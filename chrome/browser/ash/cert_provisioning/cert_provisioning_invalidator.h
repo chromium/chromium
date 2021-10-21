@@ -75,6 +75,10 @@ class CertProvisioningInvalidationHandler
   // false otherwise.
   bool Register();
 
+  // Sequence checker to ensure that calls from invalidation service are
+  // consecutive.
+  SEQUENCE_CHECKER(sequence_checker_);
+
   struct State {
     bool is_registered;
     bool is_invalidation_service_enabled;
@@ -90,22 +94,21 @@ class CertProvisioningInvalidationHandler
   // An invalidation service providing the handler with incoming invalidations.
   invalidation::InvalidationService* const invalidation_service_;
 
-  base::ScopedObservation<
-      invalidation::InvalidationService,
-      invalidation::InvalidationHandler,
-      &invalidation::InvalidationService::RegisterInvalidationHandler,
-      &invalidation::InvalidationService::UnregisterInvalidationHandler>
-      invalidation_service_observation_{this};
-
   // A topic representing certificate invalidations.
   const invalidation::Topic topic_;
 
   // A callback to be called on incoming invalidation event.
   const OnInvalidationCallback on_invalidation_callback_;
 
-  // Sequence checker to ensure that calls from invalidation service are
-  // consecutive.
-  SEQUENCE_CHECKER(sequence_checker_);
+  // Automatically unregisters `this` as an observer on destruction. Should be
+  // destroyed first so the other fields are still valid and can be used during
+  // the unregistration.
+  base::ScopedObservation<
+      invalidation::InvalidationService,
+      invalidation::InvalidationHandler,
+      &invalidation::InvalidationService::RegisterInvalidationHandler,
+      &invalidation::InvalidationService::UnregisterInvalidationHandler>
+      invalidation_service_observation_{this};
 };
 
 }  // namespace internal
