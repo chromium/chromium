@@ -92,6 +92,20 @@ class UserModel {
   void SetSelectedCreditCard(std::unique_ptr<autofill::CreditCard> card,
                              UserData* user_data);
 
+  // Sets the selected login choice. A nullptr |login_choice| will clear the
+  // selected login choice. This sets it to |user_data|.
+  // TODO(b/187286050) complete the migration to UserModel and remove UserData.
+  void SetSelectedLoginChoice(std::unique_ptr<LoginChoice> login_choice,
+                              UserData* user_data);
+
+  // Sets the selected login choice. If the identifier can not be found the
+  // selected login choice will be cleared. This sets it to |user_data|.
+  // TODO(b/187286050) complete the migration to UserModel and remove UserData.
+  void SetSelectedLoginChoiceByIdentifier(
+      const std::string& identifier,
+      const CollectUserDataOptions& collect_user_data_options,
+      UserData* user_data);
+
   // Replaces the set of available autofill profiles.
   void SetAutofillProfiles(
       std::unique_ptr<std::vector<std::unique_ptr<autofill::AutofillProfile>>>

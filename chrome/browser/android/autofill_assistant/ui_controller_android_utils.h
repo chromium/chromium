@@ -90,6 +90,12 @@ std::string SafeConvertJavaStringToNative(
     JNIEnv* env,
     const base::android::JavaRef<jstring>& jstring);
 
+// Converts an optional native string to java. Returns null if the optional is
+// not present.
+base::android::ScopedJavaLocalRef<jstring> ConvertNativeOptionalStringToJava(
+    JNIEnv* env,
+    const absl::optional<std::string> optional_string);
+
 // Creates a BottomSheetState from the Android SheetState enum defined in
 // components/browser_ui/bottomsheet/BottomSheetController.java.
 BottomSheetState ToNativeBottomSheetState(int state);

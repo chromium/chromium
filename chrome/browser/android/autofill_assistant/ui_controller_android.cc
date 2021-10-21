@@ -63,11 +63,16 @@
 #include "google_apis/google_api_keys.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-using base::android::AttachCurrentThread;
-using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaParamRef;
-using base::android::JavaRef;
-using chrome::android::ScreenshotMode;
+using ::autofill_assistant::ui_controller_android_utils::
+    ConvertNativeOptionalStringToJava;
+using ::autofill_assistant::ui_controller_android_utils::CreateJavaInfoPopup;
+using ::base::android::AttachCurrentThread;
+using ::base::android::ConvertUTF8ToJavaString;
+using ::base::android::JavaParamRef;
+using ::base::android::JavaRef;
+using ::base::android::ScopedJavaLocalRef;
+using ::base::android::ToJavaArrayOfStrings;
+using ::chrome::android::ScreenshotMode;
 
 namespace autofill_assistant {
 
@@ -100,37 +105,52 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaDate(
   return CreateJavaDateTime(env, date_time);
 }
 
+ScopedJavaLocalRef<jobject> CreateOptionalJavaInfoPopup(
+    JNIEnv* env,
+    const LoginChoice& login_choice,
+    const ClientSettings& client_settings) {
+  ScopedJavaLocalRef<jobject> jinfo_popup = nullptr;
+  if (login_choice.info_popup.has_value()) {
+    jinfo_popup = CreateJavaInfoPopup(
+        env, *login_choice.info_popup,
+        GetDisplayStringUTF8(ClientSettingsProto::CLOSE, client_settings));
+  }
+  return jinfo_popup;
+}
+
+ScopedJavaLocalRef<jobject> CreateJavaLoginChoice(
+    JNIEnv* env,
+    const LoginChoice& login_choice,
+    const ClientSettings& client_settings) {
+  return Java_AssistantCollectUserDataModel_createLoginChoice(
+      env, ConvertUTF8ToJavaString(env, login_choice.identifier),
+      ConvertUTF8ToJavaString(env, login_choice.label),
+      ConvertUTF8ToJavaString(env, login_choice.sublabel),
+      ConvertNativeOptionalStringToJava(
+          env, login_choice.sublabel_accessibility_hint),
+      login_choice.preselect_priority,
+      CreateOptionalJavaInfoPopup(env, login_choice, client_settings),
+      ConvertNativeOptionalStringToJava(
+          env, login_choice.edit_button_content_description));
+}
+
 // Creates the Java equivalent to |login_choices|.
-base::android::ScopedJavaLocalRef<jobject> CreateJavaLoginChoiceList(
+ScopedJavaLocalRef<jobject> CreateJavaLoginChoiceList(
     JNIEnv* env,
     const std::vector<LoginChoice>& login_choices,
     const ClientSettings& client_settings) {
   auto jlist = Java_AssistantCollectUserDataModel_createLoginChoiceList(env);
   for (const auto& login_choice : login_choices) {
-    base::android::ScopedJavaLocalRef<jobject> jinfo_popup = nullptr;
-    if (login_choice.info_popup.has_value()) {
-      jinfo_popup = ui_controller_android_utils::CreateJavaInfoPopup(
-          env, *login_choice.info_popup,
-          GetDisplayStringUTF8(ClientSettingsProto::CLOSE, client_settings));
-    }
-    base::android::ScopedJavaLocalRef<jstring> jsublabel_accessibility_hint =
-        nullptr;
-    if (login_choice.sublabel_accessibility_hint.has_value()) {
-      jsublabel_accessibility_hint = ConvertUTF8ToJavaString(
-          env, login_choice.sublabel_accessibility_hint.value());
-    }
-    base::android::ScopedJavaLocalRef<jstring>
-        jedit_button_content_description = nullptr;
-    if (login_choice.edit_button_content_description.has_value()) {
-      jedit_button_content_description = base::android::ConvertUTF8ToJavaString(
-          env, login_choice.edit_button_content_description.value());
-    }
     Java_AssistantCollectUserDataModel_addLoginChoice(
         env, jlist, ConvertUTF8ToJavaString(env, login_choice.identifier),
         ConvertUTF8ToJavaString(env, login_choice.label),
         ConvertUTF8ToJavaString(env, login_choice.sublabel),
-        jsublabel_accessibility_hint, login_choice.preselect_priority,
-        jinfo_popup, jedit_button_content_description);
+        ConvertNativeOptionalStringToJava(
+            env, login_choice.sublabel_accessibility_hint),
+        login_choice.preselect_priority,
+        CreateOptionalJavaInfoPopup(env, login_choice, client_settings),
+        ConvertNativeOptionalStringToJava(
+            env, login_choice.edit_button_content_description));
   }
   return jlist;
 }
@@ -1134,7 +1154,7 @@ void UiControllerAndroid::OnTermsAndConditionsChanged(
   ui_delegate_->SetTermsAndConditions(state);
 }
 
-void UiControllerAndroid::OnLoginChoiceChanged(std::string identifier) {
+void UiControllerAndroid::OnLoginChoiceChanged(const std::string& identifier) {
   ui_delegate_->SetLoginOption(identifier);
 }
 
@@ -1625,7 +1645,17 @@ void UiControllerAndroid::OnUserDataChanged(
     }
   }
 
-  // TODO(crbug.com/806868): Add |setSelectedLogin|.
+  if (field_change == UserData::FieldChange::ALL ||
+      field_change == UserData::FieldChange::LOGIN_CHOICE) {
+    ScopedJavaLocalRef<jobject> jselected_login_choice =
+        user_data.selected_login_choice() == nullptr
+            ? nullptr
+            : CreateJavaLoginChoice(env, *user_data.selected_login_choice(),
+                                    ui_delegate_->GetClientSettings());
+
+    Java_AssistantCollectUserDataModel_setSelectedLoginChoice(
+        env, jmodel, jselected_login_choice);
+  }
 }
 
 // FormProto related methods.

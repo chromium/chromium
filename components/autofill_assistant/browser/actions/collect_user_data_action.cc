@@ -14,6 +14,7 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/i18n/case_conversion.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -38,6 +39,7 @@
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_data.h"
 #include "ui/base/l10n/l10n_util.h"
 
+namespace autofill_assistant {
 namespace {
 
 static constexpr int kDefaultMaxNumberContactSummaryLines = 1;
@@ -48,13 +50,6 @@ static constexpr int kDefaultMaxNumberContactFullLines = 2;
 static constexpr std::array<autofill_assistant::AutofillContactField, 2>
     kDefaultContactFullFields = {autofill_assistant::NAME_FULL,
                                  autofill_assistant::EMAIL_ADDRESS};
-
-using autofill_assistant::CollectUserDataOptions;
-using autofill_assistant::CollectUserDataProto;
-using autofill_assistant::DateTimeProto;
-using autofill_assistant::TermsAndConditionsState;
-using autofill_assistant::UserData;
-using autofill_assistant::UserModel;
 
 bool IsReadOnlyAdditionalSection(
     const autofill_assistant::UserFormSectionProto& section) {
@@ -74,22 +69,15 @@ bool OnlyLoginRequested(
     return false;
   }
 
-  auto find_additional_input_sections =
-      [&](const autofill_assistant::UserFormSectionProto& section) {
-        return !IsReadOnlyAdditionalSection(section);
-      };
-  bool has_input_sections =
-      std::find_if(
-          collect_user_data_options.additional_prepended_sections.begin(),
-          collect_user_data_options.additional_prepended_sections.end(),
-          find_additional_input_sections) !=
-          collect_user_data_options.additional_prepended_sections.end() ||
-      std::find_if(
-          collect_user_data_options.additional_appended_sections.begin(),
-          collect_user_data_options.additional_appended_sections.end(),
-          find_additional_input_sections) !=
-          collect_user_data_options.additional_appended_sections.end();
-  return !has_input_sections && !collect_user_data_options.request_payer_name &&
+  const bool has_non_readonly_input_sections =
+      !base::ranges::all_of(
+          collect_user_data_options.additional_prepended_sections,
+          IsReadOnlyAdditionalSection) ||
+      !base::ranges::all_of(
+          collect_user_data_options.additional_appended_sections,
+          IsReadOnlyAdditionalSection);
+  return !has_non_readonly_input_sections &&
+         !collect_user_data_options.request_payer_name &&
          !collect_user_data_options.request_payer_email &&
          !collect_user_data_options.request_payer_phone &&
          !collect_user_data_options.request_shipping &&
@@ -101,10 +89,10 @@ bool OnlyLoginRequested(
 }
 
 bool IsValidLoginChoice(
-    const std::string& choice_identifier,
+    const LoginChoice* login_choice,
     const CollectUserDataOptions& collect_user_data_options) {
   return !collect_user_data_options.request_login_choice ||
-         !choice_identifier.empty();
+         login_choice != nullptr;
 }
 
 bool IsValidTermsChoice(
@@ -407,8 +395,6 @@ bool RequiresProfiles(const CollectUserDataOptions& collect_user_data_options) {
 
 }  // namespace
 
-namespace autofill_assistant {
-
 CollectUserDataAction::LoginDetails::LoginDetails(
     bool _choose_automatically_if_no_stored_login,
     const std::string& _payload,
@@ -460,9 +446,8 @@ void CollectUserDataAction::InternalProcessAction(
   // If Chrome password manager logins are requested, we need to asynchronously
   // obtain them before showing the UI.
   auto collect_user_data = proto_.collect_user_data();
-  auto password_manager_option = std::find_if(
-      collect_user_data.login_details().login_options().begin(),
-      collect_user_data.login_details().login_options().end(),
+  auto password_manager_option = base::ranges::find_if(
+      collect_user_data.login_details().login_options(),
       [&](const LoginDetailsProto::LoginOptionProto& option) {
         return option.type_case() ==
                LoginDetailsProto::LoginOptionProto::kPasswordManager;
@@ -568,14 +553,12 @@ void CollectUserDataAction::OnShowToUser(UserData* user_data,
     return;
   }
 
-  bool has_password_manager_logins =
-      std::find_if(login_details_map_.begin(), login_details_map_.end(),
-                   [&](const auto& pair) {
-                     return pair.second->login.has_value();
-                   }) != login_details_map_.end();
-  auto automatic_choice_it = std::find_if(
-      login_details_map_.begin(), login_details_map_.end(),
-      [&](const auto& pair) {
+  bool has_password_manager_logins = base::ranges::any_of(
+      login_details_map_,
+      [&](const auto& pair) { return pair.second->login.has_value(); });
+
+  auto automatic_choice_it =
+      base::ranges::find_if(login_details_map_, [&](const auto& pair) {
         return pair.second->choose_automatically_if_no_stored_login;
       });
 
@@ -584,7 +567,8 @@ void CollectUserDataAction::OnShowToUser(UserData* user_data,
   // the section will not be shown.
   if (automatic_choice_it != login_details_map_.end() &&
       !has_password_manager_logins) {
-    user_data->login_choice_identifier_.assign(automatic_choice_it->first);
+    delegate_->GetUserModel()->SetSelectedLoginChoiceByIdentifier(
+        automatic_choice_it->first, *collect_user_data_options_, user_data);
 
     // If only the login section is requested and the choice has already been
     // made implicitly, the entire UI will not be shown and the action will
@@ -599,6 +583,13 @@ void CollectUserDataAction::OnShowToUser(UserData* user_data,
       // least one other section being shown. Hide the logins, show the rest.
       collect_user_data_options_->request_login_choice = false;
     }
+  } else if (!collect_user_data_options_->login_choices.empty()) {
+    base::ranges::stable_sort(collect_user_data_options_->login_choices,
+                              LoginChoice::CompareByPriority);
+    delegate_->GetUserModel()->SetSelectedLoginChoice(
+        std::make_unique<LoginChoice>(
+            collect_user_data_options_->login_choices[0]),
+        user_data);
   }
 
   // Clear previously selected info, if requested.
@@ -1051,7 +1042,7 @@ bool CollectUserDataAction::IsUserDataComplete(
          user_data::GetPaymentInstrumentValidationErrors(
              user_data.selected_card(), billing_address, options)
              .empty() &&
-         IsValidLoginChoice(user_data.login_choice_identifier_, options) &&
+         IsValidLoginChoice(user_data.selected_login_choice(), options) &&
          IsValidTermsChoice(user_data.terms_and_conditions_, options) &&
          IsValidDateTimeRange(user_data.date_time_range_start_date_,
                               user_data.date_time_range_start_timeslot_,
@@ -1177,9 +1168,10 @@ void CollectUserDataAction::WriteProcessedAction(UserData* user_data,
     }
   }
 
-  if (proto().collect_user_data().has_login_details()) {
+  if (proto().collect_user_data().has_login_details() &&
+      user_data->selected_login_choice() != nullptr) {
     auto login_details =
-        login_details_map_.find(user_data->login_choice_identifier_);
+        login_details_map_.find(user_data->selected_login_choice()->identifier);
     if (login_details != login_details_map_.end()) {
       if (login_details->second->login.has_value()) {
         user_data->selected_login_ = *login_details->second->login;

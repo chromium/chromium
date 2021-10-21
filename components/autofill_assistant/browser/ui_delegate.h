@@ -135,7 +135,7 @@ class UiDelegate {
 
   // Sets the chosen login option, pertaining to the current collect user data
   // options.
-  virtual void SetLoginOption(std::string identifier) = 0;
+  virtual void SetLoginOption(const std::string& identifier) = 0;
 
   // Called when the user clicks a link of the form <link0>text</link0> in a
   // text message.

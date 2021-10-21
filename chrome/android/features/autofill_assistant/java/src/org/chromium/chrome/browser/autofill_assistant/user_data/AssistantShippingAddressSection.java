@@ -131,11 +131,6 @@ public class AssistantShippingAddressSection extends AssistantCollectUserDataSec
         return TextUtils.equals(optionA.getProfile().getGUID(), optionB.getProfile().getGUID());
     }
 
-    @Override
-    protected boolean shouldNotifySelectionWhenSettingItems() {
-        return false;
-    }
-
     /**
      * The Chrome profiles have changed externally. This will rebuild the UI with the new/changed
      * set of addresses derived from the profiles, while keeping the selected item if possible.

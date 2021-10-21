@@ -61,8 +61,12 @@ struct LoginChoice {
       int priority,
       const absl::optional<InfoPopupProto>& info_popup,
       const absl::optional<std::string>& edit_button_content_description);
+  LoginChoice();
   LoginChoice(const LoginChoice& another);
   ~LoginChoice();
+
+  // Compares login choices by preselect_priority. Sorts in ascending order.
+  static bool CompareByPriority(const LoginChoice& lhs, const LoginChoice& rhs);
 
   // Uniquely identifies this login choice.
   std::string identifier;
@@ -113,7 +117,6 @@ class UserData {
     AVAILABLE_PAYMENT_INSTRUMENTS,
   };
 
-  std::string login_choice_identifier_;
   TermsAndConditionsState terms_and_conditions_ = NOT_SELECTED;
   absl::optional<DateProto> date_time_range_start_date_;
   absl::optional<DateProto> date_time_range_end_date_;
@@ -138,6 +141,9 @@ class UserData {
 
   // The selected card.
   const autofill::CreditCard* selected_card() const;
+
+  // The selected login choice.
+  const LoginChoice* selected_login_choice() const;
 
   // Set an additional value for |key|.
   void SetAdditionalValue(const std::string& name, const ValueProto& value);
@@ -166,6 +172,10 @@ class UserData {
   // The selected credit card.
   // Written by |UserModel| to ensure that it stays in sync.
   std::unique_ptr<autofill::CreditCard> selected_card_;
+
+  // The selected login choice.
+  // Written by |UserModel| to ensure that it stays in sync.
+  std::unique_ptr<LoginChoice> selected_login_choice_;
 
   // A set of additional key/value pairs to be stored in client_memory.
   std::map<std::string, ValueProto> additional_values_;

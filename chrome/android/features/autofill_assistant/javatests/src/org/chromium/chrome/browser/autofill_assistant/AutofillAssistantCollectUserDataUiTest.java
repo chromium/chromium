@@ -681,8 +681,8 @@ public class AutofillAssistantCollectUserDataUiTest {
                     new PaymentInstrumentModel(paymentInstrument));
             model.set(AssistantCollectUserDataModel.VISIBLE, true);
             model.set(AssistantCollectUserDataModel.REQUEST_LOGIN_CHOICE, true);
-            model.set(AssistantCollectUserDataModel.AVAILABLE_LOGINS,
-                    Collections.singletonList(new AssistantLoginChoice(
+            model.set(AssistantCollectUserDataModel.SELECTED_LOGIN,
+                    new AssistantCollectUserDataModel.LoginChoiceModel(new AssistantLoginChoice(
                             "id", "Guest", "Description of guest checkout", "", 0, null, "")));
         });
 
@@ -738,16 +738,14 @@ public class AutofillAssistantCollectUserDataUiTest {
         testLoginDetails("Guest", "Description of guest checkout",
                 viewHolder.mLoginsSection.getCollapsedView(), viewHolder.mLoginList.getItem(0));
 
-        // Check delegate status. The selections set in the model have been sent to the delegate.
-        // |setItems()| has been called first (without selection) and selecting the item does not
-        // trigger a notification.
-        // TODO(b/198401707): The exception is the login choice which is not properly handled in
-        //  native yet.
+        // Check delegate status. The selections set in the model have not been sent to the
+        // delegate. |setItems()| has been called first (without selection) and selecting the item
+        // does not trigger a notification.
         assertThat(delegate.mPaymentMethod, is(nullValue()));
         assertThat(delegate.mContact, is(nullValue()));
         assertThat(delegate.mAddress, is(nullValue()));
         assertThat(delegate.mTermsStatus, is(AssistantTermsAndConditionsState.NOT_SELECTED));
-        assertThat(delegate.mLoginChoice.getIdentifier(), is("id")); // Default selected
+        assertThat(delegate.mLoginChoice, is(nullValue()));
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             AutofillContact contact = AssistantCollectUserDataModel.createAutofillContact(
@@ -770,13 +768,11 @@ public class AutofillAssistantCollectUserDataUiTest {
         });
 
         // Check delegate status. Setting items again will not send a notification to the delegate.
-        // TODO(b/198401707): The exception is the login choice which is not properly handled in
-        //  native yet.
         assertThat(delegate.mPaymentMethod, is(nullValue()));
         assertThat(delegate.mContact, is(nullValue()));
         assertThat(delegate.mAddress, is(nullValue()));
         assertThat(delegate.mTermsStatus, is(AssistantTermsAndConditionsState.NOT_SELECTED));
-        assertThat(delegate.mLoginChoice.getIdentifier(), is("id"));
+        assertThat(delegate.mLoginChoice, is(nullValue()));
     }
 
     /** Tests custom summary options for the contact details section. */

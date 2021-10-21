@@ -512,10 +512,9 @@ class AssistantCollectUserDataBinder
             if (!model.get(AssistantCollectUserDataModel.REQUEST_LOGIN_CHOICE)) {
                 return true;
             }
-            AssistantLoginChoice loginChoice =
-                    model.get(AssistantCollectUserDataModel.SELECTED_LOGIN);
+            LoginChoiceModel loginChoice = model.get(AssistantCollectUserDataModel.SELECTED_LOGIN);
             if (loginChoice != null) {
-                view.mLoginSection.addOrUpdateItem(new LoginChoiceModel(loginChoice),
+                view.mLoginSection.addOrUpdateItem(loginChoice,
                         /* select= */ true,
                         /* notify= */ false);
             }

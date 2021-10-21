@@ -81,6 +81,7 @@ using ::testing::AnyOf;
 using ::testing::Contains;
 using ::testing::ElementsAre;
 using ::testing::Eq;
+using ::testing::Field;
 using ::testing::Invoke;
 using ::testing::IsEmpty;
 using ::testing::IsSupersetOf;
@@ -355,8 +356,10 @@ TEST_F(CollectUserDataActionTest, SelectLogin) {
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault(
           Invoke([this](CollectUserDataOptions* collect_user_data_options) {
-            user_data_.login_choice_identifier_.assign(
-                collect_user_data_options->login_choices[0].identifier);
+            user_model_.SetSelectedLoginChoice(
+                std::make_unique<LoginChoice>(
+                    collect_user_data_options->login_choices[0]),
+                &user_data_);
             std::move(collect_user_data_options->confirm_callback)
                 .Run(&user_data_, &user_model_);
           }));
@@ -394,8 +397,10 @@ TEST_F(CollectUserDataActionTest, SelectLoginMissingUsername) {
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault(
           Invoke([this](CollectUserDataOptions* collect_user_data_options) {
-            user_data_.login_choice_identifier_.assign(
-                collect_user_data_options->login_choices[0].identifier);
+            user_model_.SetSelectedLoginChoice(
+                std::make_unique<LoginChoice>(
+                    collect_user_data_options->login_choices[0]),
+                &user_data_);
             std::move(collect_user_data_options->confirm_callback)
                 .Run(&user_data_, &user_model_);
           }));
@@ -481,6 +486,73 @@ TEST_F(CollectUserDataActionTest,
                   Property(&ProcessedActionProto::collect_user_data_result,
                            Property(&CollectUserDataResultProto::shown_to_user,
                                     false))))));
+  CollectUserDataAction action(&mock_action_delegate_, action_proto);
+  action.ProcessAction(callback_.Get());
+}
+
+TEST_F(CollectUserDataActionTest, SortLoginChoices) {
+  ActionProto action_proto;
+  auto* collect_user_data_proto = action_proto.mutable_collect_user_data();
+  collect_user_data_proto->set_request_terms_and_conditions(false);
+  auto* login_details = collect_user_data_proto->mutable_login_details();
+
+  auto* login_option = login_details->add_login_options();
+  login_option->mutable_custom()->set_label("Guest Checkout");
+  login_option->set_preselection_priority(2);
+
+  login_option = login_details->add_login_options();
+  login_option->mutable_custom()->set_label("Default priority");
+
+  login_option = login_details->add_login_options();
+  login_option->mutable_custom()->set_label("VIP Checkout");
+  login_option->set_preselection_priority(0);
+
+  login_option = login_details->add_login_options();
+  login_option->mutable_custom()->set_label("Full Checkout");
+  login_option->set_preselection_priority(1);
+
+  EXPECT_CALL(mock_action_delegate_, CollectUserData(_))
+      .WillOnce(Invoke([=](CollectUserDataOptions* collect_user_data_options) {
+        EXPECT_THAT(
+            collect_user_data_options->login_choices,
+            ElementsAre(AllOf(Field(&LoginChoice::label, "Default priority"),
+                              Field(&LoginChoice::preselect_priority, -1)),
+                        AllOf(Field(&LoginChoice::label, "VIP Checkout"),
+                              Field(&LoginChoice::preselect_priority, 0)),
+                        AllOf(Field(&LoginChoice::label, "Full Checkout"),
+                              Field(&LoginChoice::preselect_priority, 1)),
+                        AllOf(Field(&LoginChoice::label, "Guest Checkout"),
+                              Field(&LoginChoice::preselect_priority, 2))));
+      }));
+
+  CollectUserDataAction action(&mock_action_delegate_, action_proto);
+  action.ProcessAction(callback_.Get());
+}
+
+TEST_F(CollectUserDataActionTest, ChooseHighestPriorityLoginChoice) {
+  ActionProto action_proto;
+  auto* collect_user_data_proto = action_proto.mutable_collect_user_data();
+  collect_user_data_proto->set_request_terms_and_conditions(false);
+  auto* login_details = collect_user_data_proto->mutable_login_details();
+
+  auto* login_option = login_details->add_login_options();
+  login_option->mutable_custom()->set_label("Guest Checkout");
+  login_option->set_preselection_priority(2);
+
+  login_option = login_details->add_login_options();
+  login_option->mutable_custom()->set_label("Default priority");
+
+  login_option = login_details->add_login_options();
+  login_option->mutable_custom()->set_label("VIP Checkout");
+  login_option->set_preselection_priority(0);
+
+  EXPECT_CALL(mock_action_delegate_, CollectUserData(_))
+      .WillOnce(Invoke([=](CollectUserDataOptions* collect_user_data_options) {
+        EXPECT_THAT(user_data_.selected_login_choice(),
+                    AllOf(Field(&LoginChoice::label, "Default priority"),
+                          Field(&LoginChoice::preselect_priority, -1)));
+      }));
+
   CollectUserDataAction action(&mock_action_delegate_, action_proto);
   action.ProcessAction(callback_.Get());
 }
@@ -1045,7 +1117,8 @@ TEST_F(CollectUserDataActionTest, UserDataCompleteLogin) {
   EXPECT_FALSE(CollectUserDataAction::IsUserDataComplete(user_data, user_model_,
                                                          options));
 
-  user_data.login_choice_identifier_.assign("1");
+  user_model_.SetSelectedLoginChoice(std::make_unique<LoginChoice>(),
+                                     &user_data);
   EXPECT_TRUE(CollectUserDataAction::IsUserDataComplete(user_data, user_model_,
                                                         options));
 }

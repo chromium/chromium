@@ -402,6 +402,15 @@ std::string SafeConvertJavaStringToNative(
   return native_string;
 }
 
+base::android::ScopedJavaLocalRef<jstring> ConvertNativeOptionalStringToJava(
+    JNIEnv* env,
+    const absl::optional<std::string> optional_string) {
+  if (!optional_string.has_value()) {
+    return nullptr;
+  }
+  return base::android::ConvertUTF8ToJavaString(env, *optional_string);
+}
+
 BottomSheetState ToNativeBottomSheetState(int state) {
   switch (state) {
     case 1:

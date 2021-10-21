@@ -2083,7 +2083,6 @@ TEST_F(ControllerTest,
 
 TEST_F(ControllerTest, UserDataFormEmpty) {
   auto options = std::make_unique<MockCollectUserDataOptions>();
-  auto user_data = std::make_unique<UserData>();
 
   // Request nothing, expect continue button to be enabled.
   EXPECT_CALL(mock_observer_, OnUserActionsChanged(UnorderedElementsAre(
@@ -2098,7 +2097,6 @@ TEST_F(ControllerTest, UserDataFormEmpty) {
 
 TEST_F(ControllerTest, UserDataFormContactInfo) {
   auto options = std::make_unique<MockCollectUserDataOptions>();
-  auto user_data = std::make_unique<UserData>();
 
   options->required_contact_data_pieces.push_back(
       MakeRequiredDataPiece(autofill::ServerFieldType::NAME_FULL));
@@ -2137,7 +2135,6 @@ TEST_F(ControllerTest, UserDataFormContactInfo) {
 
 TEST_F(ControllerTest, UserDataFormCreditCard) {
   auto options = std::make_unique<MockCollectUserDataOptions>();
-  auto user_data = std::make_unique<UserData>();
 
   options->request_payment_method = true;
   options->billing_address_name = "billing_address";
@@ -2242,7 +2239,6 @@ TEST_F(ControllerTest, UserDataChangesByOutOfLoopWrite) {
 
 TEST_F(ControllerTest, SetTermsAndConditions) {
   auto options = std::make_unique<MockCollectUserDataOptions>();
-  auto user_data = std::make_unique<UserData>();
 
   options->accept_terms_and_conditions_text.assign("Accept T&C");
   testing::InSequence seq;
@@ -2264,9 +2260,11 @@ TEST_F(ControllerTest, SetTermsAndConditions) {
 
 TEST_F(ControllerTest, SetLoginOption) {
   auto options = std::make_unique<MockCollectUserDataOptions>();
-  auto user_data = std::make_unique<UserData>();
-
   options->request_login_choice = true;
+  LoginChoice login_choice;
+  login_choice.identifier = "guest";
+  options->login_choices.push_back(login_choice);
+
   testing::InSequence seq;
   EXPECT_CALL(mock_observer_, OnUserActionsChanged(UnorderedElementsAre(
                                   Property(&UserAction::enabled, Eq(false)))))
@@ -2279,13 +2277,13 @@ TEST_F(ControllerTest, SetLoginOption) {
   EXPECT_CALL(mock_observer_,
               OnUserDataChanged(_, UserData::FieldChange::LOGIN_CHOICE))
       .Times(1);
-  controller_->SetLoginOption("1");
-  EXPECT_THAT(controller_->GetUserData()->login_choice_identifier_, Eq("1"));
+  controller_->SetLoginOption("guest");
+  EXPECT_THAT(controller_->GetUserData()->selected_login_choice()->identifier,
+              Eq("guest"));
 }
 
 TEST_F(ControllerTest, SetShippingAddress) {
   auto options = std::make_unique<MockCollectUserDataOptions>();
-  auto user_data = std::make_unique<UserData>();
 
   options->request_shipping = true;
   options->shipping_address_name = "shipping_address";
@@ -2851,7 +2849,6 @@ TEST_F(ControllerTest, SetDateTimeRangeSameDateValidTime) {
 
 TEST_F(ControllerTest, WriteUserData) {
   auto options = std::make_unique<MockCollectUserDataOptions>();
-  auto user_data = std::make_unique<UserData>();
   controller_->SetCollectUserDataOptions(options.get());
 
   EXPECT_CALL(mock_observer_,

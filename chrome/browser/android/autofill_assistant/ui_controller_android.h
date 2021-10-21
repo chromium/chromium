@@ -158,7 +158,7 @@ class UiControllerAndroid : public ControllerObserver {
       std::unique_ptr<autofill::CreditCard> card,
       std::unique_ptr<autofill::AutofillProfile> billing_profile);
   void OnTermsAndConditionsChanged(TermsAndConditionsState state);
-  void OnLoginChoiceChanged(std::string identifier);
+  void OnLoginChoiceChanged(const std::string& identifier);
   void OnTextLinkClicked(int link);
   void OnFormActionLinkClicked(int link);
   void OnDateTimeRangeStartDateChanged(int year, int month, int day);

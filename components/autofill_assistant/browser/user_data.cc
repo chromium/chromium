@@ -24,8 +24,14 @@ LoginChoice::LoginChoice(
       preselect_priority(_preselect_priority),
       info_popup(_info_popup),
       edit_button_content_description(_edit_button_content_description) {}
+LoginChoice::LoginChoice() = default;
 LoginChoice::LoginChoice(const LoginChoice& another) = default;
 LoginChoice::~LoginChoice() = default;
+
+bool LoginChoice::CompareByPriority(const LoginChoice& lhs,
+                                    const LoginChoice& rhs) {
+  return lhs.preselect_priority < rhs.preselect_priority;
+}
 
 PaymentInstrument::PaymentInstrument() = default;
 PaymentInstrument::PaymentInstrument(
@@ -56,6 +62,10 @@ const autofill::AutofillProfile* UserData::selected_address(
 
 const autofill::CreditCard* UserData::selected_card() const {
   return selected_card_.get();
+}
+
+const LoginChoice* UserData::selected_login_choice() const {
+  return selected_login_choice_.get();
 }
 
 void UserData::SetAdditionalValue(const std::string& key,

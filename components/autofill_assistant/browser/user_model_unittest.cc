@@ -435,4 +435,33 @@ TEST_F(UserModelTest, SetSelectedCreditCard) {
   EXPECT_THAT(user_data.selected_card(), IsNull());
 }
 
+TEST_F(UserModelTest, SetSelectedLoginChoiceObject) {
+  LoginChoice login_choice;
+  login_choice.identifier = "guest";
+
+  UserData user_data;
+  model_.SetSelectedLoginChoice(std::make_unique<LoginChoice>(login_choice),
+                                &user_data);
+  EXPECT_THAT(user_data.selected_login_choice()->identifier, "guest");
+
+  model_.SetSelectedLoginChoice(nullptr, &user_data);
+  EXPECT_THAT(user_data.selected_login_choice(), IsNull());
+}
+
+TEST_F(UserModelTest, SetSelectedLoginChoiceIdentifier) {
+  LoginChoice login_choice;
+  login_choice.identifier = "guest";
+  CollectUserDataOptions collect_user_data_options;
+  collect_user_data_options.login_choices.push_back(login_choice);
+
+  UserData user_data;
+  model_.SetSelectedLoginChoiceByIdentifier("guest", collect_user_data_options,
+                                            &user_data);
+  EXPECT_THAT(user_data.selected_login_choice()->identifier, "guest");
+
+  model_.SetSelectedLoginChoiceByIdentifier(
+      "not found", collect_user_data_options, &user_data);
+  EXPECT_THAT(user_data.selected_login_choice(), IsNull());
+}
+
 }  // namespace autofill_assistant

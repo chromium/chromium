@@ -1748,11 +1748,12 @@ void Controller::SetTermsAndConditions(
   }
 }
 
-void Controller::SetLoginOption(std::string identifier) {
+void Controller::SetLoginOption(const std::string& identifier) {
   if (!collect_user_data_options_)
     return;
 
-  user_data_.login_choice_identifier_.assign(identifier);
+  user_model_.SetSelectedLoginChoiceByIdentifier(
+      identifier, *collect_user_data_options_, &user_data_);
   UpdateCollectUserDataActions();
   for (ControllerObserver& observer : observers_) {
     observer.OnUserDataChanged(user_data_, UserData::FieldChange::LOGIN_CHOICE);

@@ -177,11 +177,6 @@ public class AssistantPaymentMethodSection
         return TextUtils.equals(profileA.getGUID(), profileB.getGUID());
     }
 
-    @Override
-    protected boolean shouldNotifySelectionWhenSettingItems() {
-        return false;
-    }
-
     void onAddressesChanged(List<AutofillAddress> addresses) {
         // TODO(crbug.com/806868): replace suggested billing addresses (remove if necessary).
         for (AutofillAddress address : addresses) {

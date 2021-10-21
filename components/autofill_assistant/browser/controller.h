@@ -233,7 +233,7 @@ class Controller : public ScriptExecutorDelegate,
       std::unique_ptr<autofill::AutofillProfile> billing_profile) override;
   void SetTermsAndConditions(
       TermsAndConditionsState terms_and_conditions) override;
-  void SetLoginOption(std::string identifier) override;
+  void SetLoginOption(const std::string& identifier) override;
   void OnTextLinkClicked(int link) override;
   void OnFormActionLinkClicked(int link) override;
   void OnTtsButtonClicked() override;
