@@ -104,7 +104,8 @@ TEST_F(BackgroundDownloadTaskHelperTest,
 }
 
 // Verifies data URL should result in failure.
-TEST_F(BackgroundDownloadTaskHelperTest, DataURL) {
+// TODO(crbug.com/1261931): Flaky test. Please remove it when fixed.
+TEST_F(BackgroundDownloadTaskHelperTest, FLAKY_DataURL) {
   base::RunLoop loop;
   DownloadParams params;
   params.request_params.url = GURL("data:text/plain;base64,Q2hyb21pdW0=");
