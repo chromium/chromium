@@ -4,20 +4,44 @@
 
 #include "chrome/browser/ash/crosapi/url_handler_ash.h"
 
+#include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/chrome_url_window_manager.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/webui_url_constants.h"
-#include "ui/display/types/display_constants.h"
+
+namespace {
+
+// Show a chrome:// (os://) app for a given URL.
+void ShowOsAppForProfile(Profile* profile,
+                         const GURL& gurl,
+                         int64_t display_id) {
+  // Use the original (non off-the-record) profile for a Chrome URL unless
+  // this is a guest session.
+  if (!profile->IsGuestSession() && profile->IsOffTheRecord())
+    profile = profile->GetOriginalProfile();
+
+  // If this profile isn't allowed to create browser windows (e.g. the login
+  // screen profile) then bail out.
+  if (Browser::GetCreationStatusForProfile(profile) !=
+      Browser::CreationStatus::kOk) {
+    return;
+  }
+
+  web_app::SystemAppLaunchParams params;
+  params.url = gurl;
+  web_app::LaunchSystemWebAppAsync(profile,
+                                   web_app::SystemAppType::OS_URL_HANDLER,
+                                   params, apps::MakeWindowInfo(display_id));
+}
+
+}  // namespace
 
 namespace crosapi {
 
 UrlHandlerAsh::UrlHandlerAsh() = default;
-UrlHandlerAsh::~UrlHandlerAsh() {
-  // It is assumed that url_window_manager_ outlives url_window_observer_.
-  url_window_observer_.reset();
-  url_window_manager_.reset();
-}
+UrlHandlerAsh::~UrlHandlerAsh() = default;
 
 void UrlHandlerAsh::BindReceiver(
     mojo::PendingReceiver<mojom::UrlHandler> receiver) {
@@ -39,15 +63,8 @@ void UrlHandlerAsh::OpenUrl(const GURL& url) {
   // TODO(crbug/1256481): Only accept URL's from the Ash supplied allow list.
   if (url.DeprecatedGetOriginAsURL() ==
       GURL(chrome::kChromeUIFlagsURL).DeprecatedGetOriginAsURL()) {
-    if (!url_window_manager_) {
-      url_window_manager_ = std::make_unique<ChromeUrlWindowManager>();
-      url_window_observer_ =
-          std::make_unique<ChromeUrlWindowObserver>(url_window_manager_.get());
-    }
-
-    url_window_manager_->ShowChromePageForProfile(
-        ProfileManager::GetPrimaryUserProfile(), url,
-        display::kInvalidDisplayId);
+    ShowOsAppForProfile(ProfileManager::GetPrimaryUserProfile(), url,
+                        display::kInvalidDisplayId);
     return;
   }
 }

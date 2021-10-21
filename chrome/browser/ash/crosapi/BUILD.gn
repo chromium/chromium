@@ -141,6 +141,7 @@ source_set("crosapi") {
     "//chrome/browser/chromeos:print_job_info_proto",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/webui/settings/chromeos/constants:mojom",
+    "//chrome/browser/web_applications",
     "//chrome/common",
     "//chrome/common:channel_info",
     "//chrome/common:constants",
