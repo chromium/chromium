@@ -218,7 +218,8 @@ IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest, MissingNosniff) {
                         "\"X-Content-Type-Options: nosniff\" header.");
 }
 
-IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest, PrimaryURLNotFound) {
+IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest,
+                       PrimaryURLResourceNotFound) {
   const std::string wbn_path = "/web_bundle/test.wbn";
   const std::string primary_url_path = "/web_bundle/test.html";
   RegisterRequestHandler(wbn_path);
@@ -236,6 +237,24 @@ IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest, PrimaryURLNotFound) {
   SetContents(std::string(bundle.begin(), bundle.end()));
   TestNavigationFailure(
       wbn_url, "The primary URL resource is not found in the web bundle.");
+}
+
+IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest, PrimaryURLNotFound) {
+  const std::string wbn_path = "/web_bundle/test.wbn";
+  RegisterRequestHandler(wbn_path);
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  const GURL wbn_url = embedded_test_server()->GetURL(wbn_path);
+  const GURL inner_url =
+      embedded_test_server()->GetURL("/web_bundle/inner.html");
+  web_package::WebBundleBuilder builder("", "");
+  builder.AddExchange(inner_url.spec(),
+                      {{":status", "200"}, {"content-type", "text/html"}},
+                      "<title>Ready</title>");
+  std::vector<uint8_t> bundle = builder.CreateBundle();
+  SetContents(std::string(bundle.begin(), bundle.end()));
+  TestNavigationFailure(
+      wbn_url, "Web Bundle is missing the Primary URL to navigate to.");
 }
 
 IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest, OriginMismatch) {

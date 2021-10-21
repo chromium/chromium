@@ -463,6 +463,22 @@ IN_PROC_BROWSER_TEST_P(WebBundleFileBrowserTest, WindowOpen) {
       true /* support_third_party_wbn_page */);
 }
 
+// TODO(https://crbug.com/1225178): flaky
+#if defined(OS_LINUX)
+#define MAYBE_NoPrimaryURLFound DISABLED_NoPrimaryURLFound
+#else
+#define MAYBE_NoPrimaryURLFound NoPrimaryURLFound
+#endif
+IN_PROC_BROWSER_TEST_P(WebBundleFileBrowserTest, MAYBE_NoPrimaryURLFound) {
+  const GURL test_data_url = GetTestUrlForFile(
+      web_bundle_browsertest_utils::GetTestDataPath("same_origin_b2.wbn"));
+  std::string console_message = web_bundle_browsertest_utils::
+      ExpectNavigationFailureAndReturnConsoleMessage(shell()->web_contents(),
+                                                     test_data_url);
+
+  EXPECT_EQ(web_bundle_utils::kNoPrimaryUrlErrorMessage, console_message);
+}
+
 INSTANTIATE_TEST_SUITE_P(WebBundleFileBrowserTest,
                          WebBundleFileBrowserTest,
                          TEST_FILE_PATH_MODE_PARAMS);

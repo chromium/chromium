@@ -109,6 +109,12 @@ void WebBundleInterceptorForNetwork::OnMetadataReady(
     return;
   }
   primary_url_ = reader_->GetPrimaryURL();
+  if (primary_url_.is_empty()) {
+    web_bundle_utils::CompleteWithInvalidWebBundleError(
+        std::move(forwarding_client_), frame_tree_node_id_,
+        web_bundle_utils::kNoPrimaryUrlErrorMessage);
+    return;
+  }
   if (!reader_->HasEntry(primary_url_)) {
     web_bundle_utils::CompleteWithInvalidWebBundleError(
         std::move(forwarding_client_), frame_tree_node_id_,
