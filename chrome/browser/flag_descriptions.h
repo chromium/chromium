@@ -259,6 +259,9 @@ extern const char kBackForwardCacheDescription[];
 extern const char kBentoBarName[];
 extern const char kBentoBarDescription[];
 
+extern const char kDragWindowToNewDeskName[];
+extern const char kDragWindowToNewDeskDescription[];
+
 extern const char kBiometricReauthForPasswordFillingName[];
 extern const char kBiometricReauthForPasswordFillingDescription[];
 
