@@ -436,13 +436,30 @@ gfx::RectF ScopedOverviewTransformWindow::ShrinkRectToFitPreservingAspectRatio(
       const float window_ratio =
           static_cast<float>(window_bounds.width()) / window_bounds.height();
       if (is_pillar) {
-        const float new_x = height * window_ratio;
-        new_bounds.set_width(new_x);
+        const float new_width = height * window_ratio;
+        new_bounds.set_width(new_width);
       } else {
-        const float new_y = bounds.width() / window_ratio;
+        const float new_height = bounds.width() / window_ratio;
         new_bounds = bounds;
         new_bounds.Inset(0, title_height, 0, 0);
-        new_bounds.ClampToCenteredSize(gfx::SizeF(bounds.width(), new_y));
+        if (top_view_inset) {
+          new_bounds.set_height(new_height);
+          // Calculate `scaled_top_view_inset` without considering `title_height`
+          // because we have already inset the top of `new_bounds` by that value.
+          // We also do not consider `top_view_inset` in our calculation of
+          // `new_scale` because we want to find out the height of the inset when
+          // the whole window, including the inset, is scaled down to `new_bounds`.
+          const float new_scale = 
+              GetItemScale(rect.size(), new_bounds.size(), 0, 0);
+          const float scaled_top_view_inset = top_view_inset * new_scale;
+          // Offset `new_bounds` to be at a point in the overview item frame where 
+          // it will be centered when we clip the `top_view_inset`.
+          new_bounds.Offset(0, (bounds.height() - title_height) / 2 - 
+                               (new_height - scaled_top_view_inset) / 2 - 
+                               scaled_top_view_inset);
+        } else {
+          new_bounds.ClampToCenteredSize(gfx::SizeF(bounds.width(), new_height));
+        }
       }
       break;
     }
