@@ -325,7 +325,7 @@ public class ContextualSearchPromoControl extends OverlayPanelInflater {
         super.invalidate(didViewSizeChange);
 
         if (didViewSizeChange) {
-            calculatePromoHeight();
+            onPromoViewSizeChange();
         }
     }
 
@@ -360,7 +360,7 @@ public class ContextualSearchPromoControl extends OverlayPanelInflater {
                 new SpanApplier.SpanInfo("<link>", "</link>", settingsLink)));
         promoText.setMovementMethod(LinkMovementMethod.getInstance());
 
-        calculatePromoHeight();
+        onPromoViewSizeChange();
     }
 
     @Override
@@ -436,6 +436,10 @@ public class ContextualSearchPromoControl extends OverlayPanelInflater {
         mWasInteractive = true;
 
         ContextualSearchManager.onPromoShown();
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_SEARCH_NEW_SETTINGS)) {
+            updatePromoHeight();
+        }
     }
 
     /**
@@ -455,13 +459,19 @@ public class ContextualSearchPromoControl extends OverlayPanelInflater {
     }
 
     /**
-     * Calculates the content height of the Promo View, and adjusts the height of the Promo while
-     * preserving the proportion of the height with the content height. This should be called
-     * whenever the the size of the Promo View changes.
+     * This should be called whenever the the size of the Promo View changes or something inside the
+     * promo changes that could affect the overall size.
      */
-    private void calculatePromoHeight() {
+    private void onPromoViewSizeChange() {
         layout();
+        updatePromoHeight();
+    }
 
+    /**
+     * Calculates the content height of the Promo View, and adjusts the height of the Promo while
+     * preserving the proportion of the height with the content height.
+     */
+    private void updatePromoHeight() {
         final float previousContentHeight = mContentHeightPx;
         mContentHeightPx = getMeasuredHeight();
 
