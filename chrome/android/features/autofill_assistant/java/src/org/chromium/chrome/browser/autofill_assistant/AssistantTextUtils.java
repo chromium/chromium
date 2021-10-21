@@ -84,6 +84,8 @@ public class AssistantTextUtils {
         }
         view.setText(SpanApplier.applySpans(
                 text, successfulSpans.toArray(new SpanApplier.SpanInfo[successfulSpans.size()])));
-        view.setMovementMethod(linkIds.isEmpty() ? null : LinkMovementMethod.getInstance());
+        if (!linkIds.isEmpty()) {
+            view.setMovementMethod(LinkMovementMethod.getInstance());
+        }
     }
 }
