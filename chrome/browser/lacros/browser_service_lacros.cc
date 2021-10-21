@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_util.h"
 #include "chrome/common/channel_info.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "components/feedback/feedback_common.h"
@@ -55,6 +56,29 @@ std::string GetCompressedHistograms() {
     LOG(ERROR) << "Failed to compress lacros histograms.";
     return std::string();
   }
+}
+
+// Finds any (Lacros) Browser which has a tab matching a given URL
+// without ref (e.g. chrome://flags == chrome://flags/#).
+// If such a tab exists, it gets activated, and true gets returned.
+bool ActivateTabMatchingURLWithoutRef(Profile* profile, const GURL& url) {
+  BrowserList* browser_list = BrowserList::GetInstance();
+  for (Browser* browser : *browser_list) {
+    if (browser->profile() == profile) {
+      TabStripModel* tab_strip = browser->tab_strip_model();
+      for (int i = 0; i < tab_strip->count(); ++i) {
+        if (tab_strip->ContainsIndex(i) && !tab_strip->IsTabBlocked(i)) {
+          content::WebContents* content = tab_strip->GetWebContentsAt(i);
+          if (content->GetVisibleURL().EqualsIgnoringRef(url)) {
+            browser->window()->Activate();
+            tab_strip->ActivateTabAt(i);
+            return true;
+          }
+        }
+      }
+    }
+  }
+  return false;
 }
 
 }  // namespace
@@ -224,6 +248,18 @@ void BrowserServiceLacros::OpenUrl(const GURL& url, OpenUrlCallback callback) {
   // TODO(crbug.com/1102815): Find what profile should be used.
   Profile* profile = ProfileManager::GetLastUsedProfileAllowedByPolicy();
   DCHECK(profile) << "No last used profile is found.";
+
+  // Try to re-activate an existing tab for a few specified URLs.
+  if (url.SchemeIs(content::kChromeUIScheme) &&
+      (url.host() == chrome::kChromeUIFlagsHost ||
+       url.host() == chrome::kChromeUIVersionHost ||
+       url.host() == chrome::kChromeUIComponentsHost)) {
+    if (ActivateTabMatchingURLWithoutRef(profile, url)) {
+      std::move(callback).Run();
+      return;
+    }
+  }
+
   Browser* browser = chrome::FindBrowserWithProfile(profile);
   DCHECK(browser) << "No browser is found.";
   NavigateParams navigate_params(
