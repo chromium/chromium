@@ -92,7 +92,6 @@ class MEDIA_EXPORT OffloadingVideoDecoder : public VideoDecoder {
   ~OffloadingVideoDecoder() override;
 
   // VideoDecoder implementation.
-  bool IsOptimizedForRTC() const override;
   VideoDecoderType GetDecoderType() const override;
   void Initialize(const VideoDecoderConfig& config,
                   bool low_delay,

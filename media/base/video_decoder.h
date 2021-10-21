@@ -114,10 +114,6 @@ class MEDIA_EXPORT VideoDecoder : public Decoder {
   // Returns maximum number of parallel decode requests.
   virtual int GetMaxDecodeRequests() const;
 
-  // Returns true if and only if this decoder is optimized for decoding RTC
-  // streams.  The default is false.
-  virtual bool IsOptimizedForRTC() const;
-
   // Returns the recommended number of threads for software video decoding. If
   // the --video-threads command line option is specified and is valid, that
   // value is returned. Otherwise |desired_threads| is clamped to the number of

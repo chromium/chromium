@@ -40,10 +40,9 @@ bool SkipDecoderForRTC(const AudioDecoderConfig& /*config*/,
 
 bool SkipDecoderForRTC(const VideoDecoderConfig& config,
                        const VideoDecoder& decoder) {
-  // For now, we assume that RTC decoders are able to decode non-RTC streams,
-  // presumably by configuring themselves based on the config's rtc bit.  Since
-  // no decoders take any action at all based on it, this is as good as any.
-  return config.is_rtc() && !decoder.IsOptimizedForRTC();
+  // Skip non-platform decoders for rtc based on the feature flag.
+  return config.is_rtc() && !decoder.IsPlatformDecoder() &&
+         !base::FeatureList::IsEnabled(kExposeSwDecodersToWebRTC);
 }
 
 template <typename ConfigT, typename DecoderT>
@@ -80,6 +79,16 @@ DecoderPriority ResolutionBasedDecoderPriority(const VideoDecoderConfig& config,
              : DecoderPriority::kDeprioritized;
 }
 
+DecoderPriority UnifiedDecoderPriority(const VideoDecoderConfig& config,
+                                       const VideoDecoder& decoder) {
+  if (config.is_rtc() ||
+      base::FeatureList::IsEnabled(kResolutionBasedDecoderPriority)) {
+    return ResolutionBasedDecoderPriority(config, decoder);
+  } else {
+    return NormalDecoderPriority(config, decoder);
+  }
+}
+
 template <typename ConfigT, typename DecoderT>
 DecoderPriority SkipNonPlatformDecoders(const ConfigT& config,
                                         const DecoderT& decoder) {
@@ -94,11 +103,8 @@ void SetDefaultDecoderPriorityCB(VideoDecoderSelector::DecoderPriorityCB* out) {
   if (base::FeatureList::IsEnabled(kForceHardwareVideoDecoders)) {
     *out = base::BindRepeating(
         SkipNonPlatformDecoders<VideoDecoderConfig, VideoDecoder>);
-  } else if (base::FeatureList::IsEnabled(kResolutionBasedDecoderPriority)) {
-    *out = base::BindRepeating(ResolutionBasedDecoderPriority);
   } else {
-    *out = base::BindRepeating(
-        NormalDecoderPriority<VideoDecoderConfig, VideoDecoder>);
+    *out = base::BindRepeating(UnifiedDecoderPriority);
   }
 }
 

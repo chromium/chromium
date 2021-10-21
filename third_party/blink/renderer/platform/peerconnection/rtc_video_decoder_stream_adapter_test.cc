@@ -80,7 +80,9 @@ class MockVideoDecoder : public media::VideoDecoder {
   bool NeedsBitstreamConversion() const override { return false; }
   bool CanReadWithoutStalling() const override { return true; }
   int GetMaxDecodeRequests() const override { return 1; }
-  bool IsOptimizedForRTC() const override { return true; }
+  // Since DecoderSelector always allows platform decoders, pretend that we are
+  // a platform decoder.
+  bool IsPlatformDecoder() const override { return true; }
 };
 
 class MockDecoderFactory : public media::DecoderFactory {
@@ -347,7 +349,7 @@ TEST_P(RTCVideoDecoderStreamAdapterTest, SlowDecodingCausesReset) {
         limit = i;
         break;
       default:
-        EXPECT_TRUE(false) << result;
+        ASSERT_TRUE(false) << result;
     }
   }
 

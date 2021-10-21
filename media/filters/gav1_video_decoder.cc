@@ -420,10 +420,6 @@ void Gav1VideoDecoder::Reset(base::OnceClosure reset_cb) {
   }
 }
 
-bool Gav1VideoDecoder::IsOptimizedForRTC() const {
-  return true;
-}
-
 void Gav1VideoDecoder::Detach() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!bind_callbacks_);

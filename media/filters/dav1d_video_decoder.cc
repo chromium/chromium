@@ -282,10 +282,6 @@ void Dav1dVideoDecoder::Reset(base::OnceClosure reset_cb) {
     std::move(reset_cb).Run();
 }
 
-bool Dav1dVideoDecoder::IsOptimizedForRTC() const {
-  return true;
-}
-
 void Dav1dVideoDecoder::Detach() {
   // Even though we offload all resolutions of AV1, this may be called in a
   // transition from clear to encrypted content. Which will subsequently fail

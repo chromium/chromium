@@ -163,8 +163,6 @@ class AudioDecoderSelectorTestParam {
   static void ExpectNotInitialize(MockDecoder* decoder) {
     EXPECT_CALL(*decoder, Initialize_(_, _, _, _, _)).Times(0);
   }
-
-  static void SetRTCDecoderness(MockDecoder* decoder, bool is_rtc_decoder) {}
 };
 
 // Allocate storage for the member variables.
@@ -244,11 +242,6 @@ class VideoDecoderSelectorTestParam {
   static void ExpectNotInitialize(MockDecoder* decoder) {
     EXPECT_CALL(*decoder, Initialize_(_, _, _, _, _, _)).Times(0);
   }
-
-  static void SetRTCDecoderness(MockDecoder* decoder, bool is_optimized) {
-    EXPECT_CALL(*decoder, IsOptimizedForRTC())
-        .WillRepeatedly(Return(is_optimized));
-  }
 };
 
 // Allocate storate for the member variables.
@@ -290,7 +283,6 @@ class DecoderSelectorTest : public ::testing::Test {
     bool supports_decryption;
     bool is_platform_decoder;
     bool expect_not_initialized;
-    bool is_rtc_decoder = false;
   };
 
   DecoderSelectorTest()
@@ -346,14 +338,6 @@ class DecoderSelectorTest : public ::testing::Test {
     AddMockDecoder(std::move(args));
   }
 
-  void AddMockRTCPlatformDecoder(int decoder_type,
-                                 DecoderCapability capability) {
-    auto args = MockDecoderArgs::Create(std::move(decoder_type), capability);
-    args.is_rtc_decoder = true;
-    args.is_platform_decoder = true;
-    AddMockDecoder(std::move(args));
-  }
-
   void AddMockDecoder(MockDecoderArgs args) {
     // Actual decoders are created in CreateDecoders(), which may be called
     // multiple times by the DecoderSelector.
@@ -381,7 +365,6 @@ class DecoderSelectorTest : public ::testing::Test {
       } else {
         TypeParam::ExpectInitialize(decoder.get(), args.capability);
       }
-      TypeParam::SetRTCDecoderness(decoder.get(), args.is_rtc_decoder);
       decoders.push_back(std::move(decoder));
     }
 
@@ -1075,12 +1058,15 @@ TEST_F(VideoDecoderSelectorTest, EncryptedStream_PrioritizePlatformDecoders) {
   this->SelectDecoder();
 }
 
-// Tests that the normal decoder selector rule skips non-RTC decoders for RTC.
-TEST_F(VideoDecoderSelectorTest, RTC_NormalPriority) {
+// Tests we always use resolution-based rules for RTC.
+TEST_F(VideoDecoderSelectorTest, RTC_UseResolutionRuleWithoutSwitch) {
+  // Turn off `kResolutionBasedDecoderPriority`, since rtc should override it.
   base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(kResolutionBasedDecoderPriority);
 
+  // Add the non-platform decoder earlier, but expect the platform one.
   this->AddMockDecoder(kDecoder1, kAlwaysSucceed);
-  this->AddMockRTCPlatformDecoder(kDecoder2, kAlwaysSucceed);
+  this->AddMockPlatformDecoder(kDecoder2, kAlwaysSucceed);
 
   auto config = TestVideoConfig::Custom(gfx::Size(4096, 4096));
   config.set_is_rtc(true);
@@ -1091,37 +1077,54 @@ TEST_F(VideoDecoderSelectorTest, RTC_NormalPriority) {
   this->SelectDecoder();
 }
 
-// Tests that the resolution-based rule skips non-RTC decoders for RTC.
-TEST_F(VideoDecoderSelectorTest, RTC_DecoderBasedPriority) {
+// Non-platform decoders should be used for RTC unless enabled by a switch.
+TEST_F(VideoDecoderSelectorTest, RTC_SkipNonPlatformDecodersWithoutSwitch) {
   base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(kResolutionBasedDecoderPriority);
+  features.InitAndDisableFeature(kExposeSwDecodersToWebRTC);
 
+  // Add a non-platform decoder, which it should not use.
   this->AddMockDecoder(kDecoder1, kAlwaysSucceed);
-  this->AddMockRTCPlatformDecoder(kDecoder2, kAlwaysSucceed);
 
-  auto config = TestVideoConfig::Custom(gfx::Size(4096, 4096));
+  auto config = TestVideoConfig::Custom(gfx::Size(100, 100));
   config.set_is_rtc(true);
   this->demuxer_stream_.set_video_decoder_config(config);
   this->CreateDecoderSelector();
 
-  EXPECT_CALL(*this, OnDecoderSelected(kDecoder2));
+  EXPECT_CALL(*this, OnDecoderSelected(kDecoder1)).Times(0);
   this->SelectDecoder();
 }
 
-// Tests that the hardware-based rule skips non-RTC decoders for RTC.
-TEST_F(VideoDecoderSelectorTest, RTC_ForceHardwareDecoders) {
+// Platform decoders should be allowed for RTC without the sw switch.
+TEST_F(VideoDecoderSelectorTest, RTC_AllowPlatformDecodersWithoutSwitch) {
   base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(kForceHardwareVideoDecoders);
+  features.InitAndDisableFeature(kExposeSwDecodersToWebRTC);
 
+  // Add a platform decoder, which it should use.
   this->AddMockPlatformDecoder(kDecoder1, kAlwaysSucceed);
-  this->AddMockRTCPlatformDecoder(kDecoder2, kAlwaysSucceed);
 
-  auto config = TestVideoConfig::Custom(gfx::Size(4096, 4096));
+  auto config = TestVideoConfig::Custom(gfx::Size(100, 100));
   config.set_is_rtc(true);
   this->demuxer_stream_.set_video_decoder_config(config);
   this->CreateDecoderSelector();
 
-  EXPECT_CALL(*this, OnDecoderSelected(kDecoder2));
+  EXPECT_CALL(*this, OnDecoderSelected(kDecoder1));
+  this->SelectDecoder();
+}
+
+// Non-platform decoders should be allowed for RTC if enabled by a switch.
+TEST_F(VideoDecoderSelectorTest, RTC_AllowNonPlatformDecodersWithSwitch) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(kExposeSwDecodersToWebRTC);
+
+  // Add a non-platform decoder, which it should use.
+  this->AddMockDecoder(kDecoder1, kAlwaysSucceed);
+
+  auto config = TestVideoConfig::Custom(gfx::Size(100, 100));
+  config.set_is_rtc(true);
+  this->demuxer_stream_.set_video_decoder_config(config);
+  this->CreateDecoderSelector();
+
+  EXPECT_CALL(*this, OnDecoderSelected(kDecoder1));
   this->SelectDecoder();
 }
 
