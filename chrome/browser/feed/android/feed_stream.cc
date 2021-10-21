@@ -172,8 +172,18 @@ void FeedStream::SurfaceClosed(JNIEnv* env, const JavaParamRef<jobject>& obj) {
 
 bool FeedStream::IsActivityLoggingEnabled(JNIEnv* env,
                                           const JavaParamRef<jobject>& obj) {
+  // Currently, the UI side isn't able to query streams independently for their
+  // logging activity state, and they will always ask for kForYouStream.
+  //
+  // We expect logging state to be in the same state for both streams, but we
+  // won't have this information if the stream isn't yet loaded.
+  // For this reason, we consider logging enabled as 'true' if it's enabled for
+  // either stream type.
+  // TODO(crbug.com/1262376): Improve this.
+
   return feed_stream_api_ &&
-         feed_stream_api_->IsActivityLoggingEnabled(GetStreamType());
+         (feed_stream_api_->IsActivityLoggingEnabled(kForYouStream) ||
+          feed_stream_api_->IsActivityLoggingEnabled(kWebFeedStream));
 }
 
 void FeedStream::ReportOpenAction(JNIEnv* env,
