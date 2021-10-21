@@ -19,6 +19,7 @@
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_item_view.h"
+#include "ash/wm/overview/overview_test_base.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/overview/scoped_overview_transform_window.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
@@ -33,7 +34,7 @@
 
 namespace ash {
 
-class OverviewHighlightControllerTest : public AshTestBase {
+class OverviewHighlightControllerTest : public OverviewTestBase {
  public:
   OverviewHighlightControllerTest() = default;
 
@@ -46,7 +47,7 @@ class OverviewHighlightControllerTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    AshTestBase::SetUp();
+    OverviewTestBase::SetUp();
     ScopedOverviewTransformWindow::SetImmediateCloseForTests(true);
   }
 
@@ -424,6 +425,14 @@ TEST_F(DesksOverviewHighlightControllerTest, TabbingBasic) {
             GetHighlightedView());
   CheckDeskBarViewSize(desk_bar_view, "new desk button");
 
+  // Tests that tabbing past the new desk button, we highlight the desks
+  // templates button.
+  SendKey(ui::VKEY_TAB);
+  EXPECT_EQ(
+      desk_bar_view->expanded_state_desks_templates_button()->inner_button(),
+      GetHighlightedView());
+  CheckDeskBarViewSize(desk_bar_view, "desks templates button");
+
   // Tests that after tabbing through the overview items, we go back to the
   // first overview item.
   SendKey(ui::VKEY_TAB);
@@ -442,8 +451,14 @@ TEST_F(DesksOverviewHighlightControllerTest, TabbingReverse) {
       GetDesksBarViewForRoot(Shell::GetPrimaryRootWindow());
   EXPECT_EQ(2u, desk_bar_view->mini_views().size());
 
-  // Tests that the first highlighted item when reversing is the new desk
+  // Tests that the first highlight item when reversing is the desks templates
   // button.
+  SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  EXPECT_EQ(
+      desk_bar_view->expanded_state_desks_templates_button()->inner_button(),
+      GetHighlightedView());
+
+  // Tests that after the desks templates button, we get to the new desk button.
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   EXPECT_EQ(desk_bar_view->expanded_state_new_desk_button()->inner_button(),
             GetHighlightedView());
@@ -467,12 +482,13 @@ TEST_F(DesksOverviewHighlightControllerTest, TabbingReverse) {
   auto* item1 = GetOverviewItemForWindow(window1.get());
   EXPECT_EQ(item1->overview_item_view(), GetHighlightedView());
 
-  // Tests that we return to the new desk button after reverse tabbing through
-  // the overview items.
+  // Tests that we return to the desks templates button after reverse tabbing
+  // through the overview items.
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-  EXPECT_EQ(desk_bar_view->expanded_state_new_desk_button()->inner_button(),
-            GetHighlightedView());
+  EXPECT_EQ(
+      desk_bar_view->expanded_state_desks_templates_button()->inner_button(),
+      GetHighlightedView());
 }
 
 // Tests that tabbing with desk items and multiple displays works as expected.
@@ -508,7 +524,8 @@ TEST_F(DesksOverviewHighlightControllerTest, TabbingMultiDisplay) {
   EXPECT_EQ(item1->overview_item_view(), GetHighlightedView());
 
   // Tests that further tabbing will go through the desk mini views and their
-  // desk name views, then the new desk button on the first display.
+  // desk name views, the new desk button, and finally the desks templates
+  // button on the first display.
   SendKey(ui::VKEY_TAB);
   EXPECT_EQ(desk_bar_view1->mini_views()[0], GetHighlightedView());
   SendKey(ui::VKEY_TAB);
@@ -522,6 +539,10 @@ TEST_F(DesksOverviewHighlightControllerTest, TabbingMultiDisplay) {
   SendKey(ui::VKEY_TAB);
   EXPECT_EQ(desk_bar_view1->expanded_state_new_desk_button()->inner_button(),
             GetHighlightedView());
+  SendKey(ui::VKEY_TAB);
+  EXPECT_EQ(
+      desk_bar_view1->expanded_state_desks_templates_button()->inner_button(),
+      GetHighlightedView());
 
   // Tests that the next tab will bring us to the first overview item on the
   // second display.
@@ -540,6 +561,10 @@ TEST_F(DesksOverviewHighlightControllerTest, TabbingMultiDisplay) {
   SendKey(ui::VKEY_TAB);
   EXPECT_EQ(desk_bar_view2->expanded_state_new_desk_button()->inner_button(),
             GetHighlightedView());
+  SendKey(ui::VKEY_TAB);
+  EXPECT_EQ(
+      desk_bar_view2->expanded_state_desks_templates_button()->inner_button(),
+      GetHighlightedView());
 
   // Tests that after tabbing through the items on the second display, the
   // next tab will bring us to the first overview item on the third display.
@@ -558,6 +583,10 @@ TEST_F(DesksOverviewHighlightControllerTest, TabbingMultiDisplay) {
   SendKey(ui::VKEY_TAB);
   EXPECT_EQ(desk_bar_view3->expanded_state_new_desk_button()->inner_button(),
             GetHighlightedView());
+  SendKey(ui::VKEY_TAB);
+  EXPECT_EQ(
+      desk_bar_view3->expanded_state_desks_templates_button()->inner_button(),
+      GetHighlightedView());
 
   // Tests that after tabbing through the items on the third display, the next
   // tab will bring us to the first overview item on the first display.
@@ -755,6 +784,9 @@ TEST_F(DesksOverviewHighlightControllerTest, ZeroStateOfDesksBar) {
             GetHighlightedView());
   SendKey(ui::VKEY_TAB);
   EXPECT_EQ(desks_bar_view->zero_state_new_desk_button(), GetHighlightedView());
+  SendKey(ui::VKEY_TAB);
+  EXPECT_EQ(desks_bar_view->zero_state_desks_templates_button(),
+            GetHighlightedView());
 
   // Trigger the zero state default desk button will focus on the default desk's
   // name view.
