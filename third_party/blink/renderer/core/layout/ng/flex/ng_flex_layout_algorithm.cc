@@ -929,22 +929,28 @@ void NGFlexLayoutAlgorithm::ApplyStretchAlignmentToChild(FlexItem& flex_item) {
                                           &space_builder);
   space_builder.SetIsPaintedAtomically(true);
 
-  LogicalSize available_size(
-      flex_item.flexed_content_size_ + flex_item.main_axis_border_padding_,
-      flex_item.cross_axis_size_);
+  const LayoutUnit cross_axis_available_size =
+      flex_item.Line()->cross_axis_extent_;
+  const LayoutUnit main_axis_size =
+      flex_item.flexed_content_size_ + flex_item.main_axis_border_padding_;
+
   if (is_column_) {
-    available_size.Transpose();
+    space_builder.SetAvailableSize({cross_axis_available_size, main_axis_size});
+    space_builder.SetIsFixedBlockSize(true);
+    space_builder.SetInlineAutoBehavior(NGAutoBehavior::kStretchExplicit);
+
     if (!IsColumnContainerMainSizeDefinite() &&
         !IsUsedFlexBasisDefinite(flex_item.ng_input_node_)) {
       space_builder.SetIsInitialBlockSizeIndefinite(true);
     }
+  } else {
+    space_builder.SetAvailableSize({main_axis_size, cross_axis_available_size});
+    space_builder.SetIsFixedInlineSize(true);
+    space_builder.SetBlockAutoBehavior(NGAutoBehavior::kStretchExplicit);
   }
 
-  space_builder.SetAvailableSize(available_size);
   space_builder.SetPercentageResolutionSize(child_percentage_size_);
   space_builder.SetReplacedPercentageResolutionSize(child_percentage_size_);
-  space_builder.SetIsFixedInlineSize(true);
-  space_builder.SetIsFixedBlockSize(true);
   NGConstraintSpace child_space = space_builder.ToConstraintSpace();
   flex_item.layout_result_ =
       flex_item.ng_input_node_.Layout(child_space, /* break_token */ nullptr);

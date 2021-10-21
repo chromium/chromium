@@ -80,10 +80,12 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
 #if DCHECK_IS_ON()
     is_available_size_set_ = true;
 #endif
-    space_.available_size_ = available_size;
 
-    if (UNLIKELY(!is_in_parallel_flow_)) {
-      space_.available_size_.Transpose();
+    if (LIKELY(is_in_parallel_flow_)) {
+      space_.available_size_ = available_size;
+    } else {
+      space_.available_size_ = {available_size.block_size,
+                                available_size.inline_size};
       if (adjust_inline_size_if_needed_)
         AdjustInlineSizeIfNeeded(&space_.available_size_.inline_size);
     }
