@@ -493,10 +493,8 @@ void File::DoInitialize(const FilePath& path, uint32_t flags) {
     open_flags |= O_RDWR;
   } else if (flags & FLAG_WRITE) {
     open_flags |= O_WRONLY;
-  } else if (!(flags & FLAG_READ) &&
-             !(flags & FLAG_WRITE_ATTRIBUTES) &&
-             !(flags & FLAG_APPEND) &&
-             !(flags & FLAG_OPEN_ALWAYS)) {
+  } else if (!(flags & FLAG_READ) && !(flags & FLAG_WIN_WRITE_ATTRIBUTES) &&
+             !(flags & FLAG_APPEND) && !(flags & FLAG_OPEN_ALWAYS)) {
     NOTREACHED();
   }
 

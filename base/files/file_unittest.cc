@@ -151,9 +151,8 @@ TEST(FileTest, DeleteOpenFile) {
   FilePath file_path = temp_dir.GetPath().AppendASCII("create_file_1");
 
   // Create a file.
-  File file(file_path,
-            base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_READ |
-                base::File::FLAG_SHARE_DELETE);
+  File file(file_path, base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_READ |
+                           base::File::FLAG_WIN_SHARE_DELETE);
   EXPECT_TRUE(file.IsValid());
   EXPECT_TRUE(file.created());
   EXPECT_EQ(base::File::FILE_OK, file.error_details());
@@ -392,7 +391,7 @@ TEST(FileTest, DISABLED_TouchGetInfo) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   File file(temp_dir.GetPath().AppendASCII("touch_get_info_file"),
             base::File::FLAG_CREATE | base::File::FLAG_WRITE |
-                base::File::FLAG_WRITE_ATTRIBUTES);
+                base::File::FLAG_WIN_WRITE_ATTRIBUTES);
   ASSERT_TRUE(file.IsValid());
 
   // Get info for a newly created file.
@@ -699,11 +698,11 @@ TEST(FileTest, IrrevokableDeleteOnClose) {
   FilePath file_path = temp_dir.GetPath().AppendASCII("file");
 
   // DELETE_ON_CLOSE cannot be revoked by this opener.
-  File file(
-      file_path,
-      (base::File::FLAG_CREATE | base::File::FLAG_READ |
-       base::File::FLAG_WRITE | base::File::FLAG_DELETE_ON_CLOSE |
-       base::File::FLAG_SHARE_DELETE | base::File::FLAG_CAN_DELETE_ON_CLOSE));
+  File file(file_path,
+            (base::File::FLAG_CREATE | base::File::FLAG_READ |
+             base::File::FLAG_WRITE | base::File::FLAG_DELETE_ON_CLOSE |
+             base::File::FLAG_WIN_SHARE_DELETE |
+             base::File::FLAG_CAN_DELETE_ON_CLOSE));
   ASSERT_TRUE(file.IsValid());
   // https://msdn.microsoft.com/library/windows/desktop/aa364221.aspx says that
   // setting the dispositon has no effect if the handle was opened with
@@ -721,17 +720,17 @@ TEST(FileTest, IrrevokableDeleteOnCloseOther) {
   FilePath file_path = temp_dir.GetPath().AppendASCII("file");
 
   // DELETE_ON_CLOSE cannot be revoked by another opener.
-  File file(
-      file_path,
-      (base::File::FLAG_CREATE | base::File::FLAG_READ |
-       base::File::FLAG_WRITE | base::File::FLAG_DELETE_ON_CLOSE |
-       base::File::FLAG_SHARE_DELETE | base::File::FLAG_CAN_DELETE_ON_CLOSE));
+  File file(file_path,
+            (base::File::FLAG_CREATE | base::File::FLAG_READ |
+             base::File::FLAG_WRITE | base::File::FLAG_DELETE_ON_CLOSE |
+             base::File::FLAG_WIN_SHARE_DELETE |
+             base::File::FLAG_CAN_DELETE_ON_CLOSE));
   ASSERT_TRUE(file.IsValid());
 
-  File file2(
-      file_path,
-      (base::File::FLAG_OPEN | base::File::FLAG_READ | base::File::FLAG_WRITE |
-       base::File::FLAG_SHARE_DELETE | base::File::FLAG_CAN_DELETE_ON_CLOSE));
+  File file2(file_path,
+             (base::File::FLAG_OPEN | base::File::FLAG_READ |
+              base::File::FLAG_WRITE | base::File::FLAG_WIN_SHARE_DELETE |
+              base::File::FLAG_CAN_DELETE_ON_CLOSE));
   ASSERT_TRUE(file2.IsValid());
 
   file2.DeleteOnClose(false);
@@ -769,7 +768,7 @@ TEST(FileTest, UnsharedDeleteOnClose) {
   File file2(
       file_path,
       (base::File::FLAG_OPEN | base::File::FLAG_READ | base::File::FLAG_WRITE |
-       base::File::FLAG_DELETE_ON_CLOSE | base::File::FLAG_SHARE_DELETE));
+       base::File::FLAG_DELETE_ON_CLOSE | base::File::FLAG_WIN_SHARE_DELETE));
   ASSERT_FALSE(file2.IsValid());
 
   file.Close();

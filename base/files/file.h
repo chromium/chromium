@@ -50,8 +50,6 @@ class BASE_EXPORT File {
   // a file.
   // FLAG_(WRITE|APPEND) are mutually exclusive. This is so that APPEND behavior
   // will be consistent with O_APPEND on POSIX.
-  // FLAG_EXCLUSIVE_(READ|WRITE) only grant exclusive access to the file on
-  // creation on POSIX; for existing files, consider using Lock().
   enum Flags {
     FLAG_OPEN = 1 << 0,            // Opens a file, only if it exists.
     FLAG_CREATE = 1 << 1,          // Creates a new file, only if it does not
@@ -63,21 +61,33 @@ class BASE_EXPORT File {
     FLAG_READ = 1 << 5,
     FLAG_WRITE = 1 << 6,
     FLAG_APPEND = 1 << 7,
-    FLAG_EXCLUSIVE_READ = 1 << 8,   // Windows only. Opposite of Windows SHARE.
-    FLAG_EXCLUSIVE_WRITE = 1 << 9,  // Windows only. Opposite of Windows SHARE.
+    FLAG_WIN_EXCLUSIVE_READ = 1 << 8,   // Windows only. Opposite of SHARE.
+    FLAG_WIN_EXCLUSIVE_WRITE = 1 << 9,  // Windows only. Opposite of SHARE.
     FLAG_ASYNC = 1 << 10,
-    FLAG_TEMPORARY = 1 << 11,  // Windows only.
-    FLAG_HIDDEN = 1 << 12,     // Windows only.
+    FLAG_WIN_TEMPORARY = 1 << 11,  // Windows only.
+    FLAG_WIN_HIDDEN = 1 << 12,     // Windows only.
     FLAG_DELETE_ON_CLOSE = 1 << 13,
-    FLAG_WRITE_ATTRIBUTES = 1 << 14,     // Windows only.
-    FLAG_SHARE_DELETE = 1 << 15,         // Windows only.
-    FLAG_TERMINAL_DEVICE = 1 << 16,      // Serial port flags.
-    FLAG_BACKUP_SEMANTICS = 1 << 17,     // Windows only.
-    FLAG_EXECUTE = 1 << 18,              // Windows only.
-    FLAG_SEQUENTIAL_SCAN = 1 << 19,      // Windows only.
+    FLAG_WIN_WRITE_ATTRIBUTES = 1 << 14,  // Windows only.
+    FLAG_WIN_SHARE_DELETE = 1 << 15,      // Windows only.
+    FLAG_TERMINAL_DEVICE = 1 << 16,       // Serial port flags.
+    FLAG_WIN_BACKUP_SEMANTICS = 1 << 17,  // Windows only.
+    FLAG_WIN_EXECUTE = 1 << 18,           // Windows only.
+    FLAG_WIN_SEQUENTIAL_SCAN = 1 << 19,   // Windows only.
     FLAG_CAN_DELETE_ON_CLOSE = 1 << 20,  // Requests permission to delete a file
                                          // via DeleteOnClose() (Windows only).
                                          // See DeleteOnClose() for details.
+
+    // Deprecated names for Windows flags. Use WIN_-prefixed flags instead.
+    // TODO(crbug.com/1244149): Migrate all call sites.
+    FLAG_EXCLUSIVE_READ = FLAG_WIN_EXCLUSIVE_READ,
+    FLAG_EXCLUSIVE_WRITE = FLAG_WIN_EXCLUSIVE_WRITE,
+    FLAG_TEMPORARY = FLAG_WIN_TEMPORARY,
+    FLAG_HIDDEN = FLAG_WIN_HIDDEN,
+    FLAG_WRITE_ATTRIBUTES = FLAG_WIN_WRITE_ATTRIBUTES,
+    FLAG_SHARE_DELETE = FLAG_WIN_SHARE_DELETE,
+    FLAG_BACKUP_SEMANTICS = FLAG_WIN_BACKUP_SEMANTICS,
+    FLAG_EXECUTE = FLAG_WIN_EXECUTE,
+    FLAG_SEQUENTIAL_SCAN = FLAG_WIN_SEQUENTIAL_SCAN,
   };
 
   // This enum has been recorded in multiple histograms using PlatformFileError
@@ -337,11 +347,11 @@ class BASE_EXPORT File {
   //   calling DeleteOnClose(true).
   //
   // In all cases, all pre-existing handles to the file must have been opened
-  // with FLAG_SHARE_DELETE. Once the disposition has been set by any of the
+  // with FLAG_WIN_SHARE_DELETE. Once the disposition has been set by any of the
   // above means, no new File objects can be created for the file.
   //
   // So:
-  // - Use FLAG_SHARE_DELETE when creating/opening a file to allow another
+  // - Use FLAG_WIN_SHARE_DELETE when creating/opening a file to allow another
   //   entity on the system to cause it to be deleted when it is closed. (Note:
   //   another entity can delete the file the moment after it is closed, so not
   //   using this permission doesn't provide any protections.)

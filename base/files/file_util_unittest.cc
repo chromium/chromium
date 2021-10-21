@@ -2588,7 +2588,8 @@ TEST_F(FileUtilTest, CreateAndOpenTemporaryFileInDir) {
   EXPECT_FALSE(path.empty());
 
   // Try to open another handle to it.
-  File file2(path, File::FLAG_OPEN | File::FLAG_READ | File::FLAG_SHARE_DELETE);
+  File file2(path,
+             File::FLAG_OPEN | File::FLAG_READ | File::FLAG_WIN_SHARE_DELETE);
 #if defined(OS_WIN)
   // The file cannot be opened again on account of the exclusive access.
   EXPECT_FALSE(file2.IsValid());

@@ -510,8 +510,8 @@ File CreateAndOpenTemporaryFileInDir(const FilePath& dir, FilePath* temp_file) {
   // Open the file with exclusive r/w/d access, and allow the caller to decide
   // to mark it for deletion upon close after the fact.
   constexpr uint32_t kFlags = File::FLAG_CREATE | File::FLAG_READ |
-                              File::FLAG_WRITE | File::FLAG_EXCLUSIVE_READ |
-                              File::FLAG_EXCLUSIVE_WRITE |
+                              File::FLAG_WRITE | File::FLAG_WIN_EXCLUSIVE_READ |
+                              File::FLAG_WIN_EXCLUSIVE_WRITE |
                               File::FLAG_CAN_DELETE_ON_CLOSE;
 
   // Use GUID instead of ::GetTempFileName() to generate unique file names.
@@ -664,7 +664,8 @@ bool CreateDirectoryAndGetError(const FilePath& full_path,
 
 bool NormalizeFilePath(const FilePath& path, FilePath* real_path) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
-  File file(path, File::FLAG_OPEN | File::FLAG_READ | File::FLAG_SHARE_DELETE);
+  File file(path,
+            File::FLAG_OPEN | File::FLAG_READ | File::FLAG_WIN_SHARE_DELETE);
   if (!file.IsValid())
     return false;
 

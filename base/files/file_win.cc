@@ -395,31 +395,31 @@ void File::DoInitialize(const FilePath& path, uint32_t flags) {
   }
   if (flags & FLAG_READ)
     access |= GENERIC_READ;
-  if (flags & FLAG_WRITE_ATTRIBUTES)
+  if (flags & FLAG_WIN_WRITE_ATTRIBUTES)
     access |= FILE_WRITE_ATTRIBUTES;
-  if (flags & FLAG_EXECUTE)
+  if (flags & FLAG_WIN_EXECUTE)
     access |= GENERIC_EXECUTE;
   if (flags & FLAG_CAN_DELETE_ON_CLOSE)
     access |= DELETE;
 
-  DWORD sharing = (flags & FLAG_EXCLUSIVE_READ) ? 0 : FILE_SHARE_READ;
-  if (!(flags & FLAG_EXCLUSIVE_WRITE))
+  DWORD sharing = (flags & FLAG_WIN_EXCLUSIVE_READ) ? 0 : FILE_SHARE_READ;
+  if (!(flags & FLAG_WIN_EXCLUSIVE_WRITE))
     sharing |= FILE_SHARE_WRITE;
-  if (flags & FLAG_SHARE_DELETE)
+  if (flags & FLAG_WIN_SHARE_DELETE)
     sharing |= FILE_SHARE_DELETE;
 
   DWORD create_flags = 0;
   if (flags & FLAG_ASYNC)
     create_flags |= FILE_FLAG_OVERLAPPED;
-  if (flags & FLAG_TEMPORARY)
+  if (flags & FLAG_WIN_TEMPORARY)
     create_flags |= FILE_ATTRIBUTE_TEMPORARY;
-  if (flags & FLAG_HIDDEN)
+  if (flags & FLAG_WIN_HIDDEN)
     create_flags |= FILE_ATTRIBUTE_HIDDEN;
   if (flags & FLAG_DELETE_ON_CLOSE)
     create_flags |= FILE_FLAG_DELETE_ON_CLOSE;
-  if (flags & FLAG_BACKUP_SEMANTICS)
+  if (flags & FLAG_WIN_BACKUP_SEMANTICS)
     create_flags |= FILE_FLAG_BACKUP_SEMANTICS;
-  if (flags & FLAG_SEQUENTIAL_SCAN)
+  if (flags & FLAG_WIN_SEQUENTIAL_SCAN)
     create_flags |= FILE_FLAG_SEQUENTIAL_SCAN;
 
   file_.Set(CreateFile(path.value().c_str(), access, sharing, NULL, disposition,
