@@ -201,8 +201,7 @@ void NetInternalsTest::MessageHandler::RunJavascriptCallback(
 void NetInternalsTest::MessageHandler::GetTestServerURL(
     const base::ListValue* list_value) {
   ASSERT_TRUE(net_internals_test_->StartTestServer());
-  std::string path;
-  ASSERT_TRUE(list_value->GetString(0, &path));
+  const std::string& path = list_value->GetList()[0].GetString();
   GURL url = net_internals_test_->embedded_test_server()->GetURL(path);
   std::unique_ptr<base::Value> url_value(new base::Value(url.spec()));
   RunJavascriptCallback(url_value.get());
@@ -220,10 +219,8 @@ void NetInternalsTest::MessageHandler::SetUpTestReportURI(
 
 void NetInternalsTest::MessageHandler::DnsLookup(
     const base::ListValue* list_value) {
-  std::string hostname;
-  bool local;
-  ASSERT_TRUE(list_value->GetString(0, &hostname));
-  ASSERT_TRUE(list_value->GetBoolean(1, &local));
+  const std::string& hostname = list_value->GetList()[0].GetString();
+  const bool& local = list_value->GetList()[1].GetBool();
   ASSERT_TRUE(browser());
 
   auto resolve_host_parameters = network::mojom::ResolveHostParameters::New();

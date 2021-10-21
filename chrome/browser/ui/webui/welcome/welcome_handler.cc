@@ -66,8 +66,7 @@ void WelcomeHandler::HandleActivateSignIn(const base::ListValue* args) {
   } else {
     GURL redirect_url = GURL::EmptyGURL();
     if (args->GetList().size() == 1U) {
-      std::string url_string;
-      CHECK(args->GetString(0, &url_string));
+      const std::string& url_string = args->GetList()[0].GetString();
       redirect_url = GURL(url_string);
       DCHECK(redirect_url.is_valid());
     }

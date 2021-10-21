@@ -211,8 +211,9 @@ void InlineLoginHandler::HandleSwitchToFullTabMessage(
     return;
   }
 
-  std::string url_str;
-  CHECK(args->GetString(0, &url_str));
+  // Note: URL string is expected to be in the first argument,
+  // but it is not used.
+  CHECK(args->GetList()[0].is_string());
 
   Profile* profile = Profile::FromWebUI(web_ui());
   GURL main_frame_url(web_ui()->GetWebContents()->GetURL());
