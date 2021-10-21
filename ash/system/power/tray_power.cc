@@ -94,9 +94,11 @@ void PowerTrayView::OnPowerStatusChanged() {
 void PowerTrayView::OnSessionStateChanged(session_manager::SessionState state) {
   // Icon color changes only happens when switching session states between OOBE
   // and other state.
-  UpdateImage(session_state_ == session_manager::SessionState::OOBE ||
-              state == session_manager::SessionState::OOBE);
+  const bool update_image =
+      session_state_ == session_manager::SessionState::OOBE ||
+      state == session_manager::SessionState::OOBE;
   session_state_ = state;
+  UpdateImage(update_image);
 }
 
 void PowerTrayView::UpdateStatus() {
