@@ -616,7 +616,7 @@ public class InstantStartTest {
     }
 
     @Test
-    @MediumTest
+    @LargeTest
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
     @EnableFeatures({ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study,",
             ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
