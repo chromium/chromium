@@ -36,6 +36,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/browsing_data_remover_test_util.h"
+#include "content/public/test/mock_web_contents_observer.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "net/base/load_flags.h"
@@ -311,10 +312,14 @@ class ContentFaviconDriverTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest,
                        DoNotLoadFaviconsWhilePrerendering) {
   ASSERT_TRUE(embedded_test_server()->Start());
+  testing::NiceMock<content::MockWebContentsObserver> observer(web_contents());
+
   GURL prerender_url =
       embedded_test_server()->GetURL("/favicon/page_with_favicon.html");
   GURL icon_url = embedded_test_server()->GetURL("/favicon/icon.png");
   GURL initial_url = embedded_test_server()->GetURL("/empty.html");
+  EXPECT_CALL(observer,
+              DidUpdateFaviconURL(web_contents()->GetMainFrame(), testing::_));
   prerender_helper().NavigatePrimaryPage(initial_url);
 
   {
@@ -326,6 +331,10 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest,
   // We should not fetch the URL while prerendering.
   prerender_helper().WaitForRequest(prerender_url, 1);
   EXPECT_EQ(prerender_helper().GetRequestCount(icon_url), 0);
+
+  int host_id = prerender_helper().GetHostForUrl(prerender_url);
+  auto* prerendered = prerender_helper().GetPrerenderedMainFrameHost(host_id);
+  EXPECT_CALL(observer, DidUpdateFaviconURL(prerendered, testing::_));
   prerender_helper().NavigatePrimaryPage(prerender_url);
 
   // Check that we've fetched the URL upon activation. Should not hang.

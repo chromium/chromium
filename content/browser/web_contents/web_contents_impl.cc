@@ -5498,12 +5498,11 @@ void WebContentsImpl::DidFinishNavigation(NavigationHandle* navigation_handle) {
     // We defer favicon and manifest URL updates while prerendering. Upon
     // activation, we must inform interested parties about our candidate favicon
     // URLs and the manifest URL.
+    DCHECK(navigation_handle->IsInPrimaryMainFrame());
     auto* rfhi = static_cast<RenderFrameHostImpl*>(
         navigation_handle->GetRenderFrameHost());
-    if (!rfhi->GetParent()) {
-      UpdateFaviconURL(rfhi, rfhi->FaviconURLs());
-      OnManifestUrlChanged(rfhi->GetPage());
-    }
+    UpdateFaviconURL(rfhi, rfhi->FaviconURLs());
+    OnManifestUrlChanged(rfhi->GetPage());
 
     // The page might have set its title while prerendering, and if it was, we
     // skipped notifying observers then, and we need to notify them now after
@@ -6229,17 +6228,11 @@ void WebContentsImpl::UpdateFaviconURL(
     const std::vector<blink::mojom::FaviconURLPtr>& candidates) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::UpdateFaviconURL",
                         "render_frame_host", source);
-  // Ignore favicons for non-main frame.
-  if (source->GetParent()) {
-    NOTREACHED();
-    return;
-  }
-
   // We get updated favicon URLs after the page stops loading. If a cross-site
   // navigation occurs while a page is still loading, the initial page
   // may stop loading and send us updated favicon URLs after the navigation
   // for the new page has committed.
-  if (!source->IsActive())
+  if (!source->IsInPrimaryMainFrame())
     return;
 
   observers_.NotifyObservers(&WebContentsObserver::DidUpdateFaviconURL, source,

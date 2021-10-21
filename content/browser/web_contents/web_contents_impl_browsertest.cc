@@ -68,6 +68,8 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
+#include "content/public/test/mock_web_contents_observer.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
@@ -4975,6 +4977,48 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplAllowInsecureLocalhostBrowserTest,
 
   ASSERT_TRUE(NavigateToURL(shell(), url));
   observer.Wait();
+}
+
+class WebContentsObserverBrowsertest : public WebContentsImplBrowserTest {
+ public:
+  WebContentsObserverBrowsertest() = default;
+  ~WebContentsObserverBrowsertest() override = default;
+
+  WebContentsImpl* web_contents() {
+    return static_cast<WebContentsImpl*>(shell()->web_contents());
+  }
+
+  test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_test_helper_;
+  }
+
+ private:
+  content::test::FencedFrameTestHelper fenced_frame_test_helper_;
+};
+
+// Tests that DidUpdateFaviconURL() works only with the primary page by checking
+// if it's not called on the fenced frame loading.
+IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowsertest, UpdateFavicon) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  testing::NiceMock<MockWebContentsObserver> observer(web_contents());
+  const GURL main_url =
+      embedded_test_server()->GetURL("fencedframe.test", "/title1.html");
+
+  RenderFrameHost* primary_rfh = web_contents()->GetMainFrame();
+  EXPECT_CALL(observer, DidUpdateFaviconURL(primary_rfh, testing::_));
+  ASSERT_TRUE(NavigateToURL(shell(), main_url));
+  ASSERT_TRUE(WaitForLoadStop(web_contents()));
+
+  // Create fenced frame.
+  RenderFrameHost* inner_fenced_frame_rfh =
+      fenced_frame_test_helper().CreateFencedFrame(primary_rfh, main_url);
+  const GURL fenced_frame_url =
+      embedded_test_server()->GetURL("fencedframe.test", "/title2.html");
+  EXPECT_CALL(observer, DidUpdateFaviconURL(inner_fenced_frame_rfh, testing::_))
+      .Times(0);
+  inner_fenced_frame_rfh =
+      fenced_frame_test_helper().NavigateFrameInFencedFrameTree(
+          inner_fenced_frame_rfh, fenced_frame_url);
 }
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(PA_ALLOW_PCSCAN)
