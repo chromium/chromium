@@ -50,6 +50,12 @@ found in the LICENSE file. -->
         display: flex;
         height: 484px;
       }
+
+      .managed-icon {
+        --iron-icon-fill-color: var(--google-grey-700);
+        height: 20px;
+        margin-inline-end: 6px;
+      }
     </style>
 
     <!-- LOADING DIALOG -->
@@ -194,7 +200,7 @@ found in the LICENSE file. -->
 
         <!-- Usage stats toggle row -->
         <div class="layout horizontal center oobe-optin-row">
-          <div>
+          <div class="oobe-optin-content flex">
             <span class="oobe-optin-title">
               [[i18nDynamic(locale, 'consolidatedConsentUsageOptInTitle')]]
             </span>
@@ -204,15 +210,17 @@ found in the LICENSE file. -->
               [[i18nDynamic(locale, 'consolidatedConsentLearnMore')]]
             </a>
           </div>
-          <cr-toggle id="usageOptin" class="oobe-toggle-icon"
-              checked="{{usageChecked}}" disabled="[[usageManaged_]]">
+          <iron-icon class="managed-icon" icon="oobe-32:enterprise"
+              hidden="[[!usageManaged_]]"></iron-icon>
+          <cr-toggle id="usageOptin" checked="{{usageChecked}}"
+              disabled="[[usageManaged_]]">
           </cr-toggle>
         </div>
 
         <!-- Backup toggle row -->
         <div class="layout horizontal center oobe-optin-row"
             hidden="[[isArcOptInsHidden_(isArcEnabled_, isDemo_)]]">
-          <div>
+          <div class="oobe-optin-content flex">
             <span class="oobe-optin-title">
               [[i18nDynamic(locale, 'consolidatedConsentBackupOptInTitle')]]
             </span>
@@ -227,15 +235,18 @@ found in the LICENSE file. -->
                 [[i18nDynamic(locale, 'consolidatedConsentLearnMore')]]
             </a>
           </div>
-          <cr-toggle id="backupOptIn" class="toggle-icon"
-              checked="{{backupChecked}}" disabled="[[backupManaged_]]">
+          <iron-icon class="managed-icon" icon="oobe-32:enterprise"
+              hidden="[[!backupManaged_]]">
+          </iron-icon>
+          <cr-toggle id="backupOptIn" checked="{{backupChecked}}"
+              disabled="[[backupManaged_]]">
           </cr-toggle>
         </div>
 
         <!-- Location services toggle row -->
         <div class="layout horizontal center oobe-optin-row"
             hidden="[[isArcOptInsHidden_(isArcEnabled_, isDemo_)]]">
-          <div>
+          <div class="oobe-optin-content flex">
             <span class="oobe-optin-title">
               [[i18nDynamic(locale, 'consolidatedConsentLocationOptInTitle')]]
             </span>
@@ -250,8 +261,10 @@ found in the LICENSE file. -->
                 [[i18nDynamic(locale, 'consolidatedConsentLearnMore')]]
             </a>
           </div>
-          <cr-toggle id="locationOptIn" class="toggle-icon"
-              checked="{{locationChecked}}"
+          <iron-icon class="managed-icon" icon="oobe-32:enterprise"
+              hidden="[[!locationManaged_]]">
+          </iron-icon>
+          <cr-toggle id="locationOptIn" checked="{{locationChecked}}"
               disabled="[[locationManaged_]]">
           </cr-toggle>
         </div>

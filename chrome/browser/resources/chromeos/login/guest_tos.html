@@ -101,7 +101,7 @@ found in the LICENSE file. -->
 
         <!-- Usage stats toggle row -->
         <div class="layout horizontal center oobe-optin-row">
-          <div>
+          <div class="oobe-optin-content">
             <span class="oobe-optin-title">
               [[i18nDynamic(locale, 'guestTosUsageOptinTitle')]]
             </span>
@@ -111,8 +111,7 @@ found in the LICENSE file. -->
               [[i18nDynamic(locale, 'guestTosLearnMore')]]
             </a>
           </div>
-          <cr-toggle id="usageOptin" class="oobe-toggle-icon"
-              checked="{{usageChecked}}">
+          <cr-toggle id="usageOptin" checked="{{usageChecked}}">
           </cr-toggle>
         </div>
       </div>
