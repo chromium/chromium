@@ -1979,6 +1979,15 @@
     "obsolete": {
      "requirements-for-implementations": {
       "the-marquee-element-0": {
+       "crashtests": {
+        "marquee-with-calc.html": [
+         "51be85323aa9518513b026026ea0816d8a955a59",
+         [
+          null,
+          {}
+         ]
+        ]
+       },
        "marquee-adopt-to-inactive-document-crash.html": [
         "395f0a2a91c4d62ab4918695aa9000c1c653db35",
         [
@@ -78168,6 +78177,123 @@
         ],
         {}
        ]
+      ],
+      "grid-item-fragmentation-001.html": [
+       "1e2d41775ef84bbabca12f41c4c65a8a4c0f2187",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-item-fragmentation-002.html": [
+       "ce1b6b67ef5c0baa368881e3c36b62666c28b430",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-item-fragmentation-003.html": [
+       "8c4e42d640f19d2458a9cbc96316b226148b2e69",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-item-fragmentation-004.html": [
+       "e0eca9c9d4df78a915fa294a57895c6304e316ed",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-item-fragmentation-005.html": [
+       "8b7503f9276a45d147f6176d6cdab0576a61c295",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-item-fragmentation-006.html": [
+       "8c458c832c13028ff7e8d29bea7e00bf9cda586b",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-item-fragmentation-007.html": [
+       "cd78a9bc174d632d8baf43cf6ba3c62abd6082e0",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-item-fragmentation-008.html": [
+       "79703f65134be32fe3696f77220fce9ea9e25349",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-item-fragmentation-009.html": [
+       "33385109416b0b1eed33c4c4e59a01de5eca513c",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
       ]
      },
      "ink-overflow-002.html": [
@@ -103407,6 +103533,84 @@
        ]
       ]
      },
+     "font-face-stretch-auto-static.html": [
+      "ce3c94fa2feb25483d44883cb5a883d74fea641b",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-face-stretch-auto-static-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-face-stretch-auto-variable.html": [
+      "142f16bb31b37b61f28ac46a7fc342a47d5ffd05",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-face-stretch-auto-variable-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-face-stretch-default-variable.html": [
+      "dfb7f95d12ff110e9e7b612e498d77da76464253",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-face-stretch-default-variable-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-face-style-auto-static.html": [
+      "8c8cae3e91936d74e495f8e0a094524a53f2dcbe",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-face-style-auto-static-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-face-style-auto-variable.html": [
+      "4e503865ce97deeb02c448b611b8d0c0bd3ad05d",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-face-style-auto-variable-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-face-style-default-variable.html": [
+      "55ff17f6bd6de165109eabd911bf4d2c2322fccf",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-face-style-default-variable-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "font-face-unicode-range-2.html": [
       "427aa61d210351ae5335ba460384955a85350768",
       [
@@ -106502,7 +106706,7 @@
        ]
       ],
       "font-slant-1.html": [
-       "46863751a56b6a9e4b8e00a730547254d09ca461",
+       "f3985defde8d1151c3b2a9085bc7ca674b7b200e",
        [
         null,
         [
@@ -106528,7 +106732,7 @@
        ]
       ],
       "font-slant-2b.html": [
-       "dc4fe2c6d4dc967271ae5e4fd924c3cc9ad71075",
+       "0fb280827e21bcadc7c3176598a25b422eed3b2b",
        [
         null,
         [
@@ -136702,6 +136906,84 @@
        [
         [
          "/css/css-pseudo/spelling-error-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "target-text-001.html": [
+      "6fa529aef90ebfda8cacbaa05f481b9f94df358f",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/target-text-lime-green-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "target-text-002.html": [
+      "f93efaa548c477234c99093ccb5c3a77807818aa",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/target-text-lime-green-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "target-text-003.html": [
+      "410e636df6dc7e411640235877c03ee40405c300",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/target-text-lime-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "target-text-004.html": [
+      "2cd84d5be90ca150ad3c06734db9959309555a75",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/target-text-lime-green-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "target-text-005.html": [
+      "0f43e5d717441f71ecafb5d21681e64c5d7dd683",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/target-text-lime-green-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "target-text-006.html": [
+      "6c73ebd028f12b66badb7214dee14baf341fbad4",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/target-text-two-words-ref.html",
          "=="
         ]
        ],
@@ -236113,6 +236395,30 @@
        []
       ]
      },
+     "font-face-stretch-auto-static-ref.html": [
+      "5b3c4477332a127234b43993af3a31658c439c72",
+      []
+     ],
+     "font-face-stretch-auto-variable-ref.html": [
+      "0e56e2d520c08c978c549b49408cf8b6e8d41892",
+      []
+     ],
+     "font-face-stretch-default-variable-ref.html": [
+      "ece40e78941ed99c4e5a91c257099d6a4d1d1f4c",
+      []
+     ],
+     "font-face-style-auto-static-ref.html": [
+      "375a6d4e3e8d101df194afea937066120912b942",
+      []
+     ],
+     "font-face-style-auto-variable-ref.html": [
+      "5b9a5eeb135596a73af0d1e354e3b550dbec4420",
+      []
+     ],
+     "font-face-style-default-variable-ref.html": [
+      "ef5513afe84d6b8b2f03dd0c601e32098a67c6ac",
+      []
+     ],
      "font-face-unicode-range-2-ref.html": [
       "a338b8eb0f5acc25b7aa2590d96ba5e33c792111",
       []
@@ -237185,6 +237491,10 @@
        ],
        "FontWithFeatures2.otf": [
         "e0bf4d51d5ea4d1ae1a8499cf0855a9b4549ede8",
+        []
+       ],
+       "Inter-VF.subset.ttf": [
+        "ea32e1787e58047763ca26ca575e5ff67325d110",
         []
        ],
        "Lato-Medium-Liga.ttf": [
@@ -243193,7 +243503,7 @@
        []
       ],
       "at-font-face-descriptors-expected.txt": [
-       "03f354895cf12e94521413b39fb3cbd32982ad90",
+       "fbd2e47a5ac5ead48bb613a2702a1ca9e63c6984",
        []
       ],
       "font-descriptor-range-reversed-ref.html": [
@@ -249595,6 +249905,18 @@
      },
      "target-text-dynamic-001-ref.html": [
       "ab3fcdf58ddadd2bd42de34d49555b6631bfd772",
+      []
+     ],
+     "target-text-lime-green-ref.html": [
+      "dd29ab3705170d04581da1ba0f57fbd65fd626f2",
+      []
+     ],
+     "target-text-lime-ref.html": [
+      "bd94d694359b4bac1e226d3520af3090c30c7ebe",
+      []
+     ],
+     "target-text-two-words-ref.html": [
+      "47583b5abffe0cdbd8b3ed6839526def9c69ce9c",
       []
      ],
      "textpath-selection-011-ref.html": [
@@ -268717,11 +269039,11 @@
        []
       ],
       "cors-preflight.any-expected.txt": [
-       "19554d56e164864936b2d61b82984fcc5ee68e42",
+       "1b8dda7c6abee93c55a25f6f22d0ac1b3555bd39",
        []
       ],
       "cors-preflight.any.worker-expected.txt": [
-       "19554d56e164864936b2d61b82984fcc5ee68e42",
+       "1b8dda7c6abee93c55a25f6f22d0ac1b3555bd39",
        []
       ],
       "resources": {
@@ -273360,10 +273682,6 @@
       ],
       "noscript-iframe.html": [
        "677b5fc83aa75abdc3c542a1663cf211607dbed3",
-       []
-      ],
-      "popup-from-initial-empty-sandboxed-document.window-expected.txt": [
-       "8f0d2e4bd9a4cc8c24f13215f3f62eee851b8989",
        []
       ],
       "resources": {
@@ -303830,7 +304148,7 @@
     ],
     "resources": {
      "helpers.js": [
-      "9723ff4f1d8545fd73abc929d9e0a8d82303ecbf",
+      "2e38eeca31e0d998f3abdcac83886b22c782dacb",
       []
      ],
      "iframe.html": [
@@ -347000,7 +347318,7 @@
      ],
      "variations": {
       "at-font-face-descriptors.html": [
-       "5f8ab8e9395a68a466e848a1c22b4625e48de62f",
+       "28610860c5015b659c88058762397c10f8727ba6",
        [
         null,
         {}
@@ -354012,6 +354330,13 @@
      ],
      "abspos-in-multicol-002.html": [
       "6c254d437ad1600e26daccd78f141c372bb6603d",
+      [
+       null,
+       {}
+      ]
+     ],
+     "abspos-in-multicol-003.html": [
+      "01caa895da173f341f86647c3f30e61c5fec0a24",
       [
        null,
        {}
@@ -391519,7 +391844,7 @@
        ]
       ],
       "cors-preflight.any.js": [
-       "5dace61ffe4652c4f5eddba0b123b1678d731e2d",
+       "045422f40b1cdb37775bd7a2b83ea35081b59d1a",
        [
         "fetch/api/cors/cors-preflight.any.html",
         {
@@ -502075,7 +502400,7 @@
      ]
     ],
     "mode-mixed.tentative.https.any.js": [
-     "0dfa7e511e07d6351d0ba96cacc789933eb08e7a",
+     "5f34588693f94e4c7d42b5943931978a60be9e8a",
      [
       "web-locks/mode-mixed.tentative.https.any.html",
       {
@@ -502083,6 +502408,10 @@
         [
          "title",
          "Web Locks API: Mixed Modes"
+        ],
+        [
+         "script",
+         "resources/helpers.js"
         ],
         [
          "global",
@@ -502100,6 +502429,10 @@
          "Web Locks API: Mixed Modes"
         ],
         [
+         "script",
+         "resources/helpers.js"
+        ],
+        [
          "global",
          "window,dedicatedworker,sharedworker,serviceworker"
         ]
@@ -502115,6 +502448,10 @@
          "Web Locks API: Mixed Modes"
         ],
         [
+         "script",
+         "resources/helpers.js"
+        ],
+        [
          "global",
          "window,dedicatedworker,sharedworker,serviceworker"
         ]
@@ -502128,6 +502465,10 @@
         [
          "title",
          "Web Locks API: Mixed Modes"
+        ],
+        [
+         "script",
+         "resources/helpers.js"
         ],
         [
          "global",
@@ -502249,7 +502590,7 @@
      ]
     ],
     "opaque-origin.tentative.https.html": [
-     "589c2a7cdd8bbc3216ea0556f7c6ef55944966e3",
+     "1cb7a2d2e600797b8e3cc8e5d17a8374c9bde4ef",
      [
       null,
       {}
@@ -502501,7 +502842,7 @@
      ]
     ],
     "signal.tentative.https.any.js": [
-     "6796bfc78f8a48b1b3753d77d13ec293dd552dfa",
+     "c4509de637b81f55a3bc29a75f4b381b93f11b7b",
      [
       "web-locks/signal.tentative.https.any.html",
       {
@@ -507489,7 +507830,7 @@
      ]
     ],
     "MessagePort_onmessage_start.any.js": [
-     "fd0a4f2c43d46f64c9fa1d024da5a8345b8b7008",
+     "7ba3a3721023206fa64c810b4c70c75a208ff049",
      [
       "webmessaging/MessagePort_onmessage_start.any.html",
       {

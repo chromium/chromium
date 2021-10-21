@@ -57,4 +57,23 @@
     });
   };
 
+  /**
+   * Request a lock and hold it until the subtest ends.
+   * @param {*} t test runner object
+   * @param {string} name lock name
+   * @param {LockOptions=} options lock options
+   * @returns
+   */
+  self.requestLockAndHold = (t, name, options = {}) => {
+    return navigator.locks.request(name, options, () => {
+      return new Promise(resolve => t.add_cleanup(resolve));
+    });
+  };
+
+  self.makePromiseAndResolveFunc = () => {
+    let resolve;
+    const promise = new Promise(r => { resolve = r; });
+    return [promise, resolve];
+  };
+
 })();
