@@ -285,9 +285,8 @@ consoles.console_view(
         "*type*": consoles.ordering(short_names = ["rel", "dbg", "exp"]),
         "*cpu*": consoles.ordering(short_names = ["x86"]),
         "Windows": "*builder*",
-        "Windows|Builder": ["Release", "dEQP", "dx12vk", "Debug"],
+        "Windows|Builder": ["Release", "dx12vk", "Debug"],
         "Windows|Builder|Release": "*cpu*",
-        "Windows|Builder|dEQP": "*cpu*",
         "Windows|Builder|dx12vk": "*type*",
         "Windows|Builder|Debug": "*cpu*",
         "Windows|10|x64|Intel": "*type*",
@@ -303,7 +302,7 @@ consoles.console_view(
         "Linux|Builder": "*type*",
         "Linux|Intel": "*type*",
         "Linux|Nvidia": "*type*",
-        "Android": ["L32", "M64", "N64", "P32", "vk", "dqp", "skgl", "skv"],
+        "Android": ["L32", "M64", "N64", "P32", "vk", "skgl", "skv"],
         "Android|M64": ["QCOM"],
     },
 )
@@ -5024,14 +5023,6 @@ ci.gpu_fyi_linux_builder(
 )
 
 ci.gpu_fyi_linux_builder(
-    name = "Android FYI dEQP Release (Nexus 5X)",
-    console_view_entry = consoles.console_view_entry(
-        category = "Android|dqp|M64",
-        short_name = "N5X",
-    ),
-)
-
-ci.gpu_fyi_linux_builder(
     name = "ChromeOS FYI Release (amd64-generic)",
     # Runs a lot of tests + VMs are slower than real hardware, so increase the
     # timeout.
@@ -5071,14 +5062,6 @@ ci.gpu_fyi_linux_builder(
     console_view_entry = consoles.console_view_entry(
         category = "Linux|Builder",
         short_name = "dbg",
-    ),
-)
-
-ci.gpu_fyi_linux_builder(
-    name = "GPU FYI Linux dEQP Builder",
-    console_view_entry = consoles.console_view_entry(
-        category = "Linux|Builder",
-        short_name = "dqp",
     ),
 )
 
@@ -5231,24 +5214,6 @@ ci.gpu_fyi_thin_tester(
         short_name = "skv",
     ),
     triggered_by = ["GPU FYI Linux Builder"],
-)
-
-ci.gpu_fyi_thin_tester(
-    name = "Linux FYI dEQP Release (Intel HD 630)",
-    console_view_entry = consoles.console_view_entry(
-        category = "Linux|Intel",
-        short_name = "dqp",
-    ),
-    triggered_by = ["GPU FYI Linux dEQP Builder"],
-)
-
-ci.gpu_fyi_thin_tester(
-    name = "Linux FYI dEQP Release (NVIDIA)",
-    console_view_entry = consoles.console_view_entry(
-        category = "Linux|Nvidia",
-        short_name = "dqp",
-    ),
-    triggered_by = ["GPU FYI Linux dEQP Builder"],
 )
 
 ci.gpu_fyi_thin_tester(
