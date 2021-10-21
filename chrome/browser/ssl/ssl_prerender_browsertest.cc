@@ -13,24 +13,29 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "content/public/browser/ssl_host_state_delegate.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/url_loader_interceptor.h"
+#include "net/dns/mock_host_resolver.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/request_handler_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 using chrome_browser_interstitials::IsShowingSSLInterstitial;
 using content::EvalJs;
+using content::ExecJs;
 using content::RenderFrameHost;
 using content::SSLHostStateDelegate;
 using content::TestNavigationManager;
 using content::URLLoaderInterceptor;
 using content::WebContents;
+using content::test::PrerenderHostObserver;
 using net::EmbeddedTestServer;
 using ui_test_utils::NavigateToURL;
 
@@ -40,9 +45,28 @@ std::unique_ptr<net::EmbeddedTestServer> CreateExpiredCertServer(
     const base::FilePath& data_dir) {
   auto server =
       std::make_unique<EmbeddedTestServer>(EmbeddedTestServer::TYPE_HTTPS);
+  server->AddDefaultHandlers(data_dir);
   server->SetSSLConfig(EmbeddedTestServer::CERT_EXPIRED);
-  server->ServeFilesFromSourceDirectory(data_dir);
   return server;
+}
+
+std::unique_ptr<net::EmbeddedTestServer> CreateHTTPSServer(
+    const base::FilePath& data_dir) {
+  auto server =
+      std::make_unique<EmbeddedTestServer>(EmbeddedTestServer::TYPE_HTTPS);
+  server->AddDefaultHandlers(data_dir);
+  server->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  return server;
+}
+
+std::string GetFilePathWithHostAndPortReplacement(
+    const std::string& original_file_path,
+    const net::HostPortPair& host_port_pair) {
+  base::StringPairs replacement_text;
+  replacement_text.push_back(
+      make_pair("REPLACE_WITH_HOST_AND_PORT", host_port_pair.ToString()));
+  return net::test_server::GetFilePathWithReplacements(original_file_path,
+                                                       replacement_text);
 }
 
 }  // namespace
@@ -53,6 +77,10 @@ class SSLPrerenderTest : public InProcessBrowserTest {
       : prerender_helper_(base::BindRepeating(&SSLPrerenderTest::web_contents,
                                               base::Unretained(this))) {}
   ~SSLPrerenderTest() override = default;
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+  }
 
  protected:
   content::WebContents* web_contents() {
@@ -191,5 +219,63 @@ IN_PROC_BROWSER_TEST_F(SSLPrerenderTest, TestNoInterstitialInPrerenderSW) {
     EXPECT_EQ(prerender_helper_.GetHostForUrl(kPrerenderUrl),
               RenderFrameHost::kNoFrameTreeNodeId);
     EXPECT_FALSE(IsShowingSSLInterstitial(web_contents()));
+  }
+}
+
+// Prerenders a page that tries to submit an insecure form and checks that this
+// cancels the prerender instead.
+IN_PROC_BROWSER_TEST_F(SSLPrerenderTest,
+                       InsecureFormSubmissionCancelsPrerender) {
+  base::HistogramTester histograms;
+  const std::string kHistogramName =
+      "Security.MixedForm.InterstitialTriggerState";
+
+  // Histogram should start off empty.
+  histograms.ExpectTotalCount(kHistogramName, 0);
+
+  auto https_server = CreateHTTPSServer(GetChromeTestDataDir());
+  ASSERT_TRUE(https_server->Start());
+
+  // Add a "replace_text=" query param that the test server will use to replace
+  // the string "REPLACE_WITH_HOST_AND_PORT" in the destination page.
+  net::HostPortPair host_port_pair =
+      net::HostPortPair::FromURL(https_server->GetURL("a.test", "/"));
+  std::string replacement_path = GetFilePathWithHostAndPortReplacement(
+      "/ssl/page_with_form_targeting_http_url.html", host_port_pair);
+
+  // Use "a.test" since the default host is 127.0.0.1 and that's considered a
+  // "potentially trustworthy origin" by the throttle so navigation won't
+  // trigger the throttle.
+  const GURL kPrerenderUrl = https_server->GetURL("a.test", replacement_path);
+  const GURL kInitialUrl = https_server->GetURL("a.test", "/empty.html");
+
+  // Test steps
+  {
+    ASSERT_TRUE(NavigateToURL(browser(), kInitialUrl));
+
+    // Trigger the prerender.
+    const int kPrerenderHostId = prerender_helper_.AddPrerender(kPrerenderUrl);
+    ASSERT_NE(kPrerenderHostId, RenderFrameHost::kNoFrameTreeNodeId);
+    ASSERT_EQ(prerender_helper_.GetHostForUrl(kPrerenderUrl), kPrerenderHostId);
+
+    // Submit a form targeting an insecure URL. The prerender should be
+    // destroyed.
+    WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+    PrerenderHostObserver host_observer(*tab, kPrerenderHostId);
+    ASSERT_TRUE(
+        ExecJs(prerender_helper_.GetPrerenderedMainFrameHost(kPrerenderHostId),
+               "document.getElementById('submit').click();"));
+    host_observer.WaitForDestroyed();
+
+    // The prerender navigation should be canceled as part of the response.
+    // Ensure the prerender host is destroyed, no interstitial is showing, and
+    // we didn't affect the relevant metric.
+    EXPECT_EQ(prerender_helper_.GetHostForUrl(kPrerenderUrl),
+              RenderFrameHost::kNoFrameTreeNodeId);
+    security_interstitials::SecurityInterstitialTabHelper* helper =
+        security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
+            tab);
+    EXPECT_FALSE(helper);
+    histograms.ExpectTotalCount(kHistogramName, 0);
   }
 }

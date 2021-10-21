@@ -114,6 +114,10 @@ InsecureFormNavigationThrottle::GetThrottleResultForMixedForm(
   if (tab_storage->IsProceeding())
     return content::NavigationThrottle::PROCEED;
 
+  InterstitialTriggeredState log_state =
+      InterstitialTriggeredState::kMixedFormDirect;
+  bool should_proceed = false;
+
   if (is_redirect) {
     // 307 and 308 redirects for POST forms are special because they can leak
     // form data if done over HTTP.
@@ -122,17 +126,24 @@ InsecureFormNavigationThrottle::GetThrottleResultForMixedForm(
          handle->GetResponseHeaders()->response_code() ==
              net::HTTP_PERMANENT_REDIRECT) &&
         handle->IsPost()) {
-      LogMixedFormInterstitialMetrics(
-          InterstitialTriggeredState::kMixedFormRedirectWithFormData);
+      log_state = InterstitialTriggeredState::kMixedFormRedirectWithFormData;
     } else {
-      LogMixedFormInterstitialMetrics(
-          InterstitialTriggeredState::kMixedFormRedirectNoFormData);
-      return content::NavigationThrottle::PROCEED;
+      log_state = InterstitialTriggeredState::kMixedFormRedirectNoFormData;
+      should_proceed = true;
     }
-  } else {
-    LogMixedFormInterstitialMetrics(
-        InterstitialTriggeredState::kMixedFormDirect);
   }
+
+  if (should_proceed) {
+    LogMixedFormInterstitialMetrics(log_state);
+    return content::NavigationThrottle::PROCEED;
+  } else if (handle->IsInPrerenderedMainFrame()) {
+    // If we're prerendered, avoid logging any metrics or showing an
+    // interstitial if the prerender will be canceled. This will cancel the
+    // form navigation as well as the prerender.
+    return content::NavigationThrottle::CANCEL;
+  }
+
+  LogMixedFormInterstitialMetrics(log_state);
 
   std::unique_ptr<InsecureFormBlockingPage> blocking_page =
       blocking_page_factory_->CreateInsecureFormBlockingPage(contents,
