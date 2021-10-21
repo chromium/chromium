@@ -1445,6 +1445,37 @@ try_.chromium_linux_builder(
 )
 
 try_.chromium_linux_builder(
+    name = "linux_chromium_asan_rel_ng-orchestrator",
+    builderless = False,
+    cores = 2,
+    executable = "recipe:chromium/orchestrator",
+    main_list_view = "try",
+    properties = {
+        "$build/chromium_orchestrator": {
+            "compilator": "linux_chromium_asan_rel_ng-compilator",
+            "compilator_watcher_git_revision": compilator_watcher_git_revision,
+        },
+    },
+    service_account = "chromium-orchestrator@chops-service-accounts.iam.gserviceaccount.com",
+)
+
+try_.chromium_linux_builder(
+    name = "linux_chromium_asan_rel_ng-compilator",
+    builderless = False,
+    cores = 16,
+    executable = "recipe:chromium/compilator",
+    goma_jobs = goma.jobs.J150,
+    main_list_view = "try",
+    ssd = True,
+    properties = {
+        "orchestrator": {
+            "builder_name": "linux_chromium_asan_rel_ng-orchestrator",
+            "builder_group": "tryserver.chromium.linux",
+        },
+    },
+)
+
+try_.chromium_linux_builder(
     name = "linux_chromium_asan_rel_ng_rts",
     goma_jobs = goma.jobs.J150,
     ssd = True,
@@ -1536,6 +1567,37 @@ try_.chromium_linux_builder(
     goma_jobs = goma.jobs.J150,
     main_list_view = "try",
     tryjob = try_.job(),
+)
+
+try_.chromium_linux_builder(
+    name = "linux_chromium_tsan_rel_ng-orchestrator",
+    builderless = False,
+    cores = 2,
+    executable = "recipe:chromium/orchestrator",
+    main_list_view = "try",
+    properties = {
+        "$build/chromium_orchestrator": {
+            "compilator": "linux_chromium_tsan_rel_ng-compilator",
+            "compilator_watcher_git_revision": compilator_watcher_git_revision,
+        },
+    },
+    service_account = "chromium-orchestrator@chops-service-accounts.iam.gserviceaccount.com",
+)
+
+try_.chromium_linux_builder(
+    name = "linux_chromium_tsan_rel_ng-compilator",
+    builderless = False,
+    cores = 16,
+    executable = "recipe:chromium/compilator",
+    goma_jobs = goma.jobs.J150,
+    main_list_view = "try",
+    ssd = True,
+    properties = {
+        "orchestrator": {
+            "builder_name": "linux_chromium_tsan_rel_ng-orchestrator",
+            "builder_group": "tryserver.chromium.linux",
+        },
+    },
 )
 
 try_.chromium_linux_builder(
