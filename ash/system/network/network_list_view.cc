@@ -102,12 +102,12 @@ gfx::ImageSkia GetNetworkImageForNetwork(const NetworkInfo& info) {
     network_image = info.image;
   }
 
-  // When we are inhibited, cellular devices should have a grayed out appearance
-  // since the rows are disabled, which gives users the impression that these
-  // networks are unavailable. We must change the image before we add it to the
-  // view, and then alter the label and sub-label if they exist after it is
-  // added to the view.
-  if (info.inhibited) {
+  // When the cellular network is disabled, its appearance should be grayed out
+  // to indicate users that these networks are unavailable. We must change the
+  // image before we add it to the view, and then alter the label and sub-label
+  // if they exist after it is added to the view. TODO(crbug.com/1254917): Gray
+  // out disabled WiFi networks in quick setting page.
+  if (info.type == NetworkType::kCellular && info.disable) {
     network_image = gfx::ImageSkiaOperations::CreateTransparentImage(
         network_image, kAlphaValueForInhibitedIconOpacity);
   }
@@ -144,12 +144,11 @@ SkColor GetCellularNetworkSubTextColor(const NetworkInfo& info) {
 
 // Updates the cellular list item's label text colors to disabled if the item is
 // disabled.
-void SetupCellularListItem(HoverHighlightView* view, const NetworkInfo& info) {
-  //  The network row is disabled if inhibited or when SIM is locked and user is
-  //  not logged in.
-  if (!info.inhibited &&
-      !(info.sim_locked &&
-        !Shell::Get()->session_controller()->IsActiveUserSessionStarted())) {
+void UpdateCellularListItemTextColor(HoverHighlightView* view,
+                                     const NetworkInfo& info) {
+  // The network row is disabled if blocked by policy, device is inhibited or
+  // when SIM is locked and user is not logged in.
+  if (!info.disable) {
     return;
   }
 
@@ -174,21 +173,22 @@ void SetupCellularListItemWithSubtext(HoverHighlightView* view,
   }
   view->SetSubText(l10n_util::GetStringUTF16(cellular_subtext_message_id));
   view->sub_text_label()->SetEnabledColor(GetCellularNetworkSubTextColor(info));
-  SetupCellularListItem(view, info);
+  UpdateCellularListItemTextColor(view, info);
 }
 
 bool ComputeNetworkDisabledProperty(const NetworkStatePropertiesPtr& network,
                                     const NetworkInfo& info,
-                                    ActivationStateType activation_state) {
+                                    ActivationStateType activation_state,
+                                    bool inhibited) {
   // If user is not logged in and SIM is locked disable the row.
   if (!Shell::Get()->session_controller()->IsActiveUserSessionStarted() &&
       ShouldShowUnlockCellularNetwork(info)) {
     return info.sim_locked;
   }
-  // If the device state is inhibited, we want to have the cellular network
-  // rows disabled.
+  // If the device is inhibited or network is blocked by policy, we want to
+  // have the cellular network rows disabled.
   return activation_state == ActivationStateType::kActivating ||
-         network->prohibited_by_policy || info.inhibited;
+         network->prohibited_by_policy || inhibited;
 }
 
 }  // namespace
@@ -249,6 +249,7 @@ void NetworkListView::OnGetNetworkStateList(
     }
 
     auto info = std::make_unique<NetworkInfo>(network->guid);
+    bool inhibited = false;
     ActivationStateType activation_state = ActivationStateType::kUnknown;
     const chromeos::network_config::mojom::DeviceStateProperties*
         cellular_device = model()->GetDevice(NetworkType::kCellular);
@@ -260,7 +261,7 @@ void NetworkListView::OnGetNetworkStateList(
         info->activation_state = activation_state;
         info->sim_locked = network->type_state->get_cellular()->sim_locked;
         if (cellular_device && IsInhibited(cellular_device))
-          info->inhibited = true;
+          inhibited = true;
         // If cellular is not enabled, skip cellular networks with no service.
         if (model()->GetDeviceState(NetworkType::kCellular) !=
                 DeviceStateType::kEnabled &&
@@ -289,13 +290,12 @@ void NetworkListView::OnGetNetworkStateList(
         network.get(), network_icon::ICON_TYPE_LIST, false /* badge_vpn */);
 
     info->type = network->type;
-    info->disable =
-        ComputeNetworkDisabledProperty(network, *info, activation_state);
+    info->disable = ComputeNetworkDisabledProperty(network, *info,
+                                                   activation_state, inhibited);
 
     // If the device state is inhibited, we want to have the cellular network
     // rows not connectable.
-    info->connectable =
-        network->connectable && info->inhibited && info->sim_locked;
+    info->connectable = network->connectable && !inhibited && !info->sim_locked;
 
     if (network->prohibited_by_policy) {
       info->tooltip =
@@ -494,7 +494,7 @@ void NetworkListView::UpdateViewForNetwork(HoverHighlightView* view,
       SetupConnectingScrollListItem(view);
     }
     if (NetworkTypeMatchesType(info.type, NetworkType::kCellular)) {
-      SetupCellularListItem(view, info);
+      UpdateCellularListItemTextColor(view, info);
     }
   }
   view->SetTooltipText(info.tooltip);

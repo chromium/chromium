@@ -34,7 +34,6 @@ struct NetworkInfo {
   bool disable = false;
   bool secured = false;
   bool connectable = false;
-  bool inhibited = false;
   bool sim_locked = false;
   // Initialized in .cc file because full (non-forward) mojom headers are large.
   chromeos::network_config::mojom::ConnectionStateType connection_state;
