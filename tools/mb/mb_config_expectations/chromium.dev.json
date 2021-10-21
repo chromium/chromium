@@ -47,6 +47,17 @@
       "use_goma": true
     }
   },
+  "mac-arm-rel-swarming": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "use_goma": true
+    }
+  },
   "mac-rel-swarming": {
     "gn_args": {
       "dcheck_always_on": false,
