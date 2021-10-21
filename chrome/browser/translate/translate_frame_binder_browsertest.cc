@@ -12,6 +12,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -48,7 +49,13 @@ class TestTranslateDriverBindingContentBrowserClient
 
     translate::BindContentTranslateDriver(render_frame_host,
                                           std::move(receiver));
-    render_frame_binding_map_[render_frame_host] = true;
+
+    // Check if |render_frame_host| is a primary main frame again here even
+    // though BindContentTranslateDriver method already checks it, since it's
+    // difficult to know if the method succeeds to bind the given receiver.
+    if (render_frame_host->IsInPrimaryMainFrame())
+      render_frame_binding_map_[render_frame_host] = true;
+
     if (quit_on_binding_)
       std::move(quit_on_binding_).Run();
   }
@@ -74,16 +81,8 @@ class TestTranslateDriverBindingContentBrowserClient
 
 class TranslateFrameBinderBrowserTest : public InProcessBrowserTest {
  public:
-  TranslateFrameBinderBrowserTest()
-      : prerender_helper_(
-            base::BindRepeating(&TranslateFrameBinderBrowserTest::web_contents,
-                                base::Unretained(this))) {}
+  TranslateFrameBinderBrowserTest() = default;
   ~TranslateFrameBinderBrowserTest() override = default;
-
-  void SetUp() override {
-    prerender_helper_.SetUp(embedded_test_server());
-    InProcessBrowserTest::SetUp();
-  }
 
   void SetUpOnMainThread() override {
     ASSERT_TRUE(test_server_handle_ =
@@ -94,19 +93,36 @@ class TranslateFrameBinderBrowserTest : public InProcessBrowserTest {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
+ private:
+  net::test_server::EmbeddedTestServerHandle test_server_handle_;
+};
+
+class TranslateFrameBinderPrerenderBrowserTest
+    : public TranslateFrameBinderBrowserTest {
+ public:
+  TranslateFrameBinderPrerenderBrowserTest()
+      : prerender_helper_(base::BindRepeating(
+            &TranslateFrameBinderPrerenderBrowserTest::web_contents,
+            base::Unretained(this))) {}
+  ~TranslateFrameBinderPrerenderBrowserTest() override = default;
+
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    TranslateFrameBinderBrowserTest::SetUp();
+  }
+
   content::test::PrerenderTestHelper* prerender_helper() {
     return &prerender_helper_;
   }
 
  private:
   content::test::PrerenderTestHelper prerender_helper_;
-  net::test_server::EmbeddedTestServerHandle test_server_handle_;
 };
 
 // Tests that mojom::ContentTranslateDriver binding is deferred in prerendering
 // and it's safe to access WebContents in the binding function since it's
 // executed after prerendering activation.
-IN_PROC_BROWSER_TEST_F(TranslateFrameBinderBrowserTest,
+IN_PROC_BROWSER_TEST_F(TranslateFrameBinderPrerenderBrowserTest,
                        NotBindingInPrerendering) {
   TestTranslateDriverBindingContentBrowserClient test_browser_client;
   auto* old_browser_client = SetBrowserClientForTesting(&test_browser_client);
@@ -134,6 +150,49 @@ IN_PROC_BROWSER_TEST_F(TranslateFrameBinderBrowserTest,
     run_loop.Run();
   }
   EXPECT_TRUE(test_browser_client.IsBound(prerendered_frame_host));
+
+  content::SetBrowserClientForTesting(old_browser_client);
+}
+
+class TranslateFrameBinderFencedFrameBrowserTest
+    : public TranslateFrameBinderBrowserTest {
+ public:
+  TranslateFrameBinderFencedFrameBrowserTest() = default;
+  ~TranslateFrameBinderFencedFrameBrowserTest() override = default;
+  TranslateFrameBinderFencedFrameBrowserTest(
+      const TranslateFrameBinderFencedFrameBrowserTest&) = delete;
+
+  TranslateFrameBinderFencedFrameBrowserTest& operator=(
+      const TranslateFrameBinderFencedFrameBrowserTest&) = delete;
+
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_helper_;
+  }
+
+ private:
+  content::test::FencedFrameTestHelper fenced_frame_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(TranslateFrameBinderFencedFrameBrowserTest,
+                       NotBindingInFencedFrame) {
+  TestTranslateDriverBindingContentBrowserClient test_browser_client;
+  auto* old_browser_client = SetBrowserClientForTesting(&test_browser_client);
+
+  // Navigate to an initial page.
+  const GURL initial_url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+
+  // Create a fenced frame.
+  const GURL fenced_frame_url = embedded_test_server()->GetURL("/title1.html");
+  content::RenderFrameHost* fenced_frame_host =
+      fenced_frame_test_helper().CreateFencedFrame(
+          web_contents()->GetMainFrame(), fenced_frame_url);
+  EXPECT_FALSE(test_browser_client.IsBound(fenced_frame_host));
+
+  fenced_frame_test_helper().NavigateFrameInFencedFrameTree(fenced_frame_host,
+                                                            fenced_frame_url);
+  // Fenced frame should keep the unbound state.
+  EXPECT_FALSE(test_browser_client.IsBound(fenced_frame_host));
 
   content::SetBrowserClientForTesting(old_browser_client);
 }

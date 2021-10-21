@@ -14,8 +14,8 @@ namespace translate {
 void BindContentTranslateDriver(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<translate::mojom::ContentTranslateDriver> receiver) {
-  // Only valid for the main frame.
-  if (render_frame_host->GetParent())
+  // Only valid for the primary main frame.
+  if (!render_frame_host->IsInPrimaryMainFrame())
     return;
 
   content::WebContents* const web_contents =
