@@ -3784,6 +3784,11 @@ CSSValue* ConsumeFontStyle(CSSParserTokenRange& range,
       range.Peek().Id() == CSSValueID::kItalic)
     return ConsumeIdent(range);
 
+  if (RuntimeEnabledFeatures::CSSFontFaceAutoVariableRangeEnabled() &&
+      range.Peek().Id() == CSSValueID::kAuto &&
+      context.Mode() == kCSSFontFaceRuleMode)
+    return ConsumeIdent(range);
+
   if (range.Peek().Id() != CSSValueID::kOblique)
     return nullptr;
 
@@ -3816,18 +3821,24 @@ CSSValue* ConsumeFontStyle(CSSParserTokenRange& range,
       *oblique_identifier, *range_list);
 }
 
-CSSIdentifierValue* ConsumeFontStretchKeywordOnly(CSSParserTokenRange& range) {
+CSSIdentifierValue* ConsumeFontStretchKeywordOnly(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context) {
   const CSSParserToken& token = range.Peek();
   if (token.Id() == CSSValueID::kNormal ||
       (token.Id() >= CSSValueID::kUltraCondensed &&
        token.Id() <= CSSValueID::kUltraExpanded))
+    return ConsumeIdent(range);
+  if (RuntimeEnabledFeatures::CSSFontFaceAutoVariableRangeEnabled() &&
+      token.Id() == CSSValueID::kAuto && context.Mode() == kCSSFontFaceRuleMode)
     return ConsumeIdent(range);
   return nullptr;
 }
 
 CSSValue* ConsumeFontStretch(CSSParserTokenRange& range,
                              const CSSParserContext& context) {
-  CSSIdentifierValue* parsed_keyword = ConsumeFontStretchKeywordOnly(range);
+  CSSIdentifierValue* parsed_keyword =
+      ConsumeFontStretchKeywordOnly(range, context);
   if (parsed_keyword)
     return parsed_keyword;
 

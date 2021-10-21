@@ -1106,7 +1106,7 @@ bool ConsumeFont(bool important,
     // <‘font-weight’> || <font-stretch-css3> ]?
     if (font_stretch ||
         !(font_stretch =
-              css_parsing_utils::ConsumeFontStretchKeywordOnly(range)))
+              css_parsing_utils::ConsumeFontStretchKeywordOnly(range, context)))
       break;
   }
 

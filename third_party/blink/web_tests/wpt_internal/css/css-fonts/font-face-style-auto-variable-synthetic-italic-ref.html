@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8"/>
+<title>CSS Test: Support for font-style: auto in @font-face</title>
+<style>
+    @font-face {
+        font-family: "Inter";
+        src: url('support/fonts/Inter-VF.subset.ttf') format('truetype');
+        font-display: swap;
+        font-style: oblique 0deg 10deg;
+    }
+    .style20 {
+        font-family: "Inter";
+        font-size: 3em;
+        font-style: oblique 20deg;
+    }
+    .style10 {
+        font-family: "Inter";
+        font-size: 3em;
+        font-style: oblique 10deg;
+    }
+    .style0 {
+        font-family: "Inter";
+        font-size: 3em;
+        font-style: oblique 0deg;
+    }
+</style>
+
+<p class="style20">text</p>
+<p class="style10">text</p>
+<p class="style0">text</p>

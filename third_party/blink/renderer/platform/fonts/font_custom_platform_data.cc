@@ -48,6 +48,8 @@
 namespace {
 
 constexpr SkFourByteTag kOpszTag = SkSetFourByteTag('o', 'p', 's', 'z');
+constexpr SkFourByteTag kSlntTag = SkSetFourByteTag('s', 'l', 'n', 't');
+constexpr SkFourByteTag kWdthTag = SkSetFourByteTag('w', 'd', 't', 'h');
 constexpr SkFourByteTag kWghtTag = SkSetFourByteTag('w', 'g', 'h', 't');
 
 absl::optional<SkFontParameters::Variation::Axis>
@@ -106,6 +108,7 @@ FontPlatformData FontCustomPlatformData::GetFontPlatformData(
   FontFormatCheck::VariableFontSubType font_sub_type =
       FontFormatCheck::ProbeVariableFont(base_typeface_);
   bool synthetic_bold = bold;
+  bool synthetic_italic = italic;
   if (font_sub_type ==
           FontFormatCheck::VariableFontSubType::kVariableTrueType ||
       font_sub_type == FontFormatCheck::VariableFontSubType::kVariableCFF2) {
@@ -129,18 +132,40 @@ FontPlatformData FontCustomPlatformData::GetFontPlatformData(
     }
 
     SkFontArguments::VariationPosition::Coordinate width_coordinate = {
-        SkSetFourByteTag('w', 'd', 't', 'h'),
-        SkFloatToScalar(selection_capabilities.width.clampToRange(
-            selection_request.width))};
+        kWdthTag, SkFloatToScalar(selection_capabilities.width.clampToRange(
+                      selection_request.width))};
+    absl::optional<SkFontParameters::Variation::Axis> wdth_parameters =
+        RetrieveVariationDesignParametersByTag(base_typeface_, kWdthTag);
+    if (selection_capabilities.width.IsRangeSetFromAuto() && wdth_parameters) {
+      DCHECK(RuntimeEnabledFeatures::CSSFontFaceAutoVariableRangeEnabled());
+      FontSelectionRange wdth_range = {
+          FontSelectionValue(wdth_parameters->min),
+          FontSelectionValue(wdth_parameters->max)};
+      width_coordinate = {
+          kWdthTag,
+          SkFloatToScalar(wdth_range.clampToRange(selection_request.width))};
+    }
     // CSS and OpenType have opposite definitions of direction of slant
     // angle. In OpenType positive values turn counter-clockwise, negative
     // values clockwise - in CSS positive values are clockwise rotations /
     // skew. See note in https://drafts.csswg.org/css-fonts/#font-style-prop -
     // map value from CSS to OpenType here.
     SkFontArguments::VariationPosition::Coordinate slant_coordinate = {
-        SkSetFourByteTag('s', 'l', 'n', 't'),
-        SkFloatToScalar(-selection_capabilities.slope.clampToRange(
-            selection_request.slope))};
+        kSlntTag, SkFloatToScalar(-selection_capabilities.slope.clampToRange(
+                      selection_request.slope))};
+    absl::optional<SkFontParameters::Variation::Axis> slnt_parameters =
+        RetrieveVariationDesignParametersByTag(base_typeface_, kSlntTag);
+    if (selection_capabilities.slope.IsRangeSetFromAuto() && slnt_parameters) {
+      DCHECK(RuntimeEnabledFeatures::CSSFontFaceAutoVariableRangeEnabled());
+      FontSelectionRange slnt_range = {
+          FontSelectionValue(slnt_parameters->min),
+          FontSelectionValue(slnt_parameters->max)};
+      slant_coordinate = {
+          kSlntTag,
+          SkFloatToScalar(slnt_range.clampToRange(-selection_request.slope))};
+      synthetic_italic = italic && slnt_range.maximum < ItalicSlopeValue() &&
+                         selection_request.slope >= ItalicSlopeValue();
+    }
 
     variation.push_back(weight_coordinate);
     variation.push_back(width_coordinate);
@@ -195,7 +220,8 @@ FontPlatformData FontCustomPlatformData::GetFontPlatformData(
 
   return FontPlatformData(std::move(return_typeface), std::string(), size,
                           synthetic_bold && !base_typeface_->isBold(),
-                          italic && !base_typeface_->isItalic(), orientation);
+                          synthetic_italic && !base_typeface_->isItalic(),
+                          orientation);
 }
 
 Vector<VariationAxis> FontCustomPlatformData::GetVariationAxes() const {
