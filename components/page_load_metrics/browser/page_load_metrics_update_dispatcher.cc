@@ -484,7 +484,7 @@ void PageLoadMetricsUpdateDispatcher::UpdateMetrics(
     mojom::CpuTimingPtr new_cpu_timing,
     mojom::DeferredResourceCountsPtr new_deferred_resource_data,
     mojom::InputTimingPtr input_timing_delta,
-    const blink::MobileFriendliness& mobile_friendliness) {
+    const absl::optional<blink::MobileFriendliness>& mobile_friendliness) {
   if (embedder_interface_->IsExtensionUrl(
           render_frame_host->GetLastCommittedURL())) {
     // Extensions can inject child frames into a page. We don't want to track
@@ -508,13 +508,15 @@ void PageLoadMetricsUpdateDispatcher::UpdateMetrics(
     UpdateMainFrameMetadata(render_frame_host, std::move(new_metadata));
     UpdateMainFrameTiming(std::move(new_timing));
     UpdateMainFrameRenderData(*render_data);
-    UpdateMainFrameMobileFriendliness(mobile_friendliness);
+    if (mobile_friendliness.has_value())
+      UpdateMainFrameMobileFriendliness(*mobile_friendliness);
   } else {
     UpdateSubFrameMetadata(render_frame_host, std::move(new_metadata));
     UpdateSubFrameTiming(render_frame_host, std::move(new_timing));
     // This path is just for the AMP metrics.
     UpdateSubFrameInputTiming(render_frame_host, *input_timing_delta);
-    UpdateSubFrameMobileFriendliness(mobile_friendliness);
+    if (mobile_friendliness.has_value())
+      UpdateSubFrameMobileFriendliness(*mobile_friendliness);
   }
   UpdatePageInputTiming(*input_timing_delta);
   UpdatePageRenderData(*render_data);
@@ -649,7 +651,6 @@ void PageLoadMetricsUpdateDispatcher::UpdateMainFrameMobileFriendliness(
 
 void PageLoadMetricsUpdateDispatcher::UpdateSubFrameMobileFriendliness(
     const blink::MobileFriendliness& mobile_friendliness) {
-  mobile_friendliness_ = mobile_friendliness;
   client_->OnSubFrameMobileFriendlinessChanged(mobile_friendliness);
 }
 

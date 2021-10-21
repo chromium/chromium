@@ -786,9 +786,6 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
       commit_type == kWebHistoryInertCommit,
       FrameScheduler::NavigationType::kSameDocument);
 
-  if (auto* mf_checker = frame_->View()->GetMobileFriendlinessChecker())
-    mf_checker->EvaluateNow();
-
   GetLocalFrameClient().DidFinishSameDocumentNavigation(
       history_item_.Get(), commit_type, is_synchronously_committed,
       same_document_navigation_type, is_client_redirect_, is_browser_initiated);

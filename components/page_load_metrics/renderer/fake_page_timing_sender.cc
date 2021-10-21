@@ -26,7 +26,7 @@ void FakePageTimingSender::SendTiming(
     const mojom::CpuTimingPtr& cpu_timing,
     mojom::DeferredResourceCountsPtr new_deferred_resource_data,
     const mojom::InputTimingPtr new_input_timing,
-    const blink::MobileFriendliness& mobile_friendliness) {
+    const absl::optional<blink::MobileFriendliness>& mobile_friendliness) {
   validator_->UpdateTiming(timing, metadata, new_features, resources,
                            render_data, cpu_timing, new_deferred_resource_data,
                            new_input_timing, mobile_friendliness);
@@ -142,7 +142,7 @@ void FakePageTimingSender::PageTimingValidator::UpdateTiming(
     const mojom::CpuTimingPtr& cpu_timing,
     const mojom::DeferredResourceCountsPtr& new_deferred_resource_data,
     const mojom::InputTimingPtr& new_input_timing,
-    const blink::MobileFriendliness& mobile_friendliness) {
+    const absl::optional<blink::MobileFriendliness>& mobile_friendliness) {
   actual_timings_.push_back(timing.Clone());
   if (!cpu_timing->task_time.is_zero()) {
     actual_cpu_timings_.push_back(cpu_timing.Clone());
@@ -161,7 +161,8 @@ void FakePageTimingSender::PageTimingValidator::UpdateTiming(
   actual_input_timing->total_input_delay += new_input_timing->total_input_delay;
   actual_input_timing->total_adjusted_input_delay +=
       new_input_timing->total_adjusted_input_delay;
-  actual_mobile_friendliness = mobile_friendliness;
+  if (mobile_friendliness.has_value())
+    actual_mobile_friendliness = *mobile_friendliness;
 
   VerifyExpectedTimings();
   VerifyExpectedCpuTimings();

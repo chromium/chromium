@@ -24,14 +24,14 @@ struct MobileFriendlinessTree {
     mobile_metrics_test_helpers::MobileFriendlinessTree result;
 
     view->UpdateLifecycleToPrePaintClean(DocumentUpdateReason::kTest);
-    view->GetMobileFriendlinessChecker()->NotifyFirstContentfulPaint();
+    view->GetMobileFriendlinessChecker()->NotifyPaint();
 
     // Scroll the view to specified offset
     view->LayoutViewport()->SetScrollOffsetUnconditionally(
         ScrollOffset(0, scroll_y_offset));
 
     // Do MobileFriendliness evaluation recursively.
-    view->GetMobileFriendlinessChecker()->EvaluateNow();
+    view->GetMobileFriendlinessChecker()->EvaluateNow(nullptr);
     result.mf = view->GetMobileFriendlinessChecker()->GetMobileFriendliness();
     for (Frame* child = view->GetFrame().FirstChild(); child;
          child = child->NextSibling()) {

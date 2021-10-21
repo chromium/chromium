@@ -348,6 +348,7 @@ void PageTimingMetricsSender::SendNow() {
                       std::move(new_deferred_resource_data_),
                       std::move(input_timing_delta_), mobile_friendliness_);
   input_timing_delta_ = mojom::InputTiming::New();
+  mobile_friendliness_ = absl::nullopt;
   InitiateUserInteractionTiming();
   new_deferred_resource_data_ = mojom::DeferredResourceCounts::New();
   new_features_.clear();

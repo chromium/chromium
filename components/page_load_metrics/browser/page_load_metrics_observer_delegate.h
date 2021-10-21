@@ -154,7 +154,8 @@ class PageLoadMetricsObserverDelegate {
   GetNormalizedResponsivenessMetrics() const = 0;
   // InputTiming data accumulated across all frames.
   virtual const mojom::InputTiming& GetPageInputTiming() const = 0;
-  virtual const blink::MobileFriendliness& GetMobileFriendliness() const = 0;
+  virtual const absl::optional<blink::MobileFriendliness>&
+  GetMobileFriendliness() const = 0;
   virtual const PageRenderData& GetMainFrameRenderData() const = 0;
   virtual const ui::ScopedVisibilityTracker& GetVisibilityTracker() const = 0;
   virtual const ResourceTracker& GetResourceTracker() const = 0;

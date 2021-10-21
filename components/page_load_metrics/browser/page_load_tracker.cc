@@ -994,8 +994,9 @@ PageLoadTracker::GetNormalizedResponsivenessMetrics() const {
 const mojom::InputTiming& PageLoadTracker::GetPageInputTiming() const {
   return metrics_update_dispatcher_.page_input_timing();
 }
-const blink::MobileFriendliness& PageLoadTracker::GetMobileFriendliness()
-    const {
+
+const absl::optional<blink::MobileFriendliness>&
+PageLoadTracker::GetMobileFriendliness() const {
   return metrics_update_dispatcher_.mobile_friendliness();
 }
 

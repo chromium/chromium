@@ -394,7 +394,7 @@ interface PageLoadMetrics {
                CpuTiming cpu_load_timing,
                DeferredResourceCounts new_deferred_resource_data,
                InputTiming input_timing_delta,
-               blink.mojom.MobileFriendliness mobile_friendliness);
+               blink.mojom.MobileFriendliness? mobile_friendliness);
 
   // Set up a shared memory used to transfer smoothness data from the renderer
   // to the browser. The structure is defined in

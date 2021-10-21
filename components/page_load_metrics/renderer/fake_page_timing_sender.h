@@ -106,7 +106,7 @@ class FakePageTimingSender : public PageTimingSender {
         const mojom::CpuTimingPtr& cpu_timing,
         const mojom::DeferredResourceCountsPtr& new_deferred_resource_data,
         const mojom::InputTimingPtr& input_timing,
-        const blink::MobileFriendliness& mobile_friendliness);
+        const absl::optional<blink::MobileFriendliness>& mobile_friendliness);
 
    private:
     std::vector<mojom::PageLoadTimingPtr> expected_timings_;
@@ -121,8 +121,8 @@ class FakePageTimingSender : public PageTimingSender {
     mojom::FrameIntersectionUpdatePtr actual_frame_intersection_update_;
     mojom::InputTimingPtr expected_input_timing;
     mojom::InputTimingPtr actual_input_timing;
-    blink::MobileFriendliness expected_mobile_friendliness;
-    blink::MobileFriendliness actual_mobile_friendliness;
+    absl::optional<blink::MobileFriendliness> expected_mobile_friendliness;
+    absl::optional<blink::MobileFriendliness> actual_mobile_friendliness;
   };
 
   explicit FakePageTimingSender(PageTimingValidator* validator);
@@ -132,16 +132,16 @@ class FakePageTimingSender : public PageTimingSender {
 
   ~FakePageTimingSender() override;
 
-  void SendTiming(
-      const mojom::PageLoadTimingPtr& timing,
-      const mojom::FrameMetadataPtr& metadata,
-      const std::vector<blink::UseCounterFeature>& new_features,
-      std::vector<mojom::ResourceDataUpdatePtr> resources,
-      const mojom::FrameRenderDataUpdate& render_data,
-      const mojom::CpuTimingPtr& cpu_timing,
-      mojom::DeferredResourceCountsPtr new_deferred_resource_data,
-      mojom::InputTimingPtr new_input_timing,
-      const blink::MobileFriendliness& mobile_friendliness) override;
+  void SendTiming(const mojom::PageLoadTimingPtr& timing,
+                  const mojom::FrameMetadataPtr& metadata,
+                  const std::vector<blink::UseCounterFeature>& new_features,
+                  std::vector<mojom::ResourceDataUpdatePtr> resources,
+                  const mojom::FrameRenderDataUpdate& render_data,
+                  const mojom::CpuTimingPtr& cpu_timing,
+                  mojom::DeferredResourceCountsPtr new_deferred_resource_data,
+                  mojom::InputTimingPtr new_input_timing,
+                  const absl::optional<blink::MobileFriendliness>&
+                      mobile_friendliness) override;
 
   void SetUpSmoothnessReporting(
       base::ReadOnlySharedMemoryRegion shared_memory) override;

@@ -114,7 +114,7 @@ class PageTimingMetricsSender {
   mojom::PageLoadTimingPtr last_timing_;
   mojom::CpuTimingPtr last_cpu_timing_;
   mojom::InputTimingPtr input_timing_delta_;
-  blink::MobileFriendliness mobile_friendliness_;
+  absl::optional<blink::MobileFriendliness> mobile_friendliness_;
 
   // The the sender keep track of metadata as it comes in, because the sender is
   // scoped to a single committed load.

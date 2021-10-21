@@ -937,7 +937,7 @@ void MetricsWebContentsObserver::OnTimingUpdated(
     mojom::CpuTimingPtr cpu_timing,
     mojom::DeferredResourceCountsPtr new_deferred_resource_data,
     mojom::InputTimingPtr input_timing_delta,
-    const blink::MobileFriendliness& mobile_friendliness) {
+    const absl::optional<blink::MobileFriendliness>& mobile_friendliness) {
   PageLoadTracker* tracker = GetPageLoadTracker(render_frame_host);
   // We may receive notifications from frames that have been navigated away
   // from. In that case the PageLoadTracker is already destroyed in
@@ -990,7 +990,7 @@ void MetricsWebContentsObserver::UpdateTiming(
     mojom::CpuTimingPtr cpu_timing,
     mojom::DeferredResourceCountsPtr new_deferred_resource_data,
     mojom::InputTimingPtr input_timing_delta,
-    const blink::MobileFriendliness& mobile_friendliness) {
+    const absl::optional<blink::MobileFriendliness>& mobile_friendliness) {
   content::RenderFrameHost* render_frame_host =
       page_load_metrics_receivers_.GetCurrentTargetFrame();
   OnTimingUpdated(render_frame_host, std::move(timing), std::move(metadata),

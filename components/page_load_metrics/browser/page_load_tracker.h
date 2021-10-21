@@ -250,7 +250,8 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   const NormalizedResponsivenessMetrics& GetNormalizedResponsivenessMetrics()
       const override;
   const mojom::InputTiming& GetPageInputTiming() const override;
-  const blink::MobileFriendliness& GetMobileFriendliness() const override;
+  const absl::optional<blink::MobileFriendliness>& GetMobileFriendliness()
+      const override;
   const PageRenderData& GetMainFrameRenderData() const override;
   const ui::ScopedVisibilityTracker& GetVisibilityTracker() const override;
   const ResourceTracker& GetResourceTracker() const override;

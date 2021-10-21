@@ -118,7 +118,7 @@ FakePageLoadMetricsObserverDelegate::GetPageInputTiming() const {
   return page_input_timing_;
 }
 
-const blink::MobileFriendliness&
+const absl::optional<blink::MobileFriendliness>&
 FakePageLoadMetricsObserverDelegate::GetMobileFriendliness() const {
   return mobile_friendliness_;
 }

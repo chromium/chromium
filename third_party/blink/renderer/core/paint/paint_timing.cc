@@ -190,6 +190,7 @@ void PaintTiming::NotifyPaint(bool is_first_paint,
   if (image_painted)
     MarkFirstImagePaint();
   fmp_detector_->NotifyPaint();
+  GetFrame()->View()->GetMobileFriendlinessChecker()->NotifyPaint();
 }
 
 void PaintTiming::OnPortalActivate() {
@@ -252,9 +253,6 @@ void PaintTiming::SetFirstContentfulPaint(base::TimeTicks stamp) {
 
   if (frame->GetFrameScheduler())
     frame->GetFrameScheduler()->OnFirstContentfulPaintInMainFrame();
-
-  if (auto* mf_checker = frame->View()->GetMobileFriendlinessChecker())
-    mf_checker->NotifyFirstContentfulPaint();
 }
 
 void PaintTiming::RegisterNotifyPresentationTime(PaintEvent event) {

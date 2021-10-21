@@ -38,24 +38,34 @@ static constexpr double kMaximumScalePreventsZoomingThreshold = 1.2;
 // it takes more than 5ms.
 static constexpr base::TimeDelta kTimeBudgetForBadTapTarget =
     base::Milliseconds(5);
+static constexpr base::TimeDelta kEvaluationDelay = base::Milliseconds(3000);
+static constexpr base::TimeDelta kEvaluationInterval = base::Minutes(1);
 
 MobileFriendlinessChecker::MobileFriendlinessChecker(LocalFrameView& frame_view)
     : frame_view_(&frame_view),
-      font_size_check_enabled_(frame_view_->GetFrame().GetWidgetForLocalRoot()),
-      tap_target_check_enabled_(
-          frame_view_->GetFrame().GetWidgetForLocalRoot()),
+      enabled_(frame_view_->GetFrame().GetWidgetForLocalRoot()),
       viewport_scalar_(
-          font_size_check_enabled_
-              ? frame_view_->GetPage()
-                    ->GetChromeClient()
-                    .WindowToViewportScalar(&frame_view_->GetFrame(), 1)
-              : 0),
-      fcp_detected_(false) {}
+          enabled_ ? frame_view_->GetPage()
+                         ->GetChromeClient()
+                         .WindowToViewportScalar(&frame_view_->GetFrame(), 1)
+                   : 0),
+      timer_(frame_view_->GetFrame().GetTaskRunner(TaskType::kInternalDefault),
+             this,
+             &MobileFriendlinessChecker::EvaluateNow) {}
 
 MobileFriendlinessChecker::~MobileFriendlinessChecker() = default;
 
-void MobileFriendlinessChecker::NotifyFirstContentfulPaint() {
-  fcp_detected_ = true;
+void MobileFriendlinessChecker::NotifyPaint() {
+  if (timer_.IsActive() || !enabled_ ||
+      base::TimeTicks::Now() - last_evaluated_ < kEvaluationInterval) {
+    return;
+  }
+
+  timer_.StartOneShot(kEvaluationDelay, FROM_HERE);
+}
+
+void MobileFriendlinessChecker::WillBeRemovedFromFrame() {
+  timer_.Stop();
 }
 
 namespace {
@@ -340,31 +350,23 @@ int MobileFriendlinessChecker::ComputeBadTapTargetsRatio() {
   return bad_tap_targets * 100.0 / all_tap_targets;
 }
 
-void MobileFriendlinessChecker::EvaluateNow() {
-  // This checker has nothing to do.
-  if (!tap_target_check_enabled_ && !font_size_check_enabled_)
-    return;
-
+void MobileFriendlinessChecker::EvaluateNow(TimerBase*) {
   // If detached, there's no need to calculate any metrics.
-  // Or if this is before FCP, there's nothing to evaluate.
-  if (!frame_view_->GetChromeClient() || !fcp_detected_)
+  if (!frame_view_->GetChromeClient())
     return;
 
-  if (tap_target_check_enabled_)
-    mobile_friendliness_.bad_tap_targets_ratio = ComputeBadTapTargetsRatio();
-
-  if (font_size_check_enabled_)
-    mobile_friendliness_.small_text_ratio = text_area_sizes_.SmallTextRatio();
-
+  mobile_friendliness_.bad_tap_targets_ratio = ComputeBadTapTargetsRatio();
+  mobile_friendliness_.small_text_ratio = text_area_sizes_.SmallTextRatio();
   mobile_friendliness_.text_content_outside_viewport_percentage =
       ComputeContentOutsideViewport();
 
   frame_view_->DidChangeMobileFriendliness(mobile_friendliness_);
+  last_evaluated_ = base::TimeTicks::Now();
 }
 
 void MobileFriendlinessChecker::NotifyViewportUpdated(
     const ViewportDescription& viewport) {
-  if (viewport.type != ViewportDescription::Type::kViewportMeta)
+  if (viewport.type != ViewportDescription::Type::kViewportMeta || !enabled_)
     return;
 
   const double zoom = viewport.zoom_is_explicit ? viewport.zoom : 1.0;
@@ -400,7 +402,7 @@ int MobileFriendlinessChecker::TextAreaWithFontSize::SmallTextRatio() const {
 
 void MobileFriendlinessChecker::NotifyInvalidatePaint(
     const LayoutObject& object) {
-  if (font_size_check_enabled_)
+  if (enabled_)
     ComputeSmallTextRatio(object);
 }
 
@@ -461,6 +463,7 @@ int MobileFriendlinessChecker::ComputeContentOutsideViewport() {
 
 void MobileFriendlinessChecker::Trace(Visitor* visitor) const {
   visitor->Trace(frame_view_);
+  visitor->Trace(timer_);
 }
 
 }  // namespace blink

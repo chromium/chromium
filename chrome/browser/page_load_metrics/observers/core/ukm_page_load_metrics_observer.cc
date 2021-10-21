@@ -1216,23 +1216,25 @@ void UkmPageLoadMetricsObserver::RecordSmoothnessMetrics() {
 
 void UkmPageLoadMetricsObserver::RecordMobileFriendlinessMetrics() {
   ukm::builders::MobileFriendliness builder(GetDelegate().GetPageUkmSourceId());
-  const blink::MobileFriendliness& mf = GetDelegate().GetMobileFriendliness();
+  const absl::optional<blink::MobileFriendliness>& mf =
+      GetDelegate().GetMobileFriendliness();
+  if (!mf.has_value())
+    return;
 
-  builder.SetViewportDeviceWidth(mf.viewport_device_width);
-  builder.SetAllowUserZoom(mf.allow_user_zoom);
+  builder.SetViewportDeviceWidth(mf->viewport_device_width);
+  builder.SetAllowUserZoom(mf->allow_user_zoom);
 
-  builder.SetSmallTextRatio(mf.small_text_ratio);
+  builder.SetSmallTextRatio(mf->small_text_ratio);
   builder.SetViewportInitialScaleX10(
-      page_load_metrics::GetBucketedViewportInitialScale(mf));
+      page_load_metrics::GetBucketedViewportInitialScale(*mf));
   builder.SetViewportHardcodedWidth(
-      page_load_metrics::GetBucketedViewportHardcodedWidth(mf));
+      page_load_metrics::GetBucketedViewportHardcodedWidth(*mf));
   builder.SetTextContentOutsideViewportPercentage(
-      mf.text_content_outside_viewport_percentage);
-  builder.SetBadTapTargetsRatio(mf.bad_tap_targets_ratio);
+      mf->text_content_outside_viewport_percentage);
+  builder.SetBadTapTargetsRatio(mf->bad_tap_targets_ratio);
 
   // Make sure at least one MF evaluation happen.
-  if (mf.bad_tap_targets_ratio != -1 || mf.small_text_ratio != -1)
-    builder.Record(ukm::UkmRecorder::Get());
+  builder.Record(ukm::UkmRecorder::Get());
 }
 
 void UkmPageLoadMetricsObserver::RecordPageEndMetrics(
