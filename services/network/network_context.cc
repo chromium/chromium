@@ -446,7 +446,9 @@ NetworkContext::NetworkContext(
           std::make_unique<NetworkContextApplicationStatusListener>()),
 #endif
       receiver_(this, std::move(receiver)),
-      cors_preflight_controller_(network_service) {
+      cors_preflight_controller_(network_service),
+      cors_non_wildcard_request_headers_support_(base::FeatureList::IsEnabled(
+          features::kCorsNonWildcardRequestHeadersSupport)) {
 #if defined(OS_WIN) && DCHECK_IS_ON()
   if (params_->file_paths) {
     DCHECK(params_->win_permissions_set)
@@ -1935,6 +1937,15 @@ void NetworkContext::AddAuthCacheEntry(
       challenge.realm, net::HttpAuth::StringToScheme(challenge.scheme),
       network_isolation_key, challenge.challenge, credentials, challenge.path);
   std::move(callback).Run();
+}
+
+void NetworkContext::SetCorsNonWildcardRequestHeadersSupport(bool value) {
+  if (!base::FeatureList::IsEnabled(
+          features::kCorsNonWildcardRequestHeadersSupport)) {
+    return;
+  }
+  cors_non_wildcard_request_headers_support_ =
+      cors::NonWildcardRequestHeadersSupport(value);
 }
 
 void NetworkContext::LookupServerBasicAuthCredentials(

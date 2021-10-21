@@ -3396,4 +3396,9 @@ const char kLensRegionSearchEnabled[] = "policy.lens_region_search_enabled";
 // A boolean indicating whether the Privacy Review Welcome Card should be shown.
 const char kPrivacyReviewShowWelcomeCard[] = "privacy_review.show_welcome_card";
 
+// A boolean indicating support of "CORS non-wildcard request header name".
+// https://fetch.spec.whatwg.org/#cors-non-wildcard-request-header-name
+const char kCorsNonWildcardRequestHeadersSupport[] =
+    "cors_non_wildcard_request_headers_support";
+
 }  // namespace prefs

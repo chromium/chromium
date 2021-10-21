@@ -1206,6 +1206,8 @@ extern const char kLensRegionSearchEnabled[];
 
 extern const char kPrivacyReviewShowWelcomeCard[];
 
+extern const char kCorsNonWildcardRequestHeadersSupport[];
+
 }  // namespace prefs
 
 #endif  // CHROME_COMMON_PREF_NAMES_H_

@@ -293,6 +293,7 @@ class TestNetworkContext : public mojom::NetworkContext {
                          const net::NetworkIsolationKey& network_isolation_key,
                          const net::AuthCredentials& credentials,
                          AddAuthCacheEntryCallback callback) override {}
+  void SetCorsNonWildcardRequestHeadersSupport(bool value) override {}
   void LookupServerBasicAuthCredentials(
       const GURL& url,
       const net::NetworkIsolationKey& network_isolation_key,

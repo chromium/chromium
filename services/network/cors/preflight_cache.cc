@@ -118,7 +118,7 @@ bool PreflightCache::CheckIfRequestCanSkipPreflight(
     // skip CORS-preflight.
     if (cache_entry->second->EnsureAllowedRequest(
             credentials_mode, method, request_headers, is_revalidating,
-            PreflightResult::WithNonWildcardRequestHeadersSupport(true))) {
+            NonWildcardRequestHeadersSupport(true))) {
       // Note that we always use the "with non-wildcard request headers"
       // variant, because it is hard to generate the correct error information
       // from here, and cache miss is in most case recoverable.

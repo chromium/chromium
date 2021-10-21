@@ -28,6 +28,9 @@ namespace network {
 
 namespace cors {
 
+using NonWildcardRequestHeadersSupport =
+    base::StrongAlias<class NonWildcardRequestHeadersSupportTag, bool>;
+
 // Holds CORS-preflight request results, and provides access check methods.
 // Each instance can be cached by CORS-preflight cache.
 // See https://fetch.spec.whatwg.org/#concept-cache.
@@ -36,8 +39,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightResult final {
   // Represents whether
   // https://fetch.spec.whatwg.org/#cors-non-wildcard-request-header-name
   // is supported.
-  using WithNonWildcardRequestHeadersSupport =
-      base::StrongAlias<class WithNonWildcardRequestHeadersSupportTag, bool>;
 
   static void SetTickClockForTesting(const base::TickClock* tick_clock);
 
@@ -69,7 +70,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightResult final {
   absl::optional<CorsErrorStatus> EnsureAllowedCrossOriginHeaders(
       const net::HttpRequestHeaders& headers,
       bool is_revalidating,
-      WithNonWildcardRequestHeadersSupport
+      NonWildcardRequestHeadersSupport
           with_non_wildcard_request_headers_support) const;
 
   // Checks if this entry is expired.
@@ -84,7 +85,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightResult final {
       const std::string& method,
       const net::HttpRequestHeaders& headers,
       bool is_revalidating,
-      WithNonWildcardRequestHeadersSupport
+      NonWildcardRequestHeadersSupport
           with_non_wildcard_request_headers_support) const;
 
   // Returns true when `headers` has "authorization" which is covered by the

@@ -26714,7 +26714,7 @@ Called by update_document_policy_enum.py.-->
   <int value="910" label="DeskTemplatesEnabled"/>
   <int value="911" label="PreconfiguredDeskTemplates"/>
   <int value="912" label="FastPairEnabled"/>
-  <int value="913" label="SandboxExternalProtocol"/>
+  <int value="913" label="SandboxExternalProtocolBlocked"/>
   <int value="914" label="ReportDeviceNetworkTelemetryCollectionRateMs"/>
   <int value="915" label="ReportDeviceNetworkTelemetryEventCheckingRateMs"/>
   <int value="916" label="KioskCRXManifestUpdateURLIgnored"/>
@@ -26722,6 +26722,7 @@ Called by update_document_policy_enum.py.-->
   <int value="918" label="QuickAnswersDefinitionEnabled"/>
   <int value="919" label="QuickAnswersTranslationEnabled"/>
   <int value="920" label="QuickAnswersUnitConverstionEnabled"/>
+  <int value="921" label="CORSNonWildcardRequestHeadersSupport"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

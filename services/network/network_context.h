@@ -448,6 +448,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
                          const net::NetworkIsolationKey& network_isolation_key,
                          const net::AuthCredentials& credentials,
                          AddAuthCacheEntryCallback callback) override;
+  void SetCorsNonWildcardRequestHeadersSupport(bool value) override;
   // TODO(mmenke): Rename this method and update Mojo docs to make it clear this
   // doesn't give proxy auth credentials.
   void LookupServerBasicAuthCredentials(
@@ -570,6 +571,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
 
   bool require_network_isolation_key() const {
     return require_network_isolation_key_;
+  }
+
+  cors::NonWildcardRequestHeadersSupport
+  cors_non_wildcard_request_headers_support() const {
+    return cors_non_wildcard_request_headers_support_;
   }
 
 #if BUILDFLAG(ENABLE_REPORTING)
@@ -821,6 +827,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   // NetworkIsolationKey with all requests. When set, enabled a variety of
   // DCHECKs on APIs used by external callers.
   bool require_network_isolation_key_ = false;
+
+  // Indicating whether
+  // https://fetch.spec.whatwg.org/#cors-non-wildcard-request-header-name is
+  // supported.
+  cors::NonWildcardRequestHeadersSupport
+      cors_non_wildcard_request_headers_support_;
 
   // CorsURLLoaderFactory assumes that fields owned by the NetworkContext always
   // live longer than the factory.  Therefore we want the factories to be

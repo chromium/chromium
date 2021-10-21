@@ -1094,5 +1094,10 @@
     "prefix": "disable-custom-element-default-style",
     "bases": ["external/wpt/css/css-cascade/presentational-hints-cascade.html"],
     "args": ["--disable-blink-features=CustomElementDefaultStyle"]
+  },
+  {
+    "prefix": "cors-non-wildcard-request-headers",
+    "bases": ["external/wpt/fetch/api/cors/cors-preflight.any.js"],
+    "args": ["--enable-features=CorsNonWildcardRequestHeadersSupport"]
   }
 ]

@@ -103,6 +103,9 @@ COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::FeatureParam<base::TimeDelta>
     kQueuedRequestsCacheCheckTimeThreshold;
 
+COMPONENT_EXPORT(NETWORK_CPP)
+extern const base::Feature kCorsNonWildcardRequestHeadersSupport;
+
 }  // namespace features
 }  // namespace network
 

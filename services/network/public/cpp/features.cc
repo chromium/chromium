@@ -251,5 +251,9 @@ constexpr base::FeatureParam<base::TimeDelta>
         &kCheckCacheForQueuedRequests,
         "queued_requests_cache_check_time_threshold", base::Milliseconds(100)};
 
+// https://fetch.spec.whatwg.org/#cors-non-wildcard-request-header-name
+const base::Feature kCorsNonWildcardRequestHeadersSupport{
+    "CorsNonWildcardRequestHeadersSupport", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace network

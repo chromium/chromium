@@ -227,6 +227,7 @@ CorsURLLoader::CorsURLLoader(
     PreflightController* preflight_controller,
     const base::flat_set<std::string>* allowed_exempt_headers,
     bool allow_any_cors_exempt_header,
+    NonWildcardRequestHeadersSupport non_wildcard_request_headers_support,
     const net::IsolationInfo& isolation_info,
     mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer)
     : receiver_(this, std::move(loader_receiver)),
@@ -243,6 +244,8 @@ CorsURLLoader::CorsURLLoader(
       allowed_exempt_headers_(allowed_exempt_headers),
       skip_cors_enabled_scheme_check_(skip_cors_enabled_scheme_check),
       allow_any_cors_exempt_header_(allow_any_cors_exempt_header),
+      non_wildcard_request_headers_support_(
+          non_wildcard_request_headers_support),
       isolation_info_(isolation_info),
       devtools_observer_(std::move(devtools_observer)),
       // CORS preflight related events are logged in a series of URL_REQUEST
@@ -674,8 +677,8 @@ void CorsURLLoader::StartRequest() {
       request_,
       PreflightController::WithTrustedHeaderClient(
           options_ & mojom::kURLLoadOptionUseHeaderClient),
-      PreflightController::WithNonWildcardRequestHeadersSupport(false),
-      tainted_, net::NetworkTrafficAnnotationTag(traffic_annotation_),
+      non_wildcard_request_headers_support_, tainted_,
+      net::NetworkTrafficAnnotationTag(traffic_annotation_),
       network_loader_factory_, isolation_info_, std::move(devtools_observer),
       net_log_);
 }

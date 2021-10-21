@@ -42,8 +42,6 @@ namespace cors {
 namespace {
 
 using WithTrustedHeaderClient = PreflightController::WithTrustedHeaderClient;
-using WithNonWildcardRequestHeadersSupport =
-    PreflightController::WithNonWildcardRequestHeadersSupport;
 
 TEST(PreflightControllerCreatePreflightRequestTest, LexicographicalOrder) {
   ResourceRequest request;
@@ -231,14 +229,14 @@ TEST(PreflightControllerOptionsTest, CheckOptions) {
   preflight_controller.PerformPreflightCheck(
       base::BindOnce([](int, absl::optional<CorsErrorStatus>, bool) {}),
       request, WithTrustedHeaderClient(false),
-      WithNonWildcardRequestHeadersSupport(false), false /* tainted */,
+      NonWildcardRequestHeadersSupport(false), false /* tainted */,
       TRAFFIC_ANNOTATION_FOR_TESTS, &url_loader_factory, net::IsolationInfo(),
       /*devtools_observer=*/mojo::NullRemote(), net_log);
 
   preflight_controller.PerformPreflightCheck(
       base::BindOnce([](int, absl::optional<CorsErrorStatus>, bool) {}),
       request, WithTrustedHeaderClient(true),
-      WithNonWildcardRequestHeadersSupport(false), false /* tainted */,
+      NonWildcardRequestHeadersSupport(false), false /* tainted */,
       TRAFFIC_ANNOTATION_FOR_TESTS, &url_loader_factory, net::IsolationInfo(),
       /*devtools_observer=*/mojo::NullRemote(), net_log);
 
@@ -445,7 +443,7 @@ class PreflightControllerTest : public testing::Test {
         base::BindOnce(&PreflightControllerTest::HandleRequestCompletion,
                        base::Unretained(this)),
         request, WithTrustedHeaderClient(false),
-        with_non_wildcard_request_headers_support_, tainted,
+        non_wildcard_request_headers_support_, tainted,
         TRAFFIC_ANNOTATION_FOR_TESTS, url_loader_factory_remote_.get(),
         isolation_info, devtools_observer_->Bind(),
         net::NetLogWithSource::Make(net::NetLog::Get(),
@@ -456,9 +454,9 @@ class PreflightControllerTest : public testing::Test {
   void SetAccessControlAllowOrigin(const url::Origin origin) {
     access_control_allow_origin_ = origin;
   }
-  void SetWithNonWildcardRequestHeadersSupport(bool value) {
-    with_non_wildcard_request_headers_support_ =
-        WithNonWildcardRequestHeadersSupport(value);
+  void SetNonWildcardRequestHeadersSupport(bool value) {
+    non_wildcard_request_headers_support_ =
+        NonWildcardRequestHeadersSupport(value);
   }
 
   const url::Origin& test_initiator_origin() const {
@@ -537,8 +535,7 @@ class PreflightControllerTest : public testing::Test {
 
   net::test_server::EmbeddedTestServer test_server_;
   size_t access_count_ = 0;
-  WithNonWildcardRequestHeadersSupport
-      with_non_wildcard_request_headers_support_;
+  NonWildcardRequestHeadersSupport non_wildcard_request_headers_support_;
 
   std::unique_ptr<PreflightController> preflight_controller_;
   int net_error_ = net::OK;
@@ -730,7 +727,7 @@ TEST_F(PreflightControllerTest, AuthorizationIsCoveredByWildcard) {
   request.request_initiator = test_initiator_origin();
   request.headers.SetHeader("authorization", "foobar");
 
-  SetWithNonWildcardRequestHeadersSupport(false);
+  SetNonWildcardRequestHeadersSupport(false);
 
   PerformPreflightCheck(request);
   EXPECT_EQ(net::OK, net_error());
@@ -747,7 +744,7 @@ TEST_F(PreflightControllerTest, AuthorizationIsNotCoveredByWildcard) {
   request.request_initiator = test_initiator_origin();
   request.headers.SetHeader("authorization", "foobar");
 
-  SetWithNonWildcardRequestHeadersSupport(true);
+  SetNonWildcardRequestHeadersSupport(true);
 
   PerformPreflightCheck(request);
   EXPECT_EQ(net::ERR_FAILED, net_error());

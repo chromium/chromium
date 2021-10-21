@@ -19,5 +19,7 @@ PASS CORS [GET] [several headers], server refuses
 PASS CORS [PUT] [several headers], server allows
 PASS CORS [PUT] [several headers], server refuses
 PASS CORS [PUT] [only safe headers], server allows
+FAIL "authorization" should not be covered by the wildcard symbol assert_unreached: Should have rejected: undefined Reached unreachable code
+PASS "authorization" should be covered by "authorization"
 Harness: the test ran to completion.
 

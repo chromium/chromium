@@ -44,3 +44,19 @@ corsPreflight("CORS [PUT] [several headers], server allows", corsUrl, "PUT", tru
 corsPreflight("CORS [PUT] [several headers], server refuses", corsUrl, "PUT", false, headers, safeHeaders);
 
 corsPreflight("CORS [PUT] [only safe headers], server allows", corsUrl, "PUT", true, null, safeHeaders);
+
+promise_test(async t => {
+  const url = `${corsUrl}?allow_headers=*`;
+  await promise_rejects_js(t, TypeError, fetch(url, {
+    headers: {
+      authorization: 'foobar'
+    }
+  }));
+}, '"authorization" should not be covered by the wildcard symbol');
+
+promise_test(async t => {
+  const url = `${corsUrl}?allow_headers=authorization`;
+  await fetch(url, { headers: {
+    authorization: 'foobar'
+  }});
+}, '"authorization" should be covered by "authorization"');

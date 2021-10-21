@@ -268,6 +268,11 @@ ProfileNetworkContextService::ProfileNetworkContextService(Profile* profile)
       base::BindRepeating(&ProfileNetworkContextService::
                               UpdateSplitAuthCacheByNetworkIsolationKey,
                           base::Unretained(this)));
+  pref_change_registrar_.Add(
+      prefs::kCorsNonWildcardRequestHeadersSupport,
+      base::BindRepeating(&ProfileNetworkContextService::
+                              UpdateCorsNonWildcardRequestHeadersSupport,
+                          base::Unretained(this)));
 }
 
 ProfileNetworkContextService::~ProfileNetworkContextService() = default;
@@ -458,6 +463,19 @@ void ProfileNetworkContextService::UpdateSplitAuthCacheByNetworkIsolationKey() {
                 split_auth_cache_by_network_isolation_key);
       },
       split_auth_cache_by_network_isolation_key));
+}
+
+void ProfileNetworkContextService::
+    UpdateCorsNonWildcardRequestHeadersSupport() {
+  const bool value = profile_->GetPrefs()->GetBoolean(
+      prefs::kCorsNonWildcardRequestHeadersSupport);
+
+  profile_->ForEachStoragePartition(base::BindRepeating(
+      [](bool value, content::StoragePartition* storage_partition) {
+        storage_partition->GetNetworkContext()
+            ->SetCorsNonWildcardRequestHeadersSupport(value);
+      },
+      value));
 }
 
 // static

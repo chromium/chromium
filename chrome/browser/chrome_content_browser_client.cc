@@ -1308,6 +1308,8 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
 #endif
   registry->RegisterBooleanPref(prefs::kPromptOnMultipleMatchingCertificates,
                                 false);
+  registry->RegisterBooleanPref(prefs::kCorsNonWildcardRequestHeadersSupport,
+                                true);
 }
 
 // static

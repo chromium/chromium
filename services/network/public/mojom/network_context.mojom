@@ -1351,6 +1351,11 @@ interface NetworkContext {
                     NetworkIsolationKey network_isolation_key,
                     AuthCredentials credentials) => ();
 
+  // Sets whether
+  // https://fetch.spec.whatwg.org/#cors-non-wildcard-request-header-name is
+  // supported in this network context.
+  SetCorsNonWildcardRequestHeadersSupport(bool value);
+
   // Looks up credentials in the HttpAuthCache using the origin and path from
   // |url|. Only supports basic auth scheme. Only looks up server (not proxy)
   // auth credentials, and only those that are usable in the scope of

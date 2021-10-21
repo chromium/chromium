@@ -55,6 +55,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
       PreflightController* preflight_controller,
       const base::flat_set<std::string>* allowed_exempt_headers,
       bool allow_any_cors_exempt_header,
+      NonWildcardRequestHeadersSupport non_wildcard_request_headers_support,
       const net::IsolationInfo& isolation_info,
       mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer);
 
@@ -197,6 +198,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   const bool skip_cors_enabled_scheme_check_;
 
   const bool allow_any_cors_exempt_header_;
+
+  const NonWildcardRequestHeadersSupport non_wildcard_request_headers_support_;
 
   net::IsolationInfo isolation_info_;
 

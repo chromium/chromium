@@ -14274,6 +14274,49 @@
       }
     ]
   },
+  "CORSNonWildcardRequestHeadersSupport": {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "cors_non_wildcard_request_headers_support": {
+            "location": "user_profile",
+            "default_value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "CORSNonWildcardRequestHeadersSupport": false
+        },
+        "prefs": {
+          "cors_non_wildcard_request_headers_support": {
+            "location": "user_profile",
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "CORSNonWildcardRequestHeadersSupport": true
+        },
+        "prefs": {
+          "cors_non_wildcard_request_headers_support": {
+            "location": "user_profile",
+            "value": true
+          }
+        }
+      }
+    ]
+  },
   "HSTSPolicyBypassList": {
     "os": [
       "win",
