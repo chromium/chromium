@@ -1258,6 +1258,8 @@ class AutofillMetrics {
   static void LogOfferNotificationInfoBarResultMetric(
       OfferNotificationInfoBarResultMetric metric);
   static void LogOfferNotificationInfoBarShown();
+  static void LogProgressDialogResultMetric(bool is_canceled_by_user);
+  static void LogProgressDialogShown();
   static void LogVirtualCardManualFallbackBubbleShown(bool is_reshow);
   static void LogVirtualCardManualFallbackBubbleResultMetric(
       VirtualCardManualFallbackBubbleResultMetric metric,

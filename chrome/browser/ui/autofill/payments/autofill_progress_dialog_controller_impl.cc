@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/autofill/payments/autofill_progress_dialog_controller_impl.h"
 
+#include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -29,6 +30,11 @@ void AutofillProgressDialogControllerImpl::ShowDialog(
   cancel_callback_ = std::move(cancel_callback);
   autofill_progress_dialog_view_ =
       AutofillProgressDialogView::CreateAndShow(this);
+
+  if (autofill_progress_dialog_view_)
+    // TODO(crbug.com/1261529): Pass in the flow type once we have another use
+    // case so that the progress dialog can be shared across multiple use cases.
+    AutofillMetrics::LogProgressDialogShown();
 }
 
 void AutofillProgressDialogControllerImpl::DismissDialog(
@@ -40,19 +46,16 @@ void AutofillProgressDialogControllerImpl::DismissDialog(
   autofill_progress_dialog_view_ = nullptr;
 }
 
-void AutofillProgressDialogControllerImpl::OnDismissed() {
-  // If the |autofill_progress_dialog_view_| is not a nullptr. It means the
-  // dismissal was triggered by the user cancelling the flow. Thus we should
-  // invoke the |cancel_callback_|.
-  if (autofill_progress_dialog_view_) {
-    autofill_progress_dialog_view_ = nullptr;
-    std::move(cancel_callback_).Run();
-    // TODO(crbug.com/1243475): Add metrics.
-    return;
-  }
+void AutofillProgressDialogControllerImpl::OnDismissed(
+    bool is_canceled_by_user) {
+  // Dialog is being dismissed so set the pointer to nullptr.
+  autofill_progress_dialog_view_ = nullptr;
 
-  // Otherwise it was triggered by the backend components. The
-  // |cancel_callback_| will not be invoked but be reset.
+  if (is_canceled_by_user)
+    std::move(cancel_callback_).Run();
+  // TODO(crbug.com/1261529): Pass in the flow type once we have another use
+  // case so that the progress dialog can be shared across multiple use cases.
+  AutofillMetrics::LogProgressDialogResultMetric(is_canceled_by_user);
   cancel_callback_.Reset();
 }
 

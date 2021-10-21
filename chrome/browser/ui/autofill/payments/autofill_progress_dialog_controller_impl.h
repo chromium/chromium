@@ -33,7 +33,7 @@ class AutofillProgressDialogControllerImpl
   void DismissDialog(bool show_confirmation_before_closing);
 
   // AutofillProgressDialogController.
-  void OnDismissed() override;
+  void OnDismissed(bool is_canceled_by_user) override;
   const std::u16string GetTitle() override;
   const std::u16string GetCancelButtonLabel() override;
   const std::u16string GetLoadingMessage() override;
