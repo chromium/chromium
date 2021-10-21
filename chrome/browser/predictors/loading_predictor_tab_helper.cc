@@ -69,6 +69,7 @@ net::RequestPriority GetRequestPriority(
     case network::mojom::RequestDestination::kWebBundle:
     case network::mojom::RequestDestination::kWorker:
     case network::mojom::RequestDestination::kXslt:
+    case network::mojom::RequestDestination::kFencedframe:
       return net::LOWEST;
   }
 }

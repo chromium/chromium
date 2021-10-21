@@ -54,6 +54,15 @@ enum RequestDestination {
   kWebBundle = 19,
   kWorker = 20,
   kXslt = 21,
+  // kFencedframe represents a main resource request in a fenced frame. A
+  // <fencedframe> element uses this destination.
+  //
+  // e.g. <fencedframe src="example.com"></fencedframe>
+  //
+  // Fenced Frame is not standardized yet. See
+  // https://github.com/shivanigithub/fenced-frame for the explainer and
+  // crbug.com/1123606 for the implementation.
+  kFencedframe = 22,
 };
 
 // Corresponds to Fetch request's "redirect mode":

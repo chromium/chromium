@@ -40,6 +40,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/escape.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
@@ -775,7 +776,8 @@ void RenderViewTest::Reload(const GURL& url) {
       false /* has_text_fragment_token */,
       network::mojom::CSPDisposition::CHECK, std::vector<int>(), std::string(),
       false /* is_history_navigation_in_new_child_frame */,
-      base::TimeTicks() /* input_start */);
+      base::TimeTicks() /* input_start */,
+      network::mojom::RequestDestination::kDocument);
   auto commit_params = blink::CreateCommitNavigationParams();
   commit_params->sandbox_flags = network::mojom::WebSandboxFlags::kNone;
   TestRenderFrame* frame = static_cast<TestRenderFrame*>(GetMainRenderFrame());
@@ -911,7 +913,8 @@ void RenderViewTest::GoToOffset(int offset,
       false /* has_text_fragment_token */,
       network::mojom::CSPDisposition::CHECK, std::vector<int>(), std::string(),
       false /* is_history_navigation_in_new_child_frame */,
-      base::TimeTicks() /* input_start */);
+      base::TimeTicks() /* input_start */,
+      network::mojom::RequestDestination::kDocument);
   auto commit_params = blink::CreateCommitNavigationParams();
   commit_params->page_state = state.ToEncodedData();
   commit_params->nav_entry_id = pending_offset + 1;

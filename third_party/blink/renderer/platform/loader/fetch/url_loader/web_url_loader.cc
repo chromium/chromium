@@ -1080,6 +1080,7 @@ net::NetworkTrafficAnnotationTag WebURLLoader::Context::GetTrafficAnnotationTag(
     case network::mojom::RequestDestination::kDocument:
     case network::mojom::RequestDestination::kIframe:
     case network::mojom::RequestDestination::kFrame:
+    case network::mojom::RequestDestination::kFencedframe:
       NOTREACHED();
       FALLTHROUGH;
 

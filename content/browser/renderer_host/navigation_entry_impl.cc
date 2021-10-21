@@ -30,6 +30,7 @@
 #include "content/public/common/content_constants.h"
 #include "content/public/common/url_constants.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/common/page_state/page_state_serialization.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
@@ -818,7 +819,8 @@ NavigationEntryImpl::ConstructCommonNavigationParams(
       has_started_from_context_menu(), has_user_gesture(),
       false /* has_text_fragment_token */,
       network::mojom::CSPDisposition::CHECK, std::vector<int>(), std::string(),
-      false /* is_history_navigation_in_new_child_frame */, input_start);
+      false /* is_history_navigation_in_new_child_frame */, input_start,
+      network::mojom::RequestDestination::kEmpty);
 }
 
 blink::mojom::CommitNavigationParamsPtr

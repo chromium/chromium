@@ -632,11 +632,6 @@ bool PrerenderHost::AreBeginNavigationParamsCompatibleWithNavigation(
       return false;
   }
 
-  if (potential_activation.request_destination !=
-      begin_params_->request_destination) {
-    return false;
-  }
-
   // Since impression should not be set, no need to compare contents.
   DCHECK(!begin_params_->impression);
   if (potential_activation.impression.has_value()) {
@@ -757,6 +752,11 @@ bool PrerenderHost::AreCommonNavigationParamsCompatibleWithNavigation(
   // https://jeremyroman.github.io/alternate-loading-modes/#navigate-activation
   if (potential_activation.referrer->policy !=
       common_params_->referrer->policy) {
+    return false;
+  }
+
+  if (potential_activation.request_destination !=
+      common_params_->request_destination) {
     return false;
   }
 

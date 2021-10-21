@@ -320,14 +320,7 @@ void WebNavigationBodyLoader::FillNavigationParamsResponseAndBodyLoader(
       request_id, url,
       !commit_params->original_method.empty() ? commit_params->original_method
                                               : common_params->method,
-      common_params->referrer->url,
-      // TODO(kinuko): This should use the same value as in the request that
-      // was used in browser process, i.e. what CreateResourceRequest in
-      // content/browser/loader/navigation_url_loader_impl.cc gives.
-      // (Currently we don't propagate the value from the browser on
-      // navigation commit.)
-      is_main_frame ? network::mojom::RequestDestination::kDocument
-                    : network::mojom::RequestDestination::kIframe,
+      common_params->referrer->url, common_params->request_destination,
       is_main_frame ? net::HIGHEST : net::LOWEST);
   size_t redirect_count = commit_params->redirect_response.size();
 

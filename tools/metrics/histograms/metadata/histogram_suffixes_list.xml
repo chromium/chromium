@@ -15448,6 +15448,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="BACKGROUND_FETCH_FAIL" label=""/>
   <suffix name="BACKGROUND_FETCH_SUCCESS" label=""/>
   <suffix name="COOKIE_CHANGE" label="COOKIE_CHANGE"/>
+  <suffix name="FETCH_FENCED_FRAME" label="FETCH_FENCED_FRAME"/>
   <suffix name="FETCH_MAIN_FRAME" label="FETCH_MAIN_FRAME"/>
   <suffix name="FETCH_SHARED_WORKER" label="FETCH_SHARED_WORKER"/>
   <suffix name="FETCH_SUB_FRAME" label="FETCH_SUB_FRAME"/>
@@ -15965,6 +15966,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="plus" label="Custom histogram for Google+"/>
   <affected-histogram name="ServiceWorker.EventDispatchingDelay_ACTIVATE"/>
   <affected-histogram name="ServiceWorker.EventDispatchingDelay_COOKIE_CHANGE"/>
+  <affected-histogram
+      name="ServiceWorker.EventDispatchingDelay_FETCH_FENCED_FRAME"/>
   <affected-histogram
       name="ServiceWorker.EventDispatchingDelay_FETCH_MAIN_FRAME"/>
   <affected-histogram

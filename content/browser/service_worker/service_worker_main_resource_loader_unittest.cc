@@ -1134,5 +1134,27 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, TimingInfo) {
                 info->load_timing.service_worker_start_time);
 }
 
+TEST_F(ServiceWorkerMainResourceLoaderTest, FencedFrameNavigationPreload) {
+  registration_->EnableNavigationPreload(true);
+
+  std::unique_ptr<network::ResourceRequest> request = CreateRequest();
+  request->destination = network::mojom::RequestDestination::kFencedframe;
+
+  // Perform the request.
+  StartRequest(std::move(request));
+  client_.RunUntilComplete();
+
+  EXPECT_EQ(net::OK, client_.completion_status().error_code);
+  const auto& info = client_.response_head();
+  EXPECT_EQ(200, info->headers->response_code());
+  EXPECT_FALSE(info->load_timing.receive_headers_start.is_null());
+  EXPECT_FALSE(info->load_timing.receive_headers_end.is_null());
+  EXPECT_LE(info->load_timing.receive_headers_start,
+            info->load_timing.receive_headers_end);
+  auto expected_info = CreateResponseInfoFromServiceWorker();
+  expected_info->did_service_worker_navigation_preload = true;
+  ExpectResponseInfo(*info, *expected_info);
+}
+
 }  // namespace service_worker_main_resource_loader_unittest
 }  // namespace content

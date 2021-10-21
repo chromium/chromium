@@ -25,6 +25,7 @@
 #include "net/base/isolation_info.h"
 #include "net/cookies/site_for_cookies.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/loader/resource_type_util.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
@@ -73,15 +74,14 @@ ServiceWorkerMainResourceLoaderInterceptor::CreateForNavigation(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!ShouldCreateForNavigation(
-          url, request_info.begin_params->request_destination,
+          url, request_info.common_params->request_destination,
           navigation_handle->context_wrapper()->browser_context())) {
     return nullptr;
   }
 
   return base::WrapUnique(new ServiceWorkerMainResourceLoaderInterceptor(
       std::move(navigation_handle),
-      request_info.is_main_frame ? network::mojom::RequestDestination::kDocument
-                                 : network::mojom::RequestDestination::kIframe,
+      request_info.common_params->request_destination,
       request_info.begin_params->skip_service_worker,
       request_info.are_ancestors_secure, request_info.frame_tree_node_id,
       ChildProcessHost::kInvalidUniqueID, /* worker_token = */ nullptr,
@@ -156,8 +156,7 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
     base::WeakPtr<ServiceWorkerContainerHost> container_host;
     bool inherit_controller_only = false;
 
-    if (request_destination_ == network::mojom::RequestDestination::kDocument ||
-        request_destination_ == network::mojom::RequestDestination::kIframe) {
+    if (blink::IsRequestDestinationFrame(request_destination_)) {
       container_host = context_core->CreateContainerHostForWindow(
           std::move(host_receiver), are_ancestors_secure_,
           std::move(client_remote), frame_tree_node_id_);

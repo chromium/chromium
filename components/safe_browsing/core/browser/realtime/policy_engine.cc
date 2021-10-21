@@ -13,6 +13,7 @@
 #include "components/unified_consent/pref_names.h"
 #include "components/user_prefs/user_prefs.h"
 #include "components/variations/service/variations_service.h"
+#include "services/network/public/cpp/request_destination.h"
 
 #if defined(OS_ANDROID)
 #include "base/metrics/field_trial_params.h"
@@ -95,8 +96,7 @@ bool RealTimePolicyEngine::CanPerformFullURLLookupForRequestDestination(
   if (request_destination == network::mojom::RequestDestination::kDocument) {
     return true;
   }
-  if ((request_destination == network::mojom::RequestDestination::kIframe ||
-       request_destination == network::mojom::RequestDestination::kFrame) &&
+  if (network::IsRequestDestinationEmbeddedFrame(request_destination) &&
       can_rt_check_subresource_url) {
     return true;
   }

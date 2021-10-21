@@ -39,6 +39,7 @@ const KEYS = {
   "navigation_success"           : "00000000-0000-0000-0000-00000000000F",
   "ready_for_navigation"         : "00000000-0000-0000-0000-000000000010",
   "outer_page_did_navigate"      : "00000000-0000-0000-0000-000000000011",
+  "secFetchDest.value"           : "00000000-0000-0000-0000-000000000012",
   // Add keys above this list, incrementing the key UUID in hexadecimal
 }
 

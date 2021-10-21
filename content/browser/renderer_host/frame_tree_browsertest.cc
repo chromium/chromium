@@ -916,6 +916,12 @@ class FencedFrameTreeBrowserTest
                           ? request.headers.at("Cookie").c_str()
                           : "";
     cookie_headers_map_.insert(std::make_pair(request.GetURL().path(), val));
+
+    val = request.headers.find("Sec-Fetch-Dest") != request.headers.end()
+              ? request.headers.at("Sec-Fetch-Dest").c_str()
+              : "";
+    sec_fetch_dest_headers_map_.insert(
+        std::make_pair(request.GetURL().path(), val));
   }
 
   // Returns true if the cookie header was present in the last request received
@@ -924,8 +930,8 @@ class FencedFrameTreeBrowserTest
   // clears the value that was just checked by the method invocation.
   bool CheckAndClearCookieHeader(
       const GURL& url,
-      const std::string expected_value = "",
-      base::Location from_here = base::Location::Current()) {
+      const std::string& expected_value = "",
+      const base::Location& from_here = base::Location::Current()) {
     base::AutoLock auto_lock(requests_lock_);
     SCOPED_TRACE(from_here.ToString());
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -934,6 +940,22 @@ class FencedFrameTreeBrowserTest
     std::string header = cookie_headers_map_[file_name];
     EXPECT_EQ(expected_value, header);
     cookie_headers_map_.erase(file_name);
+    return !header.empty();
+  }
+
+  bool CheckAndClearSecFetchDestHeader(
+      const GURL& url,
+      const std::string& expected_value = "",
+      const base::Location& from_here = base::Location::Current()) {
+    base::AutoLock auto_lock(requests_lock_);
+    SCOPED_TRACE(from_here.ToString());
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    std::string file_name = url.path();
+    CHECK(sec_fetch_dest_headers_map_.find(file_name) !=
+          sec_fetch_dest_headers_map_.end());
+    std::string header = sec_fetch_dest_headers_map_[file_name];
+    EXPECT_EQ(expected_value, header);
+    sec_fetch_dest_headers_map_.erase(file_name);
     return !header.empty();
   }
 
@@ -977,6 +999,8 @@ class FencedFrameTreeBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
   base::Lock requests_lock_;
   std::map<std::string, std::string> cookie_headers_map_
+      GUARDED_BY(requests_lock_);
+  std::map<std::string, std::string> sec_fetch_dest_headers_map_
       GUARDED_BY(requests_lock_);
   net::EmbeddedTestServer https_server_;
 };
@@ -1449,6 +1473,52 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest,
   NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
       fenced_frame_root_node, urn_uuid, navigate_urn_script,
       net::ERR_BLOCKED_BY_RESPONSE);
+}
+
+IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest, CheckSecFetchDestHeader) {
+  GURL main_url(https_server()->GetURL("a.test", "/hello.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  // It is safe to obtain the root frame tree node here, as it doesn't change.
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetFrameTree()
+                            ->root();
+
+  EXPECT_TRUE(ExecJs(root,
+                     "var fenced_frame = document.createElement('fencedframe');"
+                     "document.body.appendChild(fenced_frame);"));
+
+  EXPECT_EQ(1U, root->child_count());
+
+  FrameTreeNode* fenced_frame_root_node =
+      GetFencedFrameRootNode(root->child_at(0));
+
+  {
+    // Navigate the fenced frame.
+    GURL fenced_frame_url(
+        https_server()->GetURL("a.test", "/fenced_frames/title1.html"));
+    std::string navigate_script =
+        JsReplace("fenced_frame.src = $1;", fenced_frame_url.spec());
+    NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
+        fenced_frame_root_node, fenced_frame_url, navigate_script);
+    EXPECT_TRUE(
+        CheckAndClearSecFetchDestHeader(fenced_frame_url, "fencedframe"));
+  }
+
+  // Add a nested iframe inside the fenced frame.
+  EXPECT_TRUE(ExecJs(fenced_frame_root_node,
+                     "var iframe = document.createElement('iframe');"
+                     "document.body.appendChild(iframe);"));
+  EXPECT_EQ(1U, fenced_frame_root_node->child_count());
+
+  {
+    // Navigate the iframe.
+    GURL iframe_url(https_server()->GetURL("a.test", "/title2.html"));
+    std::string navigate_script =
+        JsReplace("iframe.src = $1;", iframe_url.spec());
+    NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
+        fenced_frame_root_node->child_at(0), iframe_url, navigate_script);
+    EXPECT_TRUE(CheckAndClearSecFetchDestHeader(iframe_url, "iframe"));
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(

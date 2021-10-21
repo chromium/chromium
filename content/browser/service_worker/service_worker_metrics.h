@@ -79,8 +79,9 @@ class ServiceWorkerMetrics {
     PERIODIC_SYNC = 33,
     CONTENT_DELETE = 34,
     PUSH_SUBSCRIPTION_CHANGE = 35,
+    FETCH_FENCED_FRAME = 36,
     // Add new events to record here.
-    kMaxValue = PUSH_SUBSCRIPTION_CHANGE,
+    kMaxValue = FETCH_FENCED_FRAME,
   };
 
   // Not used for UMA.

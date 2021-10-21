@@ -28,6 +28,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <variant name="BACKGROUND_FETCH_FAIL"/>
   <variant name="BACKGROUND_FETCH_SUCCESS"/>
   <variant name="COOKIE_CHANGE"/>
+  <variant name="FETCH_FENCED_FRAME"/>
   <variant name="FETCH_MAIN_FRAME"/>
   <variant name="FETCH_SHARED_WORKER"/>
   <variant name="FETCH_SUB_FRAME"/>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<title>Test header.secFetchDest</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="resources/utils.js"></script>
+
+<body>
+
+<script>
+promise_test(async () => {
+  const sec_fetch_dest_value_key = KEYS["secFetchDest.value"];
+  const https_origin = get_host_info().HTTPS_REMOTE_ORIGIN;
+  const https_origin_url =
+      new URL('wpt_internal/fenced_frame/resources/check-header-sec-fetch-dest.py',
+              https_origin);
+  attachFencedFrame(https_origin_url);
+
+  // Get the result for the top-level fenced frame.
+  const actual_result = await nextValueFromServer(sec_fetch_dest_value_key);
+  assert_equals(actual_result, "b'fencedframe'", "The fenced frame " +
+                                     "has the right value for " +
+                                     "`secFetchDest.value`");
+}, "header.secFetchDest");
+</script>
+
+</body>

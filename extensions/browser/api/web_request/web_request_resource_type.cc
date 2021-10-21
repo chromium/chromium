@@ -64,6 +64,7 @@ WebRequestResourceType ToWebRequestResourceType(
       return WebRequestResourceType::MAIN_FRAME;
     case network::mojom::RequestDestination::kIframe:
     case network::mojom::RequestDestination::kFrame:
+    case network::mojom::RequestDestination::kFencedframe:
       return WebRequestResourceType::SUB_FRAME;
     case network::mojom::RequestDestination::kStyle:
     case network::mojom::RequestDestination::kXslt:

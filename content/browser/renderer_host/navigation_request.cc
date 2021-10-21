@@ -682,14 +682,11 @@ void EnterChildTraceEvent(const char* name,
 
 network::mojom::RequestDestination GetDestinationFromFrameTreeNode(
     FrameTreeNode* frame_tree_node) {
+  if (frame_tree_node->IsFencedFrameRoot())
+    return network::mojom::RequestDestination::kFencedframe;
+
   if (frame_tree_node->IsMainFrame()) {
     if (frame_tree_node->current_frame_host()->InsidePortal()) {
-      return network::mojom::RequestDestination::kIframe;
-    }
-    if (frame_tree_node->IsFencedFrameRoot()) {
-      // TODO(crbug.com/1223807): Introduce the `Sec-Fetch-Dest` header for
-      // fenced frames.
-      NOTIMPLEMENTED_LOG_ONCE();
       return network::mojom::RequestDestination::kIframe;
     }
     return network::mojom::RequestDestination::kDocument;
@@ -704,16 +701,15 @@ network::mojom::RequestDestination GetDestinationFromFrameTreeNode(
       return network::mojom::RequestDestination::kIframe;
     case blink::FrameOwnerElementType::kFrame:
       return network::mojom::RequestDestination::kFrame;
-    // TODO(crbug.com/1223807): Introduce the `Sec-Fetch-Dest` header for
-    // fenced frames.
-    // Note that the Fenced Frame Shadow DOM case is NOTREACHED as the browser
-    // just considers it an iframe. See `FramePolicy::is_fenced`.
-    case blink::FrameOwnerElementType::kFencedframe:
     // Main frames are handled above.
     case blink::FrameOwnerElementType::kPortal:
     case blink::FrameOwnerElementType::kNone:
       NOTREACHED();
       return network::mojom::RequestDestination::kDocument;
+      // Fenced frames are handled above.
+    case blink::FrameOwnerElementType::kFencedframe:
+      NOTREACHED();
+      return network::mojom::RequestDestination::kFencedframe;
   }
 }
 
@@ -953,7 +949,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateBrowserInitiated(
   // This is not currently handled here.
   bool is_form_submission = !!post_body;
 
-  network::mojom::RequestDestination destination =
+  common_params->request_destination =
       GetDestinationFromFrameTreeNode(frame_tree_node);
 
   absl::optional<network::ResourceRequest::WebBundleTokenParams>
@@ -969,7 +965,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateBrowserInitiated(
   auto navigation_params = blink::mojom::BeginNavigationParams::New(
       base::OptionalFromPtr(initiator_frame_token), extra_headers,
       net::LOAD_NORMAL, false /* skip_service_worker */,
-      blink::mojom::RequestContextType::LOCATION, destination,
+      blink::mojom::RequestContextType::LOCATION,
       blink::mojom::MixedContentContextType::kBlockable, is_form_submission,
       false /* was_initiated_by_link_click */, GURL() /* searchable_form_url */,
       std::string() /* searchable_form_encoding */,
@@ -1073,7 +1069,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
          common_params->navigation_type ==
              blink::mojom::NavigationType::DIFFERENT_DOCUMENT);
 
-  begin_params->request_destination =
+  common_params->request_destination =
       GetDestinationFromFrameTreeNode(frame_tree_node);
 
   // TODO(clamy): See if the navigation start time should be measured in the
@@ -1202,7 +1198,8 @@ NavigationRequest::CreateForSynchronousRendererCommit(
           std::vector<int>() /* initiator_origin_trial_features */,
           std::string() /* href_translate */,
           false /* is_history_navigation_in_new_child_frame */,
-          base::TimeTicks::Now() /* input_start */);
+          base::TimeTicks::Now() /* input_start */,
+          network::mojom::RequestDestination::kEmpty);
   // Note that some params are set to default values (e.g. page_state set to
   // the default blink::PageState()) even if the DidCommit message that came
   // from the renderer contained relevant info that can be used to fill the

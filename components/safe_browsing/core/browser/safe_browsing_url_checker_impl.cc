@@ -22,6 +22,7 @@
 #include "net/base/load_flags.h"
 #include "net/http/http_request_headers.h"
 #include "net/log/net_log_event_type.h"
+#include "services/network/public/cpp/request_destination.h"
 
 using security_interstitials::UnsafeResource;
 
@@ -225,8 +226,7 @@ UnsafeResource SafeBrowsingUrlCheckerImpl::MakeUnsafeResource(
   resource.is_subresource =
       request_destination_ != network::mojom::RequestDestination::kDocument;
   resource.is_subframe =
-      (request_destination_ == network::mojom::RequestDestination::kIframe ||
-       request_destination_ == network::mojom::RequestDestination::kFrame);
+      network::IsRequestDestinationEmbeddedFrame(request_destination_);
   resource.threat_type = threat_type;
   resource.threat_metadata = metadata;
   resource.request_destination = request_destination_;
@@ -564,8 +564,7 @@ void SafeBrowsingUrlCheckerImpl::OnCheckUrlForHighConfidenceAllowlist(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool is_expected_request_destination =
       (network::mojom::RequestDestination::kDocument == request_destination_) ||
-      ((network::mojom::RequestDestination::kIframe == request_destination_ ||
-        network::mojom::RequestDestination::kFrame == request_destination_) &&
+      (network::IsRequestDestinationEmbeddedFrame(request_destination_) &&
        can_rt_check_subresource_url_);
   DCHECK(is_expected_request_destination);
 
@@ -657,8 +656,7 @@ void SafeBrowsingUrlCheckerImpl::OnRTLookupResponse(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool is_expected_request_destination =
       (network::mojom::RequestDestination::kDocument == request_destination_) ||
-      ((network::mojom::RequestDestination::kIframe == request_destination_ ||
-        network::mojom::RequestDestination::kFrame == request_destination_) &&
+      (network::IsRequestDestinationEmbeddedFrame(request_destination_) &&
        can_rt_check_subresource_url_);
   DCHECK(is_expected_request_destination);
 

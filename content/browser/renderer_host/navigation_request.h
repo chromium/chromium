@@ -630,7 +630,7 @@ class CONTENT_EXPORT NavigationRequest
   }
 
   network::mojom::RequestDestination request_destination() const {
-    return begin_params_->request_destination;
+    return common_params_->request_destination;
   }
 
   blink::mojom::MixedContentContextType mixed_content_context_type() const {

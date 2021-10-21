@@ -123,6 +123,8 @@ const char* EventTypeToSuffix(ServiceWorkerMetrics::EventType event_type) {
       return "_CONTENT_DELETE";
     case ServiceWorkerMetrics::EventType::PUSH_SUBSCRIPTION_CHANGE:
       return "_PUSH_SUBSCRIPTION_CHANGE";
+    case ServiceWorkerMetrics::EventType::FETCH_FENCED_FRAME:
+      return "_FETCH_FENCED_FRAME";
   }
   return "_UNKNOWN";
 }
@@ -183,6 +185,8 @@ const char* ServiceWorkerMetrics::EventTypeToString(EventType event_type) {
       return "Content Delete";
     case EventType::PUSH_SUBSCRIPTION_CHANGE:
       return "Push Subscription Change";
+    case EventType::FETCH_FENCED_FRAME:
+      return "Fetch Fenced Frame";
   }
   NOTREACHED() << "Got unexpected event type: " << static_cast<int>(event_type);
   return "error";
@@ -298,6 +302,7 @@ void ServiceWorkerMetrics::RecordEventDuration(EventType event,
       break;
     case EventType::FETCH_MAIN_FRAME:
     case EventType::FETCH_SUB_FRAME:
+    case EventType::FETCH_FENCED_FRAME:
     case EventType::FETCH_SHARED_WORKER:
     case EventType::FETCH_SUB_RESOURCE:
       if (was_handled) {

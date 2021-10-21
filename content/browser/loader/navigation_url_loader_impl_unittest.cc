@@ -41,6 +41,7 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/resource_scheduler/resource_scheduler_client.h"
 #include "services/network/url_loader.h"
 #include "services/network/url_request_context_owner.h"
@@ -185,7 +186,6 @@ class NavigationURLLoaderImplTest : public testing::Test {
             absl::nullopt /* initiator_frame_token */, headers,
             net::LOAD_NORMAL, false /* skip_service_worker */,
             blink::mojom::RequestContextType::LOCATION,
-            network::mojom::RequestDestination::kDocument,
             blink::mojom::MixedContentContextType::kBlockable,
             false /* is_form_submission */,
             false /* was_initiated_by_link_click */,
@@ -203,6 +203,8 @@ class NavigationURLLoaderImplTest : public testing::Test {
     common_params->initiator_origin = url::Origin::Create(url);
     common_params->method = method;
     common_params->download_policy = download_policy;
+    common_params->request_destination =
+        network::mojom::RequestDestination::kDocument;
     url::Origin origin = url::Origin::Create(url);
 
     std::unique_ptr<NavigationRequestInfo> request_info(

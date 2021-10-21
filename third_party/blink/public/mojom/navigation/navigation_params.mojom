@@ -89,10 +89,6 @@ struct BeginNavigationParams {
   blink.mojom.RequestContextType request_context_type =
       blink.mojom.RequestContextType.UNSPECIFIED;
 
-  // Indicates the request destination.
-  network.mojom.RequestDestination request_destination =
-      network.mojom.RequestDestination.kEmpty;
-
   // The mixed content context type for potential mixed content checks.
   blink.mojom.MixedContentContextType mixed_content_context_type =
       blink.mojom.MixedContentContextType.kNotMixedContent;
@@ -237,6 +233,10 @@ struct CommonNavigationParams {
   // not always be set; it depends on the creator of the CommonNavigationParams
   // setting it.
   mojo_base.mojom.TimeTicks input_start;
+
+  // Indicates the request destination.
+  network.mojom.RequestDestination request_destination =
+      network.mojom.RequestDestination.kEmpty;
 };
 
 // Provided by the browser -----------------------------------------------------

@@ -14,6 +14,7 @@
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "net/test/cert_test_util.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/navigation/navigation_params.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
@@ -55,6 +56,8 @@ class NavigationBodyLoaderTest : public ::testing::Test,
     WebNavigationParams navigation_params;
     navigation_params.sandbox_flags = network::mojom::WebSandboxFlags::kNone;
     auto common_params = CreateCommonNavigationParams();
+    common_params->request_destination =
+        network::mojom::RequestDestination::kDocument;
     auto commit_params = CreateCommitNavigationParams();
     WebNavigationBodyLoader::FillNavigationParamsResponseAndBodyLoader(
         std::move(common_params), std::move(commit_params), /*request_id=*/1,
@@ -329,6 +332,8 @@ TEST_F(NavigationBodyLoaderTest, FillResponseWithSecurityDetails) {
 
   auto common_params = CreateCommonNavigationParams();
   common_params->url = GURL("https://example.test");
+  common_params->request_destination =
+      network::mojom::RequestDestination::kDocument;
   auto commit_params = CreateCommitNavigationParams();
 
   WebNavigationParams navigation_params;

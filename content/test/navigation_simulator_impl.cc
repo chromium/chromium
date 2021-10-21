@@ -29,6 +29,7 @@
 #include "net/base/load_flags.h"
 #include "net/url_request/redirect_info.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/navigation/navigation_params.h"
 #include "third_party/blink/public/mojom/loader/mixed_content.mojom.h"
@@ -1270,7 +1271,6 @@ bool NavigationSimulatorImpl::SimulateRendererInitiatedStart() {
               ? absl::make_optional(initiator_frame_host_->GetFrameToken())
               : absl::nullopt,
           headers_, load_flags_, skip_service_worker_, request_context_type_,
-          network::mojom::RequestDestination::kDocument,
           mixed_content_context_type_, is_form_submission_,
           false /* was_initiated_by_link_click */, searchable_form_url_,
           searchable_form_encoding_, GURL() /* client_side_redirect_url */,
@@ -1294,6 +1294,8 @@ bool NavigationSimulatorImpl::SimulateRendererInitiatedStart() {
   common_params->should_check_main_world_csp = should_check_main_world_csp_;
   common_params->should_replace_current_entry = should_replace_current_entry_;
   common_params->href_translate = href_translate_;
+  common_params->request_destination =
+      network::mojom::RequestDestination::kDocument;
 
   mojo::PendingAssociatedRemote<mojom::NavigationClient>
       navigation_client_remote;
