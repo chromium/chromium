@@ -63,6 +63,15 @@ void TestPasswordsPrivateDelegate::GetPasswordExceptionsList(
   std::move(callback).Run(current_exceptions_);
 }
 
+absl::optional<api::passwords_private::UrlCollection>
+TestPasswordsPrivateDelegate::GetUrlCollection(const std::string& url) {
+  if (url.empty()) {
+    return absl::nullopt;
+  }
+  return absl::optional<api::passwords_private::UrlCollection>(
+      api::passwords_private::UrlCollection());
+}
+
 bool TestPasswordsPrivateDelegate::ChangeSavedPassword(
     const std::vector<int>& ids,
     const std::u16string& new_username,

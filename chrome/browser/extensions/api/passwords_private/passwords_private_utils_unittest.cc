@@ -63,6 +63,15 @@ TEST(CreateUrlCollectionFromFormTest, UrlsFromAndroidFormWithAppName) {
             android_urls.link);
 }
 
+TEST(CreateUrlCollectionFromGURLTest, UrlsFromGURL) {
+  GURL url = GURL("https://example.com/login");
+  api::passwords_private::UrlCollection urls = CreateUrlCollectionFromGURL(url);
+
+  EXPECT_EQ(urls.shown, "example.com");
+  EXPECT_EQ(urls.origin, "https://example.com/");
+  EXPECT_EQ(urls.link, "https://example.com/login");
+}
+
 TEST(IdGeneratorTest, GenerateIds) {
   using ::testing::Pointee;
   using ::testing::Eq;

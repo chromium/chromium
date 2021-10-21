@@ -53,6 +53,8 @@ class PasswordsPrivateDelegateImpl : public PasswordsPrivateDelegate,
   // PasswordsPrivateDelegate implementation.
   void GetSavedPasswordsList(UiEntriesCallback callback) override;
   void GetPasswordExceptionsList(ExceptionEntriesCallback callback) override;
+  absl::optional<api::passwords_private::UrlCollection> GetUrlCollection(
+      const std::string& url) override;
   bool ChangeSavedPassword(const std::vector<int>& ids,
                            const std::u16string& new_username,
                            const std::u16string& new_password) override;

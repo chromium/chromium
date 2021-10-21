@@ -56,6 +56,12 @@ class PasswordsPrivateDelegate : public KeyedService {
       base::OnceCallback<void(const ExceptionEntries&)>;
   virtual void GetPasswordExceptionsList(ExceptionEntriesCallback callback) = 0;
 
+  // Checks whether the given |url| meets the requirements to save a password
+  // for it (e.g. valid, has proper scheme etc.) and returns the corresponding
+  // UrlCollection on success and absl::nullopt otherwise.
+  virtual absl::optional<api::passwords_private::UrlCollection>
+  GetUrlCollection(const std::string& url) = 0;
+
   // Changes the username and password corresponding to |ids|.
   // |ids|: The ids for the password entries being updated.
   // |new_username|: The new username.

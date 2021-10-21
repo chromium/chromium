@@ -652,4 +652,54 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestReauthOnGetPlaintextCompPassword) {
   EXPECT_EQ(form.password_value, base::UTF8ToUTF16(*opt_credential->password));
 }
 
+TEST_F(PasswordsPrivateDelegateImplTest,
+       GetUrlCollectionValueWithSchemeWhenIpAddress) {
+  PasswordsPrivateDelegateImpl delegate(&profile_);
+  const absl::optional<api::passwords_private::UrlCollection> urls =
+      delegate.GetUrlCollection("127.0.0.1");
+  EXPECT_TRUE(urls.has_value());
+  EXPECT_EQ("127.0.0.1", urls.value().shown);
+  EXPECT_EQ("http://127.0.0.1/", urls.value().origin);
+  EXPECT_EQ("http://127.0.0.1/", urls.value().link);
+}
+
+TEST_F(PasswordsPrivateDelegateImplTest,
+       GetUrlCollectionValueWithSchemeWhenWebAddress) {
+  PasswordsPrivateDelegateImpl delegate(&profile_);
+  const absl::optional<api::passwords_private::UrlCollection> urls =
+      delegate.GetUrlCollection("example.com/login");
+  EXPECT_TRUE(urls.has_value());
+  EXPECT_EQ("example.com", urls.value().shown);
+  EXPECT_EQ("https://example.com/", urls.value().origin);
+  EXPECT_EQ("https://example.com/login", urls.value().link);
+}
+
+TEST_F(PasswordsPrivateDelegateImplTest,
+       GetUrlCollectionStrippedValueWhenFullUrl) {
+  PasswordsPrivateDelegateImpl delegate(&profile_);
+  const absl::optional<api::passwords_private::UrlCollection> urls =
+      delegate.GetUrlCollection(
+          "http://username:password@example.com/login?param=value#ref");
+  EXPECT_TRUE(urls.has_value());
+  EXPECT_EQ("example.com", urls.value().shown);
+  EXPECT_EQ("http://example.com/", urls.value().origin);
+  EXPECT_EQ("http://example.com/login", urls.value().link);
+}
+
+TEST_F(PasswordsPrivateDelegateImplTest,
+       GetUrlCollectionNoValueWhenUnsupportedScheme) {
+  PasswordsPrivateDelegateImpl delegate(&profile_);
+  const absl::optional<api::passwords_private::UrlCollection> urls =
+      delegate.GetUrlCollection("scheme://unsupported");
+  EXPECT_FALSE(urls.has_value());
+}
+
+TEST_F(PasswordsPrivateDelegateImplTest,
+       GetUrlCollectionNoValueWhenInvalidUrl) {
+  PasswordsPrivateDelegateImpl delegate(&profile_);
+  const absl::optional<api::passwords_private::UrlCollection> urls =
+      delegate.GetUrlCollection("https://;/invalid");
+  EXPECT_FALSE(urls.has_value());
+}
+
 }  // namespace extensions

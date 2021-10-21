@@ -557,4 +557,15 @@ TEST(PasswordManagerUtil, IsValidPasswordURL) {
   }
 }
 
+TEST(PasswordManagerUtil, GetSignonRealm) {
+  std::vector<std::pair<GURL, std::string>> test_cases = {
+      {GURL("http://example.com/"), "http://example.com/"},
+      {GURL("http://example.com/signup"), "http://example.com/"},
+      {GURL("https://google.com/auth?a=1#b"), "https://google.com/"},
+      {GURL("https://username:password@google.com/"), "https://google.com/"}};
+  for (const auto& test_case : test_cases) {
+    EXPECT_EQ(test_case.second, GetSignonRealm(test_case.first));
+  }
+}
+
 }  // namespace password_manager_util
