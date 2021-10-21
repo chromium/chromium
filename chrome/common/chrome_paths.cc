@@ -146,8 +146,6 @@ bool PathProvider(int key, base::FilePath* result) {
       return base::PathService::Get(base::DIR_EXE, result);
 #endif  // defined(OS_MAC)
 #endif  // NDEBUG
-    case chrome::FILE_RESOURCE_MODULE:
-      return base::PathService::Get(base::FILE_MODULE, result);
   }
 
   // Assume that we will not need to create the directory if it does not exist.
