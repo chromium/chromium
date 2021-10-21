@@ -637,8 +637,11 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_TRUE(ExecJs(web_contents(), script));
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
   // JavaScript onbeforeunload dialogs require a user gesture.
-  for (auto* frame : web_contents()->GetAllFrames())
-    frame->ExecuteJavaScriptWithUserGestureForTests(std::u16string());
+  web_contents()->GetMainFrame()->ForEachRenderFrameHost(
+      base::BindRepeating([](content::RenderFrameHost* render_frame_host) {
+        render_frame_host->ExecuteJavaScriptWithUserGestureForTests(
+            std::u16string());
+      }));
 
   // Force a process switch by going to a privileged page. The beforeunload
   // timer will be started on the top-level frame but will be paused while the

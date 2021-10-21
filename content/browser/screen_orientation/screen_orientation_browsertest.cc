@@ -67,18 +67,6 @@ class ScreenOrientationBrowserTest : public ContentBrowserTest  {
     }
     ASSERT_NE(display::mojom::ScreenOrientation::kUndefined, type);
 
-    std::set<RenderWidgetHost*> rwhs;
-    for (RenderFrameHost* rfh : web_contents()->GetAllFrames()) {
-      if (rfh == web_contents()->GetMainFrame())
-        continue;
-
-      rwhs.insert(static_cast<RenderFrameHostImpl*>(rfh)
-                      ->frame_tree_node()
-                      ->render_manager()
-                      ->GetRenderWidgetHostView()
-                      ->GetRenderWidgetHost());
-    }
-
     // This simulates what the browser process does when the screen orientation
     // is changed.
     main_frame_rwh->SetScreenOrientationForTesting(angle, type);

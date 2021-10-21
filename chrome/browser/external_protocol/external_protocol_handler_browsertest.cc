@@ -36,8 +36,9 @@ bool AllowedBySandbox(content::WebContents* web_content,
                        "document.body.appendChild(iframe)"));
   EXPECT_TRUE(content::WaitForLoadStop(web_content));
 
-  EXPECT_EQ(2u, web_content->GetAllFrames().size());
-  content::RenderFrameHost* child_document = web_content->GetAllFrames()[1];
+  content::RenderFrameHost* child_document =
+      ChildFrameAt(web_content->GetMainFrame(), 0);
+  EXPECT_TRUE(child_document);
 
   // When not blocked by sandbox, Linux displays |allowed_msg_1| and Windows/Mac
   // |allowed_msg_2|. That's because Linux do not provide API to query for the
