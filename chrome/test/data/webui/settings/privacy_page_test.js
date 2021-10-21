@@ -6,7 +6,7 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CategorySettingExceptionsElement, ClearBrowsingDataBrowserProxyImpl, ContentSettingsTypes, CookieControlsMode, SafeBrowsingSetting, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {CategorySettingExceptionsElement, ClearBrowsingDataBrowserProxyImpl, ContentSettingsTypes, CookieControlsMode, CookiePrimarySetting, SafeBrowsingSetting, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {HatsBrowserProxyImpl, MetricsBrowserProxyImpl, PrivacyElementInteractions, PrivacyPageBrowserProxyImpl, Route, Router, routes, SecureDnsMode, SettingsPrivacyPageElement, TrustSafetyInteraction} from 'chrome://settings/settings.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
@@ -226,6 +226,12 @@ suite('PrivacyReviewEnabled', function() {
       privacy_review: {
         show_welcome_card:
             {type: chrome.settingsPrivate.PrefType.BOOLEAN, value: true},
+      },
+      generated: {
+        cookie_primary_setting: {
+          type: chrome.settingsPrivate.PrefType.NUMBER,
+          value: CookiePrimarySetting.BLOCK_THIRD_PARTY,
+        },
       },
     };
     document.body.appendChild(page);

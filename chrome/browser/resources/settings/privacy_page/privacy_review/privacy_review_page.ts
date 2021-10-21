@@ -27,6 +27,7 @@ import {SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from '../../people_p
 import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
 import {routes} from '../../route.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../../router.js';
+import {CookiePrimarySetting} from '../../site_settings/site_settings_prefs_browser_proxy.js';
 
 import {StepIndicatorModel} from './step_indicator.js';
 
@@ -96,9 +97,14 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
        */
       stepIndicatorModel_: {
         type: Object,
-        computed: 'computeStepIndicatorModel_(privacyReviewStep_)',
+        computed:
+            'computeStepIndicatorModel_(privacyReviewStep_, prefs.generated.cookie_primary_setting)',
       },
     };
+  }
+
+  static get observers() {
+    return [`onPrefChanged_(prefs.generated.cookie_primary_setting)`];
   }
 
   private privacyReviewStep_: PrivacyReviewStep;
@@ -145,7 +151,7 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
           onForwardNavigation: () => {
             this.navigateToCard_(PrivacyReviewStep.MSBB);
           },
-          isAvailable: () => this.showWelcomeCard_(),
+          isAvailable: () => this.shouldShowWelcomeCard_(),
         },
       ],
       [
@@ -204,7 +210,7 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
           onBackNavigation: () => {
             this.navigateToCard_(PrivacyReviewStep.HISTORY_SYNC, true);
           },
-          isAvailable: () => true,
+          isAvailable: () => this.shouldShowCookiesCard_(),
         },
       ],
     ]);
@@ -213,6 +219,13 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
   /** Handler for when the sync state is pushed from the browser. */
   private onSyncStatusChange_(syncStatus: SyncStatus) {
     this.syncStatus_ = syncStatus;
+    this.navigateToNextCardIfCurrentCardNoLongerAvailable();
+  }
+
+  /** Update the privacy review state based on changed pref. */
+  private onPrefChanged_() {
+    // If this change resulted in the user no longer being in one of the
+    // available states for the given card, we need to skip it.
     this.navigateToNextCardIfCurrentCardNoLongerAvailable();
   }
 
@@ -311,8 +324,16 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
         !this.syncStatus_.hasError;
   }
 
-  private showWelcomeCard_(): boolean {
+  private shouldShowWelcomeCard_(): boolean {
     return this.getPref('privacy_review.show_welcome_card').value;
+  }
+
+  private shouldShowCookiesCard_(): boolean {
+    const currentCookieSetting =
+        this.getPref('generated.cookie_primary_setting').value;
+    return currentCookieSetting === CookiePrimarySetting.BLOCK_THIRD_PARTY ||
+        currentCookieSetting ===
+        CookiePrimarySetting.BLOCK_THIRD_PARTY_INCOGNITO;
   }
 
   private showHeader_(): boolean {
