@@ -25,6 +25,13 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
+#include "testing/gtest/include/gtest/gtest-death-test.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "testing/platform_test.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
 #if defined(OS_WIN)
 #include "base/win/com_init_util.h"
 #include "base/win/scoped_bstr.h"
@@ -32,12 +39,6 @@
 #include "base/win/scoped_variant.h"
 #include "base/win/wmi.h"
 #endif  // defined(OS_WIN)
-#include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
-#include "testing/gtest/include/gtest/gtest-death-test.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/platform_test.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -106,24 +107,14 @@ TEST_F(SysInfoTest, AmountOfFreeDiskSpace) {
   // We aren't actually testing that it's correct, just that it's sane.
   FilePath tmp_path;
   ASSERT_TRUE(GetTempDir(&tmp_path));
-#if defined(OS_FUCHSIA)
-  // Fuchsia currently requires "total disk space" be set explicitly.
-  // See crbug.com/1148334.
-  SysInfo::SetAmountOfTotalDiskSpace(tmp_path, 1024);
-#endif
-  EXPECT_GE(SysInfo::AmountOfFreeDiskSpace(tmp_path), 0) << tmp_path.value();
+  EXPECT_GE(SysInfo::AmountOfFreeDiskSpace(tmp_path), 0) << tmp_path;
 }
 
 TEST_F(SysInfoTest, AmountOfTotalDiskSpace) {
   // We aren't actually testing that it's correct, just that it's sane.
   FilePath tmp_path;
   ASSERT_TRUE(GetTempDir(&tmp_path));
-#if defined(OS_FUCHSIA)
-  // Fuchsia currently requires "total disk space" be set explicitly.
-  // See crbug.com/1148334.
-  SysInfo::SetAmountOfTotalDiskSpace(tmp_path, 1024);
-#endif
-  EXPECT_GT(SysInfo::AmountOfTotalDiskSpace(tmp_path), 0) << tmp_path.value();
+  EXPECT_GT(SysInfo::AmountOfTotalDiskSpace(tmp_path), 0) << tmp_path;
 }
 
 #if defined(OS_FUCHSIA)
