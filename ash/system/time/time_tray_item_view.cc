@@ -56,7 +56,7 @@ void TimeTrayItemView::OnSessionStateChanged(
 
 void TimeTrayItemView::OnSystemTrayButtonSizeChanged(
     UnifiedSystemTrayModel::SystemTrayButtonSize system_tray_size) {
-  time_view_->SetShowDateWhenHorizontal(
+  time_view_->SetShowDate(
       features::IsShowDateInTrayButtonEnabled() &&
       system_tray_size == UnifiedSystemTrayModel::SystemTrayButtonSize::kLarge);
 }

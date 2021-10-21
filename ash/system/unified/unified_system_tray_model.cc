@@ -212,9 +212,10 @@ UnifiedSystemTrayModel::GetSystemTrayButtonSize() const {
   if (!shelf_)
     return SystemTrayButtonSize::kMedium;
 
-  int display_size = shelf_->IsHorizontalAlignment()
-                         ? GetDisplay().size().width()
-                         : GetDisplay().size().height();
+  // Handles the cases: the shelf is placed horizontally or vertically, or the
+  // screen is rotated.
+  const int display_size =
+      std::max(GetDisplay().size().width(), GetDisplay().size().height());
 
   if (display_size < kMinWidthMediumSystemTray)
     return SystemTrayButtonSize::kSmall;

@@ -51,8 +51,8 @@ class TimeTrayItemViewTest : public AshTestBase,
     return !time_tray_item_view_->time_view_->horizontal_view_;
   }
 
-  bool ShouldShowDateInTimeView() {
-    return time_tray_item_view_->time_view_->show_date_when_horizontal_;
+  bool ShouldShowDateInTimeView() const {
+    return time_tray_item_view_->time_view_->show_date_;
   }
 
  protected:

@@ -449,10 +449,12 @@ void UnifiedSystemTray::OnTimeViewActionPerformed(const ui::Event& event) {
     if (item->GetVisible())
       ++visible_item_count;
   }
+
   // If there are >= 2 icons in front of the time view (total items >= 3 if
-  // includes time_view), show calendar bubble; otherwise show quick setting
+  // includes time_view) and the screen size is large enough to show date in
+  // the unified system tray, show calendar bubble; otherwise show quick setting
   // bubble.
-  if (visible_item_count < 3) {
+  if (visible_item_count < 3 || !time_view_->time_view()->show_date()) {
     TrayBackgroundView::PerformAction(event);
     return;
   }
