@@ -32,6 +32,12 @@ source_set("fuzzer_support") {
   testonly = true
 }
 
+fuzzer_test("color_parser_fuzzer") {
+  sources = [ "color_parser_fuzzer.cc" ]
+  deps = [ ":fuzzer_support" ]
+  seed_corpus = "//content/test/data/fuzzer_corpus/color_parser_data/"
+}
+
 fuzzer_test("origin_trial_token_fuzzer") {
   sources = [ "origin_trial_token_fuzzer.cc" ]
   deps = [ "//content/test:test_support" ]
