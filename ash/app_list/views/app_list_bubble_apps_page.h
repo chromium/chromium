@@ -5,6 +5,8 @@
 #ifndef ASH_APP_LIST_VIEWS_APP_LIST_BUBBLE_APPS_PAGE_H_
 #define ASH_APP_LIST_VIEWS_APP_LIST_BUBBLE_APPS_PAGE_H_
 
+#include <memory>
+
 #include "ash/app_list/views/apps_grid_view_focus_delegate.h"
 #include "ash/app_list/views/recent_apps_view.h"
 #include "ash/ash_export.h"
@@ -21,6 +23,7 @@ class AppListViewDelegate;
 class ContinueSectionView;
 class RecentAppsView;
 class ScrollableAppsGridView;
+class ScrollViewGradientHelper;
 
 // The default page for the app list bubble / clamshell launcher. Contains a
 // scroll view with:
@@ -46,6 +49,9 @@ class ASH_EXPORT AppListBubbleAppsPage : public views::View,
   // view to handle focus.
   void DisableFocusForShowingActiveFolder(bool disabled);
 
+  // views::View:
+  void Layout() override;
+
   // RecentAppsView::Delegate:
   void MoveFocusUpFromRecents() override;
   void MoveFocusDownFromRecents(int column) override;
@@ -67,6 +73,9 @@ class ASH_EXPORT AppListBubbleAppsPage : public views::View,
   RecentAppsView* recent_apps_ = nullptr;
   views::ScrollView* scroll_view_ = nullptr;
   ScrollableAppsGridView* scrollable_apps_grid_view_ = nullptr;
+
+  // Adds fade in/out gradients to `scroll_view_`.
+  std::unique_ptr<ScrollViewGradientHelper> gradient_helper_;
 };
 
 }  // namespace ash

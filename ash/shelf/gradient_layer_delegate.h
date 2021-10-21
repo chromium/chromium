@@ -18,6 +18,8 @@ namespace ash {
 
 // A layer delegate that paints optional fade-in/out gradient zones at the ends
 // of its layer.
+// TODO(jamescook): Move into //ash/controls. This class is used outside of the
+// shelf (e.g. app list, desks).
 class ASH_EXPORT GradientLayerDelegate : public ui::LayerDelegate {
  public:
   struct FadeZone {

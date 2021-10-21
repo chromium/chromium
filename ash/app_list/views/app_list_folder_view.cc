@@ -24,6 +24,7 @@
 #include "ash/app_list/views/top_icon_animation_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/controls/rounded_scroll_bar.h"
+#include "ash/controls/scroll_view_gradient_helper.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
@@ -627,6 +628,10 @@ void AppListFolderView::CreateScrollableAppsGrid() {
   // Arrow keys are used to select app icons.
   scroll_view_->SetAllowKeyboardScrolling(false);
 
+  // Set up fade in/fade out gradients at top/bottom of scroll view.
+  scroll_view_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
+  gradient_helper_ = std::make_unique<ScrollViewGradientHelper>(scroll_view_);
+
   // Set up scroll bars.
   scroll_view_->SetHorizontalScrollBarMode(
       views::ScrollView::ScrollBarMode::kDisabled);
@@ -778,6 +783,9 @@ void AppListFolderView::ScheduleShowHideAnimation(bool show,
 
 void AppListFolderView::Layout() {
   views::View::Layout();
+
+  if (gradient_helper_)
+    gradient_helper_->UpdateGradientZone();
 
   // Position page switcher independently of the layout manager, as its
   // position does not fit with vertical layout alignment (it's expected to

@@ -88,6 +88,9 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
     // ui::ET_SCROLL, ui::ET_SCROLL_FLING_START} both will trigger this function
     // on the events sequence end.
     virtual void OnContentsScrollEnded() {}
+
+   protected:
+    virtual ~Observer() = default;
   };
 
   ScrollView();

@@ -34,6 +34,7 @@ class AppsContainerView;
 class AppsGridView;
 class FolderHeaderView;
 class PageSwitcher;
+class ScrollViewGradientHelper;
 
 // Displays folder contents via an AppsGridView. App items can be dragged out
 // of the folder to the main apps grid.
@@ -236,11 +237,15 @@ class ASH_EXPORT AppListFolderView
   FolderHeaderView* folder_header_view_;  // Owned by views hierarchy.
   AppsGridView* items_grid_view_;         // Owned by views hierarchy.
 
-  // Only used for non-AppListBubble. Owned by views hierarchy.
+  // Only used for non-ProductivityLauncher. Owned by views hierarchy.
   PageSwitcher* page_switcher_ = nullptr;
 
-  // Only used for AppListBubble. Owned by views hierarchy.
+  // Only used for ProductivityLauncher. Owned by views hierarchy.
   views::ScrollView* scroll_view_ = nullptr;
+
+  // Adds fade in/out gradients to `scroll_view_`.
+  // Only used for ProductivityLauncher.
+  std::unique_ptr<ScrollViewGradientHelper> gradient_helper_;
 
   AppListModel* const model_;
   AppListViewDelegate* const view_delegate_;

@@ -1,0 +1,52 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef ASH_CONTROLS_SCROLL_VIEW_GRADIENT_HELPER_H_
+#define ASH_CONTROLS_SCROLL_VIEW_GRADIENT_HELPER_H_
+
+#include <memory>
+
+#include "ash/ash_export.h"
+#include "ui/views/controls/scroll_view.h"
+
+namespace ash {
+
+class GradientLayerDelegate;
+
+// Draws fade in / fade out gradients at the top and bottom of a ScrollView.
+// Uses layer masks to draw the gradient. Each gradient only shows if the view
+// can be scrolled in that direction. For efficiency, does not create a layer
+// mask if no gradient is showing (i.e. if the scroll view contents fit in the
+// viewport and hence the view cannot be scrolled).
+//
+// Views using this helper should call UpdateGradientZone() whenever the scroll
+// view bounds or contents bounds change (e.g. from Layout()).
+class ASH_EXPORT ScrollViewGradientHelper : public views::ScrollView::Observer {
+ public:
+  // `scroll_view` must have a layer.
+  explicit ScrollViewGradientHelper(views::ScrollView* scroll_view);
+  ~ScrollViewGradientHelper() override;
+
+  // Updates the gradients based on `scroll_view_` bounds and scroll position.
+  void UpdateGradientZone();
+
+  // views::ScrollView::Observer:
+  void OnContentsScrolled() override;
+  void OnContentsScrollEnded() override;
+
+  GradientLayerDelegate* gradient_layer_for_test() {
+    return gradient_layer_.get();
+  }
+
+ private:
+  // The scroll view being decorated.
+  views::ScrollView* const scroll_view_;
+
+  // Draws the fade in/out gradients via a `scroll_view_` mask layer.
+  std::unique_ptr<GradientLayerDelegate> gradient_layer_;
+};
+
+}  // namespace ash
+
+#endif  // ASH_CONTROLS_SCROLL_VIEW_GRADIENT_HELPER_H_
