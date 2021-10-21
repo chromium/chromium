@@ -24,8 +24,10 @@
 #endif
 
 @interface GoogleServicesSettingsViewController () <
-    PopoverLabelViewControllerDelegate> {
-}
+    PopoverLabelViewControllerDelegate>
+
+@property(nonatomic, strong)
+    EnterpriseInfoPopoverViewController* bubbleViewController;
 
 @end
 
@@ -36,6 +38,20 @@
   self.tableView.accessibilityIdentifier =
       kGoogleServicesSettingsViewIdentifier;
   self.title = l10n_util::GetNSString(IDS_IOS_GOOGLE_SERVICES_SETTINGS_TITLE);
+}
+
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+
+  // Close popover when font size changed for accessibility because it does not
+  // resize properly and the arrow is not aligned.
+  if (self.bubbleViewController) {
+    [self.bubbleViewController dismissViewControllerAnimated:YES
+                                                  completion:nil];
+    UIButton* buttonView = base::mac::ObjCCastStrict<UIButton>(
+        self.bubbleViewController.popoverPresentationController.sourceView);
+    buttonView.enabled = YES;
+  }
 }
 
 #pragma mark - Private
@@ -55,28 +71,30 @@
 // A default message is used when |message| is nil.
 - (void)showEntepriseInfoPopoverOnButton:(UIButton*)buttonView
                              withMessage:(NSString*)message {
-  EnterpriseInfoPopoverViewController* bubbleViewController;
   if (message) {
-    bubbleViewController =
+    self.bubbleViewController =
         [[EnterpriseInfoPopoverViewController alloc] initWithMessage:message
                                                       enterpriseName:nil];
   } else {
-    bubbleViewController = [[EnterpriseInfoPopoverViewController alloc]
+    self.bubbleViewController = [[EnterpriseInfoPopoverViewController alloc]
         initWithEnterpriseName:nil];
   }
 
-  bubbleViewController.delegate = self;
+  self.bubbleViewController.delegate = self;
   // Disable the button when showing the bubble.
   buttonView.enabled = NO;
 
   // Set the anchor and arrow direction of the bubble.
-  bubbleViewController.popoverPresentationController.sourceView = buttonView;
-  bubbleViewController.popoverPresentationController.sourceRect =
+  self.bubbleViewController.popoverPresentationController.sourceView =
+      buttonView;
+  self.bubbleViewController.popoverPresentationController.sourceRect =
       buttonView.bounds;
-  bubbleViewController.popoverPresentationController.permittedArrowDirections =
-      UIPopoverArrowDirectionAny;
+  self.bubbleViewController.popoverPresentationController
+      .permittedArrowDirections = UIPopoverArrowDirectionAny;
 
-  [self presentViewController:bubbleViewController animated:YES completion:nil];
+  [self presentViewController:self.bubbleViewController
+                     animated:YES
+                   completion:nil];
 }
 
 #pragma mark - UITableViewDataSource
