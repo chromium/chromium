@@ -66,8 +66,8 @@ void NotificationExample::CreateExampleView(View* container) {
   message_center::Notification notification(
       message_center::NOTIFICATION_TYPE_BASE_FORMAT, "id", u"Title", u"Message",
       CreateTestImage(gfx::Size(80, 80)), std::u16string(), GURL(),
-      message_center::NotifierId(message_center::NotifierType::APPLICATION,
-                                 "views_examples"),
+      message_center::NotifierId(
+          GURL(), l10n_util::GetStringUTF16(IDS_NOTIFICATION_TITLE_LABEL)),
       data, base::MakeRefCounted<message_center::NotificationDelegate>());
   notification.set_small_image(CreateTestImage(gfx::Size(16, 16)));
   notification.set_image(CreateTestImage(gfx::Size(320, 240)));

@@ -9,6 +9,7 @@
 
 #include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
@@ -18,6 +19,7 @@
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/examples/example_combobox_model.h"
+#include "ui/views/examples/grit/views_examples_resources.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/table_layout.h"
@@ -112,7 +114,8 @@ class TextExample::TextExampleView : public View {
   gfx::ElideBehavior elide_ = gfx::NO_ELIDE;
 };
 
-TextExample::TextExample() : ExampleBase("Text Styles") {}
+TextExample::TextExample()
+    : ExampleBase(l10n_util::GetStringUTF8(IDS_TEXT_STYLE_LABEL).c_str()) {}
 
 TextExample::~TextExample() = default;
 
@@ -123,19 +126,17 @@ Checkbox* TextExample::AddCheckbox(View* parent, const char* name) {
 }
 
 Combobox* TextExample::AddCombobox(View* parent,
-                                   const char* name,
+                                   std::u16string name,
                                    const char* const* strings,
                                    int count,
                                    void (TextExample::*combobox_callback)()) {
-  const std::u16string name_str = base::ASCIIToUTF16(name);
-  parent->AddChildView(std::make_unique<Label>(name_str));
+  parent->AddChildView(std::make_unique<Label>(name));
   auto* combobox = parent->AddChildView(std::make_unique<Combobox>(
       std::make_unique<ExampleComboboxModel>(strings, count)));
   combobox->SetProperty(kTableColAndRowSpanKey, gfx::Size(kNumColumns - 1, 1));
   combobox->SetCallback(
       base::BindRepeating(combobox_callback, base::Unretained(this)));
-  // TODO(pbos): Figure out a reasonable accessible name here.
-  combobox->SetAccessibleName(u"TODO: Add a reasonable Accessible Name");
+  combobox->SetAccessibleName(name);
   return combobox;
 }
 
@@ -159,12 +160,12 @@ void TextExample::CreateExampleView(View* container) {
       "Center",
       "Right",
   };
-  h_align_cb_ = AddCombobox(table_container, "H-Align", kHorizontalAligments,
+  h_align_cb_ = AddCombobox(table_container, u"H-Align", kHorizontalAligments,
                             base::size(kHorizontalAligments),
                             &TextExample::AlignComboboxChanged);
 
   constexpr const char* kElideBehaviors[] = {"Elide", "No Elide"};
-  eliding_cb_ = AddCombobox(table_container, "Eliding", kElideBehaviors,
+  eliding_cb_ = AddCombobox(table_container, u"Eliding", kElideBehaviors,
                             base::size(kElideBehaviors),
                             &TextExample::ElideComboboxChanged);
 
@@ -173,7 +174,7 @@ void TextExample::CreateExampleView(View* container) {
       "Show",
       "Hide",
   };
-  prefix_cb_ = AddCombobox(table_container, "Prefix", kPrefixOptions,
+  prefix_cb_ = AddCombobox(table_container, u"Prefix", kPrefixOptions,
                            base::size(kPrefixOptions),
                            &TextExample::PrefixComboboxChanged);
 
@@ -184,14 +185,14 @@ void TextExample::CreateExampleView(View* container) {
       "RTL Hebrew",
   };
   text_cb_ =
-      AddCombobox(table_container, "Example Text", kTextExamples,
+      AddCombobox(table_container, u"Example Text", kTextExamples,
                   base::size(kTextExamples), &TextExample::TextComboboxChanged);
 
   constexpr const char* kWeightLabels[] = {
       "Thin",     "Extra Light", "Light",      "Normal", "Medium",
       "Semibold", "Bold",        "Extra Bold", "Black",
   };
-  weight_cb_ = AddCombobox(table_container, "Font Weight", kWeightLabels,
+  weight_cb_ = AddCombobox(table_container, u"Font Weight", kWeightLabels,
                            base::size(kWeightLabels),
                            &TextExample::WeightComboboxChanged);
   weight_cb_->SelectValue(u"Normal");

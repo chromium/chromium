@@ -24,7 +24,6 @@
 #include "ui/message_center/views/notification_view.h"
 #include "ui/message_center/views/relative_time_formatter.h"
 #include "ui/strings/grit/ui_strings.h"
-#include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
@@ -239,10 +238,6 @@ NotificationHeaderView::NotificationHeaderView(PressedCallback callback,
 
   // Not focusable by default, only for accessibility.
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
-  // TODO(crbug.com/1218186): Remove this, this is in place temporarily to be
-  // able to submit accessibility checks, but this focusable View needs to
-  // add a name so that the screen reader knows what to announce.
-  SetProperty(views::kSkipAccessibilityPaintChecks, true);
 }
 
 NotificationHeaderView::~NotificationHeaderView() = default;

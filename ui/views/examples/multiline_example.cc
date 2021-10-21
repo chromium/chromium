@@ -181,13 +181,12 @@ void MultilineExample::CreateExampleView(View* container) {
   elision_checkbox_->SetRequestFocusOnPress(false);
   container->AddChildView(std::make_unique<View>());
 
-  container->AddChildView(
+  auto* label = container->AddChildView(
       std::make_unique<Label>(GetStringUTF16(IDS_MULTILINE_SAMPLE_TEXT_LABEL)));
   textfield_ = container->AddChildView(std::make_unique<Textfield>());
   textfield_->set_controller(this);
   textfield_->SetText(kTestString);
-  // TODO(pbos): Figure out a reasonable accessible name here.
-  textfield_->SetAccessibleName(u"TODO: Add a reasonable Accessible Name");
+  textfield_->SetAssociatedLabel(label);
 }
 
 void MultilineExample::ContentsChanged(Textfield* sender,

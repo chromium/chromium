@@ -37,7 +37,7 @@ class VIEWS_EXAMPLES_EXPORT TextExample : public ExampleBase {
   // Creates and adds a combobox to the layout. Sets |this|' instance of
   // |combobox_callback| as the callback for the created combobox.
   Combobox* AddCombobox(View* parent,
-                        const char* name,
+                        std::u16string name,
                         const char* const* strings,
                         int count,
                         void (TextExample::*combobox_callback)());

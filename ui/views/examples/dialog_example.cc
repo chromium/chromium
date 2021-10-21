@@ -10,6 +10,7 @@
 #include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/label_button.h"
@@ -18,14 +19,13 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/examples/examples_window.h"
+#include "ui/views/examples/grit/views_examples_resources.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/layout/table_layout.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
-
-using base::ASCIIToUTF16;
 
 namespace views {
 namespace examples {
@@ -144,40 +144,53 @@ void DialogExample::CreateExampleView(View* container) {
         .AddRows(1, TableLayout::kFixedSize);
   }
 
-  StartTextfieldRow(table, &title_, "Dialog Title", "Title");
-  table->AddChildView(std::make_unique<View>());
+  StartTextfieldRow(table, &title_,
+                    l10n_util::GetStringUTF16(IDS_DIALOG_TITLE_LABEL),
+                    l10n_util::GetStringUTF16(IDS_DIALOG_TITLE_TEXT));
+  StartTextfieldRow(table, &body_,
+                    l10n_util::GetStringUTF16(IDS_DIALOG_BODY_LABEL),
+                    l10n_util::GetStringUTF16(IDS_DIALOG_BODY_LABEL));
 
-  StartTextfieldRow(table, &body_, "Dialog Body Text", "Body Text");
-  table->AddChildView(std::make_unique<View>());
+  Label* row_label = nullptr;
+  StartTextfieldRow(table, &ok_button_label_,
+                    l10n_util::GetStringUTF16(IDS_DIALOG_OK_BUTTON_LABEL),
+                    l10n_util::GetStringUTF16(IDS_DIALOG_OK_BUTTON_TEXT),
+                    &row_label);
+  AddCheckbox(table, &has_ok_button_, row_label);
 
-  StartTextfieldRow(table, &ok_button_label_, "OK Button Label", "Done");
-  AddCheckbox(table, &has_ok_button_);
+  StartTextfieldRow(table, &cancel_button_label_,
+                    l10n_util::GetStringUTF16(IDS_DIALOG_CANCEL_BUTTON_LABEL),
+                    l10n_util::GetStringUTF16(IDS_DIALOG_CANCEL_BUTTON_TEXT),
+                    &row_label);
+  AddCheckbox(table, &has_cancel_button_, row_label);
 
-  StartTextfieldRow(table, &cancel_button_label_, "Cancel Button Label",
-                    "Cancel");
-  AddCheckbox(table, &has_cancel_button_);
+  StartTextfieldRow(table, &extra_button_label_,
+                    l10n_util::GetStringUTF16(IDS_DIALOG_EXTRA_BUTTON_LABEL),
+                    l10n_util::GetStringUTF16(IDS_DIALOG_EXTRA_BUTTON_TEXT),
+                    &row_label);
+  AddCheckbox(table, &has_extra_button_, row_label);
 
-  StartTextfieldRow(table, &extra_button_label_, "Extra Button Label", "Edit");
-  AddCheckbox(table, &has_extra_button_);
-
-  table->AddChildView(std::make_unique<Label>(u"Modal Type"));
+  std::u16string modal_label =
+      l10n_util::GetStringUTF16(IDS_DIALOG_MODAL_TYPE_LABEL);
+  table->AddChildView(std::make_unique<Label>(modal_label));
   mode_ = table->AddChildView(std::make_unique<Combobox>(&mode_model_));
   mode_->SetCallback(base::BindRepeating(&DialogExample::OnPerformAction,
                                          base::Unretained(this)));
-  // TODO(pbos): Figure out a reasonable accessible name here.
-  mode_->SetAccessibleName(u"TODO: Add a reasonable Accessible Name");
   mode_->SetSelectedIndex(ui::MODAL_TYPE_CHILD);
+  mode_->SetAccessibleName(modal_label);
   table->AddChildView(std::make_unique<View>());
 
-  table->AddChildView(std::make_unique<Label>(u"Bubble"));
-  AddCheckbox(table, &bubble_);
-  AddCheckbox(table, &persistent_bubble_);
-  persistent_bubble_->SetText(u"Persistent");
+  Label* bubble_label = table->AddChildView(std::make_unique<Label>(
+      l10n_util::GetStringUTF16(IDS_DIALOG_BUBBLE_LABEL)));
+  AddCheckbox(table, &bubble_, bubble_label);
+  AddCheckbox(table, &persistent_bubble_, nullptr);
+  persistent_bubble_->SetText(
+      l10n_util::GetStringUTF16(IDS_DIALOG_PERSISTENT_LABEL));
 
   show_ = container->AddChildView(std::make_unique<views::MdTextButton>(
       base::BindRepeating(&DialogExample::ShowButtonPressed,
                           base::Unretained(this)),
-      u"Show"));
+      l10n_util::GetStringUTF16(IDS_DIALOG_SHOW_BUTTON_LABEL)));
   show_->SetProperty(kCrossAxisAlignmentKey, LayoutAlignment::kCenter);
   show_->SetProperty(
       kMarginsKey, gfx::Insets(provider->GetDistanceMetric(
@@ -187,25 +200,27 @@ void DialogExample::CreateExampleView(View* container) {
 
 void DialogExample::StartTextfieldRow(View* parent,
                                       Textfield** member,
-                                      const char* label,
-                                      const char* value) {
-  parent->AddChildView(std::make_unique<Label>(base::ASCIIToUTF16(label)));
+                                      std::u16string label,
+                                      std::u16string value,
+                                      Label** created_label) {
+  Label* row_label = parent->AddChildView(std::make_unique<Label>(label));
+  if (created_label)
+    *created_label = row_label;
   auto textfield = std::make_unique<Textfield>();
   textfield->set_controller(this);
-  textfield->SetText(base::ASCIIToUTF16(value));
-  // TODO(pbos): Figure out a reasonable accessible name here.
-  textfield->SetAccessibleName(u"TODO: Add a reasonable Accessible Name");
+  textfield->SetText(value);
+  textfield->SetAssociatedLabel(row_label);
   *member = parent->AddChildView(std::move(textfield));
 }
 
-void DialogExample::AddCheckbox(View* parent, Checkbox** member) {
+void DialogExample::AddCheckbox(View* parent, Checkbox** member, Label* label) {
   auto callback = member == &bubble_ ? &DialogExample::BubbleCheckboxPressed
                                      : &DialogExample::OtherCheckboxPressed;
   auto checkbox = std::make_unique<Checkbox>(
       std::u16string(), base::BindRepeating(callback, base::Unretained(this)));
   checkbox->SetChecked(true);
-  // TODO(pbos): Figure out a reasonable accessible name here.
-  checkbox->SetAccessibleName(u"TODO: Add a reasonable Accessible Name");
+  if (label)
+    checkbox->SetAssociatedLabel(label);
   *member = parent->AddChildView(std::move(checkbox));
 }
 

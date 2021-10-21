@@ -28,26 +28,22 @@ void ToggleButtonExample::CreateExampleView(View* container) {
   auto layout = std::make_unique<BoxLayout>(BoxLayout::Orientation::kVertical);
   layout->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kCenter);
   container->SetLayoutManager(std::move(layout));
-
-  auto toggle_button1 = std::make_unique<ToggleButton>(base::BindRepeating(
-      [](ToggleButtonExample* example) {
-        PrintStatus("Pressed 1! count: %d", ++example->count_1_);
-      },
-      base::Unretained(this)));
-  // TODO(pbos): Figure out a reasonable accessible name here.
-  toggle_button1->SetAccessibleName(u"TODO: Add a reasonable Accessible Name");
-
-  auto toggle_button2 = std::make_unique<ToggleButton>(base::BindRepeating(
-      [](ToggleButtonExample* example) {
-        PrintStatus("Pressed 2! count: %d", ++example->count_2_);
-      },
-      base::Unretained(this)));
-  toggle_button2->SetIsOn(true);
-  // TODO(pbos): Figure out a reasonable accessible name here.
-  toggle_button2->SetAccessibleName(u"TODO: Add a reasonable Accessible Name");
-
-  container->AddChildView(std::move(toggle_button1));
-  container->AddChildView(std::move(toggle_button2));
+  container
+      ->AddChildView(std::make_unique<ToggleButton>(base::BindRepeating(
+          [](ToggleButtonExample* example) {
+            PrintStatus("Pressed 1! count: %d", ++example->count_1_);
+          },
+          base::Unretained(this))))
+      ->SetAccessibleName(l10n_util::GetStringUTF16(IDS_TOGGLE_BUTTON_NAME_1));
+  auto* button = container->AddChildView(
+      std::make_unique<ToggleButton>(base::BindRepeating(
+          [](ToggleButtonExample* example) {
+            PrintStatus("Pressed 2! count: %d", ++example->count_2_);
+          },
+          base::Unretained(this))));
+  button->SetAccessibleName(
+      l10n_util::GetStringUTF16(IDS_TOGGLE_BUTTON_NAME_2));
+  button->SetIsOn(true);
 }
 
 }  // namespace examples

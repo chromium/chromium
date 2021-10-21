@@ -14,6 +14,11 @@
         Abort Animation
       </message>
 
+      <!-- button example -->
+      <message translateable="false" name="IDS_BUTTON_IMAGE_BUTTON_AX_LABEL">
+        Close Button
+      </message>
+
       <!-- colored dialog example -->
       <message translateable="false" name="IDS_COLORED_DIALOG_CHOOSER_CHECKBOX">
         Use Dark Theme
@@ -42,9 +47,90 @@
         Examples
       </message>
 
+      <!-- combo box example -->
+      <message translateable="false" name="IDS_COMBOBOX_SELECT_LABEL">
+        Combo Box
+      </message>
+      <message translateable="false" name="IDS_COMBOBOX_NAME_1">
+        Combo Box 1
+      </message>
+      <message translateable="false" name="IDS_COMBOBOX_NAME_2">
+        Combo Box 2
+      </message>
+
+      <!-- dialog example -->
+      <message translateable="false" name="IDS_DIALOG_SELECT_LABEL">
+        Dialog
+      </message>
+      <message translateable="false" name="IDS_DIALOG_TITLE_LABEL">
+        Dialog Title
+      </message>
+      <message translateable="false" name="IDS_DIALOG_BODY_LABEL">
+        Dialog Body Text
+      </message>
+      <message translateable="false" name="IDS_DIALOG_TITLE_TEXT">
+        Title
+      </message>
+      <message translateable="false" name="IDS_DIALOG_BODY_TEXT">
+        Body Text
+      </message>
+      <message translateable="false" name="IDS_DIALOG_OK_BUTTON_LABEL">
+        OK Button Label
+      </message>
+      <message translateable="false" name="IDS_DIALOG_OK_BUTTON_TEXT">
+        Done
+      </message>
+      <message translateable="false" name="IDS_DIALOG_CANCEL_BUTTON_LABEL">
+        Cancel Button Label
+      </message>
+      <message translateable="false" name="IDS_DIALOG_CANCEL_BUTTON_TEXT">
+        Cancel
+      </message>
+      <message translateable="false" name="IDS_DIALOG_EXTRA_BUTTON_LABEL">
+        Extra Button Label
+      </message>
+      <message translateable="false" name="IDS_DIALOG_EXTRA_BUTTON_TEXT">
+        Edit
+      </message>
+      <message translateable="false" name="IDS_DIALOG_MODAL_TYPE_LABEL">
+        Modal Type
+      </message>
+      <message translateable="false" name="IDS_DIALOG_BUBBLE_LABEL">
+        Bubble
+      </message>
+      <message translateable="false" name="IDS_DIALOG_PERSISTENT_LABEL">
+        Persistent
+      </message>
+      <message translateable="false" name="IDS_DIALOG_SHOW_BUTTON_LABEL">
+        Show
+      </message>
+
+      <!-- label example -->
+      <message translateable="false" name="IDS_LABEL_SELECT_LABEL">
+        Label
+      </message>
+
       <!-- layout base example -->
       <message translateable="false" name="IDS_LAYOUT_BASE_ADD_LABEL">
         Add
+      </message>
+      <message translateable="false" name="IDS_LAYOUT_BASE_PREFERRED_WIDTH_LABEL">
+        Preferred Width
+      </message>
+      <message translateable="false" name="IDS_LAYOUT_BASE_PREFERRED_HEIGHT_LABEL">
+        Preferred Height
+      </message>
+      <message translateable="false" name="IDS_LAYOUT_BASE_TOP_LABEL">
+        Top
+      </message>
+      <message translateable="false" name="IDS_LAYOUT_BASE_LEFT_LABEL">
+        Left
+      </message>
+      <message translateable="false" name="IDS_LAYOUT_BASE_RIGHT_LABEL">
+        Right
+      </message>
+      <message translateable="false" name="IDS_LAYOUT_BASE_BOTTOM_LABEL">
+        Bottom
       </message>
 
       <!-- link example -->
@@ -58,7 +144,7 @@
         Link clicked
       </message>
 
-      <!-- Login example -->
+      <!-- login example -->
       <message translateable="false" name="IDS_LOGIN_SELECT_LABEL">
         Login Bubble Dialog
       </message>
@@ -171,6 +257,9 @@
       <message translateable="false" name="IDS_NOTIFICATION_SELECT_LABEL">
         Notification
       </message>
+      <message translateable="false" name="IDS_NOTIFICATION_TITLE_LABEL">
+        Views Examples
+      </message>
 
       <!-- progress example -->
       <message translateable="false" name="IDS_PROGRESS_SELECT_LABEL">
@@ -224,6 +313,12 @@
       <message translateable="false" name="IDS_SLIDER_SELECT_LABEL">
         Slider
       </message>
+      <message translateable="false" name="IDS_SLIDER_DEFAULT_SLIDER_LABEL">
+        Default Slider
+      </message>
+      <message translateable="false" name="IDS_SLIDER_MINIMAL_SLIDER_LABEL">
+        Minimal Slider
+      </message>
 
       <!-- tabbed pane example -->
       <message translateable="false" name="IDS_TABBED_PANE_SELECT_LABEL">
@@ -258,6 +353,19 @@
       </message>
       <message translateable="false" name="IDS_TABBED_PANE_ADDED_1_LABEL">
         Added at 1
+      </message>
+
+      <!-- textarea example -->
+      <message translateable="false" name="IDS_TEXTAREA_SELECT_LABEL">
+         Textarea
+      </message>
+      <message translateable="false" name="IDS_TEXTAREA_NAME">
+         Textarea
+      </message>
+
+      <!-- text style example -->
+      <message translateable="false" name="IDS_TEXT_STYLE_LABEL">
+         Text Styles
       </message>
 
       <!-- textfield example -->
@@ -324,6 +432,12 @@
       <!-- toggle button example -->
       <message translateable="false" name="IDS_TOGGLE_BUTTON_SELECT_LABEL">
         Toggle Button
+      </message>
+      <message translateable="false" name="IDS_TOGGLE_BUTTON_NAME_1">
+        Toggle Button 1
+      </message>
+      <message translateable="false" name="IDS_TOGGLE_BUTTON_NAME_2">
+        Toggle Button 2
       </message>
 
       <!-- tree view example -->

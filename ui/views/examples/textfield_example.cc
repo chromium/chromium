@@ -51,8 +51,7 @@ void TextfieldExample::CreateExampleView(View* container) {
       std::make_unique<Label>(GetStringUTF16(IDS_TEXTFIELD_NAME_LABEL)));
   name_ = container->AddChildView(std::make_unique<Textfield>());
   name_->set_controller(this);
-  // TODO(pbos): Figure out a reasonable accessible name here.
-  name_->SetAccessibleName(u"TODO: Add a reasonable Accessible Name");
+  name_->SetAccessibleName(l10n_util::GetStringUTF16(IDS_TEXTFIELD_NAME_LABEL));
 
   container->AddChildView(
       std::make_unique<Label>(GetStringUTF16(IDS_TEXTFIELD_PASSWORD_LABEL)));
@@ -61,38 +60,37 @@ void TextfieldExample::CreateExampleView(View* container) {
   password_->SetPlaceholderText(
       GetStringUTF16(IDS_TEXTFIELD_PASSWORD_PLACEHOLDER));
   password_->set_controller(this);
-  // TODO(pbos): Figure out a reasonable accessible name here.
-  password_->SetAccessibleName(u"TODO: Add a reasonable Accessible Name");
+  password_->SetAccessibleName(
+      l10n_util::GetStringUTF16(IDS_TEXTFIELD_PASSWORD_LABEL));
 
   container->AddChildView(
       std::make_unique<Label>(GetStringUTF16(IDS_TEXTFIELD_DISABLED_LABEL)));
   disabled_ = container->AddChildView(std::make_unique<Textfield>());
   disabled_->SetEnabled(false);
   disabled_->SetText(GetStringUTF16(IDS_TEXTFIELD_DISABLED_PLACEHOLDER));
-  // TODO(pbos): Figure out a reasonable accessible name here.
-  disabled_->SetAccessibleName(u"TODO: Add a reasonable Accessible Name");
+  disabled_->SetAccessibleName(
+      l10n_util::GetStringUTF16(IDS_TEXTFIELD_DISABLED_LABEL));
 
   container->AddChildView(
       std::make_unique<Label>(GetStringUTF16(IDS_TEXTFIELD_READ_ONLY_LABEL)));
   read_only_ = container->AddChildView(std::make_unique<Textfield>());
   read_only_->SetReadOnly(true);
   read_only_->SetText(GetStringUTF16(IDS_TEXTFIELD_READ_ONLY_PLACEHOLDER));
-  // TODO(pbos): Figure out a reasonable accessible name here.
-  read_only_->SetAccessibleName(u"TODO: Add a reasonable Accessible Name");
+  read_only_->SetAccessibleName(
+      l10n_util::GetStringUTF16(IDS_TEXTFIELD_READ_ONLY_LABEL));
 
   container->AddChildView(
       std::make_unique<Label>(GetStringUTF16(IDS_TEXTFIELD_INVALID_LABEL)));
   invalid_ = container->AddChildView(std::make_unique<Textfield>());
   invalid_->SetInvalid(true);
-  // TODO(pbos): Figure out a reasonable accessible name here.
-  invalid_->SetAccessibleName(u"TODO: Add a reasonable Accessible Name");
+  invalid_->SetAccessibleName(
+      l10n_util::GetStringUTF16(IDS_TEXTFIELD_INVALID_LABEL));
 
   container->AddChildView(
       std::make_unique<Label>(GetStringUTF16(IDS_TEXTFIELD_RTL_LABEL)));
   rtl_ = container->AddChildView(std::make_unique<Textfield>());
   rtl_->ChangeTextDirectionAndLayoutAlignment(base::i18n::RIGHT_TO_LEFT);
-  // TODO(pbos): Figure out a reasonable accessible name here.
-  rtl_->SetAccessibleName(u"TODO: Add a reasonable Accessible Name");
+  rtl_->SetAccessibleName(l10n_util::GetStringUTF16(IDS_TEXTFIELD_RTL_LABEL));
 
   show_password_ =
       container->AddChildView(std::make_unique<LabelButton>(

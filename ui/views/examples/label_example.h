@@ -45,7 +45,7 @@ class VIEWS_EXAMPLES_EXPORT LabelExample : public ExampleBase,
 
   // Creates and adds a combobox to the layout.
   Combobox* AddCombobox(View* parent,
-                        const char* name,
+                        std::u16string name,
                         const char** strings,
                         int count,
                         void (LabelExample::*function)());

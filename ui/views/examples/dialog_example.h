@@ -44,12 +44,12 @@ class VIEWS_EXAMPLES_EXPORT DialogExample : public ExampleBase,
   class Dialog;
 
   // Helper methods to setup the configuration Views.
-  void StartRowWithLabel(View* parent, const char* label);
   void StartTextfieldRow(View* parent,
                          Textfield** member,
-                         const char* label,
-                         const char* value);
-  void AddCheckbox(View* parent, Checkbox** member);
+                         std::u16string label,
+                         std::u16string value,
+                         Label** created_label = nullptr);
+  void AddCheckbox(View* parent, Checkbox** member, Label* label);
 
   // Checkbox callback
   void OnPerformAction();

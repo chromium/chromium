@@ -10,6 +10,7 @@
 #include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/background.h"
@@ -19,6 +20,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/examples/example_combobox_model.h"
+#include "ui/views/examples/grit/views_examples_resources.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/table_layout.h"
@@ -59,7 +61,8 @@ const char* ExamplePreferredSizeLabel::kElideBehaviors[] = {
 
 }  // namespace
 
-LabelExample::LabelExample() : ExampleBase("Label") {}
+LabelExample::LabelExample()
+    : ExampleBase(l10n_util::GetStringUTF8(IDS_LABEL_SELECT_LABEL).c_str()) {}
 
 LabelExample::~LabelExample() = default;
 
@@ -163,21 +166,21 @@ void LabelExample::AddCustomLabel(View* container) {
                  TableLayout::ColumnSize::kUsePreferred, 0, 0)
       .AddRows(3, TableLayout::kFixedSize);
 
-  table->AddChildView(std::make_unique<Label>(u"Content: "));
+  Label* content_label =
+      table->AddChildView(std::make_unique<Label>(u"Content: "));
   textfield_ = table->AddChildView(std::make_unique<Textfield>());
   textfield_->SetText(
       u"Use the provided controls to configure the content and presentation of "
       u"this custom label.");
   textfield_->SetEditableSelectionRange(gfx::Range());
   textfield_->set_controller(this);
-  // TODO(pbos): Figure out a reasonable accessible name here.
-  textfield_->SetAccessibleName(u"TODO: Add a reasonable Accessible Name");
+  textfield_->SetAssociatedLabel(content_label);
 
   alignment_ =
-      AddCombobox(table, "Alignment: ", kAlignments, base::size(kAlignments),
+      AddCombobox(table, u"Alignment: ", kAlignments, base::size(kAlignments),
                   &LabelExample::AlignmentChanged);
   elide_behavior_ = AddCombobox(
-      table, "Elide Behavior: ", ExamplePreferredSizeLabel::kElideBehaviors,
+      table, u"Elide Behavior: ", ExamplePreferredSizeLabel::kElideBehaviors,
       base::size(ExamplePreferredSizeLabel::kElideBehaviors),
       &LabelExample::ElidingChanged);
 
@@ -211,18 +214,17 @@ void LabelExample::AddCustomLabel(View* container) {
 }
 
 Combobox* LabelExample::AddCombobox(View* parent,
-                                    const char* name,
+                                    std::u16string name,
                                     const char** strings,
                                     int count,
                                     void (LabelExample::*function)()) {
-  parent->AddChildView(std::make_unique<Label>(base::ASCIIToUTF16(name)));
+  parent->AddChildView(std::make_unique<Label>(name));
   auto* combobox = parent->AddChildView(std::make_unique<Combobox>(
       std::make_unique<ExampleComboboxModel>(strings, count)));
   combobox->SetSelectedIndex(0);
+  combobox->SetAccessibleName(name);
   combobox->SetCallback(base::BindRepeating(function, base::Unretained(this)));
-  // TODO(pbos): Figure out a reasonable accessible name here.
-  combobox->SetAccessibleName(u"TODO: Add a reasonable Accessible Name");
-  return combobox;
+  return parent->AddChildView(std::move(combobox));
 }
 
 void LabelExample::AlignmentChanged() {
