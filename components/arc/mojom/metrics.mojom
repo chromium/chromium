@@ -1,7 +1,7 @@
 // Copyright 2016 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-// Next MinVersion: 17
+// Next MinVersion: 18
 
 module arc.mojom;
 
@@ -195,6 +195,9 @@ enum ArcNetworkEvent {
   kWifiManagerForget = 30,
   kWifiManagerRegisterScanListener = 31,
   kWifiManagerAddNetworkSuggestions = 32,
+  [MinVersion=17] kWifiManagerEnableTdls = 33,
+  [MinVersion=17] kWifiManagerStartLocalHotspot = 34,
+  [MinVersion=17] kWifiManagerAddPasspointConfiguration = 35,
 };
 
 // These enum values are persisted to metrics thus must be treated as
