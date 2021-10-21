@@ -1654,6 +1654,8 @@ crbug.com/1035708 wpt_internal/css/css-pseudo/grammar-error-color-dynamic-001.ht
 crbug.com/1035708 wpt_internal/css/css-pseudo/grammar-error-color-dynamic-002.html [ Failure ]
 crbug.com/1035708 wpt_internal/css/css-pseudo/grammar-error-color-dynamic-003.html [ Failure ]
 crbug.com/1035708 wpt_internal/css/css-pseudo/grammar-error-color-dynamic-004.html [ Failure ]
+crbug.com/1147859 external/wpt/css/css-pseudo/target-text-004.html [ Failure ]
+crbug.com/1179938 external/wpt/css/css-pseudo/target-text-006.html [ Failure ]
 crbug.com/1035708 external/wpt/css/css-pseudo/target-text-dynamic-001.html [ Failure ]
 crbug.com/1035708 external/wpt/css/css-pseudo/target-text-dynamic-002.html [ Failure ]
 crbug.com/1035708 external/wpt/css/css-pseudo/target-text-dynamic-003.html [ Failure ]
