@@ -16,6 +16,8 @@ extern const base::FeatureParam<bool> kDeleteAllMerchantsOnClearBrowsingHistory;
 extern const base::Feature kShoppingList;
 extern const base::Feature kRetailCoupons;
 extern const base::Feature kCommerceDeveloper;
+// Parameter for enabling feature variation of coupons with code.
+extern const char kRetailCouponsWithCodeParam[];
 
 // Interval that controls the frequency of showing coupons in infobar bubbles.
 constexpr base::FeatureParam<base::TimeDelta> kCouponDisplayInterval{
@@ -23,6 +25,8 @@ constexpr base::FeatureParam<base::TimeDelta> kCouponDisplayInterval{
 
 // Check if a URL belongs to a partner merchant of coupon discount.
 bool IsCouponDiscountPartnerMerchant(const GURL& url);
+// Check if the feature variation of coupons with code is enabled.
+bool IsCouponWithCodeEnabled();
 }  // namespace commerce
 
 #endif  // CHROME_BROWSER_COMMERCE_COMMERCE_FEATURE_LIST_H_

@@ -46,11 +46,18 @@ const base::Feature kRetailCoupons{"RetailCoupons",
 const base::Feature kCommerceDeveloper{"CommerceDeveloper",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
+const char kRetailCouponsWithCodeParam[] = "RetailCouponsWithCodeParam";
+
 bool IsCouponDiscountPartnerMerchant(const GURL& url) {
   const std::string& url_string = url.spec();
   return RE2::PartialMatch(
       re2::StringPiece(url_string.data(), url_string.size()),
       GetPartnerMerchantPattern());
+}
+
+bool IsCouponWithCodeEnabled() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kRetailCoupons, kRetailCouponsWithCodeParam, false);
 }
 
 }  // namespace commerce

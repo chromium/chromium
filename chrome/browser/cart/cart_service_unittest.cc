@@ -16,6 +16,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/search/ntp_features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -1149,18 +1150,14 @@ class CartServiceFakeDataTest : public CartServiceTest {
 
 TEST_F(CartServiceFakeDataTest, TestFakeData) {
   base::RunLoop run_loop[2];
-  TestingProfile fake_profile;
-  CartService* fake_service = CartServiceFactory::GetForProfile(&fake_profile);
-  CartDB* fake_db = fake_service->GetDB();
-
-  fake_service->LoadCartsWithFakeData(
+  service_->LoadCartsWithFakeData(
       base::BindOnce(&CartServiceTest::GetEvaluationFakeDataDB,
                      base::Unretained(this), run_loop[0].QuitClosure()));
   run_loop[0].Run();
 
-  fake_service->Shutdown();
+  service_->Shutdown();
 
-  fake_db->LoadAllCarts(
+  service_->GetDB()->LoadAllCarts(
       base::BindOnce(&CartServiceTest::GetEvaluationURL, base::Unretained(this),
                      run_loop[1].QuitClosure(), kEmptyExpected));
   run_loop[1].Run();
@@ -1793,6 +1790,7 @@ class CartServiceCouponTest : public CartServiceTest {
    public:
     MOCK_METHOD0(DeleteAllFreeListingCoupons, void(void));
     MOCK_METHOD1(DeleteFreeListingCouponsForUrl, void(const GURL& url));
+    MOCK_METHOD1(MaybeFeatureStatusChanged, void(bool enabled));
   };
 
   void SetCouponServiceForTesting(CouponService* coupon_service) {
@@ -1883,4 +1881,28 @@ TEST_F(CartServiceCouponTest, TestUpdateCartDeleteCoupon_ReplaceProduct) {
   *added_product = BuildProductProto("id_qux");
   service_->AddCart(kMockMerchantA, absl::nullopt, proto);
   task_environment_.RunUntilIdle();
+}
+
+TEST_F(CartServiceCouponTest, TestRBDFeatureStatusUpdate) {
+  profile_->GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, true);
+
+  EXPECT_CALL(coupon_service_, MaybeFeatureStatusChanged(false)).Times(1);
+  profile_->GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, false);
+
+  EXPECT_CALL(coupon_service_, MaybeFeatureStatusChanged(true)).Times(1);
+  profile_->GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, true);
+}
+
+TEST_F(CartServiceCouponTest, TestCartFeatureStatusUpdate) {
+  profile_->GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, true);
+
+  EXPECT_CALL(coupon_service_, MaybeFeatureStatusChanged(false)).Times(2);
+  ListPrefUpdate(profile_->GetPrefs(), prefs::kNtpDisabledModules)
+      ->Append(base::Value("chrome_cart"));
+  ListPrefUpdate(profile_->GetPrefs(), prefs::kNtpDisabledModules)
+      ->Append(base::Value("something_unrelated"));
+
+  EXPECT_CALL(coupon_service_, MaybeFeatureStatusChanged(true)).Times(1);
+  ListPrefUpdate(profile_->GetPrefs(), prefs::kNtpDisabledModules)
+      ->EraseListValue(base::Value("chrome_cart"));
 }
