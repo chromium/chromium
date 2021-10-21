@@ -1713,8 +1713,17 @@ class GoogleSheetsDesktopStory(system_health_story.SystemHealthStory):
   '''
 
   def __init__(self, story_set, take_memory_measurement):
-    super(GoogleSheetsDesktopStory, self).__init__(story_set,
-        take_memory_measurement)
+    # TODO(crbug.com/1256844): Disable the ForceSynchronousHTMLParsing and
+    # LoaderDataPipeTuning experiments, because they cause failures and
+    # flakiness for this story as-recorded in 2019.
+    extra_browser_args = [
+        '--disable-features=ForceSynchronousHTMLParsing,LoaderDataPipeTuning'
+    ]
+
+    super(GoogleSheetsDesktopStory,
+          self).__init__(story_set,
+                         take_memory_measurement,
+                         extra_browser_args=extra_browser_args)
     self.script_to_evaluate_on_commit = js_template.Render(
         '''{{@events_reported_by_page}}
         {{@performance_mark}}
