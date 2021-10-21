@@ -90,7 +90,7 @@ TEST_F(TouchEventTest,
       Messages(),
       ElementsAre("Unable to preventDefault inside passive event listener due "
                   "to target being treated as passive. See "
-                  "https://www.chromestatus.com/features/5093566007214080"));
+                  "https://www.chromestatus.com/feature/5093566007214080"));
   EXPECT_THAT(MessageSources(),
               ElementsAre(mojom::ConsoleMessageSource::kIntervention));
 }

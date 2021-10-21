@@ -135,7 +135,7 @@ void TouchEvent::preventDefault() {
         message =
             "Unable to preventDefault inside passive event listener due to "
             "target being treated as passive. See "
-            "https://www.chromestatus.com/features/5093566007214080";
+            "https://www.chromestatus.com/feature/5093566007214080";
       }
       break;
     default:
