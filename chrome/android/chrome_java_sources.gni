@@ -722,7 +722,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/init/AsyncInitTaskRunner.java",
   "java/src/org/chromium/chrome/browser/init/AsyncInitializationActivity.java",
   "java/src/org/chromium/chrome/browser/init/BrowserParts.java",
-  "java/src/org/chromium/chrome/browser/init/ChainedTasks.java",
   "java/src/org/chromium/chrome/browser/init/ChromeActivityNativeDelegate.java",
   "java/src/org/chromium/chrome/browser/init/ChromeBrowserInitializer.java",
   "java/src/org/chromium/chrome/browser/init/ChromeLifetimeController.java",

@@ -24,6 +24,7 @@ import org.chromium.base.library_loader.LibraryPrefetcher;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.memory.MemoryPressureUma;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.base.task.ChainedTasks;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.AppHooks;

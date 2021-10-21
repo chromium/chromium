@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.init;
+package org.chromium.base.task;
 
 import android.util.Pair;
 
 import org.chromium.base.TraceEvent;
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
 
 import java.util.LinkedList;
 

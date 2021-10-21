@@ -4028,6 +4028,7 @@ if (is_android) {
       "android/java/src/org/chromium/base/supplier/UnownedUserDataSupplier.java",
       "android/java/src/org/chromium/base/task/AsyncTask.java",
       "android/java/src/org/chromium/base/task/BackgroundOnlyAsyncTask.java",
+      "android/java/src/org/chromium/base/task/ChainedTasks.java",
       "android/java/src/org/chromium/base/task/ChoreographerTaskRunner.java",
       "android/java/src/org/chromium/base/task/ChromeThreadPoolExecutor.java",
       "android/java/src/org/chromium/base/task/DefaultTaskExecutor.java",
@@ -4082,12 +4083,10 @@ if (is_android) {
       "android/javatests/src/org/chromium/base/CommandLineTest.java",
       "android/javatests/src/org/chromium/base/EarlyTraceEventTest.java",
       "android/javatests/src/org/chromium/base/IntentUtilsTest.java",
-      "android/javatests/src/org/chromium/base/UserDataHostTest.java",
-
-      # TODO(nona): move to Junit once that is built for Android N.
       "android/javatests/src/org/chromium/base/LocaleUtilsTest.java",
       "android/javatests/src/org/chromium/base/ObserverListTest.java",
       "android/javatests/src/org/chromium/base/StrictModeContextTest.java",
+      "android/javatests/src/org/chromium/base/UserDataHostTest.java",
       "android/javatests/src/org/chromium/base/library_loader/EarlyNativeTest.java",
       "android/javatests/src/org/chromium/base/metrics/RecordHistogramTest.java",
       "android/javatests/src/org/chromium/base/task/AsyncTaskTest.java",

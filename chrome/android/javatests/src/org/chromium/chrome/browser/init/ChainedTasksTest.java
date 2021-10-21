@@ -10,6 +10,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.task.ChainedTasks;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
