@@ -91,31 +91,35 @@ bool MetricsLogStore::has_staged_log() const {
 }
 
 const std::string& MetricsLogStore::staged_log() const {
-  return initial_log_queue_.has_staged_log()
-             ? initial_log_queue_.staged_log()
-             : ongoing_log_store()->staged_log();
+  return get_staged_log_queue()->staged_log();
 }
 
 const std::string& MetricsLogStore::staged_log_hash() const {
-  return initial_log_queue_.has_staged_log()
-             ? initial_log_queue_.staged_log_hash()
-             : ongoing_log_store()->staged_log_hash();
+  return get_staged_log_queue()->staged_log_hash();
 }
 
 const std::string& MetricsLogStore::staged_log_signature() const {
-  return initial_log_queue_.has_staged_log()
-             ? initial_log_queue_.staged_log_signature()
-             : ongoing_log_store()->staged_log_signature();
+  return get_staged_log_queue()->staged_log_signature();
 }
 
 absl::optional<uint64_t> MetricsLogStore::staged_log_user_id() const {
-  return initial_log_queue_.has_staged_log()
-             ? initial_log_queue_.staged_log_user_id()
-             : ongoing_log_store()->staged_log_user_id();
+  return get_staged_log_queue()->staged_log_user_id();
 }
 
 bool MetricsLogStore::has_alternate_ongoing_log_store() const {
   return alternate_ongoing_log_queue_ != nullptr;
+}
+
+const UnsentLogStore* MetricsLogStore::get_staged_log_queue() const {
+  DCHECK(has_staged_log());
+
+  // This is the order in which logs should be staged. Should be consistent with
+  // StageNextLog.
+  if (initial_log_queue_.has_staged_log())
+    return &initial_log_queue_;
+  else if (alternate_ongoing_log_store_has_staged_log())
+    return alternate_ongoing_log_queue_.get();
+  return &ongoing_log_queue_;
 }
 
 bool MetricsLogStore::alternate_ongoing_log_store_has_unsent_logs() const {
@@ -126,11 +130,6 @@ bool MetricsLogStore::alternate_ongoing_log_store_has_unsent_logs() const {
 bool MetricsLogStore::alternate_ongoing_log_store_has_staged_log() const {
   return has_alternate_ongoing_log_store() &&
          alternate_ongoing_log_queue_->has_staged_log();
-}
-
-const UnsentLogStore* MetricsLogStore::ongoing_log_store() const {
-  return has_alternate_ongoing_log_store() ? alternate_ongoing_log_queue_.get()
-                                           : &ongoing_log_queue_;
 }
 
 void MetricsLogStore::StageNextLog() {

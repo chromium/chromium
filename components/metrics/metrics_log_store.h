@@ -114,18 +114,18 @@ class MetricsLogStore : public LogStore {
   size_t ongoing_log_count() const { return ongoing_log_queue_.size(); }
   size_t initial_log_count() const { return initial_log_queue_.size(); }
 
+  // Returns true if alternate log store is set.
+  bool has_alternate_ongoing_log_store() const;
+
  private:
+  // Returns the log queue of the staged log.
+  const UnsentLogStore* get_staged_log_queue() const;
+
   // Returns true if alternate log store is set and it has unsent logs.
   bool alternate_ongoing_log_store_has_unsent_logs() const;
 
   // Returns true if alternate log store is set and it has a staged log.
   bool alternate_ongoing_log_store_has_staged_log() const;
-
-  // Returns true if alternate log store is set.
-  bool has_alternate_ongoing_log_store() const;
-
-  // Returns the current ongoing log store being used.
-  const UnsentLogStore* ongoing_log_store() const;
 
   // Tracks whether unsent logs (if any) have been loaded from the serializer.
   bool unsent_logs_loaded_;
