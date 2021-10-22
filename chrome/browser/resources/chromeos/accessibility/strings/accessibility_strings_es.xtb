@@ -798,6 +798,7 @@
 <translation id="6544923685317771506">Concha marina</translation>
 <translation id="6551185905438378412">Marfil</translation>
 <translation id="6561818612645211875">Accede al principio de la fila actual</translation>
+<translation id="6563126228219321999">No hay elementos no válidos</translation>
 <translation id="6579990219486187401">Rosa claro</translation>
 <translation id="6583174818554398774">Cambiar a granularidad siguiente</translation>
 <translation id="6584162722998608255">A continuación, aprenderás a desplazarte por la pantalla. Puedes deslizar un dedo de izquierda a derecha para ir al siguiente elemento. Pruébalo ahora para ir al siguiente paso.</translation>
@@ -828,6 +829,7 @@
 <translation id="6815255864998354418">Amarillo crema</translation>
 <translation id="6816066673340002913">Amarillo dorado pálido</translation>
 <translation id="6826226459053491773">Desliza dos dedos hacia abajo</translation>
+<translation id="6826669432862053130">Siguiente elemento no válido</translation>
 <translation id="6833103209700200188">Etiqueta de pie de página</translation>
 <translation id="6837853484260746864">Selecciona una voz:</translation>
 <translation id="6858047746862060282">Prólogo</translation>
@@ -1018,6 +1020,7 @@
 <translation id="8126386426083591964">No hay ningún título de nivel 5 anterior</translation>
 <translation id="812886159861361726">Se ha parado la descarga de <ph name="FILE_NAME" /></translation>
 <translation id="8129445297241948503">No hay ninguna celda arriba</translation>
+<translation id="8132248161074464367">Elemento no válido anterior</translation>
 <translation id="8138880386467279117">Táctil</translation>
 <translation id="8146613869421949343">A continuación, aprenderás lo que necesitas saber sobre la tecla de búsqueda. La tecla de búsqueda se usa junto con otras teclas para formar comandos de ChromeVox. Está justo encima de la tecla Mayús de la izquierda. Para continuar, pulsa la tecla de búsqueda.</translation>
 <translation id="8158033275290782295">seleccionar todo</translation>

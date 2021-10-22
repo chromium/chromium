@@ -620,6 +620,7 @@
 <translation id="5465662442746197494">Көмек керек пе?</translation>
 <translation id="5496819745535887422">Әкімші құрылғыны алдыңғы нұсқаға қайтаруда. Құрылғы қайта қосылған кезде, барлық деректер жойылады.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520229639206813572">Әкімшіңіз барлық eSIM профилін өшірген. Толығырақ ақпарат алу үшін әкімшіге хабарласыңыз.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> қосылуда.</translation>
 <translation id="5532994612895037630">Толық экранды жазу үшін кез келген жерді басыңыз.</translation>
 <translation id="553675580533261935">Сеанстан шығу</translation>
@@ -751,6 +752,7 @@
 <translation id="6537924328260219877">Сигнал күші: <ph name="SIGNAL_STRENGTH" />, телефон батареясы: <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> құрылғысына трансляциялануда</translation>
 <translation id="6559976592393364813">Әкімшіден сұраңыз.</translation>
+<translation id="6565007273808762236">eSIM байланысы жоқ</translation>
 <translation id="6570831796530454248">{0,plural, =1{Құрылғыны 1 сағатта жаңарту керек}other{Құрылғыны # сағатта жаңарту керек}}</translation>
 <translation id="6570902864550063460">USB арқылы зарядталып жатыр.</translation>
 <translation id="6585808820553845416">Сеанс <ph name="SESSION_TIME_REMAINING" /> уақыттан кейін аяқталады.</translation>

@@ -339,6 +339,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3509391053705095206">Không tìm được điện thoại của bạn. Hãy đảm bảo bạn đã bật Bluetooth trên điện thoại.</translation>
 <translation id="3510164367642747937">Đánh dấu con trỏ chuột</translation>
 <translation id="3513798432020909783">Người quản lý tài khoản: <ph name="MANAGER_EMAIL" /></translation>
+<translation id="352245152354538528">{0,plural, =1{Cập nhật thiết bị trong vòng 1 phút}other{Cập nhật thiết bị trong vòng # phút}}</translation>
 <translation id="353086728817903341">Đã kết nối với <ph name="NUM_DEVICES" /> thiết bị</translation>
 <translation id="3552189655002856821">Wi-Fi đang tắt</translation>
 <translation id="3560866052109807830">Công cụ đánh dấu</translation>
@@ -427,6 +428,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="4146833061457621061">Phát nhạc</translation>
 <translation id="4157822100366708405">Tùy chọn cài đặt giao diện tối</translation>
 <translation id="4173958948577803258">T5</translation>
+<translation id="4177913004758410636">{0,plural, =1{Cập nhật thiết bị trong vòng 1 ngày}other{Cập nhật thiết bị trong vòng # ngày}}</translation>
 <translation id="4181841719683918333">Ngôn ngữ</translation>
 <translation id="4195877955194704651">Nút Lượt nhấp tự động</translation>
 <translation id="4197790712631116042">Đang tắt</translation>
@@ -480,6 +482,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="445864333228800152">Xin chào!</translation>
 <translation id="4458688154122353284">Dừng ghi màn hình</translation>
 <translation id="4471354919263203780">Đang tải các tệp nhận dạng lời nói xuống... <ph name="PERCENT" />%</translation>
+<translation id="4471432286288241507">{0,plural, =0{Cập nhật thiết bị ngay}=1{Cập nhật thiết bị trong vòng 1 giây}other{Cập nhật thiết bị trong vòng # giây}}</translation>
 <translation id="4472575034687746823">Bắt đầu</translation>
 <translation id="4477350412780666475">Bản nhạc tiếp theo</translation>
 <translation id="4477892968187500306">Thiết bị này có thể chứa những ứng dụng mà Google chưa xác minh.</translation>
@@ -738,6 +741,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="6482559668224714696">Phóng to toàn màn hình</translation>
 <translation id="6490471652906364588">Thiết bị USB-C (cổng bên phải)</translation>
 <translation id="649452524636452238">Mã PIN của thẻ thông minh</translation>
+<translation id="6495400115277918834">Tính năng hình trong hình đã bắt đầu, hãy nhấn tổ hợp phím Alt+Shift+V để lấy tâm điểm</translation>
 <translation id="6500818810472529210">Xem kết quả trên Google Tìm kiếm</translation>
 <translation id="6501401484702599040">Đang truyền màn hình tới <ph name="RECEIVER_NAME" /></translation>
 <translation id="6520517963145875092">Chọn một cửa sổ để chụp</translation>
@@ -747,6 +751,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="6537924328260219877">Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />, Pin điện thoại <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">Đang truyền tới <ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">Hỏi quản trị viên</translation>
+<translation id="6570831796530454248">{0,plural, =1{Cập nhật thiết bị trong vòng 1 giờ}other{Cập nhật thiết bị trong vòng # giờ}}</translation>
 <translation id="6570902864550063460">Đang sạc qua USB</translation>
 <translation id="6585808820553845416">Phiên sẽ kết thúc sau <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>

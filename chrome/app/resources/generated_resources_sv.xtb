@@ -3058,6 +3058,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4115002065223188701">Nätverket är utanför räckvidden</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="4117637339509843559">Mörkt läge</translation>
+<translation id="4117714603282104018">Haptisk återkoppling för styrplatta</translation>
 <translation id="4118579674665737931">Starta om enheten och försök igen.</translation>
 <translation id="412022815379960229">Börja utforska dina minnen från Google Foto när du är inloggad.</translation>
 <translation id="4120388883569225797">Det går inte att återställa den här säkerhetsnyckeln</translation>
@@ -5502,6 +5503,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6810613314571580006">Logga in automatiskt på webbplatser med hjälp av lagrade inloggningsuppgifter. När funktionen är inaktiverad måste du bekräfta inloggningen varje gång du besöker en webbplats.</translation>
 <translation id="6810768462515084623">Lösenordet har upphört att gälla. Förnya det på en annan enhet och försök igen.</translation>
 <translation id="6811034713472274749">Sidan är klar att öppna</translation>
+<translation id="6811151703183939603">Fast</translation>
 <translation id="6811332638216701903">DHCP-värdnamn</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> kan inte köras av en systemadministratör.</translation>
 <translation id="6812841287760418429">Behåll ändringarna</translation>
@@ -6799,6 +6801,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="811994229154425014">Skriv punkt med hjälp av dubbelt mellanslag</translation>
 <translation id="8120505434908124087">Installera eSIM-profil</translation>
 <translation id="812260729110117038">Annonsörerna och utgivarna kan utvärdera annonsernas effektivitet med hjälp av andra metoder än att spåra dig från webbplats till webbplats.</translation>
+<translation id="81231173274944570">Aktivera haptisk återkoppling. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="81238879832906896">Gul och vit blomma</translation>
 <translation id="8124313775439841391">Hanterad ONC</translation>
 <translation id="813082847718468539">Visa information om webbplatsen</translation>
@@ -7874,6 +7877,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{App}other{Appar}}</translation>
 <translation id="964790508619473209">Skärmuppställning</translation>
 <translation id="965211523698323809">Skicka och ta emot sms på <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
+<translation id="96535553604365597">Rapportera problem med Google Cast</translation>
 <translation id="967398046773905967">Ge inga webbplatser åtkomst till HID-enheter</translation>
 <translation id="967624055006145463">Sparad data</translation>
 <translation id="96774243435178359">Hanterade skrivare</translation>

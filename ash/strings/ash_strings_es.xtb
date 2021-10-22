@@ -621,6 +621,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5465662442746197494">¿Necesitas ayuda?</translation>
 <translation id="5496819745535887422">El administrador va a instalar una versión anterior en tu dispositivo. Se eliminarán todos los datos cuando se reinicie.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520229639206813572">Tu administrador ha eliminado todos los perfiles de eSIM. Ponte en contacto con tu administrador para obtener más información.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> se está conectando.</translation>
 <translation id="5532994612895037630">Toca en cualquier sitio para grabar la pantalla completa</translation>
 <translation id="553675580533261935">Saliendo de la sesión</translation>
@@ -752,6 +753,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="6537924328260219877">Intensidad de la señal: <ph name="SIGNAL_STRENGTH" />, batería del teléfono: <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">Enviando contenido a <ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">Pregunta al administrador</translation>
+<translation id="6565007273808762236">Conexión eSIM no disponible</translation>
 <translation id="6570831796530454248">{0,plural, =1{Actualizar dispositivo dentro de 1 hora}other{Actualizar dispositivo dentro de # horas}}</translation>
 <translation id="6570902864550063460">Cargando mediante USB</translation>
 <translation id="6585808820553845416">La sesión finalizará dentro de <ph name="SESSION_TIME_REMAINING" />.</translation>

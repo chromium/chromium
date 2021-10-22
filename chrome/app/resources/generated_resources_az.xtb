@@ -3035,6 +3035,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4115002065223188701">Şəbəkə aralıqda deyil</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="4117637339509843559">Qaranlıq rejim</translation>
+<translation id="4117714603282104018">Taçped vibrocavabı</translation>
 <translation id="4118579674665737931">Cihazı yenidən işə salıb cəhd edin.</translation>
 <translation id="412022815379960229">Daxil olduqda xatirələrinizi Google Foto'dan araşdırmağa başlayın.</translation>
 <translation id="4120388883569225797">Bu güvənlik açarını sıfırlamaq mümkün deyil</translation>
@@ -5470,6 +5471,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6810613314571580006">Saxlanmış kredensialları istifadə edərək vebsaytlara avtomatik daxil olun. Xüsusiyyət deaktiv edildikdə, sayta hər dəfə girdiyinizdə təsdiqləmə tələb olunacaq.</translation>
 <translation id="6810768462515084623">Ups!  Parolunuzun vaxtı bitib. Fərqli cihazda onu yeniləyin və bir daha cəhd edin.</translation>
 <translation id="6811034713472274749">Səhifəyə baxa bilərsiniz</translation>
+<translation id="6811151703183939603">Möhkəm</translation>
 <translation id="6811332638216701903">DHCP Host adı</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> kök olaraq işə salına bilməz.</translation>
 <translation id="6812841287760418429">Dəyişiklikləri saxlayın</translation>
@@ -6761,6 +6763,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="811994229154425014">Nöqtə yazmaq üçün iki boşluq</translation>
 <translation id="8120505434908124087">eSIM profili quraşdırın</translation>
 <translation id="812260729110117038">Reklamçılar reklamların effektivliyini saytlarda sizi izləməyəcək şəkildə araşdıra bilərlər.</translation>
+<translation id="81231173274944570">Vibrocavabı aktivləşdirin. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="81238879832906896">Sarı və ağ gül</translation>
 <translation id="8124313775439841391">İdarə olunan ONC</translation>
 <translation id="813082847718468539">Sayt məlumatına baxın</translation>
@@ -7833,6 +7836,7 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Tətbiq}other{Tətbiqlər}}</translation>
 <translation id="964790508619473209">Ekran tənzimlənməsi</translation>
 <translation id="965211523698323809"><ph name="DEVICE_TYPE" /> cihazından mətn mesajları göndərin və alın. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
+<translation id="96535553604365597">Google Yayımla əlaqəli problemi bildirin</translation>
 <translation id="967398046773905967">Saytların HID cihazlarına girişinə icazə verməyin</translation>
 <translation id="967624055006145463">Yadda saxlanmış data</translation>
 <translation id="96774243435178359">İdarə edilən printerlər</translation>

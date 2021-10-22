@@ -798,6 +798,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="6544923685317771506">Maskor-kolorekoa</translation>
 <translation id="6551185905438378412">Boli-kolorekoa</translation>
 <translation id="6561818612645211875">Joan oraingo errenkadaren hasierara</translation>
+<translation id="6563126228219321999">Ez dago balio ez duen elementurik</translation>
 <translation id="6579990219486187401">Arrosa argia</translation>
 <translation id="6583174818554398774">Joan hurrengo mailara</translation>
 <translation id="6584162722998608255">Jarraian, pantailan zehar mugitzen ikasiko duzu. Hurrengo elementura joateko, pasatu hatz bat ezkerretik eskuinera. Proba ezazu hurrengo urratsera joateko.</translation>
@@ -828,6 +829,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="6815255864998354418">Limoi-pastelaren kolorekoa</translation>
 <translation id="6816066673340002913">Urre-kolore horixka oso argikoa</translation>
 <translation id="6826226459053491773">Pasatu bi hatz beherantz</translation>
+<translation id="6826669432862053130">Balio ez duen hurrengo elementua</translation>
 <translation id="6833103209700200188">Orri-oina</translation>
 <translation id="6837853484260746864">Hautatu ahotsa:</translation>
 <translation id="6858047746862060282">Hitzaurrea</translation>
@@ -1017,6 +1019,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="8126386426083591964">Ez dago bosgarren mailako beste goibururik honen aurretik</translation>
 <translation id="812886159861361726">Utzi zaio <ph name="FILE_NAME" /> deskargatzeari</translation>
 <translation id="8129445297241948503">Ez dago beste gelaxkarik goian</translation>
+<translation id="8132248161074464367">Balio ez duen aurreko elementua</translation>
 <translation id="8138880386467279117">Ukipena</translation>
 <translation id="8146613869421949343">Jarraian, bilaketa-teklari buruzko azalpenak emango dizkizugu. Bilaketa-tekla beste tekla batzuekin batera erabiltzen da aginduak sortzeko ChromeVox-en. Ezkerraldeko Maius teklaren gainean aurkituko duzu. Aurrera egiteko, saka ezazu.</translation>
 <translation id="8158033275290782295">hautatu guztiak</translation>

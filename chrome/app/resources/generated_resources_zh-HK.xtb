@@ -3057,7 +3057,7 @@
 <translation id="4115002065223188701">網絡超出範圍</translation>
 <translation id="4115378294792113321">洋紅色</translation>
 <translation id="4117637339509843559">暗光模式</translation>
-<translation id="4117714603282104018">觸控板觸動回饋</translation>
+<translation id="4117714603282104018">觸控板觸感反應</translation>
 <translation id="4118579674665737931">請重新啟動裝置，然後再試一次。</translation>
 <translation id="412022815379960229">在登入後，即可開始透過「Google 相片」探索您的回憶。</translation>
 <translation id="4120388883569225797">無法重設此安全密鑰</translation>
@@ -6801,7 +6801,7 @@
 <translation id="811994229154425014">按空白鍵兩下插入句號</translation>
 <translation id="8120505434908124087">安裝 eSIM 卡設定檔</translation>
 <translation id="812260729110117038">廣告客戶和發佈者無需追蹤您的網站瀏覽記錄，就能瞭解廣告成效。</translation>
-<translation id="81231173274944570">啟用觸動回饋。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
+<translation id="81231173274944570">啟用觸感反應。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="81238879832906896">黃色和白色的花</translation>
 <translation id="8124313775439841391">管理 ONC</translation>
 <translation id="813082847718468539">檢視網站資料</translation>
@@ -7877,7 +7877,7 @@
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{應用程式}other{應用程式}}</translation>
 <translation id="964790508619473209">螢幕安排</translation>
 <translation id="965211523698323809">在 <ph name="DEVICE_TYPE" /> 上收發短訊。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
-<translation id="96535553604365597">回報 Google Cast 的問題</translation>
+<translation id="96535553604365597">報告 Google Cast 的問題</translation>
 <translation id="967398046773905967">禁止任何網站存取 HID 裝置</translation>
 <translation id="967624055006145463">已儲存的資料</translation>
 <translation id="96774243435178359">受管理的打印機</translation>

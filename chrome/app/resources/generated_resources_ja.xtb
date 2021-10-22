@@ -25,6 +25,7 @@
 <translation id="1017280919048282932">辞書に追加(&amp;A)</translation>
 <translation id="1018656279737460067">キャンセルされました</translation>
 <translation id="1022489261739821355"><ph name="BEGIN_LINK" />Google アカウント<ph name="END_LINK" />に保存したパスワードを表示しています</translation>
+<translation id="1024304340821219537">ウェブサイトと共有される情報</translation>
 <translation id="1026655690966755180">ポートを追加</translation>
 <translation id="1026822031284433028">画像を読み込む</translation>
 <translation id="1029317248976101138">ズーム</translation>
@@ -92,6 +93,7 @@
 <translation id="1088654056000736875">お使いのパソコンから有害なソフトウェアを削除しています...</translation>
 <translation id="1088659085457112967">リーダーモードを開始</translation>
 <translation id="1090126737595388931">実行中のバックグラウンド アプリはありません</translation>
+<translation id="1090541560108055381">ペア設定を行う前に、両方のデバイスでコードが一致しているか確認してください</translation>
 <translation id="1091767800771861448">Esc キーを押すとスキップできます（非公式のビルドのみ）。</translation>
 <translation id="1093457606523402488">検出されたネットワーク:</translation>
 <translation id="1094607894174825014">「<ph name="DEVICE_NAME" />」で、無効なオフセットでの読み取りまたは書き込み操作がリクエストされました。</translation>
@@ -368,6 +370,7 @@
 <translation id="1388728792929436380">更新が完了すると、<ph name="DEVICE_TYPE" />が再起動されます。</translation>
 <translation id="139013308650923562">デバイスにインストールされたフォントの使用を許可する</translation>
 <translation id="1390548061267426325">通常のタブとして開く</translation>
+<translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> には <ph name="PRINTER_NAME" /> で印刷する権限がありません。管理者にお問い合わせください。</translation>
 <translation id="1393283411312835250">太陽と雲</translation>
 <translation id="1395730723686586365">アップデータ起動</translation>
 <translation id="1396139853388185343">プリンタの設定中にエラーが発生しました</translation>
@@ -424,6 +427,7 @@
 <translation id="1436390408194692385">有効期限まであと <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436784010935106834">削除しました</translation>
 <translation id="1437986450143295708">問題の内容を詳しくご説明ください</translation>
+<translation id="1439671507542716852">長期サポート</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> 個のアイテムを選択しました</translation>
 <translation id="1442851588227551435">有効な Kerberos チケットの設定</translation>
 <translation id="1444628761356461360">この設定はデバイスの所有者 <ph name="OWNER_EMAIL" /> が管理しています。</translation>
@@ -1409,6 +1413,7 @@
 <translation id="244231003699905658">無効なアドレスです。アドレスを確認してから、もう一度お試しください。</translation>
 <translation id="2442916515643169563">テキストの影</translation>
 <translation id="2443487764245141020">サイトで識別子を使用したデバイスの認識も必要となる場合があります</translation>
+<translation id="244475495405467108">左側のタブを閉じる</translation>
 <translation id="2445081178310039857">拡張機能のルート ディレクトリを指定してください。</translation>
 <translation id="2445484935443597917">新しいプロフィールを作成</translation>
 <translation id="244641233057214044">検索に関連</translation>
@@ -1424,6 +1429,7 @@
 <translation id="2454264884354864965">カメラはオフです</translation>
 <translation id="245650153866130664">チケットを自動的に更新するには、[パスワードを保存する] チェックボックスをオンにします。パスワードはお使いのデバイスにのみ保存されます。</translation>
 <translation id="2457246892030921239">「<ph name="APP_NAME" />」が <ph name="VOLUME_NAME" /> のファイルのコピーを求めています。</translation>
+<translation id="2457842160081795172">現在のチャンネルは <ph name="CHANNEL_NAME" /> です</translation>
 <translation id="2458379781610688953">アカウントを更新（<ph name="EMAIL" />）</translation>
 <translation id="2458591546854598341">デバイス管理トークンが無効です。</translation>
 <translation id="2459703812219683497">アクティベーション コードを検出しました</translation>
@@ -2108,6 +2114,7 @@
 <translation id="3154351730702813399">デバイス管理者が閲覧アクティビティを監視している可能性があります。</translation>
 <translation id="3154429428035006212">1 か月以上オフライン</translation>
 <translation id="3157387275655328056">リーディング リストに追加</translation>
+<translation id="3157665603750177985">シークレット モードでない場合、サイトは Cookie を使用して別のサイトでのあなたの閲覧アクティビティを確認し、広告のカスタマイズなどを行うことができます</translation>
 <translation id="3157931365184549694">復元</translation>
 <translation id="3158033540161634471">指紋の設定</translation>
 <translation id="3158770568048368350">モバイル ネットワークが一時的に切断される可能性があります</translation>
@@ -2123,6 +2130,7 @@
 <translation id="3165390001037658081">携帯通信会社によってはこの機能を利用できない場合があります。</translation>
 <translation id="316652501498554287">G Suite for Education アカウント</translation>
 <translation id="3170072451822350649">ログインせずに<ph name="LINK_START" />ゲストとしてブラウジング<ph name="LINK_END" />することもできます。</translation>
+<translation id="31774765611822736">左側の新しいタブ</translation>
 <translation id="3177909033752230686">ページの言語:</translation>
 <translation id="3179982752812949580">テキストのフォント</translation>
 <translation id="3181954750937456830">セーフ ブラウジング（危険なサイトからユーザーとデバイスを保護します）</translation>
@@ -2275,6 +2283,7 @@
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> が <ph name="ATTACHMENTS" />を共有しています。}other{<ph name="DEVICE_NAME" /> が <ph name="ATTACHMENTS" />を共有しています。}}</translation>
 <translation id="3364986687961713424">管理者からのメッセージ: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Ctrl キーまたは Alt キーのいずれかを使用してください</translation>
+<translation id="3367057768351048705">サイトは、あなたの Cookie を使用して、そのサイトでのあなたの閲覧アクティビティのみを確認できます</translation>
 <translation id="3368922792935385530">接続済み</translation>
 <translation id="3369067987974711168">このポートのその他の操作を表示</translation>
 <translation id="3369624026883419694">ホストを解決しています...</translation>
@@ -2329,6 +2338,7 @@
 <translation id="3420501302812554910">内部セキュリティ キーのリセットが必要です</translation>
 <translation id="3421387094817716717">楕円曲線公開鍵</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />注:<ph name="END_BOLD" /> よく似た音声や録音した音声でも、アカウントに基づく情報やアシスタントにアクセスできてしまうことがあります。</translation>
+<translation id="3421726884497337397">サードパーティの Cookie をどのようなときにブロックするかを選択する</translation>
 <translation id="3422291238483866753">サイトから周囲の 3D マップの作成またはカメラ位置の追跡を求められたときに確認する（推奨）</translation>
 <translation id="3423463006624419153">「<ph name="PHONE_NAME_1" />」と「<ph name="PHONE_NAME_2" />」で次の操作を行います。</translation>
 <translation id="3423858849633684918"><ph name="PRODUCT_NAME" /> を再起動してください</translation>
@@ -2728,6 +2738,7 @@
 <translation id="3819800052061700452">全画面表示(&amp;F)</translation>
 <translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{表示}other{すべて表示}}</translation>
 <translation id="3820749202859700794">SECG 楕円曲線 secp521r1（別名 NIST P-521）</translation>
+<translation id="3821074617718452587">スマートフォン ハブの通知</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{1 個の拡張機能が承認されました}other{# 個の拡張機能が承認されました}}</translation>
 <translation id="3823310065043511710">Linux 用の推奨される空き容量は <ph name="INSTALL_SIZE" /> 以上です。</translation>
 <translation id="3824621460022590830">デバイス登録トークンが無効です。デバイスの所有者または管理者にお問い合わせください。エラーコード: <ph name="ERROR_CODE" />。</translation>
@@ -2934,6 +2945,7 @@
 <translation id="4021279097213088397">–</translation>
 <translation id="402184264550408568">（TCP）</translation>
 <translation id="4021909830315618592">ビルド情報をコピー</translation>
+<translation id="4021941025609472374">左側のタブを閉じる</translation>
 <translation id="4022426551683927403">辞書に追加(&amp;A)</translation>
 <translation id="4023146161712577481">デバイスの設定を確認しています。</translation>
 <translation id="4025039777635956441">選択したサイトをミュート</translation>
@@ -3848,6 +3860,7 @@
 <translation id="5053962746715621840">Google レンズで画像を検索</translation>
 <translation id="5056950756634735043">コンテナに接続しています</translation>
 <translation id="5057110919553308744">拡張機能をクリックしたとき</translation>
+<translation id="505776528429481161">近くのデバイスと簡単に接続して設定できます</translation>
 <translation id="5059241099014281248">ログイン制限</translation>
 <translation id="5059526285558225588">共有する内容を選択</translation>
 <translation id="5060332552815861872">保存できるプリンタが 1 件あります。</translation>
@@ -4711,6 +4724,7 @@
 <translation id="6002452033851752583">Google アカウントからパスワードを削除しました</translation>
 <translation id="6002458620803359783">使用する音声</translation>
 <translation id="6003143259071779217">eSIM モバイル ネットワークの削除</translation>
+<translation id="6003479444341796444">タイトルバーが表示されました</translation>
 <translation id="6003582434972667631">テーマは組織によって設定されています</translation>
 <translation id="6006484371116297560">クラシック</translation>
 <translation id="6007240208646052708">お使いの言語では音声検索はご利用いただけません。</translation>
@@ -4878,6 +4892,7 @@
 <translation id="6184099524311454384">タブを検索</translation>
 <translation id="6185132558746749656">デバイスの位置情報</translation>
 <translation id="6186394437969115158">多くのサイトは、コンテンツやサービスを無料で提供する目的で広告を表示します。ただし、一部のサイトについては、煩わしい広告や誤解を招く広告が表示されることがわかっています。</translation>
+<translation id="6190953336330058278">スマートフォン ハブ アプリ</translation>
 <translation id="6195005504600220730">ブラウザ、OS、デバイスに関する情報の読み取り</translation>
 <translation id="6195693561221576702">このデバイスはオフライン デモモードで設定できません。</translation>
 <translation id="6196640612572343990">サードパーティの Cookie をブロックする</translation>
@@ -5094,6 +5109,7 @@
 <translation id="6418160186546245112"><ph name="IDS_SHORT_PRODUCT_NAME" /> の以前のインストール バージョンに戻しています</translation>
 <translation id="6418481728190846787">すべてのアプリのアクセスを完全に削除する</translation>
 <translation id="6418511932144861495">重要なアップデートのインストール</translation>
+<translation id="641899100123938294">新しいデバイスをスキャンする</translation>
 <translation id="6419524191360800346">Debian 11（Bullseye）にアップグレードできます</translation>
 <translation id="6419546358665792306">パッケージ化されていない拡張機能を読み込む</translation>
 <translation id="6419843101460769608">Bluetooth デバイスへのアクセスをどのサイトにも許可しない</translation>
@@ -5637,6 +5653,7 @@
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> は接続していますが設定が必要です</translation>
 <translation id="7000347579424117903">Ctrl キー、Alt キー、検索キーのいずれかが必要です</translation>
 <translation id="7001036685275644873">Linux のアプリとファイルをバックアップしています</translation>
+<translation id="7001066449188684145"><ph name="PRINTER_NAME" /> で印刷するには本人確認が必要です。管理者にお問い合わせください。</translation>
 <translation id="7002055706763150362">Smart Lock for Chromebook を設定するには、Google に対する本人確認が必要です。開始するにはパスワードを入力してください。</translation>
 <translation id="7003339318920871147">ウェブ データベース</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} 件のファイル}other{{COUNT} 件のファイル}}</translation>
@@ -6219,6 +6236,7 @@
 <translation id="7622966771025050155">キャプチャしたタブに切り替え</translation>
 <translation id="7624337243375417909">CapsLock オフ</translation>
 <translation id="7625568159987162309">すべてのサイトに保存されている権限とデータを表示</translation>
+<translation id="7625823789272218216">左側の新しいタブ</translation>
 <translation id="7628201176665550262">リフレッシュ レート</translation>
 <translation id="7629827748548208700">タブ:<ph name="TAB_NAME" /></translation>
 <translation id="7631014249255418691">Linux のアプリとファイルが正常にバックアップされました</translation>
@@ -6249,6 +6267,7 @@
 <translation id="7650582458329409456">{COUNT,plural, =1{1 件の指紋が設定されています}other{{COUNT} 件の指紋が設定されています}}</translation>
 <translation id="7650677314924139716">現在のデータ使用設定は「Wi-Fi のみ」です</translation>
 <translation id="7650920359639954963">無効: <ph name="REASON" /></translation>
+<translation id="7651784568388208829">スマートフォン ハブの作業の継続</translation>
 <translation id="765293928828334535">このウェブサイトからアプリ、拡張機能、ユーザー スクリプトを追加することはできません</translation>
 <translation id="7652954539215530680">PIN の作成</translation>
 <translation id="7654941827281939388">このアカウントは既にこのパソコンで使用されています。</translation>
@@ -7041,6 +7060,7 @@
 <translation id="8460932807646981183">検索エンジンとサイト内検索を管理する</translation>
 <translation id="84613761564611563">ネットワーク設定画面を呼び出しています。しばらくお待ちください...</translation>
 <translation id="8461914792118322307">プロキシ</translation>
+<translation id="8463001014623882202">認証に失敗しました</translation>
 <translation id="8463215747450521436">この監視対象ユーザーは管理者によって削除されたか無効にされた可能性があります。引き続きこのユーザーとしてログインする場合は、管理者にお問い合わせください。</translation>
 <translation id="846374874681391779">ダウンロード バー</translation>
 <translation id="8463955938112983119"><ph name="PLUGIN_NAME" /> が無効になっています。</translation>
@@ -7487,6 +7507,7 @@
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> さんの <ph name="DEVICE_TYPE" /></translation>
 <translation id="8922624386829239660">マウスが画面の端に触れたときに画面を移動する</translation>
 <translation id="8923880975836399332">暗い青緑</translation>
+<translation id="8925124370124776087">タイトルバーが非表示になりました</translation>
 <translation id="8925458182817574960">設定(&amp;S)</translation>
 <translation id="8926389886865778422">再表示させない</translation>
 <translation id="892706138619340876">一部の設定がリセットされました</translation>

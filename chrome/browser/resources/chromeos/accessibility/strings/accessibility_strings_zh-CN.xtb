@@ -798,6 +798,7 @@
 <translation id="6544923685317771506">海贝色</translation>
 <translation id="6551185905438378412">象牙色</translation>
 <translation id="6561818612645211875">转到当前行的开头</translation>
+<translation id="6563126228219321999">没有无效项</translation>
 <translation id="6579990219486187401">浅粉色</translation>
 <translation id="6583174818554398774">后移一个朗读单位</translation>
 <translation id="6584162722998608255">接下来，您将学习如何在屏幕上四处移动。您只需用 1 根手指从左向右滑动屏幕即可移至下一项。请立即尝试此手势以进入下一步。</translation>
@@ -828,6 +829,7 @@
 <translation id="6815255864998354418">柠檬绸色</translation>
 <translation id="6816066673340002913">灰金菊色</translation>
 <translation id="6826226459053491773">向下滑动两根手指</translation>
+<translation id="6826669432862053130">下一个无效项</translation>
 <translation id="6833103209700200188">页脚标记</translation>
 <translation id="6837853484260746864">请选择一种声音：</translation>
 <translation id="6858047746862060282">序言</translation>
@@ -1018,6 +1020,7 @@
 <translation id="8126386426083591964">没有上一个 5 级标题</translation>
 <translation id="812886159861361726">“<ph name="FILE_NAME" />”已停止下载</translation>
 <translation id="8129445297241948503">上方没有单元格</translation>
+<translation id="8132248161074464367">上一个无效项</translation>
 <translation id="8138880386467279117">触摸</translation>
 <translation id="8146613869421949343">接下来，您将学习搜索键的相关知识。搜索键旨在与其他键结合使用以执行 ChromeVox 命令。它是左侧 Shift 键上方第一个键。请按搜索键以继续。</translation>
 <translation id="8158033275290782295">全选</translation>

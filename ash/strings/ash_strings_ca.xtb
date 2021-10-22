@@ -620,6 +620,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="5465662442746197494">Necessiteu ajuda?</translation>
 <translation id="5496819745535887422">L'administrador està canviant la versió del dispositiu a una d'anterior. Quan es reiniciï el dispositiu, se'n suprimiran totes les dades.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520229639206813572">L'administrador ha suprimit tots els perfils d'eSIM. Contacta amb l'administrador per obtenir més informació.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> s'està connectant.</translation>
 <translation id="5532994612895037630">Toca en qualsevol lloc per gravar la pantalla completa</translation>
 <translation id="553675580533261935">S'està tancant la sessió</translation>
@@ -751,6 +752,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="6537924328260219877"><ph name="SIGNAL_STRENGTH" /> d'intensitat del senyal, <ph name="BATTERY_STATUS" /> de bateria al telèfon</translation>
 <translation id="6542521951477560771">S'està emetent a <ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">Pregunta a l'administrador</translation>
+<translation id="6565007273808762236">La connexió eSIM no està disponible</translation>
 <translation id="6570831796530454248">{0,plural, =1{Actualitza el dispositiu en 1 hora}other{Actualitza el dispositiu en # hores}}</translation>
 <translation id="6570902864550063460">S'està carregant per USB</translation>
 <translation id="6585808820553845416">La sessió finalitzarà d'aquí a <ph name="SESSION_TIME_REMAINING" />.</translation>

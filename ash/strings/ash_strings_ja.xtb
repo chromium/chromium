@@ -617,6 +617,7 @@
 <translation id="5465662442746197494">不明点がある場合</translation>
 <translation id="5496819745535887422">管理者がお使いのデバイスをロールバックしています。デバイスの再起動時にデータはすべて削除されます。</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520229639206813572">管理者によって eSIM プロファイルがすべて削除されています。詳しくは管理者にお問い合わせください。</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> を接続しています。</translation>
 <translation id="5532994612895037630">全画面を録画するには任意の場所をタップしてください</translation>
 <translation id="553675580533261935">セッションの終了</translation>
@@ -747,6 +748,7 @@
 <translation id="6537924328260219877">信号強度 <ph name="SIGNAL_STRENGTH" />、電池残量 <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> にキャストしています</translation>
 <translation id="6559976592393364813">管理者に問い合わせる</translation>
+<translation id="6565007273808762236">eSIM 接続を利用できません</translation>
 <translation id="6570902864550063460">USB 経由で充電しています</translation>
 <translation id="6585808820553845416">セッション終了まであと <ph name="SESSION_TIME_REMAINING" />です。</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />、<ph name="SECONDARY_TEXT" /></translation>

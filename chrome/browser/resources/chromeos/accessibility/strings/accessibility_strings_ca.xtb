@@ -798,6 +798,7 @@
 <translation id="6544923685317771506">Petxina</translation>
 <translation id="6551185905438378412">Vori</translation>
 <translation id="6561818612645211875">Ves al principi de la fila actual</translation>
+<translation id="6563126228219321999">No hi ha cap element no vàlid</translation>
 <translation id="6579990219486187401">Rosa clar</translation>
 <translation id="6583174818554398774">Ves al gest següent en granularitat</translation>
 <translation id="6584162722998608255">A continuació, obtindràs informació sobre com moure't per la pantalla. Pots fer lliscar un dit d'esquerra a dreta per anar a l'element següent. Prova-ho ara per anar al pas següent.</translation>
@@ -828,6 +829,7 @@
 <translation id="6815255864998354418">Groc crema</translation>
 <translation id="6816066673340002913">Groc daurat pàl·lid</translation>
 <translation id="6826226459053491773">Fes lliscar dos dits cap avall</translation>
+<translation id="6826669432862053130">Element no vàlid següent</translation>
 <translation id="6833103209700200188">Peu</translation>
 <translation id="6837853484260746864">Selecciona una veu:</translation>
 <translation id="6858047746862060282">Pròleg</translation>
@@ -1018,6 +1020,7 @@
 <translation id="8126386426083591964">No hi ha cap encapçalament anterior de nivell 5</translation>
 <translation id="812886159861361726">S'ha aturat la baixada del fitxer <ph name="FILE_NAME" /></translation>
 <translation id="8129445297241948503">No hi ha cap cel·la més amunt</translation>
+<translation id="8132248161074464367">Element no vàlid anterior</translation>
 <translation id="8138880386467279117">Tàctil</translation>
 <translation id="8146613869421949343">A continuació, obtindràs informació sobre la tecla de cerca. La tecla de cerca s'utilitza en combinació amb altres tecles per a les ordres de ChromeVox. Es troba just a sobre de la tecla de majúscules de l'esquerra. Per continuar, prem la tecla de cerca.</translation>
 <translation id="8158033275290782295">selecciona-ho tot</translation>

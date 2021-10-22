@@ -798,6 +798,7 @@
 <translation id="6544923685317771506">シーシェル</translation>
 <translation id="6551185905438378412">アイボリー</translation>
 <translation id="6561818612645211875">現在の行の先頭に移動</translation>
+<translation id="6563126228219321999">無効なアイテムはありません</translation>
 <translation id="6579990219486187401">ライトピンク</translation>
 <translation id="6583174818554398774">次の詳細レベルに移動します</translation>
 <translation id="6584162722998608255">次は、画面上を移動する方法を学びます。次のアイテムに移動するには、1 本の指で左から右にスワイプします。実際にやってみて、次のステップに進みましょう。</translation>
@@ -828,6 +829,7 @@
 <translation id="6815255864998354418">レモンシフォン</translation>
 <translation id="6816066673340002913">ペール ゴールデン ロッド</translation>
 <translation id="6826226459053491773">2 本の指で下にスワイプします</translation>
+<translation id="6826669432862053130">次の無効なアイテム</translation>
 <translation id="6833103209700200188">フッター</translation>
 <translation id="6837853484260746864">音声を選択:</translation>
 <translation id="6858047746862060282">プロローグ</translation>
@@ -1018,6 +1020,7 @@
 <translation id="8126386426083591964">前のレベル 5 の見出しはありません</translation>
 <translation id="812886159861361726"><ph name="FILE_NAME" /> のダウンロードを停止しました</translation>
 <translation id="8129445297241948503">上にセルはありません</translation>
+<translation id="8132248161074464367">前の無効なアイテム</translation>
 <translation id="8138880386467279117">タップ</translation>
 <translation id="8146613869421949343">次は検索キーについて見てみましょう。検索キーは他のキーと組み合わせて、ChromeVox コマンドとして使用します。検索キーは、左 Shift キーのすぐ上にあります。次へ進むには、検索キーを押してください。</translation>
 <translation id="8158033275290782295">すべて選択</translation>

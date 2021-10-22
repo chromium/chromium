@@ -1,12 +1,14 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
+<translation id="1018219910092211213">无法解析 DNS</translation>
 <translation id="1018656279737460067">已取消</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" />（<ph name="THREAD_COUNT" /> 个线程，<ph name="CPU_MAX_CLOCK_SPEED" />GHz）</translation>
 <translation id="1059913517121127803">无法启动扫描</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">检测到防火墙</translation>
 <translation id="1075811647922107217">页面大小</translation>
+<translation id="1094693127011229778">IP 地址缺失</translation>
 <translation id="1119447706177454957">内部错误</translation>
 <translation id="1124772482545689468">用户</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -21,6 +23,7 @@
 <translation id="1270369111467284986">疑似存在强制门户</translation>
 <translation id="1290331692326790741">信号较弱</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1310380015393971138">无可用的“<ph name="NETWORK_NAME" />”网络</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">家庭网络，非漫游</translation>
 <translation id="1327977588028644528">网关</translation>
@@ -67,6 +70,7 @@
 <translation id="1999615961760456652">强制门户</translation>
 <translation id="2006864819935886708">连接</translation>
 <translation id="2008685064673031089">高峰搜索</translation>
+<translation id="2016697457005847575">尝试问题排查步骤</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">更多设置</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />，版本 <ph name="MILESTONE_VERSION" /></translation>
@@ -99,6 +103,7 @@
 <translation id="2505327257735685095">刷新当前壁纸图片</translation>
 <translation id="2517472476991765520">扫描</translation>
 <translation id="2570743873672969996">正在运行<ph name="TEST_NAME" />测试…</translation>
+<translation id="2584559707064218956">若要进行设置，请转到“设置”</translation>
 <translation id="2585245331261708204">Chrome 操作系统的新变化</translation>
 <translation id="2619761439309613843">每日刷新</translation>
 <translation id="2620436844016719705">系统</translation>
@@ -145,8 +150,10 @@
 <translation id="3532980081107202182">还剩大约 <ph name="MIN_REMAINING" /> 分钟</translation>
 <translation id="3565064564551103223">允许使用的 IP</translation>
 <translation id="357889014807611375">按流量计费的 Wi-Fi</translation>
+<translation id="3583278742022654445">信号强度较弱。请尝试移到离 Wi-Fi 信号源更近的地方。</translation>
 <translation id="3595596368722241419">电池已充满</translation>
 <translation id="360565022852130722">Wi-Fi 网络采用了防护能力较弱的 WEP 802.1x 协议</translation>
+<translation id="3606583719724308068">HTTPS 网站的延迟时间较长</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" />测试</translation>
 <translation id="3708186454126126312">曾经连接过</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★（<ph name="AGGREGATED_COUNT" /> 条评价）</translation>
@@ -167,6 +174,7 @@
 <translation id="39823212440917567">系统会自动移除存在时长已超过 <ph name="NUMBER_OF_DAYS" /> 天的打印任务</translation>
 <translation id="4003384961948020559">失败 - 出纸盘已满</translation>
 <translation id="4034824040120875894">打印机</translation>
+<translation id="4044093238444069296">无法连接网关</translation>
 <translation id="404928562651467259">警告</translation>
 <translation id="409427325554347132">保存测试详细信息</translation>
 <translation id="4111761024568264522">USB 触控板</translation>
@@ -189,6 +197,7 @@
 <translation id="4378551569595875038">正在连接…</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">我的云端硬盘</translation>
+<translation id="4428374560396076622">“<ph name="NETWORK_NAME" />”已关闭</translation>
 <translation id="4429881212383817840">Kerberos 票据即将过期</translation>
 <translation id="4431821876790500265">查看报告</translation>
 <translation id="445059817448385655">旧密码</translation>
@@ -234,6 +243,7 @@
 <translation id="4917385247580444890">强</translation>
 <translation id="4917889632206600977">已停止 - 纸张已用完</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> 秒内充了 <ph name="RATE" /> 的电量。</translation>
+<translation id="4930320165497208503">若要设置或更新连接，请转到<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />。</translation>
 <translation id="4932733599132424254">日期</translation>
 <translation id="498186245079027698">请检查扫描仪，然后重试。另请确保有足够的本地空间来保存扫描版文件。</translation>
 <translation id="4985509611418653372">运行</translation>
@@ -375,6 +385,7 @@
 <translation id="7059230779847288458">正在充电，还需 <ph name="TIME_VALUE" />才能充满</translation>
 <translation id="708426984172631313">已停止</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="710028965487274708">失败 - 授权失败</translation>
 <translation id="7134436342991564651">{0,plural, =1{域名服务器}other{域名服务器}}</translation>
 <translation id="7143207342074048698">正在连接</translation>
 <translation id="7144878232160441200">重试</translation>
@@ -387,6 +398,7 @@
 <translation id="7271040990581020067">扫描仪正在使用中。请稍后再试。</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">壁纸集</translation>
+<translation id="7297226631177386107">无法通过防火墙连接到 HTTPS 网站</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -419,6 +431,7 @@
 <translation id="7762130827864645708">您已成功更改了密码。从现在开始，请改用这个新密码。</translation>
 <translation id="7763470514545477072">域名后缀匹配</translation>
 <translation id="7769672763586021400">型号 ID</translation>
+<translation id="7784116172884276937">未设置 DNS 服务器</translation>
 <translation id="7805768142964895445">状态</translation>
 <translation id="7819857487979277519">PSK（WPA 或 RSN）</translation>
 <translation id="7835501727204647447">安装 CloudReady</translation>
@@ -433,13 +446,16 @@
 <translation id="7943235353293548836">持久 keepalive 的时间间隔</translation>
 <translation id="7955587717700691983">蓝牙键盘</translation>
 <translation id="7960831585769876809">温度</translation>
+<translation id="7977800524392185497">若要加入“<ph name="NETWORK_NAME" />”网络，请转到“设置”</translation>
 <translation id="7978412674231730200">私有密钥</translation>
 <translation id="7994702968232966508">EAP 方法</translation>
 <translation id="802154636333426148">下载失败</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="8041089156583427627">发送反馈</translation>
 <translation id="8075838845814659848">剩余电量</translation>
+<translation id="8082366717211101304">无法从 Android 应用解析 DNS</translation>
 <translation id="808894953321890993">更改密码</translation>
+<translation id="8104083085214006426">您正在使用不安全的开放网络</translation>
 <translation id="811820734797650957">(Android) 可对网关执行 ping 操作</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">请求流量计数器</translation>
@@ -464,10 +480,12 @@
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">内部键盘</translation>
 <translation id="843568408673868420">互联网连接</translation>
+<translation id="844521431886043384">未设置 DNS</translation>
 <translation id="8461329675984532579">家用移动网络提供商名称</translation>
 <translation id="8475690821716466388">Wi-Fi 网络采用了防护能力较弱的 WEP PSK 协议</translation>
 <translation id="8477551185774834963">DNS 延迟时间略微超出了允许的阈值</translation>
 <translation id="8483248364096924578">IP 地址</translation>
+<translation id="8491311378305535241">无法通过防火墙从 Android 应用连接到 HTTP 网站</translation>
 <translation id="8498220429738806196">流量计数器</translation>
 <translation id="8503813439785031346">用户名</translation>
 <translation id="8503836310948963452">只需再等几分钟…</translation>
@@ -493,6 +511,7 @@
 <translation id="8818152010000655963">壁纸</translation>
 <translation id="8834539327799336565">目前已连接</translation>
 <translation id="8845001906332463065">获取帮助</translation>
+<translation id="8855781559874488009">无法通过防火墙连接到 HTTP 网站</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">测试成功</translation>
 <translation id="8898840733695078011">信号强度</translation>
@@ -518,12 +537,14 @@
 <translation id="910415269708673980">刷新 <ph name="PRINCIPAL_NAME" /> 的票据</translation>
 <translation id="9106415115617144481">正在扫描第 <ph name="PAGE_NUMBER" /> 页</translation>
 <translation id="9111102763498581341">解锁</translation>
+<translation id="9122602430962285795">若要重新连接，请转到“设置”</translation>
 <translation id="9126720536733509015">将多个页面扫描成 1 个 PDF 文件</translation>
 <translation id="9137526406337347448">Google 服务</translation>
 <translation id="9149391708638971077">运行内存测试</translation>
 <translation id="9173638680043580060">还剩不到 1 分钟</translation>
 <translation id="917720651393141712">测试</translation>
 <translation id="9190063653747922532">L2TP/IPSec + 预共享密钥</translation>
+<translation id="9204237731135241582">无法从 Android 应用连接网关</translation>
 <translation id="9211490828691860325">所有桌面</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">未激活</translation>

@@ -621,6 +621,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5465662442746197494">Het jy hulp nodig?</translation>
 <translation id="5496819745535887422">Jou administrateur rol tans jou toestel terug. Alle data sal uitgevee word wanneer die toestel herbegin word.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520229639206813572">Jou administrateur het alle e-SIM-profiele verwyder. Kontak jou administrateur vir meer inligting.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> koppel tans.</translation>
 <translation id="5532994612895037630">Tik op enige plek om volskerm op te neem</translation>
 <translation id="553675580533261935">Gaan tans uit sessie</translation>
@@ -752,6 +753,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="6537924328260219877">Seinsterkte <ph name="SIGNAL_STRENGTH" />, foonbattery <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">Saai tans uit na <ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">Vra administrateur</translation>
+<translation id="6565007273808762236">e-SIM-verbinding is nie beskikbaar nie</translation>
 <translation id="6570831796530454248">{0,plural, =1{Dateer toestel binne 'n uur op}other{Dateer toestel binne # uur op}}</translation>
 <translation id="6570902864550063460">Laai tans deur USB</translation>
 <translation id="6585808820553845416">Sessie eindig oor <ph name="SESSION_TIME_REMAINING" />.</translation>
