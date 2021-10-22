@@ -295,8 +295,6 @@ bool FullscreenControlHost::IsExitUiNeeded() {
 }
 
 float FullscreenControlHost::CalculateCursorBufferHeight() const {
-  float control_bottom = FullscreenControlPopup::GetButtonBottomOffset() +
-                         browser_view_->GetClientAreaBoundsInScreen().y();
-  DCHECK_GT(control_bottom, 0);
+  float control_bottom = FullscreenControlPopup::GetButtonBottomOffset();
   return control_bottom * kExitHeightScaleFactor;
 }
