@@ -337,8 +337,11 @@ void FrameLoader::DispatchUnloadEvent(
 }
 
 void FrameLoader::DidExplicitOpen() {
-  probe::DidOpenDocument(frame_, GetDocumentLoader());
-  if (empty_document_status_ == EmptyDocumentStatus::kOnlyEmpty)
+  bool is_empty_document_opened_first_time =
+      empty_document_status_ == EmptyDocumentStatus::kOnlyEmpty;
+  probe::DidOpenDocument(frame_, GetDocumentLoader(),
+                         is_empty_document_opened_first_time);
+  if (is_empty_document_opened_first_time)
     empty_document_status_ = EmptyDocumentStatus::kOnlyEmptyButExplicitlyOpened;
 
   // Only model a document.open() as part of a navigation if its parent is not

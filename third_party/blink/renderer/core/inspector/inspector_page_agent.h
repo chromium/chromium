@@ -192,7 +192,9 @@ class CORE_EXPORT InspectorPageAgent final
   void LoadEventFired(LocalFrame*);
   void WillCommitLoad(LocalFrame*, DocumentLoader*);
   void DidRestoreFromBackForwardCache(LocalFrame*);
-  void DidOpenDocument(LocalFrame*, DocumentLoader*);
+  void DidOpenDocument(LocalFrame*,
+                       DocumentLoader*,
+                       bool is_empty_document_opened_first_time);
   void FrameAttachedToParent(LocalFrame*);
   void FrameDetachedFromParent(LocalFrame*, FrameDetachType);
   void FrameStartedLoading(LocalFrame*);
@@ -254,6 +256,7 @@ class CORE_EXPORT InspectorPageAgent final
       LocalFrame* frame,
       const String& world_name,
       bool grant_universal_access);
+  void EvaluateScriptsOnNewDocument(LocalFrame*);
 
   static KURL UrlWithoutFragment(const KURL&);
 

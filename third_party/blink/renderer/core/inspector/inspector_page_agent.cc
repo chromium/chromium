@@ -931,6 +931,10 @@ scoped_refptr<DOMWrapperWorld> InspectorPageAgent::EnsureDOMWrapperWorld(
 }
 
 void InspectorPageAgent::DidClearDocumentOfWindowObject(LocalFrame* frame) {
+  EvaluateScriptsOnNewDocument(frame);
+}
+
+void InspectorPageAgent::EvaluateScriptsOnNewDocument(LocalFrame* frame) {
   if (!GetFrontend())
     return;
   Vector<WTF::String> keys = scripts_to_evaluate_on_load_.Keys();
@@ -1029,11 +1033,15 @@ void InspectorPageAgent::DidRestoreFromBackForwardCache(LocalFrame* frame) {
       protocol::Page::NavigationTypeEnum::BackForwardCacheRestore);
 }
 
-void InspectorPageAgent::DidOpenDocument(LocalFrame* frame,
-                                         DocumentLoader* loader) {
+void InspectorPageAgent::DidOpenDocument(
+    LocalFrame* frame,
+    DocumentLoader* loader,
+    bool is_empty_document_opened_first_time) {
   GetFrontend()->documentOpened(BuildObjectForFrame(loader->GetFrame()));
   LifecycleEvent(frame, loader, "init",
                  base::TimeTicks::Now().since_origin().InSecondsF());
+  if (is_empty_document_opened_first_time)
+    EvaluateScriptsOnNewDocument(frame);
 }
 
 void InspectorPageAgent::FrameAttachedToParent(LocalFrame* frame) {

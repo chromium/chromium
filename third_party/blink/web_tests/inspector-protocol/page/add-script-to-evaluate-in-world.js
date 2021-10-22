@@ -1,14 +1,15 @@
 (async function(testRunner) {
   const {page, session, dp} = await testRunner.startBlank(
       'Tests that Page.addScriptToEvaluateOnNewDocument is executed in the given world');
-  dp.Runtime.enable();
   dp.Page.enable();
+  const mainFrameId = (await dp.Page.getFrameTree()).result.frameTree.frame.id;
 
+  dp.Runtime.enable();
   const scriptIds = [];
   dp.Runtime.onConsoleAPICalled(msg => testRunner.log(msg.params.args[0].value));
   const logContextCreationCallback = msg => {
-    if (msg.params.context.name.includes('world'))
-      testRunner.log(msg.params.context.name);
+    const suffix = mainFrameId === msg.params.context.auxData.frameId ? 'main frame' : 'subframe';
+    testRunner.log(`${msg.params.context.name || '<main world>'} in ${suffix}`);
   };
   dp.Runtime.onExecutionContextCreated(logContextCreationCallback);
 
@@ -21,6 +22,19 @@
 
   await session.navigate('../resources/blank.html');
 
+  await session.evaluate(`
+    const iframe = document.createElement('iframe');
+    // The url does not matter since we document.open immediately below.
+    // It must not be about:blank though, to avoid sync commit.
+    iframe.src = 'http://google.com';
+    document.body.appendChild(iframe);
+    console.log('added iframe');
+    iframe.contentDocument.open();
+    iframe.contentDocument.write('hello');
+    iframe.contentDocument.close();
+    console.log('written to iframe ' + iframe.contentDocument.documentElement.innerHTML);
+  `);
+
   testRunner.log('Removing scripts');
   for (let identifier of scriptIds) {
     const response = await dp.Page.removeScriptToEvaluateOnNewDocument({identifier});
@@ -28,8 +42,8 @@
       testRunner.log('Failed script removal');
   }
 
-  dp.Runtime.offExecutionContextCreated(logContextCreationCallback);
-  await session.navigate('../resources/blank.html');
+  testRunner.log('Navigating cross-process');
+  await session.navigate('http://127.0.0.1:8000/inspector-protocol/resources/empty.html');
 
   testRunner.completeTest();
 })
