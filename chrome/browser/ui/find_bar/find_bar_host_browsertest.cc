@@ -1462,6 +1462,25 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, ActivateLinkNavigatesPage) {
   observer.Wait();
 }
 
+IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, FitWindow) {
+  Browser::CreateParams params(Browser::TYPE_POPUP, browser()->profile(), true);
+  params.initial_bounds = gfx::Rect(0, 0, 100, 500);
+  Browser* popup = Browser::Create(params);
+  content::WindowedNotificationObserver observer(
+      content::NOTIFICATION_LOAD_STOP,
+      content::NotificationService::AllSources());
+  chrome::AddSelectedTabWithURL(popup, GURL(url::kAboutBlankURL),
+                                ui::PAGE_TRANSITION_LINK);
+  // Wait for the page to finish loading.
+  observer.Wait();
+  popup->window()->Show();
+
+  EnsureFindBoxOpenForBrowser(popup);
+
+  ASSERT_LE(GetFindBarWidthForBrowser(popup),
+            popup->window()->GetBounds().width());
+}
+
 IN_PROC_BROWSER_TEST_F(FindInPageControllerTest,
                        FindMovesOnTabClose_Issue1343052) {
   EnsureFindBoxOpen();

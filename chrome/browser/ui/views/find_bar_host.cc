@@ -76,6 +76,16 @@ WEB_CONTENTS_USER_DATA_KEY_IMPL(FindBarHostHelper);
 gfx::Rect GetLocationForFindBarView(gfx::Rect view_location,
                                     const gfx::Rect& dialog_bounds,
                                     const gfx::Rect& avoid_overlapping_rect) {
+  // Clamp to the `dialog_bounds`.
+  view_location.set_width(
+      std::min(view_location.width(), dialog_bounds.width()));
+  if (base::i18n::IsRTL()) {
+    int boundary = dialog_bounds.width() - view_location.width();
+    view_location.set_x(std::min(view_location.x(), boundary));
+  } else {
+    view_location.set_x(std::max(view_location.x(), dialog_bounds.x()));
+  }
+
   gfx::Rect new_pos = view_location;
 
   // The minimum space between the FindInPage window and the search result.
@@ -309,15 +319,7 @@ bool FindBarHost::CanHandleAccelerators() const {
 
 bool FindBarHost::GetFindBarWindowInfo(gfx::Point* position,
                                        bool* fully_visible) const {
-  if (!find_bar_controller_ ||
-#if defined(OS_WIN) && !defined(USE_AURA)
-      !::IsWindow(host()->GetNativeView())) {
-#else
-      false) {
-      // TODO(sky): figure out linux side.
-      // This is tricky due to asynchronous nature of x11.
-      // See bug http://crbug.com/28629.
-#endif
+  if (!find_bar_controller_) {
     if (position)
       *position = gfx::Point();
     if (fully_visible)
@@ -354,9 +356,9 @@ size_t FindBarHost::GetAudibleAlertCount() const {
 
 gfx::Rect FindBarHost::GetDialogPosition(gfx::Rect avoid_overlapping_rect) {
   // Find the area we have to work with (after accounting for scrollbars, etc).
-  gfx::Rect widget_bounds;
-  GetWidgetBounds(&widget_bounds);
-  if (widget_bounds.IsEmpty())
+  gfx::Rect find_bar_bounds;
+  GetWidgetBounds(&find_bar_bounds);
+  if (find_bar_bounds.IsEmpty())
     return gfx::Rect();
 
   // Ask the view how large an area it needs to draw on.
@@ -364,16 +366,16 @@ gfx::Rect FindBarHost::GetDialogPosition(gfx::Rect avoid_overlapping_rect) {
 
   // Don't show the find bar if |widget_bounds| is not tall enough to fit.
   gfx::Insets insets = view()->GetInsets();
-  if (widget_bounds.height() < prefsize.height() - insets.height())
+  if (find_bar_bounds.height() < prefsize.height() - insets.height())
     return gfx::Rect();
 
   // Place the view in the top right corner of the widget boundaries (top left
   // for RTL languages). Adjust for the view insets to ensure the border lines
   // up with the location bar.
-  int x = widget_bounds.x() - insets.left();
+  int x = find_bar_bounds.x() - insets.left();
   if (!base::i18n::IsRTL())
-    x += widget_bounds.width() - prefsize.width() + insets.width();
-  int y = widget_bounds.y() - insets.top();
+    x += find_bar_bounds.width() - prefsize.width() + insets.width();
+  int y = find_bar_bounds.y() - insets.top();
   const gfx::Rect view_location(x, y, prefsize.width(), prefsize.height());
 
   // When we get Find results back, we specify a selection rect, which we
@@ -386,6 +388,8 @@ gfx::Rect FindBarHost::GetDialogPosition(gfx::Rect avoid_overlapping_rect) {
     GetWidgetPositionNative(&avoid_overlapping_rect);
   }
 
+  gfx::Rect widget_bounds;
+  DropdownBarHost::GetWidgetBounds(&widget_bounds);
   return GetLocationForFindBarView(view_location, widget_bounds,
                                    avoid_overlapping_rect);
 }
