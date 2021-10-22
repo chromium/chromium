@@ -29,6 +29,7 @@
 #include "base/numerics/clamped_math.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/scheduled_action.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -107,7 +108,9 @@ DOMTimer::DOMTimer(ExecutionContext* context,
   MoveToNewTaskRunner(context->GetTaskRunner(task_type));
 
   // Clamping up to 1ms for historical reasons crbug.com/402694.
-  timeout = std::max(timeout, base::Milliseconds(1));
+  // Removing clamp for single_shot behind a feature flag.
+  if (!single_shot || !blink::features::IsSetTimeoutWithoutClampEnabled())
+    timeout = std::max(timeout, base::Milliseconds(1));
 
   if (single_shot)
     StartOneShot(timeout, FROM_HERE);

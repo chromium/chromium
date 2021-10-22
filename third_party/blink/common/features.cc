@@ -1092,5 +1092,12 @@ const base::Feature kClientHintsViewportWidth_DEPRECATED{
 const base::Feature kCSSCascadeLayers{"CSSCascadeLayers",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, the setTimeout(..., 0) will not clamp to 1ms.
+// Tracking bug: https://crbug.com/402694.
+const base::Feature kSetTimeoutWithoutClamp{"SetTimeoutWithoutClamp",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+bool IsSetTimeoutWithoutClampEnabled() {
+  return base::FeatureList::IsEnabled(blink::features::kSetTimeoutWithoutClamp);
+}
 }  // namespace features
 }  // namespace blink
