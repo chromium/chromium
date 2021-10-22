@@ -322,7 +322,6 @@ bool WindowState::HasMaximumWidthOrHeight() const {
 bool WindowState::CanMaximize() const {
   bool can_maximize = (window_->GetProperty(aura::client::kResizeBehaviorKey) &
                        aura::client::kResizeBehaviorCanMaximize) != 0;
-  if (window_->delegate() && can_maximize) LOG(ERROR) << "[WindowState::CanMaximize()] window_: " << window_->GetName() << window_->GetTitle() <<  window_->delegate()->GetMaximumSize().ToString();
 #if DCHECK_IS_ON()
   if (window_->delegate() && can_maximize) {
     const gfx::Size max_size = window_->delegate()->GetMaximumSize();
