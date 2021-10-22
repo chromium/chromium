@@ -189,6 +189,21 @@ class MetricsServiceClient {
   // Checks if the user has forced metrics collection on via the override flag.
   bool IsMetricsReportingForceEnabled() const;
 
+  // Initializes per-user metrics collection. For more details what per-user
+  // metrics collection is, refer to MetricsService::InitPerUserMetrics.
+  //
+  // Since the concept of a user is only applicable in Ash Chrome, this function
+  // should no-op for other platforms.
+  virtual void InitPerUserMetrics() {}
+
+  // Updates the current user's metrics consent. This allows embedders to update
+  // the user consent. If there is no current user, then this function will
+  // no-op.
+  //
+  // Since the concept of a user is only applicable on Ash Chrome, this function
+  // should no-op for other platforms.
+  virtual void UpdateCurrentUserMetricsConsent(bool user_metrics_consent) {}
+
  private:
   base::RepeatingClosure update_running_services_;
 };

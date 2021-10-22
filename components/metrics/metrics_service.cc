@@ -444,7 +444,7 @@ void MetricsService::ClearSavedStabilityMetrics() {
   delegating_provider_.ClearSavedStabilityMetrics();
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void MetricsService::SetUserLogStore(
     std::unique_ptr<UnsentLogStore> user_log_store) {
   // This should only be set after the service has finished initializing.
@@ -464,7 +464,27 @@ void MetricsService::UnsetUserLogStore() {
   log_store()->UnsetAlternateOngoingLogStore();
   OpenNewLog();
 }
-#endif
+
+void MetricsService::UpdateCurrentUserMetricsConsent(
+    bool user_metrics_consent) {
+  client_->UpdateCurrentUserMetricsConsent(user_metrics_consent);
+}
+
+void MetricsService::InitPerUserMetrics() {
+  client_->InitPerUserMetrics();
+}
+
+void MetricsService::ResetClientId() {
+  // Pref must be cleared in order for ForceClientIdCreation to generate a new
+  // client ID.
+  //
+  // TODO(jongahn): Add histogram to monitor how frequently this is called
+  // before launching per-user collection.
+  local_state_->ClearPref(prefs::kMetricsClientID);
+  state_manager_->ForceClientIdCreation();
+  client_->SetMetricsClientId(state_manager_->client_id());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 bool MetricsService::StageCurrentLogForTest() {
   CloseCurrentLog();
