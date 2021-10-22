@@ -209,6 +209,7 @@
 #include "ui/gfx/scrollbar_size.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/accessibility/view_accessibility_utils.h"
+#include "ui/views/background.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/controls/separator.h"
@@ -431,28 +432,35 @@ class OverlayViewTargeterDelegate : public views::ViewTargeterDelegate {
   }
 };
 
-class ContentsSeparator : public views::Separator {
+// This class uses a solid background instead of a views::Separator. The latter
+// is not guaranteed to fill its bounds and assumes being painted on an opaque
+// background (which is why it'd be OK to only partially fill its bounds). This
+// needs to fill its bounds to have the entire BrowserView painted.
+class ContentsSeparator : public views::View {
  public:
   METADATA_HEADER(ContentsSeparator);
+
+  ContentsSeparator() {
+    // BrowserViewLayout will respect either the height or width of this,
+    // depending on orientation, not simultaneously both.
+    SetPreferredSize(
+        gfx::Size(views::Separator::kThickness, views::Separator::kThickness));
+  }
 
  private:
   // views::View:
   void OnThemeChanged() override {
-    views::Separator::OnThemeChanged();
-    UpdateColor();
-  }
-  void AddedToWidget() override { UpdateColor(); }
-
-  void UpdateColor() {
     const ui::ThemeProvider* const theme_provider = GetThemeProvider();
-    SetColor(color_utils::GetResultingPaintColor(
-        theme_provider->GetColor(
-            ThemeProperties::COLOR_TOOLBAR_CONTENT_AREA_SEPARATOR),
-        theme_provider->GetColor(ThemeProperties::COLOR_TOOLBAR)));
+    SetBackground(
+        views::CreateSolidBackground(color_utils::GetResultingPaintColor(
+            theme_provider->GetColor(
+                ThemeProperties::COLOR_TOOLBAR_CONTENT_AREA_SEPARATOR),
+            theme_provider->GetColor(ThemeProperties::COLOR_TOOLBAR))));
+    View::OnThemeChanged();
   }
 };
 
-BEGIN_METADATA(ContentsSeparator, views::Separator)
+BEGIN_METADATA(ContentsSeparator, views::View)
 END_METADATA
 
 bool ShouldShowWindowIcon(const Browser* browser) {

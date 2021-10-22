@@ -576,24 +576,23 @@ void BrowserViewLayout::LayoutSidePanelView(
   side_panel_bounds.set_width(std::min(side_panel->GetPreferredSize().width(),
                                        contents_container_bounds.width()));
 
-  constexpr int kSidePanelSeparatorWidth = 1;
-
   // Shrink container bounds to fit the side panel.
-  contents_container_bounds.set_width(contents_container_bounds.width() -
-                                      side_panel_bounds.width() -
-                                      kSidePanelSeparatorWidth);
+  contents_container_bounds.set_width(
+      contents_container_bounds.width() - side_panel_bounds.width() -
+      side_panel_separator->GetPreferredSize().width());
 
   if (is_right_aligned) {
     // Place the side panel to the right of contents, leaving space for the
     // separator.
     side_panel_bounds.set_x(contents_container_bounds.x() +
                             contents_container_bounds.width() +
-                            kSidePanelSeparatorWidth);
+                            side_panel_separator->GetPreferredSize().width());
   } else {
     // Adjust the `contents_container_bounds` to sit to the right of the left
     // aligned side panel, leaving space for the separator.
-    contents_container_bounds.set_x(side_panel_bounds.width() +
-                                    kSidePanelSeparatorWidth);
+    contents_container_bounds.set_x(
+        side_panel_bounds.width() +
+        side_panel_separator->GetPreferredSize().width());
   }
 
   side_panel->SetBoundsRect(side_panel_bounds);
@@ -601,7 +600,8 @@ void BrowserViewLayout::LayoutSidePanelView(
   // Adjust the side panel separator bounds based on the side panel bounds
   // calculated above.
   gfx::Rect side_panel_separator_bounds = side_panel_bounds;
-  side_panel_separator_bounds.set_width(kSidePanelSeparatorWidth);
+  side_panel_separator_bounds.set_width(
+      side_panel_separator->GetPreferredSize().width());
   // If right aligned place it immediately to the right of the contents
   // container. If left aligned place it immediately to the right of the side
   // panel.
