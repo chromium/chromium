@@ -85779,6 +85779,19 @@
        {}
       ]
      ],
+     "contain-paint-change-opacity.html": [
+      "4fe3f439b54ee306eccf0d670e43249ddbf6010d",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "contain-paint-clip-001.html": [
       "6637e08393b972cbe1c075b2e9b79e681ff5dab2",
       [
@@ -102985,6 +102998,19 @@
        [
         [
          "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "table-as-item-large-intrinsic-size.html": [
+      "1aba63b4fb4bfa5f4566c30a4da4a67e275882d6",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
          "=="
         ]
        ],
@@ -132810,6 +132836,19 @@
      ]
     },
     "css-position": {
+     "containing-block-change-scrollframe.html": [
+      "803512cc1a0a824bc54aac289e03e432d863109d",
+      [
+       null,
+       [
+        [
+         "/css/css-position/containing-block-change-scrollframe-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "fixed-z-index-blend.html": [
       "2b0988d1c608ae0202e484c15fe092c7f9d8d6bf",
       [
@@ -249060,6 +249099,10 @@
       "38ad6be67d76b736803ad22d117a6c01060a4169",
       []
      ],
+     "containing-block-change-scrollframe-ref.html": [
+      "63cfe1148a4d60231f6df47b29f8dbfaa0751279",
+      []
+     ],
      "fixed-z-index-blend-ref.html": [
       "864297babb3dc2b5f2042b1eec2f1b5c324f09b1",
       []
@@ -300016,6 +300059,14 @@
      []
     ],
     "focus": {
+     "click-focus-delegatesFocus-click-expected.txt": [
+      "4a77e1a9036a0b67830c0947a99d346f7c9c0c09",
+      []
+     ],
+     "focus-method-delegatesFocus-expected.txt": [
+      "361c14d641c734975e7789d123d52868cae6abd5",
+      []
+     ],
      "focus-pseudo-matches-on-shadow-host-expected.txt": [
       "3eea1c306839b2199b2cdf861b4b7333b11f304f",
       []
@@ -369611,7 +369662,7 @@
       ]
      ],
      "ElementInternals-setFormValue.html": [
-      "38a2590beb48dc34e5a524166ff9e6d061bceb66",
+      "8a13973f085af707ae15b8369032fd1fcf1c39e9",
       [
        null,
        {}
@@ -482919,7 +482970,7 @@
       ]
      ],
      "click-focus-delegatesFocus-click.html": [
-      "8b5fb843a2dcca65951980456d2b16c17645bde6",
+      "0578c15582a5cddd924199f52aeafcf6d0bc4cc2",
       [
        null,
        {
@@ -482946,7 +482997,7 @@
       ]
      ],
      "focus-method-delegatesFocus.html": [
-      "de0b6bf70f8083d9ccdbeff432c9a194da45adc8",
+      "99667029ad866a200587335c63706d97c82dfe58",
       [
        null,
        {

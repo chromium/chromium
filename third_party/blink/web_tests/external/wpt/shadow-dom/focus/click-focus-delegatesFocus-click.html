@@ -115,8 +115,8 @@ promise_test(async function() {
   const dom = createNestedHosts(true, false);
   await test_driver.click(dom.outerHost);
   assert_equals(document.activeElement, dom.outerHost);
-  assert_equals(dom.outerShadow.activeElement, dom.innerHost);
-  assert_equals(dom.innerShadow.activeElement, dom.innerShadowChild);
+  assert_equals(dom.outerShadow.activeElement, dom.outerShadowChild);
+  assert_equals(dom.innerShadow.activeElement, null);
 }, "click on the host with delegatesFocus with another host with no delegatesFocus and a focusable child");
 
 promise_test(async function() {
