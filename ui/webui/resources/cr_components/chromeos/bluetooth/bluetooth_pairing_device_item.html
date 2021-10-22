@@ -1,4 +1,8 @@
 <style include="cr-shared-style">
+  :host([pairing-failed_]) #secondaryLabel {
+    color: var(--cros-text-color-alert);
+  }
+
   #container {
     max-height: 32px;
   }
@@ -19,6 +23,12 @@
   .cr-row {
     padding: 0;
   }
+
+  .secondary {
+    color: var(--cros-text-color-disabled);
+    font-size: 11px;
+  }
+
 </style>
 <div id="container" class="cr-row continuation"
     on-click="onSelected_"
@@ -26,6 +36,9 @@
   <bluetooth-icon device="[[device]]"></bluetooth-icon>
   <div id="deviceName" class="text-row">
     [[getDeviceName_(device.*)]]
-    <!--TODO(crbug.com/1010321): Add secondary text for device pairing status.-->
+     <!-- TODO(crbug.com/1010321): Add A11Y. -->
+    <div id="secondaryLabel" class="secondary">
+      [[secondaryLabel_]]
+    </div>
   </div>
 </div>

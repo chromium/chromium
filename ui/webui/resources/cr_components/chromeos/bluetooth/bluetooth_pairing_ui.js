@@ -97,6 +97,15 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
       },
 
       /**
+       * Id of a device who's pairing attempt failed.
+       * @private {string}
+       */
+      lastFailedPairingDeviceId_: {
+        type: String,
+        value: '',
+      },
+
+      /**
        * Used to access |BluetoothPairingSubpageId| type in HTML.
        * @private {!BluetoothPairingSubpageId}
        */
@@ -172,6 +181,8 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
     this.devicePendingPairing_ = event.detail.device;
     assert(this.devicePendingPairing_);
 
+    this.lastFailedPairingDeviceId_ = '';
+
     this.devicePairingHandler_
         .pairDevice(
             this.devicePendingPairing_.id,
@@ -186,7 +197,6 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
    * @private
    */
   handlePairDeviceResult_(result) {
-    this.devicePendingPairing_ = null;
     this.pairingDelegateReceiver_.$.close();
     this.pairingDelegateReceiver_ = null;
     this.pairingAuthType_ = null;
@@ -200,7 +210,8 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
     }
 
     this.selectedPageId_ = BluetoothPairingSubpageId.DEVICE_SELECTION_PAGE;
-    // TODO(crbug.com/1010321): Pass pairing result to subpages.
+    this.lastFailedPairingDeviceId_ = this.devicePendingPairing_.id;
+    this.devicePendingPairing_ = null;
   }
 
   /** @override */

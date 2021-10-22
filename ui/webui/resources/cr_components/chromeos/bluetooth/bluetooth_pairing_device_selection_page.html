@@ -20,7 +20,10 @@
           no-bottom-scroll-border>
         <iron-list items="[[devices]]" preserve-focus>
           <template>
-            <bluetooth-pairing-device-item device="[[item]]">
+            <bluetooth-pairing-device-item
+                device="[[item]]"
+                device-item-state="[[getDeviceItemState_(
+                    item, devicePendingPairing.*, failedPairingDeviceId)]]" >
             </bluetooth-pairing-device-item>
           </template>
         </iron-list>

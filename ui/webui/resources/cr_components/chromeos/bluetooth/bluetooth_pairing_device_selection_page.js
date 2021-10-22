@@ -16,7 +16,7 @@ import '../localized_link/localized_link.js';
 import {CrScrollableBehavior, CrScrollableBehaviorInterface} from '//resources/cr_elements/cr_scrollable_behavior.m.js';
 import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ButtonBarState, ButtonState} from './bluetooth_types.js';
+import {ButtonBarState, ButtonState, DeviceItemState} from './bluetooth_types.js';
 
 /**
  * @constructor
@@ -48,6 +48,23 @@ export class SettingsBluetoothPairingDeviceSelectionPageElement extends
         value: [],
       },
 
+      /**
+       * Id of a device who's pairing attempt failed.
+       * @type {string}
+       */
+      failedPairingDeviceId: {
+        type: String,
+        value: '',
+      },
+
+      /**
+       * @type {?chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
+       */
+      devicePendingPairing: {
+        type: Object,
+        value: null,
+      },
+
       /** @private {!ButtonBarState} */
       buttonBarState_: {
         type: Object,
@@ -77,6 +94,24 @@ export class SettingsBluetoothPairingDeviceSelectionPageElement extends
     }
 
     return this.i18n('bluetoothNoAvailableDevices');
+  }
+
+  /**
+   * @param {!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties} device
+   * @return {!DeviceItemState}
+   * @private
+   */
+  getDeviceItemState_(device) {
+    if (device.id === this.failedPairingDeviceId) {
+      return DeviceItemState.FAILED;
+    }
+
+    if (this.devicePendingPairing &&
+        device.id === this.devicePendingPairing.id) {
+      return DeviceItemState.PAIRING;
+    }
+
+    return DeviceItemState.DEFAULT;
   }
 }
 

@@ -56,6 +56,7 @@ js_library("bluetooth_icon") {
 js_library("bluetooth_pairing_device_item") {
   deps = [
     ":bluetooth_icon",
+    ":bluetooth_types",
     "//chromeos/services/bluetooth_config/public/mojom:mojom_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]

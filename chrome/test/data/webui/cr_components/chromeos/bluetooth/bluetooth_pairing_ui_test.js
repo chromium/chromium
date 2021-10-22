@@ -190,8 +190,9 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
   test('Only one device is paired at a time', async function() {
     const deviceSelectionPage =
         bluetoothPairingUi.shadowRoot.querySelector('#deviceSelectionPage');
+    const deviceId = '123456';
     const device = createDefaultBluetoothDevice(
-        /*id=*/ '123456',
+        deviceId,
         /*publicName=*/ 'BeatsX',
         /*connectionState=*/
         chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected,
@@ -216,21 +217,29 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
     const deviceHandler = bluetoothConfig.getLastCreatedPairingHandler();
 
     assertEquals(deviceHandler.getPairDeviceCalledCount(), 0);
+    assertEquals(deviceSelectionPage.failedPairingDeviceId, '');
 
     let event = new CustomEvent(
         'pair-device', {detail: {device: device.deviceProperties}});
     deviceSelectionPage.dispatchEvent(event);
     await flushAsync();
 
+    assertEquals(
+        device.deviceProperties, deviceSelectionPage.devicePendingPairing);
+
     // Complete pairing to |device|.
     deviceHandler.completePairDevice(/*success=*/ false);
     await flushAsync();
+
+    assertEquals(deviceSelectionPage.failedPairingDeviceId, deviceId);
 
     await flushAsync();
     event = new CustomEvent(
         'pair-device', {detail: {device: device.deviceProperties}});
     deviceSelectionPage.dispatchEvent(event);
     await flushAsync();
+    assertEquals(
+        device.deviceProperties, deviceSelectionPage.devicePendingPairing);
 
     // pairDevice() should be called twice.
     assertEquals(deviceHandler.getPairDeviceCalledCount(), 2);

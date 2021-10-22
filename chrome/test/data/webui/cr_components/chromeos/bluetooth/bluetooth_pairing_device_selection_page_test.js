@@ -6,6 +6,7 @@
 import 'chrome://bluetooth-pairing/strings.m.js';
 
 import {SettingsBluetoothPairingDeviceSelectionPageElement} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_pairing_device_selection_page.js';
+import {DeviceItemState} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_types.js';
 import {setBluetoothConfigForTesting} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from '../../../chai_assert.js';
@@ -61,6 +62,9 @@ suite('CrComponentsBluetoothPairingDeviceSelectionPageTest', function() {
         deviceSelectionPage.shadowRoot.querySelector('iron-list');
     const getDeviceListTitle = () =>
         deviceSelectionPage.shadowRoot.querySelector('#deviceListTitle');
+    const getDeviceListItems = () =>
+        deviceSelectionPage.shadowRoot.querySelectorAll(
+            'bluetooth-pairing-device-item');
 
     const learnMoreLink =
         deviceSelectionPage.shadowRoot.querySelector('localized-link');
@@ -76,8 +80,9 @@ suite('CrComponentsBluetoothPairingDeviceSelectionPageTest', function() {
         deviceSelectionPage.i18n('bluetoothNoAvailableDevices'),
         getDeviceListTitle().textContent.trim());
 
+    const deviceId = '12//345&6789';
     const device = createDefaultBluetoothDevice(
-        /*id=*/ '12//345&6789',
+        deviceId,
         /*publicName=*/ 'BeatsX',
         /*connectionState=*/
         chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected,
@@ -95,5 +100,21 @@ suite('CrComponentsBluetoothPairingDeviceSelectionPageTest', function() {
     assertEquals(
         deviceSelectionPage.i18n('bluetoothAvailableDevices'),
         getDeviceListTitle().textContent.trim());
+
+    assertEquals(
+        getDeviceListItems()[0].deviceItemState, DeviceItemState.DEFAULT);
+
+    deviceSelectionPage.failedPairingDeviceId = deviceId;
+    await flushAsync();
+    assertEquals(
+        getDeviceListItems()[0].deviceItemState, DeviceItemState.FAILED);
+    await flushAsync();
+
+    deviceSelectionPage.failedPairingDeviceId = '';
+    deviceSelectionPage.devicePendingPairing = device.deviceProperties;
+
+    await flushAsync();
+    assertEquals(
+        getDeviceListItems()[0].deviceItemState, DeviceItemState.PAIRING);
   });
 });

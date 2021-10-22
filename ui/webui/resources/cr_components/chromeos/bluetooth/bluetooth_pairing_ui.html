@@ -11,7 +11,9 @@
     <template is="dom-if" if="[[shouldShowSubpage_(
         SubpageId.DEVICE_SELECTION_PAGE, selectedPageId_)]]">
       <bluetooth-pairing-device-selection-page
+          failed-pairing-device-id="[[lastFailedPairingDeviceId_]]"
           devices="[[discoveredDevices_]]"
+          device-pending-pairing="[[devicePendingPairing_]]"
           on-pair-device="onPairDevice_"
           id="deviceSelectionPage">
       </bluetooth-pairing-device-selection-page>

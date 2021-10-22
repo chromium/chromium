@@ -34,6 +34,8 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source) {
       {"bluetoothEnterPin", IDS_BLUETOOTH_PAIRING_ENTER_PIN},
       {"bluetoothPairedDeviceItemBatteryPercentage",
        IDS_BLUETOOTH_DEVICE_ITEM_BATTERY_PERCENTAGE},
+      {"bluetoothPairing", IDS_BLUETOOTH_PAIRING_PAIRING},
+      {"bluetoothPairingFailed", IDS_BLUETOOTH_PAIRING_PAIRING_FAILED},
       {"bluetoothConfirmCodeMessage",
        IDS_BLUETOOTH_PAIRING_CONFIRM_CODE_MESSAGE},
       // Device connecting and pairing.

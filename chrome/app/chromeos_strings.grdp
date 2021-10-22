@@ -821,6 +821,12 @@
   <message name="IDS_BLUETOOTH_DEVICE_ITEM_BATTERY_PERCENTAGE" desc="Label for a Bluetooth device in a list that indicates the battery level of the device.">
     <ph name="BATTERY_PERCENTAGE">$1<ex>32</ex></ph>%
   </message>
+  <message name="IDS_BLUETOOTH_PAIRING_PAIRING" desc="Bluetooth pairing dialog: Message informing the user that the device is being paired to.">
+    Pairing...
+  </message>
+  <message name="IDS_BLUETOOTH_PAIRING_PAIRING_FAILED" desc="Bluetooth pairing dialog: Message informing the user that the device pairing failed.">
+    Couldn't pair. Select device to try again.
+  </message>
   <message name="IDS_BLUETOOTH_PAIRING_CONFIRM_CODE_MESSAGE" desc="Bluetooth pairing dialog: Message informing the user to confirm the code displayed is the same as the code displayed on the device being paired to.">
     Before pairing, make sure this code is the same on both devices
   </message>
