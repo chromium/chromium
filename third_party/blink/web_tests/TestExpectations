@@ -1486,6 +1486,7 @@ crbug.com/1058792 virtual/layout_ng_block_frag/fast/multicol/vertical-rl/composi
 ### Tests passing with LayoutNGFlexFragmentation enabled:
 virtual/layout_ng_flex_frag/external/wpt/css/css-break/flexbox/flex-container-fragmentation-003.html [ Pass ]
 virtual/layout_ng_flex_frag/external/wpt/css/css-break/flexbox/flex-container-fragmentation-004.html [ Pass ]
+virtual/layout_ng_flex_frag/external/wpt/css/css-break/flexbox/flex-container-fragmentation-007.tentative.html [ Pass ]
 
 ### Tests failing with LayoutNGFlexFragmentation enabled:
 crbug.com/660611 virtual/layout_ng_flex_frag/fast/multicol/flexbox/flexbox.html [ Failure ]
@@ -3974,6 +3975,7 @@ crbug.com/829028 external/wpt/css/css-break/fieldset-005.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/fieldset-006.html [ Failure ]
 crbug.com/660611 external/wpt/css/css-break/flexbox/flex-container-fragmentation-003.html [ Failure ]
 crbug.com/660611 external/wpt/css/css-break/flexbox/flex-container-fragmentation-004.html [ Failure ]
+crbug.com/660611 external/wpt/css/css-break/flexbox/flex-container-fragmentation-007.tentative.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/forced-break-at-fragmentainer-start-000.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/out-of-flow-in-multicolumn-012.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/out-of-flow-in-multicolumn-029.html [ Failure ]

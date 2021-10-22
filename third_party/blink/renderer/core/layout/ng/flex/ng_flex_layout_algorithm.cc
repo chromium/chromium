@@ -50,7 +50,11 @@ NGFlexLayoutAlgorithm::NGFlexLayoutAlgorithm(
                  MainAxisContentExtent(LayoutUnit::Max()),
                  child_percentage_size_,
                  &Node().GetDocument()),
-      layout_info_for_devtools_(layout_info_for_devtools) {}
+      layout_info_for_devtools_(layout_info_for_devtools) {
+  // TODO(almaher): Support multi-line and row fragmentation.
+  has_block_fragmentation_ = ConstraintSpace().HasBlockFragmentation() &&
+                             !is_horizontal_flow_ && !algorithm_.IsMultiline();
+}
 
 bool NGFlexLayoutAlgorithm::MainAxisIsInlineAxis(
     const NGBlockNode& child) const {
@@ -867,39 +871,57 @@ scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::LayoutInternal() {
                                    cross_axis_offset);
   }
 
-  LayoutUnit intrinsic_block_size = BorderScrollbarPadding().BlockSum();
-
-  // TODO(almaher): The intrinsic block size will be incorrect if fragmented.
-  // Need to keep track of this as we perform fragmentation to ensure this is
-  // set correctly.
-  if (algorithm_.FlexLines().IsEmpty() && Node().HasLineIfEmpty()) {
-    intrinsic_block_size += Node().EmptyLineBlockSize();
-  } else {
-    intrinsic_block_size += algorithm_.IntrinsicContentBlockSize();
-  }
-
-  intrinsic_block_size =
-      ClampIntrinsicBlockSize(ConstraintSpace(), Node(),
-                              BorderScrollbarPadding(), intrinsic_block_size);
-
   LayoutUnit previously_consumed_block_size;
   if (UNLIKELY(BreakToken()))
     previously_consumed_block_size = BreakToken()->ConsumedBlockSize();
 
-  LayoutUnit block_size = ComputeBlockSizeForFragment(
-      ConstraintSpace(), Style(), BorderPadding(),
-      previously_consumed_block_size + intrinsic_block_size,
+  // |total_intrinsic_block_size| is the intrinsic block size for the entire
+  // flex container, whereas |intrinsic_block_size_| is tracked during layout
+  // when fragmenting and is the intrinsic block size of the flex container in
+  // the current fragmentainer. When not fragmenting,
+  // |total_intrinsic_block_size| and |intrinsic_block_size_| will be
+  // equivalent.
+  LayoutUnit total_intrinsic_block_size = BorderScrollbarPadding().block_start;
+  intrinsic_block_size_ = total_intrinsic_block_size;
+
+  if (algorithm_.FlexLines().IsEmpty() && Node().HasLineIfEmpty()) {
+    total_intrinsic_block_size += Node().EmptyLineBlockSize();
+    intrinsic_block_size_ =
+        (total_intrinsic_block_size - previously_consumed_block_size)
+            .ClampNegativeToZero();
+  } else {
+    LayoutUnit content_block_size = algorithm_.IntrinsicContentBlockSize();
+    total_intrinsic_block_size += content_block_size;
+    if (!has_block_fragmentation_)
+      intrinsic_block_size_ += content_block_size;
+  }
+
+  total_intrinsic_block_size = ClampIntrinsicBlockSize(
+      ConstraintSpace(), Node(), BorderScrollbarPadding(),
+      total_intrinsic_block_size + BorderScrollbarPadding().block_end);
+
+  total_block_size_ = ComputeBlockSizeForFragment(
+      ConstraintSpace(), Style(), BorderPadding(), total_intrinsic_block_size,
       container_builder_.InlineSize());
-
-  container_builder_.SetIntrinsicBlockSize(intrinsic_block_size);
-  container_builder_.SetFragmentsTotalBlockSize(block_size);
-
-  if (has_column_percent_flex_basis_)
-    container_builder_.SetHasDescendantThatDependsOnPercentageBlockSize(true);
 
   bool success = GiveLinesAndItemsFinalPositionAndSize();
   if (!success)
     return nullptr;
+
+  intrinsic_block_size_ = ClampIntrinsicBlockSize(
+      ConstraintSpace(), Node(), BorderScrollbarPadding(),
+      intrinsic_block_size_ + BorderScrollbarPadding().block_end);
+
+  LayoutUnit block_size = ComputeBlockSizeForFragment(
+      ConstraintSpace(), Style(), BorderPadding(),
+      previously_consumed_block_size + intrinsic_block_size_,
+      container_builder_.InlineSize());
+
+  container_builder_.SetIntrinsicBlockSize(intrinsic_block_size_);
+  container_builder_.SetFragmentsTotalBlockSize(block_size);
+
+  if (has_column_percent_flex_basis_)
+    container_builder_.SetHasDescendantThatDependsOnPercentageBlockSize(true);
 
   if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
     FinishFragmentation(Node(), ConstraintSpace(), BorderPadding().block_end,
@@ -965,8 +987,7 @@ bool NGFlexLayoutAlgorithm::GiveLinesAndItemsFinalPositionAndSize() {
   LayoutUnit final_content_main_size =
       container_builder_.InlineSize() - BorderScrollbarPadding().InlineSum();
   LayoutUnit final_content_cross_size =
-      container_builder_.FragmentsTotalBlockSize() -
-      BorderScrollbarPadding().BlockSum();
+      total_block_size_ - BorderScrollbarPadding().BlockSum();
   if (is_column_)
     std::swap(final_content_main_size, final_content_cross_size);
 
@@ -1018,9 +1039,7 @@ bool NGFlexLayoutAlgorithm::GiveLinesAndItemsFinalPositionAndSize() {
       // TODO(almaher): Take fragmentation into account when performing the
       // layout for stretch.
       ApplyStretchAlignmentToChild(*flex_item);
-    } else if (ConstraintSpace().HasBlockFragmentation() &&
-               !is_horizontal_flow_ && !algorithm_.IsMultiline()) {
-      // TODO(almaher): Support multi-line and row fragmentation.
+    } else if (has_block_fragmentation_) {
       LayoutWithBlockFragmentation(*flex_item, location.Y(),
                                    To<NGBlockBreakToken>(item_break_token));
 
@@ -1045,6 +1064,14 @@ bool NGFlexLayoutAlgorithm::GiveLinesAndItemsFinalPositionAndSize() {
                                  &fallback_baseline);
     }
 
+    if (has_block_fragmentation_) {
+      // TODO(almaher): What to do in the case where the line extends past
+      // the last item? Should that be included when fragmenting?
+      intrinsic_block_size_ +=
+          (location.Y() + fragment.BlockSize() - intrinsic_block_size_)
+              .ClampNegativeToZero();
+    }
+
     container_builder_.AddResult(*flex_item->layout_result_,
                                  {location.X(), location.Y()});
 
@@ -1054,8 +1081,13 @@ bool NGFlexLayoutAlgorithm::GiveLinesAndItemsFinalPositionAndSize() {
       // have to not adversely affect execution speed of a regular layout.
       PhysicalRect item_rect;
       item_rect.size = physical_fragment.Size();
+
+      // TODO(almaher): Is using |total_block_size_| correct in the case of
+      // fragmentation?
+      LogicalSize logical_flexbox_size =
+          LogicalSize(container_builder_.InlineSize(), total_block_size_);
       PhysicalSize flexbox_size = ToPhysicalSize(
-          container_builder_.Size(), ConstraintSpace().GetWritingMode());
+          logical_flexbox_size, ConstraintSpace().GetWritingMode());
       item_rect.offset =
           LogicalOffset(location.X(), location.Y())
               .ConvertToPhysical(ConstraintSpace().GetWritingDirection(),

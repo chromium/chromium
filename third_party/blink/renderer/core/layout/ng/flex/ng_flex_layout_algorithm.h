@@ -98,8 +98,16 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
 
   bool has_column_percent_flex_basis_ = false;
   bool ignore_child_scrollbar_changes_ = false;
+  bool has_block_fragmentation_ = false;
   FlexLayoutAlgorithm algorithm_;
   DevtoolsFlexInfo* layout_info_for_devtools_;
+
+  // The block size of the entire flex container (ignoring any fragmentation).
+  LayoutUnit total_block_size_;
+  // This will be the intrinsic block size in the current fragmentainer, if
+  // inside a fragmentation context. Otherwise, it will represent the intrinsic
+  // block size for the entire flex container.
+  LayoutUnit intrinsic_block_size_;
 };
 
 }  // namespace blink
