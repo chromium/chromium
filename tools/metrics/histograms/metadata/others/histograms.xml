@@ -2987,6 +2987,24 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="ChromiumAndroidLinker.{ProcessType}ThreadLoadTime" units="ms"
+    expires_after="2022-10-01">
+  <owner>pasko@chromium.org</owner>
+  <owner>agrieve@chromium.org</owner>
+  <summary>
+    The amount of CPU time (thread time) it took to load the native libraries in
+    {ProcessType}.
+
+    For a more detailed description of each suffix process type suffix (Browser,
+    Child, Zygote) see description of the ChromiumAndroidLinker.*LoadTime2.
+  </summary>
+  <token key="ProcessType">
+    <variant name="Browser" summary="the browser process"/>
+    <variant name="Child" summary="a child process"/>
+    <variant name="Zygote" summary="the App Zygote"/>
+  </token>
+</histogram>
+
 <histogram name="Chromoting.Connections" enum="State"
     expires_after="2018-08-30">
   <owner>jamiewalch@chromium.org</owner>

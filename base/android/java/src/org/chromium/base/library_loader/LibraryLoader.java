@@ -405,9 +405,17 @@ public class LibraryLoader {
             }
         }
 
+        private static final String LINKER_HISTOGRAM_PREFIX = "ChromiumAndroidLinker.";
+
         private void recordLoadTimeHistogram(long loadTimeMs) {
             RecordHistogram.recordTimesHistogram(
-                    "ChromiumAndroidLinker." + creationAsString() + "LoadTime2", loadTimeMs);
+                    LINKER_HISTOGRAM_PREFIX + creationAsString() + "LoadTime2", loadTimeMs);
+        }
+
+        public void recordLoadThreadTimeHistogram(long threadLoadTimeMs) {
+            RecordHistogram.recordTimesHistogram(
+                    LINKER_HISTOGRAM_PREFIX + creationAsString() + "ThreadLoadTime",
+                    threadLoadTimeMs);
         }
     }
 
@@ -849,6 +857,7 @@ public class LibraryLoader {
             setLinkerImplementationIfNeededAlreadyLocked();
 
             long startTime = SystemClock.uptimeMillis();
+            long startThreadTime = SystemClock.currentThreadTimeMillis();
 
             if (useChromiumLinker() && !mFallbackToSystemLinker) {
                 if (DEBUG) Log.i(TAG, "Loading with the Chromium linker.");
@@ -864,6 +873,8 @@ public class LibraryLoader {
 
             long loadTimeMs = SystemClock.uptimeMillis() - startTime;
             getMediator().recordLoadTimeHistogram(loadTimeMs);
+            getMediator().recordLoadThreadTimeHistogram(
+                    SystemClock.currentThreadTimeMillis() - startThreadTime);
             if (DEBUG) Log.i(TAG, "Time to load native libraries: %d ms", loadTimeMs);
             mLoadState = LoadState.MAIN_DEX_LOADED;
         } catch (UnsatisfiedLinkError e) {
