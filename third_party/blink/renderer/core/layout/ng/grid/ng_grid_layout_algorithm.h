@@ -218,8 +218,7 @@ struct GridItemIndices {
     explicit NGGridLayoutAlgorithm(const NGLayoutAlgorithmParams& params);
 
     scoped_refptr<const NGLayoutResult> Layout() override;
-    MinMaxSizesResult ComputeMinMaxSizes(
-        const MinMaxSizesFloatInput&) const override;
+    MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override;
 
     // Computes the containing block rect of out of flow items from stored data
     // in |NGGridData|.

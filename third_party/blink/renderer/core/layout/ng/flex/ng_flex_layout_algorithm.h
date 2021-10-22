@@ -25,8 +25,7 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
   explicit NGFlexLayoutAlgorithm(const NGLayoutAlgorithmParams& params,
                                  DevtoolsFlexInfo* devtools = nullptr);
 
-  MinMaxSizesResult ComputeMinMaxSizes(
-      const MinMaxSizesFloatInput&) const override;
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override;
   scoped_refptr<const NGLayoutResult> Layout() override;
 
  private:

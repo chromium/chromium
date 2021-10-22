@@ -191,7 +191,7 @@ scoped_refptr<const NGLayoutResult> NGMathRadicalLayoutAlgorithm::Layout() {
 }
 
 MinMaxSizesResult NGMathRadicalLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesFloatInput&) const {
+    const MinMaxSizesFloatInput&) {
   DCHECK(IsValidMathMLRadical(Node()));
 
   NGBlockNode base = nullptr;

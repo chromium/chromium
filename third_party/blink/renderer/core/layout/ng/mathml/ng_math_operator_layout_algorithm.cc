@@ -181,8 +181,7 @@ scoped_refptr<const NGLayoutResult> NGMathOperatorLayoutAlgorithm::Layout() {
 }
 
 MinMaxSizesResult NGMathOperatorLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesFloatInput&) const {
-
+    const MinMaxSizesFloatInput&) {
   MinMaxSizes sizes;
   // https://w3c.github.io/mathml-core/#layout-of-operators
   auto* element = DynamicTo<MathMLOperatorElement>(Node().GetDOMNode());

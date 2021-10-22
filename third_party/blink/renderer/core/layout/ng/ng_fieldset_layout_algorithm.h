@@ -25,8 +25,7 @@ class CORE_EXPORT NGFieldsetLayoutAlgorithm
 
   scoped_refptr<const NGLayoutResult> Layout() override;
 
-  MinMaxSizesResult ComputeMinMaxSizes(
-      const MinMaxSizesFloatInput&) const override;
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override;
 
   static LayoutUnit ComputeLegendInlineOffset(
       const ComputedStyle& legend_style,
