@@ -242,9 +242,9 @@ void ChromeAppListModelUpdater::SetItemPosition(
   DCHECK(new_position.IsValid());
   if (item->position().IsValid() && item->position().Equals(new_position))
     return;
-
-  item->SetPosition(new_position);
-  app_list_controller_->SetItemMetadata(id, item->CloneMetadata());
+  std::unique_ptr<ash::AppListItemMetadata> data = item->CloneMetadata();
+  data->position = new_position;
+  app_list_controller_->SetItemMetadata(id, std::move(data));
 }
 
 void ChromeAppListModelUpdater::SetItemIsPersistent(const std::string& id,
@@ -261,14 +261,11 @@ void ChromeAppListModelUpdater::SetItemIsPersistent(const std::string& id,
 
 void ChromeAppListModelUpdater::SetItemFolderId(const std::string& id,
                                                 const std::string& folder_id) {
+  if (!app_list_controller_)
+    return;
   ChromeAppListItem* item = FindItem(id);
   if (!item)
     return;
-
-  if (!app_list_controller_) {
-    item->SetChromeFolderId(folder_id);
-    return;
-  }
 
   std::unique_ptr<ash::AppListItemMetadata> data = item->CloneMetadata();
   data->folder_id = folder_id;
