@@ -65,16 +65,16 @@ source_set("chromeos") {
   ]
 
   deps = [
+    ":add_remove_user_event_proto",
     ":attestation_proto",
     ":device_configuration_proto",
     ":device_policy_remover_generated",
     ":dlp_policy_event_proto",
     ":key_permissions_proto",
-    ":login_logout_record_proto",
+    ":login_logout_event_proto",
     ":print_job_info_proto",
     ":screen_brightness_event_proto",
     ":user_activity_event_proto",
-    ":user_added_removed_record_proto",
     ":user_charging_event_proto",
     "../ash/guest_os:guest_os_diagnostics_mojom",
     "//apps",
@@ -4743,10 +4743,9 @@ proto_library("user_activity_event_proto") {
   sources = [ "../ash/power/ml/user_activity_event.proto" ]
 }
 
-proto_library("user_added_removed_record_proto") {
-  sources = [
-    "../policy/messaging_layer/proto/synced/user_added_removed_record.proto",
-  ]
+proto_library("add_remove_user_event_proto") {
+  sources =
+      [ "../policy/messaging_layer/proto/synced/add_remove_user_event.proto" ]
   deps = [ ":session_affiliated_user" ]
 }
 
@@ -4770,9 +4769,9 @@ proto_library("print_job_info_proto") {
   sources = [ "printing/history/print_job_info.proto" ]
 }
 
-proto_library("login_logout_record_proto") {
+proto_library("login_logout_event_proto") {
   sources =
-      [ "../policy/messaging_layer/proto/synced/login_logout_record.proto" ]
+      [ "../policy/messaging_layer/proto/synced/login_logout_event.proto" ]
   deps = [ ":session_affiliated_user" ]
 }
 
