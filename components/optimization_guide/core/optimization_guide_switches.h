@@ -29,7 +29,6 @@ extern const char kOptimizationGuideServiceAPIKey[];
 extern const char kPurgeHintsStore[];
 extern const char kPurgeModelAndFeaturesStore[];
 extern const char kDisableFetchingHintsAtNavigationStartForTesting[];
-extern const char kDisableFetchHintsForActiveTabsOnDeferredStartup[];
 extern const char kDisableCheckingUserPermissionsForTesting[];
 extern const char kDisableModelDownloadVerificationForTesting[];
 extern const char kModelOverride[];
@@ -58,9 +57,6 @@ ParseHintsFetchOverrideFromCommandLine();
 
 // Whether the hints fetcher timer should be overridden.
 bool ShouldOverrideFetchHintsTimer();
-
-// Disables fetching hints for active tabs on deferred startup.
-bool DisableFetchHintsForActiveTabsOnDeferredStartup();
 
 // Whether the prediction model and host model features fetcher timer should be
 // overridden.

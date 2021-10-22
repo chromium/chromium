@@ -434,5 +434,16 @@ bool ShouldMetadataValidationFetchHostKeyed() {
                                            "is_host_keyed", true);
 }
 
+bool ShouldDeferStartupActiveTabsHintsFetch() {
+  return GetFieldTrialParamByFeatureAsBool(
+      kOptimizationHints, "defer_startup_active_tabs_hints_fetch",
+#if defined(OS_ANDROID)
+      true
+#else
+      false
+#endif
+  );
+}
+
 }  // namespace features
 }  // namespace optimization_guide

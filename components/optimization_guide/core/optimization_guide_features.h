@@ -115,6 +115,12 @@ int ActiveTabsHintsFetchRandomMinDelaySecs();
 // fetch for hints for active tabs.
 int ActiveTabsHintsFetchRandomMaxDelaySecs();
 
+// Returns whether fetching hints for active tabs should happen on deferred
+// startup. Otherwise active tabs hints will be fetched after a random interval
+// between ActiveTabsHintsFetchRandomMinDelaySecs() and
+// ActiveTabsHintsFetchRandomMaxDelaySecs().
+bool ShouldDeferStartupActiveTabsHintsFetch();
+
 // The amount of time host model features will be considered fresh enough
 // to be used and remain in the OptimizationGuideStore.
 base::TimeDelta StoredHostModelFeaturesFreshnessDuration();
