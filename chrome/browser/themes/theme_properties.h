@@ -20,9 +20,11 @@ class ThemeProperties {
  public:
   // ---------------------------------------------------------------------------
   // The int values of OverwritableByUserThemeProperties, Alignment, and Tiling
-  // are used as a key to store the property in the browser theme pack. If you
-  // modify any of these enums, increment the version number in
-  // browser_theme_pack.cc.
+  // are used as a key to store the property in the browser theme pack.
+  //
+  // /!\ If you make any changes to these enums, you must also increment
+  // kThemePackVersion in browser_theme_pack.cc, or else themes will display
+  // incorrectly.
 
   enum OverwritableByUserThemeProperty {
     COLOR_FRAME_ACTIVE,
@@ -63,14 +65,18 @@ class ThemeProperties {
     NTP_BACKGROUND_ALIGNMENT,
     NTP_BACKGROUND_TILING,
     NTP_LOGO_ALTERNATE,
+
+    // /!\ If you make any changes to this enum, you must also increment
+    // kThemePackVersion in browser_theme_pack.cc, or else themes will display
+    // incorrectly.
   };
 
   // A bitfield mask for alignments.
   enum Alignment {
     ALIGN_CENTER = 0,
-    ALIGN_LEFT   = 1 << 0,
-    ALIGN_TOP    = 1 << 1,
-    ALIGN_RIGHT  = 1 << 2,
+    ALIGN_LEFT = 1 << 0,
+    ALIGN_TOP = 1 << 1,
+    ALIGN_RIGHT = 1 << 2,
     ALIGN_BOTTOM = 1 << 3,
   };
 
@@ -87,6 +93,10 @@ class ThemeProperties {
   // has no special meaning. Modify the enum to your heart's content.
   // The enum takes on values >= 1000 as not to overlap with
   // OverwritableByUserThemeProperties.
+  //
+  // /!\ If you make any changes to this enum, you must also increment
+  // kThemePackVersion in browser_theme_pack.cc, or else themes will display
+  // incorrectly.
   enum NotOverwritableByUserThemeProperty {
     // The color of the border drawn around the location bar.
     COLOR_LOCATION_BAR_BORDER = 1000,
@@ -109,6 +119,10 @@ class ThemeProperties {
     COLOR_TOOLBAR_TOP_SEPARATOR,
     COLOR_TOOLBAR_TOP_SEPARATOR_INACTIVE,
 
+    // /!\ If you make any changes to this enum, you must also increment
+    // kThemePackVersion in browser_theme_pack.cc, or else themes will display
+    // incorrectly.
+
     // Colors of vertical separators, such as on the bookmark bar or on the DL
     // shelf.
     COLOR_TOOLBAR_VERTICAL_SEPARATOR,
@@ -127,6 +141,10 @@ class ThemeProperties {
 
     // Status bubble colors.
     COLOR_STATUS_BUBBLE,
+
+    // /!\ If you make any changes to this enum, you must also increment
+    // kThemePackVersion in browser_theme_pack.cc, or else themes will display
+    // incorrectly.
 
     // Colors used when displaying hover cards.
     COLOR_HOVER_CARD_NO_PREVIEW_FOREGROUND,
@@ -147,6 +165,10 @@ class ThemeProperties {
     // a dialog or bubble, you likely want ui::kColorThrobber.
     COLOR_TAB_THROBBER_SPINNING,
     COLOR_TAB_THROBBER_WAITING,
+
+    // /!\ If you make any changes to this enum, you must also increment
+    // kThemePackVersion in browser_theme_pack.cc, or else themes will display
+    // incorrectly.
 
     // Note: All tab group color ids must be grouped together consecutively and
     // grouped together by use (eg grouped by dialog, context menu etc).
@@ -199,6 +221,10 @@ class ThemeProperties {
     COLOR_TAB_GROUP_BOOKMARK_BAR_PURPLE,
     COLOR_TAB_GROUP_BOOKMARK_BAR_CYAN,
 
+    // /!\ If you make any changes to this enum, you must also increment
+    // kThemePackVersion in browser_theme_pack.cc, or else themes will display
+    // incorrectly.
+
     // Calculated representative colors for the background of window control
     // buttons.
     COLOR_WINDOW_CONTROL_BUTTON_BACKGROUND_ACTIVE,
@@ -223,6 +249,10 @@ class ThemeProperties {
     COLOR_FEATURE_PROMO_BUBBLE_TEXT,
     COLOR_FEATURE_PROMO_BUBBLE_BACKGROUND,
 
+    // /!\ If you make any changes to this enum, you must also increment
+    // kThemePackVersion in browser_theme_pack.cc, or else themes will display
+    // incorrectly.
+
     COLOR_OMNIBOX_BACKGROUND_HOVERED,
     COLOR_OMNIBOX_SELECTED_KEYWORD,
     COLOR_OMNIBOX_TEXT_DIMMED,
@@ -242,6 +272,10 @@ class ThemeProperties {
     COLOR_OMNIBOX_SECURITY_CHIP_DEFAULT,
     COLOR_OMNIBOX_SECURITY_CHIP_SECURE,
     COLOR_OMNIBOX_SECURITY_CHIP_DANGEROUS,
+
+    // /!\ If you make any changes to this enum, you must also increment
+    // kThemePackVersion in browser_theme_pack.cc, or else themes will display
+    // incorrectly.
   };
 
   // Themes are hardcoded to draw frame images as if they start this many DIPs

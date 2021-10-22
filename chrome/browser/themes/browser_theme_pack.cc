@@ -93,10 +93,10 @@ constexpr int kTallestFrameHeight = kTallestTabHeight + 19;
 
 // Version number of the current theme pack. We just throw out and rebuild
 // theme packs that aren't int-equal to this. Increment this number if you
-// change default theme assets, if you need themes to recreate their generated
-// images (which are cached), or if you changed how missing values are
-// generated.
-const int kThemePackVersion = 75;
+// changed default theme assets, if you need themes to recreate their generated
+// images (which are cached), if you changed how missing values are
+// generated, or if you changed any constants.
+const int kThemePackVersion = 76;
 
 // IDs that are in the DataPack won't clash with the positive integer
 // uint16_t. kHeaderID should always have the maximum value because we want the
@@ -153,7 +153,8 @@ constexpr PersistingImagesTable kPersistingImages[] = {
     {PRS::kWindowControlBackground, IDR_THEME_WINDOW_CONTROL_BACKGROUND,
      "theme_window_control_background"},
 
-    // NOTE! If you make any changes here, please update kThemePackVersion.
+    // /!\ If you make any changes here, you must also increment
+    // kThemePackVersion above, or else themes will display incorrectly.
 };
 
 BrowserThemePack::PersistentID GetPersistentIDByName(const std::string& key) {
@@ -213,7 +214,8 @@ const StringToIntTable kTintTable[] = {
     {"frame_incognito_inactive", TP::TINT_FRAME_INCOGNITO_INACTIVE},
     {"background_tab", TP::TINT_BACKGROUND_TAB},
 
-    // NOTE! If you make any changes here, please update kThemePackVersion.
+    // /!\ If you make any changes here, you must also increment
+    // kThemePackVersion above, or else themes will display incorrectly.
 };
 const size_t kTintTableLength = base::size(kTintTable);
 
@@ -249,7 +251,8 @@ constexpr StringToIntTable kOverwritableColorTable[] = {
     {"ntp_link", TP::COLOR_NTP_LINK},
     {"ntp_text", TP::COLOR_NTP_TEXT},
 
-    // NOTE! If you make any changes here, please update kThemePackVersion.
+    // /!\ If you make any changes here, you must also increment
+    // kThemePackVersion above, or else themes will display incorrectly.
 };
 constexpr size_t kOverwritableColorTableLength =
     base::size(kOverwritableColorTable);
@@ -269,7 +272,8 @@ constexpr int kNonOverwritableColorTable[] = {
     TP::COLOR_TAB_BACKGROUND_ACTIVE_FRAME_INACTIVE,
     TP::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_INACTIVE
 
-    // NOTE! If you make any changes here, please update kThemePackVersion.
+    // /!\ If you make any changes here, you must also increment
+    // kThemePackVersion above, or else themes will display incorrectly.
 };
 constexpr size_t kNonOverwritableColorTableLength =
     base::size(kNonOverwritableColorTable);
@@ -285,7 +289,8 @@ const StringToIntTable kDisplayProperties[] = {
     {"ntp_background_repeat", TP::NTP_BACKGROUND_TILING},
     {"ntp_logo_alternate", TP::NTP_LOGO_ALTERNATE},
 
-    // NOTE! If you make any changes here, please update kThemePackVersion.
+    // /!\ If you make any changes here, you must also increment
+    // kThemePackVersion above, or else themes will display incorrectly.
 };
 const size_t kDisplayPropertiesSize = base::size(kDisplayProperties);
 
