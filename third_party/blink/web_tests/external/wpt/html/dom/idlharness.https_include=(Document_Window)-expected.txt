@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 984 tests; 966 PASS, 18 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 984 tests; 968 PASS, 16 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -269,7 +269,7 @@ PASS Window interface: attribute onratechange
 PASS Window interface: attribute onreset
 PASS Window interface: attribute onresize
 PASS Window interface: attribute onscroll
-FAIL Window interface: attribute onsecuritypolicyviolation assert_own_property: The global object must have a property "onsecuritypolicyviolation" expected property "onsecuritypolicyviolation" missing
+PASS Window interface: attribute onsecuritypolicyviolation
 PASS Window interface: attribute onseeked
 PASS Window interface: attribute onseeking
 PASS Window interface: attribute onselect
@@ -424,7 +424,7 @@ PASS Window interface: window must inherit property "onratechange" with the prop
 PASS Window interface: window must inherit property "onreset" with the proper type
 PASS Window interface: window must inherit property "onresize" with the proper type
 PASS Window interface: window must inherit property "onscroll" with the proper type
-FAIL Window interface: window must inherit property "onsecuritypolicyviolation" with the proper type assert_own_property: expected property "onsecuritypolicyviolation" missing
+PASS Window interface: window must inherit property "onsecuritypolicyviolation" with the proper type
 PASS Window interface: window must inherit property "onseeked" with the proper type
 PASS Window interface: window must inherit property "onseeking" with the proper type
 PASS Window interface: window must inherit property "onselect" with the proper type

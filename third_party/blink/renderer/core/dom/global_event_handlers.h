@@ -107,6 +107,8 @@ class GlobalEventHandlers {
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(resize, kResize)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(scroll, kScroll)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(scrollend, kScrollend)
+  DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(securitypolicyviolation,
+                                         kSecuritypolicyviolation)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(seeked, kSeeked)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(seeking, kSeeking)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(select, kSelect)

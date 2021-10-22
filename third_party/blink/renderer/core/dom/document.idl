@@ -216,7 +216,6 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     [RuntimeEnabled=Prerender2] attribute EventHandler onprerenderingchange;
     attribute EventHandler onresume;
     attribute EventHandler onsearch;
-    attribute EventHandler onsecuritypolicyviolation;
     attribute EventHandler onvisibilitychange;
 };
 

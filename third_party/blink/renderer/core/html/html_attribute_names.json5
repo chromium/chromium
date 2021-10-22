@@ -243,6 +243,7 @@
     "onscroll",
     "onscrollend",
     "onsearch",
+    "onsecuritypolicyviolation",
     "onseeked",
     "onseeking",
     "onselect",

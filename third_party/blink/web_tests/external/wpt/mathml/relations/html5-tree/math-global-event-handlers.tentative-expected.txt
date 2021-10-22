@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 335 tests; 320 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 335 tests; 325 PASS, 10 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS onabort: must be on the appropriate locations for GlobalEventHandlers
 PASS onabort: the default value must be null
 PASS onabort: the content attribute must be compiled into a function as the corresponding property
@@ -250,11 +250,11 @@ PASS onscroll: the default value must be null
 PASS onscroll: the content attribute must be compiled into a function as the corresponding property
 PASS onscroll: dynamic changes on the attribute
 PASS onscroll: dispatching an Event at a <math> element must trigger element.onscroll
-FAIL onsecuritypolicyviolation: must be on the appropriate locations for GlobalEventHandlers assert_true: MathMLElement has an own property named "onsecuritypolicyviolation" expected true got false
-FAIL onsecuritypolicyviolation: the default value must be null assert_equals: The default value of the property is null for a MathMLElement instance expected (object) null but got (undefined) undefined
-FAIL onsecuritypolicyviolation: the content attribute must be compiled into a function as the corresponding property assert_equals: The onsecuritypolicyviolation property must be a function expected "function" but got "undefined"
-FAIL onsecuritypolicyviolation: dynamic changes on the attribute assert_equals: The onsecuritypolicyviolation property must be null (no attribute) expected (object) null but got (undefined) undefined
-FAIL onsecuritypolicyviolation: dispatching an Event at a <math> element must trigger element.onsecuritypolicyviolation assert_equals: The event must be fired at the <math> element expected (object) Element node <math></math> but got (undefined) undefined
+PASS onsecuritypolicyviolation: must be on the appropriate locations for GlobalEventHandlers
+PASS onsecuritypolicyviolation: the default value must be null
+PASS onsecuritypolicyviolation: the content attribute must be compiled into a function as the corresponding property
+PASS onsecuritypolicyviolation: dynamic changes on the attribute
+PASS onsecuritypolicyviolation: dispatching an Event at a <math> element must trigger element.onsecuritypolicyviolation
 PASS onseeked: must be on the appropriate locations for GlobalEventHandlers
 PASS onseeked: the default value must be null
 PASS onseeked: the content attribute must be compiled into a function as the corresponding property

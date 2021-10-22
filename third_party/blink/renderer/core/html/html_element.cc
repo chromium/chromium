@@ -568,6 +568,8 @@ AttributeTriggers* HTMLElement::TriggersForAttributeName(
        nullptr},
       {html_names::kOnseekingAttr, kNoWebFeature, event_type_names::kSeeking,
        nullptr},
+      {html_names::kOnsecuritypolicyviolationAttr, kNoWebFeature,
+       event_type_names::kSecuritypolicyviolation, nullptr},
       {html_names::kOnselectAttr, kNoWebFeature, event_type_names::kSelect,
        nullptr},
       {html_names::kOnselectstartAttr, kNoWebFeature,

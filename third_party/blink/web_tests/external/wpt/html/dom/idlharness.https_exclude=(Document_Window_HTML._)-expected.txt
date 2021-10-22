@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1459 tests; 1419 PASS, 40 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1459 tests; 1420 PASS, 39 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -1416,7 +1416,7 @@ PASS SVGElement interface: attribute onratechange
 PASS SVGElement interface: attribute onreset
 PASS SVGElement interface: attribute onresize
 PASS SVGElement interface: attribute onscroll
-FAIL SVGElement interface: attribute onsecuritypolicyviolation assert_true: The prototype object must have a property "onsecuritypolicyviolation" expected true got false
+PASS SVGElement interface: attribute onsecuritypolicyviolation
 PASS SVGElement interface: attribute onseeked
 PASS SVGElement interface: attribute onseeking
 PASS SVGElement interface: attribute onselect
