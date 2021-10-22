@@ -2103,4 +2103,32 @@ TEST_F(PolicyServiceTest, PlatformUserListPolicyMerge_Unaffiliated) {
   EXPECT_TRUE(VerifyPolicies(chrome_namespace, expected_chrome));
 }
 
+TEST_F(PolicyServiceTest, IgnoreUserCloudPrecedencePolicies) {
+  const PolicyNamespace chrome_namespace(POLICY_DOMAIN_CHROME, std::string());
+
+  // The policies are set by a user cloud source.
+  std::vector<std::pair<std::string, base::Value>> policies;
+  policies.emplace_back(key::kCloudPolicyOverridesPlatformPolicy,
+                        base::Value(true));
+  policies.emplace_back(key::kCloudUserPolicyOverridesCloudMachinePolicy,
+                        base::Value(true));
+  policies.emplace_back(key::kBookmarkBarEnabled, base::Value(true));
+  auto policy_bundle = CreateBundle(POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+                                    std::move(policies), chrome_namespace);
+
+  provider0_.UpdatePolicy(std::move(policy_bundle));
+  RunUntilIdle();
+
+  // Precedence metapolicies set from a user cloud source are ignored.
+  EXPECT_EQ(nullptr, policy_service_->GetPolicies(chrome_namespace)
+                         .GetValue(key::kCloudPolicyOverridesPlatformPolicy));
+  EXPECT_EQ(nullptr,
+            policy_service_->GetPolicies(chrome_namespace)
+                .GetValue(key::kCloudUserPolicyOverridesCloudMachinePolicy));
+
+  // Other policies set from a user cloud source are not ignored.
+  EXPECT_NE(nullptr, policy_service_->GetPolicies(chrome_namespace)
+                         .GetValue(key::kBookmarkBarEnabled));
+}
+
 }  // namespace policy

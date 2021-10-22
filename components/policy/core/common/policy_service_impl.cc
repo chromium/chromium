@@ -115,6 +115,21 @@ void RemapRenamedPolicies(PolicyMap* policies) {
   }
 }
 
+// Precedence policies cannot be set at the user cloud level regardless of
+// affiliation status. This is done to prevent cloud users from potentially
+// giving themselves increased priority, causing a security issue.
+void IgnoreUserCloudPrecedencePolicies(PolicyMap* policies) {
+  for (auto* policy_name : metapolicy::kPrecedence) {
+    const PolicyMap::Entry* policy_entry = policies->Get(policy_name);
+    if (policy_entry && policy_entry->scope == POLICY_SCOPE_USER &&
+        policy_entry->source == POLICY_SOURCE_CLOUD) {
+      PolicyMap::Entry* policy_entry_mutable =
+          policies->GetMutable(policy_name);
+      policy_entry_mutable->SetIgnored();
+    }
+  }
+}
+
 // Metrics should not be enforced so if this policy is set as mandatory
 // downgrade it to a recommended level policy.
 void DowngradeMetricsReportingToRecommendedPolicy(PolicyMap* policies) {
@@ -336,6 +351,7 @@ void PolicyServiceImpl::MergeAndTriggerUpdates() {
     PolicyBundle provided_bundle;
     provided_bundle.CopyFrom(provider->policies());
     RemapRenamedPolicies(&provided_bundle.Get(chrome_namespace));
+    IgnoreUserCloudPrecedencePolicies(&provided_bundle.Get(chrome_namespace));
     DowngradeMetricsReportingToRecommendedPolicy(
         &provided_bundle.Get(chrome_namespace));
     bundle.MergeFrom(provided_bundle);
