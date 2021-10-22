@@ -84,6 +84,10 @@ class ChromeAutofillClient
   CreateCreditCardInternalAuthenticator(content::RenderFrameHost* rfh) override;
 
   void ShowAutofillSettings(bool show_credit_card_settings) override;
+  void ShowCardUnmaskOtpInputDialog(
+      const size_t& otp_length,
+      base::WeakPtr<OtpUnmaskDelegate> delegate) override;
+  void OnUnmaskOtpVerificationResult(OtpUnmaskResult unmask_result) override;
   void ShowUnmaskPrompt(const CreditCard& card,
                         UnmaskCardReason reason,
                         base::WeakPtr<CardUnmaskDelegate> delegate) override;

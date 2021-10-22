@@ -35,7 +35,8 @@ class CardUnmaskOtpInputDialogViews : public CardUnmaskOtpInputDialogView,
   // CardUnmaskOtpInputDialogView:
   void ShowPendingState() override;
   void ShowInvalidState(const std::u16string& invalid_label_text) override;
-  void OnControllerDestroying() override;
+  void Dismiss(bool show_confirmation_before_closing,
+               bool user_closed_dialog) override;
 
   // views::DialogDelegateView:
   std::u16string GetWindowTitle() const override;
@@ -62,6 +63,8 @@ class CardUnmaskOtpInputDialogViews : public CardUnmaskOtpInputDialogView,
 
   void HideInvalidState();
 
+  void CloseWidget(bool user_closed_dialog);
+
   CardUnmaskOtpInputDialogController* controller_ = nullptr;
 
   // Elements related to the otp part of the view.
@@ -79,6 +82,8 @@ class CardUnmaskOtpInputDialogViews : public CardUnmaskOtpInputDialogView,
   views::BoxLayoutView* progress_view_ = nullptr;
   views::Label* progress_label_ = nullptr;
   views::Throbber* progress_throbber_ = nullptr;
+
+  base::WeakPtrFactory<CardUnmaskOtpInputDialogViews> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill

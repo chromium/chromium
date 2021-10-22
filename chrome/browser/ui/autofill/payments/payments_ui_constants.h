@@ -18,6 +18,11 @@ constexpr gfx::Insets kMigrationDialogInsets = gfx::Insets(0, 24, 48, 24);
 // the bubble.
 constexpr base::TimeDelta kCardBubbleSurviveNavigationTime = base::Seconds(5);
 
+// The delay before dismissing the progress dialog after the progress throbber
+// shows the checkmark. This delay is for users to identify the status change.
+constexpr base::TimeDelta kDelayBeforeDismissingProgressDialog =
+    base::Seconds(1);
+
 }  // namespace autofill
 
 #endif  // CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_PAYMENTS_UI_CONSTANTS_H_

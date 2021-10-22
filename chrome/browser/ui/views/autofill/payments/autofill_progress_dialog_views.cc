@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/autofill/payments/autofill_progress_dialog_views.h"
 
 #include "chrome/browser/ui/autofill/payments/autofill_progress_dialog_controller.h"
+#include "chrome/browser/ui/autofill/payments/payments_ui_constants.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -17,12 +18,6 @@
 #include "ui/views/style/typography.h"
 
 namespace autofill {
-
-namespace {
-// The delay before dismissing the dialog after the progress throber shows the
-// checkmark. This delay is for users to identify the status change.
-constexpr int kDelayBeforeDismissingDialogInSeconds = 1;
-}  // namespace
 
 AutofillProgressDialogViews::AutofillProgressDialogViews(
     AutofillProgressDialogController* controller)
@@ -78,6 +73,7 @@ void AutofillProgressDialogViews::Dismiss(
   // true once this step in the current flow is completed without any user
   // interaction.
   if (show_confirmation_before_closing) {
+    progress_throbber_->Stop();
     label_->SetText(controller_->GetConfirmationMessage());
     progress_throbber_->SetChecked(true);
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
@@ -85,7 +81,7 @@ void AutofillProgressDialogViews::Dismiss(
         base::BindOnce(&AutofillProgressDialogViews::CloseWidget,
                        weak_ptr_factory_.GetWeakPtr(),
                        /*is_canceled_by_user=*/false),
-        base::Seconds(kDelayBeforeDismissingDialogInSeconds));
+        kDelayBeforeDismissingProgressDialog);
     return;
   }
 

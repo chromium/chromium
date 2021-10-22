@@ -762,7 +762,7 @@ void CreditCardAccessManager::OnOtpAuthenticationComplete(
   accessor_->OnCreditCardFetched(response.did_succeed
                                      ? CreditCardFetchResult::kSuccess
                                      : CreditCardFetchResult::kTransientError,
-                                 card_.get(), cvc_);
+                                 response.card, response.cvc);
   HandleFidoOptInStatusChange();
   Reset();
 }
