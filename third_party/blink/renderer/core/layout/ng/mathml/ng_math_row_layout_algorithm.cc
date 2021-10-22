@@ -213,10 +213,12 @@ scoped_refptr<const NGLayoutResult> NGMathRowLayoutAlgorithm::Layout() {
 
   container_builder_.SetBaseline(adjust_offset.block_offset);
 
+  auto intrinsic_block_size =
+      max_row_size.block_size + BorderScrollbarPadding().BlockSum();
   auto block_size = ComputeBlockSizeForFragment(
-      ConstraintSpace(), Style(), BorderPadding(),
-      max_row_size.block_size + BorderScrollbarPadding().BlockSum(),
+      ConstraintSpace(), Style(), BorderPadding(), intrinsic_block_size,
       border_box_size.inline_size);
+  container_builder_.SetIntrinsicBlockSize(intrinsic_block_size);
   container_builder_.SetFragmentsTotalBlockSize(block_size);
 
   NGOutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
