@@ -526,6 +526,21 @@
             ]
         }
     ],
+    "AndroidMessagesSaveCard": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MessagesForAndroidSaveCard"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidMessagesSavePassword": [
         {
             "platforms": [
