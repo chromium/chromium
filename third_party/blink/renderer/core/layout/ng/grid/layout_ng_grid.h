@@ -25,12 +25,12 @@ class CORE_EXPORT LayoutNGGrid : public LayoutNGBlock,
 
   const LayoutNGGridInterface* ToLayoutNGGridInterface() const final;
 
-  bool HasCachedPlacements(wtf_size_t column_auto_repititions,
-                           wtf_size_t row_auto_reptitions) const;
+  bool HasCachedPlacements(wtf_size_t column_auto_repetitions,
+                           wtf_size_t row_auto_repetitions) const;
   const NGGridPlacementProperties& GetCachedPlacementProperties();
   void SetCachedPlacementProperties(NGGridPlacementProperties&& properties,
-                                    wtf_size_t column_auto_repititions,
-                                    wtf_size_t row_auto_reptitions);
+                                    wtf_size_t column_auto_repetitions,
+                                    wtf_size_t row_auto_repetitions);
 
   wtf_size_t ExplicitGridStartForDirection(
       GridTrackSizingDirection direction) const final;
@@ -67,8 +67,8 @@ class CORE_EXPORT LayoutNGGrid : public LayoutNGBlock,
   void StyleDidChange(StyleDifference, const ComputedStyle*) override;
 
   NGGridPlacementProperties cached_placement_properties_;
-  wtf_size_t cached_row_auto_repititions_;
-  wtf_size_t cached_column_auto_repititions_;
+  wtf_size_t cached_column_auto_repetitions_;
+  wtf_size_t cached_row_auto_repetitions_;
 };
 
 // wtf/casting.h helper.

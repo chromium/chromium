@@ -88,16 +88,16 @@ class NGGridLayoutAlgorithmTest
                       algorithm.InitializeTrackSizes(&row_track_collection_)};
 
     // Resolve inline size.
-    bool unused;
-    algorithm.ComputeUsedTrackSizes(
-        NGGridLayoutAlgorithm::SizingConstraint::kLayout, grid_geometry_,
-        grid_properties, /* is_minmax_pass */ false, &column_track_collection_,
-        &grid_items_, &unused);
+    grid_geometry_.column_geometry = algorithm.ComputeUsedTrackSizes(
+        grid_geometry_, grid_properties,
+        NGGridLayoutAlgorithm::SizingConstraint::kLayout,
+        &column_track_collection_, &grid_items_);
+
     // Resolve block size.
-    algorithm.ComputeUsedTrackSizes(
-        NGGridLayoutAlgorithm::SizingConstraint::kLayout, grid_geometry_,
-        grid_properties, /* is_minmax_pass */ false, &row_track_collection_,
-        &grid_items_, &unused);
+    grid_geometry_.row_geometry = algorithm.ComputeUsedTrackSizes(
+        grid_geometry_, grid_properties,
+        NGGridLayoutAlgorithm::SizingConstraint::kLayout,
+        &row_track_collection_, &grid_items_);
   }
 
   NGGridLayoutAlgorithmTrackCollection& TrackCollection(
@@ -241,11 +241,11 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmBaseSetSizes) {
 
   NGGridLayoutAlgorithm algorithm({node, fragment_geometry, space});
   BuildGridItemsAndTrackCollections(algorithm);
-  EXPECT_EQ(BaseRowSizeForChild(algorithm, 0), kIndefiniteSize);
-  EXPECT_EQ(BaseRowSizeForChild(algorithm, 1), kIndefiniteSize);
+  EXPECT_EQ(BaseRowSizeForChild(algorithm, 0), LayoutUnit(0));
+  EXPECT_EQ(BaseRowSizeForChild(algorithm, 1), LayoutUnit(110));
   EXPECT_EQ(BaseRowSizeForChild(algorithm, 2), LayoutUnit(210));
   EXPECT_EQ(BaseRowSizeForChild(algorithm, 3), LayoutUnit(100));
-  EXPECT_EQ(BaseRowSizeForChild(algorithm, 4), kIndefiniteSize);
+  EXPECT_EQ(BaseRowSizeForChild(algorithm, 4), LayoutUnit(110));
 }
 
 TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmRanges) {
