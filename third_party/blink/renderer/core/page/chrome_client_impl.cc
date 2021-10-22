@@ -987,19 +987,6 @@ void ChromeClientImpl::SetEventListenerProperties(
   widget->SetEventListenerProperties(event_class, properties);
 }
 
-cc::EventListenerProperties ChromeClientImpl::EventListenerProperties(
-    LocalFrame* frame,
-    cc::EventListenerClass event_class) const {
-  if (!frame)
-    return cc::EventListenerProperties::kNone;
-
-  WebFrameWidgetImpl* widget =
-      WebLocalFrameImpl::FromFrame(frame)->LocalRootFrameWidget();
-  if (!widget)
-    return cc::EventListenerProperties::kNone;
-  return widget->EventListenerProperties(event_class);
-}
-
 void ChromeClientImpl::BeginLifecycleUpdates(LocalFrame& main_frame) {
   DCHECK(main_frame.IsMainFrame());
   web_view_->StopDeferringMainFrameUpdate();

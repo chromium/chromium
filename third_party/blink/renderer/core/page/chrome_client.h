@@ -431,9 +431,6 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   virtual void SetEventListenerProperties(LocalFrame*,
                                           cc::EventListenerClass,
                                           cc::EventListenerProperties) = 0;
-  virtual cc::EventListenerProperties EventListenerProperties(
-      LocalFrame*,
-      cc::EventListenerClass) const = 0;
 
   virtual void SetHasScrollEventHandlers(LocalFrame*, bool) = 0;
   virtual void SetNeedsLowLatencyInput(LocalFrame*, bool) = 0;

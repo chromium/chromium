@@ -213,11 +213,6 @@ class CORE_EXPORT EmptyChromeClient : public ChromeClient {
   void SetEventListenerProperties(LocalFrame*,
                                   cc::EventListenerClass,
                                   cc::EventListenerProperties) override {}
-  cc::EventListenerProperties EventListenerProperties(
-      LocalFrame*,
-      cc::EventListenerClass event_class) const override {
-    return cc::EventListenerProperties::kNone;
-  }
   void SetHasScrollEventHandlers(LocalFrame*, bool) override {}
   void SetNeedsLowLatencyInput(LocalFrame*, bool) override {}
   void SetNeedsUnbufferedInputForDebugger(LocalFrame*, bool) override {}

@@ -225,13 +225,6 @@ class PagePopupChromeClient final : public EmptyChromeClient {
     // WebPagePopup always routes input to main thread (set up in RenderWidget),
     // so no need to update listener properties.
   }
-  cc::EventListenerProperties EventListenerProperties(
-      LocalFrame*,
-      cc::EventListenerClass event_class) const override {
-    // WebPagePopup always routes input to main thread (set up in RenderWidget),
-    // so no need to update listener properties.
-    return cc::EventListenerProperties::kNone;
-  }
 
   void SetHasScrollEventHandlers(LocalFrame* frame,
                                  bool has_event_handlers) override {
