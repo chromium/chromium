@@ -21,6 +21,10 @@
 #include "ui/views/widget/widget_observer.h"
 #include "ui/views/window/dialog_delegate.h"
 
+#if defined(USE_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 using web_modal::ModalDialogHost;
 using web_modal::ModalDialogHostObserver;
 
@@ -40,13 +44,12 @@ const char* const kWidgetModalDialogHostObserverViewsKey =
     "__WIDGET_MODAL_DIALOG_HOST_OBSERVER_VIEWS__";
 
 // Applies positioning changes from the ModalDialogHost to the Widget.
-class WidgetModalDialogHostObserverViews
-    : public views::WidgetObserver,
-      public ModalDialogHostObserver {
+class WidgetModalDialogHostObserverViews : public views::WidgetObserver,
+                                           public ModalDialogHostObserver {
  public:
   WidgetModalDialogHostObserverViews(ModalDialogHost* host,
                                      views::Widget* target_widget,
-                                     const char *const native_window_property)
+                                     const char* const native_window_property)
       : host_(host),
         target_widget_(target_widget),
         native_window_property_(native_window_property) {
@@ -113,7 +116,16 @@ void UpdateModalDialogPosition(views::Widget* widget,
   position.set_y(position.y() -
                  widget->non_client_view()->frame_view()->GetInsets().top());
 
-  if (widget->is_top_level()) {
+  const bool supports_global_screen_coordinates =
+#if !defined(USE_OZONE)
+      true;
+#else
+      ui::OzonePlatform::GetInstance()
+          ->GetPlatformProperties()
+          .supports_global_screen_coordinates;
+#endif
+
+  if (widget->is_top_level() && supports_global_screen_coordinates) {
     position += host_widget->GetClientAreaBoundsInScreen().OffsetFromOrigin();
     // If the dialog extends partially off any display, clamp its position to
     // be fully visible within that display. If the dialog doesn't intersect
@@ -221,4 +233,4 @@ views::Widget* CreateBrowserModalDialogViews(views::DialogDelegate* dialog,
   return widget;
 }
 
-}  // namespace constrained window
+}  // namespace constrained_window
