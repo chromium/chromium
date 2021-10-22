@@ -40,7 +40,7 @@ class HttpsLatencySampler : public Sampler {
 
   ~HttpsLatencySampler() override;
 
-  void CollectTelemetry(TelemetryCallback callback) override;
+  void Collect(MetricCallback callback) override;
 
   void SetHttpsLatencyRoutineGetterForTest(
       HttpsLatencyRoutineGetter https_latency_routine_getter);
@@ -52,7 +52,7 @@ class HttpsLatencySampler : public Sampler {
 
   HttpsLatencyRoutineGetter https_latency_routine_getter_;
   std::unique_ptr<HttpsLatencyRoutine> https_latency_routine_;
-  base::queue<TelemetryCallback> telemetry_callbacks_;
+  base::queue<MetricCallback> metric_callbacks_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

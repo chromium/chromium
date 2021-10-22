@@ -87,6 +87,33 @@ message InfoData {}
 // of time or when an event occur.
 message TelemetryData {
   // At least one of the following telemetry should be present.
+
   // Networks telemetry data.
   optional NetworksTelemetry networks_telemetry = 1;
+}
+
+enum EventType { EVENT_TYPE_UNSPECIFIED = 0; }
+
+// Indicates one of the following conditions occurred on the device, data
+// associated with the event will be reported as TelemetryData.
+message EventData {
+  optional EventType type = 1;
+}
+
+// Main message to be reported, can contain `InfoData`, `TelemetryData`, or
+// `EventData`. Data, associated with an event or collected in response to an
+// event, is added as `TelemetryData` along with EventData.
+message MetricData {
+  // The time from epoch when the data was collected.
+  optional int64 timestamp_ms = 1;
+
+  oneof metric_type {
+    // Info data collected.
+    InfoData info_data = 2;
+    // Telemetry data collected.
+    TelemetryData telemetry_data = 3;
+  }
+
+  // Event data collected.
+  optional EventData event_data = 4;
 }

@@ -31,6 +31,7 @@ void ConvertMojomRoutineResultToTelemetry(
       break;
     case RoutineVerdictMojom::kNotRun:
       https_latency_data->set_verdict(RoutineVerdict::NOT_RUN);
+      break;
   }
 
   if (!routine_result->problems ||
@@ -73,11 +74,11 @@ HttpsLatencySampler::~HttpsLatencySampler() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void HttpsLatencySampler::CollectTelemetry(TelemetryCallback callback) {
+void HttpsLatencySampler::Collect(MetricCallback callback) {
   CHECK(base::SequencedTaskRunnerHandle::IsSet());
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  telemetry_callbacks_.push(std::move(callback));
+  metric_callbacks_.push(std::move(callback));
   if (is_routine_running_) {
     return;
   }
@@ -104,14 +105,15 @@ void HttpsLatencySampler::OnHttpsLatencyRoutineCompleted(
   https_latency_routine_.reset();
   is_routine_running_ = false;
 
-  TelemetryData telemetry_data;
-  auto* https_latency_data =
-      telemetry_data.mutable_networks_telemetry()->mutable_https_latency_data();
+  MetricData metric_data;
+  auto* https_latency_data = metric_data.mutable_telemetry_data()
+                                 ->mutable_networks_telemetry()
+                                 ->mutable_https_latency_data();
   ConvertMojomRoutineResultToTelemetry(routine_result, https_latency_data);
 
-  while (!telemetry_callbacks_.empty()) {
-    std::move(telemetry_callbacks_.front()).Run(telemetry_data);
-    telemetry_callbacks_.pop();
+  while (!metric_callbacks_.empty()) {
+    std::move(metric_callbacks_.front()).Run(metric_data);
+    metric_callbacks_.pop();
   }
 }
 }  // namespace reporting
