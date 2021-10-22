@@ -496,15 +496,6 @@ ci.android_builder(
 )
 
 ci.android_builder(
-    name = "Android WebView L (dbg)",
-    console_view_entry = consoles.console_view_entry(
-        category = "tester|webview",
-        short_name = "L",
-    ),
-    triggered_by = ["ci/Android arm Builder (dbg)"],
-)
-
-ci.android_builder(
     name = "Android WebView M (dbg)",
     branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = consoles.console_view_entry(

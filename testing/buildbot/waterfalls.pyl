@@ -428,28 +428,6 @@
           'all',
         ],
       },
-      'Android WebView L (dbg)': {
-        'test_suites': {
-          'gtest_tests': 'webview_bot_system_gtests',
-        },
-        'mixins': [
-          'has_native_resultdb_integration'
-        ],
-        'swarming': {
-          'dimension_sets': [
-            {
-              'device_os': 'LMY48M',
-              'device_os_flavor': 'google',
-              'device_os_type': 'userdebug',
-              'device_type': 'hammerhead',
-              'os': 'Android',
-            },
-          ],
-          'expiration': 10800,
-        },
-        'use_swarming': True,
-        'os_type': 'android',
-      },
       'Android WebView M (dbg)': {
         'test_suites': {
           'gtest_tests': 'webview_bot_system_gtests',
