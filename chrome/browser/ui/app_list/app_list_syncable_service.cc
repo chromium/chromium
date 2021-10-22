@@ -351,6 +351,10 @@ class AppListSyncableService::ModelUpdaterObserver
 void AppListSyncableService::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterDictionaryPref(prefs::kAppListLocalState);
+  registry->RegisterIntegerPref(
+      prefs::kAppListPreferredOrder,
+      static_cast<int>(ash::AppListSortOrder::kCustom),
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 }
 
 // static
@@ -374,10 +378,13 @@ AppListSyncableService::AppListSyncableService(Profile* profile)
   if (ash::features::IsLauncherAppSortEnabled())
     reorder_delegate_ = std::make_unique<AppListReorderDelegate>(this);
 
-  if (g_model_updater_factory_callback_for_test_)
-    model_updater_ = g_model_updater_factory_callback_for_test_->Run();
-  else
-    model_updater_ = std::make_unique<ChromeAppListModelUpdater>(profile);
+  if (g_model_updater_factory_callback_for_test_) {
+    model_updater_ = g_model_updater_factory_callback_for_test_->Run(
+        reorder_delegate_.get());
+  } else {
+    model_updater_ = std::make_unique<ChromeAppListModelUpdater>(
+        profile, reorder_delegate_.get());
+  }
 
   model_updater_observer_ = std::make_unique<ModelUpdaterObserver>(this);
 
@@ -401,6 +408,11 @@ AppListSyncableService::AppListSyncableService(Profile* profile)
 AppListSyncableService::~AppListSyncableService() {
   // Remove observers.
   model_updater_observer_.reset();
+
+  // Ensure that `reorder_delegate_` outlives `model_updater_` to eliminate
+  // potential risks.
+  model_updater_.reset();
+  reorder_delegate_.reset();
 }
 
 bool AppListSyncableService::IsExtensionServiceReady() const {
@@ -921,6 +933,10 @@ syncer::StringOrdinal AppListSyncableService::GetPositionAfterApp(
 }
 
 void AppListSyncableService::SortSyncItems(ash::AppListSortOrder order) {
+  // Update the preferred order that is shared among syncable devices.
+  profile_->GetPrefs()->SetInteger(prefs::kAppListPreferredOrder,
+                                   static_cast<int>(order));
+
   // Too few sync items. Return early.
   if (sync_items_.size() < 2)
     return;
@@ -1058,6 +1074,11 @@ void AppListSyncableService::PopulateSyncItemsForTest(
             .second;
     DCHECK(success);
   }
+}
+
+AppListSyncableService::SyncItem*
+AppListSyncableService::GetMutableSyncItemForTest(const std::string& id) {
+  return FindSyncItem(id);
 }
 
 const AppListSyncableService::SyncItemMap& AppListSyncableService::sync_items()

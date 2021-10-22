@@ -18,7 +18,8 @@ class ChromeAppListItem;
 
 class FakeAppListModelUpdater : public AppListModelUpdater {
  public:
-  explicit FakeAppListModelUpdater(Profile* profile = nullptr);
+  FakeAppListModelUpdater(Profile* profile,
+                          app_list::AppListReorderDelegate* order_delegate);
   FakeAppListModelUpdater(const FakeAppListModelUpdater&) = delete;
   FakeAppListModelUpdater& operator=(const FakeAppListModelUpdater&) = delete;
   ~FakeAppListModelUpdater() override;
@@ -50,15 +51,18 @@ class FakeAppListModelUpdater : public AppListModelUpdater {
 
   // For AppListModel:
   ChromeAppListItem* FindItem(const std::string& id) override;
+  std::vector<const ChromeAppListItem*> GetItems() const override;
   size_t ItemCount() override;
+  std::vector<ChromeAppListItem*> GetTopLevelItems() const override;
   ChromeAppListItem* ItemAtForTest(size_t index) override;
   ChromeAppListItem* FindFolderItem(const std::string& folder_id) override;
   bool FindItemIndexForTest(const std::string& id, size_t* index) override;
   void GetIdToAppListIndexMap(GetIdToAppListIndexMapCallback callback) override;
-  syncer::StringOrdinal GetFirstAvailablePosition() const override;
   syncer::StringOrdinal GetPositionBeforeFirstItem() const override;
   void GetContextMenuModel(const std::string& id,
                            GetMenuModelCallback callback) override;
+  syncer::StringOrdinal CalculatePositionForNewItem(
+      const ChromeAppListItem& new_item) override;
   size_t BadgedItemCount() override;
   void OnSortRequested(ash::AppListSortOrder order) override {}
   void HandleSetPosition(std::string id,
@@ -82,14 +86,14 @@ class FakeAppListModelUpdater : public AppListModelUpdater {
 
   size_t update_image_count() const { return update_image_count_; }
 
-  std::vector<ChromeAppListItem*> GetTopLevelItems() const;
-
  private:
+  Profile* profile_;
+  app_list::AppListReorderDelegate* const order_delegate_;
+
   bool search_engine_is_google_ = false;
   std::vector<std::unique_ptr<ChromeAppListItem>> items_;
   std::vector<ChromeSearchResult*> search_results_;
   base::ObserverList<AppListModelUpdaterObserver> observers_;
-  Profile* profile_;
 
   size_t update_image_count_ = 0;
   size_t expected_update_image_count_ = 0;

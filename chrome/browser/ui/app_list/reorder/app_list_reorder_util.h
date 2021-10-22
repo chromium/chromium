@@ -15,6 +15,10 @@
 namespace app_list {
 namespace reorder {
 
+// If the entropy (i.e. the ratio of the number of items out of order to the
+// total number) is greater than this value, the sort order is reset to kCustom.
+extern const float kOrderResetThreshold;
+
 struct ReorderParam {
   ReorderParam(const std::string& new_sync_item_id,
                const syncer::StringOrdinal& new_ordinal);
@@ -52,6 +56,11 @@ bool operator>(const SyncItemWrapper<T>& lhs, const SyncItemWrapper<T>& rhs) {
 // Gets a list of string wrappers based on the mappings from ids to sync items.
 std::vector<SyncItemWrapper<std::string>> GenerateStringWrappersFromSyncItems(
     const AppListSyncableService::SyncItemMap& sync_item_map);
+
+// Gets a list of string wrappers based on the given app list items.
+std::vector<SyncItemWrapper<std::string>>
+GenerateStringWrappersFromAppListItems(
+    const std::vector<const ChromeAppListItem*>& app_list_items);
 
 }  // namespace reorder
 }  // namespace app_list

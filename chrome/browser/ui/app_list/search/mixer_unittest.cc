@@ -145,7 +145,8 @@ class MixerTest : public testing::Test {
 
   // testing::Test overrides:
   void SetUp() override {
-    model_updater_ = std::make_unique<FakeAppListModelUpdater>();
+    model_updater_ = std::make_unique<FakeAppListModelUpdater>(
+        /*profile=*/nullptr, /*reorder_delegate=*/nullptr);
     search_controller_ = std::make_unique<SearchControllerImpl>(
         nullptr, nullptr, nullptr, nullptr);
 

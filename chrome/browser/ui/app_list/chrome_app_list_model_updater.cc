@@ -15,12 +15,18 @@
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_item.h"
+#include "chrome/browser/ui/app_list/reorder/app_list_reorder_delegate.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "extensions/common/constants.h"
 #include "ui/base/models/menu_model.h"
 
-ChromeAppListModelUpdater::ChromeAppListModelUpdater(Profile* profile)
-    : profile_(profile) {}
+ChromeAppListModelUpdater::ChromeAppListModelUpdater(
+    Profile* profile,
+    app_list::AppListReorderDelegate* order_delegate)
+    : profile_(profile), order_delegate_(order_delegate) {
+  DCHECK_EQ(ash::features::IsLauncherAppSortEnabled(),
+            static_cast<bool>(order_delegate_));
+}
 
 ChromeAppListModelUpdater::~ChromeAppListModelUpdater() = default;
 
@@ -298,6 +304,29 @@ size_t ChromeAppListModelUpdater::ItemCount() {
   return items_.size();
 }
 
+std::vector<const ChromeAppListItem*> ChromeAppListModelUpdater::GetItems()
+    const {
+  std::vector<const ChromeAppListItem*> item_pointers;
+  for (auto& entry : items_)
+    item_pointers.push_back(entry.second.get());
+  return item_pointers;
+}
+
+std::vector<ChromeAppListItem*> ChromeAppListModelUpdater::GetTopLevelItems()
+    const {
+  std::vector<ChromeAppListItem*> top_level_items;
+  for (auto& entry : items_) {
+    ChromeAppListItem* item = entry.second.get();
+    DCHECK(item->position().IsValid())
+        << "Item with invalid position: id=" << item->id()
+        << ", name=" << item->name() << ", is_folder=" << item->is_folder()
+        << ", is_page_break=" << item->is_page_break();
+    if (item->folder_id().empty() && item->position().IsValid())
+      top_level_items.emplace_back(item);
+  }
+  return top_level_items;
+}
+
 ChromeAppListItem* ChromeAppListModelUpdater::ItemAtForTest(size_t index) {
   DCHECK_LT(index, items_.size());
   DCHECK_LE(0u, index);
@@ -362,9 +391,16 @@ void ChromeAppListModelUpdater::GetContextMenuModel(
   item->GetContextMenuModel(std::move(callback));
 }
 
-syncer::StringOrdinal ChromeAppListModelUpdater::GetFirstAvailablePosition()
-    const {
-  return GetFirstAvailablePositionInternal(GetTopLevelItems());
+syncer::StringOrdinal ChromeAppListModelUpdater::CalculatePositionForNewItem(
+    const ChromeAppListItem& new_item) {
+  // TODO(https://crbug.com/1260875): handle the case that `new_item` is a
+  // folder.
+  if (!ash::features::IsLauncherAppSortEnabled() || new_item.is_folder())
+    return GetFirstAvailablePosition();
+
+  // TODO(https://crbug.com/1260877): ideally we would not have to create a
+  // one-off vector of items using `GetItems()`.
+  return order_delegate_->CalculatePositionForNewItem(new_item, GetItems());
 }
 
 syncer::StringOrdinal ChromeAppListModelUpdater::GetPositionBeforeFirstItem()
@@ -519,19 +555,4 @@ void ChromeAppListModelUpdater::HandleSetPosition(
     const syncer::StringOrdinal& new_position) {
   DCHECK(FindItem(id));
   SetItemPosition(id, new_position);
-}
-
-std::vector<ChromeAppListItem*> ChromeAppListModelUpdater::GetTopLevelItems()
-    const {
-  std::vector<ChromeAppListItem*> top_level_items;
-  for (auto& entry : items_) {
-    ChromeAppListItem* item = entry.second.get();
-    DCHECK(item->position().IsValid())
-        << "Item with invalid position: id=" << item->id()
-        << ", name=" << item->name() << ", is_folder=" << item->is_folder()
-        << ", is_page_break=" << item->is_page_break();
-    if (item->folder_id().empty() && item->position().IsValid())
-      top_level_items.emplace_back(item);
-  }
-  return top_level_items;
 }

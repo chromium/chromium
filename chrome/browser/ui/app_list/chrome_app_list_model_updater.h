@@ -18,11 +18,16 @@ namespace ash {
 class AppListController;
 }  // namespace ash
 
+namespace app_list {
+class AppListReorderDelegate;
+}  // namespace app_list
+
 class ChromeAppListItem;
 
 class ChromeAppListModelUpdater : public AppListModelUpdater {
  public:
-  explicit ChromeAppListModelUpdater(Profile* profile);
+  ChromeAppListModelUpdater(Profile* profile,
+                            app_list::AppListReorderDelegate* order_delegate);
   ChromeAppListModelUpdater(const ChromeAppListModelUpdater&) = delete;
   ChromeAppListModelUpdater& operator=(const ChromeAppListModelUpdater&) =
       delete;
@@ -75,7 +80,9 @@ class ChromeAppListModelUpdater : public AppListModelUpdater {
 
   // Methods for item querying.
   ChromeAppListItem* FindItem(const std::string& id) override;
+  std::vector<const ChromeAppListItem*> GetItems() const override;
   size_t ItemCount() override;
+  std::vector<ChromeAppListItem*> GetTopLevelItems() const override;
   ChromeAppListItem* ItemAtForTest(size_t index) override;
   ChromeAppListItem* FindFolderItem(const std::string& folder_id) override;
   bool FindItemIndexForTest(const std::string& id, size_t* index) override;
@@ -84,7 +91,8 @@ class ChromeAppListModelUpdater : public AppListModelUpdater {
   size_t BadgedItemCount() override;
   void GetContextMenuModel(const std::string& id,
                            GetMenuModelCallback callback) override;
-  syncer::StringOrdinal GetFirstAvailablePosition() const override;
+  syncer::StringOrdinal CalculatePositionForNewItem(
+      const ChromeAppListItem& new_item) override;
   syncer::StringOrdinal GetPositionBeforeFirstItem() const override;
 
   // Methods for AppListSyncableService:
@@ -109,14 +117,17 @@ class ChromeAppListModelUpdater : public AppListModelUpdater {
   void RemoveObserver(AppListModelUpdaterObserver* observer) override;
 
  private:
-  std::vector<ChromeAppListItem*> GetTopLevelItems() const;
+  // Indicates the profile that the model updater is associated with.
+  Profile* const profile_ = nullptr;
+
+  // Provides the access to the methods for ordering app list items.
+  app_list::AppListReorderDelegate* const order_delegate_;
 
   // A map from a ChromeAppListItem's id to its unique pointer. This item set
   // matches the one in AppListModel.
   std::map<std::string, std::unique_ptr<ChromeAppListItem>> items_;
   // The most recently list of search results.
   std::vector<ChromeSearchResult*> published_results_;
-  Profile* const profile_ = nullptr;
   base::ObserverList<AppListModelUpdaterObserver> observers_;
   ash::AppListController* app_list_controller_ = nullptr;
   bool search_engine_is_google_ = false;

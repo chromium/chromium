@@ -149,10 +149,8 @@ syncer::StringOrdinal ChromeAppListItem::CalculateDefaultPositionIfApplicable(
                                  launch_ordinal.ToInternalValue());
   }
 
-  if (model_updater) {
-    // Set the first available position in the app list.
-    return model_updater->GetFirstAvailablePosition();
-  }
+  if (model_updater)
+    return model_updater->CalculatePositionForNewItem(*this);
 
   // Set the natural position.
   app_sorting->EnsureValidOrdinals(id(), syncer::StringOrdinal());

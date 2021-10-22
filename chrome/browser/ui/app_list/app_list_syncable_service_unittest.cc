@@ -22,11 +22,13 @@
 #include "chrome/browser/ui/app_list/app_list_test_util.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_item.h"
 #include "chrome/browser/ui/app_list/page_break_constants.h"
+#include "chrome/browser/ui/app_list/reorder/app_list_reorder_delegate.h"
 #include "chrome/browser/ui/app_list/test/fake_app_list_model_updater.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
@@ -244,9 +246,12 @@ class AppListSyncableServiceTest : public AppListTestBase {
 
     model_updater_factory_scope_ = std::make_unique<
         app_list::AppListSyncableService::ScopedModelUpdaterFactoryForTest>(
-        base::BindRepeating([]() -> std::unique_ptr<AppListModelUpdater> {
-          return std::make_unique<FakeAppListModelUpdater>();
-        }));
+        base::BindRepeating(
+            [](app_list::AppListReorderDelegate* reorder_delegate)
+                -> std::unique_ptr<AppListModelUpdater> {
+              return std::make_unique<FakeAppListModelUpdater>(
+                  /*profile=*/nullptr, reorder_delegate);
+            }));
 
     app_list_syncable_service_ =
         std::make_unique<app_list::AppListSyncableService>(profile_.get());
@@ -1587,6 +1592,13 @@ class AppListSortUnitTest : public AppListSyncableServiceTest {
   AppListSortUnitTest& operator=(const AppListSortUnitTest&) = delete;
   ~AppListSortUnitTest() override = default;
 
+  // Returns the app list order stored as preference.
+  ash::AppListSortOrder GetSortOrderFromPrefs() {
+    return static_cast<ash::AppListSortOrder>(
+        app_list_syncable_service()->profile()->GetPrefs()->GetInteger(
+            prefs::kAppListPreferredOrder));
+  }
+
   std::vector<std::string> GetItemIdInOrdinalOrder() {
     std::vector<std::string> ids;
     app_list::AppListSyncableService* service = app_list_syncable_service();
@@ -1611,6 +1623,13 @@ class AppListSortUnitTest : public AppListSyncableServiceTest {
       names.push_back(app_list_syncable_service()->GetSyncItem(id)->item_name);
     }
     return names;
+  }
+
+  // A hacky way to change an item's name.
+  void ChangeItemName(const std::string& id, const std::string& new_name) {
+    app_list_syncable_service()->GetMutableSyncItemForTest(id)->item_name =
+        new_name;
+    app_list_syncable_service()->GetModelUpdater()->SetItemName(id, new_name);
   }
 
  private:
@@ -1917,4 +1936,219 @@ TEST_F(AppListSortUnitTest, VerifyAlphabeticalSortWithDuplicateNames) {
       ash::AppListSortOrder::kNameReverseAlphabetical);
   EXPECT_EQ(GetItemNamesInOrdinalOrder(),
             std::vector<std::string>({"D", "C", "C", "B", "A", "A"}));
+}
+
+// Verifies that a new app is placed at the correct place when the launcher is
+// in (reverse) alphabetical order.
+TEST_F(AppListSortUnitTest, NewAppPlacement) {
+  RemoveAllExistingItems();
+  EXPECT_EQ(ash::AppListSortOrder::kCustom, GetSortOrderFromPrefs());
+
+  const std::string kItemId1 = CreateNextAppId(extensions::kWebStoreAppId);
+  const std::string kItemId2 = CreateNextAppId(kItemId1);
+  const std::string kItemId3 = CreateNextAppId(kItemId2);
+  const std::string kItemId4 = CreateNextAppId(kItemId3);
+
+  scoped_refptr<extensions::Extension> app1 =
+      MakeApp("A", kItemId1, extensions::Extension::NO_FLAGS);
+  InstallExtension(app1.get());
+  scoped_refptr<extensions::Extension> app2 =
+      MakeApp("B", kItemId2, extensions::Extension::NO_FLAGS);
+  InstallExtension(app2.get());
+  scoped_refptr<extensions::Extension> app3 =
+      MakeApp("C", kItemId3, extensions::Extension::NO_FLAGS);
+  InstallExtension(app3.get());
+  scoped_refptr<extensions::Extension> app4 =
+      MakeApp("E", kItemId4, extensions::Extension::NO_FLAGS);
+  InstallExtension(app4.get());
+
+  app_list_syncable_service()->SortSyncItems(
+      ash::AppListSortOrder::kNameReverseAlphabetical);
+  EXPECT_EQ(ash::AppListSortOrder::kNameReverseAlphabetical,
+            GetSortOrderFromPrefs());
+  EXPECT_EQ(GetItemNamesInOrdinalOrder(),
+            std::vector<std::string>({"E", "C", "B", "A"}));
+
+  // Insert another app. Verify the order.
+  const std::string kItemId5 = CreateNextAppId(kItemId4);
+  scoped_refptr<extensions::Extension> app5 =
+      MakeApp("D", kItemId5, extensions::Extension::NO_FLAGS);
+  InstallExtension(app5.get());
+  EXPECT_EQ(GetItemNamesInOrdinalOrder(),
+            std::vector<std::string>({"E", "D", "C", "B", "A"}));
+
+  app_list::AppListReorderDelegate::TestApi test_api(
+      app_list_syncable_service()->reorder_delegate_for_test());
+
+  // The longest subsequence in reverse alphabetical order is the whole
+  // sequence. Therefore the entropy is (1 - 5/5), which is 0.
+  EXPECT_TRUE(cc::MathUtil::IsWithinEpsilon(
+      0.f, test_api.CalculateEntropy(
+               ash::AppListSortOrder::kNameReverseAlphabetical)));
+
+  // The longest subsequence in alphabetical order has one element so the
+  // entropy is (1 - 1/5) which is 0.8.
+  EXPECT_EQ(0.8f, test_api.CalculateEntropy(
+                      ash::AppListSortOrder::kNameAlphabetical));
+
+  app_list_syncable_service()->SortSyncItems(
+      ash::AppListSortOrder::kNameAlphabetical);
+  EXPECT_EQ(ash::AppListSortOrder::kNameAlphabetical, GetSortOrderFromPrefs());
+  EXPECT_EQ(GetItemNamesInOrdinalOrder(),
+            std::vector<std::string>({"A", "B", "C", "D", "E"}));
+
+  ChangeItemName(kItemId3, "Z");
+  EXPECT_EQ(GetItemNamesInOrdinalOrder(),
+            std::vector<std::string>({"A", "B", "Z", "D", "E"}));
+
+  // The longest subsequence in order is ["A", "B", "D", "E"] so the entropy is
+  // (1 - 4/5) which is 0.2.
+  EXPECT_TRUE(cc::MathUtil::IsWithinEpsilon(
+      0.2f,
+      test_api.CalculateEntropy(ash::AppListSortOrder::kNameAlphabetical)));
+
+  // Install a new app. Verify its location.
+  const std::string kItemId6 = CreateNextAppId(kItemId5);
+  scoped_refptr<extensions::Extension> app6 =
+      MakeApp("C", kItemId6, extensions::Extension::NO_FLAGS);
+  InstallExtension(app6.get());
+  EXPECT_EQ(GetItemNamesInOrdinalOrder(),
+            std::vector<std::string>({"A", "B", "C", "Z", "D", "E"}));
+
+  // Change another app's name.
+  ChangeItemName(kItemId2, "F");
+  EXPECT_EQ(GetItemNamesInOrdinalOrder(),
+            std::vector<std::string>({"A", "F", "C", "Z", "D", "E"}));
+
+  // The longest subsequence in order is ["A", "C", "D", "E"] so the entropy is
+  // (1 - 4/6).
+  EXPECT_TRUE(cc::MathUtil::IsWithinEpsilon(
+      1 / 3.f,
+      test_api.CalculateEntropy(ash::AppListSortOrder::kNameAlphabetical)));
+
+  // Install a new app.
+  EXPECT_EQ(ash::AppListSortOrder::kNameAlphabetical, GetSortOrderFromPrefs());
+  const std::string kItemId7 = CreateNextAppId(kItemId6);
+  scoped_refptr<extensions::Extension> app7 =
+      MakeApp("G", kItemId7, extensions::Extension::NO_FLAGS);
+  InstallExtension(app7.get());
+
+  // The entropy is too high so the new app is inserted at the front.
+  EXPECT_EQ(GetItemNamesInOrdinalOrder(),
+            std::vector<std::string>({"G", "A", "F", "C", "Z", "D", "E"}));
+
+  // The sort order is reset.
+  EXPECT_EQ(ash::AppListSortOrder::kCustom, GetSortOrderFromPrefs());
+
+  // Install a new app.
+  const std::string kItemId8 = CreateNextAppId(kItemId7);
+  scoped_refptr<extensions::Extension> app8 =
+      MakeApp("H", kItemId8, extensions::Extension::NO_FLAGS);
+  InstallExtension(app8.get());
+
+  // Because the sort order is kCustom, the new app is placed at the front.
+  EXPECT_EQ(GetItemNamesInOrdinalOrder(),
+            std::vector<std::string>({"H", "G", "A", "F", "C", "Z", "D", "E"}));
+}
+
+// Verifies that a new app is placed at the correct place when initially all of
+// top level items are folders.
+TEST_F(AppListSortUnitTest, NewAppPlacementInitiallyOnlyFolders) {
+  RemoveAllExistingItems();
+
+  // Add three folders.
+  syncer::StringOrdinal position =
+      syncer::StringOrdinal::CreateInitialOrdinal();
+  const std::string kFolderItemId1 = GenerateId("folder_id1");
+  std::unique_ptr<ChromeAppListItem> folder_item1 =
+      std::make_unique<ChromeAppListItem>(profile_.get(), kFolderItemId1,
+                                          model_updater());
+  folder_item1->SetChromeIsFolder(true);
+  ItemTestApi(folder_item1.get()).SetPosition(position);
+  ItemTestApi(folder_item1.get()).SetName("Folder1");
+  app_list_syncable_service()->AddItem(std::move(folder_item1));
+  position = position.CreateBefore();
+
+  const std::string kFolderItemId2 = GenerateId("folder_id2");
+  std::unique_ptr<ChromeAppListItem> folder_item2 =
+      std::make_unique<ChromeAppListItem>(profile_.get(), kFolderItemId2,
+                                          model_updater());
+  folder_item2->SetChromeIsFolder(true);
+  ItemTestApi(folder_item2.get()).SetPosition(position);
+  ItemTestApi(folder_item2.get()).SetName("Folder2");
+  app_list_syncable_service()->AddItem(std::move(folder_item2));
+  position = position.CreateBefore();
+
+  const std::string kFolderItemId3 = GenerateId("folder_id3");
+  std::unique_ptr<ChromeAppListItem> folder_item3 =
+      std::make_unique<ChromeAppListItem>(profile_.get(), kFolderItemId3,
+                                          model_updater());
+  folder_item3->SetChromeIsFolder(true);
+  ItemTestApi(folder_item3.get()).SetPosition(position);
+  // Use an empty folder name.
+  ItemTestApi(folder_item3.get()).SetName("");
+  app_list_syncable_service()->AddItem(std::move(folder_item3));
+
+  // Sort sync items then verify the item order.
+  app_list_syncable_service()->SortSyncItems(
+      ash::AppListSortOrder::kNameAlphabetical);
+  EXPECT_EQ(GetItemNamesInOrdinalOrder(),
+            std::vector<std::string>({"", "Folder1", "Folder2"}));
+
+  // Install a new app.
+  const std::string kNewAppId = CreateNextAppId(GenerateId("app_id"));
+  scoped_refptr<extensions::Extension> app =
+      MakeApp("B", kNewAppId, extensions::Extension::NO_FLAGS);
+  InstallExtension(app.get());
+
+  // Verify that the app is placed after folders.
+  EXPECT_EQ(GetItemNamesInOrdinalOrder(),
+            std::vector<std::string>({"", "Folder1", "Folder2", "B"}));
+
+  // Verify that the entropy is zero.
+  EXPECT_TRUE(cc::MathUtil::IsWithinEpsilon(
+      0.f, app_list::AppListReorderDelegate::TestApi(
+               app_list_syncable_service()->reorder_delegate_for_test())
+               .CalculateEntropy(ash::AppListSortOrder::kNameAlphabetical)));
+
+  // Install the second app.
+  const std::string kNewAppId2 = CreateNextAppId(GenerateId("app_id2"));
+  scoped_refptr<extensions::Extension> app2 =
+      MakeApp("C", kNewAppId2, extensions::Extension::NO_FLAGS);
+  InstallExtension(app2.get());
+
+  // Verify that the app is placed after folders.
+  EXPECT_EQ(GetItemNamesInOrdinalOrder(),
+            std::vector<std::string>({"", "Folder1", "Folder2", "B", "C"}));
+
+  // Change folders' names so that folders are out of order.
+  ChangeItemName(kFolderItemId1, "Folder2");
+  ChangeItemName(kFolderItemId2, "Folder1");
+  EXPECT_EQ(GetItemNamesInOrdinalOrder(),
+            std::vector<std::string>({"", "Folder2", "Folder1", "B", "C"}));
+
+  // There is one folder item out of order so the entropy should be 1/5 = 0.2.
+  EXPECT_TRUE(cc::MathUtil::IsWithinEpsilon(
+      0.2f, app_list::AppListReorderDelegate::TestApi(
+                app_list_syncable_service()->reorder_delegate_for_test())
+                .CalculateEntropy(ash::AppListSortOrder::kNameAlphabetical)));
+
+  // Install the third app. Verify the item order after installation.
+  const std::string kNewAppId3 = CreateNextAppId(GenerateId("app_id3"));
+  scoped_refptr<extensions::Extension> app3 =
+      MakeApp("D", kNewAppId3, extensions::Extension::NO_FLAGS);
+  InstallExtension(app3.get());
+  EXPECT_EQ(
+      GetItemNamesInOrdinalOrder(),
+      std::vector<std::string>({"", "Folder2", "Folder1", "B", "C", "D"}));
+
+  // Install the forth app. Verify that the new item is inserted between a
+  // folder and an app.
+  const std::string kNewAppId4 = CreateNextAppId(GenerateId("app_id4"));
+  scoped_refptr<extensions::Extension> app4 =
+      MakeApp("A", kNewAppId4, extensions::Extension::NO_FLAGS);
+  InstallExtension(app4.get());
+  EXPECT_EQ(
+      GetItemNamesInOrdinalOrder(),
+      std::vector<std::string>({"", "Folder2", "Folder1", "A", "B", "C", "D"}));
 }

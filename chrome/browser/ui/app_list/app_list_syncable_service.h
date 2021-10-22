@@ -86,7 +86,8 @@ class AppListSyncableService : public syncer::SyncableService,
 
   // An app list model updater factory function used by tests.
   using ModelUpdaterFactoryCallback =
-      base::RepeatingCallback<std::unique_ptr<AppListModelUpdater>()>;
+      base::RepeatingCallback<std::unique_ptr<AppListModelUpdater>(
+          AppListReorderDelegate*)>;
 
   // Sets and resets an app list model updater factory function for tests.
   class ScopedModelUpdaterFactoryForTest {
@@ -208,7 +209,13 @@ class AppListSyncableService : public syncer::SyncableService,
 
   void PopulateSyncItemsForTest(std::vector<std::unique_ptr<SyncItem>>&& items);
 
+  SyncItem* GetMutableSyncItemForTest(const std::string& id);
+
   virtual const SyncItemMap& sync_items() const;
+
+  AppListReorderDelegate* reorder_delegate_for_test() {
+    return reorder_delegate_.get();
+  }
 
   // syncer::SyncableService
   void WaitUntilReadyToSync(base::OnceClosure done) override;
@@ -289,7 +296,7 @@ class AppListSyncableService : public syncer::SyncableService,
   void SendSyncChange(SyncItem* sync_item,
                       syncer::SyncChange::SyncChangeType sync_change_type);
 
-  // Returns an existing SyncItem corresponding to |item_id| or NULL.
+  // Returns an existing sync item corresponding to `item_id` or NULL.
   SyncItem* FindSyncItem(const std::string& item_id);
 
   // Creates a new sync item for |item_id|.

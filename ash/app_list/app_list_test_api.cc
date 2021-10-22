@@ -140,7 +140,7 @@ views::View* AppListTestApi::GetViewForAppListSort(AppListSortOrder order) {
   views::View* sort_button_container =
       GetAppsContainerView()->sort_button_container_for_test();
   switch (order) {
-    case AppListSortOrder::kEmpty:
+    case AppListSortOrder::kCustom:
       NOTREACHED();
       return nullptr;
     case AppListSortOrder::kNameAlphabetical:

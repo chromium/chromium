@@ -331,7 +331,7 @@ void RemoteAppsManager::HandleOnAppAdded(const std::string& id) {
       syncer::StringOrdinal item_position =
           folder_info.add_to_front
               ? model_updater_->GetPositionBeforeFirstItem()
-              : model_updater_->GetFirstAvailablePosition();
+              : model_updater_->CalculatePositionForNewItem(*item);
       model_updater_->SetItemPosition(item->id(), item_position);
     }
   }

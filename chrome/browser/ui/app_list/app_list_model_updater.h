@@ -93,7 +93,9 @@ class AppListModelUpdater {
 
   // For AppListModel:
   virtual ChromeAppListItem* FindItem(const std::string& id) = 0;
+  virtual std::vector<const ChromeAppListItem*> GetItems() const = 0;
   virtual size_t ItemCount() = 0;
+  virtual std::vector<ChromeAppListItem*> GetTopLevelItems() const = 0;
   virtual ChromeAppListItem* ItemAtForTest(size_t index) = 0;
   virtual ChromeAppListItem* FindFolderItem(const std::string& folder_id) = 0;
   virtual bool FindItemIndexForTest(const std::string& id, size_t* index) = 0;
@@ -101,7 +103,13 @@ class AppListModelUpdater {
       base::OnceCallback<void(const base::flat_map<std::string, uint16_t>&)>;
   virtual void GetIdToAppListIndexMap(GetIdToAppListIndexMapCallback callback) {
   }
-  virtual syncer::StringOrdinal GetFirstAvailablePosition() const = 0;
+  // Calculates the default position of `new_item` that is not added to the
+  // model yet.
+  // TODO(https://crbug.com/1261899): This function cannot be const because
+  // during calculation the sort order saved in prefs could be reset. The
+  // function name is misleading. Replace it with a better function name.
+  virtual syncer::StringOrdinal CalculatePositionForNewItem(
+      const ChromeAppListItem& new_item) = 0;
   // Returns a position which is before the first item in the item list.
   virtual syncer::StringOrdinal GetPositionBeforeFirstItem() const = 0;
 
@@ -137,13 +145,14 @@ class AppListModelUpdater {
   virtual void RemoveObserver(AppListModelUpdaterObserver* observer) = 0;
 
  protected:
+  FRIEND_TEST_ALL_PREFIXES(AppListSyncableServiceTest, FirstAvailablePosition);
+  FRIEND_TEST_ALL_PREFIXES(AppListSyncableServiceTest,
+                           FirstAvailablePositionNotExist);
+
   AppListModelUpdater();
 
-  // Returns the first available position in app list. |top_level_items| are
-  // items without parents. Note that all items in |top_level_items| should have
-  // valid position.
-  static syncer::StringOrdinal GetFirstAvailablePositionInternal(
-      const std::vector<ChromeAppListItem*>& top_level_items);
+  // Returns the first available position in app list.
+  syncer::StringOrdinal GetFirstAvailablePosition() const;
 
   // Returns a position which is before the first item in the app list. If
   // |top_level_items| is empty, creates an initial position instead.

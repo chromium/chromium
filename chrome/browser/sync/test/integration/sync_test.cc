@@ -632,8 +632,10 @@ bool SyncTest::SetupClients() {
   // Uses a fake app list model updater to avoid interacting with Ash.
   model_updater_factory_ = std::make_unique<
       app_list::AppListSyncableService::ScopedModelUpdaterFactoryForTest>(
-      base::BindRepeating([]() -> std::unique_ptr<AppListModelUpdater> {
-        return std::make_unique<FakeAppListModelUpdater>();
+      base::BindRepeating([](app_list::AppListReorderDelegate* reorder_delegate)
+                              -> std::unique_ptr<AppListModelUpdater> {
+        return std::make_unique<FakeAppListModelUpdater>(
+            /*profile=*/nullptr, reorder_delegate);
       }));
 #endif
 

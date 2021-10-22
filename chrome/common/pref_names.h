@@ -933,6 +933,7 @@ extern const char kShortcutMigrationVersion[];
 extern const char kRLZBrand[];
 extern const char kRLZDisabled[];
 extern const char kAppListLocalState[];
+extern const char kAppListPreferredOrder[];
 #endif
 
 extern const char kAppShortcutsVersion[];

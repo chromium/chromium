@@ -155,7 +155,8 @@ class AppSearchProviderTest : public AppListTestBase {
   void SetUp() override {
     AppListTestBase::SetUp();
 
-    model_updater_ = std::make_unique<FakeAppListModelUpdater>();
+    model_updater_ = std::make_unique<FakeAppListModelUpdater>(
+        /*profile=*/nullptr, /*reorder_delegate=*/nullptr);
     controller_ = std::make_unique<::test::TestAppListControllerDelegate>();
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
   }

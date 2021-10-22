@@ -2761,6 +2761,7 @@ const char kRLZBrand[] = "rlz.brand";
 const char kRLZDisabled[] = "rlz.disabled";
 // Keeps local state of app list while sync service is not available.
 const char kAppListLocalState[] = "app_list.local_state";
+const char kAppListPreferredOrder[] = "app_list.preferred_order";
 #endif
 
 // An integer that is incremented whenever changes are made to app shortcuts.

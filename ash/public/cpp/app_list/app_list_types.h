@@ -84,7 +84,7 @@ struct ASH_PUBLIC_EXPORT AppListItemMetadata {
 // All possible orders to sort app list items.
 enum class AppListSortOrder {
   // The sort order is not set.
-  kEmpty = 0,
+  kCustom = 0,
 
   // Items are sorted by the name alphabetical order. Note that folders are
   // always placed in front of other types of items.

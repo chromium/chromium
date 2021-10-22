@@ -23,9 +23,9 @@ AppListModelUpdater::GetPublishedSearchResultsForTest() {
   return std::vector<ChromeSearchResult*>();
 }
 
-// static
-syncer::StringOrdinal AppListModelUpdater::GetFirstAvailablePositionInternal(
-    const std::vector<ChromeAppListItem*>& top_level_items) {
+syncer::StringOrdinal AppListModelUpdater::GetFirstAvailablePosition() const {
+  const std::vector<ChromeAppListItem*>& top_level_items = GetTopLevelItems();
+
   // Sort the top level items by their positions.
   std::vector<ChromeAppListItem*> sorted_items(top_level_items);
   std::sort(sorted_items.begin(), sorted_items.end(),

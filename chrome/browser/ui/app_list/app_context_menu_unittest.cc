@@ -162,7 +162,8 @@ class AppContextMenuTest : public AppListTestBase {
         profile(), base::BindRepeating(&MenuManagerFactory));
     controller_ = std::make_unique<FakeAppListControllerDelegate>();
     menu_delegate_ = std::make_unique<FakeAppContextMenuDelegate>();
-    model_updater_ = std::make_unique<FakeAppListModelUpdater>();
+    model_updater_ = std::make_unique<FakeAppListModelUpdater>(
+        /*profile=*/nullptr, /*reorder_delegate=*/nullptr);
     ChromeAppListItem::OverrideAppListControllerDelegateForTesting(
         controller());
   }
@@ -512,12 +513,12 @@ TEST_F(AppContextMenuTest, ArcMenuShortcut) {
   ValidateItemState(menu.get(), index++, MenuState(ash::SHOW_APP_INFO));
   // Test that arc app shortcuts provided by arc::FakeAppInstance have a
   // separator between each app shortcut.
-    EXPECT_EQ(ui::DOUBLE_SEPARATOR, menu->GetSeparatorTypeAt(index++));
-    for (int shortcut_index = 0; index < menu->GetItemCount(); ++index) {
-      EXPECT_EQ(base::StringPrintf("ShortLabel %d", shortcut_index++),
-                base::UTF16ToUTF8(menu->GetLabelAt(index++)));
-      if (index < menu->GetItemCount())
-        EXPECT_EQ(ui::PADDED_SEPARATOR, menu->GetSeparatorTypeAt(index));
+  EXPECT_EQ(ui::DOUBLE_SEPARATOR, menu->GetSeparatorTypeAt(index++));
+  for (int shortcut_index = 0; index < menu->GetItemCount(); ++index) {
+    EXPECT_EQ(base::StringPrintf("ShortLabel %d", shortcut_index++),
+              base::UTF16ToUTF8(menu->GetLabelAt(index++)));
+    if (index < menu->GetItemCount())
+      EXPECT_EQ(ui::PADDED_SEPARATOR, menu->GetSeparatorTypeAt(index));
   }
 
   // This makes all apps non-ready. Shortcut is still uninstall-able.
@@ -618,12 +619,12 @@ TEST_F(AppContextMenuTest, ArcMenuSuspendedItem) {
 
   // Test that arc app shortcuts provided by arc::FakeAppInstance have a
   // separator between each app shortcut.
-    EXPECT_EQ(ui::DOUBLE_SEPARATOR, menu->GetSeparatorTypeAt(index++));
-    for (int shortcut_index = 0; index < menu->GetItemCount(); ++index) {
-      EXPECT_EQ(base::StringPrintf("ShortLabel %d", shortcut_index++),
-                base::UTF16ToUTF8(menu->GetLabelAt(index++)));
-      if (index < menu->GetItemCount())
-        EXPECT_EQ(ui::PADDED_SEPARATOR, menu->GetSeparatorTypeAt(index));
+  EXPECT_EQ(ui::DOUBLE_SEPARATOR, menu->GetSeparatorTypeAt(index++));
+  for (int shortcut_index = 0; index < menu->GetItemCount(); ++index) {
+    EXPECT_EQ(base::StringPrintf("ShortLabel %d", shortcut_index++),
+              base::UTF16ToUTF8(menu->GetLabelAt(index++)));
+    if (index < menu->GetItemCount())
+      EXPECT_EQ(ui::PADDED_SEPARATOR, menu->GetSeparatorTypeAt(index));
   }
 }
 

@@ -216,7 +216,8 @@ class AppServiceAppModelBuilderTest : public AppListTestBase {
     app_service_test_.UninstallAllApps(profile());
     testing_profile()->SetGuestSession(guest_mode);
     app_service_test_.SetUp(testing_profile());
-    model_updater_ = std::make_unique<FakeAppListModelUpdater>();
+    model_updater_ = std::make_unique<FakeAppListModelUpdater>(
+        /*profile=*/nullptr, /*reorder_delegate=*/nullptr);
     controller_ = std::make_unique<test::TestAppListControllerDelegate>();
     builder_ = std::make_unique<AppServiceAppModelBuilder>(controller_.get());
     builder_->Initialize(nullptr, testing_profile(), model_updater_.get());
@@ -433,7 +434,8 @@ TEST_F(ExtensionAppTest, HideWebStore) {
   app_service_test_.SetUp(profile());
 
   // Web stores should be present in the model.
-  FakeAppListModelUpdater model_updater1;
+  FakeAppListModelUpdater model_updater1(/*profile=*/nullptr,
+                                         /*reorder_delegate=*/nullptr);
   AppServiceAppModelBuilder builder1(controller_.get());
   builder1.Initialize(nullptr, profile_.get(), &model_updater1);
   EXPECT_TRUE(model_updater1.FindItem(store->id()));
@@ -447,7 +449,8 @@ TEST_F(ExtensionAppTest, HideWebStore) {
   EXPECT_FALSE(model_updater1.FindItem(enterprise_store->id()));
 
   // Build a new model; web stores should NOT be present.
-  FakeAppListModelUpdater model_updater2;
+  FakeAppListModelUpdater model_updater2(/*profile=*/nullptr,
+                                         /*reorder_delegate=*/nullptr);
   AppServiceAppModelBuilder builder2(controller_.get());
   builder2.Initialize(nullptr, profile_.get(), &model_updater2);
   app_service_test_.FlushMojoCalls();
@@ -768,8 +771,11 @@ class CrostiniAppTest : public AppServiceAppModelBuilderTest {
     model_updater_factory_scope_ = std::make_unique<
         app_list::AppListSyncableService::ScopedModelUpdaterFactoryForTest>(
         base::BindRepeating(
-            [](Profile* profile) -> std::unique_ptr<AppListModelUpdater> {
-              return std::make_unique<FakeAppListModelUpdater>(profile);
+            [](Profile* profile,
+               app_list::AppListReorderDelegate* reorder_delegate)
+                -> std::unique_ptr<AppListModelUpdater> {
+              return std::make_unique<FakeAppListModelUpdater>(
+                  profile, reorder_delegate);
             },
             profile()));
     // The AppListSyncableService creates the CrostiniAppModelBuilder.
@@ -979,7 +985,8 @@ class PluginVmAppTest : public testing::Test {
     app_service_test_.UninstallAllApps(testing_profile_.get());
     testing_profile_->SetGuestSession(false);
     app_service_test_.SetUp(testing_profile_.get());
-    model_updater_ = std::make_unique<FakeAppListModelUpdater>();
+    model_updater_ = std::make_unique<FakeAppListModelUpdater>(
+        /*profile=*/nullptr, /*reorder_delegate=*/nullptr);
     controller_ = std::make_unique<test::TestAppListControllerDelegate>();
     builder_ = std::make_unique<AppServiceAppModelBuilder>(controller_.get());
     builder_->Initialize(nullptr, testing_profile_.get(), model_updater_.get());
@@ -1059,7 +1066,8 @@ class BorealisAppTest : public AppServiceAppModelBuilderTest {
     app_service_test_.UninstallAllApps(testing_profile_.get());
     testing_profile_->SetGuestSession(guest_mode);
     app_service_test_.SetUp(testing_profile_.get());
-    model_updater_ = std::make_unique<FakeAppListModelUpdater>();
+    model_updater_ = std::make_unique<FakeAppListModelUpdater>(
+        /*profile=*/nullptr, /*reorder_delegate=*/nullptr);
     controller_ = std::make_unique<test::TestAppListControllerDelegate>();
     builder_ = std::make_unique<AppServiceAppModelBuilder>(controller_.get());
     builder_->Initialize(nullptr, testing_profile_.get(), model_updater_.get());
