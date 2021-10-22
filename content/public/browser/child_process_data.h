@@ -9,7 +9,7 @@
 
 #include "base/process/process.h"
 #include "content/common/content_export.h"
-#include "sandbox/policy/sandbox_type.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 
 namespace content {
 
@@ -31,9 +31,9 @@ struct CONTENT_EXPORT ChildProcessData {
   // one run of the browser.
   int id = 0;
 
-  // The SandboxType that this process was launched at. May be invalid prior
-  // to process launch.
-  sandbox::policy::SandboxType sandbox_type;
+  // The Sandbox that this process was launched at. May be invalid prior to
+  // process launch.
+  sandbox::mojom::Sandbox sandbox_type;
 
   const base::Process& GetProcess() const { return process_; }
   // Since base::Process is non-copyable, the caller has to provide a rvalue.

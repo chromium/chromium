@@ -22,7 +22,7 @@
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"
-#include "sandbox/policy/sandbox_type.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -78,8 +78,8 @@ class CONTENT_EXPORT UtilityProcessHost
   base::WeakPtr<UtilityProcessHost> AsWeakPtr();
 
   // Makes the process run with a specific sandbox type, or unsandboxed if
-  // SandboxType::kNoSandbox is specified.
-  void SetSandboxType(sandbox::policy::SandboxType sandbox_type);
+  // Sandbox::kNoSandbox is specified.
+  void SetSandboxType(sandbox::mojom::Sandbox sandbox_type);
 
   // Returns information about the utility child process.
   const ChildProcessData& GetData();
@@ -126,7 +126,7 @@ class CONTENT_EXPORT UtilityProcessHost
   void BindHostReceiver(mojo::GenericPendingReceiver receiver) override;
 
   // Launch the child process with switches that will setup this sandbox type.
-  sandbox::policy::SandboxType sandbox_type_;
+  sandbox::mojom::Sandbox sandbox_type_;
 
   // ChildProcessHost flags to use when starting the child process.
   int child_flags_;

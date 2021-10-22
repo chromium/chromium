@@ -28,6 +28,7 @@
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
 #include "mojo/public/cpp/system/message_pipe.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/win/src/sandbox_policy.h"
 
 #include <windows.h>
@@ -53,8 +54,8 @@ void NaClBrokerListener::Listen() {
   run_loop_.Run();
 }
 
-sandbox::policy::SandboxType NaClBrokerListener::GetSandboxType() {
-  return sandbox::policy::SandboxType::kPpapi;
+sandbox::mojom::Sandbox NaClBrokerListener::GetSandboxType() {
+  return sandbox::mojom::Sandbox::kPpapi;
 }
 
 void NaClBrokerListener::OnChannelConnected(int32_t peer_pid) {

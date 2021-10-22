@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chromeos/assistant/assistant.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
@@ -40,6 +41,10 @@ mojom("mojom") {
     "//services/network/public/mojom",
     "//ui/accessibility/mojom:ax_assistant_mojom",
   ]
+
+  if (enable_cros_libassistant) {
+    enabled_features = [ "enable_cros_libassistant" ]
+  }
 
   cpp_typemaps = [
     {

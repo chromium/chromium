@@ -23,7 +23,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
-#include "sandbox/policy/sandbox_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
@@ -170,7 +169,7 @@ class CONTENT_EXPORT ServiceProcessHost {
 void CONTENT_EXPORT LaunchUtilityProcessServiceDeprecated(
     const std::string& service_name,
     const std::u16string& display_name,
-    sandbox::policy::SandboxType sandbox_type,
+    sandbox::mojom::Sandbox sandbox_type,
     mojo::ScopedMessagePipeHandle service_pipe,
     base::OnceCallback<void(base::ProcessId)> callback);
 

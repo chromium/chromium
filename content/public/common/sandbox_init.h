@@ -13,7 +13,6 @@
 #include "base/process/process_handle.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
-#include "sandbox/policy/sandbox_type.h"
 
 namespace base {
 class CommandLine;
@@ -22,10 +21,13 @@ class CommandLine;
 namespace sandbox {
 namespace bpf_dsl {
 class Policy;
-}
+}  // namespace bpf_dsl
+namespace mojom {
+enum class Sandbox;
+}  // namespace mojom
 struct SandboxInterfaceInfo;
 enum ResultCode : int;
-}
+}  // namespace sandbox
 
 namespace content {
 class SandboxedProcessLauncherDelegate;
@@ -40,7 +42,7 @@ class SandboxedProcessLauncherDelegate;
 // occurred.  If process_type isn't one that needs sandboxing true is always
 // returned.
 CONTENT_EXPORT bool InitializeSandbox(
-    sandbox::policy::SandboxType sandbox_type,
+    sandbox::mojom::Sandbox sandbox_type,
     sandbox::SandboxInterfaceInfo* sandbox_info);
 
 // Launch a sandboxed process. |delegate| may be NULL. If |delegate| is non-NULL

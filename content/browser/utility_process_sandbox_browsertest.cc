@@ -20,34 +20,37 @@
 #include "content/public/test/test_service.mojom.h"
 #include "content/test/sandbox_status.test-mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "ppapi/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "sandbox/policy/linux/sandbox_linux.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
+#include "sandbox/policy/sandbox_type.h"
 #include "sandbox/policy/switches.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/assistant/buildflags.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+using sandbox::mojom::Sandbox;
 using sandbox::policy::SandboxLinux;
-using sandbox::policy::SandboxType;
 
 namespace {
 
-std::vector<SandboxType> GetSandboxTypesToTest() {
-  std::vector<SandboxType> types;
+std::vector<Sandbox> GetSandboxTypesToTest() {
+  std::vector<Sandbox> types;
   // We need the standard sandbox config to run this test.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           sandbox::policy::switches::kNoSandbox)) {
     return types;
   }
 
-  for (SandboxType t = SandboxType::kNoSandbox; t <= SandboxType::kMaxValue;
-       t = static_cast<SandboxType>(static_cast<int>(t) + 1)) {
+  for (Sandbox t = Sandbox::kNoSandbox; t <= Sandbox::kMaxValue;
+       t = static_cast<Sandbox>(static_cast<int>(t) + 1)) {
     // These sandbox types can't be spawned in a utility process.
-    if (t == SandboxType::kRenderer || t == SandboxType::kGpu)
+    if (t == Sandbox::kRenderer || t == Sandbox::kGpu)
       continue;
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
-    if (t == SandboxType::kZygoteIntermediateSandbox)
+    if (t == Sandbox::kZygoteIntermediateSandbox)
       continue;
 #endif
 
@@ -64,7 +67,7 @@ constexpr char kTestProcessName[] = "sandbox_test_process";
 
 class UtilityProcessSandboxBrowserTest
     : public ContentBrowserTest,
-      public ::testing::WithParamInterface<SandboxType> {
+      public ::testing::WithParamInterface<Sandbox> {
  public:
   UtilityProcessSandboxBrowserTest() = default;
   ~UtilityProcessSandboxBrowserTest() override = default;
@@ -98,17 +101,17 @@ class UtilityProcessSandboxBrowserTest
     // Aside from kNoSandbox, every utility process launched explicitly with a
     // sandbox type should always end up with a sandbox.
     switch (GetParam()) {
-      case SandboxType::kNoSandbox:
+      case Sandbox::kNoSandbox:
         EXPECT_EQ(sandbox_status, 0);
         break;
 
-      case SandboxType::kCdm:
+      case Sandbox::kCdm:
 #if BUILDFLAG(ENABLE_PLUGINS)
-      case SandboxType::kPpapi:
+      case Sandbox::kPpapi:
 #endif
-      case SandboxType::kPrintCompositor:
-      case SandboxType::kService:
-      case SandboxType::kUtility: {
+      case Sandbox::kPrintCompositor:
+      case Sandbox::kService:
+      case Sandbox::kUtility: {
         constexpr int kExpectedFullSandboxFlags =
             SandboxLinux::kPIDNS | SandboxLinux::kNetNS |
             SandboxLinux::kSeccompBPF | SandboxLinux::kYama |
@@ -117,19 +120,19 @@ class UtilityProcessSandboxBrowserTest
         break;
       }
 
-      case SandboxType::kAudio:
+      case Sandbox::kAudio:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      case SandboxType::kIme:
-      case SandboxType::kTts:
+      case Sandbox::kIme:
+      case Sandbox::kTts:
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-      case SandboxType::kLibassistant:
+      case Sandbox::kLibassistant:
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-      case SandboxType::kNetwork:
+      case Sandbox::kNetwork:
 #if BUILDFLAG(ENABLE_PRINTING)
-      case SandboxType::kPrintBackend:
+      case Sandbox::kPrintBackend:
 #endif
-      case SandboxType::kSpeechRecognition: {
+      case Sandbox::kSpeechRecognition: {
         constexpr int kExpectedPartialSandboxFlags =
             SandboxLinux::kSeccompBPF | SandboxLinux::kYama |
             SandboxLinux::kSeccompTSYNC;
@@ -137,9 +140,9 @@ class UtilityProcessSandboxBrowserTest
         break;
       }
 
-      case SandboxType::kGpu:
-      case SandboxType::kRenderer:
-      case SandboxType::kZygoteIntermediateSandbox:
+      case Sandbox::kGpu:
+      case Sandbox::kRenderer:
+      case Sandbox::kZygoteIntermediateSandbox:
         NOTREACHED();
         break;
     }

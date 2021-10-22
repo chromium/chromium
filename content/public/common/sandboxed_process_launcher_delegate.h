@@ -12,7 +12,6 @@
 #include "content/common/content_export.h"
 #include "content/public/common/zygote/zygote_buildflags.h"
 #include "sandbox/policy/sandbox_delegate.h"
-#include "sandbox/policy/sandbox_type.h"
 
 #if BUILDFLAG(USE_ZYGOTE_HANDLE)
 #include "content/public/common/zygote/zygote_handle.h"  // nogncheck

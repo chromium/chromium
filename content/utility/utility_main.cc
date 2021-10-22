@@ -23,7 +23,9 @@
 #include "content/public/utility/content_utility_client.h"
 #include "content/utility/utility_thread_impl.h"
 #include "printing/buildflags/buildflags.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/sandbox.h"
+#include "sandbox/policy/sandbox_type.h"
 #include "services/tracing/public/cpp/trace_startup.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
@@ -72,7 +74,7 @@ int UtilityMain(const MainFunctionParams& parameters) {
 #if defined(OS_MAC)
   auto sandbox_type =
       sandbox::policy::SandboxTypeFromCommandLine(parameters.command_line);
-  if (sandbox_type != sandbox::policy::SandboxType::kNoSandbox) {
+  if (sandbox_type != sandbox::mojom::Sandbox::kNoSandbox) {
     // On Mac, the TYPE_UI pump for the main thread is an NSApplication loop.
     // In a sandboxed utility process, NSApp attempts to acquire more Mach
     // resources than a restrictive sandbox policy should allow. Services that
@@ -121,30 +123,30 @@ int UtilityMain(const MainFunctionParams& parameters) {
       sandbox::policy::SandboxTypeFromCommandLine(parameters.command_line);
   sandbox::policy::SandboxLinux::PreSandboxHook pre_sandbox_hook;
   switch (sandbox_type) {
-    case sandbox::policy::SandboxType::kNetwork:
+    case sandbox::mojom::Sandbox::kNetwork:
       pre_sandbox_hook = base::BindOnce(&network::NetworkPreSandboxHook);
       break;
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-    case sandbox::policy::SandboxType::kPrintBackend:
+    case sandbox::mojom::Sandbox::kPrintBackend:
       pre_sandbox_hook = base::BindOnce(&printing::PrintBackendPreSandboxHook);
       break;
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
-    case sandbox::policy::SandboxType::kAudio:
+    case sandbox::mojom::Sandbox::kAudio:
       pre_sandbox_hook = base::BindOnce(&audio::AudioPreSandboxHook);
       break;
-    case sandbox::policy::SandboxType::kSpeechRecognition:
+    case sandbox::mojom::Sandbox::kSpeechRecognition:
       pre_sandbox_hook =
           base::BindOnce(&speech::SpeechRecognitionPreSandboxHook);
       break;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    case sandbox::policy::SandboxType::kIme:
+    case sandbox::mojom::Sandbox::kIme:
       pre_sandbox_hook = base::BindOnce(&chromeos::ime::ImePreSandboxHook);
       break;
-    case sandbox::policy::SandboxType::kTts:
+    case sandbox::mojom::Sandbox::kTts:
       pre_sandbox_hook = base::BindOnce(&chromeos::tts::TtsPreSandboxHook);
       break;
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-    case sandbox::policy::SandboxType::kLibassistant:
+    case sandbox::mojom::Sandbox::kLibassistant:
       pre_sandbox_hook =
           base::BindOnce(&chromeos::libassistant::LibassistantPreSandboxHook);
       break;
@@ -206,10 +208,9 @@ int UtilityMain(const MainFunctionParams& parameters) {
   UNREFERENCED_PARAMETER(shell32_pin);
 
   if (!sandbox::policy::IsUnsandboxedSandboxType(sandbox_type) &&
-      sandbox_type != sandbox::policy::SandboxType::kCdm &&
-      sandbox_type != sandbox::policy::SandboxType::kMediaFoundationCdm &&
-      sandbox_type !=
-          sandbox::policy::SandboxType::kWindowsSystemProxyResolver) {
+      sandbox_type != sandbox::mojom::Sandbox::kCdm &&
+      sandbox_type != sandbox::mojom::Sandbox::kMediaFoundationCdm &&
+      sandbox_type != sandbox::mojom::Sandbox::kWindowsSystemProxyResolver) {
     if (!g_utility_target_services)
       return false;
     char buffer;

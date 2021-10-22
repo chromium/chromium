@@ -179,7 +179,9 @@ source_set("tests") {
     ":policy",
     "//base",
     "//base/test:test_support",
+    "//ppapi/buildflags:buildflags",
     "//printing/buildflags",
+    "//sandbox/policy/mojom",
     "//testing/gtest",
   ]
 

@@ -41,6 +41,7 @@
 #include "chrome/installer/util/util_constants.h"
 #include "content/public/app/sandbox_helper_win.h"
 #include "content/public/common/content_switches.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/sandbox_type.h"
 #include "sandbox/win/src/sandbox.h"
 
@@ -139,7 +140,7 @@ int MainDllLoader::Launch(HINSTANCE instance,
   // gated behind a feature flag, which are not yet initialized.
   const bool is_sandboxed =
       sandbox::policy::SandboxTypeFromCommandLine(cmd_line) !=
-      sandbox::policy::SandboxType::kNoSandbox;
+      sandbox::mojom::Sandbox::kNoSandbox;
   if (is_browser || is_cloud_print_service || is_sandboxed) {
     // For child processes that are running as --no-sandbox, don't initialize
     // the sandbox info, otherwise they'll be treated as brokers (as if they

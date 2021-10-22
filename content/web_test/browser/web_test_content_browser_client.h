@@ -101,7 +101,7 @@ class WebTestContentBrowserClient : public ShellContentBrowserClient {
       LoginAuthRequiredCallback auth_required_callback) override;
 #if defined(OS_WIN)
   bool PreSpawnChild(sandbox::TargetPolicy* policy,
-                     sandbox::policy::SandboxType sandbox_type,
+                     sandbox::mojom::Sandbox sandbox_type,
                      ChildSpawnFlags flags) override;
 #endif
   std::string GetAcceptLangs(BrowserContext* context) override;

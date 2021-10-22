@@ -46,8 +46,17 @@ enum Sandbox {
   // Composits PDF and XPS documents.
   kPrintCompositor,
 
+  // Hosts untrustworthy web content. Blocks as much OS access as possible.
+  // Unless disabled by policy, allows dynamic code (for wasm/v8). Services
+  // should prefer to use kService or kUtility.
+  kRenderer,
+
   // Like kUtility but allows loading of speech recognition libraries.
   kSpeechRecognition,
+
+  // The PPAPI plugin process.
+  [EnableIf=enable_plugins]
+  kPpapi,
 
   // Equivalent to no sandbox on all non-Fuchsia platforms.
   // Minimally privileged sandbox on Fuchsia.
@@ -81,6 +90,11 @@ enum Sandbox {
   [EnableIf=is_win]
   kXrCompositing,
 
+  // Allows LPAC capabilities for WinHttp. This only needs internet access,
+  // policy access, and service access.
+  [EnableIf=is_win]
+  kWindowsSystemProxyResolver,
+
   // Hosts Input Method Editors.
   [EnableIf=is_chromeos_ash]
   kIme,
@@ -91,15 +105,19 @@ enum Sandbox {
 
   // Hosts the Libassistant service on ChromeOS Ash, only used for
   // Chrome branded builds.
-  [EnableIf=is_chromeos_ash]
+  [EnableIf=enable_cros_libassistant]
   kLibassistant,
 
   // Like kUtility but allows access to IOSurface on macOS.
   [EnableIf=is_mac]
   kMirroring,
 
-  // Allows LPAC capabilities for WinHttp. This only needs internet access,
-  // policy access, and service access.
-  [EnableIf=is_win]
-  kWindowsSystemProxyResolver,
+  // The NaCl loader process.
+  [EnableIf=is_mac]
+  kNaClLoader,
+
+  // Used to prime zygotes before they specialize. The process will receive a
+  // new sandbox later in its lifetime.
+  [EnableIf=has_zygote]
+  kZygoteIntermediateSandbox,
 };

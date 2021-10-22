@@ -21,6 +21,7 @@
 #include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 
 namespace content {
 
@@ -183,7 +184,7 @@ void LaunchServiceProcess(mojo::GenericPendingReceiver receiver,
   host->SetMetricsName(*receiver.interface_name());
   if (!ShouldEnableSandbox(sandbox))
     sandbox = sandbox::mojom::Sandbox::kNoSandbox;
-  host->SetSandboxType(sandbox::policy::MapToSandboxType(sandbox));
+  host->SetSandboxType(sandbox);
   host->SetExtraCommandLineSwitches(std::move(options.extra_switches));
   if (options.child_flags)
     host->set_child_flags(*options.child_flags);
@@ -225,7 +226,7 @@ void ServiceProcessHost::Launch(mojo::GenericPendingReceiver receiver,
 void LaunchUtilityProcessServiceDeprecated(
     const std::string& service_name,
     const std::u16string& display_name,
-    sandbox::policy::SandboxType sandbox_type,
+    sandbox::mojom::Sandbox sandbox_type,
     mojo::ScopedMessagePipeHandle service_pipe,
     base::OnceCallback<void(base::ProcessId)> callback) {
   UtilityProcessHost* host = new UtilityProcessHost();

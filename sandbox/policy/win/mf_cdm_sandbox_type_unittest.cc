@@ -5,6 +5,7 @@
 #include "sandbox/policy/sandbox_type.h"
 
 #include "base/command_line.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -17,9 +18,9 @@ TEST(SandboxTypeTest, Utility) {
                                  sandbox::policy::switches::kUtilityProcess);
 
   base::CommandLine command_line2(command_line);
-  SetCommandLineFlagsForSandboxType(
-      &command_line2, sandbox::policy::SandboxType::kMediaFoundationCdm);
-  EXPECT_EQ(sandbox::policy::SandboxType::kMediaFoundationCdm,
+  sandbox::policy::SetCommandLineFlagsForSandboxType(
+      &command_line2, sandbox::mojom::Sandbox::kMediaFoundationCdm);
+  EXPECT_EQ(sandbox::mojom::Sandbox::kMediaFoundationCdm,
             sandbox::policy::SandboxTypeFromCommandLine(command_line2));
 }
 

@@ -72,6 +72,7 @@
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/sandbox_type.h"
 #include "sandbox/policy/switches.h"
 #include "ui/base/ui_base_features.h"
@@ -474,12 +475,12 @@ class GpuSandboxedProcessLauncherDelegate
   }
 #endif  // BUILDFLAG(USE_ZYGOTE_HANDLE)
 
-  sandbox::policy::SandboxType GetSandboxType() override {
+  sandbox::mojom::Sandbox GetSandboxType() override {
     if (cmd_line_.HasSwitch(sandbox::policy::switches::kDisableGpuSandbox)) {
       DVLOG(1) << "GPU sandbox is disabled";
-      return sandbox::policy::SandboxType::kNoSandbox;
+      return sandbox::mojom::Sandbox::kNoSandbox;
     }
-    return sandbox::policy::SandboxType::kGpu;
+    return sandbox::mojom::Sandbox::kGpu;
   }
 
  private:
@@ -528,7 +529,7 @@ void RecordAppContainerStatus(int error_code, bool crashed_before) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (!crashed_before &&
       sandbox::policy::SandboxWin::IsAppContainerEnabledForSandbox(
-          *command_line, sandbox::policy::SandboxType::kGpu)) {
+          *command_line, sandbox::mojom::Sandbox::kGpu)) {
     base::UmaHistogramSparse("GPU.AppContainer.Status", error_code);
   }
 }

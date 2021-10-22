@@ -35,6 +35,7 @@
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
 #include "media/base/media_switches.h"
 #include "media/webrtc/webrtc_features.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/sandbox_type.h"
 #include "sandbox/policy/switches.h"
 #include "services/network/public/cpp/network_switches.h"
@@ -67,7 +68,7 @@ UtilityProcessHost::UtilityProcessHost()
     : UtilityProcessHost(nullptr /* client */) {}
 
 UtilityProcessHost::UtilityProcessHost(std::unique_ptr<Client> client)
-    : sandbox_type_(sandbox::policy::SandboxType::kUtility),
+    : sandbox_type_(sandbox::mojom::Sandbox::kUtility),
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
       child_flags_(ChildProcessHost::CHILD_ALLOW_SELF),
 #else
@@ -91,8 +92,7 @@ base::WeakPtr<UtilityProcessHost> UtilityProcessHost::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void UtilityProcessHost::SetSandboxType(
-    sandbox::policy::SandboxType sandbox_type) {
+void UtilityProcessHost::SetSandboxType(sandbox::mojom::Sandbox sandbox_type) {
   sandbox_type_ = sandbox_type;
 }
 

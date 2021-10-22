@@ -40,6 +40,7 @@
 #include "base/win/windows_version.h"
 #include "printing/buildflags/buildflags.h"
 #include "sandbox/policy/features.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/sandbox_type.h"
 #include "sandbox/policy/switches.h"
 #include "sandbox/policy/win/lpac_capability.h"
@@ -55,6 +56,8 @@
 
 namespace sandbox {
 namespace policy {
+using sandbox::mojom::Sandbox;
+
 namespace {
 
 BrokerServices* g_broker_services = NULL;
@@ -591,9 +594,8 @@ ResultCode SetJobMemoryLimit(const base::CommandLine& cmd_line,
 
   // Note that this command line flag hasn't been fetched by all
   // callers of SetJobLevel, only those in this file.
-  SandboxType sandbox_type = SandboxTypeFromCommandLine(cmd_line);
-  if (sandbox_type == SandboxType::kGpu ||
-      sandbox_type == SandboxType::kRenderer) {
+  Sandbox sandbox_type = SandboxTypeFromCommandLine(cmd_line);
+  if (sandbox_type == Sandbox::kGpu || sandbox_type == Sandbox::kRenderer) {
     int64_t GB = 1024 * 1024 * 1024;
     // Allow the GPU/RENDERER process's sandbox to access more physical memory
     // if it's available on the system.
@@ -601,9 +603,9 @@ ResultCode SetJobMemoryLimit(const base::CommandLine& cmd_line,
     // Renderer processes are allowed to access 16 GB; the GPU process, up
     // to 64 GB.
     int64_t physical_memory = base::SysInfo::AmountOfPhysicalMemory();
-    if (sandbox_type == SandboxType::kGpu && physical_memory > 64 * GB) {
+    if (sandbox_type == Sandbox::kGpu && physical_memory > 64 * GB) {
       memory_limit = 64 * GB;
-    } else if (sandbox_type == SandboxType::kGpu && physical_memory > 32 * GB) {
+    } else if (sandbox_type == Sandbox::kGpu && physical_memory > 32 * GB) {
       memory_limit = 32 * GB;
     } else if (physical_memory > 16 * GB) {
       memory_limit = 16 * GB;
@@ -621,22 +623,22 @@ ResultCode SetJobMemoryLimit(const base::CommandLine& cmd_line,
 // hash of the appcontainer_id. This does not need to be secure so using SHA1
 // isn't a security concern.
 std::wstring GetAppContainerProfileName(const std::string& appcontainer_id,
-                                        SandboxType sandbox_type) {
+                                        Sandbox sandbox_type) {
   std::string sandbox_base_name;
   switch (sandbox_type) {
-    case SandboxType::kXrCompositing:
+    case Sandbox::kXrCompositing:
       sandbox_base_name = std::string("cr.sb.xr");
       break;
-    case SandboxType::kGpu:
+    case Sandbox::kGpu:
       sandbox_base_name = std::string("cr.sb.gpu");
       break;
-    case SandboxType::kMediaFoundationCdm:
+    case Sandbox::kMediaFoundationCdm:
       sandbox_base_name = std::string("cr.sb.cdm");
       break;
-    case SandboxType::kNetwork:
+    case Sandbox::kNetwork:
       sandbox_base_name = std::string("cr.sb.net");
       break;
-    case SandboxType::kWindowsSystemProxyResolver:
+    case Sandbox::kWindowsSystemProxyResolver:
       sandbox_base_name = std::string("cr.sb.pxy");
       break;
     default:
@@ -656,35 +658,36 @@ std::wstring GetAppContainerProfileName(const std::string& appcontainer_id,
 
 ResultCode SetupAppContainerProfile(AppContainer* container,
                                     const base::CommandLine& command_line,
-                                    SandboxType sandbox_type) {
-  if (sandbox_type != SandboxType::kMediaFoundationCdm &&
-      sandbox_type != SandboxType::kGpu &&
-      sandbox_type != SandboxType::kXrCompositing &&
-      sandbox_type != SandboxType::kNetwork &&
-      sandbox_type != SandboxType::kWindowsSystemProxyResolver)
+                                    Sandbox sandbox_type) {
+  if (sandbox_type != Sandbox::kMediaFoundationCdm &&
+      sandbox_type != Sandbox::kGpu &&
+      sandbox_type != Sandbox::kXrCompositing &&
+      sandbox_type != Sandbox::kNetwork &&
+      sandbox_type != Sandbox::kWindowsSystemProxyResolver) {
     return SBOX_ERROR_UNSUPPORTED;
+  }
 
-  if (sandbox_type == SandboxType::kGpu &&
+  if (sandbox_type == Sandbox::kGpu &&
       !container->AddImpersonationCapability(L"chromeInstallFiles")) {
     DLOG(ERROR) << "AppContainer::AddImpersonationCapability("
                    "chromeInstallFiles) failed";
     return SBOX_ERROR_CREATE_APPCONTAINER_CAPABILITY;
   }
 
-  if ((sandbox_type == SandboxType::kXrCompositing ||
-       sandbox_type == SandboxType::kGpu) &&
+  if ((sandbox_type == Sandbox::kXrCompositing ||
+       sandbox_type == Sandbox::kGpu) &&
       !container->AddCapability(L"lpacPnpNotifications")) {
     DLOG(ERROR) << "AppContainer::AddCapability(lpacPnpNotifications) failed";
     return SBOX_ERROR_CREATE_APPCONTAINER_CAPABILITY;
   }
 
-  if (sandbox_type == SandboxType::kXrCompositing &&
+  if (sandbox_type == Sandbox::kXrCompositing &&
       !container->AddCapability(L"chromeInstallFiles")) {
     DLOG(ERROR) << "AppContainer::AddCapability(chromeInstallFiles) failed";
     return SBOX_ERROR_CREATE_APPCONTAINER_CAPABILITY;
   }
 
-  if (sandbox_type == SandboxType::kMediaFoundationCdm) {
+  if (sandbox_type == Sandbox::kMediaFoundationCdm) {
     // Please refer to the following design doc on why we add the capabilities:
     // https://docs.google.com/document/d/19Y4Js5v3BlzA5uSuiVTvcvPNIOwmxcMSFJWtuc1A-w8/edit#heading=h.iqvhsrml3gl9
     if (!container->AddCapability(
@@ -693,7 +696,7 @@ ResultCode SetupAppContainerProfile(AppContainer* container,
             sandbox::WellKnownCapabilities::kInternetClient)) {
       DLOG(ERROR)
           << "AppContainer::AddCapability() - "
-          << "SandboxType::kMediaFoundationCdm internet capabilities failed";
+          << "Sandbox::kMediaFoundationCdm internet capabilities failed";
       return sandbox::SBOX_ERROR_CREATE_APPCONTAINER_CAPABILITY;
     }
 
@@ -708,18 +711,17 @@ ResultCode SetupAppContainerProfile(AppContainer* container,
         !container->AddCapability(L"lpacCryptoServices") ||
         !container->AddCapability(L"lpacEnterprisePolicyChangeNotifications") ||
         !container->AddCapability(L"mediaFoundationCdmFiles")) {
-      DLOG(ERROR)
-          << "AppContainer::AddCapability() - "
-          << "SandboxType::kMediaFoundationCdm lpac capabilities failed";
+      DLOG(ERROR) << "AppContainer::AddCapability() - "
+                  << "Sandbox::kMediaFoundationCdm lpac capabilities failed";
       return sandbox::SBOX_ERROR_CREATE_APPCONTAINER_CAPABILITY;
     }
   }
 
-  if (sandbox_type == SandboxType::kWindowsSystemProxyResolver) {
+  if (sandbox_type == Sandbox::kWindowsSystemProxyResolver) {
     if (!container->AddCapability(
             sandbox::WellKnownCapabilities::kInternetClient)) {
       DLOG(ERROR) << "AppContainer::AddCapability() - "
-                  << "SandboxType::kWindowsSystemProxyResolver internet "
+                  << "Sandbox::kWindowsSystemProxyResolver internet "
                      "capabilities failed";
       return sandbox::SBOX_ERROR_CREATE_APPCONTAINER_CAPABILITY;
     }
@@ -727,7 +729,7 @@ ResultCode SetupAppContainerProfile(AppContainer* container,
     if (!container->AddCapability(L"lpacServicesManagement") ||
         !container->AddCapability(L"lpacEnterprisePolicyChangeNotifications")) {
       DLOG(ERROR) << "AppContainer::AddCapability() - "
-                  << "SandboxType::kWindowsSystemProxyResolver lpac "
+                  << "Sandbox::kWindowsSystemProxyResolver lpac "
                      "capabilities failed";
       return sandbox::SBOX_ERROR_CREATE_APPCONTAINER_CAPABILITY;
     }
@@ -738,14 +740,14 @@ ResultCode SetupAppContainerProfile(AppContainer* container,
       L"registryRead",
   };
 
-  if (sandbox_type == SandboxType::kGpu) {
+  if (sandbox_type == Sandbox::kGpu) {
     auto cmdline_caps = base::SplitString(
         command_line.GetSwitchValueNative(switches::kAddGpuAppContainerCaps),
         L",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     base_caps.insert(base_caps.end(), cmdline_caps.begin(), cmdline_caps.end());
   }
 
-  if (sandbox_type == SandboxType::kXrCompositing) {
+  if (sandbox_type == Sandbox::kXrCompositing) {
     auto cmdline_caps = base::SplitString(
         command_line.GetSwitchValueNative(switches::kAddXrAppContainerCaps),
         L",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
@@ -760,13 +762,13 @@ ResultCode SetupAppContainerProfile(AppContainer* container,
   }
 
   // Enable LPAC for GPU process, but not for XRCompositor service.
-  if (sandbox_type == SandboxType::kGpu &&
+  if (sandbox_type == Sandbox::kGpu &&
       base::FeatureList::IsEnabled(features::kGpuLPAC)) {
     container->SetEnableLowPrivilegeAppContainer(true);
   }
 
   // Enable LPAC for Network service.
-  if (sandbox_type == SandboxType::kNetwork) {
+  if (sandbox_type == Sandbox::kNetwork) {
     container->AddCapability(
         sandbox::WellKnownCapabilities::kPrivateNetworkClientServer);
     container->AddCapability(sandbox::WellKnownCapabilities::kInternetClient);
@@ -777,13 +779,14 @@ ResultCode SetupAppContainerProfile(AppContainer* container,
     container->SetEnableLowPrivilegeAppContainer(true);
   }
 
-  if (sandbox_type == SandboxType::kMediaFoundationCdm) {
+  if (sandbox_type == Sandbox::kMediaFoundationCdm) {
     container->AddCapability(kMediaFoundationCdmData);
     container->SetEnableLowPrivilegeAppContainer(true);
   }
 
-  if (sandbox_type == SandboxType::kWindowsSystemProxyResolver)
+  if (sandbox_type == Sandbox::kWindowsSystemProxyResolver) {
     container->SetEnableLowPrivilegeAppContainer(true);
+  }
 
   return SBOX_ALL_OK;
 }
@@ -836,7 +839,7 @@ ResultCode LaunchWithoutSandbox(
 }
 
 bool IsUnsandboxedProcess(
-    SandboxType sandbox_type,
+    Sandbox sandbox_type,
     const base::CommandLine& cmd_line,
     const base::CommandLine& launcher_process_command_line) {
   if (IsUnsandboxedSandboxType(sandbox_type))
@@ -917,7 +920,7 @@ ResultCode SandboxWin::AddWin32kLockdownPolicy(TargetPolicy* policy) {
 // static
 ResultCode SandboxWin::AddAppContainerProfileToPolicy(
     const base::CommandLine& command_line,
-    SandboxType sandbox_type,
+    Sandbox sandbox_type,
     const std::string& appcontainer_id,
     TargetPolicy* policy) {
   if (base::win::GetVersion() < base::win::Version::WIN10_RS1)
@@ -951,21 +954,21 @@ ResultCode SandboxWin::AddAppContainerProfileToPolicy(
 // static
 bool SandboxWin::IsAppContainerEnabledForSandbox(
     const base::CommandLine& command_line,
-    SandboxType sandbox_type) {
+    Sandbox sandbox_type) {
   if (base::win::GetVersion() < base::win::Version::WIN10_RS1)
     return false;
 
-  if (sandbox_type == SandboxType::kMediaFoundationCdm)
+  if (sandbox_type == Sandbox::kMediaFoundationCdm)
     return true;
 
-  if (sandbox_type == SandboxType::kGpu)
+  if (sandbox_type == Sandbox::kGpu)
     return base::FeatureList::IsEnabled(features::kGpuAppContainer);
 
-  if (sandbox_type == SandboxType::kNetwork) {
+  if (sandbox_type == Sandbox::kNetwork) {
     return true;
   }
 
-  if (sandbox_type == SandboxType::kWindowsSystemProxyResolver)
+  if (sandbox_type == Sandbox::kWindowsSystemProxyResolver)
     return true;
 
   return false;
@@ -1026,7 +1029,7 @@ ResultCode SandboxWin::GeneratePolicyForSandboxedProcess(
   const base::CommandLine& launcher_process_command_line =
       *base::CommandLine::ForCurrentProcess();
 
-  SandboxType sandbox_type = delegate->GetSandboxType();
+  Sandbox sandbox_type = delegate->GetSandboxType();
   // --no-sandbox and kNoSandbox are launched without a policy.
   if (IsUnsandboxedProcess(sandbox_type, cmd_line,
                            launcher_process_command_line)) {
@@ -1077,13 +1080,12 @@ ResultCode SandboxWin::GeneratePolicyForSandboxedProcess(
   // Post-startup mitigations.
   mitigations = MITIGATION_DLL_SEARCH_ORDER;
   if (!cmd_line.HasSwitch(switches::kAllowThirdPartyModules) &&
-      sandbox_type != SandboxType::kSpeechRecognition) {
+      sandbox_type != Sandbox::kSpeechRecognition) {
     mitigations |= MITIGATION_FORCE_MS_SIGNED_BINS;
   }
 
-  if (sandbox_type == SandboxType::kNetwork ||
-      sandbox_type == SandboxType::kAudio ||
-      sandbox_type == SandboxType::kIconReader) {
+  if (sandbox_type == Sandbox::kNetwork || sandbox_type == Sandbox::kAudio ||
+      sandbox_type == Sandbox::kIconReader) {
     mitigations |= MITIGATION_DYNAMIC_CODE_DISABLE;
   }
 
@@ -1111,7 +1113,7 @@ ResultCode SandboxWin::GeneratePolicyForSandboxedProcess(
 #if !defined(NACL_WIN64)
   if (process_type == switches::kRendererProcess ||
       process_type == switches::kPpapiPluginProcess ||
-      sandbox_type == SandboxType::kPrintCompositor) {
+      sandbox_type == Sandbox::kPrintCompositor) {
     AddDirectory(base::DIR_WINDOWS_FONTS, NULL, true,
                  TargetPolicy::FILES_ALLOW_READONLY, policy.get());
   }
@@ -1147,7 +1149,7 @@ ResultCode SandboxWin::GeneratePolicyForSandboxedProcess(
     }
   }
 
-  if (sandbox_type == SandboxType::kMediaFoundationCdm) {
+  if (sandbox_type == Sandbox::kMediaFoundationCdm) {
     // Set a policy that would normally allow for process creation. This allows
     // the mf cdm process to launch the protected media pipeline process
     // (mfpmp.exe) without process interception.
@@ -1251,45 +1253,45 @@ void BlocklistAddOneDllForTesting(const wchar_t* module_name,
 }
 
 // static
-std::string SandboxWin::GetSandboxTypeInEnglish(SandboxType sandbox_type) {
+std::string SandboxWin::GetSandboxTypeInEnglish(Sandbox sandbox_type) {
   switch (sandbox_type) {
-    case SandboxType::kNoSandbox:
+    case Sandbox::kNoSandbox:
       return "Unsandboxed";
-    case SandboxType::kNoSandboxAndElevatedPrivileges:
+    case Sandbox::kNoSandboxAndElevatedPrivileges:
       return "Unsandboxed (Elevated)";
-    case SandboxType::kXrCompositing:
+    case Sandbox::kXrCompositing:
       return "XR Compositing";
-    case SandboxType::kRenderer:
+    case Sandbox::kRenderer:
       return "Renderer";
-    case SandboxType::kUtility:
+    case Sandbox::kUtility:
       return "Utility";
-    case SandboxType::kGpu:
+    case Sandbox::kGpu:
       return "GPU";
-    case SandboxType::kPpapi:
+    case Sandbox::kPpapi:
       return "PPAPI";
-    case SandboxType::kNetwork:
+    case Sandbox::kNetwork:
       return "Network";
-    case SandboxType::kCdm:
+    case Sandbox::kCdm:
       return "CDM";
-    case SandboxType::kPrintCompositor:
+    case Sandbox::kPrintCompositor:
       return "Print Compositor";
 #if BUILDFLAG(ENABLE_PRINTING)
-    case SandboxType::kPrintBackend:
+    case Sandbox::kPrintBackend:
       return "Print Backend";
 #endif
-    case SandboxType::kAudio:
+    case Sandbox::kAudio:
       return "Audio";
-    case SandboxType::kSpeechRecognition:
+    case Sandbox::kSpeechRecognition:
       return "Speech Recognition";
-    case SandboxType::kPdfConversion:
+    case Sandbox::kPdfConversion:
       return "PDF Conversion";
-    case SandboxType::kMediaFoundationCdm:
+    case Sandbox::kMediaFoundationCdm:
       return "Media Foundation CDM";
-    case SandboxType::kService:
+    case Sandbox::kService:
       return "Service";
-    case SandboxType::kIconReader:
+    case Sandbox::kIconReader:
       return "Icon Reader";
-    case SandboxType::kWindowsSystemProxyResolver:
+    case Sandbox::kWindowsSystemProxyResolver:
       return "Windows System Proxy Resolver";
   }
 }

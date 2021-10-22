@@ -10,37 +10,36 @@
 #include "content/browser/child_process_launcher.h"
 #include "content/public/browser/child_process_launcher_utils.h"
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
-#include "sandbox/policy/sandbox_type.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 
 namespace content {
 namespace internal {
 
 namespace {
 
-const char* ProcessNameFromSandboxType(
-    sandbox::policy::SandboxType sandbox_type) {
+const char* ProcessNameFromSandboxType(sandbox::mojom::Sandbox sandbox_type) {
   switch (sandbox_type) {
-    case sandbox::policy::SandboxType::kNoSandbox:
+    case sandbox::mojom::Sandbox::kNoSandbox:
       return nullptr;
-    case sandbox::policy::SandboxType::kRenderer:
+    case sandbox::mojom::Sandbox::kRenderer:
       return "renderer";
-    case sandbox::policy::SandboxType::kUtility:
+    case sandbox::mojom::Sandbox::kUtility:
       return "utility";
-    case sandbox::policy::SandboxType::kService:
+    case sandbox::mojom::Sandbox::kService:
       return "service";
-    case sandbox::policy::SandboxType::kGpu:
+    case sandbox::mojom::Sandbox::kGpu:
       return "gpu";
-    case sandbox::policy::SandboxType::kNetwork:
+    case sandbox::mojom::Sandbox::kNetwork:
       return "network";
-    case sandbox::policy::SandboxType::kVideoCapture:
+    case sandbox::mojom::Sandbox::kVideoCapture:
       return "video-capture";
-    case sandbox::policy::SandboxType::kAudio:
+    case sandbox::mojom::Sandbox::kAudio:
       return "audio";
-    case sandbox::policy::SandboxType::kCdm:
+    case sandbox::mojom::Sandbox::kCdm:
       return "cdm";
-    case sandbox::policy::SandboxType::kPrintCompositor:
+    case sandbox::mojom::Sandbox::kPrintCompositor:
       return "print-compositor";
-    case sandbox::policy::SandboxType::kSpeechRecognition:
+    case sandbox::mojom::Sandbox::kSpeechRecognition:
       return "speech-recognition";
   }
 }

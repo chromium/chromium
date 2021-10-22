@@ -14,7 +14,7 @@
 #include "media/mojo/mojom/cdm_service.mojom.h"
 #include "printing/buildflags/buildflags.h"
 #include "sandbox/policy/features.h"
-#include "sandbox/policy/sandbox_type.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/win/sandbox_win.h"
 #include "sandbox/win/src/app_container.h"
 #include "sandbox/win/src/sandbox_policy.h"
@@ -110,16 +110,15 @@ bool PrintBackendPreSpawnTarget(sandbox::TargetPolicy* policy) {
 
 bool UtilitySandboxedProcessLauncherDelegate::GetAppContainerId(
     std::string* appcontainer_id) {
-  if (sandbox_type_ == sandbox::policy::SandboxType::kNetwork) {
+  if (sandbox_type_ == sandbox::mojom::Sandbox::kNetwork) {
     *appcontainer_id = base::WideToUTF8(cmd_line_.GetProgram().value());
     return true;
   }
 
-  if ((sandbox_type_ == sandbox::policy::SandboxType::kXrCompositing &&
+  if ((sandbox_type_ == sandbox::mojom::Sandbox::kXrCompositing &&
        base::FeatureList::IsEnabled(sandbox::policy::features::kXRSandbox)) ||
-      sandbox_type_ == sandbox::policy::SandboxType::kMediaFoundationCdm ||
-      sandbox_type_ ==
-          sandbox::policy::SandboxType::kWindowsSystemProxyResolver) {
+      sandbox_type_ == sandbox::mojom::Sandbox::kMediaFoundationCdm ||
+      sandbox_type_ == sandbox::mojom::Sandbox::kWindowsSystemProxyResolver) {
     *appcontainer_id = base::WideToUTF8(cmd_line_.GetProgram().value());
     return true;
   }
@@ -128,21 +127,21 @@ bool UtilitySandboxedProcessLauncherDelegate::GetAppContainerId(
 
 bool UtilitySandboxedProcessLauncherDelegate::DisableDefaultPolicy() {
   switch (sandbox_type_) {
-    case sandbox::policy::SandboxType::kAudio:
+    case sandbox::mojom::Sandbox::kAudio:
       // Default policy is disabled for audio process to allow audio drivers
       // to read device properties (https://crbug.com/883326).
       return true;
-    case sandbox::policy::SandboxType::kXrCompositing:
+    case sandbox::mojom::Sandbox::kXrCompositing:
       return base::FeatureList::IsEnabled(
           sandbox::policy::features::kXRSandbox);
-    case sandbox::policy::SandboxType::kMediaFoundationCdm:
+    case sandbox::mojom::Sandbox::kMediaFoundationCdm:
       // Default policy is disabled for MF Cdm process to allow the application
       // of specific LPAC sandbox policies.
       return true;
-    case sandbox::policy::SandboxType::kNetwork:
+    case sandbox::mojom::Sandbox::kNetwork:
       // An LPAC specific policy for network service is set elsewhere.
       return true;
-    case sandbox::policy::SandboxType::kWindowsSystemProxyResolver:
+    case sandbox::mojom::Sandbox::kWindowsSystemProxyResolver:
       // Default policy is disabled for Windows System Proxy Resolver process to
       // allow the application of specific LPAC sandbox policies.
       return true;
@@ -153,29 +152,29 @@ bool UtilitySandboxedProcessLauncherDelegate::DisableDefaultPolicy() {
 
 bool UtilitySandboxedProcessLauncherDelegate::ShouldLaunchElevated() {
   return sandbox_type_ ==
-         sandbox::policy::SandboxType::kNoSandboxAndElevatedPrivileges;
+         sandbox::mojom::Sandbox::kNoSandboxAndElevatedPrivileges;
 }
 
 bool UtilitySandboxedProcessLauncherDelegate::PreSpawnTarget(
     sandbox::TargetPolicy* policy) {
-  if (sandbox_type_ == sandbox::policy::SandboxType::kNetwork) {
+  if (sandbox_type_ == sandbox::mojom::Sandbox::kNetwork) {
     if (!NetworkPreSpawnTarget(policy))
       return false;
   }
 
-  if (sandbox_type_ == sandbox::policy::SandboxType::kAudio) {
+  if (sandbox_type_ == sandbox::mojom::Sandbox::kAudio) {
     if (!AudioPreSpawnTarget(policy))
       return false;
   }
 
-  if (sandbox_type_ == sandbox::policy::SandboxType::kSpeechRecognition) {
+  if (sandbox_type_ == sandbox::mojom::Sandbox::kSpeechRecognition) {
     policy->SetDelayedIntegrityLevel(sandbox::INTEGRITY_LEVEL_LOW);
     policy->SetIntegrityLevel(sandbox::INTEGRITY_LEVEL_LOW);
     policy->SetTokenLevel(sandbox::USER_RESTRICTED_SAME_ACCESS,
                           sandbox::USER_LIMITED);
   }
 
-  if (sandbox_type_ == sandbox::policy::SandboxType::kIconReader) {
+  if (sandbox_type_ == sandbox::mojom::Sandbox::kIconReader) {
     policy->SetTokenLevel(sandbox::USER_RESTRICTED_SAME_ACCESS,
                           sandbox::USER_LOCKDOWN);
     policy->SetDelayedIntegrityLevel(sandbox::INTEGRITY_LEVEL_UNTRUSTED);
@@ -200,7 +199,7 @@ bool UtilitySandboxedProcessLauncherDelegate::PreSpawnTarget(
                     L"\\??\\*.ico");
   }
 
-  if (sandbox_type_ == sandbox::policy::SandboxType::kXrCompositing &&
+  if (sandbox_type_ == sandbox::mojom::Sandbox::kXrCompositing &&
       base::FeatureList::IsEnabled(sandbox::policy::features::kXRSandbox)) {
     // There were issues with some mitigations, causing an inability
     // to load OpenVR and Oculus APIs.
@@ -226,13 +225,12 @@ bool UtilitySandboxedProcessLauncherDelegate::PreSpawnTarget(
         cmd_line_, sandbox::JOB_UNPROTECTED, 0, policy);
   }
 
-  if (sandbox_type_ == sandbox::policy::SandboxType::kMediaFoundationCdm ||
-      sandbox_type_ ==
-          sandbox::policy::SandboxType::kWindowsSystemProxyResolver) {
+  if (sandbox_type_ == sandbox::mojom::Sandbox::kMediaFoundationCdm ||
+      sandbox_type_ == sandbox::mojom::Sandbox::kWindowsSystemProxyResolver) {
     policy->SetTokenLevel(sandbox::USER_UNPROTECTED, sandbox::USER_UNPROTECTED);
   }
 
-  if (sandbox_type_ == sandbox::policy::SandboxType::kService) {
+  if (sandbox_type_ == sandbox::mojom::Sandbox::kService) {
     auto result = sandbox::policy::SandboxWin::AddWin32kLockdownPolicy(policy);
     if (result != sandbox::SBOX_ALL_OK)
       return false;
@@ -245,7 +243,7 @@ bool UtilitySandboxedProcessLauncherDelegate::PreSpawnTarget(
   }
 
 #if BUILDFLAG(ENABLE_PRINTING)
-  if (sandbox_type_ == sandbox::policy::SandboxType::kPrintBackend) {
+  if (sandbox_type_ == sandbox::mojom::Sandbox::kPrintBackend) {
     if (!PrintBackendPreSpawnTarget(policy))
       return false;
   }

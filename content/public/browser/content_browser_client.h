@@ -173,9 +173,9 @@ struct ResourceRequest;
 namespace sandbox {
 class SeatbeltExecClient;
 class TargetPolicy;
-namespace policy {
-enum class SandboxType;
-}  // namespace policy
+namespace mojom {
+enum class Sandbox;
+}  // namespace mojom
 }  // namespace sandbox
 
 namespace ui {
@@ -1243,7 +1243,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Only use this for embedder-specific policies, since the bulk of sandbox
   // policies should go inside the relevant SandboxedProcessLauncherDelegate.
   virtual bool PreSpawnChild(sandbox::TargetPolicy* policy,
-                             sandbox::policy::SandboxType sandbox_type,
+                             sandbox::mojom::Sandbox sandbox_type,
                              ChildSpawnFlags flags);
 
   // This may be called on the PROCESS_LAUNCHER thread before the child process
@@ -1251,14 +1251,14 @@ class CONTENT_EXPORT ContentBrowserClient {
   // not be compatible with Hardware-enforced Stack Protection (CET).
   // |utility_sub_type| should match that provided on the command line to the
   // child process. Only use this for embedder-specific processes, and prefer to
-  // key off SandboxType in the relevant SandboxedProcessLauncherDelegate.
+  // key off Sandbox in the relevant SandboxedProcessLauncherDelegate.
   virtual bool IsUtilityCetCompatible(const std::string& utility_sub_type);
 
   // Returns the AppContainer SID for the specified sandboxed process type, or
   // empty string if this sandboxed process type does not support living inside
   // an AppContainer. Called on PROCESS_LAUNCHER thread.
   virtual std::wstring GetAppContainerSidForSandboxType(
-      sandbox::policy::SandboxType sandbox_type);
+      sandbox::mojom::Sandbox sandbox_type);
 
   // Returns the LPAC capability name to use for file data that the network
   // service needs to access to when running within LPAC sandbox. Embedders
@@ -2102,7 +2102,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   // true if parameters were successfully set up or false if no additional
   // parameters were set up.
   virtual bool SetupEmbedderSandboxParameters(
-      sandbox::policy::SandboxType sandbox_type,
+      sandbox::mojom::Sandbox sandbox_type,
       sandbox::SeatbeltExecClient* client);
 #endif  // defined(OS_MAC)
 

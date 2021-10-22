@@ -25,6 +25,7 @@
 
 #if defined(OS_WIN)
 #include <windows.h>
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 #endif  // OS_WIN
 
 namespace content {
@@ -53,7 +54,7 @@ class UtilityProcessHostBrowserTest : public BrowserChildProcessObserver,
 #if defined(OS_WIN)
     if (elevated)
       host->SetSandboxType(
-          sandbox::policy::SandboxType::kNoSandboxAndElevatedPrivileges);
+          sandbox::mojom::Sandbox::kNoSandboxAndElevatedPrivileges);
 #endif
     EXPECT_TRUE(host->Start());
 

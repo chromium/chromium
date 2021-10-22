@@ -97,10 +97,12 @@ if (is_component_build) {
       "//base",
       "//build:chromeos_buildflags",
       "//media:media_buildflags",
+      "//ppapi/buildflags:buildflags",
       "//printing/buildflags",
       "//sandbox:sandbox_buildflags",
       "//sandbox/linux:sandbox",
       "//sandbox/policy",
+      "//sandbox/policy/mojom",
     ]
   }
 } else {

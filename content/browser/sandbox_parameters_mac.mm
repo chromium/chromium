@@ -25,10 +25,11 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "ppapi/buildflags/buildflags.h"
+#include "printing/buildflags/buildflags.h"
 #include "sandbox/mac/seatbelt_exec.h"
 #include "sandbox/policy/mac/params.h"
 #include "sandbox/policy/mac/sandbox_mac.h"
-#include "sandbox/policy/sandbox_type.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/switches.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -203,40 +204,41 @@ void SetupGpuSandboxParameters(sandbox::SeatbeltExecClient* client,
 
 }  // namespace
 
-void SetupSandboxParameters(sandbox::policy::SandboxType sandbox_type,
+void SetupSandboxParameters(sandbox::mojom::Sandbox sandbox_type,
                             const base::CommandLine& command_line,
                             sandbox::SeatbeltExecClient* client) {
   switch (sandbox_type) {
-    case sandbox::policy::SandboxType::kAudio:
-    case sandbox::policy::SandboxType::kCdm:
-    case sandbox::policy::SandboxType::kMirroring:
-    case sandbox::policy::SandboxType::kNaClLoader:
+    case sandbox::mojom::Sandbox::kAudio:
+    case sandbox::mojom::Sandbox::kCdm:
+    case sandbox::mojom::Sandbox::kMirroring:
+    case sandbox::mojom::Sandbox::kNaClLoader:
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-    case sandbox::policy::SandboxType::kPrintBackend:
+    case sandbox::mojom::Sandbox::kPrintBackend:
 #endif
-    case sandbox::policy::SandboxType::kPrintCompositor:
-    case sandbox::policy::SandboxType::kRenderer:
-    case sandbox::policy::SandboxType::kUtility:
+    case sandbox::mojom::Sandbox::kPrintCompositor:
+    case sandbox::mojom::Sandbox::kRenderer:
+    case sandbox::mojom::Sandbox::kService:
+    case sandbox::mojom::Sandbox::kUtility:
       SetupCommonSandboxParameters(client);
       break;
-    case sandbox::policy::SandboxType::kGpu: {
+    case sandbox::mojom::Sandbox::kGpu: {
       SetupGpuSandboxParameters(client, command_line);
       break;
     }
-    case sandbox::policy::SandboxType::kNetwork:
+    case sandbox::mojom::Sandbox::kNetwork:
       SetupNetworkSandboxParameters(client);
       break;
-    case sandbox::policy::SandboxType::kPpapi:
+    case sandbox::mojom::Sandbox::kPpapi:
 #if BUILDFLAG(ENABLE_PLUGINS)
       SetupPPAPISandboxParameters(client);
 #endif
       break;
-    case sandbox::policy::SandboxType::kNoSandbox:
+    case sandbox::mojom::Sandbox::kNoSandbox:
       CHECK(false) << "Unhandled parameters for sandbox_type "
                    << static_cast<int>(sandbox_type);
       break;
     // Setup parameters for sandbox types handled by embedders below.
-    case sandbox::policy::SandboxType::kSpeechRecognition:
+    case sandbox::mojom::Sandbox::kSpeechRecognition:
       SetupCommonSandboxParameters(client);
       CHECK(GetContentClient()->browser()->SetupEmbedderSandboxParameters(
           sandbox_type, client));

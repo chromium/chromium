@@ -15,7 +15,7 @@
 #include "sandbox/linux/seccomp-bpf/sandbox_bpf.h"
 #include "sandbox/policy/export.h"
 #include "sandbox/policy/linux/bpf_base_policy_linux.h"
-#include "sandbox/policy/sandbox_type.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 
 namespace sandbox {
 namespace policy {
@@ -51,12 +51,12 @@ class SANDBOX_POLICY_EXPORT SandboxSeccompBPF {
 
   // Return a policy suitable for use with StartSandboxWithExternalPolicy.
   static std::unique_ptr<BPFBasePolicy> PolicyForSandboxType(
-      SandboxType sandbox_type,
+      sandbox::mojom::Sandbox sandbox_type,
       const SandboxSeccompBPF::Options& options);
 
   // Prove that the sandbox was engaged by the StartSandbox() call. Crashes
   // the process if the sandbox failed to engage.
-  static void RunSandboxSanityChecks(SandboxType sandbox_type,
+  static void RunSandboxSanityChecks(sandbox::mojom::Sandbox sandbox_type,
                                      const SandboxSeccompBPF::Options& options);
 #endif  // !defined(OS_NACL_NONSFI)
 

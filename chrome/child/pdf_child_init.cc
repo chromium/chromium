@@ -14,6 +14,7 @@
 #include "base/win/windows_version.h"
 #include "content/public/child/child_thread.h"
 #include "content/public/common/content_switches.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/sandbox_type.h"
 #include "sandbox/policy/switches.h"
 #endif
@@ -53,13 +54,13 @@ void MaybePatchGdiGetFontData() {
 #if defined(OS_WIN)
   // Only patch utility processes which explicitly need GDI.
   auto& command_line = *base::CommandLine::ForCurrentProcess();
-  sandbox::policy::SandboxType service_sandbox_type =
+  auto service_sandbox_type =
       sandbox::policy::SandboxTypeFromCommandLine(command_line);
   bool need_gdi =
-      service_sandbox_type == sandbox::policy::SandboxType::kPpapi ||
-      service_sandbox_type == sandbox::policy::SandboxType::kPrintCompositor ||
-      service_sandbox_type == sandbox::policy::SandboxType::kPdfConversion ||
-      (service_sandbox_type == sandbox::policy::SandboxType::kRenderer &&
+      service_sandbox_type == sandbox::mojom::Sandbox::kPpapi ||
+      service_sandbox_type == sandbox::mojom::Sandbox::kPrintCompositor ||
+      service_sandbox_type == sandbox::mojom::Sandbox::kPdfConversion ||
+      (service_sandbox_type == sandbox::mojom::Sandbox::kRenderer &&
        command_line.HasSwitch(switches::kPdfRenderer));
   if (!need_gdi)
     return;

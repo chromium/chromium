@@ -201,6 +201,7 @@ if (!is_android && !is_mac) {
         "//gpu/command_buffer/service",
         "//sandbox",
         "//sandbox/policy",
+        "//sandbox/policy/mojom",
         "//third_party/breakpad:breakpad_handler",
         "//third_party/breakpad:breakpad_sender",
         "//third_party/crashpad/crashpad/util",

@@ -15,6 +15,7 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "services/service_manager/public/mojom/service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -92,7 +93,7 @@ TEST(ServiceProcessLauncherTest, MAYBE_StartJoin) {
       absl::in_place, &service_process_launcher_delegate, test_service_path);
   base::RunLoop run_loop;
   launcher->Start(
-      Identity(), sandbox::policy::SandboxType::kNoSandbox,
+      Identity(), sandbox::mojom::Sandbox::kNoSandbox,
       base::BindOnce(&ProcessReadyCallbackAdapter,
                      true /*expect_process_id_valid*/, run_loop.QuitClosure()));
   run_loop.Run();
@@ -120,7 +121,7 @@ TEST(ServiceProcessLauncherTest, FailToLaunchProcess) {
   absl::optional<ServiceProcessLauncher> launcher(
       absl::in_place, &service_process_launcher_delegate, test_service_path);
   base::RunLoop run_loop;
-  launcher->Start(Identity(), sandbox::policy::SandboxType::kNoSandbox,
+  launcher->Start(Identity(), sandbox::mojom::Sandbox::kNoSandbox,
                   base::BindOnce(&ProcessReadyCallbackAdapter,
                                  false /*expect_process_id_valid*/,
                                  run_loop.QuitClosure()));

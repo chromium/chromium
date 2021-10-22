@@ -31,6 +31,7 @@
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "ppapi/buildflags/buildflags.h"
 #include "sandbox/constants.h"
 #include "sandbox/linux/seccomp-bpf-helpers/sigsys_handlers.h"
 #include "sandbox/linux/services/credentials.h"
@@ -47,6 +48,7 @@
 #include "sandbox/linux/system_headers/linux_stat.h"
 #include "sandbox/policy/linux/bpf_broker_policy_linux.h"
 #include "sandbox/policy/linux/sandbox_seccomp_bpf_linux.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/sandbox.h"
 #include "sandbox/policy/sandbox_type.h"
 #include "sandbox/policy/switches.h"
@@ -279,7 +281,7 @@ SetuidSandboxClient* SandboxLinux::setuid_sandbox_client() const {
 }
 
 // For seccomp-bpf, we use the SandboxSeccompBPF class.
-bool SandboxLinux::StartSeccompBPF(SandboxType sandbox_type,
+bool SandboxLinux::StartSeccompBPF(sandbox::mojom::Sandbox sandbox_type,
                                    PreSandboxHook hook,
                                    const Options& options) {
   CHECK(!seccomp_bpf_started_);
@@ -318,7 +320,7 @@ bool SandboxLinux::StartSeccompBPF(SandboxType sandbox_type,
 #endif
 }
 
-bool SandboxLinux::InitializeSandbox(SandboxType sandbox_type,
+bool SandboxLinux::InitializeSandbox(sandbox::mojom::Sandbox sandbox_type,
                                      SandboxLinux::PreSandboxHook hook,
                                      const Options& options) {
   DCHECK(!initialize_sandbox_ran_);
@@ -430,10 +432,10 @@ bool SandboxLinux::seccomp_bpf_with_tsync_supported() const {
   return seccomp_bpf_with_tsync_supported_;
 }
 
-rlim_t GetProcessDataSizeLimit(SandboxType sandbox_type) {
+rlim_t GetProcessDataSizeLimit(sandbox::mojom::Sandbox sandbox_type) {
 #if defined(ARCH_CPU_64_BITS)
-  if (sandbox_type == SandboxType::kGpu ||
-      sandbox_type == SandboxType::kRenderer) {
+  if (sandbox_type == sandbox::mojom::Sandbox::kGpu ||
+      sandbox_type == sandbox::mojom::Sandbox::kRenderer) {
     // Allow the GPU/RENDERER process's sandbox to access more physical memory
     // if it's available on the system.
     //
@@ -441,9 +443,11 @@ rlim_t GetProcessDataSizeLimit(SandboxType sandbox_type) {
     // to 64 GB.
     constexpr rlim_t GB = 1024 * 1024 * 1024;
     const rlim_t physical_memory = base::SysInfo::AmountOfPhysicalMemory();
-    if (sandbox_type == SandboxType::kGpu && physical_memory > 64 * GB) {
+    if (sandbox_type == sandbox::mojom::Sandbox::kGpu &&
+        physical_memory > 64 * GB) {
       return 64 * GB;
-    } else if (sandbox_type == SandboxType::kGpu && physical_memory > 32 * GB) {
+    } else if (sandbox_type == sandbox::mojom::Sandbox::kGpu &&
+               physical_memory > 32 * GB) {
       return 32 * GB;
     } else if (physical_memory > 16 * GB) {
       return 16 * GB;
@@ -460,8 +464,9 @@ bool SandboxLinux::LimitAddressSpace(int* error) {
 #if !defined(ADDRESS_SANITIZER) && !defined(MEMORY_SANITIZER) && \
     !defined(THREAD_SANITIZER) && !defined(LEAK_SANITIZER)
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  SandboxType sandbox_type = SandboxTypeFromCommandLine(*command_line);
-  if (sandbox_type == SandboxType::kNoSandbox) {
+  sandbox::mojom::Sandbox sandbox_type =
+      SandboxTypeFromCommandLine(*command_line);
+  if (sandbox_type == sandbox::mojom::Sandbox::kNoSandbox) {
     return false;
   }
 
@@ -542,10 +547,11 @@ void SandboxLinux::SealSandbox() {
   }
 }
 
-void SandboxLinux::CheckForBrokenPromises(SandboxType sandbox_type) {
-  if (sandbox_type != SandboxType::kRenderer
+void SandboxLinux::CheckForBrokenPromises(
+    sandbox::mojom::Sandbox sandbox_type) {
+  if (sandbox_type != sandbox::mojom::Sandbox::kRenderer
 #if BUILDFLAG(ENABLE_PLUGINS)
-      && sandbox_type != SandboxType::kPpapi
+      && sandbox_type != sandbox::mojom::Sandbox::kPpapi
 #endif
   ) {
     return;

@@ -161,6 +161,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/scoped_message_error_crash_key.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/switches.h"
 #include "services/device/public/mojom/power_monitor.mojom.h"
 #include "services/device/public/mojom/screen_orientation.mojom.h"
@@ -415,8 +416,8 @@ class RendererSandboxedProcessLauncherDelegate
   bool EnableCpuSecurityMitigations() override { return true; }
 #endif  // defined(OS_MAC)
 
-  sandbox::policy::SandboxType GetSandboxType() override {
-    return sandbox::policy::SandboxType::kRenderer;
+  sandbox::mojom::Sandbox GetSandboxType() override {
+    return sandbox::mojom::Sandbox::kRenderer;
   }
 };
 
@@ -477,7 +478,7 @@ class RendererSandboxedProcessLauncherDelegateWin
     }
 
     return GetContentClient()->browser()->PreSpawnChild(
-        policy, sandbox::policy::SandboxType::kRenderer, flags);
+        policy, sandbox::mojom::Sandbox::kRenderer, flags);
   }
 
   bool CetCompatible() override {

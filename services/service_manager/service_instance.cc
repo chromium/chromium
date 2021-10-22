@@ -20,6 +20,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(OS_IOS)
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "services/service_manager/service_process_launcher.h"
 #endif  // !defined(OS_IOS)
 
@@ -156,7 +157,7 @@ void ServiceInstance::StartWithRemote(
 #if !defined(OS_IOS)
 bool ServiceInstance::StartWithProcessHost(
     std::unique_ptr<ServiceProcessHost> host,
-    sandbox::policy::SandboxType sandbox_type) {
+    sandbox::mojom::Sandbox sandbox_type) {
   DCHECK(!service_remote_);
   DCHECK(!process_host_);
 

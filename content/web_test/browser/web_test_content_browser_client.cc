@@ -74,6 +74,7 @@
 
 #if defined(OS_WIN)
 #include "base/strings/utf_string_conversions.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/win/sandbox_win.h"
 #include "sandbox/win/src/sandbox.h"
 #endif
@@ -573,9 +574,9 @@ void WebTestContentBrowserClient::BindWebTestControlHost(
 #if defined(OS_WIN)
 bool WebTestContentBrowserClient::PreSpawnChild(
     sandbox::TargetPolicy* policy,
-    sandbox::policy::SandboxType sandbox_type,
+    sandbox::mojom::Sandbox sandbox_type,
     ChildSpawnFlags flags) {
-  if (sandbox_type == sandbox::policy::SandboxType::kRenderer) {
+  if (sandbox_type == sandbox::mojom::Sandbox::kRenderer) {
     // Add sideloaded font files for testing. See also DIR_WINDOWS_FONTS
     // addition in |StartSandboxedProcess|.
     std::vector<std::string> font_files = switches::GetSideloadFontFiles();

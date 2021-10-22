@@ -28,6 +28,10 @@ namespace sandbox {
 class BrokerServices;
 class TargetPolicy;
 class TargetServices;
+
+namespace mojom {
+enum class Sandbox;
+}  // namespace mojom
 }  // namespace sandbox
 
 namespace sandbox {
@@ -85,7 +89,7 @@ class SANDBOX_POLICY_EXPORT SandboxWin {
   // a unique package SID, it can be anything the caller wants.
   static ResultCode AddAppContainerProfileToPolicy(
       const base::CommandLine& command_line,
-      SandboxType sandbox_type,
+      sandbox::mojom::Sandbox sandbox_type,
       const std::string& appcontainer_id,
       TargetPolicy* policy);
 
@@ -93,7 +97,7 @@ class SANDBOX_POLICY_EXPORT SandboxWin {
   // sandbox type from |command_line| and |sandbox_type|.
   static bool IsAppContainerEnabledForSandbox(
       const base::CommandLine& command_line,
-      SandboxType sandbox_type);
+      sandbox::mojom::Sandbox sandbox_type);
 
   static bool InitBrokerServices(BrokerServices* broker_services);
   static bool InitTargetServices(TargetServices* target_services);
@@ -107,7 +111,8 @@ class SANDBOX_POLICY_EXPORT SandboxWin {
       base::OnceCallback<void(base::Value)> response);
 
   // Provides a friendly name for the sandbox for chrome://sandbox and tracing.
-  static std::string GetSandboxTypeInEnglish(SandboxType sandbox_type);
+  static std::string GetSandboxTypeInEnglish(
+      sandbox::mojom::Sandbox sandbox_type);
 };
 
 SANDBOX_POLICY_EXPORT

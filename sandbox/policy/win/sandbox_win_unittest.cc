@@ -25,6 +25,7 @@
 #include "base/win/windows_version.h"
 #include "build/build_config.h"
 #include "sandbox/policy/features.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/sandbox_type.h"
 #include "sandbox/policy/switches.h"
 #include "sandbox/win/src/app_container_base.h"
@@ -241,7 +242,7 @@ class SandboxWinTest : public ::testing::Test {
   ResultCode CreateAppContainerProfile(
       const base::CommandLine& base_command_line,
       bool access_check_fail,
-      SandboxType sandbox_type,
+      sandbox::mojom::Sandbox sandbox_type,
       scoped_refptr<AppContainerBase>* profile) {
     base::FilePath path;
     base::CommandLine command_line(base_command_line);
@@ -270,14 +271,14 @@ TEST_F(SandboxWinTest, IsGpuAppContainerEnabled) {
   if (base::win::GetVersion() < base::win::Version::WIN10_RS1)
     return;
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-  EXPECT_FALSE(SandboxWin::IsAppContainerEnabledForSandbox(command_line,
-                                                           SandboxType::kGpu));
+  EXPECT_FALSE(SandboxWin::IsAppContainerEnabledForSandbox(
+      command_line, sandbox::mojom::Sandbox::kGpu));
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(features::kGpuAppContainer);
-  EXPECT_TRUE(SandboxWin::IsAppContainerEnabledForSandbox(command_line,
-                                                          SandboxType::kGpu));
+  EXPECT_TRUE(SandboxWin::IsAppContainerEnabledForSandbox(
+      command_line, sandbox::mojom::Sandbox::kGpu));
   EXPECT_FALSE(SandboxWin::IsAppContainerEnabledForSandbox(
-      command_line, SandboxType::kNoSandbox));
+      command_line, sandbox::mojom::Sandbox::kNoSandbox));
 }
 
 TEST_F(SandboxWinTest, AppContainerAccessCheckFail) {
@@ -285,8 +286,8 @@ TEST_F(SandboxWinTest, AppContainerAccessCheckFail) {
     return;
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   scoped_refptr<AppContainerBase> profile;
-  ResultCode result = CreateAppContainerProfile(command_line, true,
-                                                SandboxType::kGpu, &profile);
+  ResultCode result = CreateAppContainerProfile(
+      command_line, true, sandbox::mojom::Sandbox::kGpu, &profile);
   EXPECT_EQ(SBOX_ERROR_CREATE_APPCONTAINER_ACCESS_CHECK, result);
   EXPECT_EQ(nullptr, profile);
 }
@@ -296,8 +297,8 @@ TEST_F(SandboxWinTest, AppContainerCheckProfile) {
     return;
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   scoped_refptr<AppContainerBase> profile;
-  ResultCode result = CreateAppContainerProfile(command_line, false,
-                                                SandboxType::kGpu, &profile);
+  ResultCode result = CreateAppContainerProfile(
+      command_line, false, sandbox::mojom::Sandbox::kGpu, &profile);
   ASSERT_EQ(SBOX_ALL_OK, result);
   ASSERT_NE(nullptr, profile);
   auto package_sid = Sid::FromSddlString(kPackageSid);
@@ -315,8 +316,8 @@ TEST_F(SandboxWinTest, AppContainerCheckProfileDisableLpac) {
   base::test::ScopedFeatureList features;
   features.InitAndDisableFeature(features::kGpuLPAC);
   scoped_refptr<AppContainerBase> profile;
-  ResultCode result = CreateAppContainerProfile(command_line, false,
-                                                SandboxType::kGpu, &profile);
+  ResultCode result = CreateAppContainerProfile(
+      command_line, false, sandbox::mojom::Sandbox::kGpu, &profile);
   ASSERT_EQ(SBOX_ALL_OK, result);
   ASSERT_NE(nullptr, profile);
   EXPECT_FALSE(profile->GetEnableLowPrivilegeAppContainer());
@@ -329,8 +330,8 @@ TEST_F(SandboxWinTest, AppContainerCheckProfileAddCapabilities) {
   command_line.AppendSwitchASCII(switches::kAddGpuAppContainerCaps,
                                  "  cap1   ,   cap2   ,");
   scoped_refptr<AppContainerBase> profile;
-  ResultCode result = CreateAppContainerProfile(command_line, false,
-                                                SandboxType::kGpu, &profile);
+  ResultCode result = CreateAppContainerProfile(
+      command_line, false, sandbox::mojom::Sandbox::kGpu, &profile);
   ASSERT_EQ(SBOX_ALL_OK, result);
   ASSERT_NE(nullptr, profile);
   CheckCapabilities(profile.get(), {L"cap1", L"cap2"});
@@ -400,8 +401,9 @@ TEST_F(SandboxWinTest, BlocklistAddOneDllDontCheckInBrowser) {
 // policy can be generated.
 class TestSandboxDelegate : public SandboxDelegate {
  public:
-  TestSandboxDelegate(SandboxType sandbox_type) : sandbox_type_(sandbox_type) {}
-  SandboxType GetSandboxType() override { return sandbox_type_; }
+  TestSandboxDelegate(sandbox::mojom::Sandbox sandbox_type)
+      : sandbox_type_(sandbox_type) {}
+  sandbox::mojom::Sandbox GetSandboxType() override { return sandbox_type_; }
   bool DisableDefaultPolicy() override { return false; }
   bool GetAppContainerId(std::string* appcontainer_id) override {
     NOTREACHED();
@@ -417,11 +419,12 @@ class TestSandboxDelegate : public SandboxDelegate {
   bool CetCompatible() override { return true; }
 
  private:
-  SandboxType sandbox_type_;
+  sandbox::mojom::Sandbox sandbox_type_;
 };
 
 TEST_F(SandboxWinTest, GeneratedPolicyTest) {
-  TestSandboxDelegate test_renderer_delegate(SandboxType::kRenderer);
+  TestSandboxDelegate test_renderer_delegate(
+      sandbox::mojom::Sandbox::kRenderer);
   base::CommandLine cmd_line(base::CommandLine::NO_PROGRAM);
   base::HandlesToInheritVector handles_to_inherit;
   BrokerServices* broker = SandboxFactory::GetBrokerServices();
@@ -441,7 +444,8 @@ TEST_F(SandboxWinTest, GeneratedPolicyTest) {
 }
 
 TEST_F(SandboxWinTest, GeneratedPolicyTestNoSandbox) {
-  TestSandboxDelegate test_unsandboxed_delegate(SandboxType::kNoSandbox);
+  TestSandboxDelegate test_unsandboxed_delegate(
+      sandbox::mojom::Sandbox::kNoSandbox);
   base::CommandLine cmd_line(base::CommandLine::NO_PROGRAM);
   base::HandlesToInheritVector handles_to_inherit;
   BrokerServices* broker = SandboxFactory::GetBrokerServices();

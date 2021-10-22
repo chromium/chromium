@@ -20,13 +20,21 @@ import "chromeos/services/libassistant/public/mojom/timer_controller.mojom";
 import "chromeos/services/libassistant/public/mojom/notification_delegate.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 
+// Service is hosted in the browser process if libassistant is not available.
+[EnableIfNot=enable_cros_libassistant]
+const sandbox.mojom.Sandbox kLibassistantServiceSandbox
+ = sandbox.mojom.Sandbox.kNoSandbox;
+[EnableIf=enable_cros_libassistant]
+const sandbox.mojom.Sandbox kLibassistantServiceSandbox
+ = sandbox.mojom.Sandbox.kLibassistant;
+
 // The main interface to the Libassistant service on ChromeOS.
 // Libassistant provides access to the Google Assistant.
 // This will eventually run in a sandboxed process, once we're done migrating
 // all Libassistant calls to this service.
 // It is used by //chromeos/services/assistant/proxy, which is a trusted
 // service running in the browser process.
-[ServiceSandbox=sandbox.mojom.Sandbox.kLibassistant]
+[ServiceSandbox=kLibassistantServiceSandbox]
 interface LibassistantService {
 
   // Bind everything needed to start the service.

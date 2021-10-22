@@ -69,6 +69,7 @@ extern sandbox::TargetServices* g_utility_target_services;
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #include "sandbox/linux/services/libc_interceptor.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/sandbox_type.h"
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
@@ -200,7 +201,7 @@ auto RunAudio(mojo::PendingReceiver<audio::mojom::AudioService> receiver) {
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   auto* command_line = base::CommandLine::ForCurrentProcess();
   if (sandbox::policy::SandboxTypeFromCommandLine(*command_line) ==
-      sandbox::policy::SandboxType::kNoSandbox) {
+      sandbox::mojom::Sandbox::kNoSandbox) {
     // This is necessary to avoid crashes in certain environments.
     // See https://crbug.com/1109346
     sandbox::InitLibcLocaltimeFunctions();

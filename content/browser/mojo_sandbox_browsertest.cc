@@ -25,7 +25,9 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/test_service.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/sandbox.h"
+#include "sandbox/policy/sandbox_type.h"
 #include "sandbox/policy/switches.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 
@@ -160,7 +162,7 @@ IN_PROC_BROWSER_TEST_F(MojoSandboxTest, IsProcessSandboxed) {
 
 IN_PROC_BROWSER_TEST_F(MojoSandboxTest, NotIsProcessSandboxed) {
   StartProcess(base::BindOnce([](UtilityProcessHost* host) {
-    host->SetSandboxType(sandbox::policy::SandboxType::kNoSandbox);
+    host->SetSandboxType(sandbox::mojom::Sandbox::kNoSandbox);
   }));
   mojo::Remote<mojom::TestService> test_service = BindTestService();
 

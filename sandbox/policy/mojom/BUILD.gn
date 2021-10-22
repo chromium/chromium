@@ -2,13 +2,26 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chromeos/assistant/assistant.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
+import("//ppapi/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
 
 mojom("mojom") {
   generate_java = true
   sources = [ "sandbox.mojom" ]
+
+  enabled_features = []
   if (enable_oop_printing) {
-    enabled_features = [ "enable_oop_printing" ]
+    enabled_features += [ "enable_oop_printing" ]
+  }
+  if (enable_plugins) {
+    enabled_features += [ "enable_plugins" ]
+  }
+  if (is_linux || is_chromeos) {
+    enabled_features += [ "has_zygote" ]
+  }
+  if (enable_cros_libassistant) {
+    enabled_features += [ "enable_cros_libassistant" ]
   }
 }

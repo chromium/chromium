@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_SANDBOX_PARAMETERS_MAC_H_
 
 #include "content/common/content_export.h"
-#include "sandbox/policy/sandbox_type.h"
 
 namespace base {
 class CommandLine;
@@ -15,14 +14,17 @@ class FilePath;
 
 namespace sandbox {
 class SeatbeltExecClient;
-}
+namespace mojom {
+enum class Sandbox;
+}  // namespace mojom
+}  // namespace sandbox
 
 namespace content {
 
 // This populates the sandbox parameters in the client for the given
 // |sandbox_type|. Some parameters may be extracted from the |command_line|.
 CONTENT_EXPORT void SetupSandboxParameters(
-    sandbox::policy::SandboxType sandbox_type,
+    sandbox::mojom::Sandbox sandbox_type,
     const base::CommandLine& command_line,
     sandbox::SeatbeltExecClient* client);
 

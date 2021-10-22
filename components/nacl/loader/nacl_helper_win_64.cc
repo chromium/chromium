@@ -28,6 +28,7 @@
 #include "content/public/common/sandbox_init.h"
 #include "mojo/core/embedder/embedder.h"
 #include "sandbox/policy/sandbox.h"
+#include "sandbox/policy/sandbox_type.h"
 #include "sandbox/win/src/sandbox_types.h"
 
 extern int NaClMain(const content::MainFunctionParams&);

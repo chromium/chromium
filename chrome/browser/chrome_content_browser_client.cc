@@ -287,6 +287,7 @@
 #include "pdf/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/switches.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -3889,33 +3890,33 @@ void ChromeContentBrowserClient::GetAdditionalMappedFilesForChildProcess(
 
 #if defined(OS_WIN)
 std::wstring ChromeContentBrowserClient::GetAppContainerSidForSandboxType(
-    sandbox::policy::SandboxType sandbox_type) {
+    sandbox::mojom::Sandbox sandbox_type) {
   // TODO(wfh): Add support for more process types here. crbug.com/499523
   switch (sandbox_type) {
-    case sandbox::policy::SandboxType::kRenderer:
+    case sandbox::mojom::Sandbox::kRenderer:
       return std::wstring(install_static::GetSandboxSidPrefix()) + L"129201922";
-    case sandbox::policy::SandboxType::kUtility:
+    case sandbox::mojom::Sandbox::kUtility:
       return std::wstring();
-    case sandbox::policy::SandboxType::kGpu:
+    case sandbox::mojom::Sandbox::kGpu:
       return std::wstring();
-    case sandbox::policy::SandboxType::kPpapi:
+    case sandbox::mojom::Sandbox::kPpapi:
       return std::wstring(install_static::GetSandboxSidPrefix()) + L"129201925";
-    case sandbox::policy::SandboxType::kNoSandbox:
-    case sandbox::policy::SandboxType::kNoSandboxAndElevatedPrivileges:
-    case sandbox::policy::SandboxType::kXrCompositing:
-    case sandbox::policy::SandboxType::kNetwork:
-    case sandbox::policy::SandboxType::kCdm:
+    case sandbox::mojom::Sandbox::kNoSandbox:
+    case sandbox::mojom::Sandbox::kNoSandboxAndElevatedPrivileges:
+    case sandbox::mojom::Sandbox::kXrCompositing:
+    case sandbox::mojom::Sandbox::kNetwork:
+    case sandbox::mojom::Sandbox::kCdm:
 #if BUILDFLAG(ENABLE_PRINTING)
-    case sandbox::policy::SandboxType::kPrintBackend:
+    case sandbox::mojom::Sandbox::kPrintBackend:
 #endif
-    case sandbox::policy::SandboxType::kPrintCompositor:
-    case sandbox::policy::SandboxType::kAudio:
-    case sandbox::policy::SandboxType::kSpeechRecognition:
-    case sandbox::policy::SandboxType::kPdfConversion:
-    case sandbox::policy::SandboxType::kService:
-    case sandbox::policy::SandboxType::kIconReader:
-    case sandbox::policy::SandboxType::kMediaFoundationCdm:
-    case sandbox::policy::SandboxType::kWindowsSystemProxyResolver:
+    case sandbox::mojom::Sandbox::kPrintCompositor:
+    case sandbox::mojom::Sandbox::kAudio:
+    case sandbox::mojom::Sandbox::kSpeechRecognition:
+    case sandbox::mojom::Sandbox::kPdfConversion:
+    case sandbox::mojom::Sandbox::kService:
+    case sandbox::mojom::Sandbox::kIconReader:
+    case sandbox::mojom::Sandbox::kMediaFoundationCdm:
+    case sandbox::mojom::Sandbox::kWindowsSystemProxyResolver:
       // Should never reach here.
       CHECK(0);
       return std::wstring();
@@ -3946,7 +3947,7 @@ ChromeContentBrowserClient::GetLPACCapabilityNameForNetworkService() {
 // should be reviewed by the security team.
 bool ChromeContentBrowserClient::PreSpawnChild(
     sandbox::TargetPolicy* policy,
-    sandbox::policy::SandboxType sandbox_type,
+    sandbox::mojom::Sandbox sandbox_type,
     ChildSpawnFlags flags) {
 // Does not work under component build because all the component DLLs would need
 // to be manually added and maintained. Does not work under ASAN build because
@@ -3956,33 +3957,33 @@ bool ChromeContentBrowserClient::PreSpawnChild(
   bool enforce_code_integrity = false;
 
   switch (sandbox_type) {
-    case sandbox::policy::SandboxType::kRenderer:
+    case sandbox::mojom::Sandbox::kRenderer:
       enforce_code_integrity =
           ((flags & ChildSpawnFlags::RENDERER_CODE_INTEGRITY) &&
            base::FeatureList::IsEnabled(kRendererCodeIntegrity));
       break;
-    case sandbox::policy::SandboxType::kNetwork:
+    case sandbox::mojom::Sandbox::kNetwork:
       enforce_code_integrity =
           base::FeatureList::IsEnabled(kNetworkServiceCodeIntegrity);
       break;
-    case sandbox::policy::SandboxType::kUtility:
-    case sandbox::policy::SandboxType::kGpu:
-    case sandbox::policy::SandboxType::kPpapi:
-    case sandbox::policy::SandboxType::kNoSandbox:
-    case sandbox::policy::SandboxType::kNoSandboxAndElevatedPrivileges:
-    case sandbox::policy::SandboxType::kXrCompositing:
-    case sandbox::policy::SandboxType::kCdm:
+    case sandbox::mojom::Sandbox::kUtility:
+    case sandbox::mojom::Sandbox::kGpu:
+    case sandbox::mojom::Sandbox::kPpapi:
+    case sandbox::mojom::Sandbox::kNoSandbox:
+    case sandbox::mojom::Sandbox::kNoSandboxAndElevatedPrivileges:
+    case sandbox::mojom::Sandbox::kXrCompositing:
+    case sandbox::mojom::Sandbox::kCdm:
 #if BUILDFLAG(ENABLE_PRINTING)
-    case sandbox::policy::SandboxType::kPrintBackend:
+    case sandbox::mojom::Sandbox::kPrintBackend:
 #endif
-    case sandbox::policy::SandboxType::kPrintCompositor:
-    case sandbox::policy::SandboxType::kAudio:
-    case sandbox::policy::SandboxType::kSpeechRecognition:
-    case sandbox::policy::SandboxType::kPdfConversion:
-    case sandbox::policy::SandboxType::kService:
-    case sandbox::policy::SandboxType::kIconReader:
-    case sandbox::policy::SandboxType::kMediaFoundationCdm:
-    case sandbox::policy::SandboxType::kWindowsSystemProxyResolver:
+    case sandbox::mojom::Sandbox::kPrintCompositor:
+    case sandbox::mojom::Sandbox::kAudio:
+    case sandbox::mojom::Sandbox::kSpeechRecognition:
+    case sandbox::mojom::Sandbox::kPdfConversion:
+    case sandbox::mojom::Sandbox::kService:
+    case sandbox::mojom::Sandbox::kIconReader:
+    case sandbox::mojom::Sandbox::kMediaFoundationCdm:
+    case sandbox::mojom::Sandbox::kWindowsSystemProxyResolver:
       break;
   }
 
@@ -6232,9 +6233,9 @@ void ChromeContentBrowserClient::OnKeepaliveRequestFinished() {
 
 #if defined(OS_MAC)
 bool ChromeContentBrowserClient::SetupEmbedderSandboxParameters(
-    sandbox::policy::SandboxType sandbox_type,
+    sandbox::mojom::Sandbox sandbox_type,
     sandbox::SeatbeltExecClient* client) {
-  if (sandbox_type == sandbox::policy::SandboxType::kSpeechRecognition) {
+  if (sandbox_type == sandbox::mojom::Sandbox::kSpeechRecognition) {
     base::FilePath soda_component_path = speech::GetSodaDirectory();
     CHECK(!soda_component_path.empty());
     CHECK(client->SetParameter(sandbox::policy::kParamSodaComponentPath,

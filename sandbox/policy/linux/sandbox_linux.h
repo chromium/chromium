@@ -16,7 +16,6 @@
 #include "sandbox/linux/syscall_broker/broker_file_permission.h"
 #include "sandbox/policy/export.h"
 #include "sandbox/policy/linux/sandbox_seccomp_bpf_linux.h"
-#include "sandbox/policy/sandbox_type.h"
 #include "sandbox/policy/sanitizer_buildflags.h"
 
 #if BUILDFLAG(USING_SANITIZER)
@@ -30,6 +29,9 @@ class Thread;
 }  // namespace base
 
 namespace sandbox {
+namespace mojom {
+enum class Sandbox;
+}  // namespace mojom
 namespace syscall_broker {
 class BrokerProcess;
 }  // namespace syscall_broker
@@ -159,7 +161,7 @@ class SANDBOX_POLICY_EXPORT SandboxLinux {
   // Currently the layer-2 sandbox is composed of seccomp-bpf and address space
   // limitations.
   // This function should only be called without any thread running.
-  bool InitializeSandbox(SandboxType sandbox_type,
+  bool InitializeSandbox(sandbox::mojom::Sandbox sandbox_type,
                          PreSandboxHook hook,
                          const Options& options);
 
@@ -192,7 +194,7 @@ class SANDBOX_POLICY_EXPORT SandboxLinux {
   // |options.allow_threads_during_sandbox_init| is true and the kernel
   // supports seccomp's TSYNC feature. If TSYNC is not available we treat
   // multiple threads as a fatal error.
-  bool StartSeccompBPF(SandboxType sandbox_type,
+  bool StartSeccompBPF(sandbox::mojom::Sandbox sandbox_type,
                        PreSandboxHook hook,
                        const Options& options);
 
@@ -265,7 +267,7 @@ class SANDBOX_POLICY_EXPORT SandboxLinux {
 
   // GetStatus() makes promises as to how the sandbox will behave. This
   // checks that no promises have been broken.
-  void CheckForBrokenPromises(SandboxType sandbox_type);
+  void CheckForBrokenPromises(sandbox::mojom::Sandbox sandbox_type);
 
   // Stop |thread| and make sure it does not appear in /proc/self/tasks/
   // anymore.

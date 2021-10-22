@@ -9,11 +9,13 @@
 #include "build/chromeos_buildflags.h"
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
 #include "content/public/common/zygote/zygote_buildflags.h"
+#include "ppapi/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
-#include "sandbox/policy/sandbox_type.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 
 #if BUILDFLAG(USE_ZYGOTE_HANDLE)
 #include "content/common/zygote/zygote_handle_impl_linux.h"
+#include "sandbox/policy/sandbox_type.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -24,7 +26,7 @@ namespace content {
 
 UtilitySandboxedProcessLauncherDelegate::
     UtilitySandboxedProcessLauncherDelegate(
-        sandbox::policy::SandboxType sandbox_type,
+        sandbox::mojom::Sandbox sandbox_type,
         const base::EnvironmentMap& env,
         const base::CommandLine& cmd_line)
     :
@@ -35,45 +37,42 @@ UtilitySandboxedProcessLauncherDelegate::
       cmd_line_(cmd_line) {
 #if DCHECK_IS_ON()
   bool supported_sandbox_type =
-      sandbox_type_ == sandbox::policy::SandboxType::kNoSandbox ||
+      sandbox_type_ == sandbox::mojom::Sandbox::kNoSandbox ||
 #if defined(OS_WIN)
       sandbox_type_ ==
-          sandbox::policy::SandboxType::kNoSandboxAndElevatedPrivileges ||
-      sandbox_type_ == sandbox::policy::SandboxType::kXrCompositing ||
-      sandbox_type_ == sandbox::policy::SandboxType::kPdfConversion ||
-      sandbox_type_ == sandbox::policy::SandboxType::kIconReader ||
-      sandbox_type_ == sandbox::policy::SandboxType::kMediaFoundationCdm ||
-      sandbox_type_ ==
-          sandbox::policy::SandboxType::kWindowsSystemProxyResolver ||
+          sandbox::mojom::Sandbox::kNoSandboxAndElevatedPrivileges ||
+      sandbox_type_ == sandbox::mojom::Sandbox::kXrCompositing ||
+      sandbox_type_ == sandbox::mojom::Sandbox::kPdfConversion ||
+      sandbox_type_ == sandbox::mojom::Sandbox::kIconReader ||
+      sandbox_type_ == sandbox::mojom::Sandbox::kMediaFoundationCdm ||
+      sandbox_type_ == sandbox::mojom::Sandbox::kWindowsSystemProxyResolver ||
 #endif
 #if defined(OS_MAC)
-      sandbox_type_ == sandbox::policy::SandboxType::kMirroring ||
+      sandbox_type_ == sandbox::mojom::Sandbox::kMirroring ||
 #endif
-      sandbox_type_ == sandbox::policy::SandboxType::kUtility ||
-      sandbox_type_ == sandbox::policy::SandboxType::kNetwork ||
-      sandbox_type_ == sandbox::policy::SandboxType::kCdm ||
+      sandbox_type_ == sandbox::mojom::Sandbox::kUtility ||
+      sandbox_type_ == sandbox::mojom::Sandbox::kService ||
+      sandbox_type_ == sandbox::mojom::Sandbox::kNetwork ||
+      sandbox_type_ == sandbox::mojom::Sandbox::kCdm ||
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-      sandbox_type_ == sandbox::policy::SandboxType::kPrintBackend ||
+      sandbox_type_ == sandbox::mojom::Sandbox::kPrintBackend ||
 #endif
-      sandbox_type_ == sandbox::policy::SandboxType::kPrintCompositor ||
+      sandbox_type_ == sandbox::mojom::Sandbox::kPrintCompositor ||
 #if BUILDFLAG(ENABLE_PLUGINS)
-      sandbox_type_ == sandbox::policy::SandboxType::kPpapi ||
+      sandbox_type_ == sandbox::mojom::Sandbox::kPpapi ||
 #endif
 #if defined(OS_FUCHSIA)
-      sandbox_type_ == sandbox::policy::SandboxType::kVideoCapture ||
+      sandbox_type_ == sandbox::mojom::Sandbox::kVideoCapture ||
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      sandbox_type_ == sandbox::policy::SandboxType::kIme ||
-      sandbox_type_ == sandbox::policy::SandboxType::kTts ||
+      sandbox_type_ == sandbox::mojom::Sandbox::kIme ||
+      sandbox_type_ == sandbox::mojom::Sandbox::kTts ||
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-      sandbox_type_ == sandbox::policy::SandboxType::kLibassistant ||
+      sandbox_type_ == sandbox::mojom::Sandbox::kLibassistant ||
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-      sandbox_type_ == sandbox::policy::SandboxType::kAudio ||
-#if !defined(OS_MAC)
-      sandbox_type_ == sandbox::policy::SandboxType::kService ||
-#endif
-      sandbox_type_ == sandbox::policy::SandboxType::kSpeechRecognition;
+      sandbox_type_ == sandbox::mojom::Sandbox::kAudio ||
+      sandbox_type_ == sandbox::mojom::Sandbox::kSpeechRecognition;
   DCHECK(supported_sandbox_type);
 #endif  // DCHECK_IS_ON()
 }
@@ -81,7 +80,7 @@ UtilitySandboxedProcessLauncherDelegate::
 UtilitySandboxedProcessLauncherDelegate::
     ~UtilitySandboxedProcessLauncherDelegate() {}
 
-sandbox::policy::SandboxType
+sandbox::mojom::Sandbox
 UtilitySandboxedProcessLauncherDelegate::GetSandboxType() {
   return sandbox_type_;
 }
@@ -101,19 +100,19 @@ ZygoteHandle UtilitySandboxedProcessLauncherDelegate::GetZygote() {
   // Utility processes which need specialized sandboxes fork from the
   // unsandboxed zygote and then apply their actual sandboxes in the forked
   // process upon startup.
-  if (sandbox_type_ == sandbox::policy::SandboxType::kNetwork ||
+  if (sandbox_type_ == sandbox::mojom::Sandbox::kNetwork ||
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      sandbox_type_ == sandbox::policy::SandboxType::kIme ||
-      sandbox_type_ == sandbox::policy::SandboxType::kTts ||
+      sandbox_type_ == sandbox::mojom::Sandbox::kIme ||
+      sandbox_type_ == sandbox::mojom::Sandbox::kTts ||
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-      sandbox_type_ == sandbox::policy::SandboxType::kLibassistant ||
+      sandbox_type_ == sandbox::mojom::Sandbox::kLibassistant ||
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-      sandbox_type_ == sandbox::policy::SandboxType::kAudio ||
+      sandbox_type_ == sandbox::mojom::Sandbox::kAudio ||
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-      sandbox_type_ == sandbox::policy::SandboxType::kPrintBackend ||
+      sandbox_type_ == sandbox::mojom::Sandbox::kPrintBackend ||
 #endif
-      sandbox_type_ == sandbox::policy::SandboxType::kSpeechRecognition) {
+      sandbox_type_ == sandbox::mojom::Sandbox::kSpeechRecognition) {
     return GetUnsandboxedZygote();
   }
 
