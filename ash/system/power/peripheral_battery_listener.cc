@@ -335,13 +335,23 @@ void PeripheralBatteryListener::PeripheralBatteryStatusReceived(
 void PeripheralBatteryListener::DeviceBatteryChanged(
     device::BluetoothAdapter* adapter,
     device::BluetoothDevice* device,
-    absl::optional<uint8_t> new_battery_percentage) {
-  if (new_battery_percentage)
-    DCHECK_LE(new_battery_percentage.value(), 100);
+    device::BluetoothDevice::BatteryType type) {
+  // This class pre-dates the change to add multiple battery support. To reduce
+  // the risk of regressions, we're ignoring battery updates for any new battery
+  // types, and can revisit in the future if we decide there's a need for this
+  // class to add support.
+  if (type != device::BluetoothDevice::BatteryType::kDefault)
+    return;
+
+  absl::optional<device::BluetoothDevice::BatteryInfo> info =
+      device->GetBatteryInfo(type);
+
+  if (info && info->percentage)
+    DCHECK_LE(info->percentage.value(), 100);
 
   BatteryInfo battery{GetBatteryMapKey(device),
                       device->GetNameForDisplay(),
-                      new_battery_percentage,
+                      info.has_value() ? info->percentage : absl::nullopt,
                       /*battery_report_eligible=*/true,
                       base::TimeTicks::Now(),
                       BatteryInfo::PeripheralType::kOther,

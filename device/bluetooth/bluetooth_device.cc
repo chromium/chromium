@@ -509,7 +509,7 @@ void BluetoothDevice::SetBatteryInfo(const BatteryInfo& info) {
 
   // New info was inserted.
   if (result.second) {
-    GetAdapter()->NotifyDeviceBatteryChanged(this);
+    GetAdapter()->NotifyDeviceBatteryChanged(this, info.type);
     return;
   }
 
@@ -521,12 +521,12 @@ void BluetoothDevice::SetBatteryInfo(const BatteryInfo& info) {
 
   // Otherwise override existing element.
   result.first->second = info;
-  GetAdapter()->NotifyDeviceBatteryChanged(this);
+  GetAdapter()->NotifyDeviceBatteryChanged(this, info.type);
 }
 
 bool BluetoothDevice::RemoveBatteryInfo(const BatteryType& type) {
   if (battery_info_map_.erase(type)) {
-    GetAdapter()->NotifyDeviceBatteryChanged(this);
+    GetAdapter()->NotifyDeviceBatteryChanged(this, type);
     return true;
   }
 

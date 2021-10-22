@@ -18,6 +18,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
+#include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"
@@ -45,6 +46,8 @@ using testing::Sequence;
 using testing::StrictMock;
 
 using BI = ash::PeripheralBatteryListener::BatteryInfo;
+using BatteryInfo = device::BluetoothDevice::BatteryInfo;
+using BatteryType = device::BluetoothDevice::BatteryType;
 
 // Annotate testing::Field invocations to improve feedback.
 #define AFIELD(element, test) testing::Field(#element, element, test)
@@ -103,6 +106,8 @@ class PeripheralBatteryListenerTest : public AshTestBase {
     mock_device_2_ = std::make_unique<NiceMock<device::MockBluetoothDevice>>(
         mock_adapter_.get(), /*bluetooth_class=*/0, kBluetoothDeviceName2,
         kBluetoothDeviceAddress2, /*paired=*/true, /*connected=*/true);
+
+    device::BluetoothAdapterFactory::SetAdapterForTesting(mock_adapter_);
 
     battery_listener_ = std::make_unique<PeripheralBatteryListener>();
   }
@@ -527,12 +532,10 @@ TEST_F(PeripheralBatteryListenerTest,
           AFIELD(&BI::name, Eq(kBluetoothDeviceName216)),
           AFIELD(&BI::bluetooth_address, Eq(kBluetoothDeviceAddress2)))));
 
-  battery_listener_->DeviceBatteryChanged(mock_adapter_.get(),
-                                          mock_device_1_.get(),
-                                          /*new_battery_percentage=*/5);
-  battery_listener_->DeviceBatteryChanged(mock_adapter_.get(),
-                                          mock_device_2_.get(),
-                                          /*new_battery_percentage=*/0);
+  mock_device_1_->SetBatteryInfo(
+      BatteryInfo(BatteryType::kDefault, /*percentage=*/5));
+  mock_device_2_->SetBatteryInfo(
+      BatteryInfo(BatteryType::kDefault, /*percentage=*/0));
 }
 
 TEST_F(PeripheralBatteryListenerTest,
@@ -565,12 +568,10 @@ TEST_F(PeripheralBatteryListenerTest,
           AFIELD(&BI::name, Eq(kBluetoothDeviceName216)),
           AFIELD(&BI::bluetooth_address, Eq(kBluetoothDeviceAddress2)))));
 
-  battery_listener_->DeviceBatteryChanged(mock_adapter_.get(),
-                                          mock_device_1_.get(),
-                                          /*new_battery_percentage=*/5);
-  battery_listener_->DeviceBatteryChanged(mock_adapter_.get(),
-                                          mock_device_2_.get(),
-                                          /*new_battery_percentage=*/0);
+  mock_device_1_->SetBatteryInfo(
+      BatteryInfo(BatteryType::kDefault, /*percentage=*/5));
+  mock_device_2_->SetBatteryInfo(
+      BatteryInfo(BatteryType::kDefault, /*percentage=*/0));
 
   EXPECT_CALL(listener_observer_mock,
               OnRemovingBattery(AFIELD(&BI::key, Eq(kBluetoothDeviceId1))));
@@ -612,12 +613,10 @@ TEST_F(PeripheralBatteryListenerTest,
           AllOf(AFIELD(&BI::key, Eq(kBluetoothDeviceId2)),
                 AFIELD(&BI::bluetooth_address, Eq(kBluetoothDeviceAddress2)))));
 
-  battery_listener_->DeviceBatteryChanged(mock_adapter_.get(),
-                                          mock_device_1_.get(),
-                                          /*new_battery_percentage=*/5);
-  battery_listener_->DeviceBatteryChanged(mock_adapter_.get(),
-                                          mock_device_2_.get(),
-                                          /*new_battery_percentage=*/0);
+  mock_device_1_->SetBatteryInfo(
+      BatteryInfo(BatteryType::kDefault, /*percentage=*/5));
+  mock_device_2_->SetBatteryInfo(
+      BatteryInfo(BatteryType::kDefault, /*percentage=*/5));
 
   EXPECT_CALL(listener_observer_mock,
               OnRemovingBattery(AFIELD(&BI::key, Eq(kBluetoothDeviceId2))));
@@ -650,9 +649,8 @@ TEST_F(PeripheralBatteryListenerTest, Bluetooth_RemoveAndReconnect) {
           AllOf(AFIELD(&BI::key, Eq(kBluetoothDeviceId1)),
                 AFIELD(&BI::bluetooth_address, Eq(kBluetoothDeviceAddress1)))));
 
-  battery_listener_->DeviceBatteryChanged(mock_adapter_.get(),
-                                          mock_device_1_.get(),
-                                          /*new_battery_percentage=*/5);
+  mock_device_1_->SetBatteryInfo(
+      BatteryInfo(BatteryType::kDefault, /*percentage=*/5));
 
   EXPECT_CALL(listener_observer_mock,
               OnRemovingBattery(AFIELD(&BI::key, Eq(kBluetoothDeviceId1))));
@@ -668,9 +666,8 @@ TEST_F(PeripheralBatteryListenerTest, Bluetooth_RemoveAndReconnect) {
           AllOf(AFIELD(&BI::key, Eq(kBluetoothDeviceId1)),
                 AFIELD(&BI::bluetooth_address, Eq(kBluetoothDeviceAddress1)))));
 
-  battery_listener_->DeviceBatteryChanged(mock_adapter_.get(),
-                                          mock_device_1_.get(),
-                                          /*new_battery_percentage=*/5);
+  mock_device_1_->SetBatteryInfo(
+      BatteryInfo(BatteryType::kDefault, /*percentage=*/1));
 }
 
 TEST_F(PeripheralBatteryListenerTest,
@@ -690,18 +687,15 @@ TEST_F(PeripheralBatteryListenerTest,
       OnUpdatedBatteryLevel(AllOf(AFIELD(&BI::key, Eq(kBluetoothDeviceId1)),
                                   AFIELD(&BI::level, Eq(1)))));
 
-  battery_listener_->DeviceBatteryChanged(mock_adapter_.get(),
-                                          mock_device_1_.get(),
-                                          /*new_battery_percentage=*/1);
+  mock_device_1_->SetBatteryInfo(
+      BatteryInfo(BatteryType::kDefault, /*percentage=*/1));
 
   EXPECT_CALL(
       listener_observer_mock,
       OnUpdatedBatteryLevel(AllOf(AFIELD(&BI::key, Eq(kBluetoothDeviceId1)),
                                   AFIELD(&BI::level, Eq(absl::nullopt)))));
 
-  battery_listener_->DeviceBatteryChanged(
-      mock_adapter_.get(), mock_device_1_.get(),
-      /*new_battery_percentage=*/absl::nullopt);
+  mock_device_1_->RemoveBatteryInfo(BatteryType::kDefault);
 }
 
 // Do notify observer if the battery level drops again under the
@@ -725,9 +719,9 @@ TEST_F(PeripheralBatteryListenerTest, EnsureUpdatesWithinSmallTimeIntervals) {
                   AFIELD(&BI::last_update_timestamp, Eq(GetTestingClock())),
                   AFIELD(&BI::level, Eq(1)))));
 
-  battery_listener_->DeviceBatteryChanged(mock_adapter_.get(),
-                                          mock_device_1_.get(),
-                                          /*new_battery_percentage=*/1);
+  mock_device_1_->SetBatteryInfo(
+      BatteryInfo(BatteryType::kDefault, /*percentage=*/1));
+
   ClockAdvance(base::Seconds(1));
 
   EXPECT_CALL(listener_observer_mock,
@@ -735,9 +729,7 @@ TEST_F(PeripheralBatteryListenerTest, EnsureUpdatesWithinSmallTimeIntervals) {
                   AFIELD(&BI::key, Eq(kBluetoothDeviceId1)),
                   AFIELD(&BI::last_update_timestamp, Eq(GetTestingClock())),
                   AFIELD(&BI::level, Eq(absl::nullopt)))));
-  battery_listener_->DeviceBatteryChanged(
-      mock_adapter_.get(), mock_device_1_.get(),
-      /*new_battery_percentage=*/absl::nullopt);
+  mock_device_1_->RemoveBatteryInfo(BatteryType::kDefault);
 
   ClockAdvance(base::Seconds(1));
   EXPECT_CALL(listener_observer_mock,
@@ -745,9 +737,8 @@ TEST_F(PeripheralBatteryListenerTest, EnsureUpdatesWithinSmallTimeIntervals) {
                   AFIELD(&BI::key, Eq(kBluetoothDeviceId1)),
                   AFIELD(&BI::last_update_timestamp, Eq(GetTestingClock())),
                   AFIELD(&BI::level, Eq(1)))));
-  battery_listener_->DeviceBatteryChanged(mock_adapter_.get(),
-                                          mock_device_1_.get(),
-                                          /*new_battery_percentage=*/1);
+  mock_device_1_->SetBatteryInfo(
+      BatteryInfo(BatteryType::kDefault, /*percentage=*/1));
 }
 
 // Notify observer if the battery is under threshold, then unknown level and
@@ -772,9 +763,8 @@ TEST_F(PeripheralBatteryListenerTest,
                   AFIELD(&BI::key, Eq(kBluetoothDeviceId1)),
                   AFIELD(&BI::last_update_timestamp, Eq(GetTestingClock())),
                   AFIELD(&BI::level, Eq(1)))));
-  battery_listener_->DeviceBatteryChanged(mock_adapter_.get(),
-                                          mock_device_1_.get(),
-                                          /*new_battery_percentage=*/1);
+  mock_device_1_->SetBatteryInfo(
+      BatteryInfo(BatteryType::kDefault, /*percentage=*/1));
 
   ClockAdvance(base::Seconds(1));
   EXPECT_CALL(listener_observer_mock,
@@ -782,9 +772,7 @@ TEST_F(PeripheralBatteryListenerTest,
                   AFIELD(&BI::key, Eq(kBluetoothDeviceId1)),
                   AFIELD(&BI::last_update_timestamp, Eq(GetTestingClock())),
                   AFIELD(&BI::level, Eq(absl::nullopt)))));
-  battery_listener_->DeviceBatteryChanged(
-      mock_adapter_.get(), mock_device_1_.get(),
-      /*new_battery_percentage=*/absl::nullopt);
+  mock_device_1_->RemoveBatteryInfo(BatteryType::kDefault);
 
   ClockAdvance(base::Seconds(100));
   EXPECT_CALL(listener_observer_mock,
@@ -792,9 +780,8 @@ TEST_F(PeripheralBatteryListenerTest,
                   AFIELD(&BI::key, Eq(kBluetoothDeviceId1)),
                   AFIELD(&BI::last_update_timestamp, Eq(GetTestingClock())),
                   AFIELD(&BI::level, Eq(1)))));
-  battery_listener_->DeviceBatteryChanged(mock_adapter_.get(),
-                                          mock_device_1_.get(),
-                                          /*new_battery_percentage=*/1);
+  mock_device_1_->SetBatteryInfo(
+      BatteryInfo(BatteryType::kDefault, /*percentage=*/1));
 }
 
 // If there is an existing notification and the battery level remains low,
@@ -817,9 +804,9 @@ TEST_F(PeripheralBatteryListenerTest, UpdateNotificationIfVisible) {
                   AFIELD(&BI::key, Eq(kBluetoothDeviceId1)),
                   AFIELD(&BI::last_update_timestamp, Eq(GetTestingClock())),
                   AFIELD(&BI::level, Eq(5)))));
-  battery_listener_->DeviceBatteryChanged(mock_adapter_.get(),
-                                          mock_device_1_.get(),
-                                          /*new_battery_percentage=*/5);
+
+  mock_device_1_->SetBatteryInfo(
+      BatteryInfo(BatteryType::kDefault, /*percentage=*/5));
 
   // The battery level remains low, should update the notification.
   ClockAdvance(base::Seconds(100));
@@ -828,9 +815,9 @@ TEST_F(PeripheralBatteryListenerTest, UpdateNotificationIfVisible) {
                   AFIELD(&BI::key, Eq(kBluetoothDeviceId1)),
                   AFIELD(&BI::last_update_timestamp, Eq(GetTestingClock())),
                   AFIELD(&BI::level, Eq(3)))));
-  battery_listener_->DeviceBatteryChanged(mock_adapter_.get(),
-                                          mock_device_1_.get(),
-                                          /*new_battery_percentage=*/3);
+
+  mock_device_1_->SetBatteryInfo(
+      BatteryInfo(BatteryType::kDefault, /*percentage=*/3));
 }
 
 TEST_F(PeripheralBatteryListenerTest, MultipleObserversCoexist) {
@@ -1209,16 +1196,14 @@ TEST_F(PeripheralBatteryListenerTest, BluetoothDoesNotDiscardZeros) {
           AFIELD(&BI::name, Eq(kBluetoothDeviceName116)),
           AFIELD(&BI::bluetooth_address, Eq(kBluetoothDeviceAddress1)))));
 
-  battery_listener_->DeviceBatteryChanged(mock_adapter_.get(),
-                                          mock_device_1_.get(),
-                                          /*new_battery_percentage=*/0);
+  mock_device_1_->SetBatteryInfo(
+      BatteryInfo(BatteryType::kDefault, /*percentage=*/0));
 
   EXPECT_CALL(listener_observer_mock,
               OnUpdatedBatteryLevel(AllOf(AFIELD(&BI::level, Eq(5)))));
 
-  battery_listener_->DeviceBatteryChanged(mock_adapter_.get(),
-                                          mock_device_1_.get(),
-                                          /*new_battery_percentage=*/5);
+  mock_device_1_->SetBatteryInfo(
+      BatteryInfo(BatteryType::kDefault, /*percentage=*/5));
 }
 
 // Stylus garage charging

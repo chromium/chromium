@@ -128,7 +128,7 @@ void DeviceCacheImpl::DeviceConnectedStateChanged(
 void DeviceCacheImpl::DeviceBatteryChanged(
     device::BluetoothAdapter* adapter,
     device::BluetoothDevice* device,
-    absl::optional<uint8_t> new_battery_percentage) {
+    device::BluetoothDevice::BatteryType type) {
   DeviceChanged(adapter, device);
 }
 

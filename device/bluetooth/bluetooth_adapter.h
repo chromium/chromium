@@ -191,11 +191,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
 #endif
 
 #if defined(OS_CHROMEOS) || defined(OS_LINUX)
-    // Called when the battery level of the device has been updated.
-    virtual void DeviceBatteryChanged(
-        BluetoothAdapter* adapter,
-        BluetoothDevice* device,
-        absl::optional<uint8_t> new_battery_percentage) {}
+    // Called when the device battery info with |type| has been updated.
+    virtual void DeviceBatteryChanged(BluetoothAdapter* adapter,
+                                      BluetoothDevice* device,
+                                      BluetoothDevice::BatteryType type) {}
 #endif
 
     // Called when the device |device| is removed from the adapter |adapter|,
@@ -654,7 +653,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
 #endif
 
 #if defined(OS_CHROMEOS) || defined(OS_LINUX)
-  void NotifyDeviceBatteryChanged(BluetoothDevice* device);
+  void NotifyDeviceBatteryChanged(BluetoothDevice* device,
+                                  BluetoothDevice::BatteryType type);
 #endif
 
 #if defined(OS_CHROMEOS)

@@ -326,18 +326,13 @@ void BluetoothAdapter::NotifyDevicePairedChanged(BluetoothDevice* device,
 #endif
 
 #if defined(OS_CHROMEOS) || defined(OS_LINUX)
-// TODO(shanfitz): Refactor this observer method to better expose the
-// battery type that was updated.
-void BluetoothAdapter::NotifyDeviceBatteryChanged(BluetoothDevice* device) {
+void BluetoothAdapter::NotifyDeviceBatteryChanged(
+    BluetoothDevice* device,
+    BluetoothDevice::BatteryType type) {
   DCHECK_EQ(device->GetAdapter(), this);
 
-  absl::optional<device::BluetoothDevice::BatteryInfo> battery_info =
-      device->GetBatteryInfo(device::BluetoothDevice::BatteryType::kDefault);
-
   for (auto& observer : observers_) {
-    observer.DeviceBatteryChanged(
-        this, device,
-        battery_info.has_value() ? battery_info->percentage : absl::nullopt);
+    observer.DeviceBatteryChanged(this, device, type);
   }
 }
 #endif
