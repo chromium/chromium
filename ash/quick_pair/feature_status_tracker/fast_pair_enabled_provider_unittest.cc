@@ -23,10 +23,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/user_manager/fake_user_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "testing/gtest/include/gtest/gtest-param-test.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
 namespace quick_pair {
@@ -38,13 +37,10 @@ class FastPairEnabledProviderTest : public AshTestBase {
 
     adapter_ = base::MakeRefCounted<FakeBluetoothAdapter>();
     device::BluetoothAdapterFactory::SetAdapterForTesting(adapter_);
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::make_unique<user_manager::FakeUserManager>());
   }
 
  protected:
   scoped_refptr<FakeBluetoothAdapter> adapter_;
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 };
 
 TEST_F(FastPairEnabledProviderTest, ProviderCallbackIsInvokedOnBTChanges) {

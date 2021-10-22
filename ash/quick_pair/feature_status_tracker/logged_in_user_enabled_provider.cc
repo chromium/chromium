@@ -4,30 +4,41 @@
 
 #include "ash/quick_pair/feature_status_tracker/logged_in_user_enabled_provider.h"
 
-#include "ash/quick_pair/common/logging.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
 
 namespace ash {
 namespace quick_pair {
 
-LoggedInUserEnabledProvider::LoggedInUserEnabledProvider() {
-  auto* user_manager = user_manager::UserManager::Get();
-  user_manager->AddSessionStateObserver(this);
-  SetEnabledAndInvokeCallback(user_manager->IsUserLoggedIn());
-}
-
-LoggedInUserEnabledProvider::~LoggedInUserEnabledProvider() {
-  user_manager::UserManager::Get()->RemoveSessionStateObserver(this);
-}
-
-void LoggedInUserEnabledProvider::ActiveUserChanged(
-    user_manager::User* active_user) {
-  if (active_user) {
-    SetEnabledAndInvokeCallback(true);
-    return;
+bool ShouldBeEnabledForLoginStatus(LoginStatus status) {
+  switch (status) {
+    case LoginStatus::NOT_LOGGED_IN:
+    case LoginStatus::LOCKED:
+    case LoginStatus::KIOSK_APP:
+      return false;
+    case LoginStatus::USER:
+    case LoginStatus::GUEST:
+    case LoginStatus::PUBLIC:
+    case LoginStatus::CHILD:
+    default:
+      return true;
   }
-  SetEnabledAndInvokeCallback(false);
+}
+
+LoggedInUserEnabledProvider::LoggedInUserEnabledProvider() {
+  auto* session_controller = Shell::Get()->session_controller();
+  observation_.Observe(session_controller);
+  SetEnabledAndInvokeCallback(
+      ShouldBeEnabledForLoginStatus(session_controller->login_status()));
+}
+
+LoggedInUserEnabledProvider::~LoggedInUserEnabledProvider() = default;
+
+void LoggedInUserEnabledProvider::OnLoginStatusChanged(
+    LoginStatus login_status) {
+  SetEnabledAndInvokeCallback(ShouldBeEnabledForLoginStatus(login_status));
 }
 
 }  // namespace quick_pair

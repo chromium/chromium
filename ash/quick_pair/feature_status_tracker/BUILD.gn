@@ -34,9 +34,9 @@ static_library("feature_status_tracker") {
     "//ash/quick_pair/common",
     "//base",
     "//components/prefs",
-    "//components/user_manager",
     "//device/bluetooth",
     "//google_apis",
+    "//skia",
     "//ui/display",
     "//ui/display/manager",
   ]
@@ -67,8 +67,8 @@ static_library("test_support") {
   deps = [
     ":feature_status_tracker",
     "//base/test:test_support",
-    "//components/user_manager:test_support",
     "//device/bluetooth:mocks",
+    "//skia",
     "//testing/gtest",
   ]
 }
@@ -80,6 +80,7 @@ source_set("unit_tests") {
     "base_enabled_provider_unittest.cc",
     "bluetooth_enabled_provider_unittest.cc",
     "fast_pair_enabled_provider_unittest.cc",
+    "logged_in_user_enabled_provider_unittest.cc",
     "screen_state_enabled_provider_unittest.cc",
   ]
 
@@ -90,9 +91,9 @@ source_set("unit_tests") {
     "//ash/constants",
     "//ash/quick_pair/common",
     "//base/test:test_support",
-    "//components/user_manager:test_support",
     "//device/bluetooth",
     "//device/bluetooth:mocks",
+    "//skia",
     "//testing/gtest",
     "//ui/display/fake",
   ]
