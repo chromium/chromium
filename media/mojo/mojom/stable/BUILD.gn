@@ -20,12 +20,52 @@ mojom("stable_video_decoder") {
     {
       types = [
         {
+          mojom = "media.stable.mojom.ColorSpacePrimaryID"
+          cpp = "::gfx::ColorSpace::PrimaryID"
+        },
+        {
+          mojom = "media.stable.mojom.ColorSpaceTransferID"
+          cpp = "::gfx::ColorSpace::TransferID"
+        },
+        {
+          mojom = "media.stable.mojom.ColorSpaceMatrixID"
+          cpp = "::gfx::ColorSpace::MatrixID"
+        },
+        {
+          mojom = "media.stable.mojom.ColorSpaceRangeID"
+          cpp = "::gfx::ColorSpace::RangeID"
+        },
+        {
+          mojom = "media.stable.mojom.ColorSpace"
+          cpp = "::gfx::ColorSpace"
+        },
+        {
+          mojom = "media.stable.mojom.EncryptionScheme"
+          cpp = "::media::EncryptionScheme"
+        },
+        {
           mojom = "media.stable.mojom.SubsampleEntry"
           cpp = "::media::SubsampleEntry"
         },
         {
           mojom = "media.stable.mojom.VideoCodec"
           cpp = "::media::VideoCodec"
+        },
+        {
+          mojom = "media.stable.mojom.VideoCodecProfile"
+          cpp = "::media::VideoCodecProfile"
+        },
+        {
+          mojom = "media.stable.mojom.VideoDecoderType"
+          cpp = "::media::VideoDecoderType"
+        },
+        {
+          mojom = "media.stable.mojom.VideoPixelFormat"
+          cpp = "::media::VideoPixelFormat"
+        },
+        {
+          mojom = "media.stable.mojom.WaitingReason"
+          cpp = "::media::WaitingReason"
         },
       ]
       traits_headers = [ "stable_video_decoder_types_mojom_traits.h" ]

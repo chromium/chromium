@@ -40,6 +40,14 @@ struct StructTraits;
 // Used to serialize a gfx::ColorSpace through the GPU command buffer.
 struct _GLcolorSpace;
 
+namespace media {
+namespace stable {
+namespace mojom {
+class ColorSpaceDataView;
+}  // namespace mojom
+}  // namespace stable
+}  // namespace media
+
 namespace gfx {
 
 enum class ContentColorUsage : uint8_t;
@@ -391,6 +399,8 @@ class COLOR_SPACE_EXPORT ColorSpace {
 
   friend struct IPC::ParamTraits<gfx::ColorSpace>;
   friend struct mojo::StructTraits<gfx::mojom::ColorSpaceDataView,
+                                   gfx::ColorSpace>;
+  friend struct mojo::StructTraits<media::stable::mojom::ColorSpaceDataView,
                                    gfx::ColorSpace>;
 };
 
