@@ -461,6 +461,13 @@ class LoadDocsStory2019(_LoadingStory):
       'https://docs.google.com/document/d/1GvzDP-tTLmJ0myRhUAfTYWs3ZUFilUICg8psNHyccwQ/edit?usp=sharing')
   TAGS = [story_tags.YEAR_2019]
 
+  # TODO(crbug.com/1256844): Disable the ForceSynchronousHTMLParsing and
+  # LoaderDataPipeTuning experiments, because they cause failures and
+  # flakiness for this story as-recorded in 2019.
+  EXTRA_BROWSER_ARGUMENTS = [
+      '--disable-features=ForceSynchronousHTMLParsing,LoaderDataPipeTuning'
+  ]
+
 
 class _LoadGmailBaseStory(_LoadingStory):
   NAME = 'load:tools:gmail'
