@@ -18,7 +18,7 @@ namespace features {
 // All features in alphabetical order.
 
 // Enables the allowActivationDelegation attribute on iframes.
-// https://www.chromestatus.com/features/6025124331388928
+// https://www.chromestatus.com/feature/6025124331388928
 //
 // TODO(mustaq): Deprecated, see kUserActivationPostMessageTransfer.
 const base::Feature kAllowActivationDelegationAttr{
@@ -705,17 +705,17 @@ const base::Feature kSharedArrayBufferOnDesktop{
     "SharedArrayBufferOnDesktop", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Signed Exchange Reporting for distributors
-// https://www.chromestatus.com/features/5687904902840320
+// https://www.chromestatus.com/feature/5687904902840320
 const base::Feature kSignedExchangeReportingForDistributors{
     "SignedExchangeReportingForDistributors", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Subresource prefetching+loading via Signed HTTP Exchange
-// https://www.chromestatus.com/features/5126805474246656
+// https://www.chromestatus.com/feature/5126805474246656
 const base::Feature kSignedExchangeSubresourcePrefetch{
     "SignedExchangeSubresourcePrefetch", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Origin-Signed HTTP Exchanges (for WebPackage Loading)
-// https://www.chromestatus.com/features/5745285984681984
+// https://www.chromestatus.com/feature/5745285984681984
 const base::Feature kSignedHTTPExchange{"SignedHTTPExchange",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
