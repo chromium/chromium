@@ -5,6 +5,7 @@
 #include "ui/color/color_provider_utils.h"
 
 #include "base/containers/fixed_flat_map.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_palette.h"
@@ -215,6 +216,23 @@ std::string SkColorName(SkColor color) {
                               1.0 / SkColorGetA(color_with_alpha));
   }
   return color_utils::SkColorToRgbaString(color);
+}
+
+std::string ConvertColorProviderColorIdToCSSColorId(std::string color_id_name) {
+  color_id_name.replace(color_id_name.begin(), color_id_name.begin() + 1, "-");
+  std::string css_color_id_name;
+  for (char i : color_id_name) {
+    if (base::IsAsciiUpper(i))
+      css_color_id_name += std::string("-");
+    css_color_id_name += base::ToLowerASCII(i);
+  }
+  return css_color_id_name;
+}
+
+std::string ConvertSkColorToCSSColor(SkColor color) {
+  return base::StringPrintf("#%.2x%.2x%.2x%.2x", SkColorGetR(color),
+                            SkColorGetG(color), SkColorGetB(color),
+                            SkColorGetA(color));
 }
 
 }  // namespace ui
