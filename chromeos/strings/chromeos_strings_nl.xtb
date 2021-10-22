@@ -1,12 +1,14 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="nl">
+<translation id="1018219910092211213">Kan DNS niet omzetten</translation>
 <translation id="1018656279737460067">Geannuleerd</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> threads, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1059913517121127803">Kan scannen niet starten</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Firewall waargenomen</translation>
 <translation id="1075811647922107217">Paginagrootte</translation>
+<translation id="1094693127011229778">IP-adres is niet beschikbaar</translation>
 <translation id="1119447706177454957">Interne fout</translation>
 <translation id="1124772482545689468">Gebruiker</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -21,6 +23,7 @@
 <translation id="1270369111467284986">Vermoedelijke captive portal</translation>
 <translation id="1290331692326790741">Zwak signaal</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1310380015393971138">Geen <ph name="NETWORK_NAME" />-netwerk beschikbaar</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Thuisnetwerk zonder roaming</translation>
 <translation id="1327977588028644528">Gateway</translation>
@@ -39,6 +42,7 @@
 <translation id="150962533380566081">Ongeldige pukcode.</translation>
 <translation id="1510238584712386396">Launcher</translation>
 <translation id="155865706765934889">Touchpad</translation>
+<translation id="1567064801249837505">Albums</translation>
 <translation id="1572585716423026576">Instellen als achtergrond</translation>
 <translation id="1621067168122174824">Batterijlading testen</translation>
 <translation id="1639239467298939599">Laden</translation>
@@ -52,6 +56,7 @@
 <translation id="1717874160321062422">Beheerd door <ph name="FIRST_MANAGER" /> en <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Naamservers</translation>
 <translation id="1731082422893354635">Bluetooth-touchpad</translation>
+<translation id="1753496554272155572">Achtergrondvoorbeeld sluiten</translation>
 <translation id="175763766237925754">Goed (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -67,6 +72,7 @@
 <translation id="1999615961760456652">Captive portal</translation>
 <translation id="2006864819935886708">Connectiviteit</translation>
 <translation id="2008685064673031089">Priemgetallen zoeken</translation>
+<translation id="2016697457005847575">Probeer de stappen voor probleemoplossing</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Meer instellingen</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versie <ph name="MILESTONE_VERSION" /></translation>
@@ -99,6 +105,7 @@
 <translation id="2505327257735685095">De huidige achtergrondafbeelding vernieuwen</translation>
 <translation id="2517472476991765520">Scannen</translation>
 <translation id="2570743873672969996">Test <ph name="TEST_NAME" /> wordt uitgevoerd...</translation>
+<translation id="2584559707064218956">Ga naar Instellingen om het netwerk in te stellen</translation>
 <translation id="2585245331261708204">Nieuw bij Chrome OS</translation>
 <translation id="2619761439309613843">Dagelijks vernieuwen</translation>
 <translation id="2620436844016719705">Systeem</translation>
@@ -145,8 +152,10 @@
 <translation id="3532980081107202182">Nog ongeveer <ph name="MIN_REMAINING" /> minuten</translation>
 <translation id="3565064564551103223">Toegestane IP's</translation>
 <translation id="357889014807611375">wifi met datalimiet</translation>
+<translation id="3583278742022654445">Zwak signaal. Ga dichter bij de wifi-signaalbron staan.</translation>
 <translation id="3595596368722241419">Batterij is vol</translation>
 <translation id="360565022852130722">Wifi-netwerk is beveiligd met het zwakke protocol WEP 802.1x</translation>
+<translation id="3606583719724308068">Lange vertraging voor HTTPS-websites</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
 <translation id="3708186454126126312">Eerder verbonden</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> reviews)</translation>
@@ -167,6 +176,7 @@
 <translation id="39823212440917567">Afdruktaken ouder dan <ph name="NUMBER_OF_DAYS" /> dagen worden verwijderd</translation>
 <translation id="4003384961948020559">Mislukt - Uitvoer is vol</translation>
 <translation id="4034824040120875894">Printer</translation>
+<translation id="4044093238444069296">Kan geen verbinding maken met de gateway</translation>
 <translation id="404928562651467259">WAARSCHUWING</translation>
 <translation id="409427325554347132">Testgegevens opslaan</translation>
 <translation id="4111761024568264522">USB-touchpad</translation>
@@ -189,6 +199,7 @@
 <translation id="4378551569595875038">Verbinden...</translation>
 <translation id="4382484599443659549">Pdf</translation>
 <translation id="4425149324548788773">Mijn Drive</translation>
+<translation id="4428374560396076622"><ph name="NETWORK_NAME" /> staat uit</translation>
 <translation id="4429881212383817840">Kerberos-ticket verloopt binnenkort</translation>
 <translation id="4431821876790500265">Rapport bekijken</translation>
 <translation id="445059817448385655">Oud wachtwoord</translation>
@@ -234,6 +245,7 @@
 <translation id="4917385247580444890">Sterk</translation>
 <translation id="4917889632206600977">Gestopt: geen papier meer</translation>
 <translation id="4921665434385737356"><ph name="RATE" /> opgeladen in <ph name="NUM_SECONDS" /> seconden.</translation>
+<translation id="4930320165497208503">Ga naar <ph name="BEGIN_LINK" />Instellingen<ph name="END_LINK" /> als je een verbinding wilt instellen of updaten.</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="498186245079027698">Check de scanner en probeer het opnieuw. Zorg dat er voldoende lokale ruimte is om gescande bestanden op te slaan.</translation>
 <translation id="4985509611418653372">Uitvoeren</translation>
@@ -358,6 +370,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="6657585470893396449">Wachtwoord</translation>
 <translation id="6704062477274546131">DNS-resolutie</translation>
 <translation id="6747215703636344499">Gestopt: uitvoer is vol</translation>
+<translation id="6749473226660745022">Foto's</translation>
 <translation id="6756731097889387912">Kan scannen niet annuleren</translation>
 <translation id="6766275201586212568">Mislukte DNS-omzettingen</translation>
 <translation id="6768237774506518020">Hoog percentage mislukte DNS-omzettingen</translation>
@@ -375,6 +388,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="7059230779847288458">Opladen, vol over <ph name="TIME_VALUE" /></translation>
 <translation id="708426984172631313">GESTOPT</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="710028965487274708">Mislukt: autorisatie mislukt</translation>
 <translation id="7134436342991564651">{0,plural, =1{Naamserver}other{Naamservers}}</translation>
 <translation id="7143207342074048698">Verbinden</translation>
 <translation id="7144878232160441200">Opnieuw proberen</translation>
@@ -387,6 +401,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="7271040990581020067">De scanner wordt momenteel gebruikt. Probeer het later opnieuw.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Achtergrondcollecties</translation>
+<translation id="7297226631177386107">Kan geen verbinding maken met HTTPS-websites via een firewall</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -419,6 +434,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="7762130827864645708">Je wachtwoord is gewijzigd. Gebruik vanaf nu je nieuwe wachtwoord.</translation>
 <translation id="7763470514545477072">Overeenkomst voor domeinextensie</translation>
 <translation id="7769672763586021400">Model-ID</translation>
+<translation id="7784116172884276937">Er zijn geen DNS-servers ingesteld</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7819857487979277519">PSK (WPA of RSN)</translation>
 <translation id="7835501727204647447">CloudReady installeren</translation>
@@ -433,13 +449,16 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="7943235353293548836">Permanent keepalive-interval</translation>
 <translation id="7955587717700691983">Bluetooth-toetsenbord</translation>
 <translation id="7960831585769876809">Temperatuur</translation>
+<translation id="7977800524392185497">Ga naar Instellingen als je verbinding wilt maken met een <ph name="NETWORK_NAME" />-netwerk</translation>
 <translation id="7978412674231730200">Privésleutel</translation>
 <translation id="7994702968232966508">EAP-methode</translation>
 <translation id="802154636333426148">Downloaden mislukt</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="8041089156583427627">Feedback sturen</translation>
 <translation id="8075838845814659848">Resterende batterijlading</translation>
+<translation id="8082366717211101304">Kan DNS niet omzetten vanuit Android-apps</translation>
 <translation id="808894953321890993">Wachtwoord wijzigen</translation>
+<translation id="8104083085214006426">Je gebruikt een open of niet-beveiligd netwerk</translation>
 <translation id="811820734797650957">(Android) Gateway kan worden gepingd</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Verkeerstellers aanvragen</translation>
@@ -464,10 +483,12 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Intern toetsenbord</translation>
 <translation id="843568408673868420">Internetverbinding</translation>
+<translation id="844521431886043384">DNS is niet ingesteld</translation>
 <translation id="8461329675984532579">Naam thuisprovider</translation>
 <translation id="8475690821716466388">Wifi-netwerk is beveiligd met het zwakke protocol WEP PSK</translation>
 <translation id="8477551185774834963">DNS-latentie is iets langer dan de toelaatbare drempel</translation>
 <translation id="8483248364096924578">IP-adres</translation>
+<translation id="8491311378305535241">Kan geen verbinding maken met HTTP-websites via een firewall op Android-apparaten</translation>
 <translation id="8498220429738806196">Verkeerstellers</translation>
 <translation id="8503813439785031346">Gebruikersnaam</translation>
 <translation id="8503836310948963452">Nog een paar minuten...</translation>
@@ -493,6 +514,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="8818152010000655963">Achtergrond</translation>
 <translation id="8834539327799336565">Momenteel verbonden</translation>
 <translation id="8845001906332463065">Hulp nodig?</translation>
+<translation id="8855781559874488009">Kan geen verbinding maken met HTTP-websites via een firewall</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Test geslaagd</translation>
 <translation id="8898840733695078011">Signaalsterkte</translation>
@@ -518,12 +540,14 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="910415269708673980">Ticket voor <ph name="PRINCIPAL_NAME" /> vernieuwen</translation>
 <translation id="9106415115617144481">Pagina <ph name="PAGE_NUMBER" /> scannen</translation>
 <translation id="9111102763498581341">Ontgrendelen</translation>
+<translation id="9122602430962285795">Ga naar Instellingen als je weer verbinding wilt maken</translation>
 <translation id="9126720536733509015">Meerdere pagina's opslaan in 1 pdf-bestand</translation>
 <translation id="9137526406337347448">Google-services</translation>
 <translation id="9149391708638971077">Geheugentest uitvoeren</translation>
 <translation id="9173638680043580060">Nog minder dan een minuut</translation>
 <translation id="917720651393141712">Test</translation>
 <translation id="9190063653747922532">L2TP/IPsec + eerder gedeelde sleutel</translation>
+<translation id="9204237731135241582">Kan geen verbinding maken met de gateway vanuit Android-apps</translation>
 <translation id="9211490828691860325">Alle bureaus</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Niet geactiveerd</translation>

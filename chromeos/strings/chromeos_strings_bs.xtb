@@ -42,6 +42,7 @@
 <translation id="150962533380566081">Nevažeći PUK.</translation>
 <translation id="1510238584712386396">Pokretač</translation>
 <translation id="155865706765934889">Dodirna podloga</translation>
+<translation id="1567064801249837505">Albumi</translation>
 <translation id="1572585716423026576">Postavi kao pozadinsku sliku</translation>
 <translation id="1621067168122174824">Pokreni test punjenja</translation>
 <translation id="1639239467298939599">Učitavanje</translation>
@@ -55,6 +56,7 @@
 <translation id="1717874160321062422">Uređajem upravljaju <ph name="FIRST_MANAGER" /> i <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Poslužitelji naziva</translation>
 <translation id="1731082422893354635">Bluetooth dodirna podloga</translation>
+<translation id="1753496554272155572">Izlaz iz pregleda pozadinske slike</translation>
 <translation id="175763766237925754">Dobro (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -368,6 +370,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="6657585470893396449">Lozinka</translation>
 <translation id="6704062477274546131">Razrješavanje DNS-a</translation>
 <translation id="6747215703636344499">Zaustavljeno – izlaz je pun</translation>
+<translation id="6749473226660745022">Fotografije</translation>
 <translation id="6756731097889387912">Otkazivanje skeniranja nije uspjelo</translation>
 <translation id="6766275201586212568">DNS rezolucije nisu uspjele</translation>
 <translation id="6768237774506518020">Visoka stopa neuspjeha DNS rezolucije</translation>

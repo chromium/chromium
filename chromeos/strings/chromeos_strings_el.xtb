@@ -42,6 +42,7 @@
 <translation id="150962533380566081">Μη έγκυρος κωδικός PUK.</translation>
 <translation id="1510238584712386396">Λειτουργία εκκίνησης</translation>
 <translation id="155865706765934889">Επιφάνεια Αφής</translation>
+<translation id="1567064801249837505">Λευκώματα</translation>
 <translation id="1572585716423026576">Ορισμός ως ταπετσαρία</translation>
 <translation id="1621067168122174824">Εκτέλεση δοκιμής φόρτισης</translation>
 <translation id="1639239467298939599">Γίνεται φόρτωση</translation>
@@ -55,6 +56,7 @@
 <translation id="1717874160321062422">Διαχειρίζεται από <ph name="FIRST_MANAGER" /> και <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Διακομιστές ονομάτων</translation>
 <translation id="1731082422893354635">Επιφάνεια αφής Bluetooth</translation>
+<translation id="1753496554272155572">Έξοδος από προεπισκόπηση ταπετσαρίας</translation>
 <translation id="175763766237925754">Καλό (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -368,6 +370,7 @@
 <translation id="6657585470893396449">Κωδικός Πρόσβασης</translation>
 <translation id="6704062477274546131">Επίλυση DNS</translation>
 <translation id="6747215703636344499">Διακοπή - Ο δίσκος εξόδου είναι γεμάτος</translation>
+<translation id="6749473226660745022">Φωτογραφίες</translation>
 <translation id="6756731097889387912">Δεν ήταν δυνατή η ακύρωση της σάρωσης.</translation>
 <translation id="6766275201586212568">Αποτυχημένες αναλύσεις DNS</translation>
 <translation id="6768237774506518020">Υψηλό ποσοστό αποτυχίας ανάλυσης DNS</translation>

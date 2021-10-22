@@ -42,6 +42,7 @@
 <translation id="150962533380566081">Неважећи PUK.</translation>
 <translation id="1510238584712386396">Покретач</translation>
 <translation id="155865706765934889">Додирна табла</translation>
+<translation id="1567064801249837505">Албуми</translation>
 <translation id="1572585716423026576">Постави као позадину</translation>
 <translation id="1621067168122174824">Покрени тест пуњења</translation>
 <translation id="1639239467298939599">Учитавање</translation>
@@ -55,6 +56,7 @@
 <translation id="1717874160321062422">Управљају <ph name="FIRST_MANAGER" /> и <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Сервери имена</translation>
 <translation id="1731082422893354635">Bluetooth тачпед</translation>
+<translation id="1753496554272155572">Изађите из прегледа позадине</translation>
 <translation id="175763766237925754">Добар (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -368,6 +370,7 @@
 <translation id="6657585470893396449">Лозинка</translation>
 <translation id="6704062477274546131">DNS разрешавање</translation>
 <translation id="6747215703636344499">Заустављено – посуда за одштампани материјал је пуна</translation>
+<translation id="6749473226660745022">Слике</translation>
 <translation id="6756731097889387912">Отказивање скенирања није успело</translation>
 <translation id="6766275201586212568">Неуспешна DNS разрешавања</translation>
 <translation id="6768237774506518020">Велика стопа неуспеха DNS разрешавања</translation>

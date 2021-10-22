@@ -15,6 +15,7 @@
 <translation id="1052916631016577720">項目掃描</translation>
 <translation id="1056775291175587022">沒有網路</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />：<ph name="RESOLUTION" /></translation>
+<translation id="1062407476771304334">取代</translation>
 <translation id="1073899992769346247">請更換電池或進行充電</translation>
 <translation id="108486256082349153">行動裝置：<ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">午安，<ph name="GIVEN_NAME" />：</translation>
@@ -147,6 +148,7 @@
 <translation id="2018630726571919839">講個笑話</translation>
 <translation id="2021864487439853900">按一下即可解鎖</translation>
 <translation id="2023558322300866873">你隨時可以停止封包擷取作業</translation>
+<translation id="2034971124472263449">繼續儲存</translation>
 <translation id="2047639699071423250">新增重點</translation>
 <translation id="2049240716062114887">已將桌面名稱變更為「<ph name="DESK_NAME" />」</translation>
 <translation id="2050339315714019657">直向</translation>
@@ -337,6 +339,7 @@
 <translation id="3509391053705095206">找不到你的手機。請確認手機已開啟藍牙功能。</translation>
 <translation id="3510164367642747937">醒目顯示滑鼠游標</translation>
 <translation id="3513798432020909783">這個帳戶是由 <ph name="MANAGER_EMAIL" /> 管理</translation>
+<translation id="352245152354538528">{0,plural, =1{請在 1 分鐘內更新裝置}other{請在 # 分鐘內更新裝置}}</translation>
 <translation id="353086728817903341">已連線至 <ph name="NUM_DEVICES" /> 部裝置</translation>
 <translation id="3552189655002856821">Wi-Fi 已關閉</translation>
 <translation id="3560866052109807830">標記繪製工具</translation>
@@ -425,6 +428,7 @@
 <translation id="4146833061457621061">播放音樂</translation>
 <translation id="4157822100366708405">深色主題設定</translation>
 <translation id="4173958948577803258">四</translation>
+<translation id="4177913004758410636">{0,plural, =1{請在 1 天內更新裝置}other{請在 # 天內更新裝置}}</translation>
 <translation id="4181841719683918333">語言</translation>
 <translation id="4195877955194704651">自動點擊按鈕</translation>
 <translation id="4197790712631116042">關閉</translation>
@@ -478,6 +482,7 @@
 <translation id="445864333228800152">晚安，</translation>
 <translation id="4458688154122353284">停止錄製螢幕畫面</translation>
 <translation id="4471354919263203780">正在下載語音辨識檔案...<ph name="PERCENT" />%</translation>
+<translation id="4471432286288241507">{0,plural, =0{請立即更新裝置}=1{請在 1 秒內更新裝置}other{請在 # 秒內更新裝置}}</translation>
 <translation id="4472575034687746823">開始使用</translation>
 <translation id="4477350412780666475">下一首曲目</translation>
 <translation id="4477892968187500306">這個裝置可能包含尚未經 Google 驗證的應用程式。</translation>
@@ -615,6 +620,7 @@
 <translation id="5465662442746197494">需要協助嗎？</translation>
 <translation id="5496819745535887422">你的管理員正在復原你的裝置。重新啟動後，裝置上的資料將全數刪除。</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520229639206813572">你的管理員已移除所有 eSIM 卡設定檔。如需更多資訊，請向管理員洽詢。</translation>
 <translation id="5523434445161341166">「<ph name="FEATURE_NAME" />」正在連線。</translation>
 <translation id="5532994612895037630">輕觸任一處即可錄製全螢幕畫面</translation>
 <translation id="553675580533261935">結束工作階段</translation>
@@ -736,6 +742,7 @@
 <translation id="6482559668224714696">全螢幕放大鏡</translation>
 <translation id="6490471652906364588">USB-C 裝置 (右側連接埠)</translation>
 <translation id="649452524636452238">智慧型卡片 PIN 碼</translation>
+<translation id="6495400115277918834">已開啟子母畫面，按下 Alt+Shift+V 可聚焦</translation>
 <translation id="6500818810472529210">查看 Google 搜尋結果</translation>
 <translation id="6501401484702599040">正在將畫面投放到「<ph name="RECEIVER_NAME" />」</translation>
 <translation id="6520517963145875092">選取要擷圖的視窗</translation>
@@ -745,6 +752,8 @@
 <translation id="6537924328260219877">訊號強度 <ph name="SIGNAL_STRENGTH" />，手機電量：<ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">正在投放至<ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">詢問系統管理員</translation>
+<translation id="6565007273808762236">無法建立 eSIM 卡連線</translation>
+<translation id="6570831796530454248">{0,plural, =1{請在 1 小時內更新裝置}other{請在 # 小時內更新裝置}}</translation>
 <translation id="6570902864550063460">正在透過 USB 充電</translation>
 <translation id="6585808820553845416">這個工作階段將在 <ph name="SESSION_TIME_REMAINING" />後結束。</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />，<ph name="SECONDARY_TEXT" /></translation>

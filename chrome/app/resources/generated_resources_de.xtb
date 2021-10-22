@@ -5304,7 +5304,6 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6644846457769259194">Gerät wird aktualisiert (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6645437135153136856">Das ausgewählte Google Cloud Print-Gerät wird nicht mehr unterstützt. <ph name="BR" /> Versuchen Sie, den Drucker in den Systemeinstellungen Ihres Computers einzurichten.</translation>
 <translation id="6647228709620733774">URL zum Zurückrufen der Zertifizierungsstelle von Netscape-Zertifikaten</translation>
-<translation id="6647838571840953560">Derzeit auf <ph name="CHANNEL_NAME" /></translation>
 <translation id="6648911618876616409">Ein wichtiges Update ist zur Installation bereit. Melden Sie sich an, um die Installation zu starten.</translation>
 <translation id="6649018507441623493">Bitte warten...</translation>
 <translation id="6650234781371031356">Ihr Passwort für <ph name="WEBSITE" /> ist auf diesem Gerät und in Ihrem Google-Konto gespeichert. Von wo möchten Sie es löschen?</translation>
@@ -6833,7 +6832,6 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8213449224684199188">Fotomodus aktiviert</translation>
 <translation id="8214489666383623925">Datei öffnen...</translation>
 <translation id="8215129063232901118">Auf Ihrem <ph name="DEVICE_TYPE" /> auf die Funktionen Ihres Smartphones zugreifen</translation>
-<translation id="8216351761227087153">Ansehen</translation>
 <translation id="8217399928341212914">Weiterhin automatisches Herunterladen mehrerer Dateien blockieren</translation>
 <translation id="8221491193165283816">Normalerweise blockieren Sie Benachrichtigungen. Klicken Sie hier, wenn Sie von dieser Website Benachrichtigungen erhalten möchten.</translation>
 <translation id="822347941086490485">HID-Geräte werden gesucht…</translation>

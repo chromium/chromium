@@ -136,6 +136,7 @@
 <translation id="1137589305610962734">临时数据</translation>
 <translation id="1137673463384776352">在<ph name="APP" />中打开链接</translation>
 <translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{新通知}other{# 条新通知}}</translation>
+<translation id="1139138655591555207">按 |<ph name="ACCELERATOR" />| 可聚焦于此帮助气泡。</translation>
 <translation id="1139343347646843679">配置 Linux 时出错。请与您的管理员联系。</translation>
 <translation id="1139923033416533844">内存使用情况</translation>
 <translation id="1140351953533677694">访问您的蓝牙和串行设备</translation>
@@ -524,6 +525,7 @@
 <translation id="1549275686094429035">已启用 ARC</translation>
 <translation id="1549788673239553762">“<ph name="APP_NAME" />”想访问 <ph name="VOLUME_NAME" />。它可能会修改或删除您的文件。</translation>
 <translation id="1552301827267621511">扩展程序“<ph name="EXTENSION_NAME" />”将搜索服务提供商改成了 <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
+<translation id="1552522962296937598">Smart display lock and detect if others peeking from behind</translation>
 <translation id="1553538517812678578">无限制</translation>
 <translation id="1555130319947370107">蓝色</translation>
 <translation id="1556537182262721003">无法将扩展程序目录移动到个人资料中。</translation>
@@ -1061,6 +1063,7 @@
 <translation id="2090165459409185032">要恢复您的帐号信息，请访问 google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">在您登录后自动连接</translation>
 <translation id="2090876986345970080">系统安全设置</translation>
+<translation id="2092038932007199943">Notify you or temporary dim your screen when someone is snooping from behind</translation>
 <translation id="2096715839409389970">清除第三方 Cookie</translation>
 <translation id="2098805196501063469">检查其余的密码</translation>
 <translation id="2099172618127234427">您正在启用 Chrome 操作系统调试功能，此功能将设置 sshd 守护程序并允许从 U 盘启动设备。</translation>
@@ -3019,6 +3022,7 @@
 <translation id="4110490973560452005">下载完成：<ph name="FILE_NAME" />。按 Shift+F6 可切换到下载内容栏区域。</translation>
 <translation id="4110686435123617899">选择影集“<ph name="TITLE" />”，<ph name="DESC" /></translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" />（离线）</translation>
+<translation id="4112809168763360620">Smart privacy protections</translation>
 <translation id="4115002065223188701">检测不到网络</translation>
 <translation id="4115378294792113321">洋红色</translation>
 <translation id="4117637339509843559">深色模式</translation>
@@ -3066,6 +3070,7 @@
 <translation id="4175137578744761569">浅紫色和白色</translation>
 <translation id="4175737294868205930">永久存储</translation>
 <translation id="4176463684765177261">已停用</translation>
+<translation id="417971315778328003">需要设置 PIN 码或密码才能继续</translation>
 <translation id="4180788401304023883">要删除 CA 证书“<ph name="CERTIFICATE_NAME" />”吗？</translation>
 <translation id="4181602000363099176">20 倍</translation>
 <translation id="4181841719683918333">语言</translation>
@@ -3100,6 +3105,7 @@
 <translation id="4231095370974836764">在 <ph name="DEVICE_TYPE" /> 上通过 Google Play 安装各种应用和游戏。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">配置 Kerberos</translation>
 <translation id="4235965441080806197">取消登录</translation>
+<translation id="4238175133949127631">Temporary dim screen</translation>
 <translation id="4241182343707213132">重启即可更新贵单位的应用</translation>
 <translation id="4242145785130247982">有多个客户端证书不受支持</translation>
 <translation id="4242533952199664413">打开“设置”</translation>
@@ -4616,6 +4622,7 @@
 <translation id="5901494423252125310">打印机机盖未关</translation>
 <translation id="5901630391730855834">黄色</translation>
 <translation id="5904614460720589786">无法设置 <ph name="APP_NAME" />，因为出现了配置问题。请与您的管理员联系。错误代码：<ph name="ERROR_CODE" />。</translation>
+<translation id="5906278356170001460">This feature uses the front camera for detection. The data is securely processed and discarded afterwards. Google doesn't use your data for any other purposes.</translation>
 <translation id="5906655207909574370">即将更新到最新版本！重新启动您的设备即可完成更新。</translation>
 <translation id="5906732635754427568">系统将会从此设备上移除与该应用相关的数据。</translation>
 <translation id="5908474332780919512">在您登录时启动应用</translation>
@@ -4767,6 +4774,7 @@
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />注意<ph name="END_BOLD" />：如果有人在语音上与<ph name="SUPERVISED_USER_NAME" />相似或拥有后者的语音录音，此人可能也能获取后者的个人信息相关结果。为了省电，您可以在<ph name="SUPERVISED_USER_NAME" />的 Google 助理设置中选择让“Ok Google”指令仅在此设备已接通电源时可用。</translation>
 <translation id="6064217302520318294">屏幕锁定</translation>
 <translation id="6065289257230303064">证书主题背景目录属性</translation>
+<translation id="6065691521254183160">按 |<ph name="ACCELERATOR" />| 可在此帮助气泡和它指向的元素之间切换焦点。</translation>
 <translation id="6066794465984119824">图片哈希未设置</translation>
 <translation id="6069464830445383022">您将使用 Google 帐号登录 Chromebook</translation>
 <translation id="6069671174561668781">设置壁纸</translation>
@@ -4792,6 +4800,7 @@
 <translation id="6085886413119427067">确定如何通过安全连接来连接到网站</translation>
 <translation id="6086004606538989567">您已验证的帐号无权访问此设备。</translation>
 <translation id="6086846494333236931">这是您的管理员安装的</translation>
+<translation id="6086898065659145625">当您的手机位于附近时，Smart Lock 会自动将您登录帐号。</translation>
 <translation id="6087960857463881712">酷炫表情</translation>
 <translation id="608912389580139775">若要将此网页添加到您的阅读清单中，请点击“书签”图标</translation>
 <translation id="6091761513005122595">已成功装载共享资源。</translation>
@@ -5255,6 +5264,7 @@
 <translation id="659005207229852190">已完成安全检查。</translation>
 <translation id="6590458744723262880">重命名文件夹</translation>
 <translation id="6592267180249644460">WebRTC日志记录时间：<ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
+<translation id="659230975550262204">Show me an eye icon in the status area</translation>
 <translation id="6592808042417736307">已捕获您的指纹</translation>
 <translation id="6593881952206664229">受版权保护的媒体可能无法播放</translation>
 <translation id="6594011207075825276">正在查找串行设备…</translation>
@@ -5304,7 +5314,6 @@
 <translation id="6644846457769259194">正在更新您的设备 (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6645437135153136856">所选的 Google 云打印设备已不再受支持。<ph name="BR" />请尝试在您计算机的系统设置中设置打印机。</translation>
 <translation id="6647228709620733774">Netscape 证书授权中心吊销网址</translation>
-<translation id="6647838571840953560">目前使用的是<ph name="CHANNEL_NAME" />版本</translation>
 <translation id="6648911618876616409">有一项重要更新已可供安装。登录即可开始安装。</translation>
 <translation id="6649018507441623493">请稍候…</translation>
 <translation id="6650234781371031356">您为 <ph name="WEBSITE" /> 保存的密码已存储到此设备上和您的 Google 帐号中。您想删除存储在哪个位置的密码？</translation>
@@ -5693,6 +5702,7 @@
 <translation id="7053983685419859001">禁止</translation>
 <translation id="7055152154916055070">已禁止重定向：</translation>
 <translation id="7055451306017383754">无法停止共享，因为有一个应用正在使用此文件夹。系统将会在下次关闭 Parallels Desktop 时停止共享此文件夹。</translation>
+<translation id="7056011684066172642">Screen locks automatically if you walk off, and won't turn off if you're in front of it</translation>
 <translation id="7056418393177503237">{0,plural, =1{无痕模式}other{# 个已打开的无痕式窗口}}</translation>
 <translation id="7056526158851679338">检查设备(&amp;I)</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{1 分钟前运行过安全检查}other{{NUM_MINS} 分钟前运行过安全检查}}</translation>
@@ -6406,6 +6416,7 @@
 <translation id="7797246427375693110">已开启 / 将在<ph name="TIME" /> 自动关闭</translation>
 <translation id="7797571222998226653">已关闭</translation>
 <translation id="7798844538707273832">已自动禁用<ph name="PERMISSION" /></translation>
+<translation id="7799220949286681310">Smart screen lock</translation>
 <translation id="7799299114731150374">已成功设置壁纸</translation>
 <translation id="7799817062559422778">浅色模式</translation>
 <translation id="7800159967992492578">开启/关闭侧边搜索。已启用侧边搜索。</translation>
@@ -6554,6 +6565,7 @@
 <translation id="7933518760693751884">如需保存某个页面以供日后阅读，请点击“书签”图标</translation>
 <translation id="7933634003144813719">管理共享的文件夹</translation>
 <translation id="793531125873261495">下载虚拟机时出错。请重试。</translation>
+<translation id="7935451262452051102">已完成 <ph name="PERCENT" />%</translation>
 <translation id="7938594894617528435">当前处于离线状态</translation>
 <translation id="7939062555109487992">高级选项</translation>
 <translation id="7939412583708276221">仍然保留</translation>
@@ -6686,6 +6698,7 @@
 <translation id="8062844841289846053">{COUNT,plural, =1{1 张纸}other{{COUNT} 张纸}}</translation>
 <translation id="8063235345342641131">默认的绿色头像</translation>
 <translation id="8063535366119089408">查看文件</translation>
+<translation id="8064269957688233720">在此 Chromebook 从休眠状态中醒来后保护您手机中的数据。</translation>
 <translation id="8064279191081105977">群组“<ph name="GROUP_NAME" />”- <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">连接对话框</translation>
 <translation id="8068253693380742035">触摸以登录</translation>
@@ -6833,7 +6846,6 @@
 <translation id="8213449224684199188">已进入照片模式</translation>
 <translation id="8214489666383623925">打开文件...</translation>
 <translation id="8215129063232901118">通过 <ph name="DEVICE_TYPE" /> 使用手机的功能</translation>
-<translation id="8216351761227087153">观看</translation>
 <translation id="8217399928341212914">继续阻止自动下载多个文件</translation>
 <translation id="8221491193165283816">您通常会屏蔽通知。要允许此网站向您发送通知，请点击此处。</translation>
 <translation id="822347941086490485">正在查找 HID 设备…</translation>
@@ -7338,6 +7350,7 @@
 <translation id="8770406935328356739">扩展程序根目录</translation>
 <translation id="8771300903067484968">已将初始页背景重置为默认背景。</translation>
 <translation id="8773302562181397928">保存<ph name="PRINTER_NAME" /></translation>
+<translation id="8773350724590665675">Snooping protection</translation>
 <translation id="8774379074441005279">确认恢复</translation>
 <translation id="8774934320277480003">上边距</translation>
 <translation id="8775144690796719618">网址无效</translation>

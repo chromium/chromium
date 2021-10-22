@@ -42,6 +42,7 @@
 <translation id="150962533380566081">Neplatný kód PUK.</translation>
 <translation id="1510238584712386396">Spúšťač</translation>
 <translation id="155865706765934889">Touchpad</translation>
+<translation id="1567064801249837505">Albumy</translation>
 <translation id="1572585716423026576">Nastaviť ako tapetu</translation>
 <translation id="1621067168122174824">Spustiť test nabitia</translation>
 <translation id="1639239467298939599">Prebieha načítavanie</translation>
@@ -55,6 +56,7 @@
 <translation id="1717874160321062422">Spravujú <ph name="FIRST_MANAGER" /> a <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Menné servery</translation>
 <translation id="1731082422893354635">Touchpad s rozhraním Bluetooth</translation>
+<translation id="1753496554272155572">Ukončiť ukážku tapety</translation>
 <translation id="175763766237925754">Dobré (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -368,6 +370,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="6657585470893396449">Heslo</translation>
 <translation id="6704062477274546131">Prevod adresy IP na názov domény systémom DNS</translation>
 <translation id="6747215703636344499">Zastavené – výstup je plný</translation>
+<translation id="6749473226660745022">Fotky</translation>
 <translation id="6756731097889387912">Skenovanie sa nepodarilo zrušiť</translation>
 <translation id="6766275201586212568">Neúspešné preklady DNS</translation>
 <translation id="6768237774506518020">Vysoká miera neúspešných prekladov DNS</translation>

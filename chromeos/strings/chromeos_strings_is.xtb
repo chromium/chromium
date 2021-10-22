@@ -42,6 +42,7 @@
 <translation id="150962533380566081">Ógilt PUK-númer.</translation>
 <translation id="1510238584712386396">Ræsiforrit</translation>
 <translation id="155865706765934889">Snertiflötur</translation>
+<translation id="1567064801249837505">Albúm</translation>
 <translation id="1572585716423026576">Nota sem veggfóður</translation>
 <translation id="1621067168122174824">Keyra hleðslupróf</translation>
 <translation id="1639239467298939599">Hleður</translation>
@@ -55,6 +56,7 @@
 <translation id="1717874160321062422">Í umsjón <ph name="FIRST_MANAGER" /> og <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Nafnaþjónar</translation>
 <translation id="1731082422893354635">Bluetooth-snertiflötur</translation>
+<translation id="1753496554272155572">Loka forskoðun veggfóðurs</translation>
 <translation id="175763766237925754">Góður (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -368,6 +370,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="6657585470893396449">Aðgangsorð</translation>
 <translation id="6704062477274546131">DNS-upplausn</translation>
 <translation id="6747215703636344499">Stöðvað – úttakið er fullt</translation>
+<translation id="6749473226660745022">Myndir</translation>
 <translation id="6756731097889387912">Ekki tókst að hætta við að skanna</translation>
 <translation id="6766275201586212568">DNS-úrlausn mistókst</translation>
 <translation id="6768237774506518020">DNS-úrlausn mistekst oft</translation>

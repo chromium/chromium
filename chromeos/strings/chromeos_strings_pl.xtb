@@ -39,6 +39,7 @@
 <translation id="150962533380566081">Nieprawidłowy PUK.</translation>
 <translation id="1510238584712386396">Menu z aplikacjami</translation>
 <translation id="155865706765934889">Touchpad</translation>
+<translation id="1567064801249837505">Albumy</translation>
 <translation id="1572585716423026576">Ustaw jako tapetę</translation>
 <translation id="1621067168122174824">Przeprowadź test ładowania</translation>
 <translation id="1639239467298939599">Wczytuję</translation>
@@ -52,6 +53,7 @@
 <translation id="1717874160321062422">Zarządzane przez <ph name="FIRST_MANAGER" /> i <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Serwery nazw</translation>
 <translation id="1731082422893354635">Touchpad Bluetooth</translation>
+<translation id="1753496554272155572">Ikona zamknięcia podglądu tapety</translation>
 <translation id="175763766237925754">Dobra (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -358,6 +360,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="6657585470893396449">Hasło</translation>
 <translation id="6704062477274546131">Rozwiązywanie nazw DNS</translation>
 <translation id="6747215703636344499">Zatrzymano – odbiornik papieru jest pełny</translation>
+<translation id="6749473226660745022">Zdjęcia</translation>
 <translation id="6756731097889387912">Nie udało się anulować skanowania</translation>
 <translation id="6766275201586212568">błędy rozpoznawania nazw DNS</translation>
 <translation id="6768237774506518020">dużo błędów rozpoznania nazwy DNS</translation>

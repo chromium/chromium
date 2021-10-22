@@ -798,6 +798,7 @@
 <translation id="6544923685317771506">海貝色</translation>
 <translation id="6551185905438378412">象牙白</translation>
 <translation id="6561818612645211875">前往目前列的開頭</translation>
+<translation id="6563126228219321999">沒有無效項目</translation>
 <translation id="6579990219486187401">淺粉紅色</translation>
 <translation id="6583174818554398774">移至較高的精細度等級</translation>
 <translation id="6584162722998608255">接下來將介紹在螢幕畫面上移動的方式。只要用單指由左往右滑動，即可移至下一個項目。馬上試試看，繼續進行下一步吧！</translation>
@@ -828,6 +829,7 @@
 <translation id="6815255864998354418">檸檬綢色</translation>
 <translation id="6816066673340002913">灰金菊色</translation>
 <translation id="6826226459053491773">以雙指向下滑動</translation>
+<translation id="6826669432862053130">下一個無效項目</translation>
 <translation id="6833103209700200188">頁尾</translation>
 <translation id="6837853484260746864">選擇語音：</translation>
 <translation id="6858047746862060282">序言</translation>
@@ -1018,6 +1020,7 @@
 <translation id="8126386426083591964">沒有上一個第 5 階標題</translation>
 <translation id="812886159861361726">已停止下載「<ph name="FILE_NAME" />」</translation>
 <translation id="8129445297241948503">上方沒有儲存格</translation>
+<translation id="8132248161074464367">上一個無效項目</translation>
 <translation id="8138880386467279117">輕觸</translation>
 <translation id="8146613869421949343">接下來，我們會學習搜尋鍵。搜尋鍵可搭配其他按鍵使用，以執行 ChromeVox 指令。搜尋鍵位於左側 Shift 鍵的正上方。如要繼續，請按下搜尋鍵。</translation>
 <translation id="8158033275290782295">全選</translation>

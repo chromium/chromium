@@ -140,6 +140,7 @@
 <translation id="1137589305610962734">тимчасові дані</translation>
 <translation id="1137673463384776352">Відкрити посилання в додатку <ph name="APP" /></translation>
 <translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Нове сповіщення}one{# нове сповіщення}few{# нові сповіщення}many{# нових сповіщень}other{# нового сповіщення}}</translation>
+<translation id="1139138655591555207">Щоб виділити цю спливаючу підказку, натисніть |<ph name="ACCELERATOR" />|.</translation>
 <translation id="1139343347646843679">Не вдалося налаштувати Linux. Зв'яжіться з адміністратором.</translation>
 <translation id="1139923033416533844">Використання пам'яті</translation>
 <translation id="1140351953533677694">Отримувати доступ до пристроїв Bluetooth і серійних пристроїв</translation>
@@ -537,6 +538,7 @@
 <translation id="1549275686094429035">ARC ввімкнено</translation>
 <translation id="1549788673239553762">Додатку <ph name="APP_NAME" /> потрібен доступ до тому <ph name="VOLUME_NAME" />. Він може змінювати або видаляти ваші файли.</translation>
 <translation id="1552301827267621511">Розширення "<ph name="EXTENSION_NAME" />" змінило пошукову систему на <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
+<translation id="1552522962296937598">Розумний екран блокується та виявляє, якщо хтось підглядає з-за вашої спини.</translation>
 <translation id="1553538517812678578">без обмежень</translation>
 <translation id="1555130319947370107">Синій</translation>
 <translation id="1556537182262721003">Не вдалося перемістити каталог розширення в профіль.</translation>
@@ -1083,6 +1085,7 @@
 <translation id="2090165459409185032">Щоб відновити дані облікового запису, перейдіть на сторінку google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">Мережа автоматично підключатиметься, коли ви входитимете в обліковий запис</translation>
 <translation id="2090876986345970080">Налаштування безпеки системи</translation>
+<translation id="2092038932007199943">Сповіщати вас або тимчасово затемнювати екран, коли хтось підглядає з-за вашої спини.</translation>
 <translation id="2096715839409389970">Очистити файли cookie третіх сторін</translation>
 <translation id="2098805196501063469">Перевірити решту паролів</translation>
 <translation id="2099172618127234427">Ви ввімкнути функції налагодження ОС Chrome, які встановлять демон SSHD та ввімкнуть завантаження з носіїв USB.</translation>
@@ -3054,9 +3057,11 @@
 <translation id="4110490973560452005">Завантажено: <ph name="FILE_NAME" />. Натисніть Shift+F6, щоб перейти на панель завантажень.</translation>
 <translation id="4110686435123617899">Вибрати альбом "<ph name="TITLE" />" з описом "<ph name="DESC" />"</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (офлайн)</translation>
+<translation id="4112809168763360620">Розумний захист конфіденційності</translation>
 <translation id="4115002065223188701">Мережа недосяжна</translation>
 <translation id="4115378294792113321">Пурпурний</translation>
 <translation id="4117637339509843559">Темний режим</translation>
+<translation id="4117714603282104018">Вібровідгук сенсорної панелі.</translation>
 <translation id="4118579674665737931">Перезапустіть пристрій і повторіть спробу.</translation>
 <translation id="412022815379960229">Переглядайте свої спогади з Google Фото після входу в обліковий запис.</translation>
 <translation id="4120388883569225797">Не вдається скинути цей ключ безпеки</translation>
@@ -3101,6 +3106,7 @@
 <translation id="4175137578744761569">Світло-фіолетовий і білий</translation>
 <translation id="4175737294868205930">Постійна пам’ять</translation>
 <translation id="4176463684765177261">Вимкнено</translation>
+<translation id="417971315778328003">Щоб продовжити, установіть PIN-код або пароль</translation>
 <translation id="4180788401304023883">Видалити сертифікат Центру сертифікації "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Мови</translation>
@@ -3135,6 +3141,7 @@
 <translation id="4231095370974836764">Установлюйте додатки й ігри з Google Play на пристрої <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Налаштувати Kerberos</translation>
 <translation id="4235965441080806197">Скасувати вхід</translation>
+<translation id="4238175133949127631">Тимчасово затемнити екран</translation>
 <translation id="4241182343707213132">Перезапустіть, щоб оновити додатки організації</translation>
 <translation id="4242145785130247982">Кілька сертифікатів клієнтів не підтримуються</translation>
 <translation id="4242533952199664413">Відкрити налаштування</translation>
@@ -4653,6 +4660,7 @@
 <translation id="5901494423252125310">Кришка принтера відкрита</translation>
 <translation id="5901630391730855834">Жовтий</translation>
 <translation id="5904614460720589786">Не вдалося налаштувати додаток <ph name="APP_NAME" /> через проблему з конфігурацією. Зв'яжіться з адміністратором. Код помилки: <ph name="ERROR_CODE" />.</translation>
+<translation id="5906278356170001460">Ця функція використовує для виявлення камеру на передній панелі. Дані надійно обробляються й потім видаляються. Google не використовує ваші дані для інших цілей.</translation>
 <translation id="5906655207909574370">Майже оновлено. Перезапустіть пристрій, щоб завершити оновлення.</translation>
 <translation id="5906732635754427568">Дані, пов’язані з цим додатком, буде видалено з пристрою.</translation>
 <translation id="5908474332780919512">Запускати додаток, коли ви входите в обліковий запис</translation>
@@ -4805,6 +4813,7 @@
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Примітка<ph name="END_BOLD" />: хтось зі схожим голосом або записом голосу також може отримати доступ до персональних результатів користувача <ph name="SUPERVISED_USER_NAME" />. Щоб заощадити заряд акумулятора, можете вибрати в налаштуваннях Асистента в обліковому записі користувача <ph name="SUPERVISED_USER_NAME" />, щоб команда "Ok Google" працювала, лише коли цей пристрій підключено до джерела живлення.</translation>
 <translation id="6064217302520318294">Блокування екрана</translation>
 <translation id="6065289257230303064">Атрибути каталогу суб'єкта сертифіката</translation>
+<translation id="6065691521254183160">Щоб переміщати фокус між цією спливаючою підказкою й об’єктом, якого вона стосується, натисніть |<ph name="ACCELERATOR" />|.</translation>
 <translation id="6066794465984119824">Хеш зображення не налаштовано</translation>
 <translation id="6069464830445383022">Ваш обліковий запис Google використовується для входу на Chromebook</translation>
 <translation id="6069671174561668781">Установити фоновий малюнок</translation>
@@ -4830,6 +4839,7 @@
 <translation id="6085886413119427067">Визначає, як безпечно підключатися до веб-сайтів</translation>
 <translation id="6086004606538989567">Обліковий запис, який ви підтвердили, не має доступу до цього пристрою.</translation>
 <translation id="6086846494333236931">Установив адміністратор</translation>
+<translation id="6086898065659145625">Якщо телефон перебуватиме поруч, відбуватиметься автоматичний вхід за допомогою Smart Lock.</translation>
 <translation id="6087960857463881712">Гарне обличчя</translation>
 <translation id="608912389580139775">Щоб додати цю сторінку в список читання, натисніть значок закладки</translation>
 <translation id="6091761513005122595">Спільний доступ надано.</translation>
@@ -5295,6 +5305,7 @@
 <translation id="659005207229852190">Перевірку безпеки завершено.</translation>
 <translation id="6590458744723262880">Перейменувати папку</translation>
 <translation id="6592267180249644460">Журнал WebRTC створено: <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
+<translation id="659230975550262204">Показувати значок ока на панелі стану</translation>
 <translation id="6592808042417736307">Відбиток пальця відскановано</translation>
 <translation id="6593881952206664229">Медіаконтент, захищений авторським правом, може не відтворюватися</translation>
 <translation id="6594011207075825276">Пошук пристроїв із послідовними портами…</translation>
@@ -5344,7 +5355,6 @@
 <translation id="6644846457769259194">Пристрій оновлюється (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6645437135153136856">Вибраний пристрій Google Cloud Print більше не підтримується. <ph name="BR" /> Спробуйте вибрати принтер у системних налаштуваннях комп’ютера.</translation>
 <translation id="6647228709620733774">URL-адреса відкликання Центру сертифікації Netscape</translation>
-<translation id="6647838571840953560">Зараз на каналі <ph name="CHANNEL_NAME" /></translation>
 <translation id="6648911618876616409">Доступне важливе оновлення. Увійдіть, щоб установити його.</translation>
 <translation id="6649018507441623493">Зачекайте…</translation>
 <translation id="6650234781371031356">Ваш пароль для сайту <ph name="WEBSITE" /> збережено на цьому пристрої та в обліковому записі Google. Звідки його видалити?</translation>
@@ -5496,6 +5506,7 @@
 <translation id="6810613314571580006">Автоматично входити в облікові записи на веб-сайтах за допомогою збережених даних. Якщо цю функцію вимкнено, потрібно підтверджувати облікові дані під час кожного входу.</translation>
 <translation id="6810768462515084623">Схоже, пароль уже не дійсний. Поновіть його на іншому пристрої та повторіть спробу.</translation>
 <translation id="6811034713472274749">Сторінка готова для перегляду</translation>
+<translation id="6811151703183939603">Сильно</translation>
 <translation id="6811332638216701903">Ім'я хосту для DHCP-сервера</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> неможливо запустити з кореневого каталогу.</translation>
 <translation id="6812841287760418429">Залишити зміни</translation>
@@ -5734,6 +5745,7 @@
 <translation id="7053983685419859001">Блокувати</translation>
 <translation id="7055152154916055070">Переадресацію заблоковано:</translation>
 <translation id="7055451306017383754">Не вдалося закрити доступ, оскільки цю папку використовує додаток. Доступ до неї буде закрито після завершення роботи Parallels Desktop.</translation>
+<translation id="7056011684066172642">Екран блокується автоматично, якщо ви відходите, і не вимикатиметься, коли ви дивитеся на нього.</translation>
 <translation id="7056418393177503237">{0,plural, =1{Вікно в режимі анонімного перегляду}one{# вікно в режимі анонімного перегляду}few{# вікна в режимі анонімного перегляду}many{# вікон у режимі анонімного перегляду}other{# вікна в режимі анонімного перегляду}}</translation>
 <translation id="7056526158851679338">&amp;Перевірити пристрої</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{Перевірку безпеки виконано 1 хвилину тому}one{Перевірку безпеки виконано {NUM_MINS} хвилину тому}few{Перевірку безпеки виконано {NUM_MINS} хвилини тому}many{Перевірку безпеки виконано {NUM_MINS} хвилин тому}other{Перевірку безпеки виконано {NUM_MINS} хвилини тому}}</translation>
@@ -6449,6 +6461,7 @@
 <translation id="7797246427375693110">Увімкнено; вимкнеться автоматично о <ph name="TIME" /></translation>
 <translation id="7797571222998226653">Вимкнено</translation>
 <translation id="7798844538707273832">Автоматично заблоковано: <ph name="PERMISSION" /></translation>
+<translation id="7799220949286681310">Розумне блокування екрана</translation>
 <translation id="7799299114731150374">Фоновий малюнок налаштовано</translation>
 <translation id="7799817062559422778">Світлий режим</translation>
 <translation id="7800159967992492578">Перемкнути бічну панель пошуку. Бічну панель пошуку активовано.</translation>
@@ -6598,6 +6611,7 @@
 <translation id="7933518760693751884">Щоб зберегти цю сторінку на пізніше, натисніть значок закладки</translation>
 <translation id="7933634003144813719">Керувати спільними папками</translation>
 <translation id="793531125873261495">Не вдалося завантажити віртуальну машину. Повторіть спробу.</translation>
+<translation id="7935451262452051102">Виконано <ph name="PERCENT" />%</translation>
 <translation id="7938594894617528435">Зараз офлайн</translation>
 <translation id="7939062555109487992">Розширені параметри</translation>
 <translation id="7939412583708276221">Усе ж зберегти</translation>
@@ -6730,6 +6744,7 @@
 <translation id="8062844841289846053">{COUNT,plural, =1{1 аркуш паперу}one{{COUNT} аркуш паперу}few{{COUNT} аркуші паперу}many{{COUNT} аркушів паперу}other{{COUNT} аркуша паперу}}</translation>
 <translation id="8063235345342641131">Стандартний зелений аватар</translation>
 <translation id="8063535366119089408">Переглянути файл</translation>
+<translation id="8064269957688233720">Захистіть дані телефона під час виходу цього комп’ютера Chromebook із режиму сну.</translation>
 <translation id="8064279191081105977">Група <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">Діалогове вікно з’єднання</translation>
 <translation id="8068253693380742035">Торкніться, щоб увійти</translation>
@@ -6789,6 +6804,7 @@
 <translation id="811994229154425014">Замінювати подвійний пробіл крапкою</translation>
 <translation id="8120505434908124087">Установити профіль eSIM-карти</translation>
 <translation id="812260729110117038">Рекламодавці й видавці можуть досліджувати ефективність оголошень, не відстежуючи ваші дії на різних сайтах.</translation>
+<translation id="81231173274944570">Увімкнути вібровідгук. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="81238879832906896">Жовто-біла квітка</translation>
 <translation id="8124313775439841391">Керований ONC</translation>
 <translation id="813082847718468539">Перегляд інформації про сайт</translation>
@@ -6877,7 +6893,6 @@
 <translation id="8213449224684199188">Увімкнено режим фото</translation>
 <translation id="8214489666383623925">Відкрити файл...</translation>
 <translation id="8215129063232901118">Користуйтеся можливостями телефона на <ph name="DEVICE_TYPE" /></translation>
-<translation id="8216351761227087153">Дивитися</translation>
 <translation id="8217399928341212914">Надалі блокувати автоматичне завантаження декількох файлів</translation>
 <translation id="8221491193165283816">Зазвичай ви блокуєте сповіщення. Натисніть тут, щоб дозволити сайту показувати їх.</translation>
 <translation id="822347941086490485">Пошук пристроїв HID…</translation>
@@ -7383,6 +7398,7 @@
 <translation id="8770406935328356739">Кореневий каталог розширення</translation>
 <translation id="8771300903067484968">Фон початкової сторінки було скинуто. Тепер це фон за умовчанням.</translation>
 <translation id="8773302562181397928">Зберегти принтер <ph name="PRINTER_NAME" /></translation>
+<translation id="8773350724590665675">Захист від підглядання</translation>
 <translation id="8774379074441005279">Підтвердити відновлення</translation>
 <translation id="8774934320277480003">Верхнє поле</translation>
 <translation id="8775144690796719618">Недійсна URL-адреса</translation>
@@ -7867,6 +7883,7 @@
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Додаток}one{Додатки}few{Додатки}many{Додатки}other{Додатки}}</translation>
 <translation id="964790508619473209">Розміщення екрана</translation>
 <translation id="965211523698323809">Обмінюйтеся текстовими повідомленнями за допомогою <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
+<translation id="96535553604365597">Повідомити про проблему з Google Cast</translation>
 <translation id="967398046773905967">Закрити всім сайтам доступ до пристроїв HID</translation>
 <translation id="967624055006145463">Збережені дані</translation>
 <translation id="96774243435178359">Керовані принтери</translation>

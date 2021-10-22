@@ -798,6 +798,7 @@
 <translation id="6544923685317771506">Simpukka</translation>
 <translation id="6551185905438378412">Norsunluunvalkoinen</translation>
 <translation id="6561818612645211875">Siirry nykyisen rivin alkuun</translation>
+<translation id="6563126228219321999">Ei virheellistä tuotetta</translation>
 <translation id="6579990219486187401">Vaaleanpinkki</translation>
 <translation id="6583174818554398774">Siirry seuraavaan tarkkuustasoon</translation>
 <translation id="6584162722998608255">Seuraavaksi opit liikkumaan näytöllä. Voit siirtyä seuraavaan kohteeseen pyyhkäisemällä vasemmalta oikealle yhdellä sormella. Kokeile nyt siirtyäksesi seuraavaan vaiheeseen.</translation>
@@ -828,6 +829,7 @@
 <translation id="6815255864998354418">Sitruunankeltainen</translation>
 <translation id="6816066673340002913">Hailakka kultapiisku</translation>
 <translation id="6826226459053491773">Pyyhkäise alas kahdella sormella</translation>
+<translation id="6826669432862053130">Seuraava virheellinen tuote</translation>
 <translation id="6833103209700200188">Alaviite</translation>
 <translation id="6837853484260746864">Valitse ääni:</translation>
 <translation id="6858047746862060282">Prologi</translation>
@@ -1018,6 +1020,7 @@
 <translation id="8126386426083591964">Ei edellisiä tason 5 otsikoita</translation>
 <translation id="812886159861361726">Tiedoston <ph name="FILE_NAME" /> lataus loppui</translation>
 <translation id="8129445297241948503">Ei yläpuolella olevia soluja</translation>
+<translation id="8132248161074464367">Edellinen virheellinen tuote</translation>
 <translation id="8138880386467279117">Kosketus</translation>
 <translation id="8146613869421949343">Seuraavaksi saat tietoja hakunäppäimestä. Hakunäppäintä käytetään yhdessä muiden näppäinten kanssa ChromeVox-komentoina. Hakunäppäin on heti vasemman vaihtonäppäimen yläpuolella. Jatka painamalla hakunäppäintä.</translation>
 <translation id="8158033275290782295">valitse kaikki</translation>

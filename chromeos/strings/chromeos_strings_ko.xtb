@@ -1,12 +1,14 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
+<translation id="1018219910092211213">DNS를 변환할 수 없습니다.</translation>
 <translation id="1018656279737460067">취소됨</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" />(스레드 <ph name="THREAD_COUNT" />개, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1059913517121127803">스캔을 시작할 수 없음</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">방화벽 감지됨</translation>
 <translation id="1075811647922107217">페이지 크기</translation>
+<translation id="1094693127011229778">IP 주소를 사용할 수 없습니다.</translation>
 <translation id="1119447706177454957">내부 오류</translation>
 <translation id="1124772482545689468">사용자</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -21,6 +23,7 @@
 <translation id="1270369111467284986">종속 포털로 의심됨</translation>
 <translation id="1290331692326790741">신호 약함</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1310380015393971138"><ph name="NETWORK_NAME" /> 네트워크를 사용할 수 없음</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">홈 네트워크 로밍 안함</translation>
 <translation id="1327977588028644528">게이트웨이</translation>
@@ -39,6 +42,7 @@
 <translation id="150962533380566081">잘못된 PUK입니다.</translation>
 <translation id="1510238584712386396">런처</translation>
 <translation id="155865706765934889">터치패드</translation>
+<translation id="1567064801249837505">앨범</translation>
 <translation id="1572585716423026576">배경화면으로 설정</translation>
 <translation id="1621067168122174824">충전 테스트 실행</translation>
 <translation id="1639239467298939599">로드 중</translation>
@@ -52,6 +56,7 @@
 <translation id="1717874160321062422">관리자: <ph name="FIRST_MANAGER" /> 및 <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">네임서버</translation>
 <translation id="1731082422893354635">블루투스 터치패드</translation>
+<translation id="1753496554272155572">배경화면 미리보기 종료</translation>
 <translation id="175763766237925754">양호(<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -67,6 +72,7 @@
 <translation id="1999615961760456652">종속 포털</translation>
 <translation id="2006864819935886708">연결</translation>
 <translation id="2008685064673031089">Prime 검색</translation>
+<translation id="2016697457005847575">문제 해결 단계 시도해 보기</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">설정 더보기</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, 버전 <ph name="MILESTONE_VERSION" /></translation>
@@ -99,6 +105,7 @@
 <translation id="2505327257735685095">현재 배경화면 이미지 새로고침</translation>
 <translation id="2517472476991765520">검색</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> 테스트 실행 중…</translation>
+<translation id="2584559707064218956">설정하려면 설정으로 이동하세요.</translation>
 <translation id="2585245331261708204">Chrome OS의 새로운 기능</translation>
 <translation id="2619761439309613843">매일 새로고침</translation>
 <translation id="2620436844016719705">시스템</translation>
@@ -145,8 +152,10 @@
 <translation id="3532980081107202182">약 <ph name="MIN_REMAINING" />분 남음</translation>
 <translation id="3565064564551103223">허용된 IP</translation>
 <translation id="357889014807611375">전송량 제한이 있는 Wi-Fi</translation>
+<translation id="3583278742022654445">신호 강도가 약합니다. Wi-Fi 신호 소스 가까이 이동해 보세요.</translation>
 <translation id="3595596368722241419">배터리 충전 완료</translation>
 <translation id="360565022852130722">Wi-Fi 네트워크가 약한 프로토콜 WEP 802.1x로 보호되었습니다.</translation>
+<translation id="3606583719724308068">HTTPS 웹사이트 연결의 지연 시간이 깁니다.</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> 테스트</translation>
 <translation id="3708186454126126312">이전에 연결된 기기</translation>
 <translation id="3740976234706877572">★ <ph name="AVERAGE_SCORE" />개(리뷰 <ph name="AGGREGATED_COUNT" />개)</translation>
@@ -167,6 +176,7 @@
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" />일 이상 경과한 인쇄 작업은 삭제됩니다.</translation>
 <translation id="4003384961948020559">실패 - 출력 가득 참</translation>
 <translation id="4034824040120875894">프린터</translation>
+<translation id="4044093238444069296">게이트웨이에 접근할 수 없습니다.</translation>
 <translation id="404928562651467259">경고</translation>
 <translation id="409427325554347132">테스트 세부정보 저장</translation>
 <translation id="4111761024568264522">USB 터치패드</translation>
@@ -189,6 +199,7 @@
 <translation id="4378551569595875038">연결 중...</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">내 드라이브</translation>
+<translation id="4428374560396076622"><ph name="NETWORK_NAME" /> 꺼짐</translation>
 <translation id="4429881212383817840">Kerberos 티켓이 곧 만료됨</translation>
 <translation id="4431821876790500265">보고서 보기</translation>
 <translation id="445059817448385655">이전 비밀번호</translation>
@@ -234,6 +245,7 @@
 <translation id="4917385247580444890">강함</translation>
 <translation id="4917889632206600977">중지됨 - 용지 부족</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" />초 동안 <ph name="RATE" /> 충전했습니다.</translation>
+<translation id="4930320165497208503">연결을 설정하거나 업데이트하려면 <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />으로 이동하세요.</translation>
 <translation id="4932733599132424254">날짜</translation>
 <translation id="498186245079027698">스캐너를 확인한 후 다시 시도해 보세요. 스캔된 파일을 저장하기에 공간이 충분한지 확인합니다.</translation>
 <translation id="4985509611418653372">실행</translation>
@@ -358,6 +370,7 @@
 <translation id="6657585470893396449">비밀번호</translation>
 <translation id="6704062477274546131">DNS 변환</translation>
 <translation id="6747215703636344499">중지됨 - 배지대 가득 참</translation>
+<translation id="6749473226660745022">사진</translation>
 <translation id="6756731097889387912">스캔을 취소할 수 없음</translation>
 <translation id="6766275201586212568">DNS 변환 실패함</translation>
 <translation id="6768237774506518020">DNS 변환 실패율 높음</translation>
@@ -375,6 +388,7 @@
 <translation id="7059230779847288458">충전 중, 완료까지 <ph name="TIME_VALUE" /> 남음</translation>
 <translation id="708426984172631313">중지됨</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /><ph name="DISPLAY_NAME" /></translation>
+<translation id="710028965487274708">실패 - 승인 실패</translation>
 <translation id="7134436342991564651">{0,plural, =1{네임서버}other{네임서버}}</translation>
 <translation id="7143207342074048698">연결 중</translation>
 <translation id="7144878232160441200">다시 시도</translation>
@@ -387,6 +401,7 @@
 <translation id="7271040990581020067">현재 스캐너를 사용하고 있습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">배경화면 컬렉션</translation>
+<translation id="7297226631177386107">방화벽으로 인해 HTTPS 웹사이트에 연결할 수 없습니다.</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -419,6 +434,7 @@
 <translation id="7762130827864645708">비밀번호가 변경되었습니다. 지금부터 새로운 비밀번호를 사용해 주세요.</translation>
 <translation id="7763470514545477072">도메인 서픽스 일치</translation>
 <translation id="7769672763586021400">모델 ID</translation>
+<translation id="7784116172884276937">DNS 서버가 설정되어 있지 않습니다.</translation>
 <translation id="7805768142964895445">상태</translation>
 <translation id="7819857487979277519">PSK (WPA 또는 RSN)</translation>
 <translation id="7835501727204647447">CloudReady 설치</translation>
@@ -433,13 +449,16 @@
 <translation id="7943235353293548836">영구 연결 유지 간격</translation>
 <translation id="7955587717700691983">블루투스 키보드</translation>
 <translation id="7960831585769876809">온도</translation>
+<translation id="7977800524392185497"><ph name="NETWORK_NAME" /> 네트워크에 참여하려면 설정으로 이동하세요.</translation>
 <translation id="7978412674231730200">비공개 키</translation>
 <translation id="7994702968232966508">EAP 방식</translation>
 <translation id="802154636333426148">다운로드 실패</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="8041089156583427627">의견 보내기</translation>
 <translation id="8075838845814659848">배터리 잔량</translation>
+<translation id="8082366717211101304">Android 앱에서 DNS를 변환할 수 없습니다.</translation>
 <translation id="808894953321890993">비밀번호 변경</translation>
+<translation id="8104083085214006426">안전하지 않은 개방형 네트워크를 사용하고 있습니다.</translation>
 <translation id="811820734797650957">(Android) 핑할 수 있는 게이트웨이</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8132480444149501833">트래픽 카운터 요청</translation>
@@ -464,10 +483,12 @@
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">내부 키보드</translation>
 <translation id="843568408673868420">인터넷 연결</translation>
+<translation id="844521431886043384">DNS가 설정되어 있지 않습니다.</translation>
 <translation id="8461329675984532579">홈 공급자 이름</translation>
 <translation id="8475690821716466388">Wi-Fi 네트워크가 약한 프로토콜 WEP PSK로 보호되었습니다.</translation>
 <translation id="8477551185774834963">DNS 지연 시간이 허용되는 기준을 약간 초과했습니다.</translation>
 <translation id="8483248364096924578">IP 주소</translation>
+<translation id="8491311378305535241">Android 앱에서 방화벽으로 인해 HTTP 웹사이트에 연결할 수 없습니다.</translation>
 <translation id="8498220429738806196">트래픽 카운터</translation>
 <translation id="8503813439785031346">사용자이름</translation>
 <translation id="8503836310948963452">몇 분 정도밖에 남지 않았습니다...</translation>
@@ -493,6 +514,7 @@
 <translation id="8818152010000655963">배경화면</translation>
 <translation id="8834539327799336565">현재 연결된 기기</translation>
 <translation id="8845001906332463065">도움말 보기</translation>
+<translation id="8855781559874488009">방화벽으로 인해 HTTP 웹사이트에 연결할 수 없습니다.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">테스트 성공</translation>
 <translation id="8898840733695078011">신호 강도</translation>
@@ -518,12 +540,14 @@
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> 티켓을 새로고침하세요.</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />페이지 스캔 중</translation>
 <translation id="9111102763498581341">잠금 해제</translation>
+<translation id="9122602430962285795">다시 연결하려면 설정으로 이동하세요.</translation>
 <translation id="9126720536733509015">여러 페이지를 하나의 PDF로 저장</translation>
 <translation id="9137526406337347448">Google 서비스</translation>
 <translation id="9149391708638971077">메모리 테스트 실행</translation>
 <translation id="9173638680043580060">1분 미만 남음</translation>
 <translation id="917720651393141712">테스트</translation>
 <translation id="9190063653747922532">L2TP/IPSec + 사전 공유 키</translation>
+<translation id="9204237731135241582">Android 앱에서 게이트웨이에 접근할 수 없습니다.</translation>
 <translation id="9211490828691860325">모든 데스크</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">활성화되지 않음</translation>

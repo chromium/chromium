@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hu">
+<translation id="1016055326260264411">Szív ikon, amely a „Kedvenc” lehetőséget is jelentheti</translation>
 <translation id="1018939186200882850">menüelem</translation>
 <translation id="10623998915015855">átkapcsológomb</translation>
 <translation id="1088086359088493902">Másodperc</translation>
@@ -8,28 +9,46 @@
 <translation id="1171774979989969504">Kérjük, adjon meg egy e-mail címet.</translation>
 <translation id="1178581264944972037">Szünet</translation>
 <translation id="1188858454923323853">kiegészítő</translation>
+<translation id="1193819188371549072">Nap ikon, amely a nappalt is jelentheti</translation>
+<translation id="1197443222693564123">Három pont, amely a „Továbbiak” lehetőséget is jelentheti</translation>
 <translation id="1206619573307042055">fényújság</translation>
 <translation id="1206693055195146388">csúszka</translation>
 <translation id="1211441953136645838">záró jegyzet</translation>
+<translation id="1231311685714446044">Szomorú arc ikon</translation>
+<translation id="1248712480115826517">Nagyító ikon, amely a „Keresés” vagy a „Nagyítás” lehetőséget is jelentheti</translation>
+<translation id="1253694090376430115">Bevásárlótáska ikon</translation>
 <translation id="1281252709823657822">párbeszédpanel</translation>
+<translation id="1292759642840406299">Iránytű ikon</translation>
+<translation id="1301463715094321941">Telefonkagyló ikon, amely a „Hívás” lehetőséget is jelentheti</translation>
 <translation id="1306460908038601864">Ki</translation>
 <translation id="1311894908970423688">Ilyen érték szükséges: <ph name="VALUE_DATE_OR_TIME" />.</translation>
+<translation id="1312685112570645372">Kérdőjel ikon</translation>
 <translation id="1335095011850992622">készítők</translation>
 <translation id="1342835525016946179">cikk</translation>
 <translation id="1359897965706325498">szalaghirdetés</translation>
+<translation id="1386033905837826130">Megosztás ikonja</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> elem</translation>
 <translation id="1480676835519562650">több is választható, <ph name="COUNT" />/<ph name="SELECTED" /> van kiválasztva.</translation>
+<translation id="157989258522571434">Naptár ikon</translation>
 <translation id="1588438908519853928">Normál</translation>
 <translation id="1589122976691792535">régió</translation>
 <translation id="1591562245178063882">Ebben a hónapban</translation>
+<translation id="1598348607589961718">Felfelé mutató nyíl, amely a „Feltöltés” lehetőséget is jelentheti</translation>
+<translation id="1632409084477505723">Letöltés ikonja</translation>
 <translation id="1637811476055996098">Fájlok kiválasztása</translation>
 <translation id="1650423536718072820">kiemelt idézet</translation>
+<translation id="1658806147928973309">Mikrofon némítása ikon</translation>
+<translation id="1677491356035817504">Lefelé mutató sávnyíl ikon, amely a „Kibontást” is jelentheti</translation>
 <translation id="1681022320378710418">aktuális idő</translation>
 <translation id="1727839386348365796">Pipetta</translation>
 <translation id="1727886345390570319">a feliratok menü elrejtése</translation>
 <translation id="1729654308190250600">Kérjük, ne hagyja üresen az e-mail-cím mezőjét.</translation>
+<translation id="173386679947102756">Harang ikon, amely az „Értesítések” lehetőséget is jelentheti</translation>
+<translation id="175222816025430946">Három vonal ikon, amely a „Menü” lehetőséget is jelentheti</translation>
 <translation id="1758486001363313524">Más...</translation>
 <translation id="1787192514241997742">összes idő: <ph name="REMAINING_TIME" /></translation>
+<translation id="1793034400053617214">X ikon, amely a „Bezárás” vagy a „Törlés” lehetőséget is jelentheti</translation>
+<translation id="1804122079878165329">Jobbra mutató sávnyíl ikon, amely az „Előre” lehetőséget is jelentheti</translation>
 <translation id="1806710327868736751">értesítő párbeszédpanel</translation>
 <translation id="1821985195704844674">farács</translation>
 <translation id="1822429046913737220">de./du.</translation>
@@ -44,18 +63,24 @@
 <translation id="1993104285338243655">Átváltott tükrözésre</translation>
 <translation id="2031987842108996681">Vörös csatorna</translation>
 <translation id="2060505056492490888">A „<ph name="DOT" />” rossz helyen van a(z) „<ph name="INVALIDDOMAIN" />” címben.</translation>
+<translation id="2131189924434603515">Kisbetűs „i” ikon, amely az „Információt” is jelentheti</translation>
 <translation id="2148716181193084225">Ma</translation>
 <translation id="2158401438286456825">oldallista</translation>
+<translation id="2177093963727449806">Frissítés ikon</translation>
+<translation id="221177765244658491">Némítás ikon</translation>
 <translation id="2226276347425096477">Kérjük, rövidítse le a szöveget legfeljebb <ph name="MAX_CHARACTERS" /> karakterre (jelenleg <ph name="CURRENT_LENGTH" /> karaktert használ).</translation>
 <translation id="2246498165605549352">Helyi fájl</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />. hét, <ph name="YEAR" /></translation>
+<translation id="2265260019987849198">Kezdőlap ikon</translation>
 <translation id="2277199496770840904"><ph name="NUMBER" />. szám</translation>
 <translation id="2291999235780842123">jelölőnégyzet</translation>
 <translation id="2307576640803031502">a lista <ph name="INDEX" />/<ph name="COUNT" />. eleme</translation>
 <translation id="2311842470354187719">oldaltörés</translation>
+<translation id="2320316128050046908">Hangerő növelése ikon</translation>
 <translation id="2335594187091864976">dátum- és időválasztó</translation>
 <translation id="2393030564806080191">Szín hexadecimális értéke</translation>
 <translation id="2398813069815436052">párbeszédpanel megnyitva.</translation>
+<translation id="2427288427427702833">Alkalmazások indítása ikon</translation>
 <translation id="245932805758469625">a videóból hátralévő másodpercek száma</translation>
 <translation id="248395913932153421">nap</translation>
 <translation id="2507943997699731163">Kérjük, töltse ki ezt a mezőt.</translation>
@@ -77,6 +102,7 @@
 <translation id="2896972712917208084">választógombcsoport</translation>
 <translation id="2908441821576996758">Kérjük, adjon meg egy vesszőkkel elválasztott e-mail címlistát.</translation>
 <translation id="2940813599313844715">objektum</translation>
+<translation id="2987445268505333132">Hívás befejezése ikon</translation>
 <translation id="3040011195152428237">link</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Kérjük, adjon meg érvényes értéket. A mező hiányos, vagy érvénytelen dátum van megadva.</translation>
@@ -88,6 +114,7 @@
 <translation id="3220661731597678625">aktuális lépés</translation>
 <translation id="3321030238473337787">Lejátszási sebesség</translation>
 <translation id="3329013043687509092">Telítettség</translation>
+<translation id="3435893727187534376">Négy kifelé mutató nyíl ikonja, amely a „Kibontás” lehetőséget is jelentheti</translation>
 <translation id="3450233048674729344">Az érték legyen kisebb vagy egyenlő, mint <ph name="MAXIMUM" />.</translation>
 <translation id="3486220673238053218">definíció</translation>
 <translation id="3557673793733683882"><ph name="HEADING_LEVEL" />. címsor</translation>
@@ -100,11 +127,14 @@
 <translation id="3808586225841795776">kifejezés</translation>
 <translation id="3822383571486410024">Kérjük, <ph name="MIN_CHARACTERS" /> karakter hosszú vagy annál hosszabb szöveget adjon meg (jelenleg <ph name="CURRENT_LENGTH" /> karaktert használ).</translation>
 <translation id="383465348367842624">A „<ph name="ATSIGN" />” előtti rész nem tartalmazhat „<ph name="INVALIDCHARACTER" />” karaktert.</translation>
+<translation id="3845063161460806746">Felfelé mutató hüvelykujj ikon, amely a „Lájk” kifejezését is jelentheti</translation>
 <translation id="3846214748874656680">Teljes képernyő – ki</translation>
+<translation id="3904695548697879411">Twitter ikon</translation>
 <translation id="3920932319529768807">összefoglalás</translation>
 <translation id="3924558731517983934">alkalmazás</translation>
 <translation id="3944740393230681990">prológus</translation>
 <translation id="3960700977367013758">görgetősáv</translation>
+<translation id="405782047075994056">Balra nyíl ikon, amely a „Vissza” lehetőséget is jelentheti</translation>
 <translation id="4103419683916926126">Ezredmásodperc</translation>
 <translation id="4151657705144244502">grafika</translation>
 <translation id="4160057747563657758">telefonszám</translation>
@@ -113,18 +143,25 @@
 <translation id="421884353938374759">színválasztó</translation>
 <translation id="4248100235867064564">menüsor</translation>
 <translation id="4293574643247337246">oldalfejléc</translation>
+<translation id="4302299849305494927">Hangszóró ikon, amely „Hangerő” lehetőséget is jelentheti</translation>
 <translation id="4360991593054037559">Kérjük, érvényes értéket adjon meg. A két legközelebbi érvényes érték <ph name="VALID_VALUE_LOW" /> és <ph name="VALID_VALUE_HIGHER" />.</translation>
+<translation id="4363712632243441817">Átküldés ikonja, amely jelentheti videó átküldését távoli képernyőre</translation>
 <translation id="4371899966896349864">lejátszási sebesség menüjének elrejtése</translation>
 <translation id="4384249794467006333">Ez a kép nincs megcímkézve. A jobb felső sarokban lévő További lehetőségek menü megnyitásával képleírásokhoz juthat.</translation>
 <translation id="4384583879834880242">Kérdések és válaszok</translation>
+<translation id="4436211924730548766">Balra mutató sávnyíl ikon</translation>
 <translation id="4444765639179266822">Úgy tűnik, hogy a következő látható rajta: <ph name="OCR_TEXT" /></translation>
 <translation id="4446524499724042288">szószedet-hivatkozás</translation>
 <translation id="4522570452068850558">Részletek</translation>
+<translation id="4540719609030900356">Papírrepülő ikon, amely a „Küldés” lehetőséget is jelentheti</translation>
 <translation id="4576178047100686001">Ez a kép nincs megcímkézve. A bal felső sarokban lévő További lehetőségek menü megnyitásával képleírásokhoz juthat.</translation>
+<translation id="4577968231433672268">Pluszjel ikon, amely a „Hozzáadás” lehetőséget is jelentheti</translation>
 <translation id="4597532268155981612">űrlap</translation>
+<translation id="4611825382945206498">Óra körkörös nyíllal, amely az „Előzmények” lehetőséget is jelentheti</translation>
 <translation id="4661075872484491155">fa</translation>
 <translation id="4664250907885839816">A „<ph name="ATSIGN" />” utáni rész nem tartalmazhat „<ph name="INVALIDCHARACTER" />” karaktert.</translation>
 <translation id="4668956016107839909">függelék</translation>
+<translation id="4679853894970977730">Kamera ikon, amely a „Fotó készítése” lehetőséget is jelentheti</translation>
 <translation id="4698212723196775569">kód</translation>
 <translation id="4718048029184481307">Lejátszás kép a képben módban</translation>
 <translation id="4742539557769756338">borító</translation>
@@ -133,6 +170,8 @@
 <translation id="4763480195061959176">video</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4812940957355064477">Kérjük, adjon meg egy számot.</translation>
+<translation id="4832245585893280119">Időjárás ikon</translation>
+<translation id="4908855810237020461">Óra ikon, amely az „Idő” lehetőséget is jelentheti</translation>
 <translation id="4912200001568447310">aktuális elem</translation>
 <translation id="4912536737030637138">bibliográfiai bejegyzés</translation>
 <translation id="4915360478455618802">Időválasztó megjelenítése</translation>
@@ -148,11 +187,13 @@
 <translation id="5093189678851173835">mottó</translation>
 <translation id="509897012892853729">Kék csatorna</translation>
 <translation id="5117590920725113268">A következő hónap megjelenítése</translation>
+<translation id="5121688653159243920">Listajeles lista ikon</translation>
 <translation id="512758898067543763">sorfejléc</translation>
 <translation id="5143125788380636750">végszó</translation>
 <translation id="5164977714490026579">Az érték legyen nagyobb vagy egyenlő, mint <ph name="MINIMUM" />.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5214400792580101697">Leállítás ikonja</translation>
 <translation id="5307600278924710095">Kérjük, adja meg a „<ph name="ATSIGN" />” előtti részt is. A „<ph name="INVALIDADDRESS" />” cím nem teljes.</translation>
 <translation id="5334352251556557839">Nem sikerült a médiafájl lejátszása.</translation>
 <translation id="537648784377940524">A minimális dátumnak (<ph name="MIN_DATE_OR_TIME" />) a maximális dátum (<ph name="MAX_DATE_OR_TIME" />) elé kell esnie.</translation>
@@ -167,17 +208,25 @@
 <translation id="5516424706154626233">dátumválasztó</translation>
 <translation id="5537725057119320332">Küldés</translation>
 <translation id="5546461542133609677">némítás feloldása</translation>
+<translation id="5586467629893654334">Hold ikon, amely az éjszakát vagy az alvást is jelentheti</translation>
+<translation id="5599474660109692598">Képregénybeli szövegbuborék ikonja, amely a „Csevegés” lehetőséget is jelentheti</translation>
 <translation id="5608153257855394627">kiemelés</translation>
+<translation id="5617165654945759937">Ceruza ikon, amely a „Szerkesztés” lehetőséget is jelentheti</translation>
 <translation id="561939826962581046">idő</translation>
+<translation id="5621627136377293173">Mikrofon ikon, amely a „Felvétel” lehetőséget is jelentheti</translation>
 <translation id="5630795885300617244">A jobb/bal oldalon duplán koppintva ugorhat előre/vissza 10 másodpercet</translation>
 <translation id="5631759159893697722">absztrakt</translation>
 <translation id="5643186887447432888">gomb</translation>
+<translation id="5647477850810769350">Headset ikon</translation>
 <translation id="5677946354068040947">további beállítások</translation>
 <translation id="5693537480074347398">felső index</translation>
+<translation id="5720390168116663167">Felfelé nyíl ikon</translation>
+<translation id="5724910823641175216">Óramutató járásával megegyező nyíl ikonja, amely az „Újra” lehetőséget is jelentheti</translation>
 <translation id="576709008726043716">bevezetés</translation>
 <translation id="57838592816432529">Némítás</translation>
 <translation id="5786442179789148008">lejátszási sebesség menüjének megjelenítése</translation>
 <translation id="5787939484346677755">kibontva, rendelkezésre állnak automatikus kiegészítési lehetőségek.</translation>
+<translation id="5838904342468928321">Felhő ikon</translation>
 <translation id="5860033963881614850">Kikapcsolva</translation>
 <translation id="588258955323874662">Teljes képernyő</translation>
 <translation id="5888666972993069672">Átküldés ide: <ph name="DEVICE_FRIENDLY_NAME" /></translation>
@@ -190,6 +239,9 @@
 <translation id="6011459053400940133">hangerőcsúszka</translation>
 <translation id="6015796118275082299">Év</translation>
 <translation id="6023896073578205740">listamező</translation>
+<translation id="6054619856758804514">Kuka ikon, amely a „Törlés” lehetőséget is jelentheti</translation>
+<translation id="6054638203631275602">Vidám arc ikon</translation>
+<translation id="608465159662359598">Fogaskerék vagy csavarkulcs ikon, amely a „Beállítások” lehetőséget is jelentheti</translation>
 <translation id="6150588977291308318">bibliográfia</translation>
 <translation id="6164829606128959761">mérő</translation>
 <translation id="6165053282446038410">kibontva, <ph name="COUNT" /> automatikus kiegészítési lehetőség áll rendelkezésre.</translation>
@@ -197,9 +249,12 @@
 <translation id="6209276755895393898">Úgy tűnik, hogy a következőről van szó: <ph name="DESCRIPTION" /></translation>
 <translation id="6212595056017402527">aktuális oldal</translation>
 <translation id="6213469881011901533">szószedet</translation>
+<translation id="6240633443440794881">Boríték ikon, amely a „Levelek” lehetőséget is jelentheti</translation>
+<translation id="6247212328664111379">Ember ikon</translation>
 <translation id="6281588256137006900">Világosság</translation>
 <translation id="6281763101136022427">url</translation>
 <translation id="6310801910862476708">Kilépés a kép a képben funkcióból</translation>
+<translation id="6350382280299255966">Mosolygós arc ikon, amely az „Emoji” lehetőséget is jelentheti</translation>
 <translation id="6398862346408813489">A hónapválasztási panel megjelenítése</translation>
 <translation id="6404546809543547843">hang idővonalának vezérlője</translation>
 <translation id="6443871981718447451">a feliratok menü mutatása</translation>
@@ -208,6 +263,7 @@
 <translation id="6550675742724504774">Beállítások</translation>
 <translation id="6572309429103589720">Nyelvtani hiba</translation>
 <translation id="658823671542763450">teljes képernyős nézet</translation>
+<translation id="6632254525813309835">Óramutató járásával ellentétes nyíl ikon, amely a „Visszavonás” lehetőséget is jelentheti</translation>
 <translation id="663493177488814956">hírcsatorna</translation>
 <translation id="6637586476836377253">napló</translation>
 <translation id="6643016212128521049">Törlés</translation>
@@ -223,14 +279,17 @@
 <translation id="6831465880655513317">Színválasztó kétdimenziós csúszkával, amellyel a telítettséget és a világosságot lehet beállítani</translation>
 <translation id="6843725295806269523">némítás</translation>
 <translation id="6885760532393684712">címtár</translation>
+<translation id="6889412865110485830">Bevásárlókosár ikon</translation>
 <translation id="689129560213475294">kolofon</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6934078000481955284">bekezdésszintű idézet</translation>
 <translation id="693476918119313863">fejléc</translation>
+<translation id="6940482800520966738">Csillag ikon</translation>
 <translation id="6941933287844615239">médiafájlok letöltése</translation>
 <translation id="6981594929165378967">beszúrás</translation>
 <translation id="698788488269350478">kibontva.</translation>
 <translation id="6989848892321993519">Legalább <ph name="MIN_CHARACTERS" /> karakter hosszú szöveget adjon meg (jelenleg 1 karaktert használ).</translation>
+<translation id="7022838723850801004">Boldog és szomorú arcok emojijának ikonja</translation>
 <translation id="7034405885550056553">javaslat</translation>
 <translation id="709897737746224366">Kérjük, tartsa magát a kívánt formátumhoz.</translation>
 <translation id="7102274145889307184">aktuális hely</translation>
@@ -258,27 +317,36 @@
 <translation id="7673697353781729403">Óra</translation>
 <translation id="7681220483256441252">tárgymutató</translation>
 <translation id="7740050170769002709">HTML-tartalom</translation>
+<translation id="7742609585924342092">Tartózkodási hely ikon</translation>
 <translation id="7745230546936012372">Ha hiányzó képleírásokat szeretne lekérni, nyissa meg a helyi menüt.</translation>
 <translation id="7750228210027921155">Kép a képben</translation>
 <translation id="775297008183122718">Érvénytelen bevitel</translation>
 <translation id="7782515065589691344">1,25</translation>
 <translation id="7789962463072032349">szüneteltetés</translation>
+<translation id="7796968532285333302">Lefelé mutató sávnyíl ikon, amely az „Összecsukás” lehetőséget is jelentheti</translation>
 <translation id="7802800022689234070">plusz tartalom kibontására szolgáló háromszög</translation>
+<translation id="7819026464394689674">Szüneteltetés ikon</translation>
 <translation id="7852167693871241274">Színárnyalat csúszkája</translation>
+<translation id="7855610409192055689">Gemkapocs ikon, amely a „Melléklet” lehetőséget is jelentheti</translation>
 <translation id="7888071071722539607">Kérjük, írjon egy „<ph name="ATSIGN" />” karaktert az e-mail címbe. A(z) „<ph name="INVALIDADDRESS" />” címből hiányzik a „<ph name="ATSIGN" />” jel.</translation>
 <translation id="7891486169920085145">felosztó</translation>
 <translation id="795667975304826397">Nincs fájl kiválasztva</translation>
 <translation id="7962328325860248200">A(z) <ph name="ACCNAME" /> fiók nincs kiválasztva</translation>
+<translation id="7994555495914042081">Pipajel ikon</translation>
 <translation id="8034303206267677282">fontos</translation>
 <translation id="8053789581856978548">keresés a szövegmezőben</translation>
 <translation id="8057695513531652401">közlés</translation>
+<translation id="8097409774376213335">Lefelé nyíl ikon</translation>
+<translation id="8105750478534334542">Lefelé mutató hüvelykujj ikon, amely a „Diszlájk” kifejezését is jelentheti</translation>
 <translation id="8105797009065549151">jegyzethivatkozás</translation>
 <translation id="811583516810654505">A leírás lekérdezése folyamatban van</translation>
 <translation id="8117451130807776954">Ezen a héten</translation>
 <translation id="8131955114056917397">0,25</translation>
+<translation id="8147719583347050106">Google ikon</translation>
 <translation id="8199524924445686405">éééé</translation>
 <translation id="8208673686607688524">helyi dátum- és időválasztó</translation>
 <translation id="8261464734335370856">Helyesírási hiba</translation>
+<translation id="8276790177939055966">Jobbra mutató sávnyíl ikon</translation>
 <translation id="8284326494547611709">Feliratok</translation>
 <translation id="8346634859695247203">szakasz</translation>
 <translation id="835897206747267392">Érvénytelen érték.</translation>
@@ -290,6 +358,7 @@
 <translation id="8451268428117625855">Válasszon egy fájlt.</translation>
 <translation id="8461852803063341183">választógomb</translation>
 <translation id="8474886197722836894">ajánlás</translation>
+<translation id="8488243824626550045">Facebook ikon</translation>
 <translation id="8531739829932800271">hibajegyzék</translation>
 <translation id="8534579021159131403">Perc</translation>
 <translation id="8541249477527128034">médiavezérlő</translation>
@@ -301,6 +370,7 @@
 <translation id="862370744433916922">felirat</translation>
 <translation id="8634971699417195529">Hónapválasztó megjelenítése</translation>
 <translation id="8637593834423658414">1,75</translation>
+<translation id="8657910582115602348">A Google Segéd ikonja</translation>
 <translation id="8668988909814782445">Sorok tördelése</translation>
 <translation id="8711688047404765493">kimenet</translation>
 <translation id="8750798805984357768">Kérjük, válassza ki az egyik opciót.</translation>
@@ -315,16 +385,22 @@
 <translation id="8987927404178983737">hónap</translation>
 <translation id="901493112792887934">jelenlegi idő másodpercben</translation>
 <translation id="901834265349196618">e-mail</translation>
+<translation id="9039639793210005614">Galéria ikon</translation>
+<translation id="9040233563616141093">Négy befelé mutató nyíl ikonja, amely az „Összecsukás” lehetőséget is jelentheti</translation>
 <translation id="9048119486235211610">navigáció</translation>
 <translation id="9062295712474918030">dokumentum</translation>
+<translation id="9073800864014589651">Lejátszás ikon</translation>
 <translation id="9093215626363556771">kilépés a kép a képben funkcióból</translation>
+<translation id="9105500880071990795">Hangerő csökkentése ikon</translation>
 <translation id="9108370397979208512">matematika</translation>
 <translation id="9132465097189459683">Más...</translation>
+<translation id="913630661384792974">Videokamera ikon, amely a „Videófelvétel” lehetőséget is jelentheti</translation>
 <translation id="9138385573473225930">értesítés</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />. hét (<ph name="WEEK_START_DATE" />-i dátummal kezdődik)</translation>
 <translation id="916607977885256133">Kép a képben</translation>
 <translation id="9168329111483466115">lábjegyzet</translation>
 <translation id="945780513535800434">Részben ellenőrzött</translation>
+<translation id="947651054772746219">Emberek ikon</translation>
 <translation id="954003015749068518">belépés a kép a képben funkcióba</translation>
 <translation id="966787709310836684">menü</translation>
 </translationbundle>

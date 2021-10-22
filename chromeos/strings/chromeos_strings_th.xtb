@@ -39,6 +39,7 @@
 <translation id="150962533380566081">PUK ไม่ถูกต้อง</translation>
 <translation id="1510238584712386396">ตัวเรียกใช้งาน</translation>
 <translation id="155865706765934889">ทัชแพด</translation>
+<translation id="1567064801249837505">อัลบั้ม</translation>
 <translation id="1572585716423026576">ตั้งเป็นวอลเปเปอร์</translation>
 <translation id="1621067168122174824">ทดสอบการชาร์จแบตเตอรี่</translation>
 <translation id="1639239467298939599">กำลังโหลด</translation>
@@ -52,6 +53,7 @@
 <translation id="1717874160321062422">จัดการโดย <ph name="FIRST_MANAGER" /> และ <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">เซิร์ฟเวอร์ชื่อ</translation>
 <translation id="1731082422893354635">ทัชแพดบลูทูธ</translation>
+<translation id="1753496554272155572">ออกจากตัวอย่างวอลเปเปอร์</translation>
 <translation id="175763766237925754">ดี (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -358,6 +360,7 @@
 <translation id="6657585470893396449">รหัสผ่าน</translation>
 <translation id="6704062477274546131">การแปลง DNS</translation>
 <translation id="6747215703636344499">หยุดพิมพ์ - ถาดกระดาษออกเต็ม</translation>
+<translation id="6749473226660745022">รูปภาพ</translation>
 <translation id="6756731097889387912">ยกเลิกการสแกนไม่ได้</translation>
 <translation id="6766275201586212568">การแปลง DNS ที่ไม่สำเร็จ</translation>
 <translation id="6768237774506518020">อัตราการแปลง DNS ไม่สำเร็จสูง</translation>

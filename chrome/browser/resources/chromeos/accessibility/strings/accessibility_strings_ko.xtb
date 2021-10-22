@@ -798,6 +798,7 @@
 <translation id="6544923685317771506">씨 셸</translation>
 <translation id="6551185905438378412">아이보리</translation>
 <translation id="6561818612645211875">현재 행의 처음으로 이동</translation>
+<translation id="6563126228219321999">잘못된 항목 없음</translation>
 <translation id="6579990219486187401">연한 분홍색</translation>
 <translation id="6583174818554398774">다음 세부 수준으로 이동</translation>
 <translation id="6584162722998608255">다음으로 화면 안에서 이동하는 방법을 알아봅니다. 한 손가락을 왼쪽에서 오른쪽으로 스와이프하여 다음 항목으로 이동할 수 있습니다. 지금 스와이프해서 다음 단계로 이동하세요.</translation>
@@ -828,6 +829,7 @@
 <translation id="6815255864998354418">레몬 시폰</translation>
 <translation id="6816066673340002913">페일 골든로드</translation>
 <translation id="6826226459053491773">손가락 두 개를 사용하여 아래로 스와이프</translation>
+<translation id="6826669432862053130">다음 잘못된 항목</translation>
 <translation id="6833103209700200188">바닥글</translation>
 <translation id="6837853484260746864">음성 선택:</translation>
 <translation id="6858047746862060282">프롤로그</translation>
@@ -1017,6 +1019,7 @@
 <translation id="8126386426083591964">이전 수준 5 제목이 없습니다</translation>
 <translation id="812886159861361726"><ph name="FILE_NAME" /> 다운로드가 중지되었습니다</translation>
 <translation id="8129445297241948503">위에 셀이 없습니다</translation>
+<translation id="8132248161074464367">이전 잘못된 항목</translation>
 <translation id="8138880386467279117">터치</translation>
 <translation id="8146613869421949343">다음으로 검색 키에 관해 알아보겠습니다. 검색 키는 ChromeVox 명령을 위해 다른 키와 함께 사용됩니다. 검색 키는 왼쪽 Shift 키 바로 위에 있습니다. 계속하려면 검색 키를 누르세요.</translation>
 <translation id="8158033275290782295">전체 선택</translation>

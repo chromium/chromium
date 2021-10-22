@@ -136,6 +136,7 @@
 <translation id="1137589305610962734">временные данные</translation>
 <translation id="1137673463384776352">Открыть ссылку в приложении "<ph name="APP" />"</translation>
 <translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Новое уведомление}one{# новое уведомление}few{# новых уведомления}many{# новых уведомлений}other{# нового уведомления}}</translation>
+<translation id="1139138655591555207">Чтобы сфокусироваться на всплывающей подсказке, нажмите |<ph name="ACCELERATOR" />|.</translation>
 <translation id="1139343347646843679">При настройке Linux произошла ошибка. Обратитесь к администратору.</translation>
 <translation id="1139923033416533844">Использование памяти</translation>
 <translation id="1140351953533677694">Доступ к Bluetooth- и последовательным устройствам</translation>
@@ -529,6 +530,7 @@
 <translation id="1549275686094429035">ARC включен</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> запрашивает доступ к тому "<ph name="VOLUME_NAME" />". Это может привести к изменению или удалению файлов.</translation>
 <translation id="1552301827267621511">Расширение "<ph name="EXTENSION_NAME" />" установило поисковую систему "<ph name="SEARCH_PROVIDER_DOMAIN" />" в качестве основной.</translation>
+<translation id="1552522962296937598">Smart display lock and detect if others peeking from behind</translation>
 <translation id="1553538517812678578">неограниченно</translation>
 <translation id="1555130319947370107">Синий</translation>
 <translation id="1556537182262721003">Не удалось переместить каталог расширений в профиль.</translation>
@@ -1066,6 +1068,7 @@
 <translation id="2090165459409185032">Чтобы восстановить данные аккаунта, перейдите на страницу google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">Автоматическое подключение при входе</translation>
 <translation id="2090876986345970080">Настройка безопасности системы</translation>
+<translation id="2092038932007199943">Notify you or temporary dim your screen when someone is snooping from behind</translation>
 <translation id="2096715839409389970">Удалить сторонние файлы cookie</translation>
 <translation id="2098805196501063469">Проверить</translation>
 <translation id="2099172618127234427">Вы включаете функции отладки Chrome OS. Будет настроен SSHD-демон и разрешена загрузка с USB-дисков.</translation>
@@ -3025,6 +3028,7 @@
 <translation id="4110490973560452005">Скачивание завершено: <ph name="FILE_NAME" />. Чтобы перейти к панели загрузок, нажмите Shift + F6.</translation>
 <translation id="4110686435123617899">Выбрать альбом "<ph name="TITLE" />" с описанием "<ph name="DESC" />"</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (офлайн)</translation>
+<translation id="4112809168763360620">Smart privacy protections</translation>
 <translation id="4115002065223188701">Сеть вне зоны доступа</translation>
 <translation id="4115378294792113321">Пурпурный</translation>
 <translation id="4117637339509843559">Тёмная тема</translation>
@@ -3072,6 +3076,7 @@
 <translation id="4175137578744761569">Сиреневый с белым</translation>
 <translation id="4175737294868205930">Постоянное хранилище</translation>
 <translation id="4176463684765177261">Отключено</translation>
+<translation id="417971315778328003">Задайте PIN-код или пароль</translation>
 <translation id="4180788401304023883">Удалить сертификат "<ph name="CERTIFICATE_NAME" />" Центра сертификации?</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Языки</translation>
@@ -3106,6 +3111,7 @@
 <translation id="4231095370974836764">Устанавливайте приложения и игры из Google Play на устройство <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Настройка Kerberos</translation>
 <translation id="4235965441080806197">Отменить вход</translation>
+<translation id="4238175133949127631">Temporary dim screen</translation>
 <translation id="4241182343707213132">Требуется перезагрузка, чтобы обновить приложения организации</translation>
 <translation id="4242145785130247982">Использование нескольких сертификатов клиента не поддерживается.</translation>
 <translation id="4242533952199664413">Открыть настройки</translation>
@@ -4622,6 +4628,7 @@
 <translation id="5901494423252125310">Дверца принтера открыта</translation>
 <translation id="5901630391730855834">Желтый</translation>
 <translation id="5904614460720589786">Не удалось настроить <ph name="APP_NAME" /> из-за проблем с конфигурацией. Обратитесь к администратору. Код ошибки: <ph name="ERROR_CODE" />.</translation>
+<translation id="5906278356170001460">This feature uses the front camera for detection. The data is securely processed and discarded afterwards. Google doesn't use your data for any other purposes.</translation>
 <translation id="5906655207909574370">Чтобы завершить обновление, перезапустите устройство.</translation>
 <translation id="5906732635754427568">Данные, связанные с этим приложением, будут удалены с устройства.</translation>
 <translation id="5908474332780919512">Запускать при входе</translation>
@@ -4773,6 +4780,7 @@
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Примечание.<ph name="END_BOLD" /> Человек с похожим голосом или записью голоса пользователя <ph name="SUPERVISED_USER_NAME" /> может получить доступ к его персональным результатам. Чтобы экономить заряд батареи, в настройках Ассистента в аккаунте пользователя <ph name="SUPERVISED_USER_NAME" /> можно выбрать режим, в котором функция "Окей, Google" работает, только когда устройство подключено к источнику питания.</translation>
 <translation id="6064217302520318294">Блокировка экрана</translation>
 <translation id="6065289257230303064">Атрибуты каталога субъекта сертификата</translation>
+<translation id="6065691521254183160">Чтобы переместить фокус между всплывающей подсказкой и элементом, на который она указывает, нажмите |<ph name="ACCELERATOR" />|.</translation>
 <translation id="6066794465984119824">Хеш изображения не задан.</translation>
 <translation id="6069464830445383022">Для входа в Chromebook используется ваш обычный аккаунт Google</translation>
 <translation id="6069671174561668781">Выбор обоев</translation>
@@ -4798,6 +4806,7 @@
 <translation id="6085886413119427067">Определяет, как подключаться к сайтам, используя защищенное соединение.</translation>
 <translation id="6086004606538989567">У аккаунта, который вы подтвердили, нет доступа к этому устройству.</translation>
 <translation id="6086846494333236931">Установлено администратором</translation>
+<translation id="6086898065659145625">Если умная блокировка экрана включена, вход в аккаунт будет выполнен автоматически, когда ваш телефон окажется поблизости.</translation>
 <translation id="6087960857463881712">Модник</translation>
 <translation id="608912389580139775">Чтобы добавить эту страницу в свой список для чтения, нажмите на значок закладки.</translation>
 <translation id="6091761513005122595">Ресурс подключен.</translation>
@@ -5261,6 +5270,7 @@
 <translation id="659005207229852190">Проверка безопасности завершена.</translation>
 <translation id="6590458744723262880">Переименование папки</translation>
 <translation id="6592267180249644460">Время сохранения журнала WebRTC: <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
+<translation id="659230975550262204">Show me an eye icon in the status area</translation>
 <translation id="6592808042417736307">Отпечаток пальца сохранен</translation>
 <translation id="6593881952206664229">Медиафайлы, защищенные авторскими правами, могут не воспроизводиться</translation>
 <translation id="6594011207075825276">Поиск последовательных устройств…</translation>
@@ -5310,7 +5320,6 @@
 <translation id="6644846457769259194">Обновление устройства (<ph name="PROGRESS_PERCENT" />)…</translation>
 <translation id="6645437135153136856">Устройство, подключенное к сервису "Google Виртуальный принтер", больше не поддерживается.<ph name="BR" />Укажите новый принтер в системных настройках компьютера.</translation>
 <translation id="6647228709620733774">URL отзыва ЦС Netscape</translation>
-<translation id="6647838571840953560">Сейчас на канале "<ph name="CHANNEL_NAME" />"</translation>
 <translation id="6648911618876616409">Доступно новое критическое обновление. Войдите, чтобы установить его.</translation>
 <translation id="6649018507441623493">Подождите...</translation>
 <translation id="6650234781371031356">Пароль для сайта <ph name="WEBSITE" /> сохранен на этом устройстве и в вашем аккаунте Google. Откуда вы хотите его удалить?</translation>
@@ -5699,6 +5708,7 @@
 <translation id="7053983685419859001">Блокировать</translation>
 <translation id="7055152154916055070">Заблокирована попытка переадресации:</translation>
 <translation id="7055451306017383754">Папка используется приложением. Доступ к ней будет закрыт при следующем выключении Parallels Desktop.</translation>
+<translation id="7056011684066172642">Screen locks automatically if you walk off, and won't turn off if you're in front of it</translation>
 <translation id="7056418393177503237">{0,plural, =1{Окно в режиме инкогнито}one{# окно в режиме инкогнито}few{# окна в режиме инкогнито}many{# окон в режиме инкогнито}other{# окна в режиме инкогнито}}</translation>
 <translation id="7056526158851679338">&amp;Проверка устройств</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{Проверка безопасности выполнена 1 минуту назад.}one{Проверка безопасности выполнена {NUM_MINS} минуту назад.}few{Проверка безопасности выполнена {NUM_MINS} минуты назад.}many{Проверка безопасности выполнена {NUM_MINS} минут назад.}other{Проверка безопасности выполнена {NUM_MINS} минуты назад.}}</translation>
@@ -6412,6 +6422,7 @@
 <translation id="7797246427375693110">Включена. Автоматически выключится в <ph name="TIME" />.</translation>
 <translation id="7797571222998226653">ВЫКЛ</translation>
 <translation id="7798844538707273832">Автоматически отключено разрешение "<ph name="PERMISSION" />"</translation>
+<translation id="7799220949286681310">Smart screen lock</translation>
 <translation id="7799299114731150374">Обои установлены.</translation>
 <translation id="7799817062559422778">Светлая тема</translation>
 <translation id="7800159967992492578">Скрыть боковую панель поиска. Боковая панель поиска активирована.</translation>
@@ -6560,6 +6571,7 @@
 <translation id="7933518760693751884">Чтобы сохранить страницу, нажмите на значок закладки.</translation>
 <translation id="7933634003144813719">Настроить общие папки</translation>
 <translation id="793531125873261495">Не удалось скачать виртуальную машину. Повторите попытку.</translation>
+<translation id="7935451262452051102">Выполнено: <ph name="PERCENT" /> %</translation>
 <translation id="7938594894617528435">Сейчас не в Сети</translation>
 <translation id="7939062555109487992">Расширенные настройки</translation>
 <translation id="7939412583708276221">Все равно продолжить</translation>
@@ -6692,6 +6704,7 @@
 <translation id="8062844841289846053">{COUNT,plural, =1{1 лист бумаги}one{{COUNT} лист бумаги}few{{COUNT} листа бумаги}many{{COUNT} листов бумаги}other{{COUNT} листа бумаги}}</translation>
 <translation id="8063235345342641131">Аватар по умолчанию (зеленый)</translation>
 <translation id="8063535366119089408">Разрешить</translation>
+<translation id="8064269957688233720">Защитите данные на телефоне при выводе устройства Chromebook из спящего режима.</translation>
 <translation id="8064279191081105977">Группа <ph name="GROUP_NAME" />: <ph name="GROUP_CONTENTS" />, <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">Диалоговое окно подключения</translation>
 <translation id="8068253693380742035">Нажмите, чтобы войти</translation>
@@ -6839,7 +6852,6 @@
 <translation id="8213449224684199188">Включён режим фотосъёмки</translation>
 <translation id="8214489666383623925">Открыть файл...</translation>
 <translation id="8215129063232901118">Получите доступ к функциям телефона на устройстве <ph name="DEVICE_TYPE" /></translation>
-<translation id="8216351761227087153">Просмотреть</translation>
 <translation id="8217399928341212914">Всегда блокировать автоскачивание нескольких файлов</translation>
 <translation id="8221491193165283816">Обычно вы блокируете уведомления. Чтобы получать их с этого сайта, нажмите здесь.</translation>
 <translation id="822347941086490485">Поиск HID-устройств…</translation>
@@ -7344,6 +7356,7 @@
 <translation id="8770406935328356739">Корневой каталог расширения</translation>
 <translation id="8771300903067484968">Фон стартовой страницы изменен на вариант по умолчанию.</translation>
 <translation id="8773302562181397928">Сохранить принтер "<ph name="PRINTER_NAME" />"</translation>
+<translation id="8773350724590665675">Snooping protection</translation>
 <translation id="8774379074441005279">Подтвердите восстановление</translation>
 <translation id="8774934320277480003">Верхнее поле</translation>
 <translation id="8775144690796719618">Недействительный URL</translation>

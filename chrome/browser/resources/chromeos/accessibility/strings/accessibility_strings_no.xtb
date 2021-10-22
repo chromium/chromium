@@ -798,6 +798,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="6544923685317771506">Sjøskjell</translation>
 <translation id="6551185905438378412">Elfenben</translation>
 <translation id="6561818612645211875">Gå til begynnelsen av nåværende rad</translation>
+<translation id="6563126228219321999">Det finnes ikke noe ugyldig element</translation>
 <translation id="6579990219486187401">Lys rosa</translation>
 <translation id="6583174818554398774">Gå til neste detaljnivå</translation>
 <translation id="6584162722998608255">Nå skal du få lære hvordan du beveger deg rundt på skjermen. Du kan sveipe fra venstre til høyre med én finger for å gå til neste element. Prøv det nå for å gå til neste trinn.</translation>
@@ -828,6 +829,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="6815255864998354418">Sitronfromasj</translation>
 <translation id="6816066673340002913">Blek gullris</translation>
 <translation id="6826226459053491773">Sveip to fingre ned</translation>
+<translation id="6826669432862053130">Neste ugyldige element</translation>
 <translation id="6833103209700200188">Bunntekst</translation>
 <translation id="6837853484260746864">Velg en stemme:</translation>
 <translation id="6858047746862060282">Prolog</translation>
@@ -1018,6 +1020,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="8126386426083591964">Det finnes ingen tidligere overskrifter på nivå 5</translation>
 <translation id="812886159861361726">Nedlastingen av <ph name="FILE_NAME" /> er stanset</translation>
 <translation id="8129445297241948503">Det finnes ingen celler ovenfor</translation>
+<translation id="8132248161074464367">Forrige ugyldige element</translation>
 <translation id="8138880386467279117">Berøring</translation>
 <translation id="8146613869421949343">Nå skal du få lære om søketasten. Søketasten brukes i kombinasjon med andre taster for å utføre ChromeVox-kommandoer. Søketasten er rett over den venstre Shift-tasten. For å fortsette, trykk på søketasten.</translation>
 <translation id="8158033275290782295">merk alt</translation>

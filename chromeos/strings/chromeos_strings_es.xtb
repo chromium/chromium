@@ -39,6 +39,7 @@
 <translation id="150962533380566081">El PUK no es válido.</translation>
 <translation id="1510238584712386396">Menú de aplicaciones</translation>
 <translation id="155865706765934889">Panel táctil</translation>
+<translation id="1567064801249837505">Álbumes</translation>
 <translation id="1572585716423026576">Configurar como fondo de pantalla</translation>
 <translation id="1621067168122174824">Realizar prueba de carga</translation>
 <translation id="1639239467298939599">Cargando</translation>
@@ -52,6 +53,7 @@
 <translation id="1717874160321062422">Gestionado por <ph name="FIRST_MANAGER" /> y <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Servidores de nombres</translation>
 <translation id="1731082422893354635">Panel táctil Bluetooth</translation>
+<translation id="1753496554272155572">Salir de la vista previa de fondo de pantalla</translation>
 <translation id="175763766237925754">Buena (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -357,6 +359,7 @@
 <translation id="6657585470893396449">Contraseña</translation>
 <translation id="6704062477274546131">Resolución de DNS</translation>
 <translation id="6747215703636344499">Detenido: bandeja de salida llena</translation>
+<translation id="6749473226660745022">Fotos</translation>
 <translation id="6756731097889387912">No se ha podido cancelar el análisis</translation>
 <translation id="6766275201586212568">Errores de resoluciones de DNS</translation>
 <translation id="6768237774506518020">Tasa de errores de resolución de DNS alta</translation>

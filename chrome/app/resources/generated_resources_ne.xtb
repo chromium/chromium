@@ -136,6 +136,7 @@
 <translation id="1137589305610962734">अस्थायी डेटा</translation>
 <translation id="1137673463384776352">लिंकलाई <ph name="APP" /> मा खोल्नुहोस्</translation>
 <translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{नयाँ सूचना}other{# वटा नयाँ सूचना}}</translation>
+<translation id="1139138655591555207">तपाईं मद्दतसम्बन्धी यो बबलमा फोकस गर्न चाहनुहुन्छ भने |<ph name="ACCELERATOR" />| थिच्नुहोस्।</translation>
 <translation id="1139343347646843679">Linux कन्फिगर गर्दै गर्दा कुनै त्रुटि भयो। कृपया आफ्ना प्रशासकसँग सम्पर्क गर्नुहोस्।</translation>
 <translation id="1139923033416533844">मेमोरीको प्रयोग</translation>
 <translation id="1140351953533677694">तपाईंको ब्लूटूथ र सिरियल डिभाइसहरूको पहुँच गर्नुहोस्</translation>
@@ -530,6 +531,7 @@
 <translation id="1549275686094429035">ARC सक्षम पारिएको छ</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> ले <ph name="VOLUME_NAME" /> पहुँच गर्न चाहन्छ। यसले तपाईँका फाइलहरू परिमार्जन गर्न वा मेटाउन सक्छ।</translation>
 <translation id="1552301827267621511">"<ph name="EXTENSION_NAME" />" एक्सटेन्सनले सर्च इन्जिन परिवर्तन गरी <ph name="SEARCH_PROVIDER_DOMAIN" /> बनाएको छ</translation>
+<translation id="1552522962296937598">Smart display lock and detect if others peeking from behind</translation>
 <translation id="1553538517812678578">असीमित</translation>
 <translation id="1555130319947370107">निलो</translation>
 <translation id="1556537182262721003">प्रोफाइलमा एक्स्टेन्शन निर्देशिका सार्न सकिएन।</translation>
@@ -1065,6 +1067,7 @@
 <translation id="2090165459409185032">तपाईँको खाता जानकारी पुनःप्राप्ति गर्न google.com/accounts/recovery मा जानुहोस्</translation>
 <translation id="2090507354966565596">तपाईंले लग इन गरेपछि स्वतः कनेक्ट हुन्छ</translation>
 <translation id="2090876986345970080">प्रणाली सुरक्षा सेटिङ</translation>
+<translation id="2092038932007199943">Notify you or temporary dim your screen when someone is snooping from behind</translation>
 <translation id="2096715839409389970">तेस्रो पक्षीय कुकीहरू खाली गर्नुहोस्</translation>
 <translation id="2098805196501063469">बाँकी पासवर्डहरू जाँच्नुहोस्</translation>
 <translation id="2099172618127234427">तपाईं Chrome OS डिबगिङ विशेषताहरू सक्षम गर्दै हुनुहुन्छ जुन USB ड्राइभहरूबाट sshd daemon सेटअप गर्दछ।</translation>
@@ -3036,6 +3039,7 @@
 <translation id="4110490973560452005">डाउनलोड सम्पन्न भयो: <ph name="FILE_NAME" />। डाउनलोडहरूको पट्टीमा जान Shift+F6 थिच्नुहोस्।</translation>
 <translation id="4110686435123617899"><ph name="TITLE" /> <ph name="DESC" /> एल्बम चयन गर्नुहोस्</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (अफलाइन)</translation>
+<translation id="4112809168763360620">Smart privacy protections</translation>
 <translation id="4115002065223188701">नेटवर्क पहुँचको दायराभन्दा बाहिर छ</translation>
 <translation id="4115378294792113321">म्याग्नेटा</translation>
 <translation id="4117637339509843559">अँध्यारो मोड</translation>
@@ -3083,6 +3087,7 @@
 <translation id="4175137578744761569">हल्का बैजनी र सेतो</translation>
 <translation id="4175737294868205930">स्थायी भण्डारण</translation>
 <translation id="4176463684765177261">असक्षम गरिएको</translation>
+<translation id="417971315778328003">तपाईं जारी राख्न चाहनुहुन्छ भने PIN वा पासवर्ड सेटअप गर्नुहोस्</translation>
 <translation id="4180788401304023883">CA सर्टिफिकेट "<ph name="CERTIFICATE_NAME" />" हटाउने?</translation>
 <translation id="4181602000363099176">२० गुणा</translation>
 <translation id="4181841719683918333">भाषाहरू</translation>
@@ -3117,6 +3122,7 @@
 <translation id="4231095370974836764">आफ्नो <ph name="DEVICE_TYPE" /> मा Google Play बाट एप र गेमहरू इन्स्टल गर्नुहोस्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos कन्फिगर गर्नुहोस्</translation>
 <translation id="4235965441080806197">साइन इन रद्द गर्नुहोस्</translation>
+<translation id="4238175133949127631">Temporary dim screen</translation>
 <translation id="4241182343707213132">सङ्गठनका एपहरू अपडेट गर्न रिस्टार्ट गर्नुहोस्</translation>
 <translation id="4242145785130247982">एकभन्दा बढी क्लाइन्टका प्रमाणपत्रहरू समर्थित छैनन्</translation>
 <translation id="4242533952199664413">सेटिङहरू खोल्नुहोस्</translation>
@@ -4634,6 +4640,7 @@
 <translation id="5901494423252125310">प्रिन्टरको कभर खुला छ</translation>
 <translation id="5901630391730855834">पहेँलो</translation>
 <translation id="5904614460720589786">कन्फिगुरेसनसम्बन्धी कुनै समस्याका कारण <ph name="APP_NAME" /> सेटअप गर्न सकिएन। कृपया आफ्ना एड्मिनसँग सम्पर्क गर्नुहोस्। त्रुटिको कोड: <ph name="ERROR_CODE" />।</translation>
+<translation id="5906278356170001460">This feature uses the front camera for detection. The data is securely processed and discarded afterwards. Google doesn't use your data for any other purposes.</translation>
 <translation id="5906655207909574370">लगभग अद्यावधिक भयो! अद्यावधिक गर्ने कार्य सम्पन्न गर्न आफ्नो यन्त्रलाई पुनः सुरु गर्नुहोस्।</translation>
 <translation id="5906732635754427568">यस डिभाइसबाट यस एपसँग सम्बन्धित डेटा हटाइने छ।</translation>
 <translation id="5908474332780919512">मैले साइन इन गर्दा यो एप खोलियोस्</translation>
@@ -4785,6 +4792,7 @@
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />ख्याल गर्नुहोस्:<ph name="END_BOLD" /> <ph name="SUPERVISED_USER_NAME" /> को आवाजसँग मिल्दोजुल्दो आवाज वा रेकर्डिङ प्रयोग गरेर पनि उनको व्यक्तिगत सामग्री हेर्न सकिने सम्भावना हुन्छ। ब्याट्री बचत गर्न सकियोस् भन्नाका खातिर तपाईं <ph name="SUPERVISED_USER_NAME" /> को सहायकका सेटिङमा गई यो डिभाइस चार्जरमा जोडिएका बेला मात्र "Ok Google" अन हुने बनाउन सक्नुहुन्छ।</translation>
 <translation id="6064217302520318294">स्क्रिन लक</translation>
 <translation id="6065289257230303064">सर्टिफिकेट विषय निर्देशिका गुणहरू</translation>
+<translation id="6065691521254183160">तपाईं मद्दतसम्बन्धी यो बबल र यसले देखाएको एलिमेन्टका बिचमा फोकस टगल गर्न चाहनुहुन्छ भने |<ph name="ACCELERATOR" />| थिच्नुहोस्।</translation>
 <translation id="6066794465984119824">इमेज ह्यास सेट गरिएको छैन</translation>
 <translation id="6069464830445383022">तपाईंको Chromebook मा साइन इन गर्ने विधि भनेको तपाईंको Google खाता नै हो</translation>
 <translation id="6069671174561668781">वालपेपर सेट गर्नुहोस्</translation>
@@ -4810,6 +4818,7 @@
 <translation id="6085886413119427067">यसले सुरक्षित इन्टरनेटमार्फत वेबसाइटहरूमा जोडिने तरिका निर्धारण गर्छ</translation>
 <translation id="6086004606538989567">तपाईंले पुष्टि गर्नुभएको खाता प्रयोग गरी यो डिभाइस चलाउन मिल्दैन।</translation>
 <translation id="6086846494333236931">तपाईँको प्रशासकद्वारा स्थापना गरियो</translation>
+<translation id="6086898065659145625">तपाईंको फोन नजिकै भएका बेला Smart Lock ले तपाईंलाई स्वतः लग इन गर्ने छ।</translation>
 <translation id="6087960857463881712">उत्कृष्ट अनुहार</translation>
 <translation id="608912389580139775">यो पेज आफ्नो पछि पढ्न सेभ गरिएका वेबपेजको सूचीमा हाल्न बुकमार्क आइकनमा क्लिक गर्नुहोस्</translation>
 <translation id="6091761513005122595">आदान प्रदान माउन्ट गर्ने कार्य सफलतापूर्वक सम्पन्न भयो।</translation>
@@ -5275,6 +5284,7 @@
 <translation id="659005207229852190">सुरक्षा जाँच पूरा भएको छ।</translation>
 <translation id="6590458744723262880">फोल्डरको पुनः नामकरण गर्नुहोस्</translation>
 <translation id="6592267180249644460">WebRTC लगले <ph name="WEBRTC_LOG_CAPTURE_TIME" /> क्याप्चर गर्‍यो</translation>
+<translation id="659230975550262204">Show me an eye icon in the status area</translation>
 <translation id="6592808042417736307">तपाईंको फिंगरप्रिन्ट हालियो</translation>
 <translation id="6593881952206664229">प्रतिलिपि अधिकार भएका मिडिया प्ले नहुन सक्छन्</translation>
 <translation id="6594011207075825276">सिरियल यन्त्रहरू लोड गरिँदै छ...</translation>
@@ -5324,7 +5334,6 @@
 <translation id="6644846457769259194">तपाईँको यन्त्रलाई अद्यावधिक गर्दै (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6645437135153136856">चयन गरिएको Google Cloud Print यन्त्र अब उप्रान्त समर्थित छैन। <ph name="BR" /> आफ्नो कम्प्युटरको प्रणालीसम्बन्धी सेटिङहरूमा गई प्रिन्टर सेटअप गरी हेर्नुहोस्।</translation>
 <translation id="6647228709620733774">नेटस्केप प्रमाणपत्र अनुमति रिभोकेशन URL</translation>
-<translation id="6647838571840953560">हाल <ph name="CHANNEL_NAME" /> मा छ</translation>
 <translation id="6648911618876616409">एउटा महत्त्वपूर्ण अद्यावधिक स्थापनाका लागि तयार छ। सुरु गर्न साइन इन गर्नुहोस्‌।</translation>
 <translation id="6649018507441623493">एकै सेकेन्ड...</translation>
 <translation id="6650234781371031356"><ph name="WEBSITE" /> को तपाईंको पासवर्ड यस यन्त्रमा र तपाईंको Google खातामा भण्डारण गरिएको छ। तपाईं कुन ठाउँमा भण्डारण गरिएको पासवर्ड मेटाउन चाहनुहुन्छ?</translation>
@@ -5714,6 +5723,7 @@
 <translation id="7053983685419859001">रोक्नुहोस्</translation>
 <translation id="7055152154916055070">रिडिरेक्ट नामक सुविधामाथि रोक लगाइयो:</translation>
 <translation id="7055451306017383754">कुनै एप्लिकेसनले यो फोल्डर प्रयोग गरिरहेका कारण यसलाई अनसेयर गर्न सकिएन। अर्को पटक Parallels Desktop सट डाउन हुँदा यो फोल्डर अनसेयर गरिने छ।</translation>
+<translation id="7056011684066172642">Screen locks automatically if you walk off, and won't turn off if you're in front of it</translation>
 <translation id="7056418393177503237">{0,plural, =1{इन्कोग्निटो}other{# वटा इन्कोग्निटो विन्डो खोलिएका छन्}}</translation>
 <translation id="7056526158851679338">डिभाइसहरूको &amp;निरीक्षण गर्नुहोस्</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{१ मिनेटअघि सुरक्षा जाँच गरिएको थियो}other{{NUM_MINS} मिनेटअघि सुरक्षा जाँच गरिएको थियो}}</translation>
@@ -6429,6 +6439,7 @@
 <translation id="7797246427375693110">अन छ / <ph name="TIME" /> बजे स्वतः अफ हुने छ</translation>
 <translation id="7797571222998226653">निष्क्रिय छ</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> माथि स्वतः रोक लगाइएको छ</translation>
+<translation id="7799220949286681310">Smart screen lock</translation>
 <translation id="7799299114731150374">वालपेपर सफलतापूर्वक सेट गरियो</translation>
 <translation id="7799817062559422778">उज्यालो मोड</translation>
 <translation id="7800159967992492578">साइड सर्च टगल गर्नुहोस्। साइड सर्च एक्टिभेट गरिएको छ।</translation>
@@ -6578,6 +6589,7 @@
 <translation id="7933518760693751884">कुनै पृष्ठ पछि पढ्ने प्रयोजनका लागि सुरक्षित गर्न 'बुकमार्क' जनाउने आइकनमा क्लिक गर्नुहोस्</translation>
 <translation id="7933634003144813719">साझा फोल्डरहरूको व्यवस्थापन गर्नुहोस्</translation>
 <translation id="793531125873261495">भर्चुअल मेसिन डाउनलोड गर्ने क्रममा त्रुटि भयो। कृपया फेरि प्रयास गर्नुहोस्।</translation>
+<translation id="7935451262452051102"><ph name="PERCENT" />% पूरा भयो</translation>
 <translation id="7938594894617528435">हाल अफलाइन</translation>
 <translation id="7939062555109487992">उन्नत विकल्पहरू</translation>
 <translation id="7939412583708276221">जसो भएता पनि राख्नुहोस्</translation>
@@ -6709,6 +6721,7 @@
 <translation id="8062844841289846053">{COUNT,plural, =1{कागजको एउटा पाना}other{कागजका {COUNT} वटा पाना}}</translation>
 <translation id="8063235345342641131">डिफल्ट हरियो अवतार</translation>
 <translation id="8063535366119089408">फाइल हेर्नुहोस्</translation>
+<translation id="8064269957688233720">यो Chromebook स्लिप मोडबाट सक्रिय हुँदा आफ्नो फोनमा भएका डेटा सुरक्षित राख्नुहोस्।</translation>
 <translation id="8064279191081105977">समूह <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">कनेक्सन डायलग</translation>
 <translation id="8068253693380742035">साइन इन गर्न छुनुहोस्</translation>
@@ -6856,7 +6869,6 @@
 <translation id="8213449224684199188">तस्बिर मोडमा प्रवेश गरियो</translation>
 <translation id="8214489666383623925">फाइल खोल्नुहोस्...</translation>
 <translation id="8215129063232901118"><ph name="DEVICE_TYPE" /> मार्फत आफ्नो फोनमा उपलब्ध सुविधाहरू प्रयोग गर्नुहोस्</translation>
-<translation id="8216351761227087153">हेर्नुहोस्</translation>
 <translation id="8217399928341212914">बहुवुध फाइलहरूको स्वचालित डाउनलोड रोक्न जारी राख्नुहोस्</translation>
 <translation id="8221491193165283816">तपाईं सामान्यतया सूचनाहरूमाथि रोक लगाउनुहुन्छ। यो साइटलाई तपाईंलाई सूचना पठाउन अनुमति दिन यहाँ क्लिक गर्नुहोस्।</translation>
 <translation id="822347941086490485">HID यन्त्रहरू पत्ता लगाइँदै छ...</translation>
@@ -7362,6 +7374,7 @@
 <translation id="8770406935328356739">विस्तारको मूल निर्देशिका</translation>
 <translation id="8771300903067484968">सुरुको पृष्ठको पृष्ठभूमिलाई डिफल्ट पृष्ठभूमिका रूपमा पुनः सेट गरिएको छ।</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> सेभ गर्नुहोस्</translation>
+<translation id="8773350724590665675">Snooping protection</translation>
 <translation id="8774379074441005279">पुनर्स्थापना गर्ने कार्य पुष्टि गर्नुहोस्</translation>
 <translation id="8774934320277480003">शीर्ष सीमान्त</translation>
 <translation id="8775144690796719618">अमान्य URL</translation>

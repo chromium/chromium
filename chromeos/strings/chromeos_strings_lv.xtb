@@ -42,6 +42,7 @@
 <translation id="150962533380566081">PUK nav derīgs.</translation>
 <translation id="1510238584712386396">Lietojumprogrammu palaidējs</translation>
 <translation id="155865706765934889">Skārienpaliktnis</translation>
+<translation id="1567064801249837505">Albumi</translation>
 <translation id="1572585716423026576">Iestatīt kā fona tapeti</translation>
 <translation id="1621067168122174824">Veikt uzlādes pārbaudi</translation>
 <translation id="1639239467298939599">Notiek ielāde</translation>
@@ -55,6 +56,7 @@
 <translation id="1717874160321062422">Pārvalda <ph name="FIRST_MANAGER" /> un <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Nosaukumu serveri</translation>
 <translation id="1731082422893354635">Bluetooth skārienpaliktnis</translation>
+<translation id="1753496554272155572">Aizvērt fona tapetes priekšskatījumu</translation>
 <translation id="175763766237925754">Labs (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -368,6 +370,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="6657585470893396449">Parole</translation>
 <translation id="6704062477274546131">DNS atrise</translation>
 <translation id="6747215703636344499">Apturēts — izvades paliktnis ir pilns</translation>
+<translation id="6749473226660745022">Fotoattēli</translation>
 <translation id="6756731097889387912">Nevarēja atcelt skenēšanu</translation>
 <translation id="6766275201586212568">DNS atrisināšanas kļūmes</translation>
 <translation id="6768237774506518020">Biežas DNS atrisināšanas kļūmes</translation>

@@ -15,6 +15,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1052916631016577720">Elementskanning</translation>
 <translation id="1056775291175587022">Ingen nettverk</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1062407476771304334">Erstatt</translation>
 <translation id="1073899992769346247">Bytt eller lad batteriet</translation>
 <translation id="108486256082349153">Mobil: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">God ettermiddag, <ph name="GIVEN_NAME" /></translation>
@@ -147,6 +148,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2018630726571919839">Fortell meg en vits</translation>
 <translation id="2021864487439853900">Klikk for å låse opp</translation>
 <translation id="2023558322300866873">Du kan stoppe pakkeregistreringen når som helst</translation>
+<translation id="2034971124472263449">Lagre likevel</translation>
 <translation id="2047639699071423250">Legg til nøkkelidé</translation>
 <translation id="2049240716062114887">Skrivebordsnavnet ble endret til <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Stående</translation>
@@ -337,6 +339,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3509391053705095206">Finner ikke telefonen. Kontrollér at Bluetooth på telefonen er slått på.</translation>
 <translation id="3510164367642747937">Fremhev musemarkøren</translation>
 <translation id="3513798432020909783">Kontoen er administrert av <ph name="MANAGER_EMAIL" /></translation>
+<translation id="352245152354538528">{0,plural, =1{Oppdater enheten innen 1 minutt}other{Oppdater enheten innen # minutter}}</translation>
 <translation id="353086728817903341">Koblet til <ph name="NUM_DEVICES" /> enheter</translation>
 <translation id="3552189655002856821">Wi-Fi er slått av</translation>
 <translation id="3560866052109807830">Markørtegneverktøy</translation>
@@ -425,6 +428,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="4146833061457621061">Spill av musikk</translation>
 <translation id="4157822100366708405">Innstillinger for mørkt tema</translation>
 <translation id="4173958948577803258">T</translation>
+<translation id="4177913004758410636">{0,plural, =1{Oppdater enheten innen en dag}other{Oppdater enheten innen # dager}}</translation>
 <translation id="4181841719683918333">Språk</translation>
 <translation id="4195877955194704651">Automatisk klikk-knapp</translation>
 <translation id="4197790712631116042">Av</translation>
@@ -478,6 +482,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="445864333228800152">God kveld</translation>
 <translation id="4458688154122353284">Avslutt skjermopptak</translation>
 <translation id="4471354919263203780">Laster ned filer for talegjenkjenning … <ph name="PERCENT" /> %</translation>
+<translation id="4471432286288241507">{0,plural, =0{Oppdater enheten nå}=1{Oppdater enheten innen 1 sekund}other{Oppdater enheten innen # sekunder}}</translation>
 <translation id="4472575034687746823">Kom i gang</translation>
 <translation id="4477350412780666475">Neste spor</translation>
 <translation id="4477892968187500306">Denne enheten kan ha apper som ikke er verifisert av Google.</translation>
@@ -615,6 +620,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="5465662442746197494">Trenger du hjelp?</translation>
 <translation id="5496819745535887422">Administratoren din tilbakestiller enheten din til forrige versjon. Alle data blir slettet når enheten starter på nytt.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520229639206813572">Administratoren din har fjernet alle e-SIM-kortprofiler. Kontakt administratoren for å få mer informasjon.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> kobler til.</translation>
 <translation id="5532994612895037630">Trykk hvor som helst for å ta opp i fullskjerm</translation>
 <translation id="553675580533261935">Avslutning av økten</translation>
@@ -736,6 +742,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="6482559668224714696">Lupe for hele skjermen</translation>
 <translation id="6490471652906364588">USB-C-enhet (porten på høyre side)</translation>
 <translation id="649452524636452238">PIN-koden til smartkortet</translation>
+<translation id="6495400115277918834">Bilde-i-bilde er startet – trykk på Alt + Shift + V for å fokusere</translation>
 <translation id="6500818810472529210">Se resultat i Google Søk</translation>
 <translation id="6501401484702599040">Caster skjermen til <ph name="RECEIVER_NAME" /></translation>
 <translation id="6520517963145875092">Velg et vindu du vil ta bilde av</translation>
@@ -745,6 +752,8 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="6537924328260219877">Signalstyrke <ph name="SIGNAL_STRENGTH" /> – telefonbatterinivå <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">Caster til <ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">Spør administratoren</translation>
+<translation id="6565007273808762236">e-SIM-korttilkoblingen er ikke tilgjengelig</translation>
+<translation id="6570831796530454248">{0,plural, =1{Oppdater enheten innen en time}other{Oppdater enheten innen # timer}}</translation>
 <translation id="6570902864550063460">Lader via USB</translation>
 <translation id="6585808820553845416">Økten slutter om <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" /> <ph name="SECONDARY_TEXT" /></translation>

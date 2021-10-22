@@ -15,6 +15,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1052916631016577720">Scanarea elementelor</translation>
 <translation id="1056775291175587022">Nicio rețea</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1062407476771304334">Înlocuiți</translation>
 <translation id="1073899992769346247">Înlocuiește sau încarcă bateria</translation>
 <translation id="108486256082349153">Celular: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Bună ziua, <ph name="GIVEN_NAME" />!</translation>
@@ -147,6 +148,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2018630726571919839">Spune-mi o glumă</translation>
 <translation id="2021864487439853900">Dă clic pentru deblocare</translation>
 <translation id="2023558322300866873">Poți opri oricând capturarea pachetelor</translation>
+<translation id="2034971124472263449">Salvează oricum</translation>
 <translation id="2047639699071423250">Adaugă o idee importantă</translation>
 <translation id="2049240716062114887">Numele desktopului a fost schimbat în <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Portret</translation>
@@ -337,6 +339,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3509391053705095206">Telefonul nu a fost găsit. Asigură-te că funcția Bluetooth a telefonului este activată.</translation>
 <translation id="3510164367642747937">Evidențiază cursorul mouse-ului</translation>
 <translation id="3513798432020909783">Cont gestionat de <ph name="MANAGER_EMAIL" /></translation>
+<translation id="352245152354538528">{0,plural, =1{Actualizează dispozitivul într-un minut}few{Actualizează dispozitivul în # minute}other{Actualizează dispozitivul în # de minute}}</translation>
 <translation id="353086728817903341">S-a conectat la <ph name="NUM_DEVICES" /> dispozitive</translation>
 <translation id="3552189655002856821">Conexiunea Wi-Fi este dezactivată</translation>
 <translation id="3560866052109807830">Instrumente de desenare cu markerul</translation>
@@ -425,6 +428,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="4146833061457621061">Redă muzică</translation>
 <translation id="4157822100366708405">Setări pentru tema întunecată</translation>
 <translation id="4173958948577803258">J</translation>
+<translation id="4177913004758410636">{0,plural, =1{Actualizează dispozitivul în cel mult o zi}few{Actualizează dispozitivul în cel mult # zile}other{Actualizează dispozitivul în cel mult # de zile}}</translation>
 <translation id="4181841719683918333">Limbi</translation>
 <translation id="4195877955194704651">Butonul Clicuri automate</translation>
 <translation id="4197790712631116042">Dezactivat</translation>
@@ -478,6 +482,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="445864333228800152">Bună seara!</translation>
 <translation id="4458688154122353284">Oprește înregistrarea ecranului</translation>
 <translation id="4471354919263203780">Se descarcă fișierele pentru recunoașterea vocală... <ph name="PERCENT" /> %</translation>
+<translation id="4471432286288241507">{0,plural, =0{Actualizează dispozitivul acum}=1{Actualizează dispozitivul într-o secundă}few{Actualizează dispozitivul în # secunde}other{Actualizează dispozitivul în # de secunde}}</translation>
 <translation id="4472575034687746823">Începeți</translation>
 <translation id="4477350412780666475">Melodia următoare</translation>
 <translation id="4477892968187500306">Dispozitivul poate conține aplicații care nu au fost verificate de Google.</translation>
@@ -737,6 +742,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="6482559668224714696">Lupă de ecran complet</translation>
 <translation id="6490471652906364588">Dispozitiv USB-C (portul din dreapta)</translation>
 <translation id="649452524636452238">Codul PIN al cardului inteligent</translation>
+<translation id="6495400115277918834">Picture-in-picture a început, apasă pe Alt+Shift+V pentru a focaliza</translation>
 <translation id="6500818810472529210">Vezi rezultatul în Căutarea Google</translation>
 <translation id="6501401484702599040">Se proiectează ecranul pe <ph name="RECEIVER_NAME" /></translation>
 <translation id="6520517963145875092">Selectează o fereastră ca să o capturezi</translation>
@@ -747,6 +753,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="6542521951477560771">Se proiectează conținut la <ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">Întreabă administratorul</translation>
 <translation id="6565007273808762236">Nu este disponibilă o conexiune eSIM</translation>
+<translation id="6570831796530454248">{0,plural, =1{Actualizează dispozitivul într-o oră}few{Actualizează dispozitivul în # ore}other{Actualizează dispozitivul în # de ore}}</translation>
 <translation id="6570902864550063460">Se încarcă prin USB</translation>
 <translation id="6585808820553845416">Sesiunea se încheie peste <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" /> <ph name="SECONDARY_TEXT" /></translation>

@@ -42,6 +42,7 @@
 <translation id="150962533380566081">‏PUK לא חוקי.</translation>
 <translation id="1510238584712386396">מרכז האפליקציות</translation>
 <translation id="155865706765934889">לוח מגע</translation>
+<translation id="1567064801249837505">אלבומים</translation>
 <translation id="1572585716423026576">הגדרה כטפט</translation>
 <translation id="1621067168122174824">הפעלה של בדיקת טעינה</translation>
 <translation id="1639239467298939599">בטעינה</translation>
@@ -55,6 +56,7 @@
 <translation id="1717874160321062422">מנוהל על ידי <ph name="FIRST_MANAGER" /> ועל ידי <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">שרתי שמות</translation>
 <translation id="1731082422893354635">‏לוח מגע של Bluetooth</translation>
+<translation id="1753496554272155572">יציאה מהתצוגה המקדימה של הטפט</translation>
 <translation id="175763766237925754">טוב (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -368,6 +370,7 @@
 <translation id="6657585470893396449">סיסמה</translation>
 <translation id="6704062477274546131">‏פענוח DNS</translation>
 <translation id="6747215703636344499">הפסיקה – מגש הפלט מלא</translation>
+<translation id="6749473226660745022">תמונות</translation>
 <translation id="6756731097889387912">לא ניתן היה לבטל את הסריקה</translation>
 <translation id="6766275201586212568">‏בקשות לזיהוי DNS שנכשלו</translation>
 <translation id="6768237774506518020">‏שיעור כישלון גבוה לנסיונות זיהוי DNS</translation>

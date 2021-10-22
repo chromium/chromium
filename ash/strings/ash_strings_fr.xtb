@@ -15,6 +15,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1052916631016577720">Parcourir</translation>
 <translation id="1056775291175587022">Aucun réseau</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" /> : <ph name="RESOLUTION" /></translation>
+<translation id="1062407476771304334">Remplacer</translation>
 <translation id="1073899992769346247">Remplacez ou rechargez la batterie</translation>
 <translation id="108486256082349153">Mobile : <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Bonjour <ph name="GIVEN_NAME" />,</translation>
@@ -147,6 +148,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2018630726571919839">Raconte-moi une blague</translation>
 <translation id="2021864487439853900">Cliquez pour le déverrouiller</translation>
 <translation id="2023558322300866873">Vous pouvez interrompre la capture de paquets à tout moment</translation>
+<translation id="2034971124472263449">Enregistrer quand même</translation>
 <translation id="2047639699071423250">Ajouter une idée principale</translation>
 <translation id="2049240716062114887">Le nom du bureau a été remplacé par <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Portrait</translation>
@@ -337,6 +339,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3509391053705095206">Impossible de localiser votre téléphone. Vérifiez que le Bluetooth y est activé.</translation>
 <translation id="3510164367642747937">Mettre le curseur de la souris en surbrillance</translation>
 <translation id="3513798432020909783">Compte géré par <ph name="MANAGER_EMAIL" /></translation>
+<translation id="352245152354538528">{0,plural, =1{Mettre à jour l'appareil d'ici 1 minute}one{Mettre à jour l'appareil d'ici # minute}other{Mettre à jour l'appareil d'ici # minutes}}</translation>
 <translation id="353086728817903341">Connecté à <ph name="NUM_DEVICES" /> appareils</translation>
 <translation id="3552189655002856821">Le Wi-Fi est désactivé</translation>
 <translation id="3560866052109807830">Outils de dessin Marqueur</translation>
@@ -425,6 +428,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="4146833061457621061">Joue de la musique</translation>
 <translation id="4157822100366708405">Paramètres du thème sombre</translation>
 <translation id="4173958948577803258">J</translation>
+<translation id="4177913004758410636">{0,plural, =1{Mettre à jour l'appareil d'ici 1 jour}one{Mettre à jour l'appareil d'ici # jour}other{Mettre à jour l'appareil d'ici # jours}}</translation>
 <translation id="4181841719683918333">Langues</translation>
 <translation id="4195877955194704651">Bouton de clics automatiques</translation>
 <translation id="4197790712631116042">Désactivé</translation>
@@ -478,6 +482,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="445864333228800152">Bonsoir,</translation>
 <translation id="4458688154122353284">Arrêter l'enregistrement de l'écran</translation>
 <translation id="4471354919263203780">Téléchargement des fichiers de reconnaissance vocale… <ph name="PERCENT" /> %</translation>
+<translation id="4471432286288241507">{0,plural, =0{Mettre à jour l'appareil maintenant}=1{Mettre à jour l'appareil d'ici 1 seconde}one{Mettre à jour l'appareil d'ici # seconde}other{Mettre à jour l'appareil d'ici # secondes}}</translation>
 <translation id="4472575034687746823">Premiers pas</translation>
 <translation id="4477350412780666475">Titre suivant</translation>
 <translation id="4477892968187500306">Cet appareil peut contenir des applications qui n'ont pas été validées par Google.</translation>
@@ -736,6 +741,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="6482559668224714696">Loupe plein écran</translation>
 <translation id="6490471652906364588">Appareil USB de type C (port situé sur la droite de l'appareil)</translation>
 <translation id="649452524636452238">Code de la carte à puce</translation>
+<translation id="6495400115277918834">Picture-in-picture a démarré, Alt+Shift+V pour sélectionner</translation>
 <translation id="6500818810472529210">Voir le résultat dans la recherche Google</translation>
 <translation id="6501401484702599040">Diffusion de l'écran sur "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="6520517963145875092">Sélectionner une fenêtre à capturer</translation>
@@ -745,6 +751,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="6537924328260219877">Force du signal : <ph name="SIGNAL_STRENGTH" />, batterie du téléphone à <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">Diffusion vers <ph name="RECEIVER_NAME" />…</translation>
 <translation id="6559976592393364813">Se renseigner auprès de l'administrateur</translation>
+<translation id="6570831796530454248">{0,plural, =1{Mettre à jour l'appareil d'ici 1 heure}one{Mettre à jour l'appareil d'ici # heure}other{Mettre à jour l'appareil d'ici # heures}}</translation>
 <translation id="6570902864550063460">En charge via USB</translation>
 <translation id="6585808820553845416">Fin de la session dans <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
