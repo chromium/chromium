@@ -613,6 +613,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2987034854559945715">Ingen samsvarende funksjoner</translation>
 <translation id="2989742184762224133">To stifter topp</translation>
 <translation id="2991174974383378012">Deling med nettsteder</translation>
+<translation id="299122504639061328">Administrer standard søkemotor og nettstedsøk</translation>
 <translation id="2991571918955627853">Du kan ikke gå til <ph name="SITE" /> akkurat nå, siden nettstedet bruker HSTS. Nettverksfeil og -angrep er vanligvis midlertidige, så denne siden fungerer sannsynligvis senere.</translation>
 <translation id="2995517112308048736">Filstørrelse:</translation>
 <translation id="3002501248619246229">Sjekk inndataskuffmedier</translation>
@@ -958,6 +959,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4123572138124678573">Tre hull bunn</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 til}other{# til}}</translation>
 <translation id="4130226655945681476">Sjekk nettverkskablene, modemet og ruteren</translation>
+<translation id="4133224101597112888">«Del denne fanen»-knappen – trykk på Enter for å dele denne fanen via en link, en QR-kode, casting eller annet.</translation>
 <translation id="4134123981501319574">Opprett dokument</translation>
 <translation id="413544239732274901">Finn ut mer</translation>
 <translation id="4142935452406587478">Skuff 10</translation>
@@ -1387,6 +1389,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5426179911063097041"><ph name="SITE" /> vil sende deg varsler</translation>
 <translation id="5428105026674456456">Spansk</translation>
 <translation id="5430298929874300616">Fjern bokmerke</translation>
+<translation id="5434889539950523874"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å dele denne fanen via en link, en QR-kode, casting eller annet.</translation>
 <translation id="5439770059721715174">Skjemavalideringsfeil i «<ph name="ERROR_PATH" />»: <ph name="ERROR" /></translation>
 <translation id="5443468954631487277">Motsatt rekkefølge – forsiden opp</translation>
 <translation id="5447765697759493033">Dette nettstedet oversettes ikke</translation>
@@ -1993,6 +1996,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7559278538486662777">Du kan ikke endre størrelse på denne appen.</translation>
 <translation id="7564049878696755256">Du kan miste tilgangen til <ph name="ORG_NAME" />-kontoen din eller bli utsatt for identitetstyveri. Chrome anbefaler at du endrer passordet ditt nå.</translation>
 <translation id="7567204685887185387">Denne tjeneren kunne ikke bevise at den er <ph name="DOMAIN" />. Tjenerens sikkerhetssertifikat kan ha blitt utstedt på uredelig vis. Dette kan være forårsaket av en feilkonfigurering eller en angriper som avskjærer tilkoblingen din.</translation>
+<translation id="7569761772822664555">«Administrer søkemotorer»-knappen – trykk på Enter for å administrere standard søkemotor og nettstedsøk</translation>
 <translation id="7569952961197462199">Vil du fjerne kredittkortet fra Chrome?</translation>
 <translation id="7569983096843329377">Svart</translation>
 <translation id="7575207903026901870">Knapp for å fjerne forslag – trykk på Enter for å fjerne dette forslaget</translation>
@@ -2110,6 +2114,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7950027195171824198">Administrer preferansene dine for informasjonskapsler i Chrome-innstillingene</translation>
 <translation id="7951415247503192394">(32-bit)</translation>
 <translation id="7953569069500808819">Kantstifting topp</translation>
+<translation id="7954041596401851904">Del denne fanen ved å dele linken, opprette en QR-kode, caste med mer.</translation>
 <translation id="7956713633345437162">Bokmerker for mobil</translation>
 <translation id="7961015016161918242">Aldri</translation>
 <translation id="7966803981046576691">Jobbkontotype</translation>
@@ -2183,6 +2188,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="8202370299023114387">Konflikt</translation>
 <translation id="8206978196348664717">Prc4 (konvolutt)</translation>
 <translation id="8211406090763984747">Tilkoblingen er sikker</translation>
+<translation id="8215696832828595581">«Tilpass Chrome»-knappen – trykk på Enter for å tilpasse nettleserens utseende.</translation>
 <translation id="8218327578424803826">Tilordnet posisjon:</translation>
 <translation id="8220146938470311105">C7/C6 (konvolutt)</translation>
 <translation id="8225771182978767009">Personen som konfigurerte denne datamaskinen, har valgt å blokkere dette nettstedet.</translation>
@@ -2324,6 +2330,7 @@ Mer informasjon:
 <translation id="868922510921656628">Sider pr. sett</translation>
 <translation id="869891660844655955">Utløpsdato</translation>
 <translation id="8699041776323235191">HID-enhet</translation>
+<translation id="8699899385443889493">«Spill Chrome Dino-spillet»-knappen – trykk på Enter for å spille Dino Run-spillet i Chrome</translation>
 <translation id="8703575177326907206">Tilkoblingen til <ph name="DOMAIN" /> er ikke kryptert.</translation>
 <translation id="8705331520020532516">Serienummer</translation>
 <translation id="8708134712139312373">Kan be om å få koble til Bluetooth-enheter</translation>

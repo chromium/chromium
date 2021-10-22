@@ -423,6 +423,7 @@
 <translation id="1436390408194692385">Geldigheidsduur: <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436784010935106834">Verwijderd</translation>
 <translation id="1437986450143295708">Geef een gedetailleerde beschrijving van het probleem</translation>
+<translation id="1439671507542716852">langdurige support</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> geselecteerd</translation>
 <translation id="1442851588227551435">Actief Kerberos-ticket instellen</translation>
 <translation id="1444628761356461360">Deze instelling wordt beheerd door de eigenaar van het apparaat, <ph name="OWNER_EMAIL" />.</translation>
@@ -1425,6 +1426,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2454264884354864965">Camera staat uit</translation>
 <translation id="245650153866130664">Als je een ticket automatisch wilt vernieuwen, vink je 'Wachtwoord onthouden' aan. Het wachtwoord wordt alleen opgeslagen op je apparaat.</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> wil bestanden van <ph name="VOLUME_NAME" /> kopiëren.</translation>
+<translation id="2457842160081795172">Momenteel op het kanaal <ph name="CHANNEL_NAME" /></translation>
 <translation id="2458379781610688953">Account updaten, <ph name="EMAIL" /></translation>
 <translation id="2458591546854598341">Token voor apparaatbeheer is ongeldig.</translation>
 <translation id="2459703812219683497">Activeringscode waargenomen</translation>

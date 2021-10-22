@@ -609,6 +609,7 @@
 <translation id="2987034854559945715">沒有相符的功能</translation>
 <translation id="2989742184762224133">雙釘 (頂端)</translation>
 <translation id="2991174974383378012">與其他網站分享</translation>
+<translation id="299122504639061328">管理預設搜尋引擎和站內搜尋</translation>
 <translation id="2991571918955627853">您目前無法瀏覽 <ph name="SITE" />，因為此網站使用 HSTS。網絡錯誤和攻擊行為通常是暫時性問題，所以此網頁應會在稍後回復正常。</translation>
 <translation id="2995517112308048736">檔案大小：</translation>
 <translation id="3002501248619246229">檢查輸入紙匣媒體</translation>
@@ -952,6 +953,7 @@
 <translation id="4123572138124678573">三孔 (底部)</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{以及另外 1 項表格資料}other{以及另外 # 項表格資料}}</translation>
 <translation id="4130226655945681476">檢查網絡連接線、數據機或路由器</translation>
+<translation id="4133224101597112888">「分享這個分頁」按鈕；按下 Enter 鍵，即可透過分享連結、建立 QR 圖碼、投放等功能分享這個分頁。</translation>
 <translation id="4134123981501319574">建立文件</translation>
 <translation id="413544239732274901">瞭解詳情</translation>
 <translation id="4142935452406587478">紙匣 10</translation>
@@ -1377,6 +1379,7 @@
 <translation id="5426179911063097041"><ph name="SITE" /> 要求傳送通知給您</translation>
 <translation id="5428105026674456456">西班牙文</translation>
 <translation id="5430298929874300616">移除書籤</translation>
+<translation id="5434889539950523874"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵，即可透過分享連結、建立 QR 圖碼、投放等功能分享這個分頁。</translation>
 <translation id="5439770059721715174">「<ph name="ERROR_PATH" />」發生綱要驗證錯誤：<ph name="ERROR" /></translation>
 <translation id="5443468954631487277">相反順序 (正面朝上)</translation>
 <translation id="5447765697759493033">系統不會翻譯此網站</translation>
@@ -1984,6 +1987,7 @@
 <translation id="7559278538486662777">此應用程式無法調整大小。</translation>
 <translation id="7564049878696755256">您有可能會失去 <ph name="ORG_NAME" /> 帳戶存取權，或會遭身份盜用。Chrome 建議您立即變更密碼。</translation>
 <translation id="7567204685887185387">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證或許曾以欺詐方式發行。這可能是因為設定錯誤，或有攻擊者攔截您的連線。</translation>
+<translation id="7569761772822664555">「管理搜尋引擎」按鈕；按下 Enter 鍵即可管理預設搜尋引擎和站內搜尋</translation>
 <translation id="7569952961197462199">要從 Chrome 中移除信用卡資料嗎？</translation>
 <translation id="7569983096843329377">黑色</translation>
 <translation id="7575207903026901870">移除建議按鈕，㩒一下 Enter 鍵就可以移除呢個建議</translation>
@@ -2101,6 +2105,7 @@
 <translation id="7950027195171824198">在 Chrome 設定中管理 Cookie 偏好設定</translation>
 <translation id="7951415247503192394">(32 位元)</translation>
 <translation id="7953569069500808819">邊緣釘裝 (右側)</translation>
+<translation id="7954041596401851904">透過分享連結、建立 QR 圖碼、投放等功能分享這個分頁。</translation>
 <translation id="7956713633345437162">流動版書籤</translation>
 <translation id="7961015016161918242">從來沒有</translation>
 <translation id="7966803981046576691">工作帳戶類型</translation>
@@ -2174,6 +2179,7 @@
 <translation id="8202370299023114387">衝突</translation>
 <translation id="8206978196348664717">Prc4 (信封)</translation>
 <translation id="8211406090763984747">己建立安全連線</translation>
+<translation id="8215696832828595581">「自訂 Chrome」按鈕；按下 Enter 鍵即可自訂瀏覽器外觀。</translation>
 <translation id="8218327578424803826">已指派的位置：</translation>
 <translation id="8220146938470311105">C7/C6 (信封)</translation>
 <translation id="8225771182978767009">設定此電腦的用戶已封鎖此網站。</translation>
@@ -2315,6 +2321,7 @@
 <translation id="868922510921656628">每組頁數</translation>
 <translation id="869891660844655955">到期日</translation>
 <translation id="8699041776323235191">HID 裝置</translation>
+<translation id="8699899385443889493">「暢玩 Chrome 恐龍遊戲」按鈕；按下 Enter 鍵即可暢玩 Chrome 恐龍遊戲</translation>
 <translation id="8703575177326907206">您與 <ph name="DOMAIN" /> 的連線未加密。</translation>
 <translation id="8705331520020532516">序號</translation>
 <translation id="8708134712139312373">可要求連接藍牙裝置</translation>

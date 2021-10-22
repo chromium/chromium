@@ -109,6 +109,7 @@
 <translation id="1680919990519905526">Osta kuvasta Lensillä <ph name="BEGIN_NEW" />Uusi<ph name="END_NEW" /></translation>
 <translation id="1682195225331129001">Kokeile nyt</translation>
 <translation id="1697284962337958118">Lisää…</translation>
+<translation id="1702543251015153180">Muutetaanko tumman teeman asetuksia?</translation>
 <translation id="1718835860248848330">Viimeinen tunti</translation>
 <translation id="1724977129262658800">Avaa lukitus muokataksesi salasanaasi</translation>
 <translation id="173522743738009831">Tietoja Privacy Sandboxista</translation>
@@ -259,6 +260,7 @@ Hae sanaa koskettamalla sitä pitkään. Jos haluat tarkentaa hakuasi, valitse e
 <translation id="2581165646603367611">Evästeet, välimuisti ja muut Chromen vähemmän tärkeinä pitämät sivustotiedot poistetaan.</translation>
 <translation id="2587052924345400782">Uudempi versio on saatavilla.</translation>
 <translation id="2593272815202181319">Monospace</translation>
+<translation id="2604446170045642109">Voit laittaa sivustojen tumman teeman pois päältä asetuksista.</translation>
 <translation id="2612676031748830579">Kortin numero</translation>
 <translation id="2625189173221582860">Salasana kopioitu</translation>
 <translation id="2631006050119455616">Säästetty</translation>
@@ -319,6 +321,7 @@ Hae sanaa koskettamalla sitä pitkään. Jos haluat tarkentaa hakuasi, valitse e
 <translation id="2932222164150889403">Tämä ei vaikuta näppäimistöön</translation>
 <translation id="2942036813789421260">Esikatseluvälilehti on suljettu</translation>
 <translation id="2946420957526726953">Päivitetään Chrome, jotta voit yhdistää muihin laitteisiin</translation>
+<translation id="2951071800649516099">Lisää sivuja lukulistalle myöhempää käyttöä varten</translation>
 <translation id="2956410042958133412">Tätä tiliä hallinnoivat <ph name="PARENT_NAME_1" /> ja <ph name="PARENT_NAME_2" />.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> sivu lukematta}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> sivua lukematta}}</translation>
 <translation id="2961210776189273067">Titteli</translation>
@@ -552,6 +555,7 @@ Hae sanaa koskettamalla sitä pitkään. Jos haluat tarkentaa hakuasi, valitse e
 <translation id="4452411734226507615">Sulje välilehti <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Lisätty kirjanmerkiksi kansioon <ph name="FOLDER_NAME" /></translation>
 <translation id="4472118726404937099">Kirjaudu sisään ja ota synkronointi käyttöön, niin sisältö synkronoidaan ja yksilöidään eri laitteilla</translation>
+<translation id="4479839115899251637">Poista lukulistalta</translation>
 <translation id="4479972344484327217">Asennetaan <ph name="MODULE" /> Chromeen…</translation>
 <translation id="4487967297491345095">Kaikki Chromen sovellustiedot, mukaan lukien tiedostot, asetukset, tilit ja tietokannat, poistetaan pysyvästi.</translation>
 <translation id="449126573531210296">Salaa synkronoidut salasanat Google-tilisi avulla</translation>
@@ -994,6 +998,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="6945221475159498467">Valitse</translation>
 <translation id="6955535239952325894">Tämä asetus on poistettu käytöstä ylläpidetyillä selaimilla</translation>
 <translation id="6963766334940102469">Poista kirjanmerkkejä</translation>
+<translation id="6964116075545915250">Muokkaa lukulistaa</translation>
 <translation id="696447261358045621">Poistu incognito-tilasta</translation>
 <translation id="6979737339423435258">Kaikki</translation>
 <translation id="6981982820502123353">Esteettömyys</translation>
@@ -1001,6 +1006,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="6989267951144302301">Lataus epäonnistui</translation>
 <translation id="6995899638241819463">Varoita, jos salasanoja vaarantuu tietosuojaloukkauksessa</translation>
 <translation id="7001056293070445572">Tämä tiedosto on suuri (<ph name="FILE_SIZE" />)</translation>
+<translation id="7020741890149022655">Lisää lukulistaan <ph name="BEGIN_NEW" />Uusi<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Avaa selaimessa</translation>
 <translation id="702463548815491781">Suositellaan käytettäväksi, kun TalkBack tai Kytkimen käyttö on päällä</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> palautettu</translation>

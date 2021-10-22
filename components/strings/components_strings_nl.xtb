@@ -610,6 +610,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2987034854559945715">Geen overeenkomende functies</translation>
 <translation id="2989742184762224133">Twee nietjes boven</translation>
 <translation id="2991174974383378012">Delen met websites</translation>
+<translation id="299122504639061328">Beheer je standaard zoekmachine en Site Search</translation>
 <translation id="2991571918955627853">Je kunt <ph name="SITE" /> momenteel niet bezoeken, omdat de website HSTS gebruikt. Netwerkfouten en aanvallen zijn doorgaans tijdelijk, dus deze pagina werkt later waarschijnlijk correct.</translation>
 <translation id="2995517112308048736">Bestandsgrootte:</translation>
 <translation id="3002501248619246229">Materiaal in de invoerlade controleren</translation>
@@ -950,6 +951,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="4123572138124678573">Drie perforaties onder</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 andere persoon}other{# andere mensen}}</translation>
 <translation id="4130226655945681476">Controleer de netwerkkabels, modem en router</translation>
+<translation id="4133224101597112888">De knop Dit tabblad delen, druk op Enter om dit tabblad te delen door bijvoorbeeld de link te delen, een QR-code te maken en te casten.</translation>
 <translation id="4134123981501319574">Document maken</translation>
 <translation id="413544239732274901">Meer informatie</translation>
 <translation id="4142935452406587478">Lade 10</translation>
@@ -1379,6 +1381,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="5426179911063097041"><ph name="SITE" /> wil meldingen sturen</translation>
 <translation id="5428105026674456456">Spaans</translation>
 <translation id="5430298929874300616">Bookmark verwijderen</translation>
+<translation id="5434889539950523874"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om dit tabblad te delen door bijvoorbeeld de link te delen, een QR-code te maken en te casten.</translation>
 <translation id="5439770059721715174">Schemavalidatiefout op '<ph name="ERROR_PATH" />': <ph name="ERROR" /></translation>
 <translation id="5443468954631487277">Omgekeerde volgorde met de bedrukte zijde omhoog</translation>
 <translation id="5447765697759493033">Deze site wordt niet vertaald</translation>
@@ -1985,6 +1988,7 @@ Aanvullende informatie:
 <translation id="7559278538486662777">Het formaat van deze app kan niet worden aangepast.</translation>
 <translation id="7564049878696755256">Je kunt de toegang tot je account van <ph name="ORG_NAME" /> kwijtraken of slachtoffer worden van identiteitsdiefstal. Chrome raadt je aan je wachtwoord nu te wijzigen.</translation>
 <translation id="7567204685887185387">De server kan niet bewijzen dat dit <ph name="DOMAIN" /> is. Het beveiligingscertificaat van de server is mogelijk frauduleus verstrekt. Dit kan worden veroorzaakt door een verkeerde configuratie of een aanvaller die je verbinding onderschept.</translation>
+<translation id="7569761772822664555">De knop Zoekmachines beheren, druk op Enter om je standaard zoekmachine en Site Search te beheren</translation>
 <translation id="7569952961197462199">Creditcard verwijderen uit Chrome?</translation>
 <translation id="7569983096843329377">Zwart</translation>
 <translation id="7575207903026901870">Suggestieknop verwijderen, druk op Enter om deze suggestie te verwijderen</translation>
@@ -2102,6 +2106,7 @@ Aanvullende informatie:
 <translation id="7950027195171824198">Je cookievoorkeuren beheren in de Chrome-instellingen</translation>
 <translation id="7951415247503192394">(32-bits)</translation>
 <translation id="7953569069500808819">Inbinden met nietjes boven</translation>
+<translation id="7954041596401851904">Deel dit tabblad door bijvoorbeeld de link te delen, een QR-code te maken en te casten.</translation>
 <translation id="7956713633345437162">Mobiele bookmarks</translation>
 <translation id="7961015016161918242">Nooit</translation>
 <translation id="7966803981046576691">Type taakaccount</translation>
@@ -2175,6 +2180,7 @@ Aanvullende informatie:
 <translation id="8202370299023114387">Conflict</translation>
 <translation id="8206978196348664717">Prc4 (envelop)</translation>
 <translation id="8211406090763984747">Verbinding is beveiligd</translation>
+<translation id="8215696832828595581">De knop Chrome aanpassen, druk op Enter om het uiterlijk van je browser aan te passen.</translation>
 <translation id="8218327578424803826">Toegewezen locatie:</translation>
 <translation id="8220146938470311105">C7/C6 (envelop)</translation>
 <translation id="8225771182978767009">De persoon die deze computer heeft geconfigureerd, heeft deze site geblokkeerd.</translation>
@@ -2316,6 +2322,7 @@ Aanvullende informatie:
 <translation id="868922510921656628">Pagina's per set</translation>
 <translation id="869891660844655955">Vervaldatum</translation>
 <translation id="8699041776323235191">HID-apparaat</translation>
+<translation id="8699899385443889493">De knop Chrome Dino-game spelen, druk op Enter om de Dino Run-game in Chrome te spelen</translation>
 <translation id="8703575177326907206">Je verbinding met <ph name="DOMAIN" /> is niet gecodeerd.</translation>
 <translation id="8705331520020532516">Serienummer</translation>
 <translation id="8708134712139312373">Kan vragen of deze site verbinding mag maken met bluetooth-apparaten</translation>

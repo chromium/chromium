@@ -613,6 +613,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2987034854559945715">Ei hakua vastaavia ominaisuuksia</translation>
 <translation id="2989742184762224133">Kaksi niittiä yläreunassa</translation>
 <translation id="2991174974383378012">Jakaminen verkkosivustojen kanssa</translation>
+<translation id="299122504639061328">Hallinnoi oletushakukonetta ja sivustohakua</translation>
 <translation id="2991571918955627853"><ph name="SITE" /> ei ole juuri nyt käytettävissä, koska se käyttää HSTS:ää. Verkkovirheet ja hyökkäykset ovat yleensä väliaikaisia, joten sivu luultavasti toimii myöhemmin.</translation>
 <translation id="2995517112308048736">Tiedoston koko:</translation>
 <translation id="3002501248619246229">Tarkista syöttölokeron media</translation>
@@ -959,6 +960,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4123572138124678573">Kolme reikää alareunassa</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 muu}other{# muuta}}</translation>
 <translation id="4130226655945681476">Tarkista verkkojohdot, modeemi ja reititin.</translation>
+<translation id="4133224101597112888">Jaa tämä välilehti ‑painike, jaa tämä välilehti esimerkiksi linkin kautta, luomalla QR-koodin tai striimaamalla painamalla Enter.</translation>
 <translation id="4134123981501319574">Luo dokumentti</translation>
 <translation id="413544239732274901">Lisätietoja</translation>
 <translation id="4142935452406587478">Lokero 10</translation>
@@ -1388,6 +1390,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5426179911063097041"><ph name="SITE" /> haluaa lähettää sinulle ilmoituksia</translation>
 <translation id="5428105026674456456">espanja</translation>
 <translation id="5430298929874300616">Poista kirjanmerkki</translation>
+<translation id="5434889539950523874"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />, jaa tämä välilehti esimerkiksi linkin kautta, luomalla QR-koodin tai striimaamalla painamalla sarkainta ja sitten Enter.</translation>
 <translation id="5439770059721715174">Mallin todennusvirhe kohdassa <ph name="ERROR_PATH" />: <ph name="ERROR" /></translation>
 <translation id="5443468954631487277">Käänteinen järjestys tulostuspuoli ylöspäin</translation>
 <translation id="5447765697759493033">Sivustoa ei käännetä.</translation>
@@ -1995,6 +1998,7 @@ Lisätietoja:
 <translation id="7559278538486662777">Tämän sovellusikkunan kokoa ei voi muuttaa.</translation>
 <translation id="7564049878696755256">Saatat menettää <ph name="ORG_NAME" />-tilisi käyttöoikeuden tai joutua identiteettivarkauden uhriksi. Chrome suosittelee salasanan vaihtamista välittömästi.</translation>
 <translation id="7567204685887185387">Palvelin ei voinut todistaa olevansa <ph name="DOMAIN" />; sen suojausvarmenne on ehkä luotu vilpillisesti. Tämä voi johtua määritysvirheestä tai verkkoyhteytesi siepanneesta hyökkääjästä.</translation>
+<translation id="7569761772822664555">Hallinnoi hakukoneita ‑painike, hallinnoi oletushakukonetta ja sivustohakua painamalla Enter</translation>
 <translation id="7569952961197462199">Poistetaanko luottokortti Chromen tiedoista?</translation>
 <translation id="7569983096843329377">Musta</translation>
 <translation id="7575207903026901870">Ehdotuksen poistopainike, poista ehdotus painamalla Enter</translation>
@@ -2112,6 +2116,7 @@ Lisätietoja:
 <translation id="7950027195171824198">Muuta evästevalintojasi Chromen asetuksista</translation>
 <translation id="7951415247503192394">(32-bittinen)</translation>
 <translation id="7953569069500808819">Reunasidonta yläreunassa</translation>
+<translation id="7954041596401851904">Jaa välilehti esimerkiksi jakamalla linkki, luomalla QR-koodi tai striimaamalla.</translation>
 <translation id="7956713633345437162">Mobiilikirjanmerkit</translation>
 <translation id="7961015016161918242">Ei koskaan</translation>
 <translation id="7966803981046576691">Työpaikkatilin tyyppi</translation>
@@ -2185,6 +2190,7 @@ Lisätietoja:
 <translation id="8202370299023114387">Ristiriita</translation>
 <translation id="8206978196348664717">Prc4 (kirjekuori)</translation>
 <translation id="8211406090763984747">Yhteys on turvallinen</translation>
+<translation id="8215696832828595581">Muokkaa Chromea ‑painike, muokkaa selaimen ulkoasua painamalla Enter.</translation>
 <translation id="8218327578424803826">Määrätty sijainti:</translation>
 <translation id="8220146938470311105">C7/C6 (kirjekuori)</translation>
 <translation id="8225771182978767009">Tämän tietokoneen määrittänyt henkilö on estänyt tämän sivuston.</translation>
@@ -2327,6 +2333,7 @@ Lisätietoja:
 <translation id="868922510921656628">Sivuja joukkoa kohti</translation>
 <translation id="869891660844655955">Vanhenemispäivämäärä</translation>
 <translation id="8699041776323235191">HID-laite</translation>
+<translation id="8699899385443889493">Pelaa Chromen Dino peliä ‑painike, pelaa Dino Run ‑peliä Chromessa painamalla Enter</translation>
 <translation id="8703575177326907206">Yhteyttäsi verkkotunnukseen <ph name="DOMAIN" /> ei ole salattu.</translation>
 <translation id="8705331520020532516">Sarjanumero</translation>
 <translation id="8708134712139312373">Saa pyytää lupaa yhdistää Bluetooth-laitteisiin</translation>

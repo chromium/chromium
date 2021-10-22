@@ -426,6 +426,7 @@
 <translation id="1436390408194692385"><ph name="TICKET_TIME_LEFT" /> ವರೆಗೆ ಮಾನ್ಯವಾಗಿರುತ್ತದೆ</translation>
 <translation id="1436784010935106834">ತೆಗೆದುಹಾಕಲಾಗಿದೆ</translation>
 <translation id="1437986450143295708">ಸಮಸ್ಯೆಯನ್ನು ವಿವರವಾಗಿ ವಿವರಿಸಿ</translation>
+<translation id="1439671507542716852">ದೀರ್ಘ-ಕಾಲದ ಬೆಂಬಲ</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1442851588227551435">ಸಕ್ರಿಯ Kerberos ಟಿಕೆಟ್ ಅನ್ನು ಹೊಂದಿಸಿ</translation>
 <translation id="1444628761356461360">ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಸಾಧನದ ಮಾಲೀಕರಿಂದ ನಿರ್ವಹಿಸಿಲಾಗುತ್ತದೆ, <ph name="OWNER_EMAIL" />.</translation>
@@ -1433,6 +1434,7 @@
 <translation id="2454264884354864965">ಕ್ಯಾಮರಾ ಆಫ್ ಆಗಿದೆ</translation>
 <translation id="245650153866130664">ಟಿಕೆಟ್ ಅನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ರಿಫ್ರೆಶ್ ಮಾಡಲು, "ಪಾಸ್‌ವರ್ಡ್‌ ನೆನಪಿಟ್ಟುಕೊಳ್ಳಿ" ಚೆಕ್ ಮಾರ್ಕ್ ಆರಿಸಿ. ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ಸಂಗ್ರಹಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> ಅಪ್ಲಿಕೇಶನ್ <ph name="VOLUME_NAME" /> ನಿಂದ ಫೈಲ್‌ಗಳನ್ನು ನಕಲಿಸಲು ಬಯಸುತ್ತಿದೆ.</translation>
+<translation id="2457842160081795172">ಪ್ರಸ್ತುತ <ph name="CHANNEL_NAME" /> ಚಾನಲ್‌ನಲ್ಲಿ</translation>
 <translation id="2458379781610688953">ಖಾತೆಯನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ, <ph name="EMAIL" /></translation>
 <translation id="2458591546854598341">ಸಾಧನ ನಿರ್ವಹಣೆಯ ಟೋಕನ್ ಅಮಾನ್ಯವಾಗಿದೆ.</translation>
 <translation id="2459703812219683497">ಸಕ್ರಿಯಗೊಳಿಸುವಿಕೆ ಕೋಡ್ ಅನ್ನು ಪತ್ತೆಹಚ್ಚಲಾಗಿದೆ</translation>

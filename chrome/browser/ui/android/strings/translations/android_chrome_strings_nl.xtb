@@ -321,6 +321,7 @@ Tik op een woord en houd dit vast om te zoeken. Selecteer meer of minder woorden
 <translation id="2932222164150889403">Je toetsenbord verandert niet</translation>
 <translation id="2942036813789421260">Voorbeeldtabblad is gesloten</translation>
 <translation id="2946420957526726953">Chrome wordt geüpdatet om verbinding te maken met andere apparaten</translation>
+<translation id="2951071800649516099">Voeg pagina's aan je leeslijst toe voor later</translation>
 <translation id="2956410042958133412">Dit account wordt beheerd door <ph name="PARENT_NAME_1" /> en <ph name="PARENT_NAME_2" />.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> ongelezen pagina}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ongelezen pagina's}}</translation>
 <translation id="2961210776189273067">Titel</translation>
@@ -554,6 +555,7 @@ Tik op een woord en houd dit vast om te zoeken. Selecteer meer of minder woorden
 <translation id="4452411734226507615">Tabblad <ph name="TAB_TITLE" /> sluiten</translation>
 <translation id="4452548195519783679">Bookmark gemaakt in <ph name="FOLDER_NAME" /></translation>
 <translation id="4472118726404937099">Log in en zet de synchronisatie aan om verschillende apparaten te synchroniseren en te personaliseren</translation>
+<translation id="4479839115899251637">Verwijderen uit leeslijst</translation>
 <translation id="4479972344484327217"><ph name="MODULE" /> installeren voor Chrome…</translation>
 <translation id="4487967297491345095">Alle app-gegevens voor Chrome worden definitief verwijderd. Dit omvat alle bestanden, instellingen, accounts, databases, enzovoort.</translation>
 <translation id="449126573531210296">Gesynchroniseerde wachtwoorden versleutelen met je Google-account</translation>
@@ -996,6 +998,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te tonen di
 <translation id="6945221475159498467">Selecteren</translation>
 <translation id="6955535239952325894">Deze instelling staat uit in beheerde browsers</translation>
 <translation id="6963766334940102469">Bookmarks verwijderen</translation>
+<translation id="6964116075545915250">Leeslijst bewerken</translation>
 <translation id="696447261358045621">Incognitomodus verlaten</translation>
 <translation id="6979737339423435258">Alles</translation>
 <translation id="6981982820502123353">Toegankelijkheid</translation>
@@ -1003,6 +1006,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te tonen di
 <translation id="6989267951144302301">Kan niet downloaden</translation>
 <translation id="6995899638241819463">Waarschuwen als je wachtwoorden zijn gelekt bij een gegevenslek</translation>
 <translation id="7001056293070445572">Dit bestand is groot (<ph name="FILE_SIZE" />)</translation>
+<translation id="7020741890149022655">Toevoegen aan leeslijst <ph name="BEGIN_NEW" />Nieuw<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Openen in browser</translation>
 <translation id="702463548815491781">Aanbevolen als TalkBack of Toegang via schakelaar aanstaat</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> is hersteld</translation>

@@ -109,6 +109,7 @@
 <translation id="1680919990519905526">Handle bildet med Google Lens <ph name="BEGIN_NEW" />Ny<ph name="END_NEW" /></translation>
 <translation id="1682195225331129001">Prøv nå</translation>
 <translation id="1697284962337958118">Legg til i</translation>
+<translation id="1702543251015153180">Vil du endre innstillingene for mørkt tema?</translation>
 <translation id="1718835860248848330">Siste time</translation>
 <translation id="1724977129262658800">Lås opp for å redigere passordet ditt</translation>
 <translation id="173522743738009831">Om Privacy Sandbox</translation>
@@ -259,6 +260,7 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="2581165646603367611">Dette sletter informasjonskapsler, buffere og annen data fra nettsteder Chrome ikke tror er viktige.</translation>
 <translation id="2587052924345400782">En nyere versjon er tilgjengelig</translation>
 <translation id="2593272815202181319">Monospace</translation>
+<translation id="2604446170045642109">Du kan slå av mørkt tema for nettsteder i innstillingene.</translation>
 <translation id="2612676031748830579">Kortnummer</translation>
 <translation id="2625189173221582860">Passordet er kopiert</translation>
 <translation id="2631006050119455616">Spart</translation>
@@ -319,6 +321,7 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="2932222164150889403">Tastaturet ditt endres ikke</translation>
 <translation id="2942036813789421260">Fanen for forhåndsvisning er lukket</translation>
 <translation id="2946420957526726953">Oppdaterer Chrome for å kunne koble til andre enheter</translation>
+<translation id="2951071800649516099">Legg til sider på leselisten til senere</translation>
 <translation id="2956410042958133412">Denne kontoen er administrert av <ph name="PARENT_NAME_1" /> og <ph name="PARENT_NAME_2" />.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> ulest side}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> uleste sider}}</translation>
 <translation id="2961210776189273067">Tittel</translation>
@@ -552,6 +555,7 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="4452411734226507615">Lukk <ph name="TAB_TITLE" />-fanen</translation>
 <translation id="4452548195519783679">Satt som bokmerke i <ph name="FOLDER_NAME" /></translation>
 <translation id="4472118726404937099">For å synkronisere og gi et personlig preg på alle enhetene, slå på synkronisering</translation>
+<translation id="4479839115899251637">Slett fra leselisten</translation>
 <translation id="4479972344484327217">Installerer <ph name="MODULE" /> for Chrome …</translation>
 <translation id="4487967297491345095">Alle appdataene for Chrome slettes permanent. Dette omfatter alle filer, innstillinger, kontoer, databaser osv.</translation>
 <translation id="449126573531210296">Kryptér synkroniserte passord med Google-kontoen din</translation>
@@ -994,6 +998,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6945221475159498467">Velg</translation>
 <translation id="6955535239952325894">Denne innstillingen er slått av for administrerte nettlesere</translation>
 <translation id="6963766334940102469">Slett bokmerker</translation>
+<translation id="6964116075545915250">Rediger leseliste</translation>
 <translation id="696447261358045621">Avslutt Inkognitomodus</translation>
 <translation id="6979737339423435258">Alle datoer</translation>
 <translation id="6981982820502123353">Tilgjengelighet</translation>
@@ -1001,6 +1006,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6989267951144302301">Kunne ikke laste ned</translation>
 <translation id="6995899638241819463">Få en advarsel hvis passord blir avdekket i databrudd</translation>
 <translation id="7001056293070445572">Denne filen er stor (<ph name="FILE_SIZE" />)</translation>
+<translation id="7020741890149022655">Legg til på leselisten <ph name="BEGIN_NEW" />Nyhet<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Åpne i nettleseren</translation>
 <translation id="702463548815491781">Anbefalt når TalkBack eller brytertilgang er på</translation>
 <translation id="7027549951530753705">Gjenopprettet <ph name="ITEM_TITLE" /></translation>
