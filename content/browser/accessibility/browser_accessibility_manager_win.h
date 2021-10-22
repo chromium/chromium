@@ -47,7 +47,6 @@ class CONTENT_EXPORT BrowserAccessibilityManagerWin
   BrowserAccessibility* GetFocus() const override;
   bool IsIgnoredChangedNode(const BrowserAccessibility* node) const;
   bool CanFireEvents() const override;
-  gfx::Rect GetViewBoundsInScreenCoordinates() const override;
 
   void FireFocusEvent(BrowserAccessibility* node) override;
   void FireBlinkEvent(ax::mojom::Event event_type,

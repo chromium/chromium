@@ -4007,8 +4007,18 @@ static NSDictionary* createMathSubSupScriptsPair(
   if (![self instanceActive])
     return NSZeroRect;
 
-  return gfx::ScreenRectToNSRect(_owner->GetBoundsRect(
-      ui::AXCoordinateSystem::kScreenDIPs, ui::AXClippingBehavior::kClipped));
+  BrowserAccessibilityManager* manager = _owner->manager();
+  auto rect = _owner->GetBoundsRect(ui::AXCoordinateSystem::kScreenDIPs,
+                                    ui::AXClippingBehavior::kClipped);
+
+  // Convert to DIPs if UseZoomForDSF is enabled.
+  // TODO(vmpstr): GetBoundsRect() call above should account for this instead.
+  auto result_rect =
+      IsUseZoomForDSFEnabled()
+          ? ScaleToRoundedRect(rect, 1.f / manager->device_scale_factor())
+          : rect;
+
+  return gfx::ScreenRectToNSRect(result_rect);
 }
 
 - (BOOL)isCheckable {
@@ -4159,17 +4169,29 @@ static NSDictionary* createMathSubSupScriptsPair(
   // The point we receive is in frame coordinates.
   // Convert to screen coordinates and then to physical pixel coordinates.
   BrowserAccessibilityManager* manager = _owner->manager();
-  gfx::Point screen_point(point.x, point.y);
-  screen_point +=
+  gfx::Point screen_point_in_dips(point.x, point.y);
+
+  auto offset_in_blink_space =
       manager->GetViewBoundsInScreenCoordinates().OffsetFromOrigin();
 
-  gfx::Point physical_pixel_point =
-      IsUseZoomForDSFEnabled()
-          ? screen_point
-          : ScaleToRoundedPoint(screen_point, manager->device_scale_factor());
+  // If UseZoomForDSF is enabled, blink space is physical, so we scale the
+  // point first then add the offset. Otherwise, it's in DIPs so we add the
+  // offset first and then scale.
+  // TODO(vmpstr): GetViewBoundsInScreenCoordinates should return consistent
+  // space.
+  gfx::Point screen_point_in_physical_space;
+  if (IsUseZoomForDSFEnabled()) {
+    screen_point_in_physical_space = ScaleToRoundedPoint(
+        screen_point_in_dips, manager->device_scale_factor());
+    screen_point_in_physical_space += offset_in_blink_space;
+  } else {
+    screen_point_in_dips += offset_in_blink_space;
+    screen_point_in_physical_space = ScaleToRoundedPoint(
+        screen_point_in_dips, manager->device_scale_factor());
+  }
 
   BrowserAccessibility* hit =
-      manager->CachingAsyncHitTest(physical_pixel_point);
+      manager->CachingAsyncHitTest(screen_point_in_physical_space);
   if (!hit)
     return nil;
 

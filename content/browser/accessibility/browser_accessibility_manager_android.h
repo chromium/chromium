@@ -96,7 +96,6 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
                       BrowserAccessibility* node) override;
   void FireGeneratedEvent(ui::AXEventGenerator::Event event_type,
                           BrowserAccessibility* node) override;
-  gfx::Rect GetViewBoundsInScreenCoordinates() const override;
 
   void FireLocationChanged(BrowserAccessibility* node);
 
