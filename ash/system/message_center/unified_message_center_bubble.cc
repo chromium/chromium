@@ -118,12 +118,11 @@ UnifiedMessageCenterBubble::~UnifiedMessageCenterBubble() {
     tray_->tray_event_filter()->RemoveBubble(this);
     tray_->bubble()->unified_view()->RemoveObserver(this);
     CHECK(message_center_view_);
-    message_center_view_->OnShutdown();
     message_center_view_->RemoveObserver(this);
 
     bubble_view_->ResetDelegate();
     bubble_widget_->RemoveObserver(this);
-    bubble_widget_->Close();
+    bubble_widget_->CloseNow();
   }
   CHECK(!views::WidgetObserver::IsInObserverList());
 }

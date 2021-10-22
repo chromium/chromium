@@ -278,8 +278,7 @@ UnifiedMessageListView::UnifiedMessageListView(
 }
 
 UnifiedMessageListView::~UnifiedMessageListView() {
-  if (model_)
-    model_->ClearNotificationChanges();
+  model_->ClearNotificationChanges();
   for (auto* view : children())
     AsMVC(view)->StoreExpandedState(model_);
 }
@@ -512,10 +511,6 @@ void UnifiedMessageListView::OnNotificationSlidOut() {
   state_ = State::MOVE_DOWN;
   UpdateBounds();
   StartAnimation();
-}
-
-void UnifiedMessageListView::OnShutdown() {
-  model_ = nullptr;
 }
 
 void UnifiedMessageListView::OnNotificationUpdated(const std::string& id) {
