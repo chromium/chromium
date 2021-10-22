@@ -75,6 +75,10 @@ gfx::NativePixmapHandle FlatlandSysmemNativePixmap::ExportHandle() {
   return gfx::CloneHandleForIPC(handle_);
 }
 
+const gfx::NativePixmapHandle& FlatlandSysmemNativePixmap::PeekHandle() const {
+  return handle_;
+}
+
 bool FlatlandSysmemNativePixmap::SupportsOverlayPlane(
     gfx::AcceleratedWidget widget) const {
   return false;

@@ -24,6 +24,19 @@ fuchsia::ui::views::ViewRef DupViewRef(
   return dup;
 }
 
+ui::PlatformWindowInitProperties CreatePlatformWindowInitProperties(
+    scenic::ViewRefPair view_ref_pair,
+    ui::ScenicWindowDelegate* scenic_window_delegate) {
+  ui::PlatformWindowInitProperties properties;
+  properties.view_ref_pair = std::move(view_ref_pair);
+  properties.enable_keyboard =
+      base::FeatureList::IsEnabled(features::kKeyboardInput);
+  properties.enable_virtual_keyboard =
+      base::FeatureList::IsEnabled(features::kVirtualKeyboard);
+  properties.scenic_window_delegate = scenic_window_delegate;
+  return properties;
+}
+
 }  // namespace
 
 class FrameWindowTreeHost::WindowParentingClientImpl
@@ -59,14 +72,26 @@ FrameWindowTreeHost::FrameWindowTreeHost(
       web_contents_(web_contents) {
   CreateCompositor();
 
-  ui::PlatformWindowInitProperties properties;
-  properties.view_token = std::move(view_token.value);
-  properties.view_ref_pair = std::move(view_ref_pair);
-  properties.enable_keyboard =
-      base::FeatureList::IsEnabled(features::kKeyboardInput);
-  properties.enable_virtual_keyboard =
-      base::FeatureList::IsEnabled(features::kVirtualKeyboard);
-  properties.scenic_window_delegate = this;
+  ui::PlatformWindowInitProperties properties =
+      CreatePlatformWindowInitProperties(std::move(view_ref_pair), this);
+  properties.view_token = std::move(view_token);
+  CreateAndSetPlatformWindow(std::move(properties));
+
+  window_parenting_client_ =
+      std::make_unique<WindowParentingClientImpl>(window());
+}
+
+FrameWindowTreeHost::FrameWindowTreeHost(
+    fuchsia::ui::views::ViewCreationToken view_creation_token,
+    scenic::ViewRefPair view_ref_pair,
+    content::WebContents* web_contents)
+    : view_ref_(DupViewRef(view_ref_pair.view_ref)),
+      web_contents_(web_contents) {
+  CreateCompositor();
+
+  ui::PlatformWindowInitProperties properties =
+      CreatePlatformWindowInitProperties(std::move(view_ref_pair), this);
+  properties.view_creation_token = std::move(view_creation_token);
   CreateAndSetPlatformWindow(std::move(properties));
 
   window_parenting_client_ =

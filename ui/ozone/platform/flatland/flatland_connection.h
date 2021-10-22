@@ -7,35 +7,57 @@
 
 #include <fuchsia/ui/composition/cpp/fidl.h>
 
+#include "base/callback.h"
+#include "base/containers/queue.h"
+
 namespace ui {
 
 // Helper class used to own fuchsia.ui.composition.Flatland to safely call
 // Present. By limiting the number of Present calls, FlatlandConnection ensures
-// that the Session will not be shut down, thus, users of FlatlandConnection
-// should not call Present on their own.
-//
-// More information can be found in the fuchsia.flatland.scheduling FIDL
-// library, in the prediction_info.fidl file.
+// that the Flatland will not be shut down, thus, users of FlatlandConnection
+// should not call Flatland::Present on their own.
 class FlatlandConnection {
  public:
-  FlatlandConnection();
+  FlatlandConnection(
+      const std::string& debug_name,
+      fidl::InterfaceHandle<fuchsia::ui::composition::Flatland> flatland);
   ~FlatlandConnection();
 
   FlatlandConnection(const FlatlandConnection&) = delete;
   FlatlandConnection& operator=(const FlatlandConnection&) = delete;
 
-  void QueuePresent();
+  static fidl::InterfaceHandle<fuchsia::ui::composition::Flatland>
+  ConnectToFlatland();
 
   fuchsia::ui::composition::Flatland* flatland() { return flatland_.get(); }
 
+  fuchsia::ui::composition::TransformId NextTransformId() {
+    return {++next_transform_id_};
+  }
+
+  fuchsia::ui::composition::ContentId NextContentId() {
+    return {++next_content_id_};
+  }
+
+  using OnFramePresentedCallback =
+      base::OnceCallback<void(zx_time_t actual_presentation_time)>;
+  void Present();
+  void Present(fuchsia::ui::composition::PresentArgs present_args,
+               OnFramePresentedCallback callback);
+
  private:
-  void QueuePresentHelper();
+  void OnError(fuchsia::ui::composition::FlatlandError error);
+  void OnNextFrameBegin(
+      fuchsia::ui::composition::OnNextFrameBeginValues values);
   void OnFramePresented(fuchsia::scenic::scheduling::FramePresentedInfo info);
 
   fuchsia::ui::composition::FlatlandPtr flatland_;
+  uint64_t next_transform_id_ = 0;
+  uint64_t next_content_id_ = 0;
+  uint32_t present_credits_ = 1;
 
-  bool presents_allowed_ = true;
-  bool present_queued_ = false;
+  std::vector<zx::event> previous_present_release_fences_;
+  base::queue<OnFramePresentedCallback> presented_callbacks_;
 };
 
 }  // namespace ui

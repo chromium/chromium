@@ -299,6 +299,15 @@ void CastComponent::CreateViewWithViewRef(
       std::move(view_token), std::move(control_ref), std::move(view_ref));
 }
 
+void CastComponent::CreateView2(fuchsia::ui::app::CreateView2Args view_args) {
+  if (is_headless_) {
+    frame()->EnableHeadlessRendering();
+    return;
+  }
+
+  WebComponent::CreateView2(std::move(view_args));
+}
+
 void CastComponent::OnZxHandleSignalled(zx_handle_t handle,
                                         zx_signals_t signals) {
   DCHECK_EQ(signals, ZX_SOCKET_PEER_CLOSED);

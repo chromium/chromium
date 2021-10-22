@@ -46,10 +46,15 @@ class COMPONENT_EXPORT(OZONE) FlatlandWindow : public PlatformWindow,
   FlatlandWindow(const FlatlandWindow&) = delete;
   FlatlandWindow& operator=(const FlatlandWindow&) = delete;
 
+  // Embeds the Flatland identified by |token| into the scene graph.
+  void AttachSurfaceContent(fuchsia::ui::views::ViewportCreationToken token);
+
   // Returns a ViewRef associated with this window.
   fuchsia::ui::views::ViewRef CloneViewRef();
 
-  bool virtual_keyboard_enabled() const { return virtual_keyboard_enabled_; }
+  // Used by OzonePlatformFlatland to determine whether to enable on-screen
+  // keyboard features when creating the InputMethod for the window.
+  bool virtual_keyboard_enabled() const { return is_virtual_keyboard_enabled_; }
 
   // PlatformWindow implementation.
   gfx::Rect GetBounds() const override;
@@ -82,13 +87,12 @@ class COMPONENT_EXPORT(OZONE) FlatlandWindow : public PlatformWindow,
   void SizeConstraintsChanged() override;
 
  private:
-  // Callbacks from |graph_link_to_parent_|.
+  // Callbacks from |parent_viewport_watcher_|.
   void OnGetLayout(fuchsia::ui::composition::LayoutInfo info);
+  void OnGetStatus(fuchsia::ui::composition::ParentViewportStatus status);
 
   // Called from link callbacks to handle view properties and metrics
   // changes.
-  void OnViewProperties(const fuchsia::math::SizeU& properties);
-  void OnViewMetrics(const fuchsia::math::SizeU& metrics);
   void OnViewAttachedChanged(bool is_view_attached);
 
   // Called to handle input events.
@@ -118,14 +122,12 @@ class COMPONENT_EXPORT(OZONE) FlatlandWindow : public PlatformWindow,
   // queueing Present() operations.
   FlatlandConnection flatland_;
 
-  uint64_t next_transform_id_ = 1;
   fuchsia::ui::composition::TransformId root_transform_id_;
-  fuchsia::ui::composition::TransformId render_transform_id_;
   fuchsia::ui::composition::TransformId surface_transform_id_;
 
   fuchsia::ui::composition::ContentId surface_content_id_;
 
-  // TODO(crbug.com/1230150): Add link primitives.
+  fuchsia::ui::composition::ParentViewportWatcherPtr parent_viewport_watcher_;
 
   // The scale between logical pixels and physical pixels, set based on the
   // fuchsia::ui::gfx::Metrics event. It's used to calculate dimensions of the
@@ -139,13 +141,23 @@ class COMPONENT_EXPORT(OZONE) FlatlandWindow : public PlatformWindow,
 
   // Current view size in device pixels. The size is set to
   // |PlatformWindowInitProperties.bounds.size()| value until
-  // |graph_link_to_parent_| is bound and returns OnGetLayout().
+  // |parent_viewport_watcher_| is bound and returns OnGetLayout().
   gfx::Rect bounds_;
 
   absl::optional<fuchsia::math::SizeU> view_properties_;
 
-  bool visible_ = false;
-  bool virtual_keyboard_enabled_ = false;
+  // False if the View for this window is detached from the View tree, in which
+  // case it is definitely not visible.
+  bool is_visible_ = false;
+
+  // True if the View occupies the full screen.
+  bool is_fullscreen_ = false;
+
+  // True if the on-screen virtual keyboard is available for this window.
+  bool is_virtual_keyboard_enabled_ = false;
+
+  // True if |view_| is currently attached to a scene.
+  bool is_view_attached_ = false;
 };
 
 }  // namespace ui

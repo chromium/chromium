@@ -71,6 +71,8 @@ constexpr SandboxConfig kGpuConfig = {
         fuchsia::media::ProfileProvider::Name_,
         fuchsia::sysmem::Allocator::Name_,
         "fuchsia.vulkan.loader.Loader",
+        fuchsia::ui::composition::Allocator::Name_,
+        fuchsia::ui::composition::Flatland::Name_,
         fuchsia::ui::scenic::Scenic::Name_,
     }),
     kProvideVulkanResources,
@@ -93,6 +95,7 @@ constexpr SandboxConfig kRendererConfig = {
         fuchsia::mediacodec::CodecFactory::Name_,
         fuchsia::memorypressure::Provider::Name_,
         fuchsia::sysmem::Allocator::Name_,
+        fuchsia::ui::composition::Allocator::Name_,
     }),
     kAmbientMarkVmoAsExecutable,
 };

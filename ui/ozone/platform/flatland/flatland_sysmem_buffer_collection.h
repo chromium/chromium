@@ -6,6 +6,7 @@
 #define UI_OZONE_PLATFORM_FLATLAND_FLATLAND_SYSMEM_BUFFER_COLLECTION_H_
 
 #include <fuchsia/sysmem/cpp/fidl.h>
+#include <fuchsia/ui/composition/cpp/fidl.h>
 #include <vulkan/vulkan.h>
 
 #include "base/callback.h"
@@ -52,20 +53,17 @@ class FlatlandSysmemBufferCollection
   // collection is created. |size| may be empty. In that case |token_handle|
   // must not be null and the image size is determined by the other sysmem
   // participants.
-  // If |register_with_image_pipe| is true, new FlatlandOverlayView instance is
-  // created and |token_handle| gets duplicated to be added to its ImagePipe.
-  bool Initialize(fuchsia::sysmem::Allocator_Sync* allocator,
+  // If usage has SCANOUT, |token_handle| gets duplicated and registered with
+  // the Scenic Allocator.
+  bool Initialize(fuchsia::sysmem::Allocator_Sync* sysmem_allocator,
+                  fuchsia::ui::composition::Allocator* flatland_allocator,
                   FlatlandSurfaceFactory* flatland_surface_factory,
                   zx::channel token_handle,
                   gfx::Size size,
                   gfx::BufferFormat format,
                   gfx::BufferUsage usage,
                   VkDevice vk_device,
-                  size_t min_buffer_count,
-                  bool register_with_allocator);
-
-  // Must not be called more than once.
-  void SetOnDeletedCallback(base::OnceClosure on_deleted);
+                  size_t min_buffer_count);
 
   // Creates a NativePixmap the buffer with the specified index. Returned
   // NativePixmap holds a reference to the collection, so the collection is not
@@ -90,15 +88,22 @@ class FlatlandSysmemBufferCollection
     return buffers_info_.settings.buffer_settings.size_bytes;
   }
 
+  // Returns a duplicate of |flatland_import_token_| so Images can be created.
+  fuchsia::ui::composition::BufferCollectionImportToken GetFlatlandImportToken()
+      const;
+  void AddOnDeletedCallback(base::OnceClosure on_deleted);
+
  private:
   friend class base::RefCountedThreadSafe<FlatlandSysmemBufferCollection>;
 
   ~FlatlandSysmemBufferCollection();
 
   bool InitializeInternal(
-      fuchsia::sysmem::Allocator_Sync* allocator,
+      fuchsia::sysmem::Allocator_Sync* sysmem_allocator,
+      fuchsia::ui::composition::Allocator* flatland_allocator,
       fuchsia::sysmem::BufferCollectionTokenSyncPtr collection_token,
-      size_t buffers_for_camping);
+      bool register_with_flatland_allocator,
+      size_t min_buffer_count);
 
   void InitializeImageCreateInfo(VkImageCreateInfo* vk_image_info,
                                  gfx::Size size);
@@ -120,6 +125,7 @@ class FlatlandSysmemBufferCollection
 
   fuchsia::sysmem::BufferCollectionSyncPtr collection_;
   fuchsia::sysmem::BufferCollectionInfo_2 buffers_info_;
+  fuchsia::ui::composition::BufferCollectionImportToken flatland_import_token_;
 
   // Vulkan device for which the collection was initialized.
   VkDevice vk_device_ = VK_NULL_HANDLE;
@@ -137,7 +143,7 @@ class FlatlandSysmemBufferCollection
   size_t buffer_size_ = 0;
   bool is_protected_ = false;
 
-  base::OnceClosure on_deleted_;
+  std::vector<base::OnceClosure> on_deleted_;
 };
 
 }  // namespace ui

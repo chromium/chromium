@@ -31,25 +31,6 @@
 
 namespace ui {
 
-namespace {
-
-constexpr char kFuchsiaSwapchainLayerName[] =
-    "VK_LAYER_FUCHSIA_imagepipe_swapchain";
-
-bool CheckSwapchainAvailable() {
-  uint32_t num_instance_exts;
-  VkResult result = vkEnumerateInstanceExtensionProperties(
-      kFuchsiaSwapchainLayerName, &num_instance_exts, nullptr);
-  return result == VK_SUCCESS;
-}
-
-bool IsSwapchainEnabled() {
-  static bool is_swapchain_enabled = CheckSwapchainAvailable();
-  return is_swapchain_enabled;
-}
-
-}  // namespace
-
 VulkanImplementationFlatland::VulkanImplementationFlatland(
     FlatlandSurfaceFactory* flatland_surface_factory,
     FlatlandSysmemBufferManager* flatland_sysmem_buffer_manager,
@@ -81,13 +62,6 @@ bool VulkanImplementationFlatland::InitializeVulkanInstance(
       VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME,
   };
   std::vector<const char*> required_layers;
-
-  if (IsSwapchainEnabled()) {
-    required_layers.push_back(kFuchsiaSwapchainLayerName);
-    required_extensions.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
-    required_extensions.push_back(VK_FUCHSIA_IMAGEPIPE_SURFACE_EXTENSION_NAME);
-  };
-
   return vulkan_instance_.Initialize(required_extensions, required_layers);
 }
 
@@ -97,10 +71,6 @@ gpu::VulkanInstance* VulkanImplementationFlatland::GetVulkanInstance() {
 
 std::unique_ptr<gpu::VulkanSurface>
 VulkanImplementationFlatland::CreateViewSurface(gfx::AcceleratedWidget window) {
-  if (!IsSwapchainEnabled()) {
-    LOG(FATAL) << "CreateViewSurface() called while swapchain extension isn't "
-                  "enabled.";
-  }
   NOTREACHED();
   return nullptr;
 }
@@ -126,9 +96,6 @@ VulkanImplementationFlatland::GetRequiredDeviceExtensions() {
       VK_KHR_MAINTENANCE1_EXTENSION_NAME,
       VK_KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME,
   };
-
-  if (IsSwapchainEnabled())
-    result.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
 
   return result;
 }
@@ -301,11 +268,9 @@ VulkanImplementationFlatland::RegisterSysmemBufferCollection(
     gfx::Size size,
     size_t min_buffer_count,
     bool register_with_image_pipe) {
-  fuchsia::images::ImagePipe2Ptr image_pipe = nullptr;
   auto buffer_collection =
       flatland_sysmem_buffer_manager_->ImportFlatlandSysmemBufferCollection(
-          device, id, std::move(token), size, format, usage, min_buffer_count,
-          register_with_image_pipe);
+          device, id, std::move(token), size, format, usage, min_buffer_count);
   if (!buffer_collection)
     return nullptr;
 

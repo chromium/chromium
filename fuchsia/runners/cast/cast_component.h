@@ -119,6 +119,7 @@ class CastComponent final : public WebComponent,
   void CreateViewWithViewRef(zx::eventpair view_token,
                              fuchsia::ui::views::ViewRefControl control_ref,
                              fuchsia::ui::views::ViewRef view_ref) override;
+  void CreateView2(fuchsia::ui::app::CreateView2Args view_args) override;
 
   // base::MessagePumpFuchsia::ZxHandleWatcher implementation.
   // Called when the headless "view" token is disconnected.

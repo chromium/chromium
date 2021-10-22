@@ -145,10 +145,20 @@ class FrameImpl : public fuchsia::web::Frame,
   // An error handler for |accessibility_bridge_|.
   void OnAccessibilityError(zx_status_t error);
 
-  // Initializes WindowTreeHost for the view with the specified |view_token|.
-  // |view_token| may be uninitialized in headless mode.
-  void InitWindowTreeHost(fuchsia::ui::views::ViewToken view_token,
-                          scenic::ViewRefPair view_ref_pair);
+  // Creates and initializes WindowTreeHost for the view with the specified
+  // |view_token|. |view_token| may be uninitialized in headless mode.
+  void SetupWindowTreeHost(fuchsia::ui::views::ViewToken view_token,
+                           scenic::ViewRefPair view_ref_pair);
+
+  // Creates and initializes WindowTreeHost for the view with the specified
+  // |view_creation_token|. |view_creation_token| may be uninitialized in
+  // headless mode.
+  void SetupWindowTreeHost(
+      fuchsia::ui::views::ViewCreationToken view_creation_token,
+      scenic::ViewRefPair view_ref_pair);
+
+  // Initializes WindowTreeHost.
+  void InitWindowTreeHost();
 
   // Destroys the WindowTreeHost along with its view or other associated
   // resources.
@@ -171,11 +181,16 @@ class FrameImpl : public fuchsia::web::Frame,
   // Updates zoom level for the specified |render_view_host|.
   void UpdateRenderViewZoomLevel(content::RenderViewHost* render_view_host);
 
+  // Helper method for connecting to AccessibilityBridge on
+  // |accessibility_bridge_|.
+  void ConnectToAccessibilityBridge();
+
   // fuchsia::web::Frame implementation.
   void CreateView(fuchsia::ui::views::ViewToken view_token) override;
   void CreateViewWithViewRef(fuchsia::ui::views::ViewToken view_token,
                              fuchsia::ui::views::ViewRefControl control_ref,
                              fuchsia::ui::views::ViewRef view_ref) override;
+  void CreateView2(fuchsia::web::CreateView2Args view_args) override;
   void GetMediaPlayer(fidl::InterfaceRequest<fuchsia::media::sessions2::Player>
                           player) override;
   void GetNavigationController(

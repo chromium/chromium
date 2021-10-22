@@ -87,6 +87,7 @@ class WebComponent : public fuchsia::sys::ComponentController,
   void CreateViewWithViewRef(zx::eventpair view_token,
                              fuchsia::ui::views::ViewRefControl control_ref,
                              fuchsia::ui::views::ViewRef view_ref) override;
+  void CreateView2(fuchsia::ui::app::CreateView2Args view_args) override;
 
   // fuchsia::web::NavigationEventListener implementation.
   // Used to detect when the Frame enters an error state (e.g. the top-level

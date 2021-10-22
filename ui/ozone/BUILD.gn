@@ -68,6 +68,7 @@ if (ozone_platform_scenic) {
 if (ozone_platform_flatland) {
   ozone_platforms += [ "flatland" ]
   ozone_platform_deps += [ "platform/flatland" ]
+  ozone_platform_test_deps += [ "platform/flatland:flatland_unittests" ]
 }
 
 platform_list_cc_file = "$target_gen_dir/platform_list.cc"

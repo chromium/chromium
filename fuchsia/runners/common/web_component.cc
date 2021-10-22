@@ -165,6 +165,22 @@ void WebComponent::CreateViewWithViewRef(
   view_is_bound_ = true;
 }
 
+void WebComponent::CreateView2(fuchsia::ui::app::CreateView2Args view_args) {
+  DCHECK(frame_);
+  if (view_is_bound_) {
+    LOG(ERROR) << "CreateView() called more than once.";
+    DestroyComponent(ZX_ERR_BAD_STATE, fuchsia::sys::TerminationReason::EXITED);
+    return;
+  }
+
+  fuchsia::web::CreateView2Args web_view_args;
+  web_view_args.set_view_creation_token(
+      std::move(*view_args.mutable_view_creation_token()));
+  frame_->CreateView2(std::move(web_view_args));
+
+  view_is_bound_ = true;
+}
+
 void WebComponent::OnNavigationStateChanged(
     fuchsia::web::NavigationState change,
     OnNavigationStateChangedCallback callback) {

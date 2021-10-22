@@ -4,6 +4,8 @@
 
 #include "ui/ozone/platform/flatland/flatland_sysmem_buffer_collection.h"
 
+#include <lib/zx/eventpair.h>
+
 #include "base/bits.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "build/build_config.h"
@@ -113,21 +115,18 @@ FlatlandSysmemBufferCollection::FlatlandSysmemBufferCollection(
     : id_(id) {}
 
 bool FlatlandSysmemBufferCollection::Initialize(
-    fuchsia::sysmem::Allocator_Sync* allocator,
+    fuchsia::sysmem::Allocator_Sync* sysmem_allocator,
+    fuchsia::ui::composition::Allocator* flatland_allocator,
     FlatlandSurfaceFactory* flatland_surface_factory,
     zx::channel token_handle,
     gfx::Size size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
     VkDevice vk_device,
-    size_t min_buffer_count,
-    bool register_with_allocator) {
+    size_t min_buffer_count) {
   DCHECK(IsNativePixmapConfigSupported(format, usage));
   DCHECK(!collection_);
   DCHECK(!vk_buffer_collection_);
-
-  // TODO(crbug.com/1230150): Use Allocator API if |register_with_allocator| is
-  // true.
 
   // Currently all supported |usage| values require GPU access, which requires
   // a valid VkDevice.
@@ -158,8 +157,8 @@ bool FlatlandSysmemBufferCollection::Initialize(
   if (token_handle) {
     collection_token.Bind(std::move(token_handle));
   } else {
-    zx_status_t status =
-        allocator->AllocateSharedCollection(collection_token.NewRequest());
+    zx_status_t status = sysmem_allocator->AllocateSharedCollection(
+        collection_token.NewRequest());
     if (status != ZX_OK) {
       ZX_DLOG(ERROR, status)
           << "fuchsia.sysmem.Allocator.AllocateSharedCollection()";
@@ -167,8 +166,10 @@ bool FlatlandSysmemBufferCollection::Initialize(
     }
   }
 
-  return InitializeInternal(allocator, std::move(collection_token),
-                            min_buffer_count);
+  return InitializeInternal(
+      sysmem_allocator, flatland_allocator, std::move(collection_token),
+      /*register_with_flatland_allocator=*/usage == gfx::BufferUsage::SCANOUT,
+      min_buffer_count);
 }
 
 scoped_refptr<gfx::NativePixmap>
@@ -331,10 +332,20 @@ bool FlatlandSysmemBufferCollection::CreateVkImage(
   return true;
 }
 
-void FlatlandSysmemBufferCollection::SetOnDeletedCallback(
+fuchsia::ui::composition::BufferCollectionImportToken
+FlatlandSysmemBufferCollection::GetFlatlandImportToken() const {
+  fuchsia::ui::composition::BufferCollectionImportToken import_dup;
+  zx_status_t status = flatland_import_token_.value.duplicate(
+      ZX_RIGHT_SAME_RIGHTS, &import_dup.value);
+  if (status != ZX_OK) {
+    ZX_DLOG(ERROR, status) << "BufferCollectionImportToken duplicate failed";
+  }
+  return import_dup;
+}
+
+void FlatlandSysmemBufferCollection::AddOnDeletedCallback(
     base::OnceClosure on_deleted) {
-  DCHECK(!on_deleted_);
-  on_deleted_ = std::move(on_deleted);
+  on_deleted_.push_back(std::move(on_deleted));
 }
 
 FlatlandSysmemBufferCollection::~FlatlandSysmemBufferCollection() {
@@ -346,23 +357,27 @@ FlatlandSysmemBufferCollection::~FlatlandSysmemBufferCollection() {
   if (collection_)
     collection_->Close();
 
-  if (on_deleted_)
-    std::move(on_deleted_).Run();
+  for (auto& callback : on_deleted_)
+    std::move(callback).Run();
 }
 
 bool FlatlandSysmemBufferCollection::InitializeInternal(
-    fuchsia::sysmem::Allocator_Sync* allocator,
+    fuchsia::sysmem::Allocator_Sync* sysmem_allocator,
+    fuchsia::ui::composition::Allocator* flatland_allocator,
     fuchsia::sysmem::BufferCollectionTokenSyncPtr collection_token,
+    bool register_with_flatland_allocator,
     size_t min_buffer_count) {
   fidl::InterfaceHandle<fuchsia::sysmem::BufferCollectionToken>
       collection_token_for_vulkan;
   collection_token->Duplicate(ZX_RIGHT_SAME_RIGHTS,
                               collection_token_for_vulkan.NewRequest());
 
-  // Duplicate one more token for Flatland if this collection can be used as an
-  // overlay.
   fidl::InterfaceHandle<fuchsia::sysmem::BufferCollectionToken>
       collection_token_for_flatland;
+  if (register_with_flatland_allocator) {
+    collection_token->Duplicate(ZX_RIGHT_SAME_RIGHTS,
+                                collection_token_for_flatland.NewRequest());
+  }
 
   zx_status_t status = collection_token->Sync();
   if (status != ZX_OK) {
@@ -370,13 +385,14 @@ bool FlatlandSysmemBufferCollection::InitializeInternal(
     return false;
   }
 
-  status = allocator->BindSharedCollection(std::move(collection_token),
-                                           collection_.NewRequest());
+  status = sysmem_allocator->BindSharedCollection(std::move(collection_token),
+                                                  collection_.NewRequest());
   if (status != ZX_OK) {
     ZX_DLOG(ERROR, status) << "fuchsia.sysmem.Allocator.BindSharedCollection()";
     return false;
   }
 
+  // Set |min_buffer_count| constraints.
   fuchsia::sysmem::BufferCollectionConstraints constraints;
   if (is_mappable()) {
     constraints.usage.cpu =
@@ -400,6 +416,29 @@ bool FlatlandSysmemBufferCollection::InitializeInternal(
     return false;
   }
 
+  // Set Flatland allocator constraints.
+  if (register_with_flatland_allocator) {
+    DCHECK(flatland_allocator);
+    fuchsia::ui::composition::BufferCollectionExportToken export_token;
+    status = zx::eventpair::create(0, &export_token.value,
+                                   &flatland_import_token_.value);
+
+    fuchsia::ui::composition::RegisterBufferCollectionArgs args;
+    args.set_export_token(std::move(export_token));
+    args.set_buffer_collection_token(std::move(collection_token_for_flatland));
+    args.set_usage(
+        fuchsia::ui::composition::RegisterBufferCollectionUsage::DEFAULT);
+    flatland_allocator->RegisterBufferCollection(
+        std::move(args),
+        [](fuchsia::ui::composition::Allocator_RegisterBufferCollection_Result
+               result) {
+          if (result.is_err()) {
+            LOG(FATAL) << "RegisterBufferCollection failed";
+          }
+        });
+  }
+
+  // Set Vulkan constraints.
   zx::channel token_channel = collection_token_for_vulkan.TakeChannel();
   VkBufferCollectionCreateInfoFUCHSIAX buffer_collection_create_info = {
       VK_STRUCTURE_TYPE_BUFFER_COLLECTION_CREATE_INFO_FUCHSIAX};

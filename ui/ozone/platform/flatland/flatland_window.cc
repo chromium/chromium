@@ -16,6 +16,7 @@
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
 #include "base/memory/scoped_refptr.h"
+#include "flatland_connection.h"
 #include "ui/base/cursor/platform_cursor.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
@@ -33,23 +34,30 @@ FlatlandWindow::FlatlandWindow(FlatlandWindowManager* window_manager,
       delegate_(delegate),
       window_id_(manager_->AddWindow(this)),
       event_dispatcher_(this),
+      view_ref_(std::move(properties.view_ref_pair.view_ref)),
+      flatland_("Chromium FlatlandWindow",
+                FlatlandConnection::ConnectToFlatland()),
       bounds_(properties.bounds) {
-  // TODO(crbug.com/1230150): Add OnError after SDK roll.
-  flatland_.flatland()->SetDebugName("Chromium FlatlandWindow");
+  fuchsia::ui::views::ViewIdentityOnCreation view_identity = {
+      .view_ref = CloneViewRef(),
+      .view_ref_control = std::move(properties.view_ref_pair.control_ref)};
+  // TODO(crbug.com/1230150): Add input protocol to |view_bound_protocols|.
+  fuchsia::ui::composition::ViewBoundProtocols view_bound_protocols;
+  flatland_.flatland()->CreateView2(
+      std::move(properties.view_creation_token), std::move(view_identity),
+      std::move(view_bound_protocols), parent_viewport_watcher_.NewRequest());
+  parent_viewport_watcher_->GetLayout(
+      fit::bind_member(this, &FlatlandWindow::OnGetLayout));
+  parent_viewport_watcher_->GetStatus(
+      fit::bind_member(this, &FlatlandWindow::OnGetStatus));
 
-  // TODO(crbug.com/1230150): Link to parent using |properties.view_token|.
-
-  root_transform_id_ = {++next_transform_id_};
+  root_transform_id_ = flatland_.NextTransformId();
   flatland_.flatland()->CreateTransform(root_transform_id_);
-
-  render_transform_id_ = {++next_transform_id_};
-  flatland_.flatland()->CreateTransform(render_transform_id_);
-  flatland_.QueuePresent();
 
   delegate_->OnAcceleratedWidgetAvailable(window_id_);
 
   if (properties.enable_keyboard) {
-    virtual_keyboard_enabled_ = properties.enable_virtual_keyboard;
+    is_virtual_keyboard_enabled_ = properties.enable_virtual_keyboard;
     keyboard_service_ = base::ComponentContextForProcess()
                             ->svc()
                             ->Connect<fuchsia::ui::input3::Keyboard>();
@@ -67,8 +75,30 @@ FlatlandWindow::~FlatlandWindow() {
   manager_->RemoveWindow(window_id_, this);
 }
 
+void FlatlandWindow::AttachSurfaceContent(
+    fuchsia::ui::views::ViewportCreationToken token) {
+  surface_transform_id_ = flatland_.NextTransformId();
+  flatland_.flatland()->CreateTransform(surface_transform_id_);
+  flatland_.flatland()->AddChild(root_transform_id_, surface_transform_id_);
+
+  fuchsia::ui::composition::ViewportProperties properties;
+  properties.set_logical_size({static_cast<uint32_t>(bounds_.width()),
+                               static_cast<uint32_t>(bounds_.height())});
+
+  surface_content_id_ = flatland_.NextContentId();
+  fuchsia::ui::composition::ChildViewWatcherPtr content_link;
+  flatland_.flatland()->CreateViewport(surface_content_id_, std::move(token),
+                                       std::move(properties),
+                                       content_link.NewRequest());
+
+  flatland_.flatland()->SetContent(surface_transform_id_, surface_content_id_);
+
+  // View is actually not attached but without it we dont get OutputPresenter
+  // updates.
+  OnViewAttachedChanged(true);
+}
+
 fuchsia::ui::views::ViewRef FlatlandWindow::CloneViewRef() {
-  // TODO(crbug.com/1230150): Tie ViewRef creation to Flatland creation.
   fuchsia::ui::views::ViewRef dup;
   zx_status_t status =
       view_ref_.reference.duplicate(ZX_RIGHT_SAME_RIGHTS, &dup.reference);
@@ -90,19 +120,19 @@ void FlatlandWindow::SetTitle(const std::u16string& title) {
 }
 
 void FlatlandWindow::Show(bool inactive) {
-  if (visible_)
+  if (is_visible_)
     return;
 
   flatland_.flatland()->SetRootTransform(root_transform_id_);
-  flatland_.QueuePresent();
+  flatland_.Present();
 }
 
 void FlatlandWindow::Hide() {
-  if (!visible_)
+  if (!is_visible_)
     return;
 
   flatland_.flatland()->SetRootTransform({0});
-  flatland_.QueuePresent();
+  flatland_.Present();
 }
 
 void FlatlandWindow::Close() {
@@ -133,7 +163,8 @@ bool FlatlandWindow::HasCapture() const {
 }
 
 void FlatlandWindow::ToggleFullscreen() {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
+  is_fullscreen_ = !is_fullscreen_;
 }
 
 void FlatlandWindow::Maximize() {
@@ -149,7 +180,11 @@ void FlatlandWindow::Restore() {
 }
 
 PlatformWindowState FlatlandWindow::GetPlatformWindowState() const {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
+  if (is_fullscreen_)
+    return PlatformWindowState::kFullScreen;
+  if (!is_view_attached_)
+    return PlatformWindowState::kMinimized;
   return PlatformWindowState::kNormal;
 }
 
@@ -199,8 +234,33 @@ void FlatlandWindow::SizeConstraintsChanged() {
 }
 
 void FlatlandWindow::OnGetLayout(fuchsia::ui::composition::LayoutInfo info) {
-  OnViewMetrics(info.pixel_scale());
-  OnViewProperties(info.logical_size());
+  device_pixel_ratio_ =
+      std::max(info.pixel_scale().width, info.pixel_scale().height);
+  view_properties_ = info.logical_size();
+
+  if (view_properties_ || device_pixel_ratio_ > 0.0)
+    UpdateSize();
+
+  parent_viewport_watcher_->GetLayout(
+      fit::bind_member(this, &FlatlandWindow::OnGetLayout));
+}
+
+void FlatlandWindow::OnGetStatus(
+    fuchsia::ui::composition::ParentViewportStatus status) {
+  switch (status) {
+    case fuchsia::ui::composition::ParentViewportStatus::CONNECTED_TO_DISPLAY:
+      OnViewAttachedChanged(true);
+      break;
+    case fuchsia::ui::composition::ParentViewportStatus::
+        DISCONNECTED_FROM_DISPLAY:
+      OnViewAttachedChanged(false);
+      break;
+    default:
+      NOTIMPLEMENTED();
+      break;
+  }
+  parent_viewport_watcher_->GetStatus(
+      fit::bind_member(this, &FlatlandWindow::OnGetStatus));
 }
 
 void FlatlandWindow::UpdateSize() {
@@ -215,46 +275,18 @@ void FlatlandWindow::UpdateSize() {
 
   // TODO(crbug.com/1230150): Handle zero size scenario.
 
-  // Translate the node by half of the view dimensions to put it in the center
-  // of the view.
-  flatland_.flatland()->SetTranslation(
-      root_transform_id_,
-      {static_cast<int32_t>(width / 2), static_cast<int32_t>(height / 2)});
-
-  // Scale the rendered image.
-  flatland_.flatland()->SetImageDestinationSize(surface_content_id_,
-                                                {width, height});
-
-  // This is necessary when using vulkan because ImagePipes are presented
-  // separately and we need to make sure our sizes change is committed.
-  flatland_.QueuePresent();
-
   PlatformWindowDelegate::BoundsChange bounds;
   bounds.bounds = bounds_;
   // TODO(crbug.com/1230150): Calculate insets and update.
   delegate_->OnBoundsChanged(bounds);
 }
 
-void FlatlandWindow::OnViewMetrics(const fuchsia::math::SizeU& metrics) {
-  device_pixel_ratio_ = std::max(metrics.width, metrics.height);
-
-  if (view_properties_)
-    UpdateSize();
-}
-
-void FlatlandWindow::OnViewProperties(const fuchsia::math::SizeU& properties) {
-  view_properties_ = properties;
-  if (device_pixel_ratio_ > 0.0)
-    UpdateSize();
-}
-
 void FlatlandWindow::OnViewAttachedChanged(bool is_view_attached) {
-  if (is_view_attached) {
-    delegate_->OnWindowStateChanged(PlatformWindowState::kMinimized,
-                                    PlatformWindowState::kNormal);
-  } else {
-    delegate_->OnWindowStateChanged(PlatformWindowState::kNormal,
-                                    PlatformWindowState::kMinimized);
+  PlatformWindowState old_state = GetPlatformWindowState();
+  is_view_attached_ = is_view_attached;
+  PlatformWindowState new_state = GetPlatformWindowState();
+  if (old_state != new_state) {
+    delegate_->OnWindowStateChanged(old_state, new_state);
   }
 }
 

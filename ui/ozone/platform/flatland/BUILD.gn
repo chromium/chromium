@@ -82,3 +82,20 @@ source_set("flatland") {
     "//third_party/angle:libGLESv2",
   ]
 }
+
+source_set("flatland_unittests") {
+  testonly = true
+  sources = [
+    "tests/fake_flatland.cc",
+    "tests/fake_flatland.h",
+    "tests/flatland_connection_unittest.cc",
+  ]
+  deps = [
+    ":flatland",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+    "//third_party/fuchsia-sdk/sdk/pkg/async-testing",
+    "//ui/ozone:platform",
+  ]
+}

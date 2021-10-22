@@ -22,6 +22,9 @@ class FrameWindowTreeHost final : public aura::WindowTreeHostPlatform,
   FrameWindowTreeHost(fuchsia::ui::views::ViewToken view_token,
                       scenic::ViewRefPair view_ref_pair,
                       content::WebContents* web_contents);
+  FrameWindowTreeHost(fuchsia::ui::views::ViewCreationToken view_creation_token,
+                      scenic::ViewRefPair view_ref_pair,
+                      content::WebContents* web_contents);
   ~FrameWindowTreeHost() override;
 
   FrameWindowTreeHost(const FrameWindowTreeHost&) = delete;

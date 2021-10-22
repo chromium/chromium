@@ -7,6 +7,7 @@
 #include <zircon/rights.h>
 
 #include "base/bind.h"
+#include "base/fuchsia/fuchsia_logging.h"
 #include "base/hash/hash.h"
 #include "ui/ozone/platform/flatland/flatland_sysmem_buffer_collection.h"
 
@@ -32,20 +33,29 @@ FlatlandSysmemBufferManager::~FlatlandSysmemBufferManager() {
 }
 
 void FlatlandSysmemBufferManager::Initialize(
-    fuchsia::sysmem::AllocatorHandle allocator) {
+    fuchsia::sysmem::AllocatorHandle sysmem_allocator,
+    fuchsia::ui::composition::AllocatorHandle flatland_allocator) {
   base::AutoLock auto_lock(collections_lock_);
   DCHECK(collections_.empty());
-  DCHECK(!allocator_);
-  allocator_.Bind(std::move(allocator));
-  allocator_->SetDebugClientInfo(
+
+  DCHECK(!sysmem_allocator_);
+  sysmem_allocator_.Bind(std::move(sysmem_allocator));
+  sysmem_allocator_->SetDebugClientInfo(
       GetProcessName() + "-FlatlandSysmemBufferManager",
       base::GetCurrentProcId());
+
+  DCHECK(!flatland_allocator_);
+  flatland_allocator_.Bind(std::move(flatland_allocator));
+  flatland_allocator_.set_error_handler([](zx_status_t status) {
+    ZX_LOG(FATAL, status) << "Lost connection to Scenic Allocator";
+  });
 }
 
 void FlatlandSysmemBufferManager::Shutdown() {
   base::AutoLock auto_lock(collections_lock_);
   DCHECK(collections_.empty());
-  allocator_ = nullptr;
+  sysmem_allocator_ = nullptr;
+  flatland_allocator_ = nullptr;
 }
 
 scoped_refptr<FlatlandSysmemBufferCollection>
@@ -55,10 +65,10 @@ FlatlandSysmemBufferManager::CreateCollection(VkDevice vk_device,
                                               gfx::BufferUsage usage,
                                               size_t min_buffer_count) {
   auto result = base::MakeRefCounted<FlatlandSysmemBufferCollection>();
-  if (!result->Initialize(allocator_.get(), flatland_surface_factory_,
+  if (!result->Initialize(sysmem_allocator_.get(), flatland_allocator_.get(),
+                          flatland_surface_factory_,
                           /*token_channel=*/zx::channel(), size, format, usage,
-                          vk_device, min_buffer_count,
-                          /*register_with_image_pipe=*/false)) {
+                          vk_device, min_buffer_count)) {
     return nullptr;
   }
   RegisterCollection(result.get());
@@ -73,12 +83,11 @@ FlatlandSysmemBufferManager::ImportFlatlandSysmemBufferCollection(
     gfx::Size size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
-    size_t min_buffer_count,
-    bool register_with_image_pipe) {
+    size_t min_buffer_count) {
   auto result = base::MakeRefCounted<FlatlandSysmemBufferCollection>(id);
-  if (!result->Initialize(allocator_.get(), flatland_surface_factory_,
-                          std::move(token), size, format, usage, vk_device,
-                          min_buffer_count, register_with_image_pipe)) {
+  if (!result->Initialize(sysmem_allocator_.get(), flatland_allocator_.get(),
+                          flatland_surface_factory_, std::move(token), size,
+                          format, usage, vk_device, min_buffer_count)) {
     return nullptr;
   }
   RegisterCollection(result.get());
@@ -92,7 +101,7 @@ void FlatlandSysmemBufferManager::RegisterCollection(
     collections_[collection->id()] = collection;
   }
 
-  collection->SetOnDeletedCallback(
+  collection->AddOnDeletedCallback(
       base::BindOnce(&FlatlandSysmemBufferManager::OnCollectionDestroyed,
                      base::Unretained(this), collection->id()));
 }

@@ -583,6 +583,25 @@ void FrameImpl::UpdateRenderViewZoomLevel(
       blink::PageZoomFactorToZoomLevel(page_scale_));
 }
 
+void FrameImpl::ConnectToAccessibilityBridge() {
+  fuchsia::accessibility::semantics::SemanticsManagerPtr semantics_manager;
+  if (!semantics_manager_for_test_) {
+    semantics_manager =
+        base::ComponentContextForProcess()
+            ->svc()
+            ->Connect<fuchsia::accessibility::semantics::SemanticsManager>();
+  }
+
+  // If the SemanticTree owned by |accessibility_bridge_| is disconnected, it
+  // will cause |this| to be closed.
+  accessibility_bridge_ = std::make_unique<AccessibilityBridge>(
+      semantics_manager_for_test_ ? semantics_manager_for_test_
+                                  : semantics_manager.get(),
+      window_tree_host_.get(), web_contents_.get(),
+      base::BindOnce(&FrameImpl::OnAccessibilityError, base::Unretained(this)),
+      inspect_node_.CreateChild(kAccessibilityInspectNodeName));
+}
+
 void FrameImpl::CreateView(fuchsia::ui::views::ViewToken view_token) {
   scenic::ViewRefPair view_ref_pair = scenic::ViewRefPair::New();
   CreateViewWithViewRef(std::move(view_token),
@@ -600,30 +619,45 @@ void FrameImpl::CreateViewWithViewRef(
     return;
   }
 
+  if (!view_token.value.is_valid()) {
+    LOG(WARNING) << "CreateView() called with invalid view_token.";
+    CloseAndDestroyFrame(ZX_ERR_INVALID_ARGS);
+    return;
+  }
+
   // If a View to this Frame is already active then disconnect it.
   DestroyWindowTreeHost();
 
   scenic::ViewRefPair view_ref_pair;
   view_ref_pair.control_ref = std::move(control_ref);
   view_ref_pair.view_ref = std::move(view_ref);
-  InitWindowTreeHost(std::move(view_token), std::move(view_ref_pair));
+  SetupWindowTreeHost(std::move(view_token), std::move(view_ref_pair));
 
-  fuchsia::accessibility::semantics::SemanticsManagerPtr semantics_manager;
-  if (!semantics_manager_for_test_) {
-    semantics_manager =
-        base::ComponentContextForProcess()
-            ->svc()
-            ->Connect<fuchsia::accessibility::semantics::SemanticsManager>();
+  ConnectToAccessibilityBridge();
+}
+
+void FrameImpl::CreateView2(fuchsia::web::CreateView2Args view_args) {
+  if (IsHeadless()) {
+    LOG(WARNING) << "CreateView2() called on a HEADLESS Context.";
+    CloseAndDestroyFrame(ZX_ERR_INVALID_ARGS);
+    return;
   }
 
-  // If the SemanticTree owned by |accessibility_bridge_| is disconnected, it
-  // will cause |this| to be closed.
-  accessibility_bridge_ = std::make_unique<AccessibilityBridge>(
-      semantics_manager_for_test_ ? semantics_manager_for_test_
-                                  : semantics_manager.get(),
-      window_tree_host_.get(), web_contents_.get(),
-      base::BindOnce(&FrameImpl::OnAccessibilityError, base::Unretained(this)),
-      inspect_node_.CreateChild(kAccessibilityInspectNodeName));
+  if (!view_args.has_view_creation_token() ||
+      !view_args.view_creation_token().value.is_valid()) {
+    LOG(WARNING) << "CreateView2() called with invalid view_creation_token.";
+    CloseAndDestroyFrame(ZX_ERR_INVALID_ARGS);
+    return;
+  }
+
+  // If a View to this Frame is already active then disconnect it.
+  DestroyWindowTreeHost();
+
+  scenic::ViewRefPair view_ref_pair = scenic::ViewRefPair::New();
+  SetupWindowTreeHost(std::move(*view_args.mutable_view_creation_token()),
+                      std::move(view_ref_pair));
+
+  ConnectToAccessibilityBridge();
 }
 
 void FrameImpl::GetMediaPlayer(
@@ -822,16 +856,12 @@ void FrameImpl::EnableHeadlessRendering() {
   }
 
   scenic::ViewRefPair view_ref_pair = scenic::ViewRefPair::New();
-  InitWindowTreeHost(fuchsia::ui::views::ViewToken(), std::move(view_ref_pair));
+  SetupWindowTreeHost(fuchsia::ui::views::ViewToken(),
+                      std::move(view_ref_pair));
 
   gfx::Rect bounds(kHeadlessWindowSize);
   if (semantics_manager_for_test_) {
-    accessibility_bridge_ = std::make_unique<AccessibilityBridge>(
-        semantics_manager_for_test_, window_tree_host_.get(),
-        web_contents_.get(),
-        base::BindOnce(&FrameImpl::OnAccessibilityError,
-                       base::Unretained(this)),
-        inspect_node_.CreateChild(kAccessibilityInspectNodeName));
+    ConnectToAccessibilityBridge();
 
     // Set bounds for testing hit testing.
     bounds.set_size(kSemanticsTestingWindowSize);
@@ -855,12 +885,31 @@ void FrameImpl::DisableHeadlessRendering() {
   DestroyWindowTreeHost();
 }
 
-void FrameImpl::InitWindowTreeHost(fuchsia::ui::views::ViewToken view_token,
-                                   scenic::ViewRefPair view_ref_pair) {
+void FrameImpl::SetupWindowTreeHost(fuchsia::ui::views::ViewToken view_token,
+                                    scenic::ViewRefPair view_ref_pair) {
   DCHECK(!window_tree_host_);
 
   window_tree_host_ = std::make_unique<FrameWindowTreeHost>(
       std::move(view_token), std::move(view_ref_pair), web_contents_.get());
+
+  InitWindowTreeHost();
+}
+
+void FrameImpl::SetupWindowTreeHost(
+    fuchsia::ui::views::ViewCreationToken view_creation_token,
+    scenic::ViewRefPair view_ref_pair) {
+  DCHECK(!window_tree_host_);
+
+  window_tree_host_ = std::make_unique<FrameWindowTreeHost>(
+      std::move(view_creation_token), std::move(view_ref_pair),
+      web_contents_.get());
+
+  InitWindowTreeHost();
+}
+
+void FrameImpl::InitWindowTreeHost() {
+  DCHECK(window_tree_host_);
+
   window_tree_host_->InitHost();
   root_window()->AddPreTargetHandler(&event_filter_);
 

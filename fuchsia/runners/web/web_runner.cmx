@@ -26,6 +26,8 @@
       "fuchsia.sys.Environment",
       "fuchsia.sys.Loader",
       "fuchsia.sysmem.Allocator",
+      "fuchsia.ui.composition.Allocator",
+      "fuchsia.ui.composition.Flatland",
       "fuchsia.ui.input3.Keyboard",
       "fuchsia.ui.scenic.Scenic",
       "fuchsia.vulkan.loader.Loader"
