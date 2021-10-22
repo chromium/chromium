@@ -2065,6 +2065,20 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionIsolatedContentTest, PdfAndHtml) {
   EXPECT_NE(pdf_frames[0]->GetProcess(), iframe->GetProcess());
 }
 
+IN_PROC_BROWSER_TEST_P(PDFExtensionIsolatedContentTest, DataNavigation) {
+  WebContents* guest_contents = LoadPdfGetGuestContents(
+      embedded_test_server()->GetURL("/pdf/data_url_rectangles.html"));
+
+  // The PDF plugin frame and the extension main frame should not share renderer
+  // processes even though the extension triggers a data: navigation when
+  // loading its plugin.
+  std::vector<content::RenderFrameHost*> pdf_frames =
+      GetUnseasonedPdfFrames(guest_contents);
+  ASSERT_EQ(pdf_frames.size(), 1u);
+  EXPECT_NE(pdf_frames[0]->GetProcess(),
+            guest_contents->GetMainFrame()->GetProcess());
+}
+
 IN_PROC_BROWSER_TEST_P(PDFExtensionIsolatedContentTest, HistoryNavigation) {
   // Navigating to a PDF should spawn a PDF renderer process.
   EXPECT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));

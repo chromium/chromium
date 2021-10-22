@@ -2512,6 +2512,14 @@ bool RenderFrameHostManager::CanUseSourceSiteInstance(
     return false;
   }
 
+  // PDF content should never share a SiteInstance with non-PDF content. In
+  // practice, this prevents the PDF viewer extension from incorrectly sharing
+  // a process with PDF content that was loaded from a data URL.
+  if (dest_url_info.is_pdf) {
+    DCHECK(!source_instance->GetProcess()->IsPdf());
+    return false;
+  }
+
   // Okay to use `source_instance`.
   return true;
 }
