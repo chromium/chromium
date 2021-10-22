@@ -20,8 +20,9 @@ ColorProviderSourceObserver::GetColorProviderSourceForTesting() const {
 }
 
 void ColorProviderSourceObserver::Observe(ColorProviderSource* source) {
-  if (source ? color_provider_source_observation_.IsObservingSource(source)
-             : !source_) {
+  if ((source &&
+       color_provider_source_observation_.IsObservingSource(source)) ||
+      (!source && source_ == nullptr)) {
     return;
   }
 

@@ -761,6 +761,7 @@ TEST_F(BrowserThemePackTest, TestCreateColorMixersOmniboxNoValues) {
                                {kColorOmniboxText, SK_ColorGREEN},
                                {kColorOmniboxBackground, SK_ColorBLUE}}});
   theme_pack().AddColorMixers(&provider, ui::ColorProviderManager::Key());
+  provider.GenerateColorMap();
   EXPECT_EQ(SK_ColorRED, provider.GetColor(kColorToolbar));
   EXPECT_EQ(SK_ColorGREEN, provider.GetColor(kColorOmniboxText));
   EXPECT_EQ(SK_ColorBLUE, provider.GetColor(kColorOmniboxBackground));
@@ -778,6 +779,7 @@ TEST_F(BrowserThemePackTest, TestCreateColorMixersOmniboxPartialValues) {
                                 "omnibox_text": [60, 80, 100] })";
   LoadColorJSON(color_json);
   theme_pack().AddColorMixers(&provider, ui::ColorProviderManager::Key());
+  provider.GenerateColorMap();
   EXPECT_EQ(SkColorSetRGB(0, 20, 40), provider.GetColor(kColorToolbar));
   EXPECT_EQ(SkColorSetRGB(60, 80, 100), provider.GetColor(kColorOmniboxText));
   EXPECT_EQ(SK_ColorBLUE, provider.GetColor(kColorOmniboxBackground));
@@ -796,6 +798,7 @@ TEST_F(BrowserThemePackTest, TestCreateColorMixersOmniboxAllValues) {
                                 "omnibox_background": [120, 140, 160] })";
   LoadColorJSON(color_json);
   theme_pack().AddColorMixers(&provider, ui::ColorProviderManager::Key());
+  provider.GenerateColorMap();
   EXPECT_EQ(SkColorSetRGB(0, 20, 40), provider.GetColor(kColorToolbar));
   EXPECT_EQ(SkColorSetRGB(60, 80, 100), provider.GetColor(kColorOmniboxText));
   EXPECT_EQ(SkColorSetRGB(120, 140, 160),

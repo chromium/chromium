@@ -19,6 +19,7 @@ TEST(GetImageSkiaFromImageModel, ShouldConvertEmptyModel) {
 
 TEST(GetImageSkiaFromImageModel, ShouldConvertVectorIcon) {
   ui::ColorProvider color_provider;
+  color_provider.GenerateColorMap();
   gfx::ImageSkia image_skia = GetImageSkiaFromImageModel(
       ui::ImageModel::FromVectorIcon(vector_icons::kSyncIcon), &color_provider);
   EXPECT_FALSE(image_skia.isNull());

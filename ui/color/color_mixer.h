@@ -7,6 +7,7 @@
 
 #include <forward_list>
 #include <map>
+#include <set>
 
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
@@ -67,6 +68,9 @@ class COMPONENT_EXPORT(COLOR) ColorMixer {
   // Returns the result color for |id|, that is, the result of applying any
   // applicable recipe from |recipes_| to the relevant input color.
   SkColor GetResultColor(ColorId id) const;
+
+  // Returns the ColorIds defined for this mixer.
+  std::set<ColorId> GetDefinedColorIds() const;
 
  private:
   using ColorSets = std::forward_list<ColorSet>;

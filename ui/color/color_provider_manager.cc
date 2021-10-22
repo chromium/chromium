@@ -125,6 +125,7 @@ ColorProvider* ColorProviderManager::GetColorProviderFor(Key key) {
     if (!initializer_list_->empty())
       initializer_list_->Notify(provider.get(), key);
 
+    provider->GenerateColorMap();
     iter = color_providers_.emplace(key, std::move(provider)).first;
   }
   ColorProvider* provider = iter->second.get();

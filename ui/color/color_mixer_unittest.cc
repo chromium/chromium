@@ -4,6 +4,8 @@
 
 #include "ui/color/color_mixer.h"
 
+#include <set>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/color/color_recipe.h"
 #include "ui/color/color_test_ids.h"
@@ -249,6 +251,19 @@ TEST(ColorMixerTest, GetResultColorWithInputGetter) {
   const SkColor output = mixer0.GetResultColor(kColorTest1);
   EXPECT_EQ(output, mixer1.GetResultColor(kColorTest1));
   EXPECT_FALSE(color_utils::IsDark(output));
+}
+
+// Tests that GetDefinedColorIds() returns the ColorIds expected.
+TEST(ColorMixerTest, GetDefinedColorIdsReturnsExpectedColorIds) {
+  ColorMixer mixer;
+  mixer.AddSet({kColorSetTest0, {{kColorTest1, SK_ColorWHITE}}});
+  mixer[kColorTest0] = {gfx::kGoogleBlue050};
+  mixer[kColorTest1] = BlendTowardMaxContrast(
+      GetColorWithMaxContrast(FromTransformInput()), 0x29);
+  mixer[kColorTest2] =
+      BlendForMinContrast(gfx::kGoogleBlue500, kColorTest1, kColorTest0);
+  EXPECT_EQ(std::set<ColorId>({kColorTest0, kColorTest1, kColorTest2}),
+            mixer.GetDefinedColorIds());
 }
 
 }  // namespace

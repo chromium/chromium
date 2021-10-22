@@ -94,10 +94,9 @@ void WebView::SetWebContents(content::WebContents* replacement) {
 
   // Do not remove the observation of the previously hosted WebContents to allow
   // the WebContents to continue to use the source for colors and receive update
-  // notifications. This will allow the WebContents to continue to render and
-  // respond to theme changes when in the background and not directly part of a
-  // UI hierarchy. This avoids color pop-in if the WebContents is re-inserted
-  // into the same hierarchy at a later point in time.
+  // notifications when in the background and not directly part of a UI
+  // hierarchy. This avoids color pop-in if the WebContents is re-inserted into
+  // the same hierarchy at a later point in time.
   if (replacement)
     replacement->SetColorProviderSource(GetWidget());
 
