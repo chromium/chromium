@@ -7,9 +7,8 @@
 #include <memory>
 #include <utility>
 
-#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
-#include "mojo/public/cpp/bindings/pending_associated_remote.h"
-#include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
+#include "base/threading/sequence_local_storage_slot.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -35,6 +34,50 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
+
+namespace {
+
+// Use the native v8::ValueSerializer here as opposed to using
+// blink::V8ScriptValueSerializer. It's capable of serializing objects of
+// primitive types. It's TBD whether we want to support any other non-primitive
+// types supported by blink::V8ScriptValueSerializer.
+bool Serialize(ScriptState* script_state,
+               const SharedStorageRunOperationMethodOptions* options,
+               ExceptionState& exception_state,
+               Vector<uint8_t>& output) {
+  DCHECK(output.IsEmpty());
+
+  if (!options->hasData())
+    return true;
+
+  v8::Isolate* isolate = script_state->GetIsolate();
+  v8::ValueSerializer serializer(isolate);
+
+  v8::TryCatch try_catch(isolate);
+
+  bool wrote_value;
+  if (!serializer
+           .WriteValue(script_state->GetContext(), options->data().V8Value())
+           .To(&wrote_value)) {
+    DCHECK(try_catch.HasCaught());
+    exception_state.RethrowV8Exception(try_catch.Exception());
+    return false;
+  }
+
+  DCHECK(wrote_value);
+
+  std::pair<uint8_t*, size_t> buffer = serializer.Release();
+
+  output.ReserveInitialCapacity(SafeCast<wtf_size_t>(buffer.second));
+  output.Append(buffer.first, static_cast<wtf_size_t>(buffer.second));
+  DCHECK_EQ(output.size(), buffer.second);
+
+  free(buffer.first);
+
+  return true;
+}
+
+}  // namespace
 
 SharedStorage::SharedStorage() = default;
 SharedStorage::~SharedStorage() = default;
@@ -182,13 +225,18 @@ ScriptPromise SharedStorage::runOperation(
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   CHECK(execution_context->IsWindow());
 
+  Vector<uint8_t> serialized_data;
+  if (!Serialize(script_state, options, exception_state, serialized_data))
+    return ScriptPromise();
+
   ScriptPromiseResolver* resolver =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
-
   resolver->Resolve();
 
-  // TODO: handle the operation
+  GetSharedStorageDocumentService(execution_context)
+      ->RunOperationOnWorklet(name, std::move(serialized_data));
+
   return promise;
 }
 
@@ -207,11 +255,31 @@ SharedStorage::GetSharedStorageDocumentService(
     ExecutionContext* execution_context) {
   CHECK(execution_context->IsWindow());
   if (!shared_storage_document_service_.is_bound()) {
-    execution_context->GetBrowserInterfaceBroker().GetInterface(
-        shared_storage_document_service_.BindNewPipeAndPassReceiver(
+    LocalDOMWindow* window = To<LocalDOMWindow>(execution_context);
+    if (!window->GetFrame())
+      return GetEmptySharedStorageDocumentService();
+
+    window->GetFrame()->GetRemoteNavigationAssociatedInterfaces()->GetInterface(
+        shared_storage_document_service_.BindNewEndpointAndPassReceiver(
             execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
   }
   return shared_storage_document_service_.get();
+}
+
+mojom::blink::SharedStorageDocumentService*
+SharedStorage::GetEmptySharedStorageDocumentService() {
+  static base::SequenceLocalStorageSlot<
+      mojo::Remote<mojom::blink::SharedStorageDocumentService>>
+      slot;
+
+  if (!slot.GetValuePointer()) {
+    auto& remote = slot.GetOrCreateValue();
+    mojo::PendingRemote<mojom::blink::SharedStorageDocumentService>
+        pending_remote;
+    ignore_result(pending_remote.InitWithNewPipeAndPassReceiver());
+    remote.Bind(std::move(pending_remote), base::ThreadTaskRunnerHandle::Get());
+  }
+  return slot.GetOrCreateValue().get();
 }
 
 }  // namespace blink

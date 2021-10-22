@@ -74,6 +74,7 @@
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
+#include "content/browser/shared_storage/shared_storage_worklet_host_manager.h"
 #include "content/browser/ssl/ssl_client_auth_handler.h"
 #include "content/browser/ssl/ssl_error_handler.h"
 #include "content/browser/ssl_private_key_impl.h"
@@ -1192,6 +1193,9 @@ void StoragePartitionImpl::Initialize(
 
   lock_manager_ = std::make_unique<LockManager>();
 
+  shared_storage_worklet_host_manager_ =
+      std::make_unique<SharedStorageWorkletHostManager>();
+
   scoped_refptr<ChromeBlobStorageContext> blob_context =
       ChromeBlobStorageContext::GetFor(browser_context_);
 
@@ -1471,6 +1475,12 @@ StoragePartitionImpl::GetLocalStorageControl() {
 LockManager* StoragePartitionImpl::GetLockManager() {
   DCHECK(initialized_);
   return lock_manager_.get();
+}
+
+SharedStorageWorkletHostManager*
+StoragePartitionImpl::GetSharedStorageWorkletHostManager() {
+  DCHECK(initialized_);
+  return shared_storage_worklet_host_manager_.get();
 }
 
 storage::mojom::IndexedDBControl& StoragePartitionImpl::GetIndexedDBControl() {
@@ -2649,6 +2659,14 @@ void StoragePartitionImpl::OverrideSharedWorkerServiceForTesting(
     std::unique_ptr<SharedWorkerServiceImpl> shared_worker_service) {
   DCHECK(initialized_);
   shared_worker_service_ = std::move(shared_worker_service);
+}
+
+void StoragePartitionImpl::OverrideSharedStorageWorkletHostManagerForTesting(
+    std::unique_ptr<SharedStorageWorkletHostManager>
+        shared_storage_worklet_host_manager) {
+  DCHECK(initialized_);
+  shared_storage_worklet_host_manager_ =
+      std::move(shared_storage_worklet_host_manager);
 }
 
 void StoragePartitionImpl::GetQuotaSettings(

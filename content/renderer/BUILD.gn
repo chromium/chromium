@@ -262,6 +262,7 @@ target(link_target_type, "renderer") {
     "//content/common:buildflags",
     "//content/gpu:gpu_sources",
     "//content/public/child:child_sources",
+    "//content/services/shared_storage_worklet",
     "//crypto",
     "//crypto:platform",
     "//device/base/synchronization",

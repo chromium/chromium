@@ -1207,19 +1207,45 @@ void OnServiceWorkerMainScriptFetchingFailed(
   DispatchToAgents(ftn, &protocol::LogHandler::EntryAdded, entry.get());
 }
 
-void LogWorkletError(RenderFrameHostImpl* frame_host,
-                     const std::string& error) {
-  FrameTreeNode* ftn = frame_host->frame_tree_node();
+void LogWorkletMessage(RenderFrameHostImpl& frame_host,
+                       blink::mojom::ConsoleMessageLevel log_level,
+                       const std::string& message) {
+  FrameTreeNode* ftn = frame_host.frame_tree_node();
   if (!ftn)
     return;
-  std::string text = base::StrCat({"Worklet error: ", error});
+
+  std::string log_level_string;
+  switch (log_level) {
+    case blink::mojom::ConsoleMessageLevel::kVerbose:
+      log_level_string = protocol::Log::LogEntry::LevelEnum::Verbose;
+      break;
+    case blink::mojom::ConsoleMessageLevel::kInfo:
+      log_level_string = protocol::Log::LogEntry::LevelEnum::Info;
+      break;
+    case blink::mojom::ConsoleMessageLevel::kWarning:
+      log_level_string = protocol::Log::LogEntry::LevelEnum::Warning;
+      break;
+    case blink::mojom::ConsoleMessageLevel::kError:
+      log_level_string = protocol::Log::LogEntry::LevelEnum::Error;
+      break;
+  }
+
+  DCHECK(!log_level_string.empty());
+
   auto entry = protocol::Log::LogEntry::Create()
                    .SetSource(protocol::Log::LogEntry::SourceEnum::Other)
-                   .SetLevel(protocol::Log::LogEntry::LevelEnum::Error)
-                   .SetText(text)
+                   .SetLevel(log_level_string)
+                   .SetText(message)
                    .SetTimestamp(base::Time::Now().ToDoubleT() * 1000.0)
                    .Build();
   DispatchToAgents(ftn, &protocol::LogHandler::EntryAdded, entry.get());
+
+  // Manually trigger RenderFrameHostImpl::DidAddMessageToConsole, so that the
+  // observer behavior aligns more with the observer behavior for the regular
+  // devtools logging path from the renderer.
+  frame_host.DidAddMessageToConsole(log_level, base::UTF8ToUTF16(message),
+                                    /*line_no=*/0, /*source_id=*/{},
+                                    /*untrusted_stack_trace=*/{});
 }
 
 void ApplyNetworkContextParamsOverrides(

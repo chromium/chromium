@@ -80,6 +80,7 @@ class PaymentAppContextImpl;
 class PrefetchURLLoaderService;
 class PushMessagingContext;
 class QuotaContext;
+class SharedStorageWorkletHostManager;
 
 class CONTENT_EXPORT StoragePartitionImpl
     : public StoragePartition,
@@ -124,6 +125,9 @@ class CONTENT_EXPORT StoragePartitionImpl
       BackgroundSyncContextImpl* background_sync_context);
   void OverrideSharedWorkerServiceForTesting(
       std::unique_ptr<SharedWorkerServiceImpl> shared_worker_service);
+  void OverrideSharedStorageWorkletHostManagerForTesting(
+      std::unique_ptr<SharedStorageWorkletHostManager>
+          shared_storage_worklet_host_manager);
 
   // Returns the StoragePartitionConfig that represents this StoragePartition.
   const StoragePartitionConfig& GetConfig();
@@ -156,6 +160,11 @@ class CONTENT_EXPORT StoragePartitionImpl
   DOMStorageContextWrapper* GetDOMStorageContext() override;
   storage::mojom::LocalStorageControl* GetLocalStorageControl() override;
   LockManager* GetLockManager();  // override; TODO: Add to interface
+  // TODO(https://crbug.com/1218540): Add this method to the StoragePartition
+  // interface, which would also require making SharedStorageWorkletHostManager
+  // an interface accessible in //content/public/.
+  SharedStorageWorkletHostManager*
+  GetSharedStorageWorkletHostManager();  // override;
   storage::mojom::IndexedDBControl& GetIndexedDBControl() override;
   FileSystemAccessEntryFactory* GetFileSystemAccessEntryFactory() override;
   storage::mojom::CacheStorageControl* GetCacheStorageControl() override;
@@ -540,6 +549,8 @@ class CONTENT_EXPORT StoragePartitionImpl
   scoped_refptr<storage::DatabaseTracker> database_tracker_;
   scoped_refptr<DOMStorageContextWrapper> dom_storage_context_;
   std::unique_ptr<LockManager> lock_manager_;
+  std::unique_ptr<SharedStorageWorkletHostManager>
+      shared_storage_worklet_host_manager_;
   std::unique_ptr<IndexedDBControlWrapper> indexed_db_control_wrapper_;
   std::unique_ptr<CacheStorageControlWrapper> cache_storage_control_wrapper_;
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context_;

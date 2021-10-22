@@ -164,8 +164,7 @@ class SharedStorageURLLoaderFactoryProxyTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
 
-  const url::Origin frame_origin_ =
-      url::Origin::Create(GURL("https://foo.test/"));
+  const url::Origin frame_origin_ = url::Origin::Create(GURL(kScriptUrl));
   network::TestURLLoaderFactory proxied_url_loader_factory_;
   std::unique_ptr<SharedStorageURLLoaderFactoryProxy> url_loader_factory_proxy_;
   mojo::Remote<network::mojom::URLLoaderFactory> remote_url_loader_factory_;

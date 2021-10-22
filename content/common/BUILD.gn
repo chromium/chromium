@@ -611,6 +611,7 @@ mojom("mojo_bindings") {
     "//cc/mojom",
     "//components/variations:variations_mojom",
     "//content/public/common:interfaces",
+    "//content/services/shared_storage_worklet/public/mojom:mojom",
     "//ipc:mojom",
     "//ipc:mojom_constants",
     "//media/capture/mojom:video_capture",

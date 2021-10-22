@@ -44,7 +44,7 @@ ScriptPromise SharedStorageWorklet::addModule(ScriptState* script_state,
   scoped_refptr<SecurityOrigin> script_security_origin =
       SecurityOrigin::Create(script_source_url);
 
-  if (!execution_context->GetSecurityOrigin()->IsSameOriginDomainWith(
+  if (!execution_context->GetSecurityOrigin()->IsSameOriginWith(
           script_security_origin.get())) {
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
         script_state->GetIsolate(), DOMExceptionCode::kDataError,
@@ -52,7 +52,28 @@ ScriptPromise SharedStorageWorklet::addModule(ScriptState* script_state,
     return promise;
   }
 
-  // TODO: handle the operation
+  shared_storage_->GetSharedStorageDocumentService(execution_context)
+      ->AddModuleOnWorklet(
+          script_source_url,
+          WTF::Bind(
+              [](ScriptPromiseResolver* resolver,
+                 SharedStorageWorklet* shared_storage_worklet, bool success,
+                 const String& error_message) {
+                DCHECK(resolver);
+                ScriptState* script_state = resolver->GetScriptState();
+
+                if (!success) {
+                  ScriptState::Scope scope(script_state);
+                  resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+                      script_state->GetIsolate(),
+                      DOMExceptionCode::kOperationError, error_message));
+                  return;
+                }
+
+                resolver->Resolve();
+              },
+              WrapPersistent(resolver), WrapPersistent(this)));
+
   return promise;
 }
 

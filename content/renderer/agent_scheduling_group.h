@@ -12,6 +12,7 @@
 #include "content/common/associated_interfaces.mojom.h"
 #include "content/common/content_export.h"
 #include "content/public/common/content_features.h"
+#include "content/services/shared_storage_worklet/public/mojom/shared_storage_worklet_service.mojom-forward.h"
 #include "ipc/ipc.mojom.h"
 #include "ipc/ipc_listener.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -102,6 +103,10 @@ class CONTENT_EXPORT AgentSchedulingGroup
       blink::mojom::FrameReplicationStatePtr replicated_state,
       const base::UnguessableToken& devtools_frame_token,
       mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces)
+      override;
+  void CreateSharedStorageWorkletService(
+      mojo::PendingReceiver<
+          shared_storage_worklet::mojom::SharedStorageWorkletService> receiver)
       override;
 
   // mojom::RouteProvider

@@ -17,6 +17,7 @@
 #include "content/common/state_transitions.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/common/content_features.h"
+#include "content/services/shared_storage_worklet/public/mojom/shared_storage_worklet_service.mojom-forward.h"
 #include "ipc/ipc_listener.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
@@ -101,6 +102,9 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
       blink::mojom::FrameReplicationStatePtr replicated_state,
       const base::UnguessableToken& devtools_frame_token,
       mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces);
+  void CreateSharedStorageWorkletService(
+      mojo::PendingReceiver<
+          shared_storage_worklet::mojom::SharedStorageWorkletService> receiver);
 
   void ReportNoBinderForInterface(const std::string& error);
 

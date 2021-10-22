@@ -78,7 +78,7 @@ interface SharedStorageWorkletServiceClient {
 interface SharedStorageWorkletService {
   // Bind to the client
   BindSharedStorageWorkletServiceClient(
-    pending_remote<SharedStorageWorkletServiceClient> client);
+    pending_associated_remote<SharedStorageWorkletServiceClient> client);
 
   // Handle sharedStorage.worklet.addModule(): download and load the script in
   // the worklet environment. The origin of the `script_source_url` should be

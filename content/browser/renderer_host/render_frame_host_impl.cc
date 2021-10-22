@@ -117,6 +117,7 @@
 #include "content/browser/scoped_active_url.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_object_host.h"
+#include "content/browser/shared_storage/shared_storage_document_service_impl.h"
 #include "content/browser/sms/webotp_service.h"
 #include "content/browser/speech/speech_synthesis_impl.h"
 #include "content/browser/storage_partition_impl.h"
@@ -8241,6 +8242,25 @@ void RenderFrameHostImpl::SetUpMojoIfNeeded() {
         impl->local_frame_host_receiver_.SetFilter(
             impl->CreateMessageFilterForAssociatedReceiver(
                 blink::mojom::LocalFrameHost::Name_));
+      },
+      base::Unretained(this)));
+
+  associated_registry_->AddInterface(base::BindRepeating(
+      [](RenderFrameHostImpl* impl,
+         mojo::PendingAssociatedReceiver<
+             blink::mojom::SharedStorageDocumentService> receiver) {
+        if (SharedStorageDocumentServiceImpl::GetForCurrentDocument(impl)) {
+          // The renderer somehow requested two shared storage worklets
+          // associated with the same document. This could indicate a
+          // compromised renderer, so let's terminate it.
+          mojo::ReportBadMessage(
+              "Attempted to request two shared storage worklets associated "
+              "with the same document.");
+          return;
+        }
+
+        SharedStorageDocumentServiceImpl::GetOrCreateForCurrentDocument(impl)
+            ->Bind(std::move(receiver));
       },
       base::Unretained(this)));
 

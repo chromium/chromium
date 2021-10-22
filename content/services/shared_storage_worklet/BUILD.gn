@@ -16,6 +16,8 @@ source_set("shared_storage_worklet") {
     "shared_storage_iterator.h",
     "shared_storage_worklet_global_scope.cc",
     "shared_storage_worklet_global_scope.h",
+    "shared_storage_worklet_service_impl.cc",
+    "shared_storage_worklet_service_impl.h",
     "unnamed_operation_handler.cc",
     "unnamed_operation_handler.h",
     "url_selection_operation_handler.cc",

@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
@@ -355,8 +356,9 @@ void AdAuctionServiceImpl::OnAuctionComplete(
 
   // Forward debug information to devtools.
   for (const std::string& error : errors) {
-    devtools_instrumentation::LogWorkletError(
-        static_cast<RenderFrameHostImpl*>(render_frame_host()), error);
+    devtools_instrumentation::LogWorkletMessage(
+        *GetFrame(), blink::mojom::ConsoleMessageLevel::kError,
+        base::StrCat({"Worklet error: ", error}));
   }
 
   if (!render_url) {
