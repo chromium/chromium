@@ -342,23 +342,23 @@ void CrashReportDatabase::UploadReport::InitializeAttachments() {
   if (!IsDirectory(attachments_dir, /*allow_symlinks=*/false)) {
     return;
   }
-  DirectoryReader reader;
-  if (!reader.Open(attachments_dir)) {
+  DirectoryReader directory_reader;
+  if (!directory_reader.Open(attachments_dir)) {
     return;
   }
 
   base::FilePath filename;
   DirectoryReader::Result dir_result;
-  while ((dir_result = reader.NextFile(&filename)) ==
+  while ((dir_result = directory_reader.NextFile(&filename)) ==
          DirectoryReader::Result::kSuccess) {
     const base::FilePath filepath(attachments_dir.Append(filename));
-    std::unique_ptr<FileReader> reader(std::make_unique<FileReader>());
-    if (!reader->Open(filepath)) {
+    std::unique_ptr<FileReader> file_reader(std::make_unique<FileReader>());
+    if (!file_reader->Open(filepath)) {
       LOG(ERROR) << "attachment " << filepath.value()
                  << " couldn't be opened, skipping";
       continue;
     }
-    attachment_readers_.emplace_back(std::move(reader));
+    attachment_readers_.emplace_back(std::move(file_reader));
     attachment_map_[filename.value()] = attachment_readers_.back().get();
   }
 }
