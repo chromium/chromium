@@ -2098,8 +2098,10 @@ void AutomationInternalCustomBindings::UpdateOverallTreeChangeObserverFilter() {
 
 ui::AXNode* AutomationInternalCustomBindings::GetParent(
     ui::AXNode* node,
-    AutomationAXTreeWrapper** in_out_tree_wrapper) const {
-  if (node->HasStringAttribute(ax::mojom::StringAttribute::kAppId)) {
+    AutomationAXTreeWrapper** in_out_tree_wrapper,
+    bool should_use_app_id) const {
+  if (should_use_app_id &&
+      node->HasStringAttribute(ax::mojom::StringAttribute::kAppId)) {
     ui::AXNode* parent_app_node =
         AutomationAXTreeWrapper::GetParentTreeNodeForAppID(
             node->GetStringAttribute(ax::mojom::StringAttribute::kAppId), this);
@@ -2842,9 +2844,10 @@ gfx::Rect AutomationInternalCustomBindings::ComputeGlobalNodeBounds(
     bounds = tree_wrapper->tree()->RelativeToTreeBounds(node, bounds, offscreen,
                                                         clip_bounds);
 
+    bool should_use_app_id = tree_wrapper->tree()->root() == node;
     AutomationAXTreeWrapper* previous_tree_wrapper = tree_wrapper;
-    ui::AXNode* parent_of_root =
-        GetParent(tree_wrapper->tree()->root(), &tree_wrapper);
+    ui::AXNode* parent_of_root = GetParent(tree_wrapper->tree()->root(),
+                                           &tree_wrapper, should_use_app_id);
     if (parent_of_root == node)
       break;
 

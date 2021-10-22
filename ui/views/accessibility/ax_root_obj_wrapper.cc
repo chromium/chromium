@@ -48,7 +48,6 @@ class AXHostAuraObj : public views::AXAuraObjWrapper {
   }
 
   ui::AXNodeID GetUniqueId() const override { return unique_id_.Get(); }
-
   std::string ToString() const override { return std::string(); }
 
  private:

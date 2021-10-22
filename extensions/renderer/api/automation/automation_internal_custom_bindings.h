@@ -65,7 +65,8 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler {
   // node of the parent tree and |in_out_tree_wrapper| will be updated to
   // point to that parent tree.
   ui::AXNode* GetParent(ui::AXNode* node,
-                        AutomationAXTreeWrapper** in_out_tree_wrapper) const;
+                        AutomationAXTreeWrapper** in_out_tree_wrapper,
+                        bool should_use_app_id = true) const;
 
   // Gets the root of a node's child tree and adjusts incoming arguments
   // accordingly. Returns false if no adjustments were made.
