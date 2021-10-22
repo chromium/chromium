@@ -15,10 +15,10 @@
 #include "extensions/common/constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
-#include "chromeos/components/projector_app/public/cpp/projector_app_constants.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {

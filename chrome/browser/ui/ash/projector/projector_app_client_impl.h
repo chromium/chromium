@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_UI_ASH_PROJECTOR_PROJECTOR_APP_CLIENT_IMPL_H_
 #define CHROME_BROWSER_UI_ASH_PROJECTOR_PROJECTOR_APP_CLIENT_IMPL_H_
 
+#include "ash/webui/projector_app/projector_app_client.h"
 #include "base/observer_list.h"
-#include "chromeos/components/projector_app/projector_app_client.h"
 
 namespace network {
 namespace mojom {

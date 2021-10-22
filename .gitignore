@@ -77,6 +77,7 @@ vs-chromium-project.txt
 /ash/webui/media_app_ui/resources/prod
 /ash/webui/media_app_ui/resources/app
 /ash/webui/media_app_ui/resources/pkg
+/ash/webui/projector_app/resources/prod
 /base/base_unittests_run.xml
 # See build/.gitignore for entries covering src/build.
 
@@ -180,7 +181,6 @@ vs-chromium-project.txt
 /chromeos/components/eche_app_ui/resources/prod
 /chromeos/components/help_app_ui/resources/app
 /chromeos/components/help_app_ui/resources/prod
-/chromeos/components/projector_app/resources/prod
 /chromeos/profiles/chromeos.orderfile.txt
 /chromeos/profiles/*.local.txt
 /chromeos/profiles/*.afdo.prof

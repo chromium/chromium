@@ -4845,6 +4845,7 @@ static_library("browser") {
       "//ash/components/quick_answers",
       "//ash/public/cpp",
       "//ash/public/cpp/external_arc",
+      "//ash/webui/projector_app",
       "//build:chromeos_buildflags",
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/power/ml/smart_dim",
@@ -4869,7 +4870,6 @@ static_library("browser") {
       "//chrome/services/sharing/public/proto",
       "//chrome/services/speech:lib",
       "//chromeos/components/feature_usage",
-      "//chromeos/components/projector_app",
       "//chromeos/components/sync_wifi",
       "//chromeos/crosapi/cpp",
       "//chromeos/crosapi/mojom",
@@ -4992,7 +4992,7 @@ static_library("browser") {
       "apps/intent_helper/common_apps_navigation_throttle.h",
     ]
     deps += [
-      "//chromeos/components/projector_app/public/cpp",
+      "//ash/webui/projector_app/public/cpp",
       "//ui/wm/public",
     ]
   }

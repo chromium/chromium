@@ -1731,7 +1731,7 @@ deps = {
     'dep_type': 'cipd',
   },
 
-  'src/chromeos/components/projector_app/resources/prod': {
+  'src/ash/webui/projector_app/resources/prod': {
     'packages': [
       {
         'package': 'chromeos_internal/apps/projector_app/app',

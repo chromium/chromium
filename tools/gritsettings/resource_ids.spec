@@ -524,11 +524,11 @@
     "META": {"sizes": {"includes": [50],}},
    "includes": [3360],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chromeos/components/projector_app/resources/chromeos_projector_app_untrusted_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/projector_app/resources/ash_projector_app_untrusted_resources.grd": {
     "META": {"sizes": {"includes": [50],}},
     "includes": [3380],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chromeos/components/projector_app/resources/chromeos_projector_app_trusted_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/projector_app/resources/ash_projector_app_trusted_resources.grd": {
     "META": {"sizes": {"includes": [50],}},
     "includes": [3400],
   },
@@ -536,11 +536,11 @@
   # start with the same id because only one of them is built depending on if
   # src_internal is available. Lower bound for number of resource ids is number
   # of languages (79).
-  "chromeos/components/projector_app/resources/prod/projector_app_bundle_resources.grd": {
+  "ash/webui/projector_app/resources/prod/projector_app_bundle_resources.grd": {
     "META": {"sizes": {"includes": [120],}}, # Relies on src-internal.
     "includes": [3420],
   },
-  "chromeos/components/projector_app/resources/mock/projector_app_bundle_mock_resources.grd": {
+  "ash/webui/projector_app/resources/mock/projector_app_bundle_mock_resources.grd": {
     "includes": [3420],
   },
   # END chromeos/ section.

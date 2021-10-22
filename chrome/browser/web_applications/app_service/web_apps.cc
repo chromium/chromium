@@ -32,6 +32,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/app_menu_constants.h"
+#include "ash/webui/projector_app/public/cpp/projector_app_constants.h"  // nogncheck
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -41,7 +42,6 @@
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/components/projector_app/public/cpp/projector_app_constants.h"  // nogncheck
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"

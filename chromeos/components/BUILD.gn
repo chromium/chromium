@@ -29,7 +29,6 @@ test("chromeos_components_unittests") {
     "//chromeos/components/mojo_bootstrap:unit_tests",
     "//chromeos/components/multidevice:unit_tests",
     "//chromeos/components/phonehub:unit_tests",
-    "//chromeos/components/projector_app:unit_tests",
     "//chromeos/components/proximity_auth:unit_tests",
     "//chromeos/components/sensors:unit_tests",
     "//chromeos/components/string_matching:unit_tests",
@@ -55,7 +54,6 @@ group("closure_compile") {
     "//chromeos/components/connectivity_diagnostics:closure_compile",
     "//chromeos/components/eche_app_ui:closure_compile",
     "//chromeos/components/multidevice/debug_webui/resources:closure_compile",
-    "//chromeos/components/projector_app/resources:closure_compile",
     "//chromeos/components/system_apps:closure_compile",
   ]
 }

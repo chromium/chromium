@@ -75,7 +75,7 @@ enum class SystemAppType {
   // enables teachers to create a library of custom-tailored instructional
   // content that students can search and view at home.
   //
-  // Source: //chromeos/components/projector_app/
+  // Source: //ash/webui/projector_app/
   // Contact: cros-projector@google.com
   // Buganizer component: b/components/1080013
   // This app is only included in Chrome-branded builds. Non-official builds

@@ -5,10 +5,10 @@
 #include "chrome/browser/ash/web_applications/projector_system_web_app_info.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/grit/ash_projector_app_trusted_resources.h"
+#include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/components/projector_app/public/cpp/projector_app_constants.h"
-#include "chromeos/grit/chromeos_projector_app_trusted_resources.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 

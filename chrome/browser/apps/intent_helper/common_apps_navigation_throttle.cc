@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "base/containers/contains.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -25,7 +26,6 @@
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/browser_resources.h"
-#include "chromeos/components/projector_app/public/cpp/projector_app_constants.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
