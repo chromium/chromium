@@ -1,8 +1,8 @@
 {
-  "name": "chrome.idle.getAutoLockDelay",
+  "name": "chrome.idle.queryState",
   "version": "1.0",
   "manifest_version": 2,
-  "description": "chrome.getAutoLockDelay API test",
+  "description": "chrome.idle API test",
   "background": {
     "scripts": [
       "test.js"
