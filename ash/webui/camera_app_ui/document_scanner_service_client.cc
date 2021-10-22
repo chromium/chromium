@@ -9,7 +9,7 @@
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "components/device_event_log/device_event_log.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -135,4 +135,4 @@ void DocumentScannerServiceClient::OnInitialized(
   document_scanner_loaded_ = result == LoadModelResult::OK;
 }
 
-}  // namespace chromeos
+}  // namespace ash

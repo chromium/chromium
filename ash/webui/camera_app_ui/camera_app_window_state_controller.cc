@@ -6,12 +6,12 @@
 
 #include "ash/public/cpp/tablet_mode.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
 bool IsRestored(views::Widget* widget) {
-  if (ash::TabletMode::Get()->InTabletMode()) {
+  if (TabletMode::Get()->InTabletMode()) {
     return !widget->IsMinimized();
   }
   return !widget->IsMinimized() && !widget->IsMaximized() &&
@@ -37,16 +37,15 @@ CameraAppWindowStateController::~CameraAppWindowStateController() {
 }
 
 void CameraAppWindowStateController::AddReceiver(
-    mojo::PendingReceiver<chromeos_camera::mojom::WindowStateController>
-        receiver) {
+    mojo::PendingReceiver<camera_app::mojom::WindowStateController> receiver) {
   receivers_.Add(this, std::move(receiver));
 }
 
 void CameraAppWindowStateController::AddMonitor(
-    mojo::PendingRemote<chromeos_camera::mojom::WindowStateMonitor> monitor,
+    mojo::PendingRemote<camera_app::mojom::WindowStateMonitor> monitor,
     AddMonitorCallback callback) {
-  auto remote = mojo::Remote<chromeos_camera::mojom::WindowStateMonitor>(
-      std::move(monitor));
+  auto remote =
+      mojo::Remote<camera_app::mojom::WindowStateMonitor>(std::move(monitor));
   monitors_.push_back(std::move(remote));
   std::move(callback).Run(ToVector(window_states_));
 }
@@ -170,4 +169,4 @@ CameraAppWindowStateController::GetCurrentWindowStates() {
   return states;
 }
 
-}  // namespace chromeos
+}  // namespace ash

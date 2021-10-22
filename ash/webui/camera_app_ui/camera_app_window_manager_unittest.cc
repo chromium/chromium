@@ -15,19 +15,19 @@
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
 
-using testing::_;
-using testing::Invoke;
-using CameraUsageOwnershipMonitor =
-    chromeos_camera::mojom::CameraUsageOwnershipMonitor;
-using OnCameraUsageOwnershipChangedCallback = chromeos_camera::mojom::
-    CameraUsageOwnershipMonitor::OnCameraUsageOwnershipChangedCallback;
-
-namespace chromeos {
+namespace ash {
 
 namespace {
 
+using testing::_;
+using testing::Invoke;
+using CameraUsageOwnershipMonitor =
+    camera_app::mojom::CameraUsageOwnershipMonitor;
+using OnCameraUsageOwnershipChangedCallback = camera_app::mojom::
+    CameraUsageOwnershipMonitor::OnCameraUsageOwnershipChangedCallback;
+
 class MockCameraUsageOwnershipMonitor
-    : public chromeos_camera::mojom::CameraUsageOwnershipMonitor {
+    : public camera_app::mojom::CameraUsageOwnershipMonitor {
  public:
   MockCameraUsageOwnershipMonitor() : receiver_(this) {}
 
@@ -47,7 +47,7 @@ class MockCameraUsageOwnershipMonitor
               (bool has_usage, OnCameraUsageOwnershipChangedCallback callback));
 
  private:
-  mojo::Receiver<chromeos_camera::mojom::CameraUsageOwnershipMonitor> receiver_;
+  mojo::Receiver<camera_app::mojom::CameraUsageOwnershipMonitor> receiver_;
 };
 
 }  // namespace
@@ -107,7 +107,7 @@ class CameraAppWindowManagerTest : public views::ViewsTestBase {
   }
 
  protected:
-  chromeos::CameraAppWindowManager app_window_manager;
+  CameraAppWindowManager app_window_manager;
 
  private:
   std::queue<OnCameraUsageOwnershipChangedCallback> pending_callbacks_;
@@ -244,4 +244,4 @@ TEST_F(CameraAppWindowManagerTest, UnexpectedlyClosed) {
   base::RunLoop().RunUntilIdle();
 }
 
-}  // namespace chromeos
+}  // namespace ash

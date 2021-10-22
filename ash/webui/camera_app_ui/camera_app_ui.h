@@ -15,15 +15,13 @@
 #include "ui/aura/window.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
-namespace chromeos_camera {
-class CameraAppHelperImpl;
-}  // namespace chromeos_camera
-
 namespace media {
 class CameraAppDeviceProviderImpl;
 }  // namespace media
 
-namespace chromeos {
+namespace ash {
+
+class CameraAppHelperImpl;
 
 class CameraAppUI : public ui::MojoWebUIController,
                     public content::DevToolsAgentHostObserver {
@@ -41,10 +39,10 @@ class CameraAppUI : public ui::MojoWebUIController,
   void BindInterface(
       mojo::PendingReceiver<cros::mojom::CameraAppDeviceProvider> receiver);
 
-  // Instantiates implementor of the chromeos_camera::mojom::CameraAppHelper
+  // Instantiates implementor of the camera_app::mojom::CameraAppHelper
   // mojo interface passing the pending receiver that will be internally bound.
   void BindInterface(
-      mojo::PendingReceiver<chromeos_camera::mojom::CameraAppHelper> receiver);
+      mojo::PendingReceiver<camera_app::mojom::CameraAppHelper> receiver);
 
   CameraAppUIDelegate* delegate() { return delegate_.get(); }
 
@@ -68,11 +66,11 @@ class CameraAppUI : public ui::MojoWebUIController,
 
   std::unique_ptr<media::CameraAppDeviceProviderImpl> provider_;
 
-  std::unique_ptr<chromeos_camera::CameraAppHelperImpl> helper_;
+  std::unique_ptr<CameraAppHelperImpl> helper_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_CAMERA_APP_UI_CAMERA_APP_UI_H_

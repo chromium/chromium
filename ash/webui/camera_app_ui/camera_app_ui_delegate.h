@@ -14,6 +14,8 @@ class WebContents;
 class WebUIDataSource;
 }  // namespace content
 
+namespace ash {
+
 // A delegate which exposes browser functionality from //chrome to the camera
 // app ui page handler.
 class CameraAppUIDelegate {
@@ -62,5 +64,7 @@ class CameraAppUIDelegate {
       const std::string& name,
       base::OnceCallback<void(FileMonitorResult)> callback) = 0;
 };
+
+}  // namespace ash
 
 #endif  // ASH_WEBUI_CAMERA_APP_UI_CAMERA_APP_UI_DELEGATE_H_

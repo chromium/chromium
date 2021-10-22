@@ -32,7 +32,7 @@
 #include "ui/aura/window.h"
 #include "ui/webui/webui_allowlist.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -125,8 +125,7 @@ void HandleCameraResult(
     uint32_t intent_id,
     arc::mojom::CameraIntentAction action,
     const std::vector<uint8_t>& data,
-    chromeos_camera::mojom::CameraAppHelper::HandleCameraResultCallback
-        callback) {
+    camera_app::mojom::CameraAppHelper::HandleCameraResultCallback callback) {
   auto* intent_helper =
       arc::ArcIntentHelperBridge::GetForBrowserContext(context);
   intent_helper->HandleCameraResult(intent_id, action, data,
@@ -161,7 +160,7 @@ CreateCameraAppDeviceProvider(const url::Origin& security_origin,
       std::move(device_bridge), std::move(mapping_callback));
 }
 
-std::unique_ptr<chromeos_camera::CameraAppHelperImpl> CreateCameraAppHelper(
+std::unique_ptr<CameraAppHelperImpl> CreateCameraAppHelper(
     CameraAppUI* camera_app_ui,
     content::BrowserContext* browser_context,
     aura::Window* window) {
@@ -171,7 +170,7 @@ std::unique_ptr<chromeos_camera::CameraAppHelperImpl> CreateCameraAppHelper(
   auto send_broadcast_callback =
       base::BindRepeating(&SendNewCaptureBroadcast, browser_context);
 
-  return std::make_unique<chromeos_camera::CameraAppHelperImpl>(
+  return std::make_unique<CameraAppHelperImpl>(
       camera_app_ui, std::move(handle_result_callback),
       std::move(send_broadcast_callback), window);
 }
@@ -211,7 +210,7 @@ CameraAppUI::CameraAppUI(content::WebUI* web_ui,
 
   delegate_->SetLaunchDirectory();
 
-  window()->SetProperty(ash::kMinimizeOnBackKey, false);
+  window()->SetProperty(kMinimizeOnBackKey, false);
 
   // Set up the data source.
   content::WebUIDataSource::Add(browser_context,
@@ -236,13 +235,13 @@ CameraAppUI::~CameraAppUI() {
 void CameraAppUI::BindInterface(
     mojo::PendingReceiver<cros::mojom::CameraAppDeviceProvider> receiver) {
   provider_ = CreateCameraAppDeviceProvider(
-      url::Origin::Create(GURL(chromeos::kChromeUICameraAppURL)),
+      url::Origin::Create(GURL(kChromeUICameraAppURL)),
       web_ui()->GetWebContents()->GetBrowserContext());
   provider_->Bind(std::move(receiver));
 }
 
 void CameraAppUI::BindInterface(
-    mojo::PendingReceiver<chromeos_camera::mojom::CameraAppHelper> receiver) {
+    mojo::PendingReceiver<camera_app::mojom::CameraAppHelper> receiver) {
   helper_ = CreateCameraAppHelper(
       this, web_ui()->GetWebContents()->GetBrowserContext(), window());
   helper_->Bind(std::move(receiver));
@@ -253,7 +252,7 @@ aura::Window* CameraAppUI::window() {
 }
 
 CameraAppWindowManager* CameraAppUI::app_window_manager() {
-  return chromeos::CameraAppWindowManager::GetInstance();
+  return CameraAppWindowManager::GetInstance();
 }
 
 const GURL& CameraAppUI::url() {
@@ -289,4 +288,4 @@ bool CameraAppUI::IsJavascriptErrorReportingEnabled() {
 
 WEB_UI_CONTROLLER_TYPE_IMPL(CameraAppUI)
 
-}  // namespace chromeos
+}  // namespace ash

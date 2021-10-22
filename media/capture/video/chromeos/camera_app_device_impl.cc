@@ -95,7 +95,7 @@ void CameraAppDeviceImpl::BindReceiver(
                           weak_ptr_factory_for_mojo_.GetWeakPtr()));
   mojo_task_runner_ = base::ThreadTaskRunnerHandle::Get();
 
-  document_scanner_service_ = chromeos::DocumentScannerServiceClient::Create();
+  document_scanner_service_ = ash::DocumentScannerServiceClient::Create();
 }
 
 base::WeakPtr<CameraAppDeviceImpl> CameraAppDeviceImpl::GetWeakPtr() {
@@ -182,7 +182,7 @@ void CameraAppDeviceImpl::MaybeDetectDocumentCorners(
       return;
     }
   }
-  if (!chromeos::DocumentScannerServiceClient::IsSupported()) {
+  if (!ash::DocumentScannerServiceClient::IsSupported()) {
     return;
   }
   mojo_task_runner_->PostTask(

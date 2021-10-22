@@ -4,7 +4,7 @@
 
 #include "ash/webui/camera_app_ui/url_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 const char kChromeUICameraAppHost[] = "camera-app";
 const char kChromeUICameraAppMainURL[] = "chrome://camera-app/views/main.html";
@@ -12,4 +12,4 @@ const char kChromeUICameraAppScopeURL[] = "chrome://camera-app/views";
 const char kChromeUICameraAppURL[] = "chrome://camera-app/";
 const char kChromeUIUntrustedCameraAppURL[] = "chrome-untrusted://camera-app/";
 
-}  // namespace chromeos
+}  // namespace ash

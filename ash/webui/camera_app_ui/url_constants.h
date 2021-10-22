@@ -5,7 +5,7 @@
 #ifndef ASH_WEBUI_CAMERA_APP_UI_URL_CONSTANTS_H_
 #define ASH_WEBUI_CAMERA_APP_UI_URL_CONSTANTS_H_
 
-namespace chromeos {
+namespace ash {
 
 extern const char kChromeUICameraAppHost[];
 extern const char kChromeUICameraAppMainURL[];
@@ -13,6 +13,6 @@ extern const char kChromeUICameraAppScopeURL[];
 extern const char kChromeUICameraAppURL[];
 extern const char kChromeUIUntrustedCameraAppURL[];
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_CAMERA_APP_UI_URL_CONSTANTS_H_

@@ -566,7 +566,7 @@ TEST_F(ChromeContentSettingsRedirectTest, RedirectScanningAppURL) {
 
 TEST_F(ChromeContentSettingsRedirectTest, RedirectCameraAppURL) {
   TestChromeContentBrowserClient test_content_browser_client;
-  const GURL camera_app_url(chromeos::kChromeUICameraAppMainURL);
+  const GURL camera_app_url(ash::kChromeUICameraAppMainURL);
   GURL dest_url = camera_app_url;
   test_content_browser_client.HandleWebUI(&dest_url, &profile_);
   EXPECT_EQ(camera_app_url, dest_url);

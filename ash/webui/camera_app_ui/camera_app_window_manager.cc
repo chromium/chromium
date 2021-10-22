@@ -8,7 +8,8 @@
 #include "ui/aura/window.h"
 #include "ui/views/widget/widget.h"
 
-namespace chromeos {
+namespace ash {
+
 CameraAppWindowManager::~CameraAppWindowManager() = default;
 
 // static
@@ -19,7 +20,7 @@ CameraAppWindowManager* CameraAppWindowManager::GetInstance() {
 
 void CameraAppWindowManager::SetCameraUsageMonitor(
     aura::Window* window,
-    mojo::PendingRemote<chromeos_camera::mojom::CameraUsageOwnershipMonitor>
+    mojo::PendingRemote<camera_app::mojom::CameraUsageOwnershipMonitor>
         usage_monitor,
     base::OnceCallback<void(bool)> callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -32,7 +33,7 @@ void CameraAppWindowManager::SetCameraUsageMonitor(
     return;
   }
 
-  mojo::Remote<chromeos_camera::mojom::CameraUsageOwnershipMonitor> remote(
+  mojo::Remote<camera_app::mojom::CameraUsageOwnershipMonitor> remote(
       std::move(usage_monitor));
   remote.set_disconnect_handler(
       base::BindOnce(&CameraAppWindowManager::OnMonitorMojoConnectionError,
@@ -221,4 +222,4 @@ void CameraAppWindowManager::ResumeNextOrIdle() {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

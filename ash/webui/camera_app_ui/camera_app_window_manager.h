@@ -19,7 +19,7 @@ namespace views {
 class Widget;
 }  // namespace views
 
-namespace chromeos {
+namespace ash {
 
 // A manager to manage the camera usage ownership between multiple camera app
 // windows. The clients should only use this object as a singleton instance and
@@ -34,7 +34,7 @@ class CameraAppWindowManager : public views::WidgetObserver {
 
   void SetCameraUsageMonitor(
       aura::Window* window,
-      mojo::PendingRemote<chromeos_camera::mojom::CameraUsageOwnershipMonitor>
+      mojo::PendingRemote<camera_app::mojom::CameraUsageOwnershipMonitor>
           usage_monitor,
       base::OnceCallback<void(bool)> callback);
 
@@ -68,9 +68,8 @@ class CameraAppWindowManager : public views::WidgetObserver {
   // Whether dev tools window should be opened when opening CCA window.
   bool dev_tools_enabled_ = false;
 
-  base::flat_map<
-      views::Widget*,
-      mojo::Remote<chromeos_camera::mojom::CameraUsageOwnershipMonitor>>
+  base::flat_map<views::Widget*,
+                 mojo::Remote<camera_app::mojom::CameraUsageOwnershipMonitor>>
       camera_usage_monitors_;
 
   // Whether the |owner_| is transferring the camera usage.
@@ -88,6 +87,6 @@ class CameraAppWindowManager : public views::WidgetObserver {
   absl::optional<views::Widget*> pending_transfer_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_CAMERA_APP_UI_CAMERA_APP_WINDOW_MANAGER_H_

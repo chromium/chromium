@@ -17,14 +17,14 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
-namespace chromeos {
+namespace ash {
 
 class CameraAppWindowStateController
-    : public chromeos_camera::mojom::WindowStateController,
+    : public camera_app::mojom::WindowStateController,
       public views::WidgetObserver {
  public:
-  using WindowStateType = chromeos_camera::mojom::WindowStateType;
-  using WindowStateMonitor = chromeos_camera::mojom::WindowStateMonitor;
+  using WindowStateType = camera_app::mojom::WindowStateType;
+  using WindowStateMonitor = camera_app::mojom::WindowStateMonitor;
 
   CameraAppWindowStateController(views::Widget* widget);
   CameraAppWindowStateController(const CameraAppWindowStateController&) =
@@ -34,12 +34,11 @@ class CameraAppWindowStateController
   ~CameraAppWindowStateController() override;
 
   void AddReceiver(
-      mojo::PendingReceiver<chromeos_camera::mojom::WindowStateController>
-          receiver);
+      mojo::PendingReceiver<camera_app::mojom::WindowStateController> receiver);
 
-  // chromeos_camera::mojom::WindowStateController implementations.
+  // camera_app::mojom::WindowStateController implementations.
   void AddMonitor(
-      mojo::PendingRemote<chromeos_camera::mojom::WindowStateMonitor> monitor,
+      mojo::PendingRemote<camera_app::mojom::WindowStateMonitor> monitor,
       AddMonitorCallback callback) override;
   void GetWindowState(GetWindowStateCallback callback) override;
   void Minimize(MinimizeCallback callback) override;
@@ -60,7 +59,7 @@ class CameraAppWindowStateController
 
   views::Widget* widget_;
   base::flat_set<WindowStateType> window_states_;
-  mojo::ReceiverSet<chromeos_camera::mojom::WindowStateController> receivers_;
+  mojo::ReceiverSet<camera_app::mojom::WindowStateController> receivers_;
   std::vector<mojo::Remote<WindowStateMonitor>> monitors_;
   std::queue<base::OnceClosure> minimize_callbacks_;
   std::queue<base::OnceClosure> restore_callbacks_;
@@ -69,6 +68,6 @@ class CameraAppWindowStateController
   std::queue<base::OnceClosure> focus_callbacks_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_CAMERA_APP_UI_CAMERA_APP_WINDOW_STATE_CONTROLLER_H_

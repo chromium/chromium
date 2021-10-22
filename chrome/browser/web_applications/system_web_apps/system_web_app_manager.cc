@@ -470,7 +470,7 @@ absl::optional<SystemAppType> SystemWebAppManager::GetCapturingSystemAppForURL(
     replacements.ClearQuery();
     replacements.ClearRef();
     if (url.ReplaceComponents(replacements).spec() !=
-        chromeos::kChromeUICameraAppMainURL)
+        ash::kChromeUICameraAppMainURL)
       return absl::nullopt;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

@@ -4879,7 +4879,7 @@ bool IsSystemFeatureURLDisabled(const GURL& url) {
     return true;
   }
 
-  if (url.DomainIs(chromeos::kChromeUICameraAppHost) &&
+  if (url.DomainIs(ash::kChromeUICameraAppHost) &&
       IsSystemFeatureDisabled(policy::SystemFeature::kCamera)) {
     return true;
   }

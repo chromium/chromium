@@ -7,7 +7,7 @@
 
 #include "ash/webui/camera_app_ui/resources/strings/grit/ash_camera_app_strings.h"
 
-namespace chromeos {
+namespace ash {
 
 // TODO(crbug.com/980846): Use camelCase for name instead after totally
 // migrating to SWA.
@@ -153,6 +153,6 @@ const struct {
     {"zoom_out_button", IDS_ZOOM_OUT_BUTTON},
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_CAMERA_APP_UI_RESOURCES_H_

@@ -64,7 +64,7 @@ std::string DeviceTypeToString(chromeos::DeviceType device_type) {
 void ChromeCameraAppUIDelegate::CameraAppDialog::ShowIntent(
     const std::string& queries,
     gfx::NativeWindow parent) {
-  std::string url = chromeos::kChromeUICameraAppMainURL + queries;
+  std::string url = ash::kChromeUICameraAppMainURL + queries;
   CameraAppDialog* dialog = new CameraAppDialog(url);
   dialog->ShowSystemDialog(parent);
 }
@@ -218,7 +218,7 @@ void ChromeCameraAppUIDelegate::OpenFeedbackDialog(
   // Note that category_tag is the name of the listnr bucket we want our
   // reports to end up in.
   Profile* profile = Profile::FromWebUI(web_ui_);
-  chrome::ShowFeedbackPage(GURL(chromeos::kChromeUICameraAppURL), profile,
+  chrome::ShowFeedbackPage(GURL(ash::kChromeUICameraAppURL), profile,
                            chrome::kFeedbackSourceCameraApp,
                            std::string() /* description_template */,
                            placeholder /* description_placeholder_text */,

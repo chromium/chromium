@@ -15,7 +15,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/gfx/geometry/point_f.h"
 
-namespace chromeos {
+namespace ash {
 
 // Client for communicating to the CrOS Document Scanner Service.
 class DocumentScannerServiceClient {
@@ -59,6 +59,6 @@ class DocumentScannerServiceClient {
       document_scanner_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_CAMERA_APP_UI_DOCUMENT_SCANNER_SERVICE_CLIENT_H_

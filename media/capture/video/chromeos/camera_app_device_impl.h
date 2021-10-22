@@ -233,8 +233,7 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
 
   // Client to connect to document detection service. It should only be
   // used/destructed on the Mojo thread.
-  std::unique_ptr<chromeos::DocumentScannerServiceClient>
-      document_scanner_service_;
+  std::unique_ptr<ash::DocumentScannerServiceClient> document_scanner_service_;
 
   // The weak pointers should be dereferenced and invalidated on camera device
   // ipc thread.

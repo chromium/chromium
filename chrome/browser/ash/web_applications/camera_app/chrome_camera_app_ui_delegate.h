@@ -34,9 +34,9 @@ enum ModalType;
 
 /**
  * Implementation of the CameraAppUIDelegate interface. Provides the camera app
- * code in chromeos/ with functions that only exist in chrome/.
+ * code in ash/ with functions that only exist in chrome/.
  */
-class ChromeCameraAppUIDelegate : public CameraAppUIDelegate {
+class ChromeCameraAppUIDelegate : public ash::CameraAppUIDelegate {
  public:
   class CameraAppDialog : public chromeos::SystemWebDialogDelegate {
    public:
@@ -92,7 +92,7 @@ class ChromeCameraAppUIDelegate : public CameraAppUIDelegate {
       delete;
   ~ChromeCameraAppUIDelegate() override;
 
-  // CameraAppUIDelegate
+  // ash::CameraAppUIDelegate
   void SetLaunchDirectory() override;
   void PopulateLoadTimeData(content::WebUIDataSource* source) override;
   bool IsMetricsAndCrashReportingEnabled() override;

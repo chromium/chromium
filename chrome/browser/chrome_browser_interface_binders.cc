@@ -866,10 +866,10 @@ void PopulateChromeWebUIFrameBinders(
       ash::printing::printing_manager::PrintManagementUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<cros::mojom::CameraAppDeviceProvider,
-                                         chromeos::CameraAppUI>(map);
+                                         ash::CameraAppUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
-      chromeos_camera::mojom::CameraAppHelper, chromeos::CameraAppUI>(map);
+      ash::camera_app::mojom::CameraAppHelper, ash::CameraAppUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       ash::help_app::mojom::PageHandlerFactory, ash::HelpAppUI>(map);

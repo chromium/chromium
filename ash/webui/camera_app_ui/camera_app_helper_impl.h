@@ -20,12 +20,12 @@
 #include "ui/display/display_observer.h"
 #include "ui/display/screen.h"
 
-namespace chromeos_camera {
+namespace ash {
 
-class CameraAppHelperImpl : public ash::TabletModeObserver,
-                            public ash::ScreenBacklightObserver,
+class CameraAppHelperImpl : public TabletModeObserver,
+                            public ScreenBacklightObserver,
                             public display::DisplayObserver,
-                            public mojom::CameraAppHelper {
+                            public camera_app::mojom::CameraAppHelper {
  public:
   using CameraResultCallback =
       base::RepeatingCallback<void(uint32_t,
@@ -34,12 +34,13 @@ class CameraAppHelperImpl : public ash::TabletModeObserver,
                                    HandleCameraResultCallback)>;
   using SendBroadcastCallback =
       base::RepeatingCallback<void(bool, std::string)>;
-  using TabletModeMonitor = mojom::TabletModeMonitor;
-  using ScreenStateMonitor = mojom::ScreenStateMonitor;
-  using ExternalScreenMonitor = mojom::ExternalScreenMonitor;
-  using CameraUsageOwnershipMonitor = mojom::CameraUsageOwnershipMonitor;
+  using TabletModeMonitor = camera_app::mojom::TabletModeMonitor;
+  using ScreenStateMonitor = camera_app::mojom::ScreenStateMonitor;
+  using ExternalScreenMonitor = camera_app::mojom::ExternalScreenMonitor;
+  using CameraUsageOwnershipMonitor =
+      camera_app::mojom::CameraUsageOwnershipMonitor;
 
-  CameraAppHelperImpl(chromeos::CameraAppUI* camera_app_ui,
+  CameraAppHelperImpl(CameraAppUI* camera_app_ui,
                       CameraResultCallback camera_result_callback,
                       SendBroadcastCallback send_broadcast_callback,
                       aura::Window* window);
@@ -48,9 +49,9 @@ class CameraAppHelperImpl : public ash::TabletModeObserver,
   CameraAppHelperImpl& operator=(const CameraAppHelperImpl&) = delete;
 
   ~CameraAppHelperImpl() override;
-  void Bind(mojo::PendingReceiver<mojom::CameraAppHelper> receiver);
+  void Bind(mojo::PendingReceiver<camera_app::mojom::CameraAppHelper> receiver);
 
-  // mojom::CameraAppHelper implementations.
+  // camera_app::mojom::CameraAppHelper implementations.
   void HandleCameraResult(uint32_t intent_id,
                           arc::mojom::CameraIntentAction action,
                           const std::vector<uint8_t>& data,
@@ -81,11 +82,10 @@ class CameraAppHelperImpl : public ash::TabletModeObserver,
       IsDocumentModeSupportedCallback callback) override;
   void ScanDocumentCorners(const std::vector<uint8_t>& jpeg_data,
                            ScanDocumentCornersCallback callback) override;
-  void ConvertToDocument(
-      const std::vector<uint8_t>& jpeg_data,
-      const std::vector<gfx::PointF>& corners,
-      chromeos_camera::mojom::DocumentOutputFormat output_format,
-      ConvertToDocumentCallback callback) override;
+  void ConvertToDocument(const std::vector<uint8_t>& jpeg_data,
+                         const std::vector<gfx::PointF>& corners,
+                         camera_app::mojom::DocumentOutputFormat output_format,
+                         ConvertToDocumentCallback callback) override;
   void ConvertToPdf(const std::vector<uint8_t>& jpeg_data,
                     ConvertToPdfCallback callback) override;
 
@@ -96,18 +96,18 @@ class CameraAppHelperImpl : public ash::TabletModeObserver,
                                 bool success,
                                 const std::vector<gfx::PointF>& corners);
   void OnConvertedToDocument(
-      chromeos_camera::mojom::DocumentOutputFormat output_format,
+      camera_app::mojom::DocumentOutputFormat output_format,
       ConvertToDocumentCallback callback,
       bool success,
       const std::vector<uint8_t>& processed_jpeg_data);
 
-  // ash::TabletModeObserver overrides;
+  // TabletModeObserver overrides;
   void OnTabletModeStarted() override;
   void OnTabletModeEnded() override;
 
-  // ash::ScreenBacklightObserver overrides;
+  // ScreenBacklightObserver overrides;
   void OnScreenBacklightStateChanged(
-      ash::ScreenBacklightState screen_backlight_state) override;
+      ScreenBacklightState screen_backlight_state) override;
 
   // display::DisplayObserver overrides;
   void OnDisplayAdded(const display::Display& new_display) override;
@@ -117,7 +117,7 @@ class CameraAppHelperImpl : public ash::TabletModeObserver,
   // it. For SWA, since CameraAppUI owns CameraAppHelperImpl, it is safe to
   // assume that the |camera_app_ui_| is always valid during the whole lifetime
   // of CameraAppHelperImpl.
-  chromeos::CameraAppUI* camera_app_ui_;
+  CameraAppUI* camera_app_ui_;
 
   CameraResultCallback camera_result_callback_;
 
@@ -133,18 +133,16 @@ class CameraAppHelperImpl : public ash::TabletModeObserver,
   mojo::Remote<ScreenStateMonitor> screen_state_monitor_;
   mojo::Remote<ExternalScreenMonitor> external_screen_monitor_;
 
-  mojo::Receiver<chromeos_camera::mojom::CameraAppHelper> receiver_{this};
+  mojo::Receiver<camera_app::mojom::CameraAppHelper> receiver_{this};
 
-  std::unique_ptr<chromeos::CameraAppWindowStateController>
-      window_state_controller_;
+  std::unique_ptr<CameraAppWindowStateController> window_state_controller_;
 
   display::ScopedDisplayObserver display_observer_{this};
 
   // Client to connect to document detection service.
-  std::unique_ptr<chromeos::DocumentScannerServiceClient>
-      document_scanner_service_;
+  std::unique_ptr<DocumentScannerServiceClient> document_scanner_service_;
 };
 
-}  // namespace chromeos_camera
+}  // namespace ash
 
 #endif  // ASH_WEBUI_CAMERA_APP_UI_CAMERA_APP_HELPER_IMPL_H_
