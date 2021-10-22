@@ -5,26 +5,44 @@
 #include "net/dns/dns_config_service.h"
 
 #include <memory>
+#include <string>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/cancelable_callback.h"
 #include "base/location.h"
 #include "base/run_loop.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "net/base/address_family.h"
+#include "net/base/ip_address.h"
+#include "net/dns/dns_hosts.h"
 #include "net/dns/public/dns_protocol.h"
 #include "net/dns/test_dns_config_service.h"
 #include "net/test/test_with_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
 
 namespace {
 
+using testing::_;
+using testing::DoAll;
+using testing::Return;
+using testing::SetArgPointee;
+
 class DnsConfigServiceTest : public TestWithTaskEnvironment {
  public:
+  DnsConfigServiceTest()
+      : TestWithTaskEnvironment(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
   void OnConfigChanged(const DnsConfig& config) {
     last_config_ = config;
     if (quit_on_config_)
@@ -59,10 +77,15 @@ class DnsConfigServiceTest : public TestWithTaskEnvironment {
     return hosts;
   }
 
+  void SetUpService(TestDnsConfigService& service) {
+    service.WatchConfig(base::BindRepeating(
+        &DnsConfigServiceTest::OnConfigChanged, base::Unretained(this)));
+    WaitForConfig(TestTimeouts::action_timeout());
+  }
+
   void SetUp() override {
     service_ = std::make_unique<TestDnsConfigService>();
-    service_->WatchConfig(base::BindRepeating(
-        &DnsConfigServiceTest::OnConfigChanged, base::Unretained(this)));
+    SetUpService(*service_);
     EXPECT_FALSE(last_config_.IsValid());
   }
 
@@ -72,6 +95,41 @@ class DnsConfigServiceTest : public TestWithTaskEnvironment {
   // Service under test.
   std::unique_ptr<TestDnsConfigService> service_;
 };
+
+class MockHostsParserFactory : public DnsHostsParser {
+ public:
+  HostsReadingTestDnsConfigService::HostsParserFactory GetFactory();
+
+  MOCK_METHOD(bool, ParseHosts, (DnsHosts*), (const, override));
+
+ private:
+  class Delegator : public DnsHostsParser {
+   public:
+    explicit Delegator(MockHostsParserFactory* factory) : factory_(factory) {}
+
+    bool ParseHosts(DnsHosts* hosts) const override {
+      return factory_->ParseHosts(hosts);
+    }
+
+   private:
+    MockHostsParserFactory* factory_;
+  };
+};
+
+HostsReadingTestDnsConfigService::HostsParserFactory
+MockHostsParserFactory::GetFactory() {
+  return base::BindLambdaForTesting(
+      [this]() -> std::unique_ptr<DnsHostsParser> {
+        return std::make_unique<Delegator>(this);
+      });
+}
+
+DnsHosts::value_type CreateHostsEntry(base::StringPiece name,
+                                      AddressFamily family,
+                                      IPAddress address) {
+  DnsHostsKey key = std::make_pair(std::string(name), family);
+  return std::make_pair(std::move(key), address);
+}
 
 }  // namespace
 
@@ -210,6 +268,217 @@ TEST_F(DnsConfigServiceTest, WatchFailure) {
   service_->InvalidateConfig();
   service_->OnConfigRead(config2);
   EXPECT_TRUE(last_config_.Equals(bad_config));
+}
+
+TEST_F(DnsConfigServiceTest, HostsReadFailure) {
+  MockHostsParserFactory parser;
+  EXPECT_CALL(parser, ParseHosts(_))
+      .WillRepeatedly(DoAll(SetArgPointee<0>(DnsHosts()), Return(false)));
+
+  auto service =
+      std::make_unique<HostsReadingTestDnsConfigService>(parser.GetFactory());
+  SetUpService(*service);
+
+  service->OnConfigRead(MakeConfig(1));
+  // No successfully read hosts, so no config result.
+  EXPECT_EQ(last_config_, DnsConfig());
+
+  // No change from retriggering read.
+  service->TriggerHostsChangeNotification(/*success=*/true);
+  WaitForConfig(TestTimeouts::action_timeout());
+  EXPECT_EQ(last_config_, DnsConfig());
+}
+
+TEST_F(DnsConfigServiceTest, ReadEmptyHosts) {
+  MockHostsParserFactory parser;
+  EXPECT_CALL(parser, ParseHosts(_))
+      .WillRepeatedly(DoAll(SetArgPointee<0>(DnsHosts()), Return(true)));
+
+  auto service =
+      std::make_unique<HostsReadingTestDnsConfigService>(parser.GetFactory());
+  SetUpService(*service);
+
+  // Expect immediate result on reading config because HOSTS should already have
+  // been read on initting watch in `SetUpService()`.
+  DnsConfig config = MakeConfig(1);
+  service->OnConfigRead(config);
+  EXPECT_TRUE(last_config_.EqualsIgnoreHosts(config));
+  EXPECT_EQ(last_config_.hosts, DnsHosts());
+
+  // No change from retriggering read.
+  service->TriggerHostsChangeNotification(/*success=*/true);
+  WaitForConfig(TestTimeouts::action_timeout());
+  EXPECT_TRUE(last_config_.EqualsIgnoreHosts(config));
+  EXPECT_EQ(last_config_.hosts, DnsHosts());
+}
+
+TEST_F(DnsConfigServiceTest, ReadSingleHosts) {
+  DnsHosts hosts = {
+      CreateHostsEntry("name", ADDRESS_FAMILY_IPV4, {IPAddress(1, 2, 3, 4)})};
+
+  MockHostsParserFactory parser;
+  EXPECT_CALL(parser, ParseHosts(_))
+      .WillRepeatedly(DoAll(SetArgPointee<0>(hosts), Return(true)));
+
+  auto service =
+      std::make_unique<HostsReadingTestDnsConfigService>(parser.GetFactory());
+  SetUpService(*service);
+
+  // Expect immediate result on reading config because HOSTS should already have
+  // been read on initting watch in `SetUpService()`.
+  DnsConfig config = MakeConfig(1);
+  service->OnConfigRead(config);
+  EXPECT_TRUE(last_config_.EqualsIgnoreHosts(config));
+  EXPECT_EQ(last_config_.hosts, hosts);
+
+  // No change from retriggering read.
+  service->TriggerHostsChangeNotification(/*success=*/true);
+  WaitForConfig(TestTimeouts::action_timeout());
+  EXPECT_TRUE(last_config_.EqualsIgnoreHosts(config));
+  EXPECT_EQ(last_config_.hosts, hosts);
+}
+
+TEST_F(DnsConfigServiceTest, ReadMultipleHosts) {
+  DnsHosts hosts = {
+      CreateHostsEntry("name1", ADDRESS_FAMILY_IPV4, {IPAddress(1, 2, 3, 4)}),
+      CreateHostsEntry("name2", ADDRESS_FAMILY_IPV4, {IPAddress(1, 2, 3, 5)}),
+      CreateHostsEntry(
+          "name1", ADDRESS_FAMILY_IPV6,
+          {IPAddress(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 15)})};
+
+  MockHostsParserFactory parser;
+  EXPECT_CALL(parser, ParseHosts(_))
+      .WillRepeatedly(DoAll(SetArgPointee<0>(hosts), Return(true)));
+
+  auto service =
+      std::make_unique<HostsReadingTestDnsConfigService>(parser.GetFactory());
+  SetUpService(*service);
+
+  // Expect immediate result on reading config because HOSTS should already have
+  // been read on initting watch in `SetUpService()`.
+  DnsConfig config = MakeConfig(1);
+  service->OnConfigRead(config);
+  EXPECT_TRUE(last_config_.EqualsIgnoreHosts(config));
+  EXPECT_EQ(last_config_.hosts, hosts);
+
+  // No change from retriggering read.
+  service->TriggerHostsChangeNotification(/*success=*/true);
+  WaitForConfig(TestTimeouts::action_timeout());
+  EXPECT_TRUE(last_config_.EqualsIgnoreHosts(config));
+  EXPECT_EQ(last_config_.hosts, hosts);
+}
+
+TEST_F(DnsConfigServiceTest, HostsReadSubsequentFailure) {
+  DnsHosts hosts = {
+      CreateHostsEntry("name", ADDRESS_FAMILY_IPV4, {IPAddress(1, 2, 3, 4)})};
+
+  MockHostsParserFactory parser;
+  EXPECT_CALL(parser, ParseHosts(_))
+      .WillOnce(DoAll(SetArgPointee<0>(hosts), Return(true)))
+      .WillOnce(DoAll(SetArgPointee<0>(DnsHosts()), Return(false)));
+
+  auto service =
+      std::make_unique<HostsReadingTestDnsConfigService>(parser.GetFactory());
+  SetUpService(*service);
+
+  // Expect immediate result on reading config because HOSTS should already have
+  // been read on initting watch in `SetUpService()`.
+  DnsConfig config = MakeConfig(1);
+  service->OnConfigRead(config);
+  EXPECT_TRUE(last_config_.EqualsIgnoreHosts(config));
+  EXPECT_EQ(last_config_.hosts, hosts);
+
+  // Config cleared after subsequent read.
+  service->TriggerHostsChangeNotification(/*success=*/true);
+  WaitForConfig(TestTimeouts::action_timeout());
+  EXPECT_EQ(last_config_, DnsConfig());
+}
+
+TEST_F(DnsConfigServiceTest, HostsReadSubsequentSuccess) {
+  DnsHosts hosts = {
+      CreateHostsEntry("name", ADDRESS_FAMILY_IPV4, {IPAddress(1, 2, 3, 4)})};
+
+  MockHostsParserFactory parser;
+  EXPECT_CALL(parser, ParseHosts(_))
+      .WillOnce(DoAll(SetArgPointee<0>(DnsHosts()), Return(false)))
+      .WillOnce(DoAll(SetArgPointee<0>(hosts), Return(true)));
+
+  auto service =
+      std::make_unique<HostsReadingTestDnsConfigService>(parser.GetFactory());
+  SetUpService(*service);
+
+  DnsConfig config = MakeConfig(1);
+  service->OnConfigRead(config);
+  // No successfully read hosts, so no config result.
+  EXPECT_EQ(last_config_, DnsConfig());
+
+  // Expect success after subsequent read.
+  service->TriggerHostsChangeNotification(/*success=*/true);
+  WaitForConfig(TestTimeouts::action_timeout());
+  EXPECT_TRUE(last_config_.EqualsIgnoreHosts(config));
+  EXPECT_EQ(last_config_.hosts, hosts);
+}
+
+TEST_F(DnsConfigServiceTest, ConfigReadDuringHostsReRead) {
+  DnsHosts hosts = {
+      CreateHostsEntry("name", ADDRESS_FAMILY_IPV4, {IPAddress(1, 2, 3, 4)})};
+
+  MockHostsParserFactory parser;
+  EXPECT_CALL(parser, ParseHosts(_))
+      .WillRepeatedly(DoAll(SetArgPointee<0>(hosts), Return(true)));
+
+  auto service =
+      std::make_unique<HostsReadingTestDnsConfigService>(parser.GetFactory());
+  SetUpService(*service);
+
+  // Expect immediate result on reading config because HOSTS should already have
+  // been read on initting watch in `SetUpService()`.
+  DnsConfig config1 = MakeConfig(1);
+  service->OnConfigRead(config1);
+  EXPECT_TRUE(last_config_.EqualsIgnoreHosts(config1));
+  EXPECT_EQ(last_config_.hosts, hosts);
+
+  // Trigger HOSTS read, and expect no new-config notification yet.
+  service->TriggerHostsChangeNotification(/*success=*/true);
+  EXPECT_TRUE(last_config_.EqualsIgnoreHosts(config1));
+  EXPECT_EQ(last_config_.hosts, hosts);
+
+  // Simulate completion of a Config read. Expect no new-config notification
+  // while HOSTS read still in progress.
+  DnsConfig config2 = MakeConfig(2);
+  service->OnConfigRead(config2);
+  EXPECT_TRUE(last_config_.EqualsIgnoreHosts(config1));
+  EXPECT_EQ(last_config_.hosts, hosts);
+
+  // Expect new config on completion of HOSTS read.
+  WaitForConfig(TestTimeouts::action_timeout());
+  EXPECT_TRUE(last_config_.EqualsIgnoreHosts(config2));
+  EXPECT_EQ(last_config_.hosts, hosts);
+}
+
+TEST_F(DnsConfigServiceTest, HostsWatcherFailure) {
+  DnsHosts hosts = {
+      CreateHostsEntry("name", ADDRESS_FAMILY_IPV4, {IPAddress(1, 2, 3, 4)})};
+
+  MockHostsParserFactory parser;
+  EXPECT_CALL(parser, ParseHosts(_))
+      .WillOnce(DoAll(SetArgPointee<0>(hosts), Return(true)));
+
+  auto service =
+      std::make_unique<HostsReadingTestDnsConfigService>(parser.GetFactory());
+  SetUpService(*service);
+
+  // Expect immediate result on reading config because HOSTS should already have
+  // been read on initting watch in `SetUpService()`.
+  DnsConfig config = MakeConfig(1);
+  service->OnConfigRead(config);
+  EXPECT_TRUE(last_config_.EqualsIgnoreHosts(config));
+  EXPECT_EQ(last_config_.hosts, hosts);
+
+  // Simulate watcher failure.
+  service->TriggerHostsChangeNotification(/*success=*/false);
+  WaitForConfig(TestTimeouts::action_timeout());
+  EXPECT_EQ(last_config_, DnsConfig());
 }
 
 }  // namespace net

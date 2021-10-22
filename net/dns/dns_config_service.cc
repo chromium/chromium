@@ -99,17 +99,18 @@ DnsConfigService::HostsReader::HostsReader(
 DnsConfigService::HostsReader::~HostsReader() = default;
 
 DnsConfigService::HostsReader::WorkItem::WorkItem(
-    base::FilePath hosts_file_path)
-    : hosts_file_path_(std::move(hosts_file_path)) {}
+    std::unique_ptr<DnsHostsParser> dns_hosts_parser)
+    : dns_hosts_parser_(std::move(dns_hosts_parser)) {
+  DCHECK(dns_hosts_parser_);
+}
 
 DnsConfigService::HostsReader::WorkItem::~WorkItem() = default;
 
 absl::optional<DnsHosts> DnsConfigService::HostsReader::WorkItem::ReadHosts() {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
-  DCHECK(!hosts_file_path_.empty());
   DnsHosts dns_hosts;
-  if (!ParseHostsFile(hosts_file_path_, &dns_hosts))
+  if (!dns_hosts_parser_->ParseHosts(&dns_hosts))
     return absl::nullopt;
 
   return dns_hosts;
@@ -132,7 +133,8 @@ void DnsConfigService::HostsReader::WorkItem::DoWork() {
 
 std::unique_ptr<SerialWorker::WorkItem>
 DnsConfigService::HostsReader::CreateWorkItem() {
-  return std::make_unique<WorkItem>(hosts_file_path_);
+  return std::make_unique<WorkItem>(
+      std::make_unique<DnsHostsFileParser>(hosts_file_path_));
 }
 
 void DnsConfigService::HostsReader::OnWorkFinished(
