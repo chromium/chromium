@@ -49,6 +49,10 @@ class NetworkDiagnosticsRoutine {
     result_.problems = std::move(problems);
   }
 
+  void set_result_value(mojom::RoutineResultValuePtr result_value) {
+    result_.result_value = std::move(result_value);
+  }
+
  private:
   mojom::RoutineResult result_;
   RoutineResultCallback callback_;

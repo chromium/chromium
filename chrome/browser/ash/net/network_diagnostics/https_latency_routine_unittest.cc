@@ -180,13 +180,42 @@ class HttpsLatencyRoutineTest : public ::testing::Test {
     run_loop_.Quit();
   }
 
+  void CompareResultNoExpectedLatency(
+      mojom::RoutineVerdict expected_verdict,
+      const std::vector<mojom::HttpsLatencyProblem>& expected_problems,
+      mojom::RoutineResultPtr result) {
+    EXPECT_TRUE(result->result_value.is_null());
+    CompareResult(expected_verdict, expected_problems, std::move(result));
+  }
+
+  void CompareResultWithExpectedLatency(
+      mojom::RoutineVerdict expected_verdict,
+      const std::vector<mojom::HttpsLatencyProblem>& expected_problems,
+      base::TimeDelta expected_latency,
+      mojom::RoutineResultPtr result) {
+    ASSERT_FALSE(result->result_value.is_null());
+    ASSERT_TRUE(result->result_value->is_https_latency_result_value());
+    EXPECT_EQ(result->result_value->get_https_latency_result_value()->latency,
+              expected_latency);
+    CompareResult(expected_verdict, expected_problems, std::move(result));
+  }
+
  protected:
-  void RunRoutine(
+  void RunRoutineNoExpectedLatency(
       mojom::RoutineVerdict expected_routine_verdict,
       const std::vector<mojom::HttpsLatencyProblem>& expected_problems) {
-    https_latency_routine_->RunRoutine(
-        base::BindOnce(&HttpsLatencyRoutineTest::CompareResult, weak_ptr(),
-                       expected_routine_verdict, expected_problems));
+    https_latency_routine_->RunRoutine(base::BindOnce(
+        &HttpsLatencyRoutineTest::CompareResultNoExpectedLatency, weak_ptr(),
+        expected_routine_verdict, expected_problems));
+    run_loop_.Run();
+  }
+  void RunRoutineWithExpectedLatency(
+      mojom::RoutineVerdict expected_routine_verdict,
+      const std::vector<mojom::HttpsLatencyProblem>& expected_problems,
+      base::TimeDelta expected_latency) {
+    https_latency_routine_->RunRoutine(base::BindOnce(
+        &HttpsLatencyRoutineTest::CompareResultWithExpectedLatency, weak_ptr(),
+        expected_routine_verdict, expected_problems, expected_latency));
     run_loop_.Run();
   }
 
@@ -261,8 +290,9 @@ TEST_F(HttpsLatencyRoutineTest, TestFailedDnsResolution) {
       std::make_unique<FakeTickClock>(kNoProblemDelayMs);
 
   SetUpRoutine(std::move(fake_dns_results), true, fake_tick_clock.get());
-  RunRoutine(mojom::RoutineVerdict::kProblem,
-             {mojom::HttpsLatencyProblem::kFailedDnsResolutions});
+  RunRoutineNoExpectedLatency(
+      mojom::RoutineVerdict::kProblem,
+      {mojom::HttpsLatencyProblem::kFailedDnsResolutions});
 }
 
 TEST_F(HttpsLatencyRoutineTest, TestLowLatency) {
@@ -282,7 +312,8 @@ TEST_F(HttpsLatencyRoutineTest, TestLowLatency) {
       std::make_unique<FakeTickClock>(kNoProblemDelayMs);
 
   SetUpRoutine(std::move(fake_dns_results), true, fake_tick_clock.get());
-  RunRoutine(mojom::RoutineVerdict::kNoProblem, {});
+  RunRoutineWithExpectedLatency(mojom::RoutineVerdict::kNoProblem, {},
+                                kNoProblemDelayMs);
 }
 
 TEST_F(HttpsLatencyRoutineTest, TestFailedHttpRequest) {
@@ -302,8 +333,9 @@ TEST_F(HttpsLatencyRoutineTest, TestFailedHttpRequest) {
       std::make_unique<FakeTickClock>(kNoProblemDelayMs);
 
   SetUpRoutine(std::move(fake_dns_results), false, fake_tick_clock.get());
-  RunRoutine(mojom::RoutineVerdict::kProblem,
-             {mojom::HttpsLatencyProblem::kFailedHttpsRequests});
+  RunRoutineNoExpectedLatency(
+      mojom::RoutineVerdict::kProblem,
+      {mojom::HttpsLatencyProblem::kFailedHttpsRequests});
 }
 
 TEST_F(HttpsLatencyRoutineTest, TestHighLatency) {
@@ -323,8 +355,9 @@ TEST_F(HttpsLatencyRoutineTest, TestHighLatency) {
       std::make_unique<FakeTickClock>(kHighLatencyDelayMs);
 
   SetUpRoutine(std::move(fake_dns_results), true, fake_tick_clock.get());
-  RunRoutine(mojom::RoutineVerdict::kProblem,
-             {mojom::HttpsLatencyProblem::kHighLatency});
+  RunRoutineWithExpectedLatency(mojom::RoutineVerdict::kProblem,
+                                {mojom::HttpsLatencyProblem::kHighLatency},
+                                kHighLatencyDelayMs);
 }
 
 TEST_F(HttpsLatencyRoutineTest, TestVeryHighLatency) {
@@ -344,8 +377,9 @@ TEST_F(HttpsLatencyRoutineTest, TestVeryHighLatency) {
       std::make_unique<FakeTickClock>(kVeryHighLatencyDelayMs);
 
   SetUpRoutine(std::move(fake_dns_results), true, fake_tick_clock.get());
-  RunRoutine(mojom::RoutineVerdict::kProblem,
-             {mojom::HttpsLatencyProblem::kVeryHighLatency});
+  RunRoutineWithExpectedLatency(mojom::RoutineVerdict::kProblem,
+                                {mojom::HttpsLatencyProblem::kVeryHighLatency},
+                                kVeryHighLatencyDelayMs);
 }
 
 }  // namespace network_diagnostics

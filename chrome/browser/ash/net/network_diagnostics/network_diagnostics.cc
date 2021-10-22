@@ -30,16 +30,6 @@
 namespace chromeos {
 namespace network_diagnostics {
 
-namespace {
-
-mojom::RoutineResultPtr CreateResult(mojom::RoutineVerdict verdict,
-                                     mojom::RoutineProblemsPtr problems) {
-  return mojom::RoutineResult::New(verdict, std::move(problems),
-                                   base::Time::Now());
-}
-
-}  // namespace
-
 NetworkDiagnostics::NetworkDiagnostics(
     chromeos::DebugDaemonClient* debug_daemon_client) {
   DCHECK(debug_daemon_client);
