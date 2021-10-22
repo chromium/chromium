@@ -18,7 +18,7 @@ import {CalibrationSetupInstruction, NetworkConfigServiceInterface, RmadErrorCod
  * If true this will replace ShimlessRmaService with a fake.
  * @type {boolean}
  */
-let useFakeService = true;
+let useFakeService = false;
 
 /**
  * @type {?ShimlessRmaServiceInterface}
