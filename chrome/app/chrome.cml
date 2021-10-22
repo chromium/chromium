@@ -3,6 +3,9 @@
     program: {
         runner: "elf",
         binary: "chrome",
+        args: [
+          "--enable-features=Vulkan,CanvasOopRasterization"
+        ],
     },
     capabilities: [
         {

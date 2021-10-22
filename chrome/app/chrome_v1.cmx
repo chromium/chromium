@@ -1,6 +1,7 @@
 {
   "program": {
-    "binary": "chrome"
+    "binary": "chrome",
+    "args": [ "--enable-features=Vulkan,CanvasOopRasterization" ]
   },
   "sandbox": {
     "features": [
