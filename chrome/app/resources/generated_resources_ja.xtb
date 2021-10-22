@@ -423,6 +423,7 @@
 <translation id="1436390408194692385">有効期限まであと <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436784010935106834">削除しました</translation>
 <translation id="1437986450143295708">問題の内容を詳しくご説明ください</translation>
+<translation id="1439671507542716852">長期サポート</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> 個のアイテムを選択しました</translation>
 <translation id="1442851588227551435">有効な Kerberos チケットの設定</translation>
 <translation id="1444628761356461360">この設定はデバイスの所有者 <ph name="OWNER_EMAIL" /> が管理しています。</translation>
@@ -1423,6 +1424,7 @@
 <translation id="2454264884354864965">カメラはオフです</translation>
 <translation id="245650153866130664">チケットを自動的に更新するには、[パスワードを保存する] チェックボックスをオンにします。パスワードはお使いのデバイスにのみ保存されます。</translation>
 <translation id="2457246892030921239">「<ph name="APP_NAME" />」が <ph name="VOLUME_NAME" /> のファイルのコピーを求めています。</translation>
+<translation id="2457842160081795172">現在のチャンネルは <ph name="CHANNEL_NAME" /> です</translation>
 <translation id="2458379781610688953">アカウントを更新（<ph name="EMAIL" />）</translation>
 <translation id="2458591546854598341">デバイス管理トークンが無効です。</translation>
 <translation id="2459703812219683497">アクティベーション コードを検出しました</translation>

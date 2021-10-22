@@ -423,6 +423,7 @@
 <translation id="1436390408194692385">有效期：<ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436784010935106834">已删除</translation>
 <translation id="1437986450143295708">请详细描述您遇到的问题</translation>
+<translation id="1439671507542716852">长期支持</translation>
 <translation id="144283815522798837">已选择 <ph name="NUMBER_OF_ITEMS_SELECTED" /> 项</translation>
 <translation id="1442851588227551435">设置有效的 Kerberos 票据</translation>
 <translation id="1444628761356461360">此设置由设备所有者<ph name="OWNER_EMAIL" />管理。</translation>
@@ -1422,6 +1423,7 @@
 <translation id="2454264884354864965">摄像头未开启</translation>
 <translation id="245650153866130664">若想自动刷新票据，请选中“记住密码”。系统便会将您的密码仅保存在您的设备上。</translation>
 <translation id="2457246892030921239">“<ph name="APP_NAME" />”想从 <ph name="VOLUME_NAME" />复制文件。</translation>
+<translation id="2457842160081795172">目前为<ph name="CHANNEL_NAME" />版本</translation>
 <translation id="2458379781610688953">更新帐号，<ph name="EMAIL" /></translation>
 <translation id="2458591546854598341">设备管理令牌无效。</translation>
 <translation id="2459703812219683497">检测到激活码</translation>

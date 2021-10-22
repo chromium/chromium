@@ -613,6 +613,7 @@
 <translation id="2987034854559945715">Сәйкес келетін функциялар жоқ.</translation>
 <translation id="2989742184762224133">Жоғарғы жағын екі рет қапсыру</translation>
 <translation id="2991174974383378012">Веб-сайттармен бөлісу</translation>
+<translation id="299122504639061328">Әдепкі іздеу жүйесін және сайттан іздеуді басқару</translation>
 <translation id="2991571918955627853">Қазір <ph name="SITE" /> сайтына кіру мүмкін емес, себебі веб сайт HSTS пайдаланады. Желі қателері мен шабуылдары әдетте уақытша болғандықтан, бұл бет кейінірек жұмыс істеуі мүмкін.</translation>
 <translation id="2995517112308048736">Файл өлшемі:</translation>
 <translation id="3002501248619246229">Кіріс науасының деректерін тексеру</translation>
@@ -957,6 +958,7 @@
 <translation id="4123572138124678573">Төменгі жағын үш рет тесу</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{тағы 1}other{тағы #}}</translation>
 <translation id="4130226655945681476">Желі кабельдерін, модем және роутерді тексеру</translation>
+<translation id="4133224101597112888">"Осы қойындыны бөлісу" түймесі, сілтемені бөлісу, QR кодын жасау, трансляциялау және т.б. арқылы осы қойындыны бөлісу үшін Enter пернесін басыңыз.</translation>
 <translation id="4134123981501319574">Құжат жасау</translation>
 <translation id="413544239732274901">Толығырақ</translation>
 <translation id="4142935452406587478">10-науа</translation>
@@ -1386,6 +1388,7 @@
 <translation id="5426179911063097041"><ph name="SITE" /> хабарландыру жіберуге рұқсат сұрады</translation>
 <translation id="5428105026674456456">испан</translation>
 <translation id="5430298929874300616">Бетбелгіні жою</translation>
+<translation id="5434889539950523874"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />, сілтемені бөлісу, QR кодын жасау, трансляциялау және т.б. арқылы осы қойындыны бөлісу үшін Tab, сосын Enter пернесін басыңыз.</translation>
 <translation id="5439770059721715174">"<ph name="ERROR_PATH" />" жолындағы схеманы растау қатесі: <ph name="ERROR" /></translation>
 <translation id="5443468954631487277">Кері ретпен беткі жағында</translation>
 <translation id="5447765697759493033">Бұл сайт аударылмайды</translation>
@@ -1993,6 +1996,7 @@
 <translation id="7559278538486662777">Бұл қолданбаның өлшемі өзгертілмейді.</translation>
 <translation id="7564049878696755256"><ph name="ORG_NAME" /> аккаунтыңызға кіру мүмкіндігін жоғалтып алуыңыз немесе жеке мәліметтеріңізді беріп қоюыңыз мүмкін. Chrome құпия сөзіңізді дереу өзгертуге кеңес береді.</translation>
 <translation id="7567204685887185387">Бұл сервер өзінің <ph name="DOMAIN" /> екенін дәлелдей алмады; оның қауіпсіздік сертификаты алаяқтық жолмен шығарылған болуы мүмкін. Бұл дұрыс конфигурацияланбағаннан немесе зиянды бағдарламаның байланысқа кедергі келтіргенінен болуы мүмкін.</translation>
+<translation id="7569761772822664555">"Іздеу жүйелерін басқару" түймесі, әдепкі іздеу жүйесін және сайттан іздеуді басқару үшін Enter пернесін басыңыз.</translation>
 <translation id="7569952961197462199">Chrome браузерінен несиелік картаны өшіру қажет пе?</translation>
 <translation id="7569983096843329377">Қара</translation>
 <translation id="7575207903026901870">"Ұсынысты өшіру" түймесі: өшіру үшін Enter пернесін басыңыз.</translation>
@@ -2110,6 +2114,7 @@
 <translation id="7950027195171824198">Chrome параметрлері арқылы cookie файлдарын басқару</translation>
 <translation id="7951415247503192394">(32 биттік)</translation>
 <translation id="7953569069500808819">Жоғарғы жиегін тігу</translation>
+<translation id="7954041596401851904">Сілтемені бөлісу, QR кодын жасау, трансляциялау және т.б. арқылы осы қойындыны бөлісу.</translation>
 <translation id="7956713633345437162">Ұялы бетбелгілер</translation>
 <translation id="7961015016161918242">Ешқашан</translation>
 <translation id="7966803981046576691">Тапсырмадағы аккаунттың түрі</translation>
@@ -2183,6 +2188,7 @@
 <translation id="8202370299023114387">Қайшылық</translation>
 <translation id="8206978196348664717">Prc4 (Envelope)</translation>
 <translation id="8211406090763984747">Қауіпсіз байланыс</translation>
+<translation id="8215696832828595581">"Chrome-ды реттеу" түймесі, браузер көрінісін реттеу үшін Enter пернесін басыңыз.</translation>
 <translation id="8218327578424803826">Тағайындалған орын:</translation>
 <translation id="8220146938470311105">C7/C6 (Envelope)</translation>
 <translation id="8225771182978767009">Бұл компьютерді орнатқан адам осы сайтты бөгеуді ұйғарды.</translation>
@@ -2324,6 +2330,7 @@
 <translation id="868922510921656628">Әр жиынтықтағы беттер саны</translation>
 <translation id="869891660844655955">Аяқталу мерзімі</translation>
 <translation id="8699041776323235191">HID құрылғысы</translation>
+<translation id="8699899385443889493">"Chrome Dino ойынын ойнау" түймесі, Chrome-да Dino Run ойынын ойнау үшін Enter пернесін басыңыз.</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> доменімен байланысыңыз шифрланбаған.</translation>
 <translation id="8705331520020532516">Сериялық нөмір</translation>
 <translation id="8708134712139312373">Bluetooth құрылғыларына қосылуға рұқсат сұрай алады</translation>

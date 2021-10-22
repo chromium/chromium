@@ -609,6 +609,7 @@
 <translation id="2987034854559945715">一致する機能はありません</translation>
 <translation id="2989742184762224133">2 か所のステープル（上）</translation>
 <translation id="2991174974383378012">ウェブサイトとの共有</translation>
+<translation id="299122504639061328">デフォルトの検索エンジンとサイト内検索を管理します</translation>
 <translation id="2991571918955627853"><ph name="SITE" /> では HSTS が使用されているため、現在アクセスできません。通常、ネットワーク エラーやネットワークへの攻撃は一時的なものです。しばらくするとページにアクセスできるようになります。</translation>
 <translation id="2995517112308048736">ファイルサイズ:</translation>
 <translation id="3002501248619246229">給紙トレイのメディアを確認してください</translation>
@@ -953,6 +954,7 @@
 <translation id="4123572138124678573">3 穴パンチ（下）</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{他 1 件}other{他 # 件}}</translation>
 <translation id="4130226655945681476">ネットワーク ケーブル、モデム、ルーターを確認する</translation>
+<translation id="4133224101597112888">[このタブを共有] ボタンです。Enter キーを押すと、リンクの共有、QR コードの作成、キャストなどを行ってこのタブを共有できます。</translation>
 <translation id="4134123981501319574">ドキュメントを作成</translation>
 <translation id="413544239732274901">詳細</translation>
 <translation id="4142935452406587478">トレイ 10</translation>
@@ -1378,6 +1380,7 @@
 <translation id="5426179911063097041"><ph name="SITE" /> が通知を送信しようとしています。</translation>
 <translation id="5428105026674456456">スペイン語</translation>
 <translation id="5430298929874300616">ブックマークを削除</translation>
+<translation id="5434889539950523874"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、リンクの共有、QR コードの作成、キャストなどを行ってこのタブを共有できます。</translation>
 <translation id="5439770059721715174">「<ph name="ERROR_PATH" />」でスキーマ確認エラー: <ph name="ERROR" /></translation>
 <translation id="5443468954631487277">逆の順序（上向き）</translation>
 <translation id="5447765697759493033">このサイトは翻訳されません</translation>
@@ -1985,6 +1988,7 @@
 <translation id="7559278538486662777">このアプリはサイズ変更できません。</translation>
 <translation id="7564049878696755256"><ph name="ORG_NAME" /> アカウントにアクセスできなくなったり、個人情報が盗まれたりする可能性があります。今すぐパスワードを変更することをおすすめします。</translation>
 <translation id="7567204685887185387">このサーバーが <ph name="DOMAIN" /> であることを確認できませんでした。このサーバーのセキュリティ証明書は不正に発行されたものである可能性があります。原因としては、不適切な設定や、悪意のあるユーザーによる接続妨害が考えられます。</translation>
+<translation id="7569761772822664555">[検索エンジンの管理] ボタンです。Enter キーを押すと、デフォルトの検索エンジンとサイト内検索を管理できます</translation>
 <translation id="7569952961197462199">Chrome からクレジット カードを削除してもよろしいですか？</translation>
 <translation id="7569983096843329377">黒</translation>
 <translation id="7575207903026901870">候補を削除するボタンです。Enter キーを押すと、この候補を削除します</translation>
@@ -2102,6 +2106,7 @@
 <translation id="7950027195171824198">Chrome の設定で Cookie の設定を管理する</translation>
 <translation id="7951415247503192394">（32 ビット）</translation>
 <translation id="7953569069500808819">端綴じ（上）</translation>
+<translation id="7954041596401851904">リンクの共有、QR コードの作成、キャストなどを行ってこのタブを共有します。</translation>
 <translation id="7956713633345437162">モバイルのブックマーク</translation>
 <translation id="7961015016161918242">使用しない</translation>
 <translation id="7966803981046576691">ジョブ管理タイプ</translation>
@@ -2175,6 +2180,7 @@
 <translation id="8202370299023114387">競合</translation>
 <translation id="8206978196348664717">Prc4（封筒）</translation>
 <translation id="8211406090763984747">この接続は保護されています</translation>
+<translation id="8215696832828595581">[Chrome をカスタマイズ] ボタンです。Enter キーを押すと、ブラウザのデザインをカスタマイズできます。</translation>
 <translation id="8218327578424803826">割り当てられた場所:</translation>
 <translation id="8220146938470311105">C7 / C6（封筒）</translation>
 <translation id="8225771182978767009">このサイトは、このパソコンを設定したユーザーによってブロックされています。</translation>
@@ -2317,6 +2323,7 @@
 <translation id="868922510921656628">1 部あたりのページ数</translation>
 <translation id="869891660844655955">有効期限</translation>
 <translation id="8699041776323235191">HID デバイス</translation>
+<translation id="8699899385443889493">[Chrome Dino ゲームをプレイ] ボタンです。Enter キーを押すと、Chrome で Dino Run ゲームをプレイできます</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> への接続は暗号化されていません。</translation>
 <translation id="8705331520020532516">シリアル番号</translation>
 <translation id="8708134712139312373">Bluetooth デバイスへの接続を要求できる</translation>

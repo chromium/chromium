@@ -609,6 +609,7 @@
 <translation id="2987034854559945715">找不到任何相符的功能</translation>
 <translation id="2989742184762224133">双钉（顶部）</translation>
 <translation id="2991174974383378012">与网站分享</translation>
+<translation id="299122504639061328">管理您的默认搜索引擎和网站搜索</translation>
 <translation id="2991571918955627853">您目前无法访问 <ph name="SITE" />，因为此网站使用了 HSTS。网络错误和攻击通常是暂时的，因此，此网页稍后可能会恢复正常。</translation>
 <translation id="2995517112308048736">文件大小：</translation>
 <translation id="3002501248619246229">检查进纸匣媒体</translation>
@@ -949,6 +950,7 @@
 <translation id="4123572138124678573">三孔（底部）</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 项其他内容}other{# 项其他内容}}</translation>
 <translation id="4130226655945681476">检查网线、调制解调器和路由器</translation>
+<translation id="4133224101597112888">“分享此标签页”按钮，按 Enter 键即可通过分享链接、创建二维码、投射等操作分享此标签页。</translation>
 <translation id="4134123981501319574">创建文档</translation>
 <translation id="413544239732274901">了解详情</translation>
 <translation id="4142935452406587478">纸匣 10</translation>
@@ -1374,6 +1376,7 @@
 <translation id="5426179911063097041"><ph name="SITE" /> 想向您发送通知</translation>
 <translation id="5428105026674456456">西班牙语</translation>
 <translation id="5430298929874300616">移除书签</translation>
+<translation id="5434889539950523874"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可通过分享链接、创建二维码、投射等操作分享此标签页。</translation>
 <translation id="5439770059721715174">“<ph name="ERROR_PATH" />”中存在模式验证错误：<ph name="ERROR" /></translation>
 <translation id="5443468954631487277">逆转顺序，正面朝上</translation>
 <translation id="5447765697759493033">系统不会翻译此网站</translation>
@@ -1980,6 +1983,7 @@
 <translation id="7559278538486662777">无法调整此应用的大小。</translation>
 <translation id="7564049878696755256">您可能会无法再访问自己的 <ph name="ORG_NAME" /> 帐号，或者身份信息遭到盗用。Chrome 建议您立即更改密码。</translation>
 <translation id="7567204685887185387">此服务器无法证明它是<ph name="DOMAIN" />；其安全证书可能是由骗子发出的。出现此问题的原因可能是配置有误或您的连接被拦截了。</translation>
+<translation id="7569761772822664555">“管理搜索引擎”按钮，按 Enter 键即可管理您的默认搜索引擎和网站搜索</translation>
 <translation id="7569952961197462199">从 Chrome 中移除信用卡信息？</translation>
 <translation id="7569983096843329377">黑色</translation>
 <translation id="7575207903026901870">“移除建议”按钮，按 Enter 键即可移除这项建议</translation>
@@ -2097,6 +2101,7 @@
 <translation id="7950027195171824198">在 Chrome 设置中管理您的 Cookie 偏好设置</translation>
 <translation id="7951415247503192394">（32 位）</translation>
 <translation id="7953569069500808819">边缘装订（顶部）</translation>
+<translation id="7954041596401851904">通过分享链接、创建二维码、投射等操作分享此标签页。</translation>
 <translation id="7956713633345437162">移动设备书签</translation>
 <translation id="7961015016161918242">一律不</translation>
 <translation id="7966803981046576691">工作帐号类型</translation>
@@ -2170,6 +2175,7 @@
 <translation id="8202370299023114387">冲突</translation>
 <translation id="8206978196348664717">Prc4 (Envelope)</translation>
 <translation id="8211406090763984747">连接是安全的</translation>
+<translation id="8215696832828595581">“自定义 Chrome”按钮，按 Enter 键即可自定义您的浏览器外观。</translation>
 <translation id="8218327578424803826">分配的位置：</translation>
 <translation id="8220146938470311105">C7/C6 (Envelope)</translation>
 <translation id="8225771182978767009">设置此计算机的用户已选择屏蔽此网站。</translation>
@@ -2312,6 +2318,7 @@
 <translation id="868922510921656628">每组页数</translation>
 <translation id="869891660844655955">截止日期</translation>
 <translation id="8699041776323235191">HID 设备</translation>
+<translation id="8699899385443889493">“玩 Chrome 恐龙游戏”按钮，按 Enter 键即可在 Chrome 中玩《Dino Run》游戏</translation>
 <translation id="8703575177326907206">您与 <ph name="DOMAIN" /> 的连接未加密。</translation>
 <translation id="8705331520020532516">序列号</translation>
 <translation id="8708134712139312373">可以询问能否连接到蓝牙设备</translation>

@@ -609,6 +609,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2987034854559945715">Ez dago bat datorren eginbiderik</translation>
 <translation id="2989742184762224133">Bi grapa goian</translation>
 <translation id="2991174974383378012">Webguneekin partekatzea</translation>
+<translation id="299122504639061328">Kudeatu bilatzaile eta webgune-bilaketa lehenetsiak</translation>
 <translation id="2991571918955627853">Une honetan ezin zara joan <ph name="SITE" /> webgunera, webguneak HSTS darabilelako. Sareko erroreak eta erasoak aldi baterakoak izan ohi dira; beraz, geroago funtzionatuko du orriak, segur aski.</translation>
 <translation id="2995517112308048736">Fitxategiaren tamaina:</translation>
 <translation id="3002501248619246229">Egiaztatu sarrerako erretiluaren euskarria</translation>
@@ -949,6 +950,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4123572138124678573">Hiru zulo behean</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{Beste 1}other{Beste #}}</translation>
 <translation id="4130226655945681476">Sareko kablea, modema eta bideratzailea egiaztatu.</translation>
+<translation id="4133224101597112888">Fitxa partekatzeko botoia: sakatu "Sartu" fitxa partekatzeko; horretarako, partekatu esteka, sortu QR kode bat, igor ezazu eta egin beste hainbat gauza.</translation>
 <translation id="4134123981501319574">Sortu dokumentu bat</translation>
 <translation id="413544239732274901">Lortu informazio gehiago</translation>
 <translation id="4142935452406587478">10. erretilua</translation>
@@ -1374,6 +1376,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5426179911063097041"><ph name="SITE" /> webguneak jakinarazpenak bidali nahi dizkizu</translation>
 <translation id="5428105026674456456">Espaniarra</translation>
 <translation id="5430298929874300616">Kendu laster-marka</translation>
+<translation id="5434889539950523874"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />: sakatu tabuladorea eta, ondoren, sakatu "Sartu" fitxa partekatzeko; horretarako, partekatu esteka, sortu QR kode bat, igor ezazu eta egin beste hainbat gauza.</translation>
 <translation id="5439770059721715174">Eskemaren baliozkotze-errorea gertatu da ("<ph name="ERROR_PATH" />"): <ph name="ERROR" /></translation>
 <translation id="5443468954631487277">Alderantzizko ordenan, ahoz gora</translation>
 <translation id="5447765697759493033">Webgune hau ez da itzuliko</translation>
@@ -1980,6 +1983,7 @@ Xehetasun gehiago:
 <translation id="7559278538486662777">Ezin zaio aldatu tamaina aplikazio honi.</translation>
 <translation id="7564049878696755256"><ph name="ORG_NAME" /> konturako sarbidea gal zenezake, edo kontua lapur liezazukete. Pasahitza aldatzea gomendatzen dizu Chrome-k.</translation>
 <translation id="7567204685887185387">Zerbitzari honek ezin izan du egiaztatu <ph name="DOMAIN" /> domeinua denik. Bere segurtasun-ziurtagiria iruzurrezko moduan igorrita egon liteke. Baliteke gaizki konfiguratuta dagoelako izatea edo erasotzaile batek zure konexioa atzeman duelako izatea.</translation>
+<translation id="7569761772822664555">Kudeatu bilatzaileen botoia, sakatu "Sartu" bilatzaile eta webgune-bilaketa lehenetsiak kudeatzeko</translation>
 <translation id="7569952961197462199">Kreditu-txartela Chrome-tik kendu nahi duzu?</translation>
 <translation id="7569983096843329377">Beltza</translation>
 <translation id="7575207903026901870">"Kendu iradokizuna" botoia, sakatu Sartu iradokizun hau kentzeko</translation>
@@ -2097,6 +2101,7 @@ Xehetasun gehiago:
 <translation id="7950027195171824198">Kudeatu cookieen hobespenak Chrome-ren ezarpenetan</translation>
 <translation id="7951415247503192394">(32 bit)</translation>
 <translation id="7953569069500808819">Goiko ertza josita</translation>
+<translation id="7954041596401851904">Fitxa partekatzeko, partekatu esteka, sortu QR kode bat, igor ezazu eta egin beste hainbat gauza.</translation>
 <translation id="7956713633345437162">Mugikorreko laster-markak</translation>
 <translation id="7961015016161918242">Inoiz ez</translation>
 <translation id="7966803981046576691">Laneko kontu mota</translation>
@@ -2170,6 +2175,7 @@ Xehetasun gehiago:
 <translation id="8202370299023114387">Gatazka</translation>
 <translation id="8206978196348664717">Prc4 (gutun-azala)</translation>
 <translation id="8211406090763984747">Konexioa segurua da</translation>
+<translation id="8215696832828595581">Chrome pertsonalizatzeko botoia: sakatu "Sartu" arakatzailearen itxura pertsonalizatzeko.</translation>
 <translation id="8218327578424803826">Esleitutako kokapena</translation>
 <translation id="8220146938470311105">C7/C6 (gutun-azala)</translation>
 <translation id="8225771182978767009">Ordenagailua konfiguratu duen pertsonak webgune hau blokeatzea aukeratu du.</translation>
@@ -2311,6 +2317,7 @@ Xehetasun gehiago:
 <translation id="868922510921656628">Multzo bakoitzeko orri kopurua</translation>
 <translation id="869891660844655955">Iraungitze-data</translation>
 <translation id="8699041776323235191">HID gailua</translation>
+<translation id="8699899385443889493">Chrome-ko Dino jokoan jokatzen hasteko botoia: sakatu "Sartu" Chrome-ko Dino jokoan aritzeko</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> domeinuarekiko duzun konexioa ez dago enkriptatuta.</translation>
 <translation id="8705331520020532516">Serie-zenbakia</translation>
 <translation id="8708134712139312373">Bluetooth bidezko gailuetara konektatzea eska dezake</translation>

@@ -321,6 +321,7 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="2932222164150889403">El teclat no canviarà</translation>
 <translation id="2942036813789421260">La pestanya de previsualització està tancada</translation>
 <translation id="2946420957526726953">Chrome s'està actualitzant per connectar-se a altres dispositius</translation>
+<translation id="2951071800649516099">Afegeix pàgines a la llista de lectura per a més tard</translation>
 <translation id="2956410042958133412"><ph name="PARENT_NAME_1" /> i <ph name="PARENT_NAME_2" /> gestionen aquest compte.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> pàgina no llegida}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> pàgines no llegides}}</translation>
 <translation id="2961210776189273067">Títol</translation>
@@ -554,6 +555,7 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="4452411734226507615">Tanca la pestanya <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Adreça d'interès afegida a <ph name="FOLDER_NAME" /></translation>
 <translation id="4472118726404937099">Per sincronitzar i personalitzar el contingut en tots els dispositius, inicia la sessió i activa la sincronització</translation>
+<translation id="4479839115899251637">Treu de llista de lectura</translation>
 <translation id="4479972344484327217">S'està instal·lant <ph name="MODULE" /> per a Chrome…</translation>
 <translation id="4487967297491345095">Totes les dades de les aplicacions de Chrome, com ara els fitxers, la configuració, els comptes o les bases de dades, entre d'altres, se suprimiran permanentment.</translation>
 <translation id="449126573531210296">Encripta contrasenyes sincronitzades amb el teu Compte de Google</translation>
@@ -996,6 +998,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6945221475159498467">Selecciona</translation>
 <translation id="6955535239952325894">Aquesta opció de configuració està desactivada als navegadors gestionats</translation>
 <translation id="6963766334940102469">Suprimeix les adreces d'interès</translation>
+<translation id="6964116075545915250">Edita la llista de lectura</translation>
 <translation id="696447261358045621">Surt del mode d'incògnit</translation>
 <translation id="6979737339423435258">Sempre</translation>
 <translation id="6981982820502123353">Accessibilitat</translation>
@@ -1003,6 +1006,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6989267951144302301">No s'ha pogut baixar</translation>
 <translation id="6995899638241819463">Rep un advertiment si les contrasenyes queden exposades en l'àmbit d'una violació de les dades</translation>
 <translation id="7001056293070445572">Aquest fitxer és gran (<ph name="FILE_SIZE" />)</translation>
+<translation id="7020741890149022655">Inclou a llista de lectura <ph name="BEGIN_NEW" />Nou<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Obre al navegador</translation>
 <translation id="702463548815491781">Es recomana quan TalkBack o l'accés amb interruptors estan activats</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> s'ha restaurat</translation>

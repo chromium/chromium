@@ -423,6 +423,7 @@
 <translation id="1436390408194692385"><ph name="TICKET_TIME_LEFT" /> үшін жарамды</translation>
 <translation id="1436784010935106834">Жойылды</translation>
 <translation id="1437986450143295708">Мәселені толық сипаттап беріңіз.</translation>
+<translation id="1439671507542716852">ұзақ мерзімді қолдау</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> таңдалған</translation>
 <translation id="1442851588227551435">Қосулы Kerberos билетін орнату</translation>
 <translation id="1444628761356461360">Бұл параметрді құрылғы иесі, <ph name="OWNER_EMAIL" />, басқарады.</translation>
@@ -1422,6 +1423,7 @@
 <translation id="2454264884354864965">Камера өшірулі</translation>
 <translation id="245650153866130664">Билетті автоматты түрде жаңарту үшін "Құпия сөзді есте сақтау" опциясын белгілеңіз. Сіздің құпия сөзіңіз тек сіздің құрылғыңызда сақталады.</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> қолданбасы <ph name="VOLUME_NAME" /> ішіндегі файлдарды көшіруді қалайды.</translation>
+<translation id="2457842160081795172">Қазір <ph name="CHANNEL_NAME" /> арнасында</translation>
 <translation id="2458379781610688953">Аккаунтты (<ph name="EMAIL" />) жаңарту</translation>
 <translation id="2458591546854598341">Құрылғыны басқару таңбалауышы жарамсыз.</translation>
 <translation id="2459703812219683497">Белсендіру коды анықталды.</translation>

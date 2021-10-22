@@ -321,6 +321,7 @@ Eduki sakatuta bilatu nahi duzun hitza. Bilaketa mugatzeko, hautatu hitz gehiago
 <translation id="2932222164150889403">Teklatua ez da aldatuko</translation>
 <translation id="2942036813789421260">Aurrebista-fitxa itxita dago</translation>
 <translation id="2946420957526726953">Chrome eguneratzen telefonoa beste gailu batzuetara konekta dadin</translation>
+<translation id="2951071800649516099">Gehitu orriak irakurketa-zerrendan, haiek geroago atzitzeko</translation>
 <translation id="2956410042958133412"><ph name="PARENT_NAME_1" /> eta <ph name="PARENT_NAME_2" /> dira kontuaren kudeatzaileak.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{Irakurri gabeko <ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> orri}other{Irakurri gabeko <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> orri}}</translation>
 <translation id="2961210776189273067">Trataera</translation>
@@ -554,6 +555,7 @@ Eduki sakatuta bilatu nahi duzun hitza. Bilaketa mugatzeko, hautatu hitz gehiago
 <translation id="4452411734226507615">Itxi <ph name="TAB_TITLE" /> fitxa</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> karpetan gehitu da laster-marka</translation>
 <translation id="4472118726404937099">Gailu guztiak sinkronizatu eta pertsonalizatzeko, hasi saioa eta aktibatu sinkronizazioa</translation>
+<translation id="4479839115899251637">Ezabatu irakurketa-zerrendatik</translation>
 <translation id="4479972344484327217"><ph name="MODULE" /> instalatzen Chrome-rako…</translation>
 <translation id="4487967297491345095">Betiko ezabatuko dira Chrome aplikazioko datu guztiak, besteak beste, fitxategiak, ezarpenak, kontuak eta datu-baseak.</translation>
 <translation id="449126573531210296">Enkriptatu sinkronizatutako pasahitzak Google-ko kontuarekin</translation>
@@ -996,6 +998,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="6945221475159498467">Hautatu</translation>
 <translation id="6955535239952325894">Ezarpen hau desgaituta dago kudeatutako arakatzaileetan</translation>
 <translation id="6963766334940102469">Ezabatu laster-markak</translation>
+<translation id="6964116075545915250">Editatu irakurketa-zerrenda</translation>
 <translation id="696447261358045621">Irten ezkutuko modutik</translation>
 <translation id="6979737339423435258">Guztiak</translation>
 <translation id="6981982820502123353">Erabilerraztasuna</translation>
@@ -1003,6 +1006,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="6989267951144302301">Ezin izan da deskargatu</translation>
 <translation id="6995899638241819463">Abisatu pasahitzak arriskuan badaude datuen isilpekotasuna urratu delako</translation>
 <translation id="7001056293070445572">Fitxategi handia da (<ph name="FILE_SIZE" />)</translation>
+<translation id="7020741890149022655">Gehitu irakurketa-zerrendan <ph name="BEGIN_NEW" />Berria<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Ireki arakatzailean</translation>
 <translation id="702463548815491781">TalkBack edo Erabilerraztasun-osagarria aktibatuta daudenean gomendatua</translation>
 <translation id="7027549951530753705">Leheneratu da <ph name="ITEM_TITLE" /></translation>

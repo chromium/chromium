@@ -319,6 +319,7 @@
 <translation id="2932222164150889403">キーボードは変更されません</translation>
 <translation id="2942036813789421260">[プレビュー] タブは閉じられています</translation>
 <translation id="2946420957526726953">他のデバイスに接続するよう Chrome を更新しています</translation>
+<translation id="2951071800649516099">後で読めるようにページをリーディング リストに追加します</translation>
 <translation id="2956410042958133412">このアカウントは <ph name="PARENT_NAME_1" /> と <ph name="PARENT_NAME_2" /> によって管理されています。</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> 件の未読ページ}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> 件の未読ページ}}</translation>
 <translation id="2961210776189273067">敬称</translation>
@@ -552,6 +553,7 @@
 <translation id="4452411734226507615">「<ph name="TAB_TITLE" />」タブを閉じます</translation>
 <translation id="4452548195519783679">「<ph name="FOLDER_NAME" />」にブックマークしました</translation>
 <translation id="4472118726404937099">複数のデバイスで独自の設定を同期して共有するには、ログインして同期を有効にします</translation>
+<translation id="4479839115899251637">リーディング リストから削除</translation>
 <translation id="4479972344484327217">Chrome 用の <ph name="MODULE" /> をインストールしています…</translation>
 <translation id="4487967297491345095">Chrome のすべてのアプリデータを完全に削除します。削除されるデータには、すべてのファイル、設定、アカウント、データベースなどが含まれます。</translation>
 <translation id="449126573531210296">Google アカウントで同期パスワードを暗号化する</translation>
@@ -994,6 +996,7 @@
 <translation id="6945221475159498467">選択</translation>
 <translation id="6955535239952325894">この設定は管理対象のブラウザでは無効です</translation>
 <translation id="6963766334940102469">ブックマークを削除</translation>
+<translation id="6964116075545915250">リーディング リストを編集</translation>
 <translation id="696447261358045621">シークレット モードを終了</translation>
 <translation id="6979737339423435258">全期間</translation>
 <translation id="6981982820502123353">ユーザー補助機能</translation>
@@ -1001,6 +1004,7 @@
 <translation id="6989267951144302301">ダウンロードできませんでした</translation>
 <translation id="6995899638241819463">データ侵害によりパスワードが漏洩した場合に警告する</translation>
 <translation id="7001056293070445572">サイズの大きいファイルです（<ph name="FILE_SIZE" />）</translation>
+<translation id="7020741890149022655">リーディング リストに追加<ph name="BEGIN_NEW" />新規<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">ブラウザで開く</translation>
 <translation id="702463548815491781">TalkBack またはスイッチ アクセスを有効にしている場合におすすめです</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> を復元しました</translation>

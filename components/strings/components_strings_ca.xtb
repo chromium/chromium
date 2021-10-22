@@ -609,6 +609,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2987034854559945715">No hi ha cap funció que coincideixi</translation>
 <translation id="2989742184762224133">Grapat doble a la part superior</translation>
 <translation id="2991174974383378012">Comparteix informació amb llocs web</translation>
+<translation id="299122504639061328">Gestiona el motor de cerca predeterminat i la cerca de llocs web</translation>
 <translation id="2991571918955627853">En aquest moments no pots visitar la pàgina <ph name="SITE" /> perquè el lloc web fa servir HSTS. Els atacs i els errors de xarxa acostumen a ser temporals, o sigui que probablement la pàgina funcionarà més endavant.</translation>
 <translation id="2995517112308048736">Mida del fitxer:</translation>
 <translation id="3002501248619246229">Comprova el suport de la safata d'entrada</translation>
@@ -953,6 +954,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4123572138124678573">Encunyació triple a la part inferior</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 element més}other{# elements més}}</translation>
 <translation id="4130226655945681476">Comprova els cables de xarxa, el mòdem i l'encaminador.</translation>
+<translation id="4133224101597112888">Botó Comparteix aquesta pestanya: prem Retorn per compartir aquesta pestanya mitjançant l'enllaç, creant un codi QR, fent una emissió i d'altres maneres.</translation>
 <translation id="4134123981501319574">Crea un document</translation>
 <translation id="413544239732274901">Més informació</translation>
 <translation id="4142935452406587478">Safata 10</translation>
@@ -1378,6 +1380,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5426179911063097041"><ph name="SITE" /> et vol enviar notificacions</translation>
 <translation id="5428105026674456456">Espanyol</translation>
 <translation id="5430298929874300616">Suprimeix l'adreça d'interès</translation>
+<translation id="5434889539950523874"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />: prem Tab i després Retorn per compartir aquesta pestanya mitjançant l'enllaç, creant un codi QR, fent una emissió i d'altres maneres.</translation>
 <translation id="5439770059721715174">Error de validació de l'esquema a "<ph name="ERROR_PATH" />": <ph name="ERROR" /></translation>
 <translation id="5443468954631487277">Ordre invers de cara amunt</translation>
 <translation id="5447765697759493033">Aquest lloc web no es traduirà</translation>
@@ -1985,6 +1988,7 @@ Detalls addicionals:
 <translation id="7559278538486662777">No es pot canviar la mida d'aquesta aplicació.</translation>
 <translation id="7564049878696755256">Podries perdre l'accés al compte de <ph name="ORG_NAME" /> o tenir problemes de suplantació d'identitat. Chrome et recomana que canviïs la contrasenya ara.</translation>
 <translation id="7567204685887185387">Aquest servidor no ha pogut comprovar que sigui <ph name="DOMAIN" /> perquè és possible que el seu certificat de seguretat s'hagi emès de manera fraudulenta. Això pot ser a causa d'una configuració incorrecta o d'un atacant que intercepta la vostra connexió.</translation>
+<translation id="7569761772822664555">Botó Gestiona els motors de cerca: prem Retorn per gestionar el motor de cerca predeterminat i la cerca de llocs web</translation>
 <translation id="7569952961197462199">Voleu suprimir la targeta de crèdit de Chrome?</translation>
 <translation id="7569983096843329377">Negre</translation>
 <translation id="7575207903026901870">Botó Suprimeix el suggeriment, prem Retorn per suprimir aquest suggeriment</translation>
@@ -2102,6 +2106,7 @@ Detalls addicionals:
 <translation id="7950027195171824198">Gestiona les preferències de galetes a la configuració de Chrome</translation>
 <translation id="7951415247503192394">(32 bits)</translation>
 <translation id="7953569069500808819">Cosit de la vora a la part superior</translation>
+<translation id="7954041596401851904">Pots compartir aquesta pestanya mitjançant l'enllaç, creant un codi QR, fent una emissió i d'altres maneres.</translation>
 <translation id="7956713633345437162">Adreces d'interès per a mòbils</translation>
 <translation id="7961015016161918242">Mai</translation>
 <translation id="7966803981046576691">Tipus de compte de treball</translation>
@@ -2175,6 +2180,7 @@ Detalls addicionals:
 <translation id="8202370299023114387">Conflicte</translation>
 <translation id="8206978196348664717">Prc4 (sobre)</translation>
 <translation id="8211406090763984747">La connexió és segura</translation>
+<translation id="8215696832828595581">Botó Personalitza Chrome: prem Retorn per personalitzar l'aspecte del navegador.</translation>
 <translation id="8218327578424803826">Ubicació assignada:</translation>
 <translation id="8220146938470311105">C7/C6 (sobre)</translation>
 <translation id="8225771182978767009">La persona que ha configurat l'ordinador ha bloquejat aquest lloc.</translation>
@@ -2316,6 +2322,7 @@ Detalls addicionals:
 <translation id="868922510921656628">Pàgines per conjunt</translation>
 <translation id="869891660844655955">Data de caducitat</translation>
 <translation id="8699041776323235191">Dispositiu d'interfície humana</translation>
+<translation id="8699899385443889493">Botó Juga al joc El dinosaure de Chrome: prem Retorn per jugar al joc El dinosaure de Chrome</translation>
 <translation id="8703575177326907206">La teva connexió a <ph name="DOMAIN" /> no està xifrada.</translation>
 <translation id="8705331520020532516">Número de sèrie</translation>
 <translation id="8708134712139312373">Pot demanar permís per connectar-se a dispositius Bluetooth</translation>

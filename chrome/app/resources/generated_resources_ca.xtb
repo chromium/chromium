@@ -423,6 +423,7 @@
 <translation id="1436390408194692385">Vàlid durant <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436784010935106834">Eliminat</translation>
 <translation id="1437986450143295708">Descriu el problema detalladament</translation>
+<translation id="1439671507542716852">assistència a llarg termini</translation>
 <translation id="144283815522798837">Elements seleccionats: <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
 <translation id="1442851588227551435">Estableix el tiquet de Kerberos actiu</translation>
 <translation id="1444628761356461360">Aquesta configuració està gestionada pel propietari del dispositiu, <ph name="OWNER_EMAIL" />.</translation>
@@ -1132,7 +1133,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2157474325782140681">Per obtenir funcions addicionals, fes servir una base de connexió Dell que funcioni amb aquest Chromebook.</translation>
 <translation id="215753907730220065">Surt de la pantalla completa</translation>
 <translation id="2157875535253991059">Ara aquesta pàgina es mostra a pantalla completa.</translation>
-<translation id="2158475082070321257">Copia l'enllaç que dirigeix al contingut marcat</translation>
+<translation id="2158475082070321257">Copia l'enllaç al contingut marcat</translation>
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Afegeix una Wi-Fi...</translation>
 <translation id="2162155940152307086">La sincronització començarà quan surtis de la configuració de la sincronització</translation>
@@ -1424,6 +1425,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2454264884354864965">La càmera està desactivada</translation>
 <translation id="245650153866130664">Perquè un tiquet s'actualitzi automàticament, marca l'opció Recorda la contrasenya. La contrasenya només s'emmagatzemarà al teu dispositiu.</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> vol copiar fitxers desats a <ph name="VOLUME_NAME" />.</translation>
+<translation id="2457842160081795172">Actualment al canal <ph name="CHANNEL_NAME" /></translation>
 <translation id="2458379781610688953">Actualitza el compte, <ph name="EMAIL" /></translation>
 <translation id="2458591546854598341">El testimoni de gestió del dispositiu no és vàlid.</translation>
 <translation id="2459703812219683497">S'ha detectat un codi d'activació</translation>
@@ -2913,7 +2915,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3984135167056005094">No incloguis l'adreça electrònica</translation>
 <translation id="3984159763196946143">No s'ha pogut iniciar el mode de demostració</translation>
 <translation id="3984431586879874039">Vols permetre que aquest lloc web vegi la teva clau de seguretat?</translation>
-<translation id="398477389655464998">Copia l'enllaç que dirigeix al contingut marcat</translation>
+<translation id="398477389655464998">Copia l'enllaç al contingut marcat</translation>
 <translation id="3984862166739904574">Definició de Respostes ràpides</translation>
 <translation id="3987544746655539083">Continua impedint que aquest lloc web accedeixi a la meva ubicació</translation>
 <translation id="3987938432087324095">No ho he entès.</translation>

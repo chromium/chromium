@@ -423,6 +423,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1436390408194692385">Balio-aldia: <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436784010935106834">Kendu egin da</translation>
 <translation id="1437986450143295708">Azaldu arazoa xehetasun osoz</translation>
+<translation id="1439671507542716852">epe luzerako bateragarritasuna</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> hautatu dira</translation>
 <translation id="1442851588227551435">Ezarri Kerberos-eko zerbitzu-eskaera aktibo bat</translation>
 <translation id="1444628761356461360">Ezarpen hau gailuaren jabeak (<ph name="OWNER_EMAIL" />) kudeatzen du.</translation>
@@ -1425,6 +1426,7 @@ Voice Match-ekin, Google-ren Laguntzailea eginbideak <ph name="SUPERVISED_USER_N
 <translation id="2454264884354864965">Kamera desaktibatuta dago</translation>
 <translation id="245650153866130664">Zerbitzu-eskaera bat automatikoki freskatzeko, hautatu "Gogoratu pasahitza". Pasahitza zure gailuan soilik gordeko da.</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> aplikazioak <ph name="VOLUME_NAME" /> bolumeneko fitxategiak kopiatu nahi ditu.</translation>
+<translation id="2457842160081795172">Oraingo kanala: <ph name="CHANNEL_NAME" /></translation>
 <translation id="2458379781610688953">Eguneratu kontua, <ph name="EMAIL" /></translation>
 <translation id="2458591546854598341">Gailu-kudeaketaren tokenak ez du balio.</translation>
 <translation id="2459703812219683497">Hauteman da aktibazio-kodea</translation>

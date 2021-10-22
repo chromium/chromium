@@ -425,6 +425,7 @@
 <translation id="1436390408194692385">Geldig vir <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436784010935106834">Verwyder</translation>
 <translation id="1437986450143295708">Beskryf die kwessie uitvoerig</translation>
+<translation id="1439671507542716852">langtermynsteundienste</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> gekies</translation>
 <translation id="1442851588227551435">Stel aktiewe Kerberos-kaartjie</translation>
 <translation id="1444628761356461360">Hierdie instelling word deur die toesteleienaar, <ph name="OWNER_EMAIL" />, bestuur.</translation>
@@ -1440,6 +1441,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2454264884354864965">Kamera is af</translation>
 <translation id="245650153866130664">Merk "Onthou wagwoord" om 'n kaartjie outomaties te herlaai. Jou wagwoord sal net op jou toestel geberg word.</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> wil lêers van <ph name="VOLUME_NAME" /> af kopieer.</translation>
+<translation id="2457842160081795172">Tans op <ph name="CHANNEL_NAME" />-kanaal</translation>
 <translation id="2458379781610688953">Dateer rekening op, <ph name="EMAIL" /></translation>
 <translation id="2458591546854598341">Toestelbestuurteken is ongeldig.</translation>
 <translation id="2459703812219683497">Aktiveringkode is bespeur</translation>
