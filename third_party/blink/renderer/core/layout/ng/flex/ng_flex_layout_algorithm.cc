@@ -1029,11 +1029,14 @@ bool NGFlexLayoutAlgorithm::GiveLinesAndItemsFinalPositionAndSize() {
                                ? flex_item->desired_location_.TransposedPoint()
                                : flex_item->desired_location_;
 
-    // TODO(almaher): We also need to adjust the location if an item doesn't
-    // start in the first fragmentainer. Will need to take the consumed block
-    // size into account.
-    if (item_break_token)
+    if (item_break_token) {
       location.SetY(LayoutUnit());
+    } else if (IsResumingLayout(BreakToken())) {
+      LayoutUnit updated_block_offset =
+          location.Y() - BreakToken()->ConsumedBlockSize();
+      DCHECK_GE(updated_block_offset, LayoutUnit());
+      location.SetY(updated_block_offset);
+    }
 
     if (DoesItemStretch(flex_item->ng_input_node_)) {
       // TODO(almaher): Take fragmentation into account when performing the
