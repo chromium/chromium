@@ -171,26 +171,29 @@ void NetInternalsMessageHandler::OnClearHostResolverCache(
 void NetInternalsMessageHandler::OnDomainSecurityPolicyDelete(
     const base::ListValue* list) {
   // |list| should be: [<domain to query>].
-  const std::string* domain = list->GetList()[0].GetIfString();
-  DCHECK(domain);
-  if (!base::IsStringASCII(*domain)) {
+  std::string domain;
+  bool result = list->GetString(0, &domain);
+  DCHECK(result);
+  if (!base::IsStringASCII(domain)) {
     // There cannot be a unicode entry in the HSTS set.
     return;
   }
   GetNetworkContext()->DeleteDynamicDataForHost(
-      *domain, base::BindOnce(&IgnoreBoolCallback));
+      domain, base::BindOnce(&IgnoreBoolCallback));
 }
 
 void NetInternalsMessageHandler::OnHSTSQuery(const base::ListValue* list) {
-  const std::string* callback_id = list->GetList()[0].GetIfString();
-  const std::string* domain = list->GetList()[1].GetIfString();
-  DCHECK(callback_id && domain);
+  std::string callback_id;
+  bool get_callback_id = list->GetString(0, &callback_id);
+  std::string domain;
+  bool get_domain_result = list->GetString(1, &domain);
+  DCHECK(get_domain_result && get_callback_id);
 
   AllowJavascript();
   GetNetworkContext()->GetHSTSState(
-      *domain,
+      domain,
       base::BindOnce(&NetInternalsMessageHandler::ResolveCallbackWithResult,
-                     weak_factory_.GetWeakPtr(), *callback_id));
+                     weak_factory_.GetWeakPtr(), callback_id));
 }
 
 void NetInternalsMessageHandler::ResolveCallbackWithResult(
@@ -201,56 +204,65 @@ void NetInternalsMessageHandler::ResolveCallbackWithResult(
 
 void NetInternalsMessageHandler::OnHSTSAdd(const base::ListValue* list) {
   // |list| should be: [<domain to query>, <STS include subdomains>]
-  const std::string* domain = list->GetList()[0].GetIfString();
-  DCHECK(domain);
-  if (!base::IsStringASCII(*domain)) {
+  std::string domain;
+  bool result = list->GetString(0, &domain);
+  DCHECK(result);
+  if (!base::IsStringASCII(domain)) {
     // Silently fail. The user will get a helpful error if they query for the
     // name.
     return;
   }
-  absl::optional<bool> sts_include_subdomains = list->GetList()[1].GetIfBool();
-  DCHECK(sts_include_subdomains);
+  bool sts_include_subdomains;
+  result = list->GetBoolean(1, &sts_include_subdomains);
+  DCHECK(result);
 
   base::Time expiry = base::Time::Now() + base::Days(1000);
-  GetNetworkContext()->AddHSTS(*domain, expiry, *sts_include_subdomains,
+  GetNetworkContext()->AddHSTS(domain, expiry, sts_include_subdomains,
                                base::DoNothing());
 }
 
 void NetInternalsMessageHandler::OnExpectCTQuery(const base::ListValue* list) {
-  const std::string* callback_id = list->GetList()[0].GetIfString();
-  const std::string* domain = list->GetList()[1].GetIfString();
-  DCHECK(callback_id && domain);
+  std::string callback_id;
+  std::string domain;
+  bool callback_result = list->GetString(0, &callback_id);
+  bool result = list->GetString(1, &domain);
 
-  url::Origin origin = url::Origin::Create(GURL("https://" + *domain));
+  DCHECK(result && callback_result);
+
+  url::Origin origin = url::Origin::Create(GURL("https://" + domain));
   AllowJavascript();
 
   GetNetworkContext()->GetExpectCTState(
-      *domain,
+      domain,
       net::NetworkIsolationKey(origin /* top_frame_site */,
                                origin /* frame_site */),
       base::BindOnce(&NetInternalsMessageHandler::ResolveCallbackWithResult,
-                     weak_factory_.GetWeakPtr(), *callback_id));
+                     weak_factory_.GetWeakPtr(), callback_id));
 }
 
 void NetInternalsMessageHandler::OnExpectCTAdd(const base::ListValue* list) {
   // |list| should be: [<domain to add>, <report URI>, <enforce>].
-  const std::string* domain = list->GetList()[0].GetIfString();
-  DCHECK(domain);
-  if (!base::IsStringASCII(*domain)) {
+  std::string domain;
+  bool result = list->GetString(0, &domain);
+  DCHECK(result);
+  if (!base::IsStringASCII(domain)) {
     // Silently fail. The user will get a helpful error if they query for the
     // name.
     return;
   }
 
-  const std::string* report_uri_str = list->GetList()[1].GetIfString();
-  absl::optional<bool> enforce = list->GetList()[2].GetIfBool();
-  DCHECK(report_uri_str && enforce);
+  std::string report_uri_str;
+  result = list->GetString(1, &report_uri_str);
+  DCHECK(result);
+  bool enforce;
+  result = list->GetBoolean(2, &enforce);
+  DCHECK(result);
 
-  url::Origin origin = url::Origin::Create(GURL("https://" + *domain));
+  url::Origin origin = url::Origin::Create(GURL("https://" + domain));
 
   base::Time expiry = base::Time::Now() + base::Days(1000);
   GetNetworkContext()->AddExpectCT(
-      *domain, expiry, *enforce, GURL(*report_uri_str),
+      domain, expiry, enforce, GURL(report_uri_str),
       net::NetworkIsolationKey(origin /* top_frame_site */,
                                origin /* frame_site */),
       base::DoNothing());
@@ -258,20 +270,22 @@ void NetInternalsMessageHandler::OnExpectCTAdd(const base::ListValue* list) {
 
 void NetInternalsMessageHandler::OnExpectCTTestReport(
     const base::ListValue* list) {
-  const std::string* callback_id = list->GetList()[0].GetIfString();
-  const std::string* report_uri_str = list->GetList()[1].GetIfString();
-  DCHECK(callback_id && report_uri_str);
-  GURL report_uri(*report_uri_str);
+  std::string callback_id;
+  std::string report_uri_str;
+  bool callback_result = list->GetString(0, &callback_id);
+  bool result = list->GetString(1, &report_uri_str);
+  DCHECK(result && callback_result);
+  GURL report_uri(report_uri_str);
   AllowJavascript();
   if (!report_uri.is_valid()) {
-    ResolveCallbackWithResult(*callback_id, base::Value("invalid"));
+    ResolveCallbackWithResult(callback_id, base::Value("invalid"));
     return;
   }
 
   GetNetworkContext()->SetExpectCTTestReport(
       report_uri,
       base::BindOnce(&NetInternalsMessageHandler::OnExpectCTTestReportCallback,
-                     weak_factory_.GetWeakPtr(), *callback_id));
+                     weak_factory_.GetWeakPtr(), callback_id));
 }
 
 void NetInternalsMessageHandler::OnExpectCTTestReportCallback(

@@ -243,7 +243,8 @@ KioskAppsHandler::GetSettingsDictionary() {
 void KioskAppsHandler::HandleInitializeKioskAppSettings(
     const base::ListValue* args) {
   CHECK_EQ(1U, args->GetList().size());
-  const std::string& callback_id = args->GetList()[0].GetString();
+  std::string callback_id;
+  CHECK(args->GetString(0, &callback_id));
 
   AllowJavascript();
   KioskAppManager::Get()->GetConsumerKioskAutoLaunchStatus(
@@ -253,7 +254,8 @@ void KioskAppsHandler::HandleInitializeKioskAppSettings(
 
 void KioskAppsHandler::HandleGetKioskAppSettings(const base::ListValue* args) {
   CHECK_EQ(1U, args->GetList().size());
-  const std::string& callback_id = args->GetList()[0].GetString();
+  std::string callback_id;
+  CHECK(args->GetString(0, &callback_id));
 
   ResolveJavascriptCallback(base::Value(callback_id), *GetSettingsDictionary());
 }
@@ -263,7 +265,8 @@ void KioskAppsHandler::HandleAddKioskApp(const base::ListValue* args) {
   if (!initialized_ || !is_kiosk_enabled_)
     return;
 
-  const std::string& input = args->GetList()[0].GetString();
+  std::string input;
+  CHECK(args->GetString(0, &input));
 
   std::string app_id;
   if (!ExtractsAppIdFromInput(input, &app_id)) {
@@ -278,7 +281,8 @@ void KioskAppsHandler::HandleRemoveKioskApp(const base::ListValue* args) {
   if (!initialized_ || !is_kiosk_enabled_)
     return;
 
-  const std::string& app_id = args->GetList()[0].GetString();
+  std::string app_id;
+  CHECK(args->GetString(0, &app_id));
 
   kiosk_app_manager_->RemoveApp(app_id, owner_settings_service_);
 }
@@ -288,7 +292,8 @@ void KioskAppsHandler::HandleEnableKioskAutoLaunch(
   if (!initialized_ || !is_kiosk_enabled_ || !is_auto_launch_enabled_)
     return;
 
-  const std::string& app_id = args->GetList()[0].GetString();
+  std::string app_id;
+  CHECK(args->GetString(0, &app_id));
 
   kiosk_app_manager_->SetAutoLaunchApp(app_id, owner_settings_service_);
 }
@@ -298,7 +303,8 @@ void KioskAppsHandler::HandleDisableKioskAutoLaunch(
   if (!initialized_ || !is_kiosk_enabled_ || !is_auto_launch_enabled_)
     return;
 
-  const std::string& app_id = args->GetList()[0].GetString();
+  std::string app_id;
+  CHECK(args->GetString(0, &app_id));
 
   std::string startup_app_id = kiosk_app_manager_->GetAutoLaunchApp();
   if (startup_app_id != app_id)

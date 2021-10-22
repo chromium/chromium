@@ -62,11 +62,11 @@ void ComponentsHandler::HandleCheckUpdate(const base::ListValue* args) {
     return;
   }
 
-  if (!args->GetList()[0].is_string()) {
+  std::string component_id;
+  if (!args->GetString(0, &component_id)) {
     NOTREACHED();
     return;
   }
-  const std::string& component_id = args->GetList()[0].GetString();
 
   OnDemandUpdate(component_id);
 }

@@ -110,7 +110,8 @@ void QuotaInternalsHandler::OnTriggerStoragePressure(
     const base::ListValue* args) {
   AllowJavascript();
   CHECK_EQ(1U, args->GetList().size());
-  const std::string& origin_string = args->GetList()[0].GetString();
+  std::string origin_string;
+  CHECK(args->GetString(0, &origin_string));
   GURL url(origin_string);
 
   if (!proxy_.get())

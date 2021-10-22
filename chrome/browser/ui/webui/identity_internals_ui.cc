@@ -228,7 +228,8 @@ IdentityInternalsUIMessageHandler::GetInfoForToken(
 
 void IdentityInternalsUIMessageHandler::GetInfoForAllTokens(
     const base::ListValue* args) {
-  const std::string& callback_id = args->GetList()[0].GetString();
+  std::string callback_id;
+  CHECK(args->GetString(0, &callback_id));
   CHECK(!callback_id.empty());
 
   AllowJavascript();
@@ -262,13 +263,14 @@ void IdentityInternalsUIMessageHandler::RegisterMessages() {
 
 void IdentityInternalsUIMessageHandler::RevokeToken(
     const base::ListValue* args) {
-  const std::string& callback_id = args->GetList()[0].GetString();
+  std::string extension_id;
+  std::string access_token;
+  std::string callback_id;
+  CHECK(args->GetString(0, &callback_id));
   CHECK(!callback_id.empty());
-  const std::string& extension_id =
-      args->GetList()[kRevokeTokenExtensionOffset].GetString();
-  const std::string& access_token =
-      args->GetList()[kRevokeTokenTokenOffset].GetString();
 
+  args->GetString(kRevokeTokenExtensionOffset, &extension_id);
+  args->GetString(kRevokeTokenTokenOffset, &access_token);
   token_revokers_.push_back(std::make_unique<IdentityInternalsTokenRevoker>(
       extension_id, access_token, callback_id, Profile::FromWebUI(web_ui()),
       this));

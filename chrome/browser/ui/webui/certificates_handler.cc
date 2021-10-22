@@ -412,7 +412,7 @@ void CertificatesHandler::HandleViewCertificate(const base::ListValue* args) {
 void CertificatesHandler::AssignWebUICallbackId(const base::ListValue* args) {
   CHECK_LE(1U, args->GetList().size());
   CHECK(webui_callback_id_.empty());
-  webui_callback_id_ = args->GetList()[0].GetString();
+  CHECK(args->GetString(0, &webui_callback_id_));
 }
 
 void CertificatesHandler::HandleGetCATrust(const base::ListValue* args) {

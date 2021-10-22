@@ -40,9 +40,10 @@ namespace {
 
 // Converts the string at |index| in |list| to an int, defaulting to 0 on error.
 int64_t StringAtIndexToInt64(const base::ListValue* list, int index) {
-  if (!list->GetList().empty() && list->GetList()[index].is_string()) {
+  std::string str;
+  if (list->GetString(index, &str)) {
     int64_t integer = 0;
-    if (base::StringToInt64(list->GetList()[index].GetString(), &integer))
+    if (base::StringToInt64(str, &integer))
       return integer;
   }
   return 0;
@@ -50,8 +51,9 @@ int64_t StringAtIndexToInt64(const base::ListValue* list, int index) {
 
 // Returns whether the there is any value at the given |index|.
 bool HasSomethingAtIndex(const base::ListValue* list, int index) {
-  if (!list->GetList().empty() && list->GetList()[index].is_string()) {
-    return !list->GetList()[index].GetString().empty();
+  std::string str;
+  if (list->GetString(index, &str)) {
+    return !str.empty();
   }
   return false;
 }
@@ -209,7 +211,9 @@ void SyncInternalsMessageHandler::HandleGetAllNodes(const ListValue* args) {
   DCHECK_EQ(1U, args->GetList().size());
   AllowJavascript();
 
-  const std::string& callback_id = args->GetList()[0].GetString();
+  std::string callback_id;
+  bool success = args->GetString(0, &callback_id);
+  DCHECK(success);
 
   SyncService* service = GetSyncService();
   if (service) {

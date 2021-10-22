@@ -45,7 +45,8 @@ void AppIconWebUIHandler::RegisterMessages() {
 
 void AppIconWebUIHandler::HandleGetAppIconDominantColor(
     const base::ListValue* args) {
-  const std::string& extension_id = args->GetList()[0].GetString();
+  std::string extension_id;
+  CHECK(args->GetString(0, &extension_id));
 
   Profile* profile = Profile::FromWebUI(web_ui());
   extensions::ExtensionRegistry* extension_registry =
