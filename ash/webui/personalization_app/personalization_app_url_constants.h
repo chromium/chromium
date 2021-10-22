@@ -5,12 +5,12 @@
 #ifndef ASH_WEBUI_PERSONALIZATION_APP_PERSONALIZATION_APP_URL_CONSTANTS_H_
 #define ASH_WEBUI_PERSONALIZATION_APP_PERSONALIZATION_APP_URL_CONSTANTS_H_
 
-namespace chromeos {
+namespace ash {
 
 extern const char kChromeUIPersonalizationAppHost[];
 extern const char kChromeUIPersonalizationAppURL[];
 extern const char kChromeUIUntrustedPersonalizationAppURL[];
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_PERSONALIZATION_APP_PERSONALIZATION_APP_URL_CONSTANTS_H_

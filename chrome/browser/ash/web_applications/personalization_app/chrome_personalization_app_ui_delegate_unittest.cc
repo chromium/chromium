@@ -78,21 +78,20 @@ gfx::ImageSkia CreateSolidImageSkia(int width, int height, SkColor color) {
 }
 
 class TestWallpaperObserver
-    : public chromeos::personalization_app::mojom::WallpaperObserver {
+    : public ash::personalization_app::mojom::WallpaperObserver {
  public:
   void OnWallpaperChanged(
-      chromeos::personalization_app::mojom::CurrentWallpaperPtr image)
-      override {
+      ash::personalization_app::mojom::CurrentWallpaperPtr image) override {
     current_wallpaper_ = std::move(image);
   }
 
-  mojo::PendingRemote<chromeos::personalization_app::mojom::WallpaperObserver>
+  mojo::PendingRemote<ash::personalization_app::mojom::WallpaperObserver>
   pending_remote() {
     DCHECK(!wallpaper_observer_receiver_.is_bound());
     return wallpaper_observer_receiver_.BindNewPipeAndPassRemote();
   }
 
-  chromeos::personalization_app::mojom::CurrentWallpaper* current_wallpaper() {
+  ash::personalization_app::mojom::CurrentWallpaper* current_wallpaper() {
     if (!wallpaper_observer_receiver_.is_bound())
       return nullptr;
 
@@ -101,10 +100,10 @@ class TestWallpaperObserver
   }
 
  private:
-  mojo::Receiver<chromeos::personalization_app::mojom::WallpaperObserver>
+  mojo::Receiver<ash::personalization_app::mojom::WallpaperObserver>
       wallpaper_observer_receiver_{this};
 
-  chromeos::personalization_app::mojom::CurrentWallpaperPtr current_wallpaper_ =
+  ash::personalization_app::mojom::CurrentWallpaperPtr current_wallpaper_ =
       nullptr;
 };
 
@@ -155,7 +154,7 @@ class ChromePersonalizationAppUiDelegateTest : public testing::Test {
     return &test_wallpaper_controller_;
   }
 
-  mojo::Remote<chromeos::personalization_app::mojom::WallpaperProvider>*
+  mojo::Remote<ash::personalization_app::mojom::WallpaperProvider>*
   wallpaper_provider_remote() {
     return &wallpaper_provider_remote_;
   }
@@ -167,7 +166,7 @@ class ChromePersonalizationAppUiDelegateTest : public testing::Test {
         test_wallpaper_observer_.pending_remote());
   }
 
-  chromeos::personalization_app::mojom::CurrentWallpaper* current_wallpaper() {
+  ash::personalization_app::mojom::CurrentWallpaper* current_wallpaper() {
     wallpaper_provider_remote_.FlushForTesting();
     return test_wallpaper_observer_.current_wallpaper();
   }
@@ -191,7 +190,7 @@ class ChromePersonalizationAppUiDelegateTest : public testing::Test {
   content::TestWebUI web_ui_;
   std::unique_ptr<content::WebContents> web_contents_;
   TestingProfile* profile_;
-  mojo::Remote<chromeos::personalization_app::mojom::WallpaperProvider>
+  mojo::Remote<ash::personalization_app::mojom::WallpaperProvider>
       wallpaper_provider_remote_;
   TestWallpaperObserver test_wallpaper_observer_;
   std::unique_ptr<ChromePersonalizationAppUiDelegate> delegate_;
@@ -280,7 +279,7 @@ TEST_F(ChromePersonalizationAppUiDelegateTest, ObserveWallpaperFiresWhenBound) {
   SetWallpaperObserver();
 
   // WallpaperObserver Should have received an image through mojom.
-  chromeos::personalization_app::mojom::CurrentWallpaper* current =
+  ash::personalization_app::mojom::CurrentWallpaper* current =
       current_wallpaper();
 
   EXPECT_EQ(ash::WallpaperType::kOnline, current->type);

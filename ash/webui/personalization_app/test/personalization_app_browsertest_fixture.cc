@@ -15,12 +15,12 @@ std::unique_ptr<content::WebUIController>
 TestPersonalizationAppWebUIProvider::NewWebUI(content::WebUI* web_ui,
                                               const GURL& url) {
   auto delegate = std::make_unique<FakePersonalizationAppUiDelegate>(web_ui);
-  return std::make_unique<chromeos::PersonalizationAppUI>(web_ui,
-                                                          std::move(delegate));
+  return std::make_unique<ash::PersonalizationAppUI>(web_ui,
+                                                     std::move(delegate));
 }
 
 void PersonalizationAppBrowserTestFixture::SetUpOnMainThread() {
   MojoWebUIBrowserTest::SetUpOnMainThread();
-  test_factory_.AddFactoryOverride(chromeos::kChromeUIPersonalizationAppHost,
+  test_factory_.AddFactoryOverride(ash::kChromeUIPersonalizationAppHost,
                                    &test_web_ui_provider_);
 }

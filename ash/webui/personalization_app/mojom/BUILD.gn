@@ -16,19 +16,19 @@ mojom("mojom") {
     {
       types = [
         {
-          mojom = "chromeos.personalization_app.mojom.WallpaperLayout"
+          mojom = "ash.personalization_app.mojom.WallpaperLayout"
           cpp = "ash::WallpaperLayout"
         },
         {
-          mojom = "chromeos.personalization_app.mojom.WallpaperType"
+          mojom = "ash.personalization_app.mojom.WallpaperType"
           cpp = "ash::WallpaperType"
         },
         {
-          mojom = "chromeos.personalization_app.mojom.WallpaperCollection"
+          mojom = "ash.personalization_app.mojom.WallpaperCollection"
           cpp = "backdrop::Collection"
         },
         {
-          mojom = "chromeos.personalization_app.mojom.WallpaperImage"
+          mojom = "ash.personalization_app.mojom.WallpaperImage"
           cpp = "backdrop::Image"
         },
       ]

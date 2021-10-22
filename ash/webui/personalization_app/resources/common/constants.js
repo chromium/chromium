@@ -34,7 +34,7 @@ export const EventType = {
  * @typedef {{
  *   type: EventType,
  *   collections:
- *     !Array<!chromeos.personalizationApp.mojom.WallpaperCollection>,
+ *     !Array<!ash.personalizationApp.mojom.WallpaperCollection>,
  * }}
  */
 export let SendCollectionsEvent;
@@ -70,7 +70,7 @@ export let SendImageCountsEvent;
 /**
  * @typedef {{
  *   type: EventType,
- *   images: !Array<!chromeos.personalizationApp.mojom.WallpaperImage>,
+ *   images: !Array<!ash.personalizationApp.mojom.WallpaperImage>,
  * }}
  */
 export let SendImagesEvent;

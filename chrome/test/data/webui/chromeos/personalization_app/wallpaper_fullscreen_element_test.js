@@ -21,12 +21,12 @@ export function WallpaperFullscreenTest() {
   /** @type {?TestPersonalizationStore} */
   let personalizationStore = null;
 
-  /** @type {!chromeos.personalizationApp.mojom.CurrentWallpaper} */
+  /** @type {!ash.personalizationApp.mojom.CurrentWallpaper} */
   const customImage = {
     attribution: ['Custom image'],
-    layout: chromeos.personalizationApp.mojom.WallpaperLayout.kCenter,
+    layout: ash.personalizationApp.mojom.WallpaperLayout.kCenter,
     key: 'testing',
-    type: chromeos.personalizationApp.mojom.WallpaperType.kCustomized,
+    type: ash.personalizationApp.mojom.WallpaperType.kCustomized,
     url: {url: 'data://testing'},
   };
 
@@ -157,13 +157,13 @@ export function WallpaperFullscreenTest() {
     wallpaperProvider.reset();
 
     assertEquals(
-        chromeos.personalizationApp.mojom.WallpaperLayout.kCenterCropped,
+        ash.personalizationApp.mojom.WallpaperLayout.kCenterCropped,
         fillLayout);
 
     // Change the layout type to something other than |kCenter|.
     personalizationStore.data.currentSelected = {
       ...customImage,
-      layout: chromeos.personalizationApp.mojom.WallpaperLayout.kCenterCropped,
+      layout: ash.personalizationApp.mojom.WallpaperLayout.kCenterCropped,
     };
     personalizationStore.notifyObservers();
     await waitAfterNextRender(wallpaperFullscreenElement);
@@ -176,8 +176,7 @@ export function WallpaperFullscreenTest() {
         await wallpaperProvider.whenCalled('setCustomWallpaperLayout');
 
     assertEquals(
-        chromeos.personalizationApp.mojom.WallpaperLayout.kCenter,
-        centerLayout);
+        ash.personalizationApp.mojom.WallpaperLayout.kCenter, centerLayout);
   });
 
   test('aria selected set for chosen layout option', async () => {
@@ -193,7 +192,7 @@ export function WallpaperFullscreenTest() {
 
     // Current image is kCenter.
     assertEquals(
-        chromeos.personalizationApp.mojom.WallpaperLayout.kCenter,
+        ash.personalizationApp.mojom.WallpaperLayout.kCenter,
         personalizationStore.data.currentSelected.layout);
 
     const center = wallpaperFullscreenElement.shadowRoot.querySelector(
@@ -206,7 +205,7 @@ export function WallpaperFullscreenTest() {
 
     personalizationStore.data.currentSelected = {
       ...personalizationStore.data.currentSelected,
-      layout: chromeos.personalizationApp.mojom.WallpaperLayout.kCenterCropped,
+      layout: ash.personalizationApp.mojom.WallpaperLayout.kCenterCropped,
     };
     personalizationStore.notifyObservers();
     await waitAfterNextRender(wallpaperFullscreenElement);
@@ -223,7 +222,7 @@ export function WallpaperFullscreenTest() {
     personalizationStore.data.fullscreen = true;
     personalizationStore.data.currentSelected = {
       ...personalizationStore.data.currentSelected,
-      type: chromeos.personalizationApp.mojom.WallpaperType.kDaily,
+      type: ash.personalizationApp.mojom.WallpaperType.kDaily,
     };
     personalizationStore.data.dailyRefresh.collectionId =
         wallpaperProvider.collections[0].id;

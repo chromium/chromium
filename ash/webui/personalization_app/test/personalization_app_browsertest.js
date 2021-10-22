@@ -21,7 +21,7 @@ var PersonalizationAppBrowserTest = class extends testing.Test {
 
   /** @override */
   get featureList() {
-    return {enabled: ['chromeos::features::kWallpaperWebUI']};
+    return {enabled: ['ash::features::kWallpaperWebUI']};
   }
 
   /** @override */

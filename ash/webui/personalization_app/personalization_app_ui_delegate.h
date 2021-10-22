@@ -8,15 +8,18 @@
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
+namespace ash {
+
 // Handles calling |backdrop_wallpaper_handler| code in //chrome to pass to the
 // Personalization App SWA.
 class PersonalizationAppUiDelegate
-    : public chromeos::personalization_app::mojom::WallpaperProvider {
+    : public personalization_app::mojom::WallpaperProvider {
  public:
   virtual void BindInterface(
-      mojo::PendingReceiver<
-          chromeos::personalization_app::mojom::WallpaperProvider>
+      mojo::PendingReceiver<personalization_app::mojom::WallpaperProvider>
           receiver) = 0;
 };
+
+}  // namespace ash
 
 #endif  // ASH_WEBUI_PERSONALIZATION_APP_PERSONALIZATION_APP_UI_DELEGATE_H_

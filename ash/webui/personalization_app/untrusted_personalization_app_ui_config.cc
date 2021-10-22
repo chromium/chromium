@@ -22,7 +22,7 @@
 #include "ui/resources/grit/webui_resources.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -35,7 +35,7 @@ void AddStrings(content::WebUIDataSource* source) {
       {"ariaLabelLoading", IDS_PERSONALIZATION_APP_ARIA_LABEL_LOADING}};
   source->AddLocalizedStrings(kLocalizedStrings);
 
-  if (ash::features::IsWallpaperGooglePhotosIntegrationEnabled()) {
+  if (features::IsWallpaperGooglePhotosIntegrationEnabled()) {
     source->AddLocalizedString("googlePhotosLabel",
                                IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS);
   }
@@ -49,9 +49,8 @@ void AddStrings(content::WebUIDataSource* source) {
 }
 
 void AddBooleans(content::WebUIDataSource* source) {
-  source->AddBoolean(
-      "isGooglePhotosIntegrationEnabled",
-      ash::features::IsWallpaperGooglePhotosIntegrationEnabled());
+  source->AddBoolean("isGooglePhotosIntegrationEnabled",
+                     features::IsWallpaperGooglePhotosIntegrationEnabled());
 }
 
 void AddCrosColors(content::WebUIDataSource* source) {
@@ -60,7 +59,7 @@ void AddCrosColors(content::WebUIDataSource* source) {
 
   source->AddString(
       "crosColorsDebugOverrides",
-      base::FeatureList::IsEnabled(ash::features::kSemanticColorsDebugOverride)
+      base::FeatureList::IsEnabled(features::kSemanticColorsDebugOverride)
           ? cros_styles::kDebugOverrideCssString
           : std::string());
 }
@@ -142,7 +141,7 @@ UntrustedPersonalizationAppUIConfig::~UntrustedPersonalizationAppUIConfig() =
 
 bool UntrustedPersonalizationAppUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return ash::features::IsWallpaperWebUIEnabled() &&
+  return features::IsWallpaperWebUIEnabled() &&
          !browser_context->IsOffTheRecord();
 }
 
@@ -152,4 +151,4 @@ UntrustedPersonalizationAppUIConfig::CreateWebUIController(
   return std::make_unique<UntrustedPersonalizationAppUI>(web_ui);
 }
 
-}  // namespace chromeos
+}  // namespace ash

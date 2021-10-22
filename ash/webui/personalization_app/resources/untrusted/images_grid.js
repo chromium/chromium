@@ -27,7 +27,7 @@ class ImagesGrid extends PolymerElement {
   static get properties() {
     return {
       /**
-       * @type {!Array<!chromeos.personalizationApp.mojom.WallpaperImage>}
+       * @type {!Array<!ash.personalizationApp.mojom.WallpaperImage>}
        * @private
        */
       images_: {
@@ -116,7 +116,7 @@ class ImagesGrid extends PolymerElement {
   }
 
   /**
-   * @param {!chromeos.personalizationApp.mojom.WallpaperImage} image
+   * @param {!ash.personalizationApp.mojom.WallpaperImage} image
    * @param {?bigint} selectedAssetId
    * @param {?bigint} pendingSelectedAssetId
    * @return {string}
@@ -145,7 +145,7 @@ class ImagesGrid extends PolymerElement {
 
   /**
    * @private
-   * @param {!chromeos.personalizationApp.mojom.WallpaperImage} image
+   * @param {!ash.personalizationApp.mojom.WallpaperImage} image
    * @return {string}
    */
   getAriaLabel_(image) {

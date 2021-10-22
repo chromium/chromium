@@ -52,8 +52,9 @@ class Profile;
 // Implemented in //chrome because this will rely on chrome
 // |backdrop_wallpaper_handlers| code when fully implemented.
 // TODO(b/182012641) add wallpaper API code here.
-class ChromePersonalizationAppUiDelegate : public PersonalizationAppUiDelegate,
-                                           ash::WallpaperControllerObserver {
+class ChromePersonalizationAppUiDelegate
+    : public ash::PersonalizationAppUiDelegate,
+      ash::WallpaperControllerObserver {
  public:
   explicit ChromePersonalizationAppUiDelegate(content::WebUI* web_ui);
 
@@ -67,11 +68,11 @@ class ChromePersonalizationAppUiDelegate : public PersonalizationAppUiDelegate,
   // PersonalizationAppUIDelegate:
   // |BindInterface| may be called multiple times, for example if the user
   // presses Ctrl+Shift+R while on the personalization app.
-  void BindInterface(mojo::PendingReceiver<
-                     chromeos::personalization_app::mojom::WallpaperProvider>
-                         receiver) override;
+  void BindInterface(
+      mojo::PendingReceiver<ash::personalization_app::mojom::WallpaperProvider>
+          receiver) override;
 
-  // chromeos::personalization_app::mojom::WallpaperProvider:
+  // ash::personalization_app::mojom::WallpaperProvider:
   void FetchCollections(FetchCollectionsCallback callback) override;
 
   void FetchImagesForCollection(
@@ -84,9 +85,8 @@ class ChromePersonalizationAppUiDelegate : public PersonalizationAppUiDelegate,
                               GetLocalImageThumbnailCallback callback) override;
 
   void SetWallpaperObserver(
-      mojo::PendingRemote<
-          chromeos::personalization_app::mojom::WallpaperObserver> observer)
-      override;
+      mojo::PendingRemote<ash::personalization_app::mojom::WallpaperObserver>
+          observer) override;
 
   // ash::WallpaperControllerObserver:
   void OnWallpaperChanged() override;
@@ -94,7 +94,7 @@ class ChromePersonalizationAppUiDelegate : public PersonalizationAppUiDelegate,
   // ash::WallpaperControllerObserver:
   void OnWallpaperPreviewEnded() override;
 
-  // chromeos::personalization_app::mojom::WallpaperProvider:
+  // ash::personalization_app::mojom::WallpaperProvider:
   void SelectWallpaper(uint64_t image_asset_id,
                        bool preview_mode,
                        SelectWallpaperCallback callback) override;
@@ -166,8 +166,7 @@ class ChromePersonalizationAppUiDelegate : public PersonalizationAppUiDelegate,
   AccountId GetAccountId() const;
 
   void NotifyWallpaperChanged(
-      chromeos::personalization_app::mojom::CurrentWallpaperPtr
-          current_wallpaper);
+      ash::personalization_app::mojom::CurrentWallpaperPtr current_wallpaper);
 
   std::unique_ptr<backdrop_wallpaper_handlers::CollectionInfoFetcher>
       wallpaper_collection_info_fetcher_;
@@ -211,10 +210,10 @@ class ChromePersonalizationAppUiDelegate : public PersonalizationAppUiDelegate,
 
   // Place near bottom of class so this is cleaned up before any pending
   // callbacks are dropped.
-  mojo::Receiver<chromeos::personalization_app::mojom::WallpaperProvider>
+  mojo::Receiver<ash::personalization_app::mojom::WallpaperProvider>
       wallpaper_receiver_{this};
 
-  mojo::Remote<chromeos::personalization_app::mojom::WallpaperObserver>
+  mojo::Remote<ash::personalization_app::mojom::WallpaperObserver>
       wallpaper_observer_remote_;
 
   // Used for interacting with local filesystem.

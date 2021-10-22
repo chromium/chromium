@@ -26,8 +26,8 @@ FakePersonalizationAppUiDelegate::FakePersonalizationAppUiDelegate(
 FakePersonalizationAppUiDelegate::~FakePersonalizationAppUiDelegate() = default;
 
 void FakePersonalizationAppUiDelegate::BindInterface(
-    mojo::PendingReceiver<
-        chromeos::personalization_app::mojom::WallpaperProvider> receiver) {
+    mojo::PendingReceiver<ash::personalization_app::mojom::WallpaperProvider>
+        receiver) {
   wallpaper_receiver_.reset();
   wallpaper_receiver_.Bind(std::move(receiver));
 }
@@ -70,7 +70,7 @@ void FakePersonalizationAppUiDelegate::GetLocalImageThumbnail(
 }
 
 void FakePersonalizationAppUiDelegate::SetWallpaperObserver(
-    mojo::PendingRemote<chromeos::personalization_app::mojom::WallpaperObserver>
+    mojo::PendingRemote<ash::personalization_app::mojom::WallpaperObserver>
         observer) {}
 
 void FakePersonalizationAppUiDelegate::SelectWallpaper(

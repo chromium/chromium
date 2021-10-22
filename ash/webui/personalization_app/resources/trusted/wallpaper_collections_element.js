@@ -76,7 +76,7 @@ export class WallpaperCollections extends WithPersonalizationStore {
       },
 
       /**
-       * @type {?Array<!chromeos.personalizationApp.mojom.WallpaperCollection>}
+       * @type {?Array<!ash.personalizationApp.mojom.WallpaperCollection>}
        * @private
        */
       collections_: {
@@ -110,7 +110,7 @@ export class WallpaperCollections extends WithPersonalizationStore {
       /**
        * Contains a mapping of collection id to an array of images.
        * @type {Object<string,
-       *     Array<!chromeos.personalizationApp.mojom.WallpaperImage>>}
+       *     Array<!ash.personalizationApp.mojom.WallpaperImage>>}
        * @private
        */
       images_: {
@@ -216,7 +216,7 @@ export class WallpaperCollections extends WithPersonalizationStore {
   }
 
   /**
-   * @param {?Array<!chromeos.personalizationApp.mojom.WallpaperCollection>}
+   * @param {?Array<!ash.personalizationApp.mojom.WallpaperCollection>}
    *     collections
    * @param {boolean} loading
    * @return {boolean}
@@ -228,7 +228,7 @@ export class WallpaperCollections extends WithPersonalizationStore {
 
   /**
    * Send updated wallpaper collections to the iframe.
-   * @param {?Array<!chromeos.personalizationApp.mojom.WallpaperCollection>}
+   * @param {?Array<!ash.personalizationApp.mojom.WallpaperCollection>}
    *     collections
    * @private
    */
@@ -242,7 +242,7 @@ export class WallpaperCollections extends WithPersonalizationStore {
   /**
    * Send count of images in each collection when a new collection is fetched.
    * @param {Object<string,
-   *     Array<!chromeos.personalizationApp.mojom.WallpaperImage>>} images
+   *     Array<!ash.personalizationApp.mojom.WallpaperImage>>} images
    * @param {Object<string, boolean>} imagesLoading
    * @private
    */

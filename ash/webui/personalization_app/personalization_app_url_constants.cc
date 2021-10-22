@@ -4,11 +4,11 @@
 
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 const char kChromeUIPersonalizationAppHost[] = "personalization";
 const char kChromeUIPersonalizationAppURL[] = "chrome://personalization/";
 const char kChromeUIUntrustedPersonalizationAppURL[] =
     "chrome-untrusted://personalization/";
 
-}  // namespace chromeos
+}  // namespace ash

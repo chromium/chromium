@@ -45,7 +45,7 @@ export class WallpaperFullscreen extends WithPersonalizationStore {
       },
       /**
        * TODO(b/202392508) remove this debug view when transparency works
-       * @type {?chromeos.personalizationApp.mojom.CurrentWallpaper}
+       * @type {?ash.personalizationApp.mojom.CurrentWallpaper}
        * @private
        */
       image_: {
@@ -72,11 +72,11 @@ export class WallpaperFullscreen extends WithPersonalizationStore {
     this.watch(
         'showLayoutOptions_',
         state => state.currentSelected?.type ===
-            chromeos.personalizationApp.mojom.WallpaperType.kCustomized);
+            ash.personalizationApp.mojom.WallpaperType.kCustomized);
     this.watch(
         'showDailyRefresh_',
         state => state.currentSelected?.type ===
-                chromeos.personalizationApp.mojom.WallpaperType.kDaily &&
+                ash.personalizationApp.mojom.WallpaperType.kDaily &&
             state.dailyRefresh.collectionId && !state.pendingSelected);
     this.watch('showConfirm_', state => !!state.pendingSelected);
     this.watch('image_', state => state.currentSelected);
@@ -148,7 +148,7 @@ export class WallpaperFullscreen extends WithPersonalizationStore {
   }
 
   /**
-   * @param {?chromeos.personalizationApp.mojom.CurrentWallpaper} image
+   * @param {?ash.personalizationApp.mojom.CurrentWallpaper} image
    * @param {string} str
    * @return {string}
    * @private

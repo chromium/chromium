@@ -29,7 +29,7 @@ export function promisifySendImagesForTesting() {
 /**
  * If |current| is set and is an online wallpaper, return the assetId of that
  * image. Otherwise returns null.
- * @param {?chromeos.personalizationApp.mojom.CurrentWallpaper} current
+ * @param {?ash.personalizationApp.mojom.CurrentWallpaper} current
  * @return {?bigint}
  */
 function getAssetId(current) {
@@ -91,7 +91,7 @@ export class WallpaperImages extends WithPersonalizationStore {
       },
 
       /**
-       * @type {?Array<!chromeos.personalizationApp.mojom.WallpaperCollection>}
+       * @type {?Array<!ash.personalizationApp.mojom.WallpaperCollection>}
        */
       collections_: {
         type: Array,
@@ -104,7 +104,7 @@ export class WallpaperImages extends WithPersonalizationStore {
 
       /**
        * @type {!Object<string,
-       *     ?Array<!chromeos.personalizationApp.mojom.WallpaperImage>>}
+       *     ?Array<!ash.personalizationApp.mojom.WallpaperImage>>}
        * @private
        */
       images_: {
@@ -120,7 +120,7 @@ export class WallpaperImages extends WithPersonalizationStore {
       },
 
       /**
-       * @type {?chromeos.personalizationApp.mojom.CurrentWallpaper}
+       * @type {?ash.personalizationApp.mojom.CurrentWallpaper}
        */
       currentSelected_: {
         type: Object,
@@ -200,7 +200,7 @@ export class WallpaperImages extends WithPersonalizationStore {
   }
 
   /**
-   * @param {?chromeos.personalizationApp.mojom.CurrentWallpaper} selected
+   * @param {?ash.personalizationApp.mojom.CurrentWallpaper} selected
    * @private
    */
   async onCurrentSelectedChanged_(selected) {
@@ -226,9 +226,9 @@ export class WallpaperImages extends WithPersonalizationStore {
    * |collectionId|. Check that collections list loaded successfully, and that
    * the collection with id |collectionId| also loaded successfully.
    * @param {?Object<string,
-   *     Array<!chromeos.personalizationApp.mojom.WallpaperImage>>} images
+   *     Array<!ash.personalizationApp.mojom.WallpaperImage>>} images
    * @param {?Object<string, boolean>} imagesLoading
-   * @param {?Array<!chromeos.personalizationApp.mojom.WallpaperCollection>}
+   * @param {?Array<!ash.personalizationApp.mojom.WallpaperCollection>}
    *     collections
    * @param {boolean} collectionsLoading
    * @param {string} collectionId
@@ -256,7 +256,7 @@ export class WallpaperImages extends WithPersonalizationStore {
 
   /**
    * @param {?Object<string,
-   *     Array<!chromeos.personalizationApp.mojom.WallpaperImage>>} images
+   *     Array<!ash.personalizationApp.mojom.WallpaperImage>>} images
    * @param {Object<string, boolean>} imagesLoading
    * @param {string} collectionId
    * @return {boolean}
@@ -295,7 +295,7 @@ export class WallpaperImages extends WithPersonalizationStore {
   /**
    * @private
    * @param {string} collectionId
-   * @param {?Array<!chromeos.personalizationApp.mojom.WallpaperCollection>}
+   * @param {?Array<!ash.personalizationApp.mojom.WallpaperCollection>}
    *     collections
    * @return {string}
    */

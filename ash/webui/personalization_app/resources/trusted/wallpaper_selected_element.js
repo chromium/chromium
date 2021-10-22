@@ -34,14 +34,14 @@ export function mockTimeoutForTesting(mock) {
 
 /**
  * Set up the observer to listen for wallpaper changes.
- * @param {!chromeos.personalizationApp.mojom.WallpaperProviderInterface}
+ * @param {!ash.personalizationApp.mojom.WallpaperProviderInterface}
  *     wallpaperProvider
- * @param {!chromeos.personalizationApp.mojom.WallpaperObserverInterface} target
- * @return {!chromeos.personalizationApp.mojom.WallpaperObserverReceiver}
+ * @param {!ash.personalizationApp.mojom.WallpaperObserverInterface} target
+ * @return {!ash.personalizationApp.mojom.WallpaperObserverReceiver}
  */
 function initWallpaperObserver(wallpaperProvider, target) {
   const receiver =
-      new chromeos.personalizationApp.mojom.WallpaperObserverReceiver(target);
+      new ash.personalizationApp.mojom.WallpaperObserverReceiver(target);
   wallpaperProvider.setWallpaperObserver(receiver.$.bindNewPipeAndPassRemote());
   return receiver;
 }
@@ -69,7 +69,7 @@ function hasHttpScheme(url) {
 
 /**
  * @polymer
- * @implements {chromeos.personalizationApp.mojom.WallpaperObserverInterface}
+ * @implements {ash.personalizationApp.mojom.WallpaperObserverInterface}
  */
 export class WallpaperSelected extends WithPersonalizationStore {
   static get is() {
@@ -97,7 +97,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
       },
 
       /**
-       * @type {?chromeos.personalizationApp.mojom.CurrentWallpaper}
+       * @type {?ash.personalizationApp.mojom.CurrentWallpaper}
        * @private
        */
       image_: {
@@ -253,7 +253,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
 
   /**
    * Called when the wallpaper changes.
-   * @param {?chromeos.personalizationApp.mojom.CurrentWallpaper}
+   * @param {?ash.personalizationApp.mojom.CurrentWallpaper}
    *     currentWallpaper
    */
   onWallpaperChanged(currentWallpaper) {
@@ -271,7 +271,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
   /**
    * Return a chrome://image or data:// url to load the image safely. Returns
    * empty string in case |image| is null or invalid.
-   * @param {?chromeos.personalizationApp.mojom.CurrentWallpaper} image
+   * @param {?ash.personalizationApp.mojom.CurrentWallpaper} image
    * @return {string}
    * @private
    */
@@ -285,7 +285,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
   }
 
   /**
-   * @param {?chromeos.personalizationApp.mojom.CurrentWallpaper} image
+   * @param {?ash.personalizationApp.mojom.CurrentWallpaper} image
    * @param {boolean} loading
    * @return {boolean}
    * @private
@@ -297,7 +297,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
   }
 
   /**
-   * @param {?chromeos.personalizationApp.mojom.CurrentWallpaper} image
+   * @param {?ash.personalizationApp.mojom.CurrentWallpaper} image
    * @param {!string} dailyRefreshCollectionId
    * @return {string}
    * @private
@@ -324,7 +324,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
   }
 
   /**
-   * @param {?chromeos.personalizationApp.mojom.CurrentWallpaper} image
+   * @param {?ash.personalizationApp.mojom.CurrentWallpaper} image
    * @return {Array<!string>}
    * @private
    */
@@ -342,7 +342,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
   }
 
   /**
-   * @param {?chromeos.personalizationApp.mojom.CurrentWallpaper} image
+   * @param {?ash.personalizationApp.mojom.CurrentWallpaper} image
    * @param {string} path
    * @return {boolean}
    * @private
@@ -362,7 +362,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
   }
 
   /**
-   * @param {!chromeos.personalizationApp.mojom.CurrentWallpaper} image
+   * @param {!ash.personalizationApp.mojom.CurrentWallpaper} image
    * @return {string}
    * @private
    */
@@ -371,7 +371,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
   }
 
   /**
-   * @param {!chromeos.personalizationApp.mojom.CurrentWallpaper} image
+   * @param {!ash.personalizationApp.mojom.CurrentWallpaper} image
    * @return {string}
    * @private
    */
@@ -381,7 +381,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
   }
 
   /**
-   * @param {!chromeos.personalizationApp.mojom.CurrentWallpaper} image
+   * @param {!ash.personalizationApp.mojom.CurrentWallpaper} image
    * @return {string}
    * @private
    */
@@ -392,7 +392,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
   }
 
   /**
-   * @param {!chromeos.personalizationApp.mojom.CurrentWallpaper} image
+   * @param {!ash.personalizationApp.mojom.CurrentWallpaper} image
    * @return {string}
    * @private
    */
@@ -480,7 +480,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
    * Determine whether there is an error in showing selected image. An error
    * happens when there is no previously loaded image and either no new image
    * is being loaded or there is an error from upstream.
-   * @param {?chromeos.personalizationApp.mojom.CurrentWallpaper} image
+   * @param {?ash.personalizationApp.mojom.CurrentWallpaper} image
    * @param {boolean} loading
    * @param {?string} error
    * @return {boolean}
@@ -491,7 +491,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
   }
 
   /**
-   * @param {?chromeos.personalizationApp.mojom.CurrentWallpaper} image
+   * @param {?ash.personalizationApp.mojom.CurrentWallpaper} image
    * @return {string}
    * @private
    */
@@ -527,8 +527,8 @@ export class WallpaperSelected extends WithPersonalizationStore {
   /**
    * Cache the attribution in local storage when image is updated
    * Populate the attribution map in local storage when image is updated
-   * @param {?chromeos.personalizationApp.mojom.CurrentWallpaper} newImage
-   * @param {?chromeos.personalizationApp.mojom.CurrentWallpaper} oldImage
+   * @param {?ash.personalizationApp.mojom.CurrentWallpaper} newImage
+   * @param {?ash.personalizationApp.mojom.CurrentWallpaper} oldImage
    * @private
    */
   async onImageChanged_(newImage, oldImage) {

@@ -17,49 +17,46 @@
 namespace mojo {
 
 template <>
-struct EnumTraits<chromeos::personalization_app::mojom::WallpaperLayout,
+struct EnumTraits<ash::personalization_app::mojom::WallpaperLayout,
                   ash::WallpaperLayout> {
   using MojomWallpaperLayout =
-      ::chromeos::personalization_app::mojom::WallpaperLayout;
+      ::ash::personalization_app::mojom::WallpaperLayout;
   static MojomWallpaperLayout ToMojom(ash::WallpaperLayout input);
   static bool FromMojom(MojomWallpaperLayout input,
                         ash::WallpaperLayout* output);
 };
 
 template <>
-struct EnumTraits<chromeos::personalization_app::mojom::WallpaperType,
+struct EnumTraits<ash::personalization_app::mojom::WallpaperType,
                   ash::WallpaperType> {
-  using MojomWallpaperType =
-      ::chromeos::personalization_app::mojom::WallpaperType;
+  using MojomWallpaperType = ::ash::personalization_app::mojom::WallpaperType;
   static MojomWallpaperType ToMojom(ash::WallpaperType input);
   static bool FromMojom(MojomWallpaperType input, ash::WallpaperType* output);
 };
 
 template <>
 struct StructTraits<
-    chromeos::personalization_app::mojom::WallpaperCollectionDataView,
+    ash::personalization_app::mojom::WallpaperCollectionDataView,
     backdrop::Collection> {
   static const std::string& id(const backdrop::Collection& collection);
   static const std::string& name(const backdrop::Collection& collection);
   static absl::optional<GURL> preview(const backdrop::Collection& collection);
 
   static bool Read(
-      chromeos::personalization_app::mojom::WallpaperCollectionDataView data,
+      ash::personalization_app::mojom::WallpaperCollectionDataView data,
       backdrop::Collection* out);
   static bool IsNull(const backdrop::Collection& collection);
 };
 
 template <>
-struct StructTraits<
-    chromeos::personalization_app::mojom::WallpaperImageDataView,
-    backdrop::Image> {
+struct StructTraits<ash::personalization_app::mojom::WallpaperImageDataView,
+                    backdrop::Image> {
   static GURL url(const backdrop::Image& image);
   static std::vector<std::string> attribution(const backdrop::Image& image);
   static uint64_t asset_id(const backdrop::Image& image);
 
-  static bool Read(
-      chromeos::personalization_app::mojom::WallpaperImageDataView data,
-      backdrop::Image* out);
+  static bool Read(ash::personalization_app::mojom::WallpaperImageDataView data,
+                   backdrop::Image* out);
   static bool IsNull(const backdrop::Image& image);
 };
 

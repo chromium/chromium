@@ -18,8 +18,8 @@
 std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForPersonalizationApp() {
   std::unique_ptr<WebApplicationInfo> info =
       std::make_unique<WebApplicationInfo>();
-  info->start_url = GURL(chromeos::kChromeUIPersonalizationAppURL);
-  info->scope = GURL(chromeos::kChromeUIPersonalizationAppURL);
+  info->start_url = GURL(ash::kChromeUIPersonalizationAppURL);
+  info->scope = GURL(ash::kChromeUIPersonalizationAppURL);
   info->title = l10n_util::GetStringUTF16(IDS_PERSONALIZATION_APP_TITLE);
   web_app::CreateIconInfoForSystemWebApp(
       info->start_url,
@@ -33,11 +33,10 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForPersonalizationApp() {
 
 PersonalizationSystemAppDelegate::PersonalizationSystemAppDelegate(
     Profile* profile)
-    : web_app::SystemWebAppDelegate(
-          web_app::SystemAppType::PERSONALIZATION,
-          "Personalization",
-          GURL(chromeos::kChromeUIPersonalizationAppURL),
-          profile) {}
+    : web_app::SystemWebAppDelegate(web_app::SystemAppType::PERSONALIZATION,
+                                    "Personalization",
+                                    GURL(ash::kChromeUIPersonalizationAppURL),
+                                    profile) {}
 
 std::unique_ptr<WebApplicationInfo>
 PersonalizationSystemAppDelegate::GetWebAppInfo() const {

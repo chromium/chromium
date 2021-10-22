@@ -946,8 +946,8 @@ void PopulateChromeWebUIFrameBinders(
 
   if (chromeos::features::IsWallpaperWebUIEnabled()) {
     RegisterWebUIControllerInterfaceBinder<
-        chromeos::personalization_app::mojom::WallpaperProvider,
-        chromeos::PersonalizationAppUI>(map);
+        ash::personalization_app::mojom::WallpaperProvider,
+        ash::PersonalizationAppUI>(map);
   }
 
   RegisterWebUIControllerInterfaceBinder<

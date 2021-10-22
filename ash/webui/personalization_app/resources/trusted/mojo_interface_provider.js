@@ -14,11 +14,11 @@ import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
 import './file_path.mojom-lite.js';
 import './personalization_app.mojom-lite.js';
 
-/** @type {?chromeos.personalizationApp.mojom.WallpaperProviderInterface} */
+/** @type {?ash.personalizationApp.mojom.WallpaperProviderInterface} */
 let wallpaperProvider = null;
 
 /**
- * @param {!chromeos.personalizationApp.mojom.WallpaperProviderInterface}
+ * @param {!ash.personalizationApp.mojom.WallpaperProviderInterface}
  *     testProvider
  */
 export function setWallpaperProviderForTesting(testProvider) {
@@ -27,12 +27,12 @@ export function setWallpaperProviderForTesting(testProvider) {
 
 /**
  * Returns a singleton for the WallpaperProvider mojom interface.
- * @return {!chromeos.personalizationApp.mojom.WallpaperProviderInterface}
+ * @return {!ash.personalizationApp.mojom.WallpaperProviderInterface}
  */
 export function getWallpaperProvider() {
   if (!wallpaperProvider) {
     wallpaperProvider =
-        chromeos.personalizationApp.mojom.WallpaperProvider.getRemote();
+        ash.personalizationApp.mojom.WallpaperProvider.getRemote();
   }
   return wallpaperProvider;
 }

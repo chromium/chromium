@@ -18,7 +18,8 @@ namespace content {
 class WebUI;
 }  // namespace content
 
-class FakePersonalizationAppUiDelegate : public PersonalizationAppUiDelegate {
+class FakePersonalizationAppUiDelegate
+    : public ash::PersonalizationAppUiDelegate {
  public:
   explicit FakePersonalizationAppUiDelegate(content::WebUI* web_ui);
 
@@ -30,9 +31,9 @@ class FakePersonalizationAppUiDelegate : public PersonalizationAppUiDelegate {
   ~FakePersonalizationAppUiDelegate() override;
 
   // PersonalizationAppUIDelegate:
-  void BindInterface(mojo::PendingReceiver<
-                     chromeos::personalization_app::mojom::WallpaperProvider>
-                         receiver) override;
+  void BindInterface(
+      mojo::PendingReceiver<ash::personalization_app::mojom::WallpaperProvider>
+          receiver) override;
 
   void FetchCollections(FetchCollectionsCallback callback) override;
 
@@ -46,9 +47,8 @@ class FakePersonalizationAppUiDelegate : public PersonalizationAppUiDelegate {
                               GetLocalImageThumbnailCallback callback) override;
 
   void SetWallpaperObserver(
-      mojo::PendingRemote<
-          chromeos::personalization_app::mojom::WallpaperObserver> observer)
-      override;
+      mojo::PendingRemote<ash::personalization_app::mojom::WallpaperObserver>
+          observer) override;
 
   void SelectWallpaper(uint64_t image_asset_id,
                        bool preview_mode,
@@ -75,7 +75,7 @@ class FakePersonalizationAppUiDelegate : public PersonalizationAppUiDelegate {
   void CancelPreviewWallpaper() override;
 
  private:
-  mojo::Receiver<chromeos::personalization_app::mojom::WallpaperProvider>
+  mojo::Receiver<ash::personalization_app::mojom::WallpaperProvider>
       wallpaper_receiver_{this};
 };
 

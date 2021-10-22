@@ -18,7 +18,7 @@
 #include "ui/resources/grit/webui_generated_resources.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -84,7 +84,7 @@ void AddStrings(content::WebUIDataSource* source) {
       {"setAsWallpaper", IDS_PERSONALIZATION_APP_SET_AS_WALLPAPER}};
   source->AddLocalizedStrings(kLocalizedStrings);
 
-  if (ash::features::IsWallpaperGooglePhotosIntegrationEnabled()) {
+  if (features::IsWallpaperGooglePhotosIntegrationEnabled()) {
     static constexpr webui::LocalizedString kGooglePhotosLocalizedStrings[] = {
         {"googlePhotosLabel", IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS},
         {"googlePhotosAlbumsTabLabel",
@@ -126,10 +126,9 @@ PersonalizationAppUI::PersonalizationAppUI(
   AddResources(source.get());
   AddStrings(source.get());
   source->AddBoolean("fullScreenPreviewEnabled",
-                     ash::features::IsWallpaperFullScreenPreviewEnabled());
-  source->AddBoolean(
-      "isGooglePhotosIntegrationEnabled",
-      ash::features::IsWallpaperGooglePhotosIntegrationEnabled());
+                     features::IsWallpaperFullScreenPreviewEnabled());
+  source->AddBoolean("isGooglePhotosIntegrationEnabled",
+                     features::IsWallpaperGooglePhotosIntegrationEnabled());
 
   auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
   content::WebUIDataSource::Add(browser_context, source.release());
@@ -138,11 +137,11 @@ PersonalizationAppUI::PersonalizationAppUI(
 PersonalizationAppUI::~PersonalizationAppUI() = default;
 
 void PersonalizationAppUI::BindInterface(
-    mojo::PendingReceiver<
-        chromeos::personalization_app::mojom::WallpaperProvider> receiver) {
+    mojo::PendingReceiver<personalization_app::mojom::WallpaperProvider>
+        receiver) {
   delegate_->BindInterface(std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(PersonalizationAppUI)
 
-}  // namespace chromeos
+}  // namespace ash

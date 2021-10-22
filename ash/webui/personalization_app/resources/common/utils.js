@@ -9,15 +9,15 @@
 
 /**
  * @param {string} layout
- * @return {chromeos.personalizationApp.mojom.WallpaperLayout}
+ * @return {ash.personalizationApp.mojom.WallpaperLayout}
  */
 export function getWallpaperLayoutEnum(layout) {
   switch (layout) {
     case 'FILL':
-      return chromeos.personalizationApp.mojom.WallpaperLayout.kCenterCropped;
+      return ash.personalizationApp.mojom.WallpaperLayout.kCenterCropped;
     case 'CENTER': // fall through
     default:
-      return chromeos.personalizationApp.mojom.WallpaperLayout.kCenter;
+      return ash.personalizationApp.mojom.WallpaperLayout.kCenter;
   }
 }
 

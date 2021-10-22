@@ -11,9 +11,9 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
-class PersonalizationAppUiDelegate;
+namespace ash {
 
-namespace chromeos {
+class PersonalizationAppUiDelegate;
 
 class PersonalizationAppUI : public ui::MojoWebUIController {
  public:
@@ -35,6 +35,6 @@ class PersonalizationAppUI : public ui::MojoWebUIController {
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_PERSONALIZATION_APP_PERSONALIZATION_APP_UI_H_

@@ -12,7 +12,7 @@ namespace content {
 class WebUI;
 }  // namespace content
 
-namespace chromeos {
+namespace ash {
 
 class UntrustedPersonalizationAppUIConfig : public ui::WebUIConfig {
  public:
@@ -25,6 +25,6 @@ class UntrustedPersonalizationAppUIConfig : public ui::WebUIConfig {
       content::WebUI* web_ui) override;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_PERSONALIZATION_APP_UNTRUSTED_PERSONALIZATION_APP_UI_CONFIG_H_

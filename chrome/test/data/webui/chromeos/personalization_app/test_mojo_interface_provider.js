@@ -6,7 +6,7 @@ import {assertTrue} from '../../chai_assert.js';
 import {TestBrowserProxy} from '../../test_browser_proxy.js';
 
 /**
- * @implements {chromeos.personalizationApp.mojom.WallpaperProviderInterface}
+ * @implements {ash.personalizationApp.mojom.WallpaperProviderInterface}
  * @extends {TestBrowserProxy}
  */
 export class TestWallpaperProvider extends TestBrowserProxy {
@@ -30,7 +30,7 @@ export class TestWallpaperProvider extends TestBrowserProxy {
     /**
      * URLs are not real but must have the correct origin to pass CSP checks.
      * @private
-     * @type {?Array<!chromeos.personalizationApp.mojom.WallpaperCollection>}
+     * @type {?Array<!ash.personalizationApp.mojom.WallpaperCollection>}
      */
     this.collections_ = [
       {
@@ -48,7 +48,7 @@ export class TestWallpaperProvider extends TestBrowserProxy {
     /**
      * URLs are not real but must have the correct origin to pass CSP checks.
      * @private
-     * @type {?Array<!chromeos.personalizationApp.mojom.WallpaperImage>}
+     * @type {?Array<!ash.personalizationApp.mojom.WallpaperImage>}
      */
     this.images_ = [
       {
@@ -74,13 +74,13 @@ export class TestWallpaperProvider extends TestBrowserProxy {
 
     /**
      * @public
-     * @type {?chromeos.personalizationApp.mojom.CurrentWallpaper}
+     * @type {?ash.personalizationApp.mojom.CurrentWallpaper}
      */
     this.currentWallpaper = {
       attribution: ['Image 0'],
-      layout: chromeos.personalizationApp.mojom.WallpaperLayout.kCenter,
+      layout: ash.personalizationApp.mojom.WallpaperLayout.kCenter,
       key: '1',
-      type: chromeos.personalizationApp.mojom.WallpaperType.kOnline,
+      type: ash.personalizationApp.mojom.WallpaperType.kOnline,
       url: {url: 'https://images.googleusercontent.com/0'},
     };
 
@@ -101,20 +101,20 @@ export class TestWallpaperProvider extends TestBrowserProxy {
 
     /**
      * @public
-     * @type {?chromeos.personalizationApp.mojom.WallpaperObserverInterface}
+     * @type {?ash.personalizationApp.mojom.WallpaperObserverInterface}
      */
     this.wallpaperObserverRemote = null;
   }
 
   /**
-   * @return {?Array<!chromeos.personalizationApp.mojom.WallpaperCollection>}
+   * @return {?Array<!ash.personalizationApp.mojom.WallpaperCollection>}
    */
   get collections() {
     return this.collections_;
   }
 
   /**
-   * @return {?Array<!chromeos.personalizationApp.mojom.WallpaperImage>}
+   * @return {?Array<!ash.personalizationApp.mojom.WallpaperImage>}
    */
   get images() {
     return this.images_;
@@ -207,7 +207,7 @@ export class TestWallpaperProvider extends TestBrowserProxy {
   }
 
   /**
-   * @param {!Array<!chromeos.personalizationApp.mojom.WallpaperCollection>}
+   * @param {!Array<!ash.personalizationApp.mojom.WallpaperCollection>}
    *     collections
    */
   setCollections(collections) {
@@ -219,7 +219,7 @@ export class TestWallpaperProvider extends TestBrowserProxy {
   }
 
   /**
-   * @param {Array<!chromeos.personalizationApp.mojom.WallpaperImage>} images
+   * @param {Array<!ash.personalizationApp.mojom.WallpaperImage>} images
    */
   setImages(images) {
     this.images_ = images;
