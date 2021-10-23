@@ -1,12 +1,14 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pl">
+<translation id="1018219910092211213">Nie udało się rozpoznać nazw DNS</translation>
 <translation id="1018656279737460067">Anulowano</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (wątki: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1059913517121127803">Nie udało się rozpocząć skanowania</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">wykryto zaporę sieciową</translation>
 <translation id="1075811647922107217">Rozmiar strony</translation>
+<translation id="1094693127011229778">Adres IP jest niedostępny</translation>
 <translation id="1119447706177454957">Błąd wewnętrzny</translation>
 <translation id="1124772482545689468">Użytkownik</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -21,6 +23,7 @@
 <translation id="1270369111467284986">Podejrzany portal przechwytujący</translation>
 <translation id="1290331692326790741">słaby sygnał</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1310380015393971138">Sieć <ph name="NETWORK_NAME" /> jest niedostępna</translation>
 <translation id="1314565355471455267">VPN na Androida</translation>
 <translation id="131461803491198646">Sieć macierzysta, nie w roamingu</translation>
 <translation id="1327977588028644528">Brama</translation>
@@ -69,6 +72,7 @@
 <translation id="1999615961760456652">Portal przechwytujący</translation>
 <translation id="2006864819935886708">Łączność</translation>
 <translation id="2008685064673031089">Znajdowanie liczb pierwszych</translation>
+<translation id="2016697457005847575">Wykonaj czynności z instrukcji rozwiązywania problemów</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Więcej ustawień</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, wersja <ph name="MILESTONE_VERSION" /></translation>
@@ -101,6 +105,7 @@
 <translation id="2505327257735685095">Odśwież bieżący obraz tapety</translation>
 <translation id="2517472476991765520">Skanuj</translation>
 <translation id="2570743873672969996">Wykonuję test <ph name="TEST_NAME" />…</translation>
+<translation id="2584559707064218956">Aby skonfigurować sieć, otwórz Ustawienia</translation>
 <translation id="2585245331261708204">Co nowego w Chrome OS</translation>
 <translation id="2619761439309613843">Codziennie nowa</translation>
 <translation id="2620436844016719705">System</translation>
@@ -147,8 +152,10 @@
 <translation id="3532980081107202182">Pozostało około <ph name="MIN_REMAINING" /> min</translation>
 <translation id="3565064564551103223">Dozwolone adresy IP</translation>
 <translation id="357889014807611375">Wi-Fi z pomiarem użycia danych</translation>
+<translation id="3583278742022654445">Słaby sygnał. Zbliż się do źródła sygnału Wi-Fi.</translation>
 <translation id="3595596368722241419">Bateria naładowana</translation>
 <translation id="360565022852130722">Sieć Wi-Fi jest zabezpieczona słabym protokołem WEP 802.1x</translation>
+<translation id="3606583719724308068">Duże opóźnienie połączeń z witrynami HTTPS</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> – test</translation>
 <translation id="3708186454126126312">Wcześniej połączone</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (liczba opinii: <ph name="AGGREGATED_COUNT" />)</translation>
@@ -169,6 +176,7 @@
 <translation id="39823212440917567">Zadania drukowania starsze niż <ph name="NUMBER_OF_DAYS" /> dni zostaną usunięte</translation>
 <translation id="4003384961948020559">Niepowodzenie – odbiornik papieru jest pełny</translation>
 <translation id="4034824040120875894">Drukarka</translation>
+<translation id="4044093238444069296">Nie udało się połączyć z bramą</translation>
 <translation id="404928562651467259">OSTRZEŻENIE</translation>
 <translation id="409427325554347132">Zapisz szczegóły testu</translation>
 <translation id="4111761024568264522">Touchpad USB</translation>
@@ -191,6 +199,7 @@
 <translation id="4378551569595875038">Łączę...</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Mój dysk</translation>
+<translation id="4428374560396076622">Sieć <ph name="NETWORK_NAME" /> jest wyłączona</translation>
 <translation id="4429881212383817840">Zgłoszenie Kerberos wkrótce straci ważność</translation>
 <translation id="4431821876790500265">Wyświetl raport</translation>
 <translation id="445059817448385655">Stare hasło</translation>
@@ -236,6 +245,7 @@
 <translation id="4917385247580444890">Silny</translation>
 <translation id="4917889632206600977">Zatrzymano – brak papieru</translation>
 <translation id="4921665434385737356">Naładowano <ph name="RATE" /> w ciągu <ph name="NUM_SECONDS" /> s.</translation>
+<translation id="4930320165497208503">Aby skonfigurować lub zaktualizować połączenie, otwórz <ph name="BEGIN_LINK" />Ustawienia<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="498186245079027698">Sprawdź skaner i spróbuj ponownie. Upewnij się, że na urządzeniu masz miejsce na zapisanie zeskanowanych plików.</translation>
 <translation id="4985509611418653372">Uruchom</translation>
@@ -378,6 +388,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="7059230779847288458">Ładuję (pełne naładowanie za <ph name="TIME_VALUE" />)</translation>
 <translation id="708426984172631313">ZATRZYMANO</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="710028965487274708">Niepowodzenie – nieudana autoryzacja</translation>
 <translation id="7134436342991564651">{0,plural, =1{Serwer nazw}few{Serwery nazw}many{Serwery nazw}other{Serwery nazw}}</translation>
 <translation id="7143207342074048698">Łączenie</translation>
 <translation id="7144878232160441200">Spróbuj jeszcze raz</translation>
@@ -390,6 +401,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="7271040990581020067">Skaner jest obecnie używany. Spróbuj ponownie później.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Kolekcje tapet</translation>
+<translation id="7297226631177386107">Nie można połączyć się z witrynami HTTPS przez zaporę sieciową</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -422,6 +434,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="7762130827864645708">Hasło zostało zmienione. Od teraz używaj nowego hasła.</translation>
 <translation id="7763470514545477072">Dopasowanie sufiksu domeny</translation>
 <translation id="7769672763586021400">Identyfikator modelu</translation>
+<translation id="7784116172884276937">Nie skonfigurowano serwerów DNS</translation>
 <translation id="7805768142964895445">Stan</translation>
 <translation id="7819857487979277519">Klucz wstępny (WPA lub RSN)</translation>
 <translation id="7835501727204647447">Zainstaluj CloudReady</translation>
@@ -436,13 +449,16 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="7943235353293548836">Trwały odstęp utrzymywania aktywności</translation>
 <translation id="7955587717700691983">Klawiatura Bluetooth</translation>
 <translation id="7960831585769876809">Temperatura</translation>
+<translation id="7977800524392185497">Aby połączyć się z siecią <ph name="NETWORK_NAME" />, otwórz Ustawienia</translation>
 <translation id="7978412674231730200">Klucz prywatny</translation>
 <translation id="7994702968232966508">Metoda EAP</translation>
 <translation id="802154636333426148">Nie udało się pobrać</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="8041089156583427627">Prześlij opinię</translation>
 <translation id="8075838845814659848">Stan naładowania</translation>
+<translation id="8082366717211101304">Nie udało się znaleźć DNS w aplikacjach na Androida</translation>
 <translation id="808894953321890993">Zmień hasło</translation>
+<translation id="8104083085214006426">Używasz niezabezpieczonej sieci otwartej</translation>
 <translation id="811820734797650957">(Android) Brama reaguje na ping</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8132480444149501833">Poproś o liczniki natężenia ruchu</translation>
@@ -467,10 +483,12 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Klawiatura wbudowana</translation>
 <translation id="843568408673868420">Połączenie z internetem</translation>
+<translation id="844521431886043384">Nie skonfigurowano DNS</translation>
 <translation id="8461329675984532579">Nazwa operatora macierzystego</translation>
 <translation id="8475690821716466388">Sieć Wi-Fi jest zabezpieczona słabym protokołem WEP PSK</translation>
 <translation id="8477551185774834963">Opóźnienie DNS nieco przekracza dopuszczalny próg</translation>
 <translation id="8483248364096924578">Adres IP</translation>
+<translation id="8491311378305535241">Nie można połączyć się z witrynami HTTP przez zaporę sieciową w aplikacjach na Androida</translation>
 <translation id="8498220429738806196">Liczniki natężenia ruchu</translation>
 <translation id="8503813439785031346">Nazwa użytkownika</translation>
 <translation id="8503836310948963452">Jeszcze kilka minut…</translation>
@@ -496,6 +514,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="8818152010000655963">Tapeta</translation>
 <translation id="8834539327799336565">Obecnie połączone</translation>
 <translation id="8845001906332463065">Uzyskaj pomoc</translation>
+<translation id="8855781559874488009">Nie udało się połączyć z witrynami HTTP przez zaporę sieciową</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Test zakończył się powodzeniem</translation>
 <translation id="8898840733695078011">Siła sygnału</translation>
@@ -521,12 +540,14 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="910415269708673980">Odśwież zgłoszenie przypisane do konta <ph name="PRINCIPAL_NAME" />.</translation>
 <translation id="9106415115617144481">Skanowanie strony <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Odblokuj</translation>
+<translation id="9122602430962285795">Aby połączyć się ponownie, otwórz Ustawienia</translation>
 <translation id="9126720536733509015">Zapisz kilka stron w 1 pliku PDF</translation>
 <translation id="9137526406337347448">Usługi Google</translation>
 <translation id="9149391708638971077">Przeprowadź test pamięci</translation>
 <translation id="9173638680043580060">Jeszcze niecała minuta</translation>
 <translation id="917720651393141712">Przetestuj</translation>
 <translation id="9190063653747922532">L2TP/IPSec + klucz wstępny</translation>
+<translation id="9204237731135241582">Nie udało się połączyć z bramą w aplikacjach na Androida</translation>
 <translation id="9211490828691860325">Wszystkie biurka</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Nie aktywowano</translation>

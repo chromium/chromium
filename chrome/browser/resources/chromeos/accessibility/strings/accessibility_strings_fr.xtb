@@ -798,6 +798,7 @@
 <translation id="6544923685317771506">Rose pâle</translation>
 <translation id="6551185905438378412">Ivoire</translation>
 <translation id="6561818612645211875">Accéder au début de la ligne actuelle</translation>
+<translation id="6563126228219321999">Aucun élément non valide</translation>
 <translation id="6579990219486187401">Rose clair</translation>
 <translation id="6583174818554398774">Passer au niveau de précision suivant</translation>
 <translation id="6584162722998608255">Voici maintenant comment faire pour vous déplacer. Pour passer à l'élément suivant, vous devez balayer l'écran de gauche à droite avec un doigt. Essayez !</translation>
@@ -828,6 +829,7 @@
 <translation id="6815255864998354418">Crème</translation>
 <translation id="6816066673340002913">Jaune paille pâle</translation>
 <translation id="6826226459053491773">Balayer l'écran vers le bas avec deux doigts</translation>
+<translation id="6826669432862053130">Élément non valide suivant</translation>
 <translation id="6833103209700200188">Pied de page</translation>
 <translation id="6837853484260746864">Sélectionner une voix :</translation>
 <translation id="6858047746862060282">Prologue</translation>
@@ -1018,6 +1020,7 @@
 <translation id="8126386426083591964">Aucun titre de niveau 5 précédent</translation>
 <translation id="812886159861361726">Le téléchargement du fichier <ph name="FILE_NAME" /> est arrêté</translation>
 <translation id="8129445297241948503">Aucune cellule au-dessus</translation>
+<translation id="8132248161074464367">Élément non valide précédent</translation>
 <translation id="8138880386467279117">Tactile</translation>
 <translation id="8146613869421949343">Vous allez à présent découvrir l'utilisation de la touche Recherche. La touche Recherche est associée à d'autres touches pour effectuer des commandes ChromeVox. Cette touche se trouve juste au-dessus de la touche Maj de gauche. Pour continuer, appuyez sur la touche Recherche.</translation>
 <translation id="8158033275290782295">tout sélectionner</translation>

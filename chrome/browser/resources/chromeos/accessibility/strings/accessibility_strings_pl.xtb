@@ -798,6 +798,7 @@
 <translation id="6544923685317771506">Muszla morska</translation>
 <translation id="6551185905438378412">Kość słoniowa</translation>
 <translation id="6561818612645211875">Przejdź na początek bieżącego wiersza</translation>
+<translation id="6563126228219321999">Brak nieprawidłowych elementów</translation>
 <translation id="6579990219486187401">Jasnoróżowy</translation>
 <translation id="6583174818554398774">Przejdź do następnego elementu na tym poziomie szczegółowości</translation>
 <translation id="6584162722998608255">Teraz dowiesz się, jak poruszać się po ekranie. Możesz przesunąć jednym palcem z lewej do prawej, aby przejść do następnego elementu. Zrób to teraz, aby przejść do następnego kroku.</translation>
@@ -828,6 +829,7 @@
 <translation id="6815255864998354418">Szyfonowy cytrynowy</translation>
 <translation id="6816066673340002913">Bladozłoty</translation>
 <translation id="6826226459053491773">Przesuń dwoma palcami w dół</translation>
+<translation id="6826669432862053130">Następny nieprawidłowy element</translation>
 <translation id="6833103209700200188">Stopka</translation>
 <translation id="6837853484260746864">Wybierz głos:</translation>
 <translation id="6858047746862060282">Prolog</translation>
@@ -1017,6 +1019,7 @@
 <translation id="8126386426083591964">Nie ma poprzedniego nagłówka poziomu 5</translation>
 <translation id="812886159861361726">Zatrzymano pobieranie pliku <ph name="FILE_NAME" /></translation>
 <translation id="8129445297241948503">Nie ma komórki powyżej</translation>
+<translation id="8132248161074464367">Poprzedni nieprawidłowy element</translation>
 <translation id="8138880386467279117">Kliknij</translation>
 <translation id="8146613869421949343">Teraz zajmiemy się klawiszem wyszukiwania Klawisza wyszukiwania używa się w połączeniu z innymi klawiszami do wydawania poleceń w ChromeVox. Klawisz wyszukiwania znajduje się tuż nad lewym klawiszem Shift. Aby przejść dalej, naciśnij klawisz wyszukiwania.</translation>
 <translation id="8158033275290782295">wybierz wszystko</translation>

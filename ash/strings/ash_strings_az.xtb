@@ -339,6 +339,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="3509391053705095206">Telefonunuzu tapmaq olmur. Telefonda Bluetooth'un aktiv olduğuna əmin olun.</translation>
 <translation id="3510164367642747937">Maus kursorunu vurğulayın</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> tərəfindən idarə edilən hesab</translation>
+<translation id="352245152354538528">{0,plural, =1{Cihazı 1 dəqiqə ərzində güncəlləyin}other{Cihazı # dəqiqə ərzində güncəlləyin}}</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> cihaza qoşulub</translation>
 <translation id="3552189655002856821">Wi-Fi deaktiv edilib</translation>
 <translation id="3560866052109807830">Markerli rəsm alətləri</translation>
@@ -427,6 +428,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="4146833061457621061">Musiqini oxudun</translation>
 <translation id="4157822100366708405">Tünd Tema Ayarları</translation>
 <translation id="4173958948577803258">C.a.</translation>
+<translation id="4177913004758410636">{0,plural, =1{Cihazı bir gün ərzində güncəlləyin}other{Cihazı # gün ərzində güncəlləyin}}</translation>
 <translation id="4181841719683918333">Dillər</translation>
 <translation id="4195877955194704651">Avtomatik klik düyməsi</translation>
 <translation id="4197790712631116042">Deaktiv</translation>
@@ -480,6 +482,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="445864333228800152">Axşamınız xeyir,</translation>
 <translation id="4458688154122353284">Ekran çəkilişini dayandırın</translation>
 <translation id="4471354919263203780">Nitq tanıma faylları endirilir... <ph name="PERCENT" />%</translation>
+<translation id="4471432286288241507">{0,plural, =0{Cihazı indi güncəlləyin}=1{Cihazı 1 saniyə ərzində güncəlləyin}other{Cihazı # saniyə ərzində güncəlləyin}}</translation>
 <translation id="4472575034687746823">Başlayın</translation>
 <translation id="4477350412780666475">Növbəti trek</translation>
 <translation id="4477892968187500306">Bu cihaz Google tərəfindən doğrulanmamış tətbiqlər ehtiva edə bilər.</translation>
@@ -739,6 +742,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="6482559668224714696">Tam ekran böyüdücüsü</translation>
 <translation id="6490471652906364588">USB-C cihazı (sağ port)</translation>
 <translation id="649452524636452238">Smart kart PIN-i</translation>
+<translation id="6495400115277918834">Şəkildə şəkil başladılıb, fokuslamaq üçün Alt+Shift+V düymələrinə basın</translation>
 <translation id="6500818810472529210">Google Axtarışda nəticəyə baxın</translation>
 <translation id="6501401484702599040">Ekran <ph name="RECEIVER_NAME" /> üzərinə yayımlanır</translation>
 <translation id="6520517963145875092">Çəkmək üçün pəncərə seçin</translation>
@@ -749,6 +753,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> ilə paylaşılır</translation>
 <translation id="6559976592393364813">Administrator ilə Əlaqə</translation>
 <translation id="6565007273808762236">eSIM bağlantısı əlçatan deyil</translation>
+<translation id="6570831796530454248">{0,plural, =1{Cihazı bir saat ərzində güncəlləyin}other{Cihazı # saat ərzində güncəlləyin}}</translation>
 <translation id="6570902864550063460">USB ilə şarj edilir</translation>
 <translation id="6585808820553845416">Sessiya <ph name="SESSION_TIME_REMAINING" /> tarixində bitir.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>

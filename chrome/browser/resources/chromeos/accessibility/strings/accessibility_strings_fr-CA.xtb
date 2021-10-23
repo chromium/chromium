@@ -798,6 +798,7 @@
 <translation id="6544923685317771506">Coquille</translation>
 <translation id="6551185905438378412">Ivoire</translation>
 <translation id="6561818612645211875">Aller au début de la rangée actuelle</translation>
+<translation id="6563126228219321999">Aucun élément incorrect</translation>
 <translation id="6579990219486187401">Rose clair</translation>
 <translation id="6583174818554398774">Accéder au niveau suivant de granularité</translation>
 <translation id="6584162722998608255">Vous apprendrez maintenant comment vous déplacer sur l'écran. Pour passer à l'élément suivant, vous pouvez balayer l'écran de gauche à droite avec un doigt. Essayez ce geste maintenant pour passer à la prochaine étape.</translation>
@@ -828,6 +829,7 @@
 <translation id="6815255864998354418">Mousseline au citron</translation>
 <translation id="6816066673340002913">Or pâle</translation>
 <translation id="6826226459053491773">Faites glisser deux doigts vers le bas</translation>
+<translation id="6826669432862053130">Élément incorrect suivant</translation>
 <translation id="6833103209700200188">Bas de page</translation>
 <translation id="6837853484260746864">Sélectionner une voix :</translation>
 <translation id="6858047746862060282">Prologue</translation>
@@ -1018,6 +1020,7 @@
 <translation id="8126386426083591964">Aucun en-tête de niveau 5 précédent</translation>
 <translation id="812886159861361726">Le téléchargement du fichier <ph name="FILE_NAME" /> a été arrêté</translation>
 <translation id="8129445297241948503">Aucune cellule au-dessus</translation>
+<translation id="8132248161074464367">Élément incorrect précédent</translation>
 <translation id="8138880386467279117">Tactile</translation>
 <translation id="8146613869421949343">Vous allez à présent découvrir l'utilisation de la touche Recherche. La touche Recherche est associée à d'autres touches pour effectuer des commandes ChromeVox. Cette touche se trouve juste au-dessus de la touche Majuscule de gauche. Pour continuer, appuyez sur la touche Recherche.</translation>
 <translation id="8158033275290782295">tout sélectionner</translation>

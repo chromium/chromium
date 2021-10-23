@@ -620,6 +620,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="5465662442746197494">Kailangan ng tulong?</translation>
 <translation id="5496819745535887422">Niro-roll back ng iyong administrator ang device mo. Made-delete ang lahat ng data kapag nag-restart ang device.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520229639206813572">Inalis ng iyong administrator ang lahat ng profile ng eSIM. Makipag-ugnayan sa iyong administrator para sa higit pang impormasyon.</translation>
 <translation id="5523434445161341166">Kumokonekta ang <ph name="FEATURE_NAME" />.</translation>
 <translation id="5532994612895037630">Mag-tap kahit saan para i-record ang full screen</translation>
 <translation id="553675580533261935">Lumalabas sa session</translation>
@@ -751,6 +752,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="6537924328260219877">Lakas ng Signal <ph name="SIGNAL_STRENGTH" />, Baterya ng Telepono <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">Nagka-cast sa <ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">Magtanong sa Administrator</translation>
+<translation id="6565007273808762236">Hindi available ang koneksyon sa eSIM</translation>
 <translation id="6570831796530454248">{0,plural, =1{I-update ang device sa loob ng isang oras}one{I-update ang device sa loob ng # oras}other{I-update ang device sa loob ng # na oras}}</translation>
 <translation id="6570902864550063460">Nagcha-charge sa pamamagitan ng USB</translation>
 <translation id="6585808820553845416">Matatapos ang session pagkalipas ng <ph name="SESSION_TIME_REMAINING" />.</translation>

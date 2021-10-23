@@ -17,6 +17,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">Replace</translation>
 <translation id="1073899992769346247">Replace or recharge the battery</translation>
+<translation id="1081015718268701546">Linux apps aren’t currently supported. Other apps will be saved.</translation>
 <translation id="108486256082349153">Mobile: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Good afternoon <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">I'm bored</translation>
@@ -43,6 +44,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1225748608451425081">Your Chromebook is locked due to a known issue. You will be able to sign in after: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Stop selecting</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> is connected.</translation>
+<translation id="1246890715821376239">Unsupported apps</translation>
 <translation id="1247372569136754018">Microphone (internal)</translation>
 <translation id="1252999807265626933">Charging from <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">What's the weather?</translation>
@@ -168,6 +170,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2148716181193084225">Today</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Retry</translation>
 <translation id="2170530631236737939">Swipe down with three fingers to exit Overview.</translation>
+<translation id="2201071101391734388">Recent photo <ph name="INDEX" /> of <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2208323208084708176">Unified desktop mode</translation>
 <translation id="2220572644011485463">PIN or password</translation>
 <translation id="2222841058024245321">Desk 7</translation>
@@ -291,6 +294,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3151786313568798007">Orientation</translation>
 <translation id="3153444934357957346">You can only have up to <ph name="MULTI_PROFILE_USER_LIMIT" /> accounts in multiple sign-in.</translation>
 <translation id="3154351730702813399">The device admin may monitor your browsing activity.</translation>
+<translation id="316086887565479535">Unsupported apps in template</translation>
 <translation id="3181441307743005334">Restart may take a while</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Connected to a device}other{Connected to # devices}}</translation>
 <translation id="320207200541803018">Set timer</translation>
@@ -388,6 +392,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="383058930331066723">Battery saver mode is on</translation>
 <translation id="3835880383832568924">To see the updates, open the Shortcuts app</translation>
 <translation id="383629559565718788">Show keyboard settings</translation>
+<translation id="384082539148746321">Delete template?</translation>
 <translation id="3846214748874656680">Exit full screen</translation>
 <translation id="3846575436967432996">No network information available</translation>
 <translation id="385051799172605136">Back</translation>
@@ -822,6 +827,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="7029814467594812963">Exit session</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistant</translation>
 <translation id="7042322267639375032">Collapse status area</translation>
+<translation id="7045033600005038336">Replace template?</translation>
 <translation id="7045595904618419789">Start magnifier</translation>
 <translation id="7055381872777910864">W</translation>
 <translation id="7055910611768509537">Stylus has not been used in over a week</translation>
@@ -958,6 +964,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="8036504271468642248">Previous sentence</translation>
 <translation id="8042893070933512245">Open accessibility settings menu</translation>
 <translation id="8048123526339889627">Bluetooth settings</translation>
+<translation id="8051716679295756675">Template named <ph name="DESK_TEMPLATE_NAME" /> already exists</translation>
 <translation id="8052898407431791827">Copied to clipboard</translation>
 <translation id="8054466585765276473">Calculating battery time.</translation>
 <translation id="8061464966246066292">High contrast</translation>
@@ -1063,6 +1070,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="8876661425082386199">Check your connection</translation>
 <translation id="8877788021141246043">Set a reminder</translation>
 <translation id="8878886163241303700">Extending screen</translation>
+<translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> will be permanently deleted</translation>
 <translation id="890616557918890486">Change source</translation>
 <translation id="8909138438987180327">Battery at <ph name="PERCENTAGE" /> per cent.</translation>
 <translation id="8913384980486163186">Themed (default)</translation>

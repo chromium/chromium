@@ -798,6 +798,7 @@
 <translation id="6544923685317771506">Sea Shell</translation>
 <translation id="6551185905438378412">Ivory</translation>
 <translation id="6561818612645211875">Pumunta sa umpisa ng kasalukuyang row</translation>
+<translation id="6563126228219321999">Walang invalid na item</translation>
 <translation id="6579990219486187401">Light Pink</translation>
 <translation id="6583174818554398774">Lumipat sa susunod na granularity</translation>
 <translation id="6584162722998608255">Susunod, matututunan mo kung paano gumalaw-galaw sa screen. Puwede kang mag-swipe ng isang daliri pakanan para lumipat sa susunod na item. Subukan ito ngayon para lumipat sa susunod na hakbang.</translation>
@@ -828,6 +829,7 @@
 <translation id="6815255864998354418">Lemon Chiffon</translation>
 <translation id="6816066673340002913">Pale Golden Rod</translation>
 <translation id="6826226459053491773">Mag-swipe pababa gamit ang dalawang daliri</translation>
+<translation id="6826669432862053130">Susunod na invalid na item</translation>
 <translation id="6833103209700200188">Footer</translation>
 <translation id="6837853484260746864">Pumili ng boses:</translation>
 <translation id="6858047746862060282">Prologue</translation>
@@ -1018,6 +1020,7 @@
 <translation id="8126386426083591964">Walang nakaraang heading sa antas 5</translation>
 <translation id="812886159861361726">Hininto ang pag-download ng <ph name="FILE_NAME" /></translation>
 <translation id="8129445297241948503">Walang cell sa itaas</translation>
+<translation id="8132248161074464367">Nakaraang invalid na item</translation>
 <translation id="8138880386467279117">Pindutin</translation>
 <translation id="8146613869421949343">Susunod, matututunan mo ang tungkol sa Key sa paghahanap. Ginagamit ang Key sa paghahanap kasama ng iba pang key para sa mga command sa ChromeVox. Nasa itaas lang ng Shift key ang Key sa paghahanap. Para magpatuloy, pindutin ang Key sa paghahanap.</translation>
 <translation id="8158033275290782295">piliin lahat</translation>

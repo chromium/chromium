@@ -17,6 +17,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">Sostituisci</translation>
 <translation id="1073899992769346247">Sostituisci o ricarica la batteria</translation>
+<translation id="1081015718268701546">Le app Linux non sono al momento supportate. Le altre app verranno salvate.</translation>
 <translation id="108486256082349153">Cellulare: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Buon pomeriggio <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">Mi annoio</translation>
@@ -43,6 +44,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1225748608451425081">Il Chromebook è bloccato a causa di un problema noto. Potrai accedere dopo: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Interrompi la selezione</translation>
 <translation id="1239161794459865856">La funzionalità <ph name="FEATURE_NAME" /> è connessa.</translation>
+<translation id="1246890715821376239">App non supportate</translation>
 <translation id="1247372569136754018">Microfono (interno)</translation>
 <translation id="1252999807265626933">In carica da: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Che tempo fa?</translation>
@@ -168,6 +170,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2148716181193084225">Oggi</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />. Riprova</translation>
 <translation id="2170530631236737939">Scorri con tre dita verso il basso per uscire dalla modalità Panoramica</translation>
+<translation id="2201071101391734388">Foto recente <ph name="INDEX" /> di <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2208323208084708176">Modalità desktop unificato</translation>
 <translation id="2220572644011485463">PIN o password</translation>
 <translation id="2222841058024245321">Scrivania 7</translation>
@@ -291,6 +294,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3151786313568798007">Orientamento</translation>
 <translation id="3153444934357957346">Puoi avere massimo <ph name="MULTI_PROFILE_USER_LIMIT" /> account per l'accesso simultaneo.</translation>
 <translation id="3154351730702813399">L'amministratore del dispositivo potrebbe monitorare l'attività di navigazione.</translation>
+<translation id="316086887565479535">App non supportate nel modello</translation>
 <translation id="3181441307743005334">Il riavvio potrebbe richiedere un po' di tempo</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Connesso a un dispositivo}other{Connesso a # dispositivi}}</translation>
 <translation id="320207200541803018">Imposta il timer</translation>
@@ -389,6 +393,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="383058930331066723">La modalità Risparmio energetico è attiva</translation>
 <translation id="3835880383832568924">Per vedere gli aggiornamenti, apri l'app Shortcuts</translation>
 <translation id="383629559565718788">Mostra impostazioni tastiera</translation>
+<translation id="384082539148746321">Vuoi eliminare il modello?</translation>
 <translation id="3846214748874656680">Esci da schermo intero</translation>
 <translation id="3846575436967432996">Nessuna informazione di rete disponibile</translation>
 <translation id="385051799172605136">Indietro</translation>
@@ -621,6 +626,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="5465662442746197494">Hai bisogno di assistenza?</translation>
 <translation id="5496819745535887422">L'amministratore sta eseguendo il rollback del tuo dispositivo. Tutti i dati verranno eliminati al momento del riavvio.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520229639206813572">L'amministratore ha rimosso tutti i profili eSIM. Per ulteriori informazioni al riguardo rivolgiti all’amministratore.</translation>
 <translation id="5523434445161341166">La funzionalità <ph name="FEATURE_NAME" /> sta cercando di connettersi.</translation>
 <translation id="5532994612895037630">Tocca un punto qualsiasi per registrare l'intera schermata</translation>
 <translation id="553675580533261935">Uscita dalla sessione</translation>
@@ -752,6 +758,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="6537924328260219877">Intensità del segnale <ph name="SIGNAL_STRENGTH" />, batteria del telefono <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">Trasmissione di contenuti a <ph name="RECEIVER_NAME" /> in corso</translation>
 <translation id="6559976592393364813">Rivolgiti all'amministratore</translation>
+<translation id="6565007273808762236">Connessione eSIM non disponibile</translation>
 <translation id="6570831796530454248">{0,plural, =1{Aggiorna il dispositivo entro 1 ora}other{Aggiorna il dispositivo entro # ore}}</translation>
 <translation id="6570902864550063460">Carica tramite USB</translation>
 <translation id="6585808820553845416">La sessione terminerà tra <ph name="SESSION_TIME_REMAINING" />.</translation>
@@ -821,6 +828,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="7029814467594812963">Esci da sessione</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Assistente Google</translation>
 <translation id="7042322267639375032">Comprimi area di stato</translation>
+<translation id="7045033600005038336">Vuoi sostituire il modello?</translation>
 <translation id="7045595904618419789">Avvia ingrandimento</translation>
 <translation id="7055381872777910864">M</translation>
 <translation id="7055910611768509537">Lo stilo non viene usato da più di una settimana</translation>
@@ -957,6 +965,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="8036504271468642248">Frase precedente</translation>
 <translation id="8042893070933512245">Apri il menu Impostazioni di accessibilità</translation>
 <translation id="8048123526339889627">Impostazioni Bluetooth</translation>
+<translation id="8051716679295756675">Esiste già un modello con il nome <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="8052898407431791827">Copiato negli appunti</translation>
 <translation id="8054466585765276473">Calcolo della durata della batteria.</translation>
 <translation id="8061464966246066292">Contrasto elevato</translation>
@@ -1062,6 +1071,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="8876661425082386199">Controlla la connessione</translation>
 <translation id="8877788021141246043">Imposta un promemoria</translation>
 <translation id="8878886163241303700">Estensione schermo</translation>
+<translation id="8896630965521842259">Il modello <ph name="DESK_TEMPLATE_NAME" /> verrà eliminato definitivamente</translation>
 <translation id="890616557918890486">Cambia origine</translation>
 <translation id="8909138438987180327">Livello batteria: <ph name="PERCENTAGE" />%.</translation>
 <translation id="8913384980486163186">A tema (predefinita)</translation>

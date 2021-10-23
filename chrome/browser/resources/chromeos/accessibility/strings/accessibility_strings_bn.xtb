@@ -798,6 +798,7 @@
 <translation id="6544923685317771506">ঝিনুক</translation>
 <translation id="6551185905438378412">হাতির দাঁতের মতো সাদা</translation>
 <translation id="6561818612645211875">বর্তমান সারির শুরুতে যান</translation>
+<translation id="6563126228219321999">কোনও ভুল আইটেম নেই</translation>
 <translation id="6579990219486187401">হালকা গোলাপি</translation>
 <translation id="6583174818554398774">পরবর্তী গ্র্যানুলারিটিতে যান</translation>
 <translation id="6584162722998608255">এরপর, আপনি শিখবেন কীভাবে স্ক্রিনের নানা দিকে নেভিগেট করতে হয়। আপনি পরের আইটেমে নেভিগেট করতে এক আঙুল দিয়ে বাঁদিক থেকে ডানদিকে সোয়াইপ করতে পারেন। পরবর্তী ধাপে যেতে এখনই এটা করে দেখুন।</translation>
@@ -828,6 +829,7 @@
 <translation id="6815255864998354418">লেবু শিফন</translation>
 <translation id="6816066673340002913">ফ্যাকাশে সোনালী রড</translation>
 <translation id="6826226459053491773">দুই আঙ্গুল দিয়ে নিচের দিকে সোয়াইপ করুন</translation>
+<translation id="6826669432862053130">পরবর্তী ভুল আইটেম</translation>
 <translation id="6833103209700200188">পাদলেখ</translation>
 <translation id="6837853484260746864">একটি ভয়েস বেছে নিন:</translation>
 <translation id="6858047746862060282">ভূমিকা</translation>
@@ -1018,6 +1020,7 @@
 <translation id="8126386426083591964">কোনও পূর্ববর্তী লেভেল ৫ শিরোনাম নেই</translation>
 <translation id="812886159861361726"><ph name="FILE_NAME" /> ডাউনলোড করা বন্ধ হয়ে গেছে</translation>
 <translation id="8129445297241948503">উপরে কোনও কক্ষ নেই</translation>
+<translation id="8132248161074464367">পূর্ববর্তী ভুল আইটেম</translation>
 <translation id="8138880386467279117">স্পর্শ</translation>
 <translation id="8146613869421949343">এরপরে, আপনি Search কী সম্পর্কে জানতে পারবেন। ChromeVox কমান্ডের জন্য অন্যান্য কী-এর সাথে Search কী ব্যবহার করা হয়। Search কী বাঁদিকের Shift কী-এর ঠিক উপরে আছে। চালিয়ে যেতে, Search কী প্রেস করুন।</translation>
 <translation id="8158033275290782295">সব বেছে নিন</translation>

@@ -339,6 +339,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3509391053705095206">Impossible de trouver votre téléphone. Assurez-vous que le Bluetooth est activé sur votre téléphone.</translation>
 <translation id="3510164367642747937">Mettre le curseur de la souris en surbrillance</translation>
 <translation id="3513798432020909783">Compte géré par <ph name="MANAGER_EMAIL" /></translation>
+<translation id="352245152354538528">{0,plural, =1{Mettez à jour l'appareil d'ici 1 minute}one{Mettez à jour l'appareil d'ici # minute}other{Mettez à jour l'appareil d'ici # minutes}}</translation>
 <translation id="353086728817903341">Connecté à <ph name="NUM_DEVICES" /> appareils</translation>
 <translation id="3552189655002856821">Le Wi-Fi est désactivé</translation>
 <translation id="3560866052109807830">Outils de dessin : marqueur</translation>
@@ -427,6 +428,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="4146833061457621061">Faire jouer de la musique</translation>
 <translation id="4157822100366708405">Paramètres du thème sombre</translation>
 <translation id="4173958948577803258">J</translation>
+<translation id="4177913004758410636">{0,plural, =1{Mettez à jour l'appareil d'ici un jour}one{Mettez à jour l'appareil d'ici # jour}other{Mettez à jour l'appareil d'ici # jours}}</translation>
 <translation id="4181841719683918333">Langues</translation>
 <translation id="4195877955194704651">Bouton de clics automatiques</translation>
 <translation id="4197790712631116042">Désactivé</translation>
@@ -480,6 +482,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="445864333228800152">Bonsoir,</translation>
 <translation id="4458688154122353284">Arrêter l'enregistrement de l'écran</translation>
 <translation id="4471354919263203780">Téléchargement des fichiers de reconnaissance vocale en cours… <ph name="PERCENT" /> %</translation>
+<translation id="4471432286288241507">{0,plural, =0{Mettez à jour l'appareil maintenant}=1{Mettez à jour l'appareil d'ici 1 seconde}one{Mettez à jour l'appareil d'ici # seconde}other{Mettez à jour l'appareil d'ici # secondes}}</translation>
 <translation id="4472575034687746823">Premiers pas</translation>
 <translation id="4477350412780666475">Chanson suivante</translation>
 <translation id="4477892968187500306">Cet appareil pourrait contenir des applications qui n'ont pas été vérifiées par Google.</translation>
@@ -617,6 +620,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="5465662442746197494">Besoin d'aide?</translation>
 <translation id="5496819745535887422">Votre administrateur est en train de restaurer votre appareil. Toutes les données seront supprimées lors du redémarrage de l'appareil.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520229639206813572">Votre administrateur a retiré tous les profils eSIM. Pour en savoir plus, communiquez avec votre administrateur.</translation>
 <translation id="5523434445161341166">La fonctionnalité <ph name="FEATURE_NAME" /> en train de se connecter.</translation>
 <translation id="5532994612895037630">Touchez n'importe où pour enregistrer la totalité de l'écran</translation>
 <translation id="553675580533261935">Fermeture de la session</translation>
@@ -738,6 +742,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="6482559668224714696">Loupe en mode plein écran</translation>
 <translation id="6490471652906364588">Appareil USB-C (port de droite)</translation>
 <translation id="649452524636452238">NIP de la carte à puce</translation>
+<translation id="6495400115277918834">Début de l'incrustation d'image, appuyez sur les touches Alt+Majuscule+V pour sélectionner</translation>
 <translation id="6500818810472529210">Affichez les résultats dans la recherche Google</translation>
 <translation id="6501401484702599040">Diffusion de l'écran sur <ph name="RECEIVER_NAME" /> en cours</translation>
 <translation id="6520517963145875092">Sélectionnez une fenêtre à capturer</translation>
@@ -747,6 +752,8 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="6537924328260219877">Force du signal : <ph name="SIGNAL_STRENGTH" />, pile du téléphone : <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">Diffusion sur <ph name="RECEIVER_NAME" /> en cours…</translation>
 <translation id="6559976592393364813">Adressez-vous à l'administrateur</translation>
+<translation id="6565007273808762236">Connexion eSIM non proposée</translation>
+<translation id="6570831796530454248">{0,plural, =1{Mettez à jour l'appareil d'ici une heure}one{Mettez à jour l'appareil d'ici # heure}other{Mettez à jour l'appareil d'ici # heures}}</translation>
 <translation id="6570902864550063460">Recharge par USB</translation>
 <translation id="6585808820553845416">Fin de la session dans <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>

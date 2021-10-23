@@ -798,6 +798,7 @@
 <translation id="6544923685317771506">Concha marina</translation>
 <translation id="6551185905438378412">Marfil</translation>
 <translation id="6561818612645211875">Ir al principio de la fila actual</translation>
+<translation id="6563126228219321999">Elemento no válido</translation>
 <translation id="6579990219486187401">Rosa claro</translation>
 <translation id="6583174818554398774">Ir al gesto del nivel de detalle siguiente</translation>
 <translation id="6584162722998608255">A continuación, aprenderás a moverte por la pantalla. Puedes deslizar un dedo de izquierda a derecha para moverte hacia el próximo elemento. Pruébalo ahora para moverte hacia el próximo paso.</translation>
@@ -828,6 +829,7 @@
 <translation id="6815255864998354418">Chifón de limón</translation>
 <translation id="6816066673340002913">Oro claro</translation>
 <translation id="6826226459053491773">Deslizar dos dedos hacia abajo</translation>
+<translation id="6826669432862053130">Siguiente elemento no válido</translation>
 <translation id="6833103209700200188">Pie de página</translation>
 <translation id="6837853484260746864">Seleccionar una voz:</translation>
 <translation id="6858047746862060282">Prólogo</translation>
@@ -1018,6 +1020,7 @@
 <translation id="8126386426083591964">No hay encabezados de nivel 5 anteriores</translation>
 <translation id="812886159861361726">Se detuvo la descarga <ph name="FILE_NAME" /></translation>
 <translation id="8129445297241948503">No hay celdas arriba</translation>
+<translation id="8132248161074464367">Anterior elemento no válido</translation>
 <translation id="8138880386467279117">Táctil</translation>
 <translation id="8146613869421949343">A continuación, encontrarás información sobre la tecla Búsqueda. Esta tecla se usa en combinación con otras para activar comandos de ChromeVox. Se encuentra inmediatamente arriba de la tecla Mayúsculas izquierda. Para continuar, presiona la tecla Búsqueda.</translation>
 <translation id="8158033275290782295">seleccionar todos</translation>

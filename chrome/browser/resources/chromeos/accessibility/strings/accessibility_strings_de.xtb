@@ -798,6 +798,7 @@
 <translation id="6544923685317771506">Muschel</translation>
 <translation id="6551185905438378412">Elfenbein</translation>
 <translation id="6561818612645211875">Zum Anfang der aktuellen Zeile gehen</translation>
+<translation id="6563126228219321999">Kein ungültiges Element</translation>
 <translation id="6579990219486187401">Hellrosa</translation>
 <translation id="6583174818554398774">Zum nächsten Detaillierungsgrad wechseln</translation>
 <translation id="6584162722998608255">Als Nächstes erfahren Sie, wie Sie mit dem Bildschirm interagieren. Sie können mit einem Finger von links nach rechts wischen, um zum nächsten Element zu wechseln. Probieren Sie es aus, um mit dem nächsten Schritt fortzufahren.</translation>
@@ -828,6 +829,7 @@
 <translation id="6815255864998354418">Chiffongelb</translation>
 <translation id="6816066673340002913">Blasse Goldrutenfarbe</translation>
 <translation id="6826226459053491773">Mit zwei Fingern nach unten wischen</translation>
+<translation id="6826669432862053130">Nächstes ungültiges Element</translation>
 <translation id="6833103209700200188">Footer-Element</translation>
 <translation id="6837853484260746864">Stimme auswählen:</translation>
 <translation id="6858047746862060282">Prolog</translation>
@@ -1018,6 +1020,7 @@
 <translation id="8126386426083591964">Keine vorherige Überschrift der Ebene 5</translation>
 <translation id="812886159861361726">Download von "<ph name="FILE_NAME" />" angehalten</translation>
 <translation id="8129445297241948503">Keine Zelle oberhalb</translation>
+<translation id="8132248161074464367">Vorheriges ungültiges Element</translation>
 <translation id="8138880386467279117">Berühren</translation>
 <translation id="8146613869421949343">Als Nächstes erfährst du mehr über die Suchtaste. Die Suchtaste wird in Kombination mit anderen Tasten für ChromeVox-Befehle verwendet. Sie befindet sich direkt über der linken Umschalttaste. Drücke zum Fortfahren die Suchtaste.</translation>
 <translation id="8158033275290782295">alles auswählen</translation>

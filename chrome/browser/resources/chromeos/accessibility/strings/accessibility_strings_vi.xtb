@@ -798,6 +798,7 @@
 <translation id="6544923685317771506">Màu vỏ sò</translation>
 <translation id="6551185905438378412">Màu ngà</translation>
 <translation id="6561818612645211875">Đi tới đầu hàng hiện tại</translation>
+<translation id="6563126228219321999">Không có mục không hợp lệ</translation>
 <translation id="6579990219486187401">Hồng nhạt</translation>
 <translation id="6583174818554398774">Chuyển tới độ chi tiết tiếp theo</translation>
 <translation id="6584162722998608255">Tiếp theo, bạn sẽ tìm hiểu cách di chuyển xung quanh màn hình. Bạn có thể vuốt bằng một ngón tay từ trái sang phải để chuyển đến mục tiếp theo. Hãy thử ngay để chuyển đến bước tiếp theo.</translation>
@@ -828,6 +829,7 @@
 <translation id="6815255864998354418">Màu vàng chanh</translation>
 <translation id="6816066673340002913">Màu vàng xanh nhạt</translation>
 <translation id="6826226459053491773">Vuốt xuống dưới bằng hai ngón tay</translation>
+<translation id="6826669432862053130">Mục không hợp lệ tiếp theo</translation>
 <translation id="6833103209700200188">Chân trang</translation>
 <translation id="6837853484260746864">Chọn một giọng nói:</translation>
 <translation id="6858047746862060282">Phần mở đầu</translation>
@@ -1018,6 +1020,7 @@
 <translation id="8126386426083591964">Không có tiêu đề cấp 5 nào trước đó</translation>
 <translation id="812886159861361726">Đã dừng tải <ph name="FILE_NAME" /> xuống</translation>
 <translation id="8129445297241948503">Không có ô nào phía trên</translation>
+<translation id="8132248161074464367">Mục không hợp lệ trước đó</translation>
 <translation id="8138880386467279117">Cảm ứng</translation>
 <translation id="8146613869421949343">Tiếp theo, bạn sẽ tìm hiểu về phím Tìm kiếm. Phím Tìm kiếm được dùng kết hợp với những phím khác để thao tác các lệnh của ChromeVox. Phím Tìm kiếm nằm ngay phía trên phím Shift ở bên trái. Để tiếp tục, hãy nhấn phím Tìm kiếm.</translation>
 <translation id="8158033275290782295">chọn tất cả</translation>

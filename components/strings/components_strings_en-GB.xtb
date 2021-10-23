@@ -299,6 +299,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1842969606798536927">Pay</translation>
 <translation id="1856713167556118146">What Incognito doesn’t do</translation>
 <translation id="1863257867908022953">Tray 12</translation>
+<translation id="1864927262126810325">From <ph name="SOURCE_NAME" /></translation>
 <translation id="1871208020102129563">Proxy is set to use fixed proxy servers, not a .pac script URL.</translation>
 <translation id="1871284979644508959">Required field</translation>
 <translation id="1875025161375567525">Photo tray</translation>
@@ -961,6 +962,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4117700440116928470">Policy scope is not supported.</translation>
 <translation id="4121428309786185360">Expires On</translation>
 <translation id="4123572138124678573">Triple punch bottom</translation>
+<translation id="4127575959421463246">Looking for the Chrome OS flags? Visit</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 other}other{# others}}</translation>
 <translation id="4130226655945681476">Checking the network cables, modem and router</translation>
 <translation id="4133224101597112888">Share this tab button: press Enter to share this tab by sharing the link, creating a QR code, casting and more.</translation>
@@ -1132,6 +1134,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4606870351894164739">Impactful</translation>
 <translation id="4607603470419975064">See Chrome tips button: press Enter to learn about Chrome features</translation>
 <translation id="4607608436550361748">See Chrome tips</translation>
+<translation id="4627675673814409125">This policy cannot be set at the Chrome profile level and will be ignored.</translation>
 <translation id="4628948037717959914">Photo</translation>
 <translation id="4631649115723685955">Cashback linked</translation>
 <translation id="4636930964841734540">Info</translation>
@@ -1763,6 +1766,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="674375294223700098">Unknown server certificate error.</translation>
 <translation id="6744009308914054259">While waiting for a connection, you can visit Downloads to read offline articles.</translation>
 <translation id="6753269504797312559">Policy Value</translation>
+<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Your device went to sleep.</translation>
 <translation id="6767985426384634228">Update address?</translation>
 <translation id="6768213884286397650">Hagaki (Postcard)</translation>
@@ -1850,6 +1854,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="706295145388601875">Add and manage addresses in Chrome settings</translation>
 <translation id="7064851114919012435">Contact info</translation>
 <translation id="7068733155164172741">Enter <ph name="OTP_LENGTH" />-digit code</translation>
+<translation id="7070090581017165256">About this site</translation>
 <translation id="70705239631109039">Your connection is not fully secure</translation>
 <translation id="7075452647191940183">Request is too large</translation>
 <translation id="7079718277001814089">This site contains malware</translation>
@@ -2094,6 +2099,7 @@ Additional details:
 <translation id="7813600968533626083">Remove form suggestion from Chrome?</translation>
 <translation id="781440967107097262">Share clipboard?</translation>
 <translation id="7815407501681723534">Found <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> for '<ph name="SEARCH_STRING" />'</translation>
+<translation id="782125616001965242">Show information about this site</translation>
 <translation id="782886543891417279">The Wi-Fi that you are using (<ph name="WIFI_NAME" />) may require you to visit its login page.</translation>
 <translation id="7836231406687464395">Postfix (Envelope)</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{None}=1{1 app (<ph name="EXAMPLE_APP_1" />)}=2{2 apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
@@ -2372,6 +2378,7 @@ Additional details:
 <translation id="8792626944327216835">microphone</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> has turned on Chrome Enterprise Connectors on your browser. These connectors have access to some of your data.</translation>
 <translation id="8798099450830957504">Default</translation>
+<translation id="8798739476508189189">Looking for browser flags? Visit</translation>
 <translation id="8805819170075074995">List entry '<ph name="LANGUAGE_ID" />': entry ignored because it is also included in the SpellcheckLanguage policy.</translation>
 <translation id="8807160976559152894">Trim after each page</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, press tab, then enter to update Chrome from your Chrome settings</translation>
@@ -2477,6 +2484,7 @@ Additional details:
 <translation id="9157595877708044936">Setting up...</translation>
 <translation id="9158625974267017556">C6 (Envelope)</translation>
 <translation id="9164029392738894042">Accuracy Check</translation>
+<translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">Allow sites to check if you have payment methods saved</translation>
 <translation id="9169664750068251925">Always block on this site</translation>
 <translation id="9169931577761441333">Add <ph name="APP_NAME" /> to Home screen</translation>

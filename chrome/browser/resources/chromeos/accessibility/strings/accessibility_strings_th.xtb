@@ -798,6 +798,7 @@
 <translation id="6544923685317771506">สีชมพูซีเชลล์</translation>
 <translation id="6551185905438378412">สีงาช้าง</translation>
 <translation id="6561818612645211875">ไปที่ด้านบนของแถวปัจจุบัน</translation>
+<translation id="6563126228219321999">ไม่มีรายการที่ไม่ถูกต้อง</translation>
 <translation id="6579990219486187401">ชมพูอ่อน</translation>
 <translation id="6583174818554398774">เลื่อนไปที่ระดับถัดไป</translation>
 <translation id="6584162722998608255">ถัดไป คุณจะได้ดูวิธีไปยังส่วนต่างๆ ในหน้าจอ คุณใช้ 1 นิ้วปัดจากซ้ายไปขวาเพื่อย้ายไปยังรายการถัดไปได้ ลองทำตอนนี้เลยเพื่อไปยังขั้นตอนถัดไป</translation>
@@ -828,6 +829,7 @@
 <translation id="6815255864998354418">สีเหลืองเลมอนชิฟฟอน</translation>
 <translation id="6816066673340002913">สีเหลืองโกลเด้นร็อดจาง</translation>
 <translation id="6826226459053491773">เลื่อน 2 นิ้วลง</translation>
+<translation id="6826669432862053130">รายการที่ไม่ถูกต้องถัดไป</translation>
 <translation id="6833103209700200188">ส่วนท้าย</translation>
 <translation id="6837853484260746864">เลือกเสียง:</translation>
 <translation id="6858047746862060282">อารัมภบท</translation>
@@ -1017,6 +1019,7 @@
 <translation id="8126386426083591964">ไม่มีส่วนหัวระดับ 5 ก่อนหน้า</translation>
 <translation id="812886159861361726">หยุดดาวน์โหลด <ph name="FILE_NAME" /> แล้ว</translation>
 <translation id="8129445297241948503">ไม่มีเซลล์ด้านบน</translation>
+<translation id="8132248161074464367">รายการที่ไม่ถูกต้องก่อนหน้า</translation>
 <translation id="8138880386467279117">การแตะ</translation>
 <translation id="8146613869421949343">ต่อไป คุณจะได้เรียนรู้เกี่ยวกับแป้น Search แป้น Search จะใช้ร่วมกับแป้นอื่นๆ สำหรับคำสั่งใน ChromeVox แป้น Search อยู่เหนือแป้น Shift ด้านซ้ายพอดี กดแป้น Search เพื่อดำเนินการต่อ</translation>
 <translation id="8158033275290782295">เลือกทั้งหมด</translation>

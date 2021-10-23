@@ -1,12 +1,14 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="id">
+<translation id="1018219910092211213">Tidak dapat me-resolve DNS</translation>
 <translation id="1018656279737460067">Dibatalkan</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> thread, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1059913517121127803">Tidak dapat memulai pemindaian</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Firewall terdeteksi</translation>
 <translation id="1075811647922107217">Ukuran halaman</translation>
+<translation id="1094693127011229778">Alamat IP tidak tersedia</translation>
 <translation id="1119447706177454957">Kesalahan internal</translation>
 <translation id="1124772482545689468">Pengguna</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -21,6 +23,7 @@
 <translation id="1270369111467284986">Captive portal dicurigai</translation>
 <translation id="1290331692326790741">Sinyal lemah</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1310380015393971138">Jaringan <ph name="NETWORK_NAME" /> tidak tersedia</translation>
 <translation id="1314565355471455267">VPN Android</translation>
 <translation id="131461803491198646">Jaringan asal, tidak dalam jelajah</translation>
 <translation id="1327977588028644528">Gerbang</translation>
@@ -69,6 +72,7 @@
 <translation id="1999615961760456652">Captive Portal</translation>
 <translation id="2006864819935886708">Konektivitas</translation>
 <translation id="2008685064673031089">Penelusuran bilangan prima</translation>
+<translation id="2016697457005847575">Coba langkah-langkah pemecahan masalah</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Setelan lain</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versi <ph name="MILESTONE_VERSION" /></translation>
@@ -101,6 +105,7 @@
 <translation id="2505327257735685095">Muat ulang gambar wallpaper saat ini</translation>
 <translation id="2517472476991765520">Pindai</translation>
 <translation id="2570743873672969996">Menjalankan pengujian <ph name="TEST_NAME" /> ...</translation>
+<translation id="2584559707064218956">Untuk menyiapkan, buka Setelan</translation>
 <translation id="2585245331261708204">Yang baru di Chrome OS</translation>
 <translation id="2619761439309613843">Muat Ulang Harian</translation>
 <translation id="2620436844016719705">Sistem</translation>
@@ -147,8 +152,10 @@
 <translation id="3532980081107202182">Sekitar <ph name="MIN_REMAINING" /> menit lagi</translation>
 <translation id="3565064564551103223">IP yang diizinkan</translation>
 <translation id="357889014807611375">Wi-Fi berbayar</translation>
+<translation id="3583278742022654445">Kekuatan sinyal lemah. Coba mendekat ke sumber sinyal Wi-Fi.</translation>
 <translation id="3595596368722241419">Baterai penuh</translation>
 <translation id="360565022852130722">Jaringan Wi-Fi diamankan dengan protokol WEP 802.1x yang lemah</translation>
+<translation id="3606583719724308068">Latensi tinggi untuk situs HTTPS</translation>
 <translation id="3689839747745352263">Uji <ph name="TEST_NAME" /></translation>
 <translation id="3708186454126126312">Terhubung sebelumnya</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ulasan)</translation>
@@ -169,6 +176,7 @@
 <translation id="39823212440917567">Tugas pencetakan yang sudah lebih dari <ph name="NUMBER_OF_DAYS" /> hari akan dihapus</translation>
 <translation id="4003384961948020559">Gagal - Baki hasil cetak penuh</translation>
 <translation id="4034824040120875894">Printer</translation>
+<translation id="4044093238444069296">Tidak dapat terhubung ke gateway</translation>
 <translation id="404928562651467259">PERINGATAN</translation>
 <translation id="409427325554347132">Simpan detail pengujian</translation>
 <translation id="4111761024568264522">Touchpad USB</translation>
@@ -191,6 +199,7 @@
 <translation id="4378551569595875038">Menghubungkan...</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Drive Saya</translation>
+<translation id="4428374560396076622"><ph name="NETWORK_NAME" /> nonaktif</translation>
 <translation id="4429881212383817840">Masa berlaku tiket Kerberos segera berakhir</translation>
 <translation id="4431821876790500265">Lihat laporan</translation>
 <translation id="445059817448385655">Sandi lama</translation>
@@ -236,6 +245,7 @@
 <translation id="4917385247580444890">Kuat</translation>
 <translation id="4917889632206600977">Dihentikan - Kertas habis</translation>
 <translation id="4921665434385737356">Terisi <ph name="RATE" /> dalam <ph name="NUM_SECONDS" /> detik.</translation>
+<translation id="4930320165497208503">Untuk menyiapkan atau memperbarui koneksi, buka <ph name="BEGIN_LINK" />Setelan<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Tanggal</translation>
 <translation id="498186245079027698">Periksa pemindai, lalu coba lagi. Pastikan terdapat cukup ruang penyimpanan lokal untuk menyimpan file hasil pemindaian.</translation>
 <translation id="4985509611418653372">Jalankan</translation>
@@ -378,6 +388,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="7059230779847288458">Mengisi daya, <ph name="TIME_VALUE" /> sampai penuh</translation>
 <translation id="708426984172631313">DIHENTIKAN</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="710028965487274708">Gagal - Otorisasi Gagal</translation>
 <translation id="7134436342991564651">{0,plural, =1{Server nama}other{Server nama}}</translation>
 <translation id="7143207342074048698">Menghubungkan</translation>
 <translation id="7144878232160441200">Coba lagi</translation>
@@ -390,6 +401,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="7271040990581020067">Pemindai sedang digunakan. Coba lagi nanti.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Koleksi Wallpaper</translation>
+<translation id="7297226631177386107">Tidak dapat terhubung melewati firewall ke situs HTTPS</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -422,6 +434,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="7762130827864645708">Perubahan sandi Anda berhasil. Gunakan sandi baru mulai sekarang.</translation>
 <translation id="7763470514545477072">Kecocokan suffix domain</translation>
 <translation id="7769672763586021400">ID Model</translation>
+<translation id="7784116172884276937">Tidak ada server DNS yang disiapkan</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7819857487979277519">PSK (WPA atau RSN)</translation>
 <translation id="7835501727204647447">Instal CloudReady</translation>
@@ -436,13 +449,16 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="7943235353293548836">Interval keepalive persisten</translation>
 <translation id="7955587717700691983">Keyboard Bluetooth</translation>
 <translation id="7960831585769876809">Suhu</translation>
+<translation id="7977800524392185497">Untuk bergabung ke jaringan <ph name="NETWORK_NAME" />, buka Setelan</translation>
 <translation id="7978412674231730200">Kunci pribadi</translation>
 <translation id="7994702968232966508">Metode EAP</translation>
 <translation id="802154636333426148">Download gagal</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="8041089156583427627">Kirim Masukan</translation>
 <translation id="8075838845814659848">Sisa daya baterai</translation>
+<translation id="8082366717211101304">Tidak dapat me-resolve DNS dari aplikasi Android</translation>
 <translation id="808894953321890993">Ubah sandi</translation>
+<translation id="8104083085214006426">Anda menggunakan jaringan terbuka dan tidak aman</translation>
 <translation id="811820734797650957">(Android) Gateway Dapat Di-ping</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Minta Penghitung Traffic</translation>
@@ -467,10 +483,12 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Keyboard internal</translation>
 <translation id="843568408673868420">Konektivitas Internet</translation>
+<translation id="844521431886043384">DNS tidak disiapkan</translation>
 <translation id="8461329675984532579">Nama penyedia rumah</translation>
 <translation id="8475690821716466388">Jaringan Wi-Fi diamankan dengan protokol WEP PSK yang lemah</translation>
 <translation id="8477551185774834963">Latensi DNS sedikit melebihi ambang batas yang diizinkan</translation>
 <translation id="8483248364096924578">Alamat IP</translation>
+<translation id="8491311378305535241">Tidak dapat terhubung melewati firewall ke situs HTTP dari aplikasi Android</translation>
 <translation id="8498220429738806196">Penghitung Traffic</translation>
 <translation id="8503813439785031346">Nama Pengguna</translation>
 <translation id="8503836310948963452">Tinggal beberapa menit lagi...</translation>
@@ -496,6 +514,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="8818152010000655963">Wallpaper</translation>
 <translation id="8834539327799336565">Saat ini terhubung</translation>
 <translation id="8845001906332463065">Dapatkan bantuan</translation>
+<translation id="8855781559874488009">Tidak dapat terhubung melewati firewall ke situs HTTP</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Pengujian berhasil</translation>
 <translation id="8898840733695078011">Kekuatan sinyal</translation>
@@ -521,12 +540,14 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="910415269708673980">Perbarui tiket untuk <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Memindai halaman <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Buka kunci</translation>
+<translation id="9122602430962285795">Untuk menghubungkan kembali, buka Setelan</translation>
 <translation id="9126720536733509015">Simpan beberapa halaman ke satu PDF</translation>
 <translation id="9137526406337347448">Layanan Google</translation>
 <translation id="9149391708638971077">Jalankan pengujian Memori</translation>
 <translation id="9173638680043580060">Kurang dari satu menit lagi</translation>
 <translation id="917720651393141712">Uji</translation>
 <translation id="9190063653747922532">L2TP/IPSec + kunci yang dibagikan sebelumnya</translation>
+<translation id="9204237731135241582">Tidak dapat terhubung ke gateway dari aplikasi Android</translation>
 <translation id="9211490828691860325">Semua desktop</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Tidak diaktifkan</translation>
