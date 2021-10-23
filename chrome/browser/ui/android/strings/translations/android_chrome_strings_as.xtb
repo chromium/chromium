@@ -319,6 +319,7 @@
 <translation id="2932222164150889403">আপোনাৰ কীব’ৰ্ড সলনি নহ’ব</translation>
 <translation id="2942036813789421260">পূৰ্বদৰ্শন টেবটো বন্ধ কৰা আছে</translation>
 <translation id="2946420957526726953">অন্য ডিভাইচৰ সৈতে সংযোগ কৰিবলৈ Chrome আপডে’ট কৰি থকা হৈছে</translation>
+<translation id="2951071800649516099">পৰৱৰ্তী সময়ৰ বাবে আপোনাৰ পঢ়াৰ সূচীত পৃষ্ঠাসমূহ যোগ দিয়ক</translation>
 <translation id="2956410042958133412"><ph name="PARENT_NAME_1" /> আৰু <ph name="PARENT_NAME_2" />এ এই একাউণ্টটো পৰিচালনা কৰে।</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> খন নপঢ়া পৃষ্ঠা}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> খন নপঢ়া পৃষ্ঠা}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> খন নপঢ়া পৃষ্ঠা}}</translation>
 <translation id="2961210776189273067">শিৰোনাম</translation>
@@ -403,6 +404,7 @@
 <translation id="3398320232533725830">বুকমাৰ্ক পৰিচালক খোলক</translation>
 <translation id="3414952576877147120">আকাৰ:</translation>
 <translation id="3429160811076349561">ট্ৰায়েলৰ সুবিধা অফ আছে</translation>
+<translation id="3435465986463792564">বহুতো ৱিণ্ড’ পাইছেনে? আপুনি ইয়াৰ পৰা সেইবোৰ পৰিচালনা কৰিব পাৰে</translation>
 <translation id="3440975416244667276">অধিক প্ৰাসংগিক তথ্যৰ বাবে স্পৰ্শ কৰি ধৰি ৰাখক</translation>
 <translation id="3443221991560634068">বর্তমানৰ পৃষ্ঠাটো পুনৰ ল’ড কৰক</translation>
 <translation id="3444179773590444986">ছাইটৰ বাবে গাঢ় ৰঙৰ থীম সম্পৰ্কে মতামত শ্বেয়াৰ কৰিব নেকি?</translation>
@@ -552,6 +554,7 @@
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> টেব বন্ধ কৰক</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" />লৈ বুকমার্ক কৰা হৈছে</translation>
 <translation id="4472118726404937099">সমগ্ৰ ডিভাইচতে ছিংক আৰু ব্যক্তিকৃত কৰিবলৈ ছাইন ইন কৰি ছিংক অন কৰক</translation>
+<translation id="4479839115899251637">পঢ়াৰ সূচীৰ পৰা মচক</translation>
 <translation id="4479972344484327217">Chromeৰ বাবে <ph name="MODULE" /> ইনষ্টল কৰি থকা হৈছে…</translation>
 <translation id="4487967297491345095">সকলো Chrome এপৰ ডেটা স্থায়ীভাৱে মচা হ'ব। ইয়াত সকলো ফাইল, ছেটিং, একাউণ্ট, ডেটাবেছ ইত্যাদি অন্তর্ভুক্ত হয়।</translation>
 <translation id="449126573531210296">আপোনাৰ Google একাউণ্টৰ সৈতে ছিংক কৰি ৰখা পাছৱৰ্ড এনক্ৰিপ্ট কৰক</translation>
@@ -994,6 +997,7 @@
 <translation id="6945221475159498467">বাছনি কৰক</translation>
 <translation id="6955535239952325894">পৰিচালিত ব্ৰাউজাৰসমূহত এই ছেটিংটো অক্ষম কৰা হৈছে</translation>
 <translation id="6963766334940102469">বুকমার্ক মচক</translation>
+<translation id="6964116075545915250">পঢ়াৰ সূচী সম্পাদনা কৰক</translation>
 <translation id="696447261358045621">ইনক’গনিট’ ম’ডৰ পৰা বাহিৰ হওক</translation>
 <translation id="6979737339423435258">সকলো সময়তে</translation>
 <translation id="6981982820502123353">সাধ্য সুবিধাসমূহ</translation>
@@ -1001,6 +1005,7 @@
 <translation id="6989267951144302301">ডাউনল’ড কৰিব পৰা নগ’ল</translation>
 <translation id="6995899638241819463">ডেটা উলংঘনৰ ফলত পাছৱৰ্ডসমূহ ফাদিল হ’লে আপোনাক সকীয়নি দিয়ে</translation>
 <translation id="7001056293070445572">ফাইলটোৰ আকাৰ অতি বেছি ডাঙৰ (<ph name="FILE_SIZE" />)</translation>
+<translation id="7020741890149022655">পঢ়াৰ সূচীত <ph name="BEGIN_NEW" />নতুন<ph name="END_NEW" /> যোগ দিয়ক</translation>
 <translation id="7022756207310403729">ব্ৰাউজাৰত খোলক</translation>
 <translation id="702463548815491781">টকবেক বা ছুইচৰ দ্বাৰা ব্যৱহাৰ কৰা অনুমতি অন থকা অৱস্থান এয়া চুপাৰিছ কৰা হয়</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> পুনঃস্থাপন কৰা হৈছে</translation>

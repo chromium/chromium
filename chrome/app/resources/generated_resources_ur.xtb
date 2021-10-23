@@ -2065,6 +2065,7 @@
 <translation id="310671807099593501">سائٹ بلوٹوتھ استعمال کر رہی ہے</translation>
 <translation id="3108931485517391283">موصول نہیں کر سکتے</translation>
 <translation id="3109724472072898302">سکیڑا گیا</translation>
+<translation id="311214366526552035">بہر حال ڈاؤن لوڈ کریں</translation>
 <translation id="311394601889664316">سائٹس کو اپنے آلے پر فاائلز یا فولڈرز میں ترمیم کرنے کی اجازت نہ دیں</translation>
 <translation id="3115147772012638511">کیش کا انتظار ہے…</translation>
 <translation id="3115580024857770654">سبھی کو سکیڑیں</translation>
@@ -2344,6 +2345,7 @@
 <translation id="3429160811076349561">ٹرائل کی خصوصیات آف ہیں</translation>
 <translation id="3429271624041785769">ویب مواد کی زبانیں</translation>
 <translation id="3429275422858276529">بعد میں اسے تلاش کرنے کے لیے اس صفحے کو بُک مارک کریں</translation>
+<translation id="343115368966109153"><ph name="FILE_NAME" /> ڈاؤن لوڈ کریں؟ آلہ استعمال کرنے والا ہر شخص اسے دیکھ سکتا ہے۔</translation>
 <translation id="3432227430032737297">سبھی دکھائے گئے کو ہٹائیں</translation>
 <translation id="3432762828853624962">اشتراک کردہ ورکرز</translation>
 <translation id="3433621910545056227">افوہ!  سسٹم آلے کے انسٹالیشن کے وقت کے انتسابات کا لاک تشکیل دینے میں ناکام ہوگیا۔</translation>
@@ -2685,6 +2687,7 @@
 <translation id="3777806571986431400">ایکسٹینشن فعال کر دیا گیا</translation>
 <translation id="3778152852029592020">ڈاؤن لوڈ کو منسوخ کر دیا گیا۔</translation>
 <translation id="3778208826288864398">‏کئی مرتبہ غلط PIN درج کرنے کی وجہ سے سیکیورٹی کلید مقفل ہو گئی ہے۔ آپ کو سیکیورٹی کلید دوبارہ ترتیب دینی ہوگی۔</translation>
+<translation id="3778369586810509692">اس فائل کو آلے پر اسٹور کیا جائے گا اور ہر کوئی اسے دیکھ سکے گا۔</translation>
 <translation id="3778740492972734840">&amp;ڈیولپر ٹولز</translation>
 <translation id="3778868487658107119">‏اس سے سوالات پوچھیں۔ اسے کام کرنے کو کہیں۔ یہ آپ کا ذاتی Google ہے، ہمیشہ مدد کرنے کیلئے تیار۔</translation>
 <translation id="3781742599892759500">‏Linux مائیکروفون کی رسائی</translation>
@@ -4697,6 +4700,7 @@
 <translation id="597235323114979258">مزید منازل دیکھیں</translation>
 <translation id="5972666587303800813">نو آپریشن سروس</translation>
 <translation id="5972708806901999743">اوپر منتقل کریں</translation>
+<translation id="5972801171078377748">دوبارہ نہ دکھائیں</translation>
 <translation id="5972826969634861500"><ph name="PRODUCT_NAME" /> شروع کریں</translation>
 <translation id="5973041996755340290">"<ph name="CLIENT_NAME" />" نے اس براؤزر کی ڈیبگنگ شروع کر دی</translation>
 <translation id="5973605538625120605">‏PIN تبدیل کریں</translation>

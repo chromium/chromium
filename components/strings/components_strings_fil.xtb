@@ -613,6 +613,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2987034854559945715">Walang tumutugmang feature</translation>
 <translation id="2989742184762224133">Dual staple top</translation>
 <translation id="2991174974383378012">Pagbabahagi sa Mga Website</translation>
+<translation id="299122504639061328">Pamahalaan ang iyong default na search engine at site search</translation>
 <translation id="2991571918955627853">Hindi mo maaaring bisitahin ang <ph name="SITE" /> sa ngayon dahil gumagamit ng HSTS ang website. Karaniwang pansamantala lang ang mga error at pag-atake sa network, kaya malamang na gagana ang page na ito sa ibang pagkakataon.</translation>
 <translation id="2995517112308048736">Laki ng file:</translation>
 <translation id="3002501248619246229">Suriin ang input tray media</translation>
@@ -958,6 +959,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4123572138124678573">Triple punch bottom</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 pa}one{# pa}other{# pa}}</translation>
 <translation id="4130226655945681476">Suriin ang mga cable, modem at router ng network</translation>
+<translation id="4133224101597112888">Button na ibahagi ang tab na ito, pindutin ang Enter para ibahagi ang tab na ito sa pamamagitan ng pagbabahagi sa link, paggawa ng QR code, pag-cast, at higit pa.</translation>
 <translation id="4134123981501319574">Gumawa ng doc</translation>
 <translation id="413544239732274901">Matuto pa</translation>
 <translation id="4142935452406587478">Tray 10</translation>
@@ -1387,6 +1389,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5426179911063097041">Gusto ng <ph name="SITE" /> na padalhan ka ng mga notification</translation>
 <translation id="5428105026674456456">Spanish</translation>
 <translation id="5430298929874300616">Alisin ang bookmark</translation>
+<translation id="5434889539950523874"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Pindutin ang tab at pagkatapos ay ang Enter para ibahagi ang tab na ito sa pamamagitan ng pagbabahagi sa link, paggawa ng QR code, pag-cast, at higit pa.</translation>
 <translation id="5439770059721715174">Error sa pagpapatunay ng schema sa "<ph name="ERROR_PATH" />": <ph name="ERROR" /></translation>
 <translation id="5443468954631487277">Baligtarin ang pagkakasunod-sunod nang nakatihaya</translation>
 <translation id="5447765697759493033">Hindi isasalin ang site na ito</translation>
@@ -1994,6 +1997,7 @@ Mga karagdagang detalye:
 <translation id="7559278538486662777">Hindi puwedeng i-resize ang app na ito.</translation>
 <translation id="7564049878696755256">Maaari kang mawalan ng access sa iyong account sa <ph name="ORG_NAME" /> o manakawan ng pagkakakilanlan. Inirerekomenda ng Chrome na palitan ang iyong password ngayon.</translation>
 <translation id="7567204685887185387">Hindi mapatunayan ng server na ito na ito ay <ph name="DOMAIN" />; maaaring mapanlokong ibinigay ang certificate ng seguridad nito. Maaaring dulot ito ng maling configuration o isang umaatake na hinahadlangan ang iyong koneksyon.</translation>
+<translation id="7569761772822664555">Button na pamahalaan ang mga search engine, pindutin ang Enter para pamahalaan ang iyong default na search engine at site search</translation>
 <translation id="7569952961197462199">Alisin ang credit card sa Chrome?</translation>
 <translation id="7569983096843329377">Itim</translation>
 <translation id="7575207903026901870">Button na Alisin ang Suhestyon, pindutin ang Enter para alisin ang suhestyong ito</translation>
@@ -2111,6 +2115,7 @@ Mga karagdagang detalye:
 <translation id="7950027195171824198">Pamahalaan ang iyong mga kagustuhan sa cookie sa mga setting ng Chrome</translation>
 <translation id="7951415247503192394">(32-bit)</translation>
 <translation id="7953569069500808819">Edge stitch top</translation>
+<translation id="7954041596401851904">Ibahagi ang tab na ito sa pamamagitan ng pagbabahagi sa link, paggawa ng QR code, pag-cast, at higit pa.</translation>
 <translation id="7956713633345437162">Mga bookmark sa mobile</translation>
 <translation id="7961015016161918242">Hindi Kailanman</translation>
 <translation id="7966803981046576691">Uri ng account ng trabaho</translation>
@@ -2184,6 +2189,7 @@ Mga karagdagang detalye:
 <translation id="8202370299023114387">Hindi pagkakasundo</translation>
 <translation id="8206978196348664717">Prc4 (Envelope)</translation>
 <translation id="8211406090763984747">Secure ang koneksyon</translation>
+<translation id="8215696832828595581">Button na i-customize ang Chrome, pindutin ang Enter para i-customize ang hitsura ng iyong browser.</translation>
 <translation id="8218327578424803826">Itinakdang Lokasyon:</translation>
 <translation id="8220146938470311105">C7/C6 (Envelope)</translation>
 <translation id="8225771182978767009">Pinili ng taong nag-set up ng computer na ito na i-block ang site na ito.</translation>
@@ -2325,6 +2331,7 @@ Mga karagdagang detalye:
 <translation id="868922510921656628">Mga page bawat hanay</translation>
 <translation id="869891660844655955">Expiration date</translation>
 <translation id="8699041776323235191">HID device</translation>
+<translation id="8699899385443889493">Button na Laruin ang Chrome Dino, pindutin ang Enter para laruin ang Dino Run sa Chrome</translation>
 <translation id="8703575177326907206">Ang iyong koneksyon sa <ph name="DOMAIN" /> ay hindi naka-encrypt.</translation>
 <translation id="8705331520020532516">Serial Number</translation>
 <translation id="8708134712139312373">Puwedeng hilinging kumonekta sa mga Bluetooth device</translation>

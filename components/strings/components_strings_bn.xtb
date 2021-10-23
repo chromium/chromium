@@ -108,6 +108,7 @@
 <translation id="129863573139666797"><ph name="BEGIN_LINK" />আপনার কুকিজ সাফ করে দেখুন<ph name="END_LINK" /></translation>
 <translation id="1301324364792935241">আপনার সুরক্ষিত DNS সেটিংস চেক করে দেখুন</translation>
 <translation id="1307966114820526988">শীঘ্রই বন্ধ করা হবে এমন ফিচার</translation>
+<translation id="1308113895091915999">অফার উপলভ্য</translation>
 <translation id="1312803275555673949">কোন প্রমাণ এখানে কাজ করে?</translation>
 <translation id="131405271941274527">NFC ডিভাইসে আপনার ফোন ট্যাপ করলে <ph name="URL" /> তথ্য পাঠাতে এবং পেতে চায়</translation>
 <translation id="1314509827145471431">ডানদিকে বাঁধাই করুন</translation>
@@ -614,6 +615,7 @@
 <translation id="2987034854559945715">একই ধরনের ফিচার পাওয়া যায়নি</translation>
 <translation id="2989742184762224133">উপরে ডুয়াল স্টেপল</translation>
 <translation id="2991174974383378012">ওয়েবসাইটের সাথে ভাগ করছে</translation>
+<translation id="299122504639061328">আপনার ডিফল্ট সার্চ ইঞ্জিন এবং সাইট সার্চ ম্যানেজ করুন</translation>
 <translation id="2991571918955627853">ওয়েবসাইটটি HSTS ব্যবহার করার কারণে আপনি এখন <ph name="SITE" />-এ যেতে পারবেন না। নেটওয়ার্ক ত্রুটি এবং আক্রমণ সাধারণত সাময়িকভাবে হয়, তাই এই পৃষ্ঠাটি সম্ভবত পরে কাজ করবে।</translation>
 <translation id="2995517112308048736">ফাইলের সাইজ:</translation>
 <translation id="3002501248619246229">ইনপুট ট্রে মিডিয়া চেক করুন</translation>
@@ -959,6 +961,7 @@
 <translation id="4123572138124678573">নিচে ট্রিপল পাঞ্চ</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{আরও ১টি}one{অন্যান্য #টি}other{অন্যান্য #টি}}</translation>
 <translation id="4130226655945681476">নেটওয়ার্কের তার, মডেম, এবং রাউটার পরীক্ষা করুন</translation>
+<translation id="4133224101597112888">এই ট্যাব বোতামটি শেয়ার করুন। লিংক শেয়ার করে, QR কোড তৈরি করে, কাস্ট করে, এবং আরও অন্যান্য বিকল্পের সাহায্যে এই ট্যাবটি শেয়ার করতে Enter প্রেস করুন।</translation>
 <translation id="4134123981501319574">ডক তৈরি করুন</translation>
 <translation id="413544239732274901">আরও জানুন</translation>
 <translation id="4142935452406587478">ট্রে ১০</translation>
@@ -1388,6 +1391,7 @@
 <translation id="5426179911063097041"><ph name="SITE" /> আপনাকে বিজ্ঞপ্তি পাঠাতে চায়</translation>
 <translation id="5428105026674456456">স্প্যানিশ</translation>
 <translation id="5430298929874300616">বুকমার্ক সরান</translation>
+<translation id="5434889539950523874"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />, লিংক শেয়ার করে, QR কোড তৈরি করে, কাস্ট করে এবং আরও অন্যান্য বিকল্পের সাহায্যে এই ট্যাব শেয়ার করতে Tab প্রেস করুন তারপর Enter প্রেস করুন।</translation>
 <translation id="5439770059721715174">"<ph name="ERROR_PATH" />" এ স্কিমা বৈধতার ত্রুটি হয়েছে: <ph name="ERROR" /></translation>
 <translation id="5443468954631487277">রিভার্স অর্ডার, সামনের দিক উপরে</translation>
 <translation id="5447765697759493033">এই সাইটটি অনুবাদ করা হবে না</translation>
@@ -1994,6 +1998,7 @@
 <translation id="7559278538486662777">এই অ্যাপটি ছোট বড় করা যাবে না</translation>
 <translation id="7564049878696755256">আপনি নিজের <ph name="ORG_NAME" /> অ্যাকাউন্টের অ্যাক্সেস হারাতে পারেন অথবা আপনার পরিচয় চুরি হয়ে যেতে পারে। Chrome এখনই আপনার পাসওয়ার্ড পরিবর্তন করার আর্জি জানাচ্ছে।</translation>
 <translation id="7567204685887185387">এই সার্ভার প্রমাণ করতে পারেনি যে এটি <ph name="DOMAIN" />; এর নিরাপত্তা সার্টিফিকেট প্রতারণাপূর্ণভাবে ইস্যু করা হয়ে থাকতে পারে। কোনো ভুল কনফিগারেশনের কারণে অথবা কোনো আক্রমণকারী আপনার সংযোগ মাঝপথে আটকে দিচ্ছে বলে এমনটা হতে পারে।</translation>
+<translation id="7569761772822664555">সার্চ ইঞ্জিন বোতাম ম্যানেজ করুন, আপনার ডিফল্ট সার্চ ইঞ্জিন এবং সাইট সার্চ ম্যানেজ করতে Enter প্রেস করুন</translation>
 <translation id="7569952961197462199">Chrome থেকে ক্রেডিট কার্ড সরাবেন?</translation>
 <translation id="7569983096843329377">কালো</translation>
 <translation id="7575207903026901870">সাজেশন বোতাম সরান, এই সাজেশন সরাতে 'Enter' কী প্রেস করুন</translation>
@@ -2111,6 +2116,7 @@
 <translation id="7950027195171824198">Chrome সেটিংসে কুকি সম্পর্কিত পছন্দগুলি ম্যানেজ করুন</translation>
 <translation id="7951415247503192394">(৩২-বিট)</translation>
 <translation id="7953569069500808819">উপরের ধারের দিকে সেলাই</translation>
+<translation id="7954041596401851904">লিঙ্ক শেয়ার করে, QR কোড তৈরি করে, কাস্টিং করে বা আরও অন্য বিকল্পের সাহায্যে এই ট্যাব শেয়ার করুন।</translation>
 <translation id="7956713633345437162">মোবাইল বুকমার্ক</translation>
 <translation id="7961015016161918242">কখনই নয়</translation>
 <translation id="7966803981046576691">চাকরির অ্যাকাউন্টের ধরন</translation>
@@ -2184,6 +2190,7 @@
 <translation id="8202370299023114387">দ্বন্দ্ব</translation>
 <translation id="8206978196348664717">Prc4 (Envelope)</translation>
 <translation id="8211406090763984747">কানেকশনটি নিরাপদ</translation>
+<translation id="8215696832828595581">Chrome বোতাম কাস্টমাইজ করুন, আপনার ব্রাউজার কেমন দেখতে হবে সেটি কাস্টমাইজ করতে Enter প্রেস করুন।</translation>
 <translation id="8218327578424803826">নির্ধারিত লোকেশন:</translation>
 <translation id="8220146938470311105">C7/C6 (Envelope)</translation>
 <translation id="8225771182978767009">এই কম্পিউটার যিনি সেট-আপ করেছেন তিনি এই সাইটটি অবরুদ্ধ করার বিষয়টি চয়ন করেছেন।</translation>
@@ -2325,6 +2332,7 @@
 <translation id="868922510921656628">সেট প্রতি পৃষ্ঠা</translation>
 <translation id="869891660844655955">মেয়াদকাল সমাপ্তির তারিখ</translation>
 <translation id="8699041776323235191">HID ডিভাইস</translation>
+<translation id="8699899385443889493">Chrome ডাইনো গেম বোতাম চালু করুন, Chrome-এ ডাইনো রান গেম খেলতে Enter প্রেস করুন</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" />-এ আপনার কানেকশন এনক্রিপ্ট হয় নি৷</translation>
 <translation id="8705331520020532516">ক্রমিক সংখ্যা</translation>
 <translation id="8708134712139312373">ব্লুটুথ ডিভাইসের সাথে কানেক্ট করার অনুমতি চাইতে পারে</translation>

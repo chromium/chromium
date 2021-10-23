@@ -108,6 +108,7 @@
 <translation id="129863573139666797"><ph name="BEGIN_LINK" />ଆପଣଙ୍କର କୁକୀଗୁଡିକୁ ଖାଲି କରିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="1301324364792935241">ଆପଣଙ୍କର ସୁରକ୍ଷିତ DNS ସେଟିଂସ୍ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="1307966114820526988">ଅଗ୍ରାହ୍ୟ କରାଯାଇଥିବା ଫିଚର୍‍ଗୁଡ଼ିକ</translation>
+<translation id="1308113895091915999">ଅଫର ଉପଲବ୍ଧ ଅଛି</translation>
 <translation id="1312803275555673949">କେଉଁ ପ୍ରମାଣ ଏହାକୁ ସମର୍ଥନ କରେ?</translation>
 <translation id="131405271941274527">ଏକ NFC ଡିଭାଇସ୍‌ରେ ଆପଣ ନିଜର ଫୋନ୍ ଟାପ୍ କରିବା ପରେ <ph name="URL" /> ସୂଚନା ପଠାଇବାକୁ ତଥା ପ୍ରାପ୍ତ କରିବାକୁ ଚାହେଁ</translation>
 <translation id="1314509827145471431">ଡାହାଣ ପଟରେ ବାଇଣ୍ଡ</translation>
@@ -609,6 +610,7 @@
 <translation id="2987034854559945715">କୌଣସି ମେଳ ହେଉଥିବା ଫିଚର୍‍ଗୁଡ଼ିକ ନାହିଁ</translation>
 <translation id="2989742184762224133">ଉପର ପଟରେ ଦୁଇଟି ଷ୍ଟାପଲ୍</translation>
 <translation id="2991174974383378012">ୱେବ୍‍ସାଇଟ୍ ସହିତ ସେୟାର୍ କରାଯାଇଛି</translation>
+<translation id="299122504639061328">ଆପଣଙ୍କ ଡିଫଲ୍ଟ ସନ୍ଧାନ ଇଞ୍ଜିନ ଏବଂ ସାଇଟ ସନ୍ଧାନକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="2991571918955627853">ବର୍ତ୍ତମାନ ଆପଣ <ph name="SITE" />କୁ ଯାଇପାରିବେ ନାହିଁ କାରଣ ୱେବ୍‌ସାଇଟ୍‍ HSTS ବ୍ୟବହାର କରେ। ସାଧାରଣତଃ ନେଟ୍‍ୱର୍କ ତ୍ରୁଟି ଏବଂ ଆକ୍ରମଣ ଅସ୍ଥାୟୀ ଅଟେ, ତେଣୁ ସମ୍ଭବତଃ ଏହି ପୃଷ୍ଠା ପରେ କାର୍ଯ୍ୟ କରିବ।</translation>
 <translation id="2995517112308048736">ଫାଇଲର ଆକାର:</translation>
 <translation id="3002501248619246229">ଇନପୁଟ୍ ଟ୍ରେ ମିଡିଆ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
@@ -950,6 +952,7 @@
 <translation id="4123572138124678573">ତଳ ପଟରେ ତିନୋଟି ପଞ୍ଚ୍</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 ଅନ୍ୟ}other{#ଟି ଅନ୍ୟ}}</translation>
 <translation id="4130226655945681476">ନେଟ୍‌ୱର୍କ କେବଲ୍‌, ମୋଡେମ୍‌ ଏବଂ ରାଉଟର୍‌ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
+<translation id="4133224101597112888">"ଏହି ଟାବକୁ ସେୟାର କରନ୍ତୁ" ବଟନ, ଲିଙ୍କ ସେୟାର କରି, ଏକ QR କୋଡ ତିଆରି କରି, କାଷ୍ଟ କରି ଓ ଆହୁରି ଅନେକ ଉପାୟରେ ଏହି ଟାବକୁ ସେୟାର କରିବା ପାଇଁ Enter ଦବାନ୍ତୁ।</translation>
 <translation id="4134123981501319574">ଡକ୍ୟୁମେଣ୍ଟ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="413544239732274901">ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="4142935452406587478">ଟ୍ରେ 10</translation>
@@ -1375,6 +1378,7 @@
 <translation id="5426179911063097041"><ph name="SITE" /> ଆପଣଙ୍କୁ ବିଜ୍ଞପ୍ତି ପଠାଇବାକୁ ଚାହୁଁଛି</translation>
 <translation id="5428105026674456456">ସ୍ପାନିଶ୍</translation>
 <translation id="5430298929874300616">ବୁକମାର୍କ୍ କାଢ଼ିଦିଅନ୍ତୁ</translation>
+<translation id="5434889539950523874"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />, ଲିଙ୍କ ସେୟାର କରି, ଏକ QR କୋଡ ତିଆରି କରି, କାଷ୍ଟ କରି ଓ ଆହୁରି ଅନେକ ଉପାୟରେ ଏହି ଟାବକୁ ସେୟାର କରିବା ପାଇଁ Tab କରି Enter ଦବାନ୍ତୁ।</translation>
 <translation id="5439770059721715174">"<ph name="ERROR_PATH" />"ରେ ସ୍କିମା ବୈଧିକରଣ ତ୍ରୁଟି: <ph name="ERROR" /></translation>
 <translation id="5443468954631487277">ଓଲଟା ଅର୍ଡରରେ ଫେସ୍ ଅପ୍</translation>
 <translation id="5447765697759493033">ଏହି ସାଇଟ୍‌ ଅନୁବାଦ କରାଯିବ ନାହିଁ</translation>
@@ -1981,6 +1985,7 @@
 <translation id="7559278538486662777">ଏହି ଆପକୁ ରିସାଇଜ୍ କରାଯାଇପାରିବ ନାହିଁ।</translation>
 <translation id="7564049878696755256">ଆପଣଙ୍କର <ph name="ORG_NAME" /> ଆକାଉଣ୍ଟ ପାଇଁ ଥିବା ଆକ୍ସେସ୍ ହରାଇବା କିମ୍ବା ନିଜର ପରିଚୟ ଚୋରି ହେବାର ଅନୁଭୁତି ପ୍ରାପ୍ତ କରିପାରନ୍ତି। ବର୍ତ୍ତମାନ Chrome ଆପଣଙ୍କୁ ପାସ୍‌ୱର୍ଡ ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ ସୁପାରିଶ୍‌ କରୁଛି।</translation>
 <translation id="7567204685887185387">ଏହା <ph name="DOMAIN" /> ଅଟେ ବୋଲି ଏହି ସର୍ଭର୍ ପ୍ରମାଣ କରିପାରିଲା ନାହିଁ; ଏହାର ସୁରକ୍ଷା ସାର୍ଟିଫିକେଟ୍ ହୁଏତ ପ୍ରବଞ୍ଚନାପୂର୍ବକ ଭାବରେ ଜାରି କରାଯାଇଥାଇପାରେ। ଏହା ହୁଏତ ଏକ ଭୁଲ କନଫିଗ୍‌ରେସନ୍ କିମ୍ବା ଜଣେ ଆକ୍ରମଣକାରୀ ଆପଣଙ୍କର ସଂଯୋଗକୁ ପ୍ରତିରୋଧ କରୁଥିବା କାରଣରୁ ହୋଇଥାଇପାରେ।</translation>
+<translation id="7569761772822664555">ସନ୍ଧାନ ଇଞ୍ଜିନ ବଟନକୁ ପରିଚାଳନା କରନ୍ତୁ, ଆପଣଙ୍କ ଡିଫଲ୍ଟ ସନ୍ଧାନ ଇଞ୍ଜିନ ଏବଂ ସାଇଟ ସନ୍ଧାନକୁ ପରିଚାଳନା କରିବା ପାଇଁ Enter ଦବାନ୍ତୁ</translation>
 <translation id="7569952961197462199">Chromeରୁ କ୍ରେଡିଟ୍‍ କାର୍ଡ କାଢ଼ିବେ?</translation>
 <translation id="7569983096843329377">କଳା</translation>
 <translation id="7575207903026901870">ପ୍ରସ୍ତାବ ବଟନ୍‍କୁ କାଢ଼ି ଦିଅନ୍ତୁ, ଏହି ପ୍ରସ୍ତାବକୁ କାଢ଼ିବା ପାଇଁ Enter ଦବାନ୍ତୁ</translation>
@@ -2098,6 +2103,7 @@
 <translation id="7950027195171824198">Chrome ସେଟିଂସରେ ଆପଣଙ୍କ କୁକୀ ପସନ୍ଦଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="7951415247503192394">(32-ବିଟ୍)</translation>
 <translation id="7953569069500808819">ଉପର ପଟରେ ଏଜ୍ ଷ୍ଟିଚ୍</translation>
+<translation id="7954041596401851904">ଲିଙ୍କ ସେୟାର କରି, ଏକ QR କୋଡ ତିଆରି କରି, କାଷ୍ଟ କରି ଓ ଆହୁରି ଅନେକ ଉପାୟରେ ଏହି ଟାବକୁ ସେୟାର କରନ୍ତୁ।</translation>
 <translation id="7956713633345437162">ମୋବାଇଲ୍‍ ବୁକ୍‍ମାର୍କ</translation>
 <translation id="7961015016161918242">ଆଦୌ ନୁହେଁ</translation>
 <translation id="7966803981046576691">ଜବ୍ ଆକାଉଣ୍ଟ ପ୍ରକାର</translation>
@@ -2171,6 +2177,7 @@
 <translation id="8202370299023114387">ବିବାଦ</translation>
 <translation id="8206978196348664717">Prc4 (ଏନଭଲପ୍)</translation>
 <translation id="8211406090763984747">ସଂଯୋଗ ସୁରକ୍ଷିତ ଅଛି</translation>
+<translation id="8215696832828595581">"Chromeକୁ କଷ୍ଟମାଇଜ କରନ୍ତୁ" ବଟନ, ଆପଣଙ୍କ ବ୍ରାଉଜରର ଲୁକ କଷ୍ଟମାଇଜ କରିବାକୁ Enter ଦବାନ୍ତୁ।</translation>
 <translation id="8218327578424803826">ହସ୍ତାନ୍ତରିତ ଲୋକେସନ୍:</translation>
 <translation id="8220146938470311105">C7/C6 (ଏନଭଲପ୍)</translation>
 <translation id="8225771182978767009">ଯେଉଁ ବ୍ୟକ୍ତି ଏହି କମ୍ପ୍ୟୁଟର୍‌ ସେଟ୍‍ ଅପ୍‍ କରିଛନ୍ତି, ସିଏ ଏହି ସାଇଟ୍‍ ଅବରୋଧ କରିବାକୁ ବାଛିଛନ୍ତି।</translation>
@@ -2312,6 +2319,7 @@
 <translation id="868922510921656628">ପ୍ରତି ସେଟ୍ ପୃଷ୍ଠାଗୁଡ଼ିକ</translation>
 <translation id="869891660844655955">ମିଆଦ ଶେଷ ହେଉଥିବା ତାରିଖ</translation>
 <translation id="8699041776323235191">HID ଡିଭାଇସ୍</translation>
+<translation id="8699899385443889493">"Chrome Dino ଗେମ ଖେଳନ୍ତୁ" ବଟନ, Chromeରେ Dino Run ଗେମ ଖେଳିବାକୁ Enter ଦବାନ୍ତୁ</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> ସହ ଆପଣଙ୍କର ସଂଯୋଜନା ଏନକ୍ରିପ୍ଟ ହୋଇ ନାହିଁ ।</translation>
 <translation id="8705331520020532516">କ୍ରମିକ ସଂଖ୍ୟା</translation>
 <translation id="8708134712139312373">ବ୍ଲୁଟୁଥ୍ ଡିଭାଇସଗୁଡ଼ିକ ସହ ସଂଯୋଗ କରିବାକୁ ସାଇଟ୍ ପଚାରିପାରେ</translation>

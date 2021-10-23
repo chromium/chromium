@@ -423,6 +423,7 @@
 <translation id="1436390408194692385">Validità per <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436784010935106834">Rimosso</translation>
 <translation id="1437986450143295708">Descrivi il problema in modo dettagliato</translation>
+<translation id="1439671507542716852">assistenza a lungo termine</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> selezionati</translation>
 <translation id="1442851588227551435">Impostare richiesta di Kerberos attiva</translation>
 <translation id="1444628761356461360">Questa impostazione è controllata dal proprietario del dispositivo, <ph name="OWNER_EMAIL" />.</translation>
@@ -1425,6 +1426,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2454264884354864965">La fotocamera è spenta</translation>
 <translation id="245650153866130664">Per aggiornare automaticamente una richiesta, seleziona "Memorizza la password". La tua password verrà memorizzata solo sul tuo dispositivo.</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> vorrebbe copiare file da <ph name="VOLUME_NAME" />.</translation>
+<translation id="2457842160081795172">Canale corrente: <ph name="CHANNEL_NAME" /></translation>
 <translation id="2458379781610688953">Aggiorna account, <ph name="EMAIL" /></translation>
 <translation id="2458591546854598341">Token di gestione del dispositivo non valido.</translation>
 <translation id="2459703812219683497">Codice di attivazione rilevato</translation>

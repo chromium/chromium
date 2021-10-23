@@ -321,6 +321,7 @@
 <translation id="2932222164150889403">Клавиатурата ви няма да се промени</translation>
 <translation id="2942036813789421260">Разделът за визуализация е затворен</translation>
 <translation id="2946420957526726953">Chrome се актуализира, за да може да се свързва с други устройства</translation>
+<translation id="2951071800649516099">Добавете страници към списъка за четене по-късно</translation>
 <translation id="2956410042958133412">Този профил се управлява от <ph name="PARENT_NAME_1" /> и <ph name="PARENT_NAME_2" />.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> непрочетена страница}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочетени страници}}</translation>
 <translation id="2961210776189273067">Обръщение</translation>
@@ -554,6 +555,7 @@
 <translation id="4452411734226507615">Затваряне на раздела „<ph name="TAB_TITLE" />“</translation>
 <translation id="4452548195519783679">Отметката бе запазена в/ъв „<ph name="FOLDER_NAME" />“</translation>
 <translation id="4472118726404937099">Влезте в профила си и включете синхронизирането, за да се възползвате от синхронизиране и персонализиране на всички устройства</translation>
+<translation id="4479839115899251637">Изтр. от списъка за четене</translation>
 <translation id="4479972344484327217">Модулът „<ph name="MODULE" />“ за Chrome се инсталира…</translation>
 <translation id="4487967297491345095">Всички данни на приложението Chrome ще се изтрият за постоянно. Това включва всички файлове, настройки, профили, бази от данни и др.</translation>
 <translation id="449126573531210296">Синхронизираните пароли да се шифроват с идентификационните данни за профила ви в Google</translation>
@@ -996,6 +998,7 @@
 <translation id="6945221475159498467">Избиране</translation>
 <translation id="6955535239952325894">Тази настройка е деактивирана за управлявани браузъри</translation>
 <translation id="6963766334940102469">Изтриване на отметките</translation>
+<translation id="6964116075545915250">Списък за четене: Редакция</translation>
 <translation id="696447261358045621">Излизане от режим „инкогнито“</translation>
 <translation id="6979737339423435258">За цялото време</translation>
 <translation id="6981982820502123353">Достъпност</translation>
@@ -1003,6 +1006,7 @@
 <translation id="6989267951144302301">Неуспешно изтегляне</translation>
 <translation id="6995899638241819463">Предупреждение за разкрити пароли при нарушение на сигурността на данните</translation>
 <translation id="7001056293070445572">Този файл е голям (<ph name="FILE_SIZE" />)</translation>
+<translation id="7020741890149022655">Списък за четене: Добав. <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Отваряне в браузъра</translation>
 <translation id="702463548815491781">Препоръчва се, когато TalkBack или достъпът с превключване са задействани</translation>
 <translation id="7027549951530753705">Файлът „<ph name="ITEM_TITLE" />“ бе възстановен</translation>

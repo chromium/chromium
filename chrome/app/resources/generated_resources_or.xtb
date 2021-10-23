@@ -424,6 +424,7 @@
 <translation id="1436390408194692385"><ph name="TICKET_TIME_LEFT" /> ପର୍ଯ୍ୟନ୍ତ ବୈଧ ଅଟେ</translation>
 <translation id="1436784010935106834">କାଢ଼ି ଦିଆଯାଇଛି</translation>
 <translation id="1437986450143295708">ସମସ୍ୟାଟିକୁ ବିଶଦ ଭାବେ ବର୍ଣ୍ଣନା କରନ୍ତୁ</translation>
+<translation id="1439671507542716852">ଦୀର୍ଘକାଳୀନ ସହାୟତା</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> ଚୟନ କରାଯାଇଛି</translation>
 <translation id="1442851588227551435">ସକ୍ରିୟ Kerberos ଟିକେଟ୍ ସେଟ୍ କରନ୍ତୁ</translation>
 <translation id="1444628761356461360">ଡିଭାଇସ୍ ମାଲିକ, <ph name="OWNER_EMAIL" />ଙ୍କ ଦ୍ୱାରା.ଏହି ସେଟିଂ ପରିଚାଳନା କରାଯାଉଛି।</translation>
@@ -1423,6 +1424,7 @@
 <translation id="2454264884354864965">କ୍ୟାମେରା ବନ୍ଦ ଅଛି</translation>
 <translation id="245650153866130664">କୌଣସି ଟିକେଟ୍ ସ୍ୱଚାଳିତ ଭାବେ ରିଫ୍ରେଶ୍ କରିବାକୁ, "ପାସ୍‍ୱାର୍ଡ ମନେ ରଖନ୍ତୁ" ବିକଳ୍ପରେ ଚେକ୍ କରନ୍ତୁ। ଆପଣଙ୍କର ପାସ୍‍ୱାର୍ଡ କେବଳ ଆପଣଙ୍କର ଡିଭାଇସ୍‍‍ରେ ସେଭ୍ ହୋଇଯିବ।</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> <ph name="VOLUME_NAME" />ରୁ ଫାଇଲ୍‌ଗୁଡ଼ିକୁ କପି କରିବାକୁ ଚାହୁଁଛି।</translation>
+<translation id="2457842160081795172">ବର୍ତ୍ତମାନ <ph name="CHANNEL_NAME" /> ଚ୍ୟାନେଲରେ ଅଛନ୍ତି</translation>
 <translation id="2458379781610688953">ଆକାଉଣ୍ଟ ଅପ୍‌ଡେଟ୍ କରନ୍ତୁ, <ph name="EMAIL" /></translation>
 <translation id="2458591546854598341">ଡିଭାଇସ୍ ପରିଚାଳନା ଟୋକନ୍ ଅବୈଧ ଅଟେ।</translation>
 <translation id="2459703812219683497">ସକ୍ରିୟକରଣ କୋଡକୁ ଚିହ୍ନଟ କରାଯାଇଛି</translation>
@@ -2062,6 +2064,7 @@
 <translation id="310671807099593501">ସାଇଟ୍ ଆପଣଙ୍କର ବ୍ଲୁଟୁଥ୍ ବ୍ୟବହାର କରୁଛି।</translation>
 <translation id="3108931485517391283">ପ୍ରାପ୍ତ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="3109724472072898302">ସଙ୍କୁଚିତ କରାଗଲା</translation>
+<translation id="311214366526552035">ଯେ କୌଣସି ମତେ ଡାଉନଲୋଡ କରନ୍ତୁ</translation>
 <translation id="311394601889664316">ଆପଣଙ୍କ ଡିଭାଇସରେ ଫାଇଲ୍ କିମ୍ଵା ଫୋଲ୍ଡରଗୁଡ଼ିକୁ ଏଡିଟ୍ କରିବା ପାଇଁ ସାଇଟଗୁଡ଼ିକୁ ଅନୁମତି ଦିଅନ୍ତୁ ନାହିଁ</translation>
 <translation id="3115147772012638511">କେଚ୍ ନିମନ୍ତେ ପ୍ରତୀକ୍ଷାରତ...</translation>
 <translation id="3115580024857770654">ସବୁ ସଙ୍କୁଚିତ କରନ୍ତୁ</translation>
@@ -2341,6 +2344,7 @@
 <translation id="3429160811076349561">ଟ୍ରାଏଲ୍ ଫିଚରଗୁଡ଼ିକ ବନ୍ଦ ଅଛି</translation>
 <translation id="3429271624041785769">ୱେବ୍ ବିଷୟବସ୍ତୁ ଭାଷାଗୁଡ଼ିକ</translation>
 <translation id="3429275422858276529">ଏହାକୁ ପରେ ସହଜରେ ଖୋଜିବା ପାଇଁ ଏହି ପୃଷ୍ଠାକୁ ବୁକ୍‌ମାର୍କ କରନ୍ତୁ</translation>
+<translation id="343115368966109153"><ph name="FILE_NAME" />କୁ ଡାଉନଲୋଡ କରିବେ? ଡିଭାଇସକୁ ବ୍ୟବହାର କରୁଥିବା ଯେ କୌଣସି ବ୍ୟକ୍ତି ଏହାକୁ ଦେଖିପାରିବେ।</translation>
 <translation id="3432227430032737297">ସମସ୍ତ ପ୍ରଦର୍ଶନକୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="3432762828853624962">ସେୟାର୍ କରାଯାଇଥିବା କର୍ମୀ</translation>
 <translation id="3433621910545056227">ଓହୋ!  ସିଷ୍ଟମ୍‌, ଡିଭାଇସ୍‌ ଇନ୍‌ଷ୍ଟଲେସନ୍-ସମୟ ବୈଶିଷ୍ଟ୍ୟ ଲକ୍‌ ସ୍ଥାପନା କରିବାରେ ବିଫଳ ହୋଇଛି।</translation>
@@ -2682,6 +2686,7 @@
 <translation id="3777806571986431400">ଏକ୍ସଟେନ୍‌ସନ୍ ସକ୍ଷମ କରାଯାଇଛି</translation>
 <translation id="3778152852029592020">ଡାଉନଲୋଡ୍ ବାତିଲ୍‍ କରାଗଲା।</translation>
 <translation id="3778208826288864398">ସୁରକ୍ଷା କୀ ଲକ୍ ହୋଇଯାଇଛି କାରଣ ଭୁଲ ପିନ୍ ବହୁତ ଥର ଲେଖାଯାଇଥିଲା। ଆପଣଙ୍କୁ ସୁରକ୍ଷା କୀ ରିସେଟ୍ କରିବା ପାଇଁ ଆବଶ୍ୟକ ପଡ଼ିବ।</translation>
+<translation id="3778369586810509692">ଏହି ଫାଇଲକୁ ଡିଭାଇସରେ ଷ୍ଟୋର କରାଯିବ ଏବଂ ସମସ୍ତେ ଏହାକୁ ଦେଖିବା ପାଇଁ ସକ୍ଷମ ହେବେ।</translation>
 <translation id="3778740492972734840">&amp;ଡେଭଲପର୍‍ ଟୁଲ୍‍</translation>
 <translation id="3778868487658107119">ଏହାକୁ ପ୍ରଶ୍ନଗୁଡ଼ିକ ପଚାରନ୍ତୁ। ଏହାକୁ କିଛି କରିବାକୁ କୁହନ୍ତୁ। ଏହା ଆପଣଙ୍କ ବ୍ୟକ୍ତିଗତ Google, ସହାୟତା ପାଇଁ ସର୍ବଦା ପ୍ରସ୍ତୁତ।</translation>
 <translation id="3781742599892759500">Linux ମାଇକ୍ରୋଫୋନ୍ ଆକ୍ସେସ୍</translation>
@@ -4695,6 +4700,7 @@
 <translation id="597235323114979258">ପ୍ରିଣ୍ଟ କରିବା ପାଇଁ ଅଧିକ ଡିଭାଇସ୍ ଦେଖନ୍ତୁ</translation>
 <translation id="5972666587303800813">ସେବାରେ ନାହିଁ</translation>
 <translation id="5972708806901999743">ଶୀର୍ଷକୁ ଘୁଞ୍ଚାନ୍ତୁ</translation>
+<translation id="5972801171078377748">ପୁଣି ଦେଖାନ୍ତୁ ନାହିଁ</translation>
 <translation id="5972826969634861500"><ph name="PRODUCT_NAME" /> ଆରମ୍ଭ କରନ୍ତୁ</translation>
 <translation id="5973041996755340290">"<ph name="CLIENT_NAME" />" ଏହି ବ୍ରାଉଜରକୁ ଡିବଗ୍ କରିବା ଆରମ୍ଭ କରିଛି</translation>
 <translation id="5973605538625120605">ଏକ ପିନ୍ ବଦାଳାନ୍ତୁ</translation>

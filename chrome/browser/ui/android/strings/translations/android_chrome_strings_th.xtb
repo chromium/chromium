@@ -321,6 +321,7 @@
 <translation id="2932222164150889403">แป้นพิมพ์จะไม่เปลี่ยนแปลง</translation>
 <translation id="2942036813789421260">แท็บแสดงตัวอย่างปิดอยู่</translation>
 <translation id="2946420957526726953">กำลังอัปเดต Chrome เพื่อเชื่อมต่อกับอุปกรณ์อื่นๆ</translation>
+<translation id="2951071800649516099">เพิ่มหน้าเว็บลงในเรื่องรออ่านไว้อ่านภายหลัง</translation>
 <translation id="2956410042958133412">บัญชีนี้ได้รับการจัดการโดย <ph name="PARENT_NAME_1" /> และ <ph name="PARENT_NAME_2" /></translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{ยังไม่อ่าน <ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> หน้า}other{ยังไม่อ่าน <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> หน้า}}</translation>
 <translation id="2961210776189273067">คำนำหน้าชื่อ</translation>
@@ -554,6 +555,7 @@
 <translation id="4452411734226507615">ปิดแท็บ <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">เพิ่มบุ๊กมาร์กไปยัง <ph name="FOLDER_NAME" /> แล้ว</translation>
 <translation id="4472118726404937099">ลงชื่อเข้าใช้และเปิดการซิงค์เพื่อซิงค์และปรับเปลี่ยนข้อมูลตามความต้องการในอุปกรณ์ทุกเครื่อง</translation>
+<translation id="4479839115899251637">ลบออกจากเรื่องรออ่าน</translation>
 <translation id="4479972344484327217">กำลังติดตั้ง <ph name="MODULE" /> สำหรับ Chrome…</translation>
 <translation id="4487967297491345095">ระบบจะลบข้อมูลแอปทั้งหมดของ Chrome อย่างถาวร ซึ่งรวมถึงไฟล์ทั้งหมด การตั้งค่า บัญชี ฐานข้อมูล และอื่นๆ</translation>
 <translation id="449126573531210296">เข้ารหัสรหัสผ่านที่ซิงค์กับบัญชี Google ของคุณ</translation>
@@ -996,6 +998,7 @@
 <translation id="6945221475159498467">เลือก</translation>
 <translation id="6955535239952325894">การตั้งค่านี้ปิดใช้อยู่ในเบราว์เซอร์ที่มีการจัดการ</translation>
 <translation id="6963766334940102469">ลบบุ๊กมาร์ก</translation>
+<translation id="6964116075545915250">แก้ไขเรื่องรออ่าน</translation>
 <translation id="696447261358045621">ออกจากโหมดไม่ระบุตัวตน</translation>
 <translation id="6979737339423435258">ตั้งแต่ต้น</translation>
 <translation id="6981982820502123353">การช่วยเหลือพิเศษ</translation>
@@ -1003,6 +1006,7 @@
 <translation id="6989267951144302301">ดาวน์โหลดไม่ได้</translation>
 <translation id="6995899638241819463">เตือนคุณในกรณีที่รหัสผ่านรั่วไหลจากการละเมิดข้อมูล</translation>
 <translation id="7001056293070445572">ไฟล์นี้มีขนาดใหญ่ (<ph name="FILE_SIZE" />)</translation>
+<translation id="7020741890149022655">เพิ่มลงในเรื่องรออ่าน <ph name="BEGIN_NEW" />ใหม่<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">เปิดในเบราว์เซอร์</translation>
 <translation id="702463548815491781">แนะนำให้ใช้เมื่อ TalkBack หรือการเข้าถึงด้วยสวิตช์เปิดอยู่</translation>
 <translation id="7027549951530753705">คืนค่า <ph name="ITEM_TITLE" /> แล้ว</translation>

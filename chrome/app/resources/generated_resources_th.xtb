@@ -423,6 +423,7 @@
 <translation id="1436390408194692385">ใช้ได้เป็นเวลา <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436784010935106834">ลบออกแล้ว</translation>
 <translation id="1437986450143295708">อธิบายปัญหาอย่างละเอียด</translation>
+<translation id="1439671507542716852">การสนับสนุนระยะยาว</translation>
 <translation id="144283815522798837">เลือกไว้ <ph name="NUMBER_OF_ITEMS_SELECTED" /> รายการ</translation>
 <translation id="1442851588227551435">ตั้งค่าตั๋ว Kerberos ที่ใช้งานอยู่</translation>
 <translation id="1444628761356461360"><ph name="OWNER_EMAIL" /> ซึ่งเป็นเจ้าของอุปกรณ์เป็นผู้จัดการการตั้งค่านี้</translation>
@@ -1424,6 +1425,7 @@
 <translation id="2454264884354864965">กล้องปิดอยู่</translation>
 <translation id="245650153866130664">หากต้องการรีเฟรชตั๋วโดยอัตโนมัติ ให้เลือก “จำรหัสผ่าน” ระบบจะจัดเก็บรหัสผ่านไว้ในอุปกรณ์ของคุณเท่านั้น</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> ต้องการคัดลอกไฟล์จาก <ph name="VOLUME_NAME" /></translation>
+<translation id="2457842160081795172">ขณะนี้อยู่ที่ช่อง <ph name="CHANNEL_NAME" /></translation>
 <translation id="2458379781610688953">อัปเดตบัญชี <ph name="EMAIL" /></translation>
 <translation id="2458591546854598341">โทเค็นการจัดการอุปกรณ์ไม่ถูกต้อง</translation>
 <translation id="2459703812219683497">ตรวจพบรหัสเปิดใช้งาน</translation>

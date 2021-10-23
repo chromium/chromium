@@ -424,6 +424,7 @@
 <translation id="1436390408194692385">Valide pendant <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436784010935106834">Supprimé</translation>
 <translation id="1437986450143295708">Décrivez en détail le problème rencontré</translation>
+<translation id="1439671507542716852">support à long terme</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> sélectionnés</translation>
 <translation id="1442851588227551435">Définir un ticket Kerberos actif</translation>
 <translation id="1444628761356461360">Ce paramètre est géré par le propriétaire de l'appareil : <ph name="OWNER_EMAIL" />.</translation>
@@ -1426,6 +1427,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2454264884354864965">La caméra est désactivée</translation>
 <translation id="245650153866130664">Pour actualiser automatiquement un ticket, cochez l'option "Mémoriser le mot de passe". Votre mot de passe n'est enregistré que sur votre appareil.</translation>
 <translation id="2457246892030921239">"<ph name="APP_NAME" />" souhaite copier des fichiers depuis "<ph name="VOLUME_NAME" />".</translation>
+<translation id="2457842160081795172">Actuellement sur la chaîne <ph name="CHANNEL_NAME" /></translation>
 <translation id="2458379781610688953">Mettre à jour le compte, <ph name="EMAIL" /></translation>
 <translation id="2458591546854598341">Le jeton de gestion des appareils n'est pas valide.</translation>
 <translation id="2459703812219683497">Code d'activation détecté</translation>

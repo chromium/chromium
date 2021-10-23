@@ -423,6 +423,7 @@
 <translation id="1436390408194692385">Período de validez: <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436784010935106834">Eliminado</translation>
 <translation id="1437986450143295708">Describe el problema de forma detallada</translation>
+<translation id="1439671507542716852">asistencia a largo plazo</translation>
 <translation id="144283815522798837">Cantidad seleccionada: <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
 <translation id="1442851588227551435">Activar un ticket de Kerberos</translation>
 <translation id="1444628761356461360">Esta configuración es administrada por el propietario del dispositivo: <ph name="OWNER_EMAIL" />.</translation>
@@ -1422,6 +1423,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2454264884354864965">La cámara está desactivada</translation>
 <translation id="245650153866130664">Para actualizar un ticket automáticamente, marca la opción "Recordar contraseña". Esta solo se almacenará en el dispositivo.</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> quiere copiar archivos de <ph name="VOLUME_NAME" />.</translation>
+<translation id="2457842160081795172">Actualmente, estás en el canal <ph name="CHANNEL_NAME" /></translation>
 <translation id="2458379781610688953">Actualizar cuenta, <ph name="EMAIL" /></translation>
 <translation id="2458591546854598341">El token de administración de dispositivos no es válido.</translation>
 <translation id="2459703812219683497">Se detectó el código de activación</translation>

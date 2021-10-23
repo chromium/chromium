@@ -613,6 +613,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2987034854559945715">Nessuna funzionalità corrispondente</translation>
 <translation id="2989742184762224133">Doppia pinzatura in alto</translation>
 <translation id="2991174974383378012">Condivisione con i siti web</translation>
+<translation id="299122504639061328">Gestisci il motore di ricerca predefinito e la ricerca su siti</translation>
 <translation id="2991571918955627853">Al momento non puoi visitare il sito web <ph name="SITE" /> perché utilizza HSTS. In genere gli errori di rete e gli attacchi sono temporanei, pertanto questa pagina potrebbe funzionare più tardi.</translation>
 <translation id="2995517112308048736">Dimensioni file:</translation>
 <translation id="3002501248619246229">Controlla contenuti multimediali cassetto di input</translation>
@@ -955,6 +956,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4123572138124678573">Tripla perforatura in basso</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 altro}other{# altri}}</translation>
 <translation id="4130226655945681476">Controllare i cavi di rete, il modem e il router</translation>
+<translation id="4133224101597112888">Pulsante Condividi questa scheda, premi Invio per condividere questa scheda, con opzioni per condividere il link, creare un codice QR, trasmettere e altro ancora.</translation>
 <translation id="4134123981501319574">Crea documento</translation>
 <translation id="413544239732274901">Scopri di più</translation>
 <translation id="4142935452406587478">Vassoio 10</translation>
@@ -1384,6 +1386,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5426179911063097041"><ph name="SITE" /> vuole inviarti notifiche</translation>
 <translation id="5428105026674456456">Spagnolo</translation>
 <translation id="5430298929874300616">Rimuovi preferito</translation>
+<translation id="5434889539950523874"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab e poi Invio per condividere questa scheda, con opzioni per condividere il link, creare un codice QR, trasmettere e altro ancora.</translation>
 <translation id="5439770059721715174">Errore di convalida dello schema in "<ph name="ERROR_PATH" />": <ph name="ERROR" /></translation>
 <translation id="5443468954631487277">Ordine inverso a faccia in su</translation>
 <translation id="5447765697759493033">Questo sito non verrà tradotto</translation>
@@ -1990,6 +1993,7 @@ Ulteriori dettagli:
 <translation id="7559278538486662777">Non è possibile ridimensionare questa app.</translation>
 <translation id="7564049878696755256">Potresti non riuscire più ad accedere al tuo account <ph name="ORG_NAME" /> o subire un furto d'identità. Chrome ti consiglia di cambiare subito la password.</translation>
 <translation id="7567204685887185387">Questo server non è riuscito a dimostrare che si tratta di <ph name="DOMAIN" />; il relativo certificato di sicurezza potrebbe essere stato emesso in modo fraudolento. Il problema potrebbe essere dovuto a un'errata configurazione o a un malintenzionato che intercetta la connessione.</translation>
+<translation id="7569761772822664555">Pulsante Gestisci motori di ricerca, premi Invio per gestire il motore di ricerca predefinito e la ricerca su siti</translation>
 <translation id="7569952961197462199">Rimuovere la carta di credito da Chrome?</translation>
 <translation id="7569983096843329377">Nero</translation>
 <translation id="7575207903026901870">Rimuovi il pulsante Suggerimento, premi INVIO per rimuovere questo suggerimento</translation>
@@ -2107,6 +2111,7 @@ Ulteriori dettagli:
 <translation id="7950027195171824198">Gestisci le preferenze relative ai cookie nelle impostazioni di Chrome</translation>
 <translation id="7951415247503192394">(a 32 bit)</translation>
 <translation id="7953569069500808819">Impuntura in alto</translation>
+<translation id="7954041596401851904">Condividi questa scheda, con opzioni per condividere il link, creare un codice QR, trasmettere e altro ancora.</translation>
 <translation id="7956713633345437162">Preferiti su disp. mobili</translation>
 <translation id="7961015016161918242">Mai</translation>
 <translation id="7966803981046576691">Tipo di account lavoro</translation>
@@ -2180,6 +2185,7 @@ Ulteriori dettagli:
 <translation id="8202370299023114387">Conflitto</translation>
 <translation id="8206978196348664717">Prc4 (Envelope)</translation>
 <translation id="8211406090763984747">La connessione è sicura</translation>
+<translation id="8215696832828595581">Pulsante Personalizza Chrome, premi Invio per personalizzare l'aspetto del browser.</translation>
 <translation id="8218327578424803826">Posizione assegnata:</translation>
 <translation id="8220146938470311105">C7/C6 (Busta)</translation>
 <translation id="8225771182978767009">La persona che ha configurato il computer ha deciso di bloccare questo sito.</translation>
@@ -2322,6 +2328,7 @@ Ulteriori dettagli:
 <translation id="868922510921656628">Pagine per insieme</translation>
 <translation id="869891660844655955">Data di scadenza</translation>
 <translation id="8699041776323235191">Dispositivo HID</translation>
+<translation id="8699899385443889493">Pulsante Gioca a Dino di Chrome, premi Invio per giocare a Dino in Chrome</translation>
 <translation id="8703575177326907206">La connessione a <ph name="DOMAIN" /> non è criptata.</translation>
 <translation id="8705331520020532516">Numero di serie</translation>
 <translation id="8708134712139312373">Può chiedere di connettersi ai dispositivi Bluetooth</translation>

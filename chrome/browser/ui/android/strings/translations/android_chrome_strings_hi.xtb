@@ -319,6 +319,7 @@
 <translation id="2932222164150889403">आपका कीबोर्ड नहीं बदलेगा</translation>
 <translation id="2942036813789421260">झलक टैब बंद है</translation>
 <translation id="2946420957526726953">Chrome को अन्य डिवाइसों से कनेक्ट करने के लिए, अपडेट किया जा रहा है</translation>
+<translation id="2951071800649516099">बाद के लिए, अपनी रीडिंग लिस्ट में पेज जोड़ें</translation>
 <translation id="2956410042958133412">यह खाता <ph name="PARENT_NAME_1" /> और <ph name="PARENT_NAME_2" /> के द्वारा प्रबंधित है.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> पेज नहीं पढ़ा गया}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> पेज नहीं पढ़ा गया}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> पेज नहीं पढ़े गए}}</translation>
 <translation id="2961210776189273067">शीर्षक</translation>
@@ -552,6 +553,7 @@
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> टैब बंद करें</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> में बुकमार्क किया गया</translation>
 <translation id="4472118726404937099">सभी डिवाइस पर सिंक करने और मनमुताबिक बनाने के लिए, साइन इन करें और 'सिंक करें' को चालू करें</translation>
+<translation id="4479839115899251637">रीडिंग लिस्ट से मिटाएं</translation>
 <translation id="4479972344484327217">Chrome के लिए <ph name="MODULE" /> इंस्टॉल किया जा रहा है…</translation>
 <translation id="4487967297491345095">Chrome का सभी ऐप्लिकेशन डेटा हमेशा केे लिए हटा दिया जाएगा. इसमें सभी फ़ाइलें, सेटिंग, खाते, डेटाबेस वगैरह शामिल हैं.</translation>
 <translation id="449126573531210296">अपने Google खाते के क्रेडेंशियल का इस्तेमाल कर, सिंक किए गए पासवर्ड को सुरक्षित करें.</translation>
@@ -994,6 +996,7 @@
 <translation id="6945221475159498467">चुनें</translation>
 <translation id="6955535239952325894">यह सेटिंग, प्रबंधित किए गए ब्राउज़र पर काम नहीं करती है</translation>
 <translation id="6963766334940102469">बुकमार्क मिटाएं</translation>
+<translation id="6964116075545915250">रीडिंग लिस्ट में बदलाव करें</translation>
 <translation id="696447261358045621">गुप्त मोड से बाहर निकलें</translation>
 <translation id="6979737339423435258">हमेशा</translation>
 <translation id="6981982820502123353">सुलभता</translation>
@@ -1001,6 +1004,7 @@
 <translation id="6989267951144302301">डाउनलोड नहीं किया जा सका</translation>
 <translation id="6995899638241819463">डेटा का उल्लंघन होने पर अगर आपके पासवर्ड बिना अनुमति के सार्वजनिक हो जाते हैं, तो आपको चेतावनी मिलती है</translation>
 <translation id="7001056293070445572">यह फ़ाइल बड़ी (<ph name="FILE_SIZE" />) है</translation>
+<translation id="7020741890149022655">रीडिंग लिस्ट में जोड़ें <ph name="BEGIN_NEW" />नया<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">ब्राउज़र में खोलें</translation>
 <translation id="702463548815491781">उस समय के लिए सुझाया गया जब 'टॉकबैक' या 'ऐक्सेस करने का तरीका बदलें' चालू हों</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> को पहले जैसा किया गया</translation>

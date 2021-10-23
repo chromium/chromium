@@ -109,6 +109,7 @@
 <translation id="1680919990519905526">Magasiner cette image avec Lentille Google <ph name="BEGIN_NEW" />Nouv.<ph name="END_NEW" /></translation>
 <translation id="1682195225331129001">Essayer maintenant</translation>
 <translation id="1697284962337958118">Ajouter à</translation>
+<translation id="1702543251015153180">Modifier les paramètres de votre thème sombre?</translation>
 <translation id="1718835860248848330">Dernière heure</translation>
 <translation id="1724977129262658800">Déverrouillez pour modifier votre mot de passe</translation>
 <translation id="173522743738009831">À propos du bac à sable de confidentialité</translation>
@@ -259,6 +260,7 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="2581165646603367611">Cette action entraînera la suppression de tous les témoins, caches et autres données provenant de sites que Chrome estime ne pas être importants.</translation>
 <translation id="2587052924345400782">Version plus récente dispo</translation>
 <translation id="2593272815202181319">Espace simple</translation>
+<translation id="2604446170045642109">Vous pouvez désactiver le thème sombre des sites dans vos paramètres.</translation>
 <translation id="2612676031748830579">Numéro de la carte</translation>
 <translation id="2625189173221582860">Mot de passe copié</translation>
 <translation id="2631006050119455616">Enregistrées</translation>
@@ -319,6 +321,7 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="2932222164150889403">Votre clavier restera le même</translation>
 <translation id="2942036813789421260">L'onglet d'aperçu est fermé</translation>
 <translation id="2946420957526726953">Mise à jour de Chrome pour se connecter à d'autres appareils en cours…</translation>
+<translation id="2951071800649516099">Ajouter des pages à votre liste de lecture pour plus tard</translation>
 <translation id="2956410042958133412">Ce compte est géré par <ph name="PARENT_NAME_1" /> et <ph name="PARENT_NAME_2" />.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> page non lue}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> page non lue}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> pages non lues}}</translation>
 <translation id="2961210776189273067">Titre</translation>
@@ -552,6 +555,7 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="4452411734226507615">Fermer l'onglet <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Marqué comme favori dans <ph name="FOLDER_NAME" /></translation>
 <translation id="4472118726404937099">Pour profiter de la synchronisation et d'une expérience personnalisée, connectez-vous et activez la synchronisation</translation>
+<translation id="4479839115899251637">Sup. de la liste de lecture</translation>
 <translation id="4479972344484327217">Installation du <ph name="MODULE" /> dans Chrome en cours…</translation>
 <translation id="4487967297491345095">Toutes les données des applications de Chrome seront supprimées de façon définitive. Cela comprend tous les fichiers, les paramètres, les comptes, les bases de données, etc.</translation>
 <translation id="449126573531210296">Chiffrer les mots de passe synchronisés avec votre compte Google</translation>
@@ -994,6 +998,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6945221475159498467">Sélectionner</translation>
 <translation id="6955535239952325894">Ce paramètre est désactivé sur les navigateurs gérés</translation>
 <translation id="6963766334940102469">Supprimer des favoris</translation>
+<translation id="6964116075545915250">Modifier liste de lecture</translation>
 <translation id="696447261358045621">Désactiver le mode de navigation privée</translation>
 <translation id="6979737339423435258">Toutes les périodes</translation>
 <translation id="6981982820502123353">Accessibilité</translation>
@@ -1001,6 +1006,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6989267951144302301">Échec du téléchargement</translation>
 <translation id="6995899638241819463">Vous envoyer un avertissement si des mots de passe sont exposés dans une violation de données</translation>
 <translation id="7001056293070445572">Fichier volumineux (<ph name="FILE_SIZE" />)</translation>
+<translation id="7020741890149022655">Ajout. à liste lect. <ph name="BEGIN_NEW" />Nouveau<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Ouvrir dans le navigateur</translation>
 <translation id="702463548815491781">Recommandé lorsque le service TalkBack ou Switch Access est activé</translation>
 <translation id="7027549951530753705">Élément restauré : <ph name="ITEM_TITLE" /></translation>

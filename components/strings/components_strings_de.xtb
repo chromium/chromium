@@ -609,6 +609,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="2987034854559945715">Keine passenden Funktionen</translation>
 <translation id="2989742184762224133">Zwei Heftklammern oben</translation>
 <translation id="2991174974383378012">Datenfreigabe an Websites</translation>
+<translation id="299122504639061328">Standardmäßige Suchmaschine und Websitesuche verwalten</translation>
 <translation id="2991571918955627853">Sie können <ph name="SITE" /> derzeit nicht aufrufen, da die Website HSTS verwendet. Netzwerkfehler und Angriffe sind in der Regel nur vorübergehend, sodass die Seite wahrscheinlich später wieder funktioniert.</translation>
 <translation id="2995517112308048736">Dateigröße:</translation>
 <translation id="3002501248619246229">Medien im Eingabefach prüfen</translation>
@@ -951,6 +952,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="4123572138124678573">Dreifache Lochung unten</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 weiterer}other{# weitere}}</translation>
 <translation id="4130226655945681476">Netzwerkkabel, Modem und Router prüfen</translation>
+<translation id="4133224101597112888">Schaltfläche „Tab teilen“ – drücken Sie die Eingabetaste, um diesen Tab über den Link, über einen QR-Code, über Streamen usw. zu teilen.</translation>
 <translation id="4134123981501319574">Dokument erstellen</translation>
 <translation id="413544239732274901">Weitere Informationen</translation>
 <translation id="4142935452406587478">Fach 10</translation>
@@ -1376,6 +1378,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="5426179911063097041"><ph name="SITE" /> möchte Ihnen Benachrichtigungen senden</translation>
 <translation id="5428105026674456456">Spanisch</translation>
 <translation id="5430298929874300616">Lesezeichen löschen</translation>
+<translation id="5434889539950523874"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücken Sie die Tabulatortaste und dann die Eingabetaste, um diesen Tab über den Link, über einen QR-Code, über Streamen usw. zu teilen.</translation>
 <translation id="5439770059721715174">Schemavalidierungsfehler in "<ph name="ERROR_PATH" />": <ph name="ERROR" /></translation>
 <translation id="5443468954631487277">Umgekehrte Reihenfolge mit der Vorderseite nach oben</translation>
 <translation id="5447765697759493033">Diese Website wird nicht übersetzt</translation>
@@ -1983,6 +1986,7 @@ Weitere Details:
 <translation id="7559278538486662777">Die Größe dieser App kann nicht geändert werden.</translation>
 <translation id="7564049878696755256">Sie könnten den Zugriff auf Ihr <ph name="ORG_NAME" />-Konto verlieren oder zum Opfer von Identitätsdiebstahl werden. Chrome empfiehlt Ihnen, Ihr Passwort jetzt zu ändern.</translation>
 <translation id="7567204685887185387">Dieser Server konnte nicht beweisen, dass er <ph name="DOMAIN" /> ist. Sein Sicherheitszertifikat wurde möglicherweise in betrügerischer Absicht ausgegeben. Mögliche Gründe sind eine fehlerhafte Konfiguration oder ein Angreifer, der Ihre Verbindung abfängt.</translation>
+<translation id="7569761772822664555">Schaltfläche „Suchmaschinen verwalten“ – drücken Sie die Eingabetaste, um Ihre standardmäßige Suchmaschine und Websitesuche zu verwalten</translation>
 <translation id="7569952961197462199">Kreditkarte aus Chrome entfernen?</translation>
 <translation id="7569983096843329377">Schwarz</translation>
 <translation id="7575207903026901870">Schaltfläche "Vorschlag entfernen", zum Entfernen dieses Vorschlags Eingabetaste drücken</translation>
@@ -2100,6 +2104,7 @@ Weitere Details:
 <translation id="7950027195171824198">Cookie-Einstellungen in den Chrome-Einstellungen verwalten</translation>
 <translation id="7951415247503192394">(32-Bit)</translation>
 <translation id="7953569069500808819">Mehrere Heftklammern oben</translation>
+<translation id="7954041596401851904">Diesen Tab über den Link, über einen QR-Code, über Streamen usw. teilen.</translation>
 <translation id="7956713633345437162">Mobile Lesezeichen</translation>
 <translation id="7961015016161918242">Nie</translation>
 <translation id="7966803981046576691">Kontotyp des Auftrags</translation>
@@ -2173,6 +2178,7 @@ Weitere Details:
 <translation id="8202370299023114387">Konflikt</translation>
 <translation id="8206978196348664717">Prc4 (Umschlag)</translation>
 <translation id="8211406090763984747">Verbindung ist sicher</translation>
+<translation id="8215696832828595581">Schaltfläche „Chrome anpassen“ – drücken Sie die Eingabetaste, um das Erscheinungsbild Ihres Browsers anzupassen.</translation>
 <translation id="8218327578424803826">Zugewiesener Standort: </translation>
 <translation id="8220146938470311105">C7/C6 (Umschlag)</translation>
 <translation id="8225771182978767009">Die Person, die diesen Computer eingerichtet hat, hat diese Website gesperrt.</translation>
@@ -2315,6 +2321,7 @@ Weitere Details:
 <translation id="868922510921656628">Seiten pro Satz</translation>
 <translation id="869891660844655955">Ablaufdatum</translation>
 <translation id="8699041776323235191">HID-Gerät</translation>
+<translation id="8699899385443889493">Schaltfläche „Chrome Dino spielen“ – drücken Sie die Eingabetaste, um Chrome Dino zu spielen</translation>
 <translation id="8703575177326907206">Die Verbindung zu <ph name="DOMAIN" /> ist nicht verschlüsselt.</translation>
 <translation id="8705331520020532516">Seriennummer</translation>
 <translation id="8708134712139312373">Darf nachfragen, wenn sie eine Verbindung mit Bluetooth-Geräten herstellen möchte</translation>

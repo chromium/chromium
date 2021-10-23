@@ -321,6 +321,7 @@
 <translation id="2932222164150889403">Это не повлияет на вашу клавиатуру.</translation>
 <translation id="2942036813789421260">Вкладка предпросмотра закрыта</translation>
 <translation id="2946420957526726953">Обновление Chrome для подключения к другим устройствам</translation>
+<translation id="2951071800649516099">Добавьте страницы в список для чтения.</translation>
 <translation id="2956410042958133412">Этим аккаунтом управляют <ph name="PARENT_NAME_1" /> и <ph name="PARENT_NAME_2" />.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> непрочитанная страница}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитанная страница}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитанные страницы}many{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитанных страниц}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитанной страницы}}</translation>
 <translation id="2961210776189273067">Обращение</translation>
@@ -554,6 +555,7 @@
 <translation id="4452411734226507615">Закрыть вкладку "<ph name="TAB_TITLE" />"</translation>
 <translation id="4452548195519783679">Закладка добавлена в папку "<ph name="FOLDER_NAME" />"</translation>
 <translation id="4472118726404937099">Чтобы синхронизировать и персонализировать данные на всех устройствах, войдите в аккаунт и включите синхронизацию.</translation>
+<translation id="4479839115899251637">Убрать из списка для чтения</translation>
 <translation id="4479972344484327217">Установка модуля "<ph name="MODULE" />" для Chrome…</translation>
 <translation id="4487967297491345095">Все данные приложения Chrome, включая файлы, настройки, аккаунты и базы данных, будут безвозвратно удалены.</translation>
 <translation id="449126573531210296">Шифровать синхронизированные пароли с помощью учетных данных аккаунта Google</translation>
@@ -996,6 +998,7 @@
 <translation id="6945221475159498467">Выбрать</translation>
 <translation id="6955535239952325894">В управляемых браузерах эта настройка отключена</translation>
 <translation id="6963766334940102469">Удалить закладки</translation>
+<translation id="6964116075545915250">Изменить список для чтения</translation>
 <translation id="696447261358045621">Выйти из режима инкогнито</translation>
 <translation id="6979737339423435258">Все время</translation>
 <translation id="6981982820502123353">Спец. возможности</translation>
@@ -1003,6 +1006,7 @@
 <translation id="6989267951144302301">Не удалось скачать</translation>
 <translation id="6995899638241819463">Сообщать, если пароли были раскрыты в результате утечки данных</translation>
 <translation id="7001056293070445572">Файл большого размера (<ph name="FILE_SIZE" />).</translation>
+<translation id="7020741890149022655">Добавить в список для чтения <ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Открыть в браузере</translation>
 <translation id="702463548815491781">Рекомендовано при включенных функциях TalkBack и Switch Access</translation>
 <translation id="7027549951530753705">Восстановлен объект "<ph name="ITEM_TITLE" />"</translation>

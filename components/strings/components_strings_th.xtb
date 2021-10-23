@@ -609,6 +609,7 @@
 <translation id="2987034854559945715">ไม่มีฟีเจอร์ที่ตรงกัน</translation>
 <translation id="2989742184762224133">เย็บด้วยลวดเย็บกระดาษด้านบน 2 ครั้ง</translation>
 <translation id="2991174974383378012">การแชร์กับเว็บไซต์</translation>
+<translation id="299122504639061328">จัดการเครื่องมือค้นหาและการค้นหาเว็บไซต์เริ่มต้น</translation>
 <translation id="2991571918955627853">คุณไม่สามารถไปที่ <ph name="SITE" /> ได้ในขณะนี้เนื่องจากเว็บไซต์ใช้ HSTS โดยปกติข้อผิดพลาดของเครือข่ายและการโจมตีจะเกิดขึ้นเพียงชั่วคราว หน้านี้จึงอาจใช้งานได้ในภายหลัง</translation>
 <translation id="2995517112308048736">ขนาดไฟล์:</translation>
 <translation id="3002501248619246229">ตรวจสอบสื่อของถาดกระดาษเข้า</translation>
@@ -952,6 +953,7 @@
 <translation id="4123572138124678573">เจาะรูด้านล่าง 3 รู</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{อีก 1 รายการ}other{อีก # รายการ}}</translation>
 <translation id="4130226655945681476">ตรวจสอบสายเครือข่าย โมเด็ม และเราเตอร์</translation>
+<translation id="4133224101597112888">ปุ่มแชร์แท็บนี้ กด Enter เพื่อแชร์แท็บนี้โดยการแชร์ลิงก์ สร้างคิวอาร์โค้ด แคสต์ และอื่นๆ</translation>
 <translation id="4134123981501319574">สร้างเอกสาร</translation>
 <translation id="413544239732274901">ดูข้อมูลเพิ่มเติม</translation>
 <translation id="4142935452406587478">ถาด 10</translation>
@@ -1377,6 +1379,7 @@
 <translation id="5426179911063097041"><ph name="SITE" /> ต้องการส่งการแจ้งเตือนให้คุณ</translation>
 <translation id="5428105026674456456">สเปน</translation>
 <translation id="5430298929874300616">นำบุ๊กมาร์กออก</translation>
+<translation id="5434889539950523874"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อแชร์แท็บนี้โดยการแชร์ลิงก์ สร้างคิวอาร์โค้ด แคสต์ และอื่นๆ</translation>
 <translation id="5439770059721715174">ข้อผิดพลาดในการตรวจสอบรูปแบบที่ "<ph name="ERROR_PATH" />": <ph name="ERROR" /></translation>
 <translation id="5443468954631487277">ลำดับย้อนกลับหงายหน้าขึ้น</translation>
 <translation id="5447765697759493033">ระบบจะไม่แปลไซต์นี้</translation>
@@ -1984,6 +1987,7 @@
 <translation id="7559278538486662777">ปรับขนาดแอปนี้ไม่ได้</translation>
 <translation id="7564049878696755256">คุณอาจเข้าถึงบัญชี <ph name="ORG_NAME" /> ไม่ได้หรือถูกโจรกรรมข้อมูลประจำตัว Chrome ขอแนะนำให้เปลี่ยนรหัสผ่านตอนนี้เลย</translation>
 <translation id="7567204685887185387">เซิร์ฟเวอร์นี้ไม่สามารถพิสูจน์ได้ว่าเป็น <ph name="DOMAIN" /> เพราะอาจมีการออกใบรับรองความปลอดภัยปลอม โดยอาจเกิดจากการกำหนดค่าผิดหรือผู้บุกรุกที่ขัดขวางการเชื่อมต่อของคุณ</translation>
+<translation id="7569761772822664555">ปุ่มจัดการเครื่องมือค้นหา กด Enter เพื่อจัดการเครื่องมือค้นหาและการค้นหาเว็บไซต์เริ่มต้น</translation>
 <translation id="7569952961197462199">นำบัตรเครดิตออกจาก Chrome ไหม</translation>
 <translation id="7569983096843329377">สีดำ</translation>
 <translation id="7575207903026901870">ปุ่ม "นำคำแนะนำออก" กด Enter เพื่อนำคำแนะนำนี้ออก</translation>
@@ -2101,6 +2105,7 @@
 <translation id="7950027195171824198">จัดการค่ากำหนดเกี่ยวกับคุกกี้ในการตั้งค่า Chrome</translation>
 <translation id="7951415247503192394">(32 บิต)</translation>
 <translation id="7953569069500808819">เย็บขอบด้านบน</translation>
+<translation id="7954041596401851904">แชร์แท็บนี้โดยการแชร์ลิงก์ สร้างคิวอาร์โค้ด แคสต์ และอื่นๆ</translation>
 <translation id="7956713633345437162">บุ๊กมาร์กบนอุปกรณ์เคลื่อนที่</translation>
 <translation id="7961015016161918242">ไม่ต้องเลย</translation>
 <translation id="7966803981046576691">ประเภทบัญชีของงาน</translation>
@@ -2174,6 +2179,7 @@
 <translation id="8202370299023114387">ความขัดแย้ง</translation>
 <translation id="8206978196348664717">Prc4 (ซองจดหมาย)</translation>
 <translation id="8211406090763984747">การเชื่อมต่อปลอดภัย</translation>
+<translation id="8215696832828595581">ปุ่มปรับแต่ง Chrome กด Enter เพื่อปรับแต่งรูปลักษณ์ของเบราว์เซอร์</translation>
 <translation id="8218327578424803826">ตำแหน่งที่มอบหมาย:</translation>
 <translation id="8220146938470311105">C7/C6 (ซองจดหมาย)</translation>
 <translation id="8225771182978767009">ผู้ที่ตั้งค่าคอมพิวเตอร์เครื่องนี้เลือกบล็อกเว็บไซต์นี้</translation>
@@ -2316,6 +2322,7 @@
 <translation id="868922510921656628">จำนวนหน้าต่อชุด</translation>
 <translation id="869891660844655955">วันหมดอายุ</translation>
 <translation id="8699041776323235191">อุปกรณ์ HID</translation>
+<translation id="8699899385443889493">ปุ่มเล่นเกมไดโนเสาร์ Chrome กด Enter เพื่อเล่นเกมไดโนเสาร์วิ่งใน Chrome</translation>
 <translation id="8703575177326907206">การเชื่อมต่อของคุณไปยัง <ph name="DOMAIN" /> ไม่ได้รับการเข้ารหัส</translation>
 <translation id="8705331520020532516">หมายเลขซีเรียล</translation>
 <translation id="8708134712139312373">สามารถขอเชื่อมต่อกับอุปกรณ์บลูทูธได้</translation>

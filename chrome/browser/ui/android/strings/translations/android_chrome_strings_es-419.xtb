@@ -321,6 +321,7 @@ Para buscar una palabra, mantenla presionada. Si quieres definir mejor la búsqu
 <translation id="2932222164150889403">No cambiará tu teclado.</translation>
 <translation id="2942036813789421260">Se cerró la pestaña de vista previa</translation>
 <translation id="2946420957526726953">Actualizando Chrome para conectar a otros dispositivos.</translation>
+<translation id="2951071800649516099">Agrega páginas a la lista de lectura para retomarlas más tarde</translation>
 <translation id="2956410042958133412"><ph name="PARENT_NAME_1" /> y <ph name="PARENT_NAME_2" /> administran esta cuenta.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> página no leída}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> páginas no leídas}}</translation>
 <translation id="2961210776189273067">Cargo</translation>
@@ -554,6 +555,7 @@ Para buscar una palabra, mantenla presionada. Si quieres definir mejor la búsqu
 <translation id="4452411734226507615">Cierra la pestaña <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Se agregó a favoritos en <ph name="FOLDER_NAME" /></translation>
 <translation id="4472118726404937099">Para sincronizar diferentes dispositivos y personalizar tu experiencia, accede a tu cuenta y activa la sincronización</translation>
+<translation id="4479839115899251637">Borrar de lista de lectura</translation>
 <translation id="4479972344484327217">Instalando <ph name="MODULE" /> para Chrome…</translation>
 <translation id="4487967297491345095">Todos los datos de app de Chrome se borrarán de forma permanente. Esta información incluye todos los archivos, opciones de configuración, cuentas, bases de datos, etc.</translation>
 <translation id="449126573531210296">Encriptar las contraseñas sincronizadas con tu Cuenta de Google</translation>
@@ -996,6 +998,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="6945221475159498467">Seleccionar</translation>
 <translation id="6955535239952325894">Esta configuración está inhabilitada en navegadores administrados</translation>
 <translation id="6963766334940102469">Borrar favoritos</translation>
+<translation id="6964116075545915250">Editar lista de lectura</translation>
 <translation id="696447261358045621">Salir del modo Incógnito</translation>
 <translation id="6979737339423435258">Todos</translation>
 <translation id="6981982820502123353">Accesibilidad</translation>
@@ -1003,6 +1006,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="6989267951144302301">No se pudo descargar</translation>
 <translation id="6995899638241819463">Advertirme si quedan expuestas las contraseñas ante una violación de la seguridad de los datos</translation>
 <translation id="7001056293070445572">Este archivo es grande (<ph name="FILE_SIZE" />).</translation>
+<translation id="7020741890149022655">Agregar a lista de lec. <ph name="BEGIN_NEW" />Nuevo<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Abrir en el navegador</translation>
 <translation id="702463548815491781">Se recomienda cuando TalkBack o Accesibilidad con interruptores están activadas</translation>
 <translation id="7027549951530753705">Se restableció <ph name="ITEM_TITLE" /></translation>

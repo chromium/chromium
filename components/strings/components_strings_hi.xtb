@@ -614,6 +614,7 @@
 <translation id="2987034854559945715">कोई मिलते-जुलते फ़ीचर नहीं</translation>
 <translation id="2989742184762224133">सबसे ऊपर ड्युएल स्टेपल</translation>
 <translation id="2991174974383378012">वेबसाइटों के साथ साझाकरण</translation>
+<translation id="299122504639061328">अपने डिफ़ॉल्ट सर्च इंजन और साइट सर्च को मैनेज करें</translation>
 <translation id="2991571918955627853">आप इस समय <ph name="SITE" /> पर नहीं जा सकते क्योंकि वेबसाइट एचएसटीएस का उपयोग करती है. नेटवर्क की गड़बड़ियां और हमले आमतौर पर कुछ समय के लिए होते हैं इसलिए यह पेज शायद बाद में ठीक से काम करेगा.</translation>
 <translation id="2995517112308048736">फ़ाइल का साइज़:</translation>
 <translation id="3002501248619246229">इनपुट ट्रे मीडिया को चुनें</translation>
@@ -958,6 +959,7 @@
 <translation id="4123572138124678573">नीचे की ओर ट्रिपल पंच</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 अन्य}one{# अन्‍य}other{# अन्‍य}}</translation>
 <translation id="4130226655945681476">नेटवर्क केबल, मोडेम और राउटर की जाँच करें</translation>
+<translation id="4133224101597112888">इस टैब बटन को शेयर करें. लिंक शेयर करके, क्यूआर कोड बनाकर, कास्ट करके, और अन्य विकल्पों की मदद से, इस टैब को शेयर करने के लिए, Enter दबाएं.</translation>
 <translation id="4134123981501319574">दस्तावेज़ बनाएं</translation>
 <translation id="413544239732274901">ज़्यादा जानें</translation>
 <translation id="4142935452406587478">ट्रे 10</translation>
@@ -1387,6 +1389,7 @@
 <translation id="5426179911063097041"><ph name="SITE" /> वेबसाइट आपको सूचनाएं भेजना चाहती है</translation>
 <translation id="5428105026674456456">स्पैनिश</translation>
 <translation id="5430298929874300616">बुकमार्क निकालें</translation>
+<translation id="5434889539950523874"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />, लिंक शेयर करके, क्यूआर कोड बनाकर, कास्ट करके, और अन्य विकल्पों की मदद से, इस टैब को शेयर करने के लिए, पहले Tab और फिर Enter दबाएं.</translation>
 <translation id="5439770059721715174">"<ph name="ERROR_PATH" />" पर स्कीमा सत्यापन गड़बड़ी: <ph name="ERROR" /></translation>
 <translation id="5443468954631487277">दूसरी तरफ़ सीधा करके रखें</translation>
 <translation id="5447765697759493033">इस साइट का अनुवाद नहीं किया जाएगा</translation>
@@ -1994,6 +1997,7 @@
 <translation id="7559278538486662777">इस ऐप्लिकेशन का आकार नहीं बदला जा सकता.</translation>
 <translation id="7564049878696755256">आपके <ph name="ORG_NAME" /> खाते का एक्सेस खो सकता है या पहचान चोरी हो सकती है. Chrome आपको अभी अपना पासवर्ड बदलने का सुझाव देता है.</translation>
 <translation id="7567204685887185387">यह सर्वर यह प्रमाणित नहीं कर सका कि यह <ph name="DOMAIN" /> है; हो सकता है इसका सुरक्षा प्रमाणपत्र धोखे से जारी किया गया हो. ऐसा गलत कॉन्फ़िगरेशन के कारण या किसी आक्रमणकर्ता द्वारा आपके कनेक्शन में अवरोध डालने के कारण हो सकता है.</translation>
+<translation id="7569761772822664555">सर्च इंजन के बटन मैनेज करें, अपने डिफ़ॉल्ट सर्च इंजन और साइट सर्च को मैनेज करने के लिए, Enter दबाएं</translation>
 <translation id="7569952961197462199">Chrome से क्रेडिट कार्ड निकालें?</translation>
 <translation id="7569983096843329377">काला</translation>
 <translation id="7575207903026901870">सुझाव बटन हटाएं, इस सुझाव को हटाने के लिए Enter दबाएं</translation>
@@ -2111,6 +2115,7 @@
 <translation id="7950027195171824198">Chrome की सेटिंग में कुकी की सेटिंग मैनेज करें</translation>
 <translation id="7951415247503192394">(32-बिट)</translation>
 <translation id="7953569069500808819">सबसे ऊपर एज़ स्टिच</translation>
+<translation id="7954041596401851904">लिंक शेयर करके, क्यूआर कोड बनाकर, कास्ट करके, और अन्य विकल्पों से इस टैब को शेयर करें.</translation>
 <translation id="7956713633345437162">मोबाइल बुकमार्क</translation>
 <translation id="7961015016161918242">कभी नहीं</translation>
 <translation id="7966803981046576691">जॉब का खाता प्रकार</translation>
@@ -2184,6 +2189,7 @@
 <translation id="8202370299023114387">विरोध</translation>
 <translation id="8206978196348664717">पीआरसी4 (एन्वेलप)</translation>
 <translation id="8211406090763984747">कनेक्शन सुरक्षित है</translation>
+<translation id="8215696832828595581">Chrome बटन को पसंद के मुताबिक बनाएं. इसके साथ ही अपने ब्राउज़र के लुक को भी पसंद के मुताबिक बनाया जा सकता है. इसके लिए, Enter दबाएं.</translation>
 <translation id="8218327578424803826">सौंपा गया स्‍थान:</translation>
 <translation id="8220146938470311105">सी7/सी6 (एन्वेलप)</translation>
 <translation id="8225771182978767009">जिस व्यक्ति ने इस कंप्यूटर को सेट किया है, उसने इस साइट को ब्लॉक करना चुना है.</translation>
@@ -2326,6 +2332,7 @@
 <translation id="868922510921656628">हर सेट पर मौजूद पेजों की संख्या</translation>
 <translation id="869891660844655955">समय समाप्ति तारीख</translation>
 <translation id="8699041776323235191">एचआईडी डिवाइस</translation>
+<translation id="8699899385443889493">Chrome Dino गेम का बटन चालू करें, Dino Run गेम को Chrome में चलाने के लिए, Enter दबाएं</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> से आपके कनेक्शन को सुरक्षित नहीं किया गया है.</translation>
 <translation id="8705331520020532516">क्रम संख्या</translation>
 <translation id="8708134712139312373">साइट, ब्लूटूथ डिवाइसों से कनेक्ट करने की अनुमति मांग सकती है</translation>

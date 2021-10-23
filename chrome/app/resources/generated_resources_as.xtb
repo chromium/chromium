@@ -426,6 +426,7 @@
 <translation id="1436390408194692385"><ph name="TICKET_TIME_LEFT" />ৰ বাবে মান্য</translation>
 <translation id="1436784010935106834">আঁতৰোৱা হ’ল</translation>
 <translation id="1437986450143295708">সমস্যাটোৰ সবিশেষ বৰ্ণনা কৰক</translation>
+<translation id="1439671507542716852">দীৰ্ঘম্যাদী সমৰ্থন</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> বাছনি কৰা হ’ল</translation>
 <translation id="1442851588227551435">সক্ৰিয় Kerberosৰ টিকেট ছেট কৰক</translation>
 <translation id="1444628761356461360">ডিভাইচৰ গৰাকী <ph name="OWNER_EMAIL" />এ এই ছেটিংটো পৰিচালনা কৰে।</translation>
@@ -1438,6 +1439,7 @@
 <translation id="2454264884354864965">কেমেৰা অফ আছে</translation>
 <translation id="245650153866130664">এটা টিকেট স্বয়ংক্ৰিয়ভাৱে ৰিফ্ৰেশ্ব কৰিবলৈ “পাছৱৰ্ড মনত ৰাখক” বাছনি কৰক। আপোনাৰ পাছৱৰ্ডটো কেৱল আপোনাৰ ডিভাইচতহে ষ্ট’ৰ কৰা হ’ব।</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" />এ <ph name="VOLUME_NAME" />ৰ পৰা ফাইল প্ৰতিলিপি কৰিব খোজে।</translation>
+<translation id="2457842160081795172">বৰ্তমান <ph name="CHANNEL_NAME" /> চেনেলত</translation>
 <translation id="2458379781610688953">একাউণ্ট আপডে'ট কৰক, <ph name="EMAIL" /></translation>
 <translation id="2458591546854598341">ডিভাইচ পৰিচালনাৰ ট'কেনটো অমান্য।</translation>
 <translation id="2459703812219683497">সক্ৰিয়কৰণ ক’ড চিনাক্ত কৰা হৈছে</translation>
@@ -2076,6 +2078,7 @@
 <translation id="310671807099593501">ছাইটটোৱে ব্লুটুথ ব্যৱহাৰ কৰি আছে</translation>
 <translation id="3108931485517391283">লাভ কৰিব নোৱাৰি</translation>
 <translation id="3109724472072898302">সংকুচিত কৰা আছে</translation>
+<translation id="311214366526552035">তথাপি ডাউনল’ড কৰক</translation>
 <translation id="311394601889664316">ছাইটক আপোনাৰ ডিভাইচত ফাইল আৰু ফ’ল্ডাৰ সম্পাদনা কৰাৰ অনুমতি নিদিব</translation>
 <translation id="3115147772012638511">কেশ্বৰ কাৰণে অপেক্ষা কৰি থকা হৈছে...</translation>
 <translation id="3115580024857770654">সকলো সংকুচিত কৰক</translation>
@@ -2355,6 +2358,7 @@
 <translation id="3429160811076349561">ট্ৰায়েলৰ সুবিধা অফ আছে</translation>
 <translation id="3429271624041785769">ৱেবৰ সমলৰ ভাষা</translation>
 <translation id="3429275422858276529">পৰৱর্তী সময়ত এই পৃষ্ঠাটো সহজে বিচাৰি পাবলৈ ইয়াক বুকমার্ক কৰক</translation>
+<translation id="343115368966109153"><ph name="FILE_NAME" /> ডাউনল’ড কৰিবনে? ডিভাইচটো ব্যৱহাৰ কৰা যিকোনো লোকে এইটো চাব পাৰে।</translation>
 <translation id="3432227430032737297">দেখুওৱা সকলো আঁতৰাওক</translation>
 <translation id="3432762828853624962">শ্বেয়াৰ কৰা ৱৰ্কাৰ</translation>
 <translation id="3433621910545056227">আমি দুঃখিত!  ছিষ্টেমটোৱে ডিভাইচটোৰ ইনষ্টলেশ্বনৰ সময়ৰ এট্রিবিউট লক স্থাপন কৰিব নোৱাৰিলে।</translation>
@@ -2696,6 +2700,7 @@
 <translation id="3777806571986431400">এক্সটেনশ্বন সক্ষম কৰা হ'ল</translation>
 <translation id="3778152852029592020">ডাউনল’ড বাতিল কৰা হৈছে।</translation>
 <translation id="3778208826288864398">সুৰক্ষা চাবিটো লক কৰা হ’ল কাৰণ বহুবাৰ ভুল পিন দিয়া হৈছে। আপুনি সুৰক্ষা চাবিটো ৰিছেট কৰিব লাগিব।</translation>
+<translation id="3778369586810509692">এই ফাইলটোত ডিভাইচটোত ষ্ট’ৰ কৰা হ’ব আৰু প্ৰত্যেকেই এইটো চাব পাৰিব।</translation>
 <translation id="3778740492972734840">&amp;বিকাশকর্তাৰ সঁজুলি</translation>
 <translation id="3778868487658107119">ইয়াক প্ৰশ্ন সোধক। ইয়াক কাম কৰিবলৈ কওক। এয়া আপোনাৰ ব্যক্তিগত Google, যি সদায় আপোনাক সহায় কৰিবলৈ সাজু থাকে।</translation>
 <translation id="3781742599892759500">Linuxৰ মাইক্ৰ’ফ’নৰ এক্সেছ</translation>
@@ -4709,6 +4714,7 @@
 <translation id="597235323114979258">অধিক প্ৰিণ্টাৰ চাওক</translation>
 <translation id="5972666587303800813">ব্যৱহাৰত নথকা সেৱা</translation>
 <translation id="5972708806901999743">ওপৰলৈ যাওক</translation>
+<translation id="5972801171078377748">পুনৰাই নেদেখুৱাব</translation>
 <translation id="5972826969634861500"><ph name="PRODUCT_NAME" /> আৰম্ভ কৰক</translation>
 <translation id="5973041996755340290">"<ph name="CLIENT_NAME" />"এ এই ব্ৰাউজাৰটো ডিবাগ কৰা আৰম্ভ কৰিছে</translation>
 <translation id="5973605538625120605">পিন সলনি কৰক</translation>

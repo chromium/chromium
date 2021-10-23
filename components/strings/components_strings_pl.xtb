@@ -609,6 +609,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2987034854559945715">Brak pasujących funkcji</translation>
 <translation id="2989742184762224133">Dwie zszywki u góry</translation>
 <translation id="2991174974383378012">Udostępnianie stronom internetowym</translation>
+<translation id="299122504639061328">Zarządzaj domyślną wyszukiwarką i wyszukiwaniem w witrynie</translation>
 <translation id="2991571918955627853">Nie możesz teraz wejść na stronę <ph name="SITE" />, ponieważ używa ona HSTS. Błędy sieciowe i ataki są zazwyczaj tymczasowe, więc prawdopodobnie strona będzie dostępna później.</translation>
 <translation id="2995517112308048736">Rozmiar pliku:</translation>
 <translation id="3002501248619246229">Sprawdź nośnik na tacy wejściowej</translation>
@@ -953,6 +954,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="4123572138124678573">Trzy otwory z dołu</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 inny wpis}few{# inne wpisy}many{# innych wpisów}other{# innego wpisu}}</translation>
 <translation id="4130226655945681476">Sprawdź kable sieciowe, modem i router</translation>
+<translation id="4133224101597112888">Przycisk Udostępnij tę kartę; aby udostępnić tę kartę za pomocą linku, kodu QR, przesyłania lub innej opcji, naciśnij Enter.</translation>
 <translation id="4134123981501319574">Utwórz dokument</translation>
 <translation id="413544239732274901">Więcej informacji</translation>
 <translation id="4142935452406587478">Taca 10</translation>
@@ -1378,6 +1380,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="5426179911063097041"><ph name="SITE" /> chce wysyłać Ci powiadomienia</translation>
 <translation id="5428105026674456456">Hiszpański</translation>
 <translation id="5430298929874300616">Usuń zakładkę</translation>
+<translation id="5434889539950523874"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />; aby udostępnić tę kartę za pomocą linku, kodu QR, przesyłania lub innej opcji, naciśnij Tab, a potem Enter.</translation>
 <translation id="5439770059721715174">Błąd podczas sprawdzania poprawności schematu – „<ph name="ERROR_PATH" />”: <ph name="ERROR" /></translation>
 <translation id="5443468954631487277">Kolejność odwrotna, strona do drukowania skierowana w górę</translation>
 <translation id="5447765697759493033">Ta strona nie zostanie przetłumaczona</translation>
@@ -1985,6 +1988,7 @@ Dodatkowe informacje:
 <translation id="7559278538486662777">Nie można zmienić rozmiaru tej aplikacji.</translation>
 <translation id="7564049878696755256">Możesz stracić dostęp do swojego konta <ph name="ORG_NAME" /> lub paść ofiarą kradzieży tożsamości. Chrome zaleca natychmiastową zmianę hasła.</translation>
 <translation id="7567204685887185387">Ten serwer nie mógł udowodnić, że należy do <ph name="DOMAIN" />. Jego certyfikat bezpieczeństwa mógł zostać wydany w celu oszustwa. Może to być spowodowane błędną konfiguracją lub przechwyceniem połączenia przez atakującego.</translation>
+<translation id="7569761772822664555">Przycisk Zarządzaj wyszukiwarkami; aby ustawić domyślną wyszukiwarkę i wyszukiwanie w witrynie, naciśnij Enter</translation>
 <translation id="7569952961197462199">Usunąć tę kartę kredytową z Chrome?</translation>
 <translation id="7569983096843329377">Czarny</translation>
 <translation id="7575207903026901870">Usuń przycisk sugestii. Naciśnij Enter, by usunąć tę sugestię</translation>
@@ -2102,6 +2106,7 @@ Dodatkowe informacje:
 <translation id="7950027195171824198">Zarządzaj opcjami plików cookie w ustawieniach Chrome</translation>
 <translation id="7951415247503192394">(32-bitowa)</translation>
 <translation id="7953569069500808819">Zszywanie wzdłuż górnej krawędzi</translation>
+<translation id="7954041596401851904">Udostępnij tę kartę za pomocą linku, kodu QR, przesyłania lub innej opcji.</translation>
 <translation id="7956713633345437162">Zakładki na komórce</translation>
 <translation id="7961015016161918242">Nigdy</translation>
 <translation id="7966803981046576691">Rodzaj konta zadania</translation>
@@ -2175,6 +2180,7 @@ Dodatkowe informacje:
 <translation id="8202370299023114387">Konflikt</translation>
 <translation id="8206978196348664717">Prc4 (koperta)</translation>
 <translation id="8211406090763984747">Połączenie jest bezpieczne</translation>
+<translation id="8215696832828595581">Przycisk Dostosuj Chrome; aby dostosować wygląd przeglądarki, naciśnij Enter.</translation>
 <translation id="8218327578424803826">Przypisana lokalizacja:</translation>
 <translation id="8220146938470311105">C7/C6 (koperta)</translation>
 <translation id="8225771182978767009">Administrator tego komputera zablokował tę witrynę.</translation>
@@ -2316,6 +2322,7 @@ Dodatkowe informacje:
 <translation id="868922510921656628">Strony na zestaw</translation>
 <translation id="869891660844655955">Data wygaśnięcia</translation>
 <translation id="8699041776323235191">Urządzenie HID</translation>
+<translation id="8699899385443889493">Przycisk Zagraj w grę z dinozaurem w Chrome; aby zagrać w grę Dino Run w Chrome, naciśnij Enter</translation>
 <translation id="8703575177326907206">Połączenie z witryną <ph name="DOMAIN" /> nie jest szyfrowane.</translation>
 <translation id="8705331520020532516">Numer seryjny</translation>
 <translation id="8708134712139312373">Może prosić o zgodę na połączenie z urządzeniami Bluetooth</translation>

@@ -426,6 +426,7 @@
 <translation id="1436390408194692385">До окончания срока действия: <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436784010935106834">Удалено</translation>
 <translation id="1437986450143295708">Подробно опишите проблему</translation>
+<translation id="1439671507542716852">долгосрочная поддержка</translation>
 <translation id="144283815522798837">Выбрано: <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
 <translation id="1442851588227551435">Задать активный билет Kerberos</translation>
 <translation id="1444628761356461360">Этот аккаунт контролируется владельцем устройства (<ph name="OWNER_EMAIL" />)</translation>
@@ -1427,6 +1428,7 @@
 <translation id="2454264884354864965">Камера выключена</translation>
 <translation id="245650153866130664">Чтобы билет обновлялся автоматически, установите флажок "Запомнить пароль". Пароль будет храниться только на вашем устройстве.</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> запрашивает разрешение на копирование файлов из тома "<ph name="VOLUME_NAME" />".</translation>
+<translation id="2457842160081795172">Сейчас на канале "<ph name="CHANNEL_NAME" />"</translation>
 <translation id="2458379781610688953">Обновить аккаунт <ph name="EMAIL" /></translation>
 <translation id="2458591546854598341">Недопустимый токен управления устройствами.</translation>
 <translation id="2459703812219683497">Код активации обнаружен</translation>

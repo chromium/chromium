@@ -425,6 +425,7 @@
 <translation id="1436390408194692385">Berlaku selama <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436784010935106834">Dihapus</translation>
 <translation id="1437986450143295708">Jelaskan masalahnya secara mendetail</translation>
+<translation id="1439671507542716852">dukungan jangka panjang (LTS)</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> dipilih</translation>
 <translation id="1442851588227551435">Setel tiket Kerberos aktif</translation>
 <translation id="1444628761356461360">Setelan ini dikelola oleh pemilik perangkat, <ph name="OWNER_EMAIL" />.</translation>
@@ -1440,6 +1441,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2454264884354864965">Kamera nonaktif</translation>
 <translation id="245650153866130664">Untuk memperbarui tiket secara otomatis, centang “Ingat sandi”. Sandi hanya akan disimpan pada perangkat Anda.</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> ingin menyalin file dari <ph name="VOLUME_NAME" />.</translation>
+<translation id="2457842160081795172">Saat ini berada di saluran <ph name="CHANNEL_NAME" /></translation>
 <translation id="2458379781610688953">Perbarui akun, <ph name="EMAIL" /></translation>
 <translation id="2458591546854598341">Token pengelolaan perangkat tidak valid.</translation>
 <translation id="2459703812219683497">Kode aktivasi terdeteksi</translation>

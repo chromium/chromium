@@ -426,6 +426,7 @@
 <translation id="1436390408194692385"><ph name="TICKET_TIME_LEFT" /> ব্যবহার করা যাবে</translation>
 <translation id="1436784010935106834">সরানো হয়েছে</translation>
 <translation id="1437986450143295708">সমস্যাটির বিবরণ দিন</translation>
+<translation id="1439671507542716852">দীর্ঘ মেয়াদী সহায়তা</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" />টি নির্বাচিত হয়েছে</translation>
 <translation id="1442851588227551435">অ্যাক্টিভ Kerberos টিকিট সেট করুন</translation>
 <translation id="1444628761356461360">এই সেটিংটি ডিভাইসের মালিকের দ্বারা <ph name="OWNER_EMAIL" /> পরিচালিত হয়৷</translation>
@@ -1441,6 +1442,7 @@
 <translation id="2454264884354864965">ক্যামেরা বন্ধ রয়েছে</translation>
 <translation id="245650153866130664">টিকিট অটোমেটিক রিফ্রেশ করতে “পাসওয়ার্ড মনে রাখুন” বিকল্পটি বেছে নিন। আপনার ডিভাইসেই আপনার পাসওয়ার্ড স্টোর করা হবে।</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> <ph name="VOLUME_NAME" /> থেকে ফাইলগুলি কপি করতে চায়৷</translation>
+<translation id="2457842160081795172">বর্তমানে <ph name="CHANNEL_NAME" /> চ্যানেলে</translation>
 <translation id="2458379781610688953">অ্যাকাউন্ট আপডেট করুন, <ph name="EMAIL" /></translation>
 <translation id="2458591546854598341">ডিভাইস পরিচালনার টোকেনটি সঠিক নয়।</translation>
 <translation id="2459703812219683497">অ্যাক্টিভেশন কোড শনাক্ত করা হয়েছে</translation>
@@ -2079,6 +2081,7 @@
 <translation id="310671807099593501">সাইটটি ব্লুটুথ ব্যবহার করছে</translation>
 <translation id="3108931485517391283">রিসিভ করা যাচ্ছে না</translation>
 <translation id="3109724472072898302">সঙ্কুচিত</translation>
+<translation id="311214366526552035">যেকোনওভাবে ডাউনলোড করুন</translation>
 <translation id="311394601889664316">সাইটগুলিকে আপনার ডিভাইসে থাকা ফাইল ও ফোল্ডার এডিট করার অনুমতি দেয় না</translation>
 <translation id="3115147772012638511">ক্যাশের অপেক্ষা করা হচ্ছে...</translation>
 <translation id="3115580024857770654">সবগুলি আড়াল করুন</translation>
@@ -2358,6 +2361,7 @@
 <translation id="3429160811076349561">ট্রায়াল ফিচার বন্ধ করা আছে</translation>
 <translation id="3429271624041785769">ওয়েব কন্টেন্টের ভাষা</translation>
 <translation id="3429275422858276529">এই পৃষ্ঠা পরে সহজে খুঁজে পেতে বুকমার্ক করুন</translation>
+<translation id="343115368966109153"><ph name="FILE_NAME" /> ডাউনলোড করবেন? এই ডিভাইস যারা ব্যবহার করছেন তারা এটি দেখতে পাবেন।</translation>
 <translation id="3432227430032737297">দেখানো সবগুলি সরান</translation>
 <translation id="3432762828853624962">শেয়ার্ড ওয়ার্কার</translation>
 <translation id="3433621910545056227">ওহো! সিস্টেমটি ডিভাইস ইনস্টলেশন-সময় অ্যাট্রিবিউটস লক স্থাপন করতে ব্যর্থ হয়েছে৷</translation>
@@ -2699,6 +2703,7 @@
 <translation id="3777806571986431400">এক্সটেনশন চালু করা হয়েছে</translation>
 <translation id="3778152852029592020">ডাউনলোড বাতিল হয়েছে৷</translation>
 <translation id="3778208826288864398">অনেক বার ভুল পিন দেওয়ার জন্য নিরাপত্তা কী লক হয়ে গেছে। আপনাকে নিরাপত্তা কী রিসেট করতে হবে।</translation>
+<translation id="3778369586810509692">এই ফাইলটি ডিভাইসে সেভ করা আছে এবং সবাই এটি দেখতে পাবেন।</translation>
 <translation id="3778740492972734840">&amp;ডেভেলপার টুল</translation>
 <translation id="3778868487658107119">প্রশ্ন করুন। কিছু করতে বলুন। এটি আপনার নিজস্ব Google যেটি সবসময় আপনাকে সাহায্য করে।</translation>
 <translation id="3781742599892759500">Linux-এ মাইক্রোফোনের অ্যাক্সেস</translation>
@@ -4713,6 +4718,7 @@
 <translation id="597235323114979258">প্রিন্ট করার জন্য আরও ডিভাইস দেখুন</translation>
 <translation id="5972666587303800813">নো-অপারেশন পরিষেবা</translation>
 <translation id="5972708806901999743">শীর্ষে যান</translation>
+<translation id="5972801171078377748">আর দেখতে চাই না</translation>
 <translation id="5972826969634861500"><ph name="PRODUCT_NAME" /> শুরু করুন</translation>
 <translation id="5973041996755340290">"<ph name="CLIENT_NAME" />" এই ব্রাউজার ডিবাগ করা চালু করেছে</translation>
 <translation id="5973605538625120605">পিন পরিবর্তন করুন</translation>

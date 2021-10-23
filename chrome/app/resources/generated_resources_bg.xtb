@@ -425,6 +425,7 @@
 <translation id="1436390408194692385">Срок на валидност: <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436784010935106834">Премахнато</translation>
 <translation id="1437986450143295708">Опишете проблема подробно</translation>
+<translation id="1439671507542716852">дългосрочна поддръжка (LTS)</translation>
 <translation id="144283815522798837">Избрахте <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
 <translation id="1442851588227551435">Задаване на активен пропуск за Kerberos</translation>
 <translation id="1444628761356461360">Тази настройка се управлява от собственика на устройството – <ph name="OWNER_EMAIL" />.</translation>
@@ -1436,6 +1437,7 @@
 <translation id="2454264884354864965">Камерата е изключена</translation>
 <translation id="245650153866130664">За да се опреснява пропускът автоматично, поставете отметка за „Запомняне на паролата“. Паролата ще бъде съхранена само на устройството ви.</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> иска да копира файлове от „<ph name="VOLUME_NAME" />“.</translation>
+<translation id="2457842160081795172">Текущ канал: <ph name="CHANNEL_NAME" /></translation>
 <translation id="2458379781610688953">Актуализиране на профила <ph name="EMAIL" /></translation>
 <translation id="2458591546854598341">Означението за управление на устройството е невалидно.</translation>
 <translation id="2459703812219683497">Открит е код за активиране</translation>
