@@ -65,6 +65,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/compositor/compositor_observer.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/throughput_tracker.h"
@@ -207,16 +208,19 @@ using OverviewExitMetricsTracker =
                            kOverviewExitSplitViewHistogram,
                            kOverviewExitMinimizedTabletHistogram>;
 
-class ShutdownAnimationMetricsTrackerObserver : public OverviewObserver {
+class ShutdownAnimationMetricsTrackerObserver : public OverviewObserver,
+                                                public ui::CompositorObserver {
  public:
   ShutdownAnimationMetricsTrackerObserver(ui::Compositor* compositor,
                                           bool in_split_view,
                                           bool single_animation,
                                           bool minimized_in_tablet)
-      : metrics_tracker_(compositor,
+      : compositor_(compositor),
+        metrics_tracker_(compositor,
                          in_split_view,
                          single_animation,
                          minimized_in_tablet) {
+    compositor->AddObserver(this);
     Shell::Get()->overview_controller()->AddObserver(this);
   }
   ShutdownAnimationMetricsTrackerObserver(
@@ -224,7 +228,9 @@ class ShutdownAnimationMetricsTrackerObserver : public OverviewObserver {
   ShutdownAnimationMetricsTrackerObserver& operator=(
       const ShutdownAnimationMetricsTrackerObserver&) = delete;
   ~ShutdownAnimationMetricsTrackerObserver() override {
-    Shell::Get()->overview_controller()->RemoveObserver(this);
+    compositor_->RemoveObserver(this);
+    if (Shell::Get()->overview_controller())
+      Shell::Get()->overview_controller()->RemoveObserver(this);
   }
 
   // OverviewObserver:
@@ -232,7 +238,13 @@ class ShutdownAnimationMetricsTrackerObserver : public OverviewObserver {
     delete this;
   }
 
+  void OnCompositingShuttingDown(ui::Compositor* compositor) override {
+    DCHECK_EQ(compositor_, compositor);
+    delete this;
+  }
+
  private:
+  ui::Compositor* compositor_;
   OverviewExitMetricsTracker metrics_tracker_;
 };
 

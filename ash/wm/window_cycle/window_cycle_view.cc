@@ -548,7 +548,8 @@ void WindowCycleView::Layout() {
   std::unique_ptr<ui::ScopedLayerAnimationSettings> settings;
   absl::optional<ui::AnimationThroughputReporter> reporter;
   if (!first_layout && !this->layer()->GetAnimator()->is_animating() &&
-      !defer_widget_bounds_update_) {
+      !defer_widget_bounds_update_ &&
+      mirror_container_->bounds() != content_container_bounds) {
     settings = std::make_unique<ui::ScopedLayerAnimationSettings>(
         mirror_container_->layer()->GetAnimator());
     settings->SetTransitionDuration(kContainerSlideDuration);
