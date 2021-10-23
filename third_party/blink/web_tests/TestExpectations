@@ -2985,6 +2985,7 @@ crbug.com/626703 fast/animation/scroll-animations/scrolltimeline-root-scroller-q
 crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/navigation-timing-extended.https.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac11.0 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/navigate-by-name.html [ Timeout ]
 crbug.com/626703 [ Mac10.13 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/navigate-by-name.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/navigate-by-name.html [ Timeout ]
 crbug.com/626703 [ Mac11.0 ] wpt_internal/fenced_frame/create-credential.https.html [ Crash ]

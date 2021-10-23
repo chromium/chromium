@@ -207,6 +207,59 @@ const svgImageTests = {
     },
 };
 
+// Each video:
+//  * is 300x200 and has a single color
+//  * has a filename base that indicates its contents:
+//
+//      <color-space>-<8-or-10-bit-color-value>
+//
+//  * was generated using commands like:
+//
+//      W=300 H=200 Y=3F Cb=66 Cr=F0 ; \
+//        perl -e "print pack('c', 0x$Y) x ($W * $H), pack('c', 0x$Cb) x ($W * $H / 4), pack('c', 0x$Cr) x ($W * $H / 4)" | \
+//        ffmpeg -f rawvideo -pix_fmt yuv420p -s:v ${W}x$H -r 25 -i - -pix_fmt yuv420p -colorspace bt709 -color_primaries bt709 -color_trc iec61966_2_1 sRGB-FF0100.webm
+//
+//      W=300 H=200 Y=0BB Cb=1BD Cr=2EF ; \
+//        perl -e "print pack('s', 0x$Y) x ($W * $H), pack('s', 0x$Cb) x ($W * $H / 4), pack('s', 0x$Cr) x ($W * $H / 4)" | \
+//        ffmpeg -f rawvideo -pix_fmt yuv420p10le -s:v ${W}x$H -r 25 -i - -c:v libx265 -vtag hvc1 -pix_fmt yuv420p10le -colorspace bt2020nc -color_primaries bt2020 -color_trc bt2020-10 Rec2020-222000000.mp4
+//
+//      W=300 H=200 Y=0BB Cb=1BD Cr=2EF ; \
+//        perl -e "print pack('s', 0x$Y) x ($W * $H), pack('s', 0x$Cb) x ($W * $H / 4), pack('s', 0x$Cr) x ($W * $H / 4)" | \
+//        ffmpeg -f rawvideo -pix_fmt yuv420p10le -s:v ${W}x$H -r 25 -i - -vcodec libvpx-vp9 -profile:v 2 -pix_fmt yuv420p10le -colorspace bt2020nc -color_primaries bt2020 -color_trc bt2020-10 Rec2020-222000000.webm
+//
+//    where the Y'CbCr values were computed using https://jdashg.github.io/misc/colors/from-coeffs.html.
+const videoTests = {
+    // Rec.709 Y'CbCr (0x3F, 0x66, 0xF0) = sRGB (0xFF, 0x01, 0x00)
+    "sRGB-FF0100": {
+        "srgb srgb": [255, 1, 0, 255],
+        "srgb display-p3": [234, 51, 35, 255],
+        "display-p3 srgb": [255, 0, 0, 255],
+        "display-p3 display-p3": [234, 51, 35, 255],
+    },
+    // Rec.709 Y'CbCr (0x32, 0x6D, 0xD2) = sRGB (0xBB, 0x00, 0x00)
+    "sRGB-BB0000": {
+        "srgb srgb": [187, 0, 0, 255],
+        "srgb display-p3": [171, 35, 23, 255],
+        "display-p3 srgb": [187, 1, 0, 255],
+        "display-p3 display-p3": [171, 35, 23, 255],
+    },
+
+    // 10 bit Rec.2020 Y'CbCr (0x126, 0x183, 0x3C0) = Rec.2020 (0x3FF, 0x000, 0x000)
+    "Rec2020-3FF000000": {
+        "srgb srgb": [255, 0, 0, 255],
+        "srgb display-p3": [234, 51, 35, 255],
+        "display-p3 srgb": [255, 0, 0, 255],
+        "display-p3 display-p3": [255, 0, 9, 255],
+    },
+    // 10 bit Rec.2020 Y'CbCr (0x0BB, 0x1BD, 0x2EF) = Rec.2020 (0x222, 0x000, 0x000)
+    "Rec2020-222000000": {
+        "srgb srgb": [186, 0, 0, 255],
+        "srgb display-p3": [170, 34, 23, 255],
+        "display-p3 srgb": [186, 0, 0, 255],
+        "display-p3 display-p3": [169, 0, 3, 255],
+    },
+};
+
 const fromSRGBToDisplayP3 = {
     "255,0,0,255": [234, 51, 35, 255],
     "255,0,0,204": [234, 51, 35, 204],
@@ -223,7 +276,7 @@ const fromDisplayP3ToSRGB = {
 
 function pixelsApproximatelyEqual(p1, p2) {
     for (let i = 0; i < 4; ++i) {
-        if (Math.abs(p1[i] - p2[i]) > 2)
+        if (Math.abs(p1[i] - p2[i]) > 3)
             return false;
     }
     return true;
