@@ -3070,11 +3070,6 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
           Ga voor voorbeeldpatronen naar https://www.chromium.org/developers/how-tos/chrome-frame-getting-started.</translation>
 <translation id="467449052039111439">Een lijst met URL's openen</translation>
 <translation id="4674871290487541952">Onbeveiligde algoritmen toestaan in integriteitscontroles bij updates en installaties van extensies</translation>
-<translation id="4680936297850947973">Beëindigd in M68. Gebruik in plaats hiervan DefaultPopupsSetting.
-
-      Ga naar https://www.chromestatus.com/features/5675755719622656 voor een volledige uitleg.
-      Als je dit beleid toepast, kunnen sites tegelijkertijd navigeren en nieuwe vensters/tabbladen openen.
-      Als dit beleid niet is toegepast of niet is ingesteld, kunnen sites niet tegelijkertijd navigeren en nieuwe vensters/tabbladen openen.</translation>
 <translation id="4680961954980851756">Automatisch invullen aanzetten</translation>
 <translation id="4685721728282448265">CECPQ2 (post-quantum sleutelovereenkomst) staat aan voor TLS</translation>
 <translation id="4693779768620889402">Op extensies gebaseerde bestemmingen</translation>

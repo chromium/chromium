@@ -3065,11 +3065,6 @@
           要查看示例格式，请访问 https://www.chromium.org/developers/how-tos/chrome-frame-getting-started。</translation>
 <translation id="467449052039111439">打开网址列表</translation>
 <translation id="4674871290487541952">在对扩展程序更新和安装进行完整性检查时允许使用不安全的算法</translation>
-<translation id="4680936297850947973">已在 M68 中弃用。请改用 DefaultPopupsSetting。
-
-      如需完整说明，请访问 https://www.chromestatus.com/features/5675755719622656。
-      如果您启用了此政策，网站将可以在导航的同时打开新窗口/标签页。
-      如果您停用了或未设置此政策，网站将无法在导航的同时打开新窗口/标签页。</translation>
 <translation id="4680961954980851756">启用自动填充</translation>
 <translation id="4685721728282448265">已为 TLS 启用 CECPQ2 后量子密钥协议算法</translation>
 <translation id="4693779768620889402">基于扩展程序的目的地</translation>

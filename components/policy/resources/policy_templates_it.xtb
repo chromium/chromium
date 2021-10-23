@@ -3089,11 +3089,6 @@ Se questo criterio viene configurato, <ph name="PRODUCT_OS_NAME" /> consente agl
           Per avere pattern di esempio, visita il sito https://www.chromium.org/developers/how-tos/chrome-frame-getting-started.</translation>
 <translation id="467449052039111439">Apri un elenco di URL</translation>
 <translation id="4674871290487541952">Consente algoritmi non protetti nei controlli dell'integrità durante gli aggiornamenti e le installazioni delle estensioni</translation>
-<translation id="4680936297850947973">Ritirata in M68. Usa DefaultPopupsSetting.
-
-      Per una spiegazione completa, consulta la pagina https://www.chromestatus.com/features/5675755719622656.
-      Se questa norma viene attivata, ai siti sarà concesso di navigare e aprire nuove finestre/schede contemporaneamente.
-      Se questa norma viene disattivata o non viene impostata, ai siti non sarà concesso di navigare e aprire nuove finestre/schede contemporaneamente.</translation>
 <translation id="4680961954980851756">Abilita Compilazione automatica</translation>
 <translation id="4685721728282448265">Algoritmo di scambio di chiavi post-quantistico CECPQ2 attivo per TLS</translation>
 <translation id="4693779768620889402">Destinazioni basate su estensioni</translation>

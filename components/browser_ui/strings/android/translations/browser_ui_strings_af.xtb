@@ -29,6 +29,7 @@
 <translation id="1743802530341753419">Vra voordat werwe toegelaat word om aan 'n toestel te koppel (aanbeveel)</translation>
 <translation id="1779089405699405702">Prentdekodeerder</translation>
 <translation id="1818308510395330587">Om <ph name="APP_NAME" /> AR te laat gebruik, moet jy kamera ook in <ph name="BEGIN_LINK" />Android-instellings<ph name="END_LINK" /> aanskakel.</translation>
+<translation id="1864927262126810325">Vanaf <ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">Liggingtoegang is af vir hierdie toestel. Skakel dit in <ph name="BEGIN_LINK" />Android-instellings<ph name="END_LINK" /> aan.</translation>
 <translation id="1919345977826869612">Advertensies</translation>
 <translation id="1919950603503897840">Kies kontakte</translation>
@@ -236,6 +237,7 @@
 <translation id="7016516562562142042">Toegelaat vir huidige soekenjin</translation>
 <translation id="7053983685419859001">Blokkeer</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 gekies}other{# gekies}}</translation>
+<translation id="7070090581017165256">Meer oor hierdie werf</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> gekies. Opsies is naby aan die bokant van die skerm beskikbaar</translation>
 <translation id="7141896414559753902">Verhinder werwe om opspringers en herleidings te wys (aanbeveel)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>

@@ -3007,11 +3007,6 @@
           パターンの例については、https://www.chromium.org/developers/how-tos/chrome-frame-getting-started をご覧ください。</translation>
 <translation id="467449052039111439">URL のリストを開く</translation>
 <translation id="4674871290487541952">拡張機能の更新とインストール時の整合性チェックで安全でないアルゴリズムを許可する</translation>
-<translation id="4680936297850947973">M68 でサポートを終了します。代わりに DefaultPopupsSetting を使用してください。
-
-      詳しくは、https://www.chromestatus.com/features/5675755719622656 をご覧ください。
-      このポリシーが有効な場合、サイトでは移動と同時に新しいウィンドウやタブを開くことができます。
-      このポリシーが無効または未設定の場合、サイトでは移動と同時に新しいウィンドウやタブを開くことはできません。</translation>
 <translation id="4680961954980851756">自動入力を有効にする</translation>
 <translation id="4685721728282448265">TLS の CECPQ2 ポスト量子鍵交換を有効にします</translation>
 <translation id="4693779768620889402">拡張機能プリンタの送信先</translation>

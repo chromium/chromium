@@ -3119,11 +3119,6 @@ Khi bạn đặt chính sách này, <ph name="PRODUCT_OS_NAME" /> chỉ cho phé
           Để biết các mẫu ví dụ, hãy xem http://www.chromium.org/developers/how-tos/chrome-frame-getting-started.</translation>
 <translation id="467449052039111439">Mở một danh sách URL</translation>
 <translation id="4674871290487541952">Cho phép thuật toán không an toàn trong quá trình kiểm tra tính toàn vẹn đối với các bản cập nhật và cài đặt tiện ích</translation>
-<translation id="4680936297850947973">Không còn dùng trong M68. Hãy sử dụng tùy chọn DefaultPopupsSetting để thay thế.
-
-      Để biết thông tin giải thích đầy đủ, hãy truy cập vào https://www.chromestatus.com/features/5675755719622656.
-      Nếu bạn đã bật chính sách này, thì các trang web sẽ được phép chuyển tới và mở các cửa sổ/thẻ mới cùng một lúc.
-      Nếu bạn đã tắt hoặc chưa đặt chính sách này, các trang web sẽ không được phép chuyển tới và mở cửa sổ/thẻ mới cùng một lúc.</translation>
 <translation id="4680961954980851756">Bật Tự động điền</translation>
 <translation id="4685721728282448265">Đã cho phép dùng thuật toán CECPQ2 của thỏa thuận về khóa hậu lượng tử cho TLS</translation>
 <translation id="4693779768620889402">Đích dựa trên tiện ích</translation>

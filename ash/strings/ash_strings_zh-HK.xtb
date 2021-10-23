@@ -17,6 +17,7 @@
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />：<ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">取代</translation>
 <translation id="1073899992769346247">請更換電池或充電</translation>
+<translation id="1081015718268701546">目前並未支援 Linux 應用程式。系統將會儲存其他應用程式。</translation>
 <translation id="108486256082349153">流動裝置：<ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426"><ph name="GIVEN_NAME" />，午安：</translation>
 <translation id="109942774857561566">我好悶</translation>
@@ -43,6 +44,7 @@
 <translation id="1225748608451425081">由於發生已知問題，因此 Chromebook 已鎖定。您將可在 <ph name="TIME_LEFT" />後登入。</translation>
 <translation id="1229194443904279055">停止選取</translation>
 <translation id="1239161794459865856">「<ph name="FEATURE_NAME" />」已連線。</translation>
+<translation id="1246890715821376239">不支援的應用程式</translation>
 <translation id="1247372569136754018">麥克風 (內置)</translation>
 <translation id="1252999807265626933">正在使用 <ph name="POWER_SOURCE" />充電</translation>
 <translation id="1255033239764210633">天氣點樣？</translation>
@@ -168,6 +170,7 @@
 <translation id="2148716181193084225">今天</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />：重試</translation>
 <translation id="2170530631236737939">用三隻手指向下滑動即可結束「概覽」</translation>
+<translation id="2201071101391734388">第 <ph name="INDEX" /> 張近期相片 (共 <ph name="TOTAL_COUNT" /> 張)。</translation>
 <translation id="2208323208084708176">統一桌面模式</translation>
 <translation id="2220572644011485463">PIN 或密碼</translation>
 <translation id="2222841058024245321">桌面 7</translation>
@@ -291,6 +294,7 @@
 <translation id="3151786313568798007">方向</translation>
 <translation id="3153444934357957346">使用多重登入功能時，最多只能有 <ph name="MULTI_PROFILE_USER_LIMIT" /> 個帳戶。</translation>
 <translation id="3154351730702813399">裝置管理員可能會監控您的瀏覽活動。</translation>
+<translation id="316086887565479535">範本中有不支援的應用程式</translation>
 <translation id="3181441307743005334">重新啟動中，請稍候</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{已連接 1 部裝置}other{已連接 # 部裝置}}</translation>
 <translation id="320207200541803018">設定計時器</translation>
@@ -388,6 +392,7 @@
 <translation id="383058930331066723">「省電模式」已開啟</translation>
 <translation id="3835880383832568924">如要查看更新，請開啟「快速鍵」應用程式</translation>
 <translation id="383629559565718788">顯示鍵盤設定</translation>
+<translation id="384082539148746321">要刪除範本嗎？</translation>
 <translation id="3846214748874656680">關閉全屏幕模式</translation>
 <translation id="3846575436967432996">沒有可用的網絡資料</translation>
 <translation id="385051799172605136">返回</translation>
@@ -821,6 +826,7 @@
 <translation id="7029814467594812963">結束工作階段</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />，Google 助理</translation>
 <translation id="7042322267639375032">收合狀態區</translation>
+<translation id="7045033600005038336">要取代範本嗎？</translation>
 <translation id="7045595904618419789">啟用放大鏡</translation>
 <translation id="7055381872777910864">三</translation>
 <translation id="7055910611768509537">您已超過一星期沒有使用觸控筆</translation>
@@ -957,6 +963,7 @@
 <translation id="8036504271468642248">上一句</translation>
 <translation id="8042893070933512245">開啟無障礙功能設定選單</translation>
 <translation id="8048123526339889627">藍牙設定</translation>
+<translation id="8051716679295756675">名為「<ph name="DESK_TEMPLATE_NAME" />」的範本已存在</translation>
 <translation id="8052898407431791827">已複製到剪貼簿</translation>
 <translation id="8054466585765276473">正在計算電池使用時間。</translation>
 <translation id="8061464966246066292">高對比模式</translation>
@@ -1062,6 +1069,7 @@
 <translation id="8876661425082386199">請檢查連線</translation>
 <translation id="8877788021141246043">設定提醒</translation>
 <translation id="8878886163241303700">延伸螢幕</translation>
+<translation id="8896630965521842259">「<ph name="DESK_TEMPLATE_NAME" />」將被永久刪除</translation>
 <translation id="890616557918890486">變更來源</translation>
 <translation id="8909138438987180327">電量剩番 <ph name="PERCENTAGE" />%。</translation>
 <translation id="8913384980486163186">主題 (預設值)</translation>

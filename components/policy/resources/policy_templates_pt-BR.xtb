@@ -3104,11 +3104,6 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
           Para ver exemplos de padrões, consulte http://www.chromium.org/developers/how-tos/chrome-frame-getting-started (link em inglês).</translation>
 <translation id="467449052039111439">Abrir uma lista de URLs</translation>
 <translation id="4674871290487541952">Permite algoritmos inseguros em verificações de integridade nas atualizações e instalações de extensão</translation>
-<translation id="4680936297850947973">Uso suspenso na versão M68. Em vez disso, use DefaultPopupsSetting.
-
-      Para ver a explicação detalhada, acesse https://www.chromestatus.com/features/5675755719622656.
-      Se esta política estiver ativada, os sites terão permissão para navegar e abrir novas janelas/guias simultaneamente.
-      Se esta política estiver desativada ou não for configurada, os sites não terão permissão para navegar e abrir uma nova janela/guia simultaneamente.</translation>
 <translation id="4680961954980851756">Ativar Preenchimento automático</translation>
 <translation id="4685721728282448265">CECPQ2 de acordo de chave pós-quântico ativado para TLS</translation>
 <translation id="4693779768620889402">Destinos baseados em extensões</translation>

@@ -3118,11 +3118,6 @@ Jika kebijakan ini disetel, <ph name="PRODUCT_OS_NAME" /> hanya mengizinkan peng
           Untuk melihat contoh pola, buka https://www.chromium.org/developers/how-tos/chrome-frame-getting-started.</translation>
 <translation id="467449052039111439">Buka daftar URL</translation>
 <translation id="4674871290487541952">Mengizinkan algoritme tidak aman dalam pemeriksaan integritas selama penginstalan dan update ekstensi</translation>
-<translation id="4680936297850947973">Tidak digunakan lagi di M68. Sebagai gantinya, gunakan DefaultPopupsSetting.
-
-Untuk penjelasan selengkapnya, lihat https://www.chromestatus.com/features/5675755719622656.
-Jika kebijakan ini diaktifkan, situs akan diizinkan untuk menavigasi dan membuka jendela/tab baru secara bersamaan.
-Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat menavigasi dan membuka jendela/tab baru secara bersamaan.</translation>
 <translation id="4680961954980851756">Aktifkan IsiOtomatis</translation>
 <translation id="4685721728282448265">Perjanjian kunci pasca-kuantum CECPQ2 diaktifkan untuk TLS</translation>
 <translation id="4693779768620889402">Tujuan berbasis ekstensi</translation>

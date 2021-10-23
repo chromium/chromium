@@ -3062,11 +3062,6 @@
           如需模式範例，請參閱 https://www.chromium.org/developers/how-tos/chrome-frame-getting-started。</translation>
 <translation id="467449052039111439">開啟網址清單</translation>
 <translation id="4674871290487541952">針對擴充功能更新與安裝作業進行完整性檢查時，允許使用不安全的演算法</translation>
-<translation id="4680936297850947973">自 M68 起已淘汰，請改用 DefaultPopupsSetting。
-
-      如需完整說明，請前往  https://www.chromestatus.com/features/5675755719622656。
-      如果啟用這項政策，即可同時在多個網站中進行瀏覽及開啟新視窗/分頁。
-      如果停用這項政策或不予設定，則無法同時在多個網站中進行瀏覽及開啟新視窗/分頁。</translation>
 <translation id="4680961954980851756">啟用自動填入</translation>
 <translation id="4685721728282448265">已啟用傳輸層安全標準 (TLS) 的 CECPQ2 後量子金鑰協議</translation>
 <translation id="4693779768620889402">可支援擴充功能的目的地</translation>
