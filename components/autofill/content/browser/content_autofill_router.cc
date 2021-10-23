@@ -201,9 +201,10 @@ void ContentAutofillRouter::TriggerReparseExcept(
 
 void ContentAutofillRouter::FormsSeen(
     ContentAutofillDriver* source,
-    const std::vector<FormData>& renderer_forms) {
+    const std::vector<FormData>& renderer_forms,
+    const std::vector<FormGlobalId>& removed_forms) {
   if (!base::FeatureList::IsEnabled(features::kAutofillAcrossIframes)) {
-    source->FormsSeenImpl(renderer_forms);
+    source->FormsSeenImpl(renderer_forms, removed_forms);
     return;
   }
 
@@ -236,7 +237,7 @@ void ContentAutofillRouter::FormsSeen(
     }));
     ContentAutofillDriver* target = DriverOfFrame(frame);
     AFCHECK(target, return );
-    target->FormsSeenImpl(std::move(browser_forms));
+    target->FormsSeenImpl(std::move(browser_forms), removed_forms);
   }
 }
 

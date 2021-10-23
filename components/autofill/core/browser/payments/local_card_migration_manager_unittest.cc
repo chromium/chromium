@@ -108,8 +108,9 @@ class LocalCardMigrationManagerTest : public testing::Test {
     personal_data_.ClearCreditCards();
   }
 
-  void FormsSeen(const std::vector<FormData>& forms) {
-    browser_autofill_manager_->OnFormsSeen(forms);
+  void FormsSeen(const std::vector<FormData>& updated_forms) {
+    browser_autofill_manager_->OnFormsSeen(/*updated_forms=*/updated_forms,
+                                           /*removed_forms=*/{});
   }
 
   void FormSubmitted(const FormData& form) {

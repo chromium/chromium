@@ -497,7 +497,8 @@ class BrowserAutofillManagerTest : public testing::Test {
   }
 
   void FormsSeen(const std::vector<FormData>& forms) {
-    browser_autofill_manager_->OnFormsSeen(forms);
+    browser_autofill_manager_->OnFormsSeen(/*updated_forms=*/forms,
+                                           /*removed_forms=*/{});
   }
 
   void FormSubmitted(const FormData& form) {
@@ -9246,7 +9247,7 @@ TEST_F(BrowserAutofillManagerTest, PageLanguageGetsCorrectlySet) {
   FormData form;
   test::CreateTestAddressFormData(&form);
 
-  browser_autofill_manager_->OnFormsSeen({form});
+  browser_autofill_manager_->OnFormsSeen({form}, {});
   FormStructure* parsed_form =
       browser_autofill_manager_->FindCachedFormByRendererId(form.global_id());
 
@@ -9255,7 +9256,7 @@ TEST_F(BrowserAutofillManagerTest, PageLanguageGetsCorrectlySet) {
 
   autofill_client_.GetLanguageState()->SetCurrentLanguage("zh");
 
-  browser_autofill_manager_->OnFormsSeen({form});
+  browser_autofill_manager_->OnFormsSeen({form}, {});
   parsed_form =
       browser_autofill_manager_->FindCachedFormByRendererId(form.global_id());
 
@@ -9270,7 +9271,7 @@ TEST_F(BrowserAutofillManagerTest, PageLanguageGetsCorrectlyDetected) {
   FormData form;
   test::CreateTestAddressFormData(&form);
 
-  browser_autofill_manager_->OnFormsSeen({form});
+  browser_autofill_manager_->OnFormsSeen({form}, {});
   FormStructure* parsed_form =
       browser_autofill_manager_->FindCachedFormByRendererId(form.global_id());
 

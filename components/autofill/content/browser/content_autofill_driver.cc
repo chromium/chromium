@@ -334,8 +334,10 @@ void ContentAutofillDriver::RendererShouldSetSuggestionAvailability(
                                                               state);
 }
 
-void ContentAutofillDriver::FormsSeenImpl(const std::vector<FormData>& forms) {
-  autofill_manager_->OnFormsSeen(forms);
+void ContentAutofillDriver::FormsSeenImpl(
+    const std::vector<FormData>& updated_forms,
+    const std::vector<FormGlobalId>& removed_forms) {
+  autofill_manager_->OnFormsSeen(updated_forms, removed_forms);
 }
 
 void ContentAutofillDriver::SetFormToBeProbablySubmittedImpl(
@@ -462,13 +464,22 @@ void ContentAutofillDriver::SetFormToBeProbablySubmitted(
                  : absl::nullopt);
 }
 
-void ContentAutofillDriver::FormsSeen(const std::vector<FormData>& raw_forms) {
+void ContentAutofillDriver::FormsSeen(
+    const std::vector<FormData>& raw_updated_forms,
+    const std::vector<FormRendererId>& raw_removed_forms) {
   if (!bad_message::CheckFrameNotPrerendering(render_frame_host_))
     return;
-  std::vector<FormData> forms = raw_forms;
-  for (FormData& form : forms)
+  std::vector<FormData> updated_forms = raw_updated_forms;
+  for (FormData& form : updated_forms)
     SetFrameAndFormMetaData(form, nullptr);
-  GetAutofillRouter().FormsSeen(this, forms);
+
+  LocalFrameToken frame_token(render_frame_host_->GetFrameToken().value());
+  std::vector<FormGlobalId> removed_forms;
+  removed_forms.reserve(raw_removed_forms.size());
+  for (FormRendererId form_id : raw_removed_forms)
+    removed_forms.push_back({frame_token, form_id});
+
+  GetAutofillRouter().FormsSeen(this, updated_forms, removed_forms);
 }
 
 void ContentAutofillDriver::FormSubmitted(const FormData& raw_form,

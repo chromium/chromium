@@ -134,8 +134,12 @@ class AutofillManager
                        bool known_success,
                        mojom::SubmissionSource source);
 
-  // Invoked when |forms| has been detected.
-  virtual void OnFormsSeen(const std::vector<FormData>& forms);
+  // Invoked when changes of the forms have been detected: the forms in
+  // |updated_forms| are either new or have changed, and the forms in
+  // |removed_forms| have been removed from the DOM (but may be re-added to the
+  // DOM later).
+  virtual void OnFormsSeen(const std::vector<FormData>& updated_forms,
+                           const std::vector<FormGlobalId>& removed_forms);
 
   // Invoked when focus is no longer on form. |had_interacted_form| indicates
   // whether focus was previously on a form with which the user had interacted.

@@ -802,11 +802,15 @@ class PrerenderAutofillTest : public InProcessBrowserTest {
       // calls while prerendering.
       if (rfh->GetLifecycleState() ==
           content::RenderFrameHost::LifecycleState::kPrerendering) {
-        EXPECT_CALL(*this, OnFormsSeen(_)).Times(0);
+        EXPECT_CALL(*this, OnFormsSeen(_, _)).Times(0);
         EXPECT_CALL(*this, OnFocusOnFormFieldImpl(_, _, _)).Times(0);
       }
     }
-    MOCK_METHOD(void, OnFormsSeen, (const std::vector<FormData>&), (override));
+    MOCK_METHOD(void,
+                OnFormsSeen,
+                (const std::vector<FormData>&,
+                 const std::vector<FormGlobalId>&),
+                (override));
     MOCK_METHOD(void,
                 OnFocusOnFormFieldImpl,
                 (const FormData&,
@@ -880,7 +884,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderAutofillTest, DeferWhilePrerendering) {
   // Next, we ensure that once we activate, we issue the deferred calls.
   base::RunLoop run_loop;
   EXPECT_CALL(*mock, OnFocusOnFormFieldImpl(_, _, _)).Times(1);
-  EXPECT_CALL(*mock, OnFormsSeen(_))
+  EXPECT_CALL(*mock, OnFormsSeen(_, _))
       .Times(1)
       .WillRepeatedly(
           testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));

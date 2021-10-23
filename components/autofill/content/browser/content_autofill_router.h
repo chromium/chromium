@@ -168,7 +168,8 @@ class ContentAutofillRouter {
   void SetFormToBeProbablySubmitted(ContentAutofillDriver* source_driver,
                                     const absl::optional<FormData>& form);
   void FormsSeen(ContentAutofillDriver* source_driver,
-                 const std::vector<FormData>& forms);
+                 const std::vector<FormData>& updated_forms,
+                 const std::vector<FormGlobalId>& removed_forms);
   void FormSubmitted(ContentAutofillDriver* source_driver,
                      const FormData& form,
                      bool known_success,

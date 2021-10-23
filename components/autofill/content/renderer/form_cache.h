@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "components/autofill/core/common/field_data_manager.h"
@@ -32,6 +33,20 @@ struct FormDataPredictions;
 // Manages the forms in a single RenderFrame.
 class FormCache {
  public:
+  struct UpdateFormCacheResult {
+    UpdateFormCacheResult();
+    UpdateFormCacheResult(UpdateFormCacheResult&&);
+    UpdateFormCacheResult& operator=(UpdateFormCacheResult&&);
+    ~UpdateFormCacheResult();
+
+    // The updated forms are those forms that are new or are still present and
+    // have changed.
+    std::vector<FormData> updated_forms;
+
+    // The forms that have been removed from the DOM.
+    base::flat_set<FormRendererId> removed_forms;
+  };
+
   explicit FormCache(blink::WebLocalFrame* frame);
 
   FormCache(const FormCache&) = delete;
@@ -54,14 +69,25 @@ class FormCache {
   //   FormData::child_frames.
   // In either case, the subset is chosen so that the returned list of forms
   // does not exceed the limits of fields and frames.
-  std::vector<FormData> ExtractNewForms(
+  UpdateFormCacheResult ExtractNewForms(
       const FieldDataManager* field_data_manager);
 
-  // Modified version of ExtractNewForms(). It is used only if
-  // `AutofillUseNewFormExtraction` feature is enabled.
-  // TODO(crbug/1215333): Remove ExtractNewForms() after the feature is deleted.
+  // Returns the diff of forms since the last call to UpdateFormCache(): the new
+  // forms, the still present but changed forms, and the removed forms.
   //
-  // Extracts and returns the new or modified forms in the |frame_|.
+  // A form is *new* / *still present* / *removed* if if its renderer ID
+  // - is      / is  / is not in the current DOM and considered interesting, and
+  // - was not / was / was    in the previous DOM and considered interesting,
+  // where the
+  // - current DOM is the DOM at the time of UpdateFormCacheResult()
+  // - previous DOM is the DOM at the time of the last UpdateFormCacheResult()
+  //   call
+  // - a form is interesting if it contains an editable field or an iframe
+  //   (see IsFormInteresting() for details), and its fields and iframes do
+  //   not exceed the limits (see below).
+  //
+  // A form has *changed* if it differs from the previous
+  // form of the same renderer IDs according to FormData::DeepEqual().
   //
   // To reduce the computational cost, we limit the number of fields and frames
   // summed over all forms, in addition to the per-form limits in
@@ -76,7 +102,11 @@ class FormCache {
   //
   // Updates |parsed_forms_by_renderer_id_| to contain the forms that are
   // currently in the DOM.
-  std::vector<FormData> UpdateFormCache(
+  //
+  // TODO(crbug/1215333):/ Modified version of ExtractNewForms(). It is used
+  // only if `AutofillUseNewFormExtraction` feature is enabled. Remove
+  // ExtractNewForms() after the feature is deleted.
+  UpdateFormCacheResult UpdateFormCache(
       const FieldDataManager* field_data_manager);
 
   // Resets the forms.

@@ -222,7 +222,8 @@ class ContentAutofillDriver : public AutofillDriver,
   // call, we will shut down the renderer and log the bad message.
   void SetFormToBeProbablySubmitted(
       const absl::optional<FormData>& form) override;
-  void FormsSeen(const std::vector<FormData>& forms) override;
+  void FormsSeen(const std::vector<FormData>& updated_forms,
+                 const std::vector<FormRendererId>& removed_forms) override;
   void FormSubmitted(const FormData& form,
                      bool known_success,
                      mojom::SubmissionSource source) override;
@@ -255,7 +256,8 @@ class ContentAutofillDriver : public AutofillDriver,
   // Implementations of the mojom::AutofillDriver functions called by the
   // renderer. These functions are called by ContentAutofillRouter.
   void SetFormToBeProbablySubmittedImpl(const absl::optional<FormData>& form);
-  void FormsSeenImpl(const std::vector<FormData>& forms);
+  void FormsSeenImpl(const std::vector<FormData>& updated_forms,
+                     const std::vector<FormGlobalId>& removed_forms);
   void FormSubmittedImpl(const FormData& form,
                          bool known_success,
                          mojom::SubmissionSource source);
