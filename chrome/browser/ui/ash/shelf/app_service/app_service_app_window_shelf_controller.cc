@@ -345,13 +345,16 @@ void AppServiceAppWindowShelfController::OnWindowActivated(
 void AppServiceAppWindowShelfController::OnInstanceUpdate(
     const apps::InstanceUpdate& update) {
   const apps::Instance::InstanceKey& instance_key = update.InstanceKey();
+  if (instance_key.IsForWebBasedApp()) {
+    // Only deal with window based app instances past here.
+    return;
+  }
+
   if (update.IsDestruction()) {
     // For Chrome apps edge case, it could be added for the inactive users, and
     // then removed. Since it is not registered we don't need to do anything
     // anyways. As such, all which is left to do here is to get rid of our own
     // reference.
-    if (instance_key.IsForWebBasedApp())
-      return;
     WindowList::iterator it =
         std::find(window_list_.begin(), window_list_.end(),
                   instance_key.GetEnclosingAppWindow());
@@ -361,9 +364,7 @@ void AppServiceAppWindowShelfController::OnInstanceUpdate(
   }
 
   aura::Window* window = instance_key.GetEnclosingAppWindow();
-  // Only deal with window based app instances past here.
-  if (instance_key.IsForWebBasedApp() ||
-      !observed_windows_.IsObservingSource(window)) {
+  if (!observed_windows_.IsObservingSource(window)) {
     return;
   }
 
