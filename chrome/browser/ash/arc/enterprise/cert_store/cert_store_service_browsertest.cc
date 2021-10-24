@@ -110,9 +110,12 @@ class FakeArcCertInstaller : public ArcCertInstaller {
       std::vector<CertDescription> certs,
       InstallArcCertsCallback callback) override {
     certs_.clear();
+    cert_ids_.clear();
     for (const auto& cert : certs) {
-      certs_[x509_certificate_model::GetCertNameOrNickname(
-          cert.nss_cert.get())] = GetDerCert64(cert.nss_cert.get());
+      std::string cert_name =
+          x509_certificate_model::GetCertNameOrNickname(cert.nss_cert.get());
+      certs_[cert_name] = GetDerCert64(cert.nss_cert.get());
+      cert_ids_[cert_name] = cert.id;
     }
 
     callback_ = std::move(callback);
@@ -136,9 +139,12 @@ class FakeArcCertInstaller : public ArcCertInstaller {
 
   std::map<std::string, std::string> certs() const { return certs_; }
 
+  std::map<std::string, std::string> cert_ids() const { return cert_ids_; }
+
  private:
   std::unique_ptr<base::RunLoop> run_loop_;
   std::map<std::string, std::string> certs_;
+  std::map<std::string, std::string> cert_ids_;
   InstallArcCertsCallback callback_;
 };
 
@@ -507,20 +513,15 @@ void CertStoreServiceTest::CheckInstalledCerts(
       EXPECT_EQ(x509_certificate_model::GetCertNameOrNickname(nss_cert.get()),
                 cert_name);
       found = true;
-      // Check KeyInfo.
-      auto key_info =
-          service->GetKeyInfoForDummySpki(installer_->certs()[cert_name]);
-      EXPECT_TRUE(key_info.has_value());
-      EXPECT_EQ(key_info.value().nickname, cert_name);
+      std::string cert_id = installer_->cert_ids()[cert_name];
       // Check CKA_ID and slot.
       int slot_id;
-      std::string hex_encoded_id = base::HexEncode(key_info.value().id.data(),
-                                                   key_info.value().id.size());
+      std::string hex_encoded_id =
+          base::HexEncode(cert_id.data(), cert_id.size());
       EXPECT_EQ(hex_encoded_id,
                 chromeos::NetworkCertLoader::GetPkcs11IdAndSlotForCert(
                     nss_cert.get(), &slot_id));
-      EXPECT_TRUE(PlaceholdersContainIdAndSlot(key_info.value().id,
-                                               cert.test_data.slot));
+      EXPECT_TRUE(PlaceholdersContainIdAndSlot(cert_id, cert.test_data.slot));
       break;
     }
     // Check the required cert was found.
