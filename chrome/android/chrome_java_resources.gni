@@ -735,6 +735,7 @@ chrome_java_resources = [
   "java/res/menu/save_password_preferences_action_bar_menu.xml",
   "java/res/transition/fade.xml",
   "java/res/transition/move_image.xml",
+  "java/res/values-h600dp/dimens.xml",
   "java/res/values-hdpi/dimens.xml",
   "java/res/values-large/dimens.xml",
   "java/res/values-night/colors.xml",
