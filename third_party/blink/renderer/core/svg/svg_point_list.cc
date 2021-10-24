@@ -46,7 +46,7 @@ SVGParsingError SVGPointList::Parse(const CharType* ptr, const CharType* end) {
         !ParseNumber(ptr, end, y, kDisallowWhitespace))
       return SVGParsingError(SVGParseStatus::kExpectedNumber, ptr - list_start);
 
-    Append(MakeGarbageCollected<SVGPoint>(FloatPoint(x, y)));
+    Append(MakeGarbageCollected<SVGPoint>(gfx::PointF(x, y)));
 
     if (!SkipOptionalSVGSpaces(ptr, end))
       break;
@@ -80,8 +80,10 @@ void SVGPointList::Add(const SVGPropertyBase* other,
   if (length() != other_list->length())
     return;
 
-  for (uint32_t i = 0; i < length(); ++i)
-    at(i)->SetValue(at(i)->Value() + other_list->at(i)->Value());
+  for (uint32_t i = 0; i < length(); ++i) {
+    at(i)->SetValue(at(i)->Value() +
+                    other_list->at(i)->Value().OffsetFromOrigin());
+  }
 }
 
 void SVGPointList::CalculateAnimatedValue(
@@ -107,15 +109,15 @@ void SVGPointList::CalculateAnimatedValue(
       to_at_end_of_duration_list->length();
 
   for (uint32_t i = 0; i < to_point_list_size; ++i) {
-    FloatPoint effective_from;
+    gfx::PointF effective_from;
     if (from_point_list_size)
       effective_from = from_list->at(i)->Value();
-    FloatPoint effective_to = to_list->at(i)->Value();
-    FloatPoint effective_to_at_end;
+    gfx::PointF effective_to = to_list->at(i)->Value();
+    gfx::PointF effective_to_at_end;
     if (i < to_at_end_of_duration_list_size)
       effective_to_at_end = to_at_end_of_duration_list->at(i)->Value();
 
-    FloatPoint result(
+    gfx::PointF result(
         ComputeAnimatedNumber(parameters, percentage, repeat_count,
                               effective_from.x(), effective_to.x(),
                               effective_to_at_end.x()),
@@ -123,7 +125,7 @@ void SVGPointList::CalculateAnimatedValue(
                               effective_from.y(), effective_to.y(),
                               effective_to_at_end.y()));
     if (parameters.is_additive)
-      result += at(i)->Value();
+      result += at(i)->Value().OffsetFromOrigin();
 
     at(i)->SetValue(result);
   }

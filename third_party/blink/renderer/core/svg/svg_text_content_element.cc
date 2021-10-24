@@ -170,7 +170,7 @@ SVGPointTearOff* SVGTextContentElement::getStartPositionOfChar(
   } else {
     point = SVGTextQuery(layout_object).StartPositionOfCharacter(charnum);
   }
-  return SVGPointTearOff::CreateDetached(point);
+  return SVGPointTearOff::CreateDetached(ToGfxPointF(point));
 }
 
 SVGPointTearOff* SVGTextContentElement::getEndPositionOfChar(
@@ -194,7 +194,7 @@ SVGPointTearOff* SVGTextContentElement::getEndPositionOfChar(
   } else {
     point = SVGTextQuery(layout_object).EndPositionOfCharacter(charnum);
   }
-  return SVGPointTearOff::CreateDetached(point);
+  return SVGPointTearOff::CreateDetached(ToGfxPointF(point));
 }
 
 SVGRectTearOff* SVGTextContentElement::getExtentOfChar(
@@ -249,10 +249,10 @@ int SVGTextContentElement::getCharNumAtPosition(
   auto* layout_object = GetLayoutObject();
   if (IsNGTextOrInline(layout_object)) {
     return NGSvgTextQuery(*layout_object)
-        .CharacterNumberAtPosition(point->Target()->Value());
+        .CharacterNumberAtPosition(FloatPoint(point->Target()->Value()));
   }
   return SVGTextQuery(layout_object)
-      .CharacterNumberAtPosition(point->Target()->Value());
+      .CharacterNumberAtPosition(FloatPoint(point->Target()->Value()));
 }
 
 void SVGTextContentElement::selectSubString(unsigned charnum,

@@ -231,8 +231,8 @@ PathSegmentData SVGPathStringSource::ParseSegment() {
       break;
     case kPathSegArcRel:
     case kPathSegArcAbs:
-      segment.ArcRadii().set_x(ParseNumberWithError());
-      segment.ArcRadii().set_y(ParseNumberWithError());
+      segment.SetArcRadiusX(ParseNumberWithError());
+      segment.SetArcRadiusY(ParseNumberWithError());
       segment.SetArcAngle(ParseNumberWithError());
       segment.arc_large = ParseArcFlagWithError();
       segment.arc_sweep = ParseArcFlagWithError();

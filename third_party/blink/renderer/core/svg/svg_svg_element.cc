@@ -139,8 +139,8 @@ SVGPointTearOff* SVGSVGElement::currentTranslateFromJavascript() {
   return MakeGarbageCollected<SVGCurrentTranslateTearOff>(this);
 }
 
-void SVGSVGElement::SetCurrentTranslate(const FloatPoint& point) {
-  translation_->SetValue(point);
+void SVGSVGElement::SetCurrentTranslate(const gfx::Vector2dF& point) {
+  translation_->SetValue(gfx::PointAtOffsetFromOrigin(point));
   UpdateUserTransform();
 }
 
@@ -444,7 +444,7 @@ SVGAngleTearOff* SVGSVGElement::createSVGAngle() {
 }
 
 SVGPointTearOff* SVGSVGElement::createSVGPoint() {
-  return SVGPointTearOff::CreateDetached(FloatPoint(0, 0));
+  return SVGPointTearOff::CreateDetached(gfx::PointF(0, 0));
 }
 
 SVGMatrixTearOff* SVGSVGElement::createSVGMatrix() {

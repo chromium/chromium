@@ -69,7 +69,7 @@ class PathBuilder {
   }
 
  protected:
-  virtual FloatPoint TranslatePoint(const FloatPoint& point) { return point; }
+  virtual gfx::PointF TranslatePoint(const gfx::PointF& point) { return point; }
 
  private:
   static void AppendPathElement(void* path_builder,
@@ -79,18 +79,18 @@ class PathBuilder {
 
   void AppendPathElement(const PathElement*);
   void AppendPathCommandAndPoints(const char* command,
-                                  const FloatPoint points[],
+                                  const gfx::PointF points[],
                                   size_t length);
 
   std::unique_ptr<protocol::ListValue> path_;
 };
 
 void PathBuilder::AppendPathCommandAndPoints(const char* command,
-                                             const FloatPoint points[],
+                                             const gfx::PointF points[],
                                              size_t length) {
   path_->pushValue(protocol::StringValue::create(command));
   for (size_t i = 0; i < length; i++) {
-    FloatPoint point = TranslatePoint(points[i]);
+    gfx::PointF point = TranslatePoint(points[i]);
     path_->pushValue(protocol::FundamentalValue::create(point.x()));
     path_->pushValue(protocol::FundamentalValue::create(point.y()));
   }
@@ -142,13 +142,13 @@ class ShapePathBuilder : public PathBuilder {
   }
 
  protected:
-  FloatPoint TranslatePoint(const FloatPoint& point) override {
+  gfx::PointF TranslatePoint(const gfx::PointF& point) override {
     PhysicalOffset layout_object_point = PhysicalOffset::FromFloatPointRound(
-        shape_outside_info_.ShapeToLayoutObjectPoint(point));
+        shape_outside_info_.ShapeToLayoutObjectPoint(FloatPoint(point)));
     // TODO(pfeldman): Is this kIgnoreTransforms correct?
-    return FloatPoint(view_->FrameToViewport(
+    return gfx::PointF(ToGfxPoint(view_->FrameToViewport(
         RoundedIntPoint(layout_object_->LocalToAbsolutePoint(
-            layout_object_point, kIgnoreTransforms))));
+            layout_object_point, kIgnoreTransforms)))));
   }
 
  private:
@@ -164,7 +164,7 @@ std::unique_ptr<protocol::Array<double>> BuildArrayForQuad(
        quad.p3().x(), quad.p3().y(), quad.p4().x(), quad.p4().y()});
 }
 
-Path QuadToPath(const FloatQuad& quad) {
+Path QuadToPath(const gfx::QuadF& quad) {
   Path quad_path;
   quad_path.MoveTo(quad.p1());
   quad_path.AddLineTo(quad.p2());
@@ -174,26 +174,38 @@ Path QuadToPath(const FloatQuad& quad) {
   return quad_path;
 }
 
-Path RowQuadToPath(const FloatQuad& quad, bool drawEndLine) {
+Path QuadToPath(const FloatQuad& quad) {
+  return QuadToPath(ToGfxQuadF(quad));
+}
+
+Path RowQuadToPath(const gfx::QuadF& quad, bool draw_end_line) {
   Path quad_path;
   quad_path.MoveTo(quad.p1());
   quad_path.AddLineTo(quad.p2());
-  if (drawEndLine) {
+  if (draw_end_line) {
     quad_path.MoveTo(quad.p3());
     quad_path.AddLineTo(quad.p4());
   }
   return quad_path;
 }
 
-Path ColumnQuadToPath(const FloatQuad& quad, bool drawEndLine) {
+Path RowQuadToPath(const FloatQuad& quad, bool draw_end_line) {
+  return RowQuadToPath(ToGfxQuadF(quad), draw_end_line);
+}
+
+Path ColumnQuadToPath(const gfx::QuadF& quad, bool draw_end_line) {
   Path quad_path;
   quad_path.MoveTo(quad.p1());
   quad_path.AddLineTo(quad.p4());
-  if (drawEndLine) {
+  if (draw_end_line) {
     quad_path.MoveTo(quad.p3());
     quad_path.AddLineTo(quad.p2());
   }
   return quad_path;
+}
+
+Path ColumnQuadToPath(const FloatQuad& quad, bool draw_end_line) {
+  return ColumnQuadToPath(ToGfxQuadF(quad), draw_end_line);
 }
 
 FloatPoint FramePointToViewport(const LocalFrameView* view,

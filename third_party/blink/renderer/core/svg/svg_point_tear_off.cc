@@ -65,7 +65,7 @@ SVGPointTearOff* SVGPointTearOff::matrixTransform(SVGMatrixTearOff* matrix) {
   return CreateDetached(matrix->Value().MapPoint(Target()->Value()));
 }
 
-SVGPointTearOff* SVGPointTearOff::CreateDetached(const FloatPoint& point) {
+SVGPointTearOff* SVGPointTearOff::CreateDetached(const gfx::PointF& point) {
   return MakeGarbageCollected<SVGPointTearOff>(
       MakeGarbageCollected<SVGPoint>(point), nullptr, kPropertyIsNotAnimVal);
 }

@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/svg/svg_point.h"
 #include "third_party/blink/renderer/core/svg/svg_zoom_and_pan.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
 
@@ -59,8 +60,10 @@ class SVGSVGElement final : public SVGGraphicsElement,
   float currentScale() const;
   void setCurrentScale(float scale);
 
-  FloatPoint CurrentTranslate() { return translation_->Value(); }
-  void SetCurrentTranslate(const FloatPoint&);
+  gfx::Vector2dF CurrentTranslate() {
+    return translation_->Value().OffsetFromOrigin();
+  }
+  void SetCurrentTranslate(const gfx::Vector2dF&);
   SVGPointTearOff* currentTranslateFromJavascript();
 
   SMILTimeContainer* TimeContainer() const { return time_container_.Get(); }

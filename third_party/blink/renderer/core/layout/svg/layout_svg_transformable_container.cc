@@ -92,8 +92,8 @@ SVGTransformChange LayoutSVGTransformableContainer::CalculateLocalTransform(
   if (IsA<SVGUseElement>(element)) {
     const ComputedStyle& style = StyleRef();
     SVGLengthContext length_context(element);
-    FloatSize translation(ToFloatSize(
-        length_context.ResolveLengthPair(style.X(), style.Y(), style)));
+    FloatSize translation(
+        length_context.ResolveLengthPair(style.X(), style.Y(), style));
     // TODO(fs): Signal this on style update instead.
     if (translation != additional_translation_)
       SetNeedsTransformUpdate();

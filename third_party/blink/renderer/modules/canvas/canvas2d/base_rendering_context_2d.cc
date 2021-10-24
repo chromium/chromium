@@ -1509,9 +1509,9 @@ bool BaseRenderingContext2D::IsPointInPathInternal(
 
   if (!std::isfinite(x) || !std::isfinite(y))
     return false;
-  FloatPoint point(ClampTo<float>(x), ClampTo<float>(y));
+  gfx::PointF point(ClampTo<float>(x), ClampTo<float>(y));
   TransformationMatrix ctm = GetState().GetTransform();
-  FloatPoint transformed_point = ctm.Inverse().MapPoint(point);
+  gfx::PointF transformed_point = ctm.Inverse().MapPoint(point);
 
   return path.Contains(transformed_point,
                        SkFillTypeToWindRule(ParseWinding(winding_rule_string)));
@@ -1538,9 +1538,9 @@ bool BaseRenderingContext2D::IsPointInStrokeInternal(const Path& path,
 
   if (!std::isfinite(x) || !std::isfinite(y))
     return false;
-  FloatPoint point(ClampTo<float>(x), ClampTo<float>(y));
+  gfx::PointF point(ClampTo<float>(x), ClampTo<float>(y));
   AffineTransform ctm = GetState().GetAffineTransform();
-  FloatPoint transformed_point = ctm.Inverse().MapPoint(point);
+  gfx::PointF transformed_point = ctm.Inverse().MapPoint(point);
 
   StrokeData stroke_data;
   stroke_data.SetThickness(GetState().LineWidth());

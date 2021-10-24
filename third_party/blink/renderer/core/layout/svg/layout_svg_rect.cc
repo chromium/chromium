@@ -48,8 +48,8 @@ void LayoutSVGRect::UpdateShapeFromElement() {
 
   SVGLengthContext length_context(GetElement());
   const ComputedStyle& style = StyleRef();
-  FloatSize bounding_box_size(ToFloatSize(
-      length_context.ResolveLengthPair(style.Width(), style.Height(), style)));
+  FloatSize bounding_box_size(
+      length_context.ResolveLengthPair(style.Width(), style.Height(), style));
 
   // Spec: "A negative value is an error."
   if (bounding_box_size.width() < 0 || bounding_box_size.height() < 0)
@@ -78,9 +78,9 @@ void LayoutSVGRect::UpdateShapeFromElement() {
   if (!use_path_fallback_)
     ClearPath();
 
-  fill_bounding_box_ =
-      FloatRect(length_context.ResolveLengthPair(style.X(), style.Y(), style),
-                bounding_box_size);
+  fill_bounding_box_ = FloatRect(
+      FloatPoint(length_context.ResolveLengthPair(style.X(), style.Y(), style)),
+      bounding_box_size);
   stroke_bounding_box_ = CalculateStrokeBoundingBox();
 }
 

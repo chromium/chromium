@@ -97,7 +97,7 @@ SVGPointTearOff* SVGPathElement::getPointAtLength(
     if (length > computed_length)
       length = computed_length;
   }
-  FloatPoint point = path_query.GetPointAtLength(length);
+  gfx::PointF point = path_query.GetPointAtLength(length);
   return SVGPointTearOff::CreateDetached(point);
 }
 

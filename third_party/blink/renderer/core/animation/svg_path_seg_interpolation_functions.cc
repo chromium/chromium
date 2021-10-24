@@ -189,8 +189,8 @@ std::unique_ptr<InterpolableValue> ConsumeArc(const PathSegmentData& segment,
                                        coordinates.current_x));
   result->Set(1, ConsumeCoordinateAxis(segment.Y(), is_absolute,
                                        coordinates.current_y));
-  result->Set(2, std::make_unique<InterpolableNumber>(segment.R1()));
-  result->Set(3, std::make_unique<InterpolableNumber>(segment.R2()));
+  result->Set(2, std::make_unique<InterpolableNumber>(segment.ArcRadiusX()));
+  result->Set(3, std::make_unique<InterpolableNumber>(segment.ArcRadiusY()));
   result->Set(4, std::make_unique<InterpolableNumber>(segment.ArcAngle()));
   // TODO(alancutter): Make these flags part of the NonInterpolableValue.
   result->Set(5, std::make_unique<InterpolableNumber>(segment.LargeArcFlag()));
@@ -209,8 +209,8 @@ PathSegmentData ConsumeInterpolableArc(const InterpolableValue& value,
       list.Get(0), is_absolute, coordinates.current_x));
   segment.target_point.set_y(ConsumeInterpolableCoordinateAxis(
       list.Get(1), is_absolute, coordinates.current_y));
-  segment.ArcRadii().set_x(To<InterpolableNumber>(list.Get(2))->Value());
-  segment.ArcRadii().set_y(To<InterpolableNumber>(list.Get(3))->Value());
+  segment.SetArcRadiusX(To<InterpolableNumber>(list.Get(2))->Value());
+  segment.SetArcRadiusY(To<InterpolableNumber>(list.Get(3))->Value());
   segment.SetArcAngle(To<InterpolableNumber>(list.Get(4))->Value());
   segment.arc_large = To<InterpolableNumber>(list.Get(5))->Value() >= 0.5;
   segment.arc_sweep = To<InterpolableNumber>(list.Get(6))->Value() >= 0.5;

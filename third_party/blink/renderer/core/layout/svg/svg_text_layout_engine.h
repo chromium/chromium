@@ -87,7 +87,7 @@ class SVGTextLayoutEngine {
 
   SVGTextFragment current_text_fragment_;
   SVGInlineTextMetricsIterator visual_metrics_iterator_;
-  FloatPoint text_position_;
+  gfx::PointF text_position_;
   bool is_vertical_text_;
   bool in_path_layout_;
   bool text_length_spacing_in_effect_;

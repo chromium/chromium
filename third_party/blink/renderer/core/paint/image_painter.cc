@@ -114,7 +114,7 @@ void ImagePainter::PaintAreaElementFocusRing(const PaintInfo& paint_info) {
 
   ScopedPaintState paint_state(layout_image_, paint_info);
   auto paint_offset = paint_state.PaintOffset();
-  path.Translate(FloatSize(paint_offset));
+  path.Translate(gfx::Vector2dF(paint_offset));
 
   if (DrawingRecorder::UseCachedDrawingIfPossible(
           paint_info.context, layout_image_, DisplayItem::kImageAreaFocusRing))

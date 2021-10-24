@@ -44,18 +44,18 @@ void LayoutSVGEllipse::UpdateShapeFromElement() {
   // to avoid using garbage.
   fill_bounding_box_ = FloatRect();
   stroke_bounding_box_ = FloatRect();
-  center_ = FloatPoint();
-  radii_ = FloatSize();
+  center_ = gfx::PointF();
+  radius_x_ = radius_y_ = 0;
   use_path_fallback_ = false;
 
   CalculateRadiiAndCenter();
 
   // Spec: "A negative value is an error. A value of zero disables rendering of
   // the element."
-  if (radii_.width() < 0 || radii_.height() < 0)
+  if (radius_x_ < 0 || radius_y_ < 0)
     return;
 
-  if (!radii_.IsEmpty()) {
+  if (radius_x_ && radius_y_) {
     // Fall back to LayoutSVGShape and path-based hit detection if the ellipse
     // has a non-scaling or discontinuous stroke.
     // However, only use LayoutSVGShape bounding-box calculations for the
@@ -75,7 +75,9 @@ void LayoutSVGEllipse::UpdateShapeFromElement() {
   if (!use_path_fallback_)
     ClearPath();
 
-  fill_bounding_box_ = FloatRect(center_ - radii_, radii_.ScaledBy(2));
+  fill_bounding_box_ =
+      FloatRect(center_.x() - radius_x_, center_.y() - radius_y_, radius_x_ * 2,
+                radius_y_ * 2);
   stroke_bounding_box_ = CalculateStrokeBoundingBox();
 }
 
@@ -84,39 +86,40 @@ void LayoutSVGEllipse::CalculateRadiiAndCenter() {
   DCHECK(GetElement());
   SVGLengthContext length_context(GetElement());
   const ComputedStyle& style = StyleRef();
-  center_ = length_context.ResolveLengthPair(style.Cx(), style.Cy(), style);
+  center_ = gfx::PointAtOffsetFromOrigin(
+      length_context.ResolveLengthPair(style.Cx(), style.Cy(), style));
 
   if (IsA<SVGCircleElement>(*GetElement())) {
-    float radius =
+    radius_x_ = radius_y_ =
         length_context.ValueForLength(style.R(), style, SVGLengthMode::kOther);
-    radii_ = FloatSize(radius, radius);
   } else {
-    radii_ = ToFloatSize(
-        length_context.ResolveLengthPair(style.Rx(), style.Ry(), style));
+    gfx::Vector2dF radii =
+        length_context.ResolveLengthPair(style.Rx(), style.Ry(), style);
+    radius_x_ = radii.x();
+    radius_y_ = radii.y();
     if (style.Rx().IsAuto())
-      radii_.set_width(radii_.height());
+      radius_x_ = radius_y_;
     else if (style.Ry().IsAuto())
-      radii_.set_height(radii_.width());
+      radius_y_ = radius_x_;
   }
 }
 
 bool LayoutSVGEllipse::ShapeDependentStrokeContains(
     const HitTestLocation& location) {
   NOT_DESTROYED();
-  if (radii_.width() < 0 || radii_.height() < 0)
+  if (radius_x_ < 0 || radius_y_ < 0)
     return false;
 
   // The optimized check below for circles does not support non-circular and
   // the cases that we set use_path_fallback_ in UpdateShapeFromElement().
-  if (use_path_fallback_ || radii_.width() != radii_.height())
+  if (use_path_fallback_ || radius_x_ != radius_y_)
     return LayoutSVGShape::ShapeDependentStrokeContains(location);
 
   const FloatPoint& point = location.TransformedPoint();
   const FloatPoint center =
       FloatPoint(center_.x() - point.x(), center_.y() - point.y());
   const float half_stroke_width = StrokeWidth() / 2;
-  const float r = radii_.width();
-  return std::abs(center.length() - r) <= half_stroke_width;
+  return std::abs(center.length() - radius_x_) <= half_stroke_width;
 }
 
 bool LayoutSVGEllipse::ShapeDependentFillContains(
@@ -129,8 +132,8 @@ bool LayoutSVGEllipse::ShapeDependentFillContains(
 
   // This works by checking if the point satisfies the ellipse equation.
   // (x/rX)^2 + (y/rY)^2 <= 1
-  const float xr_x = center.x() / radii_.width();
-  const float yr_y = center.y() / radii_.height();
+  const float xr_x = center.x() / radius_x_;
+  const float yr_y = center.y() / radius_y_;
   return xr_x * xr_x + yr_y * yr_y <= 1.0;
 }
 

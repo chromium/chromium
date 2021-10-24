@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/pod_interval_tree.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
 
@@ -44,11 +45,11 @@ class PLATFORM_EXPORT FloatPolygon {
   USING_FAST_MALLOC(FloatPolygon);
 
  public:
-  explicit FloatPolygon(Vector<FloatPoint> vertices);
+  explicit FloatPolygon(Vector<gfx::PointF> vertices);
   FloatPolygon(const FloatPolygon&) = delete;
   FloatPolygon& operator=(const FloatPolygon&) = delete;
 
-  const FloatPoint& VertexAt(unsigned index) const { return vertices_[index]; }
+  const gfx::PointF& VertexAt(unsigned index) const { return vertices_[index]; }
   unsigned NumberOfVertices() const { return vertices_.size(); }
 
   const FloatPolygonEdge& EdgeAt(unsigned index) const { return edges_[index]; }
@@ -58,15 +59,15 @@ class PLATFORM_EXPORT FloatPolygon {
   bool OverlappingEdges(float min_y,
                         float max_y,
                         Vector<const FloatPolygonEdge*>& result) const;
-  bool ContainsNonZero(const FloatPoint&) const;
-  bool ContainsEvenOdd(const FloatPoint&) const;
+  bool ContainsNonZero(const gfx::PointF&) const;
+  bool ContainsEvenOdd(const gfx::PointF&) const;
   bool IsEmpty() const { return empty_; }
 
  private:
   typedef WTF::PODInterval<float, FloatPolygonEdge*> EdgeInterval;
   typedef WTF::PODIntervalTree<float, FloatPolygonEdge*> EdgeIntervalTree;
 
-  Vector<FloatPoint> vertices_;
+  Vector<gfx::PointF> vertices_;
   FloatRect bounding_box_;
   bool empty_;
   Vector<FloatPolygonEdge> edges_;
@@ -81,15 +82,15 @@ class PLATFORM_EXPORT VertexPair {
  public:
   virtual ~VertexPair() = default;
 
-  virtual const FloatPoint& Vertex1() const = 0;
-  virtual const FloatPoint& Vertex2() const = 0;
+  virtual const gfx::PointF& Vertex1() const = 0;
+  virtual const gfx::PointF& Vertex2() const = 0;
 
   float MinX() const { return std::min(Vertex1().x(), Vertex2().x()); }
   float MinY() const { return std::min(Vertex1().y(), Vertex2().y()); }
   float MaxX() const { return std::max(Vertex1().x(), Vertex2().x()); }
   float MaxY() const { return std::max(Vertex1().y(), Vertex2().y()); }
 
-  bool Intersection(const VertexPair&, FloatPoint&) const;
+  bool Intersection(const VertexPair&, gfx::PointF&) const;
 };
 
 class PLATFORM_EXPORT FloatPolygonEdge final : public VertexPair {
@@ -97,12 +98,12 @@ class PLATFORM_EXPORT FloatPolygonEdge final : public VertexPair {
   friend class FloatPolygon;
 
  public:
-  const FloatPoint& Vertex1() const override {
+  const gfx::PointF& Vertex1() const override {
     DCHECK(polygon_);
     return polygon_->VertexAt(vertex_index1_);
   }
 
-  const FloatPoint& Vertex2() const override {
+  const gfx::PointF& Vertex2() const override {
     DCHECK(polygon_);
     return polygon_->VertexAt(vertex_index2_);
   }

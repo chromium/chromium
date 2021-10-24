@@ -87,7 +87,7 @@ void HTMLAreaElement::InvalidateCachedPath() {
 
 bool HTMLAreaElement::PointInArea(const PhysicalOffset& location,
                                   const LayoutObject* container_object) const {
-  return GetPath(container_object).Contains(FloatPoint(location));
+  return GetPath(container_object).Contains(gfx::PointF(location));
 }
 
 PhysicalRect HTMLAreaElement::ComputeAbsoluteRect(
@@ -100,7 +100,7 @@ PhysicalRect HTMLAreaElement::ComputeAbsoluteRect(
       PhysicalOffset(), kIgnoreTransforms);
 
   Path path = GetPath(container_object);
-  path.Translate(FloatSize(abs_pos));
+  path.Translate(gfx::Vector2dF(abs_pos));
   return PhysicalRect::EnclosingRect(path.BoundingRect());
 }
 
@@ -131,11 +131,12 @@ Path HTMLAreaElement::GetPath(const LayoutObject* container_object) const {
       case kPoly:
         if (coords_.size() >= 6) {
           int num_points = coords_.size() / 2;
-          path.MoveTo(FloatPoint(ClampCoordinate(coords_[0]),
-                                 ClampCoordinate(coords_[1])));
-          for (int i = 1; i < num_points; ++i)
-            path.AddLineTo(FloatPoint(ClampCoordinate(coords_[i * 2]),
-                                      ClampCoordinate(coords_[i * 2 + 1])));
+          path.MoveTo(gfx::PointF(ClampCoordinate(coords_[0]),
+                                  ClampCoordinate(coords_[1])));
+          for (int i = 1; i < num_points; ++i) {
+            path.AddLineTo(gfx::PointF(ClampCoordinate(coords_[i * 2]),
+                                       ClampCoordinate(coords_[i * 2 + 1])));
+          }
           path.CloseSubpath();
           path.SetWindRule(RULE_EVENODD);
         }

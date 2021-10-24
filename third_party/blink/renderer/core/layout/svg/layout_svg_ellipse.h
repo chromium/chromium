@@ -28,6 +28,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_LAYOUT_SVG_ELLIPSE_H_
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_shape.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
 
@@ -60,8 +61,9 @@ class LayoutSVGEllipse final : public LayoutSVGShape {
   bool HasContinuousStroke() const;
 
  private:
-  FloatPoint center_;
-  FloatSize radii_;
+  gfx::PointF center_;
+  float radius_x_;
+  float radius_y_;
   bool use_path_fallback_;
 };
 

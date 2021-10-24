@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 #include "third_party/blink/renderer/platform/fonts/font_metrics.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
 
@@ -197,7 +198,7 @@ FloatPoint SVGLengthContext::ResolvePoint(const SVGElement* context,
   return FloatPoint(x.ValueAsPercentage(), y.ValueAsPercentage());
 }
 
-FloatPoint SVGLengthContext::ResolveLengthPair(
+gfx::Vector2dF SVGLengthContext::ResolveLengthPair(
     const Length& x_length,
     const Length& y_length,
     const ComputedStyle& style) const {
@@ -213,8 +214,8 @@ FloatPoint SVGLengthContext::ResolveLengthPair(
       viewport_size.set_height(0);
   }
   float zoom = style.EffectiveZoom();
-  return FloatPoint(ValueForLength(x_length, zoom, viewport_size.width()),
-                    ValueForLength(y_length, zoom, viewport_size.height()));
+  return gfx::Vector2dF(ValueForLength(x_length, zoom, viewport_size.width()),
+                        ValueForLength(y_length, zoom, viewport_size.height()));
 }
 
 float SVGLengthContext::ResolveLength(const SVGElement* context,

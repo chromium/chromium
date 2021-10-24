@@ -495,7 +495,7 @@ SVGTransformChange LayoutSVGRoot::BuildLocalToBorderBoxTransform() {
   FloatSize content_size(ContentWidth() / scale, ContentHeight() / scale);
   local_to_border_box_transform_ = svg->ViewBoxToViewTransform(content_size);
 
-  FloatPoint translate = svg->CurrentTranslate();
+  gfx::Vector2dF translate = svg->CurrentTranslate();
   LayoutSize border_and_padding(BorderLeft() + PaddingLeft(),
                                 BorderTop() + PaddingTop());
   AffineTransform view_to_border_box_transform(

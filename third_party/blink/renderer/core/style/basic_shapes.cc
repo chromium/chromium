@@ -122,12 +122,12 @@ void BasicShapePolygon::GetPath(Path& path,
     return;
 
   path.MoveTo(
-      FloatPoint(FloatValueForLength(values_.at(0), bounding_box.width()) +
-                     bounding_box.x(),
-                 FloatValueForLength(values_.at(1), bounding_box.height()) +
-                     bounding_box.y()));
+      gfx::PointF(FloatValueForLength(values_.at(0), bounding_box.width()) +
+                      bounding_box.x(),
+                  FloatValueForLength(values_.at(1), bounding_box.height()) +
+                      bounding_box.y()));
   for (wtf_size_t i = 2; i < length; i = i + 2) {
-    path.AddLineTo(FloatPoint(
+    path.AddLineTo(gfx::PointF(
         FloatValueForLength(values_.at(i), bounding_box.width()) +
             bounding_box.x(),
         FloatValueForLength(values_.at(i + 1), bounding_box.height()) +

@@ -10,6 +10,10 @@
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/text/writing_direction_mode.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/vector2d.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
 
@@ -96,6 +100,8 @@ struct CORE_EXPORT PhysicalOffset {
       : left(size.width()), top(size.height()) {}
   explicit PhysicalOffset(const gfx::Point& point)
       : left(point.x()), top(point.y()) {}
+  explicit PhysicalOffset(const gfx::Vector2d& vector)
+      : left(vector.x()), top(vector.y()) {}
 
   static PhysicalOffset FromFloatPointFloor(const FloatPoint& point) {
     return {LayoutUnit::FromFloatFloor(point.x()),
@@ -114,6 +120,23 @@ struct CORE_EXPORT PhysicalOffset {
             LayoutUnit::FromFloatRound(size.height())};
   }
 
+  static PhysicalOffset FromPointFFloor(const gfx::PointF& point) {
+    return {LayoutUnit::FromFloatFloor(point.x()),
+            LayoutUnit::FromFloatFloor(point.y())};
+  }
+  static PhysicalOffset FromPointFRound(const gfx::PointF& point) {
+    return {LayoutUnit::FromFloatRound(point.x()),
+            LayoutUnit::FromFloatRound(point.y())};
+  }
+  static PhysicalOffset FromVector2dFFloor(const gfx::Vector2dF& vector) {
+    return {LayoutUnit::FromFloatFloor(vector.x()),
+            LayoutUnit::FromFloatFloor(vector.y())};
+  }
+  static PhysicalOffset FromVector2dFRound(const gfx::Vector2dF& vector) {
+    return {LayoutUnit::FromFloatRound(vector.x()),
+            LayoutUnit::FromFloatRound(vector.y())};
+  }
+
   void Scale(float s) {
     left *= s;
     top *= s;
@@ -121,6 +144,8 @@ struct CORE_EXPORT PhysicalOffset {
 
   constexpr explicit operator FloatPoint() const { return {left, top}; }
   constexpr explicit operator FloatSize() const { return {left, top}; }
+  constexpr explicit operator gfx::PointF() const { return {left, top}; }
+  constexpr explicit operator gfx::Vector2dF() const { return {left, top}; }
 
   String ToString() const;
 };

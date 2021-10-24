@@ -30,8 +30,10 @@
 #include "third_party/blink/renderer/platform/geometry/float_quad.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
+#include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
 
@@ -266,6 +268,13 @@ FloatPoint AffineTransform::MapPoint(const FloatPoint& point) const {
   Map(point.x(), point.y(), x2, y2);
 
   return FloatPoint(ClampTo<float>(x2), ClampTo<float>(y2));
+}
+
+gfx::PointF AffineTransform::MapPoint(const gfx::PointF& point) const {
+  double x2, y2;
+  Map(point.x(), point.y(), x2, y2);
+
+  return gfx::PointF(ClampTo<float>(x2), ClampTo<float>(y2));
 }
 
 IntSize AffineTransform::MapSize(const IntSize& size) const {

@@ -21,8 +21,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_PATH_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_PATH_DATA_H_
 
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
 
@@ -65,17 +65,13 @@ struct PathSegmentData {
   DISALLOW_NEW();
 
  public:
-  PathSegmentData()
-      : command(kPathSegUnknown), arc_sweep(false), arc_large(false) {}
-
-  const FloatPoint& ArcRadii() const { return point1; }
-  FloatPoint& ArcRadii() { return point1; }
-
   float ArcAngle() const { return point2.x(); }
   void SetArcAngle(float angle) { point2.set_x(angle); }
 
-  float R1() const { return ArcRadii().x(); }
-  float R2() const { return ArcRadii().y(); }
+  float ArcRadiusX() const { return point1.x(); }
+  void SetArcRadiusX(float x) { point1.set_x(x); }
+  float ArcRadiusY() const { return point1.y(); }
+  void SetArcRadiusY(float y) { point1.set_y(y); }
 
   bool LargeArcFlag() const { return arc_large; }
   bool SweepFlag() const { return arc_sweep; }
@@ -89,12 +85,12 @@ struct PathSegmentData {
   float X2() const { return point2.x(); }
   float Y2() const { return point2.y(); }
 
-  SVGPathSegType command;
-  FloatPoint target_point;
-  FloatPoint point1;
-  FloatPoint point2;
-  bool arc_sweep;
-  bool arc_large;
+  SVGPathSegType command = kPathSegUnknown;
+  gfx::PointF target_point;
+  gfx::PointF point1;
+  gfx::PointF point2;
+  bool arc_sweep = false;
+  bool arc_large = false;
 };
 
 }  // namespace blink

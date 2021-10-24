@@ -26,6 +26,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 
+#include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 
 namespace blink {

@@ -2807,7 +2807,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateClipPathCache() {
 
   absl::optional<Path> path = ClipPathClipper::PathBasedClip(object_);
   if (path)
-    path->Translate(ToFloatSize(FloatPoint(fragment_data_.PaintOffset())));
+    path->Translate(gfx::Vector2dF(fragment_data_.PaintOffset()));
   fragment_data_.SetClipPathCache(
       EnclosingIntRect(*bounding_box),
       path ? AdoptRef(new RefCountedPath(std::move(*path))) : nullptr);

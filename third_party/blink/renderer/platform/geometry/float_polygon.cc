@@ -35,20 +35,20 @@
 
 namespace blink {
 
-static inline bool AreCollinearPoints(const FloatPoint& p0,
-                                      const FloatPoint& p1,
-                                      const FloatPoint& p2) {
-  return !Determinant(p1 - p0, p2 - p0);
+static inline bool AreCollinearPoints(const gfx::PointF& p0,
+                                      const gfx::PointF& p1,
+                                      const gfx::PointF& p2) {
+  return !gfx::CrossProduct(p1 - p0, p2 - p0);
 }
 
-static inline bool AreCoincidentPoints(const FloatPoint& p0,
-                                       const FloatPoint& p1) {
+static inline bool AreCoincidentPoints(const gfx::PointF& p0,
+                                       const gfx::PointF& p1) {
   return p0.x() == p1.x() && p0.y() == p1.y();
 }
 
-static inline bool IsPointOnLineSegment(const FloatPoint& vertex1,
-                                        const FloatPoint& vertex2,
-                                        const FloatPoint& point) {
+static inline bool IsPointOnLineSegment(const gfx::PointF& vertex1,
+                                        const gfx::PointF& vertex2,
+                                        const gfx::PointF& point) {
   return point.x() >= std::min(vertex1.x(), vertex2.x()) &&
          point.x() <= std::max(vertex1.x(), vertex2.x()) &&
          AreCollinearPoints(vertex1, vertex2, point);
@@ -85,36 +85,36 @@ static unsigned FindNextEdgeVertexIndex(const FloatPolygon& polygon,
   return vertex_index2;
 }
 
-FloatPolygon::FloatPolygon(Vector<FloatPoint> vertices)
+FloatPolygon::FloatPolygon(Vector<gfx::PointF> vertices)
     : vertices_(std::move(vertices)) {
   unsigned n_vertices = NumberOfVertices();
   edges_.resize(n_vertices);
   empty_ = n_vertices < 3;
 
   if (n_vertices)
-    bounding_box_.set_origin(VertexAt(0));
+    bounding_box_.set_origin(FloatPoint(VertexAt(0)));
 
   if (empty_)
     return;
 
   unsigned min_vertex_index = 0;
   for (unsigned i = 1; i < n_vertices; ++i) {
-    const FloatPoint& vertex = VertexAt(i);
+    const gfx::PointF& vertex = VertexAt(i);
     if (vertex.y() < VertexAt(min_vertex_index).y() ||
         (vertex.y() == VertexAt(min_vertex_index).y() &&
          vertex.x() < VertexAt(min_vertex_index).x()))
       min_vertex_index = i;
   }
-  FloatPoint next_vertex = VertexAt((min_vertex_index + 1) % n_vertices);
-  FloatPoint prev_vertex =
+  gfx::PointF next_vertex = VertexAt((min_vertex_index + 1) % n_vertices);
+  gfx::PointF prev_vertex =
       VertexAt((min_vertex_index + n_vertices - 1) % n_vertices);
-  bool clockwise = Determinant(VertexAt(min_vertex_index) - prev_vertex,
-                               next_vertex - prev_vertex) > 0;
+  bool clockwise = gfx::CrossProduct(VertexAt(min_vertex_index) - prev_vertex,
+                                     next_vertex - prev_vertex) > 0;
 
   unsigned edge_index = 0;
   unsigned vertex_index1 = 0;
   do {
-    bounding_box_.Extend(VertexAt(vertex_index1));
+    bounding_box_.Extend(FloatPoint(VertexAt(vertex_index1)));
     unsigned vertex_index2 =
         FindNextEdgeVertexIndex(*this, vertex_index1, clockwise);
     edges_[edge_index].polygon_ = this;
@@ -165,20 +165,20 @@ bool FloatPolygon::OverlappingEdges(
   return overlapping_edge_intervals_size > 0;
 }
 
-static inline float LeftSide(const FloatPoint& vertex1,
-                             const FloatPoint& vertex2,
-                             const FloatPoint& point) {
+static inline float LeftSide(const gfx::PointF& vertex1,
+                             const gfx::PointF& vertex2,
+                             const gfx::PointF& point) {
   return ((point.x() - vertex1.x()) * (vertex2.y() - vertex1.y())) -
          ((vertex2.x() - vertex1.x()) * (point.y() - vertex1.y()));
 }
 
-bool FloatPolygon::ContainsEvenOdd(const FloatPoint& point) const {
-  if (!bounding_box_.Contains(point))
+bool FloatPolygon::ContainsEvenOdd(const gfx::PointF& point) const {
+  if (!bounding_box_.Contains(FloatPoint(point)))
     return false;
   unsigned crossing_count = 0;
   for (unsigned i = 0; i < NumberOfEdges(); ++i) {
-    const FloatPoint& vertex1 = EdgeAt(i).Vertex1();
-    const FloatPoint& vertex2 = EdgeAt(i).Vertex2();
+    const gfx::PointF& vertex1 = EdgeAt(i).Vertex1();
+    const gfx::PointF& vertex2 = EdgeAt(i).Vertex2();
     if (IsPointOnLineSegment(vertex1, vertex2, point))
       return true;
     if ((vertex1.y() <= point.y() && vertex2.y() > point.y()) ||
@@ -191,13 +191,13 @@ bool FloatPolygon::ContainsEvenOdd(const FloatPoint& point) const {
   return crossing_count & 1;
 }
 
-bool FloatPolygon::ContainsNonZero(const FloatPoint& point) const {
-  if (!bounding_box_.Contains(point))
+bool FloatPolygon::ContainsNonZero(const gfx::PointF& point) const {
+  if (!bounding_box_.Contains(FloatPoint(point)))
     return false;
   int winding_number = 0;
   for (unsigned i = 0; i < NumberOfEdges(); ++i) {
-    const FloatPoint& vertex1 = EdgeAt(i).Vertex1();
-    const FloatPoint& vertex2 = EdgeAt(i).Vertex2();
+    const gfx::PointF& vertex1 = EdgeAt(i).Vertex1();
+    const gfx::PointF& vertex2 = EdgeAt(i).Vertex2();
     if (IsPointOnLineSegment(vertex1, vertex2, point))
       return true;
     if (vertex2.y() <= point.y()) {
@@ -212,13 +212,13 @@ bool FloatPolygon::ContainsNonZero(const FloatPoint& point) const {
 }
 
 bool VertexPair::Intersection(const VertexPair& other,
-                              FloatPoint& point) const {
+                              gfx::PointF& point) const {
   // See: http://paulbourke.net/geometry/pointlineplane/,
   // "Intersection point of two lines in 2 dimensions"
 
-  const FloatSize& this_delta = Vertex2() - Vertex1();
-  const FloatSize& other_delta = other.Vertex2() - other.Vertex1();
-  float denominator = Determinant(this_delta, other_delta);
+  gfx::Vector2dF this_delta = Vertex2() - Vertex1();
+  gfx::Vector2dF other_delta = other.Vertex2() - other.Vertex1();
+  float denominator = gfx::CrossProduct(this_delta, other_delta);
   if (!denominator)
     return false;
 
@@ -227,15 +227,17 @@ bool VertexPair::Intersection(const VertexPair& other,
   // vertex1 + u * (vertex2 - vertex1), when 0 <= u <= 1. We're computing the
   // values of u for each line at their intersection point.
 
-  const FloatSize& vertex1_delta = Vertex1() - other.Vertex1();
-  float u_this_line = Determinant(other_delta, vertex1_delta) / denominator;
-  float u_other_line = Determinant(this_delta, vertex1_delta) / denominator;
+  gfx::Vector2dF vertex1_delta = Vertex1() - other.Vertex1();
+  float u_this_line =
+      gfx::CrossProduct(other_delta, vertex1_delta) / denominator;
+  float u_other_line =
+      gfx::CrossProduct(this_delta, vertex1_delta) / denominator;
 
   if (u_this_line < 0 || u_other_line < 0 || u_this_line > 1 ||
       u_other_line > 1)
     return false;
 
-  point = Vertex1() + u_this_line * this_delta;
+  point = Vertex1() + gfx::ScaleVector2d(this_delta, u_this_line);
   return true;
 }
 

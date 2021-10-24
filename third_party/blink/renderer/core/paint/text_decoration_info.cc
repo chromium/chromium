@@ -372,7 +372,7 @@ absl::optional<Path> TextDecorationInfo::PrepareWavyStrokePath(
   GraphicsContext::AdjustLineToPixelBoundaries(p1, p2, ResolvedThickness());
 
   Path& path = line_data_[line_data_index].stroke_path.emplace();
-  path.MoveTo(p1);
+  path.MoveTo(ToGfxPointF(p1));
 
   // Distance between decoration's axis and Bezier curve's control points.
   // The height of the curve is based on this distance. Use a minimum of 6
@@ -408,15 +408,15 @@ absl::optional<Path> TextDecorationInfo::PrepareWavyStrokePath(
     }
 
     AdjustStepToDecorationLength(step, control_point_distance, y2 - y1);
-    FloatPoint control_point1(x_axis + control_point_distance, 0);
-    FloatPoint control_point2(x_axis - control_point_distance, 0);
+    gfx::PointF control_point1(x_axis + control_point_distance, 0);
+    gfx::PointF control_point2(x_axis - control_point_distance, 0);
 
     for (float y = y1; y + 2 * step <= y2;) {
       control_point1.set_y(y + step);
       control_point2.set_y(y + step);
       y += 2 * step;
       path.AddBezierCurveTo(control_point1, control_point2,
-                            FloatPoint(x_axis, y));
+                            gfx::PointF(x_axis, y));
     }
   } else {
     DCHECK(p1.y() == p2.y());
@@ -434,15 +434,15 @@ absl::optional<Path> TextDecorationInfo::PrepareWavyStrokePath(
     }
 
     AdjustStepToDecorationLength(step, control_point_distance, x2 - x1);
-    FloatPoint control_point1(0, y_axis + control_point_distance);
-    FloatPoint control_point2(0, y_axis - control_point_distance);
+    gfx::PointF control_point1(0, y_axis + control_point_distance);
+    gfx::PointF control_point2(0, y_axis - control_point_distance);
 
     for (float x = x1; x + 2 * step <= x2;) {
       control_point1.set_x(x + step);
       control_point2.set_x(x + step);
       x += 2 * step;
       path.AddBezierCurveTo(control_point1, control_point2,
-                            FloatPoint(x, y_axis));
+                            gfx::PointF(x, y_axis));
     }
   }
   return line_data_[line_data_index].stroke_path;
