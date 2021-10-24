@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_CROSAPI_USER_DATA_STATS_RECORDER_H_
-#define CHROME_BROWSER_ASH_CROSAPI_USER_DATA_STATS_RECORDER_H_
+#ifndef CHROME_BROWSER_ASH_CROSAPI_BROWSER_DATA_MIGRATOR_UTIL_H_
+#define CHROME_BROWSER_ASH_CROSAPI_BROWSER_DATA_MIGRATOR_UTIL_H_
 
 #include <string>
 
@@ -13,8 +13,8 @@ namespace base {
 class FilePath;
 }
 
-namespace crosapi {
-namespace user_data_stats_recorder {
+namespace ash {
+namespace browser_data_migrator_util {
 // UMA name prefix to record sizes of files/dirs in profile data directory. The
 // name unique to each file/dir is appended to the end to create a full UMA name
 // as follows `Ash.UserDataStatsRecorder.DataSize.{ItemName}`.
@@ -38,7 +38,7 @@ std::string GetUMAItemName(const base::FilePath& path);
 // under `dir_path` recursively while skipping symlinks.
 int64_t ComputeDirectorySizeWithoutLinks(const base::FilePath& dir_path);
 
-}  // namespace user_data_stats_recorder
-}  // namespace crosapi
+}  // namespace browser_data_migrator_util
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_CROSAPI_USER_DATA_STATS_RECORDER_H_
+#endif  // CHROME_BROWSER_ASH_CROSAPI_BROWSER_DATA_MIGRATOR_UTIL_H_
