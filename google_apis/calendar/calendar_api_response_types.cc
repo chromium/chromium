@@ -71,6 +71,10 @@ CalendarEvent::CalendarEvent() = default;
 
 CalendarEvent::~CalendarEvent() = default;
 
+CalendarEvent::CalendarEvent(const CalendarEvent&) = default;
+
+CalendarEvent& CalendarEvent::operator=(const CalendarEvent&) = default;
+
 // static
 void CalendarEvent::RegisterJSONConverter(
     base::JSONValueConverter<CalendarEvent>* converter) {
@@ -99,6 +103,19 @@ std::unique_ptr<CalendarEvent> CalendarEvent::CreateFrom(
   return event;
 }
 
+int CalendarEvent::GetApproximateSizeInBytes() const {
+  int total_bytes = 0;
+
+  total_bytes += sizeof(CalendarEvent);
+  total_bytes += id_.length();
+  total_bytes += summary_.length();
+  total_bytes += html_link_.length();
+  total_bytes += color_id_.length();
+  total_bytes += status_.length();
+
+  return total_bytes;
+}
+
 EventList::EventList() = default;
 
 EventList::~EventList() = default;
@@ -123,6 +140,10 @@ std::unique_ptr<EventList> EventList::CreateFrom(const base::Value& value) {
     return nullptr;
   }
   return events;
+}
+
+void EventList::InjectItemForTesting(std::unique_ptr<CalendarEvent> item) {
+  items_.push_back(std::move(item));
 }
 
 }  // namespace calendar

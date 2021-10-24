@@ -34,8 +34,11 @@ constexpr gfx::Insets kDateCellInsets{kDateVerticalPadding,
 // Checks if the `selected_date` is local time today.
 bool IsToday(const base::Time::Exploded& selected_date);
 
-// Gets the given `date`'s `Exploded` instance.
-base::Time::Exploded GetExploded(const base::Time& date);
+// Gets the given `date`'s `Exploded` instance, in local time.
+base::Time::Exploded GetExplodedLocal(const base::Time& date);
+
+// Gets the given `date`'s `Exploded` instance, in UTC time.
+base::Time::Exploded GetExplodedUTC(const base::Time& date);
 
 // Gets the given `date`'s month name in string in the current language.
 std::u16string GetMonthName(const base::Time date);
@@ -46,6 +49,28 @@ void SetUpWeekColumnSets(views::ColumnSet* column_set);
 // Colors.
 SkColor GetPrimaryTextColor();
 SkColor GetSecondaryTextColor();
+
+// Get local midnight on the first day of the month that includes |date|.
+base::Time GetStartOfMonthLocal(const base::Time& date);
+
+// Get local midnight on the first day of the month before the one that includes
+// |date|.
+base::Time GetStartOfPreviousMonthLocal(base::Time date);
+
+// Get local midnight on the first day of the month after the one that includes
+// |date|.
+base::Time GetStartOfNextMonthLocal(base::Time date);
+
+// Get UTC midnight on the first day of the month that includes |date|.
+base::Time GetStartOfMonthUTC(const base::Time& date);
+
+// Get UTC midnight on the first day of the month before the one that includes
+// |date|.
+base::Time GetStartOfPreviousMonthUTC(base::Time date);
+
+// Get UTC midnight on the first day of the month after the one that includes
+// |date|.
+base::Time GetStartOfNextMonthUTC(base::Time date);
 
 }  // namespace calendar_utils
 

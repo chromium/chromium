@@ -6,6 +6,7 @@
 
 #include "ash/style/ash_color_provider.h"
 #include "base/i18n/unicodestring.h"
+#include "base/time/time.h"
 #include "third_party/icu/source/i18n/unicode/datefmt.h"
 #include "third_party/icu/source/i18n/unicode/dtptngen.h"
 #include "third_party/icu/source/i18n/unicode/smpdtfmt.h"
@@ -16,15 +17,21 @@ namespace ash {
 namespace calendar_utils {
 
 bool IsToday(const base::Time::Exploded& selected_date) {
-  base::Time::Exploded today_exploded = GetExploded(base::Time::Now());
+  base::Time::Exploded today_exploded = GetExplodedLocal(base::Time::Now());
   return selected_date.year == today_exploded.year &&
          selected_date.month == today_exploded.month &&
          selected_date.day_of_month == today_exploded.day_of_month;
 }
 
-base::Time::Exploded GetExploded(const base::Time& date) {
+base::Time::Exploded GetExplodedLocal(const base::Time& date) {
   base::Time::Exploded exploded;
   date.LocalExplode(&exploded);
+  return exploded;
+}
+
+base::Time::Exploded GetExplodedUTC(const base::Time& date) {
+  base::Time::Exploded exploded;
+  date.UTCExplode(&exploded);
   return exploded;
 }
 
@@ -68,6 +75,36 @@ SkColor GetSecondaryTextColor() {
   const ash::AshColorProvider* color_provider = ash::AshColorProvider::Get();
   return color_provider->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorSecondary);
+}
+
+base::Time GetStartOfMonthLocal(const base::Time& date) {
+  return (date -
+          base::Days(calendar_utils::GetExplodedLocal(date).day_of_month - 1))
+      .LocalMidnight();
+}
+
+base::Time GetStartOfPreviousMonthLocal(base::Time date) {
+  return GetStartOfMonthLocal(GetStartOfMonthLocal(date) - base::Days(1));
+}
+
+base::Time GetStartOfNextMonthLocal(base::Time date) {
+  // Adds over 31 days to make sure it goes to the next month.
+  return GetStartOfMonthLocal(GetStartOfMonthLocal(date) + base::Days(33));
+}
+
+base::Time GetStartOfMonthUTC(const base::Time& date) {
+  return (date -
+          base::Days(calendar_utils::GetExplodedUTC(date).day_of_month - 1))
+      .UTCMidnight();
+}
+
+base::Time GetStartOfPreviousMonthUTC(base::Time date) {
+  return GetStartOfMonthUTC(GetStartOfMonthUTC(date) - base::Days(1));
+}
+
+base::Time GetStartOfNextMonthUTC(base::Time date) {
+  // Adds over 31 days to make sure it goes to the next month.
+  return GetStartOfMonthUTC(GetStartOfMonthUTC(date) + base::Days(33));
 }
 
 }  // namespace calendar_utils
