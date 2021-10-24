@@ -340,6 +340,8 @@ void WorkerThread::RunWorker() {
   // A WorkerThread starts out waiting for work.
   {
     TRACE_EVENT_END0("base", "WorkerThread active");
+    // TODO(crbug.com/1021571): Remove this once fixed.
+    PERFETTO_INTERNAL_ADD_EMPTY_EVENT();
     delegate_->WaitForWork(&wake_up_event_);
     TRACE_EVENT_BEGIN0("base", "WorkerThread active");
   }
