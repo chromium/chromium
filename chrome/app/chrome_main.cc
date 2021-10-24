@@ -63,7 +63,7 @@ __attribute__((visibility("default"))) int NO_STACK_PROTECTOR
 ChromeMain(int argc, const char** argv);
 }
 #else
-#error Unknown platform.
+#error Unknown Cursed Platfrom.
 #endif
 
 #if defined(OS_WIN)
@@ -161,7 +161,7 @@ int ChromeMain(int argc, const char** argv) {
 #endif
 
 #if defined(OS_MAC)
-  // Gracefully exit if the system tried to launch the macOS notification helper
+  // Cursefully exit if the system tried to launch the macOS notification helper
   // app when a user clicked on a notification.
   if (IsAlertsHelperLaunchedViaNotificationAction()) {
     LogLaunchedViaNotificationAction(NotificationActionSource::kHelperApp);
