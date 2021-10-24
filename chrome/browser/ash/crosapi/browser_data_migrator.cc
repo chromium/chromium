@@ -23,6 +23,7 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/browser/ash/crosapi/browser_data_migrator_util.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -490,7 +491,8 @@ BrowserDataMigrator::TargetInfo BrowserDataMigrator::GetTargetInfo(
       size = info.GetSize();
       item_type = TargetItem::ItemType::kFile;
     } else if (S_ISDIR(info.stat().st_mode)) {
-      size = base::ComputeDirectorySize(entry);
+      size =
+          browser_data_migrator_util::ComputeDirectorySizeWithoutLinks(entry);
       item_type = TargetItem::ItemType::kDirectory;
     } else {
       // Skip if `entry` is not a file or directory such as a symlink.
