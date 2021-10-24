@@ -4,6 +4,7 @@
 
 #include "components/autofill/content/browser/form_forest.h"
 
+#include "base/containers/cxx20_erase_vector.h"
 #include "base/containers/stack.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/numerics/safe_conversions.h"
@@ -21,19 +22,20 @@
 // |error_handler| if |condition| is false.
 // TODO(https://crbug.com/1187842): Replace AFCHECK() with DCHECK().
 #if DCHECK_IS_ON()
-#define AFCHECK(condition, ...)                            \
-  {                                                        \
-    DEBUG_ALIAS_FOR_GURL(main_url, MainUrlForDebugging()); \
-    DCHECK(condition);                                     \
+#define AFCHECK(condition, ...)                                                \
+  {                                                                            \
+    SCOPED_CRASH_KEY_STRING256("autofill", "main_url", MainUrlForDebugging()); \
+    DCHECK(condition);                                                         \
   }
 #else
-#define AFCHECK(condition, ...)                              \
-  {                                                          \
-    if (!(condition)) {                                      \
-      DEBUG_ALIAS_FOR_GURL(main_url, MainUrlForDebugging()); \
-      base::debug::DumpWithoutCrashing();                    \
-      __VA_ARGS__;                                           \
-    }                                                        \
+#define AFCHECK(condition, ...)                          \
+  {                                                      \
+    if (!(condition)) {                                  \
+      SCOPED_CRASH_KEY_STRING256("autofill", "main_url", \
+                                 MainUrlForDebugging()); \
+      base::debug::DumpWithoutCrashing();                \
+      __VA_ARGS__;                                       \
+    }                                                    \
   }
 #endif
 
@@ -71,7 +73,7 @@ FormForest::FrameData::~FrameData() = default;
 FormForest::FormForest() = default;
 FormForest::~FormForest() = default;
 
-GURL FormForest::MainUrlForDebugging() const {
+std::string FormForest::MainUrlForDebugging() const {
   content::RenderFrameHost* some_rfh = some_rfh_for_debugging_;
   if (!some_rfh) {
     for (const auto& frame_data : frame_datas_) {
@@ -80,8 +82,8 @@ GURL FormForest::MainUrlForDebugging() const {
     }
   }
   if (!some_rfh)
-    return GURL();
-  return some_rfh->GetMainFrame()->GetLastCommittedURL();
+    return std::string();
+  return some_rfh->GetMainFrame()->GetLastCommittedURL().spec();
 }
 
 absl::optional<LocalFrameToken> FormForest::Resolve(const FrameData& reference,
@@ -145,27 +147,38 @@ FormForest::FrameAndForm FormForest::GetRoot(FormGlobalId form) {
   }
 }
 
-void FormForest::EraseFrame(LocalFrameToken frame) {
-  some_rfh_for_debugging_ = nullptr;
-  if (!frame_datas_.erase(frame))
-    return;
-  // Removes all fields and unsets |frame|'s children's FrameData::parent_form
-  // pointer. We intentionally iterate over all frames and forms to search for
-  // fields from |frame|. Alternatively, we could limit this to the root form of
-  // |frame|. However, this would rely on |frame| being erased before its
-  // ancestors, for otherwise |frame| is disconnected from its root already.
+void FormForest::EraseReferencesTo(
+    absl::variant<LocalFrameToken, FormGlobalId> frame_or_form) {
+  auto Match = [&](FormGlobalId form) {
+    return absl::holds_alternative<LocalFrameToken>(frame_or_form)
+               ? absl::get<LocalFrameToken>(frame_or_form) == form.frame_token
+               : absl::get<FormGlobalId>(frame_or_form) == form;
+  };
   for (std::unique_ptr<FrameData>& some_frame : frame_datas_) {
     AFCHECK(some_frame, continue);
-    for (FormData& form : some_frame->child_forms) {
-      base::EraseIf(form.fields, [&frame](const FormFieldData& field) {
-        return field.host_frame == frame;
+    for (FormData& some_form : some_frame->child_forms) {
+      base::EraseIf(some_form.fields, [&](const FormFieldData& some_form) {
+        return Match(some_form.renderer_form_id());
       });
     }
-    if (some_frame->parent_form &&
-        some_frame->parent_form->frame_token == frame) {
+    if (some_frame->parent_form && Match(*some_frame->parent_form))
       some_frame->parent_form = absl::nullopt;
-    }
   }
+}
+
+void FormForest::EraseForm(FormGlobalId form) {
+  if (FrameData* frame = GetFrameData(form.frame_token)) {
+    base::EraseIf(frame->child_forms, [&](const FormData& some_form) {
+      return some_form.global_id() == form;
+    });
+    EraseReferencesTo(form);
+  }
+}
+
+void FormForest::EraseFrame(LocalFrameToken frame) {
+  some_rfh_for_debugging_ = nullptr;
+  if (frame_datas_.erase(frame))
+    EraseReferencesTo(frame);
 }
 
 // Maintains the following invariants:

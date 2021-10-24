@@ -210,6 +210,9 @@ void ContentAutofillRouter::FormsSeen(
 
   some_rfh_for_debugging_ = source->render_frame_host();
 
+  for (FormGlobalId form : removed_forms)
+    form_forest_.EraseForm(form);
+
   for (const FormData& form : renderer_forms)
     form_forest_.UpdateTreeOfRendererForm(form, source);
 
