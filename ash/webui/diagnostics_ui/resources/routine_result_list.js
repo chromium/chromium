@@ -10,7 +10,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {RoutineType} from './diagnostics_types.js';
 import {RoutineGroup} from './routine_group.js';
-import {ExecutionProgress, ResultStatusItem} from './routine_list_executor.js'
+import {ExecutionProgress, ResultStatusItem} from './routine_list_executor.js';
 
 /**
  * @fileoverview
@@ -83,7 +83,7 @@ Polymer({
    * @param {!Array<!RoutineType>} routines
    */
   addRoutines_(routines) {
-    for (let routine of routines) {
+    for (const routine of routines) {
       this.push('results_', new ResultStatusItem(routine));
     }
   },
@@ -129,7 +129,7 @@ Polymer({
         this.updateRoutineStatus_(idx, status);
         return;
       }
-    })
+    });
   },
 
   /**
@@ -153,7 +153,7 @@ Polymer({
         routineGroup.progress = ExecutionProgress.kSkipped;
         this.updateRoutineStatus_(i, routineGroup.clone());
       }
-    })
+    });
   },
 
   /**

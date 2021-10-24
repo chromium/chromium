@@ -31,7 +31,7 @@ export class PageToolbarElement extends PolymerElement {
         value: false,
         reflectToAttribute: true,
       },
-    }
+    };
   }
 
   onMenuTap_() {

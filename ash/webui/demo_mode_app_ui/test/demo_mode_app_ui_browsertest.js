@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 GEN('#include "ash/constants/ash_features.h"');
-GEN('#include "content/public/test/browser_test.h"')
+GEN('#include "content/public/test/browser_test.h"');
 
 const HOST_ORIGIN = 'chrome://demo-mode-app';
 
+// js2gtest fixtures require var here (https://crbug.com/1033337).
+// eslint-disable-next-line no-var
 var DemoModeAppUIBrowserTest = class extends testing.Test {
   /** @override */
   get browsePreload() {

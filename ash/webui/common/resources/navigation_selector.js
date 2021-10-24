@@ -57,7 +57,7 @@ export class NavigationSelectorElement extends PolymerElement {
         type: Array,
         value: () => [],
       }
-    }
+    };
   }
 
   /**
@@ -81,7 +81,7 @@ export class NavigationSelectorElement extends PolymerElement {
    * @private
    */
   updateSelected_(items) {
-    for (let item of items) {
+    for (const item of items) {
       if (item.textContent.trim() === this.selectedItem.name) {
         item.classList.add('selected');
       } else {

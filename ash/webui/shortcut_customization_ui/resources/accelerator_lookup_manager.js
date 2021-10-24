@@ -132,7 +132,7 @@ export class AcceleratorLookupManager {
         this.acceleratorLayoutLookup_.set(entry.category, new Map());
       }
 
-      let subcatMap = this.acceleratorLayoutLookup_.get(entry.category);
+      const subcatMap = this.acceleratorLayoutLookup_.get(entry.category);
       if (!subcatMap.has(entry.sub_category)) {
         subcatMap.set(entry.sub_category, []);
       }

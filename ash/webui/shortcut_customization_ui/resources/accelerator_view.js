@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './input_key.js'
+import './input_key.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
@@ -13,24 +13,24 @@ import {getShortcutProvider} from './mojo_interface_provider.js';
 import {AcceleratorConfigResult, AcceleratorInfo, AcceleratorKeys, AcceleratorSource, AcceleratorState, AcceleratorType, Modifier, ShortcutProviderInterface} from './shortcut_types.js';
 
 const ModifierRawKeys = [
-  /*Shift=*/16,
-  /*Alt=*/17,
-  /*Ctrl=*/18,
-  /*MetaLeft=*/91,
-  /*MetaRight=*/92,
-]
+  /*Shift=*/ 16,
+  /*Alt=*/ 17,
+  /*Ctrl=*/ 18,
+  /*MetaLeft=*/ 91,
+  /*MetaRight=*/ 92,
+];
 
 const KeyState = {
   NOT_SELECTED: 'not-selected',
   MODIFIER: 'modifier-selected',
   ALPHANUMERIC: 'alpha-numeric-selected',
-}
+};
 
 export const ViewState = {
   VIEW: 0,
   ADD: 1,
   EDIT: 2,
-}
+};
 
 /**
  * Returns the converted modifier flag as a readable string.
@@ -143,7 +143,7 @@ export class AcceleratorViewElement extends PolymerElement {
         type: Number,
         value: 0,
       },
-    }
+    };
   }
 
   /** @override */
@@ -162,7 +162,7 @@ export class AcceleratorViewElement extends PolymerElement {
    * @private
    */
   getModifiers_() {
-    let modifiers = [];
+    const modifiers = [];
     for (const key in Modifier) {
       const modifier = Modifier[key];
       if (this.acceleratorInfo.accelerator.modifiers & modifier) {
@@ -507,7 +507,6 @@ export class AcceleratorViewElement extends PolymerElement {
               this.fireUpdateEvent_();
             }
           });
-      ;
     }
 
     if (this.viewState === ViewState.ADD) {

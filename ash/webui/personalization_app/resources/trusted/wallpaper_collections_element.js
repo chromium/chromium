@@ -35,7 +35,7 @@ let sendLocalImageDataFunction = sendLocalImageData;
  * }}
  */
 export function promisifyIframeFunctionsForTesting() {
-  let resolvers = {};
+  const resolvers = {};
   const promises = [
     sendCollections, sendGooglePhotosPhotos, sendImageCounts, sendLocalImages,
     sendLocalImageData
@@ -330,7 +330,7 @@ export class WallpaperCollections extends WithPersonalizationStore {
       return didLoadMaximum ||
           // No more images to load so send now even if some failed.
           images.every(image => imageDataLoading[image.path] === false);
-    };
+    }
 
 
     if (shouldSendImageData()) {

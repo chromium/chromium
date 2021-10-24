@@ -29,7 +29,7 @@ export class TrustedAnnotatorClient extends PostMessageAPIClient {
     return this.callApiFn(
         'onUndoRedoAvailabilityChanged', [undoAvailable, redoAvailable]);
   }
-};
+}
 
 /**
  * Class that implements the RequestHandler inside the Projector untrusted
@@ -69,7 +69,7 @@ export class UntrustedAnnotatorRequestHandler extends RequestHandler {
   targetWindow() {
     return this.targetWindow_;
   }
-};
+}
 
 /**
  * This is a class that is used to setup the duplex communication channels

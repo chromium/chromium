@@ -9,7 +9,7 @@
 // Chrome APIs not available in SWAs.
 
 import {test} from 'chrome://file-manager/background/js/test_util.js';
-import {ScriptLoader} from './script_loader.js'
+import {ScriptLoader} from './script_loader.js';
 
 delete test.util.registerRemoteTestUtils;
 

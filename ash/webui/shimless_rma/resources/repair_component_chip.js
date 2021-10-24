@@ -56,7 +56,7 @@ export class RepairComponentChipElement extends PolymerElement {
   click() {
     this.onComponentButtonClicked_();
   }
-};
+}
 
 customElements.define(
     RepairComponentChipElement.is, RepairComponentChipElement);

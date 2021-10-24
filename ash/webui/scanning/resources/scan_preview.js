@@ -583,7 +583,7 @@ Polymer({
               this.dialogTitleText_ =
                   isRemoveFromMultiplePages ? '' : pluralString;
               if (isRemoveFromMultiplePages) {
-                this.dialogConfirmationText_ = pluralString
+                this.dialogConfirmationText_ = pluralString;
               }
 
               // Once strings are loaded, open the dialog.

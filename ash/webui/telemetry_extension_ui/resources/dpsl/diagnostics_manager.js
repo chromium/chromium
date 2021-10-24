@@ -77,7 +77,7 @@
           (await genericSendMessage(
               dpsl_internal.Message.DIAGNOSTICS_ROUTINE_UPDATE, message));
 
-      let status = /** @type {dpsl.RoutineStatus} */ ({
+      const status = /** @type {dpsl.RoutineStatus} */ ({
         progressPercent: 0,
         output: '',
         status: '',
@@ -249,8 +249,9 @@
      * @private
      */
     _getExpectedPowerType(params) {
-      if (!params || !params.expectedPowerType)
+      if (!params || !params.expectedPowerType) {
         return null;
+      }
       return params.expectedPowerType;
     }
 
@@ -737,7 +738,7 @@
           dpsl_internal.Message.DIAGNOSTICS_RUN_BATTERY_CHARGE_ROUTINE,
           message));
     }
-  };
+  }
 
   globalThis.chromeos.diagnostics = new DiagnosticsManager();
 })();

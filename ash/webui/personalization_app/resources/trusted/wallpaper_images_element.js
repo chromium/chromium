@@ -164,7 +164,7 @@ export class WallpaperImages extends WithPersonalizationStore {
   static get observers() {
     return [
       'onImagesUpdated_(hasImages_, hasError_, collectionId)',
-    ]
+    ];
   }
 
   /** @override */

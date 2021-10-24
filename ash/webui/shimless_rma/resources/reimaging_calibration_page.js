@@ -82,7 +82,7 @@ export class ReimagingCalibrationPageElement extends PolymerElement {
       }
 
       /** @type {!Array<!ComponentCheckbox>} */
-      let componentList = [];
+      const componentList = [];
       result.components.forEach(item => {
         const component = assert(item.component);
 
@@ -124,7 +124,7 @@ export class ReimagingCalibrationPageElement extends PolymerElement {
   onNextButtonClick() {
     return this.shimlessRmaService_.startCalibration(this.getComponentsList_());
   }
-};
+}
 
 customElements.define(
     ReimagingCalibrationPageElement.is, ReimagingCalibrationPageElement);

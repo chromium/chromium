@@ -26,7 +26,7 @@ class FakeMethodState {
    * @return {!Promise}
    */
   resolveMethod() {
-    let resolver = new PromiseResolver();
+    const resolver = new PromiseResolver();
     resolver.resolve(this.result_);
     return resolver.promise;
   }
@@ -37,11 +37,11 @@ class FakeMethodState {
    * @return {!Promise}
    */
    resolveMethodWithDelay(delayMs) {
-    let resolver = new PromiseResolver();
-    setTimeout(() => {
-      resolver.resolve(this.result_);
-    }, delayMs);
-    return resolver.promise;
+     const resolver = new PromiseResolver();
+     setTimeout(() => {
+       resolver.resolve(this.result_);
+     }, delayMs);
+     return resolver.promise;
   }
 
   /**

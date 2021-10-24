@@ -114,8 +114,8 @@ export class ReimagingCalibrationRunPageElement extends PolymerElement {
    * @param {!CalibrationComponentStatus} status
    */
   getCalibrationStatusString_(status) {
-    let componentType = ComponentTypeToName[status.component];
-    let percent = Math.round(status.progress * 100.0);
+    const componentType = ComponentTypeToName[status.component];
+    const percent = Math.round(status.progress * 100.0);
     // TODO(gavindodd): update for i18n
     const statusMessage = {
       [CalibrationStatus.kCalibrationWaiting]:
@@ -130,7 +130,7 @@ export class ReimagingCalibrationRunPageElement extends PolymerElement {
     };
     return statusMessage[status.status];
   }
-};
+}
 
 customElements.define(
     ReimagingCalibrationRunPageElement.is, ReimagingCalibrationRunPageElement);

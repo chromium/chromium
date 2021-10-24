@@ -12,9 +12,9 @@ import './mojo_interface_provider.js';
 import {Action} from 'chrome://resources/js/cr/ui/store.js';
 import {ActionName} from './personalization_actions.js';
 
-export let WallpaperLayout = ash.personalizationApp.mojom.WallpaperLayout;
+export const WallpaperLayout = ash.personalizationApp.mojom.WallpaperLayout;
 
-export let WallpaperType = ash.personalizationApp.mojom.WallpaperType;
+export const WallpaperType = ash.personalizationApp.mojom.WallpaperType;
 
 /**
  * @typedef {mojoBase.mojom.FilePath |

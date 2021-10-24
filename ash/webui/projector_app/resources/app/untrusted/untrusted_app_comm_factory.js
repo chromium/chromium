@@ -7,7 +7,7 @@ import {RequestHandler} from 'chrome-untrusted://projector/js/post_message_api_r
 
 import {ProjectorError} from '../../communication/message_types.js';
 
-const TARGET_URL = 'chrome://projector/'
+const TARGET_URL = 'chrome://projector/';
 
 /**
  * Returns the projector app element inside this current DOM.
@@ -114,7 +114,7 @@ const CLIENT_DELEGATE = {
     return AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
         'installSoda', []);
   }
-}
+};
 
 /**
  * Class that implements the RequestHandler inside the Projector untrusted
@@ -154,7 +154,7 @@ export class UntrustedAppRequestHandler extends RequestHandler {
   targetWindow() {
     return this.targetWindow_;
   }
-};
+}
 
 
 /**

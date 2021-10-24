@@ -46,7 +46,7 @@ export class ShortcutsPageElement extends PolymerElement {
         type: Array,
         value: [],
       },
-    }
+    };
   }
 
   /** @override */
@@ -70,7 +70,7 @@ export class ShortcutsPageElement extends PolymerElement {
       return;
     }
 
-    let subcategories = [];
+    const subcategories = [];
     for (const key of subcatMap.keys()) {
       subcategories.push(key);
     }

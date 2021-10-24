@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './accelerator_row.js'
+import './accelerator_row.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -54,7 +54,7 @@ export class AcceleratorSubsectionElement extends PolymerElement {
         type: Array,
         value: [],
       }
-    }
+    };
   }
 
   /** @override */
@@ -94,7 +94,7 @@ export class AcceleratorSubsectionElement extends PolymerElement {
     // updates as one which results in strange behaviors with updating
     // individual subsections. An atomic replacement makes ensures each
     // subsection's accelerators are kept distinct from each other.
-    let tempAccelContainer = [];
+    const tempAccelContainer = [];
     layoutInfos.forEach((value) => {
       const acceleratorInfos =
           this.lookupManager_.getAccelerators(value.source, value.action)

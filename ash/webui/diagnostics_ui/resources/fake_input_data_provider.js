@@ -82,7 +82,7 @@ export class FakeInputDataProvider {
                             {keyboards: [...this.keyboards_],
                              touchDevices: [...this.touchDevices_]});
 
-    for (let observer of this.observers_) {
+    for (const observer of this.observers_) {
       observer.onKeyboardConnected(keyboard);
     }
   }
@@ -95,7 +95,7 @@ export class FakeInputDataProvider {
   removeFakeConnectedKeyboardById(id) {
     this.keyboards_ = this.keyboards_.filter((device) => device.id !== id);
 
-    for (let observer of this.observers_) {
+    for (const observer of this.observers_) {
       observer.onKeyboardDisconnected(id);
     }
   }
@@ -111,7 +111,7 @@ export class FakeInputDataProvider {
                             {keyboards: this.keyboards_,
                              touchDevices: this.touchDevices_});
 
-    for (let observer of this.observers_) {
+    for (const observer of this.observers_) {
       observer.onTouchDeviceConnected(touchDevice);
     }
   }
@@ -125,7 +125,7 @@ export class FakeInputDataProvider {
     this.touchDevices_ =
       this.touchDevices_.filter((device) => device.id !== id);
 
-    for (let observer of this.observers_) {
+    for (const observer of this.observers_) {
       observer.onTouchDeviceDisconnected(id);
     }
   }

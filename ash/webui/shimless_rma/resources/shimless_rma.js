@@ -28,7 +28,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService, rmadErrorString} from './mojo_interface_provider.js';
-import {RmadErrorCode, RmaState, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js'
+import {RmadErrorCode, RmaState, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
 
 /**
  * Enum for button states.
@@ -386,7 +386,7 @@ export class ShimlessRmaElement extends PolymerElement {
   loadComponent_(componentIs) {
     const shimlessBody = this.shadowRoot.querySelector('#contentContainer');
 
-    let component = document.createElement(componentIs);
+    const component = document.createElement(componentIs);
     component.setAttribute('id', componentIs);
     component.setAttribute('class', 'shimless-content');
     component.hidden = true;
@@ -447,6 +447,6 @@ export class ShimlessRmaElement extends PolymerElement {
     this.shimlessRmaService_.abortRma().then(
         (result) => this.handleError_(result.error));
   }
-};
+}
 
 customElements.define(ShimlessRmaElement.is, ShimlessRmaElement);

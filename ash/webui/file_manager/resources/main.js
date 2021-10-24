@@ -12,8 +12,8 @@ import './crt0.js';
 /**
  * Load modules.
  */
-import {BrowserProxy} from './browser_proxy.js'
-import {ScriptLoader} from './script_loader.js'
+import {BrowserProxy} from './browser_proxy.js';
+import {ScriptLoader} from './script_loader.js';
 import {promisify} from 'chrome://file-manager/common/js/api.js';
 import {VolumeManagerImpl} from 'chrome://file-manager/background/js/volume_manager_impl.js';
 import 'chrome://file-manager/background/js/metrics_start.js';
@@ -63,7 +63,7 @@ class FileManagerApp {
 
     console.log(
         '%cYou are running File System Web App',
-        'font-size: 2em; background-color: #ff0; color: #000;')
+        'font-size: 2em; background-color: #ff0; color: #000;');
   }
 }
 

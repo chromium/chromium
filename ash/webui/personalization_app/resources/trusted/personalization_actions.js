@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.m.js'
+import {assert} from 'chrome://resources/js/assert.m.js';
 import {Action} from 'chrome://resources/js/cr/ui/store.js';
 import {DisplayableImage} from './personalization_reducers.js';
 
@@ -130,8 +130,9 @@ export function setCollectionsAction(collections) {
  */
 export function setDailyRefreshCollectionIdAction(collectionId) {
   return {
-    collectionId, name: ActionName.SET_DAILY_REFRESH_COLLECTION_ID,
-  }
+    collectionId,
+    name: ActionName.SET_DAILY_REFRESH_COLLECTION_ID,
+  };
 }
 
 /**

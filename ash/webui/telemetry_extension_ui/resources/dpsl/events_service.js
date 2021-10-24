@@ -29,7 +29,7 @@
     LID_OPENED: 'lid-opened',
     OS_RESUME: 'os-resume',
     OS_SUSPEND: 'os-suspend'
-  }
+  };
 
   /**
    * Internal event target to deliver events on subscribtion.
@@ -328,7 +328,7 @@
    */
   class DPSLEventsService {
     constructor() {
-      let eventTarget = new InternalEventTarget();
+      const eventTarget = new InternalEventTarget();
 
       /**
        * @type {!BluetoothObserver}

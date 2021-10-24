@@ -91,7 +91,7 @@ export class OnboardingWaitForManualWpDisablePageElement extends
           new Error('Hardware Write Protection is not disabled.'));
     }
   }
-};
+}
 
 customElements.define(
     OnboardingWaitForManualWpDisablePageElement.is,

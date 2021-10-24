@@ -155,7 +155,7 @@ Polymer({
 
   listeners: {
     'all-history-cleared': 'getPrintJobs_',
-    'remove-print-job' : 'removePrintJob_',
+    'remove-print-job': 'removePrintJob_',
   },
 
   observers: ['onClearAllButtonUpdated_(shouldDisableClearAllButton_)'],
@@ -200,9 +200,10 @@ Polymer({
 
   /** @private */
   fetchDeletePrintJobHistoryPolicy_() {
-    this.mojoInterfaceProvider_.getDeletePrintJobHistoryAllowedByPolicy()
-        .then(/*@type {!{isAllowedByPolicy: boolean}}*/(param) => {
-            this.onGetDeletePrintHistoryPolicy_(param)});
+    this.mojoInterfaceProvider_.getDeletePrintJobHistoryAllowedByPolicy().then(
+        /*@type {!{isAllowedByPolicy: boolean}}*/ (param) => {
+          this.onGetDeletePrintHistoryPolicy_(param);
+        });
   },
 
   /**
@@ -257,14 +258,13 @@ Polymer({
   onPrintJobsReceived_(jobs) {
     // TODO(crbug/1073690): Update this when BigInt is supported for
     // updateList().
-    let ongoingList = [];
-    let historyList = [];
+    const ongoingList = [];
+    const historyList = [];
     for (const job of jobs.printJobs) {
       // activePrintJobInfo is not null for ongoing print jobs.
       if (job.activePrintJobInfo) {
         ongoingList.push(job);
-      }
-      else {
+      } else {
         historyList.push(job);
       }
     }

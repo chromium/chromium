@@ -74,7 +74,7 @@ const PersonalizationStoreClientImpl = {
   getStore() {
     return PersonalizationStore.getInstance();
   },
-}
+};
 
 export class PersonalizationStoreClientInterface {
   /**

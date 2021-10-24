@@ -103,7 +103,7 @@ export class NavigationViewPanelElement extends PolymerElement {
       showNav: {
         type: Boolean,
       },
-    }
+    };
   }
 
   /** @override */
@@ -137,9 +137,7 @@ export class NavigationViewPanelElement extends PolymerElement {
   createSelectorItem(
       name, pageIs, icon = '', id = null, initialData = null) {
     id = id || pageIs;
-    return {
-      name, pageIs, icon, id, initialData
-    }
+    return {name, pageIs, icon, id, initialData};
   }
 
   /**
@@ -152,7 +150,7 @@ export class NavigationViewPanelElement extends PolymerElement {
     assert(!this.selectedItem);
     const params = new URLSearchParams(window.location.search);
 
-    for (let item of this.selectorItems_) {
+    for (const item of this.selectorItems_) {
       if (params.has(item.id)) {
         this.selectedItem = item;
         return;
@@ -184,15 +182,16 @@ export class NavigationViewPanelElement extends PolymerElement {
    * @param {?Object} initialData
    */
   addSelector(name, pageIs, icon = '', id = null, initialData = null) {
-    let selectorItem =
+    const selectorItem =
         this.createSelectorItem(name, pageIs, icon, id, initialData);
     this.push('selectorItems_', selectorItem);
   }
 
   /** @protected */
   selectedItemChanged_() {
-    if (!this.selectedItem)
+    if (!this.selectedItem) {
       return;
+    }
     const pageComponent = this.getPage_(this.selectedItem);
 
     if (this.$.drawer.open) {

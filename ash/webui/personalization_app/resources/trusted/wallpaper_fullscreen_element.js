@@ -11,7 +11,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import '../common/icons.js';
-import {assert} from 'chrome://resources/js/assert.m.js'
+import {assert} from 'chrome://resources/js/assert.m.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getWallpaperLayoutEnum} from '../common/utils.js';
 import {getWallpaperProvider} from './mojo_interface_provider.js';

@@ -85,8 +85,9 @@ export class WallpaperBreadcrumb extends WithPersonalizationStore {
   computePageLabel_(path, collections, collectionId) {
     switch (path) {
       case Paths.CollectionImages:
-        if (!isNonEmptyArray(collections))
+        if (!isNonEmptyArray(collections)) {
           return '';
+        }
         const collection =
             collections.find(collection => collection.id === collectionId);
         return collection ? collection.name : '';

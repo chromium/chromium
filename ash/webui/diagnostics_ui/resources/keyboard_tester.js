@@ -7,7 +7,7 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {MechanicalLayout as DiagramMechanicalLayout} from 'chrome://resources/ash/common/keyboard_diagram.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {KeyboardInfo, MechanicalLayout, PhysicalLayout} from './diagnostics_types.js'
+import {KeyboardInfo, MechanicalLayout, PhysicalLayout} from './diagnostics_types.js';
 
 /**
  * @fileoverview

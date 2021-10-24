@@ -15,7 +15,7 @@ Polymer({
 
   /** @override */
   ready() {
-    let client = AnnotatorTrustedCommFactory.getPostMessageAPIClient();
+    const client = AnnotatorTrustedCommFactory.getPostMessageAPIClient();
 
     this.addWebUIListener('undo', () => {
       client.undo();

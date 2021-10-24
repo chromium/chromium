@@ -90,7 +90,7 @@ export class WrapupWaitForManualWpEnablePageElement extends PolymerElement {
           new Error('Hardware Write Protection is not enabled.'));
     }
   }
-};
+}
 
 customElements.define(
     WrapupWaitForManualWpEnablePageElement.is,

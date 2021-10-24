@@ -42,7 +42,7 @@ export class InputKeyElement extends PolymerElement {
         value: KeyInputState.NOT_SELECTED,
         reflectToAttribute: true,
       },
-    }
+    };
   }
 }
 

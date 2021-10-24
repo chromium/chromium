@@ -66,7 +66,7 @@ Polymer({
         return this.i18n('networkTechnologyUmtsLabel');
       default:
         assertNotReached();
-        return ''
+        return '';
     }
   },
 

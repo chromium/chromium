@@ -105,7 +105,7 @@ Polymer({
       if (this.isNetworkingEnabled_) {
         pages.push(navPanel.createSelectorItem(
             loadTimeData.getString('connectivityText'), 'network-list',
-            getNavigationIcon('ethernet'), 'connectivity'))
+            getNavigationIcon('ethernet'), 'connectivity'));
       }
 
       if (this.isInputEnabled_) {

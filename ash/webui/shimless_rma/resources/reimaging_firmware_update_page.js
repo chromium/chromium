@@ -62,7 +62,7 @@ export class ReimagingFirmwareUpdatePageElement extends PolymerElement {
    */
   onFirmwareReimageSelectionChanged_(event) {
     this.reimageMethod_ = event.detail.value;
-    let disabled = !this.reimageMethod_;
+    const disabled = !this.reimageMethod_;
     this.dispatchEvent(new CustomEvent(
         'disable-next-button',
         {bubbles: true, composed: true, detail: disabled},
@@ -115,7 +115,7 @@ export class ReimagingFirmwareUpdatePageElement extends PolymerElement {
     // TODO(joonbug): Update with real link and check for browser leak.
     window.open('http://www.google.com');
   }
-};
+}
 
 customElements.define(
     ReimagingFirmwareUpdatePageElement.is, ReimagingFirmwareUpdatePageElement);

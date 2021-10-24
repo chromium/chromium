@@ -210,7 +210,7 @@ export class ReimagingDeviceInformationPageElement extends PolymerElement {
           this.serialNumber_, this.regionIndex_, this.skuIndex_);
     }
   }
-};
+}
 
 customElements.define(
     ReimagingDeviceInformationPageElement.is,

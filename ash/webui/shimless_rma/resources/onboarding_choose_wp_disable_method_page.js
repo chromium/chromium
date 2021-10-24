@@ -49,7 +49,7 @@ export class OnboardingChooseWpDisableMethodPageElement extends PolymerElement {
    */
   onHwwpDisableMethodSelectionChanged_(event) {
     this.hwwpMethod_ = event.detail.value;
-    let disabled = !this.hwwpMethod_;
+    const disabled = !this.hwwpMethod_;
     this.dispatchEvent(new CustomEvent(
         'disable-next-button',
         {bubbles: true, composed: true, detail: disabled},
@@ -66,7 +66,7 @@ export class OnboardingChooseWpDisableMethodPageElement extends PolymerElement {
       return Promise.reject(new Error('No disable method selected'));
     }
   }
-};
+}
 
 customElements.define(
     OnboardingChooseWpDisableMethodPageElement.is,

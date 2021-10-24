@@ -63,7 +63,7 @@ export class AcceleratorEditDialogElement extends PolymerElement {
         type: Boolean,
         value: false,
       },
-    }
+    };
   }
 
   /** @override */

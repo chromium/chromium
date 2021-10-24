@@ -277,8 +277,9 @@ export class WallpaperSelected extends WithPersonalizationStore {
    */
   getImageSrc_(image) {
     if (image && image.url) {
-      if (hasHttpScheme(image.url.url))
+      if (hasHttpScheme(image.url.url)) {
         return `chrome://image?${removeHighResolutionSuffix(image.url.url)}`;
+      }
       return image.url.url;
     }
     return '';
@@ -303,19 +304,20 @@ export class WallpaperSelected extends WithPersonalizationStore {
    * @private
    */
   computeImageTitle_(image, dailyRefreshCollectionId) {
-    if (!image)
+    if (!image) {
       return this.i18n('unknownImageAttribution');
+    }
     if (isNonEmptyArray(image.attribution)) {
-      let title = image.attribution[0];
-      return !!dailyRefreshCollectionId ?
+      const title = image.attribution[0];
+      return dailyRefreshCollectionId ?
           this.i18n('dailyRefresh') + ': ' + title :
           title;
     } else {
       // Fallback to cached attribution.
-      let attribution = this.getLocalStorageAttribution(image.key);
+      const attribution = this.getLocalStorageAttribution(image.key);
       if (isNonEmptyArray(attribution)) {
-        let title = attribution[0];
-        return !!dailyRefreshCollectionId ?
+        const title = attribution[0];
+        return dailyRefreshCollectionId ?
             this.i18n('dailyRefresh') + ': ' + title :
             title;
       }
@@ -329,12 +331,14 @@ export class WallpaperSelected extends WithPersonalizationStore {
    * @private
    */
   computeImageOtherAttribution_(image) {
-    if (!image)
+    if (!image) {
       return [];
-    if (isNonEmptyArray(image.attribution))
+    }
+    if (isNonEmptyArray(image.attribution)) {
       return image.attribution.slice(1);
+    }
     // Fallback to cached attribution.
-    let attribution = this.getLocalStorageAttribution(image.key);
+    const attribution = this.getLocalStorageAttribution(image.key);
     if (isNonEmptyArray(attribution)) {
       return attribution.slice(1);
     }
@@ -386,8 +390,9 @@ export class WallpaperSelected extends WithPersonalizationStore {
    * @private
    */
   computeFillIcon_(image) {
-    if (!!image && image.layout === WallpaperLayout.kCenterCropped)
+    if (!!image && image.layout === WallpaperLayout.kCenterCropped) {
       return 'personalization:checkmark';
+    }
     return 'personalization:layout_fill';
   }
 
@@ -397,8 +402,9 @@ export class WallpaperSelected extends WithPersonalizationStore {
    * @private
    */
   computeCenterIcon_(image) {
-    if (!!image && image.layout === WallpaperLayout.kCenter)
+    if (!!image && image.layout === WallpaperLayout.kCenter) {
       return 'personalization:checkmark';
+    }
     return 'personalization:layout_center';
   }
 
@@ -419,8 +425,9 @@ export class WallpaperSelected extends WithPersonalizationStore {
    */
   computeDailyRefreshIcon_(collectionId, dailyRefreshCollectionId) {
     if (this.isDailyRefreshCollectionId_(
-            collectionId, dailyRefreshCollectionId))
+            collectionId, dailyRefreshCollectionId)) {
       return 'personalization:checkmark';
+    }
     return 'personalization:change-daily';
   }
 
@@ -432,8 +439,9 @@ export class WallpaperSelected extends WithPersonalizationStore {
    */
   computeAriaPressed_(collectionId, dailyRefreshCollectionId) {
     if (this.isDailyRefreshCollectionId_(
-            collectionId, dailyRefreshCollectionId))
+            collectionId, dailyRefreshCollectionId)) {
       return 'true';
+    }
     return 'false';
   }
 
@@ -504,7 +512,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
       return [this.i18n('currentlySet'), ...image.attribution].join(' ');
     }
     // Fallback to cached attribution.
-    let attribution =
+    const attribution =
         /** @type {!Iterable} */ (this.getLocalStorageAttribution(image.key));
     if (isNonEmptyArray(attribution)) {
       return [this.i18n('currentlySet'), ...attribution].join(' ');
@@ -532,7 +540,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
    * @private
    */
   async onImageChanged_(newImage, oldImage) {
-    let attributionMap = /** @type {Object<string, Array<string>>} */ (
+    const attributionMap = /** @type {Object<string, Array<string>>} */ (
         JSON.parse((window.localStorage['attribution'] || '{}')));
     if (attributionMap.size == 0 ||
         !!newImage && !!oldImage && newImage.key !== oldImage.key) {
@@ -547,9 +555,9 @@ export class WallpaperSelected extends WithPersonalizationStore {
    * @return {Array<!string>}
    */
   getLocalStorageAttribution(key) {
-    let attributionMap = /** @type {Object<string, Array<string>>} */ (
+    const attributionMap = /** @type {Object<string, Array<string>>} */ (
         JSON.parse((window.localStorage['attribution'] || '{}')));
-    let attribution = attributionMap[key];
+    const attribution = attributionMap[key];
     if (!attribution) {
       console.warn('Unable to get attribution from local storage.', key);
     }

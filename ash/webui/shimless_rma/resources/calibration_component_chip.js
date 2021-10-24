@@ -75,7 +75,7 @@ export class CalibrationComponentChipElement extends PolymerElement {
   click() {
     this.onComponentButtonClicked_();
   }
-};
+}
 
 customElements.define(
     CalibrationComponentChipElement.is, CalibrationComponentChipElement);

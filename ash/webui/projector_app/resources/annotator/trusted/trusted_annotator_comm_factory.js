@@ -50,7 +50,7 @@ export class UntrustedAnnotatorClient extends PostMessageAPIClient {
   clear() {
     return this.callApiFn('clear', []);
   }
-};
+}
 
 /**
  * Class that implements the RequestHandler inside the Projector trusted scheme
@@ -75,7 +75,7 @@ class TrustedAnnotatorRequestHandler extends RequestHandler {
           values[0], values[1]);
     });
   }
-};
+}
 
 /**
  * This is a class that is used to setup the duplex communication
@@ -93,7 +93,7 @@ export class AnnotatorTrustedCommFactory {
       return;
     }
 
-    let iframeElement = document.getElementsByTagName('iframe')[0];
+    const iframeElement = document.getElementsByTagName('iframe')[0];
 
     AnnotatorTrustedCommFactory.client_ =
         new UntrustedAnnotatorClient(iframeElement.contentWindow);

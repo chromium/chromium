@@ -25,27 +25,27 @@ import {getNetworkType} from './diagnostics_utils.js';
  * Type alias for network_config NetworkStateProperties struct.
  * @typedef {chromeos.networkConfig.mojom.NetworkStateProperties}
  */
-export let CrosNetworkStateProperties =
+export const CrosNetworkStateProperties =
     chromeos.networkConfig.mojom.NetworkStateProperties;
 
 /**
  * Type alias for network_config ConnectionStateType enum.
  * @typedef {chromeos.networkConfig.mojom.ConnectionStateType}
  */
-export let ConnectionStateType =
+export const ConnectionStateType =
     chromeos.networkConfig.mojom.ConnectionStateType;
 
 /**
  * Type alias for network_config NetworkType enum.
  * @typedef {chromeos.networkConfig.mojom.NetworkType}
  */
-export let CrosNetworkType = chromeos.networkConfig.mojom.NetworkType;
+export const CrosNetworkType = chromeos.networkConfig.mojom.NetworkType;
 
 /**
  * Type alias for network_config SecurityType enum.
  * @typedef {chromeos.networkConfig.mojom.SecurityType}
  */
-export let CrosSecurityType = chromeos.networkConfig.mojom.SecurityType;
+export const CrosSecurityType = chromeos.networkConfig.mojom.SecurityType;
 
 /**
  * Struct for minimal required network state required to display network-icon
@@ -254,7 +254,7 @@ export class DiagnosticsNetworkIconElement extends DiagnosticsNetworkIconBase {
   }
 
   static get template() {
-    return html`{__html_template__}`
+    return html`{__html_template__}`;
   }
 
   static get properties() {

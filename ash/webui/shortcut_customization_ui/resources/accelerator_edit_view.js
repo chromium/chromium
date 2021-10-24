@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './icons.js'
+import './icons.js';
 import './shortcut_customization_shared_css.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import 'chrome://resources/cr_elements/cr_icons_css.m.js';
@@ -12,8 +12,8 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
-import {ViewState} from './accelerator_view.js'
-import {getShortcutProvider} from './mojo_interface_provider.js'
+import {ViewState} from './accelerator_view.js';
+import {getShortcutProvider} from './mojo_interface_provider.js';
 import {AcceleratorConfigResult, AcceleratorInfo, AcceleratorKeys, AcceleratorSource, AcceleratorState, AcceleratorType, ShortcutProviderInterface} from './shortcut_types.js';
 
 /**
@@ -37,14 +37,14 @@ export class AcceleratorEditViewElement extends PolymerElement {
       acceleratorInfo: {
         type: Object,
         value: /** @type {!AcceleratorInfo} */ ({
-            accelerator: /** @type {!AcceleratorKeys} */ ({
-              modifiers: 0,
-              key: 0,
-              key_display: '',
-            }),
-            type: AcceleratorType.kDefault,
-            state: AcceleratorState.kEnabled,
-            locked: false,
+          accelerator: /** @type {!AcceleratorKeys} */ ({
+            modifiers: 0,
+            key: 0,
+            key_display: '',
+          }),
+          type: AcceleratorType.kDefault,
+          state: AcceleratorState.kEnabled,
+          locked: false,
         }),
       },
 
@@ -90,7 +90,7 @@ export class AcceleratorEditViewElement extends PolymerElement {
         type: Number,
         value: 0,
       },
-    }
+    };
   }
 
   /** @override */

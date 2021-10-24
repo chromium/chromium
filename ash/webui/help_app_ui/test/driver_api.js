@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /** @typedef {{testQueryResult: string}} */
-var TestMessageResponseData;
+let TestMessageResponseData;
 
 /** @typedef {{testCase: string}} */
 let TestMessageRunTestCase;

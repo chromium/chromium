@@ -130,7 +130,7 @@ UNTRUSTED_TEST(
 // return correct responses.
 UNTRUSTED_TEST(
     'UntrustedDiagnosticsRoutineCommandWithInterceptor', async () => {
-      let expectedRoutineStatus = {
+      const expectedRoutineStatus = {
         progressPercent: 0,
         output: '',
         status: 'ready',
@@ -937,7 +937,7 @@ UNTRUSTED_TEST(
         status: 'ready',
         statusMessage: 'Routine ran by Google.',
         userMessage: ''
-      }
+      };
       const response = await chromeos.diagnostics.sendCommandToRoutine(
           135797531, 'remove', true);
       assertDeepEquals(
@@ -955,7 +955,7 @@ UNTRUSTED_TEST(
       const dpslRoutine = await dpsl.diagnostics.battery.runCapacityRoutine();
       const routineStatus = await dpslRoutine.getStatus();
       assertDeepEquals(expectedResult, routineStatus);
-});
+    });
 
 // Tests that TelemetryInfo can be successfully requested from
 // from chrome-untrusted://.

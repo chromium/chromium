@@ -11,6 +11,10 @@ GEN('#include "content/public/test/browser_test.h"');
 const HOST_ORIGIN = 'chrome://sample-system-web-app';
 const UNTRUSTED_HOST_ORIGIN = 'chrome-untrusted://sample-system-web-app';
 
+// TODO:(crbug.com/1262025): We should avoid using `var`.
+//
+// js2gtest fixtures require var here (https://crbug.com/1033337).
+// eslint-disable-next-line no-var
 var SampleSystemWebAppUIBrowserTest = class extends testing.Test {
   /** @override */
   get browsePreload() {
@@ -43,7 +47,7 @@ TEST_F('SampleSystemWebAppUIBrowserTest', 'FetchPreferences', async () => {
   const {preferences} = await window.pageHandler.getPreferences();
   assertDeepEquals({background: '#ffffff', foreground: '#000000'}, preferences);
   testDone();
-})
+});
 
 // Test the ability to trigger work in the page handler.
 TEST_F('SampleSystemWebAppUIBrowserTest', 'DoSomething', async () => {
@@ -51,7 +55,7 @@ TEST_F('SampleSystemWebAppUIBrowserTest', 'DoSomething', async () => {
   const callbackRouter = window.callbackRouter;
 
   // Now execute our test: zero the event count and call doSomething.
-  window.eventCount.set('DoSomething is done', 0)
+  window.eventCount.set('DoSomething is done', 0);
   pageHandler.doSomething();
 
   // Ensure the DoSomething() is called on the browser side.
@@ -63,8 +67,9 @@ TEST_F('SampleSystemWebAppUIBrowserTest', 'DoSomething', async () => {
   assertEquals(1, window.eventCount.get('DoSomething is done'));
 
   testDone();
-})
+});
 
+// eslint-disable-next-line no-var
 var SampleSystemWebAppUIUntrustedBrowserTest = class extends testing.Test {
   /** @override */
   get browsePreload() {

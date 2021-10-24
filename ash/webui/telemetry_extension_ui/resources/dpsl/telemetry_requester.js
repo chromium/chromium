@@ -205,7 +205,7 @@
         'removed. Use dpsl.telemetry.get*, instead');
       return getSelectedTelemetryInfo(categories);
     }
-  };
+  }
 
   globalThis.chromeos.telemetry = new TelemetryRequester();
 })();

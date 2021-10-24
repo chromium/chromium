@@ -6,8 +6,8 @@
  * Registers onmessage event handler.
  * @param {MessageEvent} event Incoming message event.
  */
-self.onmessage = function (event) {
-  let data = /** @type {string} */ (event.data);
+self.onmessage = function(event) {
+  const data = /** @type {string} */ (event.data);
 
   console.debug('Message received from main script: ', data);
 

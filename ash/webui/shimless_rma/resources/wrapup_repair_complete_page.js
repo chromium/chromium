@@ -60,6 +60,6 @@ export class WrapupRepairCompletePage extends PolymerElement {
       dialog.close();
     });
   }
-};
+}
 
 customElements.define(WrapupRepairCompletePage.is, WrapupRepairCompletePage);

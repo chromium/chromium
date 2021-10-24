@@ -43,7 +43,7 @@ export class OnboardingWpDisableCompletePage extends PolymerElement {
   onNextButtonClick() {
     return this.shimlessRmaService_.confirmManualWpDisableComplete();
   }
-};
+}
 
 customElements.define(
     OnboardingWpDisableCompletePage.is, OnboardingWpDisableCompletePage);

@@ -13,7 +13,7 @@
 // This is meant to be called by the foreground page.
 
 let doubler = 2;
-let connectedPagePorts = new Set();
+const connectedPagePorts = new Set();
 onconnect = (event) => {
   const port = event.ports[0];
   port.onmessage = function(e) {
@@ -31,5 +31,5 @@ onconnect = (event) => {
 
       port.postMessage(myWorkerResult);
     }
-  }
-}
+  };
+};

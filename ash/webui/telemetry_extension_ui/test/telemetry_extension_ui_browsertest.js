@@ -14,6 +14,8 @@ GEN('#include "content/public/test/browser_test.h"');
 const HOST_ORIGIN = 'chrome://telemetry-extension';
 const UNTRUSTED_HOST_ORIGIN = 'chrome-untrusted://telemetry-extension';
 
+// js2gtest fixtures require var here (https://crbug.com/1033337).
+// eslint-disable-next-line no-var
 var TelemetryExtensionUIBrowserTest = class extends testing.Test {
   /** @override */
   get browsePreload() {
@@ -347,125 +349,155 @@ TEST_F(
       testDone();
     });
 
+// js2gtest fixtures require var here (https://crbug.com/1033337).
+// eslint-disable-next-line no-var
 var TelemetryExtensionUIWithInteractiveRoutineUpdateBrowserTest =
     class extends TelemetryExtensionUIBrowserTest {
   /** @override */
   testGenPreamble() {
     GEN('ConfigureDiagnosticsForInteractiveUpdate();');
   }
-}
+};
 
+// js2gtest fixtures require var here (https://crbug.com/1033337).
+// eslint-disable-next-line no-var
 var TelemetryExtensionUIWithNonInteractiveRoutineUpdateBrowserTest =
     class extends TelemetryExtensionUIBrowserTest {
   /** @override */
   testGenPreamble() {
     GEN('ConfigureDiagnosticsForNonInteractiveUpdate();');
   }
-}
+};
 
+// js2gtest fixtures require var here (https://crbug.com/1033337).
+// eslint-disable-next-line no-var
 var TelemetryExtensionUIWithProbeServiceErrorsBrowserTest =
     class extends TelemetryExtensionUIBrowserTest {
   /** @override */
   testGenPreamble() {
     GEN('ConfigureProbeServiceToReturnErrors();');
   }
-}
+};
 
+// js2gtest fixtures require var here (https://crbug.com/1033337).
+// eslint-disable-next-line no-var
 var TelemetryExtensionUIWithAdapterAddedEventBrowserTest =
     class extends TelemetryExtensionUIBrowserTest {
   /** @override */
   testGenPreamble() {
     GEN('EmitBluetoothAdapterAddedEventPeriodically();');
   }
-}
+};
 
+// js2gtest fixtures require var here (https://crbug.com/1033337).
+// eslint-disable-next-line no-var
 var TelemetryExtensionUIWithAdapterRemovedEventBrowserTest =
     class extends TelemetryExtensionUIBrowserTest {
   /** @override */
   testGenPreamble() {
     GEN('EmitBluetoothAdapterRemovedEventPeriodically();');
   }
-}
+};
 
+// js2gtest fixtures require var here (https://crbug.com/1033337).
+// eslint-disable-next-line no-var
 var TelemetryExtensionUIWithAdapterPropertyChangedEventBrowserTest =
     class extends TelemetryExtensionUIBrowserTest {
   /** @override */
   testGenPreamble() {
     GEN('EmitBluetoothAdapterPropertyChangedEventPeriodically();');
   }
-}
+};
 
+// js2gtest fixtures require var here (https://crbug.com/1033337).
+// eslint-disable-next-line no-var
 var TelemetryExtensionUIWithDeviceAddedEventBrowserTest =
     class extends TelemetryExtensionUIBrowserTest {
   /** @override */
   testGenPreamble() {
     GEN('EmitBluetoothDeviceAddedEventPeriodically();');
   }
-}
+};
 
+// js2gtest fixtures require var here (https://crbug.com/1033337).
+// eslint-disable-next-line no-var
 var TelemetryExtensionUIWithDeviceRemovedEventBrowserTest =
     class extends TelemetryExtensionUIBrowserTest {
   /** @override */
   testGenPreamble() {
     GEN('EmitBluetoothDeviceRemovedEventPeriodically();');
   }
-}
+};
 
+// js2gtest fixtures require var here (https://crbug.com/1033337).
+// eslint-disable-next-line no-var
 var TelemetryExtensionUIWithDevicePropertyChangedEventBrowserTest =
     class extends TelemetryExtensionUIBrowserTest {
   /** @override */
   testGenPreamble() {
     GEN('EmitBluetoothDevicePropertyChangedEventPeriodically();');
   }
-}
+};
 
+// js2gtest fixtures require var here (https://crbug.com/1033337).
+// eslint-disable-next-line no-var
 var TelemetryExtensionUIWithLidClosedEventBrowserTest =
     class extends TelemetryExtensionUIBrowserTest {
   /** @override */
   testGenPreamble() {
     GEN('EmitLidClosedEventPeriodically();');
   }
-}
+};
 
+// js2gtest fixtures require var here (https://crbug.com/1033337).
+// eslint-disable-next-line no-var
 var TelemetryExtensionUIWithLidOpenedEventBrowserTest =
     class extends TelemetryExtensionUIBrowserTest {
   /** @override */
   testGenPreamble() {
     GEN('EmitLidOpenedEventPeriodically();');
   }
-}
+};
 
+// js2gtest fixtures require var here (https://crbug.com/1033337).
+// eslint-disable-next-line no-var
 var TelemetryExtensionUIWithAcInsertedEventBrowserTest =
     class extends TelemetryExtensionUIBrowserTest {
   /** @override */
   testGenPreamble() {
     GEN('EmitAcInsertedEventPeriodically();');
   }
-}
+};
 
+// js2gtest fixtures require var here (https://crbug.com/1033337).
+// eslint-disable-next-line no-var
 var TelemetryExtensionUIWithAcRemovedEventBrowserTest =
     class extends TelemetryExtensionUIBrowserTest {
   /** @override */
   testGenPreamble() {
     GEN('EmitAcRemovedEventPeriodically();');
   }
-}
+};
 
+// js2gtest fixtures require var here (https://crbug.com/1033337).
+// eslint-disable-next-line no-var
 var TelemetryExtensionUIWithOsSuspendEventBrowserTest =
     class extends TelemetryExtensionUIBrowserTest {
   /** @override */
   testGenPreamble() {
     GEN('EmitOsSuspendEventPeriodically();');
   }
-}
+};
 
+// js2gtest fixtures require var here (https://crbug.com/1033337).
+// eslint-disable-next-line no-var
 var TelemetryExtensionUIWithOsResumeEventBrowserTest =
     class extends TelemetryExtensionUIBrowserTest {
   /** @override */
   testGenPreamble() {
     GEN('EmitOsResumeEventPeriodically();');
   }
-}
+};
 
 // Test cases injected into the untrusted context.
 // See implementations in untrusted_browsertest.js.
@@ -639,36 +671,39 @@ class TestProbeService {
   getOemData() {
     throw 'This method should not be called from telemetry extension';
   }
-};
+}
 
 // Tests with a testing Mojo probe service, so we can test for example strings
 // conversion to Mojo enum values.
+//
+// js2gtest fixtures require var here (https://crbug.com/1033337).
+// eslint-disable-next-line no-var
 var TelemetryExtensionUIWithInterceptorBrowserTest =
-  class extends TelemetryExtensionUIBrowserTest {
-    constructor() {
-      super();
+    class extends TelemetryExtensionUIBrowserTest {
+  constructor() {
+    super();
 
-      /**
-       * @type {TestProbeService}
-       */
-      this.probeService = null;
+    /**
+     * @type {TestProbeService}
+     */
+    this.probeService = null;
 
-      this.probeServiceInterceptor = null;
-    }
+    this.probeServiceInterceptor = null;
+  }
 
-    /** @override */
-    setUp() {
-      this.probeService = new TestProbeService();
+  /** @override */
+  setUp() {
+    this.probeService = new TestProbeService();
 
-      /** @suppress {undefinedVars} */
-      this.probeServiceInterceptor = new MojoInterfaceInterceptor(
+    /** @suppress {undefinedVars} */
+    this.probeServiceInterceptor = new MojoInterfaceInterceptor(
         ash.health.mojom.ProbeService.$interfaceName);
-      this.probeServiceInterceptor.oninterfacerequest = (e) => {
-        this.probeService.bind(e.handle);
-      };
-      this.probeServiceInterceptor.start();
-    }
-  };
+    this.probeServiceInterceptor.oninterfacerequest = (e) => {
+      this.probeService.bind(e.handle);
+    };
+    this.probeServiceInterceptor.start();
+  }
+};
 
 // Test cases injected into the untrusted context.
 // See implementations in untrusted_browsertest.js.
@@ -788,7 +823,7 @@ class TestDiagnosticsService {
   runBatteryCapacityRoutine() {
     this.callHistory.push(['runBatteryCapacityRoutine']);
 
-    let response = this.routineResponse;
+    const response = this.routineResponse;
     return Promise.resolve({response});
   }
 
@@ -799,7 +834,7 @@ class TestDiagnosticsService {
   runBatteryHealthRoutine() {
     this.callHistory.push(['runBatteryHealthRoutine']);
 
-    let response = this.routineResponse;
+    const response = this.routineResponse;
     return Promise.resolve({response});
   }
 
@@ -817,7 +852,7 @@ class TestDiagnosticsService {
       }
     ]);
 
-    let response = this.routineResponse;
+    const response = this.routineResponse;
     return Promise.resolve({response});
   }
 
@@ -835,7 +870,7 @@ class TestDiagnosticsService {
       }
     ]);
 
-    let response = this.routineResponse;
+    const response = this.routineResponse;
     return Promise.resolve({response});
   }
 
@@ -852,7 +887,7 @@ class TestDiagnosticsService {
       {routineId: routineId, command: command, includeOutput: includeOutput}
     ]);
 
-    let routineUpdate = /** @type {!ash.health.mojom.RoutineUpdate} */ (
+    const routineUpdate = /** @type {!ash.health.mojom.RoutineUpdate} */ (
         this.routineUpdateResponse);
     return Promise.resolve({routineUpdate});
   }
@@ -865,7 +900,7 @@ class TestDiagnosticsService {
   runNvmeSelfTestRoutine(type) {
     this.callHistory.push(['runNvmeSelfTestRoutine', {type: type}]);
 
-    let response = this.routineResponse;
+    const response = this.routineResponse;
     return Promise.resolve({response});
   }
 
@@ -877,7 +912,7 @@ class TestDiagnosticsService {
   runNvmeWearLevelRoutine(threshold) {
     this.callHistory.push(['runNvmeWearLevelRoutine', {threshold: threshold}]);
 
-    let response = this.routineResponse;
+    const response = this.routineResponse;
     return Promise.resolve({response});
   }
 
@@ -888,7 +923,7 @@ class TestDiagnosticsService {
   runSmartctlCheckRoutine() {
     this.callHistory.push(['runSmartctlCheckRoutine']);
 
-    let response = this.routineResponse;
+    const response = this.routineResponse;
     return Promise.resolve({response});
   }
 
@@ -904,7 +939,7 @@ class TestDiagnosticsService {
       {expectedStatus: expectedStatus, expectedPowerType: expectedPowerType}
     ]);
 
-    let response = this.routineResponse;
+    const response = this.routineResponse;
     return Promise.resolve({response});
   }
 
@@ -916,7 +951,7 @@ class TestDiagnosticsService {
   runCpuCacheRoutine(duration) {
     this.callHistory.push(['runCpuCacheRoutine', {duration: duration}]);
 
-    let response = this.routineResponse;
+    const response = this.routineResponse;
     return Promise.resolve({response});
   }
 
@@ -928,7 +963,7 @@ class TestDiagnosticsService {
   runCpuStressRoutine(duration) {
     this.callHistory.push(['runCpuStressRoutine', {duration: duration}]);
 
-    let response = this.routineResponse;
+    const response = this.routineResponse;
     return Promise.resolve({response});
   }
 
@@ -941,7 +976,7 @@ class TestDiagnosticsService {
     this.callHistory.push(
         ['runFloatingPointAccuracyRoutine', {duration: duration}]);
 
-    let response = this.routineResponse;
+    const response = this.routineResponse;
     return Promise.resolve({response});
   }
 
@@ -956,7 +991,7 @@ class TestDiagnosticsService {
       'runPrimeSearchRoutine', {lengthSeconds: lengthSeconds, maxNum: maxNum}
     ]);
 
-    let response = this.routineResponse;
+    const response = this.routineResponse;
     return Promise.resolve({response});
   }
 
@@ -973,7 +1008,7 @@ class TestDiagnosticsService {
       {type: type, lengthSeconds: lengthSeconds, fileSizeMB: fileSizeMB}
     ]);
 
-    let response = this.routineResponse;
+    const response = this.routineResponse;
     return Promise.resolve({response});
   }
 
@@ -987,12 +1022,15 @@ class TestDiagnosticsService {
       {}
     ]);
 
-    let response = this.routineResponse;
+    const response = this.routineResponse;
     return Promise.resolve({response});
   }
-};
+}
 
 // Tests with a fake Mojo diagnostics service.
+//
+// js2gtest fixtures require var here (https://crbug.com/1033337).
+// eslint-disable-next-line no-var
 var TelemetryExtensionUIWithDiagnosticsInterceptorBrowserTest =
     class extends TelemetryExtensionUIBrowserTest {
   constructor() {

@@ -145,7 +145,8 @@ Polymer({
     this.macAddress_ = network.macAddress || '';
 
     if (this.testSuiteStatus === TestSuiteStatus.kNotRunning) {
-      let isArcEnabled = loadTimeData.getBoolean('enableArcNetworkDiagnostics');
+      const isArcEnabled =
+          loadTimeData.getBoolean('enableArcNetworkDiagnostics');
       this.routineGroups_ = getRoutineGroups(network.type, isArcEnabled);
       this.getRoutineSectionElem_().runTests();
     }

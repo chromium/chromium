@@ -75,6 +75,6 @@ export class WrapupFinalizePageElement extends PolymerElement {
       return Promise.reject(new Error('Finalization is not complete.'));
     }
   }
-};
+}
 
 customElements.define(WrapupFinalizePageElement.is, WrapupFinalizePageElement);

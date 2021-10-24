@@ -99,7 +99,7 @@ export class LocalImages extends WithPersonalizationStore {
   }
 
   static get observers() {
-    return ['onImageLoaded_(imageData_, imageDataLoading_)']
+    return ['onImageLoaded_(imageData_, imageDataLoading_)'];
   }
 
   /** @override */
@@ -203,8 +203,9 @@ export class LocalImages extends WithPersonalizationStore {
    * @private
    */
    getAriaLabel_(image) {
-    if (!image || !image.path)
-      return '';
+     if (!image || !image.path) {
+       return '';
+     }
     const path = image.path;
     return path.substring(path.lastIndexOf('/')+1);
   }

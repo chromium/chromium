@@ -27,7 +27,7 @@ export const Modifier = {
  * Enumeration of accelerator sources.
  * @enum {number}
  */
-export let AcceleratorSource = {
+export const AcceleratorSource = {
   kAsh: 0,
   kEventRewriter: 1,
   kBrowser: 2,
@@ -38,7 +38,7 @@ export let AcceleratorSource = {
  * Enumeration of accelerator types.
  * @enum {number}
  */
-export let AcceleratorType = {
+export const AcceleratorType = {
   kDefault: 0,
   kUserDefined: 1,
   kDeprecated: 2,
@@ -50,7 +50,7 @@ export let AcceleratorType = {
  * Enumeration of accelerator states.
  * @enum {number}
  */
-export let AcceleratorState = {
+export const AcceleratorState = {
   kEnabled: 0,
   kDisabledByConflict: 1,
   kDisabledByUser: 2,
@@ -61,14 +61,14 @@ export let AcceleratorState = {
  * accelerator.
  * @enum {number}
  */
-export let AcceleratorConfigResult = {
+export const AcceleratorConfigResult = {
   kSuccess: 0,
   kActionLocked: 1,
   kAcceleratorLocked: 2,
   kConflict: 3,
   kNotFound: 4,
   kDuplicate: 5,
-}
+};
 
 /**
  * Type alias for AcceleratorKeys.

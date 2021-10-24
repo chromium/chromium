@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.m.js'
+import {assert} from 'chrome://resources/js/assert.m.js';
 import {isNonEmptyArray} from '../common/utils.js';
 import * as action from './personalization_actions.js';
 import {WallpaperLayout, WallpaperType} from './personalization_reducers.js';
@@ -151,7 +151,7 @@ export async function selectWallpaper(image, provider, store) {
   const shouldPreview =
       tabletMode && loadTimeData.getBoolean('fullScreenPreviewEnabled');
   if (shouldPreview) {
-    store.dispatch(action.setFullscreenEnabledAction(/*enabled=*/ true))
+    store.dispatch(action.setFullscreenEnabledAction(/*enabled=*/ true));
   }
   store.endBatchUpdate();
   const {success} = await (() => {
@@ -189,8 +189,9 @@ export async function setCustomWallpaperLayout(layout, provider, store) {
       layout === WallpaperLayout.kCenter ||
       layout === WallpaperLayout.kCenterCropped);
 
-  if (image.layout === layout)
+  if (image.layout === layout) {
     return;
+  }
 
   store.dispatch(action.beginLoadSelectedImageAction());
   await provider.setCustomWallpaperLayout(layout);

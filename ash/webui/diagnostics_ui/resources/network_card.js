@@ -24,7 +24,7 @@ const SETTINGS_URL = 'chrome://os-settings/';
  * Represents the state of the network troubleshooting banner.
  * @enum {number}
  */
-export let TroubleshootingState = {
+export const TroubleshootingState = {
   kDisabled: 0,
   kNotConnected: 1,
   kMissingIpAddress: 2,
@@ -181,9 +181,9 @@ Polymer({
     // Remove '0.0.0.0' (if present) from list of name servers.
     filterNameServers(network);
     this.set('network', network);
-    let isIpAddressMissing = !network.ipConfig || !network.ipConfig.ipAddress;
-    let isTimerInProgress = this.timerId_ !== -1;
-    let isConnecting = network.state === NetworkState.kConnecting;
+    const isIpAddressMissing = !network.ipConfig || !network.ipConfig.ipAddress;
+    const isTimerInProgress = this.timerId_ !== -1;
+    const isConnecting = network.state === NetworkState.kConnecting;
 
     if (!isIpAddressMissing) {
       this.isMissingNameServers_ = isNetworkMissingNameServers(network);
@@ -269,9 +269,10 @@ Polymer({
         this.i18n('reconnectLinkText') :
         this.i18n('joinNetworkLinkText', this.networkType_);
     return {
-      header: this.i18n('disabledText', this.networkType_), linkText,
-          url: SETTINGS_URL,
-    }
+      header: this.i18n('disabledText', this.networkType_),
+      linkText,
+      url: SETTINGS_URL,
+    };
   },
 
   /**
@@ -283,7 +284,7 @@ Polymer({
       header: this.i18n('troubleshootingText', this.networkType_),
       linkText: this.i18n('troubleConnecting'),
       url: BASE_SUPPORT_URL,
-    }
+    };
   },
 
   /**
@@ -315,9 +316,9 @@ Polymer({
       }
     }
 
-    let isDisabled = this.network.state === NetworkState.kDisabled;
+    const isDisabled = this.network.state === NetworkState.kDisabled;
     // Show the not connected state for the Not Connected/Portal states.
-    let isNotConnected = [
+    const isNotConnected = [
       NetworkState.kNotConnected, NetworkState.kPortal
     ].includes(this.network.state);
     // Override the |troubleshootingState| value if necessary since the
@@ -346,7 +347,7 @@ Polymer({
       header: this.i18n('noIpAddressText'),
       linkText: this.i18n('visitSettingsToConfigureLinkText'),
       url: SETTINGS_URL,
-    }
+    };
   },
 
   /**
@@ -358,7 +359,7 @@ Polymer({
       header: this.i18n('missingNameServersText'),
       linkText: this.i18n('visitSettingsToConfigureLinkText'),
       url: SETTINGS_URL,
-    }
+    };
   },
 
   /**
@@ -378,8 +379,10 @@ Polymer({
         return this.getMissingNameServersInfo_();
       default:
         return {
-          header: '', linkText: '', url: '',
-        }
+          header: '',
+          linkText: '',
+          url: '',
+        };
     }
   },
 

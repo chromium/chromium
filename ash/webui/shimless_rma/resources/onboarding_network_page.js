@@ -293,6 +293,6 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
   onNextButtonClick() {
     return this.shimlessRmaService_.networkSelectionComplete();
   }
-};
+}
 
 customElements.define(OnboardingNetworkPage.is, OnboardingNetworkPage);

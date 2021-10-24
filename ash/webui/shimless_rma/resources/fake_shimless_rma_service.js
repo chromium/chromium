@@ -113,7 +113,7 @@ export class FakeShimlessRmaService {
       // It should not be possible for stateIndex_ to be out of range unless
       // there is a bug in the fake.
       assert(this.stateIndex_ < this.states_.length);
-      let state = this.states_[this.stateIndex_];
+      const state = this.states_[this.stateIndex_];
       this.setFakeCurrentState_(
           state.state, state.canCancel, state.canGoBack, state.error);
     }
@@ -133,13 +133,13 @@ export class FakeShimlessRmaService {
       // It should not be possible for stateIndex_ to be out of range unless
       // there is a bug in the fake.
       assert(this.stateIndex_ < this.states_.length);
-      let state = this.states_[this.stateIndex_];
+      const state = this.states_[this.stateIndex_];
       this.setFakePrevState_(
           state.state, state.canCancel, state.canGoBack,
           RmadErrorCode.kTransitionFailed);
     } else {
       this.stateIndex_--;
-      let state = this.states_[this.stateIndex_];
+      const state = this.states_[this.stateIndex_];
       this.setFakePrevState_(
           state.state, state.canCancel, state.canGoBack, state.error);
     }
@@ -946,7 +946,7 @@ export class FakeShimlessRmaService {
    * @template T
    */
   triggerObserverAfterMs(method, result, delayMs) {
-    let setDataTriggerAndResolve = function(service, resolve) {
+    const setDataTriggerAndResolve = function(service, resolve) {
       service.observables_.setObservableData(method, [result]);
       service.observables_.trigger(method);
       resolve();
@@ -1091,20 +1091,20 @@ export class FakeShimlessRmaService {
       // It should not be possible for stateIndex_ to be out of range unless
       // there is a bug in the fake.
       assert(this.stateIndex_ < this.states_.length);
-      let state = this.states_[this.stateIndex_];
+      const state = this.states_[this.stateIndex_];
       this.setFakeStateForMethod_(
           method, state.state, state.canCancel, state.canGoBack,
           RmadErrorCode.kTransitionFailed);
     } else if (this.states_[this.stateIndex_].state !== expectedState) {
       // Error: Called in wrong state.
-      let state = this.states_[this.stateIndex_];
+      const state = this.states_[this.stateIndex_];
       this.setFakeStateForMethod_(
           method, state.state, state.canCancel, state.canGoBack,
           RmadErrorCode.kRequestInvalid);
     } else {
       // Success.
       this.stateIndex_++;
-      let state = this.states_[this.stateIndex_];
+      const state = this.states_[this.stateIndex_];
       this.setFakeStateForMethod_(
           method, state.state, state.canCancel, state.canGoBack, state.error);
     }

@@ -160,7 +160,7 @@ export class OnboardingEnterRsuWpDisableCodePageElement extends PolymerElement {
       return Promise.reject(new Error('No RSU code set'));
     }
   }
-};
+}
 
 customElements.define(
     OnboardingEnterRsuWpDisableCodePageElement.is,

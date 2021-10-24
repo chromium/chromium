@@ -239,7 +239,7 @@ export class CollectionsGrid extends PolymerElement {
       'onLocalImagesLoaded_(localImages_, localImageData_)',
       'onCollectionLoaded_(collections_, imageCounts_)',
       'onGooglePhotosLoaded_(googlePhotos_)',
-    ]
+    ];
   }
 
   /** @override */

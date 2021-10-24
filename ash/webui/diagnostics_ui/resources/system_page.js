@@ -20,7 +20,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DiagnosticsBrowserProxy, DiagnosticsBrowserProxyImpl} from './diagnostics_browser_proxy.js';
-import {SystemDataProviderInterface, SystemInfo} from './diagnostics_types.js'
+import {SystemDataProviderInterface, SystemInfo} from './diagnostics_types.js';
 import {getSystemDataProvider} from './mojo_interface_provider.js';
 import {TestSuiteStatus} from './routine_list_executor.js';
 
@@ -208,7 +208,7 @@ Polymer({
    * @return {string}
    */
   getCardContainerClass_() {
-    let cardContainer = 'diagnostics-cards-container';
+    const cardContainer = 'diagnostics-cards-container';
     return `${cardContainer}${this.isNetworkingEnabled ? '-nav' : ''}`;
   },
 });

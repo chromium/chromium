@@ -75,5 +75,5 @@ export function isSelectionEvent(event) {
  * @return {string}
  */
 export function getLoadingPlaceholderAnimationDelay(index) {
-  return `--animation-delay: ${index * 83}ms;`
+  return `--animation-delay: ${index * 83}ms;`;
 }

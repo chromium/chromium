@@ -10,6 +10,8 @@
 /**
  * Namespace for DPSL APIs.
  */
+// Global namespace relies on var.
+// eslint-disable-next-line no-var
 var dpsl = {};
 dpsl.telemetry = null;
 dpsl.diagnostics = null;
@@ -21,6 +23,8 @@ dpsl.internal.messagePipe =
 /**
  * Namespace for ChromeOS APIs.
  */
+// Global namespace relies on var.
+// eslint-disable-next-line no-var
 var chromeos = {};
 chromeos.diagnostics = null;
 chromeos.telemetry = null;

@@ -7,7 +7,7 @@ import {RequestHandler} from 'chrome://resources/js/post_message_api_request_han
 
 import {ProjectorBrowserProxy, ProjectorBrowserProxyImpl} from '../../communication/projector_browser_proxy.js';
 
-const TARGET_URL = 'chrome-untrusted://projector/'
+const TARGET_URL = 'chrome-untrusted://projector/';
 
 
 // A PostMessageAPIClient that sends messages to chrome-untrusted://projector.
@@ -97,12 +97,12 @@ export class TrustedAppRequestHandler extends RequestHandler {
     });
     this.registerMethod('shouldDownloadSoda', (args) => {
       return this.browserProxy_.shouldDownloadSoda();
-    })
+    });
     this.registerMethod('installSoda', (args) => {
       return this.browserProxy_.installSoda();
-    })
+    });
   }
-};
+}
 
 /**
  * This is a class that is used to setup the duplex communication
@@ -119,7 +119,7 @@ export class AppTrustedCommFactory {
       return;
     }
 
-    let iframeElement = document.getElementsByTagName('iframe')[0];
+    const iframeElement = document.getElementsByTagName('iframe')[0];
 
     AppTrustedCommFactory.client_ =
         new UntrustedAppClient(iframeElement.contentWindow);

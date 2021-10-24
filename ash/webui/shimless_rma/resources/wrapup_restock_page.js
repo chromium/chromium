@@ -62,6 +62,6 @@ export class WrapupRestockPageElement extends PolymerElement {
   onNextButtonClick() {
     return this.shimlessRmaService_.continueFinalizationAfterRestock();
   }
-};
+}
 
 customElements.define(WrapupRestockPageElement.is, WrapupRestockPageElement);

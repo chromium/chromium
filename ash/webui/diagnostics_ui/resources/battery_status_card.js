@@ -17,7 +17,7 @@ import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BatteryChargeStatus, BatteryChargeStatusObserverInterface, BatteryChargeStatusObserverReceiver, BatteryHealth, BatteryHealthObserverInterface, BatteryHealthObserverReceiver, BatteryInfo, BatteryState, ExternalPowerSource, RoutineType, SystemDataProviderInterface} from './diagnostics_types.js'
+import {BatteryChargeStatus, BatteryChargeStatusObserverInterface, BatteryChargeStatusObserverReceiver, BatteryHealth, BatteryHealthObserverInterface, BatteryHealthObserverReceiver, BatteryInfo, BatteryState, ExternalPowerSource, RoutineType, SystemDataProviderInterface} from './diagnostics_types.js';
 import {getDiagnosticsIcon} from './diagnostics_utils.js';
 import {getSystemDataProvider} from './mojo_interface_provider.js';
 import {mojoString16ToString} from './mojo_utils.js';
@@ -244,7 +244,7 @@ Polymer({
         this.batteryChargeStatus_.powerAdapterStatus ===
                 ExternalPowerSource.kDisconnected ?
             'runBatteryDischargeTestText' :
-            'runBatteryChargeTestText')
+            'runBatteryChargeTestText');
   },
 
   /** @protected */
@@ -311,7 +311,7 @@ Polymer({
         return getDiagnosticsIcon(
             `${BATTERY_ICON_PREFIX}${rangeStart}-${rangeEnd}`);
       }
-    };
+    }
 
     assertNotReached();
   },

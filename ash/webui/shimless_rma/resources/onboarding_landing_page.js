@@ -46,6 +46,6 @@ export class OnboardingLandingPage extends PolymerElement {
   onNextButtonClick() {
     return this.shimlessRmaService_.beginFinalization();
   }
-};
+}
 
 customElements.define(OnboardingLandingPage.is, OnboardingLandingPage);

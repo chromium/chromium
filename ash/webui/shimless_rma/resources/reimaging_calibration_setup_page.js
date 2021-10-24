@@ -57,7 +57,7 @@ export class ReimagingCalibrationSetupPageElement extends PolymerElement {
     super.ready();
     this.shimlessRmaService_.getCalibrationSetupInstructions().then(
         (result) => {
-          let message = instructionMessages[result.instructions];
+          const message = instructionMessages[result.instructions];
           if (message === undefined) {
             // This is a catchall in case of errors.
             // TODO(gavindodd): i18n string
@@ -76,7 +76,7 @@ export class ReimagingCalibrationSetupPageElement extends PolymerElement {
   onNextButtonClick() {
     return this.shimlessRmaService_.runCalibrationStep();
   }
-};
+}
 
 customElements.define(
     ReimagingCalibrationSetupPageElement.is,

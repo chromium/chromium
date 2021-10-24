@@ -32,6 +32,6 @@ export class ConfirmationPageElement extends PolymerElement {
   close_() {
     window.close();
   }
-};
+}
 
 customElements.define(ConfirmationPageElement.is, ConfirmationPageElement);

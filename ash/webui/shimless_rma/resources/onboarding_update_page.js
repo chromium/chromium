@@ -179,7 +179,7 @@ export class OnboardingUpdatePageElement extends PolymerElement {
     this.updateProgressMessage_ = 'OS update progress received ' +
         operationName[operation] + ' ' + Math.round(progress * 100) + '%';
   }
-};
+}
 
 customElements.define(
     OnboardingUpdatePageElement.is, OnboardingUpdatePageElement);

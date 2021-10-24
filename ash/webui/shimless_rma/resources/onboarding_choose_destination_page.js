@@ -49,7 +49,7 @@ export class OnboardingChooseDestinationPageElement extends PolymerElement {
    */
   onDestinationSelectionChanged_(event) {
     this.destinationOwner_ = event.detail.value;
-    let disabled = !this.destinationOwner_;
+    const disabled = !this.destinationOwner_;
     this.dispatchEvent(new CustomEvent(
         'disable-next-button',
         {bubbles: true, composed: true, detail: disabled},
@@ -66,7 +66,7 @@ export class OnboardingChooseDestinationPageElement extends PolymerElement {
       return Promise.reject(new Error('No destination selected'));
     }
   }
-};
+}
 
 customElements.define(
     OnboardingChooseDestinationPageElement.is,

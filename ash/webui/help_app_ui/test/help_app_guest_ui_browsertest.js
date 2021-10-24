@@ -28,7 +28,9 @@ async function waitForInitialIndexUpdate() {
     if (response && response.results && response.results.length > 0) {
       break;
     }
-    await new Promise(resolve => {setTimeout(resolve, 50)});
+    await new Promise(resolve => {
+      setTimeout(resolve, 50);
+    });
   }
   return delegate;
 }
@@ -80,7 +82,9 @@ GUEST_TEST('GuestCanSearchWithHeadings', async () => {
     if (response && response.results && response.results.length > 0) {
       break;
     }
-    await new Promise(resolve => {setTimeout(resolve, 50)});
+    await new Promise(resolve => {
+      setTimeout(resolve, 50);
+    });
   }
 
   assertDeepEquals(response.results, [
@@ -154,7 +158,9 @@ GUEST_TEST('GuestCanSearchWithCategories', async () => {
     if (response && response.results && response.results.length > 0) {
       break;
     }
-    await new Promise(resolve => {setTimeout(resolve, 50)});
+    await new Promise(resolve => {
+      setTimeout(resolve, 50);
+    });
   }
 
   // Don't test the ordering of search results because they should have similar

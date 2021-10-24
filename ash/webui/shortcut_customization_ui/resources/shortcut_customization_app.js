@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './accelerator_edit_dialog.js'
+import './accelerator_edit_dialog.js';
 import './shortcut_input.js';
-import './shortcuts_page.js'
-import './shortcut_customization_fonts_css.js'
+import './shortcuts_page.js';
+import './shortcut_customization_fonts_css.js';
 import 'chrome://resources/ash/common/navigation_view_panel.js';
 import 'chrome://resources/ash/common/page_toolbar.js';
 
@@ -70,7 +70,7 @@ export class ShortcutCustomizationAppElement extends PolymerElement {
         type: Boolean,
         value: false,
       },
-    }
+    };
   }
 
   /** @override */

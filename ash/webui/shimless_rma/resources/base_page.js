@@ -37,6 +37,6 @@ export class BasePageElement extends PolymerElement {
   ready() {
     super.ready();
   }
-};
+}
 
 customElements.define(BasePageElement.is, BasePageElement);

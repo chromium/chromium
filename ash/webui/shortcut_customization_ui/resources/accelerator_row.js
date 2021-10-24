@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './accelerator_view.js'
+import './accelerator_view.js';
 import './icons.js';
 import './shortcut_customization_shared_css.js';
 
@@ -61,7 +61,7 @@ export class AcceleratorRowElement extends PolymerElement {
         value: 0,
         observer: 'onSourceChanged_',
       },
-    }
+    };
   }
 
   constructor() {

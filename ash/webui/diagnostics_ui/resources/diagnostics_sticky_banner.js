@@ -16,7 +16,7 @@ export class DiagnosticsStickyBannerElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`
+    return html`{__html_template__}`;
   }
 
   static get properties() {
@@ -117,7 +117,7 @@ export class DiagnosticsStickyBannerElement extends PolymerElement {
     this.scrollTimerId_ =
         window.setTimeout(() => this.scrollingClass_ = '', 300);
   }
-};
+}
 
 customElements.define(
     DiagnosticsStickyBannerElement.is, DiagnosticsStickyBannerElement);

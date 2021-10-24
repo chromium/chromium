@@ -35,7 +35,7 @@ Polymer({
     document.body.querySelector('iframe').src =
         'chrome-untrusted://projector/' + getQuery();
 
-    let client = AppTrustedCommFactory.getPostMessageAPIClient();
+    const client = AppTrustedCommFactory.getPostMessageAPIClient();
 
     this.addWebUIListener('onNewScreencastPreconditionChanged', (canStart) => {
       if (typeof canStart !== "boolean") {

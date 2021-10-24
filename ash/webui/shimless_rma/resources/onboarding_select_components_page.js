@@ -73,7 +73,7 @@ export class OnboardingSelectComponentsPageElement extends PolymerElement {
         return;
       }
 
-      let componentList = [];
+      const componentList = [];
       result.components.forEach(item => {
         const component = assert(item.component);
 
@@ -126,7 +126,7 @@ export class OnboardingSelectComponentsPageElement extends PolymerElement {
     return this.shimlessRmaService_.setComponentList(
         this.getComponentRepairStateList_());
   }
-};
+}
 
 customElements.define(
     OnboardingSelectComponentsPageElement.is,

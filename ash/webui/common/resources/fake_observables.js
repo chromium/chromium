@@ -217,7 +217,7 @@ export class FakeObservables {
    * Disables all observers firing automatically on an interval.
    */
   stopAllTriggerIntervals() {
-    for (let obs of this.observables_.values()) {
+    for (const obs of this.observables_.values()) {
       obs.stopTriggerOnInterval();
     }
   }
@@ -249,7 +249,7 @@ export class FakeObservables {
    * @private
    */
   getObservable_(methodName) {
-    let observable = this.observables_.get(methodName);
+    const observable = this.observables_.get(methodName);
     assert(!!observable, `Observable '${methodName}' not found.`);
     return observable;
   }

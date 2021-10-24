@@ -217,7 +217,7 @@ class DiagnosticsProxy {
     const availableRoutines =
         await getOrCreateDiagnosticsService().getAvailableRoutines();
     return this.convertRoutines(availableRoutines.availableRoutines);
-  };
+  }
 
   /**
    * @param { !number } id
@@ -271,7 +271,7 @@ class DiagnosticsProxy {
    * @return { !Object }
    */
   convertRoutineUpdate(routineUpdate) {
-    let result = {
+    const result = {
       progressPercent: routineUpdate.progressPercent,
       output: routineUpdate.output,
       routineUpdateUnion: {}
@@ -281,7 +281,8 @@ class DiagnosticsProxy {
 
     if (typeof updateUnion.noninteractiveUpdate !== 'undefined' &&
         updateUnion.noninteractiveUpdate !== null) {
-      let status = this.convertStatus(updateUnion.noninteractiveUpdate.status);
+      const status =
+          this.convertStatus(updateUnion.noninteractiveUpdate.status);
 
       result.routineUpdateUnion = {
         noninteractiveUpdate: {
@@ -293,7 +294,7 @@ class DiagnosticsProxy {
 
     if (typeof updateUnion.interactiveUpdate !== 'undefined' &&
         updateUnion.interactiveUpdate !== null) {
-      let message =
+      const message =
           this.convertUserMessage(updateUnion.interactiveUpdate.userMessage);
       result.routineUpdateUnion = {interactiveUpdate: {userMessage: message}};
     }
@@ -323,7 +324,7 @@ class DiagnosticsProxy {
         routine, command, request.includeOutput);
 
     return this.convertRoutineUpdate(response.routineUpdate);
-  };
+  }
 
   /**
    * @param { !ash.health.mojom.RunRoutineResponse } runRoutineResponse
@@ -334,7 +335,7 @@ class DiagnosticsProxy {
       id: runRoutineResponse.id,
       status: this.convertStatus(runRoutineResponse.status)
     };
-  };
+  }
 
   /**
    * Generic handler for a runRoutine.
@@ -349,7 +350,7 @@ class DiagnosticsProxy {
     } catch (/** @type {!Error} */ error) {
       return error;
     }
-  };
+  }
 
   /**
    * Runs battery capacity routine.
@@ -357,7 +358,7 @@ class DiagnosticsProxy {
    */
   async handleRunBatteryCapacityRoutine() {
     return await getOrCreateDiagnosticsService().runBatteryCapacityRoutine();
-  };
+  }
 
   /**
    * Runs battery health routine.
@@ -365,7 +366,7 @@ class DiagnosticsProxy {
    */
   async handleRunBatteryHealthRoutine() {
     return await getOrCreateDiagnosticsService().runBatteryHealthRoutine();
-  };
+  }
 
   /**
    * Runs smartctl check routine.
@@ -373,7 +374,7 @@ class DiagnosticsProxy {
    */
   async handleRunSmartctlCheckRoutine() {
     return await getOrCreateDiagnosticsService().runSmartctlCheckRoutine();
-  };
+  }
 
   /**
    * Converts expected status string to AcPowerStatusEnum.
@@ -398,10 +399,11 @@ class DiagnosticsProxy {
     const request =
         /** @type {!dpsl_internal.DiagnosticsRunAcPowerRoutineRequest} */ (
             message);
-    const expectedStatus = this.convertPowerStatusToEnum(request.expectedStatus)
+    const expectedStatus =
+        this.convertPowerStatusToEnum(request.expectedStatus);
     return await getOrCreateDiagnosticsService().runAcPowerRoutine(
         expectedStatus, request.expectedPowerType);
-  };
+  }
 
   /**
    * @param { !number } number
@@ -424,7 +426,7 @@ class DiagnosticsProxy {
     this.assertNumberIsPositive(request.duration);
     return await getOrCreateDiagnosticsService().runCpuCacheRoutine(
         request.duration);
-  };
+  }
 
   /**
    * Runs cpu stress routine.
@@ -438,7 +440,7 @@ class DiagnosticsProxy {
     this.assertNumberIsPositive(request.duration);
     return await getOrCreateDiagnosticsService().runCpuStressRoutine(
         request.duration);
-  };
+  }
 
   /**
    * Runs floating point accuracy routine.
@@ -452,7 +454,7 @@ class DiagnosticsProxy {
     this.assertNumberIsPositive(request.duration);
     return await getOrCreateDiagnosticsService()
         .runFloatingPointAccuracyRoutine(request.duration);
-  };
+  }
 
   /**
    * Runs NVMe wear level routine.
@@ -465,7 +467,7 @@ class DiagnosticsProxy {
         (message);
     return await getOrCreateDiagnosticsService().runNvmeWearLevelRoutine(
         request.wearLevelThreshold);
-  };
+  }
 
   /**
    * Converts NVMe self test type string to NvmeSelfTestTypeEnum.
@@ -492,7 +494,7 @@ class DiagnosticsProxy {
         (message);
     return await getOrCreateDiagnosticsService().runNvmeSelfTestRoutine(
         this.convertNvmeSelfTestTypeToEnum(request.nvmeSelfTestType));
-  };
+  }
 
   /**
    * Converts disk read type string to DiskReadRoutineTypeEnum.
@@ -534,7 +536,7 @@ class DiagnosticsProxy {
     return await getOrCreateDiagnosticsService().runDiskReadRoutine(
         this.convertDiskReadTypeToEnum(request.type), request.lengthSeconds,
         request.fileSizeMb);
-  };
+  }
 
   /**
    * Runs prime search routine.
@@ -548,7 +550,7 @@ class DiagnosticsProxy {
     this.assertNumberIsPositive(request.lengthSeconds);
     return await getOrCreateDiagnosticsService().runPrimeSearchRoutine(
         request.lengthSeconds, BigInt(request.maximumNumber));
-  };
+  }
 
   /**
    * Runs battery discharge routine.
@@ -564,7 +566,7 @@ class DiagnosticsProxy {
     this.assertNumberIsPositive(request.lengthSeconds);
     return await getOrCreateDiagnosticsService().runBatteryDischargeRoutine(
         request.lengthSeconds, request.maximumDischargePercentAllowed);
-  };
+  }
 
   /**
    * Runs battery charge routine.
@@ -580,8 +582,8 @@ class DiagnosticsProxy {
     this.assertNumberIsPositive(request.lengthSeconds);
     return await getOrCreateDiagnosticsService().runBatteryChargeRoutine(
         request.lengthSeconds, request.minimumChargePercentRequired);
-  };
-};
+  }
+}
 
 const diagnosticsProxy = new DiagnosticsProxy();
 
@@ -807,7 +809,7 @@ class TelemetryProxy {
       return input['value'];
     }
 
-    let output = {};
+    const output = {};
     Object.entries(input).forEach(kv => {
       const key = /** @type {!string} */ (kv[0]);
       const value = /** @type {?Object|string|number|null|undefined} */ (kv[1]);
@@ -824,7 +826,7 @@ class TelemetryProxy {
       return null;
     }
     return output;
-  };
+  }
 
   /**
    * Requests telemetry info.
@@ -848,7 +850,7 @@ class TelemetryProxy {
     return /** @type {!Object} */ (
         this.convert(this.convertAllEnums(telemetryInfo.telemetryInfo)) || {});
   }
-};
+}
 
 const telemetryProxy = new TelemetryProxy();
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AuthenticationType, BatteryChargeStatus, BatteryHealth, BatteryInfo, BatteryState, ConnectionType, CpuUsage, ExternalPowerSource, KeyboardInfo, LockType, MechanicalLayout, MemoryUsage, Network, NetworkGuidInfo, NetworkState, NetworkType, NumberPadPresence, PhysicalLayout, PowerRoutineResult, RoamingState, RoutineType, SecurityType, StandardRoutineResult, SystemInfo, TouchDeviceInfo, TouchDeviceType, WiFiStateProperties} from './diagnostics_types.js'
+import {AuthenticationType, BatteryChargeStatus, BatteryHealth, BatteryInfo, BatteryState, ConnectionType, CpuUsage, ExternalPowerSource, KeyboardInfo, LockType, MechanicalLayout, MemoryUsage, Network, NetworkGuidInfo, NetworkState, NetworkType, NumberPadPresence, PhysicalLayout, PowerRoutineResult, RoamingState, RoutineType, SecurityType, StandardRoutineResult, SystemInfo, TouchDeviceInfo, TouchDeviceType, WiFiStateProperties} from './diagnostics_types.js';
 import {stringToMojoString16} from './mojo_utils.js';
 
 /** @type {!Array<!BatteryChargeStatus>} */
@@ -301,7 +301,7 @@ export const fakeWiFiStateProperties = {
 };
 
 /** @type {!Network} */
-export let fakeWifiNetwork = {
+export const fakeWifiNetwork = {
   state: NetworkState.kConnected,
   type: NetworkType.kWiFi,
   typeProperties: {
@@ -325,7 +325,7 @@ export let fakeWifiNetwork = {
 };
 
 /** @type {!Network} */
-export let fakeWifiNetworkDisabled = {
+export const fakeWifiNetworkDisabled = {
   state: NetworkState.kDisabled,
   type: NetworkType.kWiFi,
   typeProperties: {
@@ -349,7 +349,7 @@ export let fakeWifiNetworkDisabled = {
 };
 
 /** @type {!Network} */
-export let fakeWifiNetworkNoNameServers = {
+export const fakeWifiNetworkNoNameServers = {
   state: NetworkState.kConnected,
   type: NetworkType.kWiFi,
   typeProperties: {
@@ -373,7 +373,7 @@ export let fakeWifiNetworkNoNameServers = {
 };
 
 /** @type {!Network} */
-export let fakeWifiNetworkEmptyNameServers = {
+export const fakeWifiNetworkEmptyNameServers = {
   state: NetworkState.kConnected,
   type: NetworkType.kWiFi,
   typeProperties: {
@@ -397,7 +397,7 @@ export let fakeWifiNetworkEmptyNameServers = {
 };
 
 /** @type {!Network} */
-export let fakeWifiNetworkMultipleNameServers = {
+export const fakeWifiNetworkMultipleNameServers = {
   state: NetworkState.kConnected,
   type: NetworkType.kWiFi,
   typeProperties: {
@@ -421,7 +421,7 @@ export let fakeWifiNetworkMultipleNameServers = {
 };
 
 /** @type {!Network} */
-export let fakeWifiNetworkInvalidNameServers = {
+export const fakeWifiNetworkInvalidNameServers = {
   state: NetworkState.kConnected,
   type: NetworkType.kWiFi,
   typeProperties: {
@@ -445,7 +445,7 @@ export let fakeWifiNetworkInvalidNameServers = {
 };
 
 /** @type {!Network} */
-export let fakeWifiNetworkNoIpAddress = {
+export const fakeWifiNetworkNoIpAddress = {
   state: NetworkState.kConnecting,
   type: NetworkType.kWiFi,
   typeProperties: {
@@ -468,7 +468,7 @@ export let fakeWifiNetworkNoIpAddress = {
   },
 };
 
-export let fakeDisconnectedWifiNetwork = {
+export const fakeDisconnectedWifiNetwork = {
   state: NetworkState.kNotConnected,
   type: NetworkType.kWiFi,
   typeProperties: null,
@@ -479,7 +479,7 @@ export let fakeDisconnectedWifiNetwork = {
 };
 
 /** @type {!Network} */
-export let fakePortalWifiNetwork = {
+export const fakePortalWifiNetwork = {
   state: NetworkState.kPortal,
   type: NetworkType.kWiFi,
   typeProperties: {
@@ -503,7 +503,7 @@ export let fakePortalWifiNetwork = {
 };
 
 /** @type {!Network} */
-export let fakeEthernetNetwork = {
+export const fakeEthernetNetwork = {
   state: NetworkState.kOnline,
   type: NetworkType.kEthernet,
   typeProperties: {
@@ -523,7 +523,7 @@ export let fakeEthernetNetwork = {
 };
 
 /** @type {!Network} */
-export let fakeConnectingEthernetNetwork = {
+export const fakeConnectingEthernetNetwork = {
   state: NetworkState.kConnecting,
   type: NetworkType.kEthernet,
   observerGuid: 'ethernetGuid',
@@ -532,7 +532,7 @@ export let fakeConnectingEthernetNetwork = {
 };
 
 /** @type {!Network} */
-export let fakeDisconnectedEthernetNetwork = {
+export const fakeDisconnectedEthernetNetwork = {
   state: NetworkState.kNotConnected,
   type: NetworkType.kEthernet,
   typeProperties: {
@@ -547,7 +547,7 @@ export let fakeDisconnectedEthernetNetwork = {
 };
 
 /** @type {!Network} */
-export let fakeCellularNetwork = {
+export const fakeCellularNetwork = {
   state: NetworkState.kConnected,
   type: NetworkType.kCellular,
   typeProperties: {
@@ -575,7 +575,7 @@ export let fakeCellularNetwork = {
 };
 
 /** @type {!Network} */
-export let fakeCellularWithIpConfigNetwork = {
+export const fakeCellularWithIpConfigNetwork = {
   state: NetworkState.kConnected,
   type: NetworkType.kCellular,
   typeProperties: {
@@ -603,7 +603,7 @@ export let fakeCellularWithIpConfigNetwork = {
 };
 
 /** @type {!Network} */
-export let fakeCellularDisabledNetwork = {
+export const fakeCellularDisabledNetwork = {
   state: NetworkState.kDisabled,
   type: NetworkType.kCellular,
   observerGuid: 'cellularDisabledGuid',
@@ -612,7 +612,7 @@ export let fakeCellularDisabledNetwork = {
 };
 
 /** @type {!Network} */
-export let fakeCellularDisconnectedNetwork = {
+export const fakeCellularDisconnectedNetwork = {
   state: NetworkState.kNotConnected,
   type: NetworkType.kCellular,
   observerGuid: 'cellularDisconnectedGuid',
@@ -621,7 +621,7 @@ export let fakeCellularDisconnectedNetwork = {
 };
 
 /** @type {!Array<!KeyboardInfo>} */
-export let fakeKeyboards = [
+export const fakeKeyboards = [
   {
     id: 3,
     connectionType: ConnectionType.kInternal,
@@ -634,7 +634,7 @@ export let fakeKeyboards = [
 ];
 
 /** @type {!Array<!TouchDeviceInfo>} */
-export let fakeTouchDevices = [
+export const fakeTouchDevices = [
   {
     id: 6,
     connectionType: ConnectionType.kInternal,

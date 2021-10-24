@@ -50,7 +50,7 @@ function convertMojoTimeToJS(mojoTime) {
   const timeInMs = Number(mojoTime.internalValue) / 1000;
 
   return new Date(timeInMs - epochDeltaInMs);
-};
+}
 
 /**
  * Returns true if |date| is today, false otherwise.
@@ -62,7 +62,7 @@ function isToday(date) {
   return date.getDate() === today_date.getDate() &&
       date.getMonth() === today_date.getMonth() &&
       date.getFullYear() === today_date.getFullYear();
-};
+}
 
 /**
  * Best effort attempt of finding the file icon name based off of the file's
@@ -107,7 +107,7 @@ function getFileExtensionIconName(fileName) {
     default:
       return GENERIC_FILE_EXTENSION_ICON;
   }
-};
+}
 
 /**
  * Best effort to get the file icon name for a Google-file
@@ -141,7 +141,7 @@ function getGFileIconName(fileName) {
     default:
       return '';
   }
-};
+}
 
 /**
  * @fileoverview
@@ -253,7 +253,7 @@ Polymer({
           } else {
             e.removeAttribute('title');
           }
-        })
+        });
   },
 
   /** @private */
@@ -551,4 +551,4 @@ Polymer({
     }
   },
 });
-})()
+})();
