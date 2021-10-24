@@ -301,6 +301,7 @@
 <translation id="1842969606798536927">ငွေပေးချေရန်</translation>
 <translation id="1856713167556118146">ရုပ်ဖျက်မုဒ်က မလုပ်ပေးနိုင်သည်များ</translation>
 <translation id="1863257867908022953">ဗန်း ၁၂</translation>
+<translation id="1864927262126810325"><ph name="SOURCE_NAME" /> မှ</translation>
 <translation id="1871208020102129563">ပရောက်စီအား တိကျသည့် ပရောက်ဟီဆာဗာများ သတ်မှတ်ထားသည်၊ .pac script URL မဟုတ်ပါ။</translation>
 <translation id="1871284979644508959">ဖြည့်ရန်လိုအပ်သည့်အကွက်</translation>
 <translation id="1875025161375567525">ဓာတ်ပုံဗန်း</translation>
@@ -962,6 +963,7 @@
 <translation id="4117700440116928470">မူဝါဒ နယ်ပယ်ကို မပံ့ပိုးထား။</translation>
 <translation id="4121428309786185360">မှာ သက်တမ်း ကုန်</translation>
 <translation id="4123572138124678573">အောက်ခြေတွင် သုံးချက်ဖောက်ရန်</translation>
+<translation id="4127575959421463246">ChromeOS အလံပြခြင်းများကို ရှာနေပါသလား။ ဝင်ကြည့်ရန်</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{အခြား ၁ ခု}other{အခြား # ခု}}</translation>
 <translation id="4130226655945681476">ကွန်ရက် ကြိုးများ၊ မော်ဒင်နှင့် ရောက်တားကို စစ်ဆေးနေသည်</translation>
 <translation id="4133224101597112888">ဤတဘ်ကိုမျှဝေရန် ခလုတ်၊ လင့်ခ်ကို မျှဝေခြင်း၊ QR ကုဒ် ပြုလုပ်ခြင်း၊ ကာစ်လုပ်ခြင်းစသည်တို့ဖြင့် ဤတဘ်ကို မျှဝေရန် Enter နှိပ်ပါ။</translation>
@@ -1134,6 +1136,7 @@
 <translation id="4606870351894164739">အကျိုးသက်ရောက်မှု</translation>
 <translation id="4607603470419975064">Chrome အကြံပြုချက်များ ကြည့်ရန် ခလုတ်၊ Chrome ဝန်ဆောင်မှုများအကြောင်း လေ့လာရန် Enter ခလုတ် နှိပ်ပါ</translation>
 <translation id="4607608436550361748">Chrome အကြံပြုချက်များ ကြည့်ရန်</translation>
+<translation id="4627675673814409125">ဤမူဝါဒကို Chrome ပရိုဖိုင်အဆင့်မှာ မထည့်သွင်းနိုင်ဘဲ လျစ်လျူရှုထားပါမည်။</translation>
 <translation id="4628948037717959914">ဓာတ်ပုံ</translation>
 <translation id="4631649115723685955">ငွေပြန်ပေးခြင်းကို လင့်ခ်ချိတ်ထားသည်</translation>
 <translation id="4636930964841734540">အချက်အလက်</translation>
@@ -1764,6 +1767,7 @@
 <translation id="674375294223700098">အမည်မသိ ဆာဗာ အသိမှတ်ပြုလက်မှတ် မှားယွင်းမှု</translation>
 <translation id="6744009308914054259">ချိတ်ဆက်မှုကို စောင့်နေစဉ် အော့ဖ်လိုင်းဆောင်းပါးများကို ဖတ်ရန် 'ဒေါင်းလုဒ်များ' သို့ သွားနိုင်သည်။</translation>
 <translation id="6753269504797312559">ပေါ်လစီတန်ဖိုး</translation>
+<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">သင့်စက်ပစ္စည်း အိပ်ပျော်သွားပါသည်။</translation>
 <translation id="6767985426384634228">လိပ်စာ အပ်ဒိတ်လုပ်မလား။</translation>
 <translation id="6768213884286397650">ဟာဂကိ (ပို့စ်ကတ်)</translation>
@@ -1851,6 +1855,7 @@
 <translation id="706295145388601875">Chrome ဆက်တင်များတွင် လိပ်စာများထည့်ရန်နှင့် စီမံရန်</translation>
 <translation id="7064851114919012435">ဆက်သွယ်ရန်အချက်အလက်</translation>
 <translation id="7068733155164172741">ဂဏန်း-<ph name="OTP_LENGTH" /> လုံးပါကုဒ် ထည့်ပါ</translation>
+<translation id="7070090581017165256">ဤဝဘ်ဆိုက်အကြောင်း</translation>
 <translation id="70705239631109039">သင့်ချိတ်ဆက်မှုသည် လုံခြုံမှုအပြည့်အဝမရှိပါ</translation>
 <translation id="7075452647191940183">တောင်းဆိုချက် အလွန်ကြီးနေသည်</translation>
 <translation id="7079718277001814089">ဤဆိုက်တွင် မဲလ်ဝဲ ပါဝင်ပါသည်</translation>
@@ -2096,6 +2101,7 @@
 <translation id="7813600968533626083">Chrome မှပုံစံ အကြံပြုမှုများ ဖယ်ရှားမလား?</translation>
 <translation id="781440967107097262">ကလစ်ဘုတ် မျှဝေမလား။</translation>
 <translation id="7815407501681723534">'<ph name="SEARCH_STRING" />' အတွက် <ph name="SEARCH_RESULTS" /> <ph name="NUMBER_OF_RESULTS" /> ခု တွေ့ထားသည်</translation>
+<translation id="782125616001965242">ဤဝဘ်ဆိုက်အကြောင်း အချက်အလက်များ ပြရန်</translation>
 <translation id="782886543891417279">သင်အသုံးပြုနေသော Wi-Fi ( <ph name="WIFI_NAME" /> ) ၏ login စာမျက်နှာသို့ သင်သွားရောက်ကြည့်ရှုရန် လိုမည်။</translation>
 <translation id="7836231406687464395">Postfix (စာအိတ်)</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{မရှိ}=1{အက်ပ် ၁ ခု (<ph name="EXAMPLE_APP_1" />)}=2{အက်ပ် ၂ ခု (<ph name="EXAMPLE_APP_1" />၊ <ph name="EXAMPLE_APP_2" />)}other{အက်ပ် # ခု (<ph name="EXAMPLE_APP_1" />၊ <ph name="EXAMPLE_APP_2" />၊ <ph name="AND_MORE" />)}}</translation>
@@ -2310,6 +2316,7 @@
 <translation id="8541158209346794904">ဘလူးတုသ် စက်ပစ္စည်း</translation>
 <translation id="8542014550340843547">အောက်ခြေတွင် ချုပ်စက်ဖြင့် သုံးချက်ချုပ်ရန်</translation>
 <translation id="8543181531796978784">သင်သည် <ph name="BEGIN_ERROR_LINK" /> ထောက်လှမ်းခံရသည့် ပြဿနာကို သတင်းပို့နိုင် <ph name="END_ERROR_LINK" /> သို့မဟုတ်၊ သင်က သင်၏ လုံခြုံရေးဆိုင်ရာ အန္တရာယ်များကို နားလည်လျှင်၊ <ph name="BEGIN_LINK" /> မလုံခြုံသည့် ဤဆိုက်<ph name="END_LINK" /> ဝင်ကြည့်နိုင်သည်။</translation>
+<translation id="8554010658308662631">နောက်ထပ်ဖွင့်ရန်</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{ခွင့်ပြုချက် ပြင်ဆင်သတ်မှတ်ရန်}other{ခွင့်ပြုချက်များ ပြင်ဆင်သတ်မှတ်ရန်}}</translation>
 <translation id="8555010941760982128">ငွေရှင်းသည့်အခါ ဤကုဒ်ကို သုံးပါ</translation>
 <translation id="8557066899867184262">CVC သည် သင့်ကဒ်အနောက်ဘက်ခြမ်းတွင် ရှိသည်။</translation>
@@ -2375,6 +2382,7 @@
 <translation id="8792626944327216835">မိုက်ခရိုဖုန်း</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> က သင့်ဘရောင်ဇာတွင် Chrome Enterprise Connectors ကို ဖွင့်ထားသည်။ ဤချိတ်ဆက်စနစ်များက သင့်ဒေတာအချို့ကို ဝင်သုံးခွင့်ရှိသည်။</translation>
 <translation id="8798099450830957504">ပုံသေ</translation>
+<translation id="8798739476508189189">ဘရောင်ဇာအလံပြခြင်းများကို ရှာနေပါသလား။ ဝင်ကြည့်ရန်</translation>
 <translation id="8805819170075074995">စာရင်းထည့်သွင်းမှု "<ph name="LANGUAGE_ID" />"- SpellcheckLanguage မူဝါဒတွင်လည်း ပါဝင်နေသောကြောင့် ထည့်သွင်းမှုကို လျစ်လျူရှုထားသည်။</translation>
 <translation id="8807160976559152894">တစ်မျက်နှာအပြီး ဖြတ်ထုတ်ရန်</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ သင့် Chrome ဆက်တင်များမှတစ်ဆင့် Chrome ကို အပ်ဒိတ်လုပ်ရန် Tab နှိပ်ပြီးနောက် Enter နှိပ်ပါ</translation>
@@ -2480,6 +2488,7 @@
 <translation id="9157595877708044936">စဖွင့်သတ်မှတ်နေ...</translation>
 <translation id="9158625974267017556">C6 (စာအိတ်)</translation>
 <translation id="9164029392738894042">တိကျမှု စစ်ဆေးခြင်း</translation>
+<translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">သင့်တွင် သိမ်းထားသော ငွေပေးချေနည်းလမ်းများရှိမရှိ စစ်ဆေးရန် ဝဘ်ဆိုက်များကို ခွင့်ပြုပါ</translation>
 <translation id="9169664750068251925">ဒီဆိုက် ပေါ်မှာ အမြဲတမ်း ပိတ်ဆို့ရန်</translation>
 <translation id="9169931577761441333"><ph name="APP_NAME" /> ကို ပင်မစာမျက်နှာသို့ ထည့်ရန်</translation>
