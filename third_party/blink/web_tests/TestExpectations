@@ -6857,9 +6857,6 @@ crbug.com/1243707 [ Debug Linux ] http/tests/inspector-protocol/target/auto-atta
 # Sheriff 2021-08-26
 crbug.com/1243933 [ Win7 ] virtual/shared_array_buffer_on_desktop/http/tests/devtools/elements/accessibility/edit-aria-attributes.js [ Failure ]
 
-# Temporarily allow pass or failure while new WebRTC stats are added and rolled into Chromium.
-crbug.com/webrtc/12951 external/wpt/webrtc-stats/supported-stats.html [ Failure Pass ]
-
 # Sheriff 2021-09-03
 crbug.com/1246238 http/tests/devtools/security/mixed-content-sidebar.js [ Failure Pass ]
 crbug.com/1246238 http/tests/devtools/security/interstitial-sidebar.js [ Failure Pass ]
