@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("installer") {
+source_set("elevated_rotation") {
   public = [ "key_rotation_manager.h" ]
 
   sources = [
@@ -30,7 +30,7 @@ source_set("unit_tests") {
   sources = [ "key_rotation_manager_unittest.cc" ]
 
   deps = [
-    ":installer",
+    ":elevated_rotation",
     "//chrome/browser/enterprise/connectors/device_trust/key_management/core",
     "//chrome/browser/enterprise/connectors/device_trust/key_management/core/network:test_support",
     "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence:test_support",
