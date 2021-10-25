@@ -132,19 +132,15 @@ android_library("java") {
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   resources_package = "org.chromium.chrome.browser.feed"
 
-  if (enable_new_feed_hooks) {
-    # Add the actual implementation where necessary so that downstream targets
-    # can provide their own implementations.
-    jar_excluded_patterns = [ "*/FeedHooksImpl*.class" ]
-  }
+  # Add the actual implementation where necessary so that downstream targets
+  # can provide their own implementations.
+  jar_excluded_patterns = [ "*/FeedHooksImpl*.class" ]
 }
 
-if (enable_new_feed_hooks) {
-  android_library("hooks_public_impl_java") {
-    sources =
-        [ "java/src/org/chromium/chrome/browser/feed/hooks/FeedHooksImpl.java" ]
-    deps = [ ":java" ]
-  }
+android_library("hooks_public_impl_java") {
+  sources =
+      [ "java/src/org/chromium/chrome/browser/feed/hooks/FeedHooksImpl.java" ]
+  deps = [ ":java" ]
 }
 
 android_resources("feed_java_resources") {

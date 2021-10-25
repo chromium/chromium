@@ -38,6 +38,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator;
 import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator.StreamTabId;
+import org.chromium.chrome.browser.feed.hooks.FeedHooks;
 import org.chromium.chrome.browser.feed.sections.SectionHeaderListProperties;
 import org.chromium.chrome.browser.feed.sections.SectionHeaderView;
 import org.chromium.chrome.browser.feed.sections.SectionHeaderViewBinder;
@@ -273,6 +274,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
      *   purposes, or |null| if the view returned by HybridListRenderer is to be used.
      * @param actionDelegate Implements some Feed actions.
      * @param helpAndFeedbackLauncher A HelpAndFeedbackLauncher.
+     * @param feedHooks A @{link FeedHooks} instance.
      */
     public FeedSurfaceCoordinator(Activity activity, SnackbarManager snackbarManager,
             WindowAndroid windowAndroid, @Nullable SnapScrollHelper snapScrollHelper,
@@ -287,8 +289,9 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
             FeedLaunchReliabilityLoggingState launchReliabilityLoggingState,
             @Nullable FeedSwipeRefreshLayout swipeRefreshLayout, boolean overScrollDisabled,
             @Nullable ViewGroup viewportView, FeedActionDelegate actionDelegate,
-            HelpAndFeedbackLauncher helpAndFeedbackLauncher) {
-        FeedSurfaceTracker.getInstance().initServiceBridge(new FeedServiceBridgeDelegateImpl());
+            HelpAndFeedbackLauncher helpAndFeedbackLauncher, FeedHooks feedHooks) {
+        FeedSurfaceTracker.getInstance().initServiceBridge(
+                new FeedServiceBridgeDelegateImpl(feedHooks));
         mActivity = activity;
         mSnackbarManager = snackbarManager;
         mNtpHeader = ntpHeader;

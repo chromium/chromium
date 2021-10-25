@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
 import org.chromium.chrome.browser.feed.FeedSurfaceLifecycleManager;
 import org.chromium.chrome.browser.feed.FeedSwipeRefreshLayout;
 import org.chromium.chrome.browser.feed.ScrollableContainerDelegate;
+import org.chromium.chrome.browser.feed.hooks.FeedHooksImpl;
 import org.chromium.chrome.browser.feed.shared.FeedSurfaceDelegate;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
@@ -154,7 +155,7 @@ class ExploreSurfaceCoordinator implements FeedSurfaceDelegate {
                 parentView,
                 new FeedActionDelegateImpl(mActivity, mSnackbarManager,
                         mExploreSurfaceNavigationDelegate, new BookmarkBridge(profile)),
-                HelpAndFeedbackLauncherImpl.getInstance());
+                HelpAndFeedbackLauncherImpl.getInstance(), FeedHooksImpl.getInstance());
         feedSurfaceCoordinator.getView().setId(R.id.start_surface_explore_view);
         return feedSurfaceCoordinator;
         // TODO(crbug.com/982018): Customize surface background for incognito and dark mode.

@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
 import org.chromium.chrome.browser.feed.FeedSurfaceLifecycleManager;
 import org.chromium.chrome.browser.feed.FeedSwipeRefreshLayout;
 import org.chromium.chrome.browser.feed.NtpFeedSurfaceLifecycleManager;
+import org.chromium.chrome.browser.feed.hooks.FeedHooksImpl;
 import org.chromium.chrome.browser.feed.shared.FeedSurfaceDelegate;
 import org.chromium.chrome.browser.feed.shared.FeedSurfaceProvider;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
@@ -471,7 +472,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
                 new FeedLaunchReliabilityLoggingState(SurfaceType.NEW_TAB_PAGE, mConstructedTimeNs),
                 FeedSwipeRefreshLayout.create(activity, R.id.toolbar_container),
                 /* overScrollDisabled= */ false, /* viewportView= */ null, actionDelegate,
-                HelpAndFeedbackLauncherImpl.getInstance());
+                HelpAndFeedbackLauncherImpl.getInstance(), FeedHooksImpl.getInstance());
 
         // Record the timestamp at which the new tab page's construction started.
         uma.trackTimeToFirstDraw(mFeedSurfaceProvider.getView(), mConstructedTimeNs);
