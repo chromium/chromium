@@ -1405,27 +1405,44 @@ bool AutofillPopupViewNativeViews::DoUpdateBoundsAndRedrawPopup() {
   gfx::Size preferred_size = CalculatePreferredSize();
   gfx::Rect popup_bounds;
 
-  // When a bubble border is shown, the contents area (inside the shadow) is
-  // supposed to be aligned with input element boundaries.
+  const gfx::Rect content_area_bounds = GetContentAreaBounds();
+  // TODO(crbug.com/1262371) Once popups can render outside the main window on
+  // Linux, use the screen bounds.
+  const gfx::Rect top_window_bounds = GetTopWindowBounds();
+  const gfx::Rect& max_bounds_for_popup =
+      PopupMayExceedContentAreaBounds(controller_->GetWebContents())
+          ? top_window_bounds
+          : content_area_bounds;
+
   gfx::Rect element_bounds =
       gfx::ToEnclosingRect(controller_->element_bounds());
+
+  // If the element exceeds the content area, ensure that the popup is still
+  // visually attached to the input element.
+  element_bounds.Intersect(content_area_bounds);
+  if (element_bounds.IsEmpty()) {
+    controller_->Hide(PopupHidingReason::kElementOutsideOfContentArea);
+    return false;
+  }
+
   // Consider the element is |kElementBorderPadding| pixels larger at the top
   // and at the bottom in order to reposition the dropdown, so that it doesn't
   // look too close to the element.
   element_bounds.Inset(/*horizontal=*/0, /*vertical=*/-kElementBorderPadding);
 
+  // At least one row of the popup should be shown in the bounds of the content
+  // area so that the user notices the presence of the popup.
   int item_height =
       body_container_ && body_container_->children().size() > 0
           ? body_container_->children()[0]->GetPreferredSize().height()
           : 0;
 
-  const gfx::Rect content_area_bounds = GetContentAreaBounds();
-  if (!CanShowDropdownHere(item_height, content_area_bounds, element_bounds)) {
+  if (!CanShowDropdownHere(item_height, max_bounds_for_popup, element_bounds)) {
     controller_->Hide(PopupHidingReason::kInsufficientSpace);
     return false;
   }
 
-  CalculatePopupYAndHeight(preferred_size.height(), content_area_bounds,
+  CalculatePopupYAndHeight(preferred_size.height(), max_bounds_for_popup,
                            element_bounds, &popup_bounds);
 
   // Adjust the width to compensate for a scroll bar, if necessary, and for
@@ -1445,10 +1462,10 @@ bool AutofillPopupViewNativeViews::DoUpdateBoundsAndRedrawPopup() {
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillCenterAlignedSuggestions)) {
     CalculatePopupXAndWidthHorizontallyCentered(
-        preferred_size.width(), content_area_bounds, element_bounds,
+        preferred_size.width(), max_bounds_for_popup, element_bounds,
         controller_->IsRTL(), &popup_bounds);
   } else {
-    CalculatePopupXAndWidth(preferred_size.width(), content_area_bounds,
+    CalculatePopupXAndWidth(preferred_size.width(), max_bounds_for_popup,
                             element_bounds, controller_->IsRTL(),
                             &popup_bounds);
   }
