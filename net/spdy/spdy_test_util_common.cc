@@ -17,6 +17,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
+#include "build/build_config.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/http_user_agent_settings.h"
 #include "net/cert/ct_policy_enforcer.h"
@@ -314,7 +315,12 @@ SpdySessionDependencies::SpdySessionDependencies(
       disable_idle_sockets_close_on_memory_pressure(false),
       enable_early_data(false),
       key_auth_cache_server_entries_by_network_isolation_key(false),
-      enable_priority_update(false) {
+      enable_priority_update(false),
+#if defined(OS_ANDROID) || defined(OS_WIN) || defined(OS_IOS)
+      go_away_on_ip_change(true) {
+#else
+      go_away_on_ip_change(false) {
+#endif  // defined(OS_ANDROID) || defined(OS_WIN) || defined(OS_IOS)
   http2_settings[spdy::SETTINGS_INITIAL_WINDOW_SIZE] =
       kDefaultInitialWindowSize;
 }
@@ -373,6 +379,7 @@ HttpNetworkSessionParams SpdySessionDependencies::CreateSessionParams(
   params.key_auth_cache_server_entries_by_network_isolation_key =
       session_deps->key_auth_cache_server_entries_by_network_isolation_key;
   params.enable_priority_update = session_deps->enable_priority_update;
+  params.spdy_go_away_on_ip_change = session_deps->go_away_on_ip_change;
   return params;
 }
 

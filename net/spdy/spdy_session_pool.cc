@@ -88,6 +88,7 @@ SpdySessionPool::SpdySessionPool(
     const absl::optional<GreasedHttp2Frame>& greased_http2_frame,
     bool http2_end_stream_with_data_frame,
     bool enable_priority_update,
+    bool go_away_on_ip_change,
     SpdySessionPool::TimeFunc time_func,
     NetworkQualityEstimator* network_quality_estimator)
     : http_server_properties_(http_server_properties),
@@ -106,6 +107,7 @@ SpdySessionPool::SpdySessionPool(
       greased_http2_frame_(greased_http2_frame),
       http2_end_stream_with_data_frame_(http2_end_stream_with_data_frame),
       enable_priority_update_(enable_priority_update),
+      go_away_on_ip_change_(go_away_on_ip_change),
       time_func_(time_func),
       push_delegate_(nullptr),
       network_quality_estimator_(network_quality_estimator) {
@@ -481,19 +483,15 @@ void SpdySessionPool::OnIPAddressChanged() {
     if (!*it)
       continue;
 
-// For OSs that terminate TCP connections upon relevant network changes,
-// attempt to preserve active streams by marking all sessions as going
-// away, rather than explicitly closing them. Streams may still fail due
-// to a generated TCP reset.
-#if defined(OS_ANDROID) || defined(OS_WIN) || defined(OS_IOS)
-    (*it)->MakeUnavailable();
-    (*it)->StartGoingAway(kLastStreamId, ERR_NETWORK_CHANGED);
-    (*it)->MaybeFinishGoingAway();
-#else
-    (*it)->CloseSessionOnError(ERR_NETWORK_CHANGED,
-                               "Closing current sessions.");
-    DCHECK((*it)->IsDraining());
-#endif  // defined(OS_ANDROID) || defined(OS_WIN) || defined(OS_IOS)
+    if (go_away_on_ip_change_) {
+      (*it)->MakeUnavailable();
+      (*it)->StartGoingAway(kLastStreamId, ERR_NETWORK_CHANGED);
+      (*it)->MaybeFinishGoingAway();
+    } else {
+      (*it)->CloseSessionOnError(ERR_NETWORK_CHANGED,
+                                 "Closing current sessions.");
+      DCHECK((*it)->IsDraining());
+    }
     DCHECK(!IsSessionAvailable(*it));
   }
 }

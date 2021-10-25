@@ -142,6 +142,7 @@ class NET_EXPORT SpdySessionPool
                   const absl::optional<GreasedHttp2Frame>& greased_http2_frame,
                   bool http2_end_stream_with_data_frame,
                   bool enable_priority_update,
+                  bool go_away_on_ip_change,
                   SpdySessionPool::TimeFunc time_func,
                   NetworkQualityEstimator* network_quality_estimator);
 
@@ -472,6 +473,10 @@ class NET_EXPORT SpdySessionPool
   // but continue and also stop sending HTTP/2-style priority information in
   // HEADERS frames and PRIORITY frames if it has value 1.
   const bool enable_priority_update_;
+
+  // If set, sessions will be marked as going away upon relevant network changes
+  // (instead of being closed).
+  const bool go_away_on_ip_change_;
 
   SpdySessionRequestMap spdy_session_request_map_;
 
