@@ -289,6 +289,7 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
         env_vars=self.env_vars,
         test_args=self.test_args,
         release=self.release,
+        repeat_count=self.repeat_count,
         host_app_path=self.host_app_path)
 
   def launch(self):
