@@ -1,9 +1,9 @@
 COMPANY_FULLNAME=The Chromium Authors
 COMPANY_SHORTNAME=The Chromium Authors
-PRODUCT_FULLNAME=Cursemium
-PRODUCT_SHORTNAME=Cursemium
-PRODUCT_INSTALLER_FULLNAME=Cursemium Installer
-PRODUCT_INSTALLER_SHORTNAME=Cursemium Installer
+PRODUCT_FULLNAME=Blitz browser
+PRODUCT_SHORTNAME=Blitz
+PRODUCT_INSTALLER_FULLNAME=Blitz browser Installer
+PRODUCT_INSTALLER_SHORTNAME=blitz Installer
 COPYRIGHT=Copyright @LASTCHANGE_YEAR@ The Chromium Authors. All rights reserved.
 MAC_BUNDLE_ID=org.chromium.Chromium
 MAC_CREATOR_CODE=Cr24
