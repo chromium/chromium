@@ -13,7 +13,7 @@ const char test_name_0[] = "Inigo Montoya";
 const char test_name_1[] = "Dread Pirate Roberts";
 }  // namespace
 
-class AppUpdateTest : public testing::Test {
+class AppUpdateMojomTest : public testing::Test {
  protected:
   apps::mojom::Readiness expect_readiness_;
   apps::mojom::Readiness expect_prior_readiness_;
@@ -812,17 +812,17 @@ class AppUpdateTest : public testing::Test {
       auto scheme_condition =
           apps_util::MakeCondition(apps::mojom::ConditionType::kScheme,
                                    std::move(scheme_condition_values));
-      intent_filter->conditions.push_back(std::move(scheme_condition));
+      intent_filter->conditions.push_back(scheme_condition.Clone());
 
       std::vector<apps::mojom::ConditionValuePtr> host_condition_values;
       host_condition_values.push_back(apps_util::MakeConditionValue(
           "www.abc.com", apps::mojom::PatternMatchType::kNone));
       auto host_condition = apps_util::MakeCondition(
           apps::mojom::ConditionType::kHost, std::move(host_condition_values));
-      intent_filter->conditions.push_back(std::move(host_condition));
-
-      intent_filter->conditions.push_back(scheme_condition.Clone());
       intent_filter->conditions.push_back(host_condition.Clone());
+
+      intent_filter->conditions.push_back(std::move(scheme_condition));
+      intent_filter->conditions.push_back(std::move(host_condition));
 
       delta->intent_filters.push_back(intent_filter.Clone());
       expect_intent_filters_.push_back(intent_filter.Clone());
@@ -882,7 +882,7 @@ class AppUpdateTest : public testing::Test {
   }
 };
 
-TEST_F(AppUpdateTest, StateIsNonNull) {
+TEST_F(AppUpdateMojomTest, StateIsNonNull) {
   apps::mojom::AppPtr state = apps::mojom::App::New();
   state->app_type = app_type;
   state->app_id = app_id;
@@ -890,7 +890,7 @@ TEST_F(AppUpdateTest, StateIsNonNull) {
   TestAppUpdate(state.get(), nullptr);
 }
 
-TEST_F(AppUpdateTest, DeltaIsNonNull) {
+TEST_F(AppUpdateMojomTest, DeltaIsNonNull) {
   apps::mojom::AppPtr delta = apps::mojom::App::New();
   delta->app_type = app_type;
   delta->app_id = app_id;
@@ -898,7 +898,7 @@ TEST_F(AppUpdateTest, DeltaIsNonNull) {
   TestAppUpdate(nullptr, delta.get());
 }
 
-TEST_F(AppUpdateTest, BothAreNonNull) {
+TEST_F(AppUpdateMojomTest, BothAreNonNull) {
   apps::mojom::AppPtr state = apps::mojom::App::New();
   state->app_type = app_type;
   state->app_id = app_id;
