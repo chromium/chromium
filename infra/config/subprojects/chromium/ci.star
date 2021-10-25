@@ -711,11 +711,13 @@ ci.android_builder(
 ci.android_builder(
     name = "android-binary-size-generator",
     executable = "recipe:binary_size_generator_tot",
+    cores = 32,
     console_view_entry = consoles.console_view_entry(
         category = "builder|other",
         short_name = "size",
     ),
     os = os.LINUX_BIONIC_REMOVE,
+    ssd = True,
 )
 
 ci.android_builder(
