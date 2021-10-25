@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 
 namespace {
@@ -31,6 +32,11 @@ void CloneIntentFilters(
   for (const auto& intent_filter : clone_from) {
     clone_to->push_back(intent_filter->Clone());
   }
+}
+
+absl::optional<apps::IconKey> CloneIconKey(const apps::IconKey& icon_key) {
+  return apps::IconKey(icon_key.timeline, icon_key.resource_id,
+                       icon_key.icon_effects);
 }
 
 }  // namespace
@@ -146,6 +152,49 @@ void AppUpdate::Merge(apps::mojom::App* state, const apps::mojom::App* delta) {
   // updated.
 }
 
+// static
+void AppUpdate::Merge(App* state, const App* delta) {
+  DCHECK(state);
+  if (!delta) {
+    return;
+  }
+
+  if ((delta->app_type != state->app_type) ||
+      (delta->app_id != state->app_id)) {
+    NOTREACHED();
+    return;
+  }
+
+  // You can not merge removed states.
+  DCHECK_NE(state->readiness, Readiness::kRemoved);
+  DCHECK_NE(delta->readiness, Readiness::kRemoved);
+
+  if (delta->readiness != apps::Readiness::kUnknown) {
+    state->readiness = delta->readiness;
+  }
+  if (delta->name.has_value()) {
+    state->name = delta->name;
+  }
+  if (delta->short_name.has_value()) {
+    state->short_name = delta->short_name;
+  }
+  if (delta->publisher_id.has_value()) {
+    state->publisher_id = delta->publisher_id;
+  }
+  if (delta->description.has_value()) {
+    state->description = delta->description;
+  }
+  if (delta->version.has_value()) {
+    state->version = delta->version;
+  }
+  if (delta->icon_key.has_value()) {
+    state->icon_key = CloneIconKey(delta->icon_key.value());
+  }
+
+  // When adding new fields to the App type, this function should also be
+  // updated.
+}
+
 AppUpdate::AppUpdate(const apps::mojom::App* state,
                      const apps::mojom::App* delta,
                      const ::AccountId& account_id)
@@ -157,6 +206,17 @@ AppUpdate::AppUpdate(const apps::mojom::App* state,
   }
 }
 
+AppUpdate::AppUpdate(const App* state,
+                     const App* delta,
+                     const ::AccountId& account_id)
+    : state_(state), delta_(delta), account_id_(account_id) {
+  DCHECK(state_ || delta_);
+  if (state_ && delta_) {
+    DCHECK_EQ(state_->app_type, delta->app_type);
+    DCHECK_EQ(state_->app_id, delta->app_id);
+  }
+}
+
 bool AppUpdate::StateIsNull() const {
   return mojom_state_ == nullptr;
 }
@@ -165,8 +225,16 @@ apps::mojom::AppType AppUpdate::AppType() const {
   return mojom_delta_ ? mojom_delta_->app_type : mojom_state_->app_type;
 }
 
+apps::AppType AppUpdate::GetAppType() const {
+  return delta_ ? delta_->app_type : state_->app_type;
+}
+
 const std::string& AppUpdate::AppId() const {
   return mojom_delta_ ? mojom_delta_->app_id : mojom_state_->app_id;
+}
+
+const std::string& AppUpdate::GetAppId() const {
+  return delta_ ? delta_->app_id : state_->app_id;
 }
 
 apps::mojom::Readiness AppUpdate::Readiness() const {
@@ -183,6 +251,20 @@ apps::mojom::Readiness AppUpdate::Readiness() const {
 apps::mojom::Readiness AppUpdate::PriorReadiness() const {
   return mojom_state_ ? mojom_state_->readiness
                       : apps::mojom::Readiness::kUnknown;
+}
+
+apps::Readiness AppUpdate::GetReadiness() const {
+  if (delta_ && (delta_->readiness != apps::Readiness::kUnknown)) {
+    return delta_->readiness;
+  }
+  if (state_) {
+    return state_->readiness;
+  }
+  return apps::Readiness::kUnknown;
+}
+
+apps::Readiness AppUpdate::GetPriorReadiness() const {
+  return state_ ? state_->readiness : apps::Readiness::kUnknown;
 }
 
 bool AppUpdate::ReadinessChanged() const {
@@ -202,6 +284,16 @@ const std::string& AppUpdate::Name() const {
   return base::EmptyString();
 }
 
+const std::string& AppUpdate::GetName() const {
+  if (delta_ && delta_->name.has_value()) {
+    return delta_->name.value();
+  }
+  if (state_ && state_->name.has_value()) {
+    return state_->name.value();
+  }
+  return base::EmptyString();
+}
+
 bool AppUpdate::NameChanged() const {
   return mojom_delta_ && mojom_delta_->name.has_value() &&
          (!mojom_state_ || (mojom_delta_->name != mojom_state_->name));
@@ -213,6 +305,16 @@ const std::string& AppUpdate::ShortName() const {
   }
   if (mojom_state_ && mojom_state_->short_name.has_value()) {
     return mojom_state_->short_name.value();
+  }
+  return base::EmptyString();
+}
+
+const std::string& AppUpdate::GetShortName() const {
+  if (delta_ && delta_->short_name.has_value()) {
+    return delta_->short_name.value();
+  }
+  if (state_ && state_->short_name.has_value()) {
+    return state_->short_name.value();
   }
   return base::EmptyString();
 }
@@ -233,6 +335,16 @@ const std::string& AppUpdate::PublisherId() const {
   return base::EmptyString();
 }
 
+const std::string& AppUpdate::GetPublisherId() const {
+  if (delta_ && delta_->publisher_id.has_value()) {
+    return delta_->publisher_id.value();
+  }
+  if (state_ && state_->publisher_id.has_value()) {
+    return state_->publisher_id.value();
+  }
+  return base::EmptyString();
+}
+
 bool AppUpdate::PublisherIdChanged() const {
   return mojom_delta_ && mojom_delta_->publisher_id.has_value() &&
          (!mojom_state_ ||
@@ -249,6 +361,16 @@ const std::string& AppUpdate::Description() const {
   return base::EmptyString();
 }
 
+const std::string& AppUpdate::GetDescription() const {
+  if (delta_ && delta_->description.has_value()) {
+    return delta_->description.value();
+  }
+  if (state_ && state_->description.has_value()) {
+    return state_->description.value();
+  }
+  return base::EmptyString();
+}
+
 bool AppUpdate::DescriptionChanged() const {
   return mojom_delta_ && mojom_delta_->description.has_value() &&
          (!mojom_state_ ||
@@ -261,6 +383,16 @@ const std::string& AppUpdate::Version() const {
   }
   if (mojom_state_ && mojom_state_->version.has_value()) {
     return mojom_state_->version.value();
+  }
+  return base::EmptyString();
+}
+
+const std::string& AppUpdate::GetVersion() const {
+  if (delta_ && delta_->version.has_value()) {
+    return delta_->version.value();
+  }
+  if (state_ && state_->version.has_value()) {
+    return state_->version.value();
   }
   return base::EmptyString();
 }
@@ -298,6 +430,16 @@ apps::mojom::IconKeyPtr AppUpdate::IconKey() const {
     return mojom_state_->icon_key.Clone();
   }
   return apps::mojom::IconKeyPtr();
+}
+
+absl::optional<apps::IconKey> AppUpdate::GetIconKey() const {
+  if (delta_ && delta_->icon_key.has_value()) {
+    return CloneIconKey(delta_->icon_key.value());
+  }
+  if (state_ && state_->icon_key.has_value()) {
+    return CloneIconKey(state_->icon_key.value());
+  }
+  return absl::nullopt;
 }
 
 bool AppUpdate::IconKeyChanged() const {
