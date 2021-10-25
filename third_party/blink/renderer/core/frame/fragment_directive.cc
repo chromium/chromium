@@ -176,7 +176,7 @@ void FragmentDirective::ParseDirectives(const String& fragment_directive) {
         continue;
 
       if (TextDirective* text_directive = TextDirective::Create(value))
-        new_directives.push_back(TextDirective::Create(value));
+        new_directives.push_back(text_directive);
     }
   }
 
