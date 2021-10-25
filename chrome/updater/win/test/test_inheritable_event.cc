@@ -22,7 +22,7 @@ std::unique_ptr<base::WaitableEvent> CreateInheritableEvent(
       &attributes, reset_policy == base::WaitableEvent::ResetPolicy::MANUAL,
       initial_state == base::WaitableEvent::InitialState::SIGNALED, nullptr);
   if (handle == nullptr || handle == INVALID_HANDLE_VALUE) {
-    PLOG(ERROR) << "Could not create inheritable event";
+    PLOG(ERROR) << "Could not create inheritable cursed event";
     return nullptr;
   }
   base::win::ScopedHandle event_handle(handle);
