@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/sync/split_settings_sync_field_trial.h"
+#include "chrome/browser/ash/sync/sync_consent_optional_field_trial.h"
 
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
@@ -14,15 +14,15 @@
 #include "components/variations/variations_associated_data.h"
 #include "components/version_info/version_info.h"
 
-namespace split_settings_sync_field_trial {
+namespace sync_consent_optional_field_trial {
 namespace {
 
 // String local state preference with the name of the assigned trial group.
 // Empty if no group has been assigned yet.
-const char kTrialGroupPrefName[] = "split_settings_sync.trial_group";
+const char kTrialGroupPrefName[] = "sync_consent_optional.trial_group";
 
 // The field trial name.
-const char kTrialName[] = "SplitSettingsSync";
+const char kTrialName[] = "SyncConsentOptional";
 
 // Group names for the trial.
 const char kEnabledGroup[] = "Enabled";
@@ -48,7 +48,7 @@ void SetFeatureState(base::FeatureList* feature_list,
       group_name == kEnabledGroup ? base::FeatureList::OVERRIDE_ENABLE_FEATURE
                                   : base::FeatureList::OVERRIDE_DISABLE_FEATURE;
   feature_list->RegisterFieldTrialOverride(
-      chromeos::features::kSplitSettingsSync.name, feature_state, trial);
+      chromeos::features::kSyncConsentOptional.name, feature_state, trial);
 }
 
 // Creates a trial for the first run (when there is no variations seed) and
@@ -110,6 +110,9 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 }
 
 void Create(base::FeatureList* feature_list, PrefService* local_state) {
+  // TODO(https://crbug.com/1246357): Uncomment the function body for the
+  // SyncConsentOptional launch.
+  /*
   // This field trial is only intended to be run on Canary/Dev/Beta channels.
   // If the user is on Stable channel, return early so that they are not opted
   // into this experiment. Without this return, users who were opted into the
@@ -135,6 +138,7 @@ void Create(base::FeatureList* feature_list, PrefService* local_state) {
 
     CreateSubsequentRunTrial(feature_list, trial_group);
   }
+  */
 }
 
-}  // namespace split_settings_sync_field_trial
+}  // namespace sync_consent_optional_field_trial
