@@ -62,6 +62,8 @@ static_library("android") {
     "//content/public/browser",
     "//ui/android:android",
   ]
+
+  public_deps = [ "//skia" ]
 }
 
 static_library("test_support") {
