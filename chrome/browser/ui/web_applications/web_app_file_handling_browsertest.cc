@@ -1113,8 +1113,7 @@ IN_PROC_BROWSER_TEST_P(WebAppFileHandlingBrowserTest,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
 // End-to-end test to ensure the file handler is registered on ChromeOS when the
-// extension system is initialized. Gives more coverage than the unit tests for
-// web_file_tasks.cc.
+// extension system is initialized. Gives more coverage than the unit tests.
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingOriginTrialTest,
                        IsFileHandlerOnChromeOS) {
   const AppId app_id = InstallFileHandlingWebApp();
