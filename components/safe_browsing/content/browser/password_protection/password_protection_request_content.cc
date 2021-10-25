@@ -203,9 +203,6 @@ void PasswordProtectionRequestContent::OnGetDomFeatures(
   if (dom_features_collection_complete_)
     return;
 
-  UMA_HISTOGRAM_ENUMERATION("PasswordProtection.RendererDomFeatureResult",
-                            result);
-
   if (result != mojom::PhishingDetectorResult::SUCCESS &&
       result != mojom::PhishingDetectorResult::INVALID_SCORE)
     return;

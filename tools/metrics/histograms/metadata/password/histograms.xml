@@ -3017,6 +3017,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PasswordProtection.RendererDomFeatureResult"
     enum="ClientSidePhishingResult" expires_after="2020-05-23">
+  <obsolete>
+    Removed 10-2021 due to being long-expired.
+  </obsolete>
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
