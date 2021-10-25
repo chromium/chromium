@@ -47,6 +47,7 @@
 #include "ui/base/layout.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/events/gestures/gesture_recognizer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
@@ -611,6 +612,18 @@ void BrowserNonClientFrameViewChromeOS::OnWindowPropertyChanged(
     aura::Window* window,
     const void* key,
     intptr_t old) {
+  if (key == aura::client::kShowStateKey) {
+    bool enter_fullscreen = window->GetProperty(aura::client::kShowStateKey) ==
+                            ui::SHOW_STATE_FULLSCREEN;
+    bool exit_fullscreen =
+        static_cast<ui::WindowShowState>(old) == ui::SHOW_STATE_FULLSCREEN;
+
+    // May have to hide caption buttons while in fullscreen mode, or show them
+    // when exiting fullscreen.
+    if (enter_fullscreen || exit_fullscreen)
+      ResetWindowControls();
+  }
+
   if (key == chromeos::kIsShowingInOverviewKey) {
     OnAddedToOrRemovedFromOverview();
     return;
@@ -628,6 +641,7 @@ void BrowserNonClientFrameViewChromeOS::OnWindowPropertyChanged(
 }
 
 void BrowserNonClientFrameViewChromeOS::OnImmersiveRevealStarted() {
+  ResetWindowControls();
   // The frame caption buttons use ink drop highlights and flood fill effects.
   // They make those buttons paint_to_layer. On immersive mode, the browser's
   // TopContainerView is also converted to paint_to_layer (see
@@ -660,6 +674,7 @@ void BrowserNonClientFrameViewChromeOS::OnImmersiveRevealStarted() {
 }
 
 void BrowserNonClientFrameViewChromeOS::OnImmersiveRevealEnded() {
+  ResetWindowControls();
   AddChildViewAt(caption_button_container_, 0);
 
   if (web_app_frame_toolbar()) {
@@ -696,7 +711,8 @@ void BrowserNonClientFrameViewChromeOS::OnProfileAvatarChanged(
 }
 
 bool BrowserNonClientFrameViewChromeOS::GetShowCaptionButtons() const {
-  return GetShowCaptionButtonsWhenNotInOverview() && !GetOverviewMode();
+  return GetShowCaptionButtonsWhenNotInOverview() && !GetOverviewMode() &&
+         !GetHideCaptionButtonsForFullscreen();
 }
 
 bool BrowserNonClientFrameViewChromeOS::GetShowCaptionButtonsWhenNotInOverview()
@@ -856,6 +872,20 @@ void BrowserNonClientFrameViewChromeOS::LayoutProfileIndicator() {
 
 bool BrowserNonClientFrameViewChromeOS::GetOverviewMode() const {
   return GetFrameWindow()->GetProperty(chromeos::kIsShowingInOverviewKey);
+}
+
+bool BrowserNonClientFrameViewChromeOS::GetHideCaptionButtonsForFullscreen()
+    const {
+  if (!frame()->IsFullscreen())
+    return false;
+
+  auto* immersive_controller = browser_view()->immersive_mode_controller();
+
+  // In fullscreen view, but not in immersive mode. Hide the caption buttons.
+  if (!immersive_controller || !immersive_controller->IsEnabled())
+    return true;
+
+  return immersive_controller->ShouldHideTopViews();
 }
 
 void BrowserNonClientFrameViewChromeOS::OnUpdateFrameColor() {
