@@ -12,9 +12,9 @@ import argparse
 import json
 import os
 
-_FILE_URL = 'https://repo.maven.apache.org/maven2/org/robolectric/plugins-maven-dependency-resolver/4.6.1/plugins-maven-dependency-resolver-4.6.1.jar'
-_FILE_NAME = 'plugins-maven-dependency-resolver-4.6.1.jar'
-_FILE_VERSION = '4.6.1'
+_FILE_URL = 'https://repo.maven.apache.org/maven2/org/robolectric/plugins-maven-dependency-resolver/4.3.1/plugins-maven-dependency-resolver-4.3.1.jar'
+_FILE_NAME = 'plugins-maven-dependency-resolver-4.3.1.jar'
+_FILE_VERSION = '4.3.1'
 
 
 def do_latest():
