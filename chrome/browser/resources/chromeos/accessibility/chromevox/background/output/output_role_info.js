@@ -32,7 +32,7 @@ const OutputRoleInfo = {
       {msgId: 'role_alertdialog', contextOrder: OutputContextOrder.FIRST},
   article: {msgId: 'role_article', inherits: 'abstractItem'},
   application: {msgId: 'role_application', inherits: 'abstractContainer'},
-  audio: {msgId: 'tag_audio', inherits: 'abstractContainer'},
+  audio: {msgId: 'tag_audio', inherits: 'abstractFormFieldContainer'},
   banner: {msgId: 'role_banner', inherits: 'abstractContainer'},
   button: {msgId: 'role_button', earconId: 'BUTTON'},
   buttonDropDown: {msgId: 'role_button', earconId: 'BUTTON'},
@@ -59,7 +59,7 @@ const OutputRoleInfo = {
     inherits: 'abstractSpan'
   },
   contentInfo: {msgId: 'role_contentinfo', inherits: 'abstractContainer'},
-  date: {msgId: 'input_type_date', inherits: 'abstractContainer'},
+  date: {msgId: 'input_type_date', inherits: 'abstractFormFieldContainer'},
   definition: {msgId: 'role_definition', inherits: 'abstractContainer'},
   descriptionList: {msgId: 'role_description_list', inherits: 'abstractList'},
   descriptionListDetail:
@@ -144,11 +144,10 @@ const OutputRoleInfo = {
     msgId: 'role_img',
   },
   imeCandidate: {msgId: 'ime_candidate', ignoreAncestry: true},
-  inputTime: {msgId: 'input_type_time', inherits: 'abstractContainer'},
+  inputTime: {msgId: 'input_type_time', inherits: 'abstractFormFieldContainer'},
   link: {msgId: 'role_link', earconId: 'LINK'},
   list: {msgId: 'role_list', inherits: 'abstractList'},
-  listBox:
-      {msgId: 'role_listbox', earconId: 'LISTBOX', inherits: 'abstractList'},
+  listBox: {msgId: 'role_listbox', earconId: 'LISTBOX'},
   listBoxOption: {msgId: 'role_listitem', earconId: 'LIST_ITEM'},
   listGrid: {msgId: 'role_list_grid', inherits: 'table'},
   listItem:
@@ -187,7 +186,8 @@ const OutputRoleInfo = {
     inherits: 'comboBoxMenuButton'
   },
   radioButton: {msgId: 'role_radio'},
-  radioGroup: {msgId: 'role_radiogroup', inherits: 'abstractContainer'},
+  radioGroup:
+      {msgId: 'role_radiogroup', inherits: 'abstractFormFieldContainer'},
   region: {msgId: 'role_region', inherits: 'abstractContainer'},
   row: {msgId: 'role_row'},
   rowHeader: {msgId: 'role_rowheader', inherits: 'cell'},
@@ -212,17 +212,17 @@ const OutputRoleInfo = {
   },
   superscript: {msgId: 'role_superscript', inherits: 'abstractSpan'},
   tab: {msgId: 'role_tab'},
-  tabList: {msgId: 'role_tablist', inherits: 'abstractContainer'},
+  tabList: {msgId: 'role_tablist', inherits: 'abstractFormFieldContainer'},
   tabPanel: {msgId: 'role_tabpanel'},
   searchBox: {msgId: 'role_search', earconId: 'EDITABLE_TEXT'},
   textField: {msgId: 'input_type_text', earconId: 'EDITABLE_TEXT'},
   textFieldWithComboBox: {msgId: 'role_combobox', earconId: 'EDITABLE_TEXT'},
-  time: {msgId: 'tag_time', inherits: 'abstractContainer'},
+  time: {msgId: 'tag_time', inherits: 'abstractFormFieldContainer'},
   timer: {msgId: 'role_timer', inherits: 'abstractNameFromContents'},
   toolbar: {msgId: 'role_toolbar', ignoreAncestry: true},
   toggleButton: {msgId: 'role_toggle_button', inherits: 'checkBox'},
   tree: {msgId: 'role_tree'},
   treeItem: {msgId: 'role_treeitem'},
-  video: {msgId: 'tag_video', inherits: 'abstractContainer'},
+  video: {msgId: 'tag_video', inherits: 'abstractFormFieldContainer'},
   window: {ignoreAncestry: true}
 };

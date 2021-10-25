@@ -3754,3 +3754,71 @@ TEST_F('ChromeVoxBackgroundTest', 'NewWindowWebSpeech', function() {
     }));
   })();
 });
+
+TEST_F('ChromeVoxBackgroundTest', 'MultipleListBoxes', function() {
+  const mockFeedback = this.createMockFeedback();
+  const site = `
+    <div role="listbox" aria-expanded="false" aria-label="Configuration 1">
+      <div role="presentation">
+        <div role="presentation">
+          <div aria-selected="true" role="option" tabindex="0">
+            <span>Listbox item 1</span>
+          </div>
+          <div aria-selected="false" role="option" tabindex="-1">
+            <span>Listbox item 2</span>
+          </div>
+          <div aria-selected="false" role="option" tabindex="-2">
+            <span>Listbox item 3</span>
+          </div>
+        </div>
+        <div role="presentation"></div>
+      </div>
+    </div>
+
+    <div role="listbox" aria-expanded="false" aria-label="Configuration 2">
+      <div role="presentation">
+        <div role="presentation">
+          <div aria-selected="false" role="option" tabindex="-1">
+            <span>Listbox item 1</span>
+          </div>
+          <div aria-selected="true" role="option" tabindex="0">
+            <span>Listbox item 2</span>
+          </div>
+          <div aria-selected="false" role="option" tabindex="-2">
+            <span>Listbox item 3</span>
+          </div>
+        </div>
+        <div role="presentation"></div>
+      </div>
+    </div>
+
+    <div role="listbox" aria-expanded="false" aria-label="Configuration 3">
+      <div role="presentation">
+        <div role="presentation">
+          <div aria-selected="false" role="option" tabindex="-1">
+            <span>Listbox item 1</span>
+          </div>
+          <div aria-selected="false" role="option" tabindex="-2">
+            <span>Listbox item 2</span>
+          </div>
+          <div aria-selected="true" role="option" tabindex="0">
+            <span>Listbox item 3</span>
+          </div>
+        </div>
+        <div role="presentation"></div>
+      </div>
+    </div>
+  `;
+  this.runWithLoadedTree(site, function(root) {
+    mockFeedback
+        .expectSpeech(
+            'Listbox item 1', ' 1 of 3 ', 'Configuration 1', 'List box')
+        .call(press(KeyCode.TAB))
+        .expectSpeech(
+            'Listbox item 2', ' 2 of 3 ', 'Configuration 2', 'List box')
+        .call(press(KeyCode.TAB))
+        .expectSpeech(
+            'Listbox item 3', ' 3 of 3 ', 'Configuration 3', 'List box')
+        .replay();
+  });
+});
