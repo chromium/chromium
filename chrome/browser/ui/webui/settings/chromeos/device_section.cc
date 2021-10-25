@@ -208,6 +208,18 @@ const std::vector<SearchConcept>& GetTouchpadHapticFeedback() {
   return *tags;
 }
 
+const std::vector<SearchConcept>& GetTouchpadHapticClickSensitivity() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_TOUCHPAD_HAPTIC_CLICK_SENSITIVITY,
+       mojom::kPointersSubpagePath,
+       mojom::SearchResultIcon::kLaptop,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kTouchpadHapticClickSensitivity}},
+  });
+  return *tags;
+}
+
 const std::vector<SearchConcept>& GetMouseScrollAccelerationSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_MOUSE_SCROLL_ACCELERATION,
@@ -928,6 +940,7 @@ void DeviceSection::RegisterHierarchy(HierarchyGenerator* generator) const {
       mojom::Setting::kTouchpadScrollAcceleration,
       mojom::Setting::kTouchpadSpeed,
       mojom::Setting::kTouchpadHapticFeedback,
+      mojom::Setting::kTouchpadHapticClickSensitivity,
       mojom::Setting::kPointingStickSwapPrimaryButtons,
       mojom::Setting::kPointingStickSpeed,
       mojom::Setting::kPointingStickAcceleration,
@@ -1019,6 +1032,7 @@ void DeviceSection::TouchpadExists(bool exists) {
   updater.RemoveSearchTags(GetTouchpadSearchConcepts());
   updater.RemoveSearchTags(GetTouchpadScrollAccelerationSearchConcepts());
   updater.RemoveSearchTags(GetTouchpadHapticFeedback());
+  updater.RemoveSearchTags(GetTouchpadHapticClickSensitivity());
 
   if (exists) {
     updater.AddSearchTags(GetTouchpadSearchConcepts());
@@ -1029,6 +1043,10 @@ void DeviceSection::TouchpadExists(bool exists) {
     if (base::FeatureList::IsEnabled(
             ::features::kAllowDisableTouchpadHapticFeedback)) {
       updater.AddSearchTags(GetTouchpadHapticFeedback());
+    }
+    if (base::FeatureList::IsEnabled(
+            ::features::kAllowTouchpadHapticClickSettings)) {
+      updater.AddSearchTags(GetTouchpadHapticClickSensitivity());
     }
   }
 }
