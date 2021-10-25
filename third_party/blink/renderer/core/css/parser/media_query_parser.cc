@@ -52,18 +52,8 @@ const MediaQueryParser::State MediaQueryParser::kReadAnd =
     &MediaQueryParser::ReadAnd;
 const MediaQueryParser::State MediaQueryParser::kReadFeatureStart =
     &MediaQueryParser::ReadFeatureStart;
-const MediaQueryParser::State MediaQueryParser::kReadFeature =
-    &MediaQueryParser::ReadFeature;
-const MediaQueryParser::State MediaQueryParser::kReadFeatureColon =
-    &MediaQueryParser::ReadFeatureColon;
-const MediaQueryParser::State MediaQueryParser::kReadFeatureValue =
-    &MediaQueryParser::ReadFeatureValue;
-const MediaQueryParser::State MediaQueryParser::kReadFeatureEnd =
-    &MediaQueryParser::ReadFeatureEnd;
 const MediaQueryParser::State MediaQueryParser::kSkipUntilComma =
     &MediaQueryParser::SkipUntilComma;
-const MediaQueryParser::State MediaQueryParser::kSkipUntilBlockEnd =
-    &MediaQueryParser::SkipUntilBlockEnd;
 const MediaQueryParser::State MediaQueryParser::kDone = &MediaQueryParser::Done;
 
 MediaQueryParser::MediaQueryParser(ParserType parser_type,
@@ -80,6 +70,42 @@ MediaQueryParser::MediaQueryParser(ParserType parser_type,
 }
 
 MediaQueryParser::~MediaQueryParser() = default;
+
+bool MediaQueryParser::ConsumeFeature(CSSParserTokenRange& range) {
+  if (range.Peek().GetType() != kLeftParenthesisToken)
+    return false;
+
+  CSSParserTokenRange block = range.ConsumeBlock();
+  block.ConsumeWhitespace();
+  range.ConsumeWhitespace();
+
+  if (block.Peek().GetType() != kIdentToken)
+    return false;
+
+  String feature_name = block.ConsumeIncludingWhitespace().Value().ToString();
+
+  if (!IsMediaFeatureAllowedInMode(feature_name))
+    return false;
+
+  media_query_data_.SetMediaFeature(feature_name);
+
+  // <mf-boolean> = <mf-name>
+  if (block.AtEnd()) {
+    media_query_data_.AddExpression(block, execution_context_);
+    return media_query_data_.LastExpressionValid();
+  }
+
+  // <mf-plain> = <mf-name> : <mf-value>
+  if (block.Peek().GetType() != kColonToken)
+    return false;
+  block.ConsumeIncludingWhitespace();
+
+  if (block.AtEnd())
+    return false;
+
+  media_query_data_.AddExpression(block, execution_context_);
+  return block.AtEnd() && media_query_data_.LastExpressionValid();
+}
 
 void MediaQueryParser::SetStateAndRestrict(
     State state,
@@ -162,68 +188,10 @@ void MediaQueryParser::ReadAnd(CSSParserTokenRange& range) {
 }
 
 void MediaQueryParser::ReadFeatureStart(CSSParserTokenRange& range) {
-  CSSParserToken token = ConsumeToken(range);
-
-  if (token.GetType() == kLeftParenthesisToken)
-    state_ = kReadFeature;
+  if (!ConsumeFeature(range))
+    state_ = kSkipUntilComma;
   else
-    state_ = kSkipUntilComma;
-}
-
-void MediaQueryParser::ReadFeature(CSSParserTokenRange& range) {
-  CSSParserToken token = ConsumeToken(range);
-
-  if (token.GetType() == kIdentToken) {
-    String media_feature = token.Value().ToString();
-    if (IsMediaFeatureAllowedInMode(media_feature)) {
-      media_query_data_.SetMediaFeature(media_feature);
-      state_ = kReadFeatureColon;
-    } else {
-      state_ = kSkipUntilComma;
-    }
-  } else {
-    state_ = kSkipUntilComma;
-  }
-}
-
-void MediaQueryParser::ReadFeatureColon(CSSParserTokenRange& range) {
-  if (range.Peek().GetType() == kColonToken) {
-    CSSParserToken token = ConsumeToken(range);
-    while (range.Peek().GetType() == kWhitespaceToken)
-      range.Consume();
-    if (range.Peek().GetType() == kRightParenthesisToken ||
-        token.GetType() == kEOFToken)
-      state_ = kSkipUntilBlockEnd;
-    else
-      state_ = kReadFeatureValue;
-  } else if (range.Peek().GetType() == kRightParenthesisToken ||
-             range.AtEnd()) {
-    media_query_data_.AddExpression(range, execution_context_);
-    ReadFeatureEnd(range);
-  } else {
-    ConsumeToken(range);
-    state_ = kSkipUntilBlockEnd;
-  }
-}
-
-void MediaQueryParser::ReadFeatureValue(CSSParserTokenRange& range) {
-  media_query_data_.AddExpression(range, execution_context_);
-  state_ = kReadFeatureEnd;
-}
-
-void MediaQueryParser::ReadFeatureEnd(CSSParserTokenRange& range) {
-  CSSParserToken token = ConsumeToken(range);
-
-  if (token.GetType() == kRightParenthesisToken ||
-      token.GetType() == kEOFToken) {
-    if (media_query_data_.LastExpressionValid())
-      state_ = kReadAnd;
-    else
-      state_ = kSkipUntilComma;
-  } else {
-    media_query_data_.RemoveLastExpression();
-    state_ = kSkipUntilBlockEnd;
-  }
+    state_ = kReadAnd;
 }
 
 void MediaQueryParser::SkipUntilComma(CSSParserTokenRange& range) {
@@ -237,14 +205,6 @@ void MediaQueryParser::SkipUntilComma(CSSParserTokenRange& range) {
       query_set_->AddMediaQuery(MediaQuery::CreateNotAll());
     }
   }
-}
-
-void MediaQueryParser::SkipUntilBlockEnd(CSSParserTokenRange& range) {
-  CSSParserToken token = ConsumeToken(range);
-
-  if (token.GetBlockType() == CSSParserToken::kBlockEnd &&
-      !block_watcher_.BlockLevel())
-    state_ = kSkipUntilComma;
 }
 
 void MediaQueryParser::Done(CSSParserTokenRange& range) {
