@@ -71,55 +71,26 @@ class MODULES_EXPORT InspectorAccessibilityAgent
   // Unconditionally enables the agent, even if |enabled_.Get()==true|.
   // For idempotence, call enable().
   void EnableAndReset();
-  std::unique_ptr<protocol::Array<AXNode>> WalkAllAXNodes(Document* document);
   std::unique_ptr<protocol::Array<AXNode>> WalkAXNodesToDepth(
       Document* document,
       int max_depth);
-  std::unique_ptr<AXNode> BuildObjectForIgnoredNode(
-      Node* dom_node,
-      AXObject*,
-      bool fetch_relatives,
-      std::unique_ptr<protocol::Array<AXNode>>& nodes,
-      AXObjectCacheImpl&) const;
-  void PopulateDOMNodeAncestors(Node& inspected_dom_node,
-                                AXNode&,
-                                std::unique_ptr<protocol::Array<AXNode>>& nodes,
-                                AXObjectCacheImpl&) const;
-  std::unique_ptr<AXNode> BuildProtocolAXObject(
+  std::unique_ptr<AXNode> BuildProtocolAXNodeForDOMNodeWithNoAXNode(
+      int backend_node_id) const;
+  std::unique_ptr<AXNode> BuildProtocolAXNodeForAXObject(
       AXObject&,
-      AXObject* inspected_ax_object,
-      bool fetch_relatives,
-      std::unique_ptr<protocol::Array<AXNode>>& nodes,
-      AXObjectCacheImpl&) const;
-  void FillCoreProperties(AXObject&,
-                          AXObject* inspected_ax_object,
-                          bool fetch_relatives,
-                          AXNode&,
-                          std::unique_ptr<protocol::Array<AXNode>>& nodes,
-                          AXObjectCacheImpl&) const;
+      bool force_name_and_role) const;
+  std::unique_ptr<AXNode> BuildProtocolAXNodeForIgnoredAXObject(
+      AXObject&,
+      bool force_name_and_role) const;
+  std::unique_ptr<AXNode> BuildProtocolAXNodeForUnignoredAXObject(
+      AXObject&) const;
+  void FillCoreProperties(AXObject&, AXNode*) const;
   void AddAncestors(AXObject& first_ancestor,
                     AXObject* inspected_ax_object,
                     std::unique_ptr<protocol::Array<AXNode>>& nodes,
                     AXObjectCacheImpl&) const;
-  void PopulateRelatives(AXObject&,
-                         AXObject* inspected_ax_object,
-                         AXNode&,
-                         std::unique_ptr<protocol::Array<AXNode>>& nodes,
-                         AXObjectCacheImpl&) const;
-  void AddSiblingsOfIgnored(
-      std::unique_ptr<protocol::Array<AXNodeId>>& child_ids,
-      AXObject& parent_ax_object,
-      AXObject* inspected_ax_object,
-      std::unique_ptr<protocol::Array<AXNode>>& nodes,
-      AXObjectCacheImpl&) const;
-  void addChild(std::unique_ptr<protocol::Array<AXNodeId>>& child_ids,
-                AXObject& child_ax_object,
-                AXObject* inspected_ax_object,
-                std::unique_ptr<protocol::Array<AXNode>>& nodes,
-                AXObjectCacheImpl&) const;
-  void AddChildren(AXObject&,
-                   AXObject* inspected_ax_object,
-                   std::unique_ptr<protocol::Array<AXNodeId>>& child_ids,
+  void AddChildren(AXObject& ax_object,
+                   bool follow_ignored,
                    std::unique_ptr<protocol::Array<AXNode>>& nodes,
                    AXObjectCacheImpl&) const;
   LocalFrame* FrameFromIdOrRoot(const protocol::Maybe<String>& frame_id);
