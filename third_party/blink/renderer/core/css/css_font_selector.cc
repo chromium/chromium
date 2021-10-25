@@ -47,12 +47,12 @@
 namespace blink {
 
 CSSFontSelector::CSSFontSelector(const TreeScope& tree_scope)
-    : tree_scope_(&tree_scope),
-      generic_font_family_settings_(tree_scope.GetDocument()
-                                        .GetFrame()
-                                        ->GetSettings()
-                                        ->GetGenericFontFamilySettings()) {
+    : tree_scope_(&tree_scope) {
   DCHECK(tree_scope.GetDocument().GetFrame());
+  generic_font_family_settings_ = tree_scope.GetDocument()
+                                      .GetFrame()
+                                      ->GetSettings()
+                                      ->GetGenericFontFamilySettings();
   FontCache::GetFontCache()->AddClient(this);
   if (tree_scope.RootNode().IsDocumentNode()) {
     font_face_cache_ = MakeGarbageCollected<FontFaceCache>();
@@ -62,6 +62,10 @@ CSSFontSelector::CSSFontSelector(const TreeScope& tree_scope)
 }
 
 CSSFontSelector::~CSSFontSelector() = default;
+
+UseCounter* CSSFontSelector::GetUseCounter() {
+  return &GetDocument();
+}
 
 void CSSFontSelector::RegisterForInvalidationCallbacks(
     FontSelectorClient* client) {
@@ -129,34 +133,6 @@ scoped_refptr<FontData> CSSFontSelector::GetFontData(
       settings_family_name, font_description, font_data.get());
 
   return font_data;
-}
-
-void CSSFontSelector::WillUseFontData(const FontDescription& font_description,
-                                      const FontFamily& family,
-                                      const String& text) {
-  if (CSSSegmentedFontFace* face =
-          font_face_cache_->Get(font_description, family.FamilyName()))
-    face->WillUseFontData(font_description, text);
-}
-
-void CSSFontSelector::WillUseRange(const FontDescription& font_description,
-                                   const AtomicString& family,
-                                   const FontDataForRangeSet& range_set) {
-  CSSSegmentedFontFace* face = font_face_cache_->Get(font_description, family);
-  if (face)
-    face->WillUseRange(font_description, range_set);
-}
-
-bool CSSFontSelector::IsPlatformFamilyMatchAvailable(
-    const FontDescription& font_description,
-    const FontFamily& passed_family) {
-  AtomicString family =
-      FamilyNameFromSettings(generic_font_family_settings_, font_description,
-                             passed_family, &GetTreeScope()->GetDocument());
-  if (family.IsEmpty())
-    family = passed_family.FamilyName();
-  return FontCache::GetFontCache()->IsPlatformFamilyMatchAvailable(
-      font_description, family);
 }
 
 void CSSFontSelector::UpdateGenericFontFamilySettings(Document& document) {
@@ -237,9 +213,8 @@ void CSSFontSelector::ReportLastResortFallbackFontLookup(
 
 void CSSFontSelector::Trace(Visitor* visitor) const {
   visitor->Trace(tree_scope_);
-  visitor->Trace(font_face_cache_);
   visitor->Trace(clients_);
-  FontSelector::Trace(visitor);
+  CSSFontSelectorBase::Trace(visitor);
 }
 
 }  // namespace blink

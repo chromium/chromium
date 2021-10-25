@@ -431,6 +431,8 @@ generate_grd("build_grd") {
     "file_manager/images/files/ui/state_banner_icon.svg",
     "file_manager/images/files/ui/warning_banner_icon.svg",
     "file_manager/images/files/ui/menu_ng.svg",
+
+    "image_loader/background.m.rollup.js",
   ]
 
   resource_path_rewrites = [
@@ -451,7 +453,6 @@ generate_grd("build_grd") {
       "file_manager/foreground/js/metadata_dispatcher.rollup.js",
       "file_manager/foreground/js/shared.m.rollup.js",
 
-      "image_loader/background.m.rollup.js",
       "image_loader/image_orientation.js",
       "image_loader/lru_cache.js",
     ]

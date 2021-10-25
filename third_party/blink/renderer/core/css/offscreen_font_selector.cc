@@ -21,12 +21,17 @@
 namespace blink {
 
 OffscreenFontSelector::OffscreenFontSelector(WorkerGlobalScope* worker)
-    : font_face_cache_(MakeGarbageCollected<FontFaceCache>()), worker_(worker) {
+    : worker_(worker) {
   DCHECK(worker);
+  font_face_cache_ = MakeGarbageCollected<FontFaceCache>();
   FontCache::GetFontCache()->AddClient(this);
 }
 
 OffscreenFontSelector::~OffscreenFontSelector() = default;
+
+UseCounter* OffscreenFontSelector::GetUseCounter() {
+  return GetExecutionContext();
+}
 
 void OffscreenFontSelector::UpdateGenericFontFamilySettings(
     const GenericFontFamilySettings& settings) {
@@ -70,36 +75,6 @@ scoped_refptr<FontData> OffscreenFontSelector::GetFontData(
       settings_family_name, font_description, font_data.get());
 
   return font_data;
-}
-
-void OffscreenFontSelector::WillUseFontData(
-    const FontDescription& font_description,
-    const FontFamily& family,
-    const String& text) {
-  if (CSSSegmentedFontFace* face =
-          font_face_cache_->Get(font_description, family.FamilyName()))
-    face->WillUseFontData(font_description, text);
-}
-
-void OffscreenFontSelector::WillUseRange(
-    const FontDescription& font_description,
-    const AtomicString& family,
-    const FontDataForRangeSet& range_set) {
-  CSSSegmentedFontFace* face = font_face_cache_->Get(font_description, family);
-  if (face)
-    face->WillUseRange(font_description, range_set);
-}
-
-bool OffscreenFontSelector::IsPlatformFamilyMatchAvailable(
-    const FontDescription& font_description,
-    const FontFamily& passed_family) {
-  AtomicString family =
-      FamilyNameFromSettings(generic_font_family_settings_, font_description,
-                             passed_family, GetExecutionContext());
-  if (family.IsEmpty())
-    family = passed_family.FamilyName();
-  return FontCache::GetFontCache()->IsPlatformFamilyMatchAvailable(
-      font_description, family);
 }
 
 void OffscreenFontSelector::ReportNotDefGlyph() const {}
@@ -186,8 +161,7 @@ void OffscreenFontSelector::FontFaceInvalidated(FontInvalidationReason) {
 
 void OffscreenFontSelector::Trace(Visitor* visitor) const {
   visitor->Trace(worker_);
-  visitor->Trace(font_face_cache_);
-  FontSelector::Trace(visitor);
+  CSSFontSelectorBase::Trace(visitor);
 }
 
 }  // namespace blink

@@ -530,16 +530,19 @@ bool SerializedScriptValue::ExtractTransferables(
     v8::Local<v8::Value> value = script_value.V8Value();
     // Validation of non-null objects, per HTML5 spec 10.3.3.
     if (IsUndefinedOrNull(value)) {
-      exception_state.ThrowTypeError(
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataCloneError,
           "Value at index " + String::Number(i) + " is an untransferable " +
-          (value->IsUndefined() ? "'undefined'" : "'null'") + " value.");
+              (value->IsUndefined() ? "'undefined'" : "'null'") + " value.");
       return false;
     }
     if (!factory.ExtractTransferable(isolate, value, i, transferables,
                                      exception_state)) {
       if (!exception_state.HadException()) {
-        exception_state.ThrowTypeError("Value at index " + String::Number(i) +
-                                       " does not have a transferable type.");
+        exception_state.ThrowDOMException(
+            DOMExceptionCode::kDataCloneError,
+            "Value at index " + String::Number(i) +
+                " does not have a transferable type.");
       }
       return false;
     }

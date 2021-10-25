@@ -23,6 +23,7 @@ namespace mojom = chromeos::ime::mojom;
 
 constexpr char kUsEnglishEngineId[] = "xkb:us::eng";
 constexpr char kKoreanEngineId[] = "ko-t-i0-und";
+constexpr char kPinyinEngineId[] = "zh-t-i0-pinyin";
 
 void RegisterTestingPrefs(TestingPrefServiceSimple& prefs,
                           const base::DictionaryValue& dict) {
@@ -95,6 +96,77 @@ TEST(CreateSettingsFromPrefsTest, CreateKoreanSettings) {
   const auto& korean_settings = *settings->get_korean_settings();
   EXPECT_EQ(korean_settings.layout, mojom::KoreanLayout::kSebeolsik390);
   EXPECT_TRUE(korean_settings.input_multiple_syllables);
+}
+
+TEST(CreateSettingsFromPrefsTest, CreatePinyinSettingsDefault) {
+  base::DictionaryValue dict;
+  TestingPrefServiceSimple prefs;
+  RegisterTestingPrefs(prefs, dict);
+
+  const auto settings = CreateSettingsFromPrefs(prefs, kPinyinEngineId);
+
+  ASSERT_TRUE(settings->is_pinyin_settings());
+  const auto& pinyin_settings = *settings->get_pinyin_settings();
+  ASSERT_TRUE(pinyin_settings.fuzzy_pinyin);
+  const auto& fuzzy_pinyin = *pinyin_settings.fuzzy_pinyin;
+  EXPECT_FALSE(fuzzy_pinyin.an_ang);
+  EXPECT_FALSE(fuzzy_pinyin.en_eng);
+  EXPECT_FALSE(fuzzy_pinyin.ian_iang);
+  EXPECT_FALSE(fuzzy_pinyin.k_g);
+  EXPECT_FALSE(fuzzy_pinyin.r_l);
+  EXPECT_FALSE(fuzzy_pinyin.uan_uang);
+  EXPECT_FALSE(fuzzy_pinyin.c_ch);
+  EXPECT_FALSE(fuzzy_pinyin.f_h);
+  EXPECT_FALSE(fuzzy_pinyin.in_ing);
+  EXPECT_FALSE(fuzzy_pinyin.l_n);
+  EXPECT_FALSE(fuzzy_pinyin.s_sh);
+  EXPECT_FALSE(fuzzy_pinyin.z_zh);
+  EXPECT_EQ(pinyin_settings.layout, mojom::PinyinLayout::kUsQwerty);
+  EXPECT_TRUE(pinyin_settings.use_hyphen_and_equals_to_page_candidates);
+  EXPECT_TRUE(pinyin_settings.use_comma_and_period_to_page_candidates);
+  EXPECT_TRUE(pinyin_settings.default_to_chinese);
+  EXPECT_FALSE(pinyin_settings.default_to_full_width_characters);
+  EXPECT_TRUE(pinyin_settings.default_to_full_width_punctuation);
+}
+
+TEST(CreateSettingsFromPrefsTest, CreatePinyinSettings) {
+  base::DictionaryValue dict;
+  dict.SetBoolPath("pinyin.en:eng", true);
+  dict.SetBoolPath("pinyin.k:g", true);
+  dict.SetBoolPath("pinyin.in:ing", true);
+  dict.SetStringPath("pinyin.xkbLayout", "Colemak");
+  dict.SetBoolPath("pinyin.pinyinEnableLowerPaging", false);
+  dict.SetBoolPath("pinyin.pinyinEnableUpperPaging", false);
+  dict.SetBoolPath("pinyin.pinyinDefaultChinese", false);
+  dict.SetBoolPath("pinyin.pinyinFullWidthCharacter", true);
+  dict.SetBoolPath("pinyin.pinyinChinesePunctuation", false);
+  TestingPrefServiceSimple prefs;
+  RegisterTestingPrefs(prefs, dict);
+
+  const auto settings = CreateSettingsFromPrefs(prefs, kPinyinEngineId);
+
+  ASSERT_TRUE(settings->is_pinyin_settings());
+  const auto& pinyin_settings = *settings->get_pinyin_settings();
+  ASSERT_TRUE(pinyin_settings.fuzzy_pinyin);
+  const auto& fuzzy_pinyin = *pinyin_settings.fuzzy_pinyin;
+  EXPECT_FALSE(fuzzy_pinyin.an_ang);
+  EXPECT_TRUE(fuzzy_pinyin.en_eng);
+  EXPECT_FALSE(fuzzy_pinyin.ian_iang);
+  EXPECT_TRUE(fuzzy_pinyin.k_g);
+  EXPECT_FALSE(fuzzy_pinyin.r_l);
+  EXPECT_FALSE(fuzzy_pinyin.uan_uang);
+  EXPECT_FALSE(fuzzy_pinyin.c_ch);
+  EXPECT_FALSE(fuzzy_pinyin.f_h);
+  EXPECT_TRUE(fuzzy_pinyin.in_ing);
+  EXPECT_FALSE(fuzzy_pinyin.l_n);
+  EXPECT_FALSE(fuzzy_pinyin.s_sh);
+  EXPECT_FALSE(fuzzy_pinyin.z_zh);
+  EXPECT_EQ(pinyin_settings.layout, mojom::PinyinLayout::kColemak);
+  EXPECT_FALSE(pinyin_settings.use_comma_and_period_to_page_candidates);
+  EXPECT_FALSE(pinyin_settings.use_hyphen_and_equals_to_page_candidates);
+  EXPECT_FALSE(pinyin_settings.default_to_chinese);
+  EXPECT_TRUE(pinyin_settings.default_to_full_width_characters);
+  EXPECT_FALSE(pinyin_settings.default_to_full_width_punctuation);
 }
 
 }  // namespace

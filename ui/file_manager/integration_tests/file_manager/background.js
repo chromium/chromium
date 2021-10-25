@@ -45,7 +45,7 @@ import './trash.js';
 import './traverse.js';
 import './zip_files.js';
 
-import {FilesAppState} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/common/js/files_app_state.js';
+import {FilesAppState} from '../files_app_state.js';
 
 import {RemoteCall, RemoteCallFilesApp} from '../remote_call.js';
 import {addEntries, checkIfNoErrorsOccuredOnApp, ENTRIES, getCaller, getRootPathsResult, pending, repeatUntil, RootPath, sendBrowserTestCommand, sendTestMessage, TestEntryInfo, testPromiseAndApps} from '../test_util.js';
@@ -62,7 +62,7 @@ export const FILE_MANAGER_SWA_ID = 'chrome://file-manager';
 
 export {FILE_MANAGER_EXTENSIONS_ID};
 
-export let remoteCall = new RemoteCallFilesApp(FILE_MANAGER_EXTENSIONS_ID);
+export let remoteCall;
 
 /**
  * Extension ID of Audio Player.
@@ -286,6 +286,8 @@ window.addEventListener('load', () => {
     (swaMode) => {
       if (swaMode === 'true') {
         remoteCall = new RemoteCallFilesApp(FILE_MANAGER_SWA_ID);
+      } else {
+        remoteCall = new RemoteCallFilesApp(FILE_MANAGER_EXTENSIONS_ID);
       }
       sendBrowserTestCommand({name: 'isInGuestMode'}, steps.shift());
     },

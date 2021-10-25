@@ -685,7 +685,7 @@ void NativeInputMethodEngine::ImeObserver::OnKeyEvent(
 
   if (ShouldRouteToRuleBasedEngine(engine_id) ||
       ShouldRouteToNativeMojoEngine(engine_id)) {
-    if (input_method_.is_bound()) {
+    if (input_method_.is_bound() && input_method_.is_connected()) {
       // CharacterComposer only takes KEY_PRESSED events.
       const bool filtered = event.type() == ui::ET_KEY_PRESSED &&
                             character_composer_.FilterKeyPress(event);

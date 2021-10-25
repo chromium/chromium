@@ -14,8 +14,7 @@
     "chrome://resources/",
     "tabs",
     "commandLinePrivate",
-    "chrome-extension://oobinhbdbiehknkpbpejbbpdbkdjmoco/*",
-    "chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/*"
+    "chrome-extension://oobinhbdbiehknkpbpejbbpdbkdjmoco/*"
   ],
-  "content_security_policy": "script-src 'self' chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj chrome://resources ;"
+  "content_security_policy": "script-src 'self' chrome://resources ;"
 }

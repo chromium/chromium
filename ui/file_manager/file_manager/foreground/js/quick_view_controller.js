@@ -17,7 +17,7 @@ import {FilesQuickView} from '../elements/files_quick_view.js';
 import {constants} from './constants.js';
 import {CommandHandler} from './file_manager_commands.js';
 import {FileSelectionHandler} from './file_selection.js';
-import {FileTasks} from './file_tasks.js';
+import {FileTasks, parseActionId} from './file_tasks.js';
 import {MetadataItem} from './metadata/metadata_item.js';
 import {MetadataModel} from './metadata/metadata_model.js';
 import {MetadataBoxController} from './metadata_box_controller.js';
@@ -695,7 +695,7 @@ export class QuickViewController {
 
           params.browsable = tasks.some(task => {
             return ['view-in-browser', 'view-pdf'].includes(
-                task.descriptor.actionId);
+                parseActionId(task.descriptor.actionId));
           });
 
           if (params.browsable) {

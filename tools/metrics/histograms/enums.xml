@@ -66984,6 +66984,9 @@ Called by update_net_trust_anchors.py.-->
 </enum>
 
 <enum name="PhotoEditorFileType">
+  <obsolete>
+    Removed in M92.
+  </obsolete>
   <int value="0" label="jpg"/>
   <int value="1" label="png"/>
   <int value="2" label="gif"/>
@@ -66993,6 +66996,9 @@ Called by update_net_trust_anchors.py.-->
 </enum>
 
 <enum name="PhotoEditorLoadMode">
+  <obsolete>
+    Removed in M92.
+  </obsolete>
   <int value="0" label="From full resolution cache"/>
   <int value="1" label="From screen resolution cache"/>
   <int value="2" label="From file"/>
@@ -67000,12 +67006,18 @@ Called by update_net_trust_anchors.py.-->
 </enum>
 
 <enum name="PhotoEditorSaveResult">
+  <obsolete>
+    Removed in M92.
+  </obsolete>
   <int value="0" label="Failure"/>
   <int value="1" label="Success"/>
   <int value="2" label="Other"/>
 </enum>
 
 <enum name="PhotoEditorToolType">
+  <obsolete>
+    Removed in M92.
+  </obsolete>
   <int value="0" label="Auto-fix"/>
   <int value="1" label="Crop"/>
   <int value="2" label="Brightness"/>

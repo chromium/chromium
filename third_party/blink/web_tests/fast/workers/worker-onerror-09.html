@@ -17,7 +17,7 @@
         description("This tests that unhandled exceptions in postMessage() are delivered to 'worker.onerror'.");
 
         checkErrorEventInHandler({
-            message: "Uncaught TypeError: Failed to execute 'postMessage' on 'DedicatedWorkerGlobalScope': Value at index 0 does not have a transferable type.",
+            message: "Uncaught DataCloneError: Failed to execute 'postMessage' on 'DedicatedWorkerGlobalScope': Value at index 0 does not have a transferable type.",
             filename: "[blob: URL]",
             lineno: 3,
             colno: 9,
