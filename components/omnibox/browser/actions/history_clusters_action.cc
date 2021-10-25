@@ -86,10 +86,17 @@ void AttachHistoryClustersActions(
   }
 
   for (auto& match : result) {
-    // Skip incomptatible matches (like entities) or ones with existing actions.
+    // Skip incompatible matches (like entities) or ones with existing actions.
     // TODO(tommycli): Deduplicate this code with Pedals.
     if (match.action ||
         !AutocompleteMatch::IsActionCompatibleType(match.type)) {
+      continue;
+    }
+
+    // Also skip all URLs. Only match this for Search matches. Pedals doesn't
+    // explicitly filter URL matches out, but the "bag" of words it searches
+    // over is quite small. That's why we need to be stricter than Pedals.
+    if (!AutocompleteMatch::IsSearchType(match.type)) {
       continue;
     }
 
