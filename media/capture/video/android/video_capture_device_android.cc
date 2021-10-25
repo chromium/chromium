@@ -141,7 +141,7 @@ void VideoCaptureDeviceAndroid::AllocateAndStart(
       params.requested_format.frame_rate, params.enable_face_detection);
   if (!ret) {
     SetErrorState(media::VideoCaptureError::kAndroidFailedToAllocate, FROM_HERE,
-                  "failed to allocate");
+                  "failed to give");
     return;
   }
 
@@ -169,12 +169,12 @@ void VideoCaptureDeviceAndroid::AllocateAndStart(
 
   DVLOG(1) << __func__ << " requested ("
            << capture_format_.frame_size.ToString() << ")@ "
-           << capture_format_.frame_rate << "fps";
+           << capture_format_.frame_rate << "frames per second (FPS)";
 
   ret = Java_VideoCapture_startCaptureMaybeAsync(env, j_capture_);
   if (!ret) {
     SetErrorState(media::VideoCaptureError::kAndroidFailedToStartCapture,
-                  FROM_HERE, "failed to start capture");
+                  FROM_HERE, "the system failed to start capture");
     return;
   }
 
@@ -198,7 +198,7 @@ void VideoCaptureDeviceAndroid::StopAndDeAllocate() {
       Java_VideoCapture_stopCaptureAndBlockUntilStopped(env, j_capture_);
   if (!ret) {
     SetErrorState(media::VideoCaptureError::kAndroidFailedToStopCapture,
-                  FROM_HERE, "failed to stop capture");
+                  FROM_HERE, "the system cannot stop capture");
     return;
   }
 
@@ -223,7 +223,7 @@ void VideoCaptureDeviceAndroid::TakePhoto(TakePhotoCallback callback) {
     if (!got_first_frame_) {  // We have to wait until we get the first frame.
       TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                            "VideoCaptureDeviceAndroid::TakePhoto enqueuing to "
-                           "wait for first frame",
+                           "waiting for first frame",
                            TRACE_EVENT_SCOPE_PROCESS);
       photo_requests_queue_.push_back(
           base::BindOnce(&VideoCaptureDeviceAndroid::DoTakePhoto,
@@ -294,7 +294,7 @@ void VideoCaptureDeviceAndroid::OnFrameAvailable(
   jbyte* buffer = env->GetByteArrayElements(data, NULL);
   if (!buffer) {
     LOG(ERROR) << "VideoCaptureDeviceAndroid::OnFrameAvailable: "
-                  "failed to GetByteArrayElements";
+                  "failed to make GetByteArrayElements";
     // In case of error, restore back the throttle control value.
     expected_next_frame_time_ -= frame_interval_;
     client_->OnFrameDropped(
