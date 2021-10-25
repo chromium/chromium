@@ -80,6 +80,8 @@ blink_core_sources_css = [
   "css_font_feature_value.h",
   "css_font_selector.cc",
   "css_font_selector.h",
+  "css_font_selector_base.cc",
+  "css_font_selector_base.h",
   "css_font_style_range_value.cc",
   "css_font_style_range_value.h",
   "css_font_variation_value.cc",
