@@ -66,7 +66,7 @@ const secondScannerName = 'Scanner 2';
 const firstCapabilities = {
   sources: [
     createScannerSource(SourceType.ADF_DUPLEX, ADF_DUPLEX, firstPageSizes),
-    createScannerSource(SourceType.FLATBED, PLATEN, firstPageSizes),
+    createScannerSource(SourceType.FLATBED, PLATEN, secondPageSizes),
   ],
   colorModes: [ColorMode.BLACK_AND_WHITE, ColorMode.COLOR],
   resolutions: [75, 100, 300]
@@ -645,7 +645,7 @@ export function scanningAppTest() {
           assertEquals(
               ColorMode.COLOR.toString(), scanningApp.selectedColorMode);
           assertEquals(
-              firstCapabilities.sources[0].pageSizes[1].toString(),
+              firstCapabilities.sources[1].pageSizes[0].toString(),
               scanningApp.selectedPageSize);
           assertEquals(
               firstCapabilities.resolutions[0].toString(),
@@ -1887,7 +1887,7 @@ export function scanningAppTest() {
               ash.scanning.mojom.ColorMode.kColor.toString(),
               scanningApp.$$('#colorModeSelect').$$('select').value);
           assertEquals(
-              ash.scanning.mojom.PageSize.kNaLetter.toString(),
+              ash.scanning.mojom.PageSize.kIsoA4.toString(),
               scanningApp.$$('#pageSizeSelect').$$('select').value);
           assertEquals(
               '300', scanningApp.$$('#resolutionSelect').$$('select').value);
@@ -1963,7 +1963,7 @@ export function scanningAppTest() {
               ash.scanning.mojom.ColorMode.kColor.toString(),
               scanningApp.$$('#colorModeSelect').$$('select').value);
           assertEquals(
-              ash.scanning.mojom.PageSize.kNaLetter.toString(),
+              ash.scanning.mojom.PageSize.kIsoA4.toString(),
               scanningApp.$$('#pageSizeSelect').$$('select').value);
           assertEquals(
               '300', scanningApp.$$('#resolutionSelect').$$('select').value);
@@ -2070,7 +2070,7 @@ export function scanningAppTest() {
               ash.scanning.mojom.ColorMode.kColor.toString(),
               scanningApp.$$('#colorModeSelect').$$('select').value);
           assertEquals(
-              ash.scanning.mojom.PageSize.kNaLetter.toString(),
+              ash.scanning.mojom.PageSize.kIsoA4.toString(),
               scanningApp.$$('#pageSizeSelect').$$('select').value);
           assertEquals(
               '300', scanningApp.$$('#resolutionSelect').$$('select').value);
@@ -2517,6 +2517,62 @@ export function scanningAppTest() {
           // When scan button is clicked expect a normal scan to start.
           scanButton.click();
           return fakeScanService_.whenCalled('startScan');
+        });
+  });
+
+  // Verify the scan settings update according to the source selected.
+  test('UpdateSettingsBySource', () => {
+    return initializeScanningApp(expectedScanners, capabilities)
+        .then(() => {
+          return getScannerCapabilities();
+        })
+        .then(() => {
+          scanningApp.selectedSource = PLATEN;
+          return waitAfterNextRender(
+              /** @type {!HTMLElement} */ (scanningApp));
+        })
+        .then(() => {
+          const pageSizeSelector =
+              scanningApp.$$('#pageSizeSelect').$$('select');
+          changeSelect(
+              pageSizeSelector, PageSize.A4.toString(),
+              /* selectedIndex */ null);
+          assertEquals(
+              ash.scanning.mojom.PageSize.kIsoA4.toString(),
+              scanningApp.$$('#pageSizeSelect').$$('select').value);
+          changeSelect(
+              pageSizeSelector, PageSize.Max.toString(),
+              /* selectedIndex */ null);
+          assertEquals(
+              ash.scanning.mojom.PageSize.kMax.toString(),
+              scanningApp.$$('#pageSizeSelect').$$('select').value);
+        })
+        .then(() => {
+          scanningApp.selectedSource = ADF_DUPLEX;
+          return waitAfterNextRender(
+              /** @type {!HTMLElement} */ (scanningApp));
+        })
+        .then(() => {
+          const pageSizeSelector =
+              scanningApp.$$('#pageSizeSelect').$$('select');
+          changeSelect(
+              pageSizeSelector, PageSize.A4.toString(),
+              /* selectedIndex */ null);
+          assertEquals(
+              ash.scanning.mojom.PageSize.kIsoA4.toString(),
+              scanningApp.$$('#pageSizeSelect').$$('select').value);
+          changeSelect(
+              pageSizeSelector, PageSize.Letter.toString(),
+              /* selectedIndex */ null);
+          assertEquals(
+              ash.scanning.mojom.PageSize.kNaLetter.toString(),
+              scanningApp.$$('#pageSizeSelect').$$('select').value);
+          changeSelect(
+              pageSizeSelector, PageSize.Max.toString(),
+              /* selectedIndex */ null);
+          assertEquals(
+              ash.scanning.mojom.PageSize.kMax.toString(),
+              scanningApp.$$('#pageSizeSelect').$$('select').value);
         });
   });
 }
