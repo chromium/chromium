@@ -46,6 +46,8 @@ class BuildConfigGenerator extends DefaultTask {
     // https://source.chromium.org/chromium/infra/infra/+/master:recipes/recipe_modules/support_3pp/resolved_spec.py?q=symbol:PACKAGE_EPOCH&ss=chromium
     private static final String THREEPP_EPOCH = '2'
 
+    // Use this to exclude a dep from being depended upon. Useful for deps like androidx_window_window_java.
+    private static final String EXCLUDE_THIS_LIB = 'EXCLUDE_THIS_LIB'
     // Some libraries are hosted in Chromium's //third_party directory. This is a mapping between
     // them so they can be used instead of android_deps pulling in its own copy.
     static final Map<String, String> EXISTING_LIBS = [
@@ -58,6 +60,10 @@ class BuildConfigGenerator extends DefaultTask {
         org_hamcrest_hamcrest_core: '//third_party/hamcrest:hamcrest_core_java',
         org_hamcrest_hamcrest_integration: '//third_party/hamcrest:hamcrest_integration_java',
         org_hamcrest_hamcrest_library: '//third_party/hamcrest:hamcrest_library_java',
+        // Remove androidx_window_window from being depended upon since we don't use it and it bloats binary size due to
+        // overly broad proguard keep rules. Perhaps when http://b/165268619 is fixed then we can allow it to be
+        // depended upon again.
+        androidx_window_window: EXCLUDE_THIS_LIB,
     ]
 
     /**
@@ -465,7 +471,10 @@ class BuildConfigGenerator extends DefaultTask {
             String existingLib = EXISTING_LIBS.get(dep.id)
             String depTargetName = translateTargetName(dep.id) + '_java'
             if (existingLib) {
-                depsStr += "\"${existingLib}\","
+                // Explicitly allow removing specific deps via |EXCLUDE_THIS_LIB| (e.g. androidx_window_window_java).
+                if (existingLib != EXCLUDE_THIS_LIB) {
+                    depsStr += "\"${existingLib}\","
+                }
             } else if (excludeDependency(dep)) {
                 String thirdPartyDir = (dep.id.startsWith('androidx')) ? 'androidx' : 'android_deps'
                 depsStr += "\"//third_party/${thirdPartyDir}:${depTargetName}\","
@@ -829,6 +838,9 @@ class BuildConfigGenerator extends DefaultTask {
                     append('    "com/google/protobuf/Wrappers*",\n')
                     append('  ]')
                 }
+                break
+            case 'androidx_slidingpanelayout_slidingpanelayout':
+                sb.append('  enable_bytecode_checks = false\n')
                 break
             case 'androidx_startup_startup_runtime':
                 sb.append('  # Keeps emoji2 code. See http://crbug.com/1205141\n')
