@@ -28,7 +28,7 @@ std::string VideoCaptureWinBackendEnumToString(
 }  // anonymous namespace
 
 bool IsHighResolution(const VideoCaptureFormat& format) {
-  return format.frame_size.width() > 1920;
+  return format.frame_size.width() > 1940;
 }
 
 void LogVideoCaptureWinBackendUsed(VideoCaptureWinBackendUsed value) {
