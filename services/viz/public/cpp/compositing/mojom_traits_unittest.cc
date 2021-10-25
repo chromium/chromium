@@ -769,9 +769,9 @@ TEST_F(StructTraitsTest, RenderPass) {
   input->SetAll(render_pass_id, output_rect, damage_rect, transform_to_root,
                 filters, backdrop_filters, backdrop_filter_bounds,
                 subtree_capture_id, output_rect.size(), nullptr,
-                has_transparent_background, cache_render_pass,
-                has_damage_from_contributing_content, generate_mipmap,
-                has_per_quad_damage);
+                SharedElementResourceId(), has_transparent_background,
+                cache_render_pass, has_damage_from_contributing_content,
+                generate_mipmap, has_per_quad_damage);
   input->copy_requests.push_back(CopyOutputRequest::CreateStubForTesting());
   const gfx::Rect copy_output_area(24, 42, 75, 57);
   input->copy_requests.back()->set_area(copy_output_area);
@@ -916,9 +916,9 @@ TEST_F(StructTraitsTest, RenderPassWithEmptySharedQuadStateList) {
   input->SetAll(render_pass_id, output_rect, damage_rect, transform_to_root,
                 cc::FilterOperations(), cc::FilterOperations(),
                 backdrop_filter_bounds, subtree_capture_id, output_rect.size(),
-                nullptr, has_transparent_background, cache_render_pass,
-                has_damage_from_contributing_content, generate_mipmap,
-                has_per_quad_damage);
+                nullptr, SharedElementResourceId(), has_transparent_background,
+                cache_render_pass, has_damage_from_contributing_content,
+                generate_mipmap, has_per_quad_damage);
 
   // Unlike the previous test, don't add any quads to the list; we need to
   // verify that the serialization code can deal with that.

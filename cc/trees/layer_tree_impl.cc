@@ -1401,6 +1401,8 @@ bool LayerTreeImpl::UpdateDrawProperties(
                 layer->DrawTransform());
       }
 
+      // TODO(khushalsagar) : Skip computing occlusion for shared elements. See
+      // crbug.com/1258058.
       if (it.state() ==
           EffectTreeLayerListIterator::State::CONTRIBUTING_SURFACE) {
         const RenderSurfaceImpl* occlusion_surface =

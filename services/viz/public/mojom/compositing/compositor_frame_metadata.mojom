@@ -67,4 +67,9 @@ struct CompositorFrameMetadata {
   // Transition directives represent a list of directives for animating a
   // transition between different compositor frames / render passes.
   array<CompositorFrameTransitionDirective> transition_directives;
+
+  // Indicates if this frame is embedding SharedElementResourceIds which need to
+  // be replaced by corresponding live render passes or cached textures in the
+  // Viz process.
+  bool has_shared_element_resources;
 };

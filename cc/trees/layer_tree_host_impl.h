@@ -239,6 +239,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
     // The original BeginFrameArgs that triggered the latest update from the
     // main thread.
     viz::BeginFrameArgs origin_begin_main_frame_args;
+    bool has_shared_element_resources = false;
   };
 
   // A struct of data for a single UIResource, including the backing

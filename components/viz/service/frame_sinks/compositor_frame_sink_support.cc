@@ -215,6 +215,11 @@ void CompositorFrameSinkSupport::OnSurfaceActivated(Surface* surface) {
       UpdateNeedsBeginFramesInternal();
   }
 
+  // The directives above generate TransferableResources which are required to
+  // replaced shared elements with the corresponding cached snapshots. This step
+  // must be done after processing directives above.
+  surface_animation_manager_.ReplaceSharedElementResources(surface);
+
   // If surface animation manager needs a frame, then we should interpolate
   // here. Note that we also interpolate in OnBeginFrame. The reason for two
   // calls is that we might not receive and active a frame from the client in

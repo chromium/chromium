@@ -42,6 +42,7 @@ class VIZ_COMMON_EXPORT DrawQuad {
     // This is the viz, post-aggregation, draw quad.
     kAggregatedRenderPass,
     kSolidColor,
+    kSharedElement,
     kStreamVideoContent,
     kSurfaceContent,
     kTextureContent,

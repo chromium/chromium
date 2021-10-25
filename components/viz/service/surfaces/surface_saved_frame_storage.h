@@ -39,6 +39,7 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrameStorage {
   // This takes the saved frame stored on this storage. Returns nullptr if there
   // is no saved frame, or the frame has expired.
   std::unique_ptr<SurfaceSavedFrame> TakeSavedFrame();
+  bool HasValidFrame() const;
 
   // For testing functionality.
   void ExpireForTesting();

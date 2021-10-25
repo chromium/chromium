@@ -208,11 +208,12 @@ class VizSerializationPerfTest : public testing::Test {
         cc::FilterOperation::CreateBrightnessFilter(arbitrary_float2));
 
     auto pass_in = CompositorRenderPass::Create();
-    pass_in->SetAll(
-        root_id, arbitrary_rect1, arbitrary_rect2, arbitrary_matrix1,
-        arbitrary_filters2, arbitrary_filters1, arbitrary_rrectf1,
-        SubtreeCaptureId(), arbitrary_rect1.size(), nullptr, arbitrary_bool1,
-        arbitrary_bool1, arbitrary_bool1, arbitrary_bool1, arbitrary_bool7);
+    pass_in->SetAll(root_id, arbitrary_rect1, arbitrary_rect2,
+                    arbitrary_matrix1, arbitrary_filters2, arbitrary_filters1,
+                    arbitrary_rrectf1, SubtreeCaptureId(),
+                    arbitrary_rect1.size(), nullptr, SharedElementResourceId(),
+                    arbitrary_bool1, arbitrary_bool1, arbitrary_bool1,
+                    arbitrary_bool1, arbitrary_bool7);
 
     // Texture quads
     for (uint32_t i = 0; i < 10; ++i) {

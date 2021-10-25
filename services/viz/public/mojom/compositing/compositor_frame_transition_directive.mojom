@@ -6,10 +6,13 @@ module viz.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
 import "services/viz/public/mojom/compositing/compositor_render_pass_id.mojom";
+import "services/viz/public/mojom/compositing/shared_element_resource_id.mojom";
 
 enum CompositorFrameTransitionDirectiveType {
   kSave,
-  kAnimate
+  kAnimate,
+  kAnimateRenderer,
+  kRelease
 };
 
 enum CompositorFrameTransitionDirectiveEffect {
@@ -37,6 +40,7 @@ struct CompositorFrameTransitionDirectiveConfig {
 struct CompositorFrameTransitionDirectiveSharedElement {
   CompositorRenderPassId render_pass_id;
   CompositorFrameTransitionDirectiveConfig config;
+  SharedElementResourceId shared_element_resource_id;
 };
 
 // See components/viz/common/quads/compositor_frame_transition_directive.h

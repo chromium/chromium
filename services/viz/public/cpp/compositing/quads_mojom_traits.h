@@ -12,6 +12,7 @@
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/debug_border_draw_quad.h"
 #include "components/viz/common/quads/picture_draw_quad.h"
+#include "components/viz/common/quads/shared_element_draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/stream_video_draw_quad.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
@@ -20,8 +21,10 @@
 #include "components/viz/common/quads/video_hole_draw_quad.h"
 #include "components/viz/common/quads/yuv_video_draw_quad.h"
 #include "components/viz/common/resources/resource_id.h"
+#include "components/viz/common/shared_element_resource_id.h"
 #include "services/viz/public/cpp/compositing/filter_operation_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/filter_operations_mojom_traits.h"
+#include "services/viz/public/cpp/compositing/shared_element_resource_id_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/shared_quad_state_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/surface_range_mojom_traits.h"
 #include "services/viz/public/mojom/compositing/quads.mojom-shared.h"
@@ -134,6 +137,9 @@ struct UnionTraits<viz::mojom::DrawQuadStateDataView, viz::DrawQuad> {
         return viz::mojom::DrawQuadStateDataView::Tag::VIDEO_HOLE_QUAD_STATE;
       case viz::DrawQuad::Material::kYuvVideoContent:
         return viz::mojom::DrawQuadStateDataView::Tag::YUV_VIDEO_QUAD_STATE;
+      case viz::DrawQuad::Material::kSharedElement:
+        return viz::mojom::DrawQuadStateDataView::Tag::
+            SHARED_ELEMENT_QUAD_STATE;
     }
     NOTREACHED();
     return viz::mojom::DrawQuadStateDataView::Tag::DEBUG_BORDER_QUAD_STATE;
@@ -179,6 +185,11 @@ struct UnionTraits<viz::mojom::DrawQuadStateDataView, viz::DrawQuad> {
     return quad;
   }
 
+  static const viz::DrawQuad& shared_element_quad_state(
+      const viz::DrawQuad& quad) {
+    return quad;
+  }
+
   static bool Read(viz::mojom::DrawQuadStateDataView data, viz::DrawQuad* out) {
     switch (data.tag()) {
       case viz::mojom::DrawQuadStateDataView::Tag::DEBUG_BORDER_QUAD_STATE:
@@ -199,10 +210,25 @@ struct UnionTraits<viz::mojom::DrawQuadStateDataView, viz::DrawQuad> {
         return data.ReadVideoHoleQuadState(out);
       case viz::mojom::DrawQuadStateDataView::Tag::YUV_VIDEO_QUAD_STATE:
         return data.ReadYuvVideoQuadState(out);
+      case viz::mojom::DrawQuadStateDataView::Tag::SHARED_ELEMENT_QUAD_STATE:
+        return data.ReadSharedElementQuadState(out);
     }
     NOTREACHED();
     return false;
   }
+};
+
+template <>
+struct StructTraits<viz::mojom::SharedElementQuadStateDataView, viz::DrawQuad> {
+  static const viz::SharedElementResourceId& resource_id(
+      const viz::DrawQuad& input) {
+    const viz::SharedElementDrawQuad* quad =
+        viz::SharedElementDrawQuad::MaterialCast(&input);
+    return quad->resource_id;
+  }
+
+  static bool Read(viz::mojom::SharedElementQuadStateDataView data,
+                   viz::DrawQuad* out);
 };
 
 template <>

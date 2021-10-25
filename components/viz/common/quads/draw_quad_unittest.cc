@@ -23,6 +23,7 @@
 #include "components/viz/common/quads/debug_border_draw_quad.h"
 #include "components/viz/common/quads/largest_draw_quad.h"
 #include "components/viz/common/quads/picture_draw_quad.h"
+#include "components/viz/common/quads/shared_element_draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/stream_video_draw_quad.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
@@ -725,6 +726,9 @@ TEST(DrawQuadTest, LargestQuadType) {
       case DrawQuad::Material::kVideoHole:
         largest = std::max(largest, sizeof(VideoHoleDrawQuad));
         break;
+      case DrawQuad::Material::kSharedElement:
+        largest = std::max(largest, sizeof(SharedElementDrawQuad));
+        break;
       case DrawQuad::Material::kInvalid:
         break;
     }
@@ -772,6 +776,9 @@ TEST(DrawQuadTest, LargestQuadType) {
         break;
       case DrawQuad::Material::kVideoHole:
         LOG(ERROR) << "VideoHoleDrawQuad " << sizeof(VideoHoleDrawQuad);
+        break;
+      case DrawQuad::Material::kSharedElement:
+        LOG(ERROR) << "SharedElementDrawQuad " << sizeof(SharedElementDrawQuad);
         break;
       case DrawQuad::Material::kInvalid:
         break;
