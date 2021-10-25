@@ -275135,7 +275135,7 @@
          []
         ],
         "createImageBitmap-drawImage-expected.txt": [
-         "df85656badd79f753651385fa628a50ef56a4826",
+         "515ad96989d21446c5e02728594567fcce0f0509",
          []
         ],
         "createImageBitmap-exif-orientation-expected.txt": [
@@ -275143,7 +275143,7 @@
          []
         ],
         "createImageBitmap-flipY-expected.txt": [
-         "1f5c55f0804b03e548a57dff0b27a6c4876fadd3",
+         "b24d6caa87ae788f5881f61b21366594a81c62c7",
          []
         ],
         "createImageBitmap-worker.js": [
@@ -409706,7 +409706,7 @@
          ]
         ],
         "createImageBitmap-drawImage.html": [
-         "6f15a10eccec0bf0d36d68951d971493343c4474",
+         "e734820d116b772d03c9f5579f768ab1be99bcd1",
          [
           null,
           {}
@@ -409720,7 +409720,7 @@
          ]
         ],
         "createImageBitmap-flipY.html": [
-         "f1fea5971fe5cda18f0a532aa96bb663e1f9bfd4",
+         "99d08d830075d86fb00ca57ea3e96ead7a50c236",
          [
           null,
           {}
