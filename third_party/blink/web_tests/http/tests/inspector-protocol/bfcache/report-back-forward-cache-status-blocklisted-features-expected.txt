@@ -4,16 +4,8 @@ Test that back/forward navigations report the bfcache status
     loaderId : <string>
     notRestoredExplanations : [
         [0] : {
-            reason : RelatedActiveContentsExist
-            type : Circumstantial
-        }
-        [1] : {
             reason : IdleManager
             type : PageSupportNeeded
-        }
-        [2] : {
-            reason : BrowsingInstanceNotSwapped
-            type : Circumstantial
         }
     ]
 }
@@ -22,19 +14,7 @@ Test that back/forward navigations report the bfcache status
     loaderId : <string>
     notRestoredExplanations : [
         [0] : {
-            reason : RelatedActiveContentsExist
-            type : Circumstantial
-        }
-        [1] : {
             reason : HTTPStatusNotOK
-            type : Circumstantial
-        }
-        [2] : {
-            reason : BrowsingInstanceNotSwapped
-            type : Circumstantial
-        }
-        [3] : {
-            reason : NoResponseHead
             type : Circumstantial
         }
     ]

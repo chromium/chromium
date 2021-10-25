@@ -12,8 +12,7 @@
   await session.evaluate("navigator.mediaSession.playbackState = 'playing'");
 
   // Navigate to Page B.
-  await page.navigate(
-      'https://devtools.test:8000/inspector-protocol/resources/empty.html');
+  await page.navigate('chrome://version');
 
   const {result: history} = await dp.Page.getNavigationHistory();
 
