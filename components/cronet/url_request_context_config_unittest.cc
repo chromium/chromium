@@ -138,6 +138,7 @@ TEST(URLRequestContextConfigTest, TestExperimentalOptionParsing) {
                   base::Value("MAP * 127.0.0.1"));
   // See http://crbug.com/696569.
   options.SetKey("disable_ipv6_on_wifi", base::Value(true));
+  options.SetKey("spdy_go_away_on_ip_change", base::Value(true));
   options.SetPath({"QUIC", "ios_network_service_type"}, base::Value(2));
   std::string options_json;
   EXPECT_TRUE(base::JSONWriter::Write(options, &options_json));
@@ -287,6 +288,10 @@ TEST(URLRequestContextConfigTest, TestExperimentalOptionParsing) {
   EXPECT_FALSE(context->host_resolver()
                    ->GetManagerForTesting()
                    ->check_ipv6_on_wifi_for_testing());
+
+  const net::HttpNetworkSessionParams* params =
+      context->GetNetworkSessionParams();
+  EXPECT_TRUE(params->spdy_go_away_on_ip_change);
 
   // All host resolution expected to be mapped to an immediately-resolvable IP.
   std::unique_ptr<net::HostResolver::ResolveHostRequest> resolve_request =
@@ -1336,6 +1341,98 @@ TEST(URLURLRequestContextConfigTest, DefaultEnableQuic) {
   const net::HttpNetworkSessionParams* params =
       context->GetNetworkSessionParams();
   EXPECT_EQ(true, params->enable_quic);
+}
+
+TEST(URLRequestContextConfigTest, SetSpdyGoAwayOnIPChange) {
+  base::test::TaskEnvironment task_environment_(
+      base::test::TaskEnvironment::MainThreadType::IO);
+
+  URLRequestContextConfig config(
+      // Enable QUIC.
+      true,
+      // QUIC User Agent ID.
+      "Default QUIC User Agent ID",
+      // Enable SPDY.
+      true,
+      // Enable Brotli.
+      false,
+      // Type of http cache.
+      URLRequestContextConfig::HttpCacheType::DISK,
+      // Max size of http cache in bytes.
+      1024000,
+      // Disable caching for HTTP responses. Other information may be stored in
+      // the cache.
+      false,
+      // Storage path for http cache and cookie storage.
+      "/data/data/org.chromium.net/app_cronet_test/test_storage",
+      // Accept-Language request header field.
+      "foreign-language",
+      // User-Agent request header field.
+      "fake agent",
+      // JSON encoded experimental options.
+      "{\"spdy_go_away_on_ip_change\":false}",
+      // MockCertVerifier to use for testing purposes.
+      std::unique_ptr<net::CertVerifier>(),
+      // Enable network quality estimator.
+      false,
+      // Enable Public Key Pinning bypass for local trust anchors.
+      true,
+      // Optional network thread priority.
+      absl::optional<double>());
+
+  net::URLRequestContextBuilder builder;
+  config.ConfigureURLRequestContextBuilder(&builder);
+  // Set a ProxyConfigService to avoid DCHECK failure when building.
+  builder.set_proxy_config_service(
+      std::make_unique<net::ProxyConfigServiceFixed>(
+          net::ProxyConfigWithAnnotation::CreateDirect()));
+  std::unique_ptr<net::URLRequestContext> context(builder.Build());
+  const net::HttpNetworkSessionParams* params =
+      context->GetNetworkSessionParams();
+  EXPECT_FALSE(params->spdy_go_away_on_ip_change);
+}
+
+TEST(URLRequestContextConfigTest, WrongSpdyGoAwayOnIPChangeValue) {
+  base::test::TaskEnvironment task_environment_(
+      base::test::TaskEnvironment::MainThreadType::IO);
+
+  URLRequestContextConfig config(
+      // Enable QUIC.
+      true,
+      // QUIC User Agent ID.
+      "Default QUIC User Agent ID",
+      // Enable SPDY.
+      true,
+      // Enable Brotli.
+      false,
+      // Type of http cache.
+      URLRequestContextConfig::HttpCacheType::DISK,
+      // Max size of http cache in bytes.
+      1024000,
+      // Disable caching for HTTP responses. Other information may be stored in
+      // the cache.
+      false,
+      // Storage path for http cache and cookie storage.
+      "/data/data/org.chromium.net/app_cronet_test/test_storage",
+      // Accept-Language request header field.
+      "foreign-language",
+      // User-Agent request header field.
+      "fake agent",
+      // JSON encoded experimental options.
+      "{\"spdy_go_away_on_ip_change\":\"not a bool\"}",
+      // MockCertVerifier to use for testing purposes.
+      std::unique_ptr<net::CertVerifier>(),
+      // Enable network quality estimator.
+      false,
+      // Enable Public Key Pinning bypass for local trust anchors.
+      true,
+      // Optional network thread priority.
+      absl::optional<double>());
+
+  net::URLRequestContextBuilder builder;
+  config.ConfigureURLRequestContextBuilder(&builder);
+  EXPECT_FALSE(config.effective_experimental_options->HasKey(
+      "spdy_go_away_on_ip_change"));
 }
 
 // See stale_host_resolver_unittest.cc for test of StaleDNS options.
