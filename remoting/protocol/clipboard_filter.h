@@ -8,13 +8,16 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "remoting/protocol/clipboard_stub.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace remoting {
 namespace protocol {
 
 // Forwards clipboard events to |clipboard_stub|, if configured.  Event
 // forwarding may also be disabled independently of the configured
-// |clipboard_stub|. ClipboardFilters initially have event forwarding enabled.
+// |clipboard_stub|. ClipboardFilters initially have event forwarding enabled
+// and no maximum size set.  If |max_size| is configured, it will be used to
+// limit the amount of data transferred when InjectClipboardEvent() is called.
 class ClipboardFilter : public ClipboardStub {
  public:
   ClipboardFilter();
@@ -32,12 +35,15 @@ class ClipboardFilter : public ClipboardStub {
   void set_enabled(bool enabled) { enabled_ = enabled; }
   bool enabled() const { return enabled_; }
 
+  void set_max_size(size_t max_size) { max_size_ = max_size; }
+
   // ClipboardStub interface.
   void InjectClipboardEvent(const ClipboardEvent& event) override;
 
  private:
-  ClipboardStub* clipboard_stub_;
-  bool enabled_;
+  ClipboardStub* clipboard_stub_ = nullptr;
+  bool enabled_ = true;
+  absl::optional<size_t> max_size_;
 };
 
 }  // namespace protocol

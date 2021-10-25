@@ -22,6 +22,7 @@
 #include "remoting/protocol/port_range.h"
 #include "remoting/protocol/validating_authenticator.h"
 #include "remoting/signaling/signal_strategy.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class DictionaryValue;
@@ -216,6 +217,9 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
 
   // The host port range policy setting.
   PortRange udp_port_range_;
+
+  // Stores the clipboard size policy value.
+  absl::optional<size_t> clipboard_size_;
 
   // Tracks the JID of the remote user when in a connecting state.
   std::string connecting_jid_;

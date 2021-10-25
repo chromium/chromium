@@ -256,9 +256,12 @@ class ClientSession : public protocol::HostStub,
   // pipeline.
   protocol::ClipboardEchoFilter clipboard_echo_filter_;
 
-  // Filters used to manage enabling & disabling of input & clipboard.
+  // Filters used to manage enabling & disabling of input.
   protocol::InputFilter disable_input_filter_;
-  protocol::ClipboardFilter disable_clipboard_filter_;
+
+  // Used to enable/disable clipboard sync and to restrict payload size.
+  protocol::ClipboardFilter host_clipboard_filter_;
+  protocol::ClipboardFilter client_clipboard_filter_;
 
   // Factory for weak pointers to the client clipboard stub.
   // This must appear after |clipboard_echo_filter_|, so that it won't outlive

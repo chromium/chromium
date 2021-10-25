@@ -74,8 +74,9 @@ ClientSession::ClientSession(
       mouse_clamping_filter_(&remote_input_filter_),
       desktop_and_cursor_composer_notifier_(&mouse_clamping_filter_, this),
       disable_input_filter_(&desktop_and_cursor_composer_notifier_),
-      disable_clipboard_filter_(clipboard_echo_filter_.host_filter()),
-      client_clipboard_factory_(clipboard_echo_filter_.client_filter()),
+      host_clipboard_filter_(clipboard_echo_filter_.host_filter()),
+      client_clipboard_filter_(clipboard_echo_filter_.client_filter()),
+      client_clipboard_factory_(&client_clipboard_filter_),
       max_duration_(max_duration),
       pairing_registry_(pairing_registry),
       connection_(std::move(connection)),
@@ -421,8 +422,15 @@ void ClientSession::OnConnectionAuthenticated() {
   connection_->set_input_stub(&disable_input_filter_);
   host_input_filter_.set_input_stub(input_injector_.get());
 
+  if (desktop_environment_options_.clipboard_size().has_value()) {
+    int max_size = desktop_environment_options_.clipboard_size().value();
+
+    client_clipboard_filter_.set_max_size(max_size);
+    host_clipboard_filter_.set_max_size(max_size);
+  }
+
   // Connect the clipboard stubs.
-  connection_->set_clipboard_stub(&disable_clipboard_filter_);
+  connection_->set_clipboard_stub(&host_clipboard_filter_);
   clipboard_echo_filter_.set_host_stub(input_injector_.get());
   clipboard_echo_filter_.set_client_stub(connection_->client_stub());
 }
@@ -592,7 +600,7 @@ void ClientSession::SetDisableInputs(bool disable_inputs) {
     input_tracker_.ReleaseAll();
 
   disable_input_filter_.set_enabled(!disable_inputs);
-  disable_clipboard_filter_.set_enabled(!disable_inputs);
+  host_clipboard_filter_.set_enabled(!disable_inputs);
 }
 
 uint32_t ClientSession::desktop_session_id() const {

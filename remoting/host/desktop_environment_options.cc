@@ -119,6 +119,15 @@ void DesktopEnvironmentOptions::set_enable_remote_webauthn(bool enabled) {
   enable_remote_webauthn_ = enabled;
 }
 
+const absl::optional<size_t>& DesktopEnvironmentOptions::clipboard_size()
+    const {
+  return clipboard_size_;
+}
+
+void DesktopEnvironmentOptions::set_clipboard_size(size_t clipboard_size) {
+  clipboard_size_ = clipboard_size;
+}
+
 void DesktopEnvironmentOptions::ApplySessionOptions(
     const SessionOptions& options) {
 #if defined(OS_WIN)
