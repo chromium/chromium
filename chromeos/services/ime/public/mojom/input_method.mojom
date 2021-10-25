@@ -6,7 +6,7 @@
 // the Chromium repo. This file should be updated first, before syncing in the
 // other repos.
 
-// Next MinVersion: 6
+// Next MinVersion: 7
 
 module chromeos.ime.mojom;
 
@@ -290,9 +290,45 @@ struct LatinSettings {
   [MinVersion=5] bool predictive_writing@1;
 };
 
-// Next ordinal: 0
+// Fuzzy Pinyin allows users to input similar sounding syllables as if they were
+// the same thing. For example, if `an_ang` is enabled, then inputting the "an"
+// syllable will also show results for "ang".
+// This is useful for users with different regional accents.
+// Next ordinal: 12
+[Stable]
+struct FuzzyPinyinSettings {
+  bool an_ang@0;
+  bool en_eng@1;
+  bool ian_iang@2;
+  bool k_g@3;
+  bool r_l@4;
+  bool uan_uang@5;
+  bool c_ch@6;
+  bool f_h@7;
+  bool in_ing@8;
+  bool l_n@9;
+  bool s_sh@10;
+  bool z_zh@11;
+};
+
+// Next ordinal: 3
+[Stable, Extensible]
+enum PinyinLayout {
+  [Default] kUsQwerty = 0,
+  kDvorak = 1,
+  kColemak = 2,
+};
+
+// Next ordinal: 7
 [Stable]
 struct PinyinSettings {
+  [MinVersion=6] FuzzyPinyinSettings? fuzzy_pinyin@0;
+  [MinVersion=6] PinyinLayout layout@1;
+  [MinVersion=6] bool use_hyphen_and_equals_to_page_candidates@2;
+  [MinVersion=6] bool use_comma_and_period_to_page_candidates@3;
+  [MinVersion=6] bool default_to_chinese@4;
+  [MinVersion=6] bool default_to_full_width_characters@5;
+  [MinVersion=6] bool default_to_full_width_punctuation@6;
 };
 
 // Next ordinal: 0
