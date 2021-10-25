@@ -29,6 +29,7 @@
 #include "ash/capture_mode/recording_overlay_controller.h"
 #include "ash/capture_mode/stop_recording_button_tray.h"
 #include "ash/capture_mode/test_capture_mode_delegate.h"
+#include "ash/capture_mode/user_nudge_controller.h"
 #include "ash/capture_mode/video_recording_watcher.h"
 #include "ash/constants/ash_features.h"
 #include "ash/display/cursor_window_controller.h"
@@ -267,6 +268,10 @@ class CaptureModeSessionTestApi {
 
   views::Widget* dimensions_label_widget() const {
     return session_->dimensions_label_widget_.get();
+  }
+
+  UserNudgeController* user_nudge_controller() const {
+    return session_->user_nudge_controller_.get();
   }
 
   const MagnifierGlass& magnifier_glass() const {
@@ -1259,8 +1264,7 @@ TEST_F(CaptureModeTest, MultiDisplayFullscreenOrWindowSourceRootWindow) {
     SCOPED_TRACE(source == CaptureModeSource::kFullscreen ? "Fullscreen source"
                                                           : "Window source");
 
-    auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
-                                           CaptureModeType::kImage);
+    auto* controller = StartCaptureSession(source, CaptureModeType::kImage);
     auto* session = controller->capture_mode_session();
     EXPECT_EQ(Shell::GetAllRootWindows()[0], session->current_root());
 
@@ -4916,9 +4920,151 @@ class CaptureModeAdvancedSettingsTest : public CaptureModeTest {
         .capture_mode_advanced_settings_view();
   }
 
+  UserNudgeController* GetUserNudgeController() const {
+    auto* session = CaptureModeController::Get()->capture_mode_session();
+    DCHECK(session);
+    return CaptureModeSessionTestApi(session).user_nudge_controller();
+  }
+
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+enum class NudgeDismissalCause {
+  kPressSettingsButton,
+  kCaptureViaEnterKey,
+  kCaptureViaClickOnScreen,
+  kCaptureViaLabelButton,
+};
+
+// Test fixture to test that various causes that lead to the dismissal of the
+// user nudge, they dismiss it forever.
+class CaptureModeNudgeDismissalTest
+    : public CaptureModeAdvancedSettingsTest,
+      public ::testing::WithParamInterface<NudgeDismissalCause> {
+ public:
+  // Starts a session appropriate for the test param.
+  CaptureModeController* StartSession() {
+    switch (GetParam()) {
+      case NudgeDismissalCause::kPressSettingsButton:
+      case NudgeDismissalCause::kCaptureViaEnterKey:
+      case NudgeDismissalCause::kCaptureViaClickOnScreen:
+        return StartCaptureSession(CaptureModeSource::kFullscreen,
+                                   CaptureModeType::kImage);
+      case NudgeDismissalCause::kCaptureViaLabelButton:
+        auto* controller = CaptureModeController::Get();
+        controller->SetUserCaptureRegion(gfx::Rect(200, 300), /*by_user=*/true);
+        StartCaptureSession(CaptureModeSource::kRegion,
+                            CaptureModeType::kImage);
+        return controller;
+    }
+  }
+
+  void DoDismissalAction() {
+    auto* controller = CaptureModeController::Get();
+    auto* event_generator = GetEventGenerator();
+    switch (GetParam()) {
+      case NudgeDismissalCause::kPressSettingsButton:
+        ClickOnView(GetSettingsButton(), event_generator);
+        break;
+      case NudgeDismissalCause::kCaptureViaEnterKey:
+        PressAndReleaseKey(ui::VKEY_RETURN);
+        EXPECT_FALSE(controller->IsActive());
+        break;
+      case NudgeDismissalCause::kCaptureViaClickOnScreen:
+        event_generator->MoveMouseToCenterOf(Shell::GetPrimaryRootWindow());
+        event_generator->ClickLeftButton();
+        EXPECT_FALSE(controller->IsActive());
+        break;
+      case NudgeDismissalCause::kCaptureViaLabelButton:
+        auto* label_button_widget =
+            CaptureModeSessionTestApi(controller->capture_mode_session())
+                .capture_label_widget();
+        EXPECT_TRUE(label_button_widget);
+        ClickOnView(label_button_widget->GetContentsView(), event_generator);
+        break;
+    }
+  }
+};
+
+TEST_P(CaptureModeNudgeDismissalTest, NudgeDismissedForever) {
+  auto* controller = StartSession();
+  auto* nudge_controller = GetUserNudgeController();
+  ASSERT_TRUE(nudge_controller);
+  EXPECT_TRUE(nudge_controller->is_visible());
+  EXPECT_TRUE(nudge_controller->toast_widget());
+
+  // Trigger the action that dismisses the nudge forever, it should be removed
+  // in this session (if the action doesn't stop the session) and any future
+  // sessions.
+  DoDismissalAction();
+  if (controller->IsActive()) {
+    EXPECT_FALSE(GetUserNudgeController());
+    // Close the session in preparation for opening a new one.
+    controller->Stop();
+  }
+
+  // Reopen a new session, the nudge should not show anymore.
+  StartImageRegionCapture();
+  EXPECT_FALSE(GetUserNudgeController());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    CaptureModeNudgeDismissalTest,
+    testing::Values(NudgeDismissalCause::kPressSettingsButton,
+                    NudgeDismissalCause::kCaptureViaEnterKey,
+                    NudgeDismissalCause::kCaptureViaClickOnScreen,
+                    NudgeDismissalCause::kCaptureViaLabelButton));
+
+TEST_F(CaptureModeAdvancedSettingsTest, NudgeChangesRootWithBar) {
+  UpdateDisplay("800x700,801+0-800x700");
+
+  auto* event_generator = GetEventGenerator();
+  MoveMouseToAndUpdateCursorDisplay(gfx::Point(100, 500), event_generator);
+
+  auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
+                                         CaptureModeType::kImage);
+  auto* session = controller->capture_mode_session();
+  EXPECT_EQ(Shell::GetAllRootWindows()[0], session->current_root());
+  auto* nudge_controller = GetUserNudgeController();
+  EXPECT_EQ(
+      nudge_controller->toast_widget()->GetNativeWindow()->GetRootWindow(),
+      session->current_root());
+
+  MoveMouseToAndUpdateCursorDisplay(gfx::Point(1000, 500), event_generator);
+  EXPECT_EQ(Shell::GetAllRootWindows()[1], session->current_root());
+  EXPECT_EQ(
+      nudge_controller->toast_widget()->GetNativeWindow()->GetRootWindow(),
+      session->current_root());
+}
+
+TEST_F(CaptureModeAdvancedSettingsTest, NudgeBehaviorWhenSelectingRegion) {
+  UpdateDisplay("800x700,801+0-800x700");
+
+  auto* event_generator = GetEventGenerator();
+  MoveMouseToAndUpdateCursorDisplay(gfx::Point(100, 500), event_generator);
+
+  auto* controller = StartImageRegionCapture();
+  auto* session = controller->capture_mode_session();
+  EXPECT_EQ(Shell::GetAllRootWindows()[0], session->current_root());
+
+  // Nudge hides while selecting a region, but doesn't change roots until the
+  // region change is committed.
+  auto* nudge_controller = GetUserNudgeController();
+  MoveMouseToAndUpdateCursorDisplay(gfx::Point(1000, 500), event_generator);
+  event_generator->PressLeftButton();
+  EXPECT_FALSE(nudge_controller->is_visible());
+  event_generator->MoveMouseBy(50, 60);
+  event_generator->ReleaseLeftButton();
+  EXPECT_EQ(Shell::GetAllRootWindows()[1], session->current_root());
+
+  // The nudge shows again, and is on the second display.
+  EXPECT_TRUE(nudge_controller->is_visible());
+  EXPECT_EQ(
+      nudge_controller->toast_widget()->GetNativeWindow()->GetRootWindow(),
+      session->current_root());
+}
 
 // Tests that clicking on audio input buttons updates the state in the
 // controller, and persists between sessions.

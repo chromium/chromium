@@ -132,7 +132,9 @@ gfx::Transform GetScaleTransform(const gfx::Rect& bounds, float scale) {
 
 }  // namespace
 
-CaptureLabelView::CaptureLabelView(CaptureModeSession* capture_mode_session)
+CaptureLabelView::CaptureLabelView(
+    CaptureModeSession* capture_mode_session,
+    base::RepeatingClosure on_capture_button_pressed)
     : timeout_count_down_(kCountDownStartSeconds),
       capture_mode_session_(capture_mode_session) {
   SetPaintToLayer();
@@ -149,9 +151,7 @@ CaptureLabelView::CaptureLabelView(CaptureModeSession* capture_mode_session)
   SkColor text_color = color_provider->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorPrimary);
   label_button_ = AddChildView(std::make_unique<views::LabelButton>(
-      base::BindRepeating(&CaptureLabelView::OnButtonPressed,
-                          base::Unretained(this)),
-      std::u16string()));
+      std::move(on_capture_button_pressed), std::u16string()));
   label_button_->SetPaintToLayer();
   label_button_->layer()->SetFillsBoundsOpaquely(false);
   label_button_->SetEnabledTextColors(text_color);
@@ -466,10 +466,6 @@ void CaptureLabelView::StartWidgetLayerAnimationSequences() {
   widget_transform_sequence->AddObserver(animation_observer_.get());
   GetWidget()->GetLayer()->GetAnimator()->StartTogether(
       {widget_opacity_sequence.release(), widget_transform_sequence.release()});
-}
-
-void CaptureLabelView::OnButtonPressed() {
-  CaptureModeController::Get()->PerformCapture();
 }
 
 BEGIN_METADATA(CaptureLabelView, views::View)

@@ -62,17 +62,14 @@ class ANIMATION_EXPORT Tween {
     // ACCEL_20_DECEL_20 = (0.2, 0, 0.8, 1): https://cubic-bezier.com/#.2,0,.8,1
     // ACCEL_100_DECEL_100 = (1, 0, 0, 1): https://cubic-bezier.com/#1,0,0,1
     // ACCEL_LIN_DECEL_LIN = (0, 0, 1, 1): https://cubic-bezier.com/#0,0,1,1
-    // ACCEL_40_DECEL_80 = (0.4, 0, 0.2, 1): https://cubic-bezier.com/#.4,0,.2,1
+    // ACCEL_40_DECEL_20 = (0.4, 0, 0.8, 1): https://cubic-bezier.com/#.4,0,.8,1
     ACCEL_LIN_DECEL_60,   // Pulling a small to medium element into a place.
     ACCEL_LIN_DECEL_100,  // Pulling a small to medium element into a place that
                           // has very fast deceleration.
     ACCEL_20_DECEL_60,  // Moving a small, low emphasis or responsive elements.
     ACCEL_20_DECEL_100,
-    ACCEL_80_DECEL_20,  // Slow in and fast out with ease.
-
-    // ACCEL_0_<1>_DECEL_<2> where <1> and <2> are used to express the
-    // acceleration and deceleration speeds. The corresponding cubic bezier
-    // curve parameters would be ( 0, 0.01 * <1>, 1 - 0.01 * <2>, 1 ).
+    ACCEL_40_DECEL_20,
+    ACCEL_80_DECEL_20,     // Slow in and fast out with ease.
     ACCEL_0_40_DECEL_100,  // Specialized curve with an emphasized deceleration
                            // drift.
     ACCEL_0_80_DECEL_80,   // Variant of ACCEL_0_40_DECEL_100 which drops in

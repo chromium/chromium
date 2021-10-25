@@ -18,6 +18,7 @@
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/capture_window_observer.h"
 #include "ash/capture_mode/folder_selection_dialog_controller.h"
+#include "ash/capture_mode/user_nudge_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/display/mouse_cursor_event_filter.h"
 #include "ash/display/screen_orientation_controller.h"
@@ -30,6 +31,7 @@
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_dimmer.h"
+#include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
@@ -598,6 +600,8 @@ void CaptureModeSession::Initialize() {
       this, ui::EventTarget::Priority::kSystem);
 
   UpdateAutoclickMenuBoundsIfNeeded();
+
+  MaybeCreateUserNudge();
 }
 
 void CaptureModeSession::Shutdown() {
@@ -700,6 +704,8 @@ void CaptureModeSession::SetSettingsMenuShown(bool shown) {
     auto* parent = GetParentContainer(current_root_);
     capture_mode_settings_widget_ = std::make_unique<views::Widget>();
     if (features::AreImprovedScreenCaptureSettingsEnabled()) {
+      MaybeDismissUserNudgeForever();
+
       capture_mode_settings_widget_->Init(CreateWidgetParams(
           parent,
           CaptureModeAdvancedSettingsView::GetBounds(capture_mode_bar_view_),
@@ -858,7 +864,7 @@ void CaptureModeSession::OnKeyEvent(ui::KeyEvent* event) {
     case ui::VKEY_RETURN: {
       event->StopPropagation();
       if (!IsInCountDownAnimation())
-        controller_->PerformCapture();  // |this| is destroyed here.
+        DoPerformCapture();  // `this` can be deleted after this.
       return;
     }
 
@@ -959,9 +965,7 @@ void CaptureModeSession::OnDisplayMetricsChanged(
   DCHECK_EQ(parent->layer(), layer()->parent());
   layer()->SetBounds(parent->bounds());
 
-  DCHECK(capture_mode_bar_widget_);
-  capture_mode_bar_widget_->SetBounds(
-      CaptureModeBarView::GetBounds(current_root_));
+  RefreshBarWidgetBounds();
   if (capture_label_widget_)
     UpdateCaptureLabelWidget(CaptureLabelAnimation::kNone);
   layer()->SchedulePaint(layer()->bounds());
@@ -1055,6 +1059,44 @@ void CaptureModeSession::HighlightWindowForTab(aura::Window* window) {
   DCHECK_EQ(CaptureModeSource::kWindow, controller_->source());
   MaybeChangeRoot(window->GetRootWindow());
   capture_window_observer_->SetSelectedWindow(window);
+}
+
+void CaptureModeSession::RefreshBarWidgetBounds() {
+  DCHECK(capture_mode_bar_widget_);
+  capture_mode_bar_widget_->SetBounds(
+      CaptureModeBarView::GetBounds(current_root_));
+  auto* parent = GetParentContainer(current_root_);
+  parent->StackChildAtTop(capture_mode_bar_widget_->GetNativeWindow());
+  if (user_nudge_controller_)
+    user_nudge_controller_->Reposition();
+}
+
+void CaptureModeSession::MaybeCreateUserNudge() {
+  user_nudge_controller_.reset();
+
+  if (!features::AreImprovedScreenCaptureSettingsEnabled())
+    return;
+
+  if (is_in_projector_mode_)
+    return;
+
+  if (!controller_->CanShowFolderSelectionNudge())
+    return;
+
+  user_nudge_controller_ = std::make_unique<UserNudgeController>(
+      capture_mode_bar_view_->settings_button());
+  user_nudge_controller_->SetVisible(true);
+}
+
+void CaptureModeSession::MaybeDismissUserNudgeForever() {
+  if (user_nudge_controller_)
+    user_nudge_controller_->set_should_dismiss_nudge_forever(true);
+  user_nudge_controller_.reset();
+}
+
+void CaptureModeSession::DoPerformCapture() {
+  MaybeDismissUserNudgeForever();
+  controller_->PerformCapture();  // `this` can be deleted after this.
 }
 
 gfx::Rect CaptureModeSession::GetSelectedWindowBounds() const {
@@ -1251,10 +1293,7 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
   if (is_release_event && source == CaptureModeSource::kRegion &&
       current_root_ !=
           capture_mode_bar_widget_->GetNativeWindow()->GetRootWindow()) {
-    capture_mode_bar_widget_->SetBounds(
-        CaptureModeBarView::GetBounds(current_root_));
-    auto* parent = GetParentContainer(current_root_);
-    parent->StackChildAtTop(capture_mode_bar_widget_->GetNativeWindow());
+    RefreshBarWidgetBounds();
   }
 
   const bool is_event_on_settings_menu =
@@ -1316,7 +1355,7 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
       case ui::ET_MOUSE_RELEASED:
       case ui::ET_TOUCH_RELEASED:
         if (is_capture_fullscreen || (is_capture_window && GetSelectedWindow()))
-          controller_->PerformCapture();
+          DoPerformCapture();  // `this` can be deleted after this.
         break;
       default:
         break;
@@ -1437,6 +1476,9 @@ void CaptureModeSession::OnLocatedEventPressed(
   is_drag_in_progress_ = true;
   Shell::Get()->UpdateCursorCompositingEnabled();
 
+  if (user_nudge_controller_)
+    user_nudge_controller_->SetVisible(false);
+
   if (!is_event_on_capture_bar_or_menu)
     UpdateCaptureBarWidgetOpacity(0.f, /*on_release=*/false);
 
@@ -1529,6 +1571,9 @@ void CaptureModeSession::OnLocatedEventDragged(
 void CaptureModeSession::OnLocatedEventReleased(
     bool is_event_on_capture_bar_or_menu,
     bool region_intersects_capture_bar) {
+  if (user_nudge_controller_ && !region_intersects_capture_bar)
+    user_nudge_controller_->SetVisible(true);
+
   EndSelection(is_event_on_capture_bar_or_menu, region_intersects_capture_bar);
 
   // Do a repaint to show the affordance circles.
@@ -1697,8 +1742,9 @@ void CaptureModeSession::UpdateCaptureLabelWidget(
     auto* parent = GetParentContainer(current_root_);
     capture_label_widget_->Init(
         CreateWidgetParams(parent, gfx::Rect(), "CaptureLabel"));
-    capture_label_widget_->SetContentsView(
-        std::make_unique<CaptureLabelView>(this));
+    capture_label_widget_->SetContentsView(std::make_unique<CaptureLabelView>(
+        this, base::BindRepeating(&CaptureModeSession::DoPerformCapture,
+                                  base::Unretained(this))));
     capture_label_widget_->Show();
   }
 
@@ -1945,10 +1991,8 @@ void CaptureModeSession::MaybeChangeRoot(aura::Window* new_root) {
   // Update the bounds of the widgets after setting the new root. For region
   // capture, the capture bar will move at a later time, when the mouse is
   // released.
-  if (controller_->source() != CaptureModeSource::kRegion) {
-    capture_mode_bar_widget_->SetBounds(
-        CaptureModeBarView::GetBounds(current_root_));
-  }
+  if (controller_->source() != CaptureModeSource::kRegion)
+    RefreshBarWidgetBounds();
 
   // Because we use custom cursors for region and full screen capture, we need
   // to update the cursor in case the display DSF changes.

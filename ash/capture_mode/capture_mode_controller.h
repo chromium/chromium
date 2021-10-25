@@ -106,6 +106,15 @@ class ASH_EXPORT CaptureModeController
   // update |last_capture_region_update_time_|.
   void SetUserCaptureRegion(const gfx::Rect& region, bool by_user);
 
+  // Returns true if we can show a user nudge animation and a toast message to
+  // alert the user about the new settings to customize the save folder path.
+  bool CanShowFolderSelectionNudge() const;
+
+  // Disables showing the folder selection nudge from now on. Calling the above
+  // CanShowFolderSelectionNudge() will return false for the current active user
+  // going forward.
+  void DisableFolderSelectionNudgeForever();
+
   // Sets whether the currently logged in user selected to use the default
   // "Downloads" folder as the current save location, even while they already
   // have a currently set custom folder. When this setting is true, any

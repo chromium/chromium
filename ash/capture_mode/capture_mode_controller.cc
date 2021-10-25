@@ -99,6 +99,13 @@ constexpr char kCustomCapturePathPrefName[] =
 constexpr char kUsesDefaultCapturePathPrefName[] =
     "ash.capture_mode.uses_default_capture_path";
 
+// The name of a boolean pref that determines whether we can show the folder
+// selection user nudge. When this pref is false, it means that we showed the
+// nudge at some point and the user interacted with the capture mode session UI
+// in such a way that the nudge no longer needs to be displayed again.
+constexpr char kCanShowFolderSelectionNudge[] =
+    "ash.capture_mode.can_show_folder_selection_nudge";
+
 // The screenshot notification button index.
 enum ScreenshotNotificationButtonIndex {
   BUTTON_EDIT = 0,
@@ -413,6 +420,8 @@ void CaptureModeController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                  /*default_value=*/base::FilePath());
   registry->RegisterBooleanPref(kUsesDefaultCapturePathPrefName,
                                 /*default_value=*/false);
+  registry->RegisterBooleanPref(kCanShowFolderSelectionNudge,
+                                /*default_value=*/true);
 }
 
 bool CaptureModeController::IsActive() const {
@@ -521,6 +530,14 @@ void CaptureModeController::SetUserCaptureRegion(const gfx::Rect& region,
   user_capture_region_ = region;
   if (!user_capture_region_.IsEmpty() && by_user)
     last_capture_region_update_time_ = base::TimeTicks::Now();
+}
+
+bool CaptureModeController::CanShowFolderSelectionNudge() const {
+  return GetActiveUserPrefService()->GetBoolean(kCanShowFolderSelectionNudge);
+}
+
+void CaptureModeController::DisableFolderSelectionNudgeForever() {
+  GetActiveUserPrefService()->SetBoolean(kCanShowFolderSelectionNudge, false);
 }
 
 void CaptureModeController::SetUsesDefaultCaptureFolder(bool value) {

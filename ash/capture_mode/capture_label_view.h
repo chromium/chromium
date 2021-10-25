@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/capture_mode/capture_mode_session_focus_cycler.h"
+#include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/views/view.h"
 
@@ -34,7 +35,8 @@ class ASH_EXPORT CaptureLabelView
  public:
   METADATA_HEADER(CaptureLabelView);
 
-  explicit CaptureLabelView(CaptureModeSession* capture_mode_session);
+  CaptureLabelView(CaptureModeSession* capture_mode_session,
+                   base::RepeatingClosure on_capture_button_pressed);
   CaptureLabelView(const CaptureLabelView&) = delete;
   CaptureLabelView& operator=(const CaptureLabelView&) = delete;
   ~CaptureLabelView() override;
@@ -74,9 +76,6 @@ class ASH_EXPORT CaptureLabelView
   void StartLabelLayerAnimationSequences();
   // Starts the layer animation sequences for the entire widget if applicable.
   void StartWidgetLayerAnimationSequences();
-
-  // Called when |label_button_| is pressed.
-  void OnButtonPressed();
 
   // The label button that displays an icon and a text message. Can be user
   // interactable. When clicking/tapping on the button, start perform image or
