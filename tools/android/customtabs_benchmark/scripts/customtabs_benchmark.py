@@ -34,6 +34,7 @@ import chrome_setup
 
 # Local build of Chrome (not Chromium).
 _CHROME_PACKAGE = 'com.google.android.apps.chrome'
+_ZYGOTE_PACKAGE = 'com.google.android.apps.chrome.chrome_zygote'
 _COMMAND_LINE_FILE = 'chrome-command-line'
 _TEST_APP_PACKAGE_NAME = 'org.chromium.customtabs.test'
 _INVALID_VALUE = -1
@@ -107,6 +108,7 @@ def RunOnce(device, url, speculated_url, parallel_url, warmup,
     logcat_monitor = device.GetLogcatMonitor(clear=True)
     logcat_monitor.Start()
     device.ForceStop(_CHROME_PACKAGE)
+    device.ForceStop(_ZYGOTE_PACKAGE)
     device.ForceStop(_TEST_APP_PACKAGE_NAME)
 
     if reset_chrome_state:
@@ -186,16 +188,19 @@ def LoopOnDevice(device, configs, output_filename, once=False,
                        config['url'],
                        config.get('speculated_url', config['url']),
                        config.get('parallel_url', ''),
-                       config['warmup'], config['skip_launcher_activity'],
+                       config['warmup'],
+                       config['skip_launcher_activity'],
                        config['speculation_mode'],
                        config['delay_to_may_launch_url'],
-                       config['delay_to_launch_url'], config['cold'],
-                       config.get('pinning_benchmark', False),
-                       config.get('pin_filename', ''),
-                       config.get('pin_offset', -1),
-                       config.get('pin_length', -1),
-                       config.get('extra_brief_memory_mb', 0),
-                       chrome_args, reset_chrome_state=True)
+                       config['delay_to_launch_url'],
+                       config['cold'],
+                       config['pinning_benchmark'],
+                       config['pin_filename'],
+                       config['pin_offset'],
+                       config['pin_length'],
+                       config['extra_brief_memory_mb'],
+                       chrome_args,
+                       reset_chrome_state=True)
       if result is not None:
         out.write(result + '\n')
         out.flush()
