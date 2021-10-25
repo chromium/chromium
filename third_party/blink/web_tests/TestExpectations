@@ -2148,6 +2148,7 @@ crbug.com/555703 [ Win ] virtual/media-gpu-accelerated/* [ Skip ]
 crbug.com/555703 [ Fuchsia ] virtual/media-gpu-accelerated/* [ Skip ]
 
 crbug.com/467477 fast/multicol/vertical-rl/nested-columns.html [ Failure ]
+crbug.com/1262980 fast/multicol/infinitely-tall-content-in-outer-crash.html [ Pass Timeout ]
 
 crbug.com/400841 media/video-canvas-draw.html [ Failure ]
 
