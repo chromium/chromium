@@ -22,7 +22,7 @@ WebBundleLoader::WebBundleLoader(
     SubresourceWebBundle& subresource_web_bundle,
     Document& document,
     const KURL& url,
-    CrossOriginAttributeValue cross_origin_attribute_value)
+    network::mojom::CredentialsMode credentials_mode)
     : subresource_web_bundle_(&subresource_web_bundle),
       url_(url),
       security_origin_(SecurityOrigin::Create(url)),
@@ -41,15 +41,8 @@ WebBundleLoader::WebBundleLoader(
 
   // https://github.com/WICG/webpackage/blob/main/explainers/subresource-loading.md#requests-mode-and-credentials-mode
   request.SetMode(network::mojom::blink::RequestMode::kCors);
-  switch (cross_origin_attribute_value) {
-    case kCrossOriginAttributeNotSet:
-    case kCrossOriginAttributeAnonymous:
-      request.SetCredentialsMode(network::mojom::CredentialsMode::kSameOrigin);
-      break;
-    case kCrossOriginAttributeUseCredentials:
-      request.SetCredentialsMode(network::mojom::CredentialsMode::kInclude);
-      break;
-  }
+  request.SetCredentialsMode(credentials_mode);
+
   request.SetRequestDestination(network::mojom::RequestDestination::kWebBundle);
   request.SetPriority(ResourceLoadPriority::kHigh);
   // Skip the service worker for a short term solution.

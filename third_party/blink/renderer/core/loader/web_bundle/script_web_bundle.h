@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_WEB_BUNDLE_SCRIPT_WEB_BUNDLE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_WEB_BUNDLE_SCRIPT_WEB_BUNDLE_H_
 
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/loader/web_bundle/script_web_bundle_rule.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -46,6 +47,7 @@ class CORE_EXPORT ScriptWebBundle final
   void OnWebBundleError(const String& message) const override;
   bool IsScriptWebBundle() const override;
   bool WillBeReleased() const override;
+  network::mojom::CredentialsMode GetCredentialsMode() const override;
 
   void CreateBundleLoaderAndRegister();
   void ReleaseBundleLoaderAndUnregister();

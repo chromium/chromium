@@ -53,6 +53,7 @@ class CORE_EXPORT LinkWebBundle final : public LinkResource,
   void OnWebBundleError(const String& message) const override;
   bool IsScriptWebBundle() const override;
   bool WillBeReleased() const override;
+  network::mojom::CredentialsMode GetCredentialsMode() const override;
 
   // Returns a valid absolute URL if |str| can be parsed as a valid
   // absolute URL, or a relative URL with a given |base_url|.

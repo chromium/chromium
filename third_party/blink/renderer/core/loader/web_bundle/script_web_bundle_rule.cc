@@ -27,6 +27,17 @@ HashSet<KURL> ParseJSONArrayAsURLs(JSONArray* array, const KURL& base_url) {
   return urls;
 }
 
+network::mojom::CredentialsMode ParseCredentials(const String& credentials) {
+  if (credentials == "omit")
+    return network::mojom::CredentialsMode::kOmit;
+  if (credentials == "same-origin")
+    return network::mojom::CredentialsMode::kSameOrigin;
+  if (credentials == "include")
+    return network::mojom::CredentialsMode::kInclude;
+  // The default is "same-origin".
+  return network::mojom::CredentialsMode::kSameOrigin;
+}
+
 }  // namespace
 
 absl::optional<ScriptWebBundleRule> ScriptWebBundleRule::ParseJson(
@@ -48,20 +59,32 @@ absl::optional<ScriptWebBundleRule> ScriptWebBundleRule::ParseJson(
   if (!source_url.IsValid())
     return absl::nullopt;
 
+  network::mojom::CredentialsMode credentials_mode;
+  String credentials;
+  if (json_obj->GetString("credentials", &credentials)) {
+    credentials_mode = ParseCredentials(credentials);
+  } else {
+    // The default is "same-origin".
+    credentials_mode = network::mojom::CredentialsMode::kSameOrigin;
+  }
+
   HashSet<KURL> scope_urls =
       ParseJSONArrayAsURLs(json_obj->GetArray("scopes"), base_url);
 
   HashSet<KURL> resource_urls =
       ParseJSONArrayAsURLs(json_obj->GetArray("resources"), base_url);
 
-  return ScriptWebBundleRule(source_url, std::move(scope_urls),
-                             std::move(resource_urls));
+  return ScriptWebBundleRule(source_url, credentials_mode,
+                             std::move(scope_urls), std::move(resource_urls));
 }
 
-ScriptWebBundleRule::ScriptWebBundleRule(const KURL& source_url,
-                                         HashSet<KURL> scope_urls,
-                                         HashSet<KURL> resource_urls)
+ScriptWebBundleRule::ScriptWebBundleRule(
+    const KURL& source_url,
+    network::mojom::CredentialsMode credentials_mode,
+    HashSet<KURL> scope_urls,
+    HashSet<KURL> resource_urls)
     : source_url_(source_url),
+      credentials_mode_(credentials_mode),
       scope_urls_(std::move(scope_urls)),
       resource_urls_(std::move(resource_urls)) {}
 

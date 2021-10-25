@@ -52,8 +52,8 @@
       return createWebBundleElement(wbn_url, /*resources=*/ [resource1]);
     }
 
-    function createScriptWebBundle2() {
-      return createWebBundleElement(wbn_url, /*resources=*/ [resource2]);
+    function createScriptWebBundle2(options) {
+      return createWebBundleElement(wbn_url, /*resources=*/ [resource2], /*options=*/ options);
     }
 
     async function appendScriptWebBundle1AndFetchResource1() {
@@ -104,6 +104,51 @@
       await assertResource2CanBeFetched();
       assert_equals(webBundleFetchCount(), 0);
     }, "'remove(), then append()' should reuse webbundle resources");
+
+    promise_test(async (t) => {
+      t.add_cleanup(cleanUp);
+      await appendScriptWebBundle1AndFetchResource1();
+      clearWebBundleFetchCount();
+
+      // Remove script1, then append script2 with an explicit 'same-origin' credentials mode.
+      script1.remove();
+      script2 = createScriptWebBundle2({ credentials: "same-origin" });
+      document.body.append(script2);
+
+      await assertResource1CanNotBeFetched();
+      await assertResource2CanBeFetched();
+      assert_equals(webBundleFetchCount(), 0);
+    }, "Should reuse webbundle resources if a credential mode is same");
+
+    promise_test(async (t) => {
+      t.add_cleanup(cleanUp);
+      await appendScriptWebBundle1AndFetchResource1();
+      clearWebBundleFetchCount();
+
+      // Remove script1, then append script2 with a different credentials mode.
+      script1.remove();
+      script2 = createScriptWebBundle2({ credentials: "omit" });
+      document.body.append(script2);
+
+      await assertResource1CanNotBeFetched();
+      await assertResource2CanBeFetched();
+      assert_equals(webBundleFetchCount(), 1);
+    }, "Should not reuse webbundle resources if a credentials mode is different (same-origin vs omit)");
+
+    promise_test(async (t) => {
+      t.add_cleanup(cleanUp);
+      await appendScriptWebBundle1AndFetchResource1();
+      clearWebBundleFetchCount();
+
+      // Remove script1, then append script2 with a different credentials mode.
+      script1.remove();
+      script2 = createScriptWebBundle2({ credentials: "include" });
+      document.body.append(script2);
+
+      await assertResource1CanNotBeFetched();
+      await assertResource2CanBeFetched();
+      assert_equals(webBundleFetchCount(), 1);
+    }, "Should not reuse webbundle resources if a credential mode is different (same-origin vs include");
 
     promise_test(async (t) => {
       t.add_cleanup(cleanUp);

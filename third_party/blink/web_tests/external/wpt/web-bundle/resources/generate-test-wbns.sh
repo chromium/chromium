@@ -156,3 +156,8 @@ gen-bundle \
   -version b2 \
   -har uuid-in-package.har \
   -o wbn/uuid-in-package.wbn
+
+gen-bundle \
+  -version b2 \
+  -har simple-cross-origin.har \
+  -o wbn/simple-cross-origin.wbn
