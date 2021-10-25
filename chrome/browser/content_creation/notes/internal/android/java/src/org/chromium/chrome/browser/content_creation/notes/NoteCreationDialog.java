@@ -159,8 +159,13 @@ public class NoteCreationDialog extends DialogFragment {
 
                 int first_visible = layoutManager.findFirstCompletelyVisibleItemPosition();
                 int last_visible = layoutManager.findLastCompletelyVisibleItemPosition();
+
+                int newSelectedItemIndex = (last_visible - first_visible) / 2 + first_visible;
+                if (mSelectedItemIndex == newSelectedItemIndex) {
+                    return;
+                }
                 unFocus(mSelectedItemIndex);
-                mSelectedItemIndex = (last_visible - first_visible) / 2 + first_visible;
+                mSelectedItemIndex = newSelectedItemIndex;
                 ((TextView) mContentView.findViewById(R.id.title))
                         .setText(carouselItems.get(mSelectedItemIndex)
                                          .model.get(NoteProperties.TEMPLATE)
