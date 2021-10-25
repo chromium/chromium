@@ -278,7 +278,11 @@ WebURL WebDocument::CanonicalUrlForSharing() const {
   HTMLLinkElement* link_element = document->LinkCanonical();
   if (!link_element)
     return WebURL();
-  return link_element->Href();
+  KURL canon_url = link_element->Href();
+  KURL doc_url = document->Url();
+  if (doc_url.HasFragmentIdentifier() && !canon_url.HasFragmentIdentifier())
+    canon_url.SetFragmentIdentifier(doc_url.FragmentIdentifier());
+  return canon_url;
 }
 
 WebDistillabilityFeatures WebDocument::DistillabilityFeatures() {

@@ -13369,6 +13369,34 @@ TEST_F(WebFrameTest, GetCanonicalUrlForSharingMultiple) {
             frame->GetDocument().CanonicalUrlForSharing());
 }
 
+TEST_F(WebFrameTest, GetCanonicalURLWithCanonicalFragment) {
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.Initialize();
+  WebLocalFrameImpl* frame = web_view_helper.LocalMainFrame();
+  frame_test_helpers::LoadHTMLString(
+      frame, R"(
+    <head>
+      <link rel="canonical" href="https://example.com/canonical.html#a1">
+    </head>)",
+      ToKURL("https://example.com/test_page.html#a2"));
+  EXPECT_EQ(WebURL(ToKURL("https://example.com/canonical.html#a1")),
+            frame->GetDocument().CanonicalUrlForSharing());
+}
+
+TEST_F(WebFrameTest, GetCanonicalURLWithDocumentFragment) {
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.Initialize();
+  WebLocalFrameImpl* frame = web_view_helper.LocalMainFrame();
+  frame_test_helpers::LoadHTMLString(
+      frame, R"(
+    <head>
+      <link rel="canonical" href="https://example.com/canonical.html">
+    </head>)",
+      ToKURL("https://example.com/test_page.html#a2"));
+  EXPECT_EQ(WebURL(ToKURL("https://example.com/canonical.html#a2")),
+            frame->GetDocument().CanonicalUrlForSharing());
+}
+
 TEST_F(WebFrameSimTest, EnterFullscreenResetScrollAndScaleState) {
   UseAndroidSettings();
   WebView().MainFrameViewWidget()->Resize(gfx::Size(490, 500));
