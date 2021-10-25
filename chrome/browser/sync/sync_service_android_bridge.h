@@ -79,11 +79,8 @@ class SyncServiceAndroidBridge : public syncer::SyncServiceObserver {
   jboolean RequiresClientUpgrade(JNIEnv* env);
   void SetDecoupledFromAndroidMasterSync(JNIEnv* env);
   jboolean GetDecoupledFromAndroidMasterSync(JNIEnv* env);
-  // TODO(crbug.com/1254280): Replace "authenticated account" and "is primary"
-  // terminology.
-  base::android::ScopedJavaLocalRef<jobject> GetAuthenticatedAccountInfo(
-      JNIEnv* env);
-  jboolean IsAuthenticatedAccountPrimary(JNIEnv* env);
+  base::android::ScopedJavaLocalRef<jobject> GetAccountInfo(JNIEnv* env);
+  jboolean HasSyncConsent(JNIEnv* env);
   jboolean IsPassphrasePromptMutedForCurrentProductVersion(JNIEnv* env);
   void MarkPassphrasePromptMutedForCurrentProductVersion(JNIEnv* env);
   jboolean HasKeepEverythingSynced(JNIEnv* env);

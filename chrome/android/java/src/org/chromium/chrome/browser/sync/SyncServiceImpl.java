@@ -122,13 +122,13 @@ public class SyncServiceImpl extends SyncService {
     }
 
     @Override
-    public @Nullable CoreAccountInfo getAuthenticatedAccountInfo() {
-        return SyncServiceImplJni.get().getAuthenticatedAccountInfo(mSyncServiceAndroidBridge);
+    public @Nullable CoreAccountInfo getAccountInfo() {
+        return SyncServiceImplJni.get().getAccountInfo(mSyncServiceAndroidBridge);
     }
 
     @Override
-    public boolean isAuthenticatedAccountPrimary() {
-        return SyncServiceImplJni.get().isAuthenticatedAccountPrimary(mSyncServiceAndroidBridge);
+    public boolean hasSyncConsent() {
+        return SyncServiceImplJni.get().hasSyncConsent(mSyncServiceAndroidBridge);
     }
 
     @Override
@@ -431,8 +431,8 @@ public class SyncServiceImpl extends SyncService {
         void setDecoupledFromAndroidMasterSync(long nativeSyncServiceAndroidBridge);
         boolean getDecoupledFromAndroidMasterSync(long nativeSyncServiceAndroidBridge);
         @Nullable
-        CoreAccountInfo getAuthenticatedAccountInfo(long nativeSyncServiceAndroidBridge);
-        boolean isAuthenticatedAccountPrimary(long nativeSyncServiceAndroidBridge);
+        CoreAccountInfo getAccountInfo(long nativeSyncServiceAndroidBridge);
+        boolean hasSyncConsent(long nativeSyncServiceAndroidBridge);
         boolean isPassphrasePromptMutedForCurrentProductVersion(
                 long nativeSyncServiceAndroidBridge);
         void markPassphrasePromptMutedForCurrentProductVersion(long nativeSyncServiceAndroidBridge);

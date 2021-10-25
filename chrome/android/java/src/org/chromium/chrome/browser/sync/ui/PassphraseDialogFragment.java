@@ -184,8 +184,8 @@ public class PassphraseDialogFragment extends DialogFragment implements OnClickL
 
     private SpannableString getPromptText() {
         SyncService syncService = SyncService.get();
-        String accountName = getString(R.string.sync_account_info,
-                                     syncService.getAuthenticatedAccountInfo().getEmail())
+        String accountName =
+                getString(R.string.sync_account_info, syncService.getAccountInfo().getEmail())
                 + "\n\n";
         Date passphraseTime = syncService.getExplicitPassphraseTime();
         if (passphraseTime != null) {

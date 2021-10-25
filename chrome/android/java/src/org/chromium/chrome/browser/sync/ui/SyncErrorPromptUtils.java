@@ -199,7 +199,7 @@ public class SyncErrorPromptUtils {
     }
 
     private static void openTrustedVaultKeyRetrievalActivity() {
-        CoreAccountInfo primaryAccountInfo = getPrimaryAccountInfo();
+        CoreAccountInfo primaryAccountInfo = getSyncConsentedAccountInfo();
         if (primaryAccountInfo == null) {
             return;
         }
@@ -220,7 +220,7 @@ public class SyncErrorPromptUtils {
     }
 
     private static void openTrustedVaultRecoverabilityDegradedActivity() {
-        CoreAccountInfo primaryAccountInfo = getPrimaryAccountInfo();
+        CoreAccountInfo primaryAccountInfo = getSyncConsentedAccountInfo();
         if (primaryAccountInfo == null) {
             return;
         }
@@ -241,10 +241,10 @@ public class SyncErrorPromptUtils {
                                         exception));
     }
 
-    private static CoreAccountInfo getPrimaryAccountInfo() {
-        if (!SyncService.get().isAuthenticatedAccountPrimary()) {
+    private static CoreAccountInfo getSyncConsentedAccountInfo() {
+        if (!SyncService.get().hasSyncConsent()) {
             return null;
         }
-        return SyncService.get().getAuthenticatedAccountInfo();
+        return SyncService.get().getAccountInfo();
     }
 }
