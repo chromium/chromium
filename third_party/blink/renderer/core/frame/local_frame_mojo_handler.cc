@@ -883,18 +883,19 @@ void LocalFrameMojoHandler::JavaScriptExecuteRequestForTests(
 
   v8::HandleScope handle_scope(V8PerIsolateData::MainThreadIsolate());
   v8::Local<v8::Value> result;
+
+  // `kDoNotSanitize` is used because this is only for tests and some tests
+  // need `kDoNotSanitize` for dynamic imports.
+  ClassicScript* script = ClassicScript::CreateUnspecifiedScript(
+      javascript, SanitizeScriptErrors::kDoNotSanitize);
+
   if (world_id == DOMWrapperWorld::kMainWorldId) {
-    result = ClassicScript::CreateUnspecifiedScript(javascript)
-                 ->RunScriptAndReturnValue(DomWindow());
+    result = script->RunScriptAndReturnValue(DomWindow());
   } else {
     CHECK_GT(world_id, DOMWrapperWorld::kMainWorldId);
     CHECK_LT(world_id, DOMWrapperWorld::kDOMWrapperWorldEmbedderWorldIdLimit);
-    // Note: An error event in an isolated world will never be dispatched to
-    // a foreign world.
     result =
-        ClassicScript::CreateUnspecifiedScript(
-            javascript, SanitizeScriptErrors::kDoNotSanitize)
-            ->RunScriptInIsolatedWorldAndReturnValue(DomWindow(), world_id);
+        script->RunScriptInIsolatedWorldAndReturnValue(DomWindow(), world_id);
   }
 
   if (wants_result) {

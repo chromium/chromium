@@ -20,13 +20,10 @@ class CORE_EXPORT ClassicScript final : public Script {
   // For scripts specified in the HTML spec.
   // Please leave spec comments and spec links that explain given argument
   // values at callers.
-  ClassicScript(const ScriptSourceCode& script_source_code,
+  ClassicScript(const ScriptSourceCode&,
                 const KURL& base_url,
-                const ScriptFetchOptions& fetch_options,
-                SanitizeScriptErrors sanitize_script_errors)
-      : Script(fetch_options, base_url),
-        script_source_code_(script_source_code),
-        sanitize_script_errors_(sanitize_script_errors) {}
+                const ScriptFetchOptions&,
+                SanitizeScriptErrors);
 
   // For scripts not specified in the HTML spec.
   //

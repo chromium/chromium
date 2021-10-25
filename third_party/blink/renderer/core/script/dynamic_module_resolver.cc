@@ -309,6 +309,14 @@ void DynamicModuleResolver::ResolveDynamically(
     if (!url.IsValid()) {
       error_message = "Failed to resolve module specifier '" +
                       module_request.specifier + "'";
+      if (referrer_info.BaseURL().IsAboutBlankURL() &&
+          base_url.IsAboutBlankURL()) {
+        error_message =
+            error_message +
+            ". The base URL is about:blank because import() is called from a "
+            "CORS-cross-origin script.";
+      }
+
     } else {
       error_message = "\"" + module_request.GetModuleTypeString() +
                       "\" is not a valid module type.";
