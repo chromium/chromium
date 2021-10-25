@@ -74,16 +74,16 @@ void AppRegistryCache::OnApps(std::vector<apps::mojom::AppPtr> deltas,
     }
   }
 
-  if (!deltas_in_progress_.empty()) {
+  if (!mojom_deltas_in_progress_.empty()) {
     std::move(deltas.begin(), deltas.end(),
-              std::back_inserter(deltas_pending_));
+              std::back_inserter(mojom_deltas_pending_));
     return;
   }
 
   DoOnApps(std::move(deltas));
-  while (!deltas_pending_.empty()) {
+  while (!mojom_deltas_pending_.empty()) {
     std::vector<apps::mojom::AppPtr> pending;
-    pending.swap(deltas_pending_);
+    pending.swap(mojom_deltas_pending_);
     DoOnApps(std::move(pending));
   }
 
@@ -95,32 +95,33 @@ void AppRegistryCache::DoOnApps(std::vector<apps::mojom::AppPtr> deltas) {
   // OnAppUpdate calls back into this AppRegistryCache then we can therefore
   // present a single delta for any given app_id.
   for (auto& delta : deltas) {
-    auto d_iter = deltas_in_progress_.find(delta->app_id);
-    if (d_iter != deltas_in_progress_.end()) {
+    auto d_iter = mojom_deltas_in_progress_.find(delta->app_id);
+    if (d_iter != mojom_deltas_in_progress_.end()) {
       if (delta->readiness == mojom::Readiness::kRemoved) {
         // Ensure that removed deltas are *not* merged, so that the last update
         // before the merge is sent separately.
-        deltas_pending_.push_back(std::move(delta));
+        mojom_deltas_pending_.push_back(std::move(delta));
       } else {
         AppUpdate::Merge(d_iter->second, delta.get());
       }
     } else {
-      deltas_in_progress_[delta->app_id] = delta.get();
+      mojom_deltas_in_progress_[delta->app_id] = delta.get();
     }
   }
 
-  // The remaining for loops range over the deltas_in_progress_ map, not the
-  // deltas vector, so that OnAppUpdate is called only once per unique app_id.
+  // The remaining for loops range over the mojom_deltas_in_progress_ map, not
+  // the deltas vector, so that OnAppUpdate is called only once per unique
+  // app_id.
 
   // Notify the observers for every de-duplicated delta.
-  for (const auto& d_iter : deltas_in_progress_) {
+  for (const auto& d_iter : mojom_deltas_in_progress_) {
     // Do not update subscribers for removed apps.
     if (d_iter.second->readiness == mojom::Readiness::kRemoved) {
       continue;
     }
-    auto s_iter = states_.find(d_iter.first);
+    auto s_iter = mojom_states_.find(d_iter.first);
     apps::mojom::App* state =
-        (s_iter != states_.end()) ? s_iter->second.get() : nullptr;
+        (s_iter != mojom_states_.end()) ? s_iter->second.get() : nullptr;
     apps::mojom::App* delta = d_iter.second;
 
     for (auto& obs : observers_) {
@@ -129,35 +130,35 @@ void AppRegistryCache::DoOnApps(std::vector<apps::mojom::AppPtr> deltas) {
   }
 
   // Update the states for every de-duplicated delta.
-  for (const auto& d_iter : deltas_in_progress_) {
-    auto s_iter = states_.find(d_iter.first);
+  for (const auto& d_iter : mojom_deltas_in_progress_) {
+    auto s_iter = mojom_states_.find(d_iter.first);
     apps::mojom::App* state =
-        (s_iter != states_.end()) ? s_iter->second.get() : nullptr;
+        (s_iter != mojom_states_.end()) ? s_iter->second.get() : nullptr;
     apps::mojom::App* delta = d_iter.second;
 
     if (delta->readiness != mojom::Readiness::kRemoved) {
       if (state) {
         AppUpdate::Merge(state, delta);
       } else {
-        states_.insert(std::make_pair(delta->app_id, delta->Clone()));
+        mojom_states_.insert(std::make_pair(delta->app_id, delta->Clone()));
       }
     } else {
       DCHECK(!state || state->readiness != mojom::Readiness::kReady);
-      states_.erase(d_iter.first);
+      mojom_states_.erase(d_iter.first);
     }
   }
-  deltas_in_progress_.clear();
+  mojom_deltas_in_progress_.clear();
 }
 
 apps::mojom::AppType AppRegistryCache::GetAppType(const std::string& app_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
 
-  auto d_iter = deltas_in_progress_.find(app_id);
-  if (d_iter != deltas_in_progress_.end()) {
+  auto d_iter = mojom_deltas_in_progress_.find(app_id);
+  if (d_iter != mojom_deltas_in_progress_.end()) {
     return d_iter->second->app_type;
   }
-  auto s_iter = states_.find(app_id);
-  if (s_iter != states_.end()) {
+  auto s_iter = mojom_states_.find(app_id);
+  if (s_iter != mojom_states_.end()) {
     return s_iter->second->app_type;
   }
   return apps::mojom::AppType::kUnknown;
