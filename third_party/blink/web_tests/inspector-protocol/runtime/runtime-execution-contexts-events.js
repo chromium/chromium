@@ -1,6 +1,29 @@
 (async function (testRunner) {
   var { page, session, dp } = await testRunner.startBlank(`Tests execution context lifetime events.`);
 
+  const expectedDestroyedExecutionContexts = new Set();
+  const actualDestroyedExecutionContexts = new Set();
+  let allContextsCreated = false;
+  // The promise will resolve when the 3 created execution contexts are destroyed.
+  // Given that the timing is GC dependent, we only validate that at the end of the
+  // test we received a destroyed event for each context.
+  // The prevent the promise from resolving prematurely, we have to wait until
+  // all execution contexts have been created first.
+  const allContextsDestroyedPromise = new Promise(resolve => {
+    dp.Runtime.onExecutionContextDestroyed(event => {
+      actualDestroyedExecutionContexts.add(event.params.executionContextId);
+
+      if (!allContextsCreated) return;
+
+      for (const id of expectedDestroyedExecutionContexts) {
+        if (!actualDestroyedExecutionContexts.has(id)) return;
+      }
+
+      resolve();
+    });
+  });
+
+
   dp.Runtime.enable();
   await dp.Runtime.onceExecutionContextCreated();
   testRunner.log('Page context was created');
@@ -14,36 +37,25 @@
     new Promise(resolve => frame.onload = resolve)
   `);
   var frameExecutionContextId = (await dp.Runtime.onceExecutionContextCreated()).params.context.id;
+  expectedDestroyedExecutionContexts.add(frameExecutionContextId);
   testRunner.log('Frame context was created');
 
   await loadPromise;
   testRunner.log('Navigate frame');
-  session.evaluate(`
-    window.frames[0].location = '${testRunner.url('../resources/runtime-events-iframe.html')}'
-    GCController.collectAll();
+  var loadPromise = session.evaluateAsync(`
+    var frame = document.querySelector('#iframe');
+    frame.contentWindow.location = '${testRunner.url('../resources/runtime-events-iframe.html')}';
+    new Promise(resolve => frame.onload = resolve)
   `);
-  var executionContextId = (await dp.Runtime.onceExecutionContextDestroyed()).params.executionContextId;
-  if (frameExecutionContextId !== executionContextId) {
-    testRunner.fail(`Execution context with id = ${executionContextId} was destroyed, but iframe's executionContext had id = ${frameExecutionContextId} before navigation`);
-    return;
-  }
-  testRunner.log(`Frame's context was destroyed`);
   frameExecutionContextId = 0;
 
   frameExecutionContextId = (await dp.Runtime.onceExecutionContextCreated()).params.context.id;
+  expectedDestroyedExecutionContexts.add(frameExecutionContextId);
   testRunner.log('Frame context was created');
 
+  await loadPromise;
   testRunner.log('Remove frame');
-  session.evaluate(`
-    document.querySelector('#iframe').remove();
-    GCController.collectAll();
-  `);
-  executionContextId = (await dp.Runtime.onceExecutionContextDestroyed()).params.executionContextId;
-  if (frameExecutionContextId !== executionContextId) {
-    testRunner.fail(`Deleted frame had execution context with id = ${frameExecutionContextId}, but executionContext with id = ${executionContextId} was removed`);
-    return;
-  }
-  testRunner.log(`Frame's context was destroyed`);
+  session.evaluate(`document.querySelector('#iframe').remove();`);
 
   testRunner.log('Create new crafted frame');
   session.evaluate(`
@@ -56,6 +68,8 @@
   `);
 
   frameExecutionContextId = (await dp.Runtime.onceExecutionContextCreated()).params.context.id;
+  expectedDestroyedExecutionContexts.add(frameExecutionContextId);
+  allContextsCreated = true;
   testRunner.log('Crafted frame context was created');
 
   testRunner.log('Remove crafted frame');
@@ -63,11 +77,9 @@
     document.querySelector('#crafted-iframe').remove();
     GCController.collectAll();
   `);
-  executionContextId = (await dp.Runtime.onceExecutionContextDestroyed()).params.executionContextId;
-  if (frameExecutionContextId !== executionContextId) {
-    testRunner.fail(`Deleted frame had execution context with id = ${frameExecutionContextId}, but executionContext with id = ${executionContextId} was removed`);
-    return;
-  }
-  testRunner.log(`Crafted frame's context was destroyed`);
+
+  await allContextsDestroyedPromise;
+
+  testRunner.log(`All contexts destroyed!`);
   testRunner.completeTest();
 })
