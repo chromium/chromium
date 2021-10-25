@@ -123,18 +123,22 @@ TEST_F(LensSidePanelControllerTest, ReOpensAndCloses) {
   EXPECT_EQ(2, user_action_tester.GetActionCount(kHideAction));
 }
 
-TEST_F(LensSidePanelControllerTest, LoadResultsInNewTabHidesLensSidePanel) {
+TEST_F(LensSidePanelControllerTest,
+       LoadResultsInNewTabDoesNotHideLensSidePanel) {
   base::UserActionTester user_action_tester;
 
   controller_->OpenWithURL(
       content::OpenURLParams(GURL("http://foo.com"), content::Referrer(),
                              WindowOpenDisposition::NEW_FOREGROUND_TAB,
                              ui::PAGE_TRANSITION_LINK, false));
+  // Because we now use the last committed URL of the side panel's webview to
+  // build the new tab link, we no longer hide the side panel every time the new
+  // tab button is clicked. We only close it when the new tab button was able to
+  // create a valid URL.
   controller_->LoadResultsInNewTab();
 
-  EXPECT_FALSE(browser_view()->lens_side_panel()->GetVisible());
-  EXPECT_EQ(1, user_action_tester.GetActionCount(kHideAction));
-  EXPECT_EQ(0, user_action_tester.GetActionCount(kCloseButtonClickAction));
+  EXPECT_TRUE(browser_view()->lens_side_panel()->GetVisible());
+  EXPECT_EQ(0, user_action_tester.GetActionCount(kHideAction));
 }
 
 }  // namespace
