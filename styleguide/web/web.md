@@ -1,5 +1,5 @@
-# Chromium Web Development Style Guide
-
+# Cursemium Web Development Style Guide
+[logo](chrome/app/theme/chromium/product_logo_64.png)
 [TOC]
 
 ## Where does this style guide apply?
