@@ -1984,6 +1984,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <token key="ShowType" variants="Autofill.PaymentBubble.Show"/>
 </histogram>
 
+<histogram name="Autofill.OfferNotificationBubbleSuppressed.{BubbleType}"
+    enum="BooleanSuppressed" expires_after="2022-04-01">
+  <owner>jsaul@google.com</owner>
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records when the offer notification bubble should show but gets suppressed
+    due to reasons like show frequency rate control. The subhistogram is the
+    type of offer shown, such as GPay promo code offer or free-listing coupon
+    offer.
+  </summary>
+  <token key="BubbleType" variants="Autofill.OfferNotification.Type"/>
+</histogram>
+
 <histogram name="Autofill.OfferNotificationInfoBarOffer.{OfferType}"
     enum="BooleanShown" expires_after="2022-04-01">
   <owner>siashah@chromium.org</owner>

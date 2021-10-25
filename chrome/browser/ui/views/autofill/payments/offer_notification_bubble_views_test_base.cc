@@ -204,6 +204,11 @@ void OfferNotificationBubbleViewsTestBase::ResetEventWaiterForSequence(
       std::make_unique<EventWaiter<DialogEvent>>(std::move(event_sequence));
 }
 
+void OfferNotificationBubbleViewsTestBase::UpdateFreeListingCouponDisplayTime(
+    std::unique_ptr<AutofillOfferData> offer) {
+  coupon_service_->RecordCouponDisplayTimestamp(*offer);
+}
+
 std::string OfferNotificationBubbleViewsTestBase::GetDefaultTestPromoCode()
     const {
   return kDefaultTestPromoCode;
