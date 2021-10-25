@@ -3062,6 +3062,12 @@ This file contains the strings for ash.
       <message name="IDS_ASH_NOTIFICATION_INLINE_REPLY_PLACEHOLDER" desc="The placeholder string for the textfield of an in-line reply notification.">
         Reply
       </message>
+      <message name="IDS_ASH_NOTIFICATION_WARNING_LABEL" desc="The label indicating that this is a warning notification.">
+        Warning
+      </message>
+      <message name="IDS_ASH_NOTIFICATION_CRITICAL_WARNING_LABEL" desc="The label indicating that this is a critical warning notification.">
+        Critical
+      </message>
 
       <message name="IDS_ASH_DIALOG_DONT_SHOW_AGAIN" desc="Label for checkbox dismissing show of a dialog.">
         Don't show again

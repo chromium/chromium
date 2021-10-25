@@ -62,6 +62,8 @@ class ASH_EXPORT AshNotificationView
   void UpdateViewForExpandedState(bool expanded) override;
   void UpdateWithNotification(
       const message_center::Notification& notification) override;
+  void CreateOrUpdateHeaderView(
+      const message_center::Notification& notification) override;
   void CreateOrUpdateTitleView(
       const message_center::Notification& notification) override;
   void CreateOrUpdateSmallIconView(

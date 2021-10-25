@@ -583,4 +583,19 @@ TEST_F(NotificationViewTest, ExpandLongMessage) {
             notification_view()->GetPreferredSize().height());
 }
 
+TEST_F(NotificationViewTest, UpdateType) {
+  // Start with a progress notification.
+  std::unique_ptr<Notification> notification = CreateSimpleNotification();
+  notification->set_type(NOTIFICATION_TYPE_PROGRESS);
+  notification->set_progress(50);
+  UpdateNotificationViews(*notification);
+
+  EXPECT_TRUE(header_row()->summary_text_for_testing()->GetVisible());
+
+  // Update notification to be a simple notification.
+  notification->set_type(NOTIFICATION_TYPE_SIMPLE);
+  UpdateNotificationViews(*notification);
+  EXPECT_FALSE(header_row()->summary_text_for_testing()->GetVisible());
+}
+
 }  // namespace message_center

@@ -31,6 +31,7 @@
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
+#include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/vector_icons.h"
 #include "ui/message_center/views/notification_background_painter.h"
 #include "ui/message_center/views/notification_control_buttons_view.h"
@@ -615,6 +616,25 @@ void AshNotificationView::UpdateWithNotification(
   header_row()->SetVisible(!is_grouped_child_view_);
   UpdateMessageViewInExpandedState(notification);
   NotificationViewBase::UpdateWithNotification(notification);
+}
+
+void AshNotificationView::CreateOrUpdateHeaderView(
+    const message_center::Notification& notification) {
+  switch (notification.system_notification_warning_level()) {
+    case message_center::SystemNotificationWarningLevel::WARNING:
+      header_row()->SetSummaryText(
+          l10n_util::GetStringUTF16(IDS_ASH_NOTIFICATION_WARNING_LABEL));
+      break;
+    case message_center::SystemNotificationWarningLevel::CRITICAL_WARNING:
+      header_row()->SetSummaryText(l10n_util::GetStringUTF16(
+          IDS_ASH_NOTIFICATION_CRITICAL_WARNING_LABEL));
+      break;
+    case message_center::SystemNotificationWarningLevel::NORMAL:
+      header_row()->SetSummaryText(std::u16string());
+      break;
+  }
+
+  NotificationViewBase::CreateOrUpdateHeaderView(notification);
 }
 
 void AshNotificationView::CreateOrUpdateTitleView(
