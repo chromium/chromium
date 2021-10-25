@@ -133,7 +133,7 @@ public class ChromeImageViewPreference extends Preference {
      * @param colorRes
      */
     public void setBackgroundColor(@ColorRes int colorRes) {
-        if (mBackgroundColorRes == colorRes) return;
+        if (mBackgroundColorRes != null && mBackgroundColorRes == colorRes) return;
         mBackgroundColorRes = colorRes;
         updateBackground();
     }
