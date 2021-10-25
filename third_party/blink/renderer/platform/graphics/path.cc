@@ -439,79 +439,12 @@ void Path::AddEllipse(const gfx::PointF& center,
                 SkPathDirection::kCW, 1);
 }
 
-void Path::AddRoundedRect(const FloatRoundedRect& r) {
-  AddRoundedRect(r.Rect(), r.GetRadii().TopLeft(), r.GetRadii().TopRight(),
-                 r.GetRadii().BottomLeft(), r.GetRadii().BottomRight());
-}
-
-void Path::AddRoundedRect(const FloatRect& rect,
-                          const FloatSize& rounding_radii) {
+void Path::AddRoundedRect(const FloatRoundedRect& rect, bool clockwise) {
   if (rect.IsEmpty())
     return;
 
-  FloatSize radius(rounding_radii);
-  FloatSize half_size(rect.width() / 2, rect.height() / 2);
-
-  // Apply the SVG corner radius constraints, per the rect section of the SVG
-  // shapes spec: if one of rx,ry is negative, then the other corner radius
-  // value is used. If both values are negative then rx = ry = 0. If rx is
-  // greater than half of the width of the rectangle then set rx to half of the
-  // width; ry is handled similarly.
-
-  if (radius.width() < 0)
-    radius.set_width((radius.height() < 0) ? 0 : radius.height());
-
-  if (radius.height() < 0)
-    radius.set_height(radius.width());
-
-  if (radius.width() > half_size.width())
-    radius.set_width(half_size.width());
-
-  if (radius.height() > half_size.height())
-    radius.set_height(half_size.height());
-
-  const bool clockwise = true;
-  AddPathForRoundedRect(rect, radius, radius, radius, radius, clockwise);
-}
-
-void Path::AddRoundedRect(const FloatRect& rect,
-                          const FloatSize& top_left_radius,
-                          const FloatSize& top_right_radius,
-                          const FloatSize& bottom_left_radius,
-                          const FloatSize& bottom_right_radius) {
-  if (rect.IsEmpty())
-    return;
-
-  if (rect.width() < top_left_radius.width() + top_right_radius.width() ||
-      rect.width() < bottom_left_radius.width() + bottom_right_radius.width() ||
-      rect.height() < top_left_radius.height() + bottom_left_radius.height() ||
-      rect.height() <
-          top_right_radius.height() + bottom_right_radius.height()) {
-    // If all the radii cannot be accommodated, return a rect.
-    // FIXME: Is this an error scenario, given that it appears the code in
-    // FloatRoundedRect::constrainRadii() should be always called first? Should
-    // we assert that this code is not reached? This fallback is very bad, since
-    // it means that radii that are just barely too big due to rounding or
-    // snapping will get completely ignored.
-    AddRect(rect);
-    return;
-  }
-
-  const bool clockwise = true;
-  AddPathForRoundedRect(rect, top_left_radius, top_right_radius,
-                        bottom_left_radius, bottom_right_radius, clockwise);
-}
-
-void Path::AddPathForRoundedRect(const FloatRect& rect,
-                                 const FloatSize& top_left_radius,
-                                 const FloatSize& top_right_radius,
-                                 const FloatSize& bottom_left_radius,
-                                 const FloatSize& bottom_right_radius,
-                                 bool clockwise) {
-  // Start at upper-left (after corner radius).
-  path_.addRRect(FloatRoundedRect(rect, top_left_radius, top_right_radius,
-                                  bottom_left_radius, bottom_right_radius),
-                 clockwise ? SkPathDirection::kCW : SkPathDirection::kCCW, 0);
+  path_.addRRect(rect, clockwise ? SkPathDirection::kCW : SkPathDirection::kCCW,
+                 /* start at upper-left after corner radius */ 0);
 }
 
 void Path::AddPath(const Path& src, const AffineTransform& transform) {

@@ -102,16 +102,9 @@ LineSegment BoxShape::GetExcludedInterval(LayoutUnit logical_top,
 }
 
 void BoxShape::BuildDisplayPaths(DisplayPaths& paths) const {
-  paths.shape.AddRoundedRect(bounds_.Rect(), bounds_.GetRadii().TopLeft(),
-                             bounds_.GetRadii().TopRight(),
-                             bounds_.GetRadii().BottomLeft(),
-                             bounds_.GetRadii().BottomRight());
+  paths.shape.AddRoundedRect(bounds_);
   if (ShapeMargin())
-    paths.margin_shape.AddRoundedRect(
-        ShapeMarginBounds().Rect(), ShapeMarginBounds().GetRadii().TopLeft(),
-        ShapeMarginBounds().GetRadii().TopRight(),
-        ShapeMarginBounds().GetRadii().BottomLeft(),
-        ShapeMarginBounds().GetRadii().BottomRight());
+    paths.margin_shape.AddRoundedRect(ShapeMarginBounds());
 }
 
 }  // namespace blink

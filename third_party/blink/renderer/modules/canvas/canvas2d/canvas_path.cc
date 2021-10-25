@@ -618,8 +618,9 @@ void CanvasPath::roundRect(
   }
 
   FloatRect rect(x, y, width, height);
-  path_.AddPathForRoundedRect(rect, corner_radii[0], corner_radii[1],
-                              corner_radii[2], corner_radii[3], clockwise);
+  path_.AddRoundedRect(FloatRoundedRect(rect, corner_radii[0], corner_radii[1],
+                                        corner_radii[2], corner_radii[3]),
+                       clockwise);
   path_.MoveTo(gfx::PointF(x, y));
 }
 

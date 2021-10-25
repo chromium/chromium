@@ -269,7 +269,6 @@ void LinkHighlightImpl::Paint(GraphicsContext& context) {
   DCHECK(object->GetFrameView());
   DCHECK(!object->GetFrameView()->ShouldThrottleRendering());
 
-  static const FloatSize rect_rounding_radii(3, 3);
   auto color = object->StyleRef().VisitedDependentColor(
       GetCSSPropertyWebkitTapHighlightColor());
 
@@ -308,10 +307,12 @@ void LinkHighlightImpl::Paint(GraphicsContext& context) {
     Path new_path;
     for (auto& rect : rects) {
       FloatRect snapped_rect(PixelSnappedIntRect(rect));
-      if (use_rounded_rects)
-        new_path.AddRoundedRect(snapped_rect, rect_rounding_radii);
-      else
+      if (use_rounded_rects) {
+        constexpr float kRadius = 3;
+        new_path.AddRoundedRect(FloatRoundedRect(snapped_rect, kRadius));
+      } else {
         new_path.AddRect(snapped_rect);
+      }
     }
 
     DCHECK_LT(index, fragments_.size());

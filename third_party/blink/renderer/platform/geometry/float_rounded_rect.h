@@ -64,11 +64,12 @@ class PLATFORM_EXPORT FloatRoundedRect {
           top_right_(top_right),
           bottom_left_(bottom_left),
           bottom_right_(bottom_right) {}
-    explicit constexpr Radii(float radius)
-        : Radii(FloatSize(radius, radius),
-                FloatSize(radius, radius),
-                FloatSize(radius, radius),
-                FloatSize(radius, radius)) {}
+    explicit constexpr Radii(float radius) : Radii(radius, radius) {}
+    constexpr Radii(float radius_x, float radius_y)
+        : Radii(FloatSize(radius_x, radius_y),
+                FloatSize(radius_x, radius_y),
+                FloatSize(radius_x, radius_y),
+                FloatSize(radius_x, radius_y)) {}
 
     constexpr Radii(const Radii&) = default;
     constexpr Radii& operator=(const Radii&) = default;
@@ -122,6 +123,10 @@ class PLATFORM_EXPORT FloatRoundedRect {
                    const FloatSize& top_right,
                    const FloatSize& bottom_left,
                    const FloatSize& bottom_right);
+  FloatRoundedRect(const FloatRect& r, float radius)
+      : FloatRoundedRect(r, Radii(radius)) {}
+  FloatRoundedRect(const FloatRect& r, float radius_x, float radius_y)
+      : FloatRoundedRect(r, Radii(radius_x, radius_y)) {}
 
   constexpr const FloatRect& Rect() const { return rect_; }
   constexpr const Radii& GetRadii() const { return radii_; }

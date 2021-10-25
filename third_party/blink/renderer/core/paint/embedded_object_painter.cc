@@ -75,10 +75,8 @@ void EmbeddedObjectPainter::PaintReplaced(const PaintInfo& paint_info,
   background_rect.offset += content_rect.Center() - background_rect.Center();
   background_rect = PhysicalRect(PixelSnappedIntRect(background_rect));
   Path rounded_background_rect;
-  FloatRect float_background_rect(background_rect);
-  rounded_background_rect.AddRoundedRect(
-      float_background_rect, FloatSize(kReplacementTextRoundedRectRadius,
-                                       kReplacementTextRoundedRectRadius));
+  rounded_background_rect.AddRoundedRect(FloatRoundedRect(
+      FloatRect(background_rect), kReplacementTextRoundedRectRadius));
   context.SetFillColor(
       ScaleAlpha(Color::kWhite, kReplacementTextRoundedRectOpacity));
   AutoDarkMode auto_dark_mode(
