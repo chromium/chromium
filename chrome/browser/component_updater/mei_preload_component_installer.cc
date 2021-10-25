@@ -57,7 +57,7 @@ MediaEngagementPreloadComponentInstallerPolicy::
 
 bool MediaEngagementPreloadComponentInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {
-  return false;
+  return true;
 }
 
 bool MediaEngagementPreloadComponentInstallerPolicy::RequiresNetworkEncryption()
