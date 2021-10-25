@@ -4,11 +4,13 @@
 
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_mediator.h"
 
+#import "base/ios/ios_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/profile_metrics/browser_profile_type.h"
+#include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/browser/policy/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/ui/activity_services/canonical_url_retriever.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
@@ -19,9 +21,11 @@
 #import "ios/chrome/browser/ui/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
+#import "ios/chrome/browser/window_activities/window_activity_helpers.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
@@ -75,8 +79,13 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
 @property(nonatomic, strong) OverflowMenuDestination* settingsDestination;
 @property(nonatomic, strong) OverflowMenuDestination* siteInfoDestination;
 
-@property(nonatomic, strong) OverflowMenuAction* reloadStopAction;
+@property(nonatomic, strong) OverflowMenuActionGroup* appActionsGroup;
+
+@property(nonatomic, strong) OverflowMenuAction* reloadAction;
+@property(nonatomic, strong) OverflowMenuAction* stopLoadAction;
+@property(nonatomic, strong) OverflowMenuAction* openTabAction;
 @property(nonatomic, strong) OverflowMenuAction* openIncognitoTabAction;
+@property(nonatomic, strong) OverflowMenuAction* openNewWindowAction;
 
 @property(nonatomic, strong) OverflowMenuAction* bookmarkAction;
 @property(nonatomic, strong) OverflowMenuAction* readLaterAction;
@@ -189,25 +198,35 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
                                       [weakSelf openSiteInformation];
                                     });
 
-  // The reload action's handler depends on the page state, so it's set
-  // elsewhere.
-  self.reloadStopAction = CreateOverflowMenuAction(
-      IDS_IOS_TOOLS_MENU_RELOAD, @"overflow_menu_action_reload",
-      ^{
+  self.reloadAction = CreateOverflowMenuAction(
+      IDS_IOS_TOOLS_MENU_RELOAD, @"overflow_menu_action_reload", ^{
+        [weakSelf reload];
+      });
+  self.stopLoadAction = CreateOverflowMenuAction(
+      IDS_IOS_TOOLS_MENU_STOP, @"overflow_menu_action_stop", ^{
+        [weakSelf stopLoading];
       });
 
+  self.openTabAction = CreateOverflowMenuAction(
+      IDS_IOS_TOOLS_MENU_NEW_TAB, @"overflow_menu_action_new_tab", ^{
+        [weakSelf openTab];
+      });
   self.openIncognitoTabAction =
       CreateOverflowMenuAction(IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB,
                                @"overflow_menu_action_incognito", ^{
                                  [weakSelf openIncognitoTab];
                                });
 
-  OverflowMenuActionGroup* appActionsGroup =
+  self.openNewWindowAction = CreateOverflowMenuAction(
+      IDS_IOS_TOOLS_MENU_NEW_WINDOW, @"overflow_menu_action_new_window", ^{
+        [weakSelf openNewWindow];
+      });
+
+  // The app actions vary based on page state, so they are set in
+  // |-updateModel|.
+  self.appActionsGroup =
       [[OverflowMenuActionGroup alloc] initWithGroupName:@"app_actions"
-                                                 actions:@[
-                                                   self.reloadStopAction,
-                                                   self.openIncognitoTabAction,
-                                                 ]];
+                                                 actions:@[]];
 
   self.bookmarkAction = CreateOverflowMenuAction(
       IDS_IOS_TOOLS_MENU_ADD_TO_BOOKMARKS, @"overflow_menu_action_bookmark",
@@ -274,7 +293,7 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
     self.settingsDestination,
   ]
                                             actionGroups:@[
-                                              appActionsGroup,
+                                              self.appActionsGroup,
                                               pageActionsGroup,
                                               helpActionsGroup,
                                             ]];
@@ -289,22 +308,26 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
     return;
   }
 
-  __weak __typeof(self) weakSelf = self;
-  if ([self isPageLoading]) {
-    self.reloadStopAction.name =
-        l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_STOP);
-    self.reloadStopAction.imageName = @"overflow_menu_action_stop";
-    self.reloadStopAction.handler = ^{
-      [weakSelf stopLoading];
-    };
-  } else {
-    self.reloadStopAction.name =
-        l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_RELOAD);
-    self.reloadStopAction.imageName = @"overflow_menu_action_reload";
-    self.reloadStopAction.handler = ^{
-      [weakSelf reload];
-    };
+  NSMutableArray<OverflowMenuAction*>* appActions =
+      [[NSMutableArray alloc] init];
+
+  // The reload/stop action is only shown when the reload button is not in the
+  // toolbar. The reload button is shown in the toolbar when the toolbar is not
+  // split.
+  if (IsSplitToolbarMode(self.baseViewController)) {
+    OverflowMenuAction* reloadStopAction =
+        ([self isPageLoading]) ? self.stopLoadAction : self.reloadAction;
+    [appActions addObject:reloadStopAction];
   }
+
+  [appActions
+      addObjectsFromArray:@[ self.openTabAction, self.openIncognitoTabAction ]];
+
+  if (base::ios::IsMultipleScenesSupported()) {
+    [appActions addObject:self.openNewWindowAction];
+  }
+
+  self.appActionsGroup.actions = appActions;
 }
 
 // Whether the page is currently loading.
@@ -380,12 +403,28 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
   self.navigationAgent->StopLoading();
 }
 
+// Dismisses the menu and opens a new tab.
+- (void)openTab {
+  RecordAction(UserMetricsAction("MobileMenuNewTab"));
+  [self.dispatcher dismissPopupMenuAnimated:YES];
+  [self.dispatcher openURLInNewTab:[OpenNewTabCommand commandWithIncognito:NO]];
+}
+
 // Dismisses the menu and opens a new incognito tab.
 - (void)openIncognitoTab {
   RecordAction(UserMetricsAction("MobileMenuNewIncognitoTab"));
   [self.dispatcher dismissPopupMenuAnimated:YES];
   [self.dispatcher
       openURLInNewTab:[OpenNewTabCommand commandWithIncognito:YES]];
+}
+
+// Dismisses the menu and opens a new window.
+- (void)openNewWindow {
+  RecordAction(UserMetricsAction("MobileMenuNewWindow"));
+  [self.dispatcher dismissPopupMenuAnimated:YES];
+  [self.dispatcher
+      openNewWindowWithActivity:ActivityToLoadURL(WindowActivityToolsOrigin,
+                                                  GURL(kChromeUINewTabURL))];
 }
 
 // Dismisses the menu and adds the current page to the reading list.

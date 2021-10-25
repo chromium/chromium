@@ -36,6 +36,14 @@ imageset("overflow_menu_action_incognito") {
   ]
 }
 
+imageset("overflow_menu_action_new_tab") {
+  sources = [
+    "overflow_menu_action_new_tab.imageset/Contents.json",
+    "overflow_menu_action_new_tab.imageset/overflow_menu_action_new_tab@2x.png",
+    "overflow_menu_action_new_tab.imageset/overflow_menu_action_new_tab@3x.png",
+  ]
+}
+
 imageset("overflow_menu_action_new_window") {
   sources = [
     "overflow_menu_action_new_window.imageset/Contents.json",
