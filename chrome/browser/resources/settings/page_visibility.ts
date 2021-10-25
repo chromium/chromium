@@ -43,7 +43,7 @@ export let pageVisibility: PageVisibility;
 if (loadTimeData.getBoolean('isGuest')) {
   // "if not chromeos" and "if chromeos" in two completely separate blocks
   // to work around closure compiler.
-  // <if expr="not chromeos">
+  // <if expr="not (chromeos or lacros)">
   pageVisibility = {
     autofill: false,
     people: false,
@@ -58,7 +58,7 @@ if (loadTimeData.getBoolean('isGuest')) {
     languages: false,
   };
   // </if>
-  // <if expr="chromeos">
+  // <if expr="chromeos or lacros">
   pageVisibility = {
     autofill: false,
     people: false,
