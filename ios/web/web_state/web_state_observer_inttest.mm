@@ -1121,11 +1121,6 @@ TEST_F(WebStateObserverTest, FailedNavigation) {
 
 // Tests that navigation to an invalid URL is disallowed.
 TEST_F(WebStateObserverTest, InvalidURL) {
-  // Navigations to invalid URLs are allowed on iOS 12 (see crbug.com/965067).
-  if (!base::ios::IsRunningOnIOS13OrLater()) {
-    return;
-  }
-
   const GURL url = test_server_->GetURL("/echoall");
 
   // Perform new page navigation.
@@ -1179,81 +1174,36 @@ TEST_F(WebStateObserverTest, UrlWithSpecialSuffixNavigation) {
   int32_t nav_id = 0;
   EXPECT_CALL(observer_, DidStartLoading(web_state()));
 
-  if (@available(iOS 13, *)) {
-    // Starting from iOS 13 WebKit, does not rewrite URL.
-    const WebStatePolicyDecider::RequestInfo expected_request_info(
-        ui::PageTransition::PAGE_TRANSITION_TYPED,
-        /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
-        /*has_user_gesture=*/false);
-    const WebStatePolicyDecider::ResponseInfo expected_response_info(
-        /*for_main_frame=*/true);
-    EXPECT_CALL(*decider_, MockShouldAllowRequest(
-                               _, RequestInfoMatch(expected_request_info), _))
-        .WillOnce(
-            RunOnceCallback<2>(WebStatePolicyDecider::PolicyDecision::Allow()));
-    EXPECT_CALL(observer_, DidStartNavigation(web_state(), _))
-        .WillOnce(VerifyPageStartedContext(
-            web_state(), url, ui::PageTransition::PAGE_TRANSITION_TYPED,
-            &context, &nav_id));
-    EXPECT_CALL(*decider_, ShouldAllowResponse(
-                               _, ResponseInfoMatch(expected_response_info), _))
-        .WillOnce(
-            RunOnceCallback<2>(WebStatePolicyDecider::PolicyDecision::Allow()));
-    EXPECT_CALL(observer_, DidFinishNavigation(web_state(), _))
-        .WillOnce(VerifyNewPageFinishedContext(
-            web_state(), url, /*mime_type*/ std::string(),
-            /*content_is_html=*/false, &context, &nav_id));
-    EXPECT_CALL(observer_, DidStopLoading(web_state()));
+  // Starting from iOS 13 WebKit, does not rewrite URL.
+  const WebStatePolicyDecider::RequestInfo expected_request_info(
+      ui::PageTransition::PAGE_TRANSITION_TYPED,
+      /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
+      /*has_user_gesture=*/false);
+  const WebStatePolicyDecider::ResponseInfo expected_response_info(
+      /*for_main_frame=*/true);
+  EXPECT_CALL(*decider_, MockShouldAllowRequest(
+                             _, RequestInfoMatch(expected_request_info), _))
+      .WillOnce(
+          RunOnceCallback<2>(WebStatePolicyDecider::PolicyDecision::Allow()));
+  EXPECT_CALL(observer_, DidStartNavigation(web_state(), _))
+      .WillOnce(VerifyPageStartedContext(
+          web_state(), url, ui::PageTransition::PAGE_TRANSITION_TYPED, &context,
+          &nav_id));
+  EXPECT_CALL(*decider_, ShouldAllowResponse(
+                             _, ResponseInfoMatch(expected_response_info), _))
+      .WillOnce(
+          RunOnceCallback<2>(WebStatePolicyDecider::PolicyDecision::Allow()));
+  EXPECT_CALL(observer_, DidFinishNavigation(web_state(), _))
+      .WillOnce(VerifyNewPageFinishedContext(
+          web_state(), url, /*mime_type*/ std::string(),
+          /*content_is_html=*/false, &context, &nav_id));
+  EXPECT_CALL(observer_, DidStopLoading(web_state()));
 
-    EXPECT_CALL(observer_,
-                PageLoaded(web_state(), PageLoadCompletionStatus::SUCCESS));
+  EXPECT_CALL(observer_,
+              PageLoaded(web_state(), PageLoadCompletionStatus::SUCCESS));
 
-    ASSERT_TRUE(LoadUrl(url));
-    EXPECT_EQ(url, web_state()->GetVisibleURL());
-  } else {
-    // Perform a navigation to a url, which will be rewritten by WebKit to
-    // invalid and will fail.
-    std::string webkit_rewritten_url_spec = url.spec();
-    // Prior to iOS 13, WebKit rewrites "http://127.0.0.1:80/..;" (valid) to
-    // "http://127.0.0.1:80;/" (invalid).
-    webkit_rewritten_url_spec.replace(url.spec().size() - kBadSuffix.size(),
-                                      kBadSuffix.size(), ";/");
-
-    const WebStatePolicyDecider::RequestInfo expected_request_info(
-        // Can't match NavigationContext and determine navigation type prior to
-        // iOS 13, because context is matched by URL, which is rewritten by
-        // WebKit.
-        ui::PageTransition::PAGE_TRANSITION_CLIENT_REDIRECT,
-        /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
-        /*has_user_gesture=*/false);
-    EXPECT_CALL(*decider_, MockShouldAllowRequest(
-                               _, RequestInfoMatch(expected_request_info), _))
-        .WillOnce(
-            RunOnceCallback<2>(WebStatePolicyDecider::PolicyDecision::Allow()));
-
-    // WKWebView.URL changes from |url| nil and then to rewritten URL, while
-    // WKWebView.loading changes from true to false and then back to true.
-    EXPECT_CALL(observer_, DidStopLoading(web_state()));
-    EXPECT_CALL(observer_, DidStartLoading(web_state()));
-
-    EXPECT_CALL(observer_, DidStartNavigation(web_state(), _))
-        .WillOnce(VerifyPageStartedContext(
-            web_state(), GURL(webkit_rewritten_url_spec),
-            ui::PageTransition::PAGE_TRANSITION_TYPED, &context, &nav_id));
-
-    EXPECT_CALL(observer_, DidStopLoading(web_state()));
-
-    EXPECT_CALL(observer_, DidFinishNavigation(web_state(), _))
-        .WillOnce(VerifyErrorFinishedContext(
-            web_state(), GURL(webkit_rewritten_url_spec), &context, &nav_id,
-            /*committed=*/false, net::ERR_FAILED));
-
-    EXPECT_CALL(observer_,
-                PageLoaded(web_state(), PageLoadCompletionStatus::FAILURE));
-
-    ASSERT_TRUE(LoadUrl(url));
-    EXPECT_EQ("", web_state()->GetVisibleURL());
-  }
+  ASSERT_TRUE(LoadUrl(url));
+  EXPECT_EQ(url, web_state()->GetVisibleURL());
 }
 
 // Tests failed navigation because URL scheme is not supported by WKWebView.
@@ -2437,49 +2387,6 @@ TEST_F(WebStateObserverTest, ImmediatelyStopNavigation) {
   ASSERT_TRUE(test::WaitForPageToFinishLoading(web_state()));
   EXPECT_EQ("", web_state()->GetVisibleURL());
 }
-
-// Tests stopping a navigation after allowing the navigation from
-// WebStatePolicyDecider. DidStartNavigation and DidFinishNavigation callbacks
-// are still called on simulator. On iOS 12.2 device the navigation never
-// starts, which is ok, but the behavior can not be tested so the test is
-// simulator-only.
-#if TARGET_IPHONE_SIMULATOR
-TEST_F(WebStateObserverTest, StopNavigationAfterPolicyDeciderCallback) {
-  if (@available(iOS 13, *)) {
-    // The navigation may or may not start, which is ok, but there is no need to
-    // test this scenario.
-    return;
-  }
-
-  GURL url(test_server_->GetURL("/hung"));
-  NavigationContext* context = nullptr;
-  int32_t nav_id = 0;
-  EXPECT_CALL(observer_, DidStartLoading(web_state()));
-  const WebStatePolicyDecider::RequestInfo expected_request_info(
-      ui::PageTransition::PAGE_TRANSITION_TYPED,
-      /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
-      /*has_user_gesture=*/false);
-  EXPECT_CALL(*decider_, MockShouldAllowRequest(
-                             _, RequestInfoMatch(expected_request_info), _))
-      .WillOnce(WithArgs<2>(ReturnAllowRequestAndStopNavigation(web_state())));
-  EXPECT_CALL(observer_, DidStopLoading(web_state()));
-  EXPECT_CALL(observer_, DidStartNavigation(web_state(), _))
-      .WillOnce(VerifyAbortedNavigationStartedContext(
-          web_state(), url, ui::PageTransition::PAGE_TRANSITION_TYPED, &context,
-          &nav_id));
-  EXPECT_CALL(observer_, DidFinishNavigation(web_state(), _))
-      .WillOnce(VerifyResponseRejectedFinishedContext(web_state(), url,
-                                                      &context, &nav_id));
-
-  // Load the page and wait for DidFinishNavigation callback.
-  FakeWebStateObserver page_loaded_observer(web_state());
-  test::LoadUrl(web_state(), url);
-  FakeWebStateObserver* page_loaded_observer_ptr = &page_loaded_observer;
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
-    return page_loaded_observer_ptr->did_finish_navigation_info();
-  }));
-}
-#endif  // TARGET_IPHONE_SIMULATOR
 
 // Tests stopping a finished navigation. PageLoaded is never called.
 TEST_F(WebStateObserverTest, StopFinishedNavigation) {

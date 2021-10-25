@@ -11,9 +11,6 @@
 #endif
 
 UIWindow* GetAnyKeyWindow() {
-#if !defined(__IPHONE_13_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_13_0
-  return [UIApplication sharedApplication].keyWindow;
-#else
   // In iOS 15 and later key windows are a deprecated concept. Window state
   // should be determined at the scene rather than the application level.
   if (@available(iOS 15, *)) {
@@ -34,13 +31,8 @@ UIWindow* GetAnyKeyWindow() {
     }
   }
   return nil;
-#endif
 }
 
 UIInterfaceOrientation GetInterfaceOrientation() {
-#if !defined(__IPHONE_13_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_13_0
-  return [[UIApplication sharedApplication] statusBarOrientation];
-#else
   return GetAnyKeyWindow().windowScene.interfaceOrientation;
-#endif
 }

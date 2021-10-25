@@ -49,12 +49,12 @@
       net::CookieAccessSemantics::LEGACY;
   // No extra trustworthy URLs.
   bool delegate_treats_url_as_trustworthy = false;
-  if (@available(iOS 13, *)) {
-    // Using |UNKNOWN| semantics to allow the experiment to switch between non
-    // legacy (where cookies that don't have a specific same-site access policy
-    // and not secure will not be included), and legacy mode.
-    cookieAccessSemantics = net::CookieAccessSemantics::UNKNOWN;
-  }
+
+  // Using |UNKNOWN| semantics to allow the experiment to switch between non
+  // legacy (where cookies that don't have a specific same-site access policy
+  // and not secure will not be included), and legacy mode.
+  cookieAccessSemantics = net::CookieAccessSemantics::UNKNOWN;
+
   net::CookieAccessParams params = {
       cookieAccessSemantics, delegate_treats_url_as_trustworthy,
       net::CookieSamePartyStatus::kNoSamePartyEnforcement};

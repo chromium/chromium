@@ -354,13 +354,6 @@ void NavigationManagerImpl::CommitPendingItem(
   // If |currentItem| is not nil, it is the last committed item in the
   // WKWebView.
   if (proxy.backForwardList && !proxy.backForwardList.currentItem) {
-    if (!base::ios::IsRunningOnIOS13OrLater()) {
-      // Prior to iOS 13 WKWebView's URL should be about:blank for empty window
-      // open item. TODO(crbug.com/885249): Use GURL::IsAboutBlank() instead.
-      DCHECK(base::StartsWith(net::GURLWithNSURL(proxy.URL).spec(),
-                              url::kAboutBlankURL,
-                              base::CompareCase::SENSITIVE));
-    }
     // There should be no back-forward history for empty window open item.
     DCHECK_EQ(0UL, proxy.backForwardList.backList.count);
     DCHECK_EQ(0UL, proxy.backForwardList.forwardList.count);

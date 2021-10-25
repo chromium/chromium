@@ -167,13 +167,9 @@ class CRWWebControllerTest : public WebTestWithWebController {
   // The value for web view OCMock objects to expect for |-setFrame:|.
   CGRect GetExpectedWebViewFrame() const {
     CGSize container_view_size = GetAnyKeyWindow().bounds.size;
-#if !defined(__IPHONE_13_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_13_0
-    container_view_size.height -=
-        CGRectGetHeight([UIApplication sharedApplication].statusBarFrame);
-#else
+
     container_view_size.height -= CGRectGetHeight(
         GetAnyKeyWindow().windowScene.statusBarManager.statusBarFrame);
-#endif
     return {CGPointZero, container_view_size};
   }
 
@@ -295,14 +291,12 @@ TEST_F(CRWWebControllerTest, WebViewCreatedAfterEnsureWebViewCreated) {
       base::SysUTF8ToNSString(web_client->GetUserAgent(UserAgentType::MOBILE)),
       web_view.customUserAgent);
 
-  if (@available(iOS 13, *)) {
-    web_client->SetDefaultUserAgent(UserAgentType::DESKTOP);
-    [web_controller() removeWebView];
-    web_view = [web_controller() ensureWebViewCreated];
-    EXPECT_NSEQ(base::SysUTF8ToNSString(
-                    web_client->GetUserAgent(UserAgentType::DESKTOP)),
-                web_view.customUserAgent);
-  }
+  web_client->SetDefaultUserAgent(UserAgentType::DESKTOP);
+  [web_controller() removeWebView];
+  web_view = [web_controller() ensureWebViewCreated];
+  EXPECT_NSEQ(
+      base::SysUTF8ToNSString(web_client->GetUserAgent(UserAgentType::DESKTOP)),
+      web_view.customUserAgent);
 }
 
 // Tests that the WebView is correctly removed/added from the view hierarchy.
