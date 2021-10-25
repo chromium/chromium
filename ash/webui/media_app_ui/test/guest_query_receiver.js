@@ -121,9 +121,6 @@ const SIMPLE_TEST_QUERIES = {
     Object.assign(resultData, assertLastReceivedFileArray().map(flattenFile));
     return `${resultData.length}`;
   },
-  notifyCurrentFile: (data, resultData) => {
-    DELEGATE.notifyCurrentFile(data.simpleArgs.name, data.simpleArgs.type);
-  },
   openFileAtIndex: async (data, resultData) => {
     const handle = assertLastReceivedFileList().item(data.simpleArgs.index);
     const domFile = await handle.openFile();
