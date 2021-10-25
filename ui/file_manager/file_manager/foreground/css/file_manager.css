@@ -477,7 +477,6 @@ body.files-ng div.splitter.splitter-active .splitter-button .icon {
 }
 
 body.check-select .dialog-header {
-  background: var(--cros-bg-color);
   border-bottom: 1px solid var(--cros-separator-color);
   border-top: 1px solid transparent;
 }

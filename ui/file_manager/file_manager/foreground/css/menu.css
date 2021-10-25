@@ -31,10 +31,14 @@ cr-menu > [hidden] {
 }
 
 cr-menu > [shortcutText]::after {
-  color: rgb(100, 100, 100);
+  color: var(--cros-menu-shortcut-color);
   content: attr(shortcutText);
   float: right;
   padding-inline-start: 30px;
+}
+
+cr-menu > [shortcutText][disabled]::after {
+  color: var(--cros-text-color-disabled);
 }
 
 html[dir='rtl'] cr-menu > [shortcutText]::after {
@@ -42,7 +46,7 @@ html[dir='rtl'] cr-menu > [shortcutText]::after {
 }
 
 cr-menu > [sub-menu]::after {
-  color: rgb(100, 100, 100);
+  color: var(--cros-menu-shortcut-color);
   content: '▶' / '';
   float: right;
   font-size: 0.7em;
@@ -54,7 +58,7 @@ html[dir='rtl'] cr-menu > [sub-menu]::after {
 }
 
 cr-menu > [sub-menu][disabled]::after {
-  color: rgba(51, 51, 51, 0.20);
+  color: var(--cros-text-color-disabled);
 }
 
 /* Keeps menu visibile while animating. Fade out animation is performed by
@@ -109,14 +113,14 @@ html.files-ng:not(.pointer-active) cr-menu-item > paper-ripple {
 }
 
 html.files-ng.pointer-active cr-menu-item > paper-ripple {
-  --paper-ripple-opacity: 8%;
-  color: black;
+  --paper-ripple-opacity: 100%;
+  color: var(--cros-ripple-color);
 }
 
 html.files-ng cr-menu.files-menu > cr-menu-item:not([disabled])[selected] {
-  background-color: rgba(0, 0, 0, 4%);
+  background-color: var(--cros-menu-item-background-hover);
 }
 
 html.files-ng:not(.pointer-active) cr-menu.files-menu > cr-menu-item:not([disabled]):active[selected] {
-  background-color: rgba(0, 0, 0, 12%);
+  background-color: var(--cros-menu-item-background-hover);
 }

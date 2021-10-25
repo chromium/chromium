@@ -16,15 +16,27 @@ cr-button {
    menus in FileBrowser look like native ChromeOS menus. */
 
 cr-menu.chrome-menu {
-  background-color: white;
-  border-radius: 2px;
-  box-shadow: 0 1px 4px 0 rgba(0, 0, 0, .5);
-  color: rgb(51, 51, 51);
+  background-color: var(--cros-bg-color-elevation-2);
+  border-radius: 4px;
+  box-shadow: 0 1px 2px 0 rgba(var(--google-grey-800-rgb), 0.3),
+              0 2px 6px 2px rgba(var(--google-grey-800-rgb), 0.15);
+  color: var(--cros-menu-label-color);
   outline: none;
   overflow: hidden;
   padding: 8px 0;
   transition: opacity 200ms ease-in;
   z-index: 600;  /* Must be below the overlay pane (1000). */
+}
+
+/**
+  * TODO(crbug.com/1212771): Remove this media query when the semantic colour
+  * is available
+  */
+@media (prefers-color-scheme: dark) {
+  cr-menu.chrome-menu {
+    box-shadow:  0 1px 2px 0 rgba(0, 0, 0, 0.3),
+                 0 2px 6px 2px rgba(0, 0, 0, 0.15);
+  }
 }
 
 cr-menu.chrome-menu[hidden] {
@@ -86,7 +98,7 @@ html[dir='rtl'] cr-menu.chrome-menu > .menuitem-button.right {
 }
 
 cr-menu.chrome-menu > cr-menu-item[disabled] {
-  color: rgba(51, 51, 51, 0.20);
+  color: var(--cros-text-color-disabled);
   pointer-events: none;
 }
 
@@ -105,7 +117,7 @@ cr-menu.chrome-menu > cr-menu-item:not([disabled]):active {
 }
 
 cr-menu.chrome-menu > hr {
-  background: rgb(219, 219, 219);
+  background: var(--cros-separator-color);
   height: 1px;
   margin: 4px 0;
 }
@@ -227,13 +239,14 @@ cr-menu.chrome-menu > [checked]::before {
 
 /* Gray progress bar. Background color google grey 700 with 30% opacity */
 .progress-bar {
+  /* TODO(crbug.com/1212771): Update when semantic color is available. */
   background-color: rgba(95, 104, 106, .3);
   border-radius: 3px;
   height: 6px;
 }
 
 .progress-track {
-  background-color: var(--google-grey-600);
+  background-color: var(--cros-icon-color-primary);
   border-radius: 3px;
   height: 6px;
   min-width: 6px;
