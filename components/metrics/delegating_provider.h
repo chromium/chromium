@@ -49,6 +49,7 @@ class DelegatingProvider final : public MetricsProvider {
       ChromeUserMetricsExtension* uma_proto) override;
   void ProvideCurrentSessionData(
       ChromeUserMetricsExtension* uma_proto) override;
+  void ProvideCurrentSessionUKMData() override;
   void ClearSavedStabilityMetrics() override;
   void RecordHistogramSnapshots(
       base::HistogramSnapshotManager* snapshot_manager) override;

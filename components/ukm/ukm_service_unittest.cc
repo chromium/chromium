@@ -57,6 +57,7 @@ using TestEvent2 = builders::Memory_Experimental;
 const char* kTestEvent2Metric1 = TestEvent2::kArrayBufferName;
 const char* kTestEvent2Metric2 = TestEvent2::kBlinkGCName;
 using TestEvent3 = builders::Previews;
+using TestProviderEvent = builders::ScreenBrightness;
 
 std::string Entry1And2Whitelist() {
   return std::string(TestEvent1::kEntryName) + ',' + TestEvent2::kEntryName;
@@ -123,6 +124,24 @@ class MockDemographicMetricsProvider
   // DemographicMetricsProvider:
   MOCK_METHOD1(ProvideSyncedUserNoisedBirthYearAndGenderToReport,
                void(Report* report));
+};
+
+// A simple Provider that emits a 'TestProviderEvent' on session close (i.e. a
+// Report being emitted).
+class UkmTestMetricsProvider : public metrics::TestMetricsProvider {
+ public:
+  explicit UkmTestMetricsProvider(UkmRecorder* test_recording_helper)
+      : test_recording_helper_(test_recording_helper) {}
+
+  void ProvideCurrentSessionUKMData() override {
+    // An Event emitted during a Provider will frequently not not associated
+    // with a URL.
+    SourceId id = ukm::NoURLSourceId();
+    TestProviderEvent(id).Record(test_recording_helper_);
+  }
+
+ private:
+  UkmRecorder* test_recording_helper_;
 };
 
 class UkmServiceTest : public testing::Test {
@@ -473,13 +492,14 @@ TEST_F(UkmServiceTest, AddEntryWithEmptyMetrics) {
 }
 
 TEST_F(UkmServiceTest, MetricsProviderTest) {
-  ScopedUkmFeatureParams params({{"WhitelistEntries", Entry1And2Whitelist()}});
+  ScopedUkmFeatureParams params(
+      {{"WhitelistEntries", std::string(TestProviderEvent::kEntryName)}});
 
   UkmService service(&prefs_, &client_,
                      std::make_unique<MockDemographicMetricsProvider>());
   TestRecordingHelper recorder(&service);
 
-  metrics::TestMetricsProvider* provider = new metrics::TestMetricsProvider();
+  auto* provider = new UkmTestMetricsProvider(&service);
   service.RegisterMetricsProvider(
       std::unique_ptr<metrics::MetricsProvider>(provider));
 
@@ -492,18 +512,20 @@ TEST_F(UkmServiceTest, MetricsProviderTest) {
   service.EnableRecording(/*extensions=*/false);
   service.EnableReporting();
 
-  SourceId id = GetWhitelistedSourceId(0);
-  recorder.UpdateSourceURL(id, GURL("https://google.com/foobar"));
-  TestEvent1(id).Record(&service);
   service.Flush();
   EXPECT_EQ(GetPersistedLogCount(), 1);
 
   Report proto_report = GetPersistedReport();
-  EXPECT_EQ(1, proto_report.sources_size());
-  EXPECT_EQ(1, proto_report.entries_size());
+  // We should have an Event from a Provider provided metric, however, it is not
+  // attached to a Source (which should be typical for a Provider metric).
+  EXPECT_EQ(proto_report.sources_size(), 0);
 
-  // Providers have now supplied system profile information.
+  // Providers have now supplied system profile.
   EXPECT_TRUE(provider->provide_system_profile_metrics_called());
+  // Providers has also supplied a UKM Event.
+  const Entry& entry = proto_report.entries(0);
+  EXPECT_EQ(base::HashMetricName(TestProviderEvent::kEntryName),
+            entry.event_hash());
 }
 
 // Currently just testing brand is set, would be good to test other core
