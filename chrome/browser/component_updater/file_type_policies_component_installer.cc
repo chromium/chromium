@@ -62,7 +62,7 @@ namespace component_updater {
 
 bool FileTypePoliciesComponentInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {
-  return false;
+  return true;
 }
 
 bool FileTypePoliciesComponentInstallerPolicy::RequiresNetworkEncryption()
