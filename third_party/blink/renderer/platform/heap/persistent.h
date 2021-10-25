@@ -156,8 +156,16 @@ struct HashTraits<blink::Persistent<T>>
     : BasePersistentHashTraits<T, blink::Persistent<T>> {};
 
 template <typename T>
+struct HashTraits<blink::WeakPersistent<T>>
+    : BasePersistentHashTraits<T, blink::WeakPersistent<T>> {};
+
+template <typename T>
 struct HashTraits<blink::CrossThreadPersistent<T>>
     : BasePersistentHashTraits<T, blink::CrossThreadPersistent<T>> {};
+
+template <typename T>
+struct HashTraits<blink::CrossThreadWeakPersistent<T>>
+    : BasePersistentHashTraits<T, blink::CrossThreadWeakPersistent<T>> {};
 
 template <typename T>
 struct DefaultHash<blink::Persistent<T>> {
