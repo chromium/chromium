@@ -58,8 +58,13 @@ namespace ash {
 
 namespace {
 
-// The number of columns in the tablet mode productivity apps grid.
-constexpr int kPreferredGridColumnsForProductivityLauncher = 5;
+// The number of rows for portrait mode with mode productivity launcher
+// enabled.
+constexpr int kPreferredGridRowsInPortraitProductivityLauncher = 5;
+
+// The number of columns for portrait mode with mode productivity launcher
+// enabled.
+constexpr int kPreferredGridColumnsInPortraitProductivityLauncher = 5;
 
 // The long apps grid dimension when productivity launcher is not enabled:
 // * number of columns in landscape mode
@@ -352,23 +357,23 @@ AppsContainerView::~AppsContainerView() {
   delete app_list_folder_view_;
 }
 
-void AppsContainerView::UpdateTopLevelGridDimensions(
-    const GridLayout& grid_layout) {
+void AppsContainerView::UpdateTopLevelGridDimensions() {
+  const GridLayout grid_layout = CalculateGridLayout();
   if (features::IsProductivityLauncherEnabled()) {
     apps_grid_view_->SetMaxColumnsAndRows(
         /*max_columns=*/grid_layout.columns,
-        /*max_rows_on_first_page=*/grid_layout.rows - 1,
+        /*max_rows_on_first_page=*/grid_layout.first_page_rows,
         /*max_rows=*/grid_layout.rows);
   } else {
     apps_grid_view_->SetMaxColumnsAndRows(
         /*max_columns=*/grid_layout.columns,
-        /*max_rows_on_first_page=*/grid_layout.rows,
+        /*max_rows_on_first_page=*/grid_layout.first_page_rows,
         /*max_rows=*/grid_layout.rows);
   }
 }
 
-void AppsContainerView::UpdateAppListConfig(const gfx::Rect& contents_bounds,
-                                            const GridLayout& grid_layout) {
+gfx::Rect AppsContainerView::CalculateAvailableBoundsForAppsGrid(
+    const gfx::Rect& contents_bounds) const {
   gfx::Rect available_bounds = contents_bounds;
   // Reserve horizontal margins to accommodate page switcher.
   available_bounds.Inset(GetMinHorizontalMarginForAppsGrid(), 0);
@@ -380,6 +385,17 @@ void AppsContainerView::UpdateAppListConfig(const gfx::Rect& contents_bounds,
       0, 0);
   // Subtracts apps grid view insets from space available for apps grid.
   available_bounds.Inset(0, kGridFadeoutZoneHeight);
+
+  return available_bounds;
+}
+
+void AppsContainerView::UpdateAppListConfig(const gfx::Rect& contents_bounds) {
+  // For productivity launcher, the rows for this grid layout will be ignored
+  // during creation of a new config.
+  GridLayout grid_layout = CalculateGridLayout();
+
+  const gfx::Rect available_bounds =
+      CalculateAvailableBoundsForAppsGrid(contents_bounds);
 
   std::unique_ptr<AppListConfig> new_config =
       AppListConfigProvider::Get().CreateForFullscreenAppList(
@@ -554,6 +570,9 @@ bool AppsContainerView::IsPointWithinBottomDragBuffer(
   const int kBottomDragBufferMin = scrollable_container_->bounds().bottom() -
                                    apps_grid_view_->GetInsets().bottom() -
                                    page_flip_zone_size;
+  // TODO(crbug.com/1234064): In ProductivityLauncher, with a variable row size,
+  // the size of the bottom drag buffer can visually change. Figure out how we
+  // want to handle this and update this code to reflect that.
   return point_in_parent.y() > kBottomDragBufferMin &&
          point_in_parent.y() < kBottomDragBufferMax;
 }
@@ -708,8 +727,6 @@ void AppsContainerView::Layout() {
                   GetExpectedSuggestionChipY(kAppListFullscreenProgressValue) -
                   chip_container_rect.height());
 
-  UpdateTopLevelGridDimensions(CalculateGridLayout());
-
   // Layout apps grid.
   const gfx::Insets grid_insets = apps_grid_view_->GetInsets();
   const gfx::Insets margins = CalculateMarginsForAvailableBounds(
@@ -733,6 +750,12 @@ void AppsContainerView::Layout() {
     apps_grid_view_->set_first_page_offset(
         continue_container_->bounds().height());
   }
+
+  // Make sure that UpdateTopLevelGridDimensions() happens after setting the
+  // apps grid's first page offset, because it can change the number of rows
+  // shown in the grid.
+  UpdateTopLevelGridDimensions();
+
   apps_grid_view_->SetBoundsRect(
       gfx::Rect(0, 0, grid_rect.width(), grid_rect.height()));
 
@@ -794,16 +817,14 @@ void AppsContainerView::OnBoundsChanged(const gfx::Rect& old_bounds) {
   // The size and layout of apps grid items depend on the dimensions of the
   // display on which the apps container is shown. Given that the apps container
   // is shown in fullscreen app list view (and covers complete app list view
-  // bounds), changes in the `AppsContainerView` bounds can be used a a proxy to
-  // detect display size changes.
-  const GridLayout grid_layout = CalculateGridLayout();
-  UpdateAppListConfig(GetContentsBounds(), grid_layout);
+  // bounds), changes in the `AppsContainerView` bounds can be used as a proxy
+  // to detect display size changes.
+  UpdateAppListConfig(GetContentsBounds());
   DCHECK(app_list_config_);
+  UpdateTopLevelGridDimensions();
 
   // Finish initialization of views that require app list config.
   if (creating_initial_config) {
-    UpdateTopLevelGridDimensions(grid_layout);
-
     AppListViewDelegate* view_delegate =
         contents_view_->GetAppListMainView()->view_delegate();
 
@@ -983,6 +1004,8 @@ const gfx::Insets& AppsContainerView::CalculateMarginsForAvailableBounds(
     return cached_container_margins_.margins;
   }
 
+  // For productivity launcher, the `grid_layout`'s rows will be ignored because
+  // the vertical margin will be constant.
   const GridLayout grid_layout = CalculateGridLayout();
   const gfx::Size min_grid_size = apps_grid_view()->GetMinimumTileGridSize(
       grid_layout.columns, grid_layout.rows);
@@ -1016,14 +1039,20 @@ const gfx::Insets& AppsContainerView::CalculateMarginsForAvailableBounds(
     return ideal_margin;
   };
 
-  const int ideal_vertical_margin = GetIdealVerticalMargin();
-  const int vertical_margin =
-      calculate_margin(ideal_vertical_margin, available_height,
-                       min_grid_size.height(), max_grid_size.height());
+  int vertical_margin = 0;
+  if (features::IsProductivityLauncherEnabled()) {
+    // Productivity launcher does not have a preset number of rows per page.
+    // Instead of adjusting the margins to fit a set number of rows, the grid
+    // will change the number of rows to fit within the provided space.
+    vertical_margin = kGridFadeoutZoneHeight;
+  } else {
+    vertical_margin =
+        calculate_margin(GetIdealVerticalMargin(), available_height,
+                         min_grid_size.height(), max_grid_size.height());
+  }
 
-  const int ideal_horizontal_margin = GetIdealHorizontalMargin();
   const int horizontal_margin =
-      calculate_margin(ideal_horizontal_margin, available_bounds.width(),
+      calculate_margin(GetIdealHorizontalMargin(), available_bounds.width(),
                        min_grid_size.width(), max_grid_size.width());
 
   const int min_horizontal_margin = GetMinHorizontalMarginForAppsGrid();
@@ -1202,20 +1231,32 @@ AppsContainerView::GridLayout AppsContainerView::CalculateGridLayout() const {
           ->GetDisplayNearestView(GetWidget()->GetNativeView())
           .work_area()
           .size();
+  const bool is_portrait_mode = size.height() > size.width();
+  const int available_height =
+      CalculateAvailableBoundsForAppsGrid(GetContentsBounds()).height();
+
+  int preferred_columns = 0;
+  int preferred_rows = 0;
+
+  if (is_portrait_mode) {
+    preferred_rows = features::IsProductivityLauncherEnabled()
+                         ? kPreferredGridRowsInPortraitProductivityLauncher
+                         : kPreferredGridColumns;
+    preferred_columns =
+        features::IsProductivityLauncherEnabled()
+            ? kPreferredGridColumnsInPortraitProductivityLauncher
+            : kPreferredGridRows;
+  } else {
+    preferred_rows = kPreferredGridRows;
+    preferred_columns = kPreferredGridColumns;
+  }
 
   GridLayout result;
-  // Switch columns and rows for portrait mode.
-  if (size.width() < size.height()) {
-    result.columns = features::IsProductivityLauncherEnabled()
-                         ? kPreferredGridColumnsForProductivityLauncher
-                         : kPreferredGridRows;
-    result.rows = kPreferredGridColumns;
-  } else {
-    result.columns = features::IsProductivityLauncherEnabled()
-                         ? kPreferredGridColumnsForProductivityLauncher
-                         : kPreferredGridColumns;
-    result.rows = kPreferredGridRows;
-  }
+  result.columns = preferred_columns;
+  result.rows =
+      apps_grid_view_->CalculateMaxRows(available_height, preferred_rows);
+  result.first_page_rows = apps_grid_view_->CalculateFirstPageMaxRows(
+      available_height, preferred_rows);
   return result;
 }
 

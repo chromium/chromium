@@ -101,6 +101,14 @@ constexpr float kBackgroundCardOpacityHide = 0.0f;
 constexpr gfx::Tween::Type kCardifiedStateTweenType =
     gfx::Tween::LINEAR_OUT_SLOW_IN;
 
+// The minimum amount of space that should exist vertically between two app
+// tiles in the root grid.
+constexpr int kMinVerticalPaddingBetweenTiles = 8;
+
+// The maximum amount of space that should exist vetically between two app
+// tiles in the root grid.
+constexpr int kMaxVerticalPaddingBetweenTiles = 96;
+
 int GetFadeoutMaskHeight() {
   // The fadeout mask layer is shown only if background blur is enabled - if
   // fadeout mask is not shown, return 0 here so the apps grid is not shown in
@@ -356,6 +364,7 @@ void PagedAppsGridView::SetMaxColumnsAndRows(int max_columns,
                       TilesPerPage(1) != default_page_size)) {
     view_structure_.LoadFromMetadata();
     UpdatePaging();
+    PreferredSizeChanged();
   }
 }
 
@@ -542,16 +551,18 @@ gfx::Size PagedAppsGridView::GetTileViewSize() const {
       (cardified_state_ ? kCardifiedScale : 1.0f));
 }
 
-gfx::Insets PagedAppsGridView::GetTilePadding() const {
-  return gfx::Insets(-vertical_tile_padding_, -horizontal_tile_padding_);
+gfx::Insets PagedAppsGridView::GetTilePadding(int page) const {
+  return gfx::Insets(
+      page == 0 ? -first_page_vertical_tile_padding_ : -vertical_tile_padding_,
+      -horizontal_tile_padding_);
 }
 
 gfx::Size PagedAppsGridView::GetTileGridSize() const {
-  return GetTileGridSizeForPage(pagination_model_.selected_page());
+  return GetTileGridSizeForPage(1);
 }
 
 int PagedAppsGridView::GetPaddingBetweenPages() const {
-  // In cardified state, padding between pages should be fixed  and it should
+  // In cardified state, padding between pages should be fixed and it should
   // include background card padding.
   return cardified_state_
              ? kCardifiedPaddingBetweenPages + 2 * vertical_tile_padding_
@@ -936,18 +947,17 @@ gfx::Size PagedAppsGridView::GetPageSize() const {
   // Calculate page size as the tile grid size on non-leading page (which may
   // have reduced number of tiles to accommodate continue section and recent
   // apps UI in the apps container).
-  // NOTE: This assumes that tile padding is the same between different pages,
-  // if this assumption changes, this logic will have to be updated to use the
-  // tile padding for non-leading pages.
+  // NOTE: The the actual page size is always the same. To get the size of just
+  // app grid tiles on the leading page, GetTileGridSizeForPage(0) can be
+  // called.
   return GetTileGridSizeForPage(1);
 }
 
 gfx::Size PagedAppsGridView::GetTileGridSizeForPage(int page) const {
-  gfx::Rect rect(GetTotalTileSize());
-  const int tiles_per_page = TilesPerPage(page);
-  const int rows = tiles_per_page / cols();
+  gfx::Rect rect(GetTotalTileSize(page));
+  const int rows = TilesPerPage(page) / cols();
   rect.set_size(gfx::Size(rect.width() * cols(), rect.height() * rows));
-  rect.Inset(-GetTilePadding());
+  rect.Inset(-GetTilePadding(page));
   return rect.size();
 }
 
@@ -1244,9 +1254,12 @@ gfx::Rect PagedAppsGridView::BackgroundCardBounds(int new_page_index) {
   const gfx::Size grid_size = GetTileGridSizeForPage(new_page_index);
   // The size for the background card that will be displayed. The outer padding
   // of the grid need to be added.
+  const int vertical_tile_padding = new_page_index == 0
+                                        ? first_page_vertical_tile_padding_
+                                        : vertical_tile_padding_;
   const gfx::Size background_card_size =
       grid_size +
-      gfx::Size(2 * horizontal_tile_padding_, 2 * vertical_tile_padding_);
+      gfx::Size(2 * horizontal_tile_padding_, 2 * vertical_tile_padding);
 
   // Add a padding on the sides to make space for pagination preview, but make
   // sure the padding doesn't exceed the tile padding (otherwise the background
@@ -1325,8 +1338,13 @@ void PagedAppsGridView::SetHighlightedBackgroundCard(int new_highlighted_page) {
 }
 
 void PagedAppsGridView::UpdateTilePadding() {
-  if (has_fixed_tile_padding_)
+  if (has_fixed_tile_padding_) {
+    // With fixed padding, all padding should remain constant. Set
+    // 'first_page_vertical_tile_padding_' here because it is unique to this
+    // class.
+    first_page_vertical_tile_padding_ = vertical_tile_padding_;
     return;
+  }
 
   gfx::Size content_size = GetContentsBounds().size();
   const gfx::Size tile_size = GetTileViewSize();
@@ -1334,24 +1352,66 @@ void PagedAppsGridView::UpdateTilePadding() {
     content_size = gfx::ScaleToRoundedSize(content_size, kCardifiedScale) -
                    gfx::Size(2 * kCardifiedHorizontalPadding, 0);
   }
+
+  const auto calculate_tile_padding = [](int content_size, int num_tiles,
+                                         int tile_size, int offset) -> int {
+    return num_tiles > 1 ? (content_size - offset - num_tiles * tile_size) /
+                               ((num_tiles - 1) * 2)
+                         : 0;
+  };
+
   // Item tiles should be evenly distributed in this view.
-  horizontal_tile_padding_ =
-      cols() > 1 ? (content_size.width() - cols() * tile_size.width()) /
-                       ((cols() - 1) * 2)
-                 : 0;
+  horizontal_tile_padding_ = calculate_tile_padding(
+      content_size.width(), cols(), tile_size.width(), 0);
 
   // Calculate padding for default page size, to ensure the spacing between
   // pages remains the same when the selected page changes from/to the first
   // page.
-  // NOTE: If the padding changes depending on the current page, `GetPageSize()`
-  // has to be updated, too.
-  const int rows_per_page = max_rows_;
-  DCHECK_EQ(TilesPerPage(1), rows_per_page * cols());
-  vertical_tile_padding_ =
-      rows_per_page > 1
-          ? (content_size.height() - rows_per_page * tile_size.height()) /
-                ((rows_per_page - 1) * 2)
-          : 0;
+  vertical_tile_padding_ = calculate_tile_padding(
+      content_size.height(), max_rows_, tile_size.height(), 0);
+
+  // NOTE: The padding on the first page can be different than other pages
+  // depending on `first_page_offset_` and `max_rows_on_first_page_`.
+  first_page_vertical_tile_padding_ =
+      calculate_tile_padding(content_size.height(), max_rows_on_first_page_,
+                             tile_size.height(), first_page_offset_);
+}
+
+int PagedAppsGridView::CalculateFirstPageMaxRows(int available_height,
+                                                 int preferred_rows) {
+  return CalculateMaxRows(available_height - first_page_offset_,
+                          preferred_rows);
+}
+
+int PagedAppsGridView::CalculateMaxRows(int available_height,
+                                        int preferred_rows) {
+  if (!features::IsProductivityLauncherEnabled() || !app_list_config())
+    return preferred_rows;
+
+  const int tile_height = app_list_config()->grid_tile_height();
+  const int padding_for_preferred_rows =
+      (available_height - preferred_rows * tile_height) / (preferred_rows - 1);
+  int final_row_count = preferred_rows;
+
+  if (padding_for_preferred_rows < kMinVerticalPaddingBetweenTiles) {
+    // The padding with the preferred number of rows is too small. So find the
+    // max number of rows which will fit within the available space.
+    // I.e. max n where:
+    // n * tile_height + (n - 1) * min_padding <= available_height
+    final_row_count = (available_height + kMinVerticalPaddingBetweenTiles) /
+                      (tile_height + kMinVerticalPaddingBetweenTiles);
+
+  } else if (padding_for_preferred_rows > kMaxVerticalPaddingBetweenTiles) {
+    // The padding with the preferred number of rows is too large. So find the
+    // min number of rows which will fit within the available space.
+    // I.e. min n, with padding as close to max as possible where:
+    // n* tile_height + (n - 1) * padding <= available_height
+    // padding <= max_padding
+    final_row_count =
+        std::ceil((available_height + kMaxVerticalPaddingBetweenTiles) /
+                  (tile_height + kMaxVerticalPaddingBetweenTiles));
+  }
+  return final_row_count;
 }
 
 }  // namespace ash

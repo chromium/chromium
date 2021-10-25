@@ -120,8 +120,10 @@ class ASH_EXPORT AppsGridView : public views::View,
   void SetFixedTilePadding(int horizontal_tile_padding,
                            int vertical_tile_padding);
 
-  // Returns the size of a tile view including its padding.
-  gfx::Size GetTotalTileSize() const;
+  // Returns the size of a tile view including its padding. For paged apps grid,
+  // padding can be different between tiles on the first page and tiles on other
+  // pages.
+  gfx::Size GetTotalTileSize(int page) const;
 
   // Returns the minimum size of the entire tile grid.
   gfx::Size GetMinimumTileGridSize(int cols, int rows_per_page) const;
@@ -322,7 +324,7 @@ class ASH_EXPORT AppsGridView : public views::View,
   virtual gfx::Size GetTileViewSize() const = 0;
 
   // Returns the padding around a tile view.
-  virtual gfx::Insets GetTilePadding() const = 0;
+  virtual gfx::Insets GetTilePadding(int page) const = 0;
 
   // Returns the size of the entire tile grid.
   virtual gfx::Size GetTileGridSize() const = 0;

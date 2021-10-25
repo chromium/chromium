@@ -107,7 +107,10 @@ AppListConfigProvider::CreateForFullscreenAppList(
   const int min_grid_height = grid_rows * base_config.grid_tile_height();
   const int min_grid_width = grid_columns * base_config.grid_tile_width();
 
-  if (available_size.height() < min_grid_height) {
+  // `scale_y` does not change when productivity launcher is enabled. Instead,
+  // the number of rows will be reduced to fit the grid vertically.
+  if (available_size.height() < min_grid_height &&
+      !features::IsProductivityLauncherEnabled()) {
     scale_y =
         std::max(min_config_scale,
                  static_cast<float>(available_size.height()) / min_grid_height);

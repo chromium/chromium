@@ -97,7 +97,7 @@ gfx::Size ScrollableAppsGridView::GetTileViewSize() const {
   return gfx::Size(config->grid_tile_width(), config->grid_tile_height());
 }
 
-gfx::Insets ScrollableAppsGridView::GetTilePadding() const {
+gfx::Insets ScrollableAppsGridView::GetTilePadding(int page) const {
   if (has_fixed_tile_padding_)
     return gfx::Insets(-vertical_tile_padding_, -horizontal_tile_padding_);
 
@@ -125,9 +125,9 @@ gfx::Size ScrollableAppsGridView::GetTileGridSize() const {
   }
   const bool is_last_row_full = (items % cols() == 0);
   const int rows = is_last_row_full ? items / cols() : items / cols() + 1;
-  gfx::Size tile_size = GetTotalTileSize();
+  gfx::Size tile_size = GetTotalTileSize(/*page=*/0);
   gfx::Rect grid(tile_size.width() * cols(), tile_size.height() * rows);
-  grid.Inset(-GetTilePadding());
+  grid.Inset(-GetTilePadding(/*page=*/0));
   return grid.size();
 }
 

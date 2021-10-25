@@ -546,7 +546,7 @@ class AppsGridViewTest : public AshTestBase {
     const gfx::Rect apps_grid_bounds = paged_apps_grid_view_->GetLocalBounds();
     gfx::Point point_in_page_flip_buffer =
         gfx::Point(apps_grid_bounds.width() / 2,
-                   next_page ? apps_grid_bounds.bottom() + 1 : 0);
+                   next_page ? apps_grid_bounds.bottom() - 1 : 0);
 
     // Build the drag event which will be triggered after page flip.
     gfx::Point root_to(to);
@@ -2541,7 +2541,7 @@ TEST_P(AppsGridViewTabletTest, TouchDragFlipToNextPage) {
   InitiateDragForItemAtCurrentPageAt(AppsGridView::TOUCH, 0, 0,
                                      paged_apps_grid_view_);
   gfx::Point apps_grid_bottom_center =
-      gfx::Point(apps_grid_bounds.width() / 2, apps_grid_bounds.bottom() + 1);
+      gfx::Point(apps_grid_bounds.width() / 2, apps_grid_bounds.bottom() - 1);
   UpdateDrag(AppsGridView::TOUCH, apps_grid_bottom_center,
              paged_apps_grid_view_, 5 /*steps*/);
   while (HasPendingPageFlip(paged_apps_grid_view_)) {

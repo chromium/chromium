@@ -99,7 +99,7 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
 
   // AppsGridView:
   gfx::Size GetTileViewSize() const override;
-  gfx::Insets GetTilePadding() const override;
+  gfx::Insets GetTilePadding(int page) const override;
   gfx::Size GetTileGridSize() const override;
   int GetPaddingBetweenPages() const override;
   int GetTotalPages() const override;
@@ -152,6 +152,17 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   PaginationModel* pagination_model() { return &pagination_model_; }
 
   void set_first_page_offset(int offset) { first_page_offset_ = offset; }
+
+  // Calculates the maximum number of rows on the first page. Relies on tile
+  // size, `first_page_offset_`, and the bounds of the apps grid.
+  int CalculateFirstPageMaxRows(int available_height, int preferred_rows);
+
+  // Calculates the maximum number of rows. Relies on tile size and the bounds
+  // of the apps grid.
+  int CalculateMaxRows(int available_height, int preferred_rows);
+
+  int GetFirstPageRowsForTesting() const { return max_rows_on_first_page_; }
+  int GetRowsForTesting() const { return max_rows_; }
 
  private:
   friend class test::AppsGridViewTest;
@@ -285,6 +296,9 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   // The amount that tiles need to be offset on the y-axis to avoid overlap
   // with the recent apps and continue section.
   int first_page_offset_ = 0;
+
+  // Vertical tile spacing between the tile views on the first page.
+  int first_page_vertical_tile_padding_ = 0;
 
   base::WeakPtrFactory<PagedAppsGridView> weak_ptr_factory_{this};
 };

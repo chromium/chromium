@@ -53,7 +53,7 @@ TEST_F(AppListFolderViewProductivityLauncherTest,
   auto* folder_view = helper->GetBubbleFolderView();
   auto* scroll_view = folder_view->scroll_view_for_test();
   const int tile_height =
-      folder_view->items_grid_view()->GetTotalTileSize().height();
+      folder_view->items_grid_view()->GetTotalTileSize(/*page=*/0).height();
 
   // The scroll view has space for at least 4 full rows, but not 5.
   EXPECT_GE(scroll_view->height(), tile_height * 4);
