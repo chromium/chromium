@@ -257,7 +257,7 @@ class PDFViewerPPElement extends PDFViewerBaseElement {
         messageData = /** @type {{ x: number, y: number }} */ (message.data);
         position.y += messageData.y;
         position.x += messageData.x;
-        this.viewport.position = position;
+        this.viewport.setPosition(position);
         return true;
     }
 

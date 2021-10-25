@@ -312,7 +312,7 @@ export class PDFViewerBaseElement extends PolymerElement {
     } else if (progress === 100) {
       // Document load complete.
       if (this.lastViewportPosition) {
-        this.viewport_.position = this.lastViewportPosition;
+        this.viewport_.setPosition(this.lastViewportPosition);
       }
       this.paramsParser.getViewportFromUrlParams(this.originalUrl)
           .then(params => this.handleURLParams_(params));
@@ -544,7 +544,7 @@ export class PDFViewerBaseElement extends PolymerElement {
         } else if (params.view === FittingType.FIT_TO_HEIGHT) {
           currentViewportPosition.x += zoomedPositionShift;
         }
-        this.viewport_.position = currentViewportPosition;
+        this.viewport_.setPosition(currentViewportPosition);
       }
       this.isUserInitiatedEvent = true;
     }
