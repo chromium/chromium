@@ -83,6 +83,7 @@ if (is_chromeos) {
     "login_state.idl",
     "platform_keys_internal.idl",
     "platform_keys.idl",
+    "quick_unlock_private.idl",
   ]
 
   if (use_cups) {
@@ -108,7 +109,6 @@ if (is_chromeos_ash) {
     "login.idl",
     "login_screen_storage.idl",
     "login_screen_ui.idl",
-    "quick_unlock_private.idl",
     "speech_recognition_private.idl",
     "terminal_private.json",
     "users_private.idl",

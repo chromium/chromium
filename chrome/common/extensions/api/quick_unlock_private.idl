@@ -10,7 +10,7 @@
 // used for all lock screen settings.
 // Note: This API can not be used to actually unlock the device.
 
-[platforms=("chromeos")]
+[platforms=("chromeos", "lacros")]
 namespace quickUnlockPrivate {
   dictionary TokenInfo {
     // The authentication token that can be passed to $(ref:setModes) calls.
@@ -73,7 +73,7 @@ namespace quickUnlockPrivate {
     // policy information). This API must be used to change the pref.
     // |token|: The token returned by $(ref:getAuthToken).
     // |enabled|: Whether to enable the lock screen.
-    [supportsPromises] static void setLockScreenEnabled(
+    [platforms=("chromeos"), supportsPromises] static void setLockScreenEnabled(
         DOMString token,
         boolean enabled,
         optional VoidResultCallback onComplete);
@@ -87,23 +87,27 @@ namespace quickUnlockPrivate {
     // |enabled|: Whether to enable PIN auto submit.
     // |onComplete|: Called with true if the quick unlock state was updated,
     //     false otherwise. The update is treated as a single atomic operation.
-    [supportsPromises] static void setPinAutosubmitEnabled(
+    [platforms=("chromeos"), supportsPromises]
+    static void setPinAutosubmitEnabled(
         DOMString token,
         DOMString pin,
         boolean enabled,
         BooleanResultCallback onComplete);
 
     // Tests wether it is currently possible to authenticate using PIN.
-    [supportsPromises] static void canAuthenticatePin(
+    [platforms=("chromeos"), supportsPromises] static void canAuthenticatePin(
         BooleanResultCallback onComplete);
 
     // Returns the set of quick unlock modes that are available for the user to
     // use. Some quick unlock modes may be disabled by policy.
-    [supportsPromises] static void getAvailableModes(ModesCallback onComplete);
+    [platforms=("chromeos"), supportsPromises] static void getAvailableModes(
+        ModesCallback onComplete);
 
     // Returns the quick unlock modes that are currently enabled and usable on
     // the lock screen.
-    [supportsPromises] static void getActiveModes(ModesCallback onComplete);
+    [platforms=("chromeos"), supportsPromises]
+    static void getActiveModes(ModesCallback onComplete);
+
 
     // Checks if the given credential can be used for the given unlock mode.
     // Enterprise policy can change credential requirements.
@@ -111,7 +115,7 @@ namespace quickUnlockPrivate {
     // |credential|: The given credential.
     // |onComplete|: Called with a list of warnings and errors the given
     //     |credential| has (or an empty list if there are none).
-    [supportsPromises] static void checkCredential(
+    [platforms=("chromeos"), supportsPromises] static void checkCredential(
         QuickUnlockMode mode,
         DOMString credential,
         CredentialCheckCallback onComplete);
@@ -120,7 +124,8 @@ namespace quickUnlockPrivate {
     // |mode|: The quick unlock mode that is used.
     // |onComplete|: Called with the credential requirements of the given
     //     |mode|.
-    [supportsPromises] static void getCredentialRequirements(
+    [platforms=("chromeos"), supportsPromises]
+    static void getCredentialRequirements(
         QuickUnlockMode mode,
         CredentialRequirementsCallback onComplete);
 
@@ -131,10 +136,11 @@ namespace quickUnlockPrivate {
     //     credential the same for the associated mode, pass an empty string.
     // |onComplete|: Called with true if the quick unlock state was updated,
     //     false otherwise. The update is treated as a single atomic operation.
-    [supportsPromises] static void setModes(DOMString token,
-                                            QuickUnlockMode[] modes,
-                                            DOMString[] credentials,
-                                            VoidResultCallback onComplete);
+    [platforms=("chromeos"), supportsPromises]
+    static void setModes(DOMString token,
+                         QuickUnlockMode[] modes,
+                         DOMString[] credentials,
+                         VoidResultCallback onComplete);
   };
 
   interface Events {

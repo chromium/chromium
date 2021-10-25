@@ -723,7 +723,7 @@
       "chrome://settings/*",
       "chrome://oobe/*"
     ],
-    "platforms": ["chromeos"]
+    "platforms": ["chromeos", "lacros"]
   },
   "resourcesPrivate": [{
     "dependencies": ["permission:resourcesPrivate"],

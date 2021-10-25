@@ -1038,6 +1038,13 @@ static_library("extensions") {
     ]
   }
 
+  if (is_chromeos_lacros) {
+    sources += [
+      "api/quick_unlock_private/quick_unlock_private_api_lacros.cc",
+      "api/quick_unlock_private/quick_unlock_private_api_lacros.h",
+    ]
+  }
+
   if (is_chromeos_ash) {
     sources += [
       "api/certificate_provider/certificate_provider_api.cc",
