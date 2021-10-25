@@ -4,8 +4,11 @@
 
 import 'chrome://welcome/google_apps/nux_google_apps.js';
 
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {GoogleAppProxyImpl} from 'chrome://welcome/google_apps/google_app_proxy.js';
 import {GoogleAppsMetricsProxyImpl} from 'chrome://welcome/google_apps/google_apps_metrics_proxy.js';
+import {NuxGoogleAppsElement} from 'chrome://welcome/google_apps/nux_google_apps.js';
 import {BookmarkBarManager, BookmarkProxyImpl} from 'chrome://welcome/shared/bookmark_proxy.js';
 
 import {TestBookmarkProxy} from './test_bookmark_proxy.js';
@@ -46,17 +49,10 @@ suite('AppChooserTest', function() {
     },
   ];
 
-  /** @type {NuxAppProxy} */
-  let testAppBrowserProxy;
-
-  /** @type {ModuleMetricsProxy} */
-  let testAppMetricsProxy;
-
-  /** @type {BookmarkProxy} */
-  let testBookmarkBrowserProxy;
-
-  /** @type {AppChooserElement} */
-  let testElement;
+  let testAppBrowserProxy: TestGoogleAppProxy;
+  let testAppMetricsProxy: TestMetricsProxy;
+  let testBookmarkBrowserProxy: TestBookmarkProxy;
+  let testElement: NuxGoogleAppsElement;
 
   setup(async function() {
     testAppBrowserProxy = new TestGoogleAppProxy();
@@ -87,94 +83,88 @@ suite('AppChooserTest', function() {
 
   function getSelected() {
     return Array.from(
-        testElement.shadowRoot.querySelectorAll('.option[active]'));
+        testElement.shadowRoot!.querySelectorAll('.option[active]'));
+  }
+
+  function getActionButton(): CrButtonElement {
+    return testElement.shadowRoot!.querySelector<CrButtonElement>(
+        '.action-button')!;
   }
 
   test('test app chooser options', async function() {
-    const options =
-        Array.from(testElement.shadowRoot.querySelectorAll('.option'));
+    const options = Array.from(
+        testElement.shadowRoot!.querySelectorAll<HTMLButtonElement>('.option'));
     assertEquals(5, options.length);
 
     // First three options are selected and action button should be enabled.
     assertDeepEquals(options.slice(0, 3), getSelected());
-    assertFalse(
-        testElement.shadowRoot.querySelector('.action-button').disabled);
+    assertFalse(getActionButton().disabled);
 
     // Click the first option to deselect it.
     testBookmarkBrowserProxy.reset();
-    options[0].click();
+    options[0]!.click();
 
     assertEquals(
-        1, await testBookmarkBrowserProxy.whenCalled('removeBookmark'));
+        '1', await testBookmarkBrowserProxy.whenCalled('removeBookmark'));
     assertDeepEquals(options.slice(1, 3), getSelected());
-    assertFalse(
-        testElement.shadowRoot.querySelector('.action-button').disabled);
+    assertFalse(getActionButton().disabled);
 
     // Click fourth option to select it.
     testBookmarkBrowserProxy.reset();
-    options[3].click();
+    options[3]!.click();
 
     assertDeepEquals(
         {
-          title: apps[3].name,
-          url: apps[3].url,
+          title: apps[3]!.name,
+          url: apps[3]!.url,
           parentId: '1',
         },
         await testBookmarkBrowserProxy.whenCalled('addBookmark'));
 
     assertDeepEquals(options.slice(1, 4), getSelected());
-    assertFalse(
-        testElement.shadowRoot.querySelector('.action-button').disabled);
+    assertFalse(getActionButton().disabled);
 
     // Click fourth option again to deselect it.
     testBookmarkBrowserProxy.reset();
-    options[3].click();
+    options[3]!.click();
 
     assertEquals(
-        4, await testBookmarkBrowserProxy.whenCalled('removeBookmark'));
+        '4', await testBookmarkBrowserProxy.whenCalled('removeBookmark'));
     assertDeepEquals(options.slice(1, 3), getSelected());
-    assertFalse(
-        testElement.shadowRoot.querySelector('.action-button').disabled);
+    assertFalse(getActionButton().disabled);
 
     // Click second option to deselect it.
     testBookmarkBrowserProxy.reset();
-    options[1].click();
+    options[1]!.click();
 
     assertEquals(
-        2, await testBookmarkBrowserProxy.whenCalled('removeBookmark'));
+        '2', await testBookmarkBrowserProxy.whenCalled('removeBookmark'));
     assertDeepEquals(options.slice(2, 3), getSelected());
-    assertFalse(
-        testElement.shadowRoot.querySelector('.action-button').disabled);
+    assertFalse(getActionButton().disabled);
 
     // Click third option to deselect all options.
     testBookmarkBrowserProxy.reset();
-    options[2].click();
+    options[2]!.click();
 
     assertEquals(
-        3, await testBookmarkBrowserProxy.whenCalled('removeBookmark'));
+        '3', await testBookmarkBrowserProxy.whenCalled('removeBookmark'));
     assertEquals(0, getSelected().length);
-    assertTrue(testElement.shadowRoot.querySelector('.action-button').disabled);
+    assertTrue(getActionButton().disabled);
   });
 
   test('test app chooser skip button', async function() {
-    const options = testElement.shadowRoot.querySelectorAll('.option');
-    testElement.wasBookmarkBarShownOnInit_ = true;
-
     // First option should be selected and action button should be enabled.
     testElement.$.noThanksButton.click();
     assertEquals(
-        1, await testBookmarkBrowserProxy.whenCalled('removeBookmark'));
+        '1', await testBookmarkBrowserProxy.whenCalled('removeBookmark'));
     assertEquals(
         true, await testBookmarkBrowserProxy.whenCalled('toggleBookmarkBar'));
     await testAppMetricsProxy.whenCalled('recordDidNothingAndChoseSkip');
   });
 
   test('test app chooser next button', async function() {
-    const options = testElement.shadowRoot.querySelectorAll('.option');
-    testElement.wasBookmarkBarShownOnInit_ = true;
-
     // First option should be selected and action button should be enabled.
-    testElement.shadowRoot.querySelector('.action-button').click();
+    getActionButton().click();
 
     await testAppMetricsProxy.whenCalled('recordDidNothingAndChoseNext');
 

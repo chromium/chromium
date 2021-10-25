@@ -4,8 +4,10 @@
 
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-/** @implements {SigninViewProxy} */
-export class TestSigninViewProxy extends TestBrowserProxy {
+import {SigninViewProxy} from 'chrome://welcome/signin_view_proxy.js';
+
+export class TestSigninViewProxy extends TestBrowserProxy implements
+    SigninViewProxy {
   constructor() {
     super([
       'recordPageShown',
@@ -16,27 +18,22 @@ export class TestSigninViewProxy extends TestBrowserProxy {
     ]);
   }
 
-  /** @override */
   recordPageShown() {
     this.methodCalled('recordPageShown');
   }
 
-  /** @override */
   recordNavigatedAway() {
     this.methodCalled('recordNavigatedAway');
   }
 
-  /** @override */
   recordNavigatedAwayThroughBrowserHistory() {
     this.methodCalled('recordNavigatedAwayThroughBrowserHistory');
   }
 
-  /** @override */
   recordSkip() {
     this.methodCalled('recordSkip');
   }
 
-  /** @override */
   recordSignIn() {
     this.methodCalled('recordSignIn');
   }

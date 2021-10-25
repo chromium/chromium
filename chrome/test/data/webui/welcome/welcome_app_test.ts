@@ -4,32 +4,29 @@
 
 import 'chrome://welcome/welcome_app.js';
 
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitBeforeNextRender} from 'chrome://webui-test/test_util.js';
 import {LandingViewProxyImpl} from 'chrome://welcome/landing_view_proxy.js';
 import {navigateTo, Routes} from 'chrome://welcome/navigation_mixin.js';
 import {NuxSetAsDefaultProxyImpl} from 'chrome://welcome/set_as_default/nux_set_as_default_proxy.js';
 import {BookmarkProxyImpl} from 'chrome://welcome/shared/bookmark_proxy.js';
+import {DefaultBrowserInfo} from 'chrome://welcome/shared/nux_types.js';
+import {WelcomeAppElement} from 'chrome://welcome/welcome_app.js';
 import {WelcomeBrowserProxyImpl} from 'chrome://welcome/welcome_browser_proxy.js';
 
 import {TestBookmarkProxy} from './test_bookmark_proxy.js';
 import {TestLandingViewProxy} from './test_landing_view_proxy.js';
-import {TestMetricsProxy} from './test_metrics_proxy.js';
 import {TestNuxSetAsDefaultProxy} from './test_nux_set_as_default_proxy.js';
 import {TestWelcomeBrowserProxy} from './test_welcome_browser_proxy.js';
 
 suite('WelcomeWelcomeAppTest', function() {
-  /** @type {WelcomeAppElement} */
-  let testElement;
-
-  /** @type {WelcomeBrowserProxy} */
-  let testWelcomeBrowserProxy;
-
-  /** @type {NuxSetAsDefaultProxy} */
-  let testSetAsDefaultProxy;
+  let testElement: WelcomeAppElement;
+  let testWelcomeBrowserProxy: TestWelcomeBrowserProxy;
+  let testSetAsDefaultProxy: TestNuxSetAsDefaultProxy;
 
   function resetTestElement() {
     document.body.innerHTML = '';
-    navigateTo(Routes.LANDING, 'landing');
+    navigateTo(Routes.LANDING, 0);
     testElement = document.createElement('welcome-app');
     document.body.appendChild(testElement);
   }
@@ -77,17 +74,17 @@ suite('WelcomeWelcomeAppTest', function() {
 
   test('shows landing page by default', function() {
     assertEquals(
-        testElement.shadowRoot.querySelectorAll('[slot=view]').length, 1);
-    assertTrue(!!testElement.shadowRoot.querySelector('landing-view'));
-    assertTrue(testElement.shadowRoot.querySelector('landing-view')
-                   .classList.contains('active'));
+        testElement.shadowRoot!.querySelectorAll('[slot=view]').length, 1);
+    const landingView = testElement.shadowRoot!.querySelector('landing-view');
+    assertTrue(!!landingView);
+    assertTrue(landingView!.classList.contains('active'));
   });
 
   test('new user route (can set default)', function() {
     simulateCanSetDefault();
     navigateTo(Routes.NEW_USER, 1);
     return waitBeforeNextRender(testElement).then(() => {
-      const views = testElement.shadowRoot.querySelectorAll('[slot=view]');
+      const views = testElement.shadowRoot!.querySelectorAll('[slot=view]');
       assertEquals(views.length, 5);
       ['LANDING-VIEW',
        'NUX-GOOGLE-APPS',
@@ -95,7 +92,7 @@ suite('WelcomeWelcomeAppTest', function() {
        'NUX-SET-AS-DEFAULT',
        'SIGNIN-VIEW',
       ].forEach((expectedView, ix) => {
-        assertEquals(expectedView, views[ix].tagName);
+        assertEquals(expectedView, views[ix]!.tagName);
       });
     });
   });
@@ -104,14 +101,14 @@ suite('WelcomeWelcomeAppTest', function() {
     simulateCannotSetDefault();
     navigateTo(Routes.NEW_USER, 1);
     return waitBeforeNextRender(testElement).then(() => {
-      const views = testElement.shadowRoot.querySelectorAll('[slot=view]');
+      const views = testElement.shadowRoot!.querySelectorAll('[slot=view]');
       assertEquals(views.length, 4);
       ['LANDING-VIEW',
        'NUX-GOOGLE-APPS',
        'NUX-NTP-BACKGROUND',
        'SIGNIN-VIEW',
       ].forEach((expectedView, ix) => {
-        assertEquals(expectedView, views[ix].tagName);
+        assertEquals(expectedView, views[ix]!.tagName);
       });
     });
   });
@@ -120,10 +117,10 @@ suite('WelcomeWelcomeAppTest', function() {
     simulateCanSetDefault();
     navigateTo(Routes.RETURNING_USER, 1);
     return waitBeforeNextRender(testElement).then(() => {
-      const views = testElement.shadowRoot.querySelectorAll('[slot=view]');
+      const views = testElement.shadowRoot!.querySelectorAll('[slot=view]');
       assertEquals(views.length, 2);
-      assertEquals(views[0].tagName, 'LANDING-VIEW');
-      assertEquals(views[1].tagName, 'NUX-SET-AS-DEFAULT');
+      assertEquals(views[0]!.tagName, 'LANDING-VIEW');
+      assertEquals(views[1]!.tagName, 'NUX-SET-AS-DEFAULT');
     });
   });
 
@@ -137,12 +134,9 @@ suite('WelcomeWelcomeAppTest', function() {
   });
 
   test('default-status check resolves with correct value', function() {
-    /**
-     * @param {!DefaultBrowserInfo} status
-     * @param {boolean} expectedDefaultExists
-     * @return {!Promise}
-     */
-    function checkDefaultStatusResolveValue(status, expectedDefaultExists) {
+    function checkDefaultStatusResolveValue(
+        status: DefaultBrowserInfo,
+        expectedDefaultExists: boolean): Promise<void> {
       testSetAsDefaultProxy.setDefaultStatus(status);
       resetTestElement();
 
@@ -154,7 +148,7 @@ suite('WelcomeWelcomeAppTest', function() {
         // whether or not the promise is resolved with the expected result.
         assertEquals(
             expectedDefaultExists,
-            !!testElement.shadowRoot.querySelector('nux-set-as-default'));
+            !!testElement.shadowRoot!.querySelector('nux-set-as-default'));
       });
     }
 

@@ -4,21 +4,18 @@
 
 import 'chrome://welcome/set_as_default/nux_set_as_default.js';
 
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {NuxSetAsDefaultElement} from 'chrome://welcome/set_as_default/nux_set_as_default.js';
 import {NuxSetAsDefaultProxyImpl} from 'chrome://welcome/set_as_default/nux_set_as_default_proxy.js';
 
 import {TestNuxSetAsDefaultProxy} from './test_nux_set_as_default_proxy.js';
 
 suite('SetAsDefaultTest', function() {
-  /** @type {NuxSetAsDefaultElement} */
-  let testElement;
-
-  /** @type {NuxSetAsDefaultProxy} */
-  let testSetAsDefaultProxy;
-
-  /** @type {!Promise} */
-  let navigatedPromise;
+  let testElement: NuxSetAsDefaultElement;
+  let testSetAsDefaultProxy: TestNuxSetAsDefaultProxy;
+  let navigatedPromise: Promise<void>;
 
   setup(function() {
     testSetAsDefaultProxy = new TestNuxSetAsDefaultProxy();
@@ -27,12 +24,10 @@ suite('SetAsDefaultTest', function() {
     document.body.innerHTML = '';
     testElement = document.createElement('nux-set-as-default');
     document.body.appendChild(testElement);
-    let navigateToNextStep;
     navigatedPromise = new Promise(resolve => {
       // Spy on navigational function to make sure it's called.
-      navigateToNextStep = () => resolve();
+      testElement.navigateToNextStep = resolve;
     });
-    testElement.navigateToNextStep_ = navigateToNextStep;
   });
 
   teardown(function() {
@@ -40,14 +35,15 @@ suite('SetAsDefaultTest', function() {
   });
 
   test('skip', function() {
-    testElement.$['decline-button'].click();
+    testElement.$.declineButton.click();
     return testSetAsDefaultProxy.whenCalled('recordSkip');
   });
 
   test(
       'click set-default button and finishes setting default',
       async function() {
-        testElement.shadowRoot.querySelector('.action-button').click();
+        testElement.shadowRoot!
+            .querySelector<CrButtonElement>('.action-button')!.click();
 
         await Promise.all([
           testSetAsDefaultProxy.whenCalled('recordBeginSetDefault'),
@@ -68,14 +64,15 @@ suite('SetAsDefaultTest', function() {
       });
 
   test('click set-default button but gives up and skip', async function() {
-    testElement.shadowRoot.querySelector('.action-button').click();
+    testElement.shadowRoot!.querySelector<CrButtonElement>(
+                               '.action-button')!.click();
 
     await Promise.all([
       testSetAsDefaultProxy.whenCalled('recordBeginSetDefault'),
       testSetAsDefaultProxy.whenCalled('setAsDefault'),
     ]);
 
-    testElement.$['decline-button'].click();
+    testElement.$.declineButton.click();
 
     return Promise.all([
       testSetAsDefaultProxy.whenCalled('recordSkip'),

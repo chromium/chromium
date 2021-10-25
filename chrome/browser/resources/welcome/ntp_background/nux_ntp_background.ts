@@ -29,6 +29,7 @@ const KEYBOARD_FOCUSED_CLASS = 'keyboard-focused';
 export interface NuxNtpBackgroundElement {
   $: {
     backgroundPreview: HTMLElement,
+    skipButton: HTMLElement,
   };
 }
 
@@ -236,4 +237,11 @@ export class NuxNtpBackgroundElement extends NuxNtpBackgroundElementBase {
     return html`{__html_template__}`;
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'nux-ntp-background': NuxNtpBackgroundElement;
+  }
+}
+
 customElements.define(NuxNtpBackgroundElement.is, NuxNtpBackgroundElement);

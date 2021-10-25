@@ -3,9 +3,13 @@
 // found in the LICENSE file.
 
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {NtpBackgroundData, NtpBackgroundProxy} from 'chrome://welcome/ntp_background/ntp_background_proxy.js';
 
-/** @implements {NtpBackgroundProxy} */
-export class TestNtpBackgroundProxy extends TestBrowserProxy {
+export class TestNtpBackgroundProxy extends TestBrowserProxy implements
+    NtpBackgroundProxy {
+  private backgroundsList_: Array<NtpBackgroundData> = [];
+  private preloadImageSuccess_: boolean = true;
+
   constructor() {
     super([
       'clearBackground',
@@ -15,53 +19,41 @@ export class TestNtpBackgroundProxy extends TestBrowserProxy {
       'recordBackgroundImageLoadTime',
       'setBackground',
     ]);
-
-    /** @private {!Array<!NtpBackgroundData} */
-    this.backgroundsList_ = [];
-
-    /** @private {boolean} */
-    this.preloadImageSuccess_ = true;
   }
 
-  /** @override */
   clearBackground() {
     this.methodCalled('clearBackground');
   }
 
-  /** @override */
   getBackgrounds() {
     this.methodCalled('getBackgrounds');
     return Promise.resolve(this.backgroundsList_);
   }
 
-  /** @override */
-  preloadImage(url) {
-    this.methodCalled('preloadImage');
+  preloadImage(url: string) {
+    this.methodCalled('preloadImage', url);
     return this.preloadImageSuccess_ ? Promise.resolve() : Promise.reject();
   }
 
-  /** @override */
   recordBackgroundImageFailedToLoad() {
     this.methodCalled('recordBackgroundImageFailedToLoad');
   }
 
-  /** @override */
-  recordBackgroundImageLoadTime(loadTime) {
+  recordBackgroundImageLoadTime(loadTime: number) {
     this.methodCalled('recordBackgroundImageLoadTime', loadTime);
   }
 
-  /** @override */
-  setBackground(id) {
+  recordBackgroundImageNeverLoaded() {}
+
+  setBackground(id: number) {
     this.methodCalled('setBackground', id);
   }
 
-  /** @param {boolean} success */
-  setPreloadImageSuccess(success) {
+  setPreloadImageSuccess(success: boolean) {
     this.preloadImageSuccess_ = success;
   }
 
-  /** @param {!Array<!NtpBackgroundData>} backgroundsList */
-  setBackgroundsList(backgroundsList) {
+  setBackgroundsList(backgroundsList: Array<NtpBackgroundData>) {
     this.backgroundsList_ = backgroundsList;
   }
 }

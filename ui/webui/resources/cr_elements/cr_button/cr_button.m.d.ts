@@ -5,7 +5,7 @@
 import {LegacyElementMixin} from 'chrome://resources/polymer/v3_0/polymer/lib/legacy/legacy-element-mixin.js';
 
 interface CrButtonElement extends LegacyElementMixin, HTMLElement {
-  disabled: boolean|null|undefined;
+  disabled: boolean;
   customTabIndex: number|null|undefined;
   hostAttributes: object|null;
 }

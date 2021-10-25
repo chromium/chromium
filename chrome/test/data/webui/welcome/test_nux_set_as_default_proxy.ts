@@ -4,8 +4,18 @@
 
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-/** @implements {NuxSetAsDefaultProxy} */
-export class TestNuxSetAsDefaultProxy extends TestBrowserProxy {
+import {NuxSetAsDefaultProxy} from 'chrome://welcome/set_as_default/nux_set_as_default_proxy.js';
+import {DefaultBrowserInfo} from 'chrome://welcome/shared/nux_types.js';
+
+export class TestNuxSetAsDefaultProxy extends TestBrowserProxy implements
+    NuxSetAsDefaultProxy {
+  private defaultStatus_: DefaultBrowserInfo = {
+    canBeDefault: true,
+    isDefault: false,
+    isDisabledByPolicy: false,
+    isUnknownError: false,
+  };
+
   constructor() {
     super([
       'requestDefaultBrowserState',
@@ -17,52 +27,41 @@ export class TestNuxSetAsDefaultProxy extends TestBrowserProxy {
       'recordSuccessfullySetDefault',
       'recordNavigatedAwayThroughBrowserHistory',
     ]);
-
-    this.defaultStatus_ = {};
   }
 
-  /** @override */
   requestDefaultBrowserState() {
     this.methodCalled('requestDefaultBrowserState');
     return Promise.resolve(this.defaultStatus_);
   }
 
-  /** @override */
   setAsDefault() {
     this.methodCalled('setAsDefault');
   }
 
-  /** @param {!DefaultBrowserInfo} status */
-  setDefaultStatus(status) {
+  setDefaultStatus(status: DefaultBrowserInfo) {
     this.defaultStatus_ = status;
   }
 
-  /** @override */
   recordPageShown() {
     this.methodCalled('recordPageShown');
   }
 
-  /** @override */
   recordNavigatedAway() {
     this.methodCalled('recordNavigatedAway');
   }
 
-  /** @override */
   recordSkip() {
     this.methodCalled('recordSkip');
   }
 
-  /** @override */
   recordBeginSetDefault() {
     this.methodCalled('recordBeginSetDefault');
   }
 
-  /** @override */
   recordSuccessfullySetDefault() {
     this.methodCalled('recordSuccessfullySetDefault');
   }
 
-  /** @override */
   recordNavigatedAwayThroughBrowserHistory() {
     this.methodCalled('recordNavigatedAwayThroughBrowserHistory');
   }

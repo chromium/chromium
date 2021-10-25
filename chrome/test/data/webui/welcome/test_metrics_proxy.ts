@@ -4,8 +4,10 @@
 
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-/** @implements {ModuleMetricsProxy} */
-export class TestMetricsProxy extends TestBrowserProxy {
+import {ModuleMetricsProxy} from 'chrome://welcome/shared/module_metrics_proxy.js';
+
+export class TestMetricsProxy extends TestBrowserProxy implements
+    ModuleMetricsProxy {
   constructor() {
     super([
       'recordChoseAnOptionAndChoseNext',
@@ -22,57 +24,46 @@ export class TestMetricsProxy extends TestBrowserProxy {
     ]);
   }
 
-  /** @override */
   recordChoseAnOptionAndChoseNext() {
     this.methodCalled('recordChoseAnOptionAndChoseNext');
   }
 
-  /** @override */
   recordChoseAnOptionAndChoseSkip() {
     this.methodCalled('recordChoseAnOptionAndChoseSkip');
   }
 
-  /** @override */
   recordChoseAnOptionAndNavigatedAway() {
     this.methodCalled('recordChoseAnOptionAndNavigatedAway');
   }
 
-  /** @override */
   recordClickedDisabledNextButtonAndChoseNext() {
     this.methodCalled('recordClickedDisabledNextButtonAndChoseNext');
   }
 
-  /** @override */
   recordClickedDisabledNextButtonAndChoseSkip() {
     this.methodCalled('recordClickedDisabledNextButtonAndChoseSkip');
   }
 
-  /** @override */
   recordClickedDisabledNextButtonAndNavigatedAway() {
     this.methodCalled('recordClickedDisabledNextButtonAndNavigatedAway');
   }
 
-  /** @override */
   recordDidNothingAndChoseNext() {
     this.methodCalled('recordDidNothingAndChoseNext');
   }
 
-  /** @override */
   recordDidNothingAndChoseSkip() {
     this.methodCalled('recordDidNothingAndChoseSkip');
   }
 
-  /** @override */
   recordDidNothingAndNavigatedAway() {
     this.methodCalled('recordDidNothingAndNavigatedAway');
   }
 
-  /** @override */
   recordNavigatedAwayThroughBrowserHistory() {
     this.methodCalled('recordNavigatedAwayThroughBrowserHistory');
   }
 
-  /** @override */
   recordPageShown() {
     this.methodCalled('recordPageShown');
   }

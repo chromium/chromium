@@ -4,40 +4,37 @@
 
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-/** @implements {GoogleAppProxy} */
-export class TestGoogleAppProxy extends TestBrowserProxy {
+import {GoogleAppProxy} from 'chrome://welcome/google_apps/google_app_proxy.js';
+import {BookmarkListItem} from 'chrome://welcome/shared/nux_types.js';
+
+export class TestGoogleAppProxy extends TestBrowserProxy implements
+    GoogleAppProxy {
+  providerSelectedCount: number = 0;
+  private appList_: Array<BookmarkListItem> = [];
+
   constructor() {
     super([
       'cacheBookmarkIcon',
       'getAppList',
       'recordProviderSelected',
     ]);
-
-    this.providerSelectedCount = 0;
-
-    /** @private {!Array<!BookmarkListItem>} */
-    this.appList_ = [];
   }
 
-  /** @override */
   getAppList() {
     this.methodCalled('getAppList');
     return Promise.resolve(this.appList_);
   }
 
-  /** @override */
-  cacheBookmarkIcon() {
-    this.methodCalled('cacheBookmarkIcon');
+  cacheBookmarkIcon(appId: number) {
+    this.methodCalled('cacheBookmarkIcon', appId);
   }
 
-  /** @override */
-  recordProviderSelected(providerId) {
+  recordProviderSelected(providerId: number) {
     this.methodCalled('recordProviderSelected', providerId);
     this.providerSelectedCount++;
   }
 
-  /** @param {!Array<!BookmarkListItem>} appList */
-  setAppList(appList) {
+  setAppList(appList: Array<BookmarkListItem>) {
     this.appList_ = appList;
   }
 }

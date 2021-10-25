@@ -4,6 +4,9 @@
 
 import 'chrome://welcome/signin_view.js';
 
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+
+import {SigninViewElement} from 'chrome://welcome/signin_view.js';
 import {SigninViewProxyImpl} from 'chrome://welcome/signin_view_proxy.js';
 import {WelcomeBrowserProxyImpl} from 'chrome://welcome/welcome_browser_proxy.js';
 
@@ -11,11 +14,8 @@ import {TestSigninViewProxy} from './test_signin_view_proxy.js';
 import {TestWelcomeBrowserProxy} from './test_welcome_browser_proxy.js';
 
 suite('SigninViewTest', function() {
-  /** @type {SigninViewElement} */
-  let testElement;
-
-  /** @type {WelcomeBrowserProxy} */
-  let testWelcomeBrowserProxy;
+  let testElement: SigninViewElement;
+  let testWelcomeBrowserProxy: TestWelcomeBrowserProxy;
 
   setup(function() {
     testWelcomeBrowserProxy = new TestWelcomeBrowserProxy();
@@ -35,18 +35,18 @@ suite('SigninViewTest', function() {
   });
 
   test('sign-in button', function() {
-    const signinButton = testElement.shadowRoot.querySelector('cr-button');
+    const signinButton = testElement.shadowRoot!.querySelector('cr-button');
     assertTrue(!!signinButton);
 
-    signinButton.click();
+    signinButton!.click();
     return testWelcomeBrowserProxy.whenCalled('handleActivateSignIn')
         .then(redirectUrl => assertEquals(null, redirectUrl));
   });
 
   test('no-thanks button', function() {
-    const noThanksButton = testElement.shadowRoot.querySelector('button');
+    const noThanksButton = testElement.shadowRoot!.querySelector('button');
     assertTrue(!!noThanksButton);
-    noThanksButton.click();
+    noThanksButton!.click();
     return testWelcomeBrowserProxy.whenCalled('handleUserDecline');
   });
 });

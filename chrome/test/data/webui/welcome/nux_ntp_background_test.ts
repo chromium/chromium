@@ -4,15 +4,17 @@
 
 import 'chrome://welcome/ntp_background/nux_ntp_background.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {NtpBackgroundMetricsProxyImpl} from 'chrome://welcome/ntp_background/ntp_background_metrics_proxy.js';
-import {NtpBackgroundProxyImpl} from 'chrome://welcome/ntp_background/ntp_background_proxy.js';
+import {NtpBackgroundData, NtpBackgroundProxyImpl} from 'chrome://welcome/ntp_background/ntp_background_proxy.js';
+import {NuxNtpBackgroundElement} from 'chrome://welcome/ntp_background/nux_ntp_background.js';
 
 import {TestMetricsProxy} from './test_metrics_proxy.js';
 import {TestNtpBackgroundProxy} from './test_ntp_background_proxy.js';
 
 suite('NuxNtpBackgroundTest', function() {
-  /** @type {!Array<!NtpBackgroundData} */
-  const backgrounds = [
+  const backgrounds: Array<NtpBackgroundData> = [
     {
       id: 0,
       title: 'Art',
@@ -29,14 +31,9 @@ suite('NuxNtpBackgroundTest', function() {
     },
   ];
 
-  /** @type {NuxNtpBackgroundElement} */
-  let testElement;
-
-  /** @type {ModuleMetricsProxy} */
-  let testMetricsProxy;
-
-  /** @type {NtpBackgroundProxy} */
-  let testNtpBackgroundProxy;
+  let testElement: NuxNtpBackgroundElement;
+  let testMetricsProxy: TestMetricsProxy;
+  let testNtpBackgroundProxy: TestNtpBackgroundProxy;
 
   setup(function() {
     loadTimeData.overrideValues({
@@ -65,32 +62,36 @@ suite('NuxNtpBackgroundTest', function() {
   });
 
   test('test displaying default and custom background', function() {
-    const options = testElement.shadowRoot.querySelectorAll('.option');
+    const options = testElement.shadowRoot!.querySelectorAll('.option');
     assertEquals(3, options.length);
 
     // the first option should be the 'Default' option
-    assertEquals(options[0].querySelector('.option-name').innerText, 'Default');
+    assertEquals(
+        options[0]!.querySelector<HTMLDivElement>('.option-name')!.innerText,
+        'Default');
 
     for (let i = 0; i < backgrounds.length; i++) {
       assertEquals(
-          options[i + 1].querySelector('.option-name').innerText,
-          backgrounds[i].title);
+          options[i + 1]!.querySelector<HTMLDivElement>(
+                             '.option-name')!.innerText,
+          backgrounds[i]!.title);
     }
   });
 
   test('test previewing a background and going back to default', function() {
-    const options = testElement.shadowRoot.querySelectorAll('.option');
+    const options =
+        testElement.shadowRoot!.querySelectorAll<HTMLButtonElement>('.option');
 
-    options[1].click();
+    options[1]!.click();
     return testNtpBackgroundProxy.whenCalled('preloadImage').then(() => {
       assertEquals(
           testElement.$.backgroundPreview.style.backgroundImage,
-          `url("${backgrounds[0].imageUrl}")`);
+          `url("${backgrounds[0]!.imageUrl}")`);
       assertTrue(testElement.$.backgroundPreview.classList.contains('active'));
 
       // go back to the default option, and pretend all CSS transitions
       // have completed
-      options[0].click();
+      options[0]!.click();
       testElement.$.backgroundPreview.dispatchEvent(new Event('transitionend'));
       assertEquals(testElement.$.backgroundPreview.style.backgroundImage, '');
       assertFalse(testElement.$.backgroundPreview.classList.contains('active'));
@@ -98,32 +99,36 @@ suite('NuxNtpBackgroundTest', function() {
   });
 
   test('test activating a background', function() {
-    const options = testElement.shadowRoot.querySelectorAll('.option');
+    const options =
+        testElement.shadowRoot!.querySelectorAll<HTMLButtonElement>('.option');
 
-    options[1].click();
-    assertFalse(options[0].hasAttribute('active'));
-    assertTrue(options[1].hasAttribute('active'));
-    assertFalse(options[2].hasAttribute('active'));
+    options[1]!.click();
+    assertFalse(options[0]!.hasAttribute('active'));
+    assertTrue(options[1]!.hasAttribute('active'));
+    assertFalse(options[2]!.hasAttribute('active'));
   });
 
   test('test setting the background when hitting next', function() {
     // select the first non-default option and hit 'Next'
-    const options = testElement.shadowRoot.querySelectorAll('.option');
-    options[1].click();
-    testElement.shadowRoot.querySelector('.action-button').click();
+    const options =
+        testElement.shadowRoot!.querySelectorAll<HTMLButtonElement>('.option');
+    options[1]!.click();
+    testElement.shadowRoot!.querySelector<HTMLElement>(
+                               '.action-button')!.click();
     return Promise
         .all([
           testMetricsProxy.whenCalled('recordChoseAnOptionAndChoseNext'),
           testNtpBackgroundProxy.whenCalled('setBackground'),
         ])
         .then((responses) => {
-          assertEquals(backgrounds[0].id, responses[1]);
+          assertEquals(backgrounds[0]!.id, responses[1]);
         });
   });
 
   test('test metrics for selecting an option and skipping', function() {
-    const options = testElement.shadowRoot.querySelectorAll('.option');
-    options[1].click();
+    const options =
+        testElement.shadowRoot!.querySelectorAll<HTMLButtonElement>('.option');
+    options[1]!.click();
     testElement.$.skipButton.click();
     return testMetricsProxy.whenCalled('recordChoseAnOptionAndChoseSkip');
   });
@@ -132,8 +137,10 @@ suite('NuxNtpBackgroundTest', function() {
       'test metrics for when there is an error previewing the background',
       function() {
         testNtpBackgroundProxy.setPreloadImageSuccess(false);
-        const options = testElement.shadowRoot.querySelectorAll('.option');
-        options[1].click();
+        const options =
+            testElement.shadowRoot!.querySelectorAll<HTMLButtonElement>(
+                '.option');
+        options[1]!.click();
         return testNtpBackgroundProxy.whenCalled(
             'recordBackgroundImageFailedToLoad');
       });
@@ -142,8 +149,10 @@ suite('NuxNtpBackgroundTest', function() {
       `test metrics aren't sent when previewing the background is a success`,
       function() {
         testNtpBackgroundProxy.setPreloadImageSuccess(true);
-        const options = testElement.shadowRoot.querySelectorAll('.option');
-        options[1].click();
+        const options =
+            testElement.shadowRoot!.querySelectorAll<HTMLButtonElement>(
+                '.option');
+        options[1]!.click();
         return testNtpBackgroundProxy.whenCalled('preloadImage').then(() => {
           assertEquals(
               0,
@@ -154,8 +163,9 @@ suite('NuxNtpBackgroundTest', function() {
 
   test('test metrics for load times of background images', function() {
     testNtpBackgroundProxy.setPreloadImageSuccess(true);
-    const options = testElement.shadowRoot.querySelectorAll('.option');
-    options[1].click();
+    const options =
+        testElement.shadowRoot!.querySelectorAll<HTMLButtonElement>('.option');
+    options[1]!.click();
     return testNtpBackgroundProxy.whenCalled('recordBackgroundImageLoadTime');
   });
 
@@ -171,9 +181,11 @@ suite('NuxNtpBackgroundTest', function() {
 
   test('test clearing the background when default is selected', function() {
     // select the default option and hit 'Next'
-    const options = testElement.shadowRoot.querySelectorAll('.option');
-    options[0].click();
-    testElement.shadowRoot.querySelector('.action-button').click();
+    const options =
+        testElement.shadowRoot!.querySelectorAll<HTMLButtonElement>('.option');
+    options[0]!.click();
+    testElement.shadowRoot!.querySelector<HTMLElement>(
+                               '.action-button')!.click();
     return testNtpBackgroundProxy.whenCalled('clearBackground');
   });
 });

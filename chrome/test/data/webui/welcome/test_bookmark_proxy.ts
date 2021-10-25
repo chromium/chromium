@@ -3,9 +3,12 @@
 // found in the LICENSE file.
 
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {AddBookmarkCallback, BookmarkData, BookmarkProxy} from 'chrome://welcome/shared/bookmark_proxy.js';
 
-/** @implements {BookmarkProxy} */
-export class TestBookmarkProxy extends TestBrowserProxy {
+export class TestBookmarkProxy extends TestBrowserProxy implements
+    BookmarkProxy {
+  private fakeBookmarkId_: number = 1;
+
   constructor() {
     super([
       'addBookmark',
@@ -13,17 +16,16 @@ export class TestBookmarkProxy extends TestBrowserProxy {
       'removeBookmark',
       'toggleBookmarkBar',
     ]);
-
-    this.fakeBookmarkId = 1;
   }
 
-  /** @override */
-  addBookmark(data, callback) {
+  addBookmark(data: BookmarkData, callback: AddBookmarkCallback) {
     this.methodCalled('addBookmark', data);
-    callback({id: this.fakeBookmarkId++});
+    callback({
+      id: (this.fakeBookmarkId_++).toString(),
+      title: '',
+    });
   }
 
-  /** @override */
   isBookmarkBarShown() {
     this.methodCalled('isBookmarkBarShown');
 
@@ -31,13 +33,11 @@ export class TestBookmarkProxy extends TestBrowserProxy {
     return Promise.resolve(true);
   }
 
-  /** @override */
-  removeBookmark(id) {
+  removeBookmark(id: string) {
     this.methodCalled('removeBookmark', id);
   }
 
-  /** @override */
-  toggleBookmarkBar(show) {
+  toggleBookmarkBar(show: boolean) {
     this.methodCalled('toggleBookmarkBar', show);
   }
 }

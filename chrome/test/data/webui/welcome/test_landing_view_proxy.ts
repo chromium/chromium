@@ -4,8 +4,10 @@
 
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-/** @implements {LandingViewProxy} */
-export class TestLandingViewProxy extends TestBrowserProxy {
+import {LandingViewProxy} from 'chrome://welcome/landing_view_proxy.js';
+
+export class TestLandingViewProxy extends TestBrowserProxy implements
+    LandingViewProxy {
   constructor() {
     super([
       'recordPageShown',
@@ -15,22 +17,18 @@ export class TestLandingViewProxy extends TestBrowserProxy {
     ]);
   }
 
-  /** @override */
   recordPageShown() {
     this.methodCalled('recordPageShown');
   }
 
-  /** @override */
   recordNavigatedAway() {
     this.methodCalled('recordNavigatedAway');
   }
 
-  /** @override */
   recordNewUser() {
     this.methodCalled('recordNewUser');
   }
 
-  /** @override */
   recordExistingUser() {
     this.methodCalled('recordExistingUser');
   }

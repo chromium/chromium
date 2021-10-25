@@ -3,9 +3,10 @@
 // found in the LICENSE file.
 
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {WelcomeBrowserProxy} from 'chrome://welcome/welcome_browser_proxy.js';
 
-/** @implements {WelcomeBrowserProxy} */
-export class TestWelcomeBrowserProxy extends TestBrowserProxy {
+export class TestWelcomeBrowserProxy extends TestBrowserProxy implements
+    WelcomeBrowserProxy {
   constructor() {
     super([
       'handleActivateSignIn',
@@ -15,23 +16,19 @@ export class TestWelcomeBrowserProxy extends TestBrowserProxy {
     ]);
   }
 
-  /** @override */
-  handleActivateSignIn(providerId) {
-    this.methodCalled('handleActivateSignIn', providerId);
+  handleActivateSignIn(redirectUrl: string|null) {
+    this.methodCalled('handleActivateSignIn', redirectUrl);
   }
 
-  /** @override */
-  handleUserDecline(url) {
-    this.methodCalled('handleUserDecline', url);
+  handleUserDecline() {
+    this.methodCalled('handleUserDecline');
   }
 
-  /** @override */
   goToNewTabPage() {
     this.methodCalled('goToNewTabPage');
   }
 
-  /** @override */
-  goToURL(url) {
+  goToURL(url: string) {
     this.methodCalled('goToURL', url);
   }
 }

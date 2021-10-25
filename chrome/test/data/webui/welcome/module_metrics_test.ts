@@ -7,11 +7,8 @@ import {ModuleMetricsManager} from 'chrome://welcome/shared/module_metrics_proxy
 import {TestMetricsProxy} from './test_metrics_proxy.js';
 
 suite('ModuleMetricsTest', function() {
-  /** @type {ModuleMetricsProxy} */
-  let testMetricsProxy;
-
-  /** @type {ModuleMetricsManager} */
-  let testMetricsManager;
+  let testMetricsProxy: TestMetricsProxy;
+  let testMetricsManager: ModuleMetricsManager;
 
   setup(function() {
     testMetricsProxy = new TestMetricsProxy();
