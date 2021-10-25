@@ -3685,11 +3685,11 @@ const AtomicString& Element::IsValue() const {
 }
 
 void Element::SetDidAttachInternals() {
-  SetElementFlag(ElementFlags::kDidAttachInternals, true);
+  EnsureElementRareData().SetDidAttachInternals();
 }
 
 bool Element::DidAttachInternals() const {
-  return HasElementFlag(ElementFlags::kDidAttachInternals);
+  return HasRareData() && GetElementRareData()->DidAttachInternals();
 }
 
 ElementInternals& Element::EnsureElementInternals() {
@@ -4547,24 +4547,27 @@ bool Element::ActivateDisplayLockIfNeeded(DisplayLockActivationReason reason) {
 }
 
 bool Element::StyleShouldForceLegacyLayoutInternal() const {
-  return HasElementFlag(ElementFlags::kStyleShouldForceLegacyLayout);
+  return GetElementRareData()->StyleShouldForceLegacyLayout();
 }
+
 void Element::SetStyleShouldForceLegacyLayoutInternal(bool force) {
-  SetElementFlag(ElementFlags::kStyleShouldForceLegacyLayout, force);
+  EnsureElementRareData().SetStyleShouldForceLegacyLayout(force);
 }
 
 bool Element::ShouldForceLegacyLayoutForChildInternal() const {
-  return HasElementFlag(ElementFlags::kShouldForceLegacyLayoutForChild);
+  return GetElementRareData()->ShouldForceLegacyLayoutForChild();
 }
+
 void Element::SetShouldForceLegacyLayoutForChildInternal(bool force) {
-  SetElementFlag(ElementFlags::kShouldForceLegacyLayoutForChild, force);
+  EnsureElementRareData().SetShouldForceLegacyLayoutForChild(force);
 }
 
 bool Element::HasUndoStack() const {
-  return HasElementFlag(ElementFlags::kHasUndoStack);
+  return HasRareData() && GetElementRareData()->HasUndoStack();
 }
+
 void Element::SetHasUndoStack(bool value) {
-  SetElementFlag(ElementFlags::kHasUndoStack, value);
+  EnsureElementRareData().SetHasUndoStack(value);
 }
 
 bool Element::UpdateForceLegacyLayout(const ComputedStyle& new_style,
