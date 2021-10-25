@@ -470,6 +470,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="FileBrowser.PhotoEditor.DisplayTime" units="ms"
     expires_after="M98">
+  <obsolete>
+    Removed in M92.
+  </obsolete>
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -481,6 +484,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="FileBrowser.PhotoEditor.FileType" enum="PhotoEditorFileType"
     expires_after="M98">
+  <obsolete>
+    Removed in M92.
+  </obsolete>
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>Chrome OS Photo Editor: the type of the file opened.</summary>
@@ -488,6 +494,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="FileBrowser.PhotoEditor.LoadMode" enum="PhotoEditorLoadMode"
     expires_after="M98">
+  <obsolete>
+    Removed in M92.
+  </obsolete>
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>Chrome OS Photo Editor: the way the image has been loaded.</summary>
@@ -495,6 +504,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="FileBrowser.PhotoEditor.LoadTime" units="ms"
     expires_after="M98">
+  <obsolete>
+    Removed in M92.
+  </obsolete>
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>Chrome OS Photo Editor: time to load an image from a file.</summary>
@@ -502,6 +514,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="FileBrowser.PhotoEditor.SaveResult"
     enum="PhotoEditorSaveResult" expires_after="M98">
+  <obsolete>
+    Removed in M92.
+  </obsolete>
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -511,6 +526,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="FileBrowser.PhotoEditor.SaveTime" units="ms"
     expires_after="M98">
+  <obsolete>
+    Removed in M92.
+  </obsolete>
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>Chrome OS Photo Editor: time to save an image to a file.</summary>
@@ -518,6 +536,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="FileBrowser.PhotoEditor.Size.MB" units="MBytes"
     expires_after="M98">
+  <obsolete>
+    Removed in M92.
+  </obsolete>
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -528,6 +549,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="FileBrowser.PhotoEditor.Size.MPix" units="MPixels"
     expires_after="M98">
+  <obsolete>
+    Removed in M92.
+  </obsolete>
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -538,6 +562,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="FileBrowser.PhotoEditor.Tool" enum="PhotoEditorToolType"
     expires_after="M98">
+  <obsolete>
+    Removed in M92.
+  </obsolete>
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>Chrome OS Photo Editor: the button which the user clicked.</summary>
