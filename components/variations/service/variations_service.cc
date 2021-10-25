@@ -67,10 +67,6 @@
 #endif  // OS_ANDROID
 
 namespace variations {
-
-const base::Feature kHttpRetryFeature{"VariationsHttpRetry",
-                                      base::FEATURE_ENABLED_BY_DEFAULT};
-
 namespace {
 
 // Constants used for encrypting the if-none-match header if we are retrieving a
@@ -718,12 +714,9 @@ void VariationsService::InitResourceRequestedAllowedNotifier() {
 void VariationsService::StartRepeatedVariationsSeedFetch() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Initialize the Variations server URL.
+  // Initialize Variations server URLs.
   variations_server_url_ = GetVariationsServerURL(USE_HTTPS);
-
-  // Initialize the fallback HTTP URL if the HTTP retry feature is enabled.
-  if (base::FeatureList::IsEnabled(kHttpRetryFeature))
-    insecure_variations_server_url_ = GetVariationsServerURL(USE_HTTP);
+  insecure_variations_server_url_ = GetVariationsServerURL(USE_HTTP);
 
   DCHECK(!request_scheduler_);
   request_scheduler_.reset(VariationsRequestScheduler::Create(

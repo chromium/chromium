@@ -59,10 +59,6 @@ namespace variations {
 class DeviceVariationsRestrictionByPolicyApplicator;
 #endif
 
-// If enabled, seed fetches will be retried over HTTP after an HTTPS request
-// fails.
-extern const base::Feature kHttpRetryFeature;
-
 // Used to (a) set up field trials based on stored variations seed data and (b)
 // fetch new seed data from the variations server.
 class VariationsService
