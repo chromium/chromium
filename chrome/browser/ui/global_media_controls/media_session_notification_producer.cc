@@ -9,7 +9,6 @@
 #include "chrome/browser/ui/global_media_controls/media_session_notification_producer_observer.h"
 #include "components/global_media_controls/public/media_item_manager.h"
 #include "components/global_media_controls/public/media_item_ui.h"
-#include "content/public/browser/media_session_service.h"
 #include "media/base/media_switches.h"
 
 namespace {
@@ -207,18 +206,15 @@ void MediaSessionNotificationProducer::Session::MarkActiveIfNecessary() {
 }
 
 MediaSessionNotificationProducer::MediaSessionNotificationProducer(
+    mojo::Remote<media_session::mojom::AudioFocusManager> audio_focus_remote,
+    mojo::Remote<media_session::mojom::MediaControllerManager>
+        controller_manager_remote,
     global_media_controls::MediaItemManager* item_manager,
     absl::optional<base::UnguessableToken> source_id)
-    : item_manager_(item_manager), item_ui_observer_set_(this) {
-  // Connect to the controller manager so we can create media controllers for
-  // media sessions.
-  content::GetMediaSessionService().BindMediaControllerManager(
-      controller_manager_remote_.BindNewPipeAndPassReceiver());
-
-  // Connect to receive audio focus events.
-  content::GetMediaSessionService().BindAudioFocusManager(
-      audio_focus_remote_.BindNewPipeAndPassReceiver());
-
+    : audio_focus_remote_(std::move(audio_focus_remote)),
+      controller_manager_remote_(std::move(controller_manager_remote)),
+      item_manager_(item_manager),
+      item_ui_observer_set_(this) {
   if (source_id.has_value()) {
     audio_focus_remote_->AddSourceObserver(
         *source_id, audio_focus_observer_receiver_.BindNewPipeAndPassRemote());

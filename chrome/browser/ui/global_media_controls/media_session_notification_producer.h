@@ -42,6 +42,9 @@ class MediaSessionNotificationProducer
   // produce MediaItems for the given source (i.e. profile). When empty, it will
   // produce MediaItems for the Media Sessions on all sources (profiles).
   MediaSessionNotificationProducer(
+      mojo::Remote<media_session::mojom::AudioFocusManager> audio_focus_remote,
+      mojo::Remote<media_session::mojom::MediaControllerManager>
+          controller_manager_remote,
       global_media_controls::MediaItemManager* item_manager,
       absl::optional<base::UnguessableToken> source_id);
   ~MediaSessionNotificationProducer() override;

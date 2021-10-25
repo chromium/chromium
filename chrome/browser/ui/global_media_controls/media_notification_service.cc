@@ -130,9 +130,24 @@ MediaNotificationService::MediaNotificationService(
     source_id = content::MediaSession::GetSourceId(profile);
   }
 
+  mojo::Remote<media_session::mojom::AudioFocusManager> audio_focus_remote;
+  mojo::Remote<media_session::mojom::MediaControllerManager>
+      controller_manager_remote;
+
+  // Connect to receive audio focus events.
+  content::GetMediaSessionService().BindAudioFocusManager(
+      audio_focus_remote.BindNewPipeAndPassReceiver());
+
+  // Connect to the controller manager so we can create media controllers for
+  // media sessions.
+  content::GetMediaSessionService().BindMediaControllerManager(
+      controller_manager_remote.BindNewPipeAndPassReceiver());
+
   media_session_notification_producer_ =
-      std::make_unique<MediaSessionNotificationProducer>(item_manager_.get(),
-                                                         source_id);
+      std::make_unique<MediaSessionNotificationProducer>(
+          std::move(audio_focus_remote), std::move(controller_manager_remote),
+          item_manager_.get(), source_id);
+
   media_session_notification_producer_->AddObserver(this);
   item_manager_->AddItemProducer(media_session_notification_producer_.get());
 
