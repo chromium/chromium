@@ -533,12 +533,13 @@ void Font::ReportEmojiSegmentGlyphCoverage(unsigned num_clusters,
 }
 
 void Font::WillUseFontData(const String& text) const {
-  const FontFamily& family = GetFontDescription().Family();
-  if (font_fallback_list_ && font_fallback_list_->GetFontSelector() &&
-      !family.FamilyName().IsEmpty()) {
-    font_fallback_list_->GetFontSelector()->WillUseFontData(
-        GetFontDescription(), family.FamilyName(), text);
-  }
+  const FontDescription& font_description = GetFontDescription();
+  const FontFamily& family = font_description.Family();
+  if (UNLIKELY(family.FamilyName().IsEmpty()))
+    return;
+  family.PrewarmIfNeeded(font_description);
+  if (FontSelector* font_selector = GetFontSelector())
+    font_selector->WillUseFontData(font_description, family.FamilyName(), text);
 }
 
 GlyphData Font::GetEmphasisMarkGlyphData(const AtomicString& mark) const {
