@@ -19,13 +19,8 @@ enum PhoneHubViewID {
 
   // Notification opt in view and its components.
   kNotificationOptInView,
-
-  // Camera Roll opt in view and its components.
-  kCameraRollOptInView,
-
-  // Sub feature opt in view buttons
-  kSubFeatureOptInConfirmButton,
-  kSubFeatureOptInDismissButton,
+  kNotificationOptInSetUpButton,
+  kNotificationOptInDismissButton,
 
   // Onboarding view and its components.
   kOnboardingView,
