@@ -39,7 +39,9 @@
 #include "third_party/blink/renderer/platform/heap/custom_spaces.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 
-// This needs to be here because element.cc also depends on it.
+// Exposes |DumpStatistics()| for dumping information about nodes. To use, call
+// |DumpStatistics()| from the Node constructor or GDB.
+// This needs to be here because Element.h also depends on it.
 #define DUMP_NODE_STATISTICS 0
 
 namespace blink {
@@ -178,7 +180,9 @@ class CORE_EXPORT Node : public EventTarget {
     kDocumentPositionImplementationSpecific = 0x20,
   };
 
+#if DUMP_NODE_STATISTICS
   static void DumpStatistics();
+#endif
 
   ~Node() override;
 
@@ -1133,8 +1137,6 @@ class CORE_EXPORT Node : public EventTarget {
   virtual const ComputedStyle* VirtualEnsureComputedStyle(
       PseudoId = kPseudoIdNone,
       const AtomicString& pseudo_argument = g_null_atom);
-
-  void TrackForDebugging();
 
   // Used exclusively by |EnsureRareData|.
   NodeRareData& CreateRareData();

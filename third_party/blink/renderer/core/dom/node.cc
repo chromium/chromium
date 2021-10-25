@@ -192,146 +192,140 @@ ASSERT_SIZE(Node, SameSizeAsNode);
 
 #if DUMP_NODE_STATISTICS
 using WeakNodeSet = HeapHashSet<WeakMember<Node>>;
-static WeakNodeSet& liveNodeSet() {
-  DEFINE_STATIC_LOCAL(WeakNodeSet, set, (new WeakNodeSet));
-  return set;
+static WeakNodeSet& LiveNodeSet() {
+  DEFINE_STATIC_LOCAL(Persistent<WeakNodeSet>, set,
+                      (MakeGarbageCollected<WeakNodeSet>()));
+  return *set;
 }
-#endif
 
 void Node::DumpStatistics() {
-#if DUMP_NODE_STATISTICS
-  size_t nodesWithRareData = 0;
+  size_t nodes_with_rare_data = 0;
 
-  size_t elementNodes = 0;
-  size_t attrNodes = 0;
-  size_t textNodes = 0;
-  size_t cdataNodes = 0;
-  size_t commentNodes = 0;
-  size_t piNodes = 0;
-  size_t documentNodes = 0;
-  size_t docTypeNodes = 0;
-  size_t fragmentNodes = 0;
-  size_t shadowRootNodes = 0;
+  size_t element_nodes = 0;
+  size_t attr_nodes = 0;
+  size_t text_nodes = 0;
+  size_t cdata_nodes = 0;
+  size_t comment_nodes = 0;
+  size_t pi_nodes = 0;
+  size_t document_nodes = 0;
+  size_t doc_type_nodes = 0;
+  size_t fragment_nodes = 0;
+  size_t shadow_root_nodes = 0;
 
-  HashMap<String, size_t> perTagCount;
+  HashMap<String, size_t> per_tag_count;
 
   size_t attributes = 0;
-  size_t elementsWithAttributeStorage = 0;
-  size_t elementsWithRareData = 0;
-  size_t elementsWithNamedNodeMap = 0;
+  size_t elements_with_attribute_storage = 0;
+  size_t elements_with_rare_data = 0;
+  size_t elements_with_named_node_map = 0;
 
   {
-    ScriptForbiddenScope forbidScriptDuringRawIteration;
-    for (Node* node : liveNodeSet()) {
-      if (node->hasRareData()) {
-        ++nodesWithRareData;
+    ScriptForbiddenScope forbid_script_during_raw_iteration;
+    for (Node* node : LiveNodeSet()) {
+      if (node->HasRareData()) {
+        ++nodes_with_rare_data;
         if (auto* element = DynamicTo<Element>(node)) {
-          ++elementsWithRareData;
-          if (element->hasNamedNodeMap())
-            ++elementsWithNamedNodeMap;
+          ++elements_with_rare_data;
+          if (element->HasNamedNodeMap())
+            ++elements_with_named_node_map;
         }
       }
 
       switch (node->getNodeType()) {
         case kElementNode: {
-          ++elementNodes;
+          ++element_nodes;
 
           // Tag stats
           auto* element = To<Element>(node);
-          HashMap<String, size_t>::AddResult result =
-              perTagCount.add(element->tagName(), 1);
-          if (!result.isNewEntry)
-            result.storedValue->value++;
+          auto result = per_tag_count.insert(element->tagName(), 1);
+          if (!result.is_new_entry)
+            result.stored_value->value++;
 
-          size_t attributeCount = element->attributesWithoutUpdate().size();
+          size_t attributeCount = element->AttributesWithoutUpdate().size();
           if (attributeCount) {
             attributes += attributeCount;
-            ++elementsWithAttributeStorage;
+            ++elements_with_attribute_storage;
           }
           break;
         }
         case kAttributeNode: {
-          ++attrNodes;
+          ++attr_nodes;
           break;
         }
         case kTextNode: {
-          ++textNodes;
+          ++text_nodes;
           break;
         }
         case kCdataSectionNode: {
-          ++cdataNodes;
+          ++cdata_nodes;
           break;
         }
         case kCommentNode: {
-          ++commentNodes;
+          ++comment_nodes;
           break;
         }
         case kProcessingInstructionNode: {
-          ++piNodes;
+          ++pi_nodes;
           break;
         }
         case kDocumentNode: {
-          ++documentNodes;
+          ++document_nodes;
           break;
         }
         case kDocumentTypeNode: {
-          ++docTypeNodes;
+          ++doc_type_nodes;
           break;
         }
         case kDocumentFragmentNode: {
-          if (node->isShadowRoot())
-            ++shadowRootNodes;
+          if (node->IsShadowRoot())
+            ++shadow_root_nodes;
           else
-            ++fragmentNodes;
+            ++fragment_nodes;
           break;
         }
       }
     }
   }
 
-  std::stringstream perTagStream;
-  for (const auto& entry : perTagCount)
-    perTagStream << "  Number of <" << entry.key.utf8().data()
-                 << "> tags: " << entry.value << "\n";
+  std::stringstream per_tag_stream;
+  for (const auto& entry : per_tag_count) {
+    per_tag_stream << "  Number of <" << entry.key.Utf8().data()
+                   << "> tags: " << entry.value << "\n";
+  }
 
   LOG(INFO) << "\n"
-            << "Number of Nodes: " << liveNodeSet().size() << "\n"
-            << "Number of Nodes with RareData: " << nodesWithRareData << "\n\n"
+            << "Number of Nodes: " << LiveNodeSet().size() << "\n"
+            << "Number of Nodes with RareData: " << nodes_with_rare_data
+            << "\n\n"
 
             << "NodeType distribution:\n"
-            << "  Number of Element nodes: " << elementNodes << "\n"
-            << "  Number of Attribute nodes: " << attrNodes << "\n"
-            << "  Number of Text nodes: " << textNodes << "\n"
-            << "  Number of CDATASection nodes: " << cdataNodes << "\n"
-            << "  Number of Comment nodes: " << commentNodes << "\n"
-            << "  Number of ProcessingInstruction nodes: " << piNodes << "\n"
-            << "  Number of Document nodes: " << documentNodes << "\n"
-            << "  Number of DocumentType nodes: " << docTypeNodes << "\n"
-            << "  Number of DocumentFragment nodes: " << fragmentNodes << "\n"
-            << "  Number of ShadowRoot nodes: " << shadowRootNodes << "\n"
+            << "  Number of Element nodes: " << element_nodes << "\n"
+            << "  Number of Attribute nodes: " << attr_nodes << "\n"
+            << "  Number of Text nodes: " << text_nodes << "\n"
+            << "  Number of CDATASection nodes: " << cdata_nodes << "\n"
+            << "  Number of Comment nodes: " << comment_nodes << "\n"
+            << "  Number of ProcessingInstruction nodes: " << pi_nodes << "\n"
+            << "  Number of Document nodes: " << document_nodes << "\n"
+            << "  Number of DocumentType nodes: " << doc_type_nodes << "\n"
+            << "  Number of DocumentFragment nodes: " << fragment_nodes << "\n"
+            << "  Number of ShadowRoot nodes: " << shadow_root_nodes << "\n"
 
-            << "Element tag name distibution:\n"
-            << perTagStream.str()
+            << "Element tag name distribution:\n"
+            << per_tag_stream.str()
 
             << "Attributes:\n"
             << "  Number of Attributes (non-Node and Node): " << attributes
             << " x " << sizeof(Attribute) << "Bytes\n"
             << "  Number of Elements with attribute storage: "
-            << elementsWithAttributeStorage << " x " << sizeof(ElementData)
+            << elements_with_attribute_storage << " x " << sizeof(ElementData)
             << "Bytes\n"
-            << "  Number of Elements with RareData: " << elementsWithRareData
-            << "\n"
+            << "  Number of Elements with RareData: " << elements_with_rare_data
+            << " x " << sizeof(ElementRareData) << "Bytes\n"
             << "  Number of Elements with NamedNodeMap: "
-            << elementsWithNamedNodeMap << " x " << sizeof(NamedNodeMap)
+            << elements_with_named_node_map << " x " << sizeof(NamedNodeMap)
             << "Bytes";
-#endif
 }
-
-void Node::TrackForDebugging() {
-#if DUMP_NODE_STATISTICS
-  liveNodeSet().add(this);
 #endif
-}
 
 Node::Node(TreeScope* tree_scope, ConstructionType type)
     : node_flags_(type),
@@ -341,8 +335,8 @@ Node::Node(TreeScope* tree_scope, ConstructionType type)
       next_(nullptr),
       data_(&NodeRenderingData::SharedEmptyData()) {
   DCHECK(tree_scope_ || type == kCreateDocument || type == kCreateShadowRoot);
-#if !defined(NDEBUG) || (defined(DUMP_NODE_STATISTICS) && DUMP_NODE_STATISTICS)
-  TrackForDebugging();
+#if DUMP_NODE_STATISTICS
+  LiveNodeSet().insert(this);
 #endif
   InstanceCounters::IncrementCounter(InstanceCounters::kNodeCounter);
   // Document is required for probe sink.
