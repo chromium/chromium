@@ -7,10 +7,14 @@
 #include <utility>
 #include <vector>
 
+#include "base/base_paths_win.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_path_override.h"
 #include "base/win/shortcut.h"
 #include "base/win/windows_version.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
@@ -43,14 +47,33 @@ bool CreateTestAppShortcut(const base::FilePath& shortcut_path,
       shortcut_path, shortcut_properties, base::win::SHORTCUT_CREATE_ALWAYS);
 }
 
-base::FilePath GetShortcutPath(const base::FilePath shortcut_dir,
-                               const base::FilePath::StringType shortcut_name) {
+base::FilePath GetShortcutPath(
+    const base::FilePath& shortcut_dir,
+    const base::FilePath::StringType& shortcut_name) {
   return shortcut_dir.Append(shortcut_name).AddExtension(installer::kLnkExt);
+}
+
+void CreateAndVerifyTestAppShortcut(
+    const base::FilePath::StringType& shortcut_name,
+    const base::FilePath& shortcut_dir,
+    const base::FilePath& profile_path) {
+  const base::FilePath shortcut_path =
+      GetShortcutPath(shortcut_dir, shortcut_name);
+  EXPECT_TRUE(
+      CreateTestAppShortcut(shortcut_path, profile_path.BaseName().value()));
+  const std::vector<base::FilePath> result = FindAppShortcutsByProfileAndTitle(
+      shortcut_dir, profile_path, base::WideToUTF16(shortcut_name));
+  EXPECT_EQ(1u, result.size());
 }
 
 }  // namespace
 
-using WebAppShortcutWinTest = WebAppTest;
+class WebAppShortcutWinTest : public WebAppTest {
+ protected:
+  base::ScopedPathOverride override_taskbar_pin{base::DIR_TASKBAR_PINS};
+  base::ScopedPathOverride override_implicit_apps{
+      base::DIR_IMPLICIT_APP_SHORTCUTS};
+};
 
 TEST_F(WebAppShortcutWinTest, GetSanitizedFileName) {
   EXPECT_EQ(base::FilePath(FILE_PATH_LITERAL("__")), GetSanitizedFileName(u""));
@@ -207,14 +230,29 @@ TEST_F(WebAppShortcutWinTest, UpdatePlatformShortcuts) {
 
   const base::FilePath::StringType shortcut_name =
       FILE_PATH_LITERAL("test shortcut");
-  const base::FilePath shortcut_path =
-      GetShortcutPath(shortcut_dir, shortcut_name);
+  base::FilePath shortcut_path = GetShortcutPath(shortcut_dir, shortcut_name);
 
   const base::FilePath profile_path(FILE_PATH_LITERAL("test/profile/web_app"));
   const base::FilePath::StringType profile_name =
       profile_path.BaseName().value();
 
-  ASSERT_TRUE(CreateTestAppShortcut(shortcut_path, profile_name));
+  ASSERT_NO_FATAL_FAILURE(CreateAndVerifyTestAppShortcut(
+      shortcut_name, shortcut_dir, profile_path));
+
+  // Create shortcut in overridden taskbar dir.
+  base::FilePath taskbar_dir;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_TASKBAR_PINS, &taskbar_dir));
+  ASSERT_NO_FATAL_FAILURE(
+      CreateAndVerifyTestAppShortcut(shortcut_name, taskbar_dir, profile_path));
+
+  // Create shortcut in overridden implicit apps dir.
+  base::FilePath implicit_apps_dir;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_IMPLICIT_APP_SHORTCUTS,
+                                     &implicit_apps_dir));
+  base::FilePath implicit_apps_sub_dir = implicit_apps_dir.AppendASCII("abcde");
+  ASSERT_TRUE(base::CreateDirectory(implicit_apps_sub_dir));
+  ASSERT_NO_FATAL_FAILURE(CreateAndVerifyTestAppShortcut(
+      shortcut_name, implicit_apps_sub_dir, profile_path));
 
   // Create an icon file for the web app.
   const base::FilePath icon_file =
@@ -223,10 +261,6 @@ TEST_F(WebAppShortcutWinTest, UpdatePlatformShortcuts) {
   image_family.Add(gfx::Image(CreateDefaultApplicationIcon(5)));
   EXPECT_TRUE(CheckAndSaveIcon(icon_file, image_family,
                                /*refresh_shell_icon_cache=*/false));
-
-  std::vector<base::FilePath> result = FindAppShortcutsByProfileAndTitle(
-      shortcut_dir, profile_path, base::WideToUTF16(shortcut_name));
-  EXPECT_EQ(1u, result.size());
 
   // Update the web app with a new title.
   ShortcutInfo new_shortcut_info;
@@ -240,13 +274,27 @@ TEST_F(WebAppShortcutWinTest, UpdatePlatformShortcuts) {
 
   UpdatePlatformShortcuts(shortcut_dir, base::WideToUTF16(shortcut_name),
                           new_shortcut_info);
-  // The shortcut with the old title should be deleted.
-  result = FindAppShortcutsByProfileAndTitle(shortcut_dir, profile_path,
+  // The shortcut with the old title should be deleted from the shortcut
+  // dir, the taskbar dir, and the implicit apps subdir.
+  std::vector<base::FilePath> result = FindAppShortcutsByProfileAndTitle(
+      shortcut_dir, profile_path, base::WideToUTF16(shortcut_name));
+  EXPECT_EQ(0u, result.size());
+  result = FindAppShortcutsByProfileAndTitle(taskbar_dir, profile_path,
                                              base::WideToUTF16(shortcut_name));
   EXPECT_EQ(0u, result.size());
-  // The shortcut with the new title should be found.
+  result = FindAppShortcutsByProfileAndTitle(
+      implicit_apps_sub_dir, profile_path, base::WideToUTF16(shortcut_name));
+  EXPECT_EQ(0u, result.size());
+  // The shortcut with the new title should be found in the shortcut dir, the
+  // taskbar dir, and the implicit_apps subdir.
   result = FindAppShortcutsByProfileAndTitle(shortcut_dir, profile_path,
                                              new_shortcut_info.title);
+  EXPECT_EQ(1u, result.size());
+  result = FindAppShortcutsByProfileAndTitle(taskbar_dir, profile_path,
+                                             new_shortcut_info.title);
+  EXPECT_EQ(1u, result.size());
+  result = FindAppShortcutsByProfileAndTitle(
+      implicit_apps_sub_dir, profile_path, new_shortcut_info.title);
   EXPECT_EQ(1u, result.size());
 }
 

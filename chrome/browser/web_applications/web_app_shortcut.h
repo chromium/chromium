@@ -230,7 +230,8 @@ void DeleteMultiProfileShortcutsForApp(const std::string& app_id);
 
 // Updates all the shortcuts we have added for this extension. This is the
 // platform specific implementation of the UpdateAllShortcuts function, and
-// is executed on the FILE thread.
+// is executed on the FILE thread. On Windows, this also updates shortcuts in
+// the pinned taskbar directories.
 void UpdatePlatformShortcuts(const base::FilePath& shortcut_data_path,
                              const std::u16string& old_app_title,
                              const ShortcutInfo& shortcut_info);
