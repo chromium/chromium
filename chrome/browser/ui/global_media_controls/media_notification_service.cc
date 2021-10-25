@@ -25,6 +25,7 @@
 #include "components/global_media_controls/public/media_item_ui.h"
 #include "components/media_message_center/media_notification_item.h"
 #include "components/media_router/browser/presentation/start_presentation_context.h"
+#include "content/public/browser/audio_service.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/media_session_service.h"
 #include "media/base/media_switches.h"
@@ -94,6 +95,30 @@ void MediaNotificationService::Shutdown() {
 
   cast_notification_producer_.reset();
   presentation_request_notification_producer_.reset();
+}
+
+void MediaNotificationService::OnAudioSinkChosen(const std::string& item_id,
+                                                 const std::string& sink_id) {
+  media_session_notification_producer_->SetAudioSinkId(item_id, sink_id);
+}
+
+base::CallbackListSubscription
+MediaNotificationService::RegisterAudioOutputDeviceDescriptionsCallback(
+    MediaNotificationDeviceProvider::GetOutputDevicesCallback callback) {
+  if (!device_provider_)
+    device_provider_ = std::make_unique<MediaNotificationDeviceProviderImpl>(
+        content::CreateAudioSystemForAudioService());
+  return device_provider_->RegisterOutputDeviceDescriptionsCallback(
+      std::move(callback));
+}
+
+base::CallbackListSubscription
+MediaNotificationService::RegisterIsAudioOutputDeviceSwitchingSupportedCallback(
+    const std::string& id,
+    base::RepeatingCallback<void(bool)> callback) {
+  return media_session_notification_producer_
+      ->RegisterIsAudioOutputDeviceSwitchingSupportedCallback(
+          id, std::move(callback));
 }
 
 void MediaNotificationService::SetDialogDelegateForWebContents(
@@ -210,6 +235,11 @@ MediaNotificationService::CreateCastDialogControllerForPresentationRequest() {
     ui->InitWithDefaultMediaSource();
   }
   return ui;
+}
+
+void MediaNotificationService::set_device_provider_for_testing(
+    std::unique_ptr<MediaNotificationDeviceProvider> device_provider) {
+  device_provider_ = std::move(device_provider);
 }
 
 bool MediaNotificationService::HasCastNotificationsForWebContents(

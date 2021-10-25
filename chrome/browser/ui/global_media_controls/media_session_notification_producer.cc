@@ -11,13 +11,11 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/global_media_controls/media_notification_device_provider_impl.h"
 #include "chrome/browser/ui/media_router/media_router_ui.h"
 #include "components/global_media_controls/public/media_item_manager.h"
 #include "components/global_media_controls/public/media_item_ui.h"
 #include "components/media_router/browser/presentation/start_presentation_context.h"
 #include "components/ukm/content/source_url_recorder.h"
-#include "content/public/browser/audio_service.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/media_session_service.h"
 #include "media/base/media_switches.h"
@@ -526,22 +524,12 @@ void MediaSessionNotificationProducer::LogMediaSessionActionButtonPressed(
       .Record(recorder);
 }
 
-void MediaSessionNotificationProducer::OnAudioSinkChosen(
+void MediaSessionNotificationProducer::SetAudioSinkId(
     const std::string& id,
     const std::string& sink_id) {
   auto it = sessions_.find(id);
   DCHECK(it != sessions_.end());
   it->second.SetAudioSinkId(sink_id);
-}
-
-base::CallbackListSubscription
-MediaSessionNotificationProducer::RegisterAudioOutputDeviceDescriptionsCallback(
-    MediaNotificationDeviceProvider::GetOutputDevicesCallback callback) {
-  if (!device_provider_)
-    device_provider_ = std::make_unique<MediaNotificationDeviceProviderImpl>(
-        content::CreateAudioSystemForAudioService());
-  return device_provider_->RegisterOutputDeviceDescriptionsCallback(
-      std::move(callback));
 }
 
 base::CallbackListSubscription MediaSessionNotificationProducer::
@@ -553,11 +541,6 @@ base::CallbackListSubscription MediaSessionNotificationProducer::
 
   return it->second.RegisterIsAudioDeviceSwitchingSupportedCallback(
       std::move(callback));
-}
-
-void MediaSessionNotificationProducer::set_device_provider_for_testing(
-    std::unique_ptr<MediaNotificationDeviceProvider> device_provider) {
-  device_provider_ = std::move(device_provider);
 }
 
 MediaSessionNotificationProducer::Session*

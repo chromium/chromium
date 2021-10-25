@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_MEDIA_SESSION_NOTIFICATION_PRODUCER_H_
 #define CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_MEDIA_SESSION_NOTIFICATION_PRODUCER_H_
 
-#include "chrome/browser/ui/global_media_controls/media_item_ui_device_selector_delegate.h"
-#include "chrome/browser/ui/global_media_controls/media_notification_device_provider.h"
 #include "chrome/browser/ui/global_media_controls/media_session_notification_item.h"
 #include "components/global_media_controls/public/media_item_manager_observer.h"
 #include "components/global_media_controls/public/media_item_producer.h"
@@ -41,7 +39,6 @@ class MediaSessionNotificationProducer
     : public global_media_controls::MediaItemProducer,
       public MediaSessionNotificationItem::Delegate,
       public media_session::mojom::AudioFocusObserver,
-      public MediaItemUIDeviceSelectorDelegate,
       public global_media_controls::MediaItemUIObserver {
  public:
   // When given a |source_id|, the MediaSessionNotificationProducer will only
@@ -90,19 +87,12 @@ class MediaSessionNotificationProducer
   std::string GetActiveControllableSessionForWebContents(
       content::WebContents* web_contents) const;
 
-  // MediaItemUIDeviceSelectorDelegate:
-  void OnAudioSinkChosen(const std::string& id,
-                         const std::string& sink_id) override;
-  base::CallbackListSubscription RegisterAudioOutputDeviceDescriptionsCallback(
-      MediaNotificationDeviceProvider::GetOutputDevicesCallback callback)
-      override;
+  void SetAudioSinkId(const std::string& id, const std::string& sink_id);
+
   base::CallbackListSubscription
   RegisterIsAudioOutputDeviceSwitchingSupportedCallback(
       const std::string& id,
-      base::RepeatingCallback<void(bool)> callback) override;
-
-  void set_device_provider_for_testing(
-      std::unique_ptr<MediaNotificationDeviceProvider> device_provider);
+      base::RepeatingCallback<void(bool)> callback);
 
  private:
   friend class MediaNotificationServiceTest;
@@ -264,8 +254,6 @@ class MediaSessionNotificationProducer
   // Tracks the number of times we have recorded an action for a specific
   // source. We use this to cap the number of UKM recordings per site.
   std::map<ukm::SourceId, int> actions_recorded_to_ukm_;
-
-  std::unique_ptr<MediaNotificationDeviceProvider> device_provider_;
 
   base::WeakPtrFactory<MediaSessionNotificationProducer> weak_ptr_factory_{
       this};

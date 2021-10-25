@@ -13,6 +13,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/global_media_controls/cast_media_notification_producer.h"
+#include "chrome/browser/ui/global_media_controls/media_item_ui_device_selector_delegate.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_device_provider.h"
 #include "chrome/browser/ui/global_media_controls/media_session_notification_producer.h"
 #include "chrome/browser/ui/global_media_controls/presentation_request_notification_producer.h"
@@ -34,7 +35,8 @@ namespace media_router {
 class CastDialogController;
 }  // namespace media_router
 
-class MediaNotificationService : public KeyedService {
+class MediaNotificationService : public KeyedService,
+                                 public MediaItemUIDeviceSelectorDelegate {
  public:
   MediaNotificationService(Profile* profile, bool show_from_all_profiles);
   MediaNotificationService(const MediaNotificationService&) = delete;
@@ -48,9 +50,16 @@ class MediaNotificationService : public KeyedService {
     return item_manager_.get();
   }
 
-  MediaItemUIDeviceSelectorDelegate* device_selector_delegate() {
-    return media_session_notification_producer_.get();
-  }
+  // MediaItemUIDeviceSelectorDelegate:
+  void OnAudioSinkChosen(const std::string& item_id,
+                         const std::string& sink_id) override;
+  base::CallbackListSubscription RegisterAudioOutputDeviceDescriptionsCallback(
+      MediaNotificationDeviceProvider::GetOutputDevicesCallback callback)
+      override;
+  base::CallbackListSubscription
+  RegisterIsAudioOutputDeviceSwitchingSupportedCallback(
+      const std::string& id,
+      base::RepeatingCallback<void(bool)> callback) override;
 
   void SetDialogDelegateForWebContents(
       global_media_controls::MediaDialogDelegate* delegate,
@@ -77,6 +86,9 @@ class MediaNotificationService : public KeyedService {
   // manages.
   std::unique_ptr<media_router::CastDialogController>
   CreateCastDialogControllerForPresentationRequest();
+
+  void set_device_provider_for_testing(
+      std::unique_ptr<MediaNotificationDeviceProvider> device_provider);
 
  private:
   friend class MediaNotificationProviderImplTest;
@@ -111,6 +123,9 @@ class MediaNotificationService : public KeyedService {
 
   // Used to initialize a MediaRouterUI.
   std::unique_ptr<media_router::StartPresentationContext> context_;
+
+  // Generates a list of available audio devices.
+  std::unique_ptr<MediaNotificationDeviceProvider> device_provider_;
 
   base::WeakPtrFactory<MediaNotificationService> weak_ptr_factory_{this};
 };

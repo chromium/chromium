@@ -408,7 +408,7 @@ MediaDialogView::BuildMediaItemUIView(
               : service_->CreateCastDialogControllerForPresentationRequest();
     }
     device_selector_view = std::make_unique<MediaItemUIDeviceSelectorView>(
-        id, service_->device_selector_delegate(), std::move(cast_controller),
+        id, service_, std::move(cast_controller),
         /* has_audio_output */ is_local_media_session, entry_point_,
         show_expand_button);
   }
