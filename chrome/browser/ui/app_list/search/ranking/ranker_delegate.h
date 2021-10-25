@@ -29,7 +29,9 @@ class RankerDelegate : public Ranker {
   void AddRanker(std::unique_ptr<Ranker> ranker);
 
   // Ranker:
-  void Start(const std::u16string& query) override;
+  void Start(const std::u16string& query,
+             ResultsMap& results,
+             CategoriesMap& categories) override;
   void Rank(ResultsMap& results,
             CategoriesMap& categories,
             ProviderType provider) override;

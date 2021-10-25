@@ -20,7 +20,9 @@ FilteringRanker::FilteringRanker() {}
 
 FilteringRanker::~FilteringRanker() {}
 
-void FilteringRanker::Start(const std::u16string& query) {
+void FilteringRanker::Start(const std::u16string& query,
+                            ResultsMap& results,
+                            CategoriesMap& categories) {
   last_query_ = query;
 }
 

@@ -82,7 +82,7 @@ void SearchControllerImplNew::Start(const std::u16string& query) {
   for (Observer& observer : observer_list_)
     observer.OnResultsCleared();
 
-  ranker_->Start(query);
+  ranker_->Start(query, results_, categories_);
   for (const auto& provider : providers_)
     provider->Start(query);
 }
