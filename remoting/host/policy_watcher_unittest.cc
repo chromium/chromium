@@ -25,6 +25,8 @@ namespace remoting {
 
 namespace key = ::policy::key;
 
+using testing::_;
+
 MATCHER_P(IsPolicies, dict, "") {
   bool equal = arg->Equals(dict);
   if (!equal) {
@@ -41,6 +43,11 @@ MATCHER_P(IsPolicies, dict, "") {
     *result_listener << "Actual policy: " << actual_value << ".";
   }
   return equal;
+}
+
+MATCHER_P(ContainsSubstring, substring, "") {
+  const std::string& log_message = ::testing::get<0>(arg);
+  return log_message.find(substring) != std::string::npos;
 }
 
 class MockPolicyCallback {
@@ -506,13 +513,21 @@ TEST_P(MisspelledPolicyTest, WarningLogged) {
   const char* misspelled_policy_name = GetParam();
   base::test::MockLog mock_log;
 
-  ON_CALL(mock_log,
-          Log(testing::_, testing::_, testing::_, testing::_, testing::_))
-      .WillByDefault(testing::Return(true));
+  ON_CALL(mock_log, Log(_, _, _, _, _)).WillByDefault(testing::Return(true));
 
-  EXPECT_CALL(mock_log,
-              Log(logging::LOG_WARNING, testing::_, testing::_, testing::_,
-                  testing::HasSubstr(misspelled_policy_name)))
+#if defined(OS_WIN)
+  // The PolicyWatcher on Windows tries to open a handle to the Chrome policy
+  // registry key on Windows which fails on the Chromium bots. The warning that
+  // gets logged cases the subsequent log assertion to fail so this check was
+  // added so the test runs locally and in the bot environment.
+  EXPECT_CALL(mock_log, Log(logging::LOG_WARNING, _, _, _, _))
+      .With(testing::Args<4>(
+          ContainsSubstring("Failed to open Chrome policy registry key")))
+      .Times(testing::AtMost(1));
+#endif
+
+  EXPECT_CALL(mock_log, Log(logging::LOG_WARNING, _, _, _, _))
+      .With(testing::Args<4>(ContainsSubstring(misspelled_policy_name)))
       .Times(1);
 
   EXPECT_CALL(mock_policy_callback_,
