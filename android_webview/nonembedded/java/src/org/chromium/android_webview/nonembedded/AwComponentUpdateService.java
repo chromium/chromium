@@ -13,6 +13,7 @@ import android.os.SystemClock;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.android_webview.devui.ComponentsListFragment;
 import org.chromium.android_webview.services.ComponentUpdaterSafeModeUtils;
 import org.chromium.android_webview.services.ComponentsProviderPathUtil;
 import org.chromium.base.Callback;
@@ -77,7 +78,7 @@ public class AwComponentUpdateService extends JobService {
     public boolean onStartJob(JobParameters params) {
         assert mJobParameters == null;
         mJobParameters = params;
-        return maybeStartUpdates();
+        return maybeStartUpdates(/*onDemandUpdate=*/false);
     }
 
     // Called by JobScheduler.
@@ -110,8 +111,11 @@ public class AwComponentUpdateService extends JobService {
         // Always keep the most recent startId as this is the one that should be used to stop
         // the service.
         mServiceStartedId = startId;
-        mFinishCallback = IntentUtils.safeGetParcelableExtra(intent, "SERVICE_FINISH_CALLBACK");
-        if (!maybeStartUpdates()) {
+        mFinishCallback = IntentUtils.safeGetParcelableExtra(
+                intent, ComponentsListFragment.SERVICE_FINISH_CALLBACK);
+        boolean onDemandUpdate = IntentUtils.safeGetBooleanExtra(
+                intent, ComponentsListFragment.ON_DEMAND_UPDATE_REQUEST, false);
+        if (!maybeStartUpdates(onDemandUpdate)) {
             stopSelf(startId);
             mServiceStartedId = 0;
         }
@@ -125,7 +129,7 @@ public class AwComponentUpdateService extends JobService {
      *         already updating, {@code false} if it fails to trigger the updates.
      */
     @VisibleForTesting
-    boolean maybeStartUpdates() {
+    boolean maybeStartUpdates(boolean onDemandUpdate) {
         if (mIsUpdating) {
             return true;
         }
@@ -150,7 +154,7 @@ public class AwComponentUpdateService extends JobService {
                 recordDirectorySize();
                 setUnexpectedExit(false);
                 stopService();
-            });
+            }, onDemandUpdate);
             return true;
         }
         Log.e(TAG, "couldn't init native, aborting starting AwComponentUpdaterService");
@@ -220,6 +224,7 @@ public class AwComponentUpdateService extends JobService {
 
     @NativeMethods
     interface Natives {
-        void startComponentUpdateService(Callback<Integer> finishedCallback);
+        void startComponentUpdateService(
+                Callback<Integer> finishedCallback, boolean onDemandUpdate);
     }
 }
