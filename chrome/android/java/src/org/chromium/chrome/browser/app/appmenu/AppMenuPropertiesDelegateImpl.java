@@ -1005,7 +1005,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                 && mBookmarkBridgeSupplier.get().isEditBookmarksEnabled();
         bookmarkMenuItemShortcut.setEnabled(editEnabled);
 
-        if (shouldCheckBookmarkStar(currentTab)) {
+        if (currentTab != null && shouldCheckBookmarkStar(currentTab)) {
             bookmarkMenuItemShortcut.setIcon(R.drawable.btn_star_filled);
             bookmarkMenuItemShortcut.setChecked(true);
             bookmarkMenuItemShortcut.setTitleCondensed(mContext.getString(R.string.edit_bookmark));
