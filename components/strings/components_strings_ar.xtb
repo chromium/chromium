@@ -300,6 +300,7 @@
 <translation id="1842969606798536927">الدفع</translation>
 <translation id="1856713167556118146">إجراءات لا ينفّذها وضع التصفُّح المتخفي</translation>
 <translation id="1863257867908022953">الدُرج 12</translation>
+<translation id="1864927262126810325">من <ph name="SOURCE_NAME" /></translation>
 <translation id="1871208020102129563">‏تم ضبط الخادم الوكيل لاستخدام الخوادم الوكيلة الثابتة وليس عنوان URL لنص برمجي pac.</translation>
 <translation id="1871284979644508959">حقل مطلوب</translation>
 <translation id="1875025161375567525">دُرج الصور</translation>
@@ -617,6 +618,7 @@
 <translation id="2987034854559945715">لا تتوفر ميزات متطابقة.</translation>
 <translation id="2989742184762224133">وضع دبوسَين بالأعلى</translation>
 <translation id="2991174974383378012">المشاركة مع المواقع الإلكترونية</translation>
+<translation id="299122504639061328">يمكنك إدارة محرك البحث التلقائي وبحث الموقع التلقائي.</translation>
 <translation id="2991571918955627853">‏لا يمكنك زيارة <ph name="SITE" /> في الوقت الحالي لأن الموقع الإلكتروني يستخدم HSTS. أخطاء الشبكة والهجمات عليها عادةً ما تكون مؤقتة، لذا ستعمل هذه الصفحة في وقت لاحق على الأرجح.</translation>
 <translation id="2995517112308048736">حجم الملف:</translation>
 <translation id="3002501248619246229">التحقق من دُرج وسائل الإعلام</translation>
@@ -948,6 +950,7 @@
 <translation id="4088981014127559358">‏طباعة جانب واحد image Y shift</translation>
 <translation id="4089152113577680600">الدُرج 14</translation>
 <translation id="4098354747657067197">أنت بصدد الانتقال إلى موقع إلكتروني مخادع</translation>
+<translation id="4099048595830172239">تحظر سياسة المشرف مشاركة الشاشة مع تطبيق <ph name="APPLICATION_TITLE" /> عند عرض محتوى سري:</translation>
 <translation id="4099391883283080991">‏<ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح Tab ثم مفتاح Enter لتخصيص أحجام الخطوط وأنماطها في Chrome.</translation>
 <translation id="4101413244023615925">النص والرسم</translation>
 <translation id="4103249731201008433">الرقم التسلسلي للجهاز غير صالح</translation>
@@ -960,8 +963,10 @@
 <translation id="4117700440116928470">نطاق السياسة غير متوافق.</translation>
 <translation id="4121428309786185360">تاريخ انتهاء الصلاحية</translation>
 <translation id="4123572138124678573">عمل ثلاثة ثقوب بالأسفل</translation>
+<translation id="4127575959421463246">‏التعرّف على الميزات التجريبية لنظام التشغيل Chrome الانتقال</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{عنصر واحد آخر}zero{# عنصر آخر}two{عنصران آخران (#)}few{# عناصر أخرى}many{# عنصرًا آخر}other{# عنصر آخر}}</translation>
 <translation id="4130226655945681476">التحقق من كابلات الشبكة، والمودم، وجهاز التوجيه</translation>
+<translation id="4133224101597112888">‏زرّ مشاركة علامة التبويب: اضغط على مفتاح Enter لمشاركة علامة التبويب عن طريق مشاركة الرابط وإنشاء رمز استجابة سريعة وبث المحتوى وغير ذلك.</translation>
 <translation id="4134123981501319574">إنشاء مستند</translation>
 <translation id="413544239732274901">مزيد من المعلومات</translation>
 <translation id="4142935452406587478">الدُرج 10</translation>
@@ -988,6 +993,7 @@
     عرض سياسة، مما يمنع المتصفِّح من إكمال طلبك
     ذي الصلة بالموقع الإلكتروني <ph name="SITE" />. ويمكن استخدام سياسات المصدر من خلال
     عوامل تشغيل الموقع الإلكتروني لضبط الأمان والخصائص الأخرى لموقع إلكتروني.</translation>
+<translation id="4210602799576081649">انتهت صلاحية رمز إثبات الهوية، يُرجى طلب رمز جديد.</translation>
 <translation id="421066178035138955">استخدام أجهزة الواقع الافتراضي وبياناتها</translation>
 <translation id="4214357935346142455">الملف الشخصي في شاشة تسجيل الدخول</translation>
 <translation id="4215751373031079683">‏7x9 (مغلف)</translation>
@@ -1129,6 +1135,7 @@
 <translation id="4606870351894164739">مؤثِّر</translation>
 <translation id="4607603470419975064">‏زرّ الاطّلاع على معلومات بشأن استخدام متصفّح Chrome: اضغط على مفتاح Enter للتعرّف على ميزات Chrome.</translation>
 <translation id="4607608436550361748">‏الاطّلاع على معلومات بشأن استخدام متصفّح Chrome</translation>
+<translation id="4627675673814409125">‏يتعذّر ضبط هذه السياسة على مستوى الملف الشخصي على Chrome وسيتم تجاهلها.</translation>
 <translation id="4628948037717959914">صورة</translation>
 <translation id="4631649115723685955">تم ربط مكافأة لاسترداد جزء من المال.</translation>
 <translation id="4636930964841734540">معلومات</translation>
@@ -1300,6 +1307,7 @@
 <translation id="5126510351761255129">التحقق من بطاقتك</translation>
 <translation id="512670116361803001">قد لا يتم تغيير حجم التطبيق <ph name="APP_NAME" /> بشكل مناسب. استخدِم أحجام النوافذ المُعَدّة مسبقًا لمنع حدوث مشاكل أثناء استخدام التطبيق.</translation>
 <translation id="5135404736266831032">إدارة العناوين...</translation>
+<translation id="5136841603454277753">يُرجى إدخال رمز صالح.</translation>
 <translation id="5138014172396933048">البطاقة الافتراضية غير متوفّرة حاليًا. يُرجى التواصل مع المصرف.</translation>
 <translation id="5138227688689900538">عرض أقل</translation>
 <translation id="5145883236150621069">يوجد رمز خطأ في استجابة السياسة</translation>
@@ -1393,6 +1401,7 @@
 <translation id="5426179911063097041">يريد موقع <ph name="SITE" /> إرسال إشعارات إليك.</translation>
 <translation id="5428105026674456456">الإسبانية</translation>
 <translation id="5430298929874300616">إزالة إشارة مرجعية</translation>
+<translation id="5434889539950523874">‏<ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح Tab ثم مفتاح Enter لمشاركة علامة التبويب عن طريق مشاركة الرابط وإنشاء رمز استجابة سريعة وبث المحتوى وغير ذلك.</translation>
 <translation id="5439770059721715174">حدث خطأ في مصادقة المخطط على "<ph name="ERROR_PATH" />": <ph name="ERROR" /></translation>
 <translation id="5443468954631487277">ترتيب عكسي والوجه للأعلى</translation>
 <translation id="5447765697759493033">لن تتم ترجمة هذا الموقع</translation>
@@ -1492,6 +1501,7 @@
 <translation id="5786044859038896871">هل تريد ملء معلومات بطاقتك؟</translation>
 <translation id="578633867165174378">‏لقد عثر Chrome في عمليّة اختراق للبيانات على كلمة المرور التي استخدمتها للتو. ننصحك بتغيير كلمة المرور هذه الآن.</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5797429178165847917">المحتوى الذي تم التقاطه سرّي</translation>
 <translation id="5803412860119678065">هل تريد ملء <ph name="CARD_DETAIL" />؟</translation>
 <translation id="5804241973901381774">الأذونات</translation>
 <translation id="5810442152076338065">يتم ترميز اتصالك بالنطاق <ph name="DOMAIN" /> باستخدام مجموعة ترميز قديمة.</translation>
@@ -1757,6 +1767,7 @@
 <translation id="674375294223700098">حدث خطأ غير معروف في شهادة الخادم.</translation>
 <translation id="6744009308914054259">أثناء انتظار اتصال، يمكنك الانتقال إلى مجلد "المحتوى الذي تم تنزيله" للاطِّلاع على المقالات بلا اتصال بالإنترنت.</translation>
 <translation id="6753269504797312559">قيمة السياسة</translation>
+<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">خضع جهازك إلى وضع السكون.</translation>
 <translation id="6767985426384634228">هل تريد تعديل العنوان؟</translation>
 <translation id="6768213884286397650">‏Hagaki (بطاقة بريدية)</translation>
@@ -1844,6 +1855,7 @@
 <translation id="706295145388601875">‏إضافة عناوين وإدارتها في إعدادات متصفّح Chrome</translation>
 <translation id="7064851114919012435">معلومات الاتصال</translation>
 <translation id="7068733155164172741">أدخِل الرمز المكوَّن من <ph name="OTP_LENGTH" /> رقم.</translation>
+<translation id="7070090581017165256">لمحة عن هذا الموقع الإلكتروني</translation>
 <translation id="70705239631109039">اتصالك بهذا الموقع تتخلله ثغرات أمنية.</translation>
 <translation id="7075452647191940183">الطلب كبير جدًا</translation>
 <translation id="7079718277001814089">يحتوي هذا الموقع على برامج ضارة</translation>
@@ -2002,6 +2014,7 @@
 <translation id="7559278538486662777">لا يمكن تغيير حجم نافذة هذا التطبيق.</translation>
 <translation id="7564049878696755256">‏قد تفقد إمكانية الوصول إلى حسابك على <ph name="ORG_NAME" /> أو تتعرض لسرقة هويتك. لذا يوصي Chrome بتغيير كلمة مرورك الآن.</translation>
 <translation id="7567204685887185387">هذا الخادم لم يتمكن من إثبات أن ذلك <ph name="DOMAIN" />؛ بل إنه شهادة أمان تم إصدارها عن طريق الاحتيال. وربما يكون سبب ذلك خطأ في التكوين أو مهاجمًا يعترض اتصالك.</translation>
+<translation id="7569761772822664555">‏زرّ إدارة محركات البحث: اضغط على مفتاح Enter لإدارة محرك البحث التلقائي وبحث الموقع التلقائي.</translation>
 <translation id="7569952961197462199">‏هل تريد إزالة بطاقة الائتمان من Chrome؟</translation>
 <translation id="7569983096843329377">أسود</translation>
 <translation id="7575207903026901870">‏إزالة زر "الاقتراحات"، اضغط على مفتاح Enter لإزالة هذا الاقتراح</translation>
@@ -2087,6 +2100,7 @@
 <translation id="7813600968533626083">‏هل تريد إزالة اقتراح النموذج من Chrome؟</translation>
 <translation id="781440967107097262">هل تريد مشاركة الحافظة؟</translation>
 <translation id="7815407501681723534">تم العثور على <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> لـ "<ph name="SEARCH_STRING" />"</translation>
+<translation id="782125616001965242">عرض معلومات حول هذا الموقع الإلكتروني</translation>
 <translation id="782886543891417279">‏قد يتطلب Wi-Fi الذي تستخدمه (<ph name="WIFI_NAME" />) زيارة صفحة تسجيل الدخول.</translation>
 <translation id="7836231406687464395">‏Postfix (مغلف)</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{لا تتوفَّر تطبيقات}=1{تطبيق واحد (<ph name="EXAMPLE_APP_1" />)}=2{تطبيقان (<ph name="EXAMPLE_APP_1" />، و<ph name="EXAMPLE_APP_2" />)}few{# تطبيقات (<ph name="EXAMPLE_APP_1" />، و<ph name="EXAMPLE_APP_2" />، و<ph name="AND_MORE" /> من التطبيقات الأخرى)}many{# تطبيقات (<ph name="EXAMPLE_APP_1" />، و<ph name="EXAMPLE_APP_2" />، و<ph name="AND_MORE" /> من التطبيقات الأخرى)}other{# تطبيقات (<ph name="EXAMPLE_APP_1" />، و<ph name="EXAMPLE_APP_2" />، و<ph name="AND_MORE" /> من التطبيقات الأخرى)}}</translation>
@@ -2119,6 +2133,7 @@
 <translation id="7950027195171824198">‏إدارة الإعدادات المفضّلة لملفات تعريف الارتباط في إعدادات متصفِّح Chrome</translation>
 <translation id="7951415247503192394">(32 بت)</translation>
 <translation id="7953569069500808819">خزم الحواف من الأعلى</translation>
+<translation id="7954041596401851904">يمكنك مشاركة علامة التبويب هذه عن طريق مشاركة الرابط وإنشاء رمز استجابة سريعة وبث المحتوى وغير ذلك.</translation>
 <translation id="7956713633345437162">الإشارات المرجعية على الجوّال</translation>
 <translation id="7961015016161918242">مطلقًا</translation>
 <translation id="7966803981046576691">نوع حساب المهمة</translation>
@@ -2192,6 +2207,7 @@
 <translation id="8202370299023114387">تعارض</translation>
 <translation id="8206978196348664717">‏Prc4 (مغلف)</translation>
 <translation id="8211406090763984747">الاتصال بموقع الويب هذا آمن</translation>
+<translation id="8215696832828595581">‏زرّ تخصيص Chrome: اضغط على مفتاح Enter لتخصيص مظهر المتصفح.</translation>
 <translation id="8218327578424803826">الموقع الذي تم تعيينه:</translation>
 <translation id="8220146938470311105">‏C7/C6 (مغلف)</translation>
 <translation id="8225771182978767009">اختار الشخص الذي أعد جهاز الكمبيوتر حظر الموقع الإلكتروني هذا.</translation>
@@ -2332,6 +2348,7 @@
 <translation id="868922510921656628">عدد الصفحات في كل مجموعة</translation>
 <translation id="869891660844655955">تاريخ انتهاء الصلاحية</translation>
 <translation id="8699041776323235191">‏جهاز HID</translation>
+<translation id="8699899385443889493">‏زرّ تشغيل لعبة الديناصور في Chrome: اضغط على مفتاح Enter لتشغيل لعبة الديناصور في Chrome.</translation>
 <translation id="8703575177326907206">الاتصال بالموقع <ph name="DOMAIN" /> غير محميّ بنظام ترميز.</translation>
 <translation id="8705331520020532516">الرقم التسلسلي</translation>
 <translation id="8708134712139312373">السماح للموقع الإلكتروني بطلب الاتصال بأجهزة تتضمّن بلوتوث</translation>
@@ -2363,6 +2380,7 @@
 <translation id="8792626944327216835">الميكروفون</translation>
 <translation id="8793655568873652685">‏تم تفعيل "وصلات Chrome Enterprise" على متصفّحك من قِبل <ph name="ENROLLMENT_DOMAIN" />. لدى هذه الوصلات إذن بالوصول إلى بعض بياناتك.</translation>
 <translation id="8798099450830957504">التلقائي</translation>
+<translation id="8798739476508189189">التعرّف على الميزات التجريبية للمتصفّح الانتقال</translation>
 <translation id="8805819170075074995">‏إدخال في القائمة "<ph name="LANGUAGE_ID" />": تم تجاهل الإدخال لأنه مضمّن في سياسة SpellcheckLanguage أيضًا.</translation>
 <translation id="8807160976559152894">القطع بعد كل صفحة</translation>
 <translation id="8816395686387277279">‏<ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح التبويب (Tab) ثم مفتاح Enter لتحديث Chrome من إعدادات Chrome.</translation>
@@ -2468,6 +2486,7 @@
 <translation id="9157595877708044936">جارٍ الإعداد...</translation>
 <translation id="9158625974267017556">‏C6 (مغلف)</translation>
 <translation id="9164029392738894042">التحقّق من دقّة البيانات</translation>
+<translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">السماح للمواقع الإلكترونية بالتحقُّق ممّا إذا كانت لديك طرق دفع محفوظة أم لا</translation>
 <translation id="9169664750068251925">الحظر دومًا على هذا الموقع</translation>
 <translation id="9169931577761441333">إضافة تطبيق <ph name="APP_NAME" /> إلى الشاشة الرئيسية</translation>

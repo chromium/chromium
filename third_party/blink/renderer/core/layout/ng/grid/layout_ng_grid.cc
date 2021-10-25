@@ -137,11 +137,11 @@ const LayoutNGGridInterface* LayoutNGGrid::ToLayoutNGGridInterface() const {
   return this;
 }
 
-bool LayoutNGGrid::HasCachedPlacements(wtf_size_t column_auto_repetitions,
-                                       wtf_size_t row_auto_repetitions) const {
+bool LayoutNGGrid::HasCachedPlacements(wtf_size_t column_auto_repititions,
+                                       wtf_size_t row_auto_reptitions) const {
   if (IsGridPlacementDirty() ||
-      (cached_column_auto_repetitions_ != column_auto_repetitions) ||
-      (cached_row_auto_repetitions_ != row_auto_repetitions)) {
+      (cached_column_auto_repititions_ != column_auto_repititions) ||
+      (cached_row_auto_repititions_ != row_auto_reptitions)) {
     return false;
   }
 
@@ -156,11 +156,11 @@ const NGGridPlacementProperties& LayoutNGGrid::GetCachedPlacementProperties() {
 
 void LayoutNGGrid::SetCachedPlacementProperties(
     NGGridPlacementProperties&& properties,
-    wtf_size_t column_auto_repetitions,
-    wtf_size_t row_auto_repetitions) {
+    wtf_size_t column_auto_repititions,
+    wtf_size_t row_auto_reptitions) {
   cached_placement_properties_ = std::move(properties);
-  cached_column_auto_repetitions_ = column_auto_repetitions;
-  cached_row_auto_repetitions_ = row_auto_repetitions;
+  cached_column_auto_repititions_ = column_auto_repititions;
+  cached_row_auto_repititions_ = row_auto_reptitions;
   SetGridPlacementDirty(false);
 }
 

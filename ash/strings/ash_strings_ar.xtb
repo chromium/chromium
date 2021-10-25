@@ -17,6 +17,7 @@
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">استبدال</translation>
 <translation id="1073899992769346247">استبدِل البطارية أو أعِد شحنها.</translation>
+<translation id="1081015718268701546">‏تطبيقات Linux غير متوافقة حاليًا. سيتم حفظ التطبيقات الأخرى.</translation>
 <translation id="108486256082349153">خلوي: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">مساء الخير <ph name="GIVEN_NAME" />،</translation>
 <translation id="109942774857561566">أشعر بالملل</translation>
@@ -43,6 +44,7 @@
 <translation id="1225748608451425081">‏تم قفل جهاز Chromebook بسبب مشكلة معروفة. ستتمكّن من تسجيل الدخول بعد: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">إيقاف التحديد</translation>
 <translation id="1239161794459865856">ميزة <ph name="FEATURE_NAME" /> متصلة.</translation>
+<translation id="1246890715821376239">تطبيقات غير متوافقة</translation>
 <translation id="1247372569136754018">ميكروفون (داخلي)</translation>
 <translation id="1252999807265626933">جارٍ الشحن من <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">ما حالة الطقس؟</translation>
@@ -168,6 +170,7 @@
 <translation id="2148716181193084225">اليوم</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: إعادة المحاولة</translation>
 <translation id="2170530631236737939">يمكنك التمرير سريعًا لأسفل الشاشة بثلاثة أصابع للخروج من وضع "النظرة العامة".</translation>
+<translation id="2201071101391734388">الصورة الحديثة رقم <ph name="INDEX" /> من إجمالي <ph name="TOTAL_COUNT" /></translation>
 <translation id="2208323208084708176">وضع سطح المكتب الموحد</translation>
 <translation id="2220572644011485463">رقم التعريف الشخصي أو كلمة المرور</translation>
 <translation id="2222841058024245321">سطح المكتب 7</translation>
@@ -291,6 +294,7 @@
 <translation id="3151786313568798007">الاتجاه</translation>
 <translation id="3153444934357957346">يمكنك الحصول فقط على ما يصل إلى <ph name="MULTI_PROFILE_USER_LIMIT" /> حساب في الدخول المتعدد.</translation>
 <translation id="3154351730702813399">قد يراقب مشرف الجهاز نشاط التصفح.</translation>
+<translation id="316086887565479535">يحتوي النموذج على تطبيقات غير متوافقة.</translation>
 <translation id="3181441307743005334">قد تستغرق إعادة التشغيل بعض الوقت</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{تم الاتصال بجهاز واحد}zero{تم الاتصال بـ # جهاز}two{تم الاتصال بجهازين (#)}few{تم الاتصال بـ # أجهزة}many{تم الاتصال بـ # جهازًا}other{تم الاتصال بـ # جهاز}}</translation>
 <translation id="320207200541803018">ضبط موقِّت</translation>
@@ -388,6 +392,7 @@
 <translation id="383058930331066723">وضع "توفير شحن البطارية" مفعَّل.</translation>
 <translation id="3835880383832568924">للاطّلاع على التغييرات، افتح تطبيق "الاختصارات".</translation>
 <translation id="383629559565718788">عرض إعدادات لوحة المفاتيح</translation>
+<translation id="384082539148746321">هل تريد حذف النموذج؟</translation>
 <translation id="3846214748874656680">خروج من عرض ملء الشاشة</translation>
 <translation id="3846575436967432996">لا توجد معلومات متاحة حول الشبكة</translation>
 <translation id="385051799172605136">رجوع</translation>
@@ -620,6 +625,7 @@
 <translation id="5465662442746197494">هل تريد المساعدة؟</translation>
 <translation id="5496819745535887422">‏يعمل المشرف على إعادة النسخة السابقة من نظام التشغيل Chrome إلى جهازك. وسيتم حذف جميع البيانات عند إعادة تشغيل الجهاز.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520229639206813572">‏أزال المشرف جميع الملفات الشخصية لشريحة eSIM. يمكنك التواصل مع المشرف للحصول على مزيد من المعلومات.</translation>
 <translation id="5523434445161341166">جارٍ اتصال <ph name="FEATURE_NAME" />.</translation>
 <translation id="5532994612895037630">انقر في أي مكان للتسجيل في وضع ملء الشاشة.</translation>
 <translation id="553675580533261935">جارٍ الخروج من الجلسة</translation>
@@ -751,6 +757,7 @@
 <translation id="6537924328260219877">قوة الإشارة <ph name="SIGNAL_STRENGTH" />، بطارية الهاتف <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">البث على <ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">الطلب من المشرف</translation>
+<translation id="6565007273808762236">‏تعذُّر الاتصال من خلال شريحة eSIM</translation>
 <translation id="6570831796530454248">{0,plural, =1{تحديث الجهاز خلال ساعة واحدة}zero{تحديث الجهاز خلال # ساعة}two{تحديث الجهاز خلال ساعتين}few{تحديث الجهاز خلال # ساعات}many{تحديث الجهاز خلال # ساعة}other{تحديث الجهاز خلال # ساعة}}</translation>
 <translation id="6570902864550063460">‏جارٍ الشحن عبر USB.</translation>
 <translation id="6585808820553845416">تنتهي الجلسة في <ph name="SESSION_TIME_REMAINING" />.</translation>
@@ -820,6 +827,7 @@
 <translation id="7029814467594812963">إنهاء الجلسة</translation>
 <translation id="703425375924687388">‏<ph name="QUERY_NAME" />، "مساعد Google"</translation>
 <translation id="7042322267639375032">تصغير منطقة الحالة</translation>
+<translation id="7045033600005038336">هل تريد استبدال النموذج؟</translation>
 <translation id="7045595904618419789">تفعيل المكبِّر</translation>
 <translation id="7055381872777910864">الأربعاء</translation>
 <translation id="7055910611768509537">لم يتم استخدام قلم الشاشة منذ أكثر من أسبوع.</translation>
@@ -956,6 +964,7 @@
 <translation id="8036504271468642248">الجملة السابقة</translation>
 <translation id="8042893070933512245">فتح قائمة إعدادات "أدوات تمكين الوصول"</translation>
 <translation id="8048123526339889627">إعدادات البلوتوث</translation>
+<translation id="8051716679295756675">سبق وأن تم إدخال نموذج باسم <ph name="DESK_TEMPLATE_NAME" />.</translation>
 <translation id="8052898407431791827">تمّ النسخ إلى الحافظة.</translation>
 <translation id="8054466585765276473">يجري حساب وقت البطارية.</translation>
 <translation id="8061464966246066292">تباين عالٍ</translation>
@@ -1061,6 +1070,7 @@
 <translation id="8876661425082386199">التحقُّق من الاتصال</translation>
 <translation id="8877788021141246043">ضبط تذكير</translation>
 <translation id="8878886163241303700">توسيع الشاشة</translation>
+<translation id="8896630965521842259">سيتم حذف النموذج <ph name="DESK_TEMPLATE_NAME" /> نهائيًا.</translation>
 <translation id="890616557918890486">تغيير المصدر</translation>
 <translation id="8909138438987180327">مستوى طاقة البطارية عند <ph name="PERCENTAGE" /> في المئة.</translation>
 <translation id="8913384980486163186">المظهر (التلقائي)</translation>

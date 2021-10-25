@@ -339,7 +339,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="3509391053705095206">No se puede encontrar tu teléfono. Comprueba que el Bluetooth del teléfono esté activado.</translation>
 <translation id="3510164367642747937">Resaltar el cursor del ratón</translation>
 <translation id="3513798432020909783">Cuenta gestionada por <ph name="MANAGER_EMAIL" /></translation>
-<translation id="352245152354538528">{0,plural, =1{Actualizar dispositivo dentro de 1 minuto}other{Actualizar dispositivo dentro de # minutos}}</translation>
+<translation id="352245152354538528">{0,plural, =1{Actualiza el dispositivo en un plazo de 1 minuto}other{Actualiza el dispositivo en un plazo de # minutos}}</translation>
 <translation id="353086728817903341">Conectado a <ph name="NUM_DEVICES" /> dispositivos</translation>
 <translation id="3552189655002856821">La conexión Wi‑Fi está desactivada</translation>
 <translation id="3560866052109807830">Herramientas de dibujo del marcador</translation>
@@ -429,7 +429,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4146833061457621061">Pon música</translation>
 <translation id="4157822100366708405">Ajustes del tema oscuro</translation>
 <translation id="4173958948577803258">J</translation>
-<translation id="4177913004758410636">{0,plural, =1{Actualizar dispositivo dentro de 1 día}other{Actualizar dispositivo dentro de # días}}</translation>
+<translation id="4177913004758410636">{0,plural, =1{Actualiza el dispositivo en un plazo de 1 día}other{Actualiza el dispositivo en un plazo de # días}}</translation>
 <translation id="4181841719683918333">Idiomas</translation>
 <translation id="4195877955194704651">Botón de clics automáticos</translation>
 <translation id="4197790712631116042">Desactivado</translation>
@@ -463,7 +463,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4338109981321384717">Lupa</translation>
 <translation id="4351433414020964307">El Asistente se está cargando...</translation>
 <translation id="4356930093361201197">modo de contraste alto</translation>
-<translation id="4360237979279036412"><ph name="MANAGER" /> necesita que actualices este <ph name="DEVICE_TYPE" /> antes de la fecha límite.</translation>
+<translation id="4360237979279036412"><ph name="MANAGER" /> requiere que actualices este <ph name="DEVICE_TYPE" /> antes de la fecha límite.</translation>
 <translation id="4371348193907997655">Configuración de envío</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />; intensidad de la señal: <ph name="SIGNAL_STRENGTH" /> %</translation>
 <translation id="4378551569595875038">Conectando...</translation>
@@ -483,7 +483,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="445864333228800152">Buenas noches,</translation>
 <translation id="4458688154122353284">Detener grabación de pantalla</translation>
 <translation id="4471354919263203780">Descargando archivos de reconocimiento de voz... <ph name="PERCENT" /> %</translation>
-<translation id="4471432286288241507">{0,plural, =0{Actualizar dispositivo ahora}=1{Actualizar dispositivo dentro de 1 segundo}other{Actualizar dispositivo dentro de # segundos}}</translation>
+<translation id="4471432286288241507">{0,plural, =0{Actualiza el dispositivo ahora}=1{Actualiza el dispositivo en un plazo de 1 segundo}other{Actualiza el dispositivo en un plazo de # segundos}}</translation>
 <translation id="4472575034687746823">Empezar</translation>
 <translation id="4477350412780666475">Pista siguiente</translation>
 <translation id="4477892968187500306">Es posible que este dispositivo contenga aplicaciones que no han sido verificadas por Google.</translation>
@@ -754,7 +754,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="6542521951477560771">Enviando contenido a <ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">Pregunta al administrador</translation>
 <translation id="6565007273808762236">Conexión eSIM no disponible</translation>
-<translation id="6570831796530454248">{0,plural, =1{Actualizar dispositivo dentro de 1 hora}other{Actualizar dispositivo dentro de # horas}}</translation>
+<translation id="6570831796530454248">{0,plural, =1{Actualiza el dispositivo en un plazo de 1 hora}other{Actualiza el dispositivo en un plazo de # horas}}</translation>
 <translation id="6570902864550063460">Cargando mediante USB</translation>
 <translation id="6585808820553845416">La sesión finalizará dentro de <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>

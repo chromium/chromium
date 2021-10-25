@@ -20,7 +20,7 @@ const NGGridPlacementProperties& NGGridNode::GetPositions(
     const NGGridPlacement& grid_placement,
     const GridItems& grid_items,
     wtf_size_t column_auto_repetitions,
-    wtf_size_t row_auto_repetitions) const {
+    wtf_size_t row_auto_repititions) const {
   LayoutNGGrid* layout_grid = To<LayoutNGGrid>(box_.Get());
 
   // Always re-run placement if |grid_items| is empty, as this method also
@@ -28,11 +28,11 @@ const NGGridPlacementProperties& NGGridNode::GetPositions(
   // case, we don't want to use cached placements even if the cache is clean.
   if (!RuntimeEnabledFeatures::LayoutNGGridCachingEnabled() ||
       !layout_grid->HasCachedPlacements(column_auto_repetitions,
-                                        row_auto_repetitions) ||
+                                        row_auto_repititions) ||
       grid_items.IsEmpty()) {
     auto properties = grid_placement.RunAutoPlacementAlgorithm(grid_items);
     layout_grid->SetCachedPlacementProperties(
-        std::move(properties), column_auto_repetitions, row_auto_repetitions);
+        std::move(properties), column_auto_repetitions, row_auto_repititions);
   } else {
 #if DCHECK_IS_ON()
     auto duplicate_properties =

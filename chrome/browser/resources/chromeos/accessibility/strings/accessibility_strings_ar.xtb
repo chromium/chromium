@@ -799,6 +799,7 @@
 <translation id="6544923685317771506">صدفي</translation>
 <translation id="6551185905438378412">عاجي</translation>
 <translation id="6561818612645211875">الانتقال إلى بداية الصف الحالي</translation>
+<translation id="6563126228219321999">ما مِن عناصر غير صالحة</translation>
 <translation id="6579990219486187401">وردي فاتح</translation>
 <translation id="6583174818554398774">الانتقال إلى التالي بدقة</translation>
 <translation id="6584162722998608255">ستتعرّف في الدرس التالي على كيفية التنقّل داخل الشاشة. يمكنك التمرير سريعًا بإصبع واحد من اليمين إلى اليسار للانتقال إلى العنصر التالي. جرِّب ذلك الآن للانتقال إلى الخطوة التالية.</translation>
@@ -829,6 +830,7 @@
 <translation id="6815255864998354418">شيفون ليموني</translation>
 <translation id="6816066673340002913">أصفر ذهبي باهت</translation>
 <translation id="6826226459053491773">التمرير السريع بإصبعين إلى الأسفل</translation>
+<translation id="6826669432862053130">العنصر التالي غير الصالح</translation>
 <translation id="6833103209700200188">تذييل</translation>
 <translation id="6837853484260746864">تحديد صوت:</translation>
 <translation id="6858047746862060282">فاتحة</translation>
@@ -1018,6 +1020,7 @@
 <translation id="8126386426083591964">ليس هناك عنوان سابق من المستوى الخامس.</translation>
 <translation id="812886159861361726">تم إيقاف تنزيل <ph name="FILE_NAME" />.</translation>
 <translation id="8129445297241948503">ليست هناك خلية أعلاه.</translation>
+<translation id="8132248161074464367">العنصر السابق غير الصالح</translation>
 <translation id="8138880386467279117">اللمس</translation>
 <translation id="8146613869421949343">‏في الدرس التالي، ستتعرَّف على مزيد من المعلومات عن مفتاح البحث. يُستخدَم مفتاح البحث بالتزامن مع مفاتيح أخرى في طلبات ChromeVox. يوجد مفتاح البحث فوق مفتاح Shift الأيسر مباشرةً. للمواصلة، اضغط على مفتاح البحث.</translation>
 <translation id="8158033275290782295">اختيار الكل</translation>
