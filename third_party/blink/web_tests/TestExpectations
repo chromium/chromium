@@ -7277,6 +7277,5 @@ crbug.com/1256763 [ Linux ] virtual/gpu-rasterization/images/color-profile-svg-f
 crbug.com/1259277 [ Mac ] fast/events/message-port-multi.html [ Failure Pass ]
 
 # Sheriff 2021-10-20
-crbug.com/1261744 [ Mac11-arm64 ] external/wpt/url/a-element-origin.html [ Failure Pass ]
 crbug.com/1261770 crbug.com/1245166 [ Linux ] external/wpt/web-bundle/subresource-loading/script-relative-url-in-web-bundle-cors.https.tentative.sub.html [ Failure Pass ]
 crbug.com/1261770 crbug.com/1245166 [ Linux ] virtual/wbn-from-network/external/wpt/web-bundle/subresource-loading/script-relative-url-in-web-bundle-cors.https.tentative.sub.html [ Failure Pass ]
