@@ -535,6 +535,7 @@ class MediaCodecUtil {
     }
 
     private static String getPrefixForHWEncoder(@HWEncoder int decoder) {
+        // NOTE: Prefixes must be lower case since the comparison is done in lower case.
         switch (decoder) {
             case HWEncoder.QcomVp8:
             case HWEncoder.QcomH264:
@@ -542,9 +543,9 @@ class MediaCodecUtil {
             case HWEncoder.ExynosVp8:
             case HWEncoder.ExynosVp9:
             case HWEncoder.ExynosH264:
-                return "Exynos";
+                return "exynos";
             case HWEncoder.MediatekH264:
-                return "MTK";
+                return "mtk";
             case HWEncoder.HisiH264:
                 return "hisi";
         }
@@ -646,7 +647,7 @@ class MediaCodecUtil {
             String encoderName = null;
             for (String mimeType : info.getSupportedTypes()) {
                 if (mimeType.equalsIgnoreCase(mime)) {
-                    encoderName = info.getName();
+                    encoderName = info.getName().toLowerCase(Locale.getDefault());
                     break;
                 }
             }
@@ -661,7 +662,7 @@ class MediaCodecUtil {
                 if (!mime.equalsIgnoreCase(getMimeForHWEncoder(codecProperties))) continue;
 
                 String prefix = getPrefixForHWEncoder(codecProperties);
-                if (encoderName.startsWith("OMX." + prefix + ".")
+                if (encoderName.startsWith("omx." + prefix + ".")
                         || encoderName.startsWith("c2." + prefix + ".")) {
                     if (Build.VERSION.SDK_INT < getMinSDKForHWEncoder(codecProperties)) {
                         Log.w(TAG, "Codec " + encoderName + " is disabled due to SDK version "
