@@ -8,29 +8,30 @@
   <script src="resources/utils.js"></script>
 </head>
 <body>
-  <h1>Test for keypress activation trigger</h1>
-  <p>Tests that a popup is allowed with user activation from a keypress event.</p>
+  <h1>Test for keyboard activation trigger for ESCAPE key</h1>
+  <p>Tests missing user activation from a ESCAPE keyboard event.</p>
   <input type="text" autofocus />
   <ol id="instructions">
-    <li>Press ENTER key.
+    <li>Press ESCAPE key.
   </ol>
   <script>
     promise_test(async () => {
-        const ENTER_KEY = '\uE007';
-        test_driver.send_keys(document.body, ENTER_KEY);
+        const ESCAPE_KEY = '\uE00C';
+        test_driver.send_keys(document.body, ESCAPE_KEY);
 
+        let keydown_event = getEvent('keydown');
         let keyup_event = getEvent('keyup');
 
-        await getEvent('keypress');
+        await keydown_event;
         let consumed = await consumeTransientActivation();
-        assert_true(consumed,
-                    "ENTER keypress event should result in activation");
+        assert_false(consumed,
+                    "ESCAPE keydown event should not result in activation");
 
         await keyup_event;
         consumed = await consumeTransientActivation();
         assert_false(consumed,
-                     "ENTER keyup should have no activation after keypress consumption");
-    }, "Activation through keyboard event");
+                     "ESCAPE keyup should have no activation after keydown consumption");
+    }, "Activation through ESCAPE keyboard event");
   </script>
 </body>
 </html>
