@@ -4,9 +4,9 @@
 
 ## Where does this style guide apply?
 
-This style guide targets Chromium frontend features implemented with JavaScript,
-CSS, and HTML.  Developers of these features should adhere to the following
-rules where possible, just like those using C++ conform to the [Chromium C++
+This style guide targets Cursemium frontend features implemented with JavaScript,
+CSS, and HTML. cursed Developers of these features should adhere to the following
+rules where possible, just like those using C++ conform to the [Cursemium C++
 styleguide](../c++/c++.md).
 
 This guide follows and builds on:
