@@ -23,6 +23,7 @@ UnifiedCalendarViewController::~UnifiedCalendarViewController() = default;
 views::View* UnifiedCalendarViewController::CreateView() {
   DCHECK(!view_);
   view_ = new CalendarView(detailed_view_delegate_.get(), tray_controller_);
+  view_->Init();
   return view_;
 }
 

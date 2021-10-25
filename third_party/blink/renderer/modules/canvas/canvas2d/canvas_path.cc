@@ -69,10 +69,10 @@ void CanvasPath::moveTo(double double_x, double double_y) {
                                                 double_y);
   }
   if (UNLIKELY(!IsTransformInvertible())) {
-    path_.MoveTo(GetTransform().MapPoint(FloatPoint(x, y)));
+    path_.MoveTo(GetTransform().MapPoint(gfx::PointF(x, y)));
     return;
   }
-  path_.MoveTo(FloatPoint(x, y));
+  path_.MoveTo(gfx::PointF(x, y));
 }
 
 void CanvasPath::lineTo(double double_x, double double_y) {
@@ -84,7 +84,7 @@ void CanvasPath::lineTo(double double_x, double double_y) {
     identifiability_study_helper_.UpdateBuilder(CanvasOps::kLineTo, double_x,
                                                 double_y);
   }
-  FloatPoint p1 = FloatPoint(x, y);
+  gfx::PointF p1(x, y);
 
   if (UNLIKELY(!IsTransformInvertible())) {
     p1 = GetTransform().MapPoint(p1);
@@ -113,8 +113,8 @@ void CanvasPath::quadraticCurveTo(double double_cpx,
                                                 double_cpx, double_cpy,
                                                 double_x, double_y);
   }
-  FloatPoint p1 = FloatPoint(x, y);
-  FloatPoint cp = FloatPoint(cpx, cpy);
+  gfx::PointF p1(x, y);
+  gfx::PointF cp(cpx, cpy);
 
   if (UNLIKELY(!IsTransformInvertible())) {
     p1 = GetTransform().MapPoint(p1);
@@ -122,7 +122,7 @@ void CanvasPath::quadraticCurveTo(double double_cpx,
   }
 
   if (UNLIKELY(!path_.HasCurrentPoint()))
-    path_.MoveTo(FloatPoint(cpx, cpy));
+    path_.MoveTo(gfx::PointF(cpx, cpy));
 
   path_.AddQuadCurveTo(cp, p1);
 }
@@ -149,9 +149,9 @@ void CanvasPath::bezierCurveTo(double double_cp1x,
         double_cp2y, double_x, double_y);
   }
 
-  FloatPoint p1 = FloatPoint(x, y);
-  FloatPoint cp1 = FloatPoint(cp1x, cp1y);
-  FloatPoint cp2 = FloatPoint(cp2x, cp2y);
+  gfx::PointF p1(x, y);
+  gfx::PointF cp1(cp1x, cp1y);
+  gfx::PointF cp2(cp2x, cp2y);
 
   if (UNLIKELY(!IsTransformInvertible())) {
     p1 = GetTransform().MapPoint(p1);
@@ -159,7 +159,7 @@ void CanvasPath::bezierCurveTo(double double_cp1x,
     cp2 = GetTransform().MapPoint(cp2);
   }
   if (UNLIKELY(!path_.HasCurrentPoint()))
-    path_.MoveTo(FloatPoint(cp1x, cp1y));
+    path_.MoveTo(gfx::PointF(cp1x, cp1y));
 
   path_.AddBezierCurveTo(cp1, cp2, p1);
 }
@@ -191,8 +191,8 @@ void CanvasPath::arcTo(double double_x1,
                                                 double_r);
   }
 
-  FloatPoint p1 = FloatPoint(x1, y1);
-  FloatPoint p2 = FloatPoint(x2, y2);
+  gfx::PointF p1(x1, y1);
+  gfx::PointF p2(x2, y2);
 
   if (UNLIKELY(!IsTransformInvertible())) {
     p1 = GetTransform().MapPoint(p1);
@@ -407,7 +407,7 @@ void CanvasPath::arc(double double_x,
   }
 
   CanonicalizeAngle(&start_angle, &end_angle);
-  path_.AddArc(FloatPoint(x, y), radius, start_angle,
+  path_.AddArc(gfx::PointF(x, y), radius, start_angle,
                AdjustEndAngle(start_angle, end_angle, anticlockwise));
 }
 
@@ -468,7 +468,7 @@ void CanvasPath::ellipse(double double_x,
     return;
   }
 
-  path_.AddEllipse(FloatPoint(x, y), radius_x, radius_y, rotation, start_angle,
+  path_.AddEllipse(gfx::PointF(x, y), radius_x, radius_y, rotation, start_angle,
                    adjusted_end_angle);
 }
 
@@ -620,7 +620,7 @@ void CanvasPath::roundRect(
   FloatRect rect(x, y, width, height);
   path_.AddPathForRoundedRect(rect, corner_radii[0], corner_radii[1],
                               corner_radii[2], corner_radii[3], clockwise);
-  path_.MoveTo(FloatPoint(x, y));
+  path_.MoveTo(gfx::PointF(x, y));
 }
 
 void CanvasPath::Trace(Visitor* visitor) const {

@@ -1591,6 +1591,7 @@ source_set("unit_tests") {
     "//ui/base/cursor:cursor_base",
     "//ui/base/cursor/mojom:cursor_type_blink",
     "//ui/base/dragdrop/mojom:mojom_blink",
+    "//ui/gfx:test_support",
   ]
 
   data_deps = [ ":unit_tests_data" ]

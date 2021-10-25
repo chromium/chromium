@@ -275135,7 +275135,7 @@
          []
         ],
         "createImageBitmap-drawImage-expected.txt": [
-         "df85656badd79f753651385fa628a50ef56a4826",
+         "515ad96989d21446c5e02728594567fcce0f0509",
          []
         ],
         "createImageBitmap-exif-orientation-expected.txt": [
@@ -275143,7 +275143,7 @@
          []
         ],
         "createImageBitmap-flipY-expected.txt": [
-         "1f5c55f0804b03e548a57dff0b27a6c4876fadd3",
+         "b24d6caa87ae788f5881f61b21366594a81c62c7",
          []
         ],
         "createImageBitmap-worker.js": [
@@ -287424,6 +287424,10 @@
         ],
         "slow-png.py": [
          "fced22aa26d2593078965a4e4cb06677acbcabc8",
+         []
+        ],
+        "url-entry-document-incumbent-frame.html": [
+         "bd78d8ee52caa34af65246f5e3065183573049b8",
          []
         ],
         "url-entry-document-timer-frame.html": [
@@ -313796,6 +313800,13 @@
       {}
      ]
     ],
+    "idbindex-cross-realm-methods.html": [
+     "978fc21e0fcedea8993b3dcd6a029283366e97ec",
+     [
+      null,
+      {}
+     ]
+    ],
     "idbindex-getAll-enforcerange.html": [
      "ab0c18b04ff53fdf78932fe86189bd7cc3322c14",
      [
@@ -314216,6 +314227,13 @@
     ],
     "idbobjectstore-clear-exception-order.html": [
      "b5678d98afdc5b0c7596c8d9c96573424fbad77d",
+     [
+      null,
+      {}
+     ]
+    ],
+    "idbobjectstore-cross-realm-methods.html": [
+     "bbdefa37282892acfa0fee99e13474ba676df01c",
      [
       null,
       {}
@@ -409688,7 +409706,7 @@
          ]
         ],
         "createImageBitmap-drawImage.html": [
-         "6f15a10eccec0bf0d36d68951d971493343c4474",
+         "e734820d116b772d03c9f5579f768ab1be99bcd1",
          [
           null,
           {}
@@ -409702,7 +409720,7 @@
          ]
         ],
         "createImageBitmap-flipY.html": [
-         "f1fea5971fe5cda18f0a532aa96bb663e1f9bfd4",
+         "99d08d830075d86fb00ca57ea3e96ead7a50c236",
          [
           null,
           {}
@@ -446024,6 +446042,13 @@
         "e275a4987a0859b160a0f91de6c8896b90bdab31",
         [
          "html/webappapis/dynamic-markup-insertion/opening-the-input-stream/unload.window.html",
+         {}
+        ]
+       ],
+       "url-entry-document-sync-call.window.js": [
+        "f20b4341e36cb2bba00f21e452c0e6bcfa529238",
+        [
+         "html/webappapis/dynamic-markup-insertion/opening-the-input-stream/url-entry-document-sync-call.window.html",
          {}
         ]
        ],

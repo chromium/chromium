@@ -309,7 +309,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': '997a0253e3a2ab6d6a12c4ea28493862ea7b81cf',
+  'devtools_frontend_revision': 'ee765f2d4ded94d8aa8ff4c9d84a799f21c5055a',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -1041,7 +1041,7 @@ deps = {
     Var('chromium_git') + '/chromium/dom-distiller/dist.git' + '@' + 'f339eb9463714c3d31657c8ee1bd53d1c7e5c555',
 
   'src/third_party/eigen3/src':
-    Var('chromium_git') + '/external/gitlab.com/libeigen/eigen.git' + '@' + '7792b1e909a98703181aecb8810b4b654004c25d',
+    Var('chromium_git') + '/external/gitlab.com/libeigen/eigen.git' + '@' + '163f11e24a1011ac8ba1cecfaf53e9b11ace5f5c',
 
   'src/third_party/emoji-metadata/src': {
     'url': Var('chromium_git') + '/external/github.com/googlefonts/emoji-metadata' + '@' + '069b14c94db6c1625a143d9f82e07a08a29909cf',
@@ -1694,7 +1694,7 @@ deps = {
     Var('chromium_git') + '/v8/v8.git' + '@' +  Var('v8_revision'),
 
   'src-internal': {
-    'url': 'https://chrome-internal.googlesource.com/chrome/src-internal.git@c5cf60ecf19a86673b716d8c314a1b93de33abf9',
+    'url': 'https://chrome-internal.googlesource.com/chrome/src-internal.git@0ee22f458b754805eea743a0eb5304d5b354717a',
     'condition': 'checkout_src_internal',
   },
 
@@ -1713,7 +1713,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/help_app/app',
-        'version': 'If_VzYZCPyI-t8BGGQ5UWV9nXkfncvKTH93RVdHofhUC',
+        'version': 'zxgy8_yzB2dGUSRziEoVgQchS1FkMoZTQJS-0n_UMTQC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -1724,7 +1724,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/media_app/app',
-        'version': 'Rruls8mx9_nOhSD0vrjghzaHnjJ1wjZ_3VmDHWQaXnIC',
+        'version': 'AjWC5LHGpzS2fVIg0rpxxdfPVD5RztxwAKviQD81ONUC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',

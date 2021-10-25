@@ -34,18 +34,18 @@
 
 namespace blink {
 
-static inline FloatSize InwardEdgeNormal(const FloatPolygonEdge& edge) {
-  FloatSize edge_delta = edge.Vertex2() - edge.Vertex1();
-  if (!edge_delta.width())
-    return FloatSize((edge_delta.height() > 0 ? -1 : 1), 0);
-  if (!edge_delta.height())
-    return FloatSize(0, (edge_delta.width() > 0 ? 1 : -1));
-  float edge_length = edge_delta.DiagonalLength();
-  return FloatSize(-edge_delta.height() / edge_length,
-                   edge_delta.width() / edge_length);
+static inline gfx::Vector2dF InwardEdgeNormal(const FloatPolygonEdge& edge) {
+  gfx::Vector2dF edge_delta = edge.Vertex2() - edge.Vertex1();
+  if (!edge_delta.x())
+    return gfx::Vector2dF((edge_delta.y() > 0 ? -1 : 1), 0);
+  if (!edge_delta.y())
+    return gfx::Vector2dF(0, (edge_delta.x() > 0 ? 1 : -1));
+  float edge_length = edge_delta.Length();
+  return gfx::Vector2dF(-edge_delta.y() / edge_length,
+                        edge_delta.x() / edge_length);
 }
 
-static inline FloatSize OutwardEdgeNormal(const FloatPolygonEdge& edge) {
+static inline gfx::Vector2dF OutwardEdgeNormal(const FloatPolygonEdge& edge) {
   return -InwardEdgeNormal(edge);
 }
 
@@ -81,8 +81,8 @@ FloatShapeInterval OffsetPolygonEdge::ClippedEdgeXRange(float y1,
   // Clip the edge line segment to the vertical range y1,y2 and then return
   // the clipped line segment's horizontal range.
 
-  FloatPoint min_y_vertex;
-  FloatPoint max_y_vertex;
+  gfx::PointF min_y_vertex;
+  gfx::PointF max_y_vertex;
   if (Vertex1().y() < Vertex2().y()) {
     min_y_vertex = Vertex1();
     max_y_vertex = Vertex2();
@@ -101,7 +101,7 @@ static float CircleXIntercept(float y, float radius) {
   return radius * sqrt(1 - (y * y) / (radius * radius));
 }
 
-static FloatShapeInterval ClippedCircleXRange(const FloatPoint& center,
+static FloatShapeInterval ClippedCircleXRange(const gfx::PointF& center,
                                               float radius,
                                               float y1,
                                               float y2) {
@@ -146,13 +146,15 @@ LineSegment PolygonShape::GetExcludedInterval(LayoutUnit logical_top,
       continue;
     if (!ShapeMargin()) {
       excluded_interval.Unite(
-          OffsetPolygonEdge(edge, FloatSize()).ClippedEdgeXRange(y1, y2));
+          OffsetPolygonEdge(edge, gfx::Vector2dF()).ClippedEdgeXRange(y1, y2));
     } else {
       excluded_interval.Unite(
-          OffsetPolygonEdge(edge, OutwardEdgeNormal(edge) * ShapeMargin())
+          OffsetPolygonEdge(
+              edge, gfx::ScaleVector2d(OutwardEdgeNormal(edge), ShapeMargin()))
               .ClippedEdgeXRange(y1, y2));
       excluded_interval.Unite(
-          OffsetPolygonEdge(edge, InwardEdgeNormal(edge) * ShapeMargin())
+          OffsetPolygonEdge(
+              edge, gfx::ScaleVector2d(InwardEdgeNormal(edge), ShapeMargin()))
               .ClippedEdgeXRange(y1, y2));
       excluded_interval.Unite(
           ClippedCircleXRange(edge.Vertex1(), ShapeMargin(), y1, y2));

@@ -99,7 +99,7 @@ void SVGTextLayoutEngine::AdvanceCurrentTextPosition(float glyph_advance) {
 
 bool SVGTextLayoutEngine::ApplyRelativePositionAdjustmentsIfNeeded(
     const SVGCharacterData& data) {
-  FloatPoint delta;
+  gfx::Vector2dF delta;
   bool has_dx = data.HasDx();
   if (has_dx)
     delta.set_x(data.dx);
@@ -109,11 +109,11 @@ bool SVGTextLayoutEngine::ApplyRelativePositionAdjustmentsIfNeeded(
     delta.set_y(data.dy);
 
   // Apply dx/dy value adjustments to current text position, if needed.
-  text_position_.MoveBy(delta);
+  text_position_ += delta;
 
   if (in_path_layout_) {
     if (is_vertical_text_)
-      delta = delta.TransposedPoint();
+      delta.Transpose();
 
     text_path_current_offset_ += delta.x();
     text_path_displacement_ += delta.y();
@@ -393,7 +393,7 @@ void SVGTextLayoutEngine::LayoutTextOnLineOrPath(
   float baseline_shift_value = baseline_layout.CalculateBaselineShift(style);
   baseline_shift_value -= baseline_layout.CalculateAlignmentBaselineShift(
       is_vertical_text_, text_line_layout);
-  FloatPoint baseline_shift;
+  gfx::Vector2dF baseline_shift;
   if (is_vertical_text_)
     baseline_shift.set_x(baseline_shift_value);
   else
@@ -453,15 +453,15 @@ void SVGTextLayoutEngine::LayoutTextOnLineOrPath(
     // needed.
     float spacing = spacing_layout.CalculateCSSSpacing(current_character);
 
-    FloatPoint text_path_shift;
+    gfx::Vector2dF text_path_shift;
     PointAndTangent position;
     if (in_path_layout_) {
       float scaled_glyph_advance = glyph_advance * text_path_scaling_;
       // Setup translations that move to the glyph midpoint.
-      text_path_shift.SetPoint(-scaled_glyph_advance / 2,
-                               text_path_displacement_);
+      text_path_shift =
+          gfx::Vector2dF(-scaled_glyph_advance / 2, text_path_displacement_);
       if (is_vertical_text_)
-        text_path_shift = text_path_shift.TransposedPoint();
+        text_path_shift.Transpose();
       text_path_shift += baseline_shift;
 
       // Calculate current offset along path.

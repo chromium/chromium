@@ -141,8 +141,8 @@ TEST(GraphicsContextTest, UnboundedDrawsAreClipped) {
   // Draw a path that gets clipped. This should destroy the opaque area, but
   // only inside the clip.
   Path path;
-  path.MoveTo(FloatPoint(10, 10));
-  path.AddLineTo(FloatPoint(40, 40));
+  path.MoveTo(gfx::PointF(10, 10));
+  path.AddLineTo(gfx::PointF(40, 40));
   PaintFlags flags;
   flags.setColor(transparent.Rgb());
   flags.setBlendMode(SkBlendMode::kSrcOut);

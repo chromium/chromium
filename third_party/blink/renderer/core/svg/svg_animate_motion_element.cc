@@ -225,9 +225,10 @@ void SVGAnimateMotionElement::CalculateAnimationValue(
 
   // Handle accumulate="sum".
   if (repeat_count && parameters.is_cumulative) {
-    FloatPoint position_at_end_of_duration =
+    gfx::PointF position_at_end_of_duration =
         animation_path_.PointAtLength(path_length);
-    position.point.MoveBy(position_at_end_of_duration.ScaledBy(repeat_count));
+    position.point += gfx::ScalePoint(position_at_end_of_duration, repeat_count)
+                          .OffsetFromOrigin();
   }
 
   transform->Translate(position.point.x(), position.point.y());

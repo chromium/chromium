@@ -2720,7 +2720,7 @@ bool PaintLayer::HitTestClippedOutByClipPath(
     return !clip_path
                 ->GetPath(reference_box,
                           GetLayoutObject().StyleRef().EffectiveZoom())
-                .Contains(point);
+                .Contains(ToGfxPointF(point));
   }
   DCHECK_EQ(clip_path_operation->GetType(), ClipPathOperation::REFERENCE);
   LayoutSVGResourceClipper* clipper =

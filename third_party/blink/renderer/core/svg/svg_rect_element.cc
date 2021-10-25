@@ -90,14 +90,15 @@ Path SVGRectElement::AsPath() const {
   SVGLengthContext length_context(this);
   const ComputedStyle& style = ComputedStyleRef();
 
-  FloatSize size(ToFloatSize(
-      length_context.ResolveLengthPair(style.Width(), style.Height(), style)));
+  FloatSize size(
+      length_context.ResolveLengthPair(style.Width(), style.Height(), style));
   if (size.width() < 0 || size.height() < 0 ||
       (!size.width() && !size.height()))
     return path;
 
-  FloatRect rect(length_context.ResolveLengthPair(style.X(), style.Y(), style),
-                 size);
+  FloatRect rect(
+      FloatPoint(length_context.ResolveLengthPair(style.X(), style.Y(), style)),
+      size);
   FloatPoint radii(
       length_context.ResolveLengthPair(style.Rx(), style.Ry(), style));
   if (radii.x() > 0 || radii.y() > 0) {

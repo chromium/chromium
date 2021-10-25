@@ -15,6 +15,8 @@
 #include "base/logging.h"
 #include "base/process/launch.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/ash/borealis/borealis_context.h"
 #include "chrome/browser/ash/borealis/borealis_disk_manager.h"
@@ -112,6 +114,8 @@ void CreateDiskImage::OnCreateDiskImage(
   Complete(BorealisStartupResult::kSuccess, "");
 }
 
+namespace {
+
 bool GetDeveloperMode() {
   std::string output;
   if (!base::GetAppOutput({"/usr/bin/crossystem", "cros_debug"}, &output)) {
@@ -120,10 +124,33 @@ bool GetDeveloperMode() {
   return output == "1";
 }
 
+absl::optional<base::File> ReturnFileOnlyInDeveloperMode(
+    absl::optional<base::File> file) {
+  if (file && GetDeveloperMode()) {
+    return file;
+  }
+  return absl::nullopt;
+}
+
+}  // namespace
+
 StartBorealisVm::StartBorealisVm() : BorealisTask("StartBorealisVm") {}
 StartBorealisVm::~StartBorealisVm() = default;
 
 void StartBorealisVm::RunInternal(BorealisContext* context) {
+  absl::optional<base::File> external_disk =
+      borealis::BorealisService::GetForProfile(context->profile())
+          ->LaunchOptions()
+          .GetExtraDisk();
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, base::MayBlock(),
+      base::BindOnce(&ReturnFileOnlyInDeveloperMode, std::move(external_disk)),
+      base::BindOnce(&StartBorealisVm::StartBorealisWithExternalDisk,
+                     weak_factory_.GetWeakPtr(), context));
+}
+void StartBorealisVm::StartBorealisWithExternalDisk(
+    BorealisContext* context,
+    absl::optional<base::File> external_disk) {
   vm_tools::concierge::StartVmRequest request;
   request.mutable_vm()->set_dlc_id(kBorealisDlcName);
   request.set_start_termina(false);
@@ -149,21 +176,14 @@ void StartBorealisVm::RunInternal(BorealisContext* context) {
                        ? "enabled"
                        : "disabled");
 
-  if (GetDeveloperMode()) {
-    absl::optional<base::File> file =
-        borealis::BorealisService::GetForProfile(context->profile())
-            ->LaunchOptions()
-            .GetExtraDisk();
-
-    if (file) {
-      base::ScopedFD fd(file->TakePlatformFile());
-      request.add_fds(vm_tools::concierge::StartVmRequest::STORAGE);
-      chromeos::ConciergeClient::Get()->StartTerminaVmWithFd(
-          std::move(fd), std::move(request),
-          base::BindOnce(&StartBorealisVm::OnStartBorealisVm,
-                         weak_factory_.GetWeakPtr(), context));
-      return;
-    }
+  if (external_disk) {
+    base::ScopedFD fd(external_disk->TakePlatformFile());
+    request.add_fds(vm_tools::concierge::StartVmRequest::STORAGE);
+    chromeos::ConciergeClient::Get()->StartTerminaVmWithFd(
+        std::move(fd), std::move(request),
+        base::BindOnce(&StartBorealisVm::OnStartBorealisVm,
+                       weak_factory_.GetWeakPtr(), context));
+    return;
   }
   chromeos::ConciergeClient::Get()->StartTerminaVm(
       std::move(request), base::BindOnce(&StartBorealisVm::OnStartBorealisVm,

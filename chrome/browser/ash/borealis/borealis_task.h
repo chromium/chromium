@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_BOREALIS_BOREALIS_TASK_H_
 #define CHROME_BROWSER_ASH_BOREALIS_BOREALIS_TASK_H_
 
+#include "base/files/file.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/borealis/borealis_context_manager.h"
 #include "chrome/browser/ash/borealis/borealis_launch_watcher.h"
@@ -79,6 +80,8 @@ class StartBorealisVm : public BorealisTask {
   void RunInternal(BorealisContext* context) override;
 
  private:
+  void StartBorealisWithExternalDisk(BorealisContext* context,
+                                     absl::optional<base::File> external_disk);
   void OnStartBorealisVm(
       BorealisContext* context,
       absl::optional<vm_tools::concierge::StartVmResponse> response);

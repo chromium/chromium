@@ -296,6 +296,7 @@ _CONFIG = [
             'gfx::Point',
             'gfx::PointF',
             'gfx::Point3F',
+            'gfx::QuadF',
             'gfx::Quaternion',
             'gfx::Rect',
             'gfx::RectF',
@@ -312,8 +313,10 @@ _CONFIG = [
             'gfx::ComputeApproximateMaxScale',
             'gfx::ComputeTransform2dScaleComponents',
             'gfx::IntersectRects',
+            'gfx::PointAtOffsetFromOrigin',
             'gfx::RectToSkIRect',
             'gfx::RectToSkRect',
+            'gfx::ScalePoint',
             'gfx::ScaleToCeiledSize',
             'gfx::ScaleToEnclosingRectSafe',
             'gfx::ScaleToFlooredSize',
@@ -329,7 +332,7 @@ _CONFIG = [
             'gfx::ToRoundedRect',
             'gfx::ToRoundedSize',
             'gfx::TransposePoint',
-            'gfx::UniteRects',
+            'gfx::UnionRects',
 
             # Range type.
             'gfx::Range',

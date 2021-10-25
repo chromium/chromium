@@ -69,7 +69,7 @@ Path SVGCircleElement::AsPath() const {
   float r =
       length_context.ValueForLength(style.R(), style, SVGLengthMode::kOther);
   if (r > 0) {
-    gfx::PointF center = ToGfxPointF(
+    gfx::PointF center = gfx::PointAtOffsetFromOrigin(
         length_context.ResolveLengthPair(style.Cx(), style.Cy(), style));
     path.AddEllipse(center, r, r);
   }

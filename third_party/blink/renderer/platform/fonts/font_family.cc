@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_family.h"
 
 #include "third_party/blink/renderer/platform/font_family_names.h"
+#include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -52,6 +53,20 @@ void FontFamily::AppendFamily(AtomicString family_name, Type family_type) {
   scoped_refptr<SharedFontFamily> appended_family = SharedFontFamily::Create();
   appended_family->SetFamily(family_name, family_type);
   AppendFamily(appended_family);
+}
+
+void FontFamily::Prewarm(const FontDescription& font_description) const {
+  DCHECK(!FamilyName().IsEmpty());
+  DCHECK(!is_prewarmed_);
+  is_prewarmed_ = true;
+  switch (family_type_) {
+    case Type::kFamilyName:
+      FontCache::PrewarmFamily(FamilyName());
+      break;
+    case Type::kGenericFamily:
+      // TODO(kojii): Support generic family.
+      break;
+  }
 }
 
 String FontFamily::ToString() const {

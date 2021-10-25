@@ -27,18 +27,24 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TRANSFORMS_AFFINE_TRANSFORM_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TRANSFORMS_AFFINE_TRANSFORM_H_
 
-#include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
-
 #include <string.h>  // for memcpy
+#include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+
+namespace gfx {
+class PointF;
+}  // namespace gfx
 
 namespace blink {
 
 class FloatPoint;
 class FloatQuad;
 class FloatRect;
+class FloatSize;
 class IntPoint;
 class IntRect;
+class IntSize;
 class TransformationMatrix;
 
 #define IDENTITY_TRANSFORM \
@@ -65,6 +71,7 @@ class PLATFORM_EXPORT AffineTransform {
   // Rounds the mapped point to the nearest integer value.
   IntPoint MapPoint(const IntPoint&) const;
 
+  gfx::PointF MapPoint(const gfx::PointF&) const;
   FloatPoint MapPoint(const FloatPoint&) const;
 
   IntSize MapSize(const IntSize&) const;

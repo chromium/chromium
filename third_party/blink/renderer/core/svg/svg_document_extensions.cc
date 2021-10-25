@@ -156,15 +156,15 @@ bool SVGDocumentExtensions::ZoomAndPanEnabled() const {
 
 void SVGDocumentExtensions::StartPan(const FloatPoint& start) {
   if (SVGSVGElement* svg = rootElement(*document_)) {
-    translate_ = FloatPoint(start.x() - svg->CurrentTranslate().x(),
-                            start.y() - svg->CurrentTranslate().y());
+    translate_ = gfx::Vector2dF(start.x() - svg->CurrentTranslate().x(),
+                                start.y() - svg->CurrentTranslate().y());
   }
 }
 
 void SVGDocumentExtensions::UpdatePan(const FloatPoint& pos) const {
   if (SVGSVGElement* svg = rootElement(*document_)) {
     svg->SetCurrentTranslate(
-        FloatPoint(pos.x() - translate_.x(), pos.y() - translate_.y()));
+        gfx::Vector2dF(pos.x() - translate_.x(), pos.y() - translate_.y()));
   }
 }
 

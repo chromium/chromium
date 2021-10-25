@@ -63,11 +63,6 @@ static std::unique_ptr<Shape> CreateInsetShape(const FloatRoundedRect& bounds) {
   return std::make_unique<BoxShape>(bounds);
 }
 
-static std::unique_ptr<Shape> CreatePolygonShape(Vector<FloatPoint> vertices,
-                                                 WindRule fill_rule) {
-  return std::make_unique<PolygonShape>(std::move(vertices), fill_rule);
-}
-
 static inline FloatRect PhysicalRectToLogical(const FloatRect& rect,
                                               float logical_box_height,
                                               WritingMode writing_mode) {
@@ -149,14 +144,15 @@ std::unique_ptr<Shape> Shape::CreateShape(const BasicShape* basic_shape,
       const Vector<Length>& values = polygon->Values();
       wtf_size_t values_size = values.size();
       DCHECK(!(values_size % 2));
-      Vector<FloatPoint> vertices(values_size / 2);
+      Vector<gfx::PointF> vertices(values_size / 2);
       for (wtf_size_t i = 0; i < values_size; i += 2) {
         gfx::PointF vertex(FloatValueForLength(values.at(i), box_width),
                            FloatValueForLength(values.at(i + 1), box_height));
-        vertices[i / 2] = FloatPoint(PhysicalPointToLogical(
-            vertex, logical_box_size.Height().ToFloat(), writing_mode));
+        vertices[i / 2] = PhysicalPointToLogical(
+            vertex, logical_box_size.Height().ToFloat(), writing_mode);
       }
-      shape = CreatePolygonShape(std::move(vertices), polygon->GetWindRule());
+      shape = std::make_unique<PolygonShape>(std::move(vertices),
+                                             polygon->GetWindRule());
       break;
     }
 

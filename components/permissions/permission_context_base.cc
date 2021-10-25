@@ -49,27 +49,27 @@ const char kPermissionBlockedKillSwitchMessage[] =
 const char kPermissionBlockedRepeatedDismissalsMessage[] =
     "%s permission has been blocked as the user has dismissed the permission "
     "prompt several times. This can be reset in Site Settings. See "
-    "https://www.chromestatus.com/features/6443143280984064 for more "
+    "https://www.chromestatus.com/feature/6443143280984064 for more "
     "information.";
 
 const char kPermissionBlockedRepeatedIgnoresMessage[] =
     "%s permission has been blocked as the user has ignored the permission "
     "prompt several times. This can be reset in Site Settings. See "
-    "https://www.chromestatus.com/features/6443143280984064 for more "
+    "https://www.chromestatus.com/feature/6443143280984064 for more "
     "information.";
 #else
 const char kPermissionBlockedRepeatedDismissalsMessage[] =
     "%s permission has been blocked as the user has dismissed the permission "
     "prompt several times. This can be reset in Page Info which can be "
     "accessed by clicking the lock icon next to the URL. See "
-    "https://www.chromestatus.com/features/6443143280984064 for more "
+    "https://www.chromestatus.com/feature/6443143280984064 for more "
     "information.";
 
 const char kPermissionBlockedRepeatedIgnoresMessage[] =
     "%s permission has been blocked as the user has ignored the permission "
     "prompt several times. This can be reset in Page Info which can be "
     "accessed by clicking the lock icon next to the URL. See "
-    "https://www.chromestatus.com/features/6443143280984064 for more "
+    "https://www.chromestatus.com/feature/6443143280984064 for more "
     "information.";
 #endif
 

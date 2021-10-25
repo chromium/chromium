@@ -67,7 +67,7 @@ class CORE_EXPORT OffscreenFontSelector : public FontSelector {
   scoped_refptr<FontData> GetFontData(const FontDescription&,
                                       const FontFamily&) override;
   void WillUseFontData(const FontDescription&,
-                       const AtomicString& family,
+                       const FontFamily& family,
                        const String& text) override;
   void WillUseRange(const FontDescription&,
                     const AtomicString& family_name,

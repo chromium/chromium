@@ -74,10 +74,10 @@ scoped_refptr<FontData> OffscreenFontSelector::GetFontData(
 
 void OffscreenFontSelector::WillUseFontData(
     const FontDescription& font_description,
-    const AtomicString& family,
+    const FontFamily& family,
     const String& text) {
-  CSSSegmentedFontFace* face = font_face_cache_->Get(font_description, family);
-  if (face)
+  if (CSSSegmentedFontFace* face =
+          font_face_cache_->Get(font_description, family.FamilyName()))
     face->WillUseFontData(font_description, text);
 }
 

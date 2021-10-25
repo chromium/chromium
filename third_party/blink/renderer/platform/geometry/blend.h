@@ -5,11 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_BLEND_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_BLEND_H_
 
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
-#include "third_party/blink/renderer/platform/geometry/int_point.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "ui/gfx/geometry/point_f.h"
 
 #include <type_traits>
 
@@ -40,18 +39,11 @@ inline LayoutUnit Blend(LayoutUnit from, LayoutUnit to, double progress) {
   return LayoutUnit(from + (to - from) * progress);
 }
 
-inline IntPoint Blend(const IntPoint& from,
-                      const IntPoint& to,
-                      double progress) {
-  return IntPoint(Blend(from.x(), to.x(), progress),
-                  Blend(from.y(), to.y(), progress));
-}
-
-inline FloatPoint Blend(const FloatPoint& from,
-                        const FloatPoint& to,
-                        double progress) {
-  return FloatPoint(Blend(from.x(), to.x(), progress),
-                    Blend(from.y(), to.y(), progress));
+inline gfx::PointF Blend(const gfx::PointF& from,
+                         const gfx::PointF& to,
+                         double progress) {
+  return gfx::PointF(Blend(from.x(), to.x(), progress),
+                     Blend(from.y(), to.y(), progress));
 }
 
 }  // namespace blink

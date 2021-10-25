@@ -74,7 +74,7 @@ Path SVGEllipseElement::AsPath() const {
   SVGLengthContext length_context(this);
   const ComputedStyle& style = ComputedStyleRef();
 
-  FloatPoint radii =
+  gfx::Vector2dF radii =
       length_context.ResolveLengthPair(style.Rx(), style.Ry(), style);
   if (style.Rx().IsAuto())
     radii.set_x(radii.y());
@@ -83,7 +83,7 @@ Path SVGEllipseElement::AsPath() const {
   if (radii.x() < 0 || radii.y() < 0 || (!radii.x() && !radii.y()))
     return path;
 
-  gfx::PointF center = ToGfxPointF(
+  gfx::PointF center = gfx::PointAtOffsetFromOrigin(
       length_context.ResolveLengthPair(style.Cx(), style.Cy(), style));
   path.AddEllipse(center, radii.x(), radii.y());
   return path;

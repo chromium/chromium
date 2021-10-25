@@ -17,6 +17,7 @@ export const Message = {
   LOAD_EXTRA_FILES: 'load-extra-files',
   LOAD_FILES: 'load-files',
   NAVIGATE: 'navigate',
+  NOTIFY_CURRENT_FILE: 'notify-current-file',
   OPEN_FEEDBACK_DIALOG: 'open-feedback-dialog',
   OPEN_FILE: 'open-file',
   OVERWRITE_FILE: 'overwrite-file',
@@ -106,6 +107,16 @@ export let RenameFileMessage;
 
 /** @typedef {{renameResult: RenameResult!}}  */
 export let RenameFileResponse;
+
+/**
+ * Message sent by the unprivileged context to notify the privileged context
+ * that the current file has been updated.
+ * @typedef {{
+ *   name: (string|undefined),
+ *   type: (string|undefined),
+ * }}
+ */
+export let NotifyCurrentFileMessage;
 
 /**
  * Message sent by the unprivileged context to the privileged context requesting

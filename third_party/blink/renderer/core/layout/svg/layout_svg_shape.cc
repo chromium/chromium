@@ -224,7 +224,7 @@ bool LayoutSVGShape::ShapeDependentStrokeContains(
   }
 
   DCHECK(stroke_path_cache_);
-  auto point = location.TransformedPoint();
+  auto point = ToGfxPointF(location.TransformedPoint());
   if (HasNonScalingStroke())
     point = NonScalingStrokeTransform().MapPoint(point);
   return stroke_path_cache_->Contains(point);
@@ -234,7 +234,8 @@ bool LayoutSVGShape::ShapeDependentFillContains(
     const HitTestLocation& location,
     const WindRule fill_rule) const {
   NOT_DESTROYED();
-  return GetPath().Contains(location.TransformedPoint(), fill_rule);
+  return GetPath().Contains(ToGfxPointF(location.TransformedPoint()),
+                            fill_rule);
 }
 
 static bool HasPaintServer(const LayoutObject& object, const SVGPaint& paint) {
