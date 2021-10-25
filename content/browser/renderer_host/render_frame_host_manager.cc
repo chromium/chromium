@@ -1492,12 +1492,13 @@ void RenderFrameHostManager::ActiveFrameCountIsZero(
 RenderFrameProxyHost* RenderFrameHostManager::CreateRenderFrameProxyHost(
     SiteInstance* site_instance,
     scoped_refptr<RenderViewHostImpl> rvh) {
-  auto site_instance_id = site_instance->GetId();
-  CHECK(proxy_hosts_.find(site_instance_id) == proxy_hosts_.end())
-      << "A proxy already existed for this SiteInstance.";
+  auto site_instance_group_id =
+      static_cast<SiteInstanceImpl*>(site_instance)->group()->GetId();
+  CHECK(proxy_hosts_.find(site_instance_group_id) == proxy_hosts_.end())
+      << "A proxy already existed for this SiteInstanceGroup.";
   RenderFrameProxyHost* proxy_host =
       new RenderFrameProxyHost(site_instance, std::move(rvh), frame_tree_node_);
-  proxy_hosts_[site_instance_id] = base::WrapUnique(proxy_host);
+  proxy_hosts_[site_instance_group_id] = base::WrapUnique(proxy_host);
   static_cast<SiteInstanceImpl*>(site_instance)->AddObserver(this);
 
   TRACE_EVENT_INSTANT("navigation",
@@ -1509,7 +1510,8 @@ RenderFrameProxyHost* RenderFrameHostManager::CreateRenderFrameProxyHost(
 void RenderFrameHostManager::DeleteRenderFrameProxyHost(
     SiteInstance* site_instance) {
   static_cast<SiteInstanceImpl*>(site_instance)->RemoveObserver(this);
-  proxy_hosts_.erase(site_instance->GetId());
+  proxy_hosts_.erase(
+      static_cast<SiteInstanceImpl*>(site_instance)->group()->GetId());
 }
 
 ShouldSwapBrowsingInstance
@@ -3320,9 +3322,11 @@ void RenderFrameHostManager::CommitPending(
         std::move(pending_stored_page->proxy_hosts);
     for (auto& proxy : proxy_hosts_to_restore) {
       // We only cache pages when swapping BrowsingInstance, so we should never
-      // be reusing SiteInstances.
-      CHECK(!base::Contains(proxy_hosts_,
-                            proxy.second->GetSiteInstance()->GetId()));
+      // be reusing SiteInstanceGroups.
+      CHECK(!base::Contains(proxy_hosts_, static_cast<SiteInstanceImpl*>(
+                                              proxy.second->GetSiteInstance())
+                                              ->group()
+                                              ->GetId()));
       static_cast<SiteInstanceImpl*>(proxy.second->GetSiteInstance())
           ->AddObserver(this);
       TRACE_EVENT_INSTANT(
@@ -3601,7 +3605,8 @@ std::unique_ptr<RenderFrameHostImpl> RenderFrameHostManager::SetRenderFrameHost(
 
 RenderFrameProxyHost* RenderFrameHostManager::GetRenderFrameProxyHost(
     SiteInstance* instance) const {
-  auto it = proxy_hosts_.find(instance->GetId());
+  auto it = proxy_hosts_.find(
+      static_cast<SiteInstanceImpl*>(instance)->group()->GetId());
   if (it != proxy_hosts_.end())
     return it->second.get();
   return nullptr;

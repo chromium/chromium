@@ -22,6 +22,7 @@
 #include "content/browser/isolation_context.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
+#include "content/browser/site_instance_group.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/webui/url_data_manager_backend.h"
 #include "content/browser/webui/web_ui_controller_factory_registry.h"
@@ -787,6 +788,7 @@ class SiteInstanceImpl::DefaultSiteInstanceState {
 
 SiteInstanceImpl::SiteInstanceImpl(BrowsingInstance* browsing_instance)
     : id_(g_site_instance_id_generator.GenerateNextId()),
+      site_instance_group_(base::WrapRefCounted(new SiteInstanceGroup())),
       active_frame_count_(0),
       browsing_instance_(browsing_instance),
       process_(nullptr),

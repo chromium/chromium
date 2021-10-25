@@ -30,10 +30,12 @@ class SiteInstance;
 }  // namespace perfetto
 
 namespace content {
+
 class AgentSchedulingGroupHost;
 class BrowsingInstance;
 class ProcessLock;
 class RenderProcessHostFactory;
+class SiteInstanceGroup;
 class StoragePartitionImpl;
 
 // This struct is used to package a GURL together with extra state required to
@@ -518,6 +520,9 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
     virtual void RenderProcessHostDestroyed() {}
   };
 
+  SiteInstanceImpl(const SiteInstanceImpl&) = delete;
+  SiteInstanceImpl& operator=(const SiteInstanceImpl&) = delete;
+
   // Methods for creating new SiteInstances. The documentation for these methods
   // are on the SiteInstance::Create* methods with the same name.
   static scoped_refptr<SiteInstanceImpl> Create(
@@ -569,6 +574,11 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
       const GURL& url);
 
   static bool ShouldAssignSiteForURL(const GURL& url);
+
+  // Returns the SiteInstanceGroup |this| belongs to.
+  // Currently, each SiteInstanceGroup has exactly one SiteInstance, but that
+  // will change as the migration continues. See crbug.com/1195535.
+  SiteInstanceGroup* group() { return site_instance_group_.get(); }
 
   // Use this to get a related SiteInstance during navigations, where UrlInfo
   // may be requesting opt-in isolation. Outside of navigations, callers just
@@ -994,6 +1004,11 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
   // A unique ID for this SiteInstance.
   SiteInstanceId id_;
 
+  // Determines which RenderViewHosts, RenderWidgetHosts, and
+  // RenderFrameProxyHosts it uses. See the class-level comment of
+  // SiteInstanceGroup for more details.
+  scoped_refptr<SiteInstanceGroup> site_instance_group_;
+
   // The number of active frames in this SiteInstance.
   size_t active_frame_count_;
 
@@ -1045,8 +1060,6 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
   // Keeps track of whether we need to verify that the StoragePartition
   // information does not change when `site_info_` is set.
   bool verify_storage_partition_info_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(SiteInstanceImpl);
 };
 
 }  // namespace content

@@ -21,6 +21,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/should_swap_browsing_instance.h"
 #include "content/browser/renderer_host/stored_page.h"
+#include "content/browser/site_instance_group.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/web_exposed_isolation_info.h"
 #include "content/common/content_export.h"
@@ -106,9 +107,9 @@ class CONTENT_EXPORT RenderFrameHostManager
     : public SiteInstanceImpl::Observer {
  public:
   using RenderFrameProxyHostMap =
-      std::unordered_map<SiteInstanceId,
+      std::unordered_map<SiteInstanceGroupId,
                          std::unique_ptr<RenderFrameProxyHost>,
-                         SiteInstanceId::Hasher>;
+                         SiteInstanceGroupId::Hasher>;
 
   // Functions implemented by our owner that we need.
   //
@@ -482,7 +483,7 @@ class CONTENT_EXPORT RenderFrameHostManager
       SiteInstance* instance_to_skip = nullptr);
 
   // Returns a const reference to the map of proxy hosts. The keys are
-  // SiteInstance IDs, the values are RenderFrameProxyHosts.
+  // SiteInstanceGroup IDs, the values are RenderFrameProxyHosts.
   const RenderFrameProxyHostMap& GetAllProxyHostsForTesting() const {
     return proxy_hosts_;
   }
@@ -943,7 +944,7 @@ class CONTENT_EXPORT RenderFrameHostManager
   // Eventually, RenderViewHost will be replaced with a page context.
   std::unique_ptr<RenderFrameHostImpl> render_frame_host_;
 
-  // Proxy hosts, indexed by site instance ID.
+  // Proxy hosts, indexed by SiteInstanceGroup ID.
   RenderFrameProxyHostMap proxy_hosts_;
 
   // A set of RenderFrameHosts waiting to shut down after swapping out.
