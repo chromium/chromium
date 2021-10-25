@@ -568,6 +568,16 @@ void AppLauncherHandler::OnWebAppInstalled(const web_app::AppId& app_id) {
   web_ui()->CallJavascriptFunctionUnsafe("ntp.appAdded", *app_info, highlight);
 }
 
+void AppLauncherHandler::OnWebAppInstallTimeChanged(
+    const web_app::AppId& app_id,
+    const base::Time& time) {
+  // Use the appAdded to update the app icon's color to no longer be
+  // greyscale.
+  std::unique_ptr<base::DictionaryValue> app_info = GetWebAppInfo(app_id);
+  if (app_info)
+    web_ui()->CallJavascriptFunctionUnsafe("ntp.appAdded", *app_info);
+}
+
 void AppLauncherHandler::OnWebAppWillBeUninstalled(
     const web_app::AppId& app_id) {
   std::unique_ptr<base::DictionaryValue> app_info =
@@ -1022,12 +1032,6 @@ void AppLauncherHandler::HandleInstallAppLocally(const base::ListValue* args) {
 
   web_app_provider_->sync_bridge().SetAppIsLocallyInstalled(app_id, true);
   web_app_provider_->sync_bridge().SetAppInstallTime(app_id, base::Time::Now());
-
-  // Use the appAdded to update the app icon's color to no longer be
-  // greyscale.
-  std::unique_ptr<base::DictionaryValue> app_info = GetWebAppInfo(app_id);
-  if (app_info)
-    web_ui()->CallJavascriptFunctionUnsafe("ntp.appAdded", *app_info);
 }
 
 void AppLauncherHandler::HandleShowAppInfo(const base::ListValue* args) {
