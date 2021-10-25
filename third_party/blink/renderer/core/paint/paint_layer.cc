@@ -1973,7 +1973,7 @@ bool PaintLayer::IsInTopLayer() const {
 // points.
 static double ComputeZOffset(const HitTestingTransformState& transform_state) {
   // We got an affine transform, so no z-offset
-  if (transform_state.accumulated_transform_.IsAffine())
+  if (transform_state.AccumulatedTransform().IsAffine())
     return 0;
 
   // Flatten the point into the target plane
@@ -1981,7 +1981,7 @@ static double ComputeZOffset(const HitTestingTransformState& transform_state) {
 
   // Now map the point back through the transform, which computes Z.
   FloatPoint3D backmapped_point =
-      transform_state.accumulated_transform_.MapPoint(
+      transform_state.AccumulatedTransform().MapPoint(
           FloatPoint3D(target_point));
   return backmapped_point.z();
 }
@@ -2027,11 +2027,9 @@ HitTestingTransformState PaintLayer::CreateLocalTransformState(
     TransformationMatrix container_transform;
     GetLayoutObject().GetTransformFromContainer(container_layout_object, offset,
                                                 container_transform);
-    transform_state.ApplyTransform(
-        container_transform, HitTestingTransformState::kAccumulateTransform);
+    transform_state.ApplyTransform(container_transform);
   } else {
-    transform_state.Translate(offset.left.ToInt(), offset.top.ToInt(),
-                              HitTestingTransformState::kAccumulateTransform);
+    transform_state.Translate(offset.left.ToInt(), offset.top.ToInt());
   }
 
   return transform_state;
@@ -2074,18 +2072,18 @@ static bool IsHitCandidateForStopNode(const LayoutObject& candidate,
          !candidate.IsDescendantOf(stop_node);
 }
 
-// hitTestLocation and hitTestRect are relative to rootLayer.
+// recursion_data.location and rect are relative to root_layer.
 // A 'flattening' layer is one preserves3D() == false.
-// transformState.m_accumulatedTransform holds the transform from the containing
-// flattening layer.
-// transformState.m_lastPlanarPoint is the hitTestLocation in the plane of the
+// transform_state.AccumulatedTransform() holds the transform from the
 // containing flattening layer.
-// transformState.m_lastPlanarQuad is the hitTestRect as a quad in the plane of
+// transform_state.last_planar_point_ is the hit test location in the plane of
 // the containing flattening layer.
+// transform_state.last_planar_quad_ is the hit test rect as a quad in the
+// plane of the containing flattening layer.
 //
-// If zOffset is non-null (which indicates that the caller wants z offset
-// information), *zOffset on return is the z offset of the hit point relative to
-// the containing flattening layer.
+// If z_offset is non-null (which indicates that the caller wants z offset
+// information), *z_offset on return is the z offset of the hit point relative
+// to the containing flattening layer.
 PaintLayer* PaintLayer::HitTestLayer(PaintLayer* root_layer,
                                      PaintLayer* container_layer,
                                      HitTestResult& result,
@@ -2204,7 +2202,7 @@ PaintLayer* PaintLayer::HitTestLayer(PaintLayer* root_layer,
   if (local_transform_state && layout_object.StyleRef().BackfaceVisibility() ==
                                    EBackfaceVisibility::kHidden) {
     STACK_UNINITIALIZED TransformationMatrix inverted_matrix =
-        local_transform_state->accumulated_transform_.Inverse();
+        local_transform_state->AccumulatedTransform().Inverse();
     // If the z-vector of the matrix is negative, the back is facing towards the
     // viewer.
     if (inverted_matrix.M33() < 0)
@@ -2490,7 +2488,7 @@ PaintLayer* PaintLayer::HitTestLayerByApplyingTransform(
                                 transform_state, translation_offset);
 
   // If the transform can't be inverted, then don't hit test this layer at all.
-  if (!new_transform_state.accumulated_transform_.IsInvertible())
+  if (!new_transform_state.AccumulatedTransform().IsInvertible())
     return nullptr;
 
   // Compute the point and the hit test rect in the coords of this layer by
