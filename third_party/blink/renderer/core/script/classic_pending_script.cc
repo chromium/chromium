@@ -379,7 +379,7 @@ ClassicScript* ClassicPendingScript::GetSource(const KURL& document_url) const {
   //
   // <spec href="https://html.spec.whatwg.org/C/#concept-script-base-url">
   // ... the URL from which the script was obtained, ...</spec>
-  const KURL& base_url = source_code.Url();
+  const KURL& base_url = resource->GetResponse().ResponseUrl();
   return MakeGarbageCollected<ClassicScript>(
       source_code, base_url, options_,
       resource->GetResponse().IsCorsSameOrigin()

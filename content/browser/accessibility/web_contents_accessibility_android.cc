@@ -1320,8 +1320,10 @@ void WebContentsAccessibilityAndroid::OnAutofillPopupDisplayed(
   ax_node_data.AddState(ax::mojom::State::kFocusable);
   ax_node_data.AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, false);
   g_autofill_popup_proxy_node_ax_node->SetData(ax_node_data);
-  g_autofill_popup_proxy_node = BrowserAccessibility::Create(
-      root_manager, g_autofill_popup_proxy_node_ax_node);
+  g_autofill_popup_proxy_node =
+      BrowserAccessibility::Create(root_manager,
+                                   g_autofill_popup_proxy_node_ax_node)
+          .release();
 
   auto* android_node = static_cast<BrowserAccessibilityAndroid*>(current_focus);
 

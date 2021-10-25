@@ -94,6 +94,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/account_manager/account_manager_util.h"
+#include "chromeos/lacros/lacros_service.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -202,6 +203,9 @@ void AddCommonStrings(content::WebUIDataSource* html_source, Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       user_manager::UserManager::Get()->IsLoggedInAsGuest() ||
           user_manager::UserManager::Get()->IsLoggedInAsPublicAccount());
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+      chromeos::LacrosService::Get()->init_params()->session_type ==
+          crosapi::mojom::SessionType::kPublicSession);
 #else
                           profile->IsGuestSession());
 #endif

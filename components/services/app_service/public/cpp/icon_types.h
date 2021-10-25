@@ -22,6 +22,8 @@ struct COMPONENT_EXPORT(APP_UPDATE) IconKey {
   IconKey(IconKey&&) = default;
   IconKey& operator=(IconKey&&) = default;
 
+  bool operator==(const IconKey& other) const;
+
   ~IconKey();
 
   // A timeline value for icons that do not change.

@@ -6,6 +6,8 @@
 
 #include "base/bind.h"
 #include "base/location.h"
+#include "base/metrics/histogram_macros.h"
+#include "base/task/common/task_annotator.h"
 
 namespace content {
 
@@ -54,6 +56,14 @@ void StartupTaskRunner::WrappedTask() {
     // so there is nothing to do
     return;
   }
+
+  // Log queue times for non-delayed tasks that have a valid queue time.
+  auto* task = base::TaskAnnotator::CurrentTaskForThread();
+  if (task && !task->queue_time.is_null() && task->delayed_run_time.is_null()) {
+    UMA_HISTOGRAM_TIMES("Startup.StartupTaskRunner.AsyncTaskQueueTime",
+                        base::TimeTicks::Now() - task->queue_time);
+  }
+
   int result = std::move(task_list_.front()).Run();
   task_list_.pop_front();
   if (result > 0) {

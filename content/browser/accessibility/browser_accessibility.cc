@@ -32,10 +32,11 @@ namespace content {
 
 #if !BUILDFLAG(HAS_PLATFORM_ACCESSIBILITY_SUPPORT)
 // static
-BrowserAccessibility* BrowserAccessibility::Create(
+std::unique_ptr<BrowserAccessibility> BrowserAccessibility::Create(
     BrowserAccessibilityManager* manager,
     ui::AXNode* node) {
-  return new BrowserAccessibility(manager, node);
+  return std::unique_ptr<BrowserAccessibility>(
+      new BrowserAccessibility(manager, node));
 }
 #endif  // !BUILDFLAG(HAS_PLATFORM_ACCESSIBILITY_SUPPORT)
 

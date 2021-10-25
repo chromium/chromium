@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 310 tests; 197 PASS, 113 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 310 tests; 203 PASS, 107 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS getStats succeeds
 PASS Validating stats
 PASS codec's payloadType
@@ -161,8 +161,8 @@ PASS remote-outbound-rtp's localId
 PASS remote-outbound-rtp's remoteTimestamp
 PASS remote-outbound-rtp's reportsSent
 FAIL remote-outbound-rtp's roundTripTime assert_true: Is roundTripTime present expected true got false
-FAIL remote-outbound-rtp's totalRoundTripTime assert_true: Is totalRoundTripTime present expected true got false
-FAIL remote-outbound-rtp's roundTripTimeMeasurements assert_true: Is roundTripTimeMeasurements present expected true got false
+PASS remote-outbound-rtp's totalRoundTripTime
+PASS remote-outbound-rtp's roundTripTimeMeasurements
 PASS remote-outbound-rtp's packetsSent
 PASS remote-outbound-rtp's bytesSent
 PASS remote-outbound-rtp's ssrc
@@ -251,8 +251,8 @@ PASS candidate-pair's localCandidateId
 PASS candidate-pair's remoteCandidateId
 PASS candidate-pair's state
 PASS candidate-pair's nominated
-FAIL candidate-pair's packetsSent assert_true: Is packetsSent present expected true got false
-FAIL candidate-pair's packetsReceived assert_true: Is packetsReceived present expected true got false
+PASS candidate-pair's packetsSent
+PASS candidate-pair's packetsReceived
 PASS candidate-pair's bytesSent
 PASS candidate-pair's bytesReceived
 FAIL candidate-pair's lastPacketSentTimestamp assert_true: Is lastPacketSentTimestamp present expected true got false
@@ -273,8 +273,8 @@ FAIL candidate-pair's retransmissionsReceived assert_true: Is retransmissionsRec
 FAIL candidate-pair's retransmissionsSent assert_true: Is retransmissionsSent present expected true got false
 PASS candidate-pair's consentRequestsSent
 FAIL candidate-pair's consentExpiredTimestamp assert_true: Is consentExpiredTimestamp present expected true got false
-FAIL candidate-pair's packetsDiscardedOnSend assert_true: Is packetsDiscardedOnSend present expected true got false
-FAIL candidate-pair's bytesDiscardedOnSend assert_true: Is bytesDiscardedOnSend present expected true got false
+PASS candidate-pair's packetsDiscardedOnSend
+PASS candidate-pair's bytesDiscardedOnSend
 FAIL candidate-pair's requestBytesSent assert_true: Is requestBytesSent present expected true got false
 FAIL candidate-pair's consentRequestBytesSent assert_true: Is consentRequestBytesSent present expected true got false
 FAIL candidate-pair's responseBytesSent assert_true: Is responseBytesSent present expected true got false

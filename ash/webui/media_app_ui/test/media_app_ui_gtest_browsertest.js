@@ -157,10 +157,6 @@ TEST_F('MediaAppUIGtestBrowserTest', 'MultipleSelectionLaunch', () => {
   runMediaAppTest('MultipleSelectionLaunch');
 });
 
-TEST_F('MediaAppUIGtestBrowserTest', 'NotifyCurrentFile', () => {
-  runMediaAppTest('NotifyCurrentFile');
-});
-
 TEST_F('MediaAppUIGtestBrowserTest', 'LaunchUnopenableFile', () => {
   runMediaAppTest('LaunchUnopenableFile');
 });

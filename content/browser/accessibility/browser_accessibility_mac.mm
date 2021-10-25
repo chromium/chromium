@@ -15,10 +15,11 @@
 namespace content {
 
 // Static.
-BrowserAccessibility* BrowserAccessibility::Create(
+std::unique_ptr<BrowserAccessibility> BrowserAccessibility::Create(
     BrowserAccessibilityManager* manager,
     ui::AXNode* node) {
-  return new BrowserAccessibilityMac(manager, node);
+  return std::unique_ptr<BrowserAccessibilityMac>(
+      new BrowserAccessibilityMac(manager, node));
 }
 
 BrowserAccessibilityMac::BrowserAccessibilityMac(

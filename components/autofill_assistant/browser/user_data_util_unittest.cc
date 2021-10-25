@@ -52,6 +52,35 @@ RequiredDataPiece MakeRequiredDataPiece(autofill::ServerFieldType field) {
   return required_data_piece;
 }
 
+TEST(UserDataUtilTest, ConditionEvaluation) {
+  autofill::AutofillProfile profile;
+  autofill::test::SetProfileInfo(&profile, "Adam", "", "West",
+                                 "adam.west@gmail.com", "", "Baker Street 221b",
+                                 "", "London", "", "WC2N 5DU", "UK", "+44");
+
+  CollectUserDataOptions options;
+  options.required_contact_data_pieces.push_back(
+      MakeRequiredDataPiece(autofill::ServerFieldType::NAME_FULL));
+  RequiredDataPiece email_data_piece;
+  email_data_piece.mutable_condition()->set_key(
+      static_cast<int>(autofill::ServerFieldType::EMAIL_ADDRESS));
+  email_data_piece.mutable_condition()
+      ->mutable_regexp()
+      ->mutable_text_filter()
+      ->set_re2("^.*@.*$");
+  options.required_contact_data_pieces.push_back(email_data_piece);
+  RequiredDataPiece middle_name_data_piece;
+  middle_name_data_piece.mutable_condition()->set_key(
+      static_cast<int>(autofill::ServerFieldType::NAME_MIDDLE));
+  middle_name_data_piece.mutable_condition()
+      ->mutable_regexp()
+      ->mutable_text_filter()
+      ->set_re2("^$");
+  options.required_contact_data_pieces.push_back(middle_name_data_piece);
+
+  EXPECT_THAT(GetContactValidationErrors(&profile, options), IsEmpty());
+}
+
 TEST(UserDataUtilTest, KeepsOrderForIdenticalContacts) {
   base::Time current = base::Time::Now();
 

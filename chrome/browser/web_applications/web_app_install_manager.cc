@@ -420,9 +420,9 @@ void WebAppInstallManager::MaybeStartQueuedTask() {
 
 void WebAppInstallManager::TakeTaskErrorLog(WebAppInstallTask* task) {
   if (error_log_) {
-    base::Value task_error_list = task->TakeErrorList();
-    if (!task_error_list.GetList().empty())
-      error_log_->push_back(std::move(task_error_list));
+    base::Value task_error_dict = task->TakeErrorDict();
+    if (!task_error_dict.DictEmpty())
+      error_log_->push_back(std::move(task_error_dict));
   }
 }
 

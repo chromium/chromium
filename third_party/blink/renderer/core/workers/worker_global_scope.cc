@@ -340,7 +340,7 @@ void WorkerGlobalScope::ImportScriptsInternal(const Vector<String>& urls) {
     ClassicScript* script = MakeGarbageCollected<ClassicScript>(
         ScriptSourceCode(source_code, ScriptSourceLocationType::kUnknown,
                          handler, script_url),
-        script_url /* base_url */, ScriptFetchOptions(),
+        response_url /* base_url */, ScriptFetchOptions(),
         sanitize_script_errors);
 
     // Step 5.2: "Run the classic script script, with the rethrow errors
