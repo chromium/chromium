@@ -56,10 +56,16 @@ class NET_EXPORT ReportingHeaderParser {
       const GURL& url,
       std::unique_ptr<base::Value> value);
 
+  // `isolation_info` here will be stored in the cache, associated with the
+  // `reporting_source`. `network_isolation_key` is the NIK which will be
+  // passed in with reports to be queued. This must match the NIK from
+  // `isolation_source`, unless it is empty (which will be the case if the
+  // kPartitionNelAndReportingByNetworkIsolationKey feature is disabled.)
   static void ProcessParsedReportingEndpointsHeader(
       ReportingContext* context,
       const base::UnguessableToken& reporting_source,
       const IsolationInfo& isolation_info,
+      const NetworkIsolationKey& network_isolation_key,
       const url::Origin& origin,
       base::flat_map<std::string, std::string> parsed_header);
 

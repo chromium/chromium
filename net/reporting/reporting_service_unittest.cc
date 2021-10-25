@@ -209,8 +209,40 @@ TEST_P(ReportingServiceTest, ProcessReportingEndpointsHeader) {
   // Endpoint should not be part of the persistent store.
   EXPECT_EQ(0u, context()->cache()->GetEndpointCount());
   // Endpoint should be associated with the reporting source.
-  EXPECT_TRUE(
-      context()->cache()->GetV1EndpointForTesting(*kReportingSource_, kGroup_));
+  ReportingEndpoint cached_endpoint =
+      context()->cache()->GetV1EndpointForTesting(*kReportingSource_, kGroup_);
+  EXPECT_TRUE(cached_endpoint);
+
+  // Ensure that the NIK is stored properly with the endpoint group.
+  EXPECT_FALSE(cached_endpoint.group_key.network_isolation_key.IsEmpty());
+}
+
+TEST_P(ReportingServiceTest,
+       ProcessReportingEndpointsHeaderNetworkIsolationKeyDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {net::features::kDocumentReporting},
+      {features::kPartitionNelAndReportingByNetworkIsolationKey});
+
+  // Re-create the store, so it reads the new feature value.
+  Init();
+
+  auto parsed_header =
+      ParseReportingEndpoints(kGroup_ + "=\"" + kEndpoint_.spec() + "\"");
+  ASSERT_TRUE(parsed_header.has_value());
+  service()->SetDocumentReportingEndpoints(*kReportingSource_, kOrigin_,
+                                           kIsolationInfo_, *parsed_header);
+  FinishLoading(true /* load_success */);
+
+  // Endpoint should not be part of the persistent store.
+  EXPECT_EQ(0u, context()->cache()->GetEndpointCount());
+  // Endpoint should be associated with the reporting source.
+  ReportingEndpoint cached_endpoint =
+      context()->cache()->GetV1EndpointForTesting(*kReportingSource_, kGroup_);
+  EXPECT_TRUE(cached_endpoint);
+
+  // When isolation is disabled, cached endpoints should have a null NIK.
+  EXPECT_TRUE(cached_endpoint.group_key.network_isolation_key.IsEmpty());
 }
 
 TEST_P(ReportingServiceTest, SendReportsAndRemoveSource) {

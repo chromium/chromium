@@ -82,15 +82,26 @@ class Delivery {
   // different group keys can be in the same delivery, as long as the NIK,
   // report origin and reporting source are the same, and they all get assigned
   // to the same endpoint URL.
+  // |isolation_info| is the IsolationInfo struct associated with the reporting
+  // endpoint, and is used to determine appropriate credentials for the upload.
+  // |network_isolation_key| is the NIK from the ReportingEndpoint, which may
+  // have been cleared in the ReportingService if reports are not being
+  // partitioned by NIK. (This is why a separate parameter is used here, rather
+  // than simply using the computed NIK from |isolation_info|.)
   struct Target {
     Target(const IsolationInfo& isolation_info,
+           const NetworkIsolationKey& network_isolation_key,
            const url::Origin& origin,
            const GURL& endpoint_url,
            const absl::optional<base::UnguessableToken> reporting_source)
         : isolation_info(isolation_info),
+          network_isolation_key(network_isolation_key),
           origin(origin),
           endpoint_url(endpoint_url),
-          reporting_source(reporting_source) {}
+          reporting_source(reporting_source) {
+      DCHECK(network_isolation_key.IsEmpty() ||
+             network_isolation_key == isolation_info.network_isolation_key());
+    }
 
     ~Target() = default;
 
@@ -98,13 +109,14 @@ class Delivery {
       // Note that sorting by NIK here is required for V0 reports; V1 reports
       // should not need this (but it doesn't hurt). We can remove that as a
       // comparison key when V0 reporting endpoints are removed.
-      return std::tie(isolation_info.network_isolation_key(), origin,
-                      endpoint_url, reporting_source) <
-             std::tie(other.isolation_info.network_isolation_key(),
-                      other.origin, other.endpoint_url, other.reporting_source);
+      return std::tie(network_isolation_key, origin, endpoint_url,
+                      reporting_source) <
+             std::tie(other.network_isolation_key, other.origin,
+                      other.endpoint_url, other.reporting_source);
     }
 
     IsolationInfo isolation_info;
+    NetworkIsolationKey network_isolation_key;
     url::Origin origin;
     GURL endpoint_url;
     absl::optional<base::UnguessableToken> reporting_source;
@@ -165,7 +177,7 @@ class Delivery {
   }
 
   const NetworkIsolationKey& network_isolation_key() const {
-    return target_.isolation_info.network_isolation_key();
+    return target_.network_isolation_key;
   }
   const GURL& endpoint_url() const { return target_.endpoint_url; }
   const ReportList& reports() const { return reports_; }
@@ -307,8 +319,9 @@ class ReportingDeliveryAgentImpl : public ReportingDeliveryAgent,
           cache()->GetIsolationInfoForEndpoint(endpoint);
 
       // Add the reports to the appropriate delivery.
-      Delivery::Target target(isolation_info, report_group_key.origin,
-                              endpoint.info.url,
+      Delivery::Target target(isolation_info,
+                              report_group_key.network_isolation_key,
+                              report_group_key.origin, endpoint.info.url,
                               endpoint.group_key.reporting_source);
       auto delivery_it = deliveries.find(target);
       if (delivery_it == deliveries.end()) {
