@@ -100,6 +100,8 @@ extern const DeviceCapabilities kDrobitKeyboard;
 extern const DeviceCapabilities kDrobitNumberpad;
 extern const DeviceCapabilities kLogitechKeyboardK120;
 extern const DeviceCapabilities kMicrosoftBluetoothNumberPad;
+extern const DeviceCapabilities kDellLatitudeE6510Touchpad;
+extern const DeviceCapabilities kHPProBook6560bTouchpad;
 }  // namspace ui
 
 #endif  // UI_EVENTS_OZONE_EVDEV_EVENT_DEVICE_TEST_UTIL_H_

@@ -1273,6 +1273,72 @@ const DeviceCapabilities kMicrosoftBluetoothNumberPad = {
     base::size(kMicrosoftBluetoothNumberPadAbsAxes),
 };
 
+// Captured from Dell Latitude E6510, which report non valid resolutions and is
+// semi-multitouch.
+const ui::DeviceAbsoluteAxis kDellLatitudeE6510TouchpadAbsAxes[] = {
+    {ABS_X, {0, 0, 2000, 0, 0, 0}},
+    {ABS_Y, {0, 0, 1400, 0, 0, 0}},
+    {ABS_PRESSURE, {0, 0, 127, 0, 0, 0}},
+    {ABS_MT_SLOT, {0, 0, 3, 0, 0, 0}},
+    {ABS_MT_POSITION_X, {0, 0, 2000, 0, 0, 0}},
+    {ABS_MT_POSITION_Y, {0, 0, 1400, 0, 0, 0}},
+    {ABS_MT_TRACKING_ID, {0, 0, 65535, 0, 0, 0}},
+};
+const ui::DeviceCapabilities kDellLatitudeE6510Touchpad = {
+    /* path */ "/sys/devices/platform/i8042/serio1/input/input7/event7",
+    /* name */ "AlpsPS/2 ALPS DualPoint TouchPad",
+    /* phys */ "isa0060/serio1/input0",
+    /* uniq */ "",
+    /* bustype */ "0011",
+    /* vendor */ "0002",
+    /* product */ "0008",
+    /* version */ "0300",
+    /* prop */ "9",
+    /* ev */ "b",
+    /* key */ "e420 70000 0 0 0 0",
+    /* rel */ "0",
+    /* abs */ "260800001000003",
+    /* msc */ "0",
+    /* sw */ "0",
+    /* led */ "0",
+    /* ff */ "0",
+    kDellLatitudeE6510TouchpadAbsAxes,
+    base::size(kDellLatitudeE6510TouchpadAbsAxes),
+};
+
+// Captured from HP ProBook 6560b. Touchpad that is semi-multitouch.
+const ui::DeviceAbsoluteAxis kHPProBook6560bTouchpadAbsAxes[] = {
+    {ABS_X, {0, 1472, 5690, 8, 0, 40}},
+    {ABS_Y, {0, 1408, 4854, 8, 0, 74}},
+    {ABS_PRESSURE, {0, 0, 255, 0, 0, 0}},
+    {ABS_TOOL_WIDTH, {0, 0, 15, 0, 0, 0}},
+    {ABS_MT_SLOT, {0, 0, 1, 0, 0, 0}},
+    {ABS_MT_POSITION_X, {0, 1472, 5690, 8, 0, 40}},
+    {ABS_MT_POSITION_Y, {0, 1408, 4854, 8, 0, 74}},
+    {ABS_MT_TRACKING_ID, {0, 0, 65535, 0, 0, 0}},
+};
+const ui::DeviceCapabilities kHPProBook6560bTouchpad = {
+    /* path */ "/sys/devices/platform/i8042/serio4/input/input12/event5",
+    /* name */ "SynPS/2 Synaptics TouchPad",
+    /* phys */ "isa0060/serio4/input0",
+    /* uniq */ "",
+    /* bustype */ "0011",
+    /* vendor */ "0002",
+    /* product */ "0007",
+    /* version */ "01b1",
+    /* prop */ "9",
+    /* ev */ "b",
+    /* key */ "6420 30000 0 0 0 0",
+    /* rel */ "0",
+    /* abs */ "260800011000003",
+    /* msc */ "0",
+    /* sw */ "0",
+    /* led */ "0",
+    /* ff */ "0",
+    kHPProBook6560bTouchpadAbsAxes,
+    base::size(kHPProBook6560bTouchpadAbsAxes),
+};
+
 // NB: Please use the capture_device_capabilities.py script to add more
 // test data here. This will help ensure the data matches what the kernel
 // reports for a real device and is entered correctly.
