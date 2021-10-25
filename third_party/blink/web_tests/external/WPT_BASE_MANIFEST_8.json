@@ -280492,22 +280492,6 @@
       }
      },
      "safe-passing-of-structured-data": {
-      "messagechannel.any-expected.txt": [
-       "d297034dbb3fa91cef0bea0454165261d71d6ca0",
-       []
-      ],
-      "messagechannel.any.serviceworker-expected.txt": [
-       "7123d51e4ed5278a8d7242a990d494aacdda1c52",
-       []
-      ],
-      "messagechannel.any.sharedworker-expected.txt": [
-       "7123d51e4ed5278a8d7242a990d494aacdda1c52",
-       []
-      ],
-      "messagechannel.any.worker-expected.txt": [
-       "7123d51e4ed5278a8d7242a990d494aacdda1c52",
-       []
-      ],
       "resources": {
        "echo-iframe.html": [
         "c4fd5824a1c617c21fe8b92483b388d586edf06e",
@@ -280788,14 +280772,6 @@
       },
       "structured-cloning-error-stack-optional.sub.window-expected.txt": [
        "bcbce0586f3f4622985c9eea63a7e334b792ed68",
-       []
-      ],
-      "transfer-errors.window-expected.txt": [
-       "3fec8d0c8f9880661820799bb7589ae8acc67a28",
-       []
-      ],
-      "window-postmessage.window-expected.txt": [
-       "389ca8a10af4eb1278be24aca3b57ebb36df380c",
        []
       ]
      },
@@ -283665,7 +283641,7 @@
          []
         ],
         "targetted-form.js": [
-         "291251b7e8037ce5c9053d7c4b63142a5783b877",
+         "c72e1836d2b4e3100d46a8b11c7001fb136da52c",
          []
         ]
        }
@@ -303829,6 +303805,10 @@
       "c2c8ebb601de7f53e2b9c3208d45093da1bf8cb5",
       []
      ],
+     "check-cookie-and-return-bundle.py": [
+      "89a22c432e05b8e8e3039c31fb1d1c9f2a57d504",
+      []
+     ],
      "check-sec-fetch-dest-header-and-return-bundle.py": [
       "da36e49320369ddc94405d298746db562be50045",
       []
@@ -303890,7 +303870,7 @@
       ]
      },
      "generate-test-wbns.sh": [
-      "d9b7f4e521fe3b2072de9b087ccd3f04dc404aa8",
+      "f80a26559393c9dcc9b2ae2982c3224fd0990c86",
       []
      ],
      "location": {
@@ -303953,6 +303933,10 @@
      },
      "relative-url.har": [
       "e42e85fd1f94c35f8a597c16f97d07d3347425b5",
+      []
+     ],
+     "simple-cross-origin.har": [
+      "8566a6c6c2444cbabd3b72cebae5b919ff144ff7",
       []
      ],
      "static-element": {
@@ -304018,7 +304002,7 @@
       ]
      },
      "test-helpers.js": [
-      "b512937639b4c267a6296b75aab61d42fdd4d309",
+      "c1ff011e0d675a3b66352b7da887254a15f037d2",
       []
      ],
      "urn-uuid.har": [
@@ -304154,6 +304138,10 @@
       ],
       "relative-url.wbn.sub.headers": [
        "ce4780f454082d39cfe793a5724bc79db864b9bd",
+       []
+      ],
+      "simple-cross-origin.wbn": [
+       "a00cce00f07212c422d952f636b10e1723ca3e53",
        []
       ],
       "static-element": {
@@ -304921,7 +304909,7 @@
      []
     ],
     "utils.js": [
-     "814d435666b6482afbca23350a05303a467bcbb5",
+     "2dcfefa0a0ef9c7f6202385e9becdbc477198a74",
      []
     ],
     "video-decoder.crossOriginIsolated.https.any.js.headers": [
@@ -309248,10 +309236,6 @@
      "58ee7cca1ab3e9856e380eaccde042d5700c2603",
      []
     ],
-    "Worker-multi-port-expected.txt": [
-     "92b2f394fc152b476d3b4d346eaaf49137c0aef8",
-     []
-    ],
     "baseurl": {
      "alpha": {
       "sharedworker-in-worker-expected.txt": [
@@ -310198,16 +310182,6 @@
       ],
       "002.js": [
        "627272aaefa3457f90417ed0f19e967a2c036273",
-       []
-      ]
-     },
-     "structured-clone": {
-      "dedicated-expected.txt": [
-       "e0e614f9dac031e0d84f30900af4858d25baeddc",
-       []
-      ],
-      "shared-expected.txt": [
-       "d297034dbb3fa91cef0bea0454165261d71d6ca0",
        []
       ]
      },
@@ -502011,6 +501985,13 @@
        {}
       ]
      ],
+     "script-credentials.https.tentative.sub.html": [
+      "a1c8285813f9bdc992b22acf145abec1eb86c594",
+      [
+       null,
+       {}
+      ]
+     ],
      "script-element-removal.https.tentative.html": [
       "a46ce3bbf85a5e9fcbd64223cffab094a55f3436",
       [
@@ -502096,7 +502077,7 @@
       ]
      ],
      "script-reuse-web-bundle-resource.https.tentative.html": [
-      "e07ee7bbbd406b3691f57122c282b5d32acec44f",
+      "7429ae0a033145197d63b9e72b480c4dd03153c5",
       [
        null,
        {}
@@ -506272,7 +506253,7 @@
      ]
     ],
     "encoded-audio-chunk.any.js": [
-     "00589123c0501d59d120c5b3118923e79a41d57e",
+     "1ada120e4d91a3fd0a0d3e4cfb3ef992006ab46b",
      [
       "webcodecs/encoded-audio-chunk.any.html",
       {
@@ -506338,7 +506319,7 @@
      ]
     ],
     "encoded-video-chunk.any.js": [
-     "70131757521526c6b7bca6427e2b28c8e62a3ced",
+     "0cf0d8de4408dc1dc634b064c9a3fd313a04f813",
      [
       "webcodecs/encoded-video-chunk.any.html",
       {
