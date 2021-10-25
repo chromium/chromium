@@ -2547,7 +2547,8 @@ TEST_F(
       });
     });
 
-TEST_F('ChromeVoxBackgroundTest', 'HitTestOnExoSurface', function() {
+// TODO(crbug.com/1262875): Enable the test again.
+TEST_F('ChromeVoxBackgroundTest', 'DISABLED_HitTestOnExoSurface', function() {
   const site = `
     <button></button>
     <input type="text"</input>
