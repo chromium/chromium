@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/global_media_controls/presentation_request_notification_producer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
@@ -67,6 +68,9 @@ class MediaNotificationService
   // MediaSessionNotificationProducerObserver:
   void OnMediaSessionItemCreated(const std::string& id) override;
   void OnMediaSessionItemDestroyed(const std::string& id) override;
+  void OnMediaSessionActionButtonPressed(
+      const std::string& id,
+      media_session::mojom::MediaSessionAction action) override;
 
   void SetDialogDelegateForWebContents(
       global_media_controls::MediaDialogDelegate* delegate,
@@ -149,6 +153,12 @@ class MediaNotificationService
   bool HasCastNotificationsForWebContents(
       content::WebContents* web_contents) const;
 
+  bool HasActiveControllableSessionForWebContents(
+      content::WebContents* web_contents) const;
+
+  std::string GetActiveControllableSessionForWebContents(
+      content::WebContents* web_contents) const;
+
   std::unique_ptr<global_media_controls::MediaItemManager> item_manager_;
 
   std::unique_ptr<MediaSessionNotificationProducer>
@@ -167,6 +177,10 @@ class MediaNotificationService
 
   // Generates a list of available audio devices.
   std::unique_ptr<MediaNotificationDeviceProvider> device_provider_;
+
+  // Tracks the number of times we have recorded an action for a specific
+  // source. We use this to cap the number of UKM recordings per site.
+  std::map<ukm::SourceId, int> actions_recorded_to_ukm_;
 
   base::WeakPtrFactory<MediaNotificationService> weak_ptr_factory_{this};
 };

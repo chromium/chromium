@@ -6,24 +6,13 @@
 
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/global_media_controls/media_session_notification_producer_observer.h"
 #include "components/global_media_controls/public/media_item_manager.h"
 #include "components/global_media_controls/public/media_item_ui.h"
-#include "components/ukm/content/source_url_recorder.h"
-#include "content/public/browser/media_session.h"
 #include "content/public/browser/media_session_service.h"
 #include "media/base/media_switches.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
-#include "services/metrics/public/cpp/ukm_recorder.h"
 
 namespace {
-
-// The maximum number of actions we will record to UKM for a specific source.
-constexpr int kMaxActionsRecordedToUKM = 100;
 
 constexpr int kAutoDismissTimerInMinutesDefault = 60;  // minutes
 
@@ -37,26 +26,6 @@ enum class MediaNotificationClickSource {
   kMediaFling,
   kMaxValue = kMediaFling
 };
-
-// Here we check to see if the WebContents is focused. Note that since Session
-// is a WebContentsObserver, we could in theory listen for
-// |OnWebContentsFocused()| and |OnWebContentsLostFocus()|. However, this won't
-// actually work since focusing the MediaDialogView causes the WebContents to
-// "lose focus", so we'd never be focused.
-bool IsWebContentsFocused(content::WebContents* web_contents) {
-  DCHECK(web_contents);
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
-  if (!browser)
-    return false;
-
-  // If the given WebContents is not in the focused window, then it's not
-  // focused. Note that we know a Browser is focused because otherwise the user
-  // could not interact with the MediaDialogView.
-  if (BrowserList::GetInstance()->GetLastActive() != browser)
-    return false;
-
-  return browser->tab_strip_model()->GetActiveWebContents() == web_contents;
-}
 
 // Returns the time value to be used for the auto-dismissing of the
 // notifications after they are inactive.
@@ -77,12 +46,8 @@ MediaSessionNotificationProducer::Session::Session(
     MediaSessionNotificationProducer* owner,
     const std::string& id,
     std::unique_ptr<MediaSessionNotificationItem> item,
-    content::WebContents* web_contents,
     mojo::Remote<media_session::mojom::MediaController> controller)
-    : owner_(owner),
-      id_(id),
-      item_(std::move(item)),
-      web_contents_(web_contents) {
+    : owner_(owner), id_(id), item_(std::move(item)) {
   DCHECK(owner_);
   DCHECK(item_);
 
@@ -322,8 +287,6 @@ void MediaSessionNotificationProducer::OnFocusGained(
             std::make_unique<MediaSessionNotificationItem>(
                 this, id, session->source_name.value_or(std::string()),
                 std::move(item_controller), std::move(session->session_info)),
-            content::MediaSession::GetWebContentsFromRequestId(
-                *session->request_id),
             std::move(session_controller)));
 
     for (auto& observer : observers_)
@@ -448,55 +411,11 @@ bool MediaSessionNotificationProducer::HasSession(const std::string& id) const {
   return base::Contains(sessions_, id);
 }
 
-bool MediaSessionNotificationProducer::
-    HasActiveControllableSessionForWebContents(
-        content::WebContents* web_contents) const {
-  DCHECK(web_contents);
-  return std::any_of(sessions_.begin(), sessions_.end(),
-                     [web_contents, this](const auto& pair) {
-                       return pair.second.web_contents() == web_contents &&
-                              base::Contains(active_controllable_session_ids_,
-                                             pair.first);
-                     });
-}
-
-std::string
-MediaSessionNotificationProducer::GetActiveControllableSessionForWebContents(
-    content::WebContents* web_contents) const {
-  DCHECK(web_contents);
-  for (auto& session : sessions_) {
-    if (session.second.web_contents() == web_contents &&
-        base::Contains(active_controllable_session_ids_, session.first)) {
-      return session.first;
-    }
-  }
-  return "";
-}
-
 void MediaSessionNotificationProducer::LogMediaSessionActionButtonPressed(
     const std::string& id,
     media_session::mojom::MediaSessionAction action) {
-  auto it = sessions_.find(id);
-  if (it == sessions_.end())
-    return;
-
-  content::WebContents* web_contents = it->second.web_contents();
-  if (!web_contents)
-    return;
-
-  base::UmaHistogramBoolean("Media.GlobalMediaControls.UserActionFocus",
-                            IsWebContentsFocused(web_contents));
-
-  ukm::UkmRecorder* recorder = ukm::UkmRecorder::Get();
-  ukm::SourceId source_id =
-      ukm::GetSourceIdForWebContentsDocument(web_contents);
-
-  if (++actions_recorded_to_ukm_[source_id] > kMaxActionsRecordedToUKM)
-    return;
-
-  ukm::builders::Media_GlobalMediaControls_ActionButtonPressed(source_id)
-      .SetMediaSessionAction(static_cast<int64_t>(action))
-      .Record(recorder);
+  for (auto& observer : observers_)
+    observer.OnMediaSessionActionButtonPressed(id, action);
 }
 
 void MediaSessionNotificationProducer::SetAudioSinkId(

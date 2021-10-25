@@ -15,6 +15,10 @@ class MediaSessionNotificationProducerObserver : public base::CheckedObserver {
 
   virtual void OnMediaSessionItemDestroyed(const std::string& id) = 0;
 
+  virtual void OnMediaSessionActionButtonPressed(
+      const std::string& id,
+      media_session::mojom::MediaSessionAction action) = 0;
+
  protected:
   ~MediaSessionNotificationProducerObserver() override = default;
 };

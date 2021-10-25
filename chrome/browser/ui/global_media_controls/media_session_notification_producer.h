@@ -14,11 +14,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "services/media_session/public/mojom/media_controller.mojom.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
-
-namespace content {
-class WebContents;
-}  // namespace content
 
 namespace global_media_controls {
 class MediaItemManager;
@@ -84,14 +79,6 @@ class MediaSessionNotificationProducer
 
   bool HasSession(const std::string& id) const;
 
-  bool HasActiveControllableSessionForWebContents(
-      content::WebContents* web_contents) const;
-
-  // Returns the notification id of the session associated with |web_contents|.
-  // There is at most one session per WebContents.
-  std::string GetActiveControllableSessionForWebContents(
-      content::WebContents* web_contents) const;
-
   void SetAudioSinkId(const std::string& id, const std::string& sink_id);
 
   base::CallbackListSubscription
@@ -108,7 +95,6 @@ class MediaSessionNotificationProducer
     Session(MediaSessionNotificationProducer* owner,
             const std::string& id,
             std::unique_ptr<MediaSessionNotificationItem> item,
-            content::WebContents* web_contents,
             mojo::Remote<media_session::mojom::MediaController> controller);
     Session(const Session&) = delete;
     Session& operator=(const Session&) = delete;
@@ -154,8 +140,6 @@ class MediaSessionNotificationProducer
     RegisterIsAudioDeviceSwitchingSupportedCallback(
         base::RepeatingCallback<void(bool)> callback);
 
-    content::WebContents* web_contents() const { return web_contents_; }
-
    private:
     static void RecordDismissReason(GlobalMediaControlsDismissReason reason);
 
@@ -198,8 +182,6 @@ class MediaSessionNotificationProducer
 
     // Used to request audio output be routed to a different device.
     mojo::Remote<media_session::mojom::MediaController> controller_;
-
-    content::WebContents* const web_contents_;
   };
 
   // Looks up a Session object by its ID. Returns null if not found.
@@ -242,10 +224,6 @@ class MediaSessionNotificationProducer
   // Stores a Session for each media session keyed by its |request_id| in string
   // format.
   std::map<std::string, Session> sessions_;
-
-  // Tracks the number of times we have recorded an action for a specific
-  // source. We use this to cap the number of UKM recordings per site.
-  std::map<ukm::SourceId, int> actions_recorded_to_ukm_;
 
   base::ObserverList<MediaSessionNotificationProducerObserver> observers_;
 
