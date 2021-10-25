@@ -366,7 +366,11 @@ bool OmniboxFieldTrial::IsMaxURLMatchesFeatureEnabled() {
 }
 
 size_t OmniboxFieldTrial::GetMaxURLMatches() {
+#if !defined(OS_ANDROID)
   constexpr size_t kDefaultMaxURLMatches = 7;
+#else   // defined(OS_ANDROID)
+  constexpr size_t kDefaultMaxURLMatches = 5;
+#endif  // defined(OS_ANDROID)
   return base::GetFieldTrialParamByFeatureAsInt(
       omnibox::kOmniboxMaxURLMatches,
       OmniboxFieldTrial::kOmniboxMaxURLMatchesParam, kDefaultMaxURLMatches);
