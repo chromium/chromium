@@ -217,7 +217,8 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
         _GetTagsToTest(browser),
         set([
             'win', 'win10', 'release', 'nvidia', 'nvidia-0x1cb3', 'angle-d3d9',
-            'no-passthrough', 'no-swiftshader-gl', 'skia-renderer-disabled'
+            'no-passthrough', 'no-swiftshader-gl', 'skia-renderer-disabled',
+            'no-oop-c'
         ]))
 
   @mock.patch('sys.platform', 'darwin')
@@ -234,7 +235,7 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
         set([
             'mac', 'mojave', 'release', 'imagination',
             'imagination-PowerVR-SGX-554', 'angle-opengles', 'passthrough',
-            'no-swiftshader-gl', 'skia-renderer-disabled'
+            'no-swiftshader-gl', 'skia-renderer-disabled', 'no-oop-c'
         ]))
 
   @mock.patch('sys.platform', 'darwin')
@@ -249,7 +250,8 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
         set([
             'mac', 'mojave', 'release', 'imagination',
             'imagination-Triangle-Monster-3000', 'angle-disabled',
-            'no-passthrough', 'no-swiftshader-gl', 'skia-renderer-disabled'
+            'no-passthrough', 'no-swiftshader-gl', 'skia-renderer-disabled',
+            'no-oop-c'
         ]))
 
   @mock.patch.dict(os.environ, clear=True)

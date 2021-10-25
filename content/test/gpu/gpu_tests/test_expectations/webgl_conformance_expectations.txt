@@ -56,6 +56,8 @@
 # Display Server
 # tags: [ display-server-wayland display-server-x ]
 # results: [ Failure RetryOnFailure Skip ]
+# OOP-Canvas
+# tags: [ oop-c no-oop-c]
 # END TAG HEADER
 
 
@@ -355,6 +357,7 @@ crbug.com/478572 [ win angle-d3d9 passthrough ] deqp/data/gles2/shaders/function
 # Win NVIDIA failures
 crbug.com/1045339 [ win10 debug-x64 nvidia ] conformance/extensions/oes-texture-half-float-with-video.html [ Skip ]
 crbug.com/1143392 [ win nvidia passthrough ] conformance/glsl/misc/shader-with-non-reserved-words.html [ Skip ]
+crbug.com/angleproject/5536 [ win nvidia angle-opengl passthrough oop-c ] conformance/glsl/samplers/glsl-function-texture2dprojlod.html [ Skip ]
 
 # Win10 / NVIDIA Quadro P400 / D3D9 failures
 crbug.com/750896 [ win10 nvidia-0x1cb3 angle-d3d9 ] conformance/textures/video/* [ RetryOnFailure ]

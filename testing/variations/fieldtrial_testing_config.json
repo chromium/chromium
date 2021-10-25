@@ -1663,6 +1663,21 @@
             ]
         }
     ],
+    "CanvasOutOfProcessRasterization": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CanvasOopRasterization"
+                    ]
+                }
+            ]
+        }
+    ],
     "CctClientDataHeader": [
         {
             "platforms": [
