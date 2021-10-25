@@ -31,8 +31,8 @@
 #include "components/password_manager/core/browser/password_reuse_manager.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_backend.h"
+#include "components/password_manager/core/browser/password_store_built_in_backend.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
-#include "components/password_manager/core/browser/password_store_impl.h"
 #include "components/password_manager/core/browser/password_store_signin_notifier.h"
 #include "components/password_manager/core/browser/site_affiliation/affiliation_service.h"
 #include "components/password_manager/core/browser/site_affiliation/mock_affiliation_service.h"
@@ -153,11 +153,11 @@ class MockMetadataStore : public PasswordStoreSync::MetadataStore {
   }
 };
 
-class BackendImplWithMockedMetadataStore : public PasswordStoreImpl {
+class BackendImplWithMockedMetadataStore : public PasswordStoreBuiltInBackend {
  public:
   explicit BackendImplWithMockedMetadataStore(
       std::unique_ptr<LoginDatabase> login_database)
-      : PasswordStoreImpl(std::move(login_database)) {}
+      : PasswordStoreBuiltInBackend(std::move(login_database)) {}
 
   PasswordStoreSync::MetadataStore* GetMetadataStore() override {
     return &metadata_store_;
@@ -227,8 +227,8 @@ class PasswordStoreTest : public testing::Test {
   }
 
   scoped_refptr<PasswordStore> CreatePasswordStore() {
-    return new PasswordStore(
-        std::make_unique<PasswordStoreImpl>(std::make_unique<LoginDatabase>(
+    return new PasswordStore(std::make_unique<PasswordStoreBuiltInBackend>(
+        std::make_unique<LoginDatabase>(
             test_login_db_file_path(),
             password_manager::IsAccountStore(false))));
   }

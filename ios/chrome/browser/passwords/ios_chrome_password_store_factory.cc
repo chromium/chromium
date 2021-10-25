@@ -18,8 +18,8 @@
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/password_manager/core/browser/login_database.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/password_store_built_in_backend.h"
 #include "components/password_manager/core/browser/password_store_factory_util.h"
-#include "components/password_manager/core/browser/password_store_impl.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/sync/driver/sync_service.h"
 #include "ios/chrome/browser/application_context.h"
@@ -87,7 +87,7 @@ IOSChromePasswordStoreFactory::BuildServiceInstanceFor(
 
   scoped_refptr<password_manager::PasswordStore> store =
       base::MakeRefCounted<password_manager::PasswordStore>(
-          std::make_unique<password_manager::PasswordStoreImpl>(
+          std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
               std::move(login_db)));
 
   AffiliationService* affiliation_service =

@@ -644,13 +644,13 @@ GEN('#endif  // !defined(OS_MAC) && !BUILDFLAG(IS_CHROMEOS_ASH)');
 
 GEN('#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)');
 [['DefaultBrowser', 'default_browser_browsertest.js'],
+ ['ImportDataDialog', 'import_data_dialog_test.js'],
  ['SystemPage', 'system_page_tests.js'],
 ].forEach(test => registerTest(...test));
 GEN('#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)');
 
 GEN('#if !BUILDFLAG(IS_CHROMEOS_ASH)');
-[['ImportDataDialog', 'import_data_dialog_test.js'],
- ['PeoplePageManageProfile', 'people_page_manage_profile_test.js'],
+[['PeoplePageManageProfile', 'people_page_manage_profile_test.js'],
  ['Languages', 'languages_tests.js'],
 ].forEach(test => registerTest(...test));
 GEN('#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)');

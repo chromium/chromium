@@ -1380,23 +1380,25 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
   // Helpers for serialization.
   void SerializeActionAttributes(ui::AXNodeData* node_data);
-  void SerializeColorAttributes(ui::AXNodeData* node_data);
-  void SerializeStyleAttributes(ui::AXNodeData* node_data);
-  void SerializeSparseAttributes(ui::AXNodeData* node_data);
-  void SerializeTableAttributes(ui::AXNodeData* node_data);
-  void SerializeLangAttribute(ui::AXNodeData* node_data);
-  void SerializeListAttributes(ui::AXNodeData* node_data);
-  void SerializeScrollAttributes(ui::AXNodeData* node_data);
   void SerializeChooserPopupAttributes(ui::AXNodeData* node_data);
+  void SerializeColorAttributes(ui::AXNodeData* node_data);
   void SerializeElementAttributes(ui::AXNodeData* node_data);
   void SerializeHTMLTagAndClass(ui::AXNodeData* node_data);
   void SerializeHTMLAttributes(ui::AXNodeData* node_data);
-  void SerializeUnignoredAttributes(ui::AXNodeData* node_data,
-                                    ui::AXMode accessibility_mode);
-
+  void SerializeInlineTextBoxAttributes(ui::AXNodeData* node_data) const;
+  void SerializeLangAttribute(ui::AXNodeData* node_data);
+  void SerializeListAttributes(ui::AXNodeData* node_data);
+  void SerializeListMarkerAttributes(ui::AXNodeData* dst) const;
+  void SerializeLiveRegionAttributes(ui::AXNodeData* node_data) const;
   void SerializeNameAndDescriptionAttributes(ui::AXMode accessibility_mode,
                                              ui::AXNodeData* node_data) const;
-  void SerializeLiveRegionAttributes(ui::AXNodeData* node_data) const;
+  void SerializeOtherScreenReaderAttributes(ui::AXNodeData* node_data) const;
+  void SerializeScrollAttributes(ui::AXNodeData* node_data);
+  void SerializeSparseAttributes(ui::AXNodeData* node_data);
+  void SerializeStyleAttributes(ui::AXNodeData* node_data);
+  void SerializeTableAttributes(ui::AXNodeData* node_data);
+  void SerializeUnignoredAttributes(ui::AXNodeData* node_data,
+                                    ui::AXMode accessibility_mode);
 
   // Serialization implemented in specific subclasses.
   virtual void SerializeMarkerAttributes(ui::AXNodeData* node_data) const;

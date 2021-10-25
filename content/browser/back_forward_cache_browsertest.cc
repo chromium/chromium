@@ -3763,11 +3763,10 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, Events) {
 
   // 1) Navigate to A.
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
-  RenderFrameHostImpl* rfh_a = current_frame_host();
-  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
 
   // At A, a page-show event is recorded for the first loading.
-  MatchEventList(rfh_a, ListValueOf("window.pageshow"));
+  MatchEventList(rfh_a.get(), ListValueOf("window.pageshow"));
 
   constexpr char kEventPageShowPersisted[] = "Event.PageShow.Persisted";
 
@@ -3779,11 +3778,10 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, Events) {
 
   // 2) Navigate to B.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
-  RenderFrameHostImpl* rfh_b = current_frame_host();
-  RenderFrameDeletedObserver delete_observer_rfh_b(rfh_b);
+  RenderFrameHostImplWrapper rfh_b(current_frame_host());
 
-  EXPECT_FALSE(delete_observer_rfh_a.deleted());
-  EXPECT_FALSE(delete_observer_rfh_b.deleted());
+  EXPECT_FALSE(rfh_a.IsRenderFrameDeleted());
+  EXPECT_FALSE(rfh_b.IsRenderFrameDeleted());
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
   EXPECT_FALSE(rfh_b->IsInBackForwardCache());
   // TODO(yuzus): Post message to the frozen page, and make sure that the
@@ -3791,7 +3789,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, Events) {
 
   // As |rfh_a| is in back-forward cache, we cannot get the event list of A.
   // At B, a page-show event is recorded for the first loading.
-  MatchEventList(rfh_b, ListValueOf("window.pageshow"));
+  MatchEventList(rfh_b.get(), ListValueOf("window.pageshow"));
   content::FetchHistogramsFromChildProcesses();
   EXPECT_THAT(
       histogram_tester_.GetAllSamples(kEventPageShowPersisted),
@@ -3801,17 +3799,18 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, Events) {
   // 3) Go back to A. Confirm that expected events are fired.
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  EXPECT_FALSE(delete_observer_rfh_a.deleted());
-  EXPECT_FALSE(delete_observer_rfh_b.deleted());
-  EXPECT_EQ(rfh_a, current_frame_host());
+  EXPECT_FALSE(rfh_a.IsRenderFrameDeleted());
+  EXPECT_FALSE(rfh_b.IsRenderFrameDeleted());
+  EXPECT_EQ(rfh_a.get(), current_frame_host());
   // visibilitychange events are added twice per each because it is fired for
   // both window and document.
   MatchEventList(
-      rfh_a, ListValueOf("window.pageshow", "window.pagehide.persisted",
-                         "document.visibilitychange", "window.visibilitychange",
-                         "document.freeze", "document.resume",
-                         "document.visibilitychange", "window.visibilitychange",
-                         "window.pageshow.persisted"));
+      rfh_a.get(),
+      ListValueOf("window.pageshow", "window.pagehide.persisted",
+                  "document.visibilitychange", "window.visibilitychange",
+                  "document.freeze", "document.resume",
+                  "document.visibilitychange", "window.visibilitychange",
+                  "window.pageshow.persisted"));
 
   content::FetchHistogramsFromChildProcesses();
   EXPECT_THAT(

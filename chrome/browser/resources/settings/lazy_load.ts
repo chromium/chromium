@@ -29,8 +29,10 @@ import './site_settings/settings_category_default_radio_group.js';
 import './site_settings/site_data.js';
 import './site_settings/site_details.js';
 import './site_settings/zoom_levels.js';
-// <if expr="not chromeos">
+// <if expr="not chromeos and not lacros">
 import './people_page/import_data_dialog.js';
+// </if>
+// <if expr="not chromeos">
 import './people_page/manage_profile.js';
 // </if>
 import './people_page/signout_dialog.js';
@@ -80,8 +82,10 @@ export {LanguageSettingsActionType, LanguageSettingsMetricsProxy, LanguageSettin
 export {kMenuCloseDelay, SettingsLanguagesSubpageElement} from './languages_page/languages_subpage.js';
 export {LanguageHelper, LanguagesModel} from './languages_page/languages_types.js';
 // </if>
-// <if expr="not chromeos">
+// <if expr="not chromeos and not lacros">
 export {ImportDataBrowserProxyImpl, ImportDataStatus} from './people_page/import_data_browser_proxy.js';
+// </if>
+// <if expr="not chromeos">
 export {ManageProfileBrowserProxyImpl, ProfileShortcutStatus} from './people_page/manage_profile_browser_proxy.js';
 // </if>
 export {SettingsCollapseRadioButtonElement} from './privacy_page/collapse_radio_button.js';

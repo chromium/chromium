@@ -25,8 +25,8 @@
 #include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_reuse_manager.h"
+#include "components/password_manager/core/browser/password_store_built_in_backend.h"
 #include "components/password_manager/core/browser/password_store_factory_util.h"
-#include "components/password_manager/core/browser/password_store_impl.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_service.h"
@@ -174,11 +174,11 @@ AccountPasswordStoreFactory::BuildServiceInstanceFor(
   scoped_refptr<password_manager::PasswordStore> ps =
 #if defined(OS_ANDROID)
       new password_manager::PasswordStore(
-          std::make_unique<password_manager::PasswordStoreImpl>(
+          std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
               std::move(login_db)));
 #else
       new password_manager::PasswordStore(
-          std::make_unique<password_manager::PasswordStoreImpl>(
+          std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
               std::move(login_db),
               std::make_unique<UnsyncedCredentialsDeletionNotifierImpl>(
                   profile)));

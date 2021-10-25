@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/password_manager/core/browser/password_store_impl.h"
+#include "components/password_manager/core/browser/password_store_built_in_backend.h"
 
 #include <memory>
 #include <utility>
@@ -97,14 +97,14 @@ PasswordFormData CreateTestPasswordFormData() {
 
 }  // anonymous namespace
 
-class PasswordStoreImplTest : public testing::Test {
+class PasswordStoreBuiltInBackendTest : public testing::Test {
  public:
-  PasswordStoreImplTest() = default;
+  PasswordStoreBuiltInBackendTest() = default;
 
   PasswordStoreBackend* Initialize() {
-    store_ =
-        std::make_unique<PasswordStoreImpl>(std::make_unique<LoginDatabase>(
-            test_login_db_file_path(), IsAccountStore(false)));
+    store_ = std::make_unique<PasswordStoreBuiltInBackend>(
+        std::make_unique<LoginDatabase>(test_login_db_file_path(),
+                                        IsAccountStore(false)));
     PasswordStoreBackend* backend = store_.get();
     backend->InitBackend(/*remote_form_changes_received=*/base::DoNothing(),
                          /*sync_enabled_or_disabled_cb=*/base::DoNothing(),
@@ -115,7 +115,7 @@ class PasswordStoreImplTest : public testing::Test {
 
   PasswordStoreBackend* InitializeWithDatabase(
       std::unique_ptr<LoginDatabase> database) {
-    store_ = std::make_unique<PasswordStoreImpl>(std::move(database));
+    store_ = std::make_unique<PasswordStoreBuiltInBackend>(std::move(database));
     PasswordStoreBackend* backend = store_.get();
     backend->InitBackend(/*remote_form_changes_received=*/base::DoNothing(),
                          /*sync_enabled_or_disabled_cb=*/base::DoNothing(),
@@ -153,10 +153,10 @@ class PasswordStoreImplTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
   base::ScopedTempDir temp_dir_;
-  std::unique_ptr<PasswordStoreImpl> store_;
+  std::unique_ptr<PasswordStoreBuiltInBackend> store_;
 };
 
-TEST_F(PasswordStoreImplTest, NonASCIIData) {
+TEST_F(PasswordStoreBuiltInBackendTest, NonASCIIData) {
   PasswordStoreBackend* backend = Initialize();
 
   // Some non-ASCII password form data.
@@ -191,7 +191,7 @@ TEST_F(PasswordStoreImplTest, NonASCIIData) {
   RunUntilIdle();
 }
 
-TEST_F(PasswordStoreImplTest, TestAddLoginAsync) {
+TEST_F(PasswordStoreBuiltInBackendTest, TestAddLoginAsync) {
   PasswordStoreBackend* backend = Initialize();
   PasswordForm form = *FillPasswordFormWithData(CreateTestPasswordFormData());
 
@@ -206,7 +206,7 @@ TEST_F(PasswordStoreImplTest, TestAddLoginAsync) {
   RunUntilIdle();
 }
 
-TEST_F(PasswordStoreImplTest, TestUpdateLoginAsync) {
+TEST_F(PasswordStoreBuiltInBackendTest, TestUpdateLoginAsync) {
   PasswordStoreBackend* backend = Initialize();
   PasswordForm form = *FillPasswordFormWithData(CreateTestPasswordFormData());
 
@@ -225,7 +225,7 @@ TEST_F(PasswordStoreImplTest, TestUpdateLoginAsync) {
   RunUntilIdle();
 }
 
-TEST_F(PasswordStoreImplTest, TestRemoveLoginAsync) {
+TEST_F(PasswordStoreBuiltInBackendTest, TestRemoveLoginAsync) {
   PasswordStoreBackend* backend = Initialize();
   PasswordForm form = *FillPasswordFormWithData(CreateTestPasswordFormData());
 
@@ -246,7 +246,7 @@ TEST_F(PasswordStoreImplTest, TestRemoveLoginAsync) {
 // Verify that operations on a PasswordStore with a bad database cause no
 // explosions, but fail without side effect, return no data and trigger no
 // notifications.
-TEST_F(PasswordStoreImplTest, OperationsOnABadDatabaseSilentlyFail) {
+TEST_F(PasswordStoreBuiltInBackendTest, OperationsOnABadDatabaseSilentlyFail) {
   PasswordStoreBackend* bad_backend =
       InitializeWithDatabase(std::make_unique<BadLoginDatabase>());
   RunUntilIdle();
@@ -301,7 +301,7 @@ TEST_F(PasswordStoreImplTest, OperationsOnABadDatabaseSilentlyFail) {
   RunUntilIdle();
 }
 
-TEST_F(PasswordStoreImplTest, GetAllLoginsAsync) {
+TEST_F(PasswordStoreBuiltInBackendTest, GetAllLoginsAsync) {
   static constexpr PasswordFormData kTestCredentials[] = {
       {PasswordForm::Scheme::kHtml, kTestAndroidRealm1, "", "", u"", u"", u"",
        u"username_value_1", u"", kTestLastUsageTime, 1},

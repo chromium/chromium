@@ -27,7 +27,6 @@
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store_factory_util.h"
-#include "components/password_manager/core/browser/password_store_impl.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"

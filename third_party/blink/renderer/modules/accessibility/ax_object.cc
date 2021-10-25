@@ -497,6 +497,18 @@ void TruncateAndAddStringAttribute(
   }
 }
 
+void AddIntListAttributeFromOffsetVector(
+    ax::mojom::blink::IntListAttribute attr,
+    const Vector<int> offsets,
+    ui::AXNodeData* node_data) {
+  std::vector<int32_t> offset_values;
+  for (int offset : offsets)
+    offset_values.push_back(static_cast<int32_t>(offset));
+  DCHECK(node_data);
+  if (!offset_values.empty())
+    node_data->AddIntListAttribute(attr, offset_values);
+}
+
 }  // namespace
 
 int32_t ToAXMarkerType(DocumentMarker::MarkerType marker_type) {
@@ -1168,6 +1180,573 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
   if (accessibility_mode.has_mode(ui::AXMode::kScreenReader)) {
     if (LiveRegionRoot())
       SerializeLiveRegionAttributes(node_data);
+    SerializeOtherScreenReaderAttributes(node_data);
+  }
+}
+
+void AXObject::SerializeActionAttributes(ui::AXNodeData* node_data) {
+  if (CanSetValueAttribute())
+    node_data->AddAction(ax::mojom::blink::Action::kSetValue);
+  if (IsSlider()) {
+    node_data->AddAction(ax::mojom::blink::Action::kDecrement);
+    node_data->AddAction(ax::mojom::blink::Action::kIncrement);
+  }
+}
+
+void AXObject::SerializeChooserPopupAttributes(ui::AXNodeData* node_data) {
+  AXObject* chooser_popup = ChooserPopup();
+  if (!chooser_popup)
+    return;
+
+  int32_t chooser_popup_id = chooser_popup->AXObjectID();
+  auto controls_ids = node_data->GetIntListAttribute(
+      ax::mojom::blink::IntListAttribute::kControlsIds);
+  controls_ids.push_back(chooser_popup_id);
+  node_data->AddIntListAttribute(
+      ax::mojom::blink::IntListAttribute::kControlsIds, controls_ids);
+}
+
+void AXObject::SerializeColorAttributes(ui::AXNodeData* node_data) {
+  // Text attributes.
+  if (RGBA32 bg_color = BackgroundColor()) {
+    node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kBackgroundColor,
+                               bg_color);
+  }
+
+  if (RGBA32 color = GetColor())
+    node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kColor, color);
+}
+
+void AXObject::SerializeElementAttributes(ui::AXNodeData* node_data) {
+  Element* element = GetElement();
+  if (!element)
+    return;
+
+  if (const AtomicString& class_name = element->GetClassAttribute()) {
+    TruncateAndAddStringAttribute(node_data,
+                                  ax::mojom::blink::StringAttribute::kClassName,
+                                  class_name.Utf8());
+  }
+
+  // Expose StringAttribute::kRole, which is used for the xml-roles object
+  // attribute. Prefer the raw ARIA role attribute value, otherwise, the ARIA
+  // equivalent role is used, if it is a role that is exposed in xml-roles.
+  const AtomicString& role_str = GetRoleAttributeStringForObjectAttribute();
+  if (role_str) {
+    TruncateAndAddStringAttribute(
+        node_data, ax::mojom::blink::StringAttribute::kRole, role_str.Utf8());
+  }
+}
+
+void AXObject::SerializeHTMLTagAndClass(ui::AXNodeData* node_data) {
+  Element* element = GetElement();
+  if (!element) {
+    if (ui::IsPlatformDocument(RoleValue())) {
+      TruncateAndAddStringAttribute(
+          node_data, ax::mojom::blink::StringAttribute::kHtmlTag, "#document");
+    }
+    return;
+  }
+
+  TruncateAndAddStringAttribute(node_data,
+                                ax::mojom::blink::StringAttribute::kHtmlTag,
+                                element->tagName().LowerASCII().Utf8());
+
+  if (const AtomicString& class_name = element->GetClassAttribute()) {
+    TruncateAndAddStringAttribute(node_data,
+                                  ax::mojom::blink::StringAttribute::kClassName,
+                                  class_name.Utf8());
+  }
+}
+
+void AXObject::SerializeHTMLAttributes(ui::AXNodeData* node_data) {
+  Element* element = GetElement();
+  DCHECK(element);
+  for (const Attribute& attr : element->Attributes()) {
+    std::string name = attr.LocalName().LowerASCII().Utf8();
+    if (name == "class") {  // class already in kClassName
+      continue;
+    }
+    std::string value = attr.Value().Utf8();
+    node_data->html_attributes.push_back(std::make_pair(name, value));
+  }
+
+// TODO(nektar): Turn off kHTMLAccessibilityMode for automation and Mac
+// and remove ifdef.
+#if defined(OS_WIN) || defined(OS_CHROMEOS)
+  if ((node_data->role == ax::mojom::blink::Role::kMath ||
+       node_data->role == ax::mojom::blink::Role::kMathMLMath) &&
+      element->innerHTML().length()) {
+    TruncateAndAddStringAttribute(node_data,
+                                  ax::mojom::blink::StringAttribute::kInnerHtml,
+                                  element->innerHTML().Utf8());
+  }
+#endif
+}
+
+void AXObject::SerializeInlineTextBoxAttributes(
+    ui::AXNodeData* node_data) const {
+  DCHECK_EQ(ax::mojom::blink::Role::kInlineTextBox, node_data->role);
+
+  Vector<int> character_offsets;
+  TextCharacterOffsets(character_offsets);
+  AddIntListAttributeFromOffsetVector(
+      ax::mojom::blink::IntListAttribute::kCharacterOffsets, character_offsets,
+      node_data);
+
+  Vector<int> word_starts;
+  Vector<int> word_ends;
+  GetWordBoundaries(word_starts, word_ends);
+  AddIntListAttributeFromOffsetVector(
+      ax::mojom::blink::IntListAttribute::kWordStarts, word_starts, node_data);
+  AddIntListAttributeFromOffsetVector(
+      ax::mojom::blink::IntListAttribute::kWordEnds, word_ends, node_data);
+}
+
+void AXObject::SerializeLangAttribute(ui::AXNodeData* node_data) {
+  AXObject* parent = ParentObject();
+  if (Language().length()) {
+    // TODO(chrishall): should we still trim redundant languages off here?
+    if (!parent || parent->Language() != Language()) {
+      TruncateAndAddStringAttribute(
+          node_data, ax::mojom::blink::StringAttribute::kLanguage,
+          Language().Utf8());
+    }
+  }
+}
+
+void AXObject::SerializeListAttributes(ui::AXNodeData* node_data) {
+  if (SetSize()) {
+    node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kSetSize,
+                               SetSize());
+  }
+
+  if (PosInSet()) {
+    node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kPosInSet,
+                               PosInSet());
+  }
+}
+
+void AXObject::SerializeListMarkerAttributes(ui::AXNodeData* node_data) const {
+  DCHECK_EQ(ax::mojom::blink::Role::kListMarker, node_data->role);
+
+  Vector<int> word_starts;
+  Vector<int> word_ends;
+  GetWordBoundaries(word_starts, word_ends);
+  AddIntListAttributeFromOffsetVector(
+      ax::mojom::blink::IntListAttribute::kWordStarts, word_starts, node_data);
+  AddIntListAttributeFromOffsetVector(
+      ax::mojom::blink::IntListAttribute::kWordEnds, word_ends, node_data);
+}
+
+void AXObject::SerializeLiveRegionAttributes(ui::AXNodeData* node_data) const {
+  DCHECK(LiveRegionRoot());
+
+  node_data->AddBoolAttribute(ax::mojom::blink::BoolAttribute::kLiveAtomic,
+                              LiveRegionAtomic());
+  if (!LiveRegionStatus().IsEmpty()) {
+    TruncateAndAddStringAttribute(
+        node_data, ax::mojom::blink::StringAttribute::kLiveStatus,
+        LiveRegionStatus().Utf8());
+  }
+  TruncateAndAddStringAttribute(
+      node_data, ax::mojom::blink::StringAttribute::kLiveRelevant,
+      LiveRegionRelevant().Utf8());
+  // If we are not at the root of an atomic live region.
+  if (ContainerLiveRegionAtomic() && !LiveRegionRoot()->IsDetached() &&
+      !LiveRegionAtomic()) {
+    node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kMemberOfId,
+                               LiveRegionRoot()->AXObjectID());
+  }
+  node_data->AddBoolAttribute(
+      ax::mojom::blink::BoolAttribute::kContainerLiveAtomic,
+      ContainerLiveRegionAtomic());
+  node_data->AddBoolAttribute(
+      ax::mojom::blink::BoolAttribute::kContainerLiveBusy,
+      ContainerLiveRegionBusy());
+  TruncateAndAddStringAttribute(
+      node_data, ax::mojom::blink::StringAttribute::kContainerLiveStatus,
+      ContainerLiveRegionStatus().Utf8());
+  TruncateAndAddStringAttribute(
+      node_data, ax::mojom::blink::StringAttribute::kContainerLiveRelevant,
+      ContainerLiveRegionRelevant().Utf8());
+}
+
+void AXObject::SerializeNameAndDescriptionAttributes(
+    ui::AXMode accessibility_mode,
+    ui::AXNodeData* node_data) const {
+  ax::mojom::blink::NameFrom name_from;
+  AXObjectVector name_objects;
+  String name = GetName(name_from, &name_objects);
+  if ((!name.IsEmpty()) ||
+      name_from == ax::mojom::blink::NameFrom::kAttributeExplicitlyEmpty) {
+    int max_length = node_data->role == ax::mojom::blink::Role::kStaticText
+                         ? kMaxStaticTextLength
+                         : kMaxStringAttributeLength;
+    TruncateAndAddStringAttribute(node_data,
+                                  ax::mojom::blink::StringAttribute::kName,
+                                  name.Utf8(), max_length);
+    node_data->SetNameFrom(name_from);
+    AddIntListAttributeFromObjects(
+        ax::mojom::blink::IntListAttribute::kLabelledbyIds, name_objects,
+        node_data);
+  }
+
+  ax::mojom::blink::DescriptionFrom description_from;
+  AXObjectVector description_objects;
+  String description =
+      Description(name_from, description_from, &description_objects);
+  if (!description.IsEmpty()) {
+    DCHECK(description_from != ax::mojom::blink::DescriptionFrom::kNone);
+    TruncateAndAddStringAttribute(
+        node_data, ax::mojom::blink::StringAttribute::kDescription,
+        description.Utf8());
+    node_data->SetDescriptionFrom(description_from);
+    AddIntListAttributeFromObjects(
+        ax::mojom::blink::IntListAttribute::kDescribedbyIds,
+        description_objects, node_data);
+  }
+
+  String title = Title(name_from);
+  if (!title.IsEmpty()) {
+    TruncateAndAddStringAttribute(
+        node_data, ax::mojom::blink::StringAttribute::kTooltip, title.Utf8());
+  }
+
+  if (!accessibility_mode.has_mode(ui::AXMode::kScreenReader))
+    return;
+
+  String placeholder = Placeholder(name_from);
+  if (!placeholder.IsEmpty()) {
+    TruncateAndAddStringAttribute(
+        node_data, ax::mojom::blink::StringAttribute::kPlaceholder,
+        placeholder.Utf8());
+  }
+}
+
+void AXObject::SerializeOtherScreenReaderAttributes(
+    ui::AXNodeData* node_data) const {
+  DCHECK_NE(node_data->role, ax::mojom::blink::Role::kUnknown);
+  DCHECK_NE(node_data->role, ax::mojom::blink::Role::kNone);
+
+  if (node_data->role == ax::mojom::blink::Role::kColorWell) {
+    node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kColorValue,
+                               ColorValue());
+  }
+
+  if (node_data->role == ax::mojom::blink::Role::kLink) {
+    AXObject* target = InPageLinkTarget();
+    if (target) {
+      int32_t target_id = target->AXObjectID();
+      node_data->AddIntAttribute(
+          ax::mojom::blink::IntAttribute::kInPageLinkTargetId, target_id);
+    }
+  }
+
+  if (node_data->role == ax::mojom::blink::Role::kRadioButton) {
+    AddIntListAttributeFromObjects(
+        ax::mojom::blink::IntListAttribute::kRadioGroupIds,
+        RadioButtonsInGroup(), node_data);
+  }
+
+  if (GetAriaCurrentState() != ax::mojom::blink::AriaCurrentState::kNone) {
+    node_data->AddIntAttribute(
+        ax::mojom::blink::IntAttribute::kAriaCurrentState,
+        static_cast<int32_t>(GetAriaCurrentState()));
+  }
+
+  if (GetInvalidState() != ax::mojom::blink::InvalidState::kNone)
+    node_data->SetInvalidState(GetInvalidState());
+  if (GetInvalidState() == ax::mojom::blink::InvalidState::kOther &&
+      AriaInvalidValue().length()) {
+    TruncateAndAddStringAttribute(
+        node_data, ax::mojom::blink::StringAttribute::kAriaInvalidValue,
+        AriaInvalidValue().Utf8());
+  }
+
+  if (CheckedState() != ax::mojom::blink::CheckedState::kNone) {
+    node_data->SetCheckedState(CheckedState());
+  }
+
+  if (node_data->role == ax::mojom::blink::Role::kInlineTextBox) {
+    SerializeInlineTextBoxAttributes(node_data);
+  }
+
+  if (node_data->role == ax::mojom::blink::Role::kListMarker) {
+    SerializeListMarkerAttributes(node_data);
+  }
+
+  if (AccessKey().length()) {
+    TruncateAndAddStringAttribute(node_data,
+                                  ax::mojom::blink::StringAttribute::kAccessKey,
+                                  AccessKey().Utf8());
+  }
+
+  if (AutoComplete().length()) {
+    TruncateAndAddStringAttribute(
+        node_data, ax::mojom::blink::StringAttribute::kAutoComplete,
+        AutoComplete().Utf8());
+  }
+
+  if (Action() != ax::mojom::blink::DefaultActionVerb::kNone) {
+    node_data->SetDefaultActionVerb(Action());
+  }
+
+  if (NextOnLine() && !NextOnLine()->IsDetached()) {
+    node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kNextOnLineId,
+                               NextOnLine()->AXObjectID());
+  }
+
+  if (PreviousOnLine() && !PreviousOnLine()->IsDetached()) {
+    node_data->AddIntAttribute(
+        ax::mojom::blink::IntAttribute::kPreviousOnLineId,
+        PreviousOnLine()->AXObjectID());
+  }
+
+  if (ErrorMessage() && !ErrorMessage()->IsDetached()) {
+    node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kErrormessageId,
+                               ErrorMessage()->AXObjectID());
+  }
+
+  if (ui::SupportsHierarchicalLevel(node_data->role) && HierarchicalLevel()) {
+    node_data->AddIntAttribute(
+        ax::mojom::blink::IntAttribute::kHierarchicalLevel,
+        HierarchicalLevel());
+  }
+
+  if (CanvasHasFallbackContent()) {
+    node_data->AddBoolAttribute(
+        ax::mojom::blink::BoolAttribute::kCanvasHasFallback, true);
+  }
+
+  if (IsRangeValueSupported()) {
+    float value;
+    if (ValueForRange(&value)) {
+      node_data->AddFloatAttribute(
+          ax::mojom::blink::FloatAttribute::kValueForRange, value);
+    }
+
+    float max_value;
+    if (MaxValueForRange(&max_value)) {
+      node_data->AddFloatAttribute(
+          ax::mojom::blink::FloatAttribute::kMaxValueForRange, max_value);
+    }
+
+    float min_value;
+    if (MinValueForRange(&min_value)) {
+      node_data->AddFloatAttribute(
+          ax::mojom::blink::FloatAttribute::kMinValueForRange, min_value);
+    }
+
+    float step_value;
+    if (StepValueForRange(&step_value)) {
+      node_data->AddFloatAttribute(
+          ax::mojom::blink::FloatAttribute::kStepValueForRange, step_value);
+    }
+  }
+
+  if (ui::IsDialog(node_data->role)) {
+    node_data->AddBoolAttribute(ax::mojom::blink::BoolAttribute::kModal,
+                                IsModal());
+  }
+
+  // aria-dropeffect is deprecated in WAI-ARIA 1.1.
+  Vector<ax::mojom::blink::Dropeffect> dropeffects;
+  Dropeffects(dropeffects);
+  if (!dropeffects.IsEmpty()) {
+    for (auto&& dropeffect : dropeffects) {
+      node_data->AddDropeffect(dropeffect);
+    }
+  }
+}
+
+void AXObject::SerializeScrollAttributes(ui::AXNodeData* node_data) {
+  // Only mark as scrollable if user has actual scrollbars to use.
+  node_data->AddBoolAttribute(ax::mojom::blink::BoolAttribute::kScrollable,
+                              IsUserScrollable());
+  // Provide x,y scroll info if scrollable in any way (programmatically or via
+  // user).
+  gfx::Point scroll_offset = ToGfxPoint(GetScrollOffset());
+  node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kScrollX,
+                             scroll_offset.x());
+  node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kScrollY,
+                             scroll_offset.y());
+
+  gfx::Point min_scroll_offset = ToGfxPoint(MinimumScrollOffset());
+  node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kScrollXMin,
+                             min_scroll_offset.x());
+  node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kScrollYMin,
+                             min_scroll_offset.y());
+
+  gfx::Point max_scroll_offset = ToGfxPoint(MaximumScrollOffset());
+  node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kScrollXMax,
+                             max_scroll_offset.x());
+  node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kScrollYMax,
+                             max_scroll_offset.y());
+}
+
+void AXObject::SerializeSparseAttributes(ui::AXNodeData* node_data) {
+  if (IsVirtualObject()) {
+    AccessibleNode* accessible_node = GetAccessibleNode();
+    if (accessible_node) {
+      AXNodeDataAOMPropertyClient property_client(*ax_object_cache_,
+                                                  *node_data);
+      accessible_node->GetAllAOMProperties(&property_client);
+    }
+  }
+
+  Element* element = GetElement();
+  if (!element)
+    return;
+
+  AXSparseAttributeSetterMap& setter_map = GetAXSparseAttributeSetterMap();
+  AttributeCollection attributes = element->AttributesWithoutUpdate();
+  HashSet<QualifiedName> set_attributes;
+  for (const Attribute& attr : attributes) {
+    set_attributes.insert(attr.GetName());
+    AXSparseSetterFunc callback;
+    auto it = setter_map.find(attr.GetName());
+    if (it == setter_map.end())
+      continue;
+    it->value.Run(this, node_data, attr.Value());
+  }
+
+  if (!element->DidAttachInternals())
+    return;
+  const auto& internals_attributes =
+      element->EnsureElementInternals().GetAttributes();
+  for (const QualifiedName& attr : internals_attributes.Keys()) {
+    auto it = setter_map.find(attr);
+    if (set_attributes.Contains(attr) || it == setter_map.end())
+      continue;
+    it->value.Run(this, node_data, internals_attributes.at(attr));
+  }
+}
+
+void AXObject::SerializeStyleAttributes(ui::AXNodeData* node_data) {
+  // Only serialize font family if there is one, and it is different from the
+  // parent. Use the value from computed style first since that is a fast lookup
+  // and comparison, and serialize the user-friendly name at points in the tree
+  // where the font family changes between parent/child.
+  const AtomicString& computed_family = ComputedFontFamily();
+  if (computed_family.length()) {
+    AXObject* parent = ParentObjectUnignored();
+    if (!parent || parent->ComputedFontFamily() != computed_family) {
+      TruncateAndAddStringAttribute(
+          node_data, ax::mojom::blink::StringAttribute::kFontFamily,
+          FontFamilyForSerialization().Utf8());
+    }
+  }
+
+  // Font size is in pixels.
+  if (FontSize()) {
+    node_data->AddFloatAttribute(ax::mojom::blink::FloatAttribute::kFontSize,
+                                 FontSize());
+  }
+
+  if (FontWeight()) {
+    node_data->AddFloatAttribute(ax::mojom::blink::FloatAttribute::kFontWeight,
+                                 FontWeight());
+  }
+
+  if (RoleValue() == ax::mojom::blink::Role::kListItem &&
+      GetListStyle() != ax::mojom::blink::ListStyle::kNone) {
+    node_data->SetListStyle(GetListStyle());
+  }
+
+  if (GetTextDirection() != ax::mojom::blink::WritingDirection::kNone) {
+    node_data->SetTextDirection(GetTextDirection());
+  }
+
+  if (GetTextPosition() != ax::mojom::blink::TextPosition::kNone) {
+    node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kTextPosition,
+                               static_cast<int32_t>(GetTextPosition()));
+  }
+
+  int32_t text_style = 0;
+  ax::mojom::blink::TextDecorationStyle text_overline_style;
+  ax::mojom::blink::TextDecorationStyle text_strikethrough_style;
+  ax::mojom::blink::TextDecorationStyle text_underline_style;
+  GetTextStyleAndTextDecorationStyle(&text_style, &text_overline_style,
+                                     &text_strikethrough_style,
+                                     &text_underline_style);
+  if (text_style) {
+    node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kTextStyle,
+                               text_style);
+  }
+
+  if (text_overline_style != ax::mojom::blink::TextDecorationStyle::kNone) {
+    node_data->AddIntAttribute(
+        ax::mojom::blink::IntAttribute::kTextOverlineStyle,
+        static_cast<int32_t>(text_overline_style));
+  }
+
+  if (text_strikethrough_style !=
+      ax::mojom::blink::TextDecorationStyle::kNone) {
+    node_data->AddIntAttribute(
+        ax::mojom::blink::IntAttribute::kTextStrikethroughStyle,
+        static_cast<int32_t>(text_strikethrough_style));
+  }
+
+  if (text_underline_style != ax::mojom::blink::TextDecorationStyle::kNone) {
+    node_data->AddIntAttribute(
+        ax::mojom::blink::IntAttribute::kTextUnderlineStyle,
+        static_cast<int32_t>(text_underline_style));
+  }
+}
+
+void AXObject::SerializeTableAttributes(ui::AXNodeData* node_data) {
+  if (ui::IsTableLike(RoleValue())) {
+    int aria_colcount = AriaColumnCount();
+    if (aria_colcount) {
+      node_data->AddIntAttribute(
+          ax::mojom::blink::IntAttribute::kAriaColumnCount, aria_colcount);
+    }
+    int aria_rowcount = AriaRowCount();
+    if (aria_rowcount) {
+      node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kAriaRowCount,
+                                 aria_rowcount);
+    }
+  }
+
+  if (ui::IsTableRow(RoleValue())) {
+    AXObject* header = HeaderObject();
+    if (header && !header->IsDetached()) {
+      // TODO(accessibility): these should be computed by ui::AXTableInfo and
+      // removed here.
+      node_data->AddIntAttribute(
+          ax::mojom::blink::IntAttribute::kTableRowHeaderId,
+          header->AXObjectID());
+    }
+  }
+
+  if (ui::IsCellOrTableHeader(RoleValue())) {
+    node_data->AddIntAttribute(
+        ax::mojom::blink::IntAttribute::kTableCellColumnSpan, ColumnSpan());
+    node_data->AddIntAttribute(
+        ax::mojom::blink::IntAttribute::kTableCellRowSpan, RowSpan());
+  }
+
+  if (ui::IsCellOrTableHeader(RoleValue()) || ui::IsTableRow(RoleValue())) {
+    // aria-rowindex and aria-colindex are supported on cells, headers and
+    // rows.
+    int aria_rowindex = AriaRowIndex();
+    if (aria_rowindex) {
+      node_data->AddIntAttribute(
+          ax::mojom::blink::IntAttribute::kAriaCellRowIndex, aria_rowindex);
+    }
+
+    int aria_colindex = AriaColumnIndex();
+    if (aria_colindex) {
+      node_data->AddIntAttribute(
+          ax::mojom::blink::IntAttribute::kAriaCellColumnIndex, aria_colindex);
+    }
+  }
+
+  if (ui::IsTableHeader(RoleValue()) &&
+      GetSortDirection() != ax::mojom::blink::SortDirection::kNone) {
+    node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kSortDirection,
+                               static_cast<int32_t>(GetSortDirection()));
   }
 }
 
@@ -1368,430 +1947,8 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
   }
 }
 
-void AXObject::SerializeTableAttributes(ui::AXNodeData* node_data) {
-  if (ui::IsTableLike(RoleValue())) {
-    int aria_colcount = AriaColumnCount();
-    if (aria_colcount) {
-      node_data->AddIntAttribute(
-          ax::mojom::blink::IntAttribute::kAriaColumnCount, aria_colcount);
-    }
-    int aria_rowcount = AriaRowCount();
-    if (aria_rowcount) {
-      node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kAriaRowCount,
-                                 aria_rowcount);
-    }
-  }
-
-  if (ui::IsTableRow(RoleValue())) {
-    AXObject* header = HeaderObject();
-    if (header && !header->IsDetached()) {
-      // TODO(accessibility): these should be computed by ui::AXTableInfo and
-      // removed here.
-      node_data->AddIntAttribute(
-          ax::mojom::blink::IntAttribute::kTableRowHeaderId,
-          header->AXObjectID());
-    }
-  }
-
-  if (ui::IsCellOrTableHeader(RoleValue())) {
-    node_data->AddIntAttribute(
-        ax::mojom::blink::IntAttribute::kTableCellColumnSpan, ColumnSpan());
-    node_data->AddIntAttribute(
-        ax::mojom::blink::IntAttribute::kTableCellRowSpan, RowSpan());
-  }
-
-  if (ui::IsCellOrTableHeader(RoleValue()) || ui::IsTableRow(RoleValue())) {
-    // aria-rowindex and aria-colindex are supported on cells, headers and
-    // rows.
-    int aria_rowindex = AriaRowIndex();
-    if (aria_rowindex) {
-      node_data->AddIntAttribute(
-          ax::mojom::blink::IntAttribute::kAriaCellRowIndex, aria_rowindex);
-    }
-
-    int aria_colindex = AriaColumnIndex();
-    if (aria_colindex) {
-      node_data->AddIntAttribute(
-          ax::mojom::blink::IntAttribute::kAriaCellColumnIndex, aria_colindex);
-    }
-  }
-
-  if (ui::IsTableHeader(RoleValue()) &&
-      GetSortDirection() != ax::mojom::blink::SortDirection::kNone) {
-    node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kSortDirection,
-                               static_cast<int32_t>(GetSortDirection()));
-  }
-}
-
-void AXObject::SerializeScrollAttributes(ui::AXNodeData* node_data) {
-  // Only mark as scrollable if user has actual scrollbars to use.
-  node_data->AddBoolAttribute(ax::mojom::blink::BoolAttribute::kScrollable,
-                              IsUserScrollable());
-  // Provide x,y scroll info if scrollable in any way (programmatically or via
-  // user).
-  gfx::Point scroll_offset = ToGfxPoint(GetScrollOffset());
-  node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kScrollX,
-                             scroll_offset.x());
-  node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kScrollY,
-                             scroll_offset.y());
-
-  gfx::Point min_scroll_offset = ToGfxPoint(MinimumScrollOffset());
-  node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kScrollXMin,
-                             min_scroll_offset.x());
-  node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kScrollYMin,
-                             min_scroll_offset.y());
-
-  gfx::Point max_scroll_offset = ToGfxPoint(MaximumScrollOffset());
-  node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kScrollXMax,
-                             max_scroll_offset.x());
-  node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kScrollYMax,
-                             max_scroll_offset.y());
-}
-
-const AtomicString& AXObject::GetRoleAttributeStringForObjectAttribute() {
-  // All ARIA roles are exposed in xml-roles.
-  if (const AtomicString& role_str =
-          GetAOMPropertyOrARIAAttribute(AOMStringProperty::kRole)) {
-    return role_str;
-  }
-
-  ax::mojom::blink::Role landmark_role = RoleValue();
-  if (landmark_role == ax::mojom::blink::Role::kFooter) {
-    // - Treat <footer> as "contentinfo" in xml-roles object attribute.
-    landmark_role = ax::mojom::blink::Role::kContentInfo;
-  } else if (landmark_role == ax::mojom::blink::Role::kHeader) {
-    // - Treat <header> as "banner" in xml-roles object attribute.
-    landmark_role = ax::mojom::blink::Role::kBanner;
-  } else if (!ui::IsLandmark(RoleValue())) {
-    // Landmarks are the only roles exposed in xml-roles, matching Firefox.
-    return g_null_atom;
-  }
-
-  return ARIARoleName(landmark_role);
-}
-
-void AXObject::SerializeElementAttributes(ui::AXNodeData* node_data) {
-  Element* element = GetElement();
-  if (!element)
-    return;
-
-  if (const AtomicString& class_name = element->GetClassAttribute()) {
-    TruncateAndAddStringAttribute(node_data,
-                                  ax::mojom::blink::StringAttribute::kClassName,
-                                  class_name.Utf8());
-  }
-
-  // Expose StringAttribute::kRole, which is used for the xml-roles object
-  // attribute. Prefer the raw ARIA role attribute value, otherwise, the ARIA
-  // equivalent role is used, if it is a role that is exposed in xml-roles.
-  const AtomicString& role_str = GetRoleAttributeStringForObjectAttribute();
-  if (role_str) {
-    TruncateAndAddStringAttribute(
-        node_data, ax::mojom::blink::StringAttribute::kRole, role_str.Utf8());
-  }
-}
-
-void AXObject::SerializeHTMLTagAndClass(ui::AXNodeData* node_data) {
-  Element* element = GetElement();
-  if (!element) {
-    if (ui::IsPlatformDocument(RoleValue())) {
-      TruncateAndAddStringAttribute(
-          node_data, ax::mojom::blink::StringAttribute::kHtmlTag, "#document");
-    }
-    return;
-  }
-
-  TruncateAndAddStringAttribute(node_data,
-                                ax::mojom::blink::StringAttribute::kHtmlTag,
-                                element->tagName().LowerASCII().Utf8());
-
-  if (const AtomicString& class_name = element->GetClassAttribute()) {
-    TruncateAndAddStringAttribute(node_data,
-                                  ax::mojom::blink::StringAttribute::kClassName,
-                                  class_name.Utf8());
-  }
-}
-
-void AXObject::SerializeHTMLAttributes(ui::AXNodeData* node_data) {
-  Element* element = GetElement();
-  DCHECK(element);
-  for (const Attribute& attr : element->Attributes()) {
-    std::string name = attr.LocalName().LowerASCII().Utf8();
-    if (name == "class") {  // class already in kClassName
-      continue;
-    }
-    std::string value = attr.Value().Utf8();
-    node_data->html_attributes.push_back(std::make_pair(name, value));
-  }
-
-// TODO(nektar): Turn off kHTMLAccessibilityMode for automation and Mac
-// and remove ifdef.
-#if defined(OS_WIN) || defined(OS_CHROMEOS)
-  if ((node_data->role == ax::mojom::blink::Role::kMath ||
-       node_data->role == ax::mojom::blink::Role::kMathMLMath) &&
-      element->innerHTML().length()) {
-    TruncateAndAddStringAttribute(node_data,
-                                  ax::mojom::blink::StringAttribute::kInnerHtml,
-                                  element->innerHTML().Utf8());
-  }
-#endif
-}
-
-void AXObject::SerializeColorAttributes(ui::AXNodeData* node_data) {
-  // Text attributes.
-  if (RGBA32 bg_color = BackgroundColor()) {
-    node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kBackgroundColor,
-                               bg_color);
-  }
-
-  if (RGBA32 color = GetColor())
-    node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kColor, color);
-}
-
-void AXObject::SerializeStyleAttributes(ui::AXNodeData* node_data) {
-  // Only serialize font family if there is one, and it is different from the
-  // parent. Use the value from computed style first since that is a fast lookup
-  // and comparison, and serialize the user-friendly name at points in the tree
-  // where the font family changes between parent/child.
-  const AtomicString& computed_family = ComputedFontFamily();
-  if (computed_family.length()) {
-    AXObject* parent = ParentObjectUnignored();
-    if (!parent || parent->ComputedFontFamily() != computed_family) {
-      TruncateAndAddStringAttribute(
-          node_data, ax::mojom::blink::StringAttribute::kFontFamily,
-          FontFamilyForSerialization().Utf8());
-    }
-  }
-
-  // Font size is in pixels.
-  if (FontSize()) {
-    node_data->AddFloatAttribute(ax::mojom::blink::FloatAttribute::kFontSize,
-                                 FontSize());
-  }
-
-  if (FontWeight()) {
-    node_data->AddFloatAttribute(ax::mojom::blink::FloatAttribute::kFontWeight,
-                                 FontWeight());
-  }
-
-  if (RoleValue() == ax::mojom::blink::Role::kListItem &&
-      GetListStyle() != ax::mojom::blink::ListStyle::kNone) {
-    node_data->SetListStyle(GetListStyle());
-  }
-
-  if (GetTextDirection() != ax::mojom::blink::WritingDirection::kNone) {
-    node_data->SetTextDirection(GetTextDirection());
-  }
-
-  if (GetTextPosition() != ax::mojom::blink::TextPosition::kNone) {
-    node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kTextPosition,
-                               static_cast<int32_t>(GetTextPosition()));
-  }
-
-  int32_t text_style = 0;
-  ax::mojom::blink::TextDecorationStyle text_overline_style;
-  ax::mojom::blink::TextDecorationStyle text_strikethrough_style;
-  ax::mojom::blink::TextDecorationStyle text_underline_style;
-  GetTextStyleAndTextDecorationStyle(&text_style, &text_overline_style,
-                                     &text_strikethrough_style,
-                                     &text_underline_style);
-  if (text_style) {
-    node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kTextStyle,
-                               text_style);
-  }
-
-  if (text_overline_style != ax::mojom::blink::TextDecorationStyle::kNone) {
-    node_data->AddIntAttribute(
-        ax::mojom::blink::IntAttribute::kTextOverlineStyle,
-        static_cast<int32_t>(text_overline_style));
-  }
-
-  if (text_strikethrough_style !=
-      ax::mojom::blink::TextDecorationStyle::kNone) {
-    node_data->AddIntAttribute(
-        ax::mojom::blink::IntAttribute::kTextStrikethroughStyle,
-        static_cast<int32_t>(text_strikethrough_style));
-  }
-
-  if (text_underline_style != ax::mojom::blink::TextDecorationStyle::kNone) {
-    node_data->AddIntAttribute(
-        ax::mojom::blink::IntAttribute::kTextUnderlineStyle,
-        static_cast<int32_t>(text_underline_style));
-  }
-}
-
-void AXObject::SerializeSparseAttributes(ui::AXNodeData* node_data) {
-  if (IsVirtualObject()) {
-    AccessibleNode* accessible_node = GetAccessibleNode();
-    if (accessible_node) {
-      AXNodeDataAOMPropertyClient property_client(*ax_object_cache_,
-                                                  *node_data);
-      accessible_node->GetAllAOMProperties(&property_client);
-    }
-  }
-
-  Element* element = GetElement();
-  if (!element)
-    return;
-
-  AXSparseAttributeSetterMap& setter_map = GetAXSparseAttributeSetterMap();
-  AttributeCollection attributes = element->AttributesWithoutUpdate();
-  HashSet<QualifiedName> set_attributes;
-  for (const Attribute& attr : attributes) {
-    set_attributes.insert(attr.GetName());
-    AXSparseSetterFunc callback;
-    auto it = setter_map.find(attr.GetName());
-    if (it == setter_map.end())
-      continue;
-    it->value.Run(this, node_data, attr.Value());
-  }
-
-  if (!element->DidAttachInternals())
-    return;
-  const auto& internals_attributes =
-      element->EnsureElementInternals().GetAttributes();
-  for (const QualifiedName& attr : internals_attributes.Keys()) {
-    auto it = setter_map.find(attr);
-    if (set_attributes.Contains(attr) || it == setter_map.end())
-      continue;
-    it->value.Run(this, node_data, internals_attributes.at(attr));
-  }
-}
-
-void AXObject::SerializeLangAttribute(ui::AXNodeData* node_data) {
-  AXObject* parent = ParentObject();
-  if (Language().length()) {
-    // TODO(chrishall): should we still trim redundant languages off here?
-    if (!parent || parent->Language() != Language()) {
-      TruncateAndAddStringAttribute(
-          node_data, ax::mojom::blink::StringAttribute::kLanguage,
-          Language().Utf8());
-    }
-  }
-}
-
-void AXObject::SerializeListAttributes(ui::AXNodeData* node_data) {
-  if (SetSize()) {
-    node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kSetSize,
-                               SetSize());
-  }
-
-  if (PosInSet()) {
-    node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kPosInSet,
-                               PosInSet());
-  }
-}
-
 void AXObject::SerializeMarkerAttributes(ui::AXNodeData* node_data) const {
   // Implemented in subclasses.
-}
-
-void AXObject::SerializeChooserPopupAttributes(ui::AXNodeData* node_data) {
-  AXObject* chooser_popup = ChooserPopup();
-  if (!chooser_popup)
-    return;
-
-  int32_t chooser_popup_id = chooser_popup->AXObjectID();
-  auto controls_ids = node_data->GetIntListAttribute(
-      ax::mojom::blink::IntListAttribute::kControlsIds);
-  controls_ids.push_back(chooser_popup_id);
-  node_data->AddIntListAttribute(
-      ax::mojom::blink::IntListAttribute::kControlsIds, controls_ids);
-}
-
-void AXObject::SerializeActionAttributes(ui::AXNodeData* node_data) {
-  if (CanSetValueAttribute())
-    node_data->AddAction(ax::mojom::blink::Action::kSetValue);
-  if (IsSlider()) {
-    node_data->AddAction(ax::mojom::blink::Action::kDecrement);
-    node_data->AddAction(ax::mojom::blink::Action::kIncrement);
-  }
-}
-
-void AXObject::SerializeNameAndDescriptionAttributes(
-    ui::AXMode accessibility_mode,
-    ui::AXNodeData* node_data) const {
-  ax::mojom::blink::NameFrom name_from;
-  AXObjectVector name_objects;
-  String name = GetName(name_from, &name_objects);
-  if ((!name.IsEmpty()) ||
-      name_from == ax::mojom::blink::NameFrom::kAttributeExplicitlyEmpty) {
-    int max_length = node_data->role == ax::mojom::blink::Role::kStaticText
-                         ? kMaxStaticTextLength
-                         : kMaxStringAttributeLength;
-    TruncateAndAddStringAttribute(node_data,
-                                  ax::mojom::blink::StringAttribute::kName,
-                                  name.Utf8(), max_length);
-    node_data->SetNameFrom(name_from);
-    AddIntListAttributeFromObjects(
-        ax::mojom::blink::IntListAttribute::kLabelledbyIds, name_objects,
-        node_data);
-  }
-
-    ax::mojom::blink::DescriptionFrom description_from;
-    AXObjectVector description_objects;
-    String description =
-        Description(name_from, description_from, &description_objects);
-  if (!description.IsEmpty()) {
-    DCHECK(description_from != ax::mojom::blink::DescriptionFrom::kNone);
-    TruncateAndAddStringAttribute(
-        node_data, ax::mojom::blink::StringAttribute::kDescription,
-        description.Utf8());
-    node_data->SetDescriptionFrom(description_from);
-    AddIntListAttributeFromObjects(
-        ax::mojom::blink::IntListAttribute::kDescribedbyIds,
-        description_objects, node_data);
-  }
-
-  String title = Title(name_from);
-  if (!title.IsEmpty()) {
-    TruncateAndAddStringAttribute(
-        node_data, ax::mojom::blink::StringAttribute::kTooltip, title.Utf8());
-  }
-
-  if (!accessibility_mode.has_mode(ui::AXMode::kScreenReader))
-    return;
-
-  String placeholder = Placeholder(name_from);
-  if (!placeholder.IsEmpty()) {
-    TruncateAndAddStringAttribute(
-        node_data, ax::mojom::blink::StringAttribute::kPlaceholder,
-                                placeholder.Utf8());
-  }
-}
-
-void AXObject::SerializeLiveRegionAttributes(ui::AXNodeData* node_data) const {
-  DCHECK(LiveRegionRoot());
-  DCHECK(node_data);
-
-  node_data->AddBoolAttribute(ax::mojom::blink::BoolAttribute::kLiveAtomic,
-                              LiveRegionAtomic());
-  if (!LiveRegionStatus().IsEmpty()) {
-    TruncateAndAddStringAttribute(
-        node_data, ax::mojom::blink::StringAttribute::kLiveStatus,
-        LiveRegionStatus().Utf8());
-  }
-  TruncateAndAddStringAttribute(
-      node_data, ax::mojom::blink::StringAttribute::kLiveRelevant,
-      LiveRegionRelevant().Utf8());
-  // If we are not at the root of an atomic live region.
-  if (ContainerLiveRegionAtomic() && !LiveRegionRoot()->IsDetached() &&
-      !LiveRegionAtomic()) {
-    node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kMemberOfId,
-                               LiveRegionRoot()->AXObjectID());
-  }
-  node_data->AddBoolAttribute(
-      ax::mojom::blink::BoolAttribute::kContainerLiveAtomic,
-      ContainerLiveRegionAtomic());
-  node_data->AddBoolAttribute(
-      ax::mojom::blink::BoolAttribute::kContainerLiveBusy,
-      ContainerLiveRegionBusy());
-  TruncateAndAddStringAttribute(
-      node_data, ax::mojom::blink::StringAttribute::kContainerLiveStatus,
-      ContainerLiveRegionStatus().Utf8());
-  TruncateAndAddStringAttribute(
-      node_data, ax::mojom::blink::StringAttribute::kContainerLiveRelevant,
-      ContainerLiveRegionRelevant().Utf8());
 }
 
 bool AXObject::IsAXNodeObject() const {
@@ -1989,7 +2146,7 @@ ax::mojom::blink::CheckedState AXObject::CheckedState() const {
     // do not expose native radio mixed state as accessibility mixed state.
     // This would confuse the JAWS screen reader, which reports a mixed radio as
     // both checked and partially checked, but a native mixed native radio
-    // button sinply means no radio buttons have been checked in the group yet.
+    // button simply means no radio buttons have been checked in the group yet.
     if (IsNativeCheckboxInMixedState(node))
       return ax::mojom::blink::CheckedState::kMixed;
 
@@ -5921,6 +6078,28 @@ const AXObject* AXObject::LowestCommonAncestor(const AXObject& first,
   }
 
   return common_ancestor;
+}
+
+const AtomicString& AXObject::GetRoleAttributeStringForObjectAttribute() {
+  // All ARIA roles are exposed in xml-roles.
+  if (const AtomicString& role_str =
+          GetAOMPropertyOrARIAAttribute(AOMStringProperty::kRole)) {
+    return role_str;
+  }
+
+  ax::mojom::blink::Role landmark_role = RoleValue();
+  if (landmark_role == ax::mojom::blink::Role::kFooter) {
+    // - Treat <footer> as "contentinfo" in xml-roles object attribute.
+    landmark_role = ax::mojom::blink::Role::kContentInfo;
+  } else if (landmark_role == ax::mojom::blink::Role::kHeader) {
+    // - Treat <header> as "banner" in xml-roles object attribute.
+    landmark_role = ax::mojom::blink::Role::kBanner;
+  } else if (!ui::IsLandmark(RoleValue())) {
+    // Landmarks are the only roles exposed in xml-roles, matching Firefox.
+    return g_null_atom;
+  }
+
+  return ARIARoleName(landmark_role);
 }
 
 String AXObject::ToString(bool verbose, bool cached_values_only) const {

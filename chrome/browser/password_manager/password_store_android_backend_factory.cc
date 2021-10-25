@@ -9,7 +9,7 @@
 #include "chrome/browser/password_manager/android/password_store_android_backend_bridge.h"
 #include "components/password_manager/core/browser/login_database.h"
 #include "components/password_manager/core/browser/password_store_backend_migration_decorator.h"
-#include "components/password_manager/core/browser/password_store_impl.h"
+#include "components/password_manager/core/browser/password_store_built_in_backend.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_service.h"
 
@@ -24,7 +24,7 @@ std::unique_ptr<PasswordStoreBackend> PasswordStoreBackend::Create(
         PasswordStoreAndroidBackendBridge::Create());
   }
   return std::make_unique<PasswordStoreBackendMigrationDecorator>(
-      std::make_unique<PasswordStoreImpl>(std::move(login_db)),
+      std::make_unique<PasswordStoreBuiltInBackend>(std::move(login_db)),
       std::make_unique<PasswordStoreAndroidBackend>(
           PasswordStoreAndroidBackendBridge::Create()),
       prefs);

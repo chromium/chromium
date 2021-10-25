@@ -626,7 +626,7 @@ const base::Feature kIncognitoBrandConsistencyForDesktop{
 // upon clicking would show a dialog to close all Incognito windows.
 const base::Feature kIncognitoClearBrowsingDataDialogForDesktop{
     "IncognitoClearBrowsingDataDialogForDesktop",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
 // When enabled, removes any entry points to the history UI from Incognito mode.
