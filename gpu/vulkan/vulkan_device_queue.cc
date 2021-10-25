@@ -11,6 +11,7 @@
 
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
 #include "gpu/config/gpu_info.h"  // nogncheck
 #include "gpu/config/vulkan_info.h"
 #include "gpu/vulkan/vulkan_command_pool.h"
@@ -77,11 +78,15 @@ bool VulkanDeviceQueue::Initialize(
     if (device_properties.apiVersion < info.used_api_version)
       continue;
 
+      // In dual-CPU cases, we cannot detect the active GPU correctly on Linux,
+      // so don't select GPU device based on the |gpu_info|.
+#if !defined(OS_LINUX)
     // If gpu_info is provided, the device should match it.
     if (gpu_info && (device_properties.vendorID != gpu_info->gpu.vendor_id ||
                      device_properties.deviceID != gpu_info->gpu.device_id)) {
       continue;
     }
+#endif
 
     if (device_properties.deviceType < 0 ||
         device_properties.deviceType > VK_PHYSICAL_DEVICE_TYPE_CPU) {
@@ -112,7 +117,7 @@ bool VulkanDeviceQueue::Initialize(
         break;
       }
     }
-    
+
     if (!found)
       continue;
 
