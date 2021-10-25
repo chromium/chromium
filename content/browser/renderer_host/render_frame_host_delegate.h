@@ -183,6 +183,7 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
       const ContextMenuParams& params) {}
 
   // A JavaScript alert, confirmation or prompt dialog should be shown.
+  // Will only be called for active frames belonging to a primary page.
   virtual void RunJavaScriptDialog(RenderFrameHostImpl* render_frame_host,
                                    const std::u16string& message,
                                    const std::u16string& default_prompt,
@@ -190,6 +191,7 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
                                    bool disable_third_party_subframe_suppresion,
                                    JavaScriptDialogCallback callback) {}
 
+  // Will only be called for active frames belonging to a primary page.
   virtual void RunBeforeUnloadConfirm(RenderFrameHostImpl* render_frame_host,
                                       bool is_reload,
                                       JavaScriptDialogCallback callback) {}

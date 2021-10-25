@@ -4677,11 +4677,15 @@ void RenderFrameHostImpl::RunJavaScriptDialog(
     JavaScriptDialogType dialog_type,
     bool disable_third_party_subframe_suppresion,
     JavaScriptDialogCallback ipc_response_callback) {
-  // Don't show the dialog if it's triggered on a non-active RenderFrameHost.
-  // This happens when the RenderFrameHost is pending deletion or in the
-  // back-forward cache.
-  if (lifecycle_state() != LifecycleStateImpl::kActive) {
-    std::move(ipc_response_callback).Run(false, std::u16string());
+  // Don't show the dialog if it's triggered on a non-active or non-primary
+  // RenderFrameHost. This happens when the RenderFrameHost is pending deletion,
+  // or is a non-primary MPArch page (Fenced Frame, in BFCache, etc.)..
+  // TODO(https://crbug.com/1262022): Have to check fenced frames explicitly
+  // since they are not yet implemented with MPArch. Once the transition from
+  // shadow DOM to MPArch is complete, remove the last part of the condition.
+  if (!IsActive() || !GetPage().IsPrimary() ||
+      frame_tree_node_->IsInFencedFrameTree()) {
+    std::move(ipc_response_callback).Run(/*success=*/false, std::u16string());
     return;
   }
 
@@ -4703,9 +4707,14 @@ void RenderFrameHostImpl::RunBeforeUnloadConfirm(
   TRACE_EVENT1("navigation", "RenderFrameHostImpl::OnRunBeforeUnloadConfirm",
                "frame_tree_node", frame_tree_node_->frame_tree_node_id());
 
-  // Inactive pages, such as prerendered pages, should not be able to put up a
-  // dialog.
-  if (!IsActive()) {
+  // Don't show the dialog if it's triggered on a non-active or non-primary
+  // RenderFrameHost. This happens when the RenderFrameHost is pending deletion,
+  // or is a non-primary MPArch page (Fenced Frame, in BFCache, etc.)..
+  // TODO(https://crbug.com/1262022): Have to check fenced frames explicitly
+  // since they are not yet implemented with MPArch. Once the transition from
+  // shadow DOM to MPArch is complete, remove the last part of the condition.
+  if (!IsActive() || !GetPage().IsPrimary() ||
+      frame_tree_node_->IsInFencedFrameTree()) {
     std::move(ipc_response_callback).Run(/*success=*/false);
     return;
   }
