@@ -114,6 +114,12 @@ bool GetStatusForSigninPolicy() {
   return false;
 }
 
+bool IsForcedSigninPolicy() {
+  return static_cast<BrowserSigninMode>(
+             GetApplicationContext()->GetLocalState()->GetInteger(
+                 prefs::kBrowserSigninPolicy)) == BrowserSigninMode::kForced;
+}
+
 }  // namespace
 
 @interface GoogleServicesSettingsMediator () <
@@ -474,6 +480,11 @@ bool GetStatusForSigninPolicy() {
   if (!status) {
     managedItem.tintColor = [UIColor colorNamed:kGrey300Color];
     managedItem.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  } else if (IsForcedSigninPolicy()) {
+    // Status should be ON for forced sign-in policy, but the text color has to
+    // be gray because the knob is not shown.
+    managedItem.textColor = [UIColor colorNamed:kDisabledTintColor];
+    managedItem.detailTextColor = [UIColor colorNamed:kDisabledTintColor];
   }
   managedItem.accessibilityHint =
       l10n_util::GetNSString(IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT);
