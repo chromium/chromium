@@ -1100,5 +1100,10 @@
     "prefix": "cors-non-wildcard-request-headers",
     "bases": ["external/wpt/fetch/api/cors/cors-preflight.any.js"],
     "args": ["--enable-features=CorsNonWildcardRequestHeadersSupport"]
+  }, 
+  {
+    "prefix": "enable-experimental-async-stack-tagging-api",
+    "bases": ["inspector-protocol/runtime"],
+    "args": ["--js-flags=--experimental-async-stack-tagging-api"]
   }
 ]
