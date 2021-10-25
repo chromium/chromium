@@ -7,9 +7,13 @@
 
 #import <UIKit/UIKit.h>
 
+namespace bookmarks {
+class BookmarkModel;
+}
 @protocol ApplicationCommands;
 @protocol BrowserCommands;
 @class OverflowMenuModel;
+class PrefService;
 @protocol FindInPageCommands;
 @protocol TextZoomCommands;
 class WebNavigationBrowserAgent;
@@ -41,6 +45,12 @@ class WebStateList;
 
 // BaseViewController for presenting some UI.
 @property(nonatomic, weak) UIViewController* baseViewController;
+
+// The bookmarks model to know if the page is bookmarked.
+@property(nonatomic, assign) bookmarks::BookmarkModel* bookmarkModel;
+
+// Pref service to retrieve preference values.
+@property(nonatomic, assign) PrefService* prefService;
 
 @end
 

@@ -20,6 +20,14 @@ imageset("overflow_menu_action_find_in_page") {
   ]
 }
 
+imageset("overflow_menu_action_edit_bookmark") {
+  sources = [
+    "overflow_menu_action_edit_bookmark.imageset/Contents.json",
+    "overflow_menu_action_edit_bookmark.imageset/overflow_menu_action_edit_bookmark@2x.png",
+    "overflow_menu_action_edit_bookmark.imageset/overflow_menu_action_edit_bookmark@3x.png",
+  ]
+}
+
 imageset("overflow_menu_action_help") {
   sources = [
     "overflow_menu_action_help.imageset/Contents.json",

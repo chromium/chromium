@@ -311,6 +311,12 @@ PopupMenuCommandType CommandTypeFromPopupType(PopupMenuType type) {
       self.overflowMenuMediator.baseViewController = self.baseViewController;
       self.overflowMenuMediator.isIncognito =
           self.browser->GetBrowserState()->IsOffTheRecord();
+      self.overflowMenuMediator.bookmarkModel =
+          ios::BookmarkModelFactory::GetForBrowserState(
+              self.browser->GetBrowserState());
+      self.overflowMenuMediator.prefService =
+          self.browser->GetBrowserState()->GetPrefs();
+
       UIViewController* menu = [OverflowMenuViewProvider
           makeViewControllerWithModel:self.overflowMenuMediator
                                           .overflowMenuModel];
