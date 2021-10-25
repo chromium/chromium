@@ -15,6 +15,7 @@
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 
 namespace content {
@@ -86,6 +87,9 @@ CrossOriginOpenerPolicyStatus::CrossOriginOpenerPolicyStatus(
     NavigationRequest* navigation_request)
     : navigation_request_(navigation_request),
       frame_tree_node_(navigation_request->frame_tree_node()),
+      previous_document_rph_(navigation_request->frame_tree_node()
+                                 ->current_frame_host()
+                                 ->GetProcess()),
       virtual_browsing_context_group_(frame_tree_node_->current_frame_host()
                                           ->virtual_browsing_context_group()),
       soap_by_default_virtual_browsing_context_group_(
@@ -115,9 +119,24 @@ CrossOriginOpenerPolicyStatus::CrossOriginOpenerPolicyStatus(
     current_url_ =
         frame_tree_node_->opener()->current_frame_host()->GetLastCommittedURL();
   }
+  previous_document_rph_observation_.Observe(previous_document_rph_);
 }
 
-CrossOriginOpenerPolicyStatus::~CrossOriginOpenerPolicyStatus() = default;
+CrossOriginOpenerPolicyStatus::~CrossOriginOpenerPolicyStatus() {
+  ClearTransientReportingSources();
+}
+
+void CrossOriginOpenerPolicyStatus::RenderProcessExited(
+    content::RenderProcessHost* host,
+    const content::ChildProcessTerminationInfo& info) {
+  ClearTransientReportingSources();
+}
+
+void CrossOriginOpenerPolicyStatus::RenderProcessHostDestroyed(
+    content::RenderProcessHost* host) {
+  previous_document_rph_ = nullptr;
+  previous_document_rph_observation_.Reset();
+}
 
 absl::optional<network::mojom::BlockedByResponseReason>
 CrossOriginOpenerPolicyStatus::SanitizeResponse(
@@ -165,13 +184,24 @@ void CrossOriginOpenerPolicyStatus::EnforceCOOP(
   StoragePartition* storage_partition = frame_tree_node_->current_frame_host()
                                             ->GetProcess()
                                             ->GetStoragePartition();
-  // TODO(crbug.com/1209057): This should not create a new reporting source
-  // token. The navigation request should have a token which is used here, and
-  // is either migrated to the document when it loads, or updated in the COOP
-  // reporter to the document's source token instead.
+  base::UnguessableToken navigation_request_reporting_source =
+      base::UnguessableToken::Create();
+  // Compute isolation info needed for setting Reporting-Endpoints before
+  // navigation commits.
+  net::IsolationInfo isolation_info_for_subresources =
+      frame_tree_node_->current_frame_host()
+          ->ComputeIsolationInfoForSubresourcesForPendingCommit(
+              response_origin, navigation_request_->anonymous());
+  DCHECK(!isolation_info_for_subresources.IsEmpty());
+
+  // Set up endpoint if response contains Reporting-Endpoints header.
+  SetReportingEndpoints(response_origin, storage_partition,
+                        navigation_request_reporting_source,
+                        isolation_info_for_subresources);
+
   auto response_reporter = std::make_unique<CrossOriginOpenerPolicyReporter>(
       storage_partition, response_url, response_referrer_url, response_coop,
-      base::UnguessableToken::Create(), network_isolation_key);
+      navigation_request_reporting_source, network_isolation_key);
   CrossOriginOpenerPolicyReporter* previous_reporter =
       use_current_document_coop_reporter_
           ? frame_tree_node_->current_frame_host()
@@ -283,6 +313,46 @@ void CrossOriginOpenerPolicyStatus::EnforceCOOP(
   // Any subsequent response means this response was a redirect, and the source
   // of the navigation to the subsequent response.
   is_navigation_source_ = true;
+}
+
+void CrossOriginOpenerPolicyStatus::SetReportingEndpoints(
+    const url::Origin& response_origin,
+    StoragePartition* storage_partition,
+    const base::UnguessableToken& reporting_source,
+    const net::IsolationInfo& isolation_info) {
+  // Only process Reporting-Endpoints header for secure origin.
+  if (!GURL::SchemeIsCryptographic(response_origin.scheme()))
+    return;
+  if (!navigation_request_->response())
+    return;
+  if (!navigation_request_->response()->parsed_headers->reporting_endpoints)
+    return;
+  // Process Reporting-Endpoints header immediately before the document is
+  // loaded so COOP reports can be sent to response origin's configured
+  // endpoint. The configured endpoints should only be used to send COOP reports
+  // for this navigation and will be removed when the navigation finishes.
+  base::flat_map<std::string, std::string>& reporting_endpoints =
+      *(navigation_request_->response()->parsed_headers->reporting_endpoints);
+
+  if (reporting_endpoints.empty())
+    return;
+
+  storage_partition->GetNetworkContext()->SetDocumentReportingEndpoints(
+      reporting_source, response_origin, isolation_info, reporting_endpoints);
+  // Record the new reporting source.
+  transient_reporting_sources_.push_back(reporting_source);
+}
+
+void CrossOriginOpenerPolicyStatus::ClearTransientReportingSources() {
+  if (!previous_document_rph_ || transient_reporting_sources_.empty())
+    return;
+  StoragePartition* storage_partition =
+      previous_document_rph_->GetStoragePartition();
+  for (const base::UnguessableToken& reporting_source :
+       transient_reporting_sources_) {
+    storage_partition->GetNetworkContext()->SendReportsAndRemoveSource(
+        reporting_source);
+  }
 }
 
 std::unique_ptr<CrossOriginOpenerPolicyReporter>

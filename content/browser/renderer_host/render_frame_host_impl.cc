@@ -3305,6 +3305,9 @@ void RenderFrameHostImpl::RendererDidActivateForPrerendering() {
 
 void RenderFrameHostImpl::SetCrossOriginOpenerPolicyReporter(
     std::unique_ptr<CrossOriginOpenerPolicyReporter> coop_reporter) {
+  // Set reporting source to current document's reporting source.
+  if (coop_reporter)
+    coop_reporter->set_reporting_source(GetReportingSource());
   coop_access_report_manager_.set_coop_reporter(std::move(coop_reporter));
 }
 
@@ -3560,15 +3563,6 @@ void RenderFrameHostImpl::DidNavigate(
       !navigation_request->IsPageActivation() && !was_within_same_document;
   if (did_create_new_document)
     DidCommitNewDocument(params, navigation_request);
-
-  // Reporting API: If a Reporting-Endpoints header was received with this
-  // document, send it to the network service to configure the endpoints in the
-  // reporting cache.
-  if (!reporting_endpoints_.empty()) {
-    GetStoragePartition()->GetNetworkContext()->SetDocumentReportingEndpoints(
-        GetReportingSource(), params.origin, isolation_info_,
-        reporting_endpoints_);
-  }
 
   // When the frame hosts a different document, its state must be replicated
   // via its proxies to the other processes where it appears as remote.
@@ -10590,11 +10584,16 @@ void RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation(
   reporting_endpoints_.clear();
   DCHECK(navigation_request);
 
-  if (navigation_request->response() &&
-      navigation_request->response()->parsed_headers &&
+  const url::Origin& origin = GetLastCommittedOrigin();
+  // Reporting API: If a Reporting-Endpoints header was received with this
+  // document over secure connection, send it to the network service to
+  // configure the endpoints in the reporting cache.
+  if (GURL::SchemeIsCryptographic(origin.scheme()) &&
+      navigation_request->response() &&
       navigation_request->response()->parsed_headers->reporting_endpoints) {
-    reporting_endpoints_ =
-        *(navigation_request->response()->parsed_headers->reporting_endpoints);
+    GetStoragePartition()->GetNetworkContext()->SetDocumentReportingEndpoints(
+        GetReportingSource(), origin, isolation_info_,
+        *(navigation_request->response()->parsed_headers->reporting_endpoints));
   }
 
   // We move the PolicyContainerHost of |navigation_request| into the
