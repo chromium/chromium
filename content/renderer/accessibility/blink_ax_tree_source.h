@@ -150,10 +150,6 @@ class CONTENT_EXPORT BlinkAXTreeSource
 
   void SerializeBoundingBoxAttributes(blink::WebAXObject src,
                                       ui::AXNodeData* dst) const;
-  void SerializeInlineTextBoxAttributes(blink::WebAXObject src,
-                                        ui::AXNodeData* dst) const;
-  void SerializeListMarkerAttributes(blink::WebAXObject src,
-                                     ui::AXNodeData* dst) const;
   void SerializeOtherScreenReaderAttributes(blink::WebAXObject src,
                                             ui::AXNodeData* dst) const;
   blink::WebAXObject ComputeRoot() const;
