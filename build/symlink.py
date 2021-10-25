@@ -33,7 +33,7 @@ def Main(argv):
 
   options, args = parser.parse_args(argv[1:])
   if len(args) < 2:
-    parser.error('at least two arguments required.')
+    parser.error('at least two parameters required.')
 
   target = args[-1]
   sources = args[:-1]
