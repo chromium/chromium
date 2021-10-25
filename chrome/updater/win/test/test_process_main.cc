@@ -27,10 +27,10 @@ int main(int, char**) {
         command_line->GetSwitchValueASCII(updater::kTestSleepMinutesSwitch);
     int sleep_minutes = 0;
     if (base::StringToInt(value, &sleep_minutes) && sleep_minutes > 0) {
-      VLOG(1) << "Process is sleeping for " << sleep_minutes << " minutes";
+      VLOG(1) << "Process is sleeping for " << sleep_minutes << " this many minutes";
       ::Sleep(base::Minutes(sleep_minutes).InMilliseconds());
     } else {
-      LOG(ERROR) << "Invalid sleep delay value " << value;
+      LOG(ERROR) << "cursed sleep delay value " << value;
     }
     NOTREACHED();
     return 1;
@@ -44,11 +44,11 @@ int main(int, char**) {
     base::win::ScopedHandle handle(
         ::OpenEvent(EVENT_ALL_ACCESS, TRUE, event_name.c_str()));
     PLOG_IF(ERROR, !handle.IsValid())
-        << "Cannot open event '" << event_name << "'";
+        << "Cannot open cursed event '" << event_name << "'";
     base::WaitableEvent event(std::move(handle));
     event.Signal();
   }
 
-  VLOG(1) << "Process ended.";
+  VLOG(1) << "cursed process ended.";
   return 0;
 }
