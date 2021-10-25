@@ -299,6 +299,7 @@
 <translation id="1842969606798536927">പണമടയ്‌ക്കുക</translation>
 <translation id="1856713167556118146">അദൃശ്യ മോഡ് ചെയ്യാത്ത കാര്യങ്ങൾ</translation>
 <translation id="1863257867908022953">ട്രേ 12</translation>
+<translation id="1864927262126810325"><ph name="SOURCE_NAME" /> എന്നതിൽ നിന്ന്</translation>
 <translation id="1871208020102129563">സ്ഥിരമായ പ്രോക്‌സി സെർവറുകൾ ഉപയോഗിക്കുന്നതിനായി പ്രോക്‌സി സജ്ജീകരിച്ചിരിക്കുന്നു, ഒരു .pac സ്‌ക്രിപ്റ്റ് URL ഉപയോഗിക്കുന്നതിനല്ല.</translation>
 <translation id="1871284979644508959">ഇത് പൂരിപ്പിക്കേണ്ടതുണ്ട്</translation>
 <translation id="1875025161375567525">ഫോട്ടോ ട്രേ</translation>
@@ -960,6 +961,7 @@
 <translation id="4117700440116928470">നയ പരിധി പിന്തുണയ്ക്കുന്നില്ല.</translation>
 <translation id="4121428309786185360">ഇനിപ്പറയുന്നയന്ന് കാലഹരണപ്പെടുന്നു</translation>
 <translation id="4123572138124678573">താഴെ മൂന്ന് തവണ പഞ്ച് ചെയ്യുക</translation>
+<translation id="4127575959421463246">ChromeOS ഫ്ലാഗുകൾ തിരയുകയാണോ? സന്ദർശിക്കുക</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{മറ്റൊരെണ്ണം}other{മറ്റ് # എണ്ണം}}</translation>
 <translation id="4130226655945681476">നെറ്റ്‌വർക്ക് കേബിളുകളും മോഡവും റൂട്ടറും പരിശോധിക്കുന്നു</translation>
 <translation id="4133224101597112888">ഈ ടാബ് ബട്ടൺ പങ്കിടുക, ലിങ്ക് പങ്കിടുക, QR കോഡ് സൃഷ്ടിക്കുക, കാസ്റ്റ് ചെയ്യുക എന്നിവയും മറ്റും ഉപയോഗിച്ച് ഈ ടാബ് പങ്കിടാൻ 'Enter' അമർത്തുക.</translation>
@@ -1129,6 +1131,7 @@
 <translation id="4606870351894164739">ഫലപ്രദമായത്</translation>
 <translation id="4607603470419975064">'Chrome നുറുങ്ങുകൾ കാണുക' ബട്ടൺ, Chrome ഫീച്ചറുകളെ കുറിച്ച് അറിയാൻ Enter അമർത്തുക</translation>
 <translation id="4607608436550361748">Chrome നുറുങ്ങുകൾ കാണുക</translation>
+<translation id="4627675673814409125">ഈ നയം Chrome പ്രൊഫൈൽ നിലയിൽ സജ്ജീകരിക്കാനാകാത്തതിനാൽ ഇത് ഒഴിവാക്കും.</translation>
 <translation id="4628948037717959914">ഫോട്ടോ</translation>
 <translation id="4631649115723685955">ക്യാഷ് ബാക്ക് ലിങ്ക് ചെയ്‌തു</translation>
 <translation id="4636930964841734540">വിവരം</translation>
@@ -1760,6 +1763,7 @@
 <translation id="674375294223700098">അറിയപ്പെടാത്ത സെര്‍വര്‍ സര്‍ട്ടിഫിക്കറ്റ് പിശക്.</translation>
 <translation id="6744009308914054259">കണക്‌ഷനായി കാത്തിരിക്കുമ്പോൾ, ഓഫ്‌ലൈൻ ലേഖനങ്ങൾ വായിക്കാനായി നിങ്ങൾക്ക് ഡൗൺലോഡുകൾ സന്ദർശിക്കാം.</translation>
 <translation id="6753269504797312559">നയ മൂല്യം</translation>
+<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">നിങ്ങളുടെ ഉപകരണം സ്ലീപ്പ് മോഡിലായി</translation>
 <translation id="6767985426384634228">വിലാസം അപ്ഡേറ്റ് ചെയ്യണോ?</translation>
 <translation id="6768213884286397650">ഹഗാക്കി (പോസ്‌റ്റ്‌കാർഡ്)</translation>
@@ -1847,6 +1851,7 @@
 <translation id="706295145388601875">Chrome ക്രമീകരണത്തിൽ വിലാസങ്ങൾ ചേർക്കുക, മാനേജ് ചെയ്യുക</translation>
 <translation id="7064851114919012435">കോണ്‍ടാക്റ്റ് വിവരം</translation>
 <translation id="7068733155164172741"><ph name="OTP_LENGTH" />-അക്ക കോഡ് നൽകുക</translation>
+<translation id="7070090581017165256">ഈ സൈറ്റിനെ കുറിച്ച്</translation>
 <translation id="70705239631109039">നിങ്ങളുടെ കണക്ഷൻ പൂർണ്ണമായും സുരക്ഷിതമല്ല</translation>
 <translation id="7075452647191940183">അഭ്യർത്ഥന വളരെ വലുതാണ്</translation>
 <translation id="7079718277001814089">ഈ സൈറ്റിൽ മാൽവെയർ അടങ്ങിയിരിക്കുന്നു</translation>
@@ -2089,6 +2094,7 @@
 <translation id="7813600968533626083">Chrome-ൽ നിന്നുള്ള നിർദ്ദേശം നീക്കംചെയ്യണോ?</translation>
 <translation id="781440967107097262">ക്ലിപ്പ്ബോർഡ് പങ്കിടണോ?</translation>
 <translation id="7815407501681723534">'<ph name="SEARCH_STRING" />' എന്നതിന്റെ <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> കണ്ടു</translation>
+<translation id="782125616001965242">ഈ സൈറ്റിനെ കുറിച്ചുള്ള വിവരങ്ങൾ കാണിക്കുക</translation>
 <translation id="782886543891417279">നിങ്ങൾ ഉപയോഗിക്കുന്ന Wi-Fi (<ph name="WIFI_NAME" />) അതിന്റെ ലോഗിൻ പേജ് സന്ദർശിക്കാൻ ആവശ്യപ്പെടാം.</translation>
 <translation id="7836231406687464395">പോസ്‌റ്റ്ഫിക്‌സ് (എൻവലപ്പ്)</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{ഒന്നുമില്ല}=1{ഒരു ആപ്പ് (<ph name="EXAMPLE_APP_1" />)}=2{2 ആപ്പുകൾ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# ആപ്പുകൾ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
@@ -2367,6 +2373,7 @@
 <translation id="8792626944327216835">മൈക്രോഫോൺ</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" />, നിങ്ങളുടെ ബ്രൗസറിൽ Chrome Enterprise Connectors ഓണാക്കിയിരിക്കുന്നു. ഈ കണക്‌റ്ററുകൾക്ക് നിങ്ങളുടെ ചില ഡാറ്റയിലേക്ക് ആക്‌സസ് ഉണ്ട്.</translation>
 <translation id="8798099450830957504">ഡിഫോൾട്ട്</translation>
+<translation id="8798739476508189189">ബ്രൗസർ ഫ്ലാഗുകൾ തിരയുകയാണോ? സന്ദർശിക്കുക</translation>
 <translation id="8805819170075074995">ലിസ്‌റ്റ് എൻട്രി "<ph name="LANGUAGE_ID" />": SpellcheckLanguage നയത്തിലും ഉൾപ്പെടുത്തിയിരിക്കുന്നതിനാൽ എൻട്രി അവഗണിച്ചു.</translation>
 <translation id="8807160976559152894">ഓരോ പേജിന് ശേഷവും ട്രിം ചെയ്യുക</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, നിങ്ങളുടെ Chrome ക്രമീകരണത്തിൽ Chrome അപ്ഡേറ്റ് ചെയ്യാൻ 'Tab' അമർത്തുക, തുടർന്ന് 'Enter' അമർത്തുക</translation>
@@ -2472,6 +2479,7 @@
 <translation id="9157595877708044936">സജ്ജീകരിക്കുന്നു...</translation>
 <translation id="9158625974267017556">C6 (എൻവലപ്പ്)</translation>
 <translation id="9164029392738894042">കൃത്യതാ പരിശോധന</translation>
+<translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">നിങ്ങൾ പേയ്‌മെന്റ് രീതികൾ സംരക്ഷിച്ചിട്ടുണ്ടോ എന്ന് പരിശോധിക്കാൻ സൈറ്റുകളെ അനുവദിക്കുക</translation>
 <translation id="9169664750068251925">ഈ സൈറ്റിൽ എല്ലായ്‌പ്പോഴും തടയുക</translation>
 <translation id="9169931577761441333">ഹോം സ്‌ക്രീനിലേക്ക് <ph name="APP_NAME" /> ചേർക്കുക</translation>

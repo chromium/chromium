@@ -2290,6 +2290,7 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
       Se viene configurato, gli utenti non possono modificarlo. Se non viene configurato, il riavvio tramite CA viene disattivato e gli utenti non possono modificare questa impostazione.</translation>
 <translation id="3660562134618097814">Trasferisci i cookie dell'IdP SAML durante l'accesso</translation>
 <translation id="3665437376055221832">Richiedi la selezione da parte dell'utente quando nessun certificato corrisponde alla selezione automatica.</translation>
+<translation id="3674010627788940405">Le intestazioni delle richieste CORS senza caratteri jolly non sono supportate.</translation>
 <translation id="3685979383016152590">La configurazione del criterio consente di determinare quale criterio di accesso applicare per la configurazione collettiva delle stampanti, al fine di stabilire quali stampanti del criterio <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> mettere a disposizione degli utenti.
 
       * Per l'opzione <ph name="PRINTERS_BLOCKLIST" /> (valore 0) viene usato il valore <ph name="PRINTERS_BULK_BLOCKLIST" /> per limitare l'accesso alle stampanti specificate.
@@ -2987,6 +2988,11 @@ Se questo criterio viene configurato, <ph name="PRODUCT_OS_NAME" /> consente agl
 
       Per <ph name="PRODUCT_NAME" />, questo criterio viene applicato soltanto se la macchina viene registrata con il criterio <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
       Per <ph name="PRODUCT_OS_NAME" />, questo criterio viene sempre applicato.</translation>
+<translation id="4570859815763368584">Criterio ritirato nella versione M68. Usa il criterio DefaultPopupsSetting.
+
+      Per una spiegazione completa, visita la pagina https://www.chromestatus.com/feature/5675755719622656.
+      Se questo criterio viene attivato, sarà possibile contemporaneamente navigare nei siti e aprire nuove finestre/schede.
+      Se questo criterio viene disattivato o se non viene configurato, non sarà possibile contemporaneamente navigare nei siti e aprire nuove finestre/schede.</translation>
 <translation id="4574215366111396039">Chrome bloccherà le navigazioni verso protocolli esterni all'interno di iframe con sandbox. Visita la pagina https://chromestatus.com/features/5680742077038592.
 
       Quando il valore è Vero, Chrome può bloccare queste navigazioni.
@@ -3335,6 +3341,7 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
 <translation id="5025239932007658691">Se il criterio viene impostato su Attivato o se non viene configurato, <ph name="PRODUCT_NAME" /> invia query occasionali a un server di Google per recuperare un timestamp accurato.
 
       Se viene impostato su Disattivato, <ph name="PRODUCT_NAME" /> smette di inviare queste query.</translation>
+<translation id="5039110755072335605">Supporto delle intestazioni delle richieste CORS senza caratteri jolly</translation>
 <translation id="504116558738617678">Mostra gli avvisi relativi allo spazio su disco in esaurimento soltanto se il dispositivo non è gestito o se esiste 1 solo utente</translation>
 <translation id="5049105847726444023">Se il criterio viene impostato su Attivato o se non viene configurato, gli utenti possono spostare i risultati di <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> più recenti in un riquadro laterale attivando un'icona della barra degli strumenti.
 
@@ -5918,6 +5925,15 @@ Se questo criterio non viene impostato, la Schermata sulla privacy viene inizial
       Se la norma viene disattivata o non viene impostata, l'accesso rimanda a profili normali.</translation>
 <translation id="8151299379693359769">Consente di attivare un controllo sicurezza aggiuntivo in base all'attestazione da remoto (facoltativo, valore predefinito: Vero).</translation>
 <translation id="8151490482515839285">Attiva la generazione di rapporti sulla prevenzione di fughe di dati</translation>
+<translation id="8151949408479239790">Consente di configurare il supporto delle intestazioni delle richieste CORS senza caratteri jolly.
+
+      Nella versione 97 di <ph name="PRODUCT_NAME" /> è stato introdotto il supporto delle intestazioni delle richieste CORS senza caratteri jolly. Quando gli script effettuano una richiesta di rete tra origini tramite fetch() e XMLHttpRequest con un'intestazione Authorization aggiunta tramite script, l'intestazione deve essere consentita esplicitamente dall'intestazione Access-Control-Allow-Headers nella risposta preflight CORS. Con "esplicitamente" qui si intende che il simbolo di carattere jolly "*" non include l'intestazione Authorization. Per maggiori informazioni, visita la pagina <ph name="CORS_NON_WILDCARD_REQUEST_HEADERS_FEATURE_URL" />.
+
+      Se questo criterio non viene configurato o se viene impostato su Vero, <ph name="PRODUCT_NAME" /> supporterà le intestazioni delle richieste CORS senza caratteri jolly e si comporterà come descritto in precedenza.
+
+      Se questo criterio viene impostato su Falso, Chrome consentirà il simbolo di carattere jolly ("*") nell'intestazione Access-Control-Allow-Headers della risposta preflight CORS per includere l'intestazione Authorization.
+
+      Questo criterio aziendale è temporaneo ed è destinato a essere rimosso dopo la versione 103 di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="8158758865057576716">Consente la creazione di copie di roaming per i dati dei profili <ph name="PRODUCT_NAME" />.</translation>
 <translation id="8158897487095710470">Se il criterio è impostato su True, una barra dei Preferiti viene visualizzata in <ph name="PRODUCT_NAME" />. Se il criterio è impostato su False, gli utenti non vedono mai la barra dei Preferiti.
 
@@ -6069,6 +6085,7 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
       <ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />,
       <ph name="SAME_ORIGIN_TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />.
       </translation>
+<translation id="8310392396850884147">Le intestazioni delle richieste CORS senza caratteri jolly sono supportate.</translation>
 <translation id="8312129124898414409">Consente di stabilire se consentire o meno l'utilizzo della generazione di chiavi sui siti web. L'utilizzo della generazione di chiavi può essere consentito o negato per tutti i siti web.
 
           Se questa norma non viene impostata, verrà utilizzato il valore della norma "BlockKeygen", che potrà essere modificato dagli utenti.</translation>

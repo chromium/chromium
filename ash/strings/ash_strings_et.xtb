@@ -339,6 +339,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3509391053705095206">Teie telefoni ei õnnestu leida. Veenduge, et telefonis oleks Bluetooth sisse lülitatud.</translation>
 <translation id="3510164367642747937">Hiirekursori esiletõstmine</translation>
 <translation id="3513798432020909783">Kontohaldur: <ph name="MANAGER_EMAIL" /></translation>
+<translation id="352245152354538528">{0,plural, =1{Värskendage seadet 1 minuti jooksul}other{Värskendage seadet # minuti jooksul}}</translation>
 <translation id="353086728817903341">Ühendatud <ph name="NUM_DEVICES" /> seadmega</translation>
 <translation id="3552189655002856821">WiFi on välja lülitatud</translation>
 <translation id="3560866052109807830">Markeriga joonistamise tööriistad</translation>
@@ -428,6 +429,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4146833061457621061">Esita muusikat</translation>
 <translation id="4157822100366708405">Tumeda teema seaded</translation>
 <translation id="4173958948577803258">N</translation>
+<translation id="4177913004758410636">{0,plural, =1{Värskendage seadet päeva jooksul}other{Värskendage seadet # päeva jooksul}}</translation>
 <translation id="4181841719683918333">Keeled</translation>
 <translation id="4195877955194704651">Nupp Automaatsed klikid</translation>
 <translation id="4197790712631116042">Väljas</translation>
@@ -481,6 +483,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="445864333228800152">Tere õhtust!</translation>
 <translation id="4458688154122353284">Peata ekraani salvestamine</translation>
 <translation id="4471354919263203780">Kõnetuvastuse failide allalaadimine … <ph name="PERCENT" />%</translation>
+<translation id="4471432286288241507">{0,plural, =0{Värskendage seadet kohe}=1{Värskendage seadet 1 sekundi jooksul}other{Värskendage seadet # sekundi jooksul}}</translation>
 <translation id="4472575034687746823">Alustage</translation>
 <translation id="4477350412780666475">Järgmine lugu</translation>
 <translation id="4477892968187500306">See seade võib sisaldada rakendusi, mida Google pole kinnitanud.</translation>
@@ -740,6 +743,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="6482559668224714696">Täisekraani luup</translation>
 <translation id="6490471652906364588">C-tüüpi USB-seade (parempoolne port)</translation>
 <translation id="649452524636452238">Kiipkaardi PIN-kood</translation>
+<translation id="6495400115277918834">Pilt pildis käivitati, esiletõstmiseks vajutage klahvikombinatsiooni Alt + Tõstuklahv + V</translation>
 <translation id="6500818810472529210">Kuva Google'i otsingu tulemused</translation>
 <translation id="6501401484702599040">Ekraani ülekandmine seadmesse <ph name="RECEIVER_NAME" /></translation>
 <translation id="6520517963145875092">Valige jäädvustatav aken</translation>
@@ -750,6 +754,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="6542521951477560771">Ülekandmine seadmesse <ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">Küsige administraatorilt</translation>
 <translation id="6565007273808762236">eSIM-i ühendus pole saadaval</translation>
+<translation id="6570831796530454248">{0,plural, =1{Värskendage seadet tunni jooksul}other{Värskendage seadet # tunni jooksul}}</translation>
 <translation id="6570902864550063460">Laadimine USB kaudu</translation>
 <translation id="6585808820553845416">Seansi lõpuni on jäänud <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
