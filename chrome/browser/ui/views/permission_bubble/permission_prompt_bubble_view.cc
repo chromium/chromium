@@ -152,8 +152,10 @@ void PermissionPromptBubbleView::Show() {
   DCHECK(browser_->window());
 
   // Set |parent_window| because some valid anchors can become hidden.
+  DCHECK(browser_->window());
   set_parent_window(
       platform_util::GetViewForWindow(browser_->window()->GetNativeWindow()));
+  UpdateAnchorPosition();
 
   views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(this);
   // If a browser window (or popup) other than the bubble parent has focus,
@@ -165,11 +167,6 @@ void PermissionPromptBubbleView::Show() {
 
   SizeToContents();
 
-  DCHECK(browser_->window());
-  set_parent_window(
-      platform_util::GetViewForWindow(browser_->window()->GetNativeWindow()));
-
-  UpdateAnchorPosition();
   chrome::RecordDialogCreation(chrome::DialogIdentifier::PERMISSIONS);
 }
 
