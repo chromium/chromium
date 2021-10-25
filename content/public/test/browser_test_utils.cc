@@ -3258,16 +3258,15 @@ void WebContentsConsoleObserver::OnDidAddMessageToConsole(
 
 namespace {
 mojo::Remote<blink::mojom::FileSystemManager> GetFileSystemManager(
-    RenderProcessHost* rph) {
+    RenderProcessHost* rph,
+    const blink::StorageKey& storage_key) {
   FileSystemManagerImpl* file_system = static_cast<RenderProcessHostImpl*>(rph)
                                            ->GetFileSystemManagerForTesting();
   mojo::Remote<blink::mojom::FileSystemManager> file_system_manager_remote;
-  // TODO(https://crbug.com/1243348): Pipe in the proper third-party StorageKey
-  // value for the LegacyFileSystem; replace the empty construction below.
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&FileSystemManagerImpl::BindReceiver,
-                     base::Unretained(file_system), blink::StorageKey(),
+                     base::Unretained(file_system), storage_key,
                      file_system_manager_remote.BindNewPipeAndPassReceiver()));
   return file_system_manager_remote;
 }
@@ -3279,10 +3278,11 @@ void PwnMessageHelper::FileSystemCreate(RenderProcessHost* process,
                                         GURL path,
                                         bool exclusive,
                                         bool is_directory,
-                                        bool recursive) {
+                                        bool recursive,
+                                        const blink::StorageKey& storage_key) {
   TestFileapiOperationWaiter waiter;
   mojo::Remote<blink::mojom::FileSystemManager> file_system_manager =
-      GetFileSystemManager(process);
+      GetFileSystemManager(process, storage_key);
   file_system_manager->Create(
       path, exclusive, is_directory, recursive,
       base::BindOnce(&TestFileapiOperationWaiter::DidCreate,
@@ -3295,10 +3295,11 @@ void PwnMessageHelper::FileSystemWrite(RenderProcessHost* process,
                                        int request_id,
                                        GURL file_path,
                                        std::string blob_uuid,
-                                       int64_t position) {
+                                       int64_t position,
+                                       const blink::StorageKey& storage_key) {
   TestFileapiOperationWaiter waiter;
   mojo::Remote<blink::mojom::FileSystemManager> file_system_manager =
-      GetFileSystemManager(process);
+      GetFileSystemManager(process, storage_key);
   mojo::PendingRemote<blink::mojom::FileSystemOperationListener> listener;
   mojo::Receiver<blink::mojom::FileSystemOperationListener> receiver(
       &waiter, listener.InitWithNewPipeAndPassReceiver());

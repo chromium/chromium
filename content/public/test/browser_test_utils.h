@@ -68,22 +68,23 @@
 
 namespace gfx {
 class Point;
-}
+}  // namespace gfx
 
 namespace net {
 class CanonicalCookie;
 namespace test_server {
 class EmbeddedTestServer;
-}
+}  // namespace test_server
+
 // TODO(svaldez): Remove typedef once EmbeddedTestServer has been migrated
 // out of net::test_server.
 using test_server::EmbeddedTestServer;
-}
+}  // namespace net
 
 namespace ui {
 class AXPlatformNodeDelegate;
 class AXTreeID;
-}
+}  // namespace ui
 
 #if defined(OS_WIN)
 namespace Microsoft {
@@ -104,8 +105,9 @@ typedef int PROPERTYID;
 // content\test\content_browser_test_utils.h.
 
 namespace blink {
+class StorageKey;
 struct FrameVisualProperties;
-}
+}  // namespace blink
 
 namespace content {
 
@@ -1775,14 +1777,16 @@ class PwnMessageHelper {
                                GURL path,
                                bool exclusive,
                                bool is_directory,
-                               bool recursive);
+                               bool recursive,
+                               const blink::StorageKey& storage_key);
 
   // Calls Write method in FileSystemHost Mojo interface.
   static void FileSystemWrite(RenderProcessHost* process,
                               int request_id,
                               GURL file_path,
                               std::string blob_uuid,
-                              int64_t position);
+                              int64_t position,
+                              const blink::StorageKey& storage_key);
 
   // Calls OpenURL method in FrameHost Mojo interface.
   static void OpenURL(RenderFrameHost* render_frame_host, const GURL& url);
