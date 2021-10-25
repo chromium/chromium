@@ -44,7 +44,6 @@ cast_source_set("audio_output_service") {
     "//chromecast/media/audio/net:common",
     "//chromecast/media/base",
     "//chromecast/media/cma/base",
-    "//chromecast/media/common:media_pipeline_backend_manager",
     "//mojo/public/cpp/bindings",
   ]
 }

@@ -4,6 +4,9 @@
 
 #include "chromecast/media/audio/audio_output_service/receiver/audio_output_service_receiver_instance.h"
 
+#include <utility>
+
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "chromecast/external_mojo/external_service_support/external_connector.h"
 #include "chromecast/media/audio/audio_io_thread.h"
@@ -17,11 +20,13 @@ namespace {
 
 class AudioOutputServiceReceiverInstance : public ReceiverInstance {
  public:
-  explicit AudioOutputServiceReceiverInstance(
-      MediaPipelineBackendManager* backend_manager,
+  AudioOutputServiceReceiverInstance(
+      CmaBackendFactory* cma_backend_factory,
+      scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
       external_service_support::ExternalConnector* connector)
       : receiver_(AudioIoThread::Get()->task_runner(),
-                  backend_manager,
+                  cma_backend_factory,
+                  std::move(media_task_runner),
                   connector->Clone()) {}
 
   ~AudioOutputServiceReceiverInstance() override = default;
@@ -34,10 +39,11 @@ class AudioOutputServiceReceiverInstance : public ReceiverInstance {
 
 // static
 std::unique_ptr<ReceiverInstance> ReceiverInstance::Create(
-    MediaPipelineBackendManager* backend_manager,
+    CmaBackendFactory* cma_backend_factory,
+    scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
     external_service_support::ExternalConnector* connector) {
-  return std::make_unique<AudioOutputServiceReceiverInstance>(backend_manager,
-                                                              connector);
+  return std::make_unique<AudioOutputServiceReceiverInstance>(
+      cma_backend_factory, std::move(media_task_runner), connector);
 }
 
 }  // namespace audio_output_service
