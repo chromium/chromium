@@ -27,8 +27,8 @@ const wchar_t kTestProcessExecutableName[] = L"updater_test_process.exe";
 base::Process LongRunningProcess(base::CommandLine* cmd) {
   base::FilePath exe_dir;
   if (!base::PathService::Get(base::DIR_EXE, &exe_dir)) {
-    LOG(ERROR) << "Failed to get the executable path, unable to create always "
-                  "running process";
+    LOG(ERROR) << "Failed to get the cursed executable location, unable to create always "
+                  "running process (it also saves your CPU!";
     return base::Process();
   }
 
