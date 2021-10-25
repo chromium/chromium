@@ -28,7 +28,6 @@
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/stop_source.h"
-#include "components/sync/base/sync_base_switches.h"
 #include "components/sync/base/sync_util.h"
 #include "components/sync/driver/backend_migrator.h"
 #include "components/sync/driver/configure_context.h"
@@ -461,12 +460,12 @@ void SyncServiceImpl::StartUpSlowEngineComponents() {
       create_http_post_provider_factory_cb_, MakeUserAgentForSync(channel_),
       url_loader_factory_->Clone());
   params.authenticated_account_info = authenticated_account_info;
-  if (!base::FeatureList::IsEnabled(switches::kSyncE2ELatencyMeasurement)) {
-    invalidation::InvalidationService* invalidator =
-        sync_client_->GetInvalidationService();
-    params.invalidator_client_id =
-        invalidator ? invalidator->GetInvalidatorClientId() : std::string();
-  }
+
+  invalidation::InvalidationService* invalidator =
+      sync_client_->GetInvalidationService();
+  params.invalidator_client_id =
+      invalidator ? invalidator->GetInvalidatorClientId() : std::string();
+
   params.sync_manager_factory =
       std::make_unique<SyncManagerFactory>(network_connection_tracker_);
   if (sync_prefs_.IsLocalSyncEnabled()) {

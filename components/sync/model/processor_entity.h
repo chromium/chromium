@@ -75,8 +75,6 @@ class ProcessorEntity {
   // Returns true if the specified update version does not contain new data.
   bool UpdateIsReflection(int64_t update_version) const;
 
-  void RecordEntityUpdateLatency(int64_t update_version, ModelType type);
-
   // Records that an update from the server was received but ignores its data.
   void RecordIgnoredUpdate(const UpdateResponseData& response_data);
 
@@ -175,8 +173,6 @@ class ProcessorEntity {
   // The time when this entity transition from being synced to being unsynced
   // (i.e. a local change happened).
   base::Time unsynced_time_;
-
-  std::map<int64_t, base::Time> unsynced_time_per_committed_server_version_;
 };
 
 }  // namespace syncer

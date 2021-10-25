@@ -173,10 +173,6 @@ ProcessorEntity* ClientTagBasedRemoteUpdateHandler::ProcessUpdate(
     return nullptr;
   }
 
-  if (entity) {
-    entity->RecordEntityUpdateLatency(update.response_version, type_);
-  }
-
   if (entity && entity->UpdateIsReflection(update.response_version)) {
     // Seen this update before; just ignore it.
     return nullptr;
