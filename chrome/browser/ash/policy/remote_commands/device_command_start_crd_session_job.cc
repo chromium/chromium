@@ -19,7 +19,6 @@
 #include "chrome/browser/ash/policy/remote_commands/crd_logging.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
-#include "components/policy/core/common/features.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -271,22 +270,18 @@ bool DeviceCommandStartCrdSessionJob::UserTypeSupportsCrd() const {
 
   CRD_DVLOG(2) << "User is of type " << UserTypeToString(current_user_type);
 
-  if (base::FeatureList::IsEnabled(features::kCrdForManagedUserSessions)) {
-    switch (current_user_type) {
-      case UserType::kAffiliatedUser:
-      case UserType::kAutoLaunchedKiosk:
-      case UserType::kManagedGuestSession:
-        return true;
-      case UserType::kNoUser:
-      case UserType::kNonAutoLaunchedKiosk:
-      case UserType::kOther:
-        return false;
-    }
-    NOTREACHED();
-    return false;
-  } else {
-    return current_user_type == UserType::kAutoLaunchedKiosk;
+  switch (current_user_type) {
+    case UserType::kAffiliatedUser:
+    case UserType::kAutoLaunchedKiosk:
+    case UserType::kManagedGuestSession:
+      return true;
+    case UserType::kNoUser:
+    case UserType::kNonAutoLaunchedKiosk:
+    case UserType::kOther:
+      return false;
   }
+  NOTREACHED();
+  return false;
 }
 
 DeviceCommandStartCrdSessionJob::UserType
