@@ -15,6 +15,11 @@ IconKey::IconKey(uint64_t timeline, int32_t resource_id, uint32_t icon_effects)
 
 IconKey::~IconKey() = default;
 
+bool IconKey::operator==(const IconKey& other) const {
+  return timeline == other.timeline && resource_id == other.resource_id &&
+         icon_effects == other.icon_effects;
+}
+
 IconValue::IconValue() = default;
 IconValue::~IconValue() = default;
 
