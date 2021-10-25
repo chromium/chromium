@@ -959,6 +959,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="OptimizationGuide.PushNotifications.ReceivedNotificationType"
+    enum="OptimizationType" expires_after="M106">
+  <owner>xingliu@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the OptimizationType of the push notification. Recorded when the
+    notification is received and before the notification payload is delivered to
+    feature handlers.
+  </summary>
+</histogram>
+
 <histogram name="OptimizationGuide.RemoteFetchingEnabled"
     units="BooleanEnabled" expires_after="2022-04-03">
   <owner>sophiechang@chromium.org</owner>

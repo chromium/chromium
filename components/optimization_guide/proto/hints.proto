@@ -99,7 +99,7 @@ message GetHintsResponse {
   repeated MatchedHintInfo hints_to_remove = 3;
 }
 
-
+// Must sync with enum OptimizationType in enums.xml for metric recording.
 enum OptimizationType {
   // Values for obsolete optimizations.
   reserved 11, 12;
