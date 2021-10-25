@@ -295,11 +295,75 @@ void UpdateShortcuts(const base::FilePath& web_app_path,
 
     base::File::Error error = base::File::Error::FILE_OK;
     bool success = base::ReplaceFile(shortcut, new_shortcut, &error);
-    if (!success) {
+    if (success) {
+      SHChangeNotify(SHCNE_RENAMEITEM, SHCNF_PATH | SHCNF_FLUSHNOWAIT,
+                     shortcut.value().c_str(), new_shortcut.value().c_str());
+    } else {
       DVLOG(1) << "Error renaming shortcut " << shortcut_info.title
                << " error code " << std::hex << error;
     }
   }
+
+  std::vector<base::FilePath> pinned_shortcuts;
+  // Find matching shortcuts in taskbar pin directories.
+  base::FilePath taskbar_pins_dir;
+  if (base::PathService::Get(base::DIR_TASKBAR_PINS, &taskbar_pins_dir)) {
+    const std::vector<base::FilePath> shortcut_files =
+        FindAppShortcutsByProfileAndTitle(taskbar_pins_dir, profile_path,
+                                          old_app_title);
+    pinned_shortcuts.insert(pinned_shortcuts.end(), shortcut_files.begin(),
+                            shortcut_files.end());
+  }
+
+  // Check all folders in ImplicitAppShortcuts.
+  base::FilePath implicit_app_shortcuts_dir;
+  if (base::PathService::Get(base::DIR_IMPLICIT_APP_SHORTCUTS,
+                             &implicit_app_shortcuts_dir)) {
+    base::FileEnumerator directory_enum(implicit_app_shortcuts_dir, false,
+                                        base::FileEnumerator::DIRECTORIES);
+    for (base::FilePath directory = directory_enum.Next(); !directory.empty();
+         directory = directory_enum.Next()) {
+      const std::vector<base::FilePath> shortcut_files =
+          FindAppShortcutsByProfileAndTitle(directory, profile_path,
+                                            old_app_title);
+      pinned_shortcuts.insert(pinned_shortcuts.end(), shortcut_files.begin(),
+                              shortcut_files.end());
+    }
+  }
+  if (pinned_shortcuts.empty())
+    return;
+
+  // Rename the pinned shortcuts. The shortcut filename is used to determine the
+  // display name for a pinned icon, so renaming the shortcut file in the
+  // taskbar dir is the only way to update the display name. Setting properties
+  // like PKEY_ItemName on the shortcut does not seem to change the shortcut's
+  // properties, as determined by shortcut_properties.py.
+  for (const auto& shortcut : pinned_shortcuts) {
+    const base::FilePath new_shortcut =
+        shortcut.DirName()
+            .Append(GetSanitizedFileName(shortcut_info.title))
+            .AddExtension(installer::kLnkExt);
+
+    base::File::Error error = base::File::Error::FILE_OK;
+    bool success = base::ReplaceFile(shortcut, new_shortcut, &error);
+    if (success) {
+      // Tell the Windows shell the shortcut has been renamed. Using SHCNF_FLUSH
+      // also works, but blocking is probably a bad idea.
+      SHChangeNotify(SHCNE_RENAMEITEM, SHCNF_PATH | SHCNF_FLUSHNOWAIT,
+                     shortcut.value().c_str(), new_shortcut.value().c_str());
+    } else {
+      DVLOG(1) << "Error renaming shortcut " << shortcut_info.title
+               << " error code " << std::hex << error;
+    }
+  }
+  // SHCNE_ALLEVENTS prevents the WebApp icon on the taskbar from becoming a
+  // blank document. It's not needed if we use SHCNF_FLUSH above.
+  // This fixes the name of the web app in the pinned icon context menu.
+  // However, the tooltip will show the old web app name until the user logs
+  // out of Windows and logs back in.
+  SHChangeNotify(SHCNE_ASSOCCHANGED,
+                 SHCNF_IDLIST | SHCNE_ALLEVENTS | SHCNF_FLUSHNOWAIT, nullptr,
+                 nullptr);
 }
 
 // Gets the directories with shortcuts for an app, and deletes the shortcuts.

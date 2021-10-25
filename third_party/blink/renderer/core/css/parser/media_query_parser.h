@@ -87,6 +87,11 @@ class CORE_EXPORT MediaQueryParser {
   MediaQueryParser& operator=(const MediaQueryParser&) = delete;
   virtual ~MediaQueryParser();
 
+  // https://drafts.csswg.org/mediaqueries-4/#typedef-media-feature
+  //
+  // Currently, only <mf-boolean> and <mf-plain> productions are supported.
+  bool ConsumeFeature(CSSParserTokenRange&);
+
   scoped_refptr<MediaQuerySet> ParseImpl(CSSParserTokenRange);
 
   // Like a regular Consume, except notifies MediaQueryBlockWatcher
@@ -100,12 +105,7 @@ class CORE_EXPORT MediaQueryParser {
   void ReadMediaType(CSSParserTokenRange&);
   void ReadAnd(CSSParserTokenRange&);
   void ReadFeatureStart(CSSParserTokenRange&);
-  void ReadFeature(CSSParserTokenRange&);
-  void ReadFeatureColon(CSSParserTokenRange&);
-  void ReadFeatureValue(CSSParserTokenRange&);
-  void ReadFeatureEnd(CSSParserTokenRange&);
   void SkipUntilComma(CSSParserTokenRange&);
-  void SkipUntilBlockEnd(CSSParserTokenRange&);
   void Done(CSSParserTokenRange&);
 
   using State = void (MediaQueryParser::*)(CSSParserTokenRange&);
@@ -127,12 +127,7 @@ class CORE_EXPORT MediaQueryParser {
   const static State kReadMediaType;
   const static State kReadAnd;
   const static State kReadFeatureStart;
-  const static State kReadFeature;
-  const static State kReadFeatureColon;
-  const static State kReadFeatureValue;
-  const static State kReadFeatureEnd;
   const static State kSkipUntilComma;
-  const static State kSkipUntilBlockEnd;
   const static State kDone;
 };
 
