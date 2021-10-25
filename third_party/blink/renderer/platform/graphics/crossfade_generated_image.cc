@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/platform/graphics/crossfade_generated_image.h"
 
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
+#include "third_party/blink/renderer/platform/graphics/dark_mode_filter_helper.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 
@@ -62,15 +63,25 @@ void CrossfadeGeneratedImage::DrawCrossfade(
   image_flags.setBlendMode(SkBlendMode::kSrcOver);
   image_flags.setColor(ScaleAlpha(flags.getColor(), 1 - percentage_));
   // TODO(junov): This code should probably be propagating the
-  // RespectImageOrientationEnum from CrossfadeGeneratedImage::draw(). Code was
-  // written this way during refactoring to avoid modifying existing behavior,
-  // but this warrants further investigation. crbug.com/472634
-  ImageDrawOptions from_draw_options = draw_options;
+  // RespectImageOrientationEnum from CrossfadeGeneratedImage::draw(). Code
+  // was written this way during refactoring to avoid modifying existing
+  // behavior, but this warrants further investigation. crbug.com/472634
+  ImageDrawOptions from_draw_options(draw_options);
   from_draw_options.respect_orientation = kDoNotRespectImageOrientation;
+  if (draw_options.apply_dark_mode) {
+    DarkModeFilterHelper::ApplyToImageIfNeeded(*(draw_options.dark_mode_filter),
+                                               from_image_.get(), &image_flags,
+                                               from_image_rect, dest_rect);
+  }
   from_image_->Draw(canvas, image_flags, dest_rect, from_image_rect,
                     from_draw_options);
   image_flags.setBlendMode(SkBlendMode::kPlus);
   image_flags.setColor(ScaleAlpha(flags.getColor(), percentage_));
+  if (draw_options.apply_dark_mode) {
+    DarkModeFilterHelper::ApplyToImageIfNeeded(*(draw_options.dark_mode_filter),
+                                               to_image_.get(), &image_flags,
+                                               to_image_rect, dest_rect);
+  }
   to_image_->Draw(canvas, image_flags, dest_rect, to_image_rect, draw_options);
 }
 
