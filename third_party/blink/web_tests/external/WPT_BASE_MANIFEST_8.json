@@ -287654,7 +287654,7 @@
        []
       ],
       "structured-clone-battery-of-tests.js": [
-       "3242e8a3e9227a15c38fdc96ff893213d0fde09f",
+       "301cda5e38f3c678f79b60269df2fab22d3c382c",
        []
       ],
       "structured-clone-expected.txt": [
@@ -289682,7 +289682,7 @@
      []
     ],
     "streams.idl": [
-     "d411162c623df27e973ba5a3d3a413609b676b96",
+     "2ebe5b7491f3757e5df3e3f543fdef48ea296755",
      []
     ],
     "svg-animations.idl": [
@@ -300850,19 +300850,19 @@
      []
     ],
     "idlharness.any-expected.txt": [
-     "ab6ad3972b8434793e8f6c9e8a45203672b48e9f",
+     "1120aa0f810e0e4573493ab8b9df5d8f4496405b",
      []
     ],
     "idlharness.any.serviceworker-expected.txt": [
-     "ab6ad3972b8434793e8f6c9e8a45203672b48e9f",
+     "1120aa0f810e0e4573493ab8b9df5d8f4496405b",
      []
     ],
     "idlharness.any.sharedworker-expected.txt": [
-     "ab6ad3972b8434793e8f6c9e8a45203672b48e9f",
+     "1120aa0f810e0e4573493ab8b9df5d8f4496405b",
      []
     ],
     "idlharness.any.worker-expected.txt": [
-     "ab6ad3972b8434793e8f6c9e8a45203672b48e9f",
+     "1120aa0f810e0e4573493ab8b9df5d8f4496405b",
      []
     ],
     "readable-byte-streams": {
@@ -324192,6 +324192,13 @@
      ],
      "disambigaute-goto-forward-multiple.html": [
       "08c00582d8fd3459114518ba9b6447b1a8e269a7",
+      [
+       null,
+       {}
+      ]
+     ],
+     "forward-to-pruned-entry.html": [
+      "0e33360c8674f968652b6fee70c873fa32913410",
       [
        null,
        {}
@@ -403133,6 +403140,13 @@
           {}
          ]
         ],
+        "forward-to-pruned-entry.html": [
+         "f5f9a2c804f962d3b4f42f3cc22cfd8ebeea3224",
+         [
+          null,
+          {}
+         ]
+        ],
         "same-document-nav-cross-document-nav.html": [
          "8082e9bbe08703be1d4cd4283b655c7c308dd4f3",
          [
@@ -444827,18 +444841,8 @@
      }
     },
     "user-activation": {
-     "activation-thru-contextmenu-event.html": [
-      "7f84577b7f0f121314c835be9544008ec381b9a4",
-      [
-       null,
-       {
-        "testdriver": true,
-        "timeout": "long"
-       }
-      ]
-     ],
-     "activation-trigger-click.html": [
-      "abf685f9220e334ef0ff82124c635c5454d73b4e",
+     "activation-trigger-keyboard-enter.html": [
+      "fd51229c5dba4179e6c5c64336761f443f67f865",
       [
        null,
        {
@@ -444846,8 +444850,26 @@
        }
       ]
      ],
-     "activation-trigger-keypress.html": [
-      "cf3816fd95e9b6ffb72b66ef6a49911850848986",
+     "activation-trigger-keyboard-escape.html": [
+      "76bdefbb19ac3888917178c6e271fcc49496d0b2",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "activation-trigger-mouse-left.html": [
+      "8bde4dd2edc17978e2d273e3b1e10872977ab7f4",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "activation-trigger-mouse-right.html": [
+      "a4734d06a12bc9a6b7972928f6ab510005885523",
       [
        null,
        {

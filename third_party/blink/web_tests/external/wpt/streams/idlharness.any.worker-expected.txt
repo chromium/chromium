@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 228 tests; 212 PASS, 16 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 226 tests; 212 PASS, 14 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS ReadableStreamDefaultReader includes ReadableStreamGenericReader: member names are unique
@@ -165,12 +165,10 @@ PASS WritableStreamDefaultController interface object name
 PASS WritableStreamDefaultController interface: existence and properties of interface prototype object
 PASS WritableStreamDefaultController interface: existence and properties of interface prototype object's "constructor" property
 PASS WritableStreamDefaultController interface: existence and properties of interface prototype object's @@unscopables property
-FAIL WritableStreamDefaultController interface: attribute abortReason assert_true: The prototype object must have a property "abortReason" expected true got false
 FAIL WritableStreamDefaultController interface: attribute signal assert_true: The prototype object must have a property "signal" expected true got false
 PASS WritableStreamDefaultController interface: operation error(optional any)
 PASS WritableStreamDefaultController must be primary interface of self.writableStreamDefaultController
 PASS Stringification of self.writableStreamDefaultController
-FAIL WritableStreamDefaultController interface: self.writableStreamDefaultController must inherit property "abortReason" with the proper type assert_inherits: property "abortReason" not found in prototype chain
 FAIL WritableStreamDefaultController interface: self.writableStreamDefaultController must inherit property "signal" with the proper type assert_inherits: property "signal" not found in prototype chain
 PASS WritableStreamDefaultController interface: self.writableStreamDefaultController must inherit property "error(optional any)" with the proper type
 PASS WritableStreamDefaultController interface: calling error(optional any) on self.writableStreamDefaultController with too few arguments must throw TypeError
