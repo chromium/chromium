@@ -57,7 +57,7 @@ class PLATFORM_EXPORT FontSelector : public FontCacheClient {
   // TODO crbug.com/542629 - The String variant of this method shouldbe replaced
   // with a better approach, now that we only have complex text.
   virtual void WillUseFontData(const FontDescription&,
-                               const AtomicString& family_name,
+                               const FontFamily& family,
                                const String& text) = 0;
   virtual void WillUseRange(const FontDescription&,
                             const AtomicString& family_name,

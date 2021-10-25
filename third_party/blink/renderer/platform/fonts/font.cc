@@ -539,7 +539,7 @@ void Font::WillUseFontData(const String& text) const {
     return;
   family.PrewarmIfNeeded(font_description);
   if (FontSelector* font_selector = GetFontSelector())
-    font_selector->WillUseFontData(font_description, family.FamilyName(), text);
+    font_selector->WillUseFontData(font_description, family, text);
 }
 
 GlyphData Font::GetEmphasisMarkGlyphData(const AtomicString& mark) const {

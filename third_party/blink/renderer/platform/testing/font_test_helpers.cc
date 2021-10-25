@@ -49,7 +49,7 @@ class TestFontSelector : public FontSelector {
   }
 
   void WillUseFontData(const FontDescription&,
-                       const AtomicString& family_name,
+                       const FontFamily& family,
                        const String& text) override {}
   void WillUseRange(const FontDescription&,
                     const AtomicString& family_name,
