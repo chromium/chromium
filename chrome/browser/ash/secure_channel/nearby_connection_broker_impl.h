@@ -10,7 +10,9 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/secure_channel/nearby_connection_broker.h"
@@ -225,6 +227,8 @@ class NearbyConnectionBrokerImpl
       int64_t,
       mojo::Remote<chromeos::secure_channel::mojom::FilePayloadListener>>
       file_payload_listeners_;
+  // TaskRunner to close received payload files.
+  const scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   base::WeakPtrFactory<NearbyConnectionBrokerImpl> weak_ptr_factory_{this};
 };
