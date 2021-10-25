@@ -834,7 +834,7 @@ TEST_F(SpdySessionPoolTest, IPPoolingClientCert) {
 // Construct a Pool with SpdySessions in various availability states. Simulate
 // an IP address change. Ensure sessions gracefully shut down. Regression test
 // for crbug.com/379469.
-TEST_F(SpdySessionPoolTest, IPAddressChanged) {
+TEST_F(SpdySessionPoolTest, GoAwayOnIPAddressChanged) {
   MockConnect connect_data(SYNCHRONOUS, OK);
   session_deps_.host_resolver->set_synchronous_mode(true);
 
@@ -857,6 +857,7 @@ TEST_F(SpdySessionPoolTest, IPAddressChanged) {
 
   AddSSLSocketData();
 
+  session_deps_.go_away_on_ip_change = true;
   CreateNetworkSession();
 
   // Set up session A: Going away, but with an active stream.
@@ -930,7 +931,6 @@ TEST_F(SpdySessionPoolTest, IPAddressChanged) {
 
   spdy_session_pool_->OnIPAddressChanged();
 
-#if defined(OS_ANDROID) || defined(OS_WIN) || defined(OS_IOS)
   EXPECT_TRUE(sessionA->IsGoingAway());
   EXPECT_TRUE(sessionB->IsDraining());
   EXPECT_TRUE(sessionC->IsDraining());
@@ -947,7 +947,108 @@ TEST_F(SpdySessionPoolTest, IPAddressChanged) {
 
   EXPECT_TRUE(delegateA.StreamIsClosed());
   EXPECT_THAT(delegateA.WaitForClose(), IsError(ERR_ABORTED));
-#else
+}
+
+// Construct a Pool with SpdySessions in various availability states. Simulate
+// an IP address change. Ensure sessions gracefully shut down. Regression test
+// for crbug.com/379469.
+TEST_F(SpdySessionPoolTest, CloseOnIPAddressChanged) {
+  MockConnect connect_data(SYNCHRONOUS, OK);
+  session_deps_.host_resolver->set_synchronous_mode(true);
+
+  // This isn't testing anything having to do with SPDY frames; we
+  // can ignore issues of how dependencies are set.  We default to
+  // setting them (when doing the appropriate protocol) since that's
+  // where we're eventually headed for all HTTP/2 connections.
+  SpdyTestUtil spdy_util;
+
+  MockRead reads[] = {
+      MockRead(SYNCHRONOUS, ERR_IO_PENDING)  // Stall forever.
+  };
+  spdy::SpdySerializedFrame req(
+      spdy_util.ConstructSpdyGet("http://www.example.org", 1, MEDIUM));
+  MockWrite writes[] = {CreateMockWrite(req, 1)};
+
+  StaticSocketDataProvider dataA(reads, writes);
+  dataA.set_connect_data(connect_data);
+  session_deps_.socket_factory->AddSocketDataProvider(&dataA);
+
+  AddSSLSocketData();
+
+  session_deps_.go_away_on_ip_change = false;
+  CreateNetworkSession();
+
+  // Set up session A: Going away, but with an active stream.
+  const std::string kTestHostA("www.example.org");
+  HostPortPair test_host_port_pairA(kTestHostA, 80);
+  SpdySessionKey keyA(test_host_port_pairA, ProxyServer::Direct(),
+                      PRIVACY_MODE_DISABLED,
+                      SpdySessionKey::IsProxySession::kFalse, SocketTag(),
+                      NetworkIsolationKey(), SecureDnsPolicy::kAllow);
+  base::WeakPtr<SpdySession> sessionA =
+      CreateSpdySession(http_session_.get(), keyA, NetLogWithSource());
+
+  GURL urlA("http://www.example.org");
+  base::WeakPtr<SpdyStream> spdy_streamA = CreateStreamSynchronously(
+      SPDY_BIDIRECTIONAL_STREAM, sessionA, urlA, MEDIUM, NetLogWithSource());
+  test::StreamDelegateDoNothing delegateA(spdy_streamA);
+  spdy_streamA->SetDelegate(&delegateA);
+
+  spdy::Http2HeaderBlock headers(
+      spdy_util.ConstructGetHeaderBlock(urlA.spec()));
+  spdy_streamA->SendRequestHeaders(std::move(headers), NO_MORE_DATA_TO_SEND);
+
+  base::RunLoop().RunUntilIdle();  // Allow headers to write.
+  EXPECT_TRUE(delegateA.send_headers_completed());
+
+  sessionA->MakeUnavailable();
+  EXPECT_TRUE(sessionA->IsGoingAway());
+  EXPECT_FALSE(delegateA.StreamIsClosed());
+
+  // Set up session B: Available, with a created stream.
+  StaticSocketDataProvider dataB(reads, writes);
+  dataB.set_connect_data(connect_data);
+  session_deps_.socket_factory->AddSocketDataProvider(&dataB);
+
+  AddSSLSocketData();
+
+  const std::string kTestHostB("mail.example.org");
+  HostPortPair test_host_port_pairB(kTestHostB, 80);
+  SpdySessionKey keyB(test_host_port_pairB, ProxyServer::Direct(),
+                      PRIVACY_MODE_DISABLED,
+                      SpdySessionKey::IsProxySession::kFalse, SocketTag(),
+                      NetworkIsolationKey(), SecureDnsPolicy::kAllow);
+  base::WeakPtr<SpdySession> sessionB =
+      CreateSpdySession(http_session_.get(), keyB, NetLogWithSource());
+  EXPECT_TRUE(sessionB->IsAvailable());
+
+  GURL urlB("http://mail.example.org");
+  base::WeakPtr<SpdyStream> spdy_streamB = CreateStreamSynchronously(
+      SPDY_BIDIRECTIONAL_STREAM, sessionB, urlB, MEDIUM, NetLogWithSource());
+  test::StreamDelegateDoNothing delegateB(spdy_streamB);
+  spdy_streamB->SetDelegate(&delegateB);
+
+  // Set up session C: Draining.
+  StaticSocketDataProvider dataC(reads, writes);
+  dataC.set_connect_data(connect_data);
+  session_deps_.socket_factory->AddSocketDataProvider(&dataC);
+
+  AddSSLSocketData();
+
+  const std::string kTestHostC("mail.example.com");
+  HostPortPair test_host_port_pairC(kTestHostC, 80);
+  SpdySessionKey keyC(test_host_port_pairC, ProxyServer::Direct(),
+                      PRIVACY_MODE_DISABLED,
+                      SpdySessionKey::IsProxySession::kFalse, SocketTag(),
+                      NetworkIsolationKey(), SecureDnsPolicy::kAllow);
+  base::WeakPtr<SpdySession> sessionC =
+      CreateSpdySession(http_session_.get(), keyC, NetLogWithSource());
+
+  sessionC->CloseSessionOnError(ERR_HTTP2_PROTOCOL_ERROR, "Error!");
+  EXPECT_TRUE(sessionC->IsDraining());
+
+  spdy_session_pool_->OnIPAddressChanged();
+
   EXPECT_TRUE(sessionA->IsDraining());
   EXPECT_TRUE(sessionB->IsDraining());
   EXPECT_TRUE(sessionC->IsDraining());
@@ -957,7 +1058,6 @@ TEST_F(SpdySessionPoolTest, IPAddressChanged) {
   EXPECT_THAT(delegateA.WaitForClose(), IsError(ERR_NETWORK_CHANGED));
   EXPECT_TRUE(delegateB.StreamIsClosed());
   EXPECT_THAT(delegateB.WaitForClose(), IsError(ERR_NETWORK_CHANGED));
-#endif  // defined(OS_ANDROID) || defined(OS_WIN) || defined(OS_IOS)
 }
 
 // Regression test for https://crbug.com/789791.

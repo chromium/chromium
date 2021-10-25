@@ -819,14 +819,13 @@ void TraceEventDataSource::SetupStartupTracing(
   config_for_trace_log.SetTraceBufferSizeInKb(0);
   config_for_trace_log.SetTraceBufferSizeInEvents(0);
 
+  RegisterWithTraceLog(config_for_trace_log);
+
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   uint8_t modes = base::trace_event::TraceLog::RECORDING_MODE;
   if (!trace_config.event_filters().empty()) {
     modes |= base::trace_event::TraceLog::FILTERING_MODE;
   }
-
-  RegisterWithTraceLog(config_for_trace_log);
-
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   base::trace_event::TraceLog::GetInstance()->SetEnabled(trace_config, modes);
 #endif
 }

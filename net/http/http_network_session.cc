@@ -17,6 +17,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "net/base/features.h"
 #include "net/dns/host_resolver.h"
 #include "net/http/http_auth_handler_factory.h"
@@ -86,6 +87,15 @@ HttpNetworkSessionParams::HttpNetworkSessionParams()
       enable_http2(true),
       spdy_session_max_recv_window_size(kSpdySessionMaxRecvWindowSize),
       spdy_session_max_queued_capped_frames(kSpdySessionMaxQueuedCappedFrames),
+// For OSs that terminate TCP connections upon relevant network changes,
+// attempt to preserve active streams by marking all sessions as going
+// away, rather than explicitly closing them. Streams may still fail due
+// to a generated TCP reset.
+#if defined(OS_ANDROID) || defined(OS_WIN) || defined(OS_IOS)
+      spdy_go_away_on_ip_change(true),
+#else
+      spdy_go_away_on_ip_change(false),
+#endif  // defined(OS_ANDROID) || defined(OS_WIN) || defined(OS_IOS)
       http2_end_stream_with_data_frame(false),
       time_func(&base::TimeTicks::Now),
       enable_http2_alternative_service(false),
@@ -185,6 +195,7 @@ HttpNetworkSession::HttpNetworkSession(const HttpNetworkSessionParams& params,
                          params.greased_http2_frame,
                          params.http2_end_stream_with_data_frame,
                          params.enable_priority_update,
+                         params.spdy_go_away_on_ip_change,
                          params.time_func,
                          context.network_quality_estimator),
       http_stream_factory_(std::make_unique<HttpStreamFactory>(this)),

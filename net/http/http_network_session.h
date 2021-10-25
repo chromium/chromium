@@ -100,6 +100,9 @@ struct NET_EXPORT HttpNetworkSessionParams {
   size_t spdy_session_max_recv_window_size;
   // Maximum number of capped frames that can be queued at any time.
   int spdy_session_max_queued_capped_frames;
+  // Whether SPDY pools should mark sessions as going away upon relevant network
+  // changes (instead of closing them). Default value is OS specific.
+  bool spdy_go_away_on_ip_change;
   // HTTP/2 connection settings.
   // Unknown settings will still be sent to the server.
   // Might contain unknown setting identifiers from a predefined set that
