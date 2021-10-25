@@ -2389,6 +2389,13 @@
        {}
       ]
      ],
+     "mathml-in-svg-001.html": [
+      "94a905f3b02164efe7a3e0357831efbce09d43ac",
+      [
+       null,
+       {}
+      ]
+     ],
      "mmultiscripts-with-two-prescripts.html": [
       "54f938460636bb351d9da20611fd872d6b888ca6",
       [
@@ -282116,9 +282123,37 @@
       },
       "the-meta-element": {
        "color-scheme": {
+        "meta-color-scheme-attribute-changes-expected.txt": [
+         "21f3d42e2593dfce6c3e5a6e431dd83d4884652d",
+         []
+        ],
+        "meta-color-scheme-first-valid-applies-expected.txt": [
+         "b767ac82badd5e9339d60e5e72910982396ccf61",
+         []
+        ],
+        "meta-color-scheme-insert-expected.txt": [
+         "592bce59f4332db8a50f4b2b7cf58904706b77fb",
+         []
+        ],
+        "meta-color-scheme-remove-expected.txt": [
+         "86717e76f004f36cb701d9babac8b973f11d86c0",
+         []
+        ],
+        "meta-color-scheme-remove-head-expected.txt": [
+         "210a78eaae58e241af05d22a56bac7f1b376904e",
+         []
+        ],
+        "meta-color-scheme-single-value-in-body-expected.txt": [
+         "6f38f15e1c86925179d710b33737d747f6409066",
+         []
+        ],
+        "meta-color-scheme-single-value-in-head-expected.txt": [
+         "b87195f5ce086f7eda33ad37b64ba58e25590044",
+         []
+        ],
         "support": {
          "compute-root-color-scheme.js": [
-          "16de8485c046c7ea39fe081f3fcd6d04b4811d1e",
+          "74cbf895ced3d9b7f4783be993d5da274ca081f3",
           []
          ]
         }
@@ -283652,19 +283687,19 @@
         []
        ],
        "rel-base-target-expected.txt": [
-        "6d848622efe8cf1ac7a49ac1f458517e51147db8",
+        "ec792fee1730cffd783b46627bbfa820882a29f9",
         []
        ],
        "rel-button-target-expected.txt": [
-        "c2ff926d578885e946f148903c330ac2a878e380",
+        "fadb0c1519dc763e3c39bcadd082b4961b872a07",
         []
        ],
        "rel-form-target-expected.txt": [
-        "88e33b90d9131401e3e53638d311198e3ff3ae2c",
+        "7fb6127424da0bbf5e4f6fbcf0f43700597e26f0",
         []
        ],
        "rel-input-target-expected.txt": [
-        "b67908139dc6327eabc12a1a5da4b6f4c61de6eb",
+        "c821cacc6fc4c3d0700107fb9b0ee2164241cf03",
         []
        ],
        "resources": {
@@ -283673,7 +283708,7 @@
          []
         ],
         "reltester.js": [
-         "0fa9774ce4f15be8909a0aceaa4879e9c5ab39c1",
+         "8ca9ddbc2791b3b95d63781d1777161d323007e2",
          []
         ]
        }
@@ -284818,14 +284853,6 @@
         ],
         "dynamic-import": {
          "alpha": {
-          "base-url-worker-importScripts-expected.txt": [
-           "8134ddf6e455f6360990c8df4d9a78fe631792a5",
-           []
-          ],
-          "base-url.sub-expected.txt": [
-           "15485c46651450d0b0349488713db94f2e61be47",
-           []
-          ],
           "code-cache.js": [
            "8a8530c9b6d18e70bff9e9f234e8a14599ff66de",
            []
@@ -306289,7 +306316,7 @@
      []
     ],
     "supported-stats-expected.txt": [
-     "0ba4f70d25511e8ea124a3fdc734e94d1b77e171",
+     "18054650e2ed4b25b1fa759d7cd9b77dd789e92c",
      []
     ]
    },
@@ -332893,14 +332920,14 @@
     },
     "form-action": {
      "form-action-self-allowed-target-blank.html": [
-      "673174c1f03564e53e02a7c67d1661751e74f162",
+      "bc81a63b621deb225bbce53d4cfd957ea2deef98",
       [
        null,
        {}
       ]
      ],
      "form-action-src-allowed-target-blank.sub.html": [
-      "46747b76885d67a5663f6a5946d0b3f31fff2e4a",
+      "8727a82119aa2955f5f9b8c90258d92cc132ba11",
       [
        null,
        {}
@@ -332963,7 +332990,7 @@
       ]
      ],
      "form-action-src-redirect-allowed-target-blank.sub.html": [
-      "41c68b68f9e661ebe9eb56aae2c04d7127880a3c",
+      "e1f23db73c39e580b4ccc82509499f381979b535",
       [
        null,
        {}
@@ -343703,6 +343730,13 @@
      ],
      "layer-keyframes-override.html": [
       "d0f4044f1e7f4610b7cf9f08f9012d9483c6f2dc",
+      [
+       null,
+       {}
+      ]
+     ],
+     "layer-media-query.html": [
+      "da207333104a0a5bc404ab48364aedc846f76245",
       [
        null,
        {}
@@ -368565,7 +368599,7 @@
       ]
      ],
      "focus-visible-009.html": [
-      "35a32da7bda18a056119ee792c3de594991b4b99",
+      "fcb70f2e35c26fd6cf09b3f24e1cc9182fd0f9fc",
       [
        null,
        {}
@@ -370182,6 +370216,13 @@
      ],
      "HTMLSlotElement.html": [
       "aba8f20ccfcde3b9e1852cb4d496df5cf85e5e6d",
+      [
+       null,
+       {}
+      ]
+     ],
+     "HTMLSourceElement.html": [
+      "d2ce0f0f5e906acdbbc00b334eb11163d3ec3a67",
       [
        null,
        {}
@@ -431301,13 +431342,6 @@
         ],
         "meta-color-scheme-no-content-value.html": [
          "0d22e44b26d980f862bd06bf9f9938b6b458483e",
-         [
-          null,
-          {}
-         ]
-        ],
-        "meta-color-scheme-presentational-hint.html": [
-         "e5dc75a911c8f4fa12d85087cd769286e62719a4",
          [
           null,
           {}
@@ -510203,7 +510237,7 @@
      ]
     ],
     "RTCPeerConnection-insertable-streams-simulcast.https.html": [
-     "1a568d089549a40c36f8e8d2c94f2d0d81790aa5",
+     "1ba362e10cd5d0f8b5b611680e9caa12a3a7bb35",
      [
       null,
       {}
@@ -510503,7 +510537,7 @@
    },
    "webrtc-svc": {
     "RTCRtpParameters-scalability.html": [
-     "fd2d1a574b2631933559ee9917c531cc341f1e1b",
+     "52907af55eab90bcddc958d0cb44723e5079715b",
      [
       null,
       {}

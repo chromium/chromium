@@ -23,5 +23,6 @@ function assert_root_color_scheme(expected_used_scheme, description) {
 
   test(() => {
     assert_equals(get_used_root_color_scheme(), expected_used_scheme);
+    assert_equals(getComputedStyle(document.documentElement).colorScheme, "normal", "Root element's color-scheme should be 'normal'");
   }, description);
 }
