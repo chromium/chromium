@@ -2,26 +2,24 @@ const fs = require("fs");
 const os = require("os");
 const { spawnSync } = require("child_process");
 
-// Generate a new build ID.
-const buildId = `${currentPlatform()}-chromium-${makeDate()}-${makeRandomId()}`;
-
-fs.writeFileSync(
-  `${__dirname}/base/record_replay_build_id.cc`,
-  `namespace recordreplay { char gBuildId[] = "${buildId}"; }`
-);
-
 if (currentPlatform() == "macOS") {
   // Make sure the main executable gets rebuilt with the new build ID.
   spawnChecked("touch", [`${__dirname}/chrome/app/chrome_exe_main_mac.cc`]);
 }
 
 // Download the latest record/replay driver.
-const driverFile = `${currentPlatform()}-recordreplay.so`;
-spawnChecked("wget", [`https://replay.io/downloads/${driverFile}`], { stdio: "inherit" });
+const driverArchive = `${currentPlatform()}-recordreplay.tgz`;
+const driverFile = `${currentPlatform()}-recordreplay.${driverExtension()}`;
+const driverJSON = `${currentPlatform()}-recordreplay.json`;
+spawnChecked("curl", [`https://static.replay.io/downloads/${driverArchive}`, "-o", driverArchive], { stdio: "inherit" });
+spawnChecked("tar", ["xf", driverArchive]);
+fs.unlinkSync(driverArchive);
 
 // Embed the driver in the source.
 const driverContents = fs.readFileSync(driverFile);
+const { revision: driverRevision, date: driverDate } = JSON.parse(fs.readFileSync(driverJSON, "utf8"));
 fs.unlinkSync(driverFile);
+fs.unlinkSync(driverJSON);
 let driverString = "";
 for (let i = 0; i < driverContents.length; i++) {
   driverString += `\\${driverContents[i].toString(8)}`;
@@ -32,6 +30,7 @@ fs.writeFileSync(
 namespace recordreplay {
   char gRecordReplayDriver[] = "${driverString}";
   int gRecordReplayDriverSize = ${driverContents.length};
+  char gBuildId[] = "${computeBuildId()}";
 }
 `
 );
@@ -63,14 +62,28 @@ function currentPlatform() {
   }
 }
 
-function makeDate() {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = (now.getMonth() + 1).toString().padStart(2, "0");
-  const date = now.getDate().toString().padStart(2, "0");
-  return `${year}${month}${date}`;
+function driverExtension() {
+  return currentPlatform() == "windows" ? "dll" : "so";
 }
 
-function makeRandomId() {
-  return Math.round(Math.random() * 1e9).toString();
+function computeBuildId() {
+  // Note: this build ID doesn't include revision etc. information for v8 or other inner git
+  // repositories. It would be good to either fix this or enforce that the chromium revision
+  // gets bumped whenever an inner repository changes.
+  const chromiumRevision = spawnChecked("git", ["rev-parse", "--short", "HEAD"]).stdout.toString().trim();
+  const chromiumDate = spawnChecked("git", [
+    "show",
+    "HEAD",
+    "--pretty=%cd",
+    "--date=short",
+    "--no-patch",
+  ])
+    .stdout.toString()
+    .trim()
+    .replace(/-/g, "-");
+
+  // Use the later of the two dates in the build ID.
+  const date = +chromiumDate >= +driverDate ? chromiumDate : driverDate;
+
+  return `${currentPlatform()}-chromium-${date}-${chromiumRevision}-${driverRevision}`;
 }
