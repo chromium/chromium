@@ -44,6 +44,16 @@ std::vector<SyncItemWrapper<std::string>> GenerateStringWrappersFromSyncItems(
   return wrappers;
 }
 
+SyncItemWrapper<std::string> ConvertAppListItemToStringWrapper(
+    const ChromeAppListItem& app_list_item) {
+  SyncItemWrapper<std::string> wrapper;
+  wrapper.id = app_list_item.id();
+  wrapper.item_ordinal = app_list_item.position();
+  wrapper.key_attribute = app_list_item.name();
+  wrapper.is_folder = app_list_item.is_folder();
+  return wrapper;
+}
+
 std::vector<SyncItemWrapper<std::string>>
 GenerateStringWrappersFromAppListItems(
     const std::vector<const ChromeAppListItem*>& items) {
@@ -52,12 +62,7 @@ GenerateStringWrappersFromAppListItems(
     if (app_list_item->is_page_break())
       continue;
 
-    SyncItemWrapper<std::string> wrapper;
-    wrapper.id = app_list_item->id();
-    wrapper.item_ordinal = app_list_item->position();
-    wrapper.key_attribute = app_list_item->name();
-    wrapper.is_folder = app_list_item->is_folder();
-    wrappers.emplace_back(std::move(wrapper));
+    wrappers.emplace_back(ConvertAppListItemToStringWrapper(*app_list_item));
   }
   return wrappers;
 }

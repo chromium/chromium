@@ -2152,3 +2152,68 @@ TEST_F(AppListSortUnitTest, NewAppPlacementInitiallyOnlyFolders) {
       GetItemNamesInOrdinalOrder(),
       std::vector<std::string>({"", "Folder2", "Folder1", "A", "B", "C", "D"}));
 }
+
+// Verifies that the new app's position maintains the launcher sort order among
+// sync items (including the apps not enabled on the local device).
+TEST_F(AppListSortUnitTest, VerifyNewAppPositionInGlobalScope) {
+  RemoveAllExistingItems();
+
+  const std::string kItemId1 = CreateNextAppId(GenerateId("app_id1"));
+  scoped_refptr<extensions::Extension> app1 =
+      MakeApp("C", kItemId1, extensions::Extension::NO_FLAGS);
+  InstallExtension(app1.get());
+
+  const std::string kItemId2 = CreateNextAppId(GenerateId("app_id2"));
+  scoped_refptr<extensions::Extension> app2 =
+      MakeApp("A", kItemId2, extensions::Extension::NO_FLAGS);
+  InstallExtension(app2.get());
+
+  const std::string kItemId3 = CreateNextAppId(GenerateId("app_id3"));
+  scoped_refptr<extensions::Extension> app3 =
+      MakeApp("D", kItemId3, extensions::Extension::NO_FLAGS);
+  InstallExtension(app3.get());
+
+  // The sort order is not set. Therefore an app is always placed at the front.
+  EXPECT_EQ(GetItemNamesInOrdinalOrder(),
+            std::vector<std::string>({"D", "A", "C"}));
+
+  app_list_syncable_service()->SortSyncItems(
+      ash::AppListSortOrder::kNameAlphabetical);
+  EXPECT_EQ(ash::AppListSortOrder::kNameAlphabetical, GetSortOrderFromPrefs());
+  EXPECT_EQ(GetItemNamesInOrdinalOrder(),
+            std::vector<std::string>({"A", "C", "D"}));
+
+  // A hacky way to emulate that an item is disabled locally (in other words,
+  // the app's sync data exists but its app list item data is missing).
+  model_updater()->RemoveItem(kItemId1);
+
+  // Install a new app and verify the app order.
+  const std::string kItemId4 = CreateNextAppId(GenerateId("app_id4"));
+  scoped_refptr<extensions::Extension> app4 =
+      MakeApp("B", kItemId4, extensions::Extension::NO_FLAGS);
+  InstallExtension(app4.get());
+  EXPECT_EQ(GetItemNamesInOrdinalOrder(),
+            std::vector<std::string>({"A", "B", "C", "D"}));
+
+  // Remove another item from the model. Now only "A" and "B" are in the model.
+  model_updater()->RemoveItem(kItemId3);
+
+  // Install a new app and verify the app order.
+  const std::string kItemId5 = CreateNextAppId(GenerateId("app_id5"));
+  scoped_refptr<extensions::Extension> app5 =
+      MakeApp("F", kItemId5, extensions::Extension::NO_FLAGS);
+  InstallExtension(app5.get());
+  EXPECT_EQ(GetItemNamesInOrdinalOrder(),
+            std::vector<std::string>({"A", "B", "C", "D", "F"}));
+
+  // Remove another item from the model. Now only "A" and "B" are in the model.
+  model_updater()->RemoveItem(kItemId5);
+
+  // Install a new app and verify the app order.
+  const std::string kItemId6 = CreateNextAppId(GenerateId("app_id6"));
+  scoped_refptr<extensions::Extension> app6 =
+      MakeApp("E", kItemId6, extensions::Extension::NO_FLAGS);
+  InstallExtension(app6.get());
+  EXPECT_EQ(GetItemNamesInOrdinalOrder(),
+            std::vector<std::string>({"A", "B", "C", "D", "E", "F"}));
+}

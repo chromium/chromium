@@ -52,10 +52,11 @@ std::vector<int> SortAndGetLis(
             [order](const reorder::SyncItemWrapper<T>& wrapper1,
                     const reorder::SyncItemWrapper<T>& wrapper2) {
               // Always put folders in front.
-              if ((!wrapper1.is_folder && wrapper2.is_folder) ||
-                  (wrapper1.is_folder && !wrapper2.is_folder)) {
+              // TODO(https://crbug.com/1261673): remove this code block when
+              // `SyncItemWrapper` comparison operators take item type into
+              // consideration.
+              if (wrapper1.is_folder != wrapper2.is_folder)
                 return wrapper1.is_folder;
-              }
 
               bool comp = false;
               switch (order) {
@@ -284,8 +285,12 @@ void CalculateEntropyAndGetSortedSubsequence(
 }
 
 // Calculate neighbors' locations so that if the new item is inserted between
-// neighbors then `sorted_subsequence` after insertion still keeps `order`. If
-// the new item should be placed at the end, either `prev` or `next` is empty.
+// neighbors then `sorted_subsequence` after insertion still keeps `order`. Pass
+// the results through parameters. If the new item should be placed at the end,
+// either `prev` or `next` is empty. Note that `prev` and `next` are calculated
+// based on the local items (i.e. the app list items of the device where a new
+// item is added). Local items are contrast to global items which include all
+// items from all sync devices.
 template <typename T>
 void CalculateNeighbors(
     ash::AppListSortOrder order,
@@ -297,6 +302,7 @@ void CalculateNeighbors(
   // `sorted_subsequence` guarantees:
   // (1) Folder items are always placed in front of non-folder items.
   // (2) The items of the same category follow `order`.
+  DCHECK(!sorted_subsequence.empty());
   auto first_non_folder_iter = std::find_if(
       sorted_subsequence.cbegin(), sorted_subsequence.cend(),
       [](const reorder::SyncItemWrapper<T>& item) { return !item.is_folder; });
@@ -343,6 +349,87 @@ void CalculateNeighbors(
   // non-folder items.
   *prev = std::prev(lower_bound)->item_ordinal;
   *next = lower_bound->item_ordinal;
+}
+
+// Returns the position for an incoming new app so that after insertion launcher
+// sort order is maintained on all sync devices.
+template <typename T>
+syncer::StringOrdinal CalculateNewAppPositionInGlobalScope(
+    ash::AppListSortOrder order,
+    const reorder::SyncItemWrapper<T>& new_item,
+    const std::vector<reorder::SyncItemWrapper<T>>& global_items,
+    const absl::optional<syncer::StringOrdinal>& local_prev,
+    const absl::optional<syncer::StringOrdinal>& local_next) {
+  // `local_prev` and `local_next` are the new item's local neighbor positions
+  // (see CalculateNeighbors() for more details). Recall that different sync
+  // devices may have different sets of apps. This method checks the existing
+  // sync items whose positions are between `local_prev` and `local_next` so as
+  // to get the correct position in global scope.
+
+  // The left neighbor in the global scope.
+  syncer::StringOrdinal global_prev;
+  if (local_prev)
+    global_prev = *local_prev;
+
+  // The right neighbor in the global scope.
+  syncer::StringOrdinal global_next;
+  if (local_next)
+    global_next = *local_next;
+
+  const bool is_increasing = IsIncreasingOrder(order);
+  for (const auto& item : global_items) {
+    const syncer::StringOrdinal& position = item.item_ordinal;
+    if (!position.IsValid())
+      continue;
+
+    // Skip the loop iteration if `position` is not in the range of
+    // (global_prev, global_next) because it cannot shrink the range.
+    if ((global_prev.IsValid() && !position.GreaterThan(global_prev)) ||
+        (global_next.IsValid() && !position.LessThan(global_next))) {
+      continue;
+    }
+
+    // TODO(https://crbug.com/1261673): clean this code block when
+    // `SyncItemWrapper` comparison operators take item type into consideration.
+    const bool is_item_greater =
+        ((item.is_folder == new_item.is_folder &&
+          item.key_attribute > new_item.key_attribute) ||
+         (!item.is_folder && new_item.is_folder));
+    const bool is_equal = (item.is_folder == new_item.is_folder &&
+                           item.key_attribute == new_item.key_attribute);
+
+    if (is_equal || is_increasing == is_item_greater) {
+      // Handle the case that the new item should be placed in front of `item`.
+      // Note that if `item` is equal to `new_item`, `item` is always placed
+      // after `new_item` to keep the consistency with `CalculateNeighbors()`.
+      global_next = position;
+    } else {
+      // Handle the case that the new item should be placed after `item`.
+      global_prev = position;
+    }
+  }
+
+  // Calculate the result based on `global_prev` and `global_next`.
+
+  if (!global_prev.IsValid() && !global_next.IsValid()) {
+    // The edge case that `global_items` is empty is covered here. Not sure
+    // whether this case really exists. Handle it for satefy.
+    return syncer::StringOrdinal().CreateInitialOrdinal();
+  }
+
+  if (global_prev.IsValid() && global_next.IsValid()) {
+    // Both left neighbor and right neighbor are valid. Insert the new app
+    // between `global_prev` and `global_next`.
+    return global_prev.CreateBetween(global_next);
+  }
+
+  if (global_prev.IsValid()) {
+    // Only `global_prev` is valid. Insert the new app after `global_prev`.
+    return global_prev.CreateAfter();
+  }
+
+  // Only `global_next` is valid. Insert the new app before `global_next`.
+  return global_next.CreateBefore();
 }
 
 }  // namespace
@@ -457,9 +544,11 @@ syncer::StringOrdinal AppListReorderDelegate::CalculatePositionInNameOrder(
       reorder::GenerateStringWrappersFromAppListItems(local_items);
 
   if (local_item_wrappers.empty()) {
-    // TODO(https://crbug.com/1260915): Take all sync items into consideration
-    // when calculating the new item's position.
-    return syncer::StringOrdinal::CreateInitialOrdinal();
+    return CalculateNewAppPositionInGlobalScope(
+        order, reorder::ConvertAppListItemToStringWrapper(new_item),
+        reorder::GenerateStringWrappersFromSyncItems(
+            app_list_syncable_service_->sync_items()),
+        /*local_prev=*/absl::nullopt, /*local_next=*/absl::nullopt);
   }
 
   std::vector<reorder::SyncItemWrapper<std::string>> sorted_subsequence;
@@ -481,13 +570,11 @@ syncer::StringOrdinal AppListReorderDelegate::CalculatePositionInNameOrder(
   CalculateNeighbors(order, new_item.name(), sorted_subsequence, &prev_neighbor,
                      &next_neighbor);
 
-  // TODO(https://crbug.com/1260915): Take all sync items into consideration
-  // when calculating the new item's position.
-  if (prev_neighbor && next_neighbor)
-    return prev_neighbor->CreateBetween(*next_neighbor);
-  if (prev_neighbor)
-    return prev_neighbor->CreateAfter();
-  return next_neighbor->CreateBefore();
+  return CalculateNewAppPositionInGlobalScope(
+      order, reorder::ConvertAppListItemToStringWrapper(new_item),
+      reorder::GenerateStringWrappersFromSyncItems(
+          app_list_syncable_service_->sync_items()),
+      prev_neighbor, next_neighbor);
 }
 
 PrefService* AppListReorderDelegate::GetPrefService() {
