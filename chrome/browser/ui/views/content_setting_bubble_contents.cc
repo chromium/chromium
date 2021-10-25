@@ -50,7 +50,7 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/table_layout.h"
 #include "ui/views/native_cursor.h"
 
 namespace {
@@ -101,36 +101,34 @@ class MediaMenuBlock : public views::View {
                  ContentSettingBubbleModel::MediaMenuMap media) {
     const ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
 
-    views::GridLayout* layout =
-        SetLayoutManager(std::make_unique<views::GridLayout>());
-    constexpr int kColumnSetId = 0;
-    views::ColumnSet* column_set = layout->AddColumnSet(kColumnSetId);
-    column_set->AddColumn(views::GridLayout::LEADING, views::GridLayout::CENTER,
-                          views::GridLayout::kFixedSize,
-                          views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-    column_set->AddPaddingColumn(
-        views::GridLayout::kFixedSize,
-        provider->GetDistanceMetric(
-            views::DISTANCE_RELATED_CONTROL_HORIZONTAL));
-    column_set->AddColumn(views::GridLayout::FILL, views::GridLayout::FILL, 1.0,
-                          views::GridLayout::ColumnSize::kFixed, 0, 0);
+    auto* layout = SetLayoutManager(std::make_unique<views::TableLayout>());
+    layout
+        ->AddColumn(views::LayoutAlignment::kStart,
+                    views::LayoutAlignment::kCenter,
+                    views::TableLayout::kFixedSize,
+                    views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+        .AddPaddingColumn(views::TableLayout::kFixedSize,
+                          provider->GetDistanceMetric(
+                              views::DISTANCE_RELATED_CONTROL_HORIZONTAL))
+        .AddColumn(views::LayoutAlignment::kStretch,
+                   views::LayoutAlignment::kStretch, 1.0,
+                   views::TableLayout::ColumnSize::kFixed, 0, 0);
 
     bool first_row = true;
     for (auto i = media.cbegin(); i != media.cend(); ++i) {
       if (!first_row) {
-        layout->AddPaddingRow(views::GridLayout::kFixedSize,
+        layout->AddPaddingRow(views::TableLayout::kFixedSize,
                               provider->GetDistanceMetric(
                                   views::DISTANCE_RELATED_CONTROL_VERTICAL));
       }
       first_row = false;
 
-      layout->StartRow(views::GridLayout::kFixedSize, kColumnSetId);
+      layout->AddRows(1, views::TableLayout::kFixedSize);
       blink::mojom::MediaStreamType stream_type = i->first;
       const ContentSettingBubbleModel::MediaMenu& menu = i->second;
 
-      auto label = std::make_unique<views::Label>(menu.label);
-      label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-      layout->AddView(std::move(label));
+      AddChildView(std::make_unique<views::Label>(menu.label))
+          ->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
       auto combobox_model = std::make_unique<MediaComboboxModel>(stream_type);
       // Disable the device selection when the website is managing the devices
@@ -141,13 +139,11 @@ class MediaMenuBlock : public views::View {
           combobox_model->GetDevices().empty()
               ? 0
               : combobox_model->GetDeviceIndex(menu.selected_device);
-      // The combobox takes ownership of the model.
-      auto combobox =
-          std::make_unique<views::Combobox>(std::move(combobox_model));
+      auto* combobox = AddChildView(
+          std::make_unique<views::Combobox>(std::move(combobox_model)));
       combobox->SetEnabled(combobox_enabled);
-      combobox->SetCallback(base::BindRepeating(callback, combobox.get()));
+      combobox->SetCallback(base::BindRepeating(callback, combobox));
       combobox->SetSelectedIndex(combobox_selected_index);
-      layout->AddView(std::move(combobox));
     }
   }
 
@@ -300,28 +296,24 @@ void ContentSettingBubbleContents::ListItemContainer::RemoveRowAtIndex(
   delete children.second;
   list_item_views_.erase(list_item_views_.begin() + index);
 
-  // As GridLayout can't remove rows, we have to rebuild it entirely.
+  // As TableLayout can't remove rows, we have to rebuild it entirely.
   ResetLayout();
   for (auto& row : list_item_views_)
     AddRowToLayout(row);
 }
 
 void ContentSettingBubbleContents::ListItemContainer::ResetLayout() {
-  views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
-  views::ColumnSet* item_list_column_set = layout->AddColumnSet(0);
-  item_list_column_set->AddColumn(
-      views::GridLayout::LEADING, views::GridLayout::FILL,
-      views::GridLayout::kFixedSize,
-      views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  const int related_control_horizontal_spacing =
-      ChromeLayoutProvider::Get()->GetDistanceMetric(
-          views::DISTANCE_RELATED_CONTROL_HORIZONTAL);
-  item_list_column_set->AddPaddingColumn(views::GridLayout::kFixedSize,
-                                         related_control_horizontal_spacing);
-  item_list_column_set->AddColumn(
-      views::GridLayout::LEADING, views::GridLayout::FILL, 1.0,
-      views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
+  SetLayoutManager(std::make_unique<views::TableLayout>())
+      ->AddColumn(views::LayoutAlignment::kStart,
+                  views::LayoutAlignment::kStretch,
+                  views::TableLayout::kFixedSize,
+                  views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddPaddingColumn(views::TableLayout::kFixedSize,
+                        ChromeLayoutProvider::Get()->GetDistanceMetric(
+                            views::DISTANCE_RELATED_CONTROL_HORIZONTAL))
+      .AddColumn(views::LayoutAlignment::kStart,
+                 views::LayoutAlignment::kStretch, 1.0,
+                 views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
   auto* scroll_view = views::ScrollView::GetScrollViewForContents(this);
   // When this function is called from the constructor, the view has not yet
   // been placed into a ScrollView.
@@ -331,24 +323,18 @@ void ContentSettingBubbleContents::ListItemContainer::ResetLayout() {
 
 void ContentSettingBubbleContents::ListItemContainer::AddRowToLayout(
     const Row& row) {
-  views::GridLayout* layout =
-      static_cast<views::GridLayout*>(GetLayoutManager());
-  DCHECK(layout);
-  layout->StartRow(views::GridLayout::kFixedSize, 0);
-  layout->AddExistingView(row.first);
-  layout->AddExistingView(row.second);
+  static_cast<views::TableLayout*>(GetLayoutManager())
+      ->AddRows(1, views::TableLayout::kFixedSize, 0);
   UpdateScrollHeight(row);
 }
 
 ContentSettingBubbleContents::ListItemContainer::Row
 ContentSettingBubbleContents::ListItemContainer::AddNewRowToLayout(NewRow row) {
-  views::GridLayout* layout =
-      static_cast<views::GridLayout*>(GetLayoutManager());
-  DCHECK(layout);
+  static_cast<views::TableLayout*>(GetLayoutManager())
+      ->AddRows(1, views::GridLayout::kFixedSize);
   Row row_result;
-  layout->StartRow(views::GridLayout::kFixedSize, 0);
-  row_result.first = layout->AddView(std::move(row.first));
-  row_result.second = layout->AddView(std::move(row.second));
+  row_result.first = AddChildView(std::move(row.first));
+  row_result.second = AddChildView(std::move(row.second));
   UpdateScrollHeight(row_result);
   return row_result;
 }
