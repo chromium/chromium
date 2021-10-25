@@ -263,6 +263,8 @@ TEST_F(LoggingTest, AlwaysLogErrorsToStderr) {
   bool did_log_info = false;
   bool did_log_error = false;
 
+  // Fuchsia only logs to stderr when explicitly specified.
+#if !defined(OS_FUCHSIA)
   // When no destinations are specified, ERRORs should still log to stderr.
   TestForLogToStderr(LOG_NONE, &did_log_info, &did_log_error);
   EXPECT_FALSE(did_log_info);
@@ -272,6 +274,7 @@ TEST_F(LoggingTest, AlwaysLogErrorsToStderr) {
   TestForLogToStderr(LOG_TO_FILE, &did_log_info, &did_log_error);
   EXPECT_FALSE(did_log_info);
   EXPECT_TRUE(did_log_error);
+#endif
 
   // ERRORs should not be logged to stderr if any destination besides FILE is
   // set.
