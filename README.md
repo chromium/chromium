@@ -1,4 +1,4 @@
-# ![Logo](chrome/app/theme/chromium/product_logo_64.png) Blitz browser
+# ![Logo](resources/icons/Icon_resource.png) Blitz browser
 
 Blitz is a simple browser based on chromium.
 ## why I relaunched it
