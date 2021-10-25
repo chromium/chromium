@@ -34,7 +34,7 @@ FlocComponentInstallerPolicy::~FlocComponentInstallerPolicy() = default;
 
 bool FlocComponentInstallerPolicy::SupportsGroupPolicyEnabledComponentUpdates()
     const {
-  return false;
+  return true;
 }
 
 // Public data is delivered via this component, no need for encryption.
