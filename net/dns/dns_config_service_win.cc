@@ -559,9 +559,7 @@ class DnsConfigServiceWin::HostsReader : public DnsConfigService::HostsReader {
   class WorkItem : public DnsConfigService::HostsReader::WorkItem {
    public:
     explicit WorkItem(base::FilePath hosts_file_path)
-        : DnsConfigService::HostsReader::WorkItem(
-              std::make_unique<DnsHostsFileParser>(
-                  std::move(hosts_file_path))) {}
+        : DnsConfigService::HostsReader::WorkItem(std::move(hosts_file_path)) {}
 
     ~WorkItem() override = default;
 

@@ -23,6 +23,14 @@ namespace file_manager {
 namespace io_task {
 namespace {
 
+MATCHER_P(EntryStatusUrls, matcher, "") {
+  std::vector<storage::FileSystemURL> urls;
+  for (const auto& status : arg) {
+    urls.push_back(status.url);
+  }
+  return testing::ExplainMatchResult(matcher, urls, result_listener);
+}
+
 storage::FileSystemURL CreateFileSystemURL(std::string url) {
   return storage::FileSystemURL::CreateForTest(GURL(url));
 }
@@ -51,9 +59,10 @@ TEST_F(IOTaskControllerTest, SimpleQueueing) {
 
   // All progress statuses should return the same |type|, |source_urls| and
   // |destination_folder| as given, so set up a base matcher to check this.
-  auto base_matcher = AllOf(Field(&ProgressStatus::type, OperationType::kCopy),
-                            Field(&ProgressStatus::source_urls, source_urls),
-                            Field(&ProgressStatus::destination_folder, dest));
+  auto base_matcher =
+      AllOf(Field(&ProgressStatus::type, OperationType::kCopy),
+            Field(&ProgressStatus::sources, EntryStatusUrls(source_urls)),
+            Field(&ProgressStatus::destination_folder, dest));
 
   // The controller should synchronously send out a progress status when queued.
   EXPECT_CALL(observer, OnIOTaskStatus(
@@ -108,9 +117,10 @@ TEST_F(IOTaskControllerTest, Cancel) {
 
   // All progress statuses should return the same |type|, |source_urls| and
   // |destination_folder| given, so set up a base matcher to check this.
-  auto base_matcher = AllOf(Field(&ProgressStatus::type, OperationType::kMove),
-                            Field(&ProgressStatus::source_urls, source_urls),
-                            Field(&ProgressStatus::destination_folder, dest));
+  auto base_matcher =
+      AllOf(Field(&ProgressStatus::type, OperationType::kMove),
+            Field(&ProgressStatus::sources, EntryStatusUrls(source_urls)),
+            Field(&ProgressStatus::destination_folder, dest));
 
   // The controller should synchronously send out a progress status when queued.
   EXPECT_CALL(observer, OnIOTaskStatus(

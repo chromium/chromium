@@ -22,28 +22,29 @@ void CameraRollManager::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-CameraRollManager::CameraRollUiState CameraRollManager::ui_state() {
-  return ui_state_;
-}
-
 void CameraRollManager::SetCurrentItems(
     const std::vector<CameraRollItem>& items) {
+  if (current_items_ == items) {
+    return;
+  }
   current_items_ = items;
-  ComputeAndUpdateUiState();
+  NotifyCameraRollItemsChanged();
 }
 
 void CameraRollManager::ClearCurrentItems() {
+  if (current_items_.empty()) {
+    return;
+  }
   current_items_.clear();
-  ComputeAndUpdateUiState();
+  NotifyCameraRollItemsChanged();
 }
 
-void CameraRollManager::NotifyCameraRollViewUiStateUpdated() {
+void CameraRollManager::NotifyCameraRollItemsChanged() {
+  PA_LOG(INFO) << "Updated the list of Camera Roll items";
   for (auto& observer : observer_list_) {
-    observer.OnCameraRollViewUiStateUpdated();
+    observer.OnCameraRollItemsChanged();
   }
 }
-
-void CameraRollManager::Observer::OnCameraRollViewUiStateUpdated() {}
 
 }  // namespace phonehub
 }  // namespace chromeos

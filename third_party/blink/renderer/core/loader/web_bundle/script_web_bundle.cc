@@ -52,7 +52,7 @@ ScriptWebBundle* ScriptWebBundle::CreateOrReuseInline(
 
   if (SubresourceWebBundle* found =
           active_bundles->FindSubresourceWebBundleWhichWillBeReleased(
-              rule->source_url())) {
+              rule->source_url(), rule->credentials_mode())) {
     // Re-use the ScriptWebBundle if it has the same bundle URL and is being
     // released.
     DCHECK(found->IsScriptWebBundle());
@@ -128,14 +128,15 @@ bool ScriptWebBundle::WillBeReleased() const {
   return will_be_released_;
 }
 
+network::mojom::CredentialsMode ScriptWebBundle::GetCredentialsMode() const {
+  return rule_.credentials_mode();
+}
+
 void ScriptWebBundle::CreateBundleLoaderAndRegister() {
   DCHECK(!bundle_loader_);
   DCHECK(element_document_);
   bundle_loader_ = MakeGarbageCollected<WebBundleLoader>(
-      *this, *element_document_, rule_.source_url(),
-      // TODO(crbug.com/1245166): Set a cross origin attribute value from the
-      // rule.
-      kCrossOriginAttributeNotSet);
+      *this, *element_document_, rule_.source_url(), rule_.credentials_mode());
   ResourceFetcher* resource_fetcher = element_document_->Fetcher();
   if (!resource_fetcher)
     return;

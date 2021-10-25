@@ -84,7 +84,7 @@ class NET_EXPORT_PRIVATE DnsConfigService {
   // Watcher to observe for changes to DNS config or HOSTS (via overriding
   // `Watch()` with platform specifics) and trigger necessary refreshes on
   // changes.
-  class NET_EXPORT_PRIVATE Watcher {
+  class Watcher {
    public:
     // `service` is expected to own the created Watcher and thus stay valid for
     // the lifetime of the created Watcher.
@@ -117,7 +117,7 @@ class NET_EXPORT_PRIVATE DnsConfigService {
   // Reader of HOSTS files. In this base implementation, uses standard logic
   // appropriate to most platforms to read the HOSTS file located at
   // `hosts_file_path`.
-  class NET_EXPORT_PRIVATE HostsReader : public SerialWorker {
+  class HostsReader : public SerialWorker {
    public:
     // `service` is expected to own the created reader and thus stay valid for
     // the lifetime of the created reader.
@@ -129,9 +129,9 @@ class NET_EXPORT_PRIVATE DnsConfigService {
     HostsReader& operator=(const HostsReader&) = delete;
 
    protected:
-    class NET_EXPORT_PRIVATE WorkItem : public SerialWorker::WorkItem {
+    class WorkItem : public SerialWorker::WorkItem {
      public:
-      explicit WorkItem(std::unique_ptr<DnsHostsParser> dns_hosts_parser);
+      explicit WorkItem(base::FilePath hosts_file_path);
       ~WorkItem() override;
 
       // Override if needed to implement platform-specific behavior, e.g. for a
@@ -151,7 +151,7 @@ class NET_EXPORT_PRIVATE DnsConfigService {
       friend HostsReader;
 
       absl::optional<DnsHosts> hosts_;
-      std::unique_ptr<DnsHostsParser> dns_hosts_parser_;
+      const base::FilePath hosts_file_path_;
     };
 
     // SerialWorker:

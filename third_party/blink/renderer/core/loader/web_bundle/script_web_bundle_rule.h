@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_WEB_BUNDLE_SCRIPT_WEB_BUNDLE_RULE_H_
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl_hash.h"
@@ -23,6 +24,7 @@ class CORE_EXPORT ScriptWebBundleRule final {
       const KURL& base_url);
 
   ScriptWebBundleRule(const KURL& source_url,
+                      network::mojom::CredentialsMode credentialsl_mode,
                       HashSet<KURL> scope_urls,
                       HashSet<KURL> resource_urls);
 
@@ -30,9 +32,13 @@ class CORE_EXPORT ScriptWebBundleRule final {
   const KURL& source_url() const { return source_url_; }
   const HashSet<KURL>& scope_urls() const { return scope_urls_; }
   const HashSet<KURL>& resource_urls() const { return resource_urls_; }
+  network::mojom::CredentialsMode credentials_mode() const {
+    return credentials_mode_;
+  }
 
  private:
   KURL source_url_;
+  network::mojom::CredentialsMode credentials_mode_;
   HashSet<KURL> scope_urls_;
   HashSet<KURL> resource_urls_;
 };

@@ -33,11 +33,28 @@ using ::testing::AnyNumber;
 using ::testing::AtLeast;
 using ::testing::ElementsAre;
 using ::testing::Field;
+using ::testing::IsEmpty;
 using ::testing::Return;
 
 namespace file_manager {
 namespace io_task {
 namespace {
+
+MATCHER_P(EntryStatusUrls, matcher, "") {
+  std::vector<storage::FileSystemURL> urls;
+  for (const auto& status : arg) {
+    urls.push_back(status.url);
+  }
+  return testing::ExplainMatchResult(matcher, urls, result_listener);
+}
+
+MATCHER_P(EntryStatusErrors, matcher, "") {
+  std::vector<absl::optional<base::File::Error>> errors;
+  for (const auto& status : arg) {
+    errors.push_back(status.error);
+  }
+  return testing::ExplainMatchResult(matcher, errors, result_listener);
+}
 
 const size_t kTestFileSize = 32;
 
@@ -76,10 +93,14 @@ TEST_F(CopyIOTaskTest, Basic) {
       CreateFileSystemURL("foo.txt"),
       CreateFileSystemURL("bar.txt"),
   };
+  std::vector<storage::FileSystemURL> expected_output_urls = {
+      CreateFileSystemURL("foo (1).txt"),
+      CreateFileSystemURL("bar (1).txt"),
+  };
   auto dest = CreateFileSystemURL("");
   auto base_matcher =
       AllOf(Field(&ProgressStatus::type, OperationType::kCopy),
-            Field(&ProgressStatus::source_urls, source_urls),
+            Field(&ProgressStatus::sources, EntryStatusUrls(source_urls)),
             Field(&ProgressStatus::destination_folder, dest),
             Field(&ProgressStatus::total_bytes, 2 * kTestFileSize));
   base::MockRepeatingCallback<void(const ProgressStatus&)> progress_callback;
@@ -95,8 +116,13 @@ TEST_F(CopyIOTaskTest, Basic) {
       progress_callback,
       Run(AllOf(Field(&ProgressStatus::state, State::kInProgress),
                 Field(&ProgressStatus::bytes_transferred, kTestFileSize),
-                Field(&ProgressStatus::errors,
-                      ElementsAre(base::File::FILE_OK, absl::nullopt)),
+                Field(&ProgressStatus::sources,
+                      EntryStatusErrors(
+                          ElementsAre(base::File::FILE_OK, absl::nullopt))),
+                Field(&ProgressStatus::outputs,
+                      EntryStatusUrls(ElementsAre(expected_output_urls[0]))),
+                Field(&ProgressStatus::outputs,
+                      EntryStatusErrors(ElementsAre(base::File::FILE_OK))),
                 base_matcher)))
       .Times(AtLeast(1));
   // We should get one complete callback when the copy finishes.
@@ -104,8 +130,14 @@ TEST_F(CopyIOTaskTest, Basic) {
       complete_callback,
       Run(AllOf(Field(&ProgressStatus::state, State::kSuccess),
                 Field(&ProgressStatus::bytes_transferred, 2 * kTestFileSize),
-                Field(&ProgressStatus::errors,
-                      ElementsAre(base::File::FILE_OK, base::File::FILE_OK)),
+                Field(&ProgressStatus::sources,
+                      EntryStatusErrors(ElementsAre(base::File::FILE_OK,
+                                                    base::File::FILE_OK))),
+                Field(&ProgressStatus::outputs,
+                      EntryStatusUrls(expected_output_urls)),
+                Field(&ProgressStatus::outputs,
+                      EntryStatusErrors(ElementsAre(base::File::FILE_OK,
+                                                    base::File::FILE_OK))),
                 base_matcher)))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
 
@@ -131,20 +163,27 @@ TEST_F(CopyIOTaskTest, FolderCopy) {
   std::vector<storage::FileSystemURL> source_urls = {
       CreateFileSystemURL("folder"),
   };
+  std::vector<storage::FileSystemURL> expected_output_urls = {
+      CreateFileSystemURL("folder2/folder"),
+  };
   auto dest = CreateFileSystemURL("folder2");
   auto base_matcher =
       AllOf(Field(&ProgressStatus::type, OperationType::kCopy),
-            Field(&ProgressStatus::source_urls, source_urls),
+            Field(&ProgressStatus::sources, EntryStatusUrls(source_urls)),
             Field(&ProgressStatus::destination_folder, dest),
             Field(&ProgressStatus::total_bytes, 2 * kTestFileSize));
   base::MockOnceCallback<void(ProgressStatus)> complete_callback;
   EXPECT_CALL(
       complete_callback,
-      Run(AllOf(
-          Field(&ProgressStatus::state, State::kSuccess),
-          Field(&ProgressStatus::bytes_transferred, 2 * kTestFileSize),
-          Field(&ProgressStatus::errors, ElementsAre(base::File::FILE_OK)),
-          base_matcher)))
+      Run(AllOf(Field(&ProgressStatus::state, State::kSuccess),
+                Field(&ProgressStatus::bytes_transferred, 2 * kTestFileSize),
+                Field(&ProgressStatus::sources,
+                      EntryStatusErrors(ElementsAre(base::File::FILE_OK))),
+                Field(&ProgressStatus::outputs,
+                      EntryStatusUrls(expected_output_urls)),
+                Field(&ProgressStatus::outputs,
+                      EntryStatusErrors(ElementsAre(base::File::FILE_OK))),
+                base_matcher)))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
 
   CopyIOTask task(source_urls, dest, &profile_, file_system_context_);
@@ -193,15 +232,17 @@ TEST_F(CopyIOTaskTest, MissingSource) {
   base::MockRepeatingCallback<void(const ProgressStatus&)> progress_callback;
   base::MockOnceCallback<void(ProgressStatus)> complete_callback;
   EXPECT_CALL(progress_callback, Run(_)).Times(0);
-  EXPECT_CALL(complete_callback,
-              Run(AllOf(Field(&ProgressStatus::type, OperationType::kCopy),
-                        Field(&ProgressStatus::source_urls, source_urls),
-                        Field(&ProgressStatus::destination_folder, dest),
-                        Field(&ProgressStatus::state, State::kError),
-                        Field(&ProgressStatus::bytes_transferred, 0),
-                        Field(&ProgressStatus::errors,
-                              ElementsAre(base::File::FILE_ERROR_NOT_FOUND,
-                                          absl::nullopt)))))
+  EXPECT_CALL(
+      complete_callback,
+      Run(AllOf(Field(&ProgressStatus::type, OperationType::kCopy),
+                Field(&ProgressStatus::destination_folder, dest),
+                Field(&ProgressStatus::state, State::kError),
+                Field(&ProgressStatus::bytes_transferred, 0),
+                Field(&ProgressStatus::sources, EntryStatusUrls(source_urls)),
+                Field(&ProgressStatus::sources,
+                      EntryStatusErrors(ElementsAre(
+                          base::File::FILE_ERROR_NOT_FOUND, absl::nullopt))),
+                Field(&ProgressStatus::outputs, IsEmpty()))))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
 
   CopyIOTask task(source_urls, dest, &profile_, file_system_context_);
@@ -220,19 +261,30 @@ TEST_F(CopyIOTaskTest, MissingDestination) {
       CreateFileSystemURL("foo.txt"),
       CreateFileSystemURL("bar.txt"),
   };
+  std::vector<storage::FileSystemURL> expected_output_urls = {
+      CreateFileSystemURL("nonexistent_folder/foo.txt"),
+      CreateFileSystemURL("nonexistent_folder/bar.txt"),
+  };
   auto dest = CreateFileSystemURL("nonexistent_folder/");
   base::MockOnceCallback<void(ProgressStatus)> complete_callback;
   EXPECT_CALL(
       complete_callback,
       Run(AllOf(Field(&ProgressStatus::type, OperationType::kCopy),
-                Field(&ProgressStatus::source_urls, source_urls),
                 Field(&ProgressStatus::destination_folder, dest),
                 Field(&ProgressStatus::state, State::kError),
                 Field(&ProgressStatus::bytes_transferred, 2 * kTestFileSize),
                 Field(&ProgressStatus::total_bytes, 2 * kTestFileSize),
-                Field(&ProgressStatus::errors,
-                      ElementsAre(base::File::FILE_ERROR_NOT_FOUND,
-                                  base::File::FILE_ERROR_NOT_FOUND)))))
+                Field(&ProgressStatus::sources, EntryStatusUrls(source_urls)),
+                Field(&ProgressStatus::sources,
+                      EntryStatusErrors(
+                          ElementsAre(base::File::FILE_ERROR_NOT_FOUND,
+                                      base::File::FILE_ERROR_NOT_FOUND))),
+                Field(&ProgressStatus::outputs,
+                      EntryStatusUrls(expected_output_urls)),
+                Field(&ProgressStatus::outputs,
+                      EntryStatusErrors(
+                          ElementsAre(base::File::FILE_ERROR_NOT_FOUND,
+                                      base::File::FILE_ERROR_NOT_FOUND))))))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
 
   CopyIOTask task(source_urls, dest, &profile_, file_system_context_);

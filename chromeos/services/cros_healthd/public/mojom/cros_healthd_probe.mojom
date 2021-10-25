@@ -967,63 +967,65 @@ struct EmbeddedDisplayInfo {
 // request. All optional array members will be null if cros_healthd did not
 // attempt to fetch that information, and size zero if cros_healthd did attempt
 // to fetch that information, but was unable to.
+//
+// NextMinVersion: 2, NextIndex: 18
 struct TelemetryInfo {
   // Information about the device's main battery. Only present when kBattery was
   // included in the categories input to ProbeTelemetryInfo.
-  BatteryResult? battery_result;
+  BatteryResult? battery_result@0;
   // Information about all of the device's non-removable block devices. Only
   // present when kNonRemovableBlockDevices was included in the categories input
   // to ProbeTelemetryInfo.
-  NonRemovableBlockDeviceResult? block_device_result;
+  NonRemovableBlockDeviceResult? block_device_result@1;
   // Information about each of the device's CPUs. Only present when kCpu was
   // included in the categories input to ProbeTelemetryInfo.
-  CpuResult? cpu_result;
+  CpuResult? cpu_result@2;
   // Information about the device's timezone. Only present when kTimezone was
   // included in the categories input to ProbeTelemetryInfo.
-  TimezoneResult? timezone_result;
+  TimezoneResult? timezone_result@3;
   // Information about the system's memory. Only present when kMemory was
   // included in the categories input to ProbeTelemetryInfo.
-  MemoryResult? memory_result;
+  MemoryResult? memory_result@4;
   // Information about all of the device's backlights. Only present when
   // kBacklight was included in the categories input to ProbeTelemetryInfo.
-  BacklightResult? backlight_result;
+  BacklightResult? backlight_result@5;
   // Information about each of the device's fans. Only present when kFan was
   // included in the categories input to ProbeTelemetryInfo.
-  FanResult? fan_result;
+  FanResult? fan_result@6;
   // Information about the stateful partition. Only present when
   // kStatefulPartition was included in the categories input to
   // ProbeTelemetryInfo.
-  StatefulPartitionResult? stateful_partition_result;
+  StatefulPartitionResult? stateful_partition_result@7;
   // Information about the device's Bluetooth adapters and devices. Only present
   // when kBluetooth was included in the categories input to ProbeTelemetryInfo.
-  BluetoothResult? bluetooth_result;
+  BluetoothResult? bluetooth_result@8;
   // Information about the system. Only present when kSystem was included in
   // the categories input to ProbeTelemetryInfo.
   // DEPRECATED(b/188508561): Use system_result_v2 instead.
-  SystemResult? system_result;
+  SystemResult? system_result@9;
   // Information about the networking devices and associated networks of the
   // system. Only present when kNetwork was included in the categories input to
   // ProbeTelemetryInfo.
-  NetworkResult? network_result;
+  NetworkResult? network_result@10;
   // Information about the audio devices. Only present when kAudio was included
   // in the categories input to ProbeTelemetryInfo.
-  AudioResult? audio_result;
+  AudioResult? audio_result@11;
   // Information about boot performance. Only present when kBootPerformance was
   // included in the categories input to ProbeTelemetryInfo.
-  BootPerformanceResult? boot_performance_result;
+  BootPerformanceResult? boot_performance_result@12;
   // Information about the bus devices. Only present when kBus was included
   // in the categories input to ProbeTelemetryInfo.
-  BusResult? bus_result;
+  BusResult? bus_result@13;
   // Information about the system. Only present when kSystem2 was included in
   // the categories input to ProbeTelemetryInfo.
-  SystemResultV2? system_result_v2;
+  SystemResultV2? system_result_v2@14;
   // Information about the tpm. Only present when kTpm was included in
   // the categories input to ProbeTelemetryInfo.
-  TpmResult? tpm_result;
+  TpmResult? tpm_result@15;
   // Information about the graphics. Only present when kGraphics was included in
   // the categories input to ProbeTelemetryInfo.
-  GraphicsResult? graphics_result;
+  GraphicsResult? graphics_result@16;
   // Information about the display. Only present when kDisplay was included in
   // the categories input to ProbeTelemetryInfo.
-  DisplayResult? display_result;
+  [MinVersion=1] DisplayResult? display_result@17;
 };

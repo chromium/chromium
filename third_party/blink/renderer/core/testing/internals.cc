@@ -2855,6 +2855,15 @@ Vector<String> Internals::getReferencedFilePaths() const {
       ->GetReferencedFilePaths();
 }
 
+void Internals::disableReferencedFilePathsVerification() const {
+  if (!GetFrame())
+    return;
+  GetFrame()
+      ->GetDocument()
+      ->GetFormController()
+      .SetDropReferencedFilePathsForTesting();
+}
+
 void Internals::startTrackingRepaints(Document* document,
                                       ExceptionState& exception_state) {
   DCHECK(document);

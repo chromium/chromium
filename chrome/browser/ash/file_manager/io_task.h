@@ -41,6 +41,20 @@ enum class OperationType {
   kZip,
 };
 
+// Represents the status of a particular entry in an I/O task.
+struct EntryStatus {
+  EntryStatus(storage::FileSystemURL file_url,
+              absl::optional<base::File::Error> file_error);
+  ~EntryStatus();
+
+  EntryStatus(EntryStatus&& other);
+  EntryStatus& operator=(EntryStatus&& other);
+
+  storage::FileSystemURL url;
+  // May be empty if the entry has not been fully processed yet.
+  absl::optional<base::File::Error> error;
+};
+
 // Represents the current progress of an I/O task.
 struct ProgressStatus {
   // Out-of-line constructors to appease the style linter.
@@ -60,20 +74,20 @@ struct ProgressStatus {
   OperationType type;
 
   // Files the operation processes.
-  std::vector<storage::FileSystemURL> source_urls;
+  std::vector<EntryStatus> sources;
 
-  // One error per source_url. Absence of value indicates file has not been
-  // processed yet.
-  std::vector<absl::optional<base::File::Error>> errors;
+  // Entries created by the I/O task. These files aren't necessarily related to
+  // |sources|.
+  std::vector<EntryStatus> outputs;
 
   // Optional destination folder for operations that transfer files to a
   // directory (e.g. copy or move).
   storage::FileSystemURL destination_folder;
 
-  // ProgressStatus over all |source_urls|.
+  // ProgressStatus over all |sources|.
   int64_t bytes_transferred;
 
-  // Total size of all |source_urls|.
+  // Total size of all |sources|.
   int64_t total_bytes;
 };
 

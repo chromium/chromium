@@ -11,15 +11,11 @@
 #include "chromeos/components/phonehub/fake_camera_roll_download_manager.h"
 #include "chromeos/components/phonehub/fake_message_receiver.h"
 #include "chromeos/components/phonehub/fake_message_sender.h"
-#include "chromeos/components/phonehub/pref_names.h"
 #include "chromeos/components/phonehub/proto/phonehub_api.pb.h"
 #include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "chromeos/services/secure_channel/public/cpp/client/fake_connection_manager.h"
 #include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
-#include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/pref_service.h"
-#include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
@@ -40,25 +36,17 @@ class FakeObserver : public CameraRollManager::Observer {
   ~FakeObserver() override = default;
 
   // CameraRollManager::Observer
-  void OnCameraRollViewUiStateUpdated() override {
+  void OnCameraRollItemsChanged() override {
     on_camera_roll_items_changed_call_count_++;
   }
 
-  int GetOnCameraRollViewUiStateUpdatedCallCount() const {
+  int GetOnCameraRollItemChangedCallCount() const {
     return on_camera_roll_items_changed_call_count_;
   }
 
  private:
   int on_camera_roll_items_changed_call_count_ = 0;
 };
-
-// Registers preferences for
-void RegisterHasDismissedOnBoardingUiPreferences(
-    TestingPrefServiceSimple* pref_service) {
-  DCHECK(pref_service);
-  pref_service->registry()->RegisterBooleanPref(
-      prefs::kHasDismissedCameraRollOnboardingUi, true);
-}
 
 void PopulateItemProto(proto::CameraRollItem* item_proto, std::string key) {
   proto::CameraRollItemMetadata* metadata = item_proto->mutable_metadata();
@@ -129,7 +117,6 @@ class CameraRollManagerImplTest : public testing::Test {
   ~CameraRollManagerImplTest() override = default;
 
   void SetUp() override {
-    RegisterHasDismissedOnBoardingUiPreferences(&pref_service_);
     fake_multidevice_setup_client_ =
         std::make_unique<multidevice_setup::FakeMultiDeviceSetupClient>();
     std::unique_ptr<FakeCameraRollDownloadManager>
@@ -140,7 +127,7 @@ class CameraRollManagerImplTest : public testing::Test {
 
     SetCameraRollFeatureSettings(true);
     camera_roll_manager_ = std::make_unique<CameraRollManagerImpl>(
-        &pref_service_, &fake_message_receiver_, &fake_message_sender_,
+        &fake_message_receiver_, &fake_message_sender_,
         fake_multidevice_setup_client_.get(), &fake_connection_manager_,
         std::move(fake_camera_roll_download_manager));
     camera_roll_manager_->thumbnail_decoder_ =
@@ -152,8 +139,8 @@ class CameraRollManagerImplTest : public testing::Test {
     camera_roll_manager_->RemoveObserver(&fake_observer_);
   }
 
-  int GetOnCameraRollViewUiStateUpdatedCallCount() const {
-    return fake_observer_.GetOnCameraRollViewUiStateUpdatedCallCount();
+  int GetOnCameraRollItemChangedCallCount() const {
+    return fake_observer_.GetOnCameraRollItemChangedCallCount();
   }
 
   int GetCurrentItemsCount() const {
@@ -275,7 +262,6 @@ class CameraRollManagerImplTest : public testing::Test {
       fake_multidevice_setup_client_;
 
  private:
-  TestingPrefServiceSimple pref_service_;
   FakeMessageSender fake_message_sender_;
   secure_channel::FakeConnectionManager fake_connection_manager_;
   FakeCameraRollDownloadManager* fake_camera_roll_download_manager_;
@@ -292,7 +278,7 @@ TEST_F(CameraRollManagerImplTest, OnCameraRollItemsReceived) {
   fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(response);
   CompleteThumbnailDecoding(BatchDecodeResult::kSuccess);
 
-  EXPECT_EQ(1, GetOnCameraRollViewUiStateUpdatedCallCount());
+  EXPECT_EQ(1, GetOnCameraRollItemChangedCallCount());
   VerifyCurrentItemsMatchResponse(response);
 }
 
@@ -306,7 +292,7 @@ TEST_F(CameraRollManagerImplTest,
   fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(response);
   CompleteThumbnailDecoding(BatchDecodeResult::kError);
 
-  EXPECT_EQ(0, GetOnCameraRollViewUiStateUpdatedCallCount());
+  EXPECT_EQ(0, GetOnCameraRollItemChangedCallCount());
   EXPECT_EQ(0, GetCurrentItemsCount());
 }
 
@@ -327,7 +313,7 @@ TEST_F(CameraRollManagerImplTest,
 
   // The first thumbnail decode request should be cancelled and the current item
   // set should be updated only once after the second request completes.
-  EXPECT_EQ(1, GetOnCameraRollViewUiStateUpdatedCallCount());
+  EXPECT_EQ(1, GetOnCameraRollItemChangedCallCount());
   VerifyCurrentItemsMatchResponse(second_response);
 }
 
@@ -354,7 +340,7 @@ TEST_F(CameraRollManagerImplTest, OnCameraRollItemsReceivedWithExistingItems) {
   fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(
       second_response);
   CompleteThumbnailDecoding(BatchDecodeResult::kSuccess);
-  EXPECT_EQ(2, GetOnCameraRollViewUiStateUpdatedCallCount());
+  EXPECT_EQ(2, GetOnCameraRollItemChangedCallCount());
   VerifyCurrentItemsMatchResponse(second_response);
 }
 
@@ -369,7 +355,7 @@ TEST_F(CameraRollManagerImplTest,
   fake_message_receiver_.NotifyPhoneStatusUpdateReceived(update);
 
   EXPECT_EQ(0UL, GetSentFetchCameraRollItemsRequestCount());
-  EXPECT_EQ(1, GetOnCameraRollViewUiStateUpdatedCallCount());
+  EXPECT_EQ(0, GetOnCameraRollItemChangedCallCount());
 }
 
 TEST_F(CameraRollManagerImplTest,
@@ -385,7 +371,7 @@ TEST_F(CameraRollManagerImplTest,
   EXPECT_EQ(1UL, GetSentFetchCameraRollItemsRequestCount());
   EXPECT_EQ(0,
             GetSentFetchCameraRollItemsRequest().current_item_metadata_size());
-  EXPECT_EQ(1, GetOnCameraRollViewUiStateUpdatedCallCount());
+  EXPECT_EQ(0, GetOnCameraRollItemChangedCallCount());
 }
 
 TEST_F(CameraRollManagerImplTest,
@@ -406,7 +392,7 @@ TEST_F(CameraRollManagerImplTest,
   fake_message_receiver_.NotifyPhoneStatusUpdateReceived(update);
 
   EXPECT_EQ(1UL, GetSentFetchCameraRollItemsRequestCount());
-  EXPECT_EQ(2, GetOnCameraRollViewUiStateUpdatedCallCount());
+  EXPECT_EQ(1, GetOnCameraRollItemChangedCallCount());
   EXPECT_EQ(3,
             GetSentFetchCameraRollItemsRequest().current_item_metadata_size());
   VerifyMetadataEqual(
@@ -436,7 +422,7 @@ TEST_F(CameraRollManagerImplTest,
   fake_message_receiver_.NotifyPhoneStatusUpdateReceived(update);
 
   EXPECT_EQ(0UL, GetSentFetchCameraRollItemsRequestCount());
-  EXPECT_EQ(2, GetOnCameraRollViewUiStateUpdatedCallCount());
+  EXPECT_EQ(2, GetOnCameraRollItemChangedCallCount());
   EXPECT_EQ(0, GetCurrentItemsCount());
 }
 
@@ -458,7 +444,7 @@ TEST_F(CameraRollManagerImplTest,
   fake_message_receiver_.NotifyPhoneStatusUpdateReceived(update);
 
   EXPECT_EQ(0UL, GetSentFetchCameraRollItemsRequestCount());
-  EXPECT_EQ(4, GetOnCameraRollViewUiStateUpdatedCallCount());
+  EXPECT_EQ(2, GetOnCameraRollItemChangedCallCount());
   EXPECT_EQ(0, GetCurrentItemsCount());
 }
 
@@ -478,7 +464,7 @@ TEST_F(CameraRollManagerImplTest,
   fake_message_receiver_.NotifyPhoneStatusUpdateReceived(update);
 
   EXPECT_EQ(0UL, GetSentFetchCameraRollItemsRequestCount());
-  EXPECT_EQ(2, GetOnCameraRollViewUiStateUpdatedCallCount());
+  EXPECT_EQ(2, GetOnCameraRollItemChangedCallCount());
   EXPECT_EQ(0, GetCurrentItemsCount());
 }
 
@@ -491,7 +477,7 @@ TEST_F(CameraRollManagerImplTest, OnPhoneStatusSnapshotReceived) {
   fake_message_receiver_.NotifyPhoneStatusSnapshotReceived(snapshot);
 
   EXPECT_EQ(1UL, GetSentFetchCameraRollItemsRequestCount());
-  EXPECT_EQ(1, GetOnCameraRollViewUiStateUpdatedCallCount());
+  EXPECT_EQ(0, GetOnCameraRollItemChangedCallCount());
 }
 
 TEST_F(CameraRollManagerImplTest,
@@ -510,7 +496,7 @@ TEST_F(CameraRollManagerImplTest,
   fake_message_receiver_.NotifyPhoneStatusSnapshotReceived(snapshot);
 
   EXPECT_EQ(0UL, GetSentFetchCameraRollItemsRequestCount());
-  EXPECT_EQ(2, GetOnCameraRollViewUiStateUpdatedCallCount());
+  EXPECT_EQ(2, GetOnCameraRollItemChangedCallCount());
   EXPECT_EQ(0, GetCurrentItemsCount());
 }
 
@@ -531,7 +517,7 @@ TEST_F(CameraRollManagerImplTest,
   fake_message_receiver_.NotifyPhoneStatusSnapshotReceived(snapshot);
 
   EXPECT_EQ(0UL, GetSentFetchCameraRollItemsRequestCount());
-  EXPECT_EQ(3, GetOnCameraRollViewUiStateUpdatedCallCount());
+  EXPECT_EQ(2, GetOnCameraRollItemChangedCallCount());
   EXPECT_EQ(0, GetCurrentItemsCount());
 }
 
@@ -551,7 +537,7 @@ TEST_F(CameraRollManagerImplTest,
   fake_message_receiver_.NotifyPhoneStatusSnapshotReceived(snapshot);
 
   EXPECT_EQ(0UL, GetSentFetchCameraRollItemsRequestCount());
-  EXPECT_EQ(2, GetOnCameraRollViewUiStateUpdatedCallCount());
+  EXPECT_EQ(2, GetOnCameraRollItemChangedCallCount());
   EXPECT_EQ(0, GetCurrentItemsCount());
 }
 
@@ -565,7 +551,7 @@ TEST_F(CameraRollManagerImplTest, OnFeatureOnFeatureStatesChangedToDisabled) {
   SetCameraRollFeatureSettings(false);
 
   EXPECT_EQ(0UL, GetSentFetchCameraRollItemsRequestCount());
-  EXPECT_EQ(2, GetOnCameraRollViewUiStateUpdatedCallCount());
+  EXPECT_EQ(2, GetOnCameraRollItemChangedCallCount());
   EXPECT_EQ(0, GetCurrentItemsCount());
 }
 

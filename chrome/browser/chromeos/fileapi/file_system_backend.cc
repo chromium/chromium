@@ -44,7 +44,7 @@
 namespace chromeos {
 namespace {
 
-// TODO(mtomasz): Remove this hacky whitelist.
+// TODO(mtomasz): Remove this hacky allowlist.
 // See: crbug.com/271946
 const char* kOemAccessibleExtensions[] = {
     "mlbmkoenclnokonejhlfakkeabdlmpek",  // TimeScapes,

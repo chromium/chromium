@@ -38,12 +38,11 @@ SubresourceWebBundle* SubresourceWebBundleList::GetMatchingBundle(
 
 SubresourceWebBundle*
 SubresourceWebBundleList::FindSubresourceWebBundleWhichWillBeReleased(
-    const KURL& bundle_url) const {
+    const KURL& bundle_url,
+    network::mojom::CredentialsMode credentials_mode) const {
   for (auto& it : subresource_web_bundles_) {
-    // TODO(crbug.com/1245166): Crossorigin value (in other words, credentials
-    // mode) should be checked to avoid matching web bundles with the same URL
-    // but different credentials mode.
-    if (it->WillBeReleased() && it->GetBundleUrl() == bundle_url)
+    if (it->WillBeReleased() && it->GetBundleUrl() == bundle_url &&
+        it->GetCredentialsMode() == credentials_mode)
       return it;
   }
   return nullptr;

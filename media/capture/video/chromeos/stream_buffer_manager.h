@@ -161,6 +161,7 @@ class CAPTURE_EXPORT StreamBufferManager final {
 
   static int GetBufferKey(uint64_t buffer_ipc_id);
 
+  bool CanReserveBufferFromPool(StreamType stream_type);
   void ReserveBufferFromFactory(StreamType stream_type);
   void ReserveBufferFromPool(StreamType stream_type);
   // Destroy current streams and unmap mapped buffers.

@@ -309,7 +309,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': 'ee765f2d4ded94d8aa8ff4c9d84a799f21c5055a',
+  'devtools_frontend_revision': '051ddce0b51be75a28149a729817ae7fbfe5350b',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -1512,7 +1512,7 @@ deps = {
   },
 
   'src/third_party/re2/src':
-    Var('chromium_git') + '/external/github.com/google/re2.git' + '@' + '849bf43ac56cfe1f93cedf0eb6525b459cab1a32',
+    Var('chromium_git') + '/external/github.com/google/re2.git' + '@' + '8cbfdde4ef25e1983b714d9819d4dcba34cd5102',
 
   'src/third_party/r8': {
       'packages': [
@@ -1683,7 +1683,7 @@ deps = {
       'packages': [
         {
           'package': 'skia/tools/goldctl/mac-amd64',
-          'version': 'Ee-Y58INmdIA4z_rfmJjvZ-ljrcn-L2tk9nMJVDkidkC',
+          'version': 'rhRaADork6USXDGEk0fWwnbWVaKKc0YLzENNVBVsHkAC',
         },
       ],
       'dep_type': 'cipd',
@@ -1694,7 +1694,7 @@ deps = {
     Var('chromium_git') + '/v8/v8.git' + '@' +  Var('v8_revision'),
 
   'src-internal': {
-    'url': 'https://chrome-internal.googlesource.com/chrome/src-internal.git@8ce51831cfb0a239470536aa57be74d33df27682',
+    'url': 'https://chrome-internal.googlesource.com/chrome/src-internal.git@5aadc9c5f406dc0f4798e2247cb81e9312b55951',
     'condition': 'checkout_src_internal',
   },
 
