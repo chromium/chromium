@@ -15,6 +15,14 @@ namespace file_manager {
 
 namespace io_task {
 
+EntryStatus::EntryStatus(storage::FileSystemURL file_url,
+                         absl::optional<base::File::Error> file_error)
+    : url(file_url), error(file_error) {}
+EntryStatus::~EntryStatus() = default;
+
+EntryStatus::EntryStatus(EntryStatus&& other) = default;
+EntryStatus& EntryStatus::operator=(EntryStatus&& other) = default;
+
 ProgressStatus::ProgressStatus() = default;
 ProgressStatus::~ProgressStatus() = default;
 
@@ -30,8 +38,9 @@ DummyIOTask::DummyIOTask(std::vector<storage::FileSystemURL> source_urls,
   progress_.bytes_transferred = 0;
   progress_.total_bytes = 2;
 
-  progress_.errors.assign(source_urls.size(), {});
-  progress_.source_urls = std::move(source_urls);
+  for (auto& url : source_urls) {
+    progress_.sources.emplace_back(url, absl::nullopt);
+  }
 }
 
 DummyIOTask::~DummyIOTask() = default;
@@ -61,8 +70,8 @@ void DummyIOTask::DoProgress() {
 void DummyIOTask::DoComplete() {
   progress_.state = State::kSuccess;
   progress_.bytes_transferred = 2;
-  for (auto& error : progress_.errors) {
-    error.emplace(base::File::FILE_OK);
+  for (auto& source : progress_.sources) {
+    source.error.emplace(base::File::FILE_OK);
   }
   std::move(complete_callback_).Run(std::move(progress_));
 }
