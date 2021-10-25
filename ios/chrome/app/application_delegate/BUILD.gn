@@ -209,6 +209,7 @@ source_set("application_delegate_internal") {
     "//ios/chrome/app:mode",
     "//ios/chrome/app/spotlight",
     "//ios/chrome/app/startup",
+    "//ios/chrome/app/startup:ios_enable_sandbox_dump_buildflags",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/browsing_data",
