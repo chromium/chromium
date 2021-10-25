@@ -1528,6 +1528,18 @@ void AutomationInternalCustomBindings::AddRoutes() {
             v8::String::NewFromUtf8(isolate, current_state_string.c_str())
                 .ToLocalChecked());
       });
+  RouteNodeIDFunction(
+      "GetInvalidState",
+      [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
+         AutomationAXTreeWrapper* tree_wrapper, ui::AXNode* node) {
+        ax::mojom::InvalidState invalid_state = node->GetInvalidState();
+        if (invalid_state == ax::mojom::InvalidState::kNone)
+          return;
+        const std::string& invalid_state_string = ui::ToString(invalid_state);
+        result.Set(
+            v8::String::NewFromUtf8(isolate, invalid_state_string.c_str())
+                .ToLocalChecked());
+      });
   RouteNodeIDPlusStringBoolFunction(
       "GetNextTextMatch",
       [this](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,

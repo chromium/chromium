@@ -439,6 +439,14 @@ const GetAriaCurrentState = natives.GetAriaCurrentState;
 /**
  * @param {string} axTreeID The id of the accessibility tree.
  * @param {number} nodeID The id of a node.
+ * @return {automation.InvalidState}
+ */
+const GetInvalidState = natives.GetInvalidState;
+
+
+/**
+ * @param {string} axTreeID The id of the accessibility tree.
+ * @param {number} nodeID The id of a node.
  * @param {string} searchStr
  * @param {boolean} backward
  * @return {{treeId: string, nodeId: number}}
@@ -896,6 +904,10 @@ AutomationNodeImpl.prototype = {
 
   get ariaCurrentState() {
     return GetAriaCurrentState(this.treeID, this.id);
+  },
+
+  get invalidState() {
+    return GetInvalidState(this.treeID, this.id);
   },
 
   get tableCellColumnHeaders() {
@@ -2096,6 +2108,7 @@ utils.expose(AutomationNode, AutomationNodeImpl, {
         'htmlAttributes',
         'imageAnnotation',
         'indexInParent',
+        'invalidState',
         'isRootNode',
         'italic',
         'lastChild',

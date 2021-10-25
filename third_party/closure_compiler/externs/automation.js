@@ -509,6 +509,16 @@ chrome.automation.AriaCurrentState = {
 
 /**
  * @enum {string}
+ * @see https://developer.chrome.com/extensions/automation#type-InvalidState
+ */
+chrome.automation.InvalidState = {
+  FALSE: 'false',
+  TRUE: 'true',
+  OTHER: 'other',
+};
+
+/**
+ * @enum {string}
  * @see https://developer.chrome.com/extensions/automation#type-DefaultActionVerb
  */
 chrome.automation.DefaultActionVerb = {
@@ -2078,6 +2088,13 @@ chrome.automation.AutomationNode.prototype.nonAtomicTextFieldRoot;
  * @see https://developer.chrome.com/extensions/automation#type-ariaCurrentState
  */
 chrome.automation.AutomationNode.prototype.ariaCurrentState;
+
+/**
+ * Indicates invalid-state.
+ * @type {(!chrome.automation.InvalidState|undefined)}
+ * @see https://developer.chrome.com/extensions/automation#type-invalidState
+ */
+chrome.automation.AutomationNode.prototype.invalidState;
 
 /**
  * The application id for a tree rooted at this node.
