@@ -1767,6 +1767,7 @@
     "label": "//chrome/test:telemetry_unittests",
     "script": "//testing/scripts/run_telemetry_as_googletest.py",
     "type": "script",
+    "python3": True,
   },
   "telemetry_weblayer_apks": {
     "label": "//tools/perf/chrome_telemetry_build:telemetry_weblayer_apks",
