@@ -613,6 +613,16 @@ AppHistory::DispatchResult AppHistory::DispatchNavigateEvent(
       ToScriptStateForMainWorld(GetSupplementable()->GetFrame());
   ScriptState::Scope scope(script_state);
 
+  if (type == WebFrameLoadType::kBackForward &&
+      event_type == NavigateEventType::kFragment &&
+      !keys_to_indices_.Contains(key)) {
+    // This same document history traversal was preempted by another navigation
+    // that removed this entry from the back/forward list. Proceeding will leave
+    // entries_ out of sync with the browser process.
+    FinalizeWithAbortedNavigationError(script_state, ongoing_navigation_);
+    return DispatchResult::kAbort;
+  }
+
   auto* init = AppHistoryNavigateEventInit::Create();
   const String& navigation_type = DetermineNavigationType(type);
   init->setNavigationType(navigation_type);
