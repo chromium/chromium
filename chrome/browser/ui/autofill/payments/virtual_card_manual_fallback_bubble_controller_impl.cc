@@ -250,8 +250,19 @@ VirtualCardManualFallbackBubbleControllerImpl::
         content::WebContents* web_contents)
     : AutofillBubbleControllerBase(web_contents) {}
 
-void VirtualCardManualFallbackBubbleControllerImpl::PrimaryPageChanged(
-    content::Page& page) {
+void VirtualCardManualFallbackBubbleControllerImpl::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
+      !navigation_handle->HasCommitted())
+    return;
+
+  // Don't react to same-document (fragment) navigations.
+  if (navigation_handle->IsSameDocument())
+    return;
+
   should_icon_be_visible_ = false;
   bubble_has_been_shown_ = false;
   UpdatePageActionIcon();

@@ -22,7 +22,6 @@
 #include "components/autofill/core/browser/test_event_waiter.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/prerender_test_util.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/test/ui_controls.h"
@@ -368,59 +367,6 @@ IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
   EXPECT_EQ(clicked_button_tooltip, cardholder_name_button->GetTooltipText());
   EXPECT_EQ(u"Full Carter " + clicked_button_tooltip,
             cardholder_name_button->GetAccessibleName());
-}
-
-class VirtualCardManualFallbackBubbleViewsPrerenderTest
-    : public VirtualCardManualFallbackBubbleViewsInteractiveUiTest {
- public:
-  VirtualCardManualFallbackBubbleViewsPrerenderTest()
-      : prerender_helper_(base::BindRepeating(
-            &VirtualCardManualFallbackBubbleViewsPrerenderTest::web_contents,
-            base::Unretained(this))) {}
-  ~VirtualCardManualFallbackBubbleViewsPrerenderTest() override = default;
-
-  void SetUp() override {
-    prerender_helper_.SetUp(embedded_test_server());
-    ASSERT_TRUE(embedded_test_server()->Start());
-    InProcessBrowserTest::SetUp();
-  }
-
-  content::WebContents* web_contents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
-  }
-
- protected:
-  content::test::PrerenderTestHelper prerender_helper_;
-};
-
-IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsPrerenderTest,
-                       KeepBubbleOnPrerenderNavigation) {
-  base::HistogramTester histogram_tester;
-
-  // Navigate the primary page with the initial url.
-  const GURL& url = embedded_test_server()->GetURL("/simple.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-
-  // Show the bubble.
-  ShowBubble();
-  ASSERT_TRUE(GetBubbleViews());
-  ASSERT_TRUE(IsIconVisible());
-
-  // Start a prerender.
-  prerender_helper_.AddPrerender(
-      embedded_test_server()->GetURL("/title1.html"));
-
-  // Ensure the bubble isn't closed by prerender navigation and isn't from the
-  // prerendered page.
-  EXPECT_TRUE(GetBubbleViews());
-  EXPECT_TRUE(GetIconView()->GetVisible());
-  histogram_tester.ExpectBucketCount(
-      "Autofill.VirtualCardManualFallbackBubble.Shown", false, 1);
-
-  // Activate a prerendered page and ensure the bubble hides.
-  prerender_helper_.NavigatePrimaryPage(url);
-  EXPECT_FALSE(GetBubbleViews());
-  EXPECT_FALSE(GetIconView()->GetVisible());
 }
 
 }  // namespace autofill
