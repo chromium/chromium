@@ -47,7 +47,7 @@ InterventionPolicyDatabaseComponentInstallerPolicy::
 
 bool InterventionPolicyDatabaseComponentInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {
-  return false;
+  return true;
 }
 
 bool InterventionPolicyDatabaseComponentInstallerPolicy::
