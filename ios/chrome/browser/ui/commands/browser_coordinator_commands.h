@@ -15,10 +15,14 @@
 @protocol BrowserCoordinatorCommands
 
 // Prints the currently active tab.
-- (void)printTab;
+// Print preview will be presented on top of |baseViewController|.
+- (void)printTabWithBaseViewController:(UIViewController*)baseViewController;
 
 // Prints an image.
-- (void)printImage:(UIImage*)image title:(NSString*)title;
+// Print preview will be presented on top of |baseViewController|.
+- (void)printImage:(UIImage*)image
+                 title:(NSString*)title
+    baseViewController:(UIViewController*)baseViewController;
 
 // Shows the downloads folder.
 - (void)showDownloadsFolder;

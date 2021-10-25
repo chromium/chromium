@@ -53,6 +53,8 @@
 
 @property(nonatomic, assign) bookmarks::BookmarkModel* bookmarkModel;
 
+@property(nonatomic, weak) UIViewController* baseViewController;
+
 @end
 
 @implementation ActivityServiceMediator
@@ -63,13 +65,15 @@
                bookmarksHandler:(id<BookmarksCommands>)bookmarksHandler
             qrGenerationHandler:(id<QRGenerationCommands>)qrGenerationHandler
                     prefService:(PrefService*)prefService
-                  bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel {
+                  bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
+             baseViewController:(UIViewController*)baseViewController {
   if (self = [super init]) {
     _handler = handler;
     _bookmarksHandler = bookmarksHandler;
     _qrGenerationHandler = qrGenerationHandler;
     _prefService = prefService;
     _bookmarkModel = bookmarkModel;
+    _baseViewController = baseViewController;
   }
   return self;
 }
@@ -149,7 +153,9 @@
 
   if (self.prefService->GetBoolean(prefs::kPrintingEnabled)) {
     PrintActivity* printActivity =
-        [[PrintActivity alloc] initWithData:data handler:self.handler];
+        [[PrintActivity alloc] initWithData:data
+                                    handler:self.handler
+                         baseViewController:self.baseViewController];
     [applicationActivities addObject:printActivity];
   }
 
@@ -166,7 +172,9 @@
   // For images, we only customize the print activity. Other activities use
   // the native ones.
   PrintActivity* printActivity =
-      [[PrintActivity alloc] initWithImageData:data handler:self.handler];
+      [[PrintActivity alloc] initWithImageData:data
+                                       handler:self.handler
+                            baseViewController:self.baseViewController];
 
   return @[ printActivity ];
 }

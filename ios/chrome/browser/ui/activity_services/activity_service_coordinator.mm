@@ -75,7 +75,8 @@
                                       bookmarksHandler:bookmarksHandler
                                    qrGenerationHandler:self.scopedHandler
                                            prefService:browserState->GetPrefs()
-                                         bookmarkModel:bookmarkModel];
+                                         bookmarkModel:bookmarkModel
+                                    baseViewController:self.baseViewController];
 
   SceneState* sceneState =
       SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();

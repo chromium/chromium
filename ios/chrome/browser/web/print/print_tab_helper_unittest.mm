@@ -28,6 +28,11 @@
 - (void)printWebState:(web::WebState*)webState {
   self.printInvoked = YES;
 }
+
+- (void)printWebState:(web::WebState*)webState
+    baseViewController:(UIViewController*)baseViewController {
+  self.printInvoked = YES;
+}
 @end
 
 class PrintTabHelperTest : public PlatformTest {
