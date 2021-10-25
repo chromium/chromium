@@ -285,6 +285,13 @@ const DELEGATE = {
     await parentMessagePipe.sendMessage(Message.OPEN_FILE);
   },
   /**
+   * @param {string|undefined} name
+   * @param {string|undefined} type
+   */
+  notifyCurrentFile(name, type) {
+    parentMessagePipe.sendMessage(Message.NOTIFY_CURRENT_FILE, {name, type});
+  },
+  /**
    * @param {!Blob} file
    * @return {!Promise<!File>}
    */
