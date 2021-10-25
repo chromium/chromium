@@ -5,9 +5,12 @@
 #include "net/cert/internal/path_builder.h"
 
 #include "base/base_paths.h"
+#include "base/callback_forward.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "net/cert/internal/cert_error_params.h"
 #include "net/cert/internal/cert_issuer_source_static.h"
@@ -53,7 +56,7 @@ class AsyncCertIssuerSourceStatic : public CertIssuerSource {
  public:
   class StaticAsyncRequest : public Request {
    public:
-    StaticAsyncRequest(ParsedCertificateList&& issuers) {
+    explicit StaticAsyncRequest(ParsedCertificateList&& issuers) {
       issuers_.swap(issuers);
       issuers_iter_ = issuers_.begin();
     }
@@ -74,6 +77,10 @@ class AsyncCertIssuerSourceStatic : public CertIssuerSource {
 
   ~AsyncCertIssuerSourceStatic() override = default;
 
+  void SetAsyncGetCallback(base::RepeatingClosure closure) {
+    async_get_callback_ = std::move(closure);
+  }
+
   void AddCert(scoped_refptr<ParsedCertificate> cert) {
     static_cert_issuer_source_.AddCert(std::move(cert));
   }
@@ -88,6 +95,8 @@ class AsyncCertIssuerSourceStatic : public CertIssuerSource {
     std::unique_ptr<StaticAsyncRequest> req(
         new StaticAsyncRequest(std::move(issuers)));
     *out_req = std::move(req);
+    if (!async_get_callback_.is_null())
+      async_get_callback_.Run();
   }
   int num_async_gets() const { return num_async_gets_; }
 
@@ -95,6 +104,7 @@ class AsyncCertIssuerSourceStatic : public CertIssuerSource {
   CertIssuerSourceStatic static_cert_issuer_source_;
 
   int num_async_gets_ = 0;
+  base::RepeatingClosure async_get_callback_;
 };
 
 ::testing::AssertionResult ReadTestPem(const std::string& file_name,
@@ -446,8 +456,146 @@ TEST_F(PathBuilderMultiRootTest, TestBacktracking) {
 
   ASSERT_TRUE(result.HasValidPath());
 
+  // The partial path should be returned even though it didn't reach a trust
+  // anchor.
+  ASSERT_EQ(2U, result.paths.size());
+  EXPECT_FALSE(result.paths[0]->IsValid());
+  ASSERT_EQ(3U, result.paths[0]->certs.size());
+  EXPECT_EQ(a_by_b_, result.paths[0]->certs[0]);
+  EXPECT_EQ(b_by_f_, result.paths[0]->certs[1]);
+  EXPECT_EQ(f_by_e_, result.paths[0]->certs[2]);
+
   // The result path should be A(B) <- B(C) <- C(D) <- D(D)
+  EXPECT_EQ(1U, result.best_result_index);
+  EXPECT_TRUE(result.paths[1]->IsValid());
   const auto& path = *result.GetBestValidPath();
+  ASSERT_EQ(4U, path.certs.size());
+  EXPECT_EQ(a_by_b_, path.certs[0]);
+  EXPECT_EQ(b_by_c_, path.certs[1]);
+  EXPECT_EQ(c_by_d_, path.certs[2]);
+  EXPECT_EQ(d_by_d_, path.certs[3]);
+}
+
+// Test that if no path to a trust anchor was found, the partial path is
+// returned.
+TEST_F(PathBuilderMultiRootTest, TestOnlyPartialPathResult) {
+  TrustStoreInMemory trust_store;
+
+  // Certs B(F) and F(E) are supplied synchronously, thus the path
+  // A(B) <- B(F) <- F(E) should be built first, though it won't verify.
+  CertIssuerSourceStatic sync_certs;
+  sync_certs.AddCert(b_by_f_);
+  sync_certs.AddCert(f_by_e_);
+
+  CertPathBuilder path_builder(
+      a_by_b_, &trust_store, &delegate_, time_, KeyPurpose::ANY_EKU,
+      initial_explicit_policy_, user_initial_policy_set_,
+      initial_policy_mapping_inhibit_, initial_any_policy_inhibit_);
+  path_builder.AddCertIssuerSource(&sync_certs);
+
+  auto result = path_builder.Run();
+
+  EXPECT_FALSE(result.HasValidPath());
+
+  // The partial path should be returned even though it didn't reach a trust
+  // anchor.
+  ASSERT_EQ(1U, result.paths.size());
+  EXPECT_FALSE(result.paths[0]->IsValid());
+  ASSERT_EQ(3U, result.paths[0]->certs.size());
+  EXPECT_EQ(a_by_b_, result.paths[0]->certs[0]);
+  EXPECT_EQ(b_by_f_, result.paths[0]->certs[1]);
+  EXPECT_EQ(f_by_e_, result.paths[0]->certs[2]);
+}
+
+// Test that if two partial paths are returned, the first is marked as the best
+// path.
+TEST_F(PathBuilderMultiRootTest, TestTwoPartialPathResults) {
+  TrustStoreInMemory trust_store;
+
+  // Certs B(F) and F(E) are supplied synchronously, thus the path
+  // A(B) <- B(F) <- F(E) should be built first, though it won't verify.
+  CertIssuerSourceStatic sync_certs;
+  sync_certs.AddCert(b_by_f_);
+  sync_certs.AddCert(f_by_e_);
+
+  // Certs B(C), and C(D) are supplied asynchronously, so the path
+  // A(B) <- B(C) <- C(D) <- D(D) should be tried second.
+  AsyncCertIssuerSourceStatic async_certs;
+  async_certs.AddCert(b_by_c_);
+  async_certs.AddCert(c_by_d_);
+
+  CertPathBuilder path_builder(
+      a_by_b_, &trust_store, &delegate_, time_, KeyPurpose::ANY_EKU,
+      initial_explicit_policy_, user_initial_policy_set_,
+      initial_policy_mapping_inhibit_, initial_any_policy_inhibit_);
+  path_builder.AddCertIssuerSource(&sync_certs);
+  path_builder.AddCertIssuerSource(&async_certs);
+
+  auto result = path_builder.Run();
+
+  EXPECT_FALSE(result.HasValidPath());
+
+  // First partial path found should be marked as the best one.
+  EXPECT_EQ(0U, result.best_result_index);
+
+  ASSERT_EQ(2U, result.paths.size());
+  EXPECT_FALSE(result.paths[0]->IsValid());
+  ASSERT_EQ(3U, result.paths[0]->certs.size());
+  EXPECT_EQ(a_by_b_, result.paths[0]->certs[0]);
+  EXPECT_EQ(b_by_f_, result.paths[0]->certs[1]);
+  EXPECT_EQ(f_by_e_, result.paths[0]->certs[2]);
+
+  EXPECT_FALSE(result.paths[1]->IsValid());
+  ASSERT_EQ(3U, result.paths[1]->certs.size());
+  EXPECT_EQ(a_by_b_, result.paths[1]->certs[0]);
+  EXPECT_EQ(b_by_c_, result.paths[1]->certs[1]);
+  EXPECT_EQ(c_by_d_, result.paths[1]->certs[2]);
+}
+
+// Test that if no valid path is found, and the first invalid path is a partial
+// path, but the 2nd invalid path ends with a cert with a trust record, the 2nd
+// path should be preferred.
+TEST_F(PathBuilderMultiRootTest, TestDistrustedPathPreferredOverPartialPath) {
+  // Only D(D) has a trust record, but it is distrusted.
+  TrustStoreInMemory trust_store;
+  trust_store.AddDistrustedCertificateForTest(d_by_d_);
+
+  // Certs B(F) and F(E) are supplied synchronously, thus the path
+  // A(B) <- B(F) <- F(E) should be built first, though it won't verify.
+  CertIssuerSourceStatic sync_certs;
+  sync_certs.AddCert(b_by_f_);
+  sync_certs.AddCert(f_by_e_);
+
+  // Certs B(C), and C(D) are supplied asynchronously, so the path
+  // A(B) <- B(C) <- C(D) <- D(D) should be tried second.
+  AsyncCertIssuerSourceStatic async_certs;
+  async_certs.AddCert(b_by_c_);
+  async_certs.AddCert(c_by_d_);
+
+  CertPathBuilder path_builder(
+      a_by_b_, &trust_store, &delegate_, time_, KeyPurpose::ANY_EKU,
+      initial_explicit_policy_, user_initial_policy_set_,
+      initial_policy_mapping_inhibit_, initial_any_policy_inhibit_);
+  path_builder.AddCertIssuerSource(&sync_certs);
+  path_builder.AddCertIssuerSource(&async_certs);
+
+  auto result = path_builder.Run();
+
+  EXPECT_FALSE(result.HasValidPath());
+
+  // The partial path should be returned even though it didn't reach a trust
+  // anchor.
+  ASSERT_EQ(2U, result.paths.size());
+  EXPECT_FALSE(result.paths[0]->IsValid());
+  ASSERT_EQ(3U, result.paths[0]->certs.size());
+  EXPECT_EQ(a_by_b_, result.paths[0]->certs[0]);
+  EXPECT_EQ(b_by_f_, result.paths[0]->certs[1]);
+  EXPECT_EQ(f_by_e_, result.paths[0]->certs[2]);
+
+  // The result path should be A(B) <- B(C) <- C(D) <- D(D)
+  EXPECT_EQ(1U, result.best_result_index);
+  EXPECT_FALSE(result.paths[1]->IsValid());
+  const auto& path = *result.GetBestPathPossiblyInvalid();
   ASSERT_EQ(4U, path.certs.size());
   EXPECT_EQ(a_by_b_, path.certs[0]);
   EXPECT_EQ(b_by_c_, path.certs[1]);
@@ -579,7 +727,70 @@ TEST_F(PathBuilderMultiRootTest, TestTrivialDeadline) {
     EXPECT_EQ(!insufficient_limit, result.HasValidPath());
     EXPECT_EQ(insufficient_limit, result.exceeded_deadline);
     EXPECT_EQ(deadline, path_builder.deadline());
+
+    if (insufficient_limit) {
+      ASSERT_EQ(1U, result.paths.size());
+      EXPECT_FALSE(result.paths[0]->IsValid());
+      ASSERT_EQ(1U, result.paths[0]->certs.size());
+      EXPECT_EQ(a_by_b_, result.paths[0]->certs[0]);
+      EXPECT_TRUE(result.paths[0]->errors.ContainsError(
+          cert_errors::kDeadlineExceeded));
+    } else {
+      ASSERT_EQ(1U, result.paths.size());
+      EXPECT_TRUE(result.paths[0]->IsValid());
+      ASSERT_EQ(3U, result.paths[0]->certs.size());
+      EXPECT_EQ(a_by_b_, result.paths[0]->certs[0]);
+      EXPECT_EQ(b_by_c_, result.paths[0]->certs[1]);
+      EXPECT_EQ(c_by_d_, result.paths[0]->certs[2]);
+    }
   }
+}
+
+TEST_F(PathBuilderMultiRootTest, TestDeadline) {
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  TrustStoreInMemory trust_store;
+  trust_store.AddTrustAnchor(d_by_d_);
+
+  // Cert B(C) is supplied statically.
+  CertIssuerSourceStatic sync_certs;
+  sync_certs.AddCert(b_by_c_);
+
+  // Cert C(D) is supplied asynchronously and will advance time before returning
+  // the async result.
+  AsyncCertIssuerSourceStatic async_certs;
+  async_certs.AddCert(c_by_d_);
+  async_certs.SetAsyncGetCallback(base::BindLambdaForTesting(
+      [&] { task_environment.FastForwardBy(base::Seconds(2)); }));
+
+  CertPathBuilder path_builder(
+      a_by_b_, &trust_store, &delegate_, time_, KeyPurpose::ANY_EKU,
+      initial_explicit_policy_, user_initial_policy_set_,
+      initial_policy_mapping_inhibit_, initial_any_policy_inhibit_);
+  path_builder.AddCertIssuerSource(&sync_certs);
+  path_builder.AddCertIssuerSource(&async_certs);
+
+  base::TimeTicks deadline;
+  deadline = base::TimeTicks::Now() + base::Seconds(1);
+  path_builder.SetDeadline(deadline);
+
+  auto result = path_builder.Run();
+
+  EXPECT_FALSE(result.HasValidPath());
+  EXPECT_TRUE(result.exceeded_deadline);
+  EXPECT_EQ(deadline, path_builder.deadline());
+
+  // The chain returned should end in c_by_d_, since the deadline would only be
+  // checked again after the async results had been checked (since
+  // AsyncCertIssuerSourceStatic makes the async results available immediately.)
+  ASSERT_EQ(1U, result.paths.size());
+  EXPECT_FALSE(result.paths[0]->IsValid());
+  ASSERT_EQ(3U, result.paths[0]->certs.size());
+  EXPECT_EQ(a_by_b_, result.paths[0]->certs[0]);
+  EXPECT_EQ(b_by_c_, result.paths[0]->certs[1]);
+  EXPECT_EQ(c_by_d_, result.paths[0]->certs[2]);
+  EXPECT_TRUE(
+      result.paths[0]->errors.ContainsError(cert_errors::kDeadlineExceeded));
 }
 
 #if defined(OS_WIN) && BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
@@ -837,7 +1048,65 @@ TEST_F(PathBuilderKeyRolloverTest, TestAnchorsNoMatchAndNoIssuerSources) {
 
   EXPECT_FALSE(result.HasValidPath());
 
-  ASSERT_EQ(0U, result.paths.size());
+  ASSERT_EQ(1U, result.paths.size());
+  const auto& path = *result.paths[0];
+  EXPECT_FALSE(result.paths[0]->IsValid());
+  ASSERT_EQ(1U, path.certs.size());
+  EXPECT_EQ(target_, path.certs[0]);
+}
+
+// If a path to a trust anchor could not be found, and the last issuer(s) in
+// the chain were culled by the loop checker, the partial path up to that point
+// should be returned.
+TEST_F(PathBuilderKeyRolloverTest, TestReturnsPartialPathEndedByLoopChecker) {
+  TrustStoreInMemory trust_store;
+
+  CertIssuerSourceStatic sync_certs;
+  sync_certs.AddCert(newintermediate_);
+  sync_certs.AddCert(newroot_);
+  sync_certs.AddCert(newrootrollover_);
+
+  CertPathBuilder path_builder(
+      target_, &trust_store, &delegate_, time_, KeyPurpose::ANY_EKU,
+      initial_explicit_policy_, user_initial_policy_set_,
+      initial_policy_mapping_inhibit_, initial_any_policy_inhibit_);
+  path_builder.AddCertIssuerSource(&sync_certs);
+
+  auto result = path_builder.Run();
+
+  EXPECT_FALSE(result.HasValidPath());
+  ASSERT_EQ(2U, result.paths.size());
+
+  // Since none of the certs are trusted, the path builder should build 4
+  // candidate paths, all of which are disallowed due to the loop checker:
+  //   target->newintermediate->newroot->newroot
+  //   target->newintermediate->newroot->newrootrollover
+  //   target->newintermediate->newrootrollover->newroot
+  //   target->newintermediate->newrootrollover->newrootrollover
+  // This should end up returning the 2 partial paths which are the longest
+  // paths for which no acceptable issuers could be found:
+  //   target->newintermediate->newroot
+  //   target->newintermediate->newrootrollover
+
+  {
+    const auto& path = *result.paths[0];
+    EXPECT_FALSE(path.IsValid());
+    ASSERT_EQ(3U, path.certs.size());
+    EXPECT_EQ(target_, path.certs[0]);
+    EXPECT_EQ(newintermediate_, path.certs[1]);
+    EXPECT_EQ(newroot_, path.certs[2]);
+    EXPECT_TRUE(path.errors.ContainsError(cert_errors::kNoIssuersFound));
+  }
+
+  {
+    const auto& path = *result.paths[1];
+    EXPECT_FALSE(path.IsValid());
+    ASSERT_EQ(3U, path.certs.size());
+    EXPECT_EQ(target_, path.certs[0]);
+    EXPECT_EQ(newintermediate_, path.certs[1]);
+    EXPECT_EQ(newrootrollover_, path.certs[2]);
+    EXPECT_TRUE(path.errors.ContainsError(cert_errors::kNoIssuersFound));
+  }
 }
 
 // Tests that multiple trust root matches on a single path will be considered.
@@ -955,24 +1224,25 @@ TEST_F(PathBuilderKeyRolloverTest, ExploreAllPathsWithIterationLimit) {
   struct Expectation {
     int iteration_limit;
     size_t expected_num_paths;
+    std::vector<scoped_refptr<ParsedCertificate>> partial_path;
   } kExpectations[] = {
       // No iteration limit. All possible paths should be built.
-      {0, 4},
-      // Limit 1 is only enough to reach the intermediate, no paths should be
-      // built.
-      {1, 0},
+      {0, 4, {}},
+      // Limit 1 is only enough to reach the intermediate, no complete path
+      // should be built.
+      {1, 0, {target_, newintermediate_}},
       // Limit 2 allows reaching the root on the first path.
-      {2, 1},
+      {2, 1, {target_, newintermediate_}},
       // Next iteration uses oldroot instead of newroot.
-      {3, 2},
+      {3, 2, {target_, newintermediate_}},
       // Backtracking to the target cert.
-      {4, 2},
+      {4, 2, {target_}},
       // Adding oldintermediate.
-      {5, 2},
+      {5, 2, {target_, oldintermediate_}},
       // Trying oldroot.
-      {6, 3},
+      {6, 3, {target_, oldintermediate_}},
       // Trying newroot.
-      {7, 4},
+      {7, 4, {target_, oldintermediate_}},
   };
 
   // Trust both old and new roots.
@@ -986,6 +1256,8 @@ TEST_F(PathBuilderKeyRolloverTest, ExploreAllPathsWithIterationLimit) {
   sync_certs.AddCert(newintermediate_);
 
   for (const auto& expectation : kExpectations) {
+    SCOPED_TRACE(expectation.iteration_limit);
+
     CertPathBuilder path_builder(
         target_, &trust_store, &delegate_, time_, KeyPurpose::ANY_EKU,
         initial_explicit_policy_, user_initial_policy_set_,
@@ -1001,7 +1273,16 @@ TEST_F(PathBuilderKeyRolloverTest, ExploreAllPathsWithIterationLimit) {
     auto result = path_builder.Run();
 
     EXPECT_EQ(expectation.expected_num_paths > 0, result.HasValidPath());
-    ASSERT_EQ(expectation.expected_num_paths, result.paths.size());
+    if (expectation.partial_path.empty()) {
+      ASSERT_EQ(expectation.expected_num_paths, result.paths.size());
+    } else {
+      ASSERT_EQ(1 + expectation.expected_num_paths, result.paths.size());
+      const auto& path = *result.paths[result.paths.size() - 1];
+      EXPECT_FALSE(path.IsValid());
+      EXPECT_EQ(expectation.partial_path, path.certs);
+      EXPECT_TRUE(
+          path.errors.ContainsError(cert_errors::kIterationLimitExceeded));
+    }
 
     if (expectation.expected_num_paths > 0) {
       // Path builder will first build path: target <- newintermediate <-
