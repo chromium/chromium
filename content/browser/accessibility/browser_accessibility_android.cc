@@ -63,10 +63,11 @@ constexpr int kMinimumCharacterCountForInvalid = 7;
 }  // namespace
 
 // static
-BrowserAccessibility* BrowserAccessibility::Create(
+std::unique_ptr<BrowserAccessibility> BrowserAccessibility::Create(
     BrowserAccessibilityManager* manager,
     ui::AXNode* node) {
-  return new BrowserAccessibilityAndroid(manager, node);
+  return std::unique_ptr<BrowserAccessibilityAndroid>(
+      new BrowserAccessibilityAndroid(manager, node));
 }
 
 using UniqueIdMap = std::unordered_map<int32_t, BrowserAccessibilityAndroid*>;

@@ -209,9 +209,6 @@ BrowserAccessibilityManager::~BrowserAccessibilityManager() {
   // Fire any events that need to be fired when tree nodes get deleted. For
   // example, events that fire every time "OnSubtreeWillBeDeleted" is called.
   ax_tree()->Destroy();
-  for (auto& key_value_pair : id_wrapper_map_) {
-    delete key_value_pair.second;
-  }
   delegate_ = nullptr;  // Guard against reentrancy by screen reader.
   if (last_focused_node_tree_id_ &&
       ax_tree_id_ == *last_focused_node_tree_id_) {
@@ -347,8 +344,10 @@ BrowserAccessibility* BrowserAccessibilityManager::GetFromAXNode(
 
 BrowserAccessibility* BrowserAccessibilityManager::GetFromID(int32_t id) const {
   const auto iter = id_wrapper_map_.find(id);
-  if (iter != id_wrapper_map_.end())
-    return iter->second;
+  if (iter != id_wrapper_map_.end()) {
+    DCHECK(iter->second);
+    return iter->second.get();
+  }
 
   return nullptr;
 }
@@ -1442,8 +1441,7 @@ void BrowserAccessibilityManager::OnSubtreeWillBeDeleted(ui::AXTree* tree,
 void BrowserAccessibilityManager::OnNodeCreated(ui::AXTree* tree,
                                                 ui::AXNode* node) {
   DCHECK(node);
-  BrowserAccessibility* wrapper = BrowserAccessibility::Create(this, node);
-  id_wrapper_map_[node->id()] = wrapper;
+  id_wrapper_map_[node->id()] = BrowserAccessibility::Create(this, node);
 
   if (tree->root() != node &&
       node->GetRole() == ax::mojom::Role::kRootWebArea) {
@@ -1454,23 +1452,14 @@ void BrowserAccessibilityManager::OnNodeCreated(ui::AXTree* tree,
 void BrowserAccessibilityManager::OnNodeDeleted(ui::AXTree* tree,
                                                 int32_t node_id) {
   DCHECK_NE(node_id, ui::kInvalidAXNodeID);
-  if (BrowserAccessibility* wrapper = GetFromID(node_id)) {
-    id_wrapper_map_.erase(node_id);
-    delete wrapper;
-  }
-
-  if (popup_root_ids_.find(node_id) != popup_root_ids_.end())
-    popup_root_ids_.erase(node_id);
+  id_wrapper_map_.erase(node_id);
+  popup_root_ids_.erase(node_id);
 }
 
 void BrowserAccessibilityManager::OnNodeReparented(ui::AXTree* tree,
                                                    ui::AXNode* node) {
   DCHECK(node);
-  BrowserAccessibility* wrapper = GetFromAXNode(node);
-  if (wrapper)
-    delete wrapper;
-  wrapper = BrowserAccessibility::Create(this, node);
-  id_wrapper_map_[node->id()] = wrapper;
+  id_wrapper_map_[node->id()] = BrowserAccessibility::Create(this, node);
 }
 
 void BrowserAccessibilityManager::OnRoleChanged(ui::AXTree* tree,

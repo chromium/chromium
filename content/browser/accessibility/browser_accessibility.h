@@ -54,8 +54,9 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
 
   // Creates a platform specific BrowserAccessibility. Ownership passes to the
   // caller.
-  static BrowserAccessibility* Create(BrowserAccessibilityManager* manager,
-                                      ui::AXNode* node);
+  static std::unique_ptr<BrowserAccessibility> Create(
+      BrowserAccessibilityManager* manager,
+      ui::AXNode* node);
 
   // Returns |delegate| as a BrowserAccessibility object, if |delegate| is
   // non-null and an object in the BrowserAccessibility class hierarchy.

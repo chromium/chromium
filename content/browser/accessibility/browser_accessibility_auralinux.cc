@@ -15,10 +15,11 @@ BrowserAccessibilityAuraLinux* ToBrowserAccessibilityAuraLinux(
 }
 
 // static
-BrowserAccessibility* BrowserAccessibility::Create(
+std::unique_ptr<BrowserAccessibility> BrowserAccessibility::Create(
     BrowserAccessibilityManager* manager,
     ui::AXNode* node) {
-  return new BrowserAccessibilityAuraLinux(manager, node);
+  return std::unique_ptr<BrowserAccessibilityAuraLinux>(
+      new BrowserAccessibilityAuraLinux(manager, node));
 }
 
 BrowserAccessibilityAuraLinux::BrowserAccessibilityAuraLinux(
