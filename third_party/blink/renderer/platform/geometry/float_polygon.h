@@ -59,8 +59,6 @@ class PLATFORM_EXPORT FloatPolygon {
   bool OverlappingEdges(float min_y,
                         float max_y,
                         Vector<const FloatPolygonEdge*>& result) const;
-  bool ContainsNonZero(const gfx::PointF&) const;
-  bool ContainsEvenOdd(const gfx::PointF&) const;
   bool IsEmpty() const { return empty_; }
 
  private:

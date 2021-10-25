@@ -29,9 +29,7 @@
 
 #include "third_party/blink/renderer/platform/geometry/float_polygon.h"
 
-#include <algorithm>
 #include <memory>
-#include <utility>
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -176,41 +174,6 @@ TEST(FloatPolygonTest, basics) {
   EXPECT_EQ(0u, result_e.size());
 }
 
-/**
- * Tests ContainsNonZero and ContainsEvenOdd with a right triangle.
- *
- *                        200,100
- *                          /|
- *                         / |
- *                        /  |
- *                       -----
- *                 100,200   200,200
- */
-TEST(FloatPolygonTest, triangle_nonzero) {
-  const float kTriangleCoordinates[] = {200, 100, 200, 200, 100, 200};
-  FloatPolygonTestValue triangle_test_value(kTriangleCoordinates,
-                                            SIZEOF_ARRAY(kTriangleCoordinates));
-  const FloatPolygon& triangle = triangle_test_value.Polygon();
-
-  EXPECT_TRUE(triangle.ContainsNonZero(gfx::PointF(200, 100)));
-  EXPECT_TRUE(triangle.ContainsNonZero(gfx::PointF(200, 200)));
-  EXPECT_TRUE(triangle.ContainsNonZero(gfx::PointF(100, 200)));
-  EXPECT_TRUE(triangle.ContainsNonZero(gfx::PointF(150, 150)));
-  EXPECT_FALSE(triangle.ContainsNonZero(gfx::PointF(100, 100)));
-  EXPECT_FALSE(triangle.ContainsNonZero(gfx::PointF(149, 149)));
-  EXPECT_FALSE(triangle.ContainsNonZero(gfx::PointF(150, 200.5)));
-  EXPECT_FALSE(triangle.ContainsNonZero(gfx::PointF(201, 200.5)));
-
-  EXPECT_TRUE(triangle.ContainsEvenOdd(gfx::PointF(200, 100)));
-  EXPECT_TRUE(triangle.ContainsEvenOdd(gfx::PointF(200, 200)));
-  EXPECT_TRUE(triangle.ContainsEvenOdd(gfx::PointF(100, 200)));
-  EXPECT_TRUE(triangle.ContainsEvenOdd(gfx::PointF(150, 150)));
-  EXPECT_FALSE(triangle.ContainsEvenOdd(gfx::PointF(100, 100)));
-  EXPECT_FALSE(triangle.ContainsEvenOdd(gfx::PointF(149, 149)));
-  EXPECT_FALSE(triangle.ContainsEvenOdd(gfx::PointF(150, 200.5)));
-  EXPECT_FALSE(triangle.ContainsEvenOdd(gfx::PointF(201, 200.5)));
-}
-
 #define TEST_EMPTY(coordinates)                                                \
   {                                                                            \
     FloatPolygonTestValue empty_polygon_test_value(coordinates,                \
@@ -237,86 +200,6 @@ TEST(FloatPolygonTest, emptyPolygons) {
 
   const float kEmptyCoordinates6[] = {0, 0, 1, 0, 2, 0, 3, 0, 1, 0};
   TEST_EMPTY(kEmptyCoordinates6);
-}
-
-/*
- * Test FloatPolygon::ContainsEvenOdd() with a trapezoid. The vertices are
- * listed in counter-clockwise order.
- *
- *        150,100   250,100
- *          +----------+
- *         /            \
- *        /              \
- *       +----------------+
- *     100,150          300,150
- */
-TEST(FloatPolygonTest, trapezoid) {
-  const float kTrapezoidCoordinates[] = {100, 150, 300, 150,
-                                         250, 100, 150, 100};
-  FloatPolygonTestValue trapezoid_test_value(
-      kTrapezoidCoordinates, SIZEOF_ARRAY(kTrapezoidCoordinates));
-  const FloatPolygon& trapezoid = trapezoid_test_value.Polygon();
-
-  EXPECT_FALSE(trapezoid.IsEmpty());
-  EXPECT_EQ(4u, trapezoid.NumberOfVertices());
-  EXPECT_EQ(FloatRect(100, 100, 200, 50), trapezoid.BoundingBox());
-
-  EXPECT_TRUE(trapezoid.ContainsEvenOdd(gfx::PointF(150, 100)));
-  EXPECT_TRUE(trapezoid.ContainsEvenOdd(gfx::PointF(150, 101)));
-  EXPECT_TRUE(trapezoid.ContainsEvenOdd(gfx::PointF(200, 125)));
-  EXPECT_FALSE(trapezoid.ContainsEvenOdd(gfx::PointF(149, 100)));
-  EXPECT_FALSE(trapezoid.ContainsEvenOdd(gfx::PointF(301, 150)));
-}
-
-/*
- * Test FloatPolygon::ContainsNonZero() with a non-convex rectilinear polygon.
- * The polygon has the same shape as the letter "H":
- *
- *    100,100  150,100   200,100   250,100
- *       +--------+        +--------+
- *       |        |        |        |
- *       |        |        |        |
- *       |        +--------+        |
- *       |     150,150   200,150    |
- *       |                          |
- *       |     150,200   200,200    |
- *       |        +--------+        |
- *       |        |        |        |
- *       |        |        |        |
- *       +--------+        +--------+
- *    100,250  150,250   200,250   250,250
- */
-TEST(FloatPolygonTest, rectilinear) {
-  const float kHCoordinates[] = {100, 100, 150, 100, 150, 150, 200, 150,
-                                 200, 100, 250, 100, 250, 250, 200, 250,
-                                 200, 200, 150, 200, 150, 250, 100, 250};
-  FloatPolygonTestValue h_test_value(kHCoordinates,
-                                     SIZEOF_ARRAY(kHCoordinates));
-  const FloatPolygon& h = h_test_value.Polygon();
-
-  EXPECT_FALSE(h.IsEmpty());
-  EXPECT_EQ(12u, h.NumberOfVertices());
-  EXPECT_EQ(FloatRect(100, 100, 150, 150), h.BoundingBox());
-
-  EXPECT_TRUE(h.ContainsNonZero(gfx::PointF(100, 100)));
-  EXPECT_TRUE(h.ContainsNonZero(gfx::PointF(125, 100)));
-  EXPECT_TRUE(h.ContainsNonZero(gfx::PointF(125, 125)));
-  EXPECT_TRUE(h.ContainsNonZero(gfx::PointF(150, 100)));
-  EXPECT_TRUE(h.ContainsNonZero(gfx::PointF(200, 200)));
-  EXPECT_TRUE(h.ContainsNonZero(gfx::PointF(225, 225)));
-  EXPECT_TRUE(h.ContainsNonZero(gfx::PointF(250, 250)));
-  EXPECT_TRUE(h.ContainsNonZero(gfx::PointF(100, 250)));
-  EXPECT_TRUE(h.ContainsNonZero(gfx::PointF(125, 250)));
-
-  EXPECT_FALSE(h.ContainsNonZero(gfx::PointF(99, 100)));
-  EXPECT_FALSE(h.ContainsNonZero(gfx::PointF(251, 100)));
-  EXPECT_FALSE(h.ContainsNonZero(gfx::PointF(151, 100)));
-  EXPECT_FALSE(h.ContainsNonZero(gfx::PointF(199, 100)));
-  EXPECT_FALSE(h.ContainsNonZero(gfx::PointF(175, 125)));
-  EXPECT_FALSE(h.ContainsNonZero(gfx::PointF(151, 250)));
-  EXPECT_FALSE(h.ContainsNonZero(gfx::PointF(199, 250)));
-  EXPECT_FALSE(h.ContainsNonZero(gfx::PointF(199, 250)));
-  EXPECT_FALSE(h.ContainsNonZero(gfx::PointF(175, 225)));
 }
 
 }  // namespace blink
