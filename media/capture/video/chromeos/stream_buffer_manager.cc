@@ -41,9 +41,7 @@ StreamBufferManager::~StreamBufferManager() {
 }
 
 void StreamBufferManager::ReserveBuffer(StreamType stream_type) {
-  // The YUV output buffer for reprocessing is not passed to client, so can be
-  // allocated by the local buffer factory without zero-copy concerns.
-  if (video_capture_use_gmb_ && stream_type != StreamType::kYUVOutput) {
+  if (CanReserveBufferFromPool(stream_type)) {
     ReserveBufferFromPool(stream_type);
   } else {
     ReserveBufferFromFactory(stream_type);
@@ -415,6 +413,12 @@ int StreamBufferManager::GetBufferKey(uint64_t buffer_ipc_id) {
   return buffer_ipc_id & 0xFFFFFFFF;
 }
 
+bool StreamBufferManager::CanReserveBufferFromPool(StreamType stream_type) {
+  // The YUV output buffer for reprocessing is not passed to client, so can be
+  // allocated by the local buffer factory without zero-copy concerns.
+  return video_capture_use_gmb_ && stream_type != StreamType::kYUVOutput;
+}
+
 void StreamBufferManager::ReserveBufferFromFactory(StreamType stream_type) {
   auto& stream_context = stream_context_[stream_type];
   absl::optional<gfx::BufferFormat> gfx_format =
@@ -484,7 +488,7 @@ void StreamBufferManager::ReserveBufferFromPool(StreamType stream_type) {
 void StreamBufferManager::DestroyCurrentStreamsAndBuffers() {
   for (const auto& iter : stream_context_) {
     if (iter.second) {
-      if (!video_capture_use_gmb_) {
+      if (!CanReserveBufferFromPool(iter.first)) {
         // The GMB is mapped by default only when it's allocated locally.
         for (auto& buf : iter.second->buffers) {
           auto& buf_pair = buf.second;
