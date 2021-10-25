@@ -79,6 +79,8 @@ class WebAppUrlLoader {
       base::Seconds(30);
 };
 
+const char* ConvertUrlLoaderResultToString(WebAppUrlLoader::Result result);
+
 }  // namespace web_app
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_URL_LOADER_H_

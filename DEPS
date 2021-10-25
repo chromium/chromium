@@ -234,11 +234,11 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': '8dd1f50a65fd2df10cea4a4baaef40c632e1fd90',
+  'skia_revision': 'd8e8681c98c615a720f167fb59049e1d99d35c20',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'v8_revision': '7badf9c740780651d50ab9583bfe5233f79efc8e',
+  'v8_revision': '4baf1e18471c8627cd2b5c674f88ecea3f010a36',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
@@ -1694,7 +1694,7 @@ deps = {
     Var('chromium_git') + '/v8/v8.git' + '@' +  Var('v8_revision'),
 
   'src-internal': {
-    'url': 'https://chrome-internal.googlesource.com/chrome/src-internal.git@5aadc9c5f406dc0f4798e2247cb81e9312b55951',
+    'url': 'https://chrome-internal.googlesource.com/chrome/src-internal.git@0d2723cd463cf45a21f5b038c01ad40c7b97b0b0',
     'condition': 'checkout_src_internal',
   },
 
@@ -1702,7 +1702,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/eche_app/app',
-        'version': 'EzXw-yRlCWCi_6SJu4NFoSr4mJlHNzp3oO2gUewqa3MC',
+        'version': 'EPWxRD6yWFHcDlRrOuqWz07r28v53TpJ1dsceZIQMqkC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',

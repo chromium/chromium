@@ -149,7 +149,7 @@ void WebAppInstallTask::LoadWebAppAndCheckManifest(
       WebAppUrlLoader::UrlComparison::kIgnoreQueryParamsAndRef,
       base::BindOnce(
           &WebAppInstallTask::OnWebAppUrlLoadedCheckAndRetrieveManifest,
-          base::Unretained(this), web_contents_ptr));
+          base::Unretained(this), url, web_contents_ptr));
 }
 
 void WebAppInstallTask::InstallWebAppFromManifest(
@@ -219,7 +219,7 @@ void WebAppInstallTask::LoadAndInstallWebAppFromManifestWithFallback(
       launch_url, contents,
       WebAppUrlLoader::UrlComparison::kIgnoreQueryParamsAndRef,
       base::BindOnce(&WebAppInstallTask::OnWebAppUrlLoadedGetWebApplicationInfo,
-                     GetWeakPtr()));
+                     GetWeakPtr(), launch_url));
 }
 
 void UpdateFinalizerClientData(
@@ -337,7 +337,7 @@ void WebAppInstallTask::LoadAndRetrieveWebApplicationInfoWithIcons(
       start_url, web_contents(),
       WebAppUrlLoader::UrlComparison::kIgnoreQueryParamsAndRef,
       base::BindOnce(&WebAppInstallTask::OnWebAppUrlLoadedGetWebApplicationInfo,
-                     GetWeakPtr()));
+                     GetWeakPtr(), start_url));
 }
 
 // static
@@ -416,9 +416,13 @@ bool WebAppInstallTask::ShouldStopInstall() const {
 }
 
 void WebAppInstallTask::OnWebAppUrlLoadedGetWebApplicationInfo(
+    const GURL& url_to_load,
     WebAppUrlLoader::Result result) {
   if (ShouldStopInstall())
     return;
+
+  if (result != WebAppUrlLoader::Result::kUrlLoaded)
+    LogUrlLoaderError("OnWebAppUrlLoaded", url_to_load.spec(), result);
 
   if (result == WebAppUrlLoader::Result::kRedirectedUrlLoaded) {
     CallInstallCallback(AppId(), InstallResultCode::kInstallURLRedirected);
@@ -442,10 +446,14 @@ void WebAppInstallTask::OnWebAppUrlLoadedGetWebApplicationInfo(
 }
 
 void WebAppInstallTask::OnWebAppUrlLoadedCheckAndRetrieveManifest(
+    const GURL& url_to_load,
     content::WebContents* web_contents,
     WebAppUrlLoader::Result result) {
   if (ShouldStopInstall())
     return;
+
+  if (result != WebAppUrlLoader::Result::kUrlLoaded)
+    LogUrlLoaderError("OnWebAppUrlLoaded", url_to_load.spec(), result);
 
   if (result == WebAppUrlLoader::Result::kRedirectedUrlLoaded) {
     CallInstallCallback(AppId(), InstallResultCode::kInstallURLRedirected);
@@ -982,6 +990,7 @@ void WebAppInstallTask::LogHeaderIfLogEmpty(const std::string& start_url) {
   // `OnIconsRetrievedFinalizeUpdate`.
   header.SetIntKey("install_source", static_cast<int>(install_source_));
   header.SetStringKey("start_url", start_url);
+  header.SetBoolKey("background_installation", background_installation_);
 
   error_list_->Append(std::move(header));
 }
@@ -996,6 +1005,20 @@ void WebAppInstallTask::LogErrorObject(const char* stage,
 
   object.SetStringKey("!stage", stage);
   error_list_->Append(std::move(object));
+}
+
+void WebAppInstallTask::LogUrlLoaderError(const char* stage,
+                                          const std::string& start_url,
+                                          WebAppUrlLoader::Result result) {
+  if (!error_list_)
+    return;
+
+  base::Value url_loader_error(base::Value::Type::DICTIONARY);
+
+  url_loader_error.SetStringKey("WebAppUrlLoader::Result",
+                                ConvertUrlLoaderResultToString(result));
+
+  LogErrorObject(stage, start_url, std::move(url_loader_error));
 }
 
 void WebAppInstallTask::LogExpectedAppIdError(const char* stage,

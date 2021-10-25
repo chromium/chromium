@@ -189,4 +189,21 @@ void WebAppUrlLoader::PrepareForLoad(content::WebContents* web_contents,
               std::move(callback)));
 }
 
+const char* ConvertUrlLoaderResultToString(WebAppUrlLoader::Result result) {
+  switch (result) {
+    case WebAppUrlLoader::Result::kUrlLoaded:
+      return "UrlLoaded";
+    case WebAppUrlLoader::Result::kRedirectedUrlLoaded:
+      return "RedirectedUrlLoaded";
+    case WebAppUrlLoader::Result::kFailedUnknownReason:
+      return "FailedUnknownReason";
+    case WebAppUrlLoader::Result::kFailedPageTookTooLong:
+      return "FailedPageTookTooLong";
+    case WebAppUrlLoader::Result::kFailedWebContentsDestroyed:
+      return "FailedWebContentsDestroyed";
+    case WebAppUrlLoader::Result::kFailedErrorPageLoaded:
+      return "FailedErrorPageLoaded";
+  }
+}
+
 }  // namespace web_app

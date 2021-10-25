@@ -201,6 +201,11 @@ class WebAppInstallManager final : public SyncInstallDelegate {
   void OnWebContentsReadyRunTask(PendingTask pending_task,
                                  WebAppUrlLoader::Result result);
 
+  void LogErrorObject(const char* stage, base::Value object);
+  void LogUrlLoaderError(const char* stage,
+                         const PendingTask& task,
+                         WebAppUrlLoader::Result result);
+
   DataRetrieverFactory data_retriever_factory_;
 
   Profile* const profile_;

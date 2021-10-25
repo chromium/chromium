@@ -425,6 +425,10 @@ class AX_EXPORT AXNode final {
 
   ax::mojom::NameFrom GetNameFrom() const { return data().GetNameFrom(); }
 
+  ax::mojom::InvalidState GetInvalidState() const {
+    return data().GetInvalidState();
+  }
+
   // Return the hierarchical level if supported.
   absl::optional<int> GetHierarchicalLevel() const;
 

@@ -12,7 +12,7 @@ class Profile;
 
 namespace app_list {
 
-class RecurrenceRanker;
+class MrfuCache;
 
 // A ranker that groups results into categories.
 class CategoryUsageRanker : public Ranker {
@@ -24,18 +24,16 @@ class CategoryUsageRanker : public Ranker {
   CategoryUsageRanker& operator=(const CategoryUsageRanker&) = delete;
 
   // Ranker:
-  void Start(const std::u16string& query) override;
+  void Start(const std::u16string& query,
+             ResultsMap& results,
+             CategoriesMap& categories) override;
   void Rank(ResultsMap& results,
             CategoriesMap& categories,
             ProviderType provider) override;
   void Train(const LaunchData& launch) override;
 
  private:
-  void InitializeCategoryScores();
-
-  std::unique_ptr<RecurrenceRanker> category_ranker_;
-
-  base::flat_map<Category, int> category_ranks_;
+  std::unique_ptr<MrfuCache> ranker_;
 };
 
 }  // namespace app_list

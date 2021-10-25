@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_performance.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "build/build_config.h"
 
 namespace blink {
 
@@ -25,7 +26,9 @@ void FontPerformance::MarkFirstContentfulPaint() {
                       FontPerformance::PrimaryFontTimeInStyle());
   UMA_HISTOGRAM_TIMES("Renderer.Font.SystemFallback.FCP",
                       FontPerformance::SystemFallbackFontTime());
+#if !defined(OS_CHROMEOS) && !defined(OS_ANDROID)
   UMA_HISTOGRAM_TIMES("Renderer.Font.Shaping.FCP", shaping_);
+#endif
 }
 
 // static
@@ -36,7 +39,9 @@ void FontPerformance::MarkDomContentLoaded() {
                       FontPerformance::PrimaryFontTimeInStyle());
   UMA_HISTOGRAM_TIMES("Renderer.Font.SystemFallback.DomContentLoaded",
                       FontPerformance::SystemFallbackFontTime());
+#if !defined(OS_CHROMEOS) && !defined(OS_ANDROID)
   UMA_HISTOGRAM_TIMES("Renderer.Font.Shaping.DomContentLoaded", shaping_);
+#endif
 }
 
 }  // namespace blink
