@@ -113,11 +113,10 @@ static bool IsRestrictorOrLogicalOperator(const CSSParserToken& token) {
 
 void MediaQueryParser::ReadMediaType(CSSParserTokenRange& range) {
   if (range.Peek().GetType() == kLeftParenthesisToken) {
-    ConsumeToken(range);
     if (media_query_data_.Restrictor() != MediaQuery::kNone)
       state_ = kSkipUntilComma;
     else
-      state_ = kReadFeature;
+      state_ = kReadFeatureStart;
   } else if (range.Peek().GetType() == kIdentToken) {
     CSSParserToken token = ConsumeToken(range);
     if (state_ == kReadRestrictor &&
