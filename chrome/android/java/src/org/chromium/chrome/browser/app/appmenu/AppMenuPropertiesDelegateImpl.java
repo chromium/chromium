@@ -1043,7 +1043,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         bookmarkMenuItemAdd.setEnabled(editEnabled);
         bookmarkMenuItemEdit.setEnabled(editEnabled);
 
-        boolean shouldCheckBookmarkStar = shouldCheckBookmarkStar(currentTab);
+        boolean shouldCheckBookmarkStar = currentTab != null && shouldCheckBookmarkStar(currentTab);
         bookmarkMenuItemAdd.setVisible(!shouldCheckBookmarkStar);
         bookmarkMenuItemEdit.setVisible(shouldCheckBookmarkStar);
     }
