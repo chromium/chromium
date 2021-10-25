@@ -35,7 +35,7 @@ namespace paint_preview {
 namespace {
 
 // To minimize peak memory usage limit the number of concurrent bitmap requests.
-constexpr size_t kMaxParallelBitmapRequests = 3;
+constexpr size_t kMaxParallelBitmapRequests = 2;
 constexpr size_t kMaxParallelBitmapRequestsLowMemory = 1;
 
 ScopedJavaLocalRef<jobjectArray> ToJavaUnguessableTokenArray(
