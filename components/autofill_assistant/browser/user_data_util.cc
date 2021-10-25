@@ -109,11 +109,12 @@ void OnGetStoredPassword(
 
 bool EvaluateCondition(const std::map<field_formatter::Key, std::string>& data,
                        const RequiredDataPiece::Condition& condition) {
+  std::string value;
   auto it = data.find(field_formatter::Key(condition.key()));
-  if (it == data.end()) {
-    return false;
+  if (it != data.end()) {
+    value = it->second;
   }
-  auto value = it->second;
+
   switch (condition.condition_case()) {
     case RequiredDataPiece::Condition::kNotEmpty:
       return !value.empty();
