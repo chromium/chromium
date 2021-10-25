@@ -74,4 +74,8 @@ public class Credential {
     public long lastUsedMsSinceEpoch() {
         return mLastUsedMsSinceEpoch;
     }
+
+    public boolean isExactMatch() {
+        return !mIsPublicSuffixMatch && !mIsAffiliationBasedMatch;
+    }
 }
