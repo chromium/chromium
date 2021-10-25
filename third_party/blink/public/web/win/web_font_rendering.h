@@ -6,8 +6,8 @@
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WIN_WEB_FONT_RENDERING_H_
 
 #include "third_party/blink/public/platform/web_common.h"
+#include "third_party/blink/public/platform/web_font_prewarmer.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/web/win/web_font_prewarmer.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
 class SkFontMgr;
