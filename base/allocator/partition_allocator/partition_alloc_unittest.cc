@@ -3756,6 +3756,19 @@ TEST_F(PartitionAllocTest, EmptySlotSpanSizeIsCapped) {
     root.Free(ptr);
 }
 
+#if defined(OS_ANDROID) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
+    BUILDFLAG(IS_CHROMECAST)
+extern "C" {
+void* __real_malloc(size_t);
+}  // extern "C"
+
+TEST_F(PartitionAllocTest, HandleMixedAllocations) {
+  void* ptr = __real_malloc(12);
+  // Should not crash, no test assertion.
+  free(ptr);
+}
+#endif
+
 }  // namespace internal
 }  // namespace base
 

@@ -23,6 +23,7 @@
 #include "base/no_destructor.h"
 #include "base/numerics/checked_math.h"
 #include "build/build_config.h"
+#include "build/chromecast_buildflags.h"
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #include <malloc.h>
@@ -355,6 +356,12 @@ void* PartitionRealloc(const AllocatorDispatch*,
                                    MaybeAdjustSize(size), "");
 }
 
+#if defined(OS_ANDROID) && BUILDFLAG(IS_CHROMECAST)
+extern "C" {
+void __real_free(void*);
+}  // extern "C"
+#endif
+
 void PartitionFree(const AllocatorDispatch*, void* address, void* context) {
   ScopedDisallowAllocations guard{};
 #if defined(OS_APPLE)
@@ -365,6 +372,19 @@ void PartitionFree(const AllocatorDispatch*, void* address, void* context) {
     return free(address);
   }
 #endif  // defined(OS_APPLE)
+
+  // On Chromecast, there is at least one case where a system malloc() pointer
+  // can be passed to PartitionAlloc's free(). If we don't own the pointer, pass
+  // it along. This should not have a runtime cost vs regular Android, since on
+  // Android we have a PA_CHECK() rather than the branch here.
+#if defined(OS_ANDROID) && BUILDFLAG(IS_CHROMECAST)
+  if (UNLIKELY(!base::IsManagedByPartitionAlloc(address) && address)) {
+    // A memory region allocated by the system allocator is passed in this
+    // function.  Forward the request to `free()`, which is `__real_free()`
+    // here.
+    return __real_free(address);
+  }
+#endif
 
   base::ThreadSafePartitionRoot::FreeNoHooks(address);
 }
