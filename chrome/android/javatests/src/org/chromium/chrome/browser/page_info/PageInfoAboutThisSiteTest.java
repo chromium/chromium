@@ -33,6 +33,7 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
@@ -156,6 +157,7 @@ public class PageInfoAboutThisSiteTest {
         onView(withId(PageInfoAboutThisSiteController.ROW_ID)).check(matches(not(isDisplayed())));
     }
 
+    @DisabledTest(message = "crbug.com/1263195")
     @Test
     @MediumTest
     @Feature({"RenderTest"})
@@ -165,6 +167,7 @@ public class PageInfoAboutThisSiteTest {
         onView(withId(PageInfoAboutThisSiteController.ROW_ID))
                 .check(renderView("page_info_about_this_site_row"));
     }
+    @DisabledTest(message = "crbug.com/1263195")
     @Test
     @MediumTest
     @Feature({"RenderTest"})
