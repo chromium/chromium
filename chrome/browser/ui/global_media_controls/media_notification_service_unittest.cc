@@ -64,6 +64,7 @@ class MediaNotificationServiceTest : public ChromeRenderViewHostTestHarness {
   }
 
   void TearDown() override {
+    SimulateCloseDialog();
     service_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
   }
@@ -160,6 +161,14 @@ class MediaNotificationServiceTest : public ChromeRenderViewHostTestHarness {
       const base::UnguessableToken& id) {
     return service_->media_session_notification_producer_->GetSession(
         id.ToString());
+  }
+
+  MediaNotificationService::PresentationManagerObservation*
+  GetPresentationObservation(const base::UnguessableToken& id) {
+    auto it = service_->presentation_manager_observations_.find(id.ToString());
+    return (it == service_->presentation_manager_observations_.end())
+               ? nullptr
+               : &it->second;
   }
 
   MediaNotificationService* service() { return service_.get(); }
@@ -274,8 +283,8 @@ TEST_F(MediaNotificationServiceCastTest,
   auto presentation_manager =
       std::make_unique<MockWebContentsPresentationManager>();
   auto media_route = CreateMediaRoute("id");
-  auto* session = GetSession(id);
-  session->SetPresentationManagerForTesting(
+  auto* observation = GetPresentationObservation(id);
+  observation->SetPresentationManagerForTesting(
       presentation_manager.get()->GetWeakPtr());
 
   EXPECT_CALL(dialog_delegate, HideMediaDialog());

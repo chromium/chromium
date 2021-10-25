@@ -6,15 +6,13 @@
 
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/media_router/media_router_ui.h"
+#include "chrome/browser/ui/global_media_controls/media_session_notification_producer_observer.h"
 #include "components/global_media_controls/public/media_item_manager.h"
 #include "components/global_media_controls/public/media_item_ui.h"
-#include "components/media_router/browser/presentation/start_presentation_context.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/media_session_service.h"
@@ -73,15 +71,6 @@ base::TimeDelta GetAutoDismissTimerValue() {
       kAutoDismissTimerInMinutesParamName, kAutoDismissTimerInMinutesDefault));
 }
 
-base::WeakPtr<media_router::WebContentsPresentationManager>
-GetPresentationManager(content::WebContents* web_contents) {
-  if (!web_contents ||
-      !media_router::MediaRouterEnabled(web_contents->GetBrowserContext())) {
-    return nullptr;
-  }
-  return media_router::WebContentsPresentationManager::Get(web_contents);
-}
-
 }  // namespace
 
 MediaSessionNotificationProducer::Session::Session(
@@ -93,27 +82,14 @@ MediaSessionNotificationProducer::Session::Session(
     : owner_(owner),
       id_(id),
       item_(std::move(item)),
-      web_contents_(web_contents),
-      presentation_manager_(GetPresentationManager(web_contents)) {
+      web_contents_(web_contents) {
   DCHECK(owner_);
   DCHECK(item_);
 
   SetController(std::move(controller));
-  if (presentation_manager_)
-    presentation_manager_->AddObserver(this);
-
-  bool has_presentation_request =
-      presentation_manager_ &&
-      presentation_manager_->HasDefaultPresentationRequest();
-  base::UmaHistogramBoolean(
-      "Media.GlobalMediaControls.HasDefaultPresentationRequest",
-      has_presentation_request);
 }
 
 MediaSessionNotificationProducer::Session::~Session() {
-  if (presentation_manager_)
-    presentation_manager_->RemoveObserver(this);
-
   // If we've been marked inactive, then we've already recorded inactivity as
   // the dismiss reason.
   if (is_marked_inactive_)
@@ -167,15 +143,6 @@ void MediaSessionNotificationProducer::Session::MediaSessionPositionChanged(
   OnSessionInteractedWith();
 }
 
-void MediaSessionNotificationProducer::Session::OnMediaRoutesChanged(
-    const std::vector<media_router::MediaRoute>& routes) {
-  // Closes the media dialog after a cast session starts.
-  if (!routes.empty()) {
-    owner_->HideMediaDialog();
-    item_->Dismiss();
-  }
-}
-
 void MediaSessionNotificationProducer::Session::OnRequestIdReleased() {
   // The request ID is released when the tab is closed.
   set_dismiss_reason(GlobalMediaControlsDismissReason::kTabClosed);
@@ -226,14 +193,6 @@ base::CallbackListSubscription MediaSessionNotificationProducer::Session::
   callback.Run(is_audio_device_switching_supported_);
   return is_audio_device_switching_supported_callback_list_.Add(
       std::move(callback));
-}
-
-void MediaSessionNotificationProducer::Session::
-    SetPresentationManagerForTesting(
-        base::WeakPtr<media_router::WebContentsPresentationManager>
-            presentation_manager) {
-  presentation_manager_ = presentation_manager;
-  presentation_manager_->AddObserver(this);
 }
 
 // static
@@ -366,6 +325,9 @@ void MediaSessionNotificationProducer::OnFocusGained(
             content::MediaSession::GetWebContentsFromRequestId(
                 *session->request_id),
             std::move(session_controller)));
+
+    for (auto& observer : observers_)
+      observer.OnMediaSessionItemCreated(id);
   }
 }
 
@@ -431,6 +393,16 @@ void MediaSessionNotificationProducer::OnMediaItemUIDismissed(
   session->item()->Dismiss();
 }
 
+void MediaSessionNotificationProducer::AddObserver(
+    MediaSessionNotificationProducerObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void MediaSessionNotificationProducer::RemoveObserver(
+    MediaSessionNotificationProducerObserver* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void MediaSessionNotificationProducer::OnItemShown(
     const std::string& id,
     global_media_controls::MediaItemUI* item_ui) {
@@ -455,6 +427,9 @@ void MediaSessionNotificationProducer::RemoveItem(const std::string& id) {
   active_controllable_session_ids_.erase(id);
   frozen_session_ids_.erase(id);
   inactive_session_ids_.erase(id);
+
+  for (auto& observer : observers_)
+    observer.OnMediaSessionItemDestroyed(id);
 
   item_manager_->HideItem(id);
   sessions_.erase(id);

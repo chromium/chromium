@@ -5,12 +5,12 @@
 #ifndef CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_MEDIA_SESSION_NOTIFICATION_PRODUCER_H_
 #define CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_MEDIA_SESSION_NOTIFICATION_PRODUCER_H_
 
+#include "base/observer_list.h"
 #include "chrome/browser/ui/global_media_controls/media_session_notification_item.h"
 #include "components/global_media_controls/public/media_item_manager_observer.h"
 #include "components/global_media_controls/public/media_item_producer.h"
 #include "components/global_media_controls/public/media_item_ui_observer.h"
 #include "components/global_media_controls/public/media_item_ui_observer_set.h"
-#include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "services/media_session/public/mojom/media_controller.mojom.h"
@@ -24,6 +24,8 @@ namespace global_media_controls {
 class MediaItemManager;
 class MediaItemUI;
 }  // namespace global_media_controls
+
+class MediaSessionNotificationProducerObserver;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -77,6 +79,9 @@ class MediaSessionNotificationProducer
   void OnMediaItemUIClicked(const std::string& id) override;
   void OnMediaItemUIDismissed(const std::string& id) override;
 
+  void AddObserver(MediaSessionNotificationProducerObserver* observer);
+  void RemoveObserver(MediaSessionNotificationProducerObserver* observer);
+
   bool HasSession(const std::string& id) const;
 
   bool HasActiveControllableSessionForWebContents(
@@ -98,9 +103,7 @@ class MediaSessionNotificationProducer
   friend class MediaNotificationServiceTest;
   friend class MediaSessionNotificationProducerTest;
 
-  class Session
-      : public media_session::mojom::MediaControllerObserver,
-        public media_router::WebContentsPresentationManager::Observer {
+  class Session : public media_session::mojom::MediaControllerObserver {
    public:
     Session(MediaSessionNotificationProducer* owner,
             const std::string& id,
@@ -124,10 +127,6 @@ class MediaSessionNotificationProducer
         const absl::optional<base::UnguessableToken>& request_id) override {}
     void MediaSessionPositionChanged(
         const absl::optional<media_session::MediaPosition>& position) override;
-
-    // media_router::WebContentsPresentationManager::Observer:
-    void OnMediaRoutesChanged(
-        const std::vector<media_router::MediaRoute>& routes) override;
 
     // Called when the request ID associated with this session is released (i.e.
     // when the tab is closed).
@@ -156,10 +155,6 @@ class MediaSessionNotificationProducer
         base::RepeatingCallback<void(bool)> callback);
 
     content::WebContents* web_contents() const { return web_contents_; }
-
-    void SetPresentationManagerForTesting(
-        base::WeakPtr<media_router::WebContentsPresentationManager>
-            presentation_manager);
 
    private:
     static void RecordDismissReason(GlobalMediaControlsDismissReason reason);
@@ -205,9 +200,6 @@ class MediaSessionNotificationProducer
     mojo::Remote<media_session::mojom::MediaController> controller_;
 
     content::WebContents* const web_contents_;
-
-    base::WeakPtr<media_router::WebContentsPresentationManager>
-        presentation_manager_;
   };
 
   // Looks up a Session object by its ID. Returns null if not found.
@@ -254,6 +246,8 @@ class MediaSessionNotificationProducer
   // Tracks the number of times we have recorded an action for a specific
   // source. We use this to cap the number of UKM recordings per site.
   std::map<ukm::SourceId, int> actions_recorded_to_ukm_;
+
+  base::ObserverList<MediaSessionNotificationProducerObserver> observers_;
 
   base::WeakPtrFactory<MediaSessionNotificationProducer> weak_ptr_factory_{
       this};
