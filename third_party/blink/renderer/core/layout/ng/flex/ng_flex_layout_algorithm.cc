@@ -249,8 +249,9 @@ bool NGFlexLayoutAlgorithm::DoesItemCrossSizeComputeToAuto(
 }
 
 bool NGFlexLayoutAlgorithm::AspectRatioProvidesMainSize(
-    const NGBlockNode& child,
-    const Length& cross_axis_length) const {
+    const NGBlockNode& child) const {
+  const Length& cross_axis_length =
+      is_horizontal_flow_ ? child.Style().Height() : child.Style().Width();
   return child.HasAspectRatio() &&
          (IsItemCrossAxisLengthDefinite(child, cross_axis_length) ||
           WillChildCrossSizeBeContainerCrossSize(child));
@@ -357,7 +358,8 @@ NGConstraintSpace NGFlexLayoutAlgorithm::BuildSpaceForLayout(
     // post-flexing main size is treated as definite, even though it can
     // rely on the indefinite sizes of any flex items in the same line.
     if (!IsColumnContainerMainSizeDefinite() &&
-        !IsUsedFlexBasisDefinite(flex_item.ng_input_node_)) {
+        !IsUsedFlexBasisDefinite(flex_item.ng_input_node_) &&
+        !AspectRatioProvidesMainSize(flex_item.ng_input_node_)) {
       space_builder.SetIsInitialBlockSizeIndefinite(true);
     }
   } else {
@@ -521,6 +523,11 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
         layout_result = child.Layout(child_space, /* break_token */ nullptr);
         DCHECK(layout_result);
       }
+      // TODO(crbug.com/1261306): This value does not account for any
+      // min/main/max sizes transferred through the preferred aspect ratio, if
+      // it exists. But we use this value in places where the flex spec calls
+      // for 'min-content' and 'max-content', which are supposed to obey some
+      // transferred sizes.
       return layout_result->IntrinsicBlockSize();
     };
 
@@ -561,7 +568,7 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
       // This block means that the used flex-basis is 'content'. In here we
       // implement parts B,C,D,E of 9.2.3
       // https://drafts.csswg.org/css-flexbox/#algo-main-item
-      if (AspectRatioProvidesMainSize(child, cross_axis_length)) {
+      if (AspectRatioProvidesMainSize(child)) {
         // This is Part B of 9.2.3
         // https://drafts.csswg.org/css-flexbox/#algo-main-item It requires that
         // the item has a definite cross size.
@@ -664,8 +671,7 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
 
       LayoutUnit transferred_size_suggestion = LayoutUnit::Max();
       if (specified_size_suggestion == LayoutUnit::Max() &&
-          child.IsReplaced() &&
-          AspectRatioProvidesMainSize(child, cross_axis_length)) {
+          child.IsReplaced() && AspectRatioProvidesMainSize(child)) {
         transferred_size_suggestion = ComputeTransferredMainSize();
       }
 
@@ -962,7 +968,8 @@ void NGFlexLayoutAlgorithm::ApplyStretchAlignmentToChild(FlexItem& flex_item) {
     space_builder.SetInlineAutoBehavior(NGAutoBehavior::kStretchExplicit);
 
     if (!IsColumnContainerMainSizeDefinite() &&
-        !IsUsedFlexBasisDefinite(flex_item.ng_input_node_)) {
+        !IsUsedFlexBasisDefinite(flex_item.ng_input_node_) &&
+        !AspectRatioProvidesMainSize(flex_item.ng_input_node_)) {
       space_builder.SetIsInitialBlockSizeIndefinite(true);
     }
   } else {

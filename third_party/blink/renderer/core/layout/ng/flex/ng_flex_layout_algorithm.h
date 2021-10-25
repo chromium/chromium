@@ -40,8 +40,7 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
   bool DoesItemCrossSizeComputeToAuto(const NGBlockNode& child) const;
   bool IsItemCrossAxisLengthDefinite(const NGBlockNode& child,
                                      const Length& length) const;
-  bool AspectRatioProvidesMainSize(const NGBlockNode& child,
-                                   const Length& cross_axis_length) const;
+  bool AspectRatioProvidesMainSize(const NGBlockNode& child) const;
   bool DoesItemStretch(const NGBlockNode& child) const;
   // This checks for one of the scenarios where a flex-item box has a definite
   // size that would be indefinite if the box weren't a flex item.
