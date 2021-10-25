@@ -92,7 +92,6 @@
       'android-cronet-x86-dbg': 'android_cronet_debug_static_bot_x86',
       'android-cronet-x86-rel': 'android_cronet_release_bot_minimal_symbols_x86',
       'android-incremental-dbg': 'android_incremental_debug_bot',
-      'android-lollipop-arm-rel': 'android_release_bot_minimal_symbols_webview_google',
 
       # This bot must use the gpu_tests mixin to match 'Android FYI Release (Nexus 5X)'
       # on the chromium.gpu waterfall, which it mirrors via trybots.pyl.
@@ -811,7 +810,6 @@
       'android-cronet-arm-dbg': 'android_cronet_debug_static_bot_arm_no_neon',
       'android-cronet-marshmallow-arm64-rel': 'android_cronet_release_trybot_arm64',
       'android-inverse-fieldtrials-pie-x86-fyi-rel': 'android_release_trybot_x86_fastbuild_webview_google_invert_fieldtrials',
-      'android-lollipop-arm-rel': 'android_release_trybot_webview_google_fastbuild',
       'android-marshmallow-arm64-rel': 'gpu_tests_android_release_trybot_arm64_resource_allowlisting_fastbuild_java_coverage',
       'android-marshmallow-arm64-rel-rts': 'gpu_tests_android_release_trybot_arm64_resource_allowlisting_fastbuild_java_coverage',
       'android-marshmallow-x86-rel': 'android_release_trybot_x86_fastbuild_resource_allowlisting_webview_google_coverage',
@@ -1541,11 +1539,6 @@
       'android', 'release_trybot', 'arm64', 'strip_debug_info',
       'webview_google',
       'use_clang_coverage', 'partial_code_coverage_instrumentation',
-    ],
-
-    'android_release_trybot_webview_google_fastbuild': [
-      'android', 'release_trybot_minimal_symbols', 'strip_debug_info', 'android_no_proguard',
-      'android_fastbuild', 'webview_google',
     ],
 
     'android_release_trybot_minimal_symbols_x86_fastbuild_webview_google': [
