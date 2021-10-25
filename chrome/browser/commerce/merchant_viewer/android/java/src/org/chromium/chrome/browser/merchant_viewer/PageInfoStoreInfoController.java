@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.merchant_viewer.proto.MerchantTrustSignalsOuterClass.MerchantTrustSignals;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.page_info.PageInfoAction;
@@ -51,8 +52,15 @@ public class PageInfoStoreInfoController implements PageInfoSubpageController {
         mContext = mRowView.getContext();
         mActionHandlerSupplier = actionHandlerSupplier;
         mPageInfoOpenedFromStoreIcon = pageInfoOpenedFromStoreIcon;
-        new MerchantTrustSignalsDataProvider().getDataForUrl(
-                mMainController.getURL(), this::setupStoreInfoRow);
+        // Creating the instance of {@link MerchantTrustSignalsDataProvider} will force
+        // OptimizationGuide to register for the MERCHANT_TRUST_SIGNALS type, so we need to check
+        // the feature flag first.
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.COMMERCE_MERCHANT_VIEWER)) {
+            new MerchantTrustSignalsDataProvider().getDataForUrl(
+                    mMainController.getURL(), this::setupStoreInfoRow);
+        } else {
+            setupStoreInfoRow(null);
+        }
     }
 
     @SuppressLint("ResourceType")
