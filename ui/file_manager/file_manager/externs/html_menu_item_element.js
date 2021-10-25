@@ -3,55 +3,55 @@
 // found in the LICENSE file.
 
 /**
- * @see http://www.w3.org/html/wg/drafts/html/master/interactive-elements.html#the-menuitem-element
+ * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/menuitem
  */
 class HTMLMenuItemElement extends HTMLElement {
   constructor() {
     /**
      * @type {string}
-     * @see http://www.w3.org/html/wg/drafts/html/master/interactive-elements.html#dom-menuitem-type
+     * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/menuitem#attr-type
      */
     this.type;
 
     /**
      * @type {string}
-     * @see http://www.w3.org/html/wg/drafts/html/master/interactive-elements.html#dom-menuitem-label
+     * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/menuitem#attr-label
      */
     this.label;
 
     /**
      * @type {string}
-     * @see http://www.w3.org/html/wg/drafts/html/master/interactive-elements.html#dom-menuitem-icon
+     * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/menuitem#attr-icon
      */
     this.icon;
 
     /**
      * @type {boolean}
-     * @see http://www.w3.org/html/wg/drafts/html/master/interactive-elements.html#dom-menuitem-disabled
+     * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/menuitem#attr-disabled
      */
     this.disabled;
 
     /**
      * @type {boolean}
-     * @see http://www.w3.org/html/wg/drafts/html/master/interactive-elements.html#dom-menuitem-checked
+     * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/menuitem#attr-checked
      */
     this.checked;
 
     /**
      * @type {string}
-     * @see http://www.w3.org/html/wg/drafts/html/master/interactive-elements.html#dom-menuitem-radiogroup
+     * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/menuitem#attr-radiogroup
      */
     this.radiogroup;
 
     /**
      * @type {boolean}
-     * @see http://www.w3.org/html/wg/drafts/html/master/interactive-elements.html#dom-menuitem-default
+     * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/menuitem#attr-default
      */
     this.default;
 
     /**
      * @type {HTMLElement|undefined}
-     * @see http://www.w3.org/html/wg/drafts/html/master/interactive-elements.html#dom-menuitem-command
+     * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/menuitem#attr-command
      */
     this.command;
   }
