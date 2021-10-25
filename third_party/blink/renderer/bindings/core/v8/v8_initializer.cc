@@ -453,9 +453,8 @@ CodeGenerationCheckCallbackInMainThread(v8::Local<v8::Context> context,
   return {true, std::move(stringified_source)};
 }
 
-static bool WasmCodeGenerationCheckCallbackInMainThread(
-    v8::Local<v8::Context> context,
-    v8::Local<v8::String> source) {
+bool V8Initializer::WasmCodeGenerationCheckCallbackInMainThread(v8::Local<v8::Context> context,
+                                                 v8::Local<v8::String> source) {
   if (ExecutionContext* execution_context = ToExecutionContext(context)) {
     if (ContentSecurityPolicy* policy =
             execution_context->GetContentSecurityPolicy()) {
