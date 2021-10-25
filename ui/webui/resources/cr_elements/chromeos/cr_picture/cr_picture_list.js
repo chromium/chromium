@@ -9,8 +9,21 @@
  * profile image.
  */
 
+import '../../icons.m.js';
+import '../../shared_style_css.m.js';
+import '//resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '//resources/polymer/v3_0/iron-selector/iron-selector.js';
+
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {CrPicture} from './cr_picture_types.js';
+import {convertImageSequenceToPng, isEncodedPngDataUrlAnimated} from './png.js';
+
 Polymer({
   is: 'cr-picture-list',
+
+  _template: html`{__html_template__}`,
 
   properties: {
     cameraPresent: Boolean,
@@ -294,7 +307,7 @@ Polymer({
      * url as input if base64 encoded and potentially animated.
      */
     if (url.split(',')[0] === 'data:image/png;base64') {
-      return cr.png.convertImageSequenceToPng([url]);
+      return convertImageSequenceToPng([url]);
     }
 
     return url;
@@ -315,4 +328,3 @@ Polymer({
     return url + '[0]@2x 2x';
   },
 });
-/* #ignore */ console.warn('crbug/1173575, non-JS module files deprecated.');

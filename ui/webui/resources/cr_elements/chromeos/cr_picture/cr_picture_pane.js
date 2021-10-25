@@ -8,8 +8,19 @@
  * picture or a camera image preview.
  */
 
+import '../../shared_style_css.m.js';
+import '../../cr_icon_button/cr_icon_button.m.js';
+import './cr_camera.js';
+
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {CrPicture} from './cr_picture_types.js';
+import {convertImageSequenceToPng, isEncodedPngDataUrlAnimated} from './png.js';
+
 Polymer({
   is: 'cr-picture-pane',
+
+  _template: html`{__html_template__}`,
 
   properties: {
 
@@ -128,7 +139,7 @@ Polymer({
       const blob = new Blob([bytes], {'type': 'image/png'});
       // Use first frame as placeholder while rest of image loads.
       image.style.backgroundImage =
-          'url(' + cr.png.convertImageSequenceToPng([this.imageSrc]) + ')';
+          'url(' + convertImageSequenceToPng([this.imageSrc]) + ')';
       this.imageUrl = URL.createObjectURL(blob);
     } else {
       image.style.backgroundImage = 'none';
@@ -172,4 +183,3 @@ Polymer({
     return url;
   },
 });
-/* #ignore */ console.warn('crbug/1173575, non-JS module files deprecated.');

@@ -55,6 +55,13 @@ preprocess_if_expr("preprocess_src") {
     "find_shortcut_mixin.ts",
     "mouse_hoverable_mixin.js",
   ]
+
+  if (is_chromeos_ash) {
+    in_files += [
+      "chromeos/cr_picture/cr_picture_types.js",
+      "chromeos/cr_picture/png.js",
+    ]
+  }
 }
 
 preprocess_if_expr("preprocess_polymer2") {
@@ -117,20 +124,7 @@ preprocess_if_expr("preprocess_polymer2") {
   ]
 
   if (is_chromeos_ash) {
-    in_files += [
-      "chromeos/cros_color_overrides.html",
-      "chromeos/cr_picture/cr_camera.html",
-      "chromeos/cr_picture/cr_camera.js",
-      "chromeos/cr_picture/cr_picture_list.html",
-      "chromeos/cr_picture/cr_picture_list.js",
-      "chromeos/cr_picture/cr_picture_pane.html",
-      "chromeos/cr_picture/cr_picture_pane.js",
-      "chromeos/cr_picture/cr_picture_types.html",
-      "chromeos/cr_picture/cr_picture_types.js",
-      "chromeos/cr_picture/icons.html",
-      "chromeos/cr_picture/png.html",
-      "chromeos/cr_picture/png.js",
-    ]
+    in_files += [ "chromeos/cros_color_overrides.html" ]
   }
 }
 
@@ -204,12 +198,10 @@ preprocess_if_expr("preprocess_generated") {
   if (is_chromeos_ash) {
     in_files += [
       "chromeos/cros_color_overrides.m.js",
-      "chromeos/cr_picture/cr_camera.m.js",
-      "chromeos/cr_picture/cr_picture_list.m.js",
-      "chromeos/cr_picture/cr_picture_pane.m.js",
-      "chromeos/cr_picture/cr_picture_types.m.js",
-      "chromeos/cr_picture/icons.m.js",
-      "chromeos/cr_picture/png.m.js",
+      "chromeos/cr_picture/cr_camera.js",
+      "chromeos/cr_picture/cr_picture_list.js",
+      "chromeos/cr_picture/cr_picture_pane.js",
+      "chromeos/cr_picture/icons.js",
     ]
   }
 }

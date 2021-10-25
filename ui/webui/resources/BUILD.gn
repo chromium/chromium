@@ -265,7 +265,7 @@ ts_library("library") {
   if (is_chromeos_ash) {
     definitions += [
       "$root_dir/cr_elements/chromeos/cros_color_overrides.m.d.ts",
-      "$root_dir/cr_elements/chromeos/cr_picture/png.m.d.ts",
+      "$root_dir/cr_elements/chromeos/cr_picture/png.d.ts",
       "$root_dir/js/cr/ui/store_client.d.ts",
     ]
   }
@@ -339,7 +339,7 @@ ts_definitions("generate_definitions") {
   if (is_chromeos_ash) {
     js_files += [
       "cr_elements/chromeos/cros_color_overrides.m.js",
-      "cr_elements/chromeos/cr_picture/png.m.js",
+      "cr_elements/chromeos/cr_picture/png.js",
       "js/cr/ui/store_client.js",
     ]
   }
