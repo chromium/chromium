@@ -53,23 +53,23 @@ js_type_check("closure_compile") {
     ":zip_files",
   ]
 
-  closure_flags = strict_error_checking_closure_args + [
-                    "js_module_root=gen/ui/file_manager/",
-                    "js_module_root=../../ui/file_manager/",
-                    "browser_resolver_prefix_replacements=\"chrome://test/=./\"",
-                    "browser_resolver_prefix_replacements=\"chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/=./file_manager/\"",
-                    "hide_warnings_for=third_party/",
-                  ]
+  closure_flags =
+      strict_error_checking_closure_args + [
+        "js_module_root=gen/ui/file_manager/",
+        "js_module_root=../../ui/file_manager/",
+        "browser_resolver_prefix_replacements=\"chrome://test/=./\"",
+        "hide_warnings_for=third_party/",
+      ]
 }
 
 js_library("background") {
   testonly = true
   deps = [
-    "//ui/file_manager/file_manager/common/js:files_app_state",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/integration_tests:files_app_state",
     "//ui/file_manager/integration_tests:remote_call",
     "//ui/file_manager/integration_tests:test_util",
     "//ui/file_manager/integration_tests:testcase",
+    "//ui/file_manager/integration_tests:volume_manager_common_volume_type",
   ]
 }
 
@@ -183,7 +183,11 @@ js_library("keyboard_operations") {
 
 js_library("metadata") {
   testonly = true
-  deps = [ "//ui/file_manager/integration_tests:testcase" ]
+  deps = [
+    "//ui/file_manager/integration_tests:metadata_stats_type",
+    "//ui/file_manager/integration_tests:testcase",
+  ]
+  externs_list = [ "$externs_path/file_manager_private.js" ]
 }
 
 js_library("metrics") {
@@ -232,7 +236,7 @@ js_library("providers") {
 js_library("quick_view") {
   testonly = true
   deps = [
-    "//ui/file_manager/file_manager/common/js:dialog_type",
+    "//ui/file_manager/integration_tests:dialog_type",
     "//ui/file_manager/integration_tests:testcase",
   ]
   externs_list = [ "//ui/file_manager/file_manager/externs/quick_view.js" ]
@@ -256,7 +260,7 @@ js_library("restore_prefs") {
 js_library("search") {
   testonly = true
   deps = [
-    "//ui/file_manager/file_manager/common/js:files_app_state",
+    "//ui/file_manager/integration_tests:files_app_state",
     "//ui/file_manager/integration_tests:testcase",
   ]
 }

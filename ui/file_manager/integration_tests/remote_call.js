@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ElementObject, KeyModifiers} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/background/js/runtime_loaded_test_util.js';
-import {VolumeManagerCommon} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/common/js/volume_manager_types.js';
-
+import {ElementObject} from './element_object.js';
+import {KeyModifiers} from './key_modifiers.js';
 import {getCaller, pending, repeatUntil, sendTestMessage} from './test_util.js';
+import {VolumeManagerCommonVolumeType} from './volume_manager_common_volume_type.js';
 
 /**
  * When step by step tests are enabled, turns on automatic step() calls. Note
@@ -343,7 +343,7 @@ export class RemoteCall {
   /**
    * Gets file entries just under the volume.
    *
-   * @param {VolumeManagerCommon.VolumeType} volumeType Volume type.
+   * @param {VolumeManagerCommonVolumeType} volumeType Volume type.
    * @param {Array<string>} names File name list.
    * @return {Promise} Promise to be fulfilled with file entries or rejected
    *     depending on the result.
@@ -355,7 +355,7 @@ export class RemoteCall {
 
   /**
    * Waits for a single file.
-   * @param {VolumeManagerCommon.VolumeType} volumeType Volume type.
+   * @param {VolumeManagerCommonVolumeType} volumeType Volume type.
    * @param {string} name File name.
    * @return {!Promise} Promise to be fulfilled when the file had found.
    */

@@ -1282,7 +1282,7 @@ function isFilesAppId(appId) {
  * @param {string} actionId
  * @return {string}
  */
-function parseActionId(actionId) {
+export function parseActionId(actionId) {
   if (window.isSWA) {
     const swaUrl = SWA_FILES_APP_URL.toString() + '?';
     return actionId.replace(swaUrl, '');

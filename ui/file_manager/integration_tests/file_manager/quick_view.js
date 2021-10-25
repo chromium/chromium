@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DialogType} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/common/js/dialog_type.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 
+import {DialogType} from '../dialog_type.js';
 import {addEntries, ENTRIES, EntryType, getCaller, getHistogramCount, pending, repeatUntil, RootPath, sendTestMessage, TestEntryInfo, wait} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
