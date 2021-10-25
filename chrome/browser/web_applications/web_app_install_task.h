@@ -177,9 +177,11 @@ class WebAppInstallTask : content::WebContentsObserver {
   // install_callback_.
   bool ShouldStopInstall() const;
 
-  void OnWebAppUrlLoadedGetWebApplicationInfo(WebAppUrlLoader::Result result);
+  void OnWebAppUrlLoadedGetWebApplicationInfo(const GURL& url_to_load,
+                                              WebAppUrlLoader::Result result);
 
   void OnWebAppUrlLoadedCheckAndRetrieveManifest(
+      const GURL& url_to_load,
       content::WebContents* web_contents,
       WebAppUrlLoader::Result result);
   void OnWebAppInstallabilityChecked(blink::mojom::ManifestPtr opt_manifest,
@@ -265,6 +267,9 @@ class WebAppInstallTask : content::WebContentsObserver {
                       const std::string& start_url,
                       base::Value object);
 
+  void LogUrlLoaderError(const char* stage,
+                         const std::string& start_url,
+                         WebAppUrlLoader::Result result);
   void LogExpectedAppIdError(const char* stage,
                              const std::string& start_url,
                              const AppId& app_id);

@@ -25,6 +25,7 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/url_constants.h"
 
 namespace web_app {
 
@@ -411,7 +412,7 @@ void WebAppInstallManager::MaybeStartQueuedTask() {
 
   // Load about:blank to ensure ready and clean up any left over state.
   url_loader_->LoadUrl(
-      GURL("about:blank"), web_contents_.get(),
+      GURL(url::kAboutBlankURL), web_contents_.get(),
       WebAppUrlLoader::UrlComparison::kExact,
       base::BindOnce(&WebAppInstallManager::OnWebContentsReadyRunTask,
                      weak_ptr_factory_.GetWeakPtr(), std::move(pending_task)));
@@ -496,8 +497,40 @@ void WebAppInstallManager::OnWebContentsReadyRunTask(
     return;
   }
 
+  // about:blank must always be loaded.
   DCHECK_EQ(WebAppUrlLoader::Result::kUrlLoaded, result);
+  if (result != WebAppUrlLoader::Result::kUrlLoaded)
+    LogUrlLoaderError("OnWebContentsReady", pending_task, result);
+
   std::move(pending_task.start).Run();
+}
+
+void WebAppInstallManager::LogUrlLoaderError(const char* stage,
+                                             const PendingTask& pending_task,
+                                             WebAppUrlLoader::Result result) {
+  if (!error_log_)
+    return;
+
+  base::Value url_loader_error(base::Value::Type::DICTIONARY);
+
+  url_loader_error.SetStringKey("WebAppUrlLoader::Result",
+                                ConvertUrlLoaderResultToString(result));
+
+  if (pending_task.task->app_id_to_expect().has_value()) {
+    url_loader_error.SetStringKey(
+        "task.app_id_to_expect", pending_task.task->app_id_to_expect().value());
+  }
+
+  LogErrorObject(stage, std::move(url_loader_error));
+}
+
+void WebAppInstallManager::LogErrorObject(const char* stage,
+                                          base::Value object) {
+  if (!error_log_)
+    return;
+
+  object.SetStringKey("!stage", stage);
+  error_log_->push_back(std::move(object));
 }
 
 WebAppInstallManager::PendingTask::PendingTask() = default;
