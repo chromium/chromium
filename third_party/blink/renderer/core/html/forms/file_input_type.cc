@@ -108,7 +108,8 @@ const AtomicString& FileInputType::FormControlType() const {
 }
 
 FormControlState FileInputType::SaveFormControlState() const {
-  if (file_list_->IsEmpty())
+  if (file_list_->IsEmpty() ||
+      GetElement().GetDocument().GetFormController().DropReferencedFilePaths())
     return FormControlState();
   FormControlState state;
   unsigned num_files = file_list_->length();

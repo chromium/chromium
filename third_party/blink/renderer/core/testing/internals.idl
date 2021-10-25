@@ -239,6 +239,9 @@
     TypeConversions typeConversions();
 
     sequence<DOMString> getReferencedFilePaths();
+    // This should be called if <input type=file> refers to files selected
+    // without the browser process.
+    void disableReferencedFilePathsVerification();
 
     // These functions both reset the tracked repaint rects. They are intended to be used in the following order:
     //  startTrackingRepaints(), repaintRectsAsText(), stopTrackingRepaints().

@@ -18,6 +18,7 @@ class MockFileChooserFactory extends EventTarget {
   }
 
   setPathsToBeChosen(paths, opt_baseDir) {
+    internals.disableReferencedFilePathsVerification();
     // TODO(tkent): Need to ensure each of paths is an absolute path.
     this.paths_ = paths;
     this.baseDir_ = opt_baseDir;
