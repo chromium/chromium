@@ -4,6 +4,16 @@
 
 #include "components/live_caption/pref_names.h"
 
+#include <string>
+
+#include "base/feature_list.h"
+#include "components/prefs/pref_service.h"
+
+#if !defined(OS_ANDROID)
+#include "components/soda/constants.h"
+#include "media/base/media_switches.h"
+#endif
+
 namespace prefs {
 
 #if !defined(ANDROID)
@@ -14,6 +24,15 @@ const char kLiveCaptionEnabled[] =
 // The language to use with the Live Caption feature.
 const char kLiveCaptionLanguageCode[] =
     "accessibility.captions.live_caption_language";
+
+const std::string GetLiveCaptionLanguageCode(PrefService* profile_prefs) {
+  if (base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage))
+    return profile_prefs->GetString(prefs::kLiveCaptionLanguageCode);
+
+  // Default to en-US if the kLiveCaptionMultiLanguage feature isn't enabled.
+  return speech::kUsEnglishLocale;
+}
+
 #endif  // !defined(ANDROID)
 
 // String indicating the size of the captions text as a percentage.

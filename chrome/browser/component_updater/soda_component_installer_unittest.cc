@@ -50,7 +50,7 @@ class SodaComponentInstallerTest : public ::testing::Test {
     local_state_.registry()->RegisterTimePref(prefs::kSodaScheduledDeletionTime,
                                               base::Time());
     profile_prefs_.registry()->RegisterStringPref(
-        prefs::kLiveCaptionLanguageCode, "en-US");
+        prefs::kLiveCaptionLanguageCode, speech::kUsEnglishLocale);
   }
 
  protected:

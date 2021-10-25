@@ -114,7 +114,7 @@ base::FilePath ChromeSpeechRecognitionService::GetSodaConfigPath(
   // non-Chrome OS Chrome, so hard-coding to the Live Caption language code.
   absl::optional<speech::SodaLanguagePackComponentConfig> language_config =
       speech::GetLanguageComponentConfig(
-          prefs->GetString(prefs::kLiveCaptionLanguageCode));
+          prefs::GetLiveCaptionLanguageCode(prefs));
 
   if (language_config) {
     base::UmaHistogramEnumeration("Accessibility.LiveCaption.SodaLanguage",
