@@ -5,7 +5,7 @@
 #include "components/password_manager/core/browser/password_store_backend.h"
 
 #include "components/password_manager/core/browser/login_database.h"
-#include "components/password_manager/core/browser/password_store_impl.h"
+#include "components/password_manager/core/browser/password_store_built_in_backend.h"
 #include "components/prefs/pref_service.h"
 
 namespace password_manager {
@@ -13,7 +13,7 @@ namespace password_manager {
 std::unique_ptr<PasswordStoreBackend> PasswordStoreBackend::Create(
     std::unique_ptr<LoginDatabase> login_db,
     PrefService* prefs) {
-  return std::make_unique<PasswordStoreImpl>(std::move(login_db));
+  return std::make_unique<PasswordStoreBuiltInBackend>(std::move(login_db));
 }
 
 }  // namespace password_manager

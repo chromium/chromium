@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_IMPL_H_
-#define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_IMPL_H_
+#ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_BUILT_IN_BACKEND_H_
+#define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_BUILT_IN_BACKEND_H_
 
 #include <memory>
 #include <string>
@@ -32,24 +32,21 @@ struct FieldInfo;
 
 // Simple password store implementation that delegates everything to
 // the LoginDatabase.
-class PasswordStoreImpl : protected PasswordStoreSync,
-                          public PasswordStoreBackend,
-                          public SmartBubbleStatsStore,
-                          protected FieldInfoStore {
+class PasswordStoreBuiltInBackend : protected PasswordStoreSync,
+                                    public PasswordStoreBackend,
+                                    public SmartBubbleStatsStore,
+                                    protected FieldInfoStore {
  public:
   // The |login_db| must not have been Init()-ed yet. It will be initialized in
   // a deferred manner on the background sequence.
-  explicit PasswordStoreImpl(std::unique_ptr<LoginDatabase> login_db);
+  explicit PasswordStoreBuiltInBackend(std::unique_ptr<LoginDatabase> login_db);
 
-  PasswordStoreImpl(
+  PasswordStoreBuiltInBackend(
       std::unique_ptr<LoginDatabase> login_db,
       std::unique_ptr<PasswordStore::UnsyncedCredentialsDeletionNotifier>
           notifier);
 
-  PasswordStoreImpl(const PasswordStoreImpl&) = delete;
-  PasswordStoreImpl& operator=(const PasswordStoreImpl&) = delete;
-
-  ~PasswordStoreImpl() override;
+  ~PasswordStoreBuiltInBackend() override;
 
  protected:
   // Implements PasswordStore interface.
@@ -226,9 +223,9 @@ class PasswordStoreImpl : protected PasswordStoreSync,
   // TaskRunner for all the background operations.
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 
-  base::WeakPtrFactory<PasswordStoreImpl> weak_ptr_factory_{this};
+  base::WeakPtrFactory<PasswordStoreBuiltInBackend> weak_ptr_factory_{this};
 };
 
 }  // namespace password_manager
 
-#endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_IMPL_H_
+#endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_BUILT_IN_BACKEND_H_

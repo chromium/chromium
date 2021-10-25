@@ -9,8 +9,8 @@
 #include "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store_built_in_backend.h"
 #include "components/password_manager/core/browser/password_store_factory_util.h"
-#include "components/password_manager/core/browser/password_store_impl.h"
 #include "components/password_manager/core/browser/site_affiliation/fake_affiliation_service.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -105,7 +105,7 @@ class CredentialProviderServiceTest : public PlatformTest {
 
   scoped_refptr<PasswordStore> CreatePasswordStore() {
     return base::MakeRefCounted<PasswordStore>(
-        std::make_unique<password_manager::PasswordStoreImpl>(
+        std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
             std::make_unique<LoginDatabase>(
                 temp_dir_.GetPath().Append(FILE_PATH_LITERAL("login_test")),
                 password_manager::IsAccountStore(false))));
