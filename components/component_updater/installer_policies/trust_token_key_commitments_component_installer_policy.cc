@@ -70,7 +70,7 @@ TrustTokenKeyCommitmentsComponentInstallerPolicy::
 
 bool TrustTokenKeyCommitmentsComponentInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {
-  return false;
+  return true;
 }
 
 bool TrustTokenKeyCommitmentsComponentInstallerPolicy::
