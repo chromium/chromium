@@ -473,6 +473,12 @@ def _CheckForMissingSymbols(r8_path, dex_files, classpath, warnings_as_errors,
         # Found in: com/facebook/fbui/textlayoutbuilder/StaticLayoutHelper
         'android.text.StaticLayout.<init>',
 
+        # Reflection is used to access some of these and they are allowed to be
+        # missing. See proguard.txt in androidx_window_window/window*.aar. See
+        # https://crbug.com/1039050 for usages of this library.
+        'androidx.window.extensions.',
+        'androidx.window.sidecar.',
+
         # Explicictly guarded by try (NoClassDefFoundError) in Flogger's
         # PlatformProvider.
         'com.google.common.flogger.backend.google.GooglePlatform',
