@@ -325,6 +325,7 @@
 <translation id="133535873114485416">Voorkeursinvoer</translation>
 <translation id="1335929031622236846">Je apparaat inschrijven</translation>
 <translation id="1336902454946927954">Je beveiligingssleutel is vergrendeld omdat je vingerafdruk niet kan worden herkend. Geef je pincode op om de sleutel te ontgrendelen.</translation>
+<translation id="1338631221631423366">Koppelen...</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> wil deze app openen.</translation>
 <translation id="1338950911836659113">Verwijderen...</translation>
 <translation id="1339009753652684748">Activeer je Assistent als je 'Hey Google' zegt. Als je de batterij wilt sparen, kies je Aan (aanbevolen). De Assistent reageert dan alleen als je apparaat is aangesloten op een voedingsbron of wordt opgeladen.</translation>
@@ -6543,6 +6544,7 @@ Druk op een toegewezen schakelaar of toets om de toewijzing te verwijderen.</tra
 <translation id="7887864092952184874">Bluetooth-muis gekoppeld</translation>
 <translation id="7889371445710865055">Dicteertaal wijzigen</translation>
 <translation id="7890147169288018054">Netwerkinformatie bekijken, zoals je IP- of MAC-adres</translation>
+<translation id="7892384782944609022">Kan niet koppelen. Selecteer het apparaat om het opnieuw te proberen.</translation>
 <translation id="7893008570150657497">Foto's, muziek en andere media van je computer openen</translation>
 <translation id="7893153962594818789">Bluetooth staat uit op deze <ph name="DEVICE_TYPE" />. Geef je wachtwoord op en zet Bluetooth aan.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (standaard)</translation>

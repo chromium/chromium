@@ -29,6 +29,7 @@
 <translation id="1743802530341753419">Prikaži poziv, preden se spletnim mestom dovoli povezovanje z napravo (priporočeno)</translation>
 <translation id="1779089405699405702">Slikovni dekodirnik</translation>
 <translation id="1818308510395330587">Če želite aplikaciji <ph name="APP_NAME" /> dovoliti uporabo razširjene resničnosti, prav tako vklopite fotoaparat v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>
+<translation id="1864927262126810325">Iz: <ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">Dostop do lokacije je izklopljen za to napravo. Vklopite ga lahko v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>
 <translation id="1919345977826869612">Oglasi</translation>
 <translation id="1919950603503897840">Izbira stikov</translation>
@@ -236,6 +237,7 @@
 <translation id="7016516562562142042">Dovoljeno za trenutni iskalnik</translation>
 <translation id="7053983685419859001">Blokiraj</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 izbran}one{# izbran}two{# izbrana}few{# izbrani}other{# izbranih}}</translation>
+<translation id="7070090581017165256">O tem spletnem mestu</translation>
 <translation id="7087918508125750058">Št. izbranih: <ph name="ITEM_COUNT" />. Možnosti so na voljo na zgornjem delu zaslona.</translation>
 <translation id="7141896414559753902">Preprečevanje, da spletna mesta prikazujejo pojavna okna in preusmeritve (priporočeno)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>

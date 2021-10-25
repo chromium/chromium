@@ -306,10 +306,8 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
     // On iOS 12, we allow the navigation since cancelling it here causes
     // crbug.com/965067. The underlying issue is a WebKit bug that converts
     // valid URLs into invalid ones. This issue is fixed in iOS 13.
-    if (@available(iOS 13, *)) {
-      decisionHandler(WKNavigationActionPolicyCancel);
-      return;
-    }
+    decisionHandler(WKNavigationActionPolicyCancel);
+    return;
   }
 
   // First check if the navigation action should be blocked by the controller
@@ -1598,23 +1596,6 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
     [self handleCancelledError:error
                  forNavigation:navigation
                provisionalLoad:provisionalLoad];
-    if (@available(iOS 13, *)) {
-      // The bug has been fixed on iOS 13. The workaround is only needed for
-      // other versions.
-    } else if (@available(iOS 12.2, *)) {
-      if (![webView.backForwardList.currentItem.URL isEqual:webView.URL] &&
-          [self isCurrentNavigationItemPOST]) {
-        UMA_HISTOGRAM_BOOLEAN("WebController.BackForwardListOutOfSync", true);
-        // Sometimes on error the backForward list is out of sync with the
-        // webView, go back or forward to fix it. See crbug.com/951880.
-        if ([webView.backForwardList.backItem.URL isEqual:webView.URL]) {
-          [webView goBack];
-        } else if ([webView.backForwardList.forwardItem.URL
-                       isEqual:webView.URL]) {
-          [webView goForward];
-        }
-      }
-    }
     // NSURLErrorCancelled errors that aren't handled by aborting the load will
     // automatically be retried by the web view, so early return in this case.
     return;
@@ -1622,17 +1603,6 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
 
   web::NavigationContextImpl* navigationContext =
       [self.navigationStates contextForNavigation:navigation];
-
-  if (@available(iOS 13, *)) {
-  } else {
-    if (provisionalLoad && !navigationContext &&
-        web::RequiresProvisionalNavigationFailureWorkaround()) {
-      // It is likely that |navigationContext| is null because
-      // didStartProvisionalNavigation: was not called with this WKNavigation
-      // object.
-      return;
-    }
-  }
 
   NSError* contextError = web::NetErrorFromError(error);
   if (policyDecisionCancellationError) {

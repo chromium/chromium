@@ -3047,6 +3047,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4115002065223188701">Rețea în afara ariei de acoperire</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="4117637339509843559">Modul întunecat</translation>
+<translation id="4117714603282104018">Feedbackul haptic al touchpadului</translation>
 <translation id="4118579674665737931">Repornește dispozitivul și încearcă din nou.</translation>
 <translation id="412022815379960229">Începe să explorezi amintirile tale din Google Foto, oricând te conectezi.</translation>
 <translation id="4120388883569225797">Această cheie de securitate nu poate fi resetată</translation>
@@ -5490,6 +5491,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6810613314571580006">Te conectezi automat la site-uri folosind datele de conectare stocate. Când funcția este dezactivată, ți se va solicita confirmarea de fiecare dată înainte de a te conecta la un site.</translation>
 <translation id="6810768462515084623">Hopa! Se pare că parola a expirat. Reînnoiește-o pe alt dispozitiv și încearcă din nou.</translation>
 <translation id="6811034713472274749">Pagina este gata de vizualizare</translation>
+<translation id="6811151703183939603">Fermă</translation>
 <translation id="6811332638216701903">Nume de gazdă DHCP</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> nu poate fi rulat în modul root.</translation>
 <translation id="6812841287760418429">Păstrați modificările</translation>
@@ -6786,6 +6788,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="811994229154425014">Spațiu dublu pentru a insera punct</translation>
 <translation id="8120505434908124087">Instalează profilul eSIM</translation>
 <translation id="812260729110117038">Advertiserii și editorii pot studia eficiența anunțurilor într-un mod care nu te urmărește pe site-uri.</translation>
+<translation id="81231173274944570">Activează feedbackul haptic. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="81238879832906896">Floare galbenă și albă</translation>
 <translation id="8124313775439841391">Proprietăți ONC gestionate</translation>
 <translation id="813082847718468539">Afișează informațiile privind site-ul</translation>
@@ -7862,6 +7865,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Aplicație}few{Aplicații}other{Aplicații}}</translation>
 <translation id="964790508619473209">Aranjarea pe ecran</translation>
 <translation id="965211523698323809">Trimite și primește mesaje text pe <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
+<translation id="96535553604365597">Raportează o problemă privind Google Cast</translation>
 <translation id="967398046773905967">Nu permite niciunui site să acceseze dispozitive HID</translation>
 <translation id="967624055006145463">Date stocate</translation>
 <translation id="96774243435178359">Imprimante gestionate</translation>

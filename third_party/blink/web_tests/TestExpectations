@@ -6827,9 +6827,6 @@ crbug.com/1234619 external/wpt/screen-capture/permissions-policy-video.https.sub
 # Sheriff 2021-08-02
 crbug.com/1215390 [ Linux ] external/wpt/pointerevents/pointerevent_pointerId_scope.html [ Failure Pass ]
 
-# Sheriff 2021-08-04
-crbug.com/1236466 inspector-protocol/runtime/runtime-execution-contexts-events.js [ Crash Failure Pass Timeout ]
-
 # Sheriff 2021-08/05
 crbug.com/1230534 external/wpt/webrtc/simulcast/getStats.https.html [ Failure Pass Skip Timeout ]
 crbug.com/1237132 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-pattern-over-gradient.html [ Pass Skip Timeout ]

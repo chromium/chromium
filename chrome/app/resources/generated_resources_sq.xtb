@@ -325,6 +325,7 @@
 <translation id="133535873114485416">Hyrja e preferuar</translation>
 <translation id="1335929031622236846">Regjistro pajisjen tënde</translation>
 <translation id="1336902454946927954">Çelësi yt i sigurisë është i kyçur sepse gjurma jote e gishtit nuk mund të njihej. Për ta shkyçur, fut kodin PIN.</translation>
+<translation id="1338631221631423366">Po çiftohet...</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> dëshiron që ta hapë këtë aplikacion.</translation>
 <translation id="1338950911836659113">Po fshin...</translation>
 <translation id="1339009753652684748">Hap "Asistentin" kur thua "Ok Google". Për të kursyer baterinë, zgjidh "Aktive (rekomandohet)". "Asistenti" yt do të përgjigjet vetëm kur pajisja jote të jetë e lidhur ose në karikim.</translation>
@@ -6541,6 +6542,7 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7887864092952184874">Miu me Bluetooth u çiftua</translation>
 <translation id="7889371445710865055">Ndrysho gjuhën e "Diktimit"</translation>
 <translation id="7890147169288018054">Të shikojë informacionet e rrjetit, të tilla si adresat e IP-së ose MAC</translation>
+<translation id="7892384782944609022">Nuk mund të çiftohej. Zgjidh pajisjen për të provuar sërish.</translation>
 <translation id="7893008570150657497">Qasu në fotografi, muzikë dhe media të tjera nga kompjuteri yt</translation>
 <translation id="7893153962594818789">"Bluetooth-i" është i çaktivizuar në këtë pajisje <ph name="DEVICE_TYPE" />. Fut fjalëkalimin dhe aktivizo "Bluetooth-in".</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (e parazgjedhur)</translation>

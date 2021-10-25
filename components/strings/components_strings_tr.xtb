@@ -298,6 +298,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1842969606798536927">Ödeme</translation>
 <translation id="1856713167556118146">Gizli mod ne yapmaz?</translation>
 <translation id="1863257867908022953">Tepsi 12</translation>
+<translation id="1864927262126810325"><ph name="SOURCE_NAME" /> kaynağından</translation>
 <translation id="1871208020102129563">Proxy, bir .pac komut dosyası URL'sini değil, sabit proxy sunucuları kullanacak şekilde ayarlanır.</translation>
 <translation id="1871284979644508959">Zorunlu alan</translation>
 <translation id="1875025161375567525">Fotoğraf Tepsisi</translation>
@@ -959,6 +960,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4117700440116928470">Politika kapsamı desteklenmiyor.</translation>
 <translation id="4121428309786185360">Son Kullanma Tarihi:</translation>
 <translation id="4123572138124678573">Altta üçlü delik</translation>
+<translation id="4127575959421463246">ChromeOS flag'lerini mi arıyorsunuz? Şuraya gidin:</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 öğe daha}other{# öğe daha}}</translation>
 <translation id="4130226655945681476">Ağ kabloları, modem ve yönlendirici kontrol ediliyor</translation>
 <translation id="4133224101597112888">Bu sekmeyi paylaş düğmesi; bağlantıyı paylaşarak, QR kodu oluşturarak, yayınlayarak ve başka seçenekleri kullanarak bu sekmeyi paylaşmak için Enter'a basın.</translation>
@@ -1127,6 +1129,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4606870351894164739">Etkili</translation>
 <translation id="4607603470419975064">Chrome ipuçlarını göster düğmesi, Chrome özellikleri hakkında bilgi edinmek için Enter'a basın</translation>
 <translation id="4607608436550361748">Chrome ipuçlarını göster</translation>
+<translation id="4627675673814409125">Bu politika, Chrome profili düzeyinde ayarlanamaz ve yoksayılır.</translation>
 <translation id="4628948037717959914">Fotoğraf</translation>
 <translation id="4631649115723685955">Nakit para üstü bağlantısı oluşturuldu</translation>
 <translation id="4636930964841734540">Bilgi</translation>
@@ -1758,6 +1761,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="674375294223700098">Bilinmeyen sunucu sertifikası hatası.</translation>
 <translation id="6744009308914054259">Bağlantı kurulmasını beklerken çevrimdışı makaleleri okumak için İndirilenler bölümünü ziyaret edebilirsiniz.</translation>
 <translation id="6753269504797312559">Politika değeri</translation>
+<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Cihazınız uyku moduna geçti.</translation>
 <translation id="6767985426384634228">Adres Güncellensin mi?</translation>
 <translation id="6768213884286397650">Hagaki (Kartpostal)</translation>
@@ -1845,6 +1849,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="706295145388601875">Chrome ayarlarında adres ekleyip yönetin</translation>
 <translation id="7064851114919012435">İletişim bilgileri</translation>
 <translation id="7068733155164172741"><ph name="OTP_LENGTH" /> haneli kodu girin</translation>
+<translation id="7070090581017165256">Bu site hakkında</translation>
 <translation id="70705239631109039">Bağlantınız tam olarak güvenli değil</translation>
 <translation id="7075452647191940183">İstek çok büyük</translation>
 <translation id="7079718277001814089">Bu site kötü amaçlı yazılım içeriyor</translation>
@@ -2089,6 +2094,7 @@ Ek ayrıntılar:
 <translation id="7813600968533626083">Form önerisi Chrome'dan kaldırılsın mı?</translation>
 <translation id="781440967107097262">Pano paylaşılsın mı?</translation>
 <translation id="7815407501681723534">"<ph name="SEARCH_STRING" />" için <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> bulundu.</translation>
+<translation id="782125616001965242">Bu site hakkındaki bilgileri göster</translation>
 <translation id="782886543891417279">Kullandığınız kablosuz bağlantı ağı (<ph name="WIFI_NAME" />) giriş sayfasını ziyaret etmenizi gerektiriyor olabilir.</translation>
 <translation id="7836231406687464395">Postfix (Zarf)</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Yok}=1{1 uygulama (<ph name="EXAMPLE_APP_1" />)}=2{2 uygulama (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# uygulama (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
@@ -2368,6 +2374,7 @@ Ek ayrıntılar:
 <translation id="8792626944327216835">mikrofon</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" />, tarayıcınızda Chrome Enterprise Connectors'ı etkinleştirdi. Bu bağlayıcıların verilerinizin bir kısmına erişimi vardır.</translation>
 <translation id="8798099450830957504">Varsayılan</translation>
+<translation id="8798739476508189189">Tarayıcı flag'lerini mi arıyorsunuz? Şuraya gidin:</translation>
 <translation id="8805819170075074995">Liste girişi "<ph name="LANGUAGE_ID" />": Giriş, SpellcheckLanguage politikasında da yer aldığı için yoksayıldı.</translation>
 <translation id="8807160976559152894">Her sayfadan sonra kırp</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ayarlarınızdan Chrome'u güncellemek için Sekme'ye, sonra Enter'a basın</translation>
@@ -2473,6 +2480,7 @@ Ek ayrıntılar:
 <translation id="9157595877708044936">Ayarlanıyor...</translation>
 <translation id="9158625974267017556">C6 (Zarf)</translation>
 <translation id="9164029392738894042">Doğruluk Kontrolü</translation>
+<translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">Sitelerin, kayıtlı ödeme yöntemleriniz olup olmadığını kontrol etmesine izin verin</translation>
 <translation id="9169664750068251925">Bu sitede her zaman engelle</translation>
 <translation id="9169931577761441333"><ph name="APP_NAME" /> uygulamasını Ana ekrana ekle</translation>

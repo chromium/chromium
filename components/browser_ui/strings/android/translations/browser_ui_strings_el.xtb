@@ -29,6 +29,7 @@
 <translation id="1743802530341753419">Να γίνεται ερώτηση προτού επιτραπεί στους ιστοτόπους να συνδεθούν σε μια συσκευή (συνιστάται)</translation>
 <translation id="1779089405699405702">Εργαλείο αποκωδικοποίησης εικόνων</translation>
 <translation id="1818308510395330587">Για να επιτρέπεται στην εφαρμογή <ph name="APP_NAME" /> να χρησιμοποιεί AR, ενεργοποιήστε επίσης την κάμερα στις <ph name="BEGIN_LINK" />Ρυθμίσεις Android<ph name="END_LINK" />.</translation>
+<translation id="1864927262126810325">Από <ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">Η πρόσβαση στην Τοποθεσία είναι απενεργοποιημένη γι' αυτήν τη συσκευή. Ενεργοποιήστε τη στις <ph name="BEGIN_LINK" />Ρυθμίσεις Android<ph name="END_LINK" />.</translation>
 <translation id="1919345977826869612">Διαφημίσεις</translation>
 <translation id="1919950603503897840">Επιλογή επαφών</translation>
@@ -236,6 +237,7 @@
 <translation id="7016516562562142042">Επιτράπηκε για την τρέχουσα μηχανή αναζήτησης</translation>
 <translation id="7053983685419859001">Αποκλεισμός</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 επιλεγμένο}other{# επιλεγμένα}}</translation>
+<translation id="7070090581017165256">Σχετικά με αυτόν τον ιστότοπο</translation>
 <translation id="7087918508125750058">Επιλέχθηκαν <ph name="ITEM_COUNT" />. Οι επιλογές είναι διαθέσιμες κοντά στο επάνω μέρος της οθόνης</translation>
 <translation id="7141896414559753902">Αποκλεισμός εμφάνισης αναδυόμενων παραθύρων και ανακατευθύνσεων σε ιστοτόπους (συνιστάται)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>

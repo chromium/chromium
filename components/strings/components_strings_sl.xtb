@@ -301,6 +301,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1842969606798536927">Plačilo</translation>
 <translation id="1856713167556118146">Kaj se ne zgodi v anonimnem načinu</translation>
 <translation id="1863257867908022953">Pladenj 12</translation>
+<translation id="1864927262126810325">Iz: <ph name="SOURCE_NAME" /></translation>
 <translation id="1871208020102129563">Proxy je nastavljen na uporabo stalnih strežnikov proxy, ne na URL skripta .pac.</translation>
 <translation id="1871284979644508959">Obvezno polje</translation>
 <translation id="1875025161375567525">Pladenj za fotografije</translation>
@@ -963,6 +964,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4117700440116928470">Obseg pravilnika ni podprt.</translation>
 <translation id="4121428309786185360">Velja do</translation>
 <translation id="4123572138124678573">Trojno luknjanje spodaj</translation>
+<translation id="4127575959421463246">Iščete zastavice sistema Chrome OS? Obiščite</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{in še 1 drug}one{in še # drug}two{in še # druga}few{in še # drugi}other{in še # drugih}}</translation>
 <translation id="4130226655945681476">preveriti omrežne kable, modem in usmerjevalnik</translation>
 <translation id="4133224101597112888">Gumb za deljenje zavihka, pritisnite Enter, če želite ta zavihek deliti z drugimi tako, da delite povezavo, ustvarite kodo QR, ga predvajate oziroma na kak drug način.</translation>
@@ -1134,6 +1136,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4606870351894164739">Izstopajoče</translation>
 <translation id="4607603470419975064">Gumb za ogled nasvetov za Chrome, pritisnite Enter, če želite izvedeti več o funkcijah Chroma</translation>
 <translation id="4607608436550361748">Ogled nasvetov za Chrome</translation>
+<translation id="4627675673814409125">Tega pravilnika ni mogoče nastaviti na ravni profila v Chromu in bo prezrt.</translation>
 <translation id="4628948037717959914">Fotografija</translation>
 <translation id="4631649115723685955">Vključuje vračilo gotovine</translation>
 <translation id="4636930964841734540">Informacije</translation>
@@ -1765,6 +1768,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="674375294223700098">Neznana napaka potrdila strežnika.</translation>
 <translation id="6744009308914054259">Med čakanjem na povezavo lahko berete članke za branje brez povezave med prenosi.</translation>
 <translation id="6753269504797312559">Vrednost pravilnika</translation>
+<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Naprava je preklopila v stanje pripravljenosti.</translation>
 <translation id="6767985426384634228">Želite posodobiti naslov?</translation>
 <translation id="6768213884286397650">Hagaki (Postcard)</translation>
@@ -1852,6 +1856,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="706295145388601875">Dodajte in upravljajte naslove v Chromovih nastavitvah.</translation>
 <translation id="7064851114919012435">Podatki o stiku</translation>
 <translation id="7068733155164172741">Vnesite <ph name="OTP_LENGTH" />-mestno kodo</translation>
+<translation id="7070090581017165256">O tem spletnem mestu</translation>
 <translation id="70705239631109039">Povezava ni v celoti varna</translation>
 <translation id="7075452647191940183">Zahteva je prevelika</translation>
 <translation id="7079718277001814089">To spletno mesto vsebuje zlonamerno programsko opremo</translation>
@@ -2096,6 +2101,7 @@ Dodatne podrobnosti:
 <translation id="7813600968533626083">Želite odstraniti predlog obrazca iz Chroma?</translation>
 <translation id="781440967107097262">Želite odložišče deliti z drugimi?</translation>
 <translation id="7815407501681723534">Za »<ph name="SEARCH_STRING" />« je bilo najdenih toliko <ph name="SEARCH_RESULTS" />: <ph name="NUMBER_OF_RESULTS" />.</translation>
+<translation id="782125616001965242">Prikaz podatkov o tem spletnem mestu</translation>
 <translation id="782886543891417279">Omrežje Wi-Fi, ki ga uporabljate (<ph name="WIFI_NAME" />), morda zahteva, da obiščete stran za prijavo.</translation>
 <translation id="7836231406687464395">Postfix (Envelope)</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Brez}=1{1 aplikacija (<ph name="EXAMPLE_APP_1" />)}=2{2 aplikaciji (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# aplikacija (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}two{# aplikaciji (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}few{# aplikacije (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# aplikacij (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
@@ -2309,6 +2315,7 @@ Dodatne podrobnosti:
 <translation id="8541158209346794904">Naprava Bluetooth</translation>
 <translation id="8542014550340843547">Trojno spenjanje spodaj</translation>
 <translation id="8543181531796978784"><ph name="BEGIN_ERROR_LINK" />Prijavite lahko težavo z zaznavanjem<ph name="END_ERROR_LINK" />, če razumete varnostna tveganja, pa lahko <ph name="BEGIN_LINK" />obiščete to spletno mesto, ki ni varno<ph name="END_LINK" />.</translation>
+<translation id="8554010658308662631">Naloži več</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Ponastavi dovoljenje}one{Ponastavi dovoljenja}two{Ponastavi dovoljenja}few{Ponastavi dovoljenja}other{Ponastavi dovoljenja}}</translation>
 <translation id="8555010941760982128">Na blagajni uporabite to kodo</translation>
 <translation id="8557066899867184262">CVC je na zadnji strani kartice.</translation>
@@ -2374,6 +2381,7 @@ Dodatne podrobnosti:
 <translation id="8792626944327216835">mikrofon</translation>
 <translation id="8793655568873652685">Domena <ph name="ENROLLMENT_DOMAIN" /> je v brskalniku omogočila priključke Chrome Enterprise Connectors. Ti priključki imajo dostop do nekaterih vaših podatkov.</translation>
 <translation id="8798099450830957504">Privzeto</translation>
+<translation id="8798739476508189189">Iščete zastavice brskalnika? Obiščite</translation>
 <translation id="8805819170075074995">Vnos na seznamu »<ph name="LANGUAGE_ID" />«: vnos je prezrt, ker je vključen tudi v pravilnik SpellcheckLanguage.</translation>
 <translation id="8807160976559152894">Obrezovanje po vsaki strani</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite posodobiti Chrome v Chromovih nastavitvah</translation>
@@ -2479,6 +2487,7 @@ Dodatne podrobnosti:
 <translation id="9157595877708044936">Nastavljanje ...</translation>
 <translation id="9158625974267017556">C6 (Envelope)</translation>
 <translation id="9164029392738894042">Preverjanje natančnosti</translation>
+<translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">Dovolite spletnim mestom, da preverijo, ali imate shranjena plačilna sredstva</translation>
 <translation id="9169664750068251925">Vedno blokiraj na tem spletnem mestu</translation>
 <translation id="9169931577761441333">Dodajanje aplikacije <ph name="APP_NAME" /> na začetni zaslon</translation>

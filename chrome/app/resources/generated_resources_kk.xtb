@@ -3039,6 +3039,7 @@
 <translation id="4115002065223188701">Желі қолжетімді емес</translation>
 <translation id="4115378294792113321">Күлгін</translation>
 <translation id="4117637339509843559">Қараңғы режим</translation>
+<translation id="4117714603282104018">Сенсорлық тақтаның сенсорлық жауабы</translation>
 <translation id="4118579674665737931">Құрылғыны қайта жүктеп, әрекетті қайталаңыз.</translation>
 <translation id="412022815379960229">Аккаунтқа кіріп, Google Photos-дан естеліктеріңізді қараңыз.</translation>
 <translation id="4120388883569225797">Қауіпсіздік кілті бастапқы күйге қайтарылмады.</translation>
@@ -5482,6 +5483,7 @@
 <translation id="6810613314571580006">Сақталған тіркелу деректерімен веб-сайттарға автоматты кіру. Мүмкіндік өшірілсе, веб-сайтқа кірген сайын растау жасау сұралатын болады.</translation>
 <translation id="6810768462515084623">Қап! Құпия сөзіңіздің мерзімі біткен сияқты. Оны басқа құрылғыда жаңартып, әрекетті қайталаңыз.</translation>
 <translation id="6811034713472274749">Бетті көре беруге болады.</translation>
+<translation id="6811151703183939603">Қатты</translation>
 <translation id="6811332638216701903">DHCP хост атауы</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> өнімін түбірлік ретінде іске мүмкін емес.</translation>
 <translation id="6812841287760418429">Өзгерістерді сақтау</translation>
@@ -6777,6 +6779,7 @@
 <translation id="811994229154425014">Нүкте қою үшін бос орын пернесін екі рет басу</translation>
 <translation id="8120505434908124087">eSIM профилін орнату</translation>
 <translation id="812260729110117038">Жарнама берушілер мен жариялаушылар сайттарда жасаған әрекеттеріңізді бақыламай-ақ жарнамалардың тиімділігін бағамдай алады.</translation>
+<translation id="81231173274944570">Сенсорлық жауапты қосу. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
 <translation id="81238879832906896">Сары және ақ гүл</translation>
 <translation id="8124313775439841391">Басқарылатын ONC</translation>
 <translation id="813082847718468539">Сайт ақпаратын көру</translation>
@@ -7852,6 +7855,7 @@
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Қолданба}other{Қолданбалар}}</translation>
 <translation id="964790508619473209">Экранды реттеу</translation>
 <translation id="965211523698323809"><ph name="DEVICE_TYPE" /> құрылғысына мәтіндік хабарлар жіберіңіз және одан мәтіндік хабарлар алыңыз. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
+<translation id="96535553604365597">Google Cast мәселесі туралы хабарлау</translation>
 <translation id="967398046773905967">Ешқандай сайтқа HID құрылғыларын пайдалануға рұқсат етпеу</translation>
 <translation id="967624055006145463">Сақталған деректер</translation>
 <translation id="96774243435178359">Басқарылатын принтерлер</translation>

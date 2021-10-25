@@ -17,6 +17,7 @@
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">​ປ່ຽນ​ແທນ​</translation>
 <translation id="1073899992769346247">ປ່ຽນ ຫຼື ສາກໄຟແບັດເຕີຣີ</translation>
+<translation id="1081015718268701546">ຕອນນີ້ບໍ່ຮອງຮັບແອັບ Linux ເທື່ອ. ແອັບອື່ນໆຈະຖືກບັນທຶກໄວ້.</translation>
 <translation id="108486256082349153">ເຊວລູລາ: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">ສະບາຍດີຕອນບ່າຍ <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">ຂ້ອຍເບື່ອຫຼາຍ</translation>
@@ -43,6 +44,7 @@
 <translation id="1225748608451425081">Chromebook ຂອງທ່ານຖືກລັອກໄວ້ເນື່ອງຈາກບັນຫາທີ່ຮູ້ແລ້ວ. ທ່ານຈະສາມາດເຂົ້າສູ່ລະບົບໄດ້ຫຼັງຈາກ: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">ຢຸດການເລືອກ</translation>
 <translation id="1239161794459865856">ເຊື່ອມຕໍ່ <ph name="FEATURE_NAME" /> ແລ້ວ.</translation>
+<translation id="1246890715821376239">ແອັບທີ່ບໍ່ຮອງຮັບ</translation>
 <translation id="1247372569136754018">ໄມໂຄຣໂຟນ (ພາຍໃນ)</translation>
 <translation id="1252999807265626933">ກຳລັງສາກຈາກ <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">ສະພາບອາກາດເປັນແນວໃດ?</translation>
@@ -168,6 +170,7 @@
 <translation id="2148716181193084225">ມື້​ນີ້</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: ລອງໃໝ່</translation>
 <translation id="2170530631236737939">ໃຊ້ສາມນິ້ວມືປັດລົງເພື່ອອອກຈາກພາບຮວມ</translation>
+<translation id="2201071101391734388">ຮູບຫຼ້າສຸດທີ <ph name="INDEX" /> ຈາກທັງໝົດ <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2208323208084708176">​ໂໝດ​ໜ້າ​ຈໍ​ເຮັດ​ເຂົ້າ​ກັນ​ແລ້ວ</translation>
 <translation id="2220572644011485463">PIN ຫຼື ລະຫັດຜ່ານ</translation>
 <translation id="2222841058024245321">ໂຕະ 7</translation>
@@ -291,6 +294,7 @@
 <translation id="3151786313568798007">ລວງເຈ້ຍ</translation>
 <translation id="3153444934357957346">ທ່ານສາມາດມີບັນຊີໄດ້ບໍ່ເກີນ <ph name="MULTI_PROFILE_USER_LIMIT" /> ບັນຊີເທົ່ານັ້ນໃນການເຂົ້າສູ່ລະບົບຫຼາຍບັນຊີ.</translation>
 <translation id="3154351730702813399">ຜູ້ເບິ່ງແຍງລະບົບອາດຈະຕິດຕາມເບິ່ງການເຄື່ອນໄຫວທ່ອງເວັບຂອງທ່ານ.</translation>
+<translation id="316086887565479535">ແອັບທີ່ບໍ່ຮອງຮັບໃນແມ່ແບບ</translation>
 <translation id="3181441307743005334">ການຣິສະຕາດອາດຈະໃຊ້ເວລາຄາວໜຶ່ງ</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{ເຊື່ອມຕໍ່ກັບໜຶ່ງອຸປະກອນແລ້ວ}other{ເຊື່ອມຕໍ່ກັບ # ອຸປະກອນແລ້ວ}}</translation>
 <translation id="320207200541803018">ຕັ້ງຄ່າໂມງນັບຖອຍຫຼັງ</translation>
@@ -388,6 +392,7 @@
 <translation id="383058930331066723">ໂໝດປະຢັດແບັດເຕີຣີເປີດຢູ່</translation>
 <translation id="3835880383832568924">ເພື່ອເບິ່ງອັບເດດ, ໃຫ້ເປີດແອັບ​ທາງ​ລັດ</translation>
 <translation id="383629559565718788">ສະແດງການຕັ້ງຄ່າແປ້ນພິມ</translation>
+<translation id="384082539148746321">ລຶບແມ່ແບບອອກບໍ?</translation>
 <translation id="3846214748874656680">ອອກຈາກເຕັມໜ້າຈໍ</translation>
 <translation id="3846575436967432996">ບໍ່​ມີຂໍ້ມູນເຄືອຂ່າຍຢູ່</translation>
 <translation id="385051799172605136">ກັບ​ຄືນ​</translation>
@@ -822,6 +827,7 @@
 <translation id="7029814467594812963">ອອກຈາກເຊດຊັນ</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, ຜູ້ຊ່ວຍ Google</translation>
 <translation id="7042322267639375032">ຍຸບພື້ນທີ່ສະແດງສະຖານະ</translation>
+<translation id="7045033600005038336">ແທນທີ່ແມ່ແບບບໍ?</translation>
 <translation id="7045595904618419789">ເລີ່ມແວ່ນຂະຫຍາຍ</translation>
 <translation id="7055381872777910864">ພຸ</translation>
 <translation id="7055910611768509537">ບໍ່ໄດ້ໃຊ້ປາກກາເປັນເວລາຫຼາຍກວ່າໜຶ່ງອາທິດແລ້ວ</translation>
@@ -896,6 +902,7 @@
 <translation id="7595633564847427181">ຈ</translation>
 <translation id="7600875258240007829">ເບິ່ງການແຈ້ງເຕືອນທັງໝົດ</translation>
 <translation id="7607002721634913082">ຢຸດແລ້ວ</translation>
+<translation id="7610198039767537854">ເບິ່ງຮູບພາບຫຼ້າສຸດໃນຮູບຈາກອະລະບໍ້າກ້ອງຂອງໂທລະສັບທ່ານຢູ່ <ph name="DEVICE_TYPE" /></translation>
 <translation id="7618774594543487847">ປານກາງ</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7631906263969450674">ບິກມາກເກີ</translation>
@@ -958,6 +965,7 @@
 <translation id="8036504271468642248">ປະໂຫຍກກ່ອນໜ້າ</translation>
 <translation id="8042893070933512245">ເປີດເມນູການຕັ້ງຄ່າການຊ່ວຍເຂົ້າເຖິງ</translation>
 <translation id="8048123526339889627">ການຕັ້ງຄ່າ Bluetooth</translation>
+<translation id="8051716679295756675">ມີແມ່ແບບຊື່ <ph name="DESK_TEMPLATE_NAME" /> ຢູ່ກ່ອນແລ້ວ</translation>
 <translation id="8052898407431791827">ສຳເນົາໃສ່ຄລິບບອດແລ້ວ</translation>
 <translation id="8054466585765276473">ການ​ຄິດ​ໄລ່​ເວລາແບັດເຕີຣີ.</translation>
 <translation id="8061464966246066292">ຄວາມເຂັ້ມສູງ</translation>
@@ -1063,6 +1071,7 @@
 <translation id="8876661425082386199">ກະລຸນາກວດສອບການເຊື່ອມຕໍ່ຂອງທ່ານ</translation>
 <translation id="8877788021141246043">ຕັ້ງຄ່າການແຈ້ງເຕືອນ</translation>
 <translation id="8878886163241303700">ກໍາລັງຂະ​ຫຍາຍຫນ້າ​ຈໍ​</translation>
+<translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> ຈະຖືກລຶບອອກຖາວອນ</translation>
 <translation id="890616557918890486">ປ່ຽນແຫຼ່ງ</translation>
 <translation id="8909138438987180327">ແບັດເຕີຣີຢູ່ທີ່ <ph name="PERCENTAGE" /> ເປີເຊັນ.</translation>
 <translation id="8913384980486163186">ມີຮູບແບບສີສັນ (ຄ່າເລີ່ມຕົ້ນ)</translation>

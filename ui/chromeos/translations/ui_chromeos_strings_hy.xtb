@@ -131,6 +131,7 @@
 <translation id="2122305276694332719">Թաքցված ցանցին ավտոմատ միացումը մյուս օգտատերերին թույլ է տալիս տեսնել ձեր սարքը և ցանցային որոշ կարգավորումներ: Այդ իսկ պատճառով Խորհուրդ չի տրվում միացնել այս գործառույթը:</translation>
 <translation id="2125607626296734455">քմերերեն</translation>
 <translation id="2139545522194199494">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, կառավարվում է ձեր ադմինիստրատորի կողմից, կապակցում</translation>
+<translation id="2141347188420181405">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, արգելափակված է ադմինիստրատորի կողմից, մանրամասներ</translation>
 <translation id="2142680004883808240">ռուսերեն (YaZHert հնչյունային ստեղնաշար)</translation>
 <translation id="2143778271340628265">Պրոքսի-սերվերի ձեռքով կազմաձևում</translation>
 <translation id="2163152940313951844">Անվավեր գրանշան՝ <ph name="CHARACTER_NAME" /></translation>
@@ -185,6 +186,7 @@
 <translation id="2563185590376525700">Գորտ</translation>
 <translation id="2578394532502990878">թամիլերեն (հնչյունային)</translation>
 <translation id="2579959351793446050">օրիյա</translation>
+<translation id="2602810353103180630">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, արգելափակված է ադմինիստրատորի կողմից, մանրամասներ</translation>
 <translation id="2614589611416690597">Տեսանյութ (<ph name="VIDEO_TYPE" />)</translation>
 <translation id="2617342710774726426">SIM քարտը կողպված է</translation>
 <translation id="2620090360073999360">Google Drive-ը մատչելի չէ այս պահին:</translation>

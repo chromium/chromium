@@ -158,9 +158,8 @@ using web::wk_navigation_util::IsRestoreSessionUrl;
       existingContext &&
       (existingContext->GetPageTransition() & ui::PAGE_TRANSITION_FORWARD_BACK);
   // The back-forward workaround isn't need on iOS13.
-  if (@available(iOS 13, *)) {
-    needs_back_forward_navigation_reload = false;
-  }
+  needs_back_forward_navigation_reload = false;
+
   if (IsRestoreSessionUrl(webViewURL)) {
     if (previousURLHasAboutScheme || needs_back_forward_navigation_reload) {
       [self.webView reload];

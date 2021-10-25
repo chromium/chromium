@@ -17,6 +17,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">Gantikan</translation>
 <translation id="1073899992769346247">Gantikan atau cas semula bateri</translation>
+<translation id="1081015718268701546">Apl Linux tidak disokong pada masa ini. Apl lain akan disimpan.</translation>
 <translation id="108486256082349153">Selular: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Selamat tengah hari <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">Saya bosan</translation>
@@ -43,6 +44,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1225748608451425081">Chromebook anda dikunci kerana isu yang diketahui. Anda akan dapat log masuk selepas: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Berhenti memilih</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> disambungkan.</translation>
+<translation id="1246890715821376239">Apl tidak disokong</translation>
 <translation id="1247372569136754018">Mikrofon (dalaman)</translation>
 <translation id="1252999807265626933">Mengecas daripada <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Bagaimanakah keadaan cuaca?</translation>
@@ -168,6 +170,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2148716181193084225">Hari ini</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Cuba lagi</translation>
 <translation id="2170530631236737939">Leret ke bawah dengan tiga jari untuk keluar daripada Ikhtisar</translation>
+<translation id="2201071101391734388">Foto baru-baru ini <ph name="INDEX" /> daripada <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2208323208084708176">Mod desktop bersatu</translation>
 <translation id="2220572644011485463">PIN atau kata laluan</translation>
 <translation id="2222841058024245321">Meja 7</translation>
@@ -291,6 +294,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="3151786313568798007">Orientasi</translation>
 <translation id="3153444934357957346">Anda hanya boleh memiliki sehingga <ph name="MULTI_PROFILE_USER_LIMIT" /> akaun dalam log masuk berbilang.</translation>
 <translation id="3154351730702813399">Pentadbir peranti boleh memantau aktiviti penyemakan imbas anda.</translation>
+<translation id="316086887565479535">Apl tidak disokong dalam templat</translation>
 <translation id="3181441307743005334">Proses mula semula mungkin mengambil sedikit masa</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Disambungkan ke peranti}other{Disambungkan ke # peranti}}</translation>
 <translation id="320207200541803018">Tetapkan pemasa</translation>
@@ -389,6 +393,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="383058930331066723">Mod penjimat bateri dihidupkan</translation>
 <translation id="3835880383832568924">Untuk melihat kemaskinian, buka apl Pintasan</translation>
 <translation id="383629559565718788">Tunjukkan tetapan papan kekunci</translation>
+<translation id="384082539148746321">Padamkan templat?</translation>
 <translation id="3846214748874656680">Keluar dari skrin penuh</translation>
 <translation id="3846575436967432996">Tiada maklumat rangkaian tersedia</translation>
 <translation id="385051799172605136">Kembali</translation>
@@ -823,6 +828,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="7029814467594812963">Keluar dari sesi</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistant</translation>
 <translation id="7042322267639375032">Runtuhkan area status</translation>
+<translation id="7045033600005038336">Gantikan templat?</translation>
 <translation id="7045595904618419789">Mulakan penggadang</translation>
 <translation id="7055381872777910864">R</translation>
 <translation id="7055910611768509537">Stilus sudah tidak digunakan lebih daripada seminggu</translation>
@@ -959,6 +965,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="8036504271468642248">Ayat sebelumnya</translation>
 <translation id="8042893070933512245">Buka menu tetapan kebolehaksesan</translation>
 <translation id="8048123526339889627">Tetapan Bluetooth</translation>
+<translation id="8051716679295756675">Templat yang bernama <ph name="DESK_TEMPLATE_NAME" /> sudah wujud</translation>
 <translation id="8052898407431791827">Disalin ke papan keratan</translation>
 <translation id="8054466585765276473">Mengira tempoh bateri.</translation>
 <translation id="8061464966246066292">Kontras tinggi</translation>
@@ -1064,6 +1071,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="8876661425082386199">Semak sambungan anda</translation>
 <translation id="8877788021141246043">Tetapkan peringatan</translation>
 <translation id="8878886163241303700">Meluaskan skrin</translation>
+<translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> akan dipadamkan secara kekal</translation>
 <translation id="890616557918890486">Tukar sumber</translation>
 <translation id="8909138438987180327">Kuasa bateri pada tahap <ph name="PERCENTAGE" /> peratus.</translation>
 <translation id="8913384980486163186">Bertema (lalai)</translation>

@@ -131,6 +131,7 @@
 <translation id="2122305276694332719">Lidhja automatike me një rrjet të fshehtë u lejon të tjerëve të të shohin pajisjen dhe disa prej cilësimeve të rrjetit, dhe nuk rekomandohet.</translation>
 <translation id="2125607626296734455">Kmerisht</translation>
 <translation id="2139545522194199494">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, menaxhuar nga administratori yt, lidhu</translation>
+<translation id="2141347188420181405">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, bllokuar nga administratori yt, detajet</translation>
 <translation id="2142680004883808240">Rusisht me tastierë fonetike YaZHert</translation>
 <translation id="2143778271340628265">Konfigurimi manual i përfaqësuesit</translation>
 <translation id="2163152940313951844">Karakter i pavlefshëm: <ph name="CHARACTER_NAME" /></translation>
@@ -185,6 +186,7 @@
 <translation id="2563185590376525700">Bretkosa</translation>
 <translation id="2578394532502990878">Tamilisht fonetike</translation>
 <translation id="2579959351793446050">Odiaisht</translation>
+<translation id="2602810353103180630">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, bllokuar nga administratori yt, detajet</translation>
 <translation id="2614589611416690597">Video <ph name="VIDEO_TYPE" /></translation>
 <translation id="2617342710774726426">Karta SIM është e kyçur</translation>
 <translation id="2620090360073999360">"Disku i Google" nuk mund të arrihet në këtë moment.</translation>

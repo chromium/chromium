@@ -564,7 +564,7 @@ public class PasswordSettings extends PreferenceFragmentCompat
         mTrustedVaultOptIn.setSummary(R.string.android_trusted_vault_opt_in_sub_label);
         mTrustedVaultOptIn.setOnPreferenceClickListener(preference -> {
             assert SyncService.get() != null;
-            CoreAccountInfo accountInfo = SyncService.get().getAuthenticatedAccountInfo();
+            CoreAccountInfo accountInfo = SyncService.get().getAccountInfo();
             assert accountInfo != null;
             SyncSettingsUtils.openTrustedVaultOptInDialog(
                     this, accountInfo, REQUEST_CODE_TRUSTED_VAULT_OPT_IN);

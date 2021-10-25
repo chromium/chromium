@@ -296,6 +296,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1842969606798536927">Zapłać</translation>
 <translation id="1856713167556118146">Jak nie działa tryb incognito</translation>
 <translation id="1863257867908022953">Taca 12</translation>
+<translation id="1864927262126810325">Źródło: <ph name="SOURCE_NAME" /></translation>
 <translation id="1871208020102129563">Proxy skonfigurowano do używania stałych serwerów proxy, a nie URL-a skryptu PAC.</translation>
 <translation id="1871284979644508959">Pole wymagane</translation>
 <translation id="1875025161375567525">Taca na zdjęcia</translation>
@@ -957,6 +958,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="4117700440116928470">Ten zakres zasad nie jest obsługiwany.</translation>
 <translation id="4121428309786185360">Wygasa dnia</translation>
 <translation id="4123572138124678573">Trzy otwory z dołu</translation>
+<translation id="4127575959421463246">Szukasz flag Chrome OS? Wejdź na</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 inny wpis}few{# inne wpisy}many{# innych wpisów}other{# innego wpisu}}</translation>
 <translation id="4130226655945681476">Sprawdź kable sieciowe, modem i router</translation>
 <translation id="4133224101597112888">Przycisk Udostępnij tę kartę; aby udostępnić tę kartę za pomocą linku, kodu QR, przesyłania lub innej opcji, naciśnij Enter.</translation>
@@ -1124,6 +1126,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="4606870351894164739">Wyrazisty</translation>
 <translation id="4607603470419975064">Przycisk Zobacz wskazówki na temat Chrome; naciśnij Enter, aby poznać funkcje Chrome</translation>
 <translation id="4607608436550361748">Zobacz wskazówki na temat Chrome</translation>
+<translation id="4627675673814409125">Tej zasady nie można ustawić na poziomie profilu Chrome, dlatego zostanie ona zignorowana.</translation>
 <translation id="4628948037717959914">Zdjęcie</translation>
 <translation id="4631649115723685955">Połączone ze zwrotem za zakupy</translation>
 <translation id="4636930964841734540">Informacje</translation>
@@ -1755,6 +1758,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="674375294223700098">Nieznany błąd certyfikatu serwera.</translation>
 <translation id="6744009308914054259">Dopóki nie masz połączenia, możesz poczytać artykuły offline z Pobranych plików.</translation>
 <translation id="6753269504797312559">Wartość zasady</translation>
+<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Twoje urządzenie przeszło w tryb uśpienia.</translation>
 <translation id="6767985426384634228">Zmienić adres?</translation>
 <translation id="6768213884286397650">Hagaki (pocztówka)</translation>
@@ -1842,6 +1846,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="706295145388601875">Dodaj adresy i zarządzaj nimi w ustawieniach Chrome</translation>
 <translation id="7064851114919012435">Dane kontaktowe</translation>
 <translation id="7068733155164172741">Wpisz <ph name="OTP_LENGTH" />-cyfrowy kod</translation>
+<translation id="7070090581017165256">O tej witrynie</translation>
 <translation id="70705239631109039">Połączenie nie jest całkowicie bezpieczne</translation>
 <translation id="7075452647191940183">Żądanie jest za duże</translation>
 <translation id="7079718277001814089">Ta strona zawiera złośliwe oprogramowanie</translation>
@@ -2086,6 +2091,7 @@ Dodatkowe informacje:
 <translation id="7813600968533626083">Usunąć tę podpowiedź do formularza z Chrome?</translation>
 <translation id="781440967107097262">Udostępnić schowek?</translation>
 <translation id="7815407501681723534">Znalezione <ph name="SEARCH_RESULTS" /> dla zapytania „<ph name="SEARCH_STRING" />”: <ph name="NUMBER_OF_RESULTS" /></translation>
+<translation id="782125616001965242">Pokaż informacje o tej witrynie</translation>
 <translation id="782886543891417279">Sieć Wi-Fi (<ph name="WIFI_NAME" />), której używasz, może wymagać otwarcia strony logowania.</translation>
 <translation id="7836231406687464395">Postfix (koperta)</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Brak}=1{Jedna aplikacja (<ph name="EXAMPLE_APP_1" />)}=2{Dwie aplikacje (<ph name="EXAMPLE_APP_1" /> i <ph name="EXAMPLE_APP_2" />)}few{# aplikacje (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}many{# aplikacji (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}other{# aplikacji (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
@@ -2364,6 +2370,7 @@ Dodatkowe informacje:
 <translation id="8792626944327216835">mikrofon</translation>
 <translation id="8793655568873652685">Strona <ph name="ENROLLMENT_DOMAIN" /> włączyła w przeglądarce oprogramowanie sprzęgające Chrome Enterprise. Może ono mieć dostęp do niektórych Twoich danych.</translation>
 <translation id="8798099450830957504">Domyślny</translation>
+<translation id="8798739476508189189">Szukasz flag przeglądarki? Wejdź na</translation>
 <translation id="8805819170075074995">Pozycja na liście „<ph name="LANGUAGE_ID" />”: pozycja została zignorowana, ponieważ występuje też w zasadzie SpellcheckLanguage.</translation>
 <translation id="8807160976559152894">Przycięcie po każdej stronie</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Naciśnij Tab, a potem Enter, by zaktualizować przeglądarkę Chrome z poziomu jej ustawień.</translation>
@@ -2469,6 +2476,7 @@ Dodatkowe informacje:
 <translation id="9157595877708044936">Konfigurowanie...</translation>
 <translation id="9158625974267017556">C6 (koperta)</translation>
 <translation id="9164029392738894042">Sprawdzenie dokładności</translation>
+<translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">Zezwalaj stronom na sprawdzanie, czy masz zapisane formy płatności</translation>
 <translation id="9169664750068251925">Zawsze blokuj w tej witrynie</translation>
 <translation id="9169931577761441333">Dodaj aplikację <ph name="APP_NAME" /> do ekranu głównego</translation>

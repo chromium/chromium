@@ -131,6 +131,7 @@
 <translation id="2122305276694332719">Samodejna povezava s skritim omrežjem omogoča drugim, da vidijo vašo napravo in nekatere nastavitve omrežja, zato tega ne priporočamo.</translation>
 <translation id="2125607626296734455">kmerščina</translation>
 <translation id="2139545522194199494">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, moč signala je <ph name="SIGNAL_STRENGTH" /> %, upravlja ga vaš skrbnik, vzpostavitev povezave</translation>
+<translation id="2141347188420181405">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, moč signala <ph name="SIGNAL_STRENGTH" /> %, blokiral skrbnik, podrobnosti</translation>
 <translation id="2142680004883808240">ruščina s fonetično tipkovnico YaZHert</translation>
 <translation id="2143778271340628265">Ročna konfiguracija strežnika proxy</translation>
 <translation id="2163152940313951844">Neveljavni znak: <ph name="CHARACTER_NAME" /></translation>
@@ -185,6 +186,7 @@
 <translation id="2563185590376525700">Žaba</translation>
 <translation id="2578394532502990878">tamilščina (fonetična)</translation>
 <translation id="2579959351793446050">odijščina</translation>
+<translation id="2602810353103180630">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, moč signala <ph name="SIGNAL_STRENGTH" /> %, blokiral skrbnik, podrobnosti</translation>
 <translation id="2614589611416690597">Videoposnetek <ph name="VIDEO_TYPE" /></translation>
 <translation id="2617342710774726426">Kartica SIM je zaklenjena</translation>
 <translation id="2620090360073999360">Storitev Google Drive trenutno ni na voljo.</translation>

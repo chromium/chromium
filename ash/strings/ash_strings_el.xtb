@@ -17,6 +17,7 @@
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">Αντικατάσταση</translation>
 <translation id="1073899992769346247">Αντικατάταση ή επαναφόρτιση της μπαταρίας</translation>
+<translation id="1081015718268701546">Οι εφαρμογές Linux δεν υποστηρίζονται προς το παρόν. Οι άλλες εφαρμογές θα αποθηκευτούν.</translation>
 <translation id="108486256082349153">Κινητό: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Καλό απόγευμα <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">Βαριέμαι</translation>
@@ -43,6 +44,7 @@
 <translation id="1225748608451425081">Το Chromebook κλειδώθηκε λόγω γνωστού προβλήματος. Θα μπορέσετε να συνδεθείτε σε: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Διακοπή επιλογής</translation>
 <translation id="1239161794459865856">Η λειτουργία <ph name="FEATURE_NAME" /> συνδέθηκε.</translation>
+<translation id="1246890715821376239">Μη υποστηριζόμενες εφαρμογές</translation>
 <translation id="1247372569136754018">Μικρόφωνο (εσωτερικό)</translation>
 <translation id="1252999807265626933">Φόρτιση από <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Τι καιρό κάνει;</translation>
@@ -168,6 +170,7 @@
 <translation id="2148716181193084225">Σήμερα</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Επανάληψη</translation>
 <translation id="2170530631236737939">Σύρετε προς τα κάτω με τρία δάχτυλα για έξοδο από την Επισκόπηση</translation>
+<translation id="2201071101391734388">Πρόσφατη φωτογραφία <ph name="INDEX" /> από <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2208323208084708176">Ενιαία λειτουργία επιφάνειας εργασίας.</translation>
 <translation id="2220572644011485463">PIN ή κωδικός πρόσβασης</translation>
 <translation id="2222841058024245321">Γραφείο 7</translation>
@@ -291,6 +294,7 @@
 <translation id="3151786313568798007">Προσανατολισμός</translation>
 <translation id="3153444934357957346">Μπορείτε να χρησιμοποιήσετε έως <ph name="MULTI_PROFILE_USER_LIMIT" /> λογαριασμούς στη λειτουργία σύνδεσης σε πολλούς λογαριασμούς.</translation>
 <translation id="3154351730702813399">Ο διαχειριστής της συσκευής μπορεί να παρακολουθεί τη δραστηριότητα περιήγησής σας.</translation>
+<translation id="316086887565479535">Μη υποστηριζόμενες εφαρμογές στο πρότυπο</translation>
 <translation id="3181441307743005334">Η επανεκκίνηση μπορεί να διαρκέσει λίγη ώρα</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Συνδέθηκε σε κάποια συσκευή}other{Συνδέθηκε σε # συσκευές}}</translation>
 <translation id="320207200541803018">Ορισμός χρονομέτρου</translation>
@@ -388,6 +392,7 @@
 <translation id="383058930331066723">Η λειτουργία εξοικονόμησης μπαταρίας είναι ενεργοποιημένη</translation>
 <translation id="3835880383832568924">Για να δείτε τις ενημερώσεις, ανοίξτε την εφαρμογή Συντομεύσεις.</translation>
 <translation id="383629559565718788">Εμφάνιση ρυθμίσεων πληκτρολογίου</translation>
+<translation id="384082539148746321">Διαγραφή προτύπου;</translation>
 <translation id="3846214748874656680">Έξοδος από πλήρη οθόνη</translation>
 <translation id="3846575436967432996">Δεν υπάρχουν διαθέσιμες πληροφορίες δικτύου</translation>
 <translation id="385051799172605136">Πίσω</translation>
@@ -822,6 +827,7 @@
 <translation id="7029814467594812963">Έξοδος από συνεδρία</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Βοηθός Google</translation>
 <translation id="7042322267639375032">Σύμπτυξη περιοχής κατάστασης</translation>
+<translation id="7045033600005038336">Αντικατάσταση προτύπου;</translation>
 <translation id="7045595904618419789">Έναρξη μεγέθυνσης</translation>
 <translation id="7055381872777910864">Τε</translation>
 <translation id="7055910611768509537">Η γραφίδα δεν χρησιμοποιήθηκε για περισσότερο από μία εβδομάδα.</translation>
@@ -958,6 +964,7 @@
 <translation id="8036504271468642248">Προηγούμενη πρόταση</translation>
 <translation id="8042893070933512245">Άνοιγμα μενού ρυθμίσεων προσβασιμότητας</translation>
 <translation id="8048123526339889627">Ρυθμίσεις Bluetooth</translation>
+<translation id="8051716679295756675">Το πρότυπο με την ονομασία <ph name="DESK_TEMPLATE_NAME" /> υπάρχει ήδη.</translation>
 <translation id="8052898407431791827">Αντιγράφηκε στο πρόχειρο</translation>
 <translation id="8054466585765276473">Υπολογισμός χρόνου μπαταρίας που απομένει.</translation>
 <translation id="8061464966246066292">Υψηλή αντίθεση</translation>
@@ -1063,6 +1070,7 @@
 <translation id="8876661425082386199">Ελέγξτε τη σύνδεσή σας</translation>
 <translation id="8877788021141246043">Ορισμός υπενθύμισης</translation>
 <translation id="8878886163241303700">Επέκταση οθόνης</translation>
+<translation id="8896630965521842259">Το <ph name="DESK_TEMPLATE_NAME" /> θα διαγραφεί οριστικά.</translation>
 <translation id="890616557918890486">Αλλαγή πηγής</translation>
 <translation id="8909138438987180327">Η μπαταρία βρίσκεται στο <ph name="PERCENTAGE" /> τοις εκατό.</translation>
 <translation id="8913384980486163186">Με θέμα (προεπιλογή)</translation>

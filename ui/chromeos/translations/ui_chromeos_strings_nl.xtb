@@ -131,6 +131,7 @@
 <translation id="2122305276694332719">Als er automatisch verbinding wordt gemaakt met een verborgen netwerk, kunnen anderen je apparaat en bepaalde netwerkinstellingen zien. Dit wordt niet aanbevolen.</translation>
 <translation id="2125607626296734455">Khmer</translation>
 <translation id="2139545522194199494">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, beheerd door je beheerder, verbinden</translation>
+<translation id="2141347188420181405">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, geblokkeerd door je beheerder, details</translation>
 <translation id="2142680004883808240">Russisch met fonetisch YaZHert-toetsenbord</translation>
 <translation id="2143778271340628265">Handmatige proxyconfiguratie</translation>
 <translation id="2163152940313951844">Ongeldig teken: <ph name="CHARACTER_NAME" /></translation>
@@ -185,6 +186,7 @@
 <translation id="2563185590376525700">Kikker</translation>
 <translation id="2578394532502990878">Tamil (fonetisch)</translation>
 <translation id="2579959351793446050">Odia</translation>
+<translation id="2602810353103180630">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, geblokkeerd door je beheerder, details</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" />-video</translation>
 <translation id="2617342710774726426">Simkaart is vergrendeld</translation>
 <translation id="2620090360073999360">Kan Google Drive momenteel niet bereiken.</translation>

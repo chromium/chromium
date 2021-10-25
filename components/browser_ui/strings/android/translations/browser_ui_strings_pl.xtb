@@ -29,6 +29,7 @@
 <translation id="1743802530341753419">Pytaj, zanim zezwolisz stronom na połączenie z urządzeniem (zalecane)</translation>
 <translation id="1779089405699405702">Dekoder obrazów</translation>
 <translation id="1818308510395330587">Aby w aplikacji <ph name="APP_NAME" /> można było korzystać z rzeczywistości rozszerzonej, włącz też aparat w <ph name="BEGIN_LINK" />ustawieniach Androida<ph name="END_LINK" />.</translation>
+<translation id="1864927262126810325">Źródło: <ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">Dostęp do lokalizacji jest wyłączony na tym urządzeniu. Włącz go w <ph name="BEGIN_LINK" />Ustawieniach Androida<ph name="END_LINK" />.</translation>
 <translation id="1919345977826869612">Reklamy</translation>
 <translation id="1919950603503897840">Wybierz kontakty</translation>
@@ -236,6 +237,7 @@
 <translation id="7016516562562142042">Zezwolono na dostęp obecnej wyszukiwarce</translation>
 <translation id="7053983685419859001">Blokuj</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Wybrano 1}few{Wybrano #}many{Wybrano #}other{Wybrano #}}</translation>
+<translation id="7070090581017165256">O tej witrynie</translation>
 <translation id="7087918508125750058">Wybrano <ph name="ITEM_COUNT" />. Opcje dostępne na górze ekranu</translation>
 <translation id="7141896414559753902">Blokuj wyskakujące okienka i przekierowania na stronach (zalecane)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>

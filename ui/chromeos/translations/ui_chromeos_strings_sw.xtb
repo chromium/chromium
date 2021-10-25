@@ -131,6 +131,7 @@
 <translation id="2122305276694332719">Hatua ya kuunganisha kiotomatiki kwenye mtandao uliofichwa huruhusu watu wengine kuona kifaa chako na baadhi ya mipangilio ya mtandao, na hali hii haipendekezwi.</translation>
 <translation id="2125607626296734455">Kikhema</translation>
 <translation id="2139545522194199494">Mtandao wa <ph name="NETWORK_INDEX" /> kati ya <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Uthabiti wa Mtandao <ph name="SIGNAL_STRENGTH" />%, Unadhibitiwa na Msimamizi wako, Unganisha</translation>
+<translation id="2141347188420181405">Mtandao wa <ph name="NETWORK_INDEX" /> kati ya <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Uthabiti wa Mtandao, <ph name="SIGNAL_STRENGTH" />%, Umezuiwa na Msimamizi wako, Maelezo</translation>
 <translation id="2142680004883808240">Kirusi kwenye kibodi ya Fonetiki ya YaZHert</translation>
 <translation id="2143778271340628265">Usanidi wa proksi na mtumiaji</translation>
 <translation id="2163152940313951844">Herufi si sahihi: <ph name="CHARACTER_NAME" /></translation>
@@ -185,6 +186,7 @@
 <translation id="2563185590376525700">Chura</translation>
 <translation id="2578394532502990878">Fonetiki ya Kitamili</translation>
 <translation id="2579959351793446050">Kiodia</translation>
+<translation id="2602810353103180630">Mtandao wa <ph name="NETWORK_INDEX" /> kati ya <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Uthabiti wa Mtandao, <ph name="SIGNAL_STRENGTH" />%, Umezuiwa na Msimamizi wako, Maelezo</translation>
 <translation id="2614589611416690597">Video ya <ph name="VIDEO_TYPE" /></translation>
 <translation id="2617342710774726426">SIM kadi imefungwa</translation>
 <translation id="2620090360073999360">Hifadhi ya Google haiwezi kufikiwa kwa wakati huu.</translation>

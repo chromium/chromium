@@ -296,6 +296,7 @@
 <translation id="1842969606798536927">จ่าย</translation>
 <translation id="1856713167556118146">สิ่งที่โหมดไม่ระบุตัวตนไม่ทำ</translation>
 <translation id="1863257867908022953">ถาด 12</translation>
+<translation id="1864927262126810325">จาก <ph name="SOURCE_NAME" /></translation>
 <translation id="1871208020102129563">พร็อกซีถูกตั้งค่าให้ใช้พร็อกซีเซิร์ฟเวอร์แบบคงที่ ไม่ใช่ URL สคริปต์ .pac</translation>
 <translation id="1871284979644508959">ช่องที่ต้องกรอก</translation>
 <translation id="1875025161375567525">ถาดรูปภาพ</translation>
@@ -956,6 +957,7 @@
 <translation id="4117700440116928470">ขอบข่ายนโยบายไม่ได้รับการสนับสนุน</translation>
 <translation id="4121428309786185360">หมดอายุเมื่อวันที่</translation>
 <translation id="4123572138124678573">เจาะรูด้านล่าง 3 รู</translation>
+<translation id="4127575959421463246">กำลังมองหาการติดธงของ ChromeOS ใช่ไหม ไปที่</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{อีก 1 รายการ}other{อีก # รายการ}}</translation>
 <translation id="4130226655945681476">ตรวจสอบสายเครือข่าย โมเด็ม และเราเตอร์</translation>
 <translation id="4133224101597112888">ปุ่มแชร์แท็บนี้ กด Enter เพื่อแชร์แท็บนี้โดยการแชร์ลิงก์ สร้างคิวอาร์โค้ด แคสต์ และอื่นๆ</translation>
@@ -1123,6 +1125,7 @@
 <translation id="4606870351894164739">มีประสิทธิภาพ</translation>
 <translation id="4607603470419975064">ปุ่มดูเคล็ดลับในการใช้ Chrome กด Enter เพื่อดูข้อมูลเกี่ยวกับฟีเจอร์ต่างๆ ของ Chrome</translation>
 <translation id="4607608436550361748">ดูเคล็ดลับในการใช้ Chrome</translation>
+<translation id="4627675673814409125">ตั้งค่านโยบายนี้ในระดับโปรไฟล์ Chrome ไม่ได้ และระบบจะไม่สนใจ</translation>
 <translation id="4628948037717959914">รูปภาพ</translation>
 <translation id="4631649115723685955">บริการคืนเงินที่ลิงก์อยู่</translation>
 <translation id="4636930964841734540">ข้อมูล</translation>
@@ -1754,6 +1757,7 @@
 <translation id="674375294223700098">ข้อผิดพลาดใบรับรองของเซิร์ฟเวอร์ที่ไม่รู้จัก</translation>
 <translation id="6744009308914054259">ระหว่างที่รอการเชื่อมต่อ คุณไปที่หน้า "ดาวน์โหลด" เพื่ออ่านบทความออฟไลน์ได้</translation>
 <translation id="6753269504797312559">ค่านโยบาย</translation>
+<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">อุปกรณ์ของคุณเข้าสู่โหมดสลีปแล้ว</translation>
 <translation id="6767985426384634228">อัปเดตที่อยู่ไหม</translation>
 <translation id="6768213884286397650">Hagaki (โปสการ์ด)</translation>
@@ -1841,6 +1845,7 @@
 <translation id="706295145388601875">เพิ่มและจัดการที่อยู่ในการตั้งค่า Chrome</translation>
 <translation id="7064851114919012435">ข้อมูลติดต่อ</translation>
 <translation id="7068733155164172741">ป้อนรหัส <ph name="OTP_LENGTH" /> หลัก</translation>
+<translation id="7070090581017165256">เกี่ยวกับเว็บไซต์นี้</translation>
 <translation id="70705239631109039">การเชื่อมต่อไม่ปลอดภัยอย่างสมบูรณ์</translation>
 <translation id="7075452647191940183">คำขอมีขนาดใหญ่เกินไป</translation>
 <translation id="7079718277001814089">เว็บไซต์นี้มีมัลแวร์</translation>
@@ -2085,6 +2090,7 @@
 <translation id="7813600968533626083">นำคำแนะนำสำหรับแบบฟอร์มออกจาก Chrome ไหม</translation>
 <translation id="781440967107097262">แชร์คลิปบอร์ดไหม</translation>
 <translation id="7815407501681723534">พบ<ph name="SEARCH_RESULTS" /> <ph name="NUMBER_OF_RESULTS" /> รายการสำหรับ "<ph name="SEARCH_STRING" />"</translation>
+<translation id="782125616001965242">แสดงข้อมูลเกี่ยวกับเว็บไซต์นี้</translation>
 <translation id="782886543891417279">Wi-Fi ที่คุณใช้ (<ph name="WIFI_NAME" />) อาจต้องการให้คุณไปที่หน้าการเข้าสู่ระบบ</translation>
 <translation id="7836231406687464395">Postfix (ซองจดหมาย)</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{ไม่มี}=1{1 แอป (<ph name="EXAMPLE_APP_1" />)}=2{2 แอป (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# แอป (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
@@ -2364,6 +2370,7 @@
 <translation id="8792626944327216835">ไมโครโฟน</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> ได้เปิดใช้เครื่องมือเชื่อมต่อ Chrome Enterprise ในเบราว์เซอร์ เครื่องมือเชื่อมต่อเหล่านี้เข้าถึงข้อมูลบางอย่างของคุณได้</translation>
 <translation id="8798099450830957504">ค่าเริ่มต้น</translation>
+<translation id="8798739476508189189">กำลังมองหาการติดธงของเบราว์เซอร์ใช่ไหม ไปที่</translation>
 <translation id="8805819170075074995">รายการ "<ph name="LANGUAGE_ID" />": ระบบไม่สนใจรายการนี้เพราะมีอยู่ในนโยบาย SpellcheckLanguage เช่นกัน</translation>
 <translation id="8807160976559152894">ตัดออกหลังหน้าแต่ละหน้า</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่ออัปเดต Chrome จากการตั้งค่า Chrome</translation>
@@ -2469,6 +2476,7 @@
 <translation id="9157595877708044936">กำลังตั้งค่า...</translation>
 <translation id="9158625974267017556">C6 (ซองจดหมาย)</translation>
 <translation id="9164029392738894042">การตรวจสอบความแม่นยำ</translation>
+<translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">อนุญาตให้เว็บไซต์ตรวจสอบว่าคุณได้บันทึกวิธีการชำระเงินไว้ไหม</translation>
 <translation id="9169664750068251925">บล็อกบนไซต์นี้เสมอ</translation>
 <translation id="9169931577761441333">เพิ่ม <ph name="APP_NAME" /> ในหน้าจอหลัก</translation>

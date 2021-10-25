@@ -140,6 +140,7 @@
 <translation id="1137589305610962734">ਅਸਥਾਈ ਡਾਟਾ</translation>
 <translation id="1137673463384776352"><ph name="APP" /> ਵਿੱਚ ਲਿੰਕ ਖੋਲ੍ਹੋ</translation>
 <translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{ਨਵੀਂ ਸੂਚਨਾ}one{# ਨਵੀਂ ਸੂਚਨਾ}other{# ਨਵੀਆਂ ਸੂਚਨਾਵਾਂ}}</translation>
+<translation id="1139138655591555207">ਇਸ ਮਦਦ ਬੁਲਬੁਲੇ 'ਤੇ ਫੋਕਸ ਕਰਨ ਲਈ |<ph name="ACCELERATOR" />| ਦਬਾਓ।</translation>
 <translation id="1139343347646843679">Linux ਦਾ ਸੰਰੂਪਣ ਕਰਨ ਦੌਰਾਨ ਗੜਬੜ ਹੋਈ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।</translation>
 <translation id="1139923033416533844">ਮੈਮੋਰੀ ਵਰਤੋਂ</translation>
 <translation id="1140351953533677694">ਆਪਣੀ ਬਲੂਟੁੱਥ ਅਤੇ ਸੀਰੀਅਲ ਡਿਵਾਈਸਾਂ ਤੱਕ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
@@ -535,6 +536,7 @@
 <translation id="1549275686094429035">ARC ਨੂੰ ਚਾਲੂ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> <ph name="VOLUME_NAME" /> ਤੱਕ ਪਹੁੰਚ ਕਰਨਾ ਚਾਹੁੰਦੀ ਹੈ। ਇਹ ਤੁਹਾਡੀਆਂ ਫਾਈਲਾਂ ਨੂੰ ਸੰਸ਼ੋਧਿਤ ਕਰ ਜਾਂ ਮਿਟਾ ਸਕਦੀ ਹੈ।</translation>
 <translation id="1552301827267621511">"<ph name="EXTENSION_NAME" />" ਐਕਸਟੈਂਸ਼ਨ ਨੇ <ph name="SEARCH_PROVIDER_DOMAIN" /> ਨੂੰ ਵਰਤਣ ਲਈ ਖੋਜ ਇੰਜਣ ਨੂੰ ਬਦਲਿਆ</translation>
+<translation id="1552522962296937598">Smart display lock and detect if others peeking from behind</translation>
 <translation id="1553538517812678578">ਅਸੀਮਿਤ</translation>
 <translation id="1555130319947370107">ਨੀਲਾ</translation>
 <translation id="1556537182262721003">ਐਕਸਟੈਂਸ਼ਨ ਡਾਇਰੈਕਟਰੀ 'ਚ ਪ੍ਰੋਫਾਈਲ ਦੀ ਹਲਚਲ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕਦੀ।</translation>
@@ -1081,6 +1083,7 @@
 <translation id="2090165459409185032">ਆਪਣੀ ਖਾਤਾ ਜਾਣਕਾਰੀ ਨੂੰ ਰਿਕਵਰ ਕਰਨ ਲਈ, ਇੱਥੇ ਜਾਓ: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">ਜਦੋਂ ਤੁਸੀਂ ਲੌਗ-ਇਨ ਕਰਦੇ ਹੋ ਉਦੋਂ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਕਨੈਕਟ ਹੋ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="2090876986345970080">ਸਿਸਟਮ ਸੁਰੱਖਿਆ ਸੈਟਿੰਗਾ</translation>
+<translation id="2092038932007199943">Notify you or temporary dim your screen when someone is snooping from behind</translation>
 <translation id="2096715839409389970">ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਕਲੀਅਰ ਕਰੋ</translation>
 <translation id="2098805196501063469">ਬਾਕੀ ਬਚੇ ਪਾਸਵਰਡਾਂ ਦੀ ਜਾਂਚ ਕਰੋ</translation>
 <translation id="2099172618127234427">ਤੁਸੀਂ Chrome OS ਡੀਬੱਗਿੰਗ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਨੂੰ ਚਾਲੂ ਕਰ ਰਹੇ ਹੋ, ਜੋ sshd daemon ਨੂੰ ਸੈੱਟ ਕਰਨਗੀਆਂ ਅਤੇ USB ਡਰਾਈਵ ਵਿੱਚੋਂ ਬੂਟਿੰਗ ਨੂੰ ਚਾਲੂ ਕਰਨਗੀਆਂ।</translation>
@@ -3054,6 +3057,7 @@
 <translation id="4110490973560452005">ਡਾਊਨਲੋਡ ਮੁਕੰਮਲ ਹੋਇਆ: <ph name="FILE_NAME" />. ਡਾਊਨਲੋਡ ਬਾਰ ਖੇਤਰ ਵਿੱਚ ਜਾਣ ਲਈ Shift+F6 ਦਬਾਓ।</translation>
 <translation id="4110686435123617899">ਐਲਬਮ ਚੁਣੋ <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ਆਫ਼ਲਾਈਨ)</translation>
+<translation id="4112809168763360620">Smart privacy protections</translation>
 <translation id="4115002065223188701">ਨੈੱਟਵਰਕ ਰੇਂਜ ਤੋਂ ਬਾਹਰ ਹੈ</translation>
 <translation id="4115378294792113321">ਮਜੈਂਟਾ</translation>
 <translation id="4117637339509843559">ਗੂੜ੍ਹਾ ਮੋਡ</translation>
@@ -3101,6 +3105,7 @@
 <translation id="4175137578744761569">ਹਲਕਾ ਜਾਮਨੀ ਅਤੇ ਸਫ਼ੈਦ</translation>
 <translation id="4175737294868205930">ਸਥਿਰ ਸਟੋਰੇਜ:</translation>
 <translation id="4176463684765177261">ਅਸਮਰਥਿਤ</translation>
+<translation id="417971315778328003">ਜਾਰੀ ਰੱਖਣ ਲਈ ਇੱਕ ਪਿੰਨ ਜਾਂ ਪਾਸਵਰਡ ਸੈੱਟ ਕਰੋ</translation>
 <translation id="4180788401304023883">ਕੀ CA ਪ੍ਰਮਾਣ-ਪੱਤਰ "<ph name="CERTIFICATE_NAME" />" ਮਿਟਾਉਣਾ ਹੈ?</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">ਭਾਸ਼ਾਵਾਂ</translation>
@@ -3135,6 +3140,7 @@
 <translation id="4231095370974836764">ਆਪਣੇ <ph name="DEVICE_TYPE" /> 'ਤੇ Google Play ਤੋਂ ਐਪਾਂ ਅਤੇ ਗੇਮਾਂ ਸਥਾਪਤ ਕਰੋ। <ph name="LINK_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos ਦਾ ਸੰਰੂਪਣ ਕਰੋ</translation>
 <translation id="4235965441080806197">ਸਾਈਨ-ਇਨ ਰੱਦ ਕਰੋ</translation>
+<translation id="4238175133949127631">Temporary dim screen</translation>
 <translation id="4241182343707213132">ਸੰਸਥਾ ਦੀਆਂ ਐਪਾਂ ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਲਈ ਮੁੜ-ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="4242145785130247982">ਇੱਕ ਤੋਂ ਵੱਧ ਕਲਾਇੰਟ ਪ੍ਰਮਾਣ-ਪੱਤਰਾਂ ਦੀ ਸੁਵਿਧਾ ਨਹੀਂ ਹੈ</translation>
 <translation id="4242533952199664413">ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ</translation>
@@ -4653,6 +4659,7 @@
 <translation id="5901494423252125310">ਪ੍ਰਿੰਟਰ ਦਾ ਢੱਕਣ ਖੁੱਲ੍ਹਾ ਹੋਇਆ ਹੈ</translation>
 <translation id="5901630391730855834">ਪੀਲਾ</translation>
 <translation id="5904614460720589786">ਕਿਸੇ ਸੰਰੂਪਣ ਸੰਬੰਧੀ ਸਮੱਸਿਆ ਕਰਕੇ <ph name="APP_NAME" /> ਦਾ ਸੈੱਟਅੱਪ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ। ਗੜਬੜ ਕੋਡ: <ph name="ERROR_CODE" />।</translation>
+<translation id="5906278356170001460">This feature uses the front camera for detection. The data is securely processed and discarded afterwards. Google doesn't use your data for any other purposes.</translation>
 <translation id="5906655207909574370">ਲਗਭਗ ਅੱਪ ਟੂ ਡੇਟ! ਅੱਪਡੇਟ ਕਰਨਾ ਪੂਰਾ ਕਰਨ ਲਈ ਆਪਣੀ ਡੀਵਾਈਸ ਨੂੰ ਮੁੜ-ਚਾਲੂ ਕਰੋ।</translation>
 <translation id="5906732635754427568">ਇਸ ਐਪ ਨਾਲ ਸਬੰਧਿਤ ਡਾਟੇ ਨੂੰ ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਹਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="5908474332780919512">ਸਾਈਨ-ਇਨ ਕਰਨ ਵੇਲੇ ਐਪ ਨੂੰ ਸ਼ੁਰੂ ਕਰੋ</translation>
@@ -4805,6 +4812,7 @@
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />ਨੋਟ ਕਰੋ<ph name="END_BOLD" />: ਕਿਸੇ ਮਿਲਦੀ-ਜੁਲਦੀ ਅਵਾਜ਼ ਜਾਂ ਅਵਾਜ਼ ਦੀ ਰਿਕਾਰਡਿੰਗ ਨਾਲ <ph name="SUPERVISED_USER_NAME" /> ਦੇ ਨਿੱਜੀ ਨਤੀਜਿਆਂ ਤੱਕ ਪਹੁੰਚ ਕੀਤੀ ਜਾ ਸਕਦੀ ਹੈ। ਬੈਟਰੀ ਬਚਾਉਣ ਲਈ, ਤੁਸੀਂ <ph name="SUPERVISED_USER_NAME" /> ਦੀਆਂ Assistant ਸੈਟਿੰਗਾਂ ਵਿੱਚ "Ok Google" ਨੂੰ ਸਿਰਫ਼ ਉਦੋਂ ਚਾਲੂ ਰੱਖਣ ਦੀ ਚੋਣ ਕਰ ਸਕਦੇ ਹੋ ਜਦੋਂ ਇਹ ਡੀਵਾਈਸ ਕਿਸੇ ਪਾਵਰ ਦੇ ਸਰੋਤ ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ ਹੋਵੇ।</translation>
 <translation id="6064217302520318294">ਸਕ੍ਰੀਨ ਲੌਕ</translation>
 <translation id="6065289257230303064">ਪ੍ਰਮਾਣ-ਪੱਤਰ ਵਿਸ਼ਾ ਡਾਇਰੈਕਟਰੀ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ</translation>
+<translation id="6065691521254183160">ਇਸ ਮਦਦ ਬੁਲਬੁਲੇ ਅਤੇ ਇਸਦੇ ਵੱਲੋਂ ਇਸ਼ਾਰਾ ਕੀਤੇ ਜਾ ਰਹੇ ਤੱਤ ਵਿਚਾਲੇ ਫੋਕਸ ਨੂੰ ਟੌਗਲ ਕਰਨ ਲਈ |<ph name="ACCELERATOR" />| ਦਬਾਓ।</translation>
 <translation id="6066794465984119824">ਚਿੱਤਰ ਹੈਸ਼ ਸੈੱਟ ਨਹੀਂ ਹੈ</translation>
 <translation id="6069464830445383022">ਤੁਹਾਡੇ Google ਖਾਤੇ ਨਾਲ ਹੀ ਤੁਹਾਡੀ Chromebook ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ</translation>
 <translation id="6069671174561668781">ਵਾਲਪੇਪਰ ਸੈੱਟ ਕਰੋ</translation>
@@ -4830,6 +4838,7 @@
 <translation id="6085886413119427067">ਨਿਰਧਾਰਤ ਕਰਦਾ ਹੈ ਕਿ ਕਿਸੇ ਸੁਰੱਖਿਅਤ ਕਨੈਕਸ਼ਨ 'ਤੇ ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ ਕਿਵੇਂ ਕਨੈਕਟ ਕਰਨਾ ਹੈ</translation>
 <translation id="6086004606538989567">ਤੁਹਾਡਾ ਪੁਸ਼ਟੀਕਿਰਤ ਖਾਤਾ ਇਸ ਡੀਵਾਈਸ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਲਈ ਅਧਿਕਾਰਤ ਨਹੀਂ ਹੈ।</translation>
 <translation id="6086846494333236931">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਸਥਾਪਿਤ ਕੀਤਾ ਗਿਆ</translation>
+<translation id="6086898065659145625">ਤੁਹਾਡਾ ਫ਼ੋਨ ਨੇੜੇ ਹੋਵੇ ਤਾਂ ਸਮਾਰਟ ਲਾਕ ਤੁਹਾਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਲੌਗ-ਇਨ ਕਰ ਦੇਵੇਗਾ।</translation>
 <translation id="6087960857463881712">ਸੁੰਦਰ ਚਿਹਰਾ</translation>
 <translation id="608912389580139775">ਆਪਣੀ ਪੜ੍ਹਨ-ਸੂਚੀ ਵਿੱਚ ਇਹ ਪੰਨਾ ਸ਼ਾਮਲ ਕਰਨ ਲਈ, 'ਬੁੱਕਮਾਰਕ' ਪ੍ਰਤੀਕ 'ਤੇ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="6091761513005122595">ਸਾਂਝਾਕਰਨ ਨੂੰ ਮਾਊਂਟ ਕਰਨਾ ਸਫਲ ਰਿਹਾ।</translation>
@@ -5295,6 +5304,7 @@
 <translation id="659005207229852190">ਸੁਰੱਖਿਆ ਜਾਂਚ ਪੂਰੀ ਹੋ ਗਈ।</translation>
 <translation id="6590458744723262880">ਫੋਲਡਰ ਦਾ ਨਾਮ ਬਦਲੋ</translation>
 <translation id="6592267180249644460">WebRTC ਲੌਗ ਕੈਪਚਰ ਕੀਤਾ <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
+<translation id="659230975550262204">Show me an eye icon in the status area</translation>
 <translation id="6592808042417736307">ਤੁਹਾਡਾ ਫਿੰਗਰਪ੍ਰਿੰਟ ਕੈਪਚਰ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="6593881952206664229">ਕਾਪੀਰਾਈਟ ਵਾਲਾ ਮੀਡੀਆ ਸ਼ਾਇਦ ਨਾ ਚੱਲੇ</translation>
 <translation id="6594011207075825276">ਸੀਰੀਅਲ ਡੀਵਾਈਸ ਲੱਭੇ ਜਾ ਰਹੇ ਹਨ...</translation>
@@ -5734,6 +5744,7 @@
 <translation id="7053983685419859001">ਬਲੌਕ ਕਰੋ</translation>
 <translation id="7055152154916055070">ਇਸ ਰੀਡਾਇਰੈਕਟ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ:</translation>
 <translation id="7055451306017383754">ਸਾਂਝਾਕਰਨ ਹਟਾਇਆ ਨਹੀਂ ਜਾ ਸਕਿਆ ਕਿਉਂਕਿ ਐਪਲੀਕੇਸ਼ਨ ਇਸ ਫੋਲਡਰ ਨੂੰ ਵਰਤ ਰਹੀ ਹੈ। ਅਗਲੀ ਵਾਰ Parallels Desktop ਬੰਦ ਹੋਣ 'ਤੇ ਫੋਲਡਰ ਸਾਂਝਾ ਨਹੀਂ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
+<translation id="7056011684066172642">Screen locks automatically if you walk off, and won't turn off if you're in front of it</translation>
 <translation id="7056418393177503237">{0,plural, =1{ਇਨਕੋਗਨਿਟੋ}one{# ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋ ਖੋਲ੍ਹੋ}other{# ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋਆਂ ਖੋਲ੍ਹੋ}}</translation>
 <translation id="7056526158851679338">&amp;ਡਿਵਾਈਸਾਂ ਦੀ ਜਾਂਚ ਕਰੋ</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{ਸੁਰੱਖਿਆ ਜਾਂਚ 1 ਮਿੰਟ ਪਹਿਲਾਂ ਚਲਾਈ ਗਈ}one{ਸੁਰੱਖਿਆ ਜਾਂਚ {NUM_MINS} ਮਿੰਟ ਪਹਿਲਾਂ ਚਲਾਈ ਗਈ}other{ਸੁਰੱਖਿਆ ਜਾਂਚ {NUM_MINS} ਮਿੰਟ ਪਹਿਲਾਂ ਚਲਾਈ ਗਈ}}</translation>
@@ -6448,6 +6459,7 @@
 <translation id="7797246427375693110">ਚਾਲੂ ਹੈ / <ph name="TIME" /> ਵਜੇ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਬੰਦ ਹੋ ਜਾਵੇਗਾ</translation>
 <translation id="7797571222998226653">ਬੰਦ</translation>
 <translation id="7798844538707273832">ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਬਲਾਕ ਕੀਤੀ ਗਈ <ph name="PERMISSION" /></translation>
+<translation id="7799220949286681310">Smart screen lock</translation>
 <translation id="7799299114731150374">ਵਾਲਪੇਪਰ ਸਫਲਤਾਪੂਰਵਕ ਸੈੱਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="7799817062559422778">ਹਲਕਾ ਮੋਡ</translation>
 <translation id="7800159967992492578">ਸਾਈਡ ਖੋਜ ਟੌਗਲ ਕਰੋ। ਸਾਈਡ ਖੋਜ ਨੂੰ ਕਿਰਿਆਸ਼ੀਲ ਕੀਤਾ ਗਿਆ।</translation>
@@ -6597,6 +6609,7 @@
 <translation id="7933518760693751884">ਇਸ ਪੰਨੇ ਨੂੰ ਬਾਅਦ ਵਿੱਚ ਪੜ੍ਹਨ ਵਾਸਤੇ ਰੱਖਿਅਤ ਕਰਨ ਲਈ, ਬੁੱਕਮਾਰਕ ਪ੍ਰਤੀਕ ਨੂੰ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="7933634003144813719">ਸਾਂਝੇ ਕੀਤੇ ਫੋਲਡਰਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="793531125873261495">ਆਭਾਸੀ ਮਸ਼ੀਨ ਨੂੰ ਡਾਊਨਲੋਡ ਕਰਨ ਵਿੱਚ ਗੜਬੜ ਹੋ ਗਈ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ ਕਰੋ।</translation>
+<translation id="7935451262452051102"><ph name="PERCENT" />% ਮੁਕੰਮਲ</translation>
 <translation id="7938594894617528435">ਇਸ ਵੇਲੇ ਆਫ਼ਲਾਈਨ</translation>
 <translation id="7939062555109487992">ਉੱਨਤ ਵਿਕਲਪ</translation>
 <translation id="7939412583708276221">ਫੇਰ ਵੀ ਰੱਖੋ</translation>
@@ -6728,6 +6741,7 @@
 <translation id="8062844841289846053">{COUNT,plural, =1{1 ਕਾਗਜ਼ ਦੀ ਸ਼ੀਟ}one{{COUNT} ਕਾਗਜ਼ ਦੀ ਸ਼ੀਟ}other{{COUNT} ਕਾਗਜ਼ ਦੀਆਂ ਸ਼ੀਟਾਂ}}</translation>
 <translation id="8063235345342641131">ਪੂਰਵ-ਨਿਰਧਾਰਤ ਹਰਾ ਅਵਤਾਰ</translation>
 <translation id="8063535366119089408">ਫ਼ਾਈਲ ਦੇਖੋ</translation>
+<translation id="8064269957688233720">ਜਦੋਂ ਇਹ Chromebook ਸਲੀਪ ਮੋਡ ਤੋਂ ਬਾਹਰ ਆਉਂਦੀ ਹੈ ਤਾਂ ਆਪਣੇ ਫ਼ੋਨ ਦੇ ਡਾਟਾ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰੋ।</translation>
 <translation id="8064279191081105977"><ph name="GROUP_NAME" /> ਗਰੁੱਪ - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">ਕਨੈਕਸ਼ਨ ਵਿੰਡੋ</translation>
 <translation id="8068253693380742035">ਸਾਈਨ-ਇਨ ਕਰਨ ਲਈ ਸਪਰਸ਼ ਕਰੋ</translation>
@@ -7380,6 +7394,7 @@
 <translation id="8770406935328356739">ਐਕਸਟੈਂਸ਼ਨ ਰੂਟ ਡਾਇਰੈਕਟਰੀ</translation>
 <translation id="8771300903067484968">ਸ਼ੁਰੂਆਤੀ ਪੰਨੇ ਦੇ ਬੈਕਗ੍ਰਾਊਂਡ ਨੂੰ ਪੂਰਵ-ਨਿਰਧਾਰਤ ਬੈਕਗ੍ਰਾਊਂਡ ਵਜੋਂ ਰੀਸੈੱਟ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> ਨੂੰ ਰੱਖਿਅਤ ਕਰੋ</translation>
+<translation id="8773350724590665675">Snooping protection</translation>
 <translation id="8774379074441005279">ਮੁੜ-ਬਹਾਲ ਕਰਨ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="8774934320277480003">ਟੌਪ ਹਾਸ਼ੀਆ</translation>
 <translation id="8775144690796719618">ਅਵੈਧ URL</translation>

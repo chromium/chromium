@@ -29,6 +29,7 @@
 <translation id="1743802530341753419">Sitelerin bir cihaza bağlanmasına izin verilmeden önce sor (önerilir)</translation>
 <translation id="1779089405699405702">Görsel kod çözücüsü</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> uygulamasının artırılmış gerçekliği (AR) kullanması için <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> kamerayı da açın.</translation>
+<translation id="1864927262126810325"><ph name="SOURCE_NAME" /> kaynağından</translation>
 <translation id="1887786770086287077">Konum erişimi bu cihaz için kapalı. Konum erişimini <ph name="BEGIN_LINK" />Android Ayarları<ph name="END_LINK" />'ndan açın.</translation>
 <translation id="1919345977826869612">Reklamlar</translation>
 <translation id="1919950603503897840">Kişi seçin</translation>
@@ -236,6 +237,7 @@
 <translation id="7016516562562142042">Geçerli arama motoru için izin verildi</translation>
 <translation id="7053983685419859001">Engelle</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 öğe seçildi}other{# öğe seçildi}}</translation>
+<translation id="7070090581017165256">Bu site hakkında</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> öğe seçildi. Seçenekler, ekranın üst kısmına yakın bir yerde bulunur</translation>
 <translation id="7141896414559753902">Sitelerin pop-up göstermesini ve yönlendirme yapmasını engelle (önerilir)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>

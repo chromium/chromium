@@ -339,6 +339,7 @@
 <translation id="3509391053705095206">ਤੁਹਾਡਾ ਫ਼ੋਨ ਨਹੀਂ ਲੱਭਿਆ ਜਾ ਸਕਦਾ। ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡੇ ਫ਼ੋਨ ਦਾ ਬਲੂਟੁੱਥ ਚਾਲੂ ਹੈ।</translation>
 <translation id="3510164367642747937">ਮਾਊਸ ਕਰਸਰ ਨੂੰ ਉਜਾਗਰ ਕਰੋ</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> ਵੱਲੋਂ ਖਾਤੇ ਦਾ ਪ੍ਰਬੰਧਨ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
+<translation id="352245152354538528">{0,plural, =1{ਡੀਵਾਈਸ ਨੂੰ 1 ਮਿੰਟ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰੋ}one{ਡੀਵਾਈਸ ਨੂੰ # ਮਿੰਟ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰੋ}other{ਡੀਵਾਈਸ ਨੂੰ # ਮਿੰਟਾਂ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰੋ}}</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> ਡੀਵਾਈਸਾਂ ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="3552189655002856821">ਵਾਈ-ਫਾਈ ਬੰਦ ਹੈ</translation>
 <translation id="3560866052109807830">ਮਾਰਕਰ ਚਿੱਤਰਕਾਰੀ ਟੂਲ</translation>
@@ -427,6 +428,7 @@
 <translation id="4146833061457621061">ਸੰਗੀਤ ਚਲਾਓ</translation>
 <translation id="4157822100366708405">ਗੂੜ੍ਹੇ ਥੀਮ ਦੀਆਂ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="4173958948577803258">ਵੀ</translation>
+<translation id="4177913004758410636">{0,plural, =1{ਡੀਵਾਈਸ ਨੂੰ ਇੱਕ ਦਿਨ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰੋ}one{ਡੀਵਾਈਸ ਨੂੰ # ਦਿਨ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰੋ}other{ਡੀਵਾਈਸ ਨੂੰ # ਦਿਨਾਂ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰੋ}}</translation>
 <translation id="4181841719683918333">ਭਾਸ਼ਾਵਾਂ</translation>
 <translation id="4195877955194704651">ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਕਲਿੱਕ ਕਰਨ ਲਈ ਬਟਨ</translation>
 <translation id="4197790712631116042">ਬੰਦ</translation>
@@ -480,6 +482,7 @@
 <translation id="445864333228800152">ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ,</translation>
 <translation id="4458688154122353284">ਸਕ੍ਰੀਨ ਰਿਕਾਰਡਿੰਗ ਬੰਦ ਕਰੋ</translation>
 <translation id="4471354919263203780">ਬੋਲੀ ਪਛਾਣ ਫ਼ਾਈਲਾਂ ਨੂੰ ਡਾਊਨਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ... <ph name="PERCENT" />%</translation>
+<translation id="4471432286288241507">{0,plural, =0{ਡੀਵਾਈਸ ਨੂੰ ਹੁਣੇ ਅੱਪਡੇਟ ਕਰੋ}=1{ਡੀਵਾਈਸ ਨੂੰ 1 ਸਕਿੰਟ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰੋ}other{ਡੀਵਾਈਸ ਨੂੰ # ਸਕਿੰਟਾਂ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰੋ}}</translation>
 <translation id="4472575034687746823">ਸ਼ੁਰੂਆਤ ਕਰੋ</translation>
 <translation id="4477350412780666475">ਅਗਲਾ ਟਰੈਕ</translation>
 <translation id="4477892968187500306">ਇਸ ਡੀਵਾਈਸ ਵਿੱਚ ਸ਼ਾਇਦ ਅਜਿਹੀਆਂ ਐਪਾਂ ਹੋਣ ਜਿਨ੍ਹਾਂ ਦੀ ਪੁਸ਼ਟੀ Google ਨੇ ਨਹੀਂ ਕੀਤੀ ਹੈ।</translation>
@@ -739,6 +742,7 @@
 <translation id="6482559668224714696">ਪੂਰੀ-ਸਕ੍ਰੀਨ ਵੱਡਦਰਸ਼ੀ</translation>
 <translation id="6490471652906364588">USB-C ਡਿਵਾਈਸ (ਸੱਜਾ ਪੋਰਟ)</translation>
 <translation id="649452524636452238">ਸਮਾਰਟ ਕਾਰਡ ਦਾ ਪਿੰਨ</translation>
+<translation id="6495400115277918834">ਤਸਵੀਰ-ਵਿੱਚ-ਤਸਵੀਰ ਮੋਡ ਸ਼ੁਰੂ ਕਰੋ ਅਤੇ ਫੋਕਸ ਕਰਨ ਲਈ Alt+Shift+V ਦਬਾਓ</translation>
 <translation id="6500818810472529210">Google Search ਵਿੱਚ ਨਤੀਜਾ ਦੇਖੋ</translation>
 <translation id="6501401484702599040"><ph name="RECEIVER_NAME" /> ਲਈ ਸਕਰੀਨ ਕਾਸਟ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="6520517963145875092">ਕੈਪਚਰ ਕਰਨ ਲਈ ਕੋਈ ਵਿੰਡੋ ਚੁਣੋ</translation>
@@ -749,6 +753,7 @@
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> 'ਤੇ ਕਾਸਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="6559976592393364813">ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਪੁੱਛੋ</translation>
 <translation id="6565007273808762236">ਈ-ਸਿਮ ਕਨੈਕਸ਼ਨ ਉਪਲਬਧ ਨਹੀਂ</translation>
+<translation id="6570831796530454248">{0,plural, =1{ਡੀਵਾਈਸ ਨੂੰ ਇੱਕ ਘੰਟੇ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰੋ}one{ਡੀਵਾਈਸ ਨੂੰ # ਘੰਟੇ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰੋ}other{ਡੀਵਾਈਸ ਨੂੰ # ਘੰਟਿਆਂ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰੋ}}</translation>
 <translation id="6570902864550063460">USB ਰਾਹੀਂ ਚਾਰਜ ਹੋ ਰਿਹਾ ਹੈ</translation>
 <translation id="6585808820553845416">ਸੈਸ਼ਨ <ph name="SESSION_TIME_REMAINING" /> ਵਿੱਚ ਖ਼ਤਮ ਹੋਵੇਗਾ।</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>

@@ -29,6 +29,7 @@
 <translation id="1743802530341753419">Сайтуудыг төхөөрөмжид холбогдохыг зөвшөөрөхөөс өмнө асуух (санал болгосон)</translation>
 <translation id="1779089405699405702">Зургийн код тайлагч</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" />-д AR-г ашиглахыг зөвшөөрөхийн тулд камерыг мөн <ph name="BEGIN_LINK" />Андройдын Тохиргоо<ph name="END_LINK" />-нд асаана уу.</translation>
+<translation id="1864927262126810325"><ph name="SOURCE_NAME" />-с</translation>
 <translation id="1887786770086287077">Байршлын хандалт энэ төхөөрөмжид унтраалттай байна. Үүнийг <ph name="BEGIN_LINK" />Андройдын тохиргоо<ph name="END_LINK" /> хэсэгт асаана уу.</translation>
 <translation id="1919345977826869612">Зар</translation>
 <translation id="1919950603503897840">Харилцагчдыг сонгох</translation>
@@ -236,6 +237,7 @@
 <translation id="7016516562562142042">Одоогийн хайлтын хэрэгсэлд зөвшөөрсөн</translation>
 <translation id="7053983685419859001">Блоклох</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 сонгосон}other{# сонгосон}}</translation>
+<translation id="7070090581017165256">Энэ сайтын талаар</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" />-г сонгосон. Сонголт дэлгэцийн дээд хэсэгт боломжтой</translation>
 <translation id="7141896414559753902">Сайтыг попап болон дахин чиглүүлэлтийг харуулахаас блоклох (санал болгосон)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> килобайт</translation>

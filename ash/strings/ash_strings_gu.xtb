@@ -339,6 +339,7 @@
 <translation id="3509391053705095206">ફોન શોધી શકતા નથી. ખાતરી કરો કે તમારા ફોનનું બ્લૂટૂથ ચાલુ છે.</translation>
 <translation id="3510164367642747937">માઉસ કર્સરને હાઇલાઇટ કરો</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> દ્વારા મેનેજ કરાતું એકાઉન્ટ</translation>
+<translation id="352245152354538528">{0,plural, =1{1 મિનિટની અંદર ડિવાઇસ અપડેટ કરો}one{# મિનિટની અંદર ડિવાઇસ અપડેટ કરો}other{# મિનિટની અંદર ડિવાઇસ અપડેટ કરો}}</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> ડિવાઇસ સાથે કનેક્ટેડ</translation>
 <translation id="3552189655002856821">વાઇ-ફાઇ બંધ છે</translation>
 <translation id="3560866052109807830">માર્કર ડ્રોઇંગના સાધનો</translation>
@@ -427,6 +428,7 @@
 <translation id="4146833061457621061">મ્યુઝિક વગાડો</translation>
 <translation id="4157822100366708405">ઘેરી થીમનું સેટિંગ</translation>
 <translation id="4173958948577803258">ગુ</translation>
+<translation id="4177913004758410636">{0,plural, =1{એક દિવસની અંદર ડિવાઇસ અપડેટ કરો}one{# દિવસની અંદર ડિવાઇસ અપડેટ કરો}other{# દિવસની અંદર ડિવાઇસ અપડેટ કરો}}</translation>
 <translation id="4181841719683918333">ભાષાઓ</translation>
 <translation id="4195877955194704651">ઑટોમૅટિક ક્લિક બટન</translation>
 <translation id="4197790712631116042">બંધ</translation>
@@ -480,6 +482,7 @@
 <translation id="445864333228800152">ગુડ ઇવનિંગ,</translation>
 <translation id="4458688154122353284">સ્ક્રીન રેકોર્ડિંગ બંધ કરો</translation>
 <translation id="4471354919263203780">વાણી ઓળખની ફાઇલો ડાઉનલોડ કરી રહ્યાં છીએ… <ph name="PERCENT" />%</translation>
+<translation id="4471432286288241507">{0,plural, =0{હમણાં જ ડિવાઇસ અપડેટ કરો}=1{1 સેકન્ડની અંદર ડિવાઇસ અપડેટ કરો}one{# સેકન્ડની અંદર ડિવાઇસ અપડેટ કરો}other{# સેકન્ડની અંદર ડિવાઇસ અપડેટ કરો}}</translation>
 <translation id="4472575034687746823">શરૂ કરો</translation>
 <translation id="4477350412780666475">આગલો ટ્રૅક</translation>
 <translation id="4477892968187500306">આ ડિવાઇસમાં એવી ઍપ હોય શકે કે જેની Google દ્વારા ચકાસણી કરવામાં આવી છે.</translation>
@@ -739,6 +742,7 @@
 <translation id="6482559668224714696">પૂર્ણ-સ્ક્રીન મૅગ્નિફાયર</translation>
 <translation id="6490471652906364588">USB-C ઉપકરણ (જમણું પોર્ટ)</translation>
 <translation id="649452524636452238">સ્માર્ટ કાર્ડ પિન</translation>
+<translation id="6495400115277918834">ચિત્ર-માં-ચિત્ર સુવિધા ચાલુ થઈ ગઈ છે, ફોકસ કરવા માટે Alt+Shift+V દબાવો</translation>
 <translation id="6500818810472529210">Google Searchમાં પરિણામ જુઓ</translation>
 <translation id="6501401484702599040"><ph name="RECEIVER_NAME" /> પર સ્ક્રીન કાસ્ટ કરી રહ્યાં છીએ</translation>
 <translation id="6520517963145875092">કૅપ્ચર કરવા માટે વિન્ડો પસંદ કરો</translation>
@@ -749,6 +753,7 @@
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> પર કાસ્ટ કરી રહ્યાં છીએ</translation>
 <translation id="6559976592393364813">વ્યવસ્થાપકને પૂછો</translation>
 <translation id="6565007273808762236">ઇ-સિમ કનેક્શન ઉપલબ્ધ નથી</translation>
+<translation id="6570831796530454248">{0,plural, =1{એક કલાકની અંદર ડિવાઇસ અપડેટ કરો}one{# કલાકની અંદર ડિવાઇસ અપડેટ કરો}other{# કલાકની અંદર ડિવાઇસ અપડેટ કરો}}</translation>
 <translation id="6570902864550063460">USB વડે ચાર્જિંગ</translation>
 <translation id="6585808820553845416"><ph name="SESSION_TIME_REMAINING" /> માં સત્ર સમાપ્ત થાય છે.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>

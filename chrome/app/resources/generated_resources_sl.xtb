@@ -330,6 +330,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="133535873114485416">Želeni način vnosa</translation>
 <translation id="1335929031622236846">Včlanite napravo</translation>
 <translation id="1336902454946927954">Varnostni ključ je zaklenjen, ker vašega prstnega odtisa ni bilo mogoče prepoznati. Če ga želite odkleniti, vnesite PIN.</translation>
+<translation id="1338631221631423366">Seznanjanje …</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> želi odpreti to aplikacijo.</translation>
 <translation id="1338950911836659113">Brisanje ...</translation>
 <translation id="1339009753652684748">Dostopajte do Pomočnika, ko izgovorite »Hey Google«. Zaradi varčevanja z energijo akumulatorja izberite »Vklopljeno (priporočeno)«. Pomočnik se bo odzval samo, ko je naprava priklopljena ali se polni njen akumulator.</translation>
@@ -6572,6 +6573,7 @@ Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</trans
 <translation id="7887864092952184874">Miška Bluetooth je seznanjena</translation>
 <translation id="7889371445710865055">Spreminjanje jezika nareka</translation>
 <translation id="7890147169288018054">Prikaz podatkov o omrežju, kot je naslov IP ali MAC</translation>
+<translation id="7892384782944609022">Ni bilo mogoče seznaniti. Izberite napravo, če želite poskusiti znova.</translation>
 <translation id="7893008570150657497">Dostop do fotografij, glasbe in druge predstavnosti v računalniku</translation>
 <translation id="7893153962594818789">Bluetooth je izklopljen v tej napravi: <ph name="DEVICE_TYPE" />. Vnesite geslo in vklopite Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (privzeto)</translation>

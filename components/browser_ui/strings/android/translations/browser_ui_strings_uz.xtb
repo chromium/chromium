@@ -29,6 +29,7 @@
 <translation id="1743802530341753419">Saytlar qurilmaga ulanishiga ruxsat so‘ralsin (tavsiya etiladi)</translation>
 <translation id="1779089405699405702">Tasvir dekoderi</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> AR ishlatishi uchun <ph name="BEGIN_LINK" />Android sozlamalari<ph name="END_LINK" /> orqali kamerani yoqing.</translation>
+<translation id="1864927262126810325"><ph name="SOURCE_NAME" />dan</translation>
 <translation id="1887786770086287077">Bu qurilmada Joylashuvni aniqlash xizmati yoqilmagan, uni <ph name="BEGIN_LINK" />Android sozlamalari<ph name="END_LINK" /> orqali yoqing.</translation>
 <translation id="1919345977826869612">Reklamalar</translation>
 <translation id="1919950603503897840">Kontaktlarni tanlash</translation>
@@ -236,6 +237,7 @@
 <translation id="7016516562562142042">Joriy qidiruv tizimiga ruxsat berilgan</translation>
 <translation id="7053983685419859001">Taqiqlash</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{ 1 ta belgilandi}other{# ta belgilandi}}</translation>
+<translation id="7070090581017165256">Bu sayt haqida</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> ta element tanlandi. Parametrlar ekranning yuqoriroq qismida joylashgan</translation>
 <translation id="7141896414559753902">Saytlarga qalqib chiquvchi oynalarni ochishni taqiqlash (tavsiya etiladi)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>

@@ -301,6 +301,7 @@
 <translation id="1842969606798536927">ຈ່າຍ</translation>
 <translation id="1856713167556118146">ສິ່ງທີ່ໂໝດບໍ່ເປີດເຜີຍຕົວຕົນບໍ່ໄດ້ເຮັດ</translation>
 <translation id="1863257867908022953">ຖາດ 12</translation>
+<translation id="1864927262126810325">ຈາກ <ph name="SOURCE_NAME" /></translation>
 <translation id="1871208020102129563">ພຣັອກຊີໄດ້ຖືກຕັ້ງຂຶ້ນ ເພື່ອໃຊ້ເຊີບເວີພຣັອກຊີທີ່ກໍານົດໄວ້, ບໍ່ແມ່ນ URL ຕົວໜັງສື  .pac.</translation>
 <translation id="1871284979644508959">ຊ່ອງຂໍ້ມູນທີ່ຕ້ອງລະບຸ</translation>
 <translation id="1875025161375567525">ຖາດຮູບພາບ</translation>
@@ -963,6 +964,7 @@
 <translation id="4117700440116928470">ຂອບເຂດນະໂຍບາຍບໍ່ຖືກຮອງຮັບ.</translation>
 <translation id="4121428309786185360">ໝົດອາຍຸ</translation>
 <translation id="4123572138124678573">ເຈາະຮູຢູ່ລຸ່ມສຸດສາມຮູ</translation>
+<translation id="4127575959421463246">ກຳລັງຊອກຫາປັກທຸງ ChromeOS ບໍ? ເຂົ້າເບິ່ງ</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 ລາຍການອື່ນ}other{# ລາຍການອື່ນ}}</translation>
 <translation id="4130226655945681476">ກຳລັງກວດເບິ່ງສາຍເຊື່ອມຕໍ່ເຄືອຂ່າຍ, ໂມເດັມ ແລະ ເຣົາເຕີ</translation>
 <translation id="4133224101597112888">ປຸ່ມແບ່ງປັນແຖບນີ້, ກົດ Enter ເພື່ອແບ່ງປັນແຖບນີ້ໂດຍການແບ່ງປັນລິ້ງ, ການສ້າງລະຫັດ QR, ການສົ່ງສັນຍານ ແລະ ອື່ນໆ.</translation>
@@ -1134,6 +1136,7 @@
 <translation id="4606870351894164739">ມີຜົນກະທົບ</translation>
 <translation id="4607603470419975064">ປຸ່ມເບິ່ງເຄັດລັບ Chrome, ກົດ Enter ເພື່ອສຶກສາເພີ່ມເຕີມກ່ຽວກັບຄຸນສົມບັດ Chrome</translation>
 <translation id="4607608436550361748">ເບິ່ງເຄັດລັບ Chrome</translation>
+<translation id="4627675673814409125">ບໍ່ສາມາດຕັ້ງນະໂຍບາຍນີ້ຢູ່ລະດັບໂປຣໄຟລ໌ Chrome ໄດ້ ແລະ ລະບົບຈະບໍ່ສົນໃຈ.</translation>
 <translation id="4628948037717959914">ຮູບຖ່າຍ</translation>
 <translation id="4631649115723685955">ເຊື່ອມໂຍງເງິນຄືນແລ້ວ</translation>
 <translation id="4636930964841734540">ຂໍ້​ມູນ</translation>
@@ -1765,6 +1768,7 @@
 <translation id="674375294223700098">ໃບຢັ້ງຢືນເຊີບເວີບໍ່ຮູ້ຈັກຜິດພາດ.</translation>
 <translation id="6744009308914054259">ໃນຂະນະທີ່ລໍຖ້າການເຊື່ອມຕໍ່, ທ່ານສາມາດເຂົ້າຫາການດາວໂຫຼດເພື່ອອ່ານບົດຄວາມອອບລາຍໄດ້.</translation>
 <translation id="6753269504797312559">ຄ່າ​​ນະ​ໂຍ​ບາຍ</translation>
+<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">ອຸປະກອນຂອງທ່ານໄດ້ເຂົ້າສູ່ໂໝດນອນຫຼັບແລ້ວ.</translation>
 <translation id="6767985426384634228">ອັບເດດທີ່ຢູ່ບໍ?</translation>
 <translation id="6768213884286397650">Hagaki (ໂພສກາດ)</translation>
@@ -1852,6 +1856,7 @@
 <translation id="706295145388601875">ເພີ່ມ ແລະ ຈັດການທີ່ຢູ່ໃນການຕັ້ງຄ່າ Chrome</translation>
 <translation id="7064851114919012435">ຂໍ້​ມູນ​ຕິດ​ຕໍ່</translation>
 <translation id="7068733155164172741">ລະບຸລະຫັດ <ph name="OTP_LENGTH" /> ຕົວເລກ</translation>
+<translation id="7070090581017165256">ກ່ຽວກັບເວັບໄຊນີ້</translation>
 <translation id="70705239631109039">ການເຊື່ອມຕໍ່ຂອງທ່ານບໍ່ປອດໄພຢ່າງສົມບູນ</translation>
 <translation id="7075452647191940183">ຄຳຂໍໃຫຍ່ເກີນໄປ</translation>
 <translation id="7079718277001814089">ເວັບໄຊນີ້ປະກອບມີມາລແວ</translation>
@@ -2096,6 +2101,7 @@
 <translation id="7813600968533626083">ເອົາ​ການ​ແນະ​ນຳ​ແບບ​ຟອມ​ອອກ​ໄປ​ຈາກ Chrome ບໍ?</translation>
 <translation id="781440967107097262">ແບ່ງປັນຄລິບບອດບໍ?</translation>
 <translation id="7815407501681723534">ພົບ <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> ສຳລັບ '<ph name="SEARCH_STRING" />'</translation>
+<translation id="782125616001965242">ສະແດງຂໍ້ມູນກ່ຽວກັບເວັບໄຊນີ້</translation>
 <translation id="782886543891417279">Wi-Fi ທີ່​ທ່ານ​ກຳ​ລັງ​ໃຊ້​ຢູ່ (<ph name="WIFI_NAME" />) ອາດ​ຈະ​ຕ້ອງ​ການ​ໃຫ້​ທ່ານ​ເຂົ້າ​ຫາໜ້າລັອກອິນ​ເຂົ້າ​​ລະ​ບົບ​ຂອງ​ມັນ.</translation>
 <translation id="7836231406687464395">Postfix (ຊອງຈົດໝາຍ)</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{ບໍ່ມີ}=1{1 ແອັບ (<ph name="EXAMPLE_APP_1" />)}=2{2 ແອັບ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# ແອັບ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
@@ -2309,6 +2315,7 @@
 <translation id="8541158209346794904">ອຸປະກອນ Bluetooth</translation>
 <translation id="8542014550340843547">ໜີບກະຫຼັບເຟີຢູ່ລຸ່ມສຸດສາມເທື່ອ</translation>
 <translation id="8543181531796978784">ທ່ານ​ສາ​ມາດ​ <ph name="BEGIN_ERROR_LINK" />ລາຍ​ງານ​ບັນ​ຫາ​ທີ່ກວດ​ພົບ​ໄດ້<ph name="END_ERROR_LINK" /> ຫຼື, ຖ້າທ່ານເຂົ້າໃຈຄວາມສ່ຽງຕໍ່ຄວາມປອດໄພຂອງທ່ານ, <ph name="BEGIN_LINK" />ເຂົ້າ​ເບິ່ງ​ເວັບ​ໄຊ​ທ໌​ທີ່​ບໍ່​ປອດ​ໄພ​ນີ້<ph name="END_LINK" />.</translation>
+<translation id="8554010658308662631">ໂຫຼດເພີ່ມເຕີມ</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{ຣີເຊັດການອະນຸຍາດ}other{ຣີເຊັດການອະນຸຍາດ}}</translation>
 <translation id="8555010941760982128">ໃຊ້ລະຫັດນີ້ເພື່ອຈ່າຍເງິນ</translation>
 <translation id="8557066899867184262">ມີ CVC ຢູ່ຫຼັງບັດຂອງທ່ານ.</translation>
@@ -2374,6 +2381,7 @@
 <translation id="8792626944327216835">ໄມໂຄຣໂຟນ</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> ໄດ້ເປີດ Chrome Enterprise Connectors ໃນໂປຣແກຣມທ່ອງເວັບຂອງທ່ານແລ້ວ. ເຄື່ອງມືເຊື່ອມຕໍ່ເຫຼົ່ານີ້ມີສິດເຂົ້າເຖິງບາງຂໍ້ມູນຂອງທ່ານໄດ້.</translation>
 <translation id="8798099450830957504">ຄ່າ​ມາດຕະຖານ</translation>
+<translation id="8798739476508189189">ກຳລັງຊອກຫາປັກທຸງໂປຣແກຣມທ່ອງເວັບບໍ? ເຂົ້າເບິ່ງ</translation>
 <translation id="8805819170075074995">ບອກລາຍການ "<ph name="LANGUAGE_ID" />": ລາຍການຖືກລະເລີຍ ເພາະວ່າມັນຮວມມີຢູ່ໃນນະໂຍບາຍ SpellcheckLanguage ນຳ.</translation>
 <translation id="8807160976559152894">ຕັດອອກຫຼັງຈາກແຕ່ລະໜ້າ</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດແຖບ ຈາກນັ້ນ Enter ເພື່ອອັບເດດ Chrome ຈາກການຕັ້ງຄ່າ Chrome ຂອງທ່ານ</translation>
@@ -2479,6 +2487,7 @@
 <translation id="9157595877708044936">ກໍາລັງ​ຕັ້ງ...</translation>
 <translation id="9158625974267017556">C6 (ຊອງຈົດໝາຍ)</translation>
 <translation id="9164029392738894042">ກວດສອບຄວາມຖືກຕ້ອງ</translation>
+<translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">ອະນຸຍາດໃຫ້ເວັບໄຊກວດເບິ່ງວ່າທ່ານມີວິທີການຈ່າຍເງິນທີ່ບັນທຶກໄວ້ຫຼືບໍ່</translation>
 <translation id="9169664750068251925">ບລັອກເວັບໄຊທ໌ນີ້ຢູ່ສະເໝີ</translation>
 <translation id="9169931577761441333">ເພີ່ມ <ph name="APP_NAME" /> ໃສ່ໜ້າຈໍຫຼັກ</translation>
