@@ -35,6 +35,7 @@ class BubbleButtonController : public views::ButtonController {
         bubble_owner_(bubble_owner) {}
 
   bool OnMousePressed(const ui::MouseEvent& event) override {
+    bubble_owner_->RecordOnMousePressed();
     suppress_button_release_ = bubble_owner_->IsBubbleShowing();
     return views::ButtonController::OnMousePressed(event);
   }
@@ -94,6 +95,7 @@ void PermissionChip::OpenBubble() {
   DCHECK(!GetPromptBubbleWidget());
 
   prompt_bubble_tracker_.SetView(CreateBubble());
+  delegate_->SetBubbleShown();
 }
 
 void PermissionChip::Hide() {
@@ -145,6 +147,14 @@ bool PermissionChip::IsBubbleShowing() const {
   return prompt_bubble_tracker_.view() != nullptr;
 }
 
+void PermissionChip::RecordOnMousePressed() {
+  if (IsBubbleShowing() && ShouldCloseBubbleOnLostFocus()) {
+    // If the permission prompt bubble is closed because the user clicked on the
+    // chip, record this as Dismissed.
+    OnPromptBubbleClosed();
+  }
+}
+
 views::Widget* PermissionChip::GetPromptBubbleWidgetForTesting() {
   return GetPromptBubbleWidget();
 }
@@ -153,6 +163,19 @@ views::Widget* PermissionChip::GetPromptBubbleWidget() {
   return prompt_bubble_tracker_.view()
              ? prompt_bubble_tracker_.view()->GetWidget()
              : nullptr;
+}
+
+void PermissionChip::OnPromptBubbleClosed() {
+  should_dismiss_ = true;
+  delegate_->SetDismissOnTabClose();
+  // If the permission prompt bubble is closed, we count it as "Dismissed",
+  // hence it should record the time when the bubble is closed and not when the
+  // permission request is finalized.
+  delegate_->SetDecisionTime();
+}
+
+bool PermissionChip::ShouldCloseBubbleOnLostFocus() const {
+  return false;
 }
 
 void PermissionChip::Show(bool always_open_bubble) {
@@ -174,7 +197,9 @@ void PermissionChip::ExpandAnimationEnded() {
 }
 
 void PermissionChip::ChipButtonPressed() {
-  OpenBubble();
+  if (!IsBubbleShowing()) {
+    OpenBubble();
+  }
   RestartTimersOnInteraction();
 }
 
@@ -200,23 +225,27 @@ void PermissionChip::StartDismissTimer() {
             permissions::features::kPermissionChipAutoDismiss)) {
       auto delay = base::Milliseconds(
           permissions::features::kPermissionChipAutoDismissDelay.Get());
-      dismiss_timer_.Start(FROM_HERE, delay, this, &PermissionChip::Dismiss);
+      dismiss_timer_.Start(FROM_HERE, delay, this, &PermissionChip::Finalize);
     }
   } else {
     // Abusive origins do not support expand animation, hence the dismiss timer
     // should be longer.
     dismiss_timer_.Start(FROM_HERE, base::Seconds(18), this,
-                         &PermissionChip::Dismiss);
+                         &PermissionChip::Finalize);
   }
 }
 
-void PermissionChip::Dismiss() {
+void PermissionChip::Finalize() {
   GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
       IDS_PERMISSIONS_EXPIRED_SCREENREADER_ANNOUNCEMENT));
 
-  // `delegate_->Closing()` will destroy `this`. It's not safe to run any code
-  // afterwards.
-  delegate_->Closing();
+  // `delegate_->Dismiss()` and `delegate_->Ignore()` will destroy `this`. It's
+  // not safe to run any code afterwards.
+  if (should_dismiss_) {
+    delegate_->Dismiss();
+  } else {
+    delegate_->Ignore();
+  }
 }
 
 BEGIN_METADATA(PermissionChip, views::View)

@@ -16,7 +16,8 @@ class PermissionRequestChip : public PermissionChip {
   METADATA_HEADER(PermissionRequestChip);
   explicit PermissionRequestChip(
       Browser* browser,
-      permissions::PermissionPrompt::Delegate* delegate);
+      permissions::PermissionPrompt::Delegate* delegate,
+      bool should_bubble_start_open);
   PermissionRequestChip(const PermissionRequestChip& chip) = delete;
   PermissionRequestChip& operator=(const PermissionRequestChip& chip) = delete;
   ~PermissionRequestChip() override;
@@ -25,6 +26,7 @@ class PermissionRequestChip : public PermissionChip {
   // PermissionChip:
   views::View* CreateBubble() override;
   void Collapse(bool allow_restart) override;
+  void OnPromptBubbleClosed() override;
 
   void RecordChipButtonPressed();
 
