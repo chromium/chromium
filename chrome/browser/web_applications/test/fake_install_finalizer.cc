@@ -42,7 +42,6 @@ void FakeInstallFinalizer::FinalizeInstall(
 
 void FakeInstallFinalizer::FinalizeUpdate(
     const WebApplicationInfo& web_app_info,
-    content::WebContents* web_contents,
     InstallFinalizedCallback callback) {
   Finalize(web_app_info, InstallResultCode::kSuccessAlreadyInstalled,
            std::move(callback));

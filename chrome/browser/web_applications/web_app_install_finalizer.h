@@ -81,7 +81,6 @@ class WebAppInstallFinalizer {
   // if the app window needing update closes at the same time as Chrome.
   // Therefore, the manifest may not always update as expected.
   virtual void FinalizeUpdate(const WebApplicationInfo& web_app_info,
-                              content::WebContents* web_contents,
                               InstallFinalizedCallback callback);
 
   // Removes |webapp_uninstall_source| from |app_id|. If no more interested

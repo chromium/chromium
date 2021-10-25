@@ -26,7 +26,7 @@ struct InstallableData;
 namespace web_app {
 
 class WebAppIconManager;
-class WebAppInstallManager;
+class WebAppInstallFinalizer;
 class WebAppRegistrar;
 class WebAppSyncBridge;
 class WebAppUiManager;
@@ -166,7 +166,7 @@ class ManifestUpdateTask final
                      const WebAppRegistrar& registrar,
                      const WebAppIconManager& icon_manager,
                      WebAppUiManager* ui_manager,
-                     WebAppInstallManager* install_manager,
+                     WebAppInstallFinalizer* install_finalizer,
                      OsIntegrationManager& os_integration_manager,
                      WebAppSyncBridge* sync_bridge);
 
@@ -223,7 +223,7 @@ class ManifestUpdateTask final
   const WebAppRegistrar& registrar_;
   const WebAppIconManager& icon_manager_;
   WebAppUiManager& ui_manager_;
-  WebAppInstallManager& install_manager_;
+  WebAppInstallFinalizer& install_finalizer_;
   OsIntegrationManager& os_integration_manager_;
   WebAppSyncBridge* sync_bridge_ = nullptr;
 

@@ -1558,9 +1558,8 @@ class WebAppInstallTaskTestWithShortcutsMenu : public WebAppInstallTaskTest {
 
     SetInstallFinalizerForTesting();
 
-    install_task_->UpdateWebAppFromInfo(
-        web_contents(), app_id, std::move(web_app_info),
-        /*redownload_app_icons=*/false,
+    fake_install_finalizer().FinalizeUpdate(
+        *web_app_info,
         base::BindLambdaForTesting([&](const AppId& installed_app_id,
                                        InstallResultCode code) {
           result.app_id = installed_app_id;
@@ -1776,17 +1775,15 @@ class WebAppInstallTaskTestWithFileHandlers : public WebAppInstallTaskTest {
     bool callback_called = false;
     InstallResult result;
 
-    install_task_->UpdateWebAppFromInfo(
-        web_contents(), app_id, std::move(app_info),
-        /*redownload_app_icons=*/false,
-        base::BindLambdaForTesting(
-            [&](const AppId& installed_app_id, InstallResultCode code) {
-              result.app_id = installed_app_id;
-              result.code = code;
+    install_finalizer_->FinalizeUpdate(
+        *app_info, base::BindLambdaForTesting([&](const AppId& installed_app_id,
+                                                  InstallResultCode code) {
+          result.app_id = installed_app_id;
+          result.code = code;
 
-              callback_called = true;
-              run_loop.Quit();
-            }));
+          callback_called = true;
+          run_loop.Quit();
+        }));
 
     run_loop.Run();
     EXPECT_TRUE(callback_called);

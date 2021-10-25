@@ -294,31 +294,6 @@ void WebAppInstallTask::InstallWebAppWithParams(
                      base::Unretained(this), /*force_shortcut_app=*/false));
 }
 
-void WebAppInstallTask::UpdateWebAppFromInfo(
-    content::WebContents* web_contents,
-    const AppId& app_id,
-    std::unique_ptr<WebApplicationInfo> web_application_info,
-    bool update_product_icons,
-    OnceInstallCallback callback) {
-  CheckInstallPreconditions();
-  Observe(web_contents);
-  if (ShouldStopInstall())
-    return;
-
-  install_callback_ = std::move(callback);
-  background_installation_ = true;
-
-  std::vector<GURL> icon_urls =
-      GetValidIconUrlsToDownload(*web_application_info);
-
-  data_retriever_->GetIcons(
-      web_contents, std::move(icon_urls),
-      /*skip_page_favicons=*/true,
-      base::BindOnce(&WebAppInstallTask::OnIconsRetrievedFinalizeUpdate,
-                     base::Unretained(this), std::move(web_application_info),
-                     update_product_icons));
-}
-
 void WebAppInstallTask::LoadAndRetrieveWebApplicationInfoWithIcons(
     const GURL& start_url,
     WebAppUrlLoader* url_loader,
@@ -814,7 +789,7 @@ void WebAppInstallTask::OnIconsRetrievedFinalizeUpdate(
                            icons_http_results);
 
   install_finalizer_->FinalizeUpdate(
-      *web_app_info, web_contents(),
+      *web_app_info,
       base::BindOnce(&WebAppInstallTask::CallInstallCallback, GetWeakPtr()));
 }
 

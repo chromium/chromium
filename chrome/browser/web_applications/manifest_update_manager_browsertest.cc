@@ -106,7 +106,7 @@ constexpr char16_t kAnotherShortcutsItemName16[] = u"Timeline";
 constexpr char kAnotherShortcutsItemUrl[] = "/shortcut";
 constexpr char kAnotherShortcutsItemShortName[] = "H";
 constexpr char kAnotherShortcutsItemDescription[] = "Navigate home";
-constexpr char kAnotherIconSrc[] = "/launcher-icon-4x.png";
+constexpr char kAnotherIconSrc[] = "/banners/launcher-icon-4x.png";
 constexpr int kAnotherIconSize = 192;
 
 constexpr char kShortcutsItem[] = R"(
@@ -432,6 +432,38 @@ class ManifestUpdateManagerBrowserTest : public InProcessBrowserTest {
   absl::optional<base::RunLoop> shortcut_run_loop_;
   absl::optional<SkColor> updated_shortcut_top_left_color_;
   ScopedOsHooksSuppress os_hooks_suppress_;
+};
+
+enum class UpdateDialogParam {
+  kDisabled = 0,
+  kEnabled = 1,
+};
+
+class ManifestUpdateManagerBrowserTest_UpdateDialog
+    : public ManifestUpdateManagerBrowserTest,
+      public testing::WithParamInterface<UpdateDialogParam> {
+ public:
+  ManifestUpdateManagerBrowserTest_UpdateDialog() {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kPwaUpdateDialogForNameAndIcon, IsUpdateDialogEnabled());
+  }
+
+  bool IsUpdateDialogEnabled() const {
+    return GetParam() == UpdateDialogParam::kEnabled;
+  }
+
+  static std::string ParamToString(
+      testing::TestParamInfo<UpdateDialogParam> param) {
+    switch (param.param) {
+      case UpdateDialogParam::kDisabled:
+        return "UpdateDialogDisabled";
+      case UpdateDialogParam::kEnabled:
+        return "UpdateDialogEnabled";
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
@@ -978,10 +1010,10 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
             http_server_.GetURL("/"));
 }
 
-IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
-                       CheckDoesNotApplyIconURLChange) {
-  // This test changes the scope and also the icon list. The scope should update
-  // but the icons should not.
+IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTest_UpdateDialog,
+                       ScopeChangeWithProductIconChange) {
+  // This test changes the scope and also the icon list. The scope should
+  // update. The icon should update only if identity updates are allowed.
   constexpr char kManifestTemplate[] = R"(
     {
       "name": "Test app name",
@@ -999,8 +1031,10 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
             ManifestUpdateResult::kAppUpdated);
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
-  // The icon should not be updated.
-  CheckShortcutInfoUpdated(app_id, kInstallableIconTopLeftColor);
+  // The icon should be updated only if product icon updates are allowed.
+  CheckShortcutInfoUpdated(app_id, IsUpdateDialogEnabled()
+                                       ? kAnotherInstallableIconTopLeftColor
+                                       : kInstallableIconTopLeftColor);
   EXPECT_EQ(GetProvider().registrar().GetAppScope(app_id),
             http_server_.GetURL("/"));
 }
@@ -1433,43 +1467,6 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 0);
 }
-
-enum class UpdateDialogParam {
-  kDisabled = 0,
-  kEnabled = 1,
-};
-
-class ManifestUpdateManagerBrowserTest_UpdateDialog
-    : public ManifestUpdateManagerBrowserTest,
-      public testing::WithParamInterface<UpdateDialogParam> {
- public:
-  ManifestUpdateManagerBrowserTest_UpdateDialog() {
-    if (IsUpdateDialogEnabled()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kPwaUpdateDialogForNameAndIcon);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kPwaUpdateDialogForNameAndIcon);
-    }
-  }
-
-  bool IsUpdateDialogEnabled() const {
-    return GetParam() == UpdateDialogParam::kEnabled;
-  }
-
-  static std::string ParamToString(
-      testing::TestParamInfo<UpdateDialogParam> param) {
-    switch (param.param) {
-      case UpdateDialogParam::kDisabled:
-        return "UpdateDialogDisabled";
-      case UpdateDialogParam::kEnabled:
-        return "UpdateDialogEnabled";
-    }
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
 
 IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTest_UpdateDialog,
                        CheckDoesNotUpdateGeneratedIcons_SyncFailure) {
@@ -2535,8 +2532,11 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   run_loop.Run();
 }
 
-IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
-                       ShortcutIconContentChangeDoesNotApplyAppIconUpdate) {
+IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTest_UpdateDialog,
+                       ShortcutIconContentChangeWithProductIconChange) {
+  // This test changes the shortuct icon contents and also the product icon
+  // list. The shortcut icons should update. The icon should update only if
+  // identity updates are allowed.
   constexpr char kManifest[] = R"(
     {
       "name": "Test app name",
@@ -2581,8 +2581,10 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   OverrideManifest(kManifest, {kAnotherInstallableIconList});
   EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppUpdated);
-  // The icon should not be updated.
-  CheckShortcutInfoUpdated(app_id, kInstallableIconTopLeftColor);
+  // The icon should be updated only if product icon updates are allowed.
+  CheckShortcutInfoUpdated(app_id, IsUpdateDialogEnabled()
+                                       ? kAnotherInstallableIconTopLeftColor
+                                       : kInstallableIconTopLeftColor);
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
 }

@@ -18,7 +18,7 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
-#include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_installation_utils.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -198,14 +198,14 @@ ManifestUpdateTask::ManifestUpdateTask(
     const WebAppRegistrar& registrar,
     const WebAppIconManager& icon_manager,
     WebAppUiManager* ui_manager,
-    WebAppInstallManager* install_manager,
+    WebAppInstallFinalizer* install_finalizer,
     OsIntegrationManager& os_integration_manager,
     WebAppSyncBridge* sync_bridge)
     : content::WebContentsObserver(web_contents),
       registrar_(registrar),
       icon_manager_(icon_manager),
       ui_manager_(*ui_manager),
-      install_manager_(*install_manager),
+      install_finalizer_(*install_finalizer),
       os_integration_manager_(os_integration_manager),
       sync_bridge_(sync_bridge),
       url_(url),
@@ -290,11 +290,6 @@ void ManifestUpdateTask::OnDidGetInstallableData(
   if (app_id_ != GenerateAppId(web_application_info_->manifest_id,
                                web_application_info_->start_url)) {
     DestroySelf(ManifestUpdateResult::kAppIdMismatch);
-    return;
-  }
-
-  if (IsUpdateNeededForManifest()) {
-    UpdateAfterWindowsClose();
     return;
   }
 
@@ -433,9 +428,6 @@ void ManifestUpdateTask::OnIconsDownloaded(
 
   // TODO(crbug.com/1238622): Report `result` and `DownloadedIconsHttpResults`in
   // UMA and internals.
-  // TODO(crbug.com/1240660): ManifestUpdateTask should download icons and pass
-  // to WebAppInstallManager. See the duplicate recording in
-  // `WebAppInstallTask::OnIconsRetrievedFinalizeUpdate()`.
   RecordDownloadedIconsHttpResultsCodeClass(
       "WebApp.Icon.HttpStatusCodeClassOnUpdate", result, icons_http_results);
 
@@ -461,15 +453,8 @@ void ManifestUpdateTask::OnAllIconsRead(IconsMap downloaded_icons_map,
   // data.
   // If this data does not match what we already have on disk, then an update
   // is necessary.
-  // TODO(https://crbug.com/1184911): Reuse this data in the web app install
-  // task.
   PopulateOtherIcons(&web_application_info_.value(), downloaded_icons_map);
   PopulateProductIcons(&web_application_info_.value(), &downloaded_icons_map);
-
-  if (!base::FeatureList::IsEnabled(features::kPwaUpdateDialogForNameAndIcon)) {
-    OnPostAppIdentityUpdateCheck(AppIdentityUpdate::kSkipped);
-    return;
-  }
 
   IconDiff icon_diff = IsUpdateNeededForIconContents(disk_icon_bitmaps);
   std::u16string old_title =
@@ -491,6 +476,16 @@ void ManifestUpdateTask::OnAllIconsRead(IconsMap downloaded_icons_map,
     // running IsUpdateNeededForManifest. It doesn't matter a great deal whether
     // kSkipped or kAllowed is used here, except that updating should also work
     // without approval here. So to be safe we return kSkipped.
+    OnPostAppIdentityUpdateCheck(AppIdentityUpdate::kSkipped);
+    return;
+  }
+
+  if (!base::FeatureList::IsEnabled(features::kPwaUpdateDialogForNameAndIcon)) {
+    // Update dialog required, but not enabled --- restore the original product
+    // icons and proceed with update, if needed.
+    web_application_info_->icon_bitmaps = std::move(disk_icon_bitmaps);
+    web_application_info_->manifest_icons =
+        registrar_.GetAppById(app_id_)->manifest_icons();
     OnPostAppIdentityUpdateCheck(AppIdentityUpdate::kSkipped);
     return;
   }
@@ -522,10 +517,9 @@ void ManifestUpdateTask::OnAllIconsRead(IconsMap downloaded_icons_map,
     return;
   }
 
-  content::WebContents* web_contents = WebContentsObserver::web_contents();
   ui_manager_.ShowWebAppIdentityUpdateDialog(
       app_id_, title_change, icon_diff.mismatch(), old_title, new_title,
-      *before_icon, *after_icon, web_contents,
+      *before_icon, *after_icon, web_contents(),
       base::BindOnce(&ManifestUpdateTask::OnPostAppIdentityUpdateCheck,
                      AsWeakPtr()));
 
@@ -540,6 +534,11 @@ void ManifestUpdateTask::OnPostAppIdentityUpdateCheck(
   app_identity_update_allowed_ =
       app_identity_update_allowed == AppIdentityUpdate::kAllowed;
   if (app_identity_update_allowed_) {
+    UpdateAfterWindowsClose();
+    return;
+  }
+
+  if (IsUpdateNeededForManifest()) {
     UpdateAfterWindowsClose();
     return;
   }
@@ -640,8 +639,6 @@ void ManifestUpdateTask::OnAllAppWindowsClosed() {
       !app_identity_update_allowed_) {
     // The app's name must not change due to an automatic update, except for
     // default installed apps (that have been vetted).
-    // TODO(crbug.com/1088338): Provide a safe way for apps to update their
-    // name.
     web_application_info_->title =
         base::UTF8ToUTF16(registrar_.GetAppShortName(app_id_));
   }
@@ -650,30 +647,10 @@ void ManifestUpdateTask::OnAllAppWindowsClosed() {
   web_application_info_->user_display_mode =
       registrar_.GetAppUserDisplayMode(app_id_);
 
-  stage_ = Stage::kPendingMaybeReadExistingIcons;
-  // If icon updating is disabled, then read the existing icons so they can be
-  // populated on the WebApplicationInfo.
-  if (AllowUnpromptedIconUpdate(app_id_, registrar_) ||
-      app_identity_update_allowed_) {
-    OnExistingIconsRead(IconBitmaps());
-    return;
-  }
-  icon_manager_.ReadAllIcons(
-      app_id_,
-      base::BindOnce(&ManifestUpdateTask::OnExistingIconsRead, AsWeakPtr()));
-}
-
-void ManifestUpdateTask::OnExistingIconsRead(IconBitmaps icon_bitmaps) {
-  DCHECK_EQ(stage_, Stage::kPendingMaybeReadExistingIcons);
-
-  bool redownload_app_icons = icon_bitmaps.empty();
-  if (!redownload_app_icons)
-    web_application_info_->icon_bitmaps = std::move(icon_bitmaps);
-
   stage_ = Stage::kPendingInstallation;
-  install_manager_.UpdateWebAppFromInfo(
-      app_id_, std::make_unique<WebApplicationInfo>(*web_application_info_),
-      /*redownload_app_icons=*/redownload_app_icons,
+
+  install_finalizer_.FinalizeUpdate(
+      *web_application_info_,
       base::BindOnce(&ManifestUpdateTask::OnInstallationComplete, AsWeakPtr()));
 }
 
