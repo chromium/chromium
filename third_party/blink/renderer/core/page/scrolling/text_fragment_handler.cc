@@ -8,6 +8,7 @@
 #include "base/strings/strcat.h"
 #include "components/shared_highlighting/core/common/disabled_sites.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
+#include "components/shared_highlighting/core/common/text_fragments_utils.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
@@ -15,7 +16,9 @@
 #include "third_party/blink/renderer/core/editing/range_in_flat_tree.h"
 #include "third_party/blink/renderer/core/editing/selection_editor.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/page/scrolling/text_fragment_anchor.h"
 
 namespace {
@@ -31,6 +34,7 @@ TextFragmentHandler::TextFragmentHandler(LocalFrame* main_frame)
     : text_fragment_selector_generator_(
           MakeGarbageCollected<TextFragmentSelectorGenerator>(main_frame)) {}
 
+// TODO(http://crbug/1262142): lazily bind once and not re-bind each time.
 void TextFragmentHandler::BindTextFragmentReceiver(
     mojo::PendingReceiver<mojom::blink::TextFragmentReceiver> producer) {
   selector_producer_.reset();
@@ -91,14 +95,23 @@ void TextFragmentHandler::GetExistingSelectors(
   std::move(callback).Run(text_fragment_selectors);
 }
 
+// TODO(http://crbug/1262141): look into using PageBroadcast Mojo.
 void TextFragmentHandler::RemoveFragments() {
   DCHECK(
       base::FeatureList::IsEnabled(shared_highlighting::kSharedHighlightingV2));
 
-  GetTextFragmentSelectorGenerator()
-      ->GetFrame()
-      ->View()
-      ->DismissFragmentAnchor();
+  LocalFrame* frame = GetTextFragmentSelectorGenerator()->GetFrame();
+
+  if (GetTextFragmentAnchor()) {
+    frame->View()->DismissFragmentAnchor();
+  } else if (frame->IsMainFrame()) {
+    // DismissFragmentAnchor normally runs the URL update steps to remove the
+    // selectors from the URL. However, even if the main frame doesn't have a
+    // text fragment anchor, the selectors still need to be removed from the
+    // URL. This is because dismissing the text fragment anchors is a page-wide
+    // operation, and the URL might have selectors for a subframe.
+    RemoveSelectorsFromUrl(frame);
+  }
 }
 
 // static
@@ -271,6 +284,19 @@ TextFragmentAnchor* TextFragmentHandler::GetTextFragmentAnchor() {
     return nullptr;
   }
   return static_cast<TextFragmentAnchor*>(fragmentAnchor);
+}
+
+// static
+void TextFragmentHandler::RemoveSelectorsFromUrl(LocalFrame* frame) {
+  KURL url(
+      shared_highlighting::RemoveTextFragments(frame->GetDocument()->Url()));
+  // Replace the current history entry with the new url, so that the text
+  // fragment shown in the URL matches the state of the highlight on the page.
+  // This is equivalent to history.replaceState in javascript.
+  frame->DomWindow()->document()->Loader()->RunURLAndHistoryUpdateSteps(
+      url, mojom::blink::SameDocumentNavigationType::kFragment,
+      /*data=*/nullptr, WebFrameLoadType::kReplaceCurrentItem,
+      mojom::blink::ScrollRestorationType::kAuto);
 }
 
 }  // namespace blink

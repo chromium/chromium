@@ -29,6 +29,16 @@ constexpr char kTextFragmentUrlClassifier[] = "#:~:text=";
 
 // Indicates how long context menu should wait for link generation result.
 constexpr base::TimeDelta kTimeoutMs = base::Milliseconds(500);
+
+// Removes the highlight from the frame.
+void RemoveHighlightsInFrame(content::RenderFrameHost* render_frame_host) {
+  mojo::Remote<blink::mojom::TextFragmentReceiver> remote;
+
+  // A TextFragmentReceiver is created lazily for each frame
+  render_frame_host->GetRemoteInterfaces()->GetInterface(
+      remote.BindNewPipeAndPassReceiver());
+  remote->RemoveFragments();
+}
 }  // namespace
 
 // static
@@ -114,7 +124,7 @@ void LinkToTextMenuObserver::ExecuteCommand(int command_id) {
       }
     }
   } else if (command_id == IDC_CONTENT_CONTEXT_REMOVELINKTOTEXT) {
-    RemoveHighlight();
+    RemoveHighlights();
   }
 }
 
@@ -258,8 +268,10 @@ void LinkToTextMenuObserver::OnGetExistingSelectorsComplete(
           kCopiedFromExistingHighlight);
 }
 
-void LinkToTextMenuObserver::RemoveHighlight() {
-  GetRemote()->RemoveFragments();
+void LinkToTextMenuObserver::RemoveHighlights() {
+  // Remove highlights from all frames in the primary page.
+  proxy_->GetWebContents()->GetMainFrame()->ForEachRenderFrameHost(
+      base::BindRepeating(RemoveHighlightsInFrame));
 }
 
 mojo::Remote<blink::mojom::TextFragmentReceiver>&

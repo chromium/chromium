@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/page/scrolling/text_fragment_handler.h"
 #include "third_party/blink/renderer/core/page/scrolling/text_fragment_selector.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
@@ -266,8 +267,9 @@ void TextFragmentAnchor::DidScroll(mojom::blink::ScrollType type) {
     return;
   }
 
-  if (ShouldDismissOnScrollOrClick())
-    Dismiss();
+  if (ShouldDismissOnScrollOrClick() && Dismiss())
+    TextFragmentHandler::RemoveSelectorsFromUrl(frame_);
+
   user_scrolled_ = true;
 
   if (did_non_zero_scroll_ &&
@@ -484,17 +486,6 @@ bool TextFragmentAnchor::Dismiss() {
       DocumentMarker::MarkerTypes::TextFragment());
   dismissed_ = true;
   metrics_->Dismissed();
-
-  KURL url(
-      shared_highlighting::RemoveTextFragments(frame_->GetDocument()->Url()));
-
-  // Replace the current history entry with the new url, so that the text
-  // fragment shown in the URL matches the state of the highlight on the page.
-  // This is equivalent to history.replaceState in javascript.
-  frame_->DomWindow()->document()->Loader()->RunURLAndHistoryUpdateSteps(
-      url, mojom::blink::SameDocumentNavigationType::kFragment,
-      /*data=*/nullptr, WebFrameLoadType::kReplaceCurrentItem,
-      mojom::blink::ScrollRestorationType::kAuto);
 
   return dismissed_;
 }
