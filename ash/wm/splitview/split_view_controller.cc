@@ -345,7 +345,7 @@ class SplitViewController::DividerSnapAnimation
 
     gfx::AnimationContainer* container = new gfx::AnimationContainer();
     container->SetAnimationRunner(
-        std::make_unique<views::CompositorAnimationRunner>(widget));
+        std::make_unique<views::CompositorAnimationRunner>(widget, FROM_HERE));
     SetContainer(container);
 
     tracker_.emplace(widget->GetCompositor()->RequestNewThroughputTracker());

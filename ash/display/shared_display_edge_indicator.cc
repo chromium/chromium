@@ -61,7 +61,8 @@ void SharedDisplayEdgeIndicator::Show(const gfx::Rect& src_bounds,
   animation_ = std::make_unique<gfx::ThrobAnimation>(this);
   gfx::AnimationContainer* container = new gfx::AnimationContainer();
   container->SetAnimationRunner(
-      std::make_unique<views::CompositorAnimationRunner>(src_widget_.get()));
+      std::make_unique<views::CompositorAnimationRunner>(src_widget_.get(),
+                                                         FROM_HERE));
   animation_->SetContainer(container);
   animation_->SetThrobDuration(base::Milliseconds(1000));
   animation_->StartThrobbing(/*infinite=*/-1);
