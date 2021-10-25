@@ -127,10 +127,10 @@ class BluetoothDetailedViewTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
-  ash::TopShortcutButton* FindPairNewDeviceButton() {
+  ash::TopShortcutButton* FindPairNewDeviceClickableView() {
     return FindViewById<ash::TopShortcutButton*>(
         BluetoothDetailedViewImpl::BluetoothDetailedViewChildId::
-            kPairNewDeviceButton);
+            kPairNewDeviceClickableView);
   }
 
   views::ToggleButton* FindBluetoothToggleButton() {
@@ -251,7 +251,8 @@ TEST_F(BluetoothDetailedViewTest, BluetoothToggleHasCorrectTooltipText) {
 }
 
 TEST_F(BluetoothDetailedViewTest, PressingPairNewDeviceNotifiesDelegate) {
-  ash::TopShortcutButton* pair_new_device_button = FindPairNewDeviceButton();
+  ash::TopShortcutButton* pair_new_device_button =
+      FindPairNewDeviceClickableView();
   views::View* pair_new_device_view = FindPairNewDeviceView();
 
   EXPECT_FALSE(pair_new_device_view->GetVisible());
@@ -265,7 +266,8 @@ TEST_F(BluetoothDetailedViewTest, PressingPairNewDeviceNotifiesDelegate) {
 }
 
 TEST_F(BluetoothDetailedViewTest, PairNewDeviceButtonIsCentered) {
-  ash::TopShortcutButton* pair_new_device_button = FindPairNewDeviceButton();
+  ash::TopShortcutButton* pair_new_device_button =
+      FindPairNewDeviceClickableView();
   views::View* pair_new_device_view = FindPairNewDeviceView();
 
   bluetooth_detailed_view()->UpdateBluetoothEnabledState(true);

@@ -16,7 +16,6 @@
 
 namespace views {
 class Border;
-class ImageView;
 class Label;
 }
 
@@ -50,6 +49,11 @@ class HoverHighlightView : public ActionableView {
   // also sets the accessible name. Primarily used for scrollable rows in
   // detailed views.
   void AddIconAndLabel(const gfx::ImageSkia& image, const std::u16string& text);
+
+  // Convenience function for populating the view with an arbitrary view and a
+  // label. This also sets the accessible name.
+  void AddViewAndLabel(std::unique_ptr<views::View> view,
+                       const std::u16string& text);
 
   // Populates the view with a text label, inset on the left by the horizontal
   // space that would normally be occupied by an icon.
@@ -89,7 +93,7 @@ class HoverHighlightView : public ActionableView {
 
   views::Label* text_label() { return text_label_; }
   views::Label* sub_text_label() { return sub_text_label_; }
-  views::ImageView* left_icon() { return left_icon_; }
+  views::View* left_view() { return left_view_; }
   views::View* right_view() { return right_view_; }
   views::View* sub_row() { return sub_row_; }
 
@@ -127,7 +131,7 @@ class HoverHighlightView : public ActionableView {
   ViewClickListener* const listener_ = nullptr;
   views::Label* text_label_ = nullptr;
   views::Label* sub_text_label_ = nullptr;
-  views::ImageView* left_icon_ = nullptr;
+  views::View* left_view_ = nullptr;
   views::View* right_view_ = nullptr;
   views::View* sub_row_ = nullptr;
   TriView* tri_view_ = nullptr;

@@ -202,8 +202,12 @@ TEST_F(BluetoothDeviceListItemViewTest, HasCorrectIcon) {
 
     const gfx::Image expected_image(
         gfx::CreateVectorIcon(*it.second, icon_color));
-    const gfx::Image actual_image(
-        bluetooth_device_list_item()->left_icon()->GetImage());
+
+    ASSERT_TRUE(views::IsViewClass<views::ImageView>(
+        bluetooth_device_list_item()->left_view()));
+    const gfx::Image actual_image(static_cast<views::ImageView*>(
+                                      bluetooth_device_list_item()->left_view())
+                                      ->GetImage());
 
     EXPECT_TRUE(gfx::test::AreImagesEqual(expected_image, actual_image));
   }

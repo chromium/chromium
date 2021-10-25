@@ -46,7 +46,7 @@ class ASH_EXPORT BluetoothDetailedViewImpl : public BluetoothDetailedView,
     kDisabledView = 2,
     kSettingsButton = 3,
     kPairNewDeviceView = 4,
-    kPairNewDeviceButton = 5,
+    kPairNewDeviceClickableView = 5,
   };
 
   // BluetoothDetailedView:
@@ -73,9 +73,6 @@ class ASH_EXPORT BluetoothDetailedViewImpl : public BluetoothDetailedView,
 
   // Creates and configures the Bluetooth toggle button and the settings button.
   void CreateTitleRowButtons();
-
-  // Propagates user interaction with the "pair new device" button.
-  void OnPairNewDeviceRequested();
 
   // Attempts to close the quick settings and open the Bluetooth settings.
   void OnSettingsClicked();

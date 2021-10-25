@@ -23,6 +23,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/view.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
 
@@ -235,7 +236,11 @@ void MetalayerMode::UpdateView() {
       AshColorProvider::ContentLayerType::kIconColorPrimary);
   if (!enabled)
     icon_color = AshColorProvider::GetDisabledColor(icon_color);
-  highlight_view_->left_icon()->SetImage(
+
+  DCHECK(views::IsViewClass<views::ImageView>(highlight_view_->left_view()));
+  views::ImageView* left_icon =
+      static_cast<views::ImageView*>(highlight_view_->left_view());
+  left_icon->SetImage(
       CreateVectorIcon(GetPaletteIcon(), kMenuIconSize, icon_color));
 }
 

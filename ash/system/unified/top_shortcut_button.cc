@@ -8,6 +8,7 @@
 #include "ash/style/element_style.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
@@ -45,10 +46,6 @@ void TopShortcutButton::PaintButtonContents(gfx::Canvas* canvas) {
   views::ImageButton::PaintButtonContents(canvas);
 }
 
-const char* TopShortcutButton::GetClassName() const {
-  return "TopShortcutButton";
-}
-
 void TopShortcutButton::OnThemeChanged() {
   views::ImageButton::OnThemeChanged();
   element_style::DecorateSmallIconButton(this, icon_,
@@ -59,5 +56,8 @@ void TopShortcutButton::OnThemeChanged() {
           AshColorProvider::ControlsLayerType::kFocusRingColor));
   SchedulePaint();
 }
+
+BEGIN_METADATA(TopShortcutButton, views::ImageButton)
+END_METADATA
 
 }  // namespace ash

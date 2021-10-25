@@ -33,6 +33,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/view_utils.h"
 
 using device::mojom::BluetoothDeviceInfo;
 using device::mojom::BluetoothSystem;
@@ -318,7 +319,11 @@ int BluetoothDetailedViewLegacy::AddSameTypeDevicesToScrollList(
       container = AddScrollListItem(icon, device_name);
     } else {
       container->text_label()->SetText(device_name);
-      container->left_icon()->SetImage(gfx::CreateVectorIcon(
+
+      DCHECK(views::IsViewClass<views::ImageView>(container->left_view()));
+      views::ImageView* left_icon =
+          static_cast<views::ImageView*>(container->left_view());
+      left_icon->SetImage(gfx::CreateVectorIcon(
           icon, AshColorProvider::Get()->GetContentLayerColor(
                     AshColorProvider::ContentLayerType::kIconColorPrimary)));
     }
