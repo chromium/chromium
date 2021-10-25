@@ -45,7 +45,6 @@ class PLATFORM_EXPORT CrossfadeGeneratedImage final : public GeneratedImage {
   }
 
   bool HasIntrinsicSize() const override { return true; }
-  bool IsCrossfadeGeneratedImage() const override { return true; }
 
   IntSize SizeWithConfig(SizeConfig) const override {
     return FlooredIntSize(size_);
