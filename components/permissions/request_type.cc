@@ -5,6 +5,7 @@
 #include "components/permissions/request_type.h"
 
 #include "base/check.h"
+#include "base/debug/crash_logging.h"
 #include "base/notreached.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permissions_client.h"
@@ -176,6 +177,8 @@ RequestType ContentSettingsTypeToRequestType(
       return RequestType::kWindowPlacement;
 #endif
     default:
+      SCOPED_CRASH_KEY_NUMBER("RequestType", "content_settings_type",
+                              static_cast<int>(content_settings_type));
       CHECK(false);
       return RequestType::kGeolocation;
   }

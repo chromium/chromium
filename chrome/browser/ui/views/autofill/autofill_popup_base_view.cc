@@ -232,26 +232,60 @@ gfx::Rect AutofillPopupBaseView::GetContentAreaBounds() const {
   return gfx::Rect();
 }
 
+gfx::Rect AutofillPopupBaseView::GetTopWindowBounds() const {
+  views::Widget* widget = views::Widget::GetTopLevelWidgetForNativeView(
+      delegate()->container_view());
+  // Find root in window tree.
+  while (widget && widget->parent()) {
+    widget = widget->parent();
+  }
+  if (widget)
+    return widget->GetWindowBoundsInScreen();
+
+  // If the widget is null, simply return an empty rect. The most common reason
+  // to end up here is that the NativeView has been destroyed externally, which
+  // can happen at any time. This happens fairly commonly on Windows (e.g., at
+  // shutdown) in particular.
+  return gfx::Rect();
+}
+
 bool AutofillPopupBaseView::DoUpdateBoundsAndRedrawPopup() {
   gfx::Size preferred_size = GetPreferredSize();
+  const gfx::Rect content_area_bounds = GetContentAreaBounds();
+  // TODO(crbug.com/1262371) Once popups can render outside the main window on
+  // Linux, use the screen bounds.
+  const gfx::Rect top_window_bounds = GetTopWindowBounds();
+  const gfx::Rect& max_bounds_for_popup =
+      PopupMayExceedContentAreaBounds(delegate_->GetWebContents())
+          ? top_window_bounds
+          : content_area_bounds;
 
-  // When a bubble border is shown, the contents area (inside the shadow) is
-  // supposed to be aligned with input element boundaries.
   gfx::Rect element_bounds = gfx::ToEnclosingRect(delegate()->element_bounds());
+
+  // If the element exceeds the content area, ensure that the popup is still
+  // visually attached to the input element.
+  element_bounds.Intersect(content_area_bounds);
+  if (element_bounds.IsEmpty()) {
+    HideController(PopupHidingReason::kElementOutsideOfContentArea);
+    return false;
+  }
+
+  // Consider the element is |kElementBorderPadding| pixels larger at the top
+  // and at the bottom in order to reposition the dropdown, so that it doesn't
+  // look too close to the element.
   element_bounds.Inset(/*horizontal=*/0, /*vertical=*/-kElementBorderPadding);
 
   // At least one row of the popup should be shown in the bounds of the content
   // area so that the user notices the presence of the popup.
   int item_height =
       children().size() > 0 ? children()[0]->GetPreferredSize().height() : 0;
-  const gfx::Rect content_area_bounds = GetContentAreaBounds();
-  if (!CanShowDropdownHere(item_height, content_area_bounds, element_bounds)) {
+  if (!CanShowDropdownHere(item_height, max_bounds_for_popup, element_bounds)) {
     HideController(PopupHidingReason::kInsufficientSpace);
     return false;
   }
 
   gfx::Rect popup_bounds = CalculatePopupBounds(
-      preferred_size, content_area_bounds, element_bounds, delegate()->IsRTL(),
+      preferred_size, max_bounds_for_popup, element_bounds, delegate()->IsRTL(),
       /*horizontally_centered=*/false);
   // Account for the scroll view's border so that the content has enough space.
   popup_bounds.Inset(-GetWidget()->GetRootView()->GetInsets());

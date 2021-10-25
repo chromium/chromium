@@ -16,9 +16,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
-
-#include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_service.h"
-#include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_service_factory.h"
 #include "chrome/browser/platform_keys/extension_key_permissions_service.h"
 #include "chrome/browser/platform_keys/extension_key_permissions_service_factory.h"
 #include "chrome/browser/platform_keys/platform_keys.h"
@@ -740,9 +737,9 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
   // This is called once for each certificate in
   // |matches_pending_permissions_check_|. Each invocation processes the first
   // element and removes it from the deque. Each processed certificate is added
-  // to |matches_| if it is selectable according to KeyPermissionsService. When
-  // all certificates have been processed, advances the SignTask state machine
-  // to |next_step|.
+  // to |matches_| if it is selectable according to
+  // ExtensionKeyPermissionsService. When all certificates have been processed,
+  // advances the SignTask state machine to |next_step|.
   void CheckKeyPermissions(Step next_step) {
     if (matches_pending_permissions_check_.empty()) {
       next_step_ = next_step;

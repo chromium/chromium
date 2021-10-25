@@ -242,7 +242,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
-  'angle_revision': 'fc1fd31a5d3807d9e82a1be139e0053662e7d4c2',
+  'angle_revision': '7a8ad7cb90ff207617f440665ea054442fbf3855',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling SwiftShader
   # and whatever else without interference from each other.
@@ -309,7 +309,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': 'ede4c59ac39f8281b3e372fa2e8f162c1a2a7ea2',
+  'devtools_frontend_revision': 'd4f932ff178bed1fafae19e0bc76b406359bb4e7',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -1694,7 +1694,7 @@ deps = {
     Var('chromium_git') + '/v8/v8.git' + '@' +  Var('v8_revision'),
 
   'src-internal': {
-    'url': 'https://chrome-internal.googlesource.com/chrome/src-internal.git@b3d887d15e7b2429350b2356390ec1287ccadb37',
+    'url': 'https://chrome-internal.googlesource.com/chrome/src-internal.git@c7ebc539d37b84815f332ebf5fa4f0786ab072f7',
     'condition': 'checkout_src_internal',
   },
 
@@ -1735,7 +1735,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/projector_app/app',
-        'version': 'baQvaqi-f8cLB6M6UNBe9ECSAXSY2EY5TdN_Q19uX8cC',
+        'version': 'xqruBqFnq2mt88cNe7dYarmo9vpJd6ivqa0LVM_SL_QC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',

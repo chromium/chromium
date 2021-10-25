@@ -162,7 +162,12 @@ const char kAllowPortMigration[] = "allow_port_migration";
 
 const char kDisableTlsZeroRtt[] = "disable_tls_zero_rtt";
 
-// "goaway_sessions_on_ip_change" is default on for iOS unless overrided via
+// Whether SPDY sessions should be closed or marked as going away upon relevant
+// network changes. When not specified, /net behavior varies depending on the
+// underlying OS.
+const char kSpdyGoAwayOnIpChange[] = "spdy_go_away_on_ip_change";
+
+// "goaway_sessions_on_ip_change" is default on for iOS unless overridden via
 // experimental options explicitly.
 #if defined(OS_IOS)
 const bool kDefaultQuicGoAwaySessionsOnIpChange = true;
@@ -666,7 +671,14 @@ void URLRequestContextConfig::ParseAndSetExperimentalOptions(
                      << "\" is not a valid effective connection type value";
         }
       }
-
+    } else if (it.key() == kSpdyGoAwayOnIpChange) {
+      if (!it.value().is_bool()) {
+        LOG(ERROR) << "\"" << it.key() << "\" config params \"" << it.value()
+                   << "\" is not a bool";
+        effective_experimental_options->RemoveKey(it.key());
+        continue;
+      }
+      session_params->spdy_go_away_on_ip_change = it.value().GetBool();
     } else {
       LOG(WARNING) << "Unrecognized Cronet experimental option \"" << it.key()
                    << "\" with params \"" << it.value();

@@ -8,7 +8,9 @@
 
 #include "base/cxx17_backports.h"
 #include "chrome/browser/platform_util.h"
+#include "chrome/browser/ui/views/extensions/extension_popup.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/common/constants.h"
 #include "ui/views/widget/widget.h"
 
 void CalculatePopupXAndWidthHorizontallyCentered(
@@ -148,14 +150,14 @@ bool CanShowDropdownHere(int item_height,
   bool enough_space_for_one_item_in_content_area_above_element =
       element_bounds.y() - content_area_bounds.y() >= item_height;
   bool element_top_is_within_content_area_bounds =
-      element_bounds.y() > content_area_bounds.y() &&
+      element_bounds.y() >= content_area_bounds.y() &&
       element_bounds.y() < content_area_bounds.bottom();
 
   bool enough_space_for_one_item_in_content_area_below_element =
       content_area_bounds.bottom() - element_bounds.bottom() >= item_height;
   bool element_bottom_is_within_content_area_bounds =
       element_bounds.bottom() > content_area_bounds.y() &&
-      element_bounds.bottom() < content_area_bounds.bottom();
+      element_bounds.bottom() <= content_area_bounds.bottom();
 
   return (enough_space_for_one_item_in_content_area_above_element &&
           element_top_is_within_content_area_bounds) ||
@@ -169,6 +171,15 @@ bool BoundsOverlapWithAnyOpenPrompt(const gfx::Rect& screen_bounds,
       platform_util::GetViewForWindow(web_contents->GetTopLevelNativeWindow());
   if (!top_level_view)
     return false;
+  // We generally want to ensure that no prompt overlaps with |screen_bounds|.
+  // It is possible, however, that a <datalist> is part of a prompt (e.g. an
+  // extension popup can render a <datalist>). Therefore, we exclude the widget
+  // that hosts the |web_contents| from the prompts that are considered for
+  // overlaps.
+  views::Widget* web_contents_widget =
+      views::Widget::GetTopLevelWidgetForNativeView(
+          web_contents->GetContentNativeView());
+
   // On Aura-based systems, prompts are siblings to the top level native window,
   // and hence we need to go one level up to start searching from the root
   // window.
@@ -177,8 +188,25 @@ bool BoundsOverlapWithAnyOpenPrompt(const gfx::Rect& screen_bounds,
                        : top_level_view;
   views::Widget::Widgets all_widgets;
   views::Widget::GetAllChildWidgets(top_level_view, &all_widgets);
-  return base::ranges::any_of(all_widgets, [&screen_bounds](views::Widget* w) {
-    return w->IsDialogBox() &&
-           w->GetWindowBoundsInScreen().Intersects(screen_bounds);
-  });
+  return base::ranges::any_of(
+      all_widgets, [&screen_bounds, web_contents_widget](views::Widget* w) {
+        return w->IsDialogBox() &&
+               w->GetWindowBoundsInScreen().Intersects(screen_bounds) &&
+               w != web_contents_widget;
+      });
+}
+
+bool PopupMayExceedContentAreaBounds(content::WebContents* web_contents) {
+  if (!web_contents)  // May be null for tests.
+    return false;
+  const GURL& url = web_contents->GetLastCommittedURL();
+  // Extensions may want to show <datalist> form controls whose popups cannot be
+  // rendered within the bounds of an extension popup. For that reason they are
+  // allow-listed to draw popups outside the boundary of the extension popup.
+  if (url.SchemeIs(extensions::kExtensionScheme)) {
+    views::Widget* widget = views::Widget::GetTopLevelWidgetForNativeView(
+        web_contents->GetContentNativeView());
+    return widget && widget->GetName() == ExtensionPopup::kViewClassName;
+  }
+  return false;
 }

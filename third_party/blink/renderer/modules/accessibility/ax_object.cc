@@ -486,14 +486,17 @@ static constexpr uint32_t kMaxStaticTextLength = 3227574;
 void TruncateAndAddStringAttribute(
     ui::AXNodeData* dst,
     ax::mojom::blink::StringAttribute attribute,
-    const std::string& value,
+    const String& value,
     uint32_t max_len = kMaxStringAttributeLength) {
-  if (value.size() > max_len) {
+  if (value.IsEmpty())
+    return;
+  std::string value_utf8 = value.Utf8();
+  if (value_utf8.size() > max_len) {
     std::string truncated;
-    base::TruncateUTF8ToByteSize(value, max_len, &truncated);
+    base::TruncateUTF8ToByteSize(value_utf8, max_len, &truncated);
     dst->AddStringAttribute(attribute, truncated);
   } else {
-    dst->AddStringAttribute(attribute, value);
+    dst->AddStringAttribute(attribute, value_utf8);
   }
 }
 
@@ -1177,11 +1180,12 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
 
   SerializeNameAndDescriptionAttributes(accessibility_mode, node_data);
 
-  if (accessibility_mode.has_mode(ui::AXMode::kScreenReader)) {
-    if (LiveRegionRoot())
-      SerializeLiveRegionAttributes(node_data);
-    SerializeOtherScreenReaderAttributes(node_data);
-  }
+  if (!accessibility_mode.has_mode(ui::AXMode::kScreenReader))
+    return;
+
+  if (LiveRegionRoot())
+    SerializeLiveRegionAttributes(node_data);
+  SerializeOtherScreenReaderAttributes(node_data);
 }
 
 void AXObject::SerializeActionAttributes(ui::AXNodeData* node_data) {
@@ -1223,19 +1227,16 @@ void AXObject::SerializeElementAttributes(ui::AXNodeData* node_data) {
     return;
 
   if (const AtomicString& class_name = element->GetClassAttribute()) {
-    TruncateAndAddStringAttribute(node_data,
-                                  ax::mojom::blink::StringAttribute::kClassName,
-                                  class_name.Utf8());
+    TruncateAndAddStringAttribute(
+        node_data, ax::mojom::blink::StringAttribute::kClassName, class_name);
   }
 
   // Expose StringAttribute::kRole, which is used for the xml-roles object
   // attribute. Prefer the raw ARIA role attribute value, otherwise, the ARIA
   // equivalent role is used, if it is a role that is exposed in xml-roles.
   const AtomicString& role_str = GetRoleAttributeStringForObjectAttribute();
-  if (role_str) {
-    TruncateAndAddStringAttribute(
-        node_data, ax::mojom::blink::StringAttribute::kRole, role_str.Utf8());
-  }
+  TruncateAndAddStringAttribute(
+      node_data, ax::mojom::blink::StringAttribute::kRole, role_str);
 }
 
 void AXObject::SerializeHTMLTagAndClass(ui::AXNodeData* node_data) {
@@ -1250,12 +1251,11 @@ void AXObject::SerializeHTMLTagAndClass(ui::AXNodeData* node_data) {
 
   TruncateAndAddStringAttribute(node_data,
                                 ax::mojom::blink::StringAttribute::kHtmlTag,
-                                element->tagName().LowerASCII().Utf8());
+                                element->tagName().LowerASCII());
 
   if (const AtomicString& class_name = element->GetClassAttribute()) {
-    TruncateAndAddStringAttribute(node_data,
-                                  ax::mojom::blink::StringAttribute::kClassName,
-                                  class_name.Utf8());
+    TruncateAndAddStringAttribute(
+        node_data, ax::mojom::blink::StringAttribute::kClassName, class_name);
   }
 }
 
@@ -1274,12 +1274,11 @@ void AXObject::SerializeHTMLAttributes(ui::AXNodeData* node_data) {
 // TODO(nektar): Turn off kHTMLAccessibilityMode for automation and Mac
 // and remove ifdef.
 #if defined(OS_WIN) || defined(OS_CHROMEOS)
-  if ((node_data->role == ax::mojom::blink::Role::kMath ||
-       node_data->role == ax::mojom::blink::Role::kMathMLMath) &&
-      element->innerHTML().length()) {
+  if (node_data->role == ax::mojom::blink::Role::kMath ||
+      node_data->role == ax::mojom::blink::Role::kMathMLMath) {
     TruncateAndAddStringAttribute(node_data,
                                   ax::mojom::blink::StringAttribute::kInnerHtml,
-                                  element->innerHTML().Utf8());
+                                  element->innerHTML());
   }
 #endif
 }
@@ -1309,8 +1308,7 @@ void AXObject::SerializeLangAttribute(ui::AXNodeData* node_data) {
     // TODO(chrishall): should we still trim redundant languages off here?
     if (!parent || parent->Language() != Language()) {
       TruncateAndAddStringAttribute(
-          node_data, ax::mojom::blink::StringAttribute::kLanguage,
-          Language().Utf8());
+          node_data, ax::mojom::blink::StringAttribute::kLanguage, Language());
     }
   }
 }
@@ -1344,14 +1342,12 @@ void AXObject::SerializeLiveRegionAttributes(ui::AXNodeData* node_data) const {
 
   node_data->AddBoolAttribute(ax::mojom::blink::BoolAttribute::kLiveAtomic,
                               LiveRegionAtomic());
-  if (!LiveRegionStatus().IsEmpty()) {
-    TruncateAndAddStringAttribute(
-        node_data, ax::mojom::blink::StringAttribute::kLiveStatus,
-        LiveRegionStatus().Utf8());
-  }
+  TruncateAndAddStringAttribute(node_data,
+                                ax::mojom::blink::StringAttribute::kLiveStatus,
+                                LiveRegionStatus());
   TruncateAndAddStringAttribute(
       node_data, ax::mojom::blink::StringAttribute::kLiveRelevant,
-      LiveRegionRelevant().Utf8());
+      LiveRegionRelevant());
   // If we are not at the root of an atomic live region.
   if (ContainerLiveRegionAtomic() && !LiveRegionRoot()->IsDetached() &&
       !LiveRegionAtomic()) {
@@ -1366,10 +1362,10 @@ void AXObject::SerializeLiveRegionAttributes(ui::AXNodeData* node_data) const {
       ContainerLiveRegionBusy());
   TruncateAndAddStringAttribute(
       node_data, ax::mojom::blink::StringAttribute::kContainerLiveStatus,
-      ContainerLiveRegionStatus().Utf8());
+      ContainerLiveRegionStatus());
   TruncateAndAddStringAttribute(
       node_data, ax::mojom::blink::StringAttribute::kContainerLiveRelevant,
-      ContainerLiveRegionRelevant().Utf8());
+      ContainerLiveRegionRelevant());
 }
 
 void AXObject::SerializeNameAndDescriptionAttributes(
@@ -1378,14 +1374,17 @@ void AXObject::SerializeNameAndDescriptionAttributes(
   ax::mojom::blink::NameFrom name_from;
   AXObjectVector name_objects;
   String name = GetName(name_from, &name_objects);
-  if ((!name.IsEmpty()) ||
-      name_from == ax::mojom::blink::NameFrom::kAttributeExplicitlyEmpty) {
+  if (name_from == ax::mojom::blink::NameFrom::kAttributeExplicitlyEmpty) {
+    node_data->AddStringAttribute(ax::mojom::blink::StringAttribute::kName,
+                                  std::string());
+    node_data->SetNameFrom(
+        ax::mojom::blink::NameFrom::kAttributeExplicitlyEmpty);
+  } else if (!name.IsEmpty()) {
     int max_length = node_data->role == ax::mojom::blink::Role::kStaticText
                          ? kMaxStaticTextLength
                          : kMaxStringAttributeLength;
-    TruncateAndAddStringAttribute(node_data,
-                                  ax::mojom::blink::StringAttribute::kName,
-                                  name.Utf8(), max_length);
+    TruncateAndAddStringAttribute(
+        node_data, ax::mojom::blink::StringAttribute::kName, name, max_length);
     node_data->SetNameFrom(name_from);
     AddIntListAttributeFromObjects(
         ax::mojom::blink::IntListAttribute::kLabelledbyIds, name_objects,
@@ -1400,7 +1399,7 @@ void AXObject::SerializeNameAndDescriptionAttributes(
     DCHECK(description_from != ax::mojom::blink::DescriptionFrom::kNone);
     TruncateAndAddStringAttribute(
         node_data, ax::mojom::blink::StringAttribute::kDescription,
-        description.Utf8());
+        description);
     node_data->SetDescriptionFrom(description_from);
     AddIntListAttributeFromObjects(
         ax::mojom::blink::IntListAttribute::kDescribedbyIds,
@@ -1408,20 +1407,15 @@ void AXObject::SerializeNameAndDescriptionAttributes(
   }
 
   String title = Title(name_from);
-  if (!title.IsEmpty()) {
-    TruncateAndAddStringAttribute(
-        node_data, ax::mojom::blink::StringAttribute::kTooltip, title.Utf8());
-  }
+  TruncateAndAddStringAttribute(
+      node_data, ax::mojom::blink::StringAttribute::kTooltip, title);
 
   if (!accessibility_mode.has_mode(ui::AXMode::kScreenReader))
     return;
 
   String placeholder = Placeholder(name_from);
-  if (!placeholder.IsEmpty()) {
-    TruncateAndAddStringAttribute(
-        node_data, ax::mojom::blink::StringAttribute::kPlaceholder,
-        placeholder.Utf8());
-  }
+  TruncateAndAddStringAttribute(
+      node_data, ax::mojom::blink::StringAttribute::kPlaceholder, placeholder);
 }
 
 void AXObject::SerializeOtherScreenReaderAttributes(
@@ -1457,11 +1451,10 @@ void AXObject::SerializeOtherScreenReaderAttributes(
 
   if (GetInvalidState() != ax::mojom::blink::InvalidState::kNone)
     node_data->SetInvalidState(GetInvalidState());
-  if (GetInvalidState() == ax::mojom::blink::InvalidState::kOther &&
-      AriaInvalidValue().length()) {
+  if (GetInvalidState() == ax::mojom::blink::InvalidState::kOther) {
     TruncateAndAddStringAttribute(
         node_data, ax::mojom::blink::StringAttribute::kAriaInvalidValue,
-        AriaInvalidValue().Utf8());
+        AriaInvalidValue());
   }
 
   if (CheckedState() != ax::mojom::blink::CheckedState::kNone) {
@@ -1476,17 +1469,12 @@ void AXObject::SerializeOtherScreenReaderAttributes(
     SerializeListMarkerAttributes(node_data);
   }
 
-  if (AccessKey().length()) {
-    TruncateAndAddStringAttribute(node_data,
-                                  ax::mojom::blink::StringAttribute::kAccessKey,
-                                  AccessKey().Utf8());
-  }
+  TruncateAndAddStringAttribute(
+      node_data, ax::mojom::blink::StringAttribute::kAccessKey, AccessKey());
 
-  if (AutoComplete().length()) {
-    TruncateAndAddStringAttribute(
-        node_data, ax::mojom::blink::StringAttribute::kAutoComplete,
-        AutoComplete().Utf8());
-  }
+  TruncateAndAddStringAttribute(
+      node_data, ax::mojom::blink::StringAttribute::kAutoComplete,
+      AutoComplete());
 
   if (Action() != ax::mojom::blink::DefaultActionVerb::kNone) {
     node_data->SetDefaultActionVerb(Action());
@@ -1634,7 +1622,7 @@ void AXObject::SerializeStyleAttributes(ui::AXNodeData* node_data) {
     if (!parent || parent->ComputedFontFamily() != computed_family) {
       TruncateAndAddStringAttribute(
           node_data, ax::mojom::blink::StringAttribute::kFontFamily,
-          FontFamilyForSerialization().Utf8());
+          FontFamilyForSerialization());
     }
   }
 
@@ -1890,11 +1878,8 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
       break;
   }
 
-  if (!Url().IsEmpty()) {
-    TruncateAndAddStringAttribute(node_data,
-                                  ax::mojom::blink::StringAttribute::kUrl,
-                                  Url().GetString().Utf8());
-  }
+  TruncateAndAddStringAttribute(
+      node_data, ax::mojom::blink::StringAttribute::kUrl, Url().GetString());
 
   if (accessibility_mode.has_mode(ui::AXMode::kScreenReader)) {
     SerializeMarkerAttributes(node_data);
@@ -1905,12 +1890,14 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
 
   if (Element* element = GetElement()) {
     String value_text = SlowGetValueForControlIncludingContentEditable();
-    if (!value_text.IsEmpty() || !IsRangeValueSupported()) {
+    if (value_text.IsEmpty() && !IsRangeValueSupported()) {
       // TODO(nektar) Once contenteditable values are computed on the browser
       // side, only expose this when value text is non-empty.
-      TruncateAndAddStringAttribute(node_data,
-                                    ax::mojom::blink::StringAttribute::kValue,
-                                    value_text.Utf8());
+      node_data->AddStringAttribute(ax::mojom::blink::StringAttribute::kValue,
+                                    std::string());
+    } else {
+      TruncateAndAddStringAttribute(
+          node_data, ax::mojom::blink::StringAttribute::kValue, value_text);
     }
 
     if (IsAtomicTextField()) {
@@ -1945,6 +1932,28 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
       SerializeHTMLAttributes(node_data);
     }
   }
+}
+
+const AtomicString& AXObject::GetRoleAttributeStringForObjectAttribute() {
+  // All ARIA roles are exposed in xml-roles.
+  if (const AtomicString& role_str =
+          GetAOMPropertyOrARIAAttribute(AOMStringProperty::kRole)) {
+    return role_str;
+  }
+
+  ax::mojom::blink::Role landmark_role = RoleValue();
+  if (landmark_role == ax::mojom::blink::Role::kFooter) {
+    // - Treat <footer> as "contentinfo" in xml-roles object attribute.
+    landmark_role = ax::mojom::blink::Role::kContentInfo;
+  } else if (landmark_role == ax::mojom::blink::Role::kHeader) {
+    // - Treat <header> as "banner" in xml-roles object attribute.
+    landmark_role = ax::mojom::blink::Role::kBanner;
+  } else if (!ui::IsLandmark(RoleValue())) {
+    // Landmarks are the only roles exposed in xml-roles, matching Firefox.
+    return g_null_atom;
+  }
+
+  return ARIARoleName(landmark_role);
 }
 
 void AXObject::SerializeMarkerAttributes(ui::AXNodeData* node_data) const {
@@ -6078,28 +6087,6 @@ const AXObject* AXObject::LowestCommonAncestor(const AXObject& first,
   }
 
   return common_ancestor;
-}
-
-const AtomicString& AXObject::GetRoleAttributeStringForObjectAttribute() {
-  // All ARIA roles are exposed in xml-roles.
-  if (const AtomicString& role_str =
-          GetAOMPropertyOrARIAAttribute(AOMStringProperty::kRole)) {
-    return role_str;
-  }
-
-  ax::mojom::blink::Role landmark_role = RoleValue();
-  if (landmark_role == ax::mojom::blink::Role::kFooter) {
-    // - Treat <footer> as "contentinfo" in xml-roles object attribute.
-    landmark_role = ax::mojom::blink::Role::kContentInfo;
-  } else if (landmark_role == ax::mojom::blink::Role::kHeader) {
-    // - Treat <header> as "banner" in xml-roles object attribute.
-    landmark_role = ax::mojom::blink::Role::kBanner;
-  } else if (!ui::IsLandmark(RoleValue())) {
-    // Landmarks are the only roles exposed in xml-roles, matching Firefox.
-    return g_null_atom;
-  }
-
-  return ARIARoleName(landmark_role);
 }
 
 String AXObject::ToString(bool verbose, bool cached_values_only) const {

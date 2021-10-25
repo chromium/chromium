@@ -178,6 +178,8 @@ crbug.com/1254945 external/wpt/html/semantics/embedded-content/media-elements/tr
 crbug.com/1254945 external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-remove-insert-ready-state.html [ Failure Pass ]
 
 crbug.com/1262934 fast/forms/form-invalid-url.html [ Failure Pass ]
+crbug.com/1262985 fullscreen/enter-exit-full-screen-hover.html [ Failure Pass ]
+crbug.com/1262966 http/tests/security/script-onerror-crossorigin-no-cors.html [ Failure Pass ]
 
 # ====== Synchronous, budgeted HTML parser tests to here ========================
 
@@ -2147,6 +2149,7 @@ crbug.com/555703 [ Win ] virtual/media-gpu-accelerated/* [ Skip ]
 crbug.com/555703 [ Fuchsia ] virtual/media-gpu-accelerated/* [ Skip ]
 
 crbug.com/467477 fast/multicol/vertical-rl/nested-columns.html [ Failure ]
+crbug.com/1262980 fast/multicol/infinitely-tall-content-in-outer-crash.html [ Pass Timeout ]
 
 crbug.com/400841 media/video-canvas-draw.html [ Failure ]
 

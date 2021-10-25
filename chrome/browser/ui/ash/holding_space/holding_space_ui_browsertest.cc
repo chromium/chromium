@@ -631,7 +631,9 @@ class HoldingSpaceUiDragAndDropBrowserTest
 };
 
 // Verifies that drag-and-drop of holding space items works.
-IN_PROC_BROWSER_TEST_P(HoldingSpaceUiDragAndDropBrowserTest, DragAndDrop) {
+// Test is flaky - crbug.com/1262973
+IN_PROC_BROWSER_TEST_P(HoldingSpaceUiDragAndDropBrowserTest,
+                       DISABLED_DragAndDrop) {
   ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 

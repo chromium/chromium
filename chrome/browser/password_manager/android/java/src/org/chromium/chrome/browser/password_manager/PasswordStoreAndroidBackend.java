@@ -19,4 +19,15 @@ public interface PasswordStoreAndroidBackend {
      * @param failureCallback A callback that is called on failure for any reason. May return sync.
      */
     void getAllLogins(Callback<byte[]> loginsReply, Callback<Exception> failureCallback);
+
+    /**
+     * Triggers an async list call to remove a login from store.
+     *
+     * @param pwdSpecificsData Serialized PasswordSpecificsData of a login that is to be deleted.
+     * @param successCallback Callback that is called on success.
+     * @param failureCallback A callback that is called on failure for any reason. May return sync.
+     */
+    // TODO(crbug.com/1229655): Make this method abstract after landing its implementation in Clank.
+    default void removeLogin(byte[] pwdSpecificsData, Callback<Void> successCallback,
+            Callback<Exception> failureCallback){};
 }

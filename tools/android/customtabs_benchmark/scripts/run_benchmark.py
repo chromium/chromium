@@ -61,6 +61,14 @@ def _ParseConfiguration(filename):
     A list of configurations, where each value is specified.
   """
   config = json.load(open(filename, 'r'))
+
+  # Set defaults for optional keys.
+  config.setdefault('pinning_benchmark', False)
+  config.setdefault('pin_filename', '')
+  config.setdefault('pin_offset', -1)
+  config.setdefault('pin_length', -1)
+  config.setdefault('extra_brief_memory_mb', 0)
+
   has_all_values = all(k in config for k in _KEYS)
   assert has_all_values
   config['url'] = str(config['url'])  # Intents don't like unicode.
