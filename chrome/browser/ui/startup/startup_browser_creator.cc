@@ -361,95 +361,21 @@ bool IsSilentLaunchEnabled(const base::CommandLine& command_line,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-void FinalizeWebAppLaunch(
-    std::unique_ptr<LaunchModeRecorder> launch_mode_recorder,
-    absl::optional<LaunchMode> app_launch_mode,
-    Browser* browser,
-    apps::mojom::LaunchContainer container) {
-  if (!browser)
-    return;
-
-  if (launch_mode_recorder) {
-    LaunchMode mode;
-    switch (container) {
-      case apps::mojom::LaunchContainer::kLaunchContainerWindow:
-        DCHECK(browser->is_type_app());
-        mode = app_launch_mode.value_or(LaunchMode::kAsWebAppInWindowOther);
-        break;
-      case apps::mojom::LaunchContainer::kLaunchContainerTab:
-        DCHECK(!browser->is_type_app());
-        mode = LaunchMode::kAsWebAppInTab;
-        break;
-      case apps::mojom::LaunchContainer::kLaunchContainerPanelDeprecated:
-        NOTREACHED();
-        FALLTHROUGH;
-      case apps::mojom::LaunchContainer::kLaunchContainerNone:
-        DCHECK(!browser->is_type_app());
-        mode = LaunchMode::kUnknownWebApp;
-        break;
-    }
-
-    launch_mode_recorder->SetLaunchMode(mode);
-  }
-
-  StartupBrowserCreatorImpl::MaybeToggleFullscreen(browser);
-}
-
-// If the process was launched with the web application command line flags,
-// e.g. --app=http://www.google.com/ or --app_id=... return true.
-// In this case |app_url| or |app_id| are populated if they're non-null.
-bool IsAppLaunch(const base::CommandLine& command_line,
-                 std::string* app_url,
-                 std::string* app_id) {
-  if (command_line.HasSwitch(switches::kApp)) {
-    if (app_url)
-      *app_url = command_line.GetSwitchValueASCII(switches::kApp);
-    return true;
-  }
-  if (command_line.HasSwitch(switches::kAppId)) {
-    if (app_id)
-      *app_id = command_line.GetSwitchValueASCII(switches::kAppId);
-    return true;
-  }
-  return false;
-}
-
 bool CanOpenWebApp(Profile* profile) {
   return web_app::AreWebAppsEnabled(profile) &&
          apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile);
 }
 
-// Opens an application window or tab if the process was launched with the web
-// application command line switches. Returns true if launch succeeded (or is
-// proceeding asynchronously); otherwise, returns false to indicate that
-// normal browser startup should resume. Desktop web applications launch
-// asynchronously, and fall back to launching a browser window.
-bool MaybeLaunchApplication(
-    const base::CommandLine& command_line,
-    const base::FilePath& cur_dir,
-    Profile* profile,
-    std::unique_ptr<LaunchModeRecorder> launch_mode_recorder) {
+// Handles the --app switch.
+bool MaybeLaunchAppShortcutWindow(const base::CommandLine& command_line,
+                                  const base::FilePath& cur_dir,
+                                  Profile* profile) {
   DCHECK(CanOpenWebApp(profile));
 
-  std::string url_string, app_id;
-  if (!IsAppLaunch(command_line, &url_string, &app_id))
+  if (!command_line.HasSwitch(switches::kApp))
     return false;
 
-  if (!app_id.empty()) {
-    // Opens an empty browser window if the app_id is invalid.
-    apps::AppServiceProxyFactory::GetForProfile(profile)
-        ->BrowserAppLauncher()
-        ->LaunchAppWithCallback(
-            app_id, command_line, cur_dir,
-            /*url_handler_launch_url=*/absl::nullopt,
-            /*protocol_handler_launch_url=*/absl::nullopt,
-            /*launch_files=*/{},
-            base::BindOnce(&FinalizeWebAppLaunch,
-                           std::move(launch_mode_recorder),
-                           LaunchMode::kAsWebAppInWindowByAppId));
-    return true;
-  }
-
+  std::string url_string = command_line.GetSwitchValueASCII(switches::kApp);
   if (url_string.empty())
     return false;
 
@@ -467,8 +393,8 @@ bool MaybeLaunchApplication(
       const content::WebContents* web_contents =
           apps::OpenExtensionAppShortcutWindow(profile, url);
       if (web_contents) {
-        FinalizeWebAppLaunch(
-            std::move(launch_mode_recorder), LaunchMode::kAsWebAppInWindowByUrl,
+        web_app::startup::FinalizeWebAppLaunch(
+            LaunchMode::kAsWebAppInWindowByUrl,
             chrome::FindBrowserWithWebContents(web_contents),
             apps::mojom::LaunchContainer::kLaunchContainerWindow);
         return true;
@@ -501,8 +427,7 @@ bool MaybeLaunchUrlHandlerWebAppFromCmd(
 
   return web_app::startup::MaybeLaunchUrlHandlerWebAppFromCmd(
       command_line, cur_dir, std::move(on_urls_unhandled_cb),
-      base::BindOnce(&FinalizeWebAppLaunch,
-                     std::make_unique<LaunchModeRecorder>(), absl::nullopt));
+      base::BindOnce(&web_app::startup::FinalizeWebAppLaunch, absl::nullopt));
 }
 #endif
 
@@ -856,8 +781,7 @@ void StartupBrowserCreator::MaybeHandleProfileAgnosticUrls(
   // Web app URL handling.
   web_app::startup::MaybeLaunchUrlHandlerWebAppFromUrls(
       urls, std::move(on_urls_unhandled_cb),
-      base::BindOnce(&FinalizeWebAppLaunch,
-                     std::make_unique<LaunchModeRecorder>(), absl::nullopt));
+      base::BindOnce(&web_app::startup::FinalizeWebAppLaunch, absl::nullopt));
 }
 #endif  // defined(OS_MAC)
 
@@ -1124,73 +1048,30 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
                                         last_opened_profiles);
   }
 
-  // Web app launch handling.
-  auto continue_startup_callback = base::BindOnce(
-      [](bool process_startup, const base::CommandLine& command_line,
-         const base::FilePath& cur_dir, Profile* profile,
-         Profile* last_used_profile,
-         const std::vector<Profile*>& last_opened_profiles) {
-        // TODO(crbug.com/1208199): It's a bug that this object doesn't hold
-        // onto the same state as the outer `this`. Refactor
-        // StartupBrowserCreator and use the state struct here.
-        StartupBrowserCreator()
-            .ContinueProcessingCommandLineAfterEarlyWebAppCheck(
-                command_line, cur_dir, profile, process_startup,
-                last_used_profile, last_opened_profiles);
-      },
-      process_startup, command_line, cur_dir, privacy_safe_profile,
-      last_used_profile, last_opened_profiles);
+  bool handled_as_app =
+      // Try a web app launch (--app-id is present).
+      web_app::startup::MaybeHandleWebAppLaunch(command_line, cur_dir,
+                                                privacy_safe_profile) ||
+      // Try an shortcut app launch (--app is present).
+      MaybeLaunchAppShortcutWindow(command_line, cur_dir, privacy_safe_profile);
 
-  // web_app::startup::MaybeLaunchProtocolHandlerWebApp keeps the passed
-  // profiles alive until running `continue_startup_callback`.
-  if (web_app::startup::MaybeHandleEarlyWebAppLaunch(
-          command_line, cur_dir, privacy_safe_profile, last_used_profile,
-          last_opened_profiles,
-          base::BindOnce(&FinalizeWebAppLaunch,
-                         std::make_unique<LaunchModeRecorder>(), absl::nullopt),
-          std::move(continue_startup_callback))) {
-    return true;
-  }
-
-  return ContinueProcessingCommandLineAfterEarlyWebAppCheck(
-      command_line, cur_dir, privacy_safe_profile, process_startup,
-      last_used_profile, last_opened_profiles);
-}
-
-bool StartupBrowserCreator::ContinueProcessingCommandLineAfterEarlyWebAppCheck(
-    const base::CommandLine& command_line,
-    const base::FilePath& cur_dir,
-    Profile* privacy_safe_profile,
-    bool process_startup,
-    Profile* last_used_profile,
-    const std::vector<Profile*>& last_opened_profiles) {
-  // If we're being run as an application window or application tab, don't
-  // restore tabs or open initial URLs as the user has directly launched an app
-  // shortcut. In the first case, the user should see a standlone app window. In
-  // the second case, the tab should either open in an existing Chrome window
-  // for this profile, or spawn a new Chrome window without any NTP if no window
-  // exists (see crbug.com/528385).
-  if (MaybeLaunchApplication(command_line, cur_dir, privacy_safe_profile,
-                             std::make_unique<LaunchModeRecorder>())) {
-    // At this point we've opened the app. As a temporary fix for
-    // https://crbug.com/1199203, if this startup is also from an unclean exit
-    // we also need to open a blank browser window so that users have the
-    // opportunity to restore, but also to prevent a potential crash loop.
-    // To achieve that, stop this from returning here, and allow it to continue
-    // to hit a standard crash reopen codepath and show an empty browser window
-    // with the restore dialog.
-    if (!HasPendingUncleanExit(privacy_safe_profile))
-      return true;
-  }
-
-  // Web app URL handling.
 #if defined(OS_WIN) || (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
-  if (MaybeLaunchUrlHandlerWebAppFromCmd(command_line, cur_dir, process_startup,
-                                         last_used_profile,
-                                         last_opened_profiles)) {
-    return true;
-  }
+  handled_as_app = handled_as_app ||
+                   // Give web apps a chance to handle a URL.
+                   MaybeLaunchUrlHandlerWebAppFromCmd(
+                       command_line, cur_dir, process_startup,
+                       last_used_profile, last_opened_profiles);
 #endif
+
+  // At this point we've decided to open an app. As a temporary fix for
+  // https://crbug.com/1199203, if this startup is also from an unclean exit
+  // we also need to open a blank browser window so that users have the
+  // opportunity to restore, but also to prevent a potential crash loop.
+  // To achieve that, stop this from returning here, and allow it to continue
+  // to hit a standard crash reopen codepath and show an empty browser window
+  // with the restore dialog.
+  if (handled_as_app && !HasPendingUncleanExit(privacy_safe_profile))
+    return true;
 
   return LaunchBrowserForLastProfiles(command_line, cur_dir, process_startup,
                                       last_used_profile, last_opened_profiles);

@@ -1323,6 +1323,8 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, AppIdSwitch) {
   // There should be one tab to start with.
   ASSERT_EQ(1, browser()->tab_strip_model()->count());
 
+  ui_test_utils::TabAddedWaiter tab_waiter(browser());
+
   // Load an app.
   ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("app/")));
   const Extension* extension_app = GetExtension();
@@ -1333,6 +1335,8 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, AppIdSwitch) {
   EXPECT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
       command_line, base::FilePath(), /*process_startup=*/false,
       browser()->profile(), {}));
+
+  tab_waiter.Wait();
 
   {
     // From launch_mode_recorder.cc:
