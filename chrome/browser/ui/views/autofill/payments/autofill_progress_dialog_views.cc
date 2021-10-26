@@ -65,8 +65,8 @@ AutofillProgressDialogView* AutofillProgressDialogView::CreateAndShow(
   return dialog_view;
 }
 
-void AutofillProgressDialogViews::Dismiss(
-    bool show_confirmation_before_closing) {
+void AutofillProgressDialogViews::Dismiss(bool show_confirmation_before_closing,
+                                          bool is_canceled_by_user) {
   // If |show_confirmation_before_closing| is true, show the confirmation and
   // close the widget with a delay. |show_confirmation_before_closing| being
   // true implies that the user did not cancel the dialog, as it is only set to
@@ -79,14 +79,13 @@ void AutofillProgressDialogViews::Dismiss(
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&AutofillProgressDialogViews::CloseWidget,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       /*is_canceled_by_user=*/false),
+                       weak_ptr_factory_.GetWeakPtr(), is_canceled_by_user),
         kDelayBeforeDismissingProgressDialog);
     return;
   }
 
   // Otherwise close the widget directly.
-  CloseWidget(/*is_canceled_by_user=*/true);
+  CloseWidget(is_canceled_by_user);
 }
 
 void AutofillProgressDialogViews::AddedToWidget() {

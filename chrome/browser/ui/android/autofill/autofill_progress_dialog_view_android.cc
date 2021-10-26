@@ -40,13 +40,24 @@ AutofillProgressDialogView* AutofillProgressDialogView::CreateAndShow(
 }
 
 void AutofillProgressDialogViewAndroid::Dismiss(
-    bool show_confirmation_before_closing) {
+    bool show_confirmation_before_closing,
+    bool is_canceled_by_user) {
   if (show_confirmation_before_closing) {
-    is_canceled_by_user_ = false;
+    // If the confirmation is shown, the dialog must have been dismissed
+    // automatically without user actions.
+    DCHECK(!is_canceled_by_user);
+    if (controller_) {
+      controller_->OnDismissed(/*is_canceled_by_user=*/false);
+      controller_ = nullptr;
+    }
     ShowConfirmation();
     return;
   }
 
+  if (controller_) {
+    controller_->OnDismissed(/*is_canceled_by_user=*/is_canceled_by_user);
+    controller_ = nullptr;
+  }
   JNIEnv* env = base::android::AttachCurrentThread();
   if (!java_object_.is_null()) {
     Java_AutofillProgressDialogBridge_dismiss(env, java_object_);
@@ -56,8 +67,10 @@ void AutofillProgressDialogViewAndroid::Dismiss(
 }
 
 void AutofillProgressDialogViewAndroid::OnDismissed(JNIEnv* env) {
-  controller_->OnDismissed(is_canceled_by_user_);
-  controller_ = nullptr;
+  if (controller_) {
+    controller_->OnDismissed(/*is_canceled_by_user=*/true);
+    controller_ = nullptr;
+  }
   delete this;
 }
 
