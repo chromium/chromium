@@ -780,4 +780,17 @@ TEST_F(VerdictCacheManagerTest, TestGetPageLoadToken) {
   ASSERT_FALSE(token4.has_token_value());
 }
 
+TEST_F(VerdictCacheManagerTest, TestGetExpiredPageLoadToken) {
+  GURL url("https://www.example.com/path");
+  cache_manager_->CreatePageLoadToken(url);
+  ChromeUserPopulation::PageLoadToken token =
+      cache_manager_->GetPageLoadToken(url);
+  ASSERT_TRUE(token.has_token_value());
+
+  task_environment_.FastForwardBy(base::Minutes(6));
+  token = cache_manager_->GetPageLoadToken(url);
+  // Token is not found because it has already expired.
+  ASSERT_FALSE(token.has_token_value());
+}
+
 }  // namespace safe_browsing
