@@ -52,6 +52,8 @@ CustomPatternWithAlias kCustomPatternsWithContext[] = {
 
     // wpa_supplicant
     {"SSID", "(?i-s)(\\bssid[= ]')(.+)(')"},
+    {"SSID", "(?i-s)(\\bssid[= ]\")(.+)(\")"},
+    {"SSID", "(\\* SSID=)(.+)($)"},
     {"SSIDHex", "(?-s)(\\bSSID - hexdump\\(len=[0-9]+\\): )(.+)()"},
 
     // shill
