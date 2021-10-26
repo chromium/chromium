@@ -909,6 +909,7 @@ class RasterDecoderImpl final : public RasterDecoder,
 
   bool supports_gpu_raster_ = false;
   bool supports_oop_raster_ = false;
+  bool supports_oop_canvas_ = false;
   bool use_passthrough_ = false;
   bool use_ddl_ = false;
   bool use_ddl_in_current_raster_session_ = false;
@@ -1074,6 +1075,10 @@ RasterDecoderImpl::RasterDecoderImpl(
           shared_image_manager->display_context_on_another_thread()),
       supports_gpu_raster_(
           gpu_feature_info.status_values[GPU_FEATURE_TYPE_GPU_RASTERIZATION] ==
+          kGpuFeatureStatusEnabled),
+      supports_oop_canvas_(
+          gpu_feature_info
+              .status_values[GPU_FEATURE_TYPE_CANVAS_OOP_RASTERIZATION] ==
           kGpuFeatureStatusEnabled),
       use_passthrough_(gles2::PassthroughCommandDecoderSupported() &&
                        gpu_preferences.use_passthrough_cmd_decoder),
@@ -2130,9 +2135,10 @@ void RasterDecoderImpl::DoCopySubTextureINTERNAL(
     return;
   }
 
-  if (!shared_context_state_->GrContextIsGL() ||
-      base::FeatureList::IsEnabled(features::kCanvasOopRasterization)) {
-    // Use Skia to copy texture if raster's gr_context() is not using GL.
+  if (!shared_context_state_->GrContextIsGL() || supports_oop_canvas_) {
+    // Use Skia to copy texture if raster's gr_context() is not using GL. Or if
+    // we the oop canvas is enabled, so canvas can allocate shared images that
+    // doesn't support GLES2 access (i.e WrappedSkImage).
     DoCopySubTextureINTERNALSkia(xoffset, yoffset, x, y, width, height,
                                  unpack_flip_y, source_mailbox, dest_mailbox);
   } else if (use_passthrough_) {
