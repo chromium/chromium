@@ -5505,6 +5505,24 @@
             ]
         }
     ],
+    "OptimizationHintsFieldTrials": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "allowed_field_trial_names": "ChromeStart"
+                    },
+                    "enable_features": [
+                        "OptimizationHintsFieldTrials"
+                    ]
+                }
+            ]
+        }
+    ],
     "OptimizedRealtimeThreadingMac": [
         {
             "platforms": [
@@ -5668,12 +5686,10 @@
                 {
                     "name": "PageContentAnnotationsMemImproved_20210604",
                     "params": {
-                        "allowed_field_trial_names": "PageContentAnnotationsAndroid",
                         "write_to_history_service": "false"
                     },
                     "enable_features": [
                         "LoadModelFileForEachExecution",
-                        "OptimizationHintsFieldTrials",
                         "PageContentAnnotations"
                     ]
                 }
