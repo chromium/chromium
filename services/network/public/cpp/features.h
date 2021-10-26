@@ -79,8 +79,14 @@ extern const base::Feature kSCTAuditingRetryAndPersistReports;
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kLoaderDataPipeTuningFeature;
 
+enum class DataPipeAllocationSize {
+  kDefaultSizeOnly,
+  kLargerSizeIfPossible,
+};
+
 COMPONENT_EXPORT(NETWORK_CPP)
-extern uint32_t GetDataPipeDefaultAllocationSize();
+extern uint32_t GetDataPipeDefaultAllocationSize(
+    DataPipeAllocationSize = DataPipeAllocationSize::kDefaultSizeOnly);
 
 COMPONENT_EXPORT(NETWORK_CPP)
 extern uint32_t GetLoaderChunkSize();

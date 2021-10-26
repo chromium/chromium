@@ -6,6 +6,7 @@
 
 #include "base/metrics/field_trial_params.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/system/sys_info.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
@@ -221,7 +222,12 @@ constexpr base::FeatureParam<int> kLoaderChunkSize{
 }  // namespace
 
 // static
-uint32_t GetDataPipeDefaultAllocationSize() {
+uint32_t GetDataPipeDefaultAllocationSize(DataPipeAllocationSize option) {
+  if (option == DataPipeAllocationSize::kDefaultSizeOnly)
+    return kDataPipeDefaultAllocationSize;
+  // For low-memory devices, always use the (smaller) default buffer size.
+  if (base::SysInfo::AmountOfPhysicalMemoryMB() <= 512)
+    return kDataPipeDefaultAllocationSize;
   return base::saturated_cast<uint32_t>(kDataPipeAllocationSize.Get());
 }
 

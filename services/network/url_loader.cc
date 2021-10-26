@@ -1318,7 +1318,8 @@ void URLLoader::ContinueOnResponseStarted() {
   options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
   options.element_num_bytes = 1;
   options.capacity_num_bytes =
-      network::features::GetDataPipeDefaultAllocationSize();
+      network::features::GetDataPipeDefaultAllocationSize(
+          features::DataPipeAllocationSize::kLargerSizeIfPossible);
   MojoResult result =
       mojo::CreateDataPipe(&options, response_body_stream_, consumer_handle_);
   if (result != MOJO_RESULT_OK) {
