@@ -79,10 +79,11 @@ void CameraRollManagerImpl::OnFetchCameraRollItemDataResponseReceived(
 
 void CameraRollManagerImpl::OnPayloadFilesCreated(
     const proto::FetchCameraRollItemDataResponse& response,
+    CameraRollDownloadManager::CreatePayloadFilesResult result,
     absl::optional<secure_channel::mojom::PayloadFilesPtr> payload_files) {
-  if (!payload_files) {
+  if (result != CameraRollDownloadManager::CreatePayloadFilesResult::kSuccess) {
     // TODO(http://crbug.com/1221297): notify the user that the item cannot be
-    // downloaded.
+    // downloaded and log the result code.
     return;
   }
 
