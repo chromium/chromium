@@ -6954,7 +6954,6 @@ crbug.com/1249176 [ Mac11-arm64 ] external/wpt/websockets/stream/tentative/backp
 crbug.com/1249176 [ Mac11-arm64 ] fast/forms/color/color-picker-escape-cancellation-revert.html [ Failure ]
 crbug.com/1249176 [ Mac11-arm64 ] fast/css/focus-display-block-inline.html [ Failure ]
 crbug.com/1249176 [ Mac11-arm64 ] fast/dom/geometry-interfaces-dom-matrix-rotate.html [ Failure ]
-crbug.com/1249176 [ Mac11-arm64 ] http/tests/devtools/tracing/timeline-paint/timeline-paint-image.js [ Failure ]
 
 # Following tests timeout on mac11-arm64
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/focus/focus-already-focused-iframe-deep-same-site.html [ Timeout ]
@@ -7271,3 +7270,4 @@ crbug.com/1249043 external/wpt/html/cross-origin-embedder-policy/reporting-to-en
 crbug.com/1249043 external/wpt/html/cross-origin-embedder-policy/reporting-to-frame-owner.html [ Failure Pass ]
 crbug.com/1249043 external/wpt/html/cross-origin-embedder-policy/reporting-to-worker-owner.html [ Failure Pass ]
 crbug.com/1249043 external/wpt/html/cross-origin-embedder-policy/report-only-require-corp.https.html [ Failure Pass ]
+crbug.com/1263732 http/tests/devtools/tracing/timeline-paint/timeline-paint-image.js [ Failure Pass ]
