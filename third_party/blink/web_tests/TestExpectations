@@ -3105,8 +3105,6 @@ crbug.com/626703 [ Mac10.15 ] external/wpt/css/css-sizing/parsing/min-height-inv
 crbug.com/626703 [ Mac10.15 ] virtual/no-alloc-direct-call/external/wpt/html/canvas/element/manual/wide-gamut-canvas/canvas-display-p3-drawImage-ImageBitmap-Blob.html [ Failure Timeout ]
 crbug.com/626703 [ Linux ] virtual/plz-dedicated-worker/external/wpt/xhr/event-loadstart-upload.any.worker.html [ Crash ]
 crbug.com/626703 [ Mac10.15 ] virtual/plz-dedicated-worker/external/wpt/xhr/event-loadstart-upload.any.worker.html [ Crash ]
-crbug.com/626703 [ Linux ] external/wpt/html/cross-origin-embedder-policy/reporting-subresource-corp.https.html [ Skip Timeout ]
-crbug.com/626703 [ Mac11.0 ] external/wpt/html/cross-origin-embedder-policy/reporting-subresource-corp.https.html [ Skip Timeout ]
 crbug.com/626703 [ Linux ] wpt_internal/webcodecs/reconfiguring_encoder.https.any.html [ Timeout ]
 crbug.com/626703 [ Linux ] wpt_internal/webcodecs/basic_video_encoding.https.any.html [ Timeout ]
 crbug.com/626703 [ Mac11.0 ] wpt_internal/webcodecs/basic_video_encoding.https.any.html [ Timeout ]
@@ -3598,7 +3596,6 @@ crbug.com/626703 [ Fuchsia ] virtual/threaded/external/wpt/animation-worklet/wor
 crbug.com/626703 [ Mac ] external/wpt/web-locks/query-ordering.tentative.https.html [ Failure Pass ]
 crbug.com/626703 external/wpt/fetch/connection-pool/network-partition-key.html [ Failure Skip Timeout ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/html/browsers/the-window-object/apis-for-creating-and-navigating-browsing-contexts-by-name/open-features-tokenization-top-left.html [ Skip Timeout ]
-crbug.com/626703 [ Win7 ] external/wpt/html/cross-origin-embedder-policy/reporting-subresource-corp.https.html [ Failure Skip Timeout ]
 crbug.com/626703 external/wpt/input-events/input-events-get-target-ranges-backspace.tentative.html [ Failure Skip Timeout ]
 crbug.com/626703 external/wpt/input-events/input-events-get-target-ranges-forwarddelete.tentative.html [ Failure Skip Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/css/css-color/t422-rgba-a0.6-a.xht [ Failure ]
@@ -6760,7 +6757,6 @@ crbug.com/1229802 fast/events/pointerevents/multi-touch-events.html [ Failure Pa
 crbug.com/1181886 external/wpt/pointerevents/pointerevent_movementxy.html?* [ Failure Pass Timeout ]
 
 # Sheriff 2021-07-21
-crbug.com/1231431 external/wpt/html/cross-origin-embedder-policy/reporting-to-endpoint.https.html [ Failure ]
 crbug.com/1231431 virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/reporting-to-endpoint.https.html [ Failure ]
 
 # Sheriff 2021-07-22
@@ -7117,11 +7113,6 @@ crbug.com/1249176 [ Mac11-arm64 ] virtual/not-site-per-process/external/wpt/html
 # Sheriff 2021-09-16
 crbug.com/1250457 [ Win7 ] http/tests/devtools/sources/debugger-ui/script-formatter-breakpoints-3.js [ Failure ]
 crbug.com/1250457 [ Mac ] virtual/scroll-unification/plugins/plugin-map-data-to-src.html [ Failure ]
-crbug.com/1250457 [ Mac10.12 ] external/wpt/html/cross-origin-embedder-policy/reporting-subresource-corp.https.html [ Failure ]
-crbug.com/1250457 [ Mac10.13 ] external/wpt/html/cross-origin-embedder-policy/reporting-subresource-corp.https.html [ Failure ]
-crbug.com/1250457 [ Mac10.14 ] external/wpt/html/cross-origin-embedder-policy/reporting-subresource-corp.https.html [ Failure ]
-crbug.com/1250457 [ Mac10.15 ] external/wpt/html/cross-origin-embedder-policy/reporting-subresource-corp.https.html [ Failure ]
-crbug.com/1250457 [ Mac11-arm64 ] external/wpt/html/cross-origin-embedder-policy/reporting-subresource-corp.https.html [ Failure ]
 crbug.com/1250457 [ Mac ] storage/websql/open-database-set-empty-version.html [ Timeout ]
 crbug.com/1250457 [ Mac ] virtual/not-site-per-process/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/1-iframe/parent-no-child-yes-same.sub.https.html [ Timeout ]
 crbug.com/1250457 [ Mac ] virtual/plz-dedicated-worker-cors-rfc1918/http/tests/security/cors-rfc1918/external-to-internal-xhr.php [ Timeout ]
@@ -7289,3 +7280,9 @@ crbug.com/1261770 crbug.com/1245166 [ Linux ] virtual/wbn-from-network/external/
 # Sheriff 2021-10-26
 crbug.com/1263349 [ Linux ] external/wpt/resource-timing/object-not-found-after-cross-origin-redirect.html [ Failure Pass ]
 crbug.com/1263354 [ Linux ] virtual/plz-dedicated-worker/external/wpt/resource-timing/object-not-found-adds-entry.html [ Failure Pass ]
+crbug.com/1249043 external/wpt/html/cross-origin-embedder-policy/reporting-navigation.https.html [ Failure Pass ]
+crbug.com/1249043 external/wpt/html/cross-origin-embedder-policy/reporting-subresource-corp.https.html [ Failure Pass ]
+crbug.com/1249043 external/wpt/html/cross-origin-embedder-policy/reporting-to-endpoint.https.html [ Failure Pass ]
+crbug.com/1249043 external/wpt/html/cross-origin-embedder-policy/reporting-to-frame-owner.html [ Failure Pass ]
+crbug.com/1249043 external/wpt/html/cross-origin-embedder-policy/reporting-to-worker-owner.html [ Failure Pass ]
+crbug.com/1249043 external/wpt/html/cross-origin-embedder-policy/report-only-require-corp.https.html [ Failure Pass ]
