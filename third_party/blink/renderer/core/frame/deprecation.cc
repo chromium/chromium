@@ -4,8 +4,10 @@
 
 #include "third_party/blink/renderer/core/frame/deprecation.h"
 
+#include "base/feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/public/mojom/reporting/reporting.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -797,10 +799,16 @@ void Deprecation::CountDeprecation(ExecutionContext* context,
 
   // Send the deprecation message to the console as a warning.
   DCHECK(!info.message_.IsEmpty());
-  auto* console_message = MakeGarbageCollected<ConsoleMessage>(
-      mojom::blink::ConsoleMessageSource::kDeprecation,
-      mojom::blink::ConsoleMessageLevel::kWarning, info.message_);
-  context->AddConsoleMessage(console_message);
+  if (base::FeatureList::IsEnabled(features::kDeprecationWillLogToConsole)) {
+    auto* console_message = MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kDeprecation,
+        mojom::blink::ConsoleMessageLevel::kWarning, info.message_);
+    context->AddConsoleMessage(console_message);
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kDeprecationWillLogToDevToolsIssue)) {
+    // TODO(crbug.com/1248484): Implement DevTools Issue logging.
+  }
 
   Report* report = CreateReportInternal(context->Url(), info);
 

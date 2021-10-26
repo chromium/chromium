@@ -518,6 +518,10 @@ BLINK_COMMON_EXPORT extern const base::Feature kCSSCascadeLayers;
 BLINK_COMMON_EXPORT extern const base::Feature kSetTimeoutWithoutClamp;
 BLINK_COMMON_EXPORT bool IsSetTimeoutWithoutClampEnabled();
 
+BLINK_COMMON_EXPORT extern const base::Feature kDeprecationWillLogToConsole;
+BLINK_COMMON_EXPORT extern const base::Feature
+    kDeprecationWillLogToDevToolsIssue;
+
 }  // namespace features
 }  // namespace blink
 
