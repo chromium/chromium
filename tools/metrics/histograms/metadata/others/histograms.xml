@@ -16451,7 +16451,12 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SpellCheck.Android.Latency" units="ms" expires_after="M77">
+  <obsolete>
+    Removed 2021/10: This histogram was added as part of an investigation that
+    has been completed.
+  </obsolete>
   <owner>timvolodine@chromium.org</owner>
+  <owner>chrome-language@google.com</owner>
   <summary>
     Measures the amount of time it takes to receive results from the
     spellchecking service on Android. More precisely this is the
@@ -16503,7 +16508,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SpellCheck.SpellingService.RequestHttpResponseCode"
-    enum="HttpResponseCode" expires_after="2021-11-07">
+    enum="HttpResponseCode" expires_after="2022-04-24">
   <owner>yyushkina@google.com</owner>
   <owner>gujen@google.com</owner>
   <owner>chrome-language@google.com</owner>
