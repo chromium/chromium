@@ -4264,9 +4264,10 @@ TEST_F(SoftwareRendererPixelTest, TextureDrawQuadLinear) {
   float vertex_opacity[4] = {1.0f, 1.0f, 1.0f, 1.0f};
   auto* quad = pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
   quad->SetNew(shared_state, viewport, viewport, needs_blending,
-               mapped_resource, false, gfx::PointF(0, 0), gfx::PointF(1, 1),
-               SK_ColorBLACK, vertex_opacity, false, nearest_neighbor,
-               /*secure_output_only=*/false, gfx::ProtectedVideoType::kClear);
+               mapped_resource, /*premultiplied=*/true, gfx::PointF(0, 0),
+               gfx::PointF(1, 1), SK_ColorBLACK, vertex_opacity, false,
+               nearest_neighbor, /*secure_output=*/false,
+               gfx::ProtectedVideoType::kClear);
 
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(pass));
