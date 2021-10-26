@@ -499,23 +499,22 @@ TEST_F(AttributionStorageSqlTest, MaxUint64StorageSucceeds) {
   // with the maximum value.
 
   const auto impression =
-      SourceBuilder(clock()->Now()).SetData(kMaxUint64).Build();
+      SourceBuilder(clock()->Now()).SetSourceEventId(kMaxUint64).Build();
   storage()->StoreSource(impression);
   std::vector<StorableSource> impressions = storage()->GetActiveSources();
   EXPECT_EQ(1u, impressions.size());
-  EXPECT_EQ(kMaxUint64, impressions[0].impression_data());
+  EXPECT_EQ(kMaxUint64, impressions[0].source_event_id());
 
-  EXPECT_EQ(
-      CreateReportStatus::kSuccess,
-      MaybeCreateAndStoreReport(StorableTrigger(
-          /*conversion_data=*/kMaxUint64, impression.ConversionDestination(),
-          impression.reporting_origin(), /*event_source_trigger_data=*/0,
-          /*priority=*/0, /*dedup_key=*/absl::nullopt)));
+  EXPECT_EQ(CreateReportStatus::kSuccess,
+            MaybeCreateAndStoreReport(StorableTrigger(
+                /*trigger_data=*/kMaxUint64, impression.ConversionDestination(),
+                impression.reporting_origin(), /*event_source_trigger_data=*/0,
+                /*priority=*/0, /*dedup_key=*/absl::nullopt)));
 
   std::vector<AttributionReport> reports =
       storage()->GetAttributionsToReport(clock()->Now());
   EXPECT_EQ(1u, reports.size());
-  EXPECT_EQ(kMaxUint64, reports[0].conversion_data);
+  EXPECT_EQ(kMaxUint64, reports[0].trigger_data);
 }
 
 TEST_F(AttributionStorageSqlTest, ImpressionNotExpired_NotDeleted) {

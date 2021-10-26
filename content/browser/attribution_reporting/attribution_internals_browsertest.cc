@@ -189,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   TestAttributionManager manager;
   manager.SetActiveSourcesForWebUI(
       {SourceBuilder(base::Time::Now())
-           .SetData(std::numeric_limits<uint64_t>::max())
+           .SetSourceEventId(std::numeric_limits<uint64_t>::max())
            .SetAttributionLogic(StorableSource::AttributionLogic::kNever)
            .Build(),
        SourceBuilder(base::Time::Now())
@@ -298,8 +298,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   TestAttributionManager manager;
   manager.GetSessionStorage().AddSentReport(SentReportInfo(
-      AttributionReport(SourceBuilder(now).SetData(100).Build(),
-                        /*conversion_data=*/5,
+      AttributionReport(SourceBuilder(now).SetSourceEventId(100).Build(),
+                        /*trigger_data=*/5,
                         /*conversion_time=*/now,
                         /*report_time=*/now + base::Hours(3),
                         /*priority=*/0, AttributionReport::Id(2)),
@@ -307,17 +307,17 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       /*http_response_code=*/200));
   manager.SetReportsForWebUI({AttributionReport(
       SourceBuilder(now)
-          .SetData(200)
+          .SetSourceEventId(200)
           .SetSourceType(StorableSource::SourceType::kEvent)
           .SetAttributionLogic(StorableSource::AttributionLogic::kFalsely)
           .Build(),
-      /*conversion_data=*/7, /*conversion_time=*/now,
+      /*trigger_data=*/7, /*conversion_time=*/now,
       /*report_time=*/now, /*priority=*/13, AttributionReport::Id(1))});
   manager.GetSessionStorage().AddDroppedReport(
       AttributionStorage::CreateReportResult(
           CreateReportStatus::kPriorityTooLow,
           AttributionReport(SourceBuilder(now).Build(),
-                            /*conversion_data=*/8,
+                            /*trigger_data=*/8,
                             /*conversion_time=*/now,
                             /*report_time=*/now + base::Hours(1),
                             /*priority=*/11, AttributionReport::Id(3))));
@@ -325,7 +325,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       AttributionStorage::CreateReportResult(
           CreateReportStatus::kDroppedForNoise,
           AttributionReport(SourceBuilder(now).Build(),
-                            /*conversion_data=*/9,
+                            /*trigger_data=*/9,
                             /*conversion_time=*/now,
                             /*report_time=*/now + base::Hours(2),
                             /*priority=*/12,
@@ -432,8 +432,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   const base::Time now = base::Time::Now();
 
   TestAttributionManager manager;
-  AttributionReport report(SourceBuilder(now).SetData(100).Build(),
-                           /*conversion_data=*/0, /*conversion_time=*/now,
+  AttributionReport report(SourceBuilder(now).SetSourceEventId(100).Build(),
+                           /*trigger_data=*/0, /*conversion_time=*/now,
                            /*report_time=*/now, /*priority=*/7,
                            AttributionReport::Id(1));
   manager.SetReportsForWebUI({report});
@@ -479,8 +479,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   TestAttributionManager manager;
   AttributionReport report(
-      SourceBuilder(base::Time::Now()).SetData(100).Build(),
-      /*conversion_data=*/0, /*conversion_time=*/base::Time::Now(),
+      SourceBuilder(base::Time::Now()).SetSourceEventId(100).Build(),
+      /*trigger_data=*/0, /*conversion_time=*/base::Time::Now(),
       /*report_time=*/base::Time::Now(), /*priority=*/7,
       AttributionReport::Id(1));
   manager.SetReportsForWebUI({report});

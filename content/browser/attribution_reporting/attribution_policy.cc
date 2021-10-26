@@ -33,41 +33,41 @@ AttributionPolicy::AttributionPolicy(bool debug_mode)
 
 AttributionPolicy::~AttributionPolicy() = default;
 
-bool AttributionPolicy::ShouldNoiseConversionData() const {
+bool AttributionPolicy::ShouldNoiseTriggerData() const {
   return base::RandDouble() <= .05;
 }
 
-uint64_t AttributionPolicy::MakeNoisedConversionData(uint64_t max) const {
+uint64_t AttributionPolicy::MakeNoisedTriggerData(uint64_t max) const {
   return base::RandGenerator(max);
 }
 
-uint64_t AttributionPolicy::GetSanitizedConversionData(
-    uint64_t conversion_data,
+uint64_t AttributionPolicy::SanitizeTriggerData(
+    uint64_t trigger_data,
     StorableSource::SourceType source_type) const {
   const uint64_t max_allowed_values = MaxAllowedValueForSourceType(source_type);
 
   // Add noise to the conversion when the value is first sanitized from a
   // conversion registration event. This noised data will be used for all
   // associated impressions that convert.
-  if (!debug_mode_ && ShouldNoiseConversionData()) {
-    const uint64_t noised_data = MakeNoisedConversionData(max_allowed_values);
+  if (!debug_mode_ && ShouldNoiseTriggerData()) {
+    const uint64_t noised_data = MakeNoisedTriggerData(max_allowed_values);
     DCHECK_LT(noised_data, max_allowed_values);
     return noised_data;
   }
 
-  return conversion_data % max_allowed_values;
+  return trigger_data % max_allowed_values;
 }
 
-bool AttributionPolicy::IsConversionDataInRange(
-    uint64_t conversion_data,
+bool AttributionPolicy::IsTriggerDataInRange(
+    uint64_t trigger_data,
     StorableSource::SourceType source_type) const {
-  return conversion_data < MaxAllowedValueForSourceType(source_type);
+  return trigger_data < MaxAllowedValueForSourceType(source_type);
 }
 
-uint64_t AttributionPolicy::GetSanitizedImpressionData(
-    uint64_t impression_data) const {
+uint64_t AttributionPolicy::SanitizeSourceEventId(
+    uint64_t source_event_id) const {
   // Impression data is allowed the full 64 bits.
-  return impression_data;
+  return source_event_id;
 }
 
 base::Time AttributionPolicy::GetExpiryTimeForImpression(

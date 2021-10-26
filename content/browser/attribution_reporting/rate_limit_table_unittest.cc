@@ -51,7 +51,7 @@ class RateLimitTableTest : public testing::Test {
             .SetImpressionId(impression_id)
             .SetSourceType(source_type)
             .Build(),
-        /*conversion_data=*/0,
+        /*trigger_data=*/0,
         /*conversion_time=*/clock()->Now(),
         /*report_time=*/clock()->Now(),
         /*priority=*/0,

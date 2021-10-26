@@ -26,8 +26,7 @@ AttributionReport GetReport(base::Time impression_time,
                                .SetExpiry(expiry)
                                .SetSourceType(source_type)
                                .Build(),
-                           /*conversion_data=*/123, conversion_time,
-                           report_time,
+                           /*trigger_data=*/123, conversion_time, report_time,
                            /*priority=*/0,
                            /*conversion_id=*/absl::nullopt);
 }
