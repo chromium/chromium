@@ -146,28 +146,44 @@ std::string GetTimeStr(const base::Time::Exploded& timestamp,
   return time.append(timestamp.hour >= 12 ? " PM" : " AM");
 }
 
-// Writes the given |data| in a file with |path|. Returns true if saving
+// Selects a file path for captured files (image/video) from `current_path` and
+// `fallback_path`. If `current_path` is valid, use `current_path`, otherwise
+// use `fallback_path`.
+base::FilePath SelectFilePathForCapturedFile(
+    const base::FilePath& current_path,
+    const base::FilePath& fallback_path) {
+  if (base::PathExists(current_path.DirName()))
+    return current_path;
+  DCHECK(base::PathExists(fallback_path.DirName()));
+  return fallback_path;
+}
+
+// Writes the given `data` in a file with `path`. Returns true if saving
 // succeeded, or false otherwise.
-bool SaveFile(scoped_refptr<base::RefCountedMemory> data,
-              const base::FilePath& path) {
+base::FilePath DoSaveFile(scoped_refptr<base::RefCountedMemory> data,
+                          const base::FilePath& path) {
   DCHECK(data);
   const int size = static_cast<int>(data->size());
   DCHECK(size);
-  DCHECK(!base::CurrentUIThread::IsSet());
-  DCHECK(!path.empty());
-
-  if (!base::PathExists(path.DirName())) {
-    LOG(ERROR) << "File path doesn't exist: " << path.DirName();
-    return false;
-  }
-
   if (size != base::WriteFile(
                   path, reinterpret_cast<const char*>(data->front()), size)) {
     LOG(ERROR) << "Failed to save file: " << path;
-    return false;
+    return base::FilePath();
   }
+  return path;
+}
 
-  return true;
+// Attempts to write the given `data` with the file path returned from
+// `SelectAFilePathForCapturedFile`.
+base::FilePath SaveFile(scoped_refptr<base::RefCountedMemory> data,
+                        const base::FilePath& current_path,
+                        const base::FilePath& fallback_path) {
+  DCHECK(!base::CurrentUIThread::IsSet());
+  DCHECK(!current_path.empty());
+  DCHECK(!fallback_path.empty());
+
+  return DoSaveFile(data,
+                    SelectFilePathForCapturedFile(current_path, fallback_path));
 }
 
 void DeleteFileAsync(scoped_refptr<base::SequencedTaskRunner> task_runner,
@@ -664,6 +680,14 @@ void CaptureModeController::EndVideoRecording(EndRecordingReason reason) {
   TerminateRecordingUiElements();
 }
 
+void CaptureModeController::CheckFolderAvailability(
+    const base::FilePath& folder,
+    base::OnceCallback<void(bool available)> callback) {
+  blocking_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&base::PathExists, folder),
+      base::BindOnce(std::move(callback)));
+}
+
 void CaptureModeController::SetWindowProtectionMask(aura::Window* window,
                                                     uint32_t protection_mask) {
   if (protection_mask == display::CONTENT_PROTECTION_METHOD_NONE)
@@ -1088,33 +1112,32 @@ void CaptureModeController::OnImageCaptured(
     ShowFailureNotification();
     return;
   }
-
   blocking_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&SaveFile, png_bytes, path),
+      FROM_HERE,
+      base::BindOnce(&SaveFile, png_bytes, path,
+                     GetFallbackFilePathFromFile(path)),
       base::BindOnce(&CaptureModeController::OnImageFileSaved,
-                     weak_ptr_factory_.GetWeakPtr(), png_bytes, path));
+                     weak_ptr_factory_.GetWeakPtr(), png_bytes));
 }
 
 void CaptureModeController::OnImageFileSaved(
     scoped_refptr<base::RefCountedMemory> png_bytes,
-    const base::FilePath& path,
-    bool success) {
-  if (!success) {
+    const base::FilePath& file_saved_path) {
+  if (file_saved_path.empty()) {
     ShowFailureNotification();
     return;
   }
-
-  if (!on_file_saved_callback_.is_null())
-    std::move(on_file_saved_callback_).Run(path);
+  if (on_file_saved_callback_for_test_)
+    std::move(on_file_saved_callback_for_test_).Run(file_saved_path);
 
   DCHECK(png_bytes && png_bytes->size());
   const auto image = gfx::Image::CreateFrom1xPNGBytes(png_bytes);
   CopyImageToClipboard(image);
-  ShowPreviewNotification(path, image, CaptureModeType::kImage);
+  ShowPreviewNotification(file_saved_path, image, CaptureModeType::kImage);
 
   HoldingSpaceClient* client = HoldingSpaceController::Get()->client();
   if (client)  // May be `nullptr` in tests.
-    client->AddScreenshot(path);
+    client->AddScreenshot(file_saved_path);
 }
 
 void CaptureModeController::OnVideoFileSaved(
@@ -1144,8 +1167,8 @@ void CaptureModeController::OnVideoFileSaved(
   const auto local_video_file_path = current_video_file_path_;
   current_video_file_path_.clear();
 
-  if (!on_file_saved_callback_.is_null())
-    std::move(on_file_saved_callback_).Run(local_video_file_path);
+  if (on_file_saved_callback_for_test_)
+    std::move(on_file_saved_callback_for_test_).Run(local_video_file_path);
 }
 
 void CaptureModeController::ShowPreviewNotification(
@@ -1247,12 +1270,14 @@ base::FilePath CaptureModeController::BuildPathNoExtension(
   base::Time::Exploded exploded_time;
   timestamp.LocalExplode(&exploded_time);
 
-  // TODO(https://crbug.com/1252156): The current path can become unavailable at
-  // any time before we get here. We need to handle the cases mentioned on the
-  // bug.
   return GetCurrentCaptureFolder().path.AppendASCII(base::StringPrintf(
       format_string, GetDateStr(exploded_time).c_str(),
       GetTimeStr(exploded_time, delegate_->Uses24HourFormat()).c_str()));
+}
+
+base::FilePath CaptureModeController::GetFallbackFilePathFromFile(
+    const base::FilePath& path) {
+  return delegate_->GetUserDefaultDownloadsFolder().Append(path.BaseName());
 }
 
 void CaptureModeController::RecordAndResetScreenshotsTakenInLastDay() {
@@ -1311,9 +1336,23 @@ void CaptureModeController::OnVideoRecordCountDownFinished() {
             weak_ptr_factory_.GetWeakPtr(), *capture_params));
     return;
   }
+  const base::FilePath current_path = BuildVideoPath();
 
-  BeginVideoRecording(*capture_params,
-                      /*for_projector=*/false, BuildVideoPath());
+  // If the current capture folder is not the default `Downloads` folder, we
+  // need to validate the current folder first before starting the video
+  // recording.
+  if (!GetCurrentCaptureFolder().is_default_downloads_folder) {
+    blocking_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(&SelectFilePathForCapturedFile, current_path,
+                       GetFallbackFilePathFromFile(current_path)),
+        base::BindOnce(&CaptureModeController::BeginVideoRecording,
+                       weak_ptr_factory_.GetWeakPtr(), *capture_params,
+                       /*for_projector=*/false));
+    return;
+  }
+
+  BeginVideoRecording(*capture_params, /*for_projector=*/false, current_path);
 }
 
 void CaptureModeController::OnProjectorContainerFolderCreated(

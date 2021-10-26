@@ -14,6 +14,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "base/bind.h"
 #include "base/files/file_path.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -118,16 +119,22 @@ gfx::Rect CaptureModeAdvancedSettingsView::GetBounds(
 void CaptureModeAdvancedSettingsView::OnCaptureFolderMayHaveChanged() {
   if (!save_to_menu_group_)
     return;
-
-  const auto custom_path =
-      CaptureModeController::Get()->GetCustomCaptureFolder();
-  if (!custom_path.empty()) {
-    save_to_menu_group_->AddOrUpdateExistingOption(
-        custom_path.BaseName().AsUTF16Unsafe(), kCustomFolder);
-  } else {
+  auto* controller = CaptureModeController::Get();
+  const auto custom_path = controller->GetCustomCaptureFolder();
+  if (custom_path.empty()) {
+    is_custom_folder_available_.reset();
     save_to_menu_group_->RemoveOptionIfAny(kCustomFolder);
+    save_to_menu_group_->RefreshOptionsSelections();
+    return;
   }
-  save_to_menu_group_->RefreshOptionsSelections();
+
+  save_to_menu_group_->AddOrUpdateExistingOption(
+      custom_path.BaseName().AsUTF16Unsafe(), kCustomFolder);
+  controller->CheckFolderAvailability(
+      custom_path,
+      base::BindOnce(
+          &CaptureModeAdvancedSettingsView::OnCustomFolderAvailabilityChecked,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void CaptureModeAdvancedSettingsView::OnDefaultCaptureFolderSelectionChanged() {
@@ -162,9 +169,11 @@ bool CaptureModeAdvancedSettingsView::IsOptionChecked(int option_id) const {
     case kAudioMicrophone:
       return CaptureModeController::Get()->enable_audio_recording();
     case kDownloadsFolder:
-      return GetCurrentCaptureFolder().is_default_downloads_folder;
+      return GetCurrentCaptureFolder().is_default_downloads_folder ||
+             !is_custom_folder_available_.value_or(false);
     case kCustomFolder:
-      return !GetCurrentCaptureFolder().is_default_downloads_folder;
+      return !GetCurrentCaptureFolder().is_default_downloads_folder &&
+             is_custom_folder_available_.value_or(false);
     default:
       return false;
   }
@@ -174,9 +183,10 @@ bool CaptureModeAdvancedSettingsView::IsOptionEnabled(int option_id) const {
   switch (option_id) {
     case kAudioOff:
       return !capture_mode_session_->is_in_projector_mode();
+    case kCustomFolder:
+      return is_custom_folder_available_.value_or(false);
     case kAudioMicrophone:
     case kDownloadsFolder:
-    case kCustomFolder:
     default:
       return true;
   }
@@ -193,6 +203,16 @@ views::View* CaptureModeAdvancedSettingsView::GetOffOptionForTesting() {
 
 void CaptureModeAdvancedSettingsView::OnSelectFolderMenuItemPressed() {
   capture_mode_session_->OpenFolderSelectionDialog();
+}
+
+void CaptureModeAdvancedSettingsView::OnCustomFolderAvailabilityChecked(
+    bool available) {
+  DCHECK(save_to_menu_group_);
+  is_custom_folder_available_ = available;
+  save_to_menu_group_->RefreshOptionsSelections();
+
+  if (on_settings_menu_refreshed_callback_for_test_)
+    std::move(on_settings_menu_refreshed_callback_for_test_).Run();
 }
 
 BEGIN_METADATA(CaptureModeAdvancedSettingsView, views::View)

@@ -49,6 +49,7 @@ class FolderSelectionDialogController : public ui::SelectFileDialog::Listener,
   ~FolderSelectionDialogController() override;
 
   aura::Window* dialog_window() { return dialog_window_; }
+  bool did_user_select_a_folder() const { return did_user_select_a_folder_; }
 
   // Returns false while the dialog window is shown, and the |event| is
   // targeting a window in the dialog subtree (in this case, the
@@ -83,6 +84,9 @@ class FolderSelectionDialogController : public ui::SelectFileDialog::Listener,
   // This is the window of the dialog that gets created by
   // |select_folder_dialog_| as a transient child of the dimming window.
   aura::Window* dialog_window_ = nullptr;
+
+  // It will be set to true when user selects a folder from the dialog.
+  bool did_user_select_a_folder_ = false;
 
   // An optional callback that will be invoked when |dialog_window_| gets added.
   base::OnceClosure on_dialog_window_added_callback_for_test_;

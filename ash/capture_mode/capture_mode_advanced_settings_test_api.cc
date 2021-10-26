@@ -63,4 +63,10 @@ views::View* CaptureModeAdvancedSettingsTestApi::GetSelectFolderMenuItem() {
   return GetSaveToMenuGroup()->GetSelectFolderMenuItemForTesting();
 }
 
+void CaptureModeAdvancedSettingsTestApi::SetOnSettingsMenuRefreshedCallback(
+    base::OnceClosure callback) {
+  settings_view_->on_settings_menu_refreshed_callback_for_test_ =
+      std::move(callback);
+}
+
 }  // namespace ash

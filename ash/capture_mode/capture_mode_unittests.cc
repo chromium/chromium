@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
@@ -59,6 +60,8 @@
 #include "base/bind.h"
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
@@ -435,6 +438,11 @@ class CaptureModeTest : public AshTestBase {
     return controller;
   }
 
+  void StartVideoRecordingImmediately() {
+    CaptureModeController::Get()->StartVideoRecordingImmediatelyForTesting();
+    WaitForRecordingToStart();
+  }
+
   // Start Capture Mode with source region and type image.
   CaptureModeController* StartImageRegionCapture() {
     return StartCaptureSession(CaptureModeSource::kRegion,
@@ -445,7 +453,7 @@ class CaptureModeTest : public AshTestBase {
     auto* controller = StartCaptureSession(CaptureModeSource::kWindow,
                                            CaptureModeType::kVideo);
     GetEventGenerator()->MoveMouseToCenterOf(window);
-    controller->StartVideoRecordingImmediatelyForTesting();
+    StartVideoRecordingImmediately();
     EXPECT_TRUE(controller->is_recording_in_progress());
     return controller;
   }
@@ -504,16 +512,22 @@ class CaptureModeTest : public AshTestBase {
     loop.Run();
   }
 
-  void WaitForCaptureFileToBeSaved() {
+  base::FilePath WaitForCaptureFileToBeSaved() {
+    base::FilePath result;
     base::RunLoop run_loop;
-    CaptureModeTestApi().SetOnCaptureFileSavedCallback(
-        base::BindLambdaForTesting(
-            [&run_loop](const base::FilePath& path) { run_loop.Quit(); }));
+    ash::CaptureModeTestApi().SetOnCaptureFileSavedCallback(
+        base::BindLambdaForTesting([&](const base::FilePath& path) {
+          result = path;
+          run_loop.Quit();
+        }));
     run_loop.Run();
+    return result;
   }
 
   void WaitForRecordingToStart() {
     auto* controller = CaptureModeController::Get();
+    if (controller->is_recording_in_progress())
+      return;
     auto* test_delegate = static_cast<TestCaptureModeDelegate*>(
         controller->delegate_for_testing());
     ASSERT_TRUE(test_delegate);
@@ -522,6 +536,17 @@ class CaptureModeTest : public AshTestBase {
         base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); }));
     run_loop.Run();
     ASSERT_TRUE(controller->is_recording_in_progress());
+  }
+
+  base::FilePath CreateCustomFolder(const std::string& custom_folder_name) {
+    base::FilePath custom_folder = CaptureModeController::Get()
+                                       ->delegate_for_testing()
+                                       ->GetUserDefaultDownloadsFolder()
+                                       .Append(custom_folder_name);
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    const bool result = base::CreateDirectory(custom_folder);
+    DCHECK(result);
+    return custom_folder;
   }
 };
 
@@ -1910,7 +1935,7 @@ TEST_F(CaptureModeTest, CaptureModeEntryPointHistograms) {
 TEST_F(CaptureModeTest, VideoNotificationThumbnail) {
   auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
                                          CaptureModeType::kVideo);
-  controller->StartVideoRecordingImmediatelyForTesting();
+  StartVideoRecordingImmediately();
   EXPECT_TRUE(controller->is_recording_in_progress());
   CaptureModeTestApi().FlushRecordingServiceForTesting();
 
@@ -1946,7 +1971,7 @@ TEST_F(CaptureModeTest, WindowRecordingCaptureId) {
   auto* event_generator = GetEventGenerator();
   event_generator->MoveMouseToCenterOf(window.get());
   auto* controller = CaptureModeController::Get();
-  controller->StartVideoRecordingImmediatelyForTesting();
+  StartVideoRecordingImmediately();
   EXPECT_TRUE(controller->is_recording_in_progress());
 
   // The window should have a valid capture ID.
@@ -2086,7 +2111,7 @@ TEST_F(CaptureModeTest, MultiDisplayWindowRecording) {
   auto* event_generator = GetEventGenerator();
   event_generator->MoveMouseToCenterOf(window.get());
   auto* session_layer = controller->capture_mode_session()->layer();
-  controller->StartVideoRecordingImmediatelyForTesting();
+  StartVideoRecordingImmediately();
   EXPECT_TRUE(controller->is_recording_in_progress());
   // The session layer is reused to paint the recording shield.
   auto* shield_layer =
@@ -2133,7 +2158,7 @@ TEST_F(CaptureModeTest, WindowResizing) {
 
   auto* event_generator = GetEventGenerator();
   event_generator->MoveMouseToCenterOf(window.get());
-  controller->StartVideoRecordingImmediatelyForTesting();
+  StartVideoRecordingImmediately();
   EXPECT_TRUE(controller->is_recording_in_progress());
   auto* test_delegate =
       static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
@@ -2183,7 +2208,7 @@ TEST_F(CaptureModeTest, RotateDisplayWhileRecording) {
   auto* controller =
       StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kVideo);
   SelectRegion(gfx::Rect(20, 40, 100, 200));
-  controller->StartVideoRecordingImmediatelyForTesting();
+  StartVideoRecordingImmediately();
   EXPECT_TRUE(controller->is_recording_in_progress());
 
   // Initially the frame sink size matches the un-rotated display size in DIPs,
@@ -2218,7 +2243,7 @@ TEST_F(CaptureModeTest, VerifyWindowRecordingVideoFrames) {
   auto* event_generator = GetEventGenerator();
   event_generator->MoveMouseToCenterOf(window.get());
   auto* controller = CaptureModeController::Get();
-  controller->StartVideoRecordingImmediatelyForTesting();
+  StartVideoRecordingImmediately();
   EXPECT_TRUE(controller->is_recording_in_progress());
   CaptureModeTestApi test_api;
   test_api.FlushRecordingServiceForTesting();
@@ -2307,6 +2332,76 @@ TEST_F(CaptureModeTest, VerifyWindowRecordingVideoFrames) {
   EXPECT_FALSE(controller->is_recording_in_progress());
 }
 
+class CaptureModeSaveFileTest
+    : public CaptureModeTest,
+      public testing::WithParamInterface<CaptureModeType> {
+ public:
+  CaptureModeSaveFileTest() = default;
+  CaptureModeSaveFileTest(
+      const CaptureModeSaveFileTest& capture_mode_save_file_test) = delete;
+  CaptureModeSaveFileTest& operator=(const CaptureModeSaveFileTest&) = delete;
+  ~CaptureModeSaveFileTest() override = default;
+
+  void StartCaptureSessionWithParam() {
+    StartCaptureSession(CaptureModeSource::kFullscreen, GetParam());
+  }
+
+  // Based on the `CaptureModeType`, it performs the capture and then returns
+  // the path of the saved image or video files.
+  base::FilePath PerformCapture() {
+    auto* controller = CaptureModeController::Get();
+    switch (GetParam()) {
+      case CaptureModeType::kImage:
+        controller->PerformCapture();
+        return WaitForCaptureFileToBeSaved();
+
+      case CaptureModeType::kVideo:
+        StartVideoRecordingImmediately();
+        controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
+        return WaitForCaptureFileToBeSaved();
+    }
+  }
+};
+
+// Tests that if the custom folder becomes unavailable, the captured file should
+// be saved into the default folder. Otherwise, it's saved into custom folder.
+TEST_P(CaptureModeSaveFileTest, SaveCapturedFileWithCustomFolder) {
+  auto* controller = CaptureModeController::Get();
+  const base::FilePath default_folder =
+      controller->delegate_for_testing()->GetUserDefaultDownloadsFolder();
+  const base::FilePath custom_folder((FILE_PATH_LITERAL("/home/tests")));
+  controller->SetCustomCaptureFolder(custom_folder);
+
+  // Make sure the current folder is the custom folder here and then perform
+  // capture.
+  auto capture_folder = controller->GetCurrentCaptureFolder();
+  EXPECT_FALSE(capture_folder.is_default_downloads_folder);
+  StartCaptureSessionWithParam();
+  base::FilePath file_saved_path = PerformCapture();
+
+  // Since `custom_folder` is not available, the captured files will be saved
+  // into default folder;
+  EXPECT_EQ(file_saved_path.DirName(), default_folder);
+
+  // Now create an available custom folder and set it for custom capture folder.
+  const base::FilePath available_custom_folder = CreateCustomFolder("test");
+  controller->SetCustomCaptureFolder(available_custom_folder);
+
+  capture_folder = controller->GetCurrentCaptureFolder();
+  EXPECT_FALSE(capture_folder.is_default_downloads_folder);
+  StartCaptureSessionWithParam();
+  file_saved_path = PerformCapture();
+
+  // Since `available_custom_folder` is now available, the captured files will
+  // be saved into the custom folder;
+  EXPECT_EQ(file_saved_path.DirName(), available_custom_folder);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         CaptureModeSaveFileTest,
+                         testing::Values(CaptureModeType::kImage,
+                                         CaptureModeType::kVideo));
+
 // Test fixture for verifying that the videos are recorded at the pixel size of
 // the targets being captured in all recording modes. This avoids having the
 // scaling in CopyOutputRequests when performing the capture at a different size
@@ -2353,7 +2448,7 @@ class CaptureModeRecordingSizeTest : public CaptureModeTest {
     auto* controller = StartCaptureSession(source, CaptureModeType::kVideo);
     if (source == CaptureModeSource::kWindow)
       GetEventGenerator()->MoveMouseToCenterOf(window_.get());
-    controller->StartVideoRecordingImmediatelyForTesting();
+    StartVideoRecordingImmediately();
     EXPECT_TRUE(controller->is_recording_in_progress());
     CaptureModeTestApi().FlushRecordingServiceForTesting();
     return controller;
@@ -2565,8 +2660,9 @@ class CaptureModeHdcpTest
     StartCaptureSession(GetParam(), CaptureModeType::kVideo);
   }
 
-  // Starts video recording from the capture mode source set by the test param.
-  void StartRecording() {
+  // Attempts video recording from the capture mode source set by the test
+  // param.
+  void AttemptRecording() {
     auto* controller = CaptureModeController::Get();
     ASSERT_TRUE(controller->IsActive());
 
@@ -2594,7 +2690,8 @@ class CaptureModeHdcpTest
 
 TEST_P(CaptureModeHdcpTest, WindowBecomesProtectedWhileRecording) {
   StartSessionForVideo();
-  StartRecording();
+  AttemptRecording();
+  WaitForRecordingToStart();
 
   auto* controller = CaptureModeController::Get();
   EXPECT_TRUE(controller->is_recording_in_progress());
@@ -2617,13 +2714,14 @@ TEST_P(CaptureModeHdcpTest, ProtectedWindowDestruction) {
                                       base::DoNothing());
 
   StartSessionForVideo();
-  StartRecording();
+  AttemptRecording();
 
   // Recording cannot start because of another protected window on the screen,
   // except when we're capturing a different |window_|.
   auto* controller = CaptureModeController::Get();
   EXPECT_FALSE(controller->IsActive());
   if (GetParam() == CaptureModeSource::kWindow) {
+    WaitForRecordingToStart();
     EXPECT_TRUE(controller->is_recording_in_progress());
     controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
     EXPECT_FALSE(controller->is_recording_in_progress());
@@ -2637,7 +2735,8 @@ TEST_P(CaptureModeHdcpTest, ProtectedWindowDestruction) {
   // all capture sources.
   window_2.reset();
   StartSessionForVideo();
-  StartRecording();
+  AttemptRecording();
+  WaitForRecordingToStart();
 
   EXPECT_FALSE(controller->IsActive());
   EXPECT_TRUE(controller->is_recording_in_progress());
@@ -2647,7 +2746,7 @@ TEST_P(CaptureModeHdcpTest, WindowBecomesProtectedBeforeRecording) {
   protection_delegate_->SetProtection(display::CONTENT_PROTECTION_METHOD_HDCP,
                                       base::DoNothing());
   StartSessionForVideo();
-  StartRecording();
+  AttemptRecording();
 
   // Recording cannot even start.
   auto* controller = CaptureModeController::Get();
@@ -2671,7 +2770,7 @@ TEST_P(CaptureModeHdcpTest, ProtectedWindowInMultiDisplay) {
   // Also, make sure the selected region is in the secondary display.
   auto* controller = CaptureModeController::Get();
   EXPECT_EQ(controller->capture_mode_session()->current_root(), roots[1]);
-  StartRecording();
+  AttemptRecording();
 
   // Recording should be able to start (since the protected window is on the
   // first display) unless the protected window itself is the one being
@@ -2679,6 +2778,7 @@ TEST_P(CaptureModeHdcpTest, ProtectedWindowInMultiDisplay) {
   if (GetParam() == CaptureModeSource::kWindow) {
     EXPECT_FALSE(controller->is_recording_in_progress());
   } else {
+    WaitForRecordingToStart();
     EXPECT_TRUE(controller->is_recording_in_progress());
 
     // Moving the protected window to the display being recorded should
@@ -2708,7 +2808,7 @@ TEST_F(CaptureModeTest, ClosingWindowBeingRecorded) {
   auto* event_generator = GetEventGenerator();
   event_generator->MoveMouseToCenterOf(window.get());
   auto* controller = CaptureModeController::Get();
-  controller->StartVideoRecordingImmediatelyForTesting();
+  StartVideoRecordingImmediately();
   EXPECT_TRUE(controller->is_recording_in_progress());
 
   // The window should have a valid capture ID.
@@ -2743,7 +2843,7 @@ TEST_F(CaptureModeTest, DetachDisplayWhileWindowRecording) {
   MoveMouseToAndUpdateCursorDisplay(window->GetBoundsInScreen().CenterPoint(),
                                     event_generator);
   auto* controller = CaptureModeController::Get();
-  controller->StartVideoRecordingImmediatelyForTesting();
+  StartVideoRecordingImmediately();
   EXPECT_TRUE(controller->is_recording_in_progress());
 
   auto* stop_recording_button = RootWindowController::ForWindow(roots[1])
@@ -2794,7 +2894,7 @@ TEST_F(CaptureModeTest, SuspendAfterCountdownStarts) {
 TEST_F(CaptureModeTest, SuspendAfterRecordingStarts) {
   auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
                                          CaptureModeType::kVideo);
-  controller->StartVideoRecordingImmediatelyForTesting();
+  StartVideoRecordingImmediately();
   EXPECT_TRUE(controller->is_recording_in_progress());
   base::HistogramTester histogram_tester;
   power_manager_client()->SendSuspendImminent(
@@ -2808,7 +2908,7 @@ TEST_F(CaptureModeTest, SuspendAfterRecordingStarts) {
 TEST_F(CaptureModeTest, SwitchUsersWhileRecording) {
   auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
                                          CaptureModeType::kVideo);
-  controller->StartVideoRecordingImmediatelyForTesting();
+  StartVideoRecordingImmediately();
   base::HistogramTester histogram_tester;
   EXPECT_TRUE(controller->is_recording_in_progress());
   SwitchToUser2();
@@ -2844,7 +2944,7 @@ TEST_F(CaptureModeTest, ClosingDisplayBeingFullscreenRecorded) {
   MoveMouseToAndUpdateCursorDisplay(roots[1]->GetBoundsInScreen().CenterPoint(),
                                     event_generator);
   auto* controller = CaptureModeController::Get();
-  controller->StartVideoRecordingImmediatelyForTesting();
+  StartVideoRecordingImmediately();
   EXPECT_TRUE(controller->is_recording_in_progress());
 
   auto* stop_recording_button = RootWindowController::ForWindow(roots[1])
@@ -2873,7 +2973,7 @@ TEST_F(CaptureModeTest, ShuttingDownWhileRecording) {
   StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
 
   auto* controller = CaptureModeController::Get();
-  controller->StartVideoRecordingImmediatelyForTesting();
+  StartVideoRecordingImmediately();
   EXPECT_TRUE(controller->is_recording_in_progress());
 
   // Exiting the test now will shut down ash while recording is in progress,
@@ -3856,7 +3956,7 @@ TEST_F(CaptureModeTest, CannotDoMultipleRecordings) {
   StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
 
   auto* controller = CaptureModeController::Get();
-  controller->StartVideoRecordingImmediatelyForTesting();
+  StartVideoRecordingImmediately();
   EXPECT_TRUE(controller->is_recording_in_progress());
   EXPECT_EQ(CaptureModeType::kVideo, controller->type());
 
@@ -4185,7 +4285,7 @@ class CaptureModeCursorOverlayTest : public CaptureModeTest {
     auto* event_generator = GetEventGenerator();
     if (source == CaptureModeSource::kWindow)
       event_generator->MoveMouseToCenterOf(window_.get());
-    controller->StartVideoRecordingImmediatelyForTesting();
+    StartVideoRecordingImmediately();
     EXPECT_TRUE(controller->is_recording_in_progress());
     auto* recording_watcher = controller->video_recording_watcher_for_testing();
     mojo::PendingRemote<Overlay> overlay_pending_remote;
@@ -4926,6 +5026,13 @@ class CaptureModeAdvancedSettingsTest : public CaptureModeTest {
     return CaptureModeSessionTestApi(session).user_nudge_controller();
   }
 
+  void WaitForSettingsMenuToBeRefreshed() {
+    base::RunLoop run_loop;
+    CaptureModeAdvancedSettingsTestApi().SetOnSettingsMenuRefreshedCallback(
+        run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -5122,12 +5229,13 @@ TEST_F(CaptureModeAdvancedSettingsTest, SelectFolderFromDialog) {
 
   // Accepting the dialog with a folder selection should dismiss it and add a
   // new option for the custom selected folder in the settings menu.
-  const base::FilePath custom_folder(FILE_PATH_LITERAL("/home/tests/foo"));
+  const base::FilePath custom_folder(CreateCustomFolder("test"));
   dialog_factory->AcceptPath(custom_folder);
+  WaitForSettingsMenuToBeRefreshed();
   EXPECT_FALSE(IsFolderSelectionDialogShown());
   EXPECT_TRUE(save_to_menu_group->IsOptionChecked(kCustomFolder));
   EXPECT_FALSE(save_to_menu_group->IsOptionChecked(kDownloadsFolder));
-  EXPECT_EQ(u"foo",
+  EXPECT_EQ(u"test",
             save_to_menu_group->GetOptionLabelForTesting(kCustomFolder));
 
   // This should update the folder that will be used by the controller.
@@ -5165,14 +5273,15 @@ TEST_F(CaptureModeAdvancedSettingsTest, DismissDialogWithoutSelection) {
 TEST_F(CaptureModeAdvancedSettingsTest, AcceptUpdatedCustomFolderFromDialog) {
   // Begin a new session with a pre-configured custom folder.
   auto* controller = CaptureModeController::Get();
-  controller->SetCustomCaptureFolder(
-      base::FilePath(FILE_PATH_LITERAL("/home/tests/foo")));
+  const base::FilePath custom_folder(CreateCustomFolder("test"));
+  controller->SetCustomCaptureFolder(custom_folder);
   StartImageRegionCapture();
 
   // Open the settings menu and check there already exists an item for that
   // pre-configured custom folder.
   auto* event_generator = GetEventGenerator();
   ClickOnView(GetSettingsButton(), event_generator);
+  WaitForSettingsMenuToBeRefreshed();
   CaptureModeAdvancedSettingsTestApi test_api;
   EXPECT_TRUE(test_api.GetDefaultDownloadsOption());
   auto* custom_folder_view = test_api.GetCustomFolderOptionIfAny();
@@ -5187,20 +5296,106 @@ TEST_F(CaptureModeAdvancedSettingsTest, AcceptUpdatedCustomFolderFromDialog) {
   EXPECT_TRUE(IsFolderSelectionDialogShown());
 
   auto* dialog_factory = FakeFolderSelectionDialogFactory::Get();
-  const base::FilePath new_folder(FILE_PATH_LITERAL("/home/bar"));
+  const base::FilePath new_folder(CreateCustomFolder("test1"));
   dialog_factory->AcceptPath(new_folder);
+  WaitForSettingsMenuToBeRefreshed();
   EXPECT_FALSE(IsFolderSelectionDialogShown());
-
   EXPECT_EQ(custom_folder_view, test_api.GetCustomFolderOptionIfAny());
   EXPECT_TRUE(save_to_menu_group->IsOptionChecked(kCustomFolder));
   EXPECT_FALSE(save_to_menu_group->IsOptionChecked(kDownloadsFolder));
-  EXPECT_EQ(u"bar",
+  EXPECT_EQ(u"test1",
             save_to_menu_group->GetOptionLabelForTesting(kCustomFolder));
 
   // This should update the folder that will be used by the controller.
   const auto capture_folder = controller->GetCurrentCaptureFolder();
   EXPECT_EQ(capture_folder.path, new_folder);
   EXPECT_FALSE(capture_folder.is_default_downloads_folder);
+}
+
+TEST_F(CaptureModeAdvancedSettingsTest,
+       InitializeSettingsViewWithUnavailableCustomFolder) {
+  // Begin a new session with a pre-configured unavailable custom folder.
+  auto* controller = CaptureModeController::Get();
+  const base::FilePath default_folder =
+      controller->delegate_for_testing()->GetUserDefaultDownloadsFolder();
+  const base::FilePath custom_folder(FILE_PATH_LITERAL("/home/random"));
+  controller->SetCustomCaptureFolder(custom_folder);
+  StartImageRegionCapture();
+
+  // Open the settings menu and check there already exists an item for that
+  // pre-configured custom folder. Since the custom folder is unavailable, the
+  // item should be disabled and dimmed. The item of the default folder should
+  // be checked.
+  auto* event_generator = GetEventGenerator();
+  ClickOnView(GetSettingsButton(), event_generator);
+  WaitForSettingsMenuToBeRefreshed();
+
+  CaptureModeAdvancedSettingsTestApi test_api;
+  EXPECT_TRUE(test_api.GetDefaultDownloadsOption());
+  auto* custom_folder_view = test_api.GetCustomFolderOptionIfAny();
+  EXPECT_TRUE(custom_folder_view);
+  CaptureModeMenuGroup* save_to_menu_group = test_api.GetSaveToMenuGroup();
+  EXPECT_TRUE(save_to_menu_group->IsOptionChecked(kDownloadsFolder));
+  EXPECT_FALSE(save_to_menu_group->IsOptionChecked(kCustomFolder));
+  EXPECT_FALSE(custom_folder_view->GetEnabled());
+  EXPECT_EQ(u"random",
+            save_to_menu_group->GetOptionLabelForTesting(kCustomFolder));
+
+  // Now open the folder selection dialog and select an available folder. The
+  // item of the custom folder should be checked and enabled.
+  ClickOnView(test_api.GetSelectFolderMenuItem(), event_generator);
+  EXPECT_TRUE(IsFolderSelectionDialogShown());
+
+  auto* dialog_factory = FakeFolderSelectionDialogFactory::Get();
+  const base::FilePath new_folder(CreateCustomFolder("test"));
+  dialog_factory->AcceptPath(new_folder);
+  WaitForSettingsMenuToBeRefreshed();
+  EXPECT_EQ(custom_folder_view, test_api.GetCustomFolderOptionIfAny());
+  EXPECT_TRUE(save_to_menu_group->IsOptionChecked(kCustomFolder));
+  EXPECT_FALSE(save_to_menu_group->IsOptionChecked(kDownloadsFolder));
+  EXPECT_TRUE(custom_folder_view->GetEnabled());
+  EXPECT_EQ(u"test",
+            save_to_menu_group->GetOptionLabelForTesting(kCustomFolder));
+}
+
+TEST_F(CaptureModeAdvancedSettingsTest, DeleteCustomFolderFromDialog) {
+  // Begin a new session with a pre-configured custom folder.
+  auto* controller = CaptureModeController::Get();
+  const base::FilePath custom_folder(CreateCustomFolder("test"));
+  controller->SetCustomCaptureFolder(custom_folder);
+  StartImageRegionCapture();
+
+  // Open the settings menu and check there exists an item for that custom
+  // folder. And the item is checked to indicate the current folder in use to
+  // save the captured files is the custom folder.
+  auto* event_generator = GetEventGenerator();
+  ClickOnView(GetSettingsButton(), event_generator);
+  WaitForSettingsMenuToBeRefreshed();
+
+  CaptureModeAdvancedSettingsTestApi test_api;
+  EXPECT_TRUE(test_api.GetDefaultDownloadsOption());
+  auto* custom_folder_view = test_api.GetCustomFolderOptionIfAny();
+  EXPECT_TRUE(custom_folder_view);
+  CaptureModeMenuGroup* save_to_menu_group = test_api.GetSaveToMenuGroup();
+  EXPECT_TRUE(save_to_menu_group->IsOptionChecked(kCustomFolder));
+
+  // Now open the folder selection dialog and delete the custom folder. Check
+  // the item on the settings menu for custom folder is still there but disabled
+  // and dimmed. The item of the default folder is checked now.
+  ClickOnView(test_api.GetSelectFolderMenuItem(), event_generator);
+  EXPECT_TRUE(IsFolderSelectionDialogShown());
+  auto* dialog_factory = FakeFolderSelectionDialogFactory::Get();
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    const bool result = base::DeleteFile(custom_folder);
+    DCHECK(result);
+  }
+  dialog_factory->CancelDialog();
+  WaitForSettingsMenuToBeRefreshed();
+  EXPECT_TRUE(custom_folder_view);
+  EXPECT_FALSE(save_to_menu_group->IsOptionChecked(kCustomFolder));
+  EXPECT_FALSE(custom_folder_view->GetEnabled());
+  EXPECT_TRUE(save_to_menu_group->IsOptionChecked(kDownloadsFolder));
 }
 
 TEST_F(CaptureModeAdvancedSettingsTest,
@@ -5213,6 +5408,7 @@ TEST_F(CaptureModeAdvancedSettingsTest,
 
   auto* event_generator = GetEventGenerator();
   ClickOnView(GetSettingsButton(), event_generator);
+  WaitForSettingsMenuToBeRefreshed();
   CaptureModeAdvancedSettingsTestApi test_api;
   ClickOnView(test_api.GetSelectFolderMenuItem(), event_generator);
 
@@ -5233,11 +5429,12 @@ TEST_F(CaptureModeAdvancedSettingsTest,
 TEST_F(CaptureModeAdvancedSettingsTest, SwitchWhichFolderToUserFromOptions) {
   // Begin a new session with a pre-configured custom folder.
   auto* controller = CaptureModeController::Get();
-  const base::FilePath custom_path(FILE_PATH_LITERAL("/home/tests/foo"));
+  const base::FilePath custom_path((CreateCustomFolder("test")));
   controller->SetCustomCaptureFolder(custom_path);
   StartImageRegionCapture();
   auto* event_generator = GetEventGenerator();
   ClickOnView(GetSettingsButton(), event_generator);
+  WaitForSettingsMenuToBeRefreshed();
 
   // Clicking the "Downloads" option will set it as the folder of choice, but
   // won't clear the custom folder.

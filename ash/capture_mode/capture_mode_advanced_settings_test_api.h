@@ -5,6 +5,8 @@
 #ifndef ASH_CAPTURE_MODE_CAPTURE_MODE_ADVANCED_SETTINGS_TEST_API_H_
 #define ASH_CAPTURE_MODE_CAPTURE_MODE_ADVANCED_SETTINGS_TEST_API_H_
 
+#include "base/callback_forward.h"
+
 namespace views {
 class View;
 }  // namespace views
@@ -41,6 +43,9 @@ class CaptureModeAdvancedSettingsTestApi {
   // Returns the view for the "Select folder" menu item which when pressed would
   // open the folder selection dialog.
   views::View* GetSelectFolderMenuItem();
+
+  // Sets a callback that will be triggered once the settings menu is refreshed.
+  void SetOnSettingsMenuRefreshedCallback(base::OnceClosure callback);
 
  private:
   // Valid only while the settings menu is shown.

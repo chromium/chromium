@@ -95,6 +95,7 @@ bool FolderSelectionDialogController::ShouldConsumeEvent(
 void FolderSelectionDialogController::FileSelected(const base::FilePath& path,
                                                    int index,
                                                    void* params) {
+  did_user_select_a_folder_ = true;
   delegate_->OnFolderSelected(path);
 }
 

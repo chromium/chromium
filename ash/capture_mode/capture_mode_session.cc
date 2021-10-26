@@ -977,8 +977,16 @@ void CaptureModeSession::OnFolderSelected(const base::FilePath& path) {
 
 void CaptureModeSession::OnSelectionWindowClosed() {
   DCHECK(folder_selection_dialog_controller_);
+  const bool did_user_select_a_folder =
+      folder_selection_dialog_controller_->did_user_select_a_folder();
   folder_selection_dialog_controller_.reset();
   cursor_setter_ = std::make_unique<CursorSetter>();
+
+  // If the selection window is closed by user selecting a folder, no need to
+  // update the capture folder settings menu here, since it's covered by
+  // `SetCustomCaptureFolder` via `OnFolderSelected`.
+  if (!did_user_select_a_folder)
+    OnCaptureFolderMayHaveChanged();
 }
 
 void CaptureModeSession::UpdateCursor(const gfx::Point& location_in_screen,
