@@ -14,12 +14,14 @@ import "chromeos/services/cros_healthd/public/mojom/nullable_primitives.mojom";
 import "chromeos/services/network_health/public/mojom/network_health.mojom";
 
 // An enumeration of CPU architectures.
+//
+// NextMinVersion: 1, NextIndex: 4
 [Extensible]
 enum CpuArchitectureEnum {
-  kUnknown,
-  kX86_64,
-  kAArch64,
-  kArmv7l,
+  [Default] kUnknown = 0,
+  kX86_64 = 1,
+  kAArch64 = 2,
+  kArmv7l = 3,
 };
 
 // An enumeration of each category of information that cros_healthd can report.
@@ -68,12 +70,14 @@ enum ErrorType {
 };
 
 // Structure that contains error information for a telemetry probe.
+//
+// NextMinVersion: 1, NextIndex: 2
 struct ProbeError {
   // The type of error that occurred.
-  ErrorType type;
+  ErrorType type@0;
   // A debug message with more information about the error. This string is not
   // intended to be shown to the user.
-  string msg;
+  string msg@1;
 };
 
 // An enumeration of states a process can be in.
@@ -108,51 +112,53 @@ union ProcessResult {
 };
 
 // Information related to a particular process.
+//
+// NextMinVersion: 1, NextIndex: 16
 struct ProcessInfo {
   // Command which started the process.
-  string command;
+  string command@0;
   // User the process is running as.
-  uint32 user_id;
+  uint32 user_id@1;
   // If the process is running a real-time scheduling policy, this field is the
   // negated scheduling priority, minus one. Real-time priorities range from 1
   // to 99, so this will range from -2 to -100. If the process is not running a
   // real-time scheduling priority, this field will be the raw nice value, where
   // 0 corresponds to the user-visible high priority nice value of -20, and 39
   // corresponds to the user-visible low priority nice value of 19.
-  int8 priority;
+  int8 priority@2;
   // User-visible nice value of the process, from a low priority of 19 to a high
   // priority of -20.
-  int8 nice;
+  int8 nice@3;
   // Uptime of the process, in clock ticks.
-  uint64 uptime_ticks;
+  uint64 uptime_ticks@4;
   // State of the process.
-  ProcessState state;
+  ProcessState state@5;
   // Total memory allocated to the process, in KiB.
-  uint32 total_memory_kib;
+  uint32 total_memory_kib@6;
   // Amount of resident memory currently used by the process, in KiB.
-  uint32 resident_memory_kib;
+  uint32 resident_memory_kib@7;
   // Unused memory available to the process, in KiB. This will always be
   // |total_memory_kib| - |resident_memory_kib|.
-  uint32 free_memory_kib;
+  uint32 free_memory_kib@8;
   // The sum of bytes passed to system read calls. This includes terminal
   // I/O and is independent of whether the physical disk is accessed.
-  uint64 bytes_read;
+  uint64 bytes_read@9;
   // The sum of bytes passed to system write calls. This includes terminal
   // I/O and is independent of whether the physical disk is accessed.
-  uint64 bytes_written;
+  uint64 bytes_written@10;
   // Attempted count of read syscalls.
-  uint64 read_system_calls;
+  uint64 read_system_calls@11;
   // Attempted count of write syscalls.
-  uint64 write_system_calls;
+  uint64 write_system_calls@12;
   // Attempt to count the number of bytes which this process really did cause
   // to be fetched from the storage layer.
-  uint64 physical_bytes_read;
+  uint64 physical_bytes_read@13;
   // Attempt to count the number of bytes which this process caused to be sent
   // to the storage layer.
-  uint64 physical_bytes_written;
+  uint64 physical_bytes_written@14;
   // Number of bytes which this process caused to not happen, by truncating
   // pagecache.
-  uint64 cancelled_bytes_written;
+  uint64 cancelled_bytes_written@15;
 };
 
 // Battery probe result. Can either be populated with the BatteryInfo or an
@@ -165,39 +171,41 @@ union BatteryResult {
 };
 
 // Information related to the main battery.
+//
+// NextMinVersion: 1, NextIndex: 14
 struct BatteryInfo {
   // TODO(https://crbug.com/979245): Update "smart" cycle count.
-  int64 cycle_count;
+  int64 cycle_count@0;
   // Current battery voltage (V)
-  double voltage_now;
+  double voltage_now@1;
   // Manufacturer of the battery
-  string vendor;
+  string vendor@2;
   // Serial number of the battery
-  string serial_number;
+  string serial_number@3;
   // Design capacity (Ah)
-  double charge_full_design;
+  double charge_full_design@4;
   // Full capacity (Ah)
-  double charge_full;
+  double charge_full@5;
   // Desired minimum output voltage (V)
-  double voltage_min_design;
+  double voltage_min_design@6;
   // Model name.
-  string model_name;
+  string model_name@7;
   // Current battery charge (Ah)
-  double charge_now;
+  double charge_now@8;
   // Current battery current (A)
-  double current_now;
+  double current_now@9;
   // Technology of the battery
-  string technology;
+  string technology@10;
   // Status of the battery
-  string status;
+  string status@11;
 
   // The fields below are optionally included if the main battery is a Smart
   // Battery as defined in http://sbs-forum.org/specs/sbdat110.pdf.
 
   // Manufacture date converted to yyyy-mm-dd format.
-  string? manufacture_date;
+  string? manufacture_date@12;
   // Temperature in 0.1K. Included when the main battery is a Smart Battery.
-  NullableUint64? temperature;
+  NullableUint64? temperature@13;
 };
 
 // Non-removable block device probe result. Can either be populated with the
@@ -242,61 +250,65 @@ union BlockDeviceFirmware {
 };
 
 // Purpose of the storage device.
+//
+// NextMinVersion: 1, NextIndex: 3
 [Extensible]
 enum StorageDevicePurpose {
-  kUnknown,
-  kBootDevice,
-  kSwapDevice,
+  [Default] kUnknown = 0,
+  kBootDevice = 1,
+  kSwapDevice = 2,
 };
 
 // Information related to a specific non-removable block device.
+//
+// NextMinVersion: 1, NextIndex: 17
 struct NonRemovableBlockDeviceInfo {
   // IO statistics
 
   // Bytes read since last boot.
-  uint64 bytes_read_since_last_boot;
+  uint64 bytes_read_since_last_boot@0;
   // Bytes written since last boot.
-  uint64 bytes_written_since_last_boot;
+  uint64 bytes_written_since_last_boot@1;
   // Time spent reading since last boot.
-  uint64 read_time_seconds_since_last_boot;
+  uint64 read_time_seconds_since_last_boot@2;
   // Time spent writing since last boot.
-  uint64 write_time_seconds_since_last_boot;
+  uint64 write_time_seconds_since_last_boot@3;
   // Time spent doing I/O since last boot. Counts the time the disk and queue
   // were busy, so unlike the fields above, parallel requests are not counted
   // multiple times.
-  uint64 io_time_seconds_since_last_boot;
+  uint64 io_time_seconds_since_last_boot@4;
   // Time spent discarding since last boot. Discarding is writing to clear
   // blocks which are no longer in use. Supported on kernels 4.18+.
-  NullableUint64? discard_time_seconds_since_last_boot;
+  NullableUint64? discard_time_seconds_since_last_boot@5;
 
   // Device identification.
 
   // Device vendor identification.
-  BlockDeviceVendor vendor_id;
+  BlockDeviceVendor vendor_id@6;
   // Device product identification.
-  BlockDeviceProduct product_id;
+  BlockDeviceProduct product_id@7;
   // Device revision.
-  BlockDeviceRevision revision;
+  BlockDeviceRevision revision@8;
   // Device model.
-  string name;
+  string name@9;
   // Device size in bytes.
-  uint64 size;
+  uint64 size@10;
   // Firmware version.
-  BlockDeviceFirmware firmware_version;
+  BlockDeviceFirmware firmware_version@11;
   // Storage type, could be MMC / NVMe / ATA, based on udev subsystem.
-  string type;
+  string type@12;
   // Purpose of the device e.g. "boot", "swap".
-  StorageDevicePurpose purpose;
+  StorageDevicePurpose purpose@13;
 
   // Additional identification.
 
   // The path of this storage on the system. It is useful if caller needs to
   // correlate with other information.
-  string path;
+  string path@14;
   // Manufacturer ID, 8 bits.
-  uint8 manufacturer_id;
+  uint8 manufacturer_id@15;
   // PSN: Product serial number, 32 bits
-  uint32 serial;
+  uint32 serial@16;
 };
 
 // CPU probe result. Can either be populated with the CpuInfo or an error
@@ -309,69 +321,81 @@ union CpuResult {
 };
 
 // Information about the device's CPUs.
+//
+// NextMinVersion: 1, NextIndex: 5
 struct CpuInfo {
   // Number of total threads available.
-  uint32 num_total_threads;
+  uint32 num_total_threads@0;
   // The CPU architecture - it's assumed all of a device's CPUs share an
   // architecture.
-  CpuArchitectureEnum architecture;
+  CpuArchitectureEnum architecture@1;
   // Information about the device's physical CPUs.
-  array<PhysicalCpuInfo> physical_cpus;
+  array<PhysicalCpuInfo> physical_cpus@2;
   // Information about the CPU temperature channels.
-  array<CpuTemperatureChannel> temperature_channels;
+  array<CpuTemperatureChannel> temperature_channels@3;
   // Information about keylocker.
-  KeylockerInfo? keylocker_info;
+  KeylockerInfo? keylocker_info@4;
 };
 
 // Information related to Keylocker.
+//
+// NextMinVersion: 1, NextIndex: 1
 struct KeylockerInfo {
   // Has Keylocker been configured or not.
-  bool keylocker_configured;
+  bool keylocker_configured@0;
 };
 
 // Information related to a particular physical CPU.
+//
+// NextMinVersion: 1, NextIndex: 2
 struct PhysicalCpuInfo {
   // The CPU model name, if available.
-  string? model_name;
+  string? model_name@0;
   // Logical CPUs corresponding to this physical CPU.
-  array<LogicalCpuInfo> logical_cpus;
+  array<LogicalCpuInfo> logical_cpus@1;
 };
 
 // Information related to a particular logical CPU.
+//
+// NextMinVersion: 1, NextIndex: 7
 struct LogicalCpuInfo {
   // The max CPU clock speed in kHz.
-  uint32 max_clock_speed_khz;
+  uint32 max_clock_speed_khz@0;
   // Maximum frequency the CPU is allowed to run at, by policy.
-  uint32 scaling_max_frequency_khz;
+  uint32 scaling_max_frequency_khz@1;
   // Current frequency the CPU is running at.
-  uint32 scaling_current_frequency_khz;
+  uint32 scaling_current_frequency_khz@2;
   // Time spent in user mode since last boot. USER_HZ can be converted to
   // seconds with the conversion factor given by sysconf(_SC_CLK_TCK).
-  uint64 user_time_user_hz;
+  uint64 user_time_user_hz@3;
   // Time spent in system mode since last boot. USER_HZ can be converted to
   // seconds with the conversion factor given by sysconf(_SC_CLK_TCK).
-  uint64 system_time_user_hz;
+  uint64 system_time_user_hz@4;
   // Idle time since last boot. USER_HZ can be converted to seconds with the
   // conversion factor given by sysconf(_SC_CLK_TCK).
-  uint64 idle_time_user_hz;
+  uint64 idle_time_user_hz@5;
   // Information about the logical CPU's time in various C-states.
-  array<CpuCStateInfo> c_states;
+  array<CpuCStateInfo> c_states@6;
 };
 
 // Information about a CPU's C-states.
+//
+// NextMinVersion: 1, NextIndex: 2
 struct CpuCStateInfo {
   // Name of the state.
-  string name;
+  string name@0;
   // Time spent in the state since the last reboot, in microseconds.
-  uint64 time_in_state_since_last_boot_us;
+  uint64 time_in_state_since_last_boot_us@1;
 };
 
 // Information about a single CPU temperature channel.
+//
+// NextMinVersion: 1, NextIndex: 2
 struct CpuTemperatureChannel {
   // Temperature channel label, if found on the device.
-  string? label;
+  string? label@0;
   // CPU temperature in Celsius.
-  int32 temperature_celsius;
+  int32 temperature_celsius@1;
 };
 
 // Timezone probe result. Can either be populated with the TimezoneInfo or an
@@ -384,11 +408,13 @@ union TimezoneResult {
 };
 
 // Timezone information.
+//
+// NextMinVersion: 1, NextIndex: 2
 struct TimezoneInfo {
   // The timezone of the device in POSIX standard.
-  string posix;
+  string posix@0;
   // The timezone region of the device.
-  string region;
+  string region@1;
 };
 
 // Memory probe result. Can either be populated with the MemoryInfo or an
@@ -401,15 +427,17 @@ union MemoryResult {
 };
 
 // Memory information.
+//
+// NextMinVersion: 1, NextIndex: 4
 struct MemoryInfo {
   // Total memory, in KiB.
-  uint32 total_memory_kib;
+  uint32 total_memory_kib@0;
   // Free memory, in KiB.
-  uint32 free_memory_kib;
+  uint32 free_memory_kib@1;
   // Available memory, in KiB.
-  uint32 available_memory_kib;
+  uint32 available_memory_kib@2;
   // Number of page faults since the last boot.
-  uint64 page_faults_since_last_boot;
+  uint64 page_faults_since_last_boot@3;
 };
 
 // Backlight probe result. Can either be populated with the BacklightInfo or an
@@ -422,14 +450,16 @@ union BacklightResult {
 };
 
 // Backlight information.
+//
+// NextMinVersion: 1, NextIndex: 3
 struct BacklightInfo {
   // Path to this backlight on the system. Useful if the caller needs to
   // correlate with other information.
-  string path;
+  string path@0;
   // Maximum brightness for the backlight.
-  uint32 max_brightness;
+  uint32 max_brightness@1;
   // Current brightness of the backlight, between 0 and max_brightness.
-  uint32 brightness;
+  uint32 brightness@2;
 };
 
 // Fan probe result. Can either be populated with the FanInfo or an error
@@ -442,9 +472,11 @@ union FanResult {
 };
 
 // Fan information.
+//
+// NextMinVersion: 1, NextIndex: 1
 struct FanInfo {
   // Fan speed in RPM.
-  uint32 speed_rpm;
+  uint32 speed_rpm@0;
 };
 
 // Stateful partition probe result. Can either be populated with a valid
@@ -457,15 +489,17 @@ union StatefulPartitionResult {
 };
 
 // Stateful partition info
+//
+// NextMinVersion: 1, NextIndex: 4
 struct StatefulPartitionInfo {
   // Available space for user data storage in the device in bytes.
-  uint64 available_space;
+  uint64 available_space@0;
   // Total space for user data storage in the device in bytes.
-  uint64 total_space;
+  uint64 total_space@1;
   // File system on stateful partition. e.g. ext4.
-  string filesystem;
+  string filesystem@2;
   // Source of stateful partition. e.g. /dev/mmcblk0p1.
-  string mount_source;
+  string mount_source@3;
 };
 
 // Bluetooth probe result. Can either be populated with the BluetoothAdapterInfo
@@ -478,15 +512,17 @@ union BluetoothResult {
 };
 
 // Information related to one of a device's Bluetooth adapters.
+//
+// NextMinVersion: 1, NextIndex: 4
 struct BluetoothAdapterInfo {
   // The name of the adapter.
-  string name;
+  string name@0;
   // The MAC address of the adapter.
-  string address;
+  string address@1;
   // Indicates whether the adapter is on or off.
-  bool powered;
+  bool powered@2;
   // The number of devices connected to this adapter.
-  uint32 num_connected_devices;
+  uint32 num_connected_devices@3;
 };
 
 // System probe result. Can either be populated with the SystemInfo or an error
@@ -510,90 +546,100 @@ union SystemResultV2 {
 
 // System Information.
 // DEPRECATED(b/188508561): Use SystemInfoV2 instead.
+//
+// NextMinVersion: 1, NextIndex: 12
 struct SystemInfo {
   // The date the device was first activated.
   // Format: YYYY-WW.
-  string? first_power_date;
+  string? first_power_date@0;
   // The date the device was manufactured (finalized in factory).
   // Format: YYYY-MM-DD.
-  string? manufacture_date;
+  string? manufacture_date@1;
   // The product SKU number.
-  string? product_sku_number;
+  string? product_sku_number@2;
   // The product serial number.
-  string? product_serial_number;
+  string? product_serial_number@3;
   // The product model name.
-  string? product_model_name;
+  string? product_model_name@4;
   // Contents of CrosConfig in /arc/build-properties/marketing-name.
-  string marketing_name;
+  string marketing_name@5;
   // The BIOS version.
-  string? bios_version;
+  string? bios_version@6;
   // The product name of the motherboard.
-  string? board_name;
+  string? board_name@7;
   // The version of the motherboard.
-  string? board_version;
+  string? board_version@8;
   // The chassis type of the device. The values reported by chassis type are
   // mapped in
   // www.dmtf.org/sites/default/files/standards/documents/DSP0134_3.0.0.pdf.
-  NullableUint64? chassis_type;
+  NullableUint64? chassis_type@9;
   // The product name (model) of the system.
-  string? product_name;
+  string? product_name@10;
   // The OS version of the system.
-  OsVersion os_version;
+  OsVersion os_version@11;
 };
 
 // System Information.
 // TODO(b/190459636): Rename it to SystemInfo after migration.
+//
+// NextMinVersion: 1, NextIndex: 3
 struct SystemInfoV2 {
   // The info related to the OS.
-  OsInfo os_info;
+  OsInfo os_info@0;
   // The info from the VPD cache.
-  VpdInfo? vpd_info;
+  VpdInfo? vpd_info@1;
   // The info from DMI (x86 only). The info from here should only be used for
   // logging and debugging.
-  DmiInfo? dmi_info;
+  DmiInfo? dmi_info@2;
 };
 
 // The OS information.
+//
+// NextMinVersion: 1, NextIndex: 4
 struct OsInfo {
   // Google code name for the given model. While it is OK to use this string for
   // human-display purposes (such as in a debug log or help dialog), or for a
   // searchable-key in metrics collection, it is not recommended to use this
   // property for creating model-specific behaviors.
-  string code_name;
+  string code_name@0;
   // Contents of CrosConfig in /arc/build-properties/marketing-name.
-  string? marketing_name;
+  string? marketing_name@1;
   // The OS version of the system.
-  OsVersion os_version;
+  OsVersion os_version@2;
   // The boot flow used by the current boot.
-  BootMode boot_mode;
+  BootMode boot_mode@3;
 };
 
 // Structure containing information about the operating system version of the
 // device. This structure decomposes a full version string
 // (e.g. "87.13544.59.0") into its parts:
+//
+// NextMinVersion: 1, NextIndex: 4
 struct OsVersion {
   // The OS version release milestone (e.g. "87").
-  string release_milestone;
+  string release_milestone@0;
   // The OS version build number (e.g. "13544").
-  string build_number;
+  string build_number@1;
   // The OS version patch number (e.g. "59.0").
-  string patch_number;
+  string patch_number@2;
   // The OS release channel (e.g. "stable-channel").
-  string release_channel;
+  string release_channel@3;
 };
 
 // The boot mode of the current os.
+//
+// NextMinVersion: 1, NextIndex: 5
 [Extensible]
 enum BootMode {
-  kUnknown = 0,
+  [Default] kUnknown = 0,
   // Boot with Chrome OS firmware.
-  kCrosSecure,
+  kCrosSecure = 1,
   // Boot with EFI
-  kCrosEfi,
+  kCrosEfi = 2,
   // Boot with Legacy BIOS.
-  kCrosLegacy,
+  kCrosLegacy = 3,
   // Boot with EFI security boot.
-  kCrosEfiSecure,
+  kCrosEfiSecure = 4,
 };
 
 // The list of VPD fields are available in the ChromeOS Partner Site document
@@ -601,51 +647,55 @@ enum BootMode {
 //    https://chromeos.google.com/partner/dlm/docs/factory/vpd.html
 // Note that all the fields (include required fields) are not guaranteed to be
 // exist in some situation. (e.g. in a early stage device)
+//
+// NextMinVersion: 1, NextIndex: 6
 struct VpdInfo {
   // A unique identifier of the device. (Required RO VPD field)
-  string? serial_number;
+  string? serial_number@0;
   // Defines a market region where devices share a particular configuration of
   // keyboard layout, language, and timezone. (Required VPD field)
-  string? region;
+  string? region@1;
   // The date the device was manufactured. (Required RO VPD field)
   // Format: YYYY-MM-DD.
-  string? mfg_date;
+  string? mfg_date@2;
   // The date the device was first activated. (Runtime RW VPD field)
   // Format: YYYY-WW.
-  string? activate_date;
+  string? activate_date@3;
   // The product SKU number. (Optional RO VPD field. b/35512367)
-  string? sku_number;
+  string? sku_number@4;
   // The product model name. (Optional RO VPD field. b/35512367)
-  string? model_name;
+  string? model_name@5;
 };
 
 // DMI (a.k.a. SMBIOS) is only supported on x86 platform. These info can be used
 // to identify the hardware.
+//
+// NextMinVersion: 1, NextIndex: 11
 struct DmiInfo {
   // The BIOS vendor.
-  string? bios_vendor;
+  string? bios_vendor@0;
   // The BIOS version.
-  string? bios_version;
+  string? bios_version@1;
   // The product name of the motherboard.
-  string? board_name;
+  string? board_name@2;
   // The vendor of the motherboard.
-  string? board_vendor;
+  string? board_vendor@3;
   // The version of the motherboard.
-  string? board_version;
+  string? board_version@4;
   // The vendor of the chassis.
-  string? chassis_vendor;
+  string? chassis_vendor@5;
   // The chassis type of the device. The values reported by chassis type are
   // mapped in
   // www.dmtf.org/sites/default/files/standards/documents/DSP0134_3.0.0.pdf.
-  NullableUint64? chassis_type;
+  NullableUint64? chassis_type@6;
   // The product family name.
-  string? product_family;
+  string? product_family@7;
   // The product name (model) of the system.
-  string? product_name;
+  string? product_name@8;
   // The product version.
-  string? product_version;
+  string? product_version@9;
   // The system vendor name.
-  string? sys_vendor;
+  string? sys_vendor@10;
 };
 
 // Network probe result. Can either be populated with the NetworkHealthSnapshot
@@ -667,23 +717,25 @@ union AudioResult {
 };
 
 // Audio information.
+//
+// NextMinVersion: 1, NextIndex: 8
 struct AudioInfo {
   // Is active output device mute or not.
-  bool output_mute;
+  bool output_mute@0;
   // Is active input device mute or not.
-  bool input_mute;
+  bool input_mute@1;
   // Active output device's volume in [0, 100].
-  uint64 output_volume;
+  uint64 output_volume@2;
   // Active output device's name.
-  string output_device_name;
+  string output_device_name@3;
   // Active input device's gain in [0, 100].
-  uint32 input_gain;
+  uint32 input_gain@4;
   // Active input device's name.
-  string input_device_name;
+  string input_device_name@5;
   // Numbers of underruns.
-  uint32 underruns;
+  uint32 underruns@6;
   // Numbers of severe underruns.
-  uint32 severe_underruns;
+  uint32 severe_underruns@7;
 };
 
 // Boot performance result.
@@ -695,19 +747,21 @@ union BootPerformanceResult {
 };
 
 // Boot performance information.
+//
+// NextMinVersion: 1, NextIndex: 5
 struct BootPerformanceInfo {
   // Total time since power on to login screen prompt.
-  double boot_up_seconds;
+  double boot_up_seconds@0;
   // The timestamp when power on.
-  double boot_up_timestamp;
+  double boot_up_timestamp@1;
   // Total time(rough) since shutdown start to power off.
   // Only meaningful when shutdown_reason is not "N/A".
-  double shutdown_seconds;
+  double shutdown_seconds@2;
   // The timestamp when shutdown.
   // Only meaningful when shutdown_reason is not "N/A".
-  double shutdown_timestamp;
+  double shutdown_timestamp@3;
   // The shutdown reason (including reboot).
-  string shutdown_reason;
+  string shutdown_reason@4;
 };
 
 // Bus probe result. Can either be populated with the BusDevice or an error
@@ -721,27 +775,31 @@ union BusResult {
 
 // The classes of the bus devices. Can be used to group the devices by their
 // use.
+//
+// NextMinVersion: 1, NextIndex: 5
 [Extensible]
 enum BusDeviceClass {
   // For the devices which cannot be classified.
-  kOthers = 0,
-  kDisplayController,
-  kEthernetController,
-  kWirelessController,
-  kBluetoothAdapter,
+  [Default] kOthers = 0,
+  kDisplayController = 1,
+  kEthernetController = 2,
+  kWirelessController = 3,
+  kBluetoothAdapter = 4,
 };
 
 // The bus device info.
+//
+// NextMinVersion: 1, NextIndex: 4
 struct BusDevice {
   // The vendor / product name of the device. These are extracted from the
   // databases on the system and should only be used for showing / logging.
   // Don't use these to identify the devices.
-  string vendor_name;
-  string product_name;
+  string vendor_name@0;
+  string product_name@1;
   // The class of the device.
-  BusDeviceClass device_class;
+  BusDeviceClass device_class@2;
   // The info related to specific bus type.
-  BusInfo bus_info;
+  BusInfo bus_info@3;
 };
 
 // The info related to specific bus type.
@@ -753,49 +811,55 @@ union BusInfo {
 };
 
 // The info related to pci.
+//
+// NextMinVersion: 1, NextIndex: 6
 struct PciBusInfo {
   // These fields can be used to classify / identify the pci devices. See the
   // pci.ids database for the values. (https://github.com/gentoo/hwids)
-  uint8 class_id;
-  uint8 subclass_id;
-  uint8 prog_if_id;
-  uint16 vendor_id;
-  uint16 device_id;
+  uint8 class_id@0;
+  uint8 subclass_id@1;
+  uint8 prog_if_id@2;
+  uint16 vendor_id@3;
+  uint16 device_id@4;
   // The driver used by the device. This is the name of the matched driver which
   // is registered in the kernel. See "{kernel root}/drivers/". for the list of
   // the built in drivers.
-  string? driver;
+  string? driver@5;
 };
 
 // The info related to usb.
+//
+// NextMinVersion: 1, NextIndex: 6
 struct UsbBusInfo {
   // These fields can be used to classify / identify the usb devices. See the
   // usb.ids database for the values. (https://github.com/gentoo/hwids)
-  uint8 class_id;
-  uint8 subclass_id;
-  uint8 protocol_id;
-  uint16 vendor_id;
-  uint16 product_id;
+  uint8 class_id@0;
+  uint8 subclass_id@1;
+  uint8 protocol_id@2;
+  uint16 vendor_id@3;
+  uint16 product_id@4;
   // The usb interfaces under the device. A usb device has at least one
   // interface. Each interface may or may not work independently, based on each
   // device. This allows a usb device to provide multiple features.
   // The interfaces are sorted by the |interface_number| field.
-  array<UsbBusInterfaceInfo> interfaces;
+  array<UsbBusInterfaceInfo> interfaces@5;
 };
 
 // The info related to usb interfaces.
+//
+// NextMinVersion: 1, NextIndex: 5
 struct UsbBusInterfaceInfo {
   // The zero-based number (index) of the interface.
-  uint8 interface_number;
+  uint8 interface_number@0;
   // These fields can be used to classify / identify the usb interfaces. See the
   // usb.ids database for the values.
-  uint8 class_id;
-  uint8 subclass_id;
-  uint8 protocol_id;
+  uint8 class_id@1;
+  uint8 subclass_id@2;
+  uint8 protocol_id@3;
   // The driver used by the device. This is the name of the matched driver which
   // is registered in the kernel. See "{kernel root}/drivers/". for the list of
   // the built in drivers.
-  string? driver;
+  string? driver@4;
 };
 
 // TPM probe result. Can either be populated with the TpmInfo or an error
@@ -808,94 +872,108 @@ union TpmResult {
 };
 
 // Information of the Trusted Platform Module(TPM).
+//
+// NextMinVersion: 1, NextIndex: 6
 struct TpmInfo {
   // TPM version related information.
-  TpmVersion version;
+  TpmVersion version@0;
   // TPM status related information.
-  TpmStatus status;
+  TpmStatus status@1;
   // TPM dictionary attack (DA) related information.
-  TpmDictionaryAttack dictionary_attack;
+  TpmDictionaryAttack dictionary_attack@2;
   // TPM attestation related information.
-  TpmAttestation attestation;
+  TpmAttestation attestation@3;
   // TPM supported features information.
-  TpmSupportedFeatures supported_features;
+  TpmSupportedFeatures supported_features@4;
   // [Do NOT use] TPM did_vid file. This field is only used in Cloudready
   // project. It is going to drop the support in few milestone.
   // TODO(b/199686982): Remove this.
-  string? did_vid;
+  string? did_vid@5;
 };
 
 // The version of Google security chip(GSC).
+//
+// NextMinVersion: 1, NextIndex: 3
 [Extensible]
 enum TpmGSCVersion {
   // For the devices which cannot be classified.
-  kNotGSC = 0,
+  [Default] kNotGSC = 0,
   // Devices with Cr50 firmware.
-  kCr50,
+  kCr50 = 1,
   // Devices with Ti50 firmware.
-  kTi50,
+  kTi50 = 2,
 };
 
 // TPM version related information.
+//
+// NextMinVersion: 1, NextIndex: 7
 struct TpmVersion {
   // GSC version.
-  TpmGSCVersion gsc_version;
+  TpmGSCVersion gsc_version@0;
   // TPM family. We use the TPM 2.0 style encoding, e.g.:
   //  * TPM 1.2: "1.2" -> 0x312e3200
   //  * TPM 2.0: "2.0" -> 0x322e3000
-  uint32 family;
+  uint32 family@1;
   // TPM spec level.
-  uint64 spec_level;
+  uint64 spec_level@2;
   // Manufacturer code.
-  uint32 manufacturer;
+  uint32 manufacturer@3;
   // TPM model number.
-  uint32 tpm_model;
+  uint32 tpm_model@4;
   // Firmware version.
-  uint64 firmware_version;
+  uint64 firmware_version@5;
   // Vendor specific information.
-  string? vendor_specific;
+  string? vendor_specific@6;
 };
 
 // TPM status related information.
+//
+// NextMinVersion: 1, NextIndex: 3
 struct TpmStatus {
   // Whether a TPM is enabled on the system.
-  bool enabled;
+  bool enabled@0;
   // Whether the TPM has been owned.
-  bool owned;
+  bool owned@1;
   // Whether the owner password is still retained.
-  bool owner_password_is_present;
+  bool owner_password_is_present@2;
 };
 
 // TPM dictionary attack (DA) related information.
+//
+// NextMinVersion: 1, NextIndex: 4
 struct TpmDictionaryAttack {
   // The current dictionary attack counter value.
-  uint32 counter;
+  uint32 counter@0;
   // The current dictionary attack counter threshold.
-  uint32 threshold;
+  uint32 threshold@1;
   // Whether the TPM is in some form of dictionary attack lockout.
-  bool lockout_in_effect;
+  bool lockout_in_effect@2;
   // The number of seconds remaining in the lockout.
-  uint32 lockout_seconds_remaining;
+  uint32 lockout_seconds_remaining@3;
 };
 
 // TPM attestation related information.
+//
+// NextMinVersion: 1, NextIndex: 2
 struct TpmAttestation {
   // Is prepared for enrollment? True if prepared for *any* CA.
-  bool prepared_for_enrollment;
+  bool prepared_for_enrollment@0;
   // Is enrolled (AIK certificate created)? True if enrolled with *any* CA.
-  bool enrolled;
+  bool enrolled@1;
 };
 
 // TPM supported features information.
+//
+// NextMinVersion: 1, NextIndex: 4
 struct TpmSupportedFeatures {
   // Whether the u2f is supported or not.
-  bool support_u2f;
+  bool support_u2f@0;
   // Whether the pinweaver is supported or not.
-  bool support_pinweaver;
+  bool support_pinweaver@1;
   // Whether the platform supports runtime TPM selection or not.
-  bool support_runtime_selection;
+  bool support_runtime_selection@2;
   // Whether the TPM is allowed to use or not.
-  bool is_allowed;
+  bool is_allowed@3;
 };
 
 // Graphics probe result. Can either be populated with the GraphicsInfo or an
@@ -908,35 +986,39 @@ union GraphicsResult {
 };
 
 // Graphics information.
+//
+// NextMinVersion: 1, NextIndex: 2
 struct GraphicsInfo {
   // OpenGL | ES information.
-  GLESInfo gles_info;
+  GLESInfo gles_info@0;
   // EGL information.
-  EGLInfo egl_info;
+  EGLInfo egl_info@1;
 };
 
+// NextMinVersion: 1, NextIndex: 5
 struct GLESInfo {
   // GL version.
-  string version;
+  string version@0;
   // GL shading version.
-  string shading_version;
+  string shading_version@1;
   // GL vendor.
-  string vendor;
+  string vendor@2;
   // GL renderer.
-  string renderer;
+  string renderer@3;
   // GL extensions.
-  array<string> extensions;
+  array<string> extensions@4;
 };
 
+// NextMinVersion: 1, NextIndex: 4
 struct EGLInfo {
   // EGL version.
-  string version;
+  string version@0;
   // EGL vendor.
-  string vendor;
+  string vendor@1;
   // EGL client API.
-  string client_api;
+  string client_api@2;
   // EGL extensions.
-  array<string> extensions;
+  array<string> extensions@3;
 };
 
 // Display result.
@@ -948,16 +1030,19 @@ union DisplayResult {
 };
 
 // Display information.
+//
+// NextMinVersion: 1, NextIndex: 1
 struct DisplayInfo {
   // Embedded display info.
-  EmbeddedDisplayInfo edp_info;
+  EmbeddedDisplayInfo edp_info@0;
 };
 
+// NextMinVersion: 1, NextIndex: 2
 struct EmbeddedDisplayInfo {
   // Privacy screen is supported or not.
-  bool privacy_screen_supported;
+  bool privacy_screen_supported@0;
   // Privacy screen is enabled or not.
-  bool privacy_screen_enabled;
+  bool privacy_screen_enabled@1;
 };
 
 // A collection of all the device's telemetry information that cros_healthd is

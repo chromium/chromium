@@ -106,31 +106,37 @@ enum DiagnosticRoutineCommandEnum {
 };
 
 // Generic return value for a RunSomeRoutine call.
+//
+// NextMinVersion: 1, NextIndex: 2
 struct RunRoutineResponse {
   // Unique identifier for the newly-created routine. An id of kFailedToStartId
   // means that the routine was unable to be created. Can be used in a
   // GetRoutineUpdate call to control or get the status of the created routine.
-  int32 id;
+  int32 id@0;
   // Current status of the newly-created routine. A status of kFailedToStart
   // means the routine was unable to be created.
-  DiagnosticRoutineStatusEnum status;
+  DiagnosticRoutineStatusEnum status@1;
 };
 
 // Status fields specific to interactive routines.
+//
+// NextMinVersion: 1, NextIndex: 1
 struct InteractiveRoutineUpdate {
   // Request for user action. This message should be localized and displayed to
   // the user.
-  DiagnosticRoutineUserMessageEnum user_message;
+  DiagnosticRoutineUserMessageEnum user_message@0;
 };
 
 // Status fields specific to noninteractive routines.
+//
+// NextMinVersion: 1, NextIndex: 2
 struct NonInteractiveRoutineUpdate {
   // Current status of the routine.
-  DiagnosticRoutineStatusEnum status;
+  DiagnosticRoutineStatusEnum status@0;
   // More detailed status - for example, if |status| was kError,
   // |status_message| would describe the error encountered, like "failed to
   // read file."
-  string status_message;
+  string status_message@1;
 };
 
 // Responses will be either interactive or noninteractive.
@@ -140,17 +146,19 @@ union RoutineUpdateUnion {
 };
 
 // Response type for GetRoutineUpdate.
+//
+// NextMinVersion: 1, NextIndex: 3
 struct RoutineUpdate {
   // Percent complete, must be between 0 and 100, inclusive.
-  uint32 progress_percent;
+  uint32 progress_percent@0;
   // Any accumulated output, like logs, from the routine. This field is only
   // valid when GetRoutineUpdate (see cros_healthd.mojom) is called with
   // include_output = true.
-  handle? output;
+  handle? output@1;
 
   // Information specific to the type of response - interactive or
   // noninteractive.
-  RoutineUpdateUnion routine_update_union;
+  RoutineUpdateUnion routine_update_union@2;
 };
 
 // Enumeration of the possible statuses for a power supply in the AC power
