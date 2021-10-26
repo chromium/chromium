@@ -13,7 +13,6 @@
 #include "components/page_info/android/page_info_client.h"
 #include "weblayer/browser/android/metrics/weblayer_metrics_service_client.h"
 #include "weblayer/browser/component_updater/registration.h"
-#include "weblayer/browser/default_search_engine.h"
 #include "weblayer/browser/devtools_server_android.h"
 #include "weblayer/browser/java/jni/WebLayerImpl_jni.h"
 #include "weblayer/browser/url_bar/page_info_client_impl.h"
@@ -64,14 +63,6 @@ std::u16string GetClientApplicationName() {
 
   return base::android::ConvertJavaStringToUTF16(
       env, Java_WebLayerImpl_getEmbedderName(env));
-}
-
-static jboolean JNI_WebLayerImpl_IsLocationPermissionManaged(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& origin) {
-  return IsPermissionControlledByDse(
-      ContentSettingsType::GEOLOCATION,
-      url::Origin::Create(GURL(ConvertJavaStringToUTF8(origin))));
 }
 
 static base::android::ScopedJavaLocalRef<jobjectArray>

@@ -8,7 +8,6 @@
 #include "ui/gfx/image/image_unittest_util.h"
 #include "weblayer/browser/browser_list.h"
 #include "weblayer/browser/browser_list_observer.h"
-#include "weblayer/browser/default_search_engine.h"
 #include "weblayer/browser/favicon/favicon_fetcher_impl.h"
 #include "weblayer/browser/favicon/test_favicon_fetcher_delegate.h"
 #include "weblayer/browser/host_content_settings_map_factory.h"
@@ -137,16 +136,12 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, DefaultNetworkPredictionState) {
 }
 
 IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, ClearSiteSettings) {
-  auto dse_origin = GetDseOrigin().GetURL();
   auto foo_origin = GURL("http://www.foo.com");
 
   auto* settings_map = HostContentSettingsMapFactory::GetForBrowserContext(
       static_cast<TabImpl*>(shell()->tab())
           ->web_contents()
           ->GetBrowserContext());
-  EXPECT_EQ(settings_map->GetContentSetting(dse_origin, dse_origin,
-                                            ContentSettingsType::GEOLOCATION),
-            CONTENT_SETTING_ALLOW);
   EXPECT_EQ(settings_map->GetContentSetting(foo_origin, foo_origin,
                                             ContentSettingsType::GEOLOCATION),
             CONTENT_SETTING_ASK);
@@ -164,10 +159,6 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, ClearSiteSettings) {
       base::Time(), now, run_loop.QuitClosure());
   run_loop.Run();
 
-  EXPECT_EQ(settings_map->GetContentSetting(dse_origin, dse_origin,
-                                            ContentSettingsType::GEOLOCATION),
-            CONTENT_SETTING_ALLOW);
-
   EXPECT_EQ(settings_map->GetContentSetting(foo_origin, foo_origin,
                                             ContentSettingsType::GEOLOCATION),
             CONTENT_SETTING_ALLOW);
@@ -178,9 +169,6 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, ClearSiteSettings) {
                              now, run_loop2.QuitClosure());
   run_loop2.Run();
 
-  EXPECT_EQ(settings_map->GetContentSetting(dse_origin, dse_origin,
-                                            ContentSettingsType::GEOLOCATION),
-            CONTENT_SETTING_ALLOW);
   EXPECT_EQ(settings_map->GetContentSetting(foo_origin, foo_origin,
                                             ContentSettingsType::GEOLOCATION),
             CONTENT_SETTING_ASK);

@@ -99,4 +99,7 @@ interface ITestWebLayer {
   // Simulates the implementation-side event of an access token being
   // identified as invalid.
   void fireOnAccessTokenIdentifiedAsInvalid(in IProfile profile, in IObjectWrapper /* Set<String */ scopes, in IObjectWrapper /* String */ token) = 29;
+
+  // Grants `url` location permission.
+  void grantLocationPermission(String url) = 30;
 }

@@ -166,7 +166,6 @@ test("weblayer_browsertests") {
     "../browser/clipboard_browsertest.cc",
     "../browser/content_settings_browsertest.cc",
     "../browser/cookie_manager_browsertest.cc",
-    "../browser/default_search_engine_browsertest.cc",
     "../browser/download_browsertest.cc",
     "../browser/errorpage_browsertest.cc",
     "../browser/favicon/favicon_fetcher_browsertest.cc",
