@@ -49824,6 +49824,7 @@ from previous Chrome versions.
   <int value="-767460914"
       label="ExperimentalAccessibilityDictationCommands:disabled"/>
   <int value="-766805224" label="MirroringService:enabled"/>
+  <int value="-765669184" label="LauncherNudgeShortInterval:disabled"/>
   <int value="-764463072" label="WebViewMixedContentAutoupgrades:disabled"/>
   <int value="-763900417" label="CCTModuleUseIntentExtras:enabled"/>
   <int value="-763759697" label="enable-audio-support-for-desktop-share"/>
@@ -50114,6 +50115,7 @@ from previous Chrome versions.
       label="OmniboxClobberTriggersContextualWebZeroSuggest:enabled"/>
   <int value="-535662704" label="BundledConnectionHelp:enabled"/>
   <int value="-535208779" label="enable-native-cups"/>
+  <int value="-534722229" label="LauncherNudgeShortInterval:enabled"/>
   <int value="-534470003" label="OmniboxOnDeviceHeadProviderIncognito:enabled"/>
   <int value="-534221085" label="LazyImageLoading:disabled"/>
   <int value="-533552313"

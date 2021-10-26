@@ -715,6 +715,10 @@ const base::Feature kLanguageSettingsUpdate2{"LanguageSettingsUpdate2",
 const base::Feature kLauncherAppSort{"LauncherAppSort",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Uses short intervals for launcher nudge for testing if enabled.
+const base::Feature kLauncherNudgeShortInterval{
+    "LauncherNudgeShortInterval", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables new flow for license packaged devices with enterprise license.
 const base::Feature kLicensePackagedOobeFlow{"LicensePackagedOobeFlow",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
@@ -1470,6 +1474,11 @@ bool IsKeyboardBasedDisplayArrangementInSettingsEnabled() {
 bool IsLauncherAppSortEnabled() {
   return IsProductivityLauncherEnabled() &&
          base::FeatureList::IsEnabled(kLauncherAppSort);
+}
+
+bool IsLauncherNudgeShortIntervalEnabled() {
+  return IsProductivityLauncherEnabled() &&
+         base::FeatureList::IsEnabled(kLauncherNudgeShortInterval);
 }
 
 bool IsLicensePackagedOobeFlowEnabled() {

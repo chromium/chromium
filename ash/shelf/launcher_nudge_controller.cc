@@ -36,6 +36,8 @@ constexpr char kWasLauncherShown[] = "was_launcher_shown";
 // Constants for launcher nudge controller.
 constexpr base::TimeDelta kFirstTimeShowNudgeInterval = base::Days(1);
 constexpr base::TimeDelta kShowNudgeInterval = base::Days(1);
+constexpr base::TimeDelta kFirstTimeShowNudgeIntervalForTest = base::Minutes(3);
+constexpr base::TimeDelta kShowNudgeIntervalForTest = base::Minutes(3);
 
 // Returns the last active user pref service.
 PrefService* GetPrefs() {
@@ -120,6 +122,10 @@ int LauncherNudgeController::GetShownCount(PrefService* prefs) {
 
 base::TimeDelta LauncherNudgeController::GetNudgeInterval(
     bool is_first_time) const {
+  if (features::IsLauncherNudgeShortIntervalEnabled()) {
+    return is_first_time ? kFirstTimeShowNudgeIntervalForTest
+                         : kShowNudgeIntervalForTest;
+  }
   return is_first_time ? kFirstTimeShowNudgeInterval : kShowNudgeInterval;
 }
 

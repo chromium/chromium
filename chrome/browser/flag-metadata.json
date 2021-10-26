@@ -3612,6 +3612,11 @@
     "expiry_milestone": 104
   },
   {
+    "name": "launcher-nudge-short-interval",
+    "owners": [ "wcwang", "//ash/app_list/OWNERS" ],
+    "expiry_milestone": 104
+  },
+  {
     "name": "launcher-search-normalization",
     "owners": ["wrong", "tby"],
     "expiry_milestone": 96

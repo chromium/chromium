@@ -5203,6 +5203,11 @@ const char kLauncherNudgeName[] = "Enable launcher nudge";
 const char kLauncherNudgeDescription[] =
     "Enables nudges that bring new users' attention to the launcher button.";
 
+const char kLauncherNudgeShortIntervalName[] =
+    "Enable short intervals for launcher nudge";
+const char kLauncherNudgeShortIntervalDescription[] =
+    "Enables short intervals for launcher nudge for testing";
+
 // Prefer keeping this section sorted to adding new definitions down here.
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

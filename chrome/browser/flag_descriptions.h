@@ -3001,6 +3001,9 @@ extern const char kWindowControlMenuDescription[];
 extern const char kLauncherNudgeName[];
 extern const char kLauncherNudgeDescription[];
 
+extern const char kLauncherNudgeShortIntervalName[];
+extern const char kLauncherNudgeShortIntervalDescription[];
+
 // Prefer keeping this section sorted to adding new declarations down here.
 
 #endif  // #if BUILDFLAG(IS_CHROMEOS_ASH)
