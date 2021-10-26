@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/global_media_controls/media_session_notification_item.h"
+#include "components/global_media_controls/public/media_session_notification_item.h"
 
 #include <memory>
 #include <utility>
@@ -18,6 +18,8 @@
 using media_session::mojom::MediaSessionAction;
 using testing::_;
 using testing::NiceMock;
+
+namespace global_media_controls {
 
 namespace {
 
@@ -398,3 +400,5 @@ TEST_F(MediaSessionNotificationItemTest,
   testing::Mock::VerifyAndClearExpectations(&unfrozen_callback);
   testing::Mock::VerifyAndClearExpectations(&view());
 }
+
+}  // namespace global_media_controls

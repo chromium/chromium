@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://bookmarks/bookmarks.js';
-import {normalizeIterable} from 'chrome://test/bookmarks/test_util.js';
+import {normalizeIterable} from './test_util.js';
 
 export class TestCommandManager {
   constructor() {

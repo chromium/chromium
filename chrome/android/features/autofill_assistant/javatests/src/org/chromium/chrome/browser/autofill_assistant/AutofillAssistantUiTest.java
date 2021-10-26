@@ -204,14 +204,14 @@ public class AutofillAssistantUiTest {
                         allOf(withText(descriptionLine3), withEffectiveVisibility(VISIBLE))));
 
         // Progress bar must be shown.
-        Assert.assertTrue(bottomSheetContent.findViewById(R.id.progress_bar).isShown());
+        Assert.assertTrue(bottomSheetContent.findViewById(R.id.step_progress_bar).isShown());
 
         // Disable progress bar.
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> assistantCoordinator.getModel().getHeaderModel().set(
                                 AssistantHeaderModel.PROGRESS_VISIBLE, false));
-        Assert.assertFalse(bottomSheetContent.findViewById(R.id.progress_bar).isShown());
+        Assert.assertFalse(bottomSheetContent.findViewById(R.id.step_progress_bar).isShown());
 
         // Show info box content.
         String infoBoxExplanation = "InfoBox explanation.";

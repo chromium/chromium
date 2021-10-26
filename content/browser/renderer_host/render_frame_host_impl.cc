@@ -3414,12 +3414,11 @@ void RenderFrameHostImpl::OnCreateChildFrame(
 
     TRACE_EVENT_INSTANT("navigation",
                         "RenderFrameHostImpl::OnCreateChildFrame_Target",
-                        ChromeTrackEvent::kFrameTreeNodeInfo, *frame_tree_node_,
+                        ChromeTrackEvent::kRenderFrameHost, *this,
                         ChromeTrackEvent::kSiteInstance, *target_si);
     TRACE_EVENT_INSTANT("navigation",
                         "RenderFrameHostImpl::OnCreateChildFrame_MainFrame",
-                        ChromeTrackEvent::kFrameTreeNodeInfo,
-                        *GetMainFrame()->frame_tree_node(),
+                        ChromeTrackEvent::kRenderFrameHost, *GetMainFrame(),
                         ChromeTrackEvent::kSiteInstance, *main_frame_si);
     TRACE_EVENT_INSTANT("navigation",
                         "RenderFrameHostImpl::OnCreateChildFrame_Proxy",
@@ -3949,9 +3948,8 @@ void RenderFrameHostImpl::Detach() {
 
 void RenderFrameHostImpl::DidFailLoadWithError(const GURL& url,
                                                int32_t error_code) {
-  TRACE_EVENT2("navigation", "RenderFrameHostImpl::DidFailLoadWithError",
-               "frame_tree_node", frame_tree_node_->frame_tree_node_id(),
-               "error", error_code);
+  TRACE_EVENT("navigation", "RenderFrameHostImpl::DidFailLoadWithError",
+              ChromeTrackEvent::kRenderFrameHost, *this, "error", error_code);
 
   // Cancel prerendering if DidFailLoadWithError is called during prerendering.
   // Don't dispatch the DidFailLoad event in such a case as the embedders are
@@ -3971,7 +3969,7 @@ void RenderFrameHostImpl::DidFailLoadWithError(const GURL& url,
 
 void RenderFrameHostImpl::DidFocusFrame() {
   TRACE_EVENT("navigation", "RenderFrameHostImpl::DidFocusFrame",
-              ChromeTrackEvent::kFrameTreeNodeInfo, *frame_tree_node_,
+              ChromeTrackEvent::kRenderFrameHost, *this,
               ChromeTrackEvent::kSiteInstance,
               *static_cast<SiteInstanceImpl*>(GetSiteInstance()));
   // We don't handle this IPC signal for non-active RenderFrameHost.
@@ -4141,10 +4139,9 @@ void RenderFrameHostImpl::DidCommitPageActivation(
 void RenderFrameHostImpl::DidCommitSameDocumentNavigation(
     mojom::DidCommitProvisionalLoadParamsPtr params,
     mojom::DidCommitSameDocumentNavigationParamsPtr same_document_params) {
-  TRACE_EVENT2("navigation",
-               "RenderFrameHostImpl::DidCommitSameDocumentNavigation",
-               "frame_tree_node", frame_tree_node_->frame_tree_node_id(), "url",
-               params->url.possibly_invalid_spec());
+  TRACE_EVENT2(
+      "navigation", "RenderFrameHostImpl::DidCommitSameDocumentNavigation",
+      "render_frame_host", this, "url", params->url.possibly_invalid_spec());
 
   ScopedActiveURL scoped_active_url(params->url,
                                     GetMainFrame()->GetLastCommittedOrigin());
@@ -4276,8 +4273,8 @@ void RenderFrameHostImpl::Unload(RenderFrameProxyHost* proxy, bool is_loading) {
   // The end of this event is in OnUnloadACK when the RenderFrame has completed
   // the operation and sends back an IPC message.
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("navigation", "RenderFrameHostImpl::Unload",
-                                    TRACE_ID_LOCAL(this), "frame_tree_node",
-                                    frame_tree_node_->frame_tree_node_id());
+                                    TRACE_ID_LOCAL(this), "render_frame_host",
+                                    this);
 
   // If this RenderFrameHost is already pending deletion, it must have already
   // gone through this, therefore just return.
@@ -4405,7 +4402,7 @@ void RenderFrameHostImpl::ProcessBeforeUnloadCompleted(
     const base::TimeTicks& renderer_before_unload_end_time) {
   TRACE_EVENT_NESTABLE_ASYNC_END1(
       "navigation", "RenderFrameHostImpl BeforeUnload", TRACE_ID_LOCAL(this),
-      "FrameTreeNode id", frame_tree_node_->frame_tree_node_id());
+      "render_frame_host", this);
   // If this renderer navigated while the beforeunload request was in flight, we
   // may have cleared this state in DidCommitProvisionalLoad, in which case we
   // can ignore this message.
@@ -4705,7 +4702,7 @@ void RenderFrameHostImpl::RunBeforeUnloadConfirm(
     bool is_reload,
     RunBeforeUnloadConfirmCallback ipc_response_callback) {
   TRACE_EVENT1("navigation", "RenderFrameHostImpl::OnRunBeforeUnloadConfirm",
-               "frame_tree_node", frame_tree_node_->frame_tree_node_id());
+               "render_frame_host", this);
 
   // Don't show the dialog if it's triggered on a non-active or non-primary
   // RenderFrameHost. This happens when the RenderFrameHost is pending deletion,
@@ -4993,6 +4990,55 @@ void RenderFrameHostImpl::WriteIntoTrace(perfetto::TracedValue context) {
   }
 }
 
+void RenderFrameHostImpl::WriteIntoTrace(
+    perfetto::TracedProto<perfetto::protos::pbzero::RenderFrameHost> proto) {
+  GetProcess()->WriteIntoTrace(proto.WriteNestedMessage(
+      perfetto::protos::pbzero::RenderFrameHost::kProcess));
+  auto global_render_frame_host_id = proto.WriteNestedMessage(
+      perfetto::protos::pbzero::RenderFrameHost::kRenderFrameHostId);
+  global_render_frame_host_id->set_routing_id(GetRoutingID());
+  global_render_frame_host_id->set_process_id(GetProcess()->GetID());
+  proto->set_lifecycle_state(LifecycleStateToProto());
+  proto->set_origin(GetLastCommittedOrigin().GetDebugString());
+  proto->set_url(GetLastCommittedURL().possibly_invalid_spec());
+  proto->set_frame_tree_node_id(frame_tree_node_->frame_tree_node_id());
+  GetSiteInstance()->WriteIntoTrace(proto.WriteNestedMessage(
+      perfetto::protos::pbzero::RenderFrameHost::kSiteInstance));
+  if (auto* parent = GetParent()) {
+    parent->WriteIntoTrace(proto.WriteNestedMessage(
+        perfetto::protos::pbzero::RenderFrameHost::kParent));
+  } else if (auto* outer_document = GetParentOrOuterDocument()) {
+    outer_document->WriteIntoTrace(proto.WriteNestedMessage(
+        perfetto::protos::pbzero::RenderFrameHost::kOuterDocument));
+  } else if (auto* embedder = GetParentOrOuterDocumentOrEmbedder()) {
+    embedder->WriteIntoTrace(proto.WriteNestedMessage(
+        perfetto::protos::pbzero::RenderFrameHost::kEmbedder));
+  }
+}
+
+perfetto::protos::pbzero::RenderFrameHost::LifecycleState
+RenderFrameHostImpl::LifecycleStateToProto() {
+  using RFHProto = perfetto::protos::pbzero::RenderFrameHost;
+  switch (lifecycle_state()) {
+    case LifecycleStateImpl::kSpeculative:
+      return RFHProto::SPECULATIVE;
+    case LifecycleStateImpl::kPendingCommit:
+      return RFHProto::PENDING_COMMIT;
+    case LifecycleStateImpl::kPrerendering:
+      return RFHProto::PRERENDERING;
+    case LifecycleStateImpl::kActive:
+      return RFHProto::ACTIVE;
+    case LifecycleStateImpl::kInBackForwardCache:
+      return RFHProto::IN_BACK_FORWARD_CACHE;
+    case LifecycleStateImpl::kRunningUnloadHandlers:
+      return RFHProto::RUNNING_UNLOAD_HANDLERS;
+    case LifecycleStateImpl::kReadyToBeDeleted:
+      return RFHProto::READY_TO_BE_DELETED;
+  }
+
+  return RFHProto::UNSPECIFIED;
+}
+
 StoragePartition* RenderFrameHostImpl::GetStoragePartition() {
   return GetBrowserContext()->GetStoragePartition(GetSiteInstance());
 }
@@ -5037,8 +5083,7 @@ void RenderFrameHostImpl::AllowBindings(int bindings_flags) {
     return;
   }
   TRACE_EVENT2("navigation", "RenderFrameHostImpl::AllowBindings",
-               "frame_tree_node", frame_tree_node_->frame_tree_node_id(),
-               "bindings flags", bindings_flags);
+               "render_frame_host", this, "bindings_flags", bindings_flags);
 
   int webui_bindings = bindings_flags & kWebUIBindingsPolicyMask;
 
@@ -5234,8 +5279,7 @@ void RenderFrameHostImpl::DidChangeName(const std::string& name,
     DCHECK(!unique_name.empty());
   }
   TRACE_EVENT2("navigation", "RenderFrameHostImpl::OnDidChangeName",
-               "frame_tree_node", frame_tree_node_->frame_tree_node_id(),
-               "name length", name.length());
+               "render_frame_host", this, "name", name);
 
   std::string old_name = frame_tree_node()->frame_name();
   frame_tree_node()->SetFrameName(name, unique_name);
@@ -5542,7 +5586,7 @@ void RenderFrameHostImpl::DidFinishLoad(const GURL& validated_url) {
 
 void RenderFrameHostImpl::DispatchLoad() {
   TRACE_EVENT1("navigation", "RenderFrameHostImpl::DispatchLoad",
-               "frame_tree_node", frame_tree_node_->frame_tree_node_id());
+               "render_frame_host", this);
 
   // Only active and prerendered documents are allowed to dispatch load events
   // to the parent.
@@ -5776,8 +5820,7 @@ void RenderFrameHostImpl::EvictFromBackForwardCacheWithReason(
 void RenderFrameHostImpl::EvictFromBackForwardCacheWithReasons(
     const BackForwardCacheCanStoreDocumentResult& can_store) {
   TRACE_EVENT2("navigation", "RenderFrameHostImpl::EvictFromBackForwardCache",
-               "can_store", can_store.ToString(), "rfh",
-               static_cast<void*>(this));
+               "can_store", can_store.ToString(), "render_frame_host", this);
   DCHECK(IsBackForwardCacheEnabled());
 
   if (is_evicted_from_back_forward_cache_)
@@ -6427,7 +6470,7 @@ void RenderFrameHostImpl::OpenURL(blink::mojom::OpenURLParamsPtr params) {
 
 void RenderFrameHostImpl::DidStopLoading() {
   TRACE_EVENT1("navigation", "RenderFrameHostImpl::DidStopLoading",
-               "frame_tree_node", frame_tree_node_->frame_tree_node_id());
+               "render_frame_host", this);
 
   // This method should never be called when the frame is not loading.
   // Unfortunately, it can happen if a history navigation happens during a
@@ -6508,8 +6551,7 @@ void RenderFrameHostImpl::CreateNewWindow(
     CreateNewWindowCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   TRACE_EVENT2("navigation", "RenderFrameHostImpl::CreateNewWindow",
-               "frame_tree_node", frame_tree_node_->frame_tree_node_id(), "url",
-               params->target_url.possibly_invalid_spec());
+               "render_frame_host", this, "url", params->target_url);
 
   bool no_javascript_access = false;
 
@@ -6935,7 +6977,7 @@ void RenderFrameHostImpl::BeginNavigation(
   }
 
   TRACE_EVENT2("navigation", "RenderFrameHostImpl::BeginNavigation",
-               "frame_tree_node", frame_tree_node_->frame_tree_node_id(), "url",
+               "render_frame_host", this, "url",
                common_params->url.possibly_invalid_spec());
 
   DCHECK(navigation_client.is_valid());
@@ -7316,8 +7358,8 @@ CanCommitStatus RenderFrameHostImpl::CanCommitOriginAndUrl(
 }
 
 void RenderFrameHostImpl::Stop() {
-  TRACE_EVENT1("navigation", "RenderFrameHostImpl::Stop", "frame_tree_node",
-               frame_tree_node_->frame_tree_node_id());
+  TRACE_EVENT1("navigation", "RenderFrameHostImpl::Stop", "render_frame_host",
+               this);
   // Don't call GetAssociatedLocalFrame before the RenderFrame is created.
   if (!IsRenderFrameCreated())
     return;
@@ -7373,7 +7415,7 @@ void RenderFrameHostImpl::DispatchBeforeUnload(BeforeUnloadType type,
   }
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
       "navigation", "RenderFrameHostImpl BeforeUnload", TRACE_ID_LOCAL(this),
-      "&RenderFrameHostImpl", static_cast<void*>(this));
+      "render_frame_host", this);
 
   // This may be called more than once (if the user clicks the tab close button
   // several times, or if they click the tab close button then the browser close
@@ -7600,7 +7642,7 @@ void RenderFrameHostImpl::OnUnloadTimeout() {
 
 void RenderFrameHostImpl::UpdateOpener() {
   TRACE_EVENT1("navigation", "RenderFrameHostImpl::UpdateOpener",
-               "frame_tree_node", frame_tree_node_->frame_tree_node_id());
+               "render_frame_host", this);
 
   // This frame (the frame whose opener is being updated) might not have had
   // proxies for the new opener chain in its SiteInstance.  Make sure they
@@ -10358,7 +10400,7 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
 
   if (navigated_to_new_document) {
     TRACE_EVENT1("content", "DidCommitProvisionalLoad_StateResetForNewDocument",
-                 "render_frame_host", static_cast<void*>(this));
+                 "render_frame_host", this);
 
     last_committed_cross_document_navigation_id_ =
         navigation_request->GetNavigationId();

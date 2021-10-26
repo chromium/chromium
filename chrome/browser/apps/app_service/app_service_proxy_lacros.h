@@ -71,7 +71,7 @@ class AppServiceProxyLacros : public KeyedService,
 
   apps::BrowserAppLauncher* BrowserAppLauncher();
 
-  apps::PreferredAppsList& PreferredApps();
+  apps::PreferredAppsListHandle& PreferredApps();
 
   apps::BrowserAppInstanceTracker* BrowserAppInstanceTracker();
 

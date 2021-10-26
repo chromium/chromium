@@ -4,19 +4,16 @@
 
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {BrowserProxy, DangerType, IconLoader, States} from 'chrome://downloads/downloads.js';
+import {BrowserProxy, CrToastManagerElement, DangerType, DownloadsItemElement, IconLoaderImpl, loadTimeData, States} from 'chrome://downloads/downloads.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+
 import {createDownload, TestDownloadsProxy, TestIconLoader} from './test_support.js';
 
 suite('item tests', function() {
-  /** @type {!downloads.Item} */
-  let item;
-
-  /** @type {!TestIconLoader} */
-  let testIconLoader;
-
-  /** @type {!CrToastManagerElement} */
-  let toastManager;
+  let item: DownloadsItemElement;
+  let testIconLoader: TestIconLoader;
+  let toastManager: CrToastManagerElement;
 
   setup(function() {
     document.body.innerHTML = '';
@@ -25,7 +22,7 @@ suite('item tests', function() {
     BrowserProxy.setInstance(new TestDownloadsProxy());
 
     testIconLoader = new TestIconLoader();
-    IconLoader.setInstance(testIconLoader);
+    IconLoaderImpl.setInstance(testIconLoader);
 
     item = document.createElement('downloads-item');
     document.body.appendChild(item);
@@ -74,24 +71,27 @@ suite('item tests', function() {
                hideDate: false,
                dangerType: DangerType.SENSITIVE_CONTENT_BLOCK,
              }));
-    assertEquals(item.computeIcon_(), 'cr:error');
-    assertFalse(item.useFileIcon_);
+
+    assertEquals('cr:error', item.shadowRoot!.querySelector('iron-icon')!.icon);
+    assertTrue(item.$['file-icon'].hidden);
 
     item.set('data', createDownload({
                filePath: 'unique1',
                hideDate: false,
                dangerType: DangerType.BLOCKED_TOO_LARGE,
              }));
-    assertEquals(item.computeIcon_(), 'cr:error');
-    assertFalse(item.useFileIcon_);
+
+    assertEquals('cr:error', item.shadowRoot!.querySelector('iron-icon')!.icon);
+    assertTrue(item.$['file-icon'].hidden);
 
     item.set('data', createDownload({
                filePath: 'unique1',
                hideDate: false,
                dangerType: DangerType.BLOCKED_PASSWORD_PROTECTED,
              }));
-    assertEquals(item.computeIcon_(), 'cr:error');
-    assertFalse(item.useFileIcon_);
+
+    assertEquals('cr:error', item.shadowRoot!.querySelector('iron-icon')!.icon);
+    assertTrue(item.$['file-icon'].hidden);
   });
 
   test('open now button controlled by load time data', async () => {
@@ -102,7 +102,7 @@ suite('item tests', function() {
                state: States.ASYNC_SCANNING,
              }));
     flush();
-    assertNotEquals(item.shadowRoot.querySelector('#openNow'), null);
+    assertNotEquals(item.shadowRoot!.querySelector('#openNow'), null);
 
     loadTimeData.overrideValues({'allowOpenNow': false});
     item.set('data', createDownload({
@@ -111,7 +111,7 @@ suite('item tests', function() {
                state: States.ASYNC_SCANNING,
              }));
     flush();
-    assertEquals(item.shadowRoot.querySelector('#openNow'), null);
+    assertEquals(item.shadowRoot!.querySelector('#openNow'), null);
   });
 
   test('undo is shown in toast', () => {

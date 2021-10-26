@@ -11,9 +11,9 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service_factory.h"
-#include "chrome/browser/ui/global_media_controls/media_session_notification_producer.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/global_media_controls/public/media_session_item_producer.h"
 #include "components/global_media_controls/public/views/media_item_ui_list_view.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -102,14 +102,14 @@ class MediaNotificationProviderImplTest : public testing::Test {
     focus->session_info = std::move(session_info);
 
     provider_->service_for_testing()
-        ->media_session_notification_producer_->OnFocusGained(std::move(focus));
+        ->media_session_item_producer_->OnFocusGained(std::move(focus));
     provider_->service_for_testing()
-        ->media_session_notification_producer_->ActivateItem(id.ToString());
+        ->media_session_item_producer_->ActivateItem(id.ToString());
   }
 
   void SimulateHideNotification(base::UnguessableToken id) {
-    provider_->service_for_testing()
-        ->media_session_notification_producer_->HideItem(id.ToString());
+    provider_->service_for_testing()->media_session_item_producer_->HideItem(
+        id.ToString());
   }
 
   MockMediaNotificationProviderObserver* observer() {

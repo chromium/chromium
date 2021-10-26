@@ -2,25 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_MEDIA_SESSION_NOTIFICATION_PRODUCER_H_
-#define CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_MEDIA_SESSION_NOTIFICATION_PRODUCER_H_
+#ifndef COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_MEDIA_SESSION_ITEM_PRODUCER_H_
+#define COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_MEDIA_SESSION_ITEM_PRODUCER_H_
 
+#include "base/component_export.h"
 #include "base/observer_list.h"
-#include "chrome/browser/ui/global_media_controls/media_session_notification_item.h"
 #include "components/global_media_controls/public/media_item_manager_observer.h"
 #include "components/global_media_controls/public/media_item_producer.h"
 #include "components/global_media_controls/public/media_item_ui_observer.h"
 #include "components/global_media_controls/public/media_item_ui_observer_set.h"
+#include "components/global_media_controls/public/media_session_notification_item.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "services/media_session/public/mojom/media_controller.mojom.h"
 
 namespace global_media_controls {
+
 class MediaItemManager;
 class MediaItemUI;
-}  // namespace global_media_controls
-
-class MediaSessionNotificationProducerObserver;
+class MediaSessionItemProducerObserver;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -32,30 +32,31 @@ enum class GlobalMediaControlsDismissReason {
   kMaxValue = kMediaSessionStopped,
 };
 
-class MediaSessionNotificationProducer
-    : public global_media_controls::MediaItemProducer,
+class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaSessionItemProducer
+    : public MediaItemProducer,
       public MediaSessionNotificationItem::Delegate,
       public media_session::mojom::AudioFocusObserver,
-      public global_media_controls::MediaItemUIObserver {
+      public MediaItemUIObserver {
  public:
-  // When given a |source_id|, the MediaSessionNotificationProducer will only
+  // When given a |source_id|, the MediaSessionItemProducer will only
   // produce MediaItems for the given source (i.e. profile). When empty, it will
   // produce MediaItems for the Media Sessions on all sources (profiles).
-  MediaSessionNotificationProducer(
+  MediaSessionItemProducer(
       mojo::Remote<media_session::mojom::AudioFocusManager> audio_focus_remote,
       mojo::Remote<media_session::mojom::MediaControllerManager>
           controller_manager_remote,
-      global_media_controls::MediaItemManager* item_manager,
+      MediaItemManager* item_manager,
       absl::optional<base::UnguessableToken> source_id);
-  ~MediaSessionNotificationProducer() override;
+  MediaSessionItemProducer(const MediaSessionItemProducer&) = delete;
+  MediaSessionItemProducer& operator=(const MediaSessionItemProducer&) = delete;
+  ~MediaSessionItemProducer() override;
 
-  // global_media_controls::MediaItemProducer:
+  // MediaItemProducer:
   base::WeakPtr<media_message_center::MediaNotificationItem> GetMediaItem(
       const std::string& id) override;
   std::set<std::string> GetActiveControllableItemIds() override;
   bool HasFrozenItems() override;
-  void OnItemShown(const std::string& id,
-                   global_media_controls::MediaItemUI* item_ui) override;
+  void OnItemShown(const std::string& id, MediaItemUI* item_ui) override;
   bool IsItemActivelyPlaying(const std::string& id) override;
 
   // MediaSessionNotificationItem::Delegate:
@@ -73,12 +74,12 @@ class MediaSessionNotificationProducer
       media_session::mojom::AudioFocusRequestStatePtr session) override;
   void OnRequestIdReleased(const base::UnguessableToken& request_id) override;
 
-  // global_media_controls::MediaItemUIObserver implementation.
+  // MediaItemUIObserver implementation.
   void OnMediaItemUIClicked(const std::string& id) override;
   void OnMediaItemUIDismissed(const std::string& id) override;
 
-  void AddObserver(MediaSessionNotificationProducerObserver* observer);
-  void RemoveObserver(MediaSessionNotificationProducerObserver* observer);
+  void AddObserver(MediaSessionItemProducerObserver* observer);
+  void RemoveObserver(MediaSessionItemProducerObserver* observer);
 
   bool HasSession(const std::string& id) const;
 
@@ -90,12 +91,12 @@ class MediaSessionNotificationProducer
       base::RepeatingCallback<void(bool)> callback);
 
  private:
-  friend class MediaNotificationServiceTest;
-  friend class MediaSessionNotificationProducerTest;
+  friend class MediaSessionItemProducerTest;
 
-  class Session : public media_session::mojom::MediaControllerObserver {
+  class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) Session
+      : public media_session::mojom::MediaControllerObserver {
    public:
-    Session(MediaSessionNotificationProducer* owner,
+    Session(MediaSessionItemProducer* owner,
             const std::string& id,
             std::unique_ptr<MediaSessionNotificationItem> item,
             mojo::Remote<media_session::mojom::MediaController> controller);
@@ -154,7 +155,7 @@ class MediaSessionNotificationProducer
 
     void MarkActiveIfNecessary();
 
-    MediaSessionNotificationProducer* const owner_;
+    MediaSessionItemProducer* const owner_;
     const std::string id_;
     std::unique_ptr<MediaSessionNotificationItem> item_;
 
@@ -219,19 +220,20 @@ class MediaSessionNotificationProducer
   mojo::Receiver<media_session::mojom::AudioFocusObserver>
       audio_focus_observer_receiver_{this};
 
-  global_media_controls::MediaItemManager* const item_manager_;
+  MediaItemManager* const item_manager_;
 
   // Keeps track of all the items we're currently observing.
-  global_media_controls::MediaItemUIObserverSet item_ui_observer_set_;
+  MediaItemUIObserverSet item_ui_observer_set_;
 
   // Stores a Session for each media session keyed by its |request_id| in string
   // format.
   std::map<std::string, Session> sessions_;
 
-  base::ObserverList<MediaSessionNotificationProducerObserver> observers_;
+  base::ObserverList<MediaSessionItemProducerObserver> observers_;
 
-  base::WeakPtrFactory<MediaSessionNotificationProducer> weak_ptr_factory_{
-      this};
+  base::WeakPtrFactory<MediaSessionItemProducer> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_MEDIA_SESSION_NOTIFICATION_PRODUCER_H_
+}  // namespace global_media_controls
+
+#endif  // COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_MEDIA_SESSION_ITEM_PRODUCER_H_

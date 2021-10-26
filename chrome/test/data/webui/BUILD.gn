@@ -645,18 +645,22 @@ generate_grd("build_grd") {
     "chai_assert.js",
     "mojo_webui_test_support.js",
     "test_browser_proxy.js",
+    "test_store.js",
     "test_util.js",
   ]
 
   deps = [
     ":build_chai_grdp",
     ":build_web_ui_test_mojo_grdp",
+    "bookmarks:build_grdp",
     "downloads:build_grdp",
   ]
+
   grdp_files = [
+    "$target_gen_dir/bookmarks/resources.grdp",
     "$target_gen_dir/chai_resources.grdp",
-    "$target_gen_dir/web_ui_test_mojo_resources.grdp",
     "$target_gen_dir/downloads/resources.grdp",
+    "$target_gen_dir/web_ui_test_mojo_resources.grdp",
   ]
 
   if (enable_print_preview) {
@@ -679,6 +683,7 @@ ts_definitions("generate_definitions") {
     "chai_assert.js",
     "mojo_webui_test_support.js",
     "test_browser_proxy.js",
+    "test_store.js",
     "test_util.js",
   ]
   extra_deps = [ "//ui/webui/resources:generate_definitions" ]

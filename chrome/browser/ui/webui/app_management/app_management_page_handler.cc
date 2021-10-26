@@ -20,7 +20,7 @@
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/intent_constants.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
-#include "components/services/app_service/public/cpp/preferred_apps_list.h"
+#include "components/services/app_service/public/cpp/preferred_apps_list_handle.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "extensions/browser/extension_registry.h"
@@ -134,12 +134,13 @@ AppManagementPageHandler::AppManagementPageHandler(
       shelf_delegate_(this, profile)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
       ,
-      preferred_apps_list_(apps::AppServiceProxyFactory::GetForProfile(profile)
-                               ->PreferredApps()) {
+      preferred_apps_list_handle_(
+          apps::AppServiceProxyFactory::GetForProfile(profile)
+              ->PreferredApps()) {
   app_registry_cache_observer_.Observe(
       &apps::AppServiceProxyFactory::GetForProfile(profile_)
            ->AppRegistryCache());
-  preferred_apps_list_observer_.Observe(&preferred_apps_list_);
+  preferred_apps_list_handle_observer_.Observe(&preferred_apps_list_handle_);
 }
 
 AppManagementPageHandler::~AppManagementPageHandler() {}
@@ -237,7 +238,7 @@ void AppManagementPageHandler::OpenNativeSettings(const std::string& app_id) {
 void AppManagementPageHandler::SetPreferredApp(const std::string& app_id,
                                                bool is_preferred_app) {
   bool is_preferred_app_for_supported_links =
-      preferred_apps_list_.IsPreferredAppForSupportedLinks(app_id);
+      preferred_apps_list_handle_.IsPreferredAppForSupportedLinks(app_id);
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
 
   if (is_preferred_app && !is_preferred_app_for_supported_links) {
@@ -252,7 +253,7 @@ void AppManagementPageHandler::GetOverlappingPreferredApps(
     GetOverlappingPreferredAppsCallback callback) {
   auto intent_filters = GetSupportedLinkIntentFilters(profile_, app_id);
   base::flat_set<std::string> app_ids =
-      preferred_apps_list_.FindPreferredAppsForFilters(intent_filters);
+      preferred_apps_list_handle_.FindPreferredAppsForFilters(intent_filters);
   app_ids.erase(app_id);
   // Remove the use_browser app ID as it's mainly used inside the intent system and is not an app
   // in app management. This prevents an overlap dialog from being shown when there are no "real"
@@ -296,7 +297,8 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
       update.ResizeLocked() == apps::mojom::OptionalBool::kUnknown;
 #endif
   app->is_preferred_app =
-      preferred_apps_list_.IsPreferredAppForSupportedLinks(update.AppId());
+      preferred_apps_list_handle_.IsPreferredAppForSupportedLinks(
+          update.AppId());
   app->hide_more_settings = ShouldHideMoreSettings(app->id);
   app->hide_pin_to_shelf =
       update.ShowInShelf() == apps::mojom::OptionalBool::kFalse ||
@@ -349,6 +351,6 @@ void AppManagementPageHandler::OnPreferredAppChanged(const std::string& app_id,
 }
 
 void AppManagementPageHandler::OnPreferredAppsListWillBeDestroyed(
-    apps::PreferredAppsList* list) {
-  list->RemoveObserver(this);
+    apps::PreferredAppsListHandle* handle) {
+  handle->RemoveObserver(this);
 }

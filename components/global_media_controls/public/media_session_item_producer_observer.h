@@ -2,14 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_MEDIA_SESSION_NOTIFICATION_PRODUCER_OBSERVER_H_
-#define CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_MEDIA_SESSION_NOTIFICATION_PRODUCER_OBSERVER_H_
+#ifndef COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_MEDIA_SESSION_ITEM_PRODUCER_OBSERVER_H_
+#define COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_MEDIA_SESSION_ITEM_PRODUCER_OBSERVER_H_
 
 #include <string>
 
 #include "base/observer_list_types.h"
 
-class MediaSessionNotificationProducerObserver : public base::CheckedObserver {
+namespace global_media_controls {
+
+class MediaSessionItemProducerObserver : public base::CheckedObserver {
  public:
   virtual void OnMediaSessionItemCreated(const std::string& id) = 0;
 
@@ -20,7 +22,9 @@ class MediaSessionNotificationProducerObserver : public base::CheckedObserver {
       media_session::mojom::MediaSessionAction action) = 0;
 
  protected:
-  ~MediaSessionNotificationProducerObserver() override = default;
+  ~MediaSessionItemProducerObserver() override = default;
 };
 
-#endif  // CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_MEDIA_SESSION_NOTIFICATION_PRODUCER_OBSERVER_H_
+}  // namespace global_media_controls
+
+#endif  // COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_MEDIA_SESSION_ITEM_PRODUCER_OBSERVER_H_

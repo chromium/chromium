@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/global_media_controls/media_session_notification_item.h"
+#include "components/global_media_controls/public/media_session_notification_item.h"
 
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
@@ -15,6 +15,8 @@
 #include "ui/gfx/image/image.h"
 
 using media_session::mojom::MediaSessionAction;
+
+namespace global_media_controls {
 
 namespace {
 
@@ -254,7 +256,7 @@ void MediaSessionNotificationItem::Freeze(base::OnceClosure unfrozen_callback) {
 }
 
 void MediaSessionNotificationItem::FlushForTesting() {
-  media_controller_remote_.FlushForTesting();
+  media_controller_remote_.FlushForTesting();  // IN-TEST
 }
 
 bool MediaSessionNotificationItem::ShouldShowNotification() const {
@@ -373,3 +375,5 @@ void MediaSessionNotificationItem::MaybeHideOrShowNotification() {
 
   UMA_HISTOGRAM_ENUMERATION(kSourceHistogramName, source_);
 }
+
+}  // namespace global_media_controls

@@ -8,8 +8,8 @@
  */
 
 import {ROOT_NODE_ID, selectFolder, selectItem} from 'chrome://bookmarks/bookmarks.js';
-import {TestStore} from 'chrome://test/bookmarks/test_store.js';
-import {createFolder, createItem, testTree} from 'chrome://test/bookmarks/test_util.js';
+import {TestStore} from './test_store.js';
+import {createFolder, createItem, testTree} from './test_util.js';
 
 suite('selectItem', function() {
   let store;

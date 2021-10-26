@@ -54,8 +54,8 @@ void ForwardImpressionsToWebUI(
   for (const StorableSource& impression : stored_impressions) {
     web_ui_impressions.push_back(mojom::WebUIImpression::New(
         impression.source_event_id(), impression.impression_origin(),
-        impression.conversion_origin(), impression.reporting_origin(),
-        impression.impression_time().ToJsTime(),
+        impression.ConversionDestination().Serialize(),
+        impression.reporting_origin(), impression.impression_time().ToJsTime(),
         impression.expiry_time().ToJsTime(),
         SourceTypeToMojoType(impression.source_type()), impression.priority(),
         impression.dedup_keys(),
@@ -71,7 +71,7 @@ mojom::WebUIConversionReportPtr WebUIConversionReport(
     int http_response_code,
     mojom::WebUIConversionReport::Status status) {
   return mojom::WebUIConversionReport::New(
-      report.impression.conversion_origin(), report.ReportURL(),
+      report.impression.ConversionDestination().Serialize(), report.ReportURL(),
       /*trigger_time=*/report.conversion_time.ToJsTime(),
       /*report_time=*/report.report_time.ToJsTime(), report.priority,
       report.ReportBody(/*pretty_print=*/true),

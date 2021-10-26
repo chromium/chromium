@@ -56,12 +56,6 @@
         app:srcCompat="@drawable/logo_avatar_anonymous"/>
   </LinearLayout>
 
-  <org.chromium.components.browser_ui.widget.MaterialProgressBar
-      android:id="@+id/progress_bar"
-      android:layout_width="match_parent"
-      android:layout_height="2dp"
-      android:layout_marginStart="@dimen/autofill_assistant_bottombar_horizontal_spacing"
-      android:layout_marginEnd="@dimen/autofill_assistant_bottombar_horizontal_spacing"/>
   <LinearLayout
       android:id="@+id/step_progress_bar"
       android:layout_width="match_parent"

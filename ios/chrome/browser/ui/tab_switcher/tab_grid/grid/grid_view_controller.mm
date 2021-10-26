@@ -456,6 +456,11 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   if (_mode == TabGridModeSelection) {
     return nil;
   }
+  // No context menu on plus sign cell.
+  if ([self isIndexPathForPlusSignCell:indexPath]) {
+    return nil;
+  }
+
   GridCell* cell = base::mac::ObjCCastStrict<GridCell>(
       [self.collectionView cellForItemAtIndexPath:indexPath]);
   return [self.menuProvider contextMenuConfigurationForGridCell:cell];

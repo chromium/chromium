@@ -66,10 +66,6 @@ class ControllerObserver : public base::CheckedObserver {
   // cleared.
   virtual void OnInfoBoxChanged(const InfoBox* info_box) = 0;
 
-  // Called when the current progress has changed. Progress, is expressed as a
-  // percentage.
-  virtual void OnProgressChanged(int progress) = 0;
-
   // Called when the currently active progress step has changed.
   virtual void OnProgressActiveStepChanged(int active_step) = 0;
 

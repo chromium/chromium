@@ -2279,7 +2279,7 @@ IN_PROC_BROWSER_TEST_F(KioskUpdateTest,
 
 IN_PROC_BROWSER_TEST_F(KioskUpdateTest, PRE_IncompliantPlatformDelayInstall) {
   base::test::ScopedChromeOSVersionInfo version(
-      "CHROMEOS_RELEASE_VERSION=1234.0.0", base::Time::Now());
+      "CHROMEOS_RELEASE_VERSION=1233.0.0", base::Time::Now());
 
   set_test_app_id(kTestOfflineEnabledKioskApp);
   set_test_app_version("2.0.0");
@@ -2299,9 +2299,7 @@ IN_PROC_BROWSER_TEST_F(KioskUpdateTest, PRE_IncompliantPlatformDelayInstall) {
   EXPECT_TRUE(PrimaryAppUpdateIsPending());
 }
 
-// TODO(crbug.com/1243885): Fix and re-enable.
-IN_PROC_BROWSER_TEST_F(KioskUpdateTest,
-                       DISABLED_IncompliantPlatformDelayInstall) {
+IN_PROC_BROWSER_TEST_F(KioskUpdateTest, IncompliantPlatformDelayInstall) {
   base::test::ScopedChromeOSVersionInfo version(
       "CHROMEOS_RELEASE_VERSION=1234.0.0", base::Time::Now());
 

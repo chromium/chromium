@@ -131,6 +131,7 @@
 <translation id="2122305276694332719">Conectarea automată la o rețea ascunsă permite altora să îți vadă dispozitivul și unele setări pentru rețea, așadar nu este recomandată.</translation>
 <translation id="2125607626296734455">Khmeră</translation>
 <translation id="2139545522194199494">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, gestionată de administratorul tău, conectează-te</translation>
+<translation id="2141347188420181405">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, Blocată de administrator, Detalii</translation>
 <translation id="2142680004883808240">Tastatură rusă fonetică YaZHert</translation>
 <translation id="2143778271340628265">Configurare proxy manuală</translation>
 <translation id="2163152940313951844">Caracter nevalid: <ph name="CHARACTER_NAME" /></translation>
@@ -185,6 +186,7 @@
 <translation id="2563185590376525700">Broască</translation>
 <translation id="2578394532502990878">Tamilă fonetică</translation>
 <translation id="2579959351793446050">Odia</translation>
+<translation id="2602810353103180630">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, Blocată de administrator, Detalii</translation>
 <translation id="2614589611416690597">Videoclip <ph name="VIDEO_TYPE" /></translation>
 <translation id="2617342710774726426">Cardul SIM este blocat</translation>
 <translation id="2620090360073999360">Disc Google nu poate fi accesat în acest moment.</translation>

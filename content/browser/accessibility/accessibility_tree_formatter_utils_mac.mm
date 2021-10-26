@@ -102,11 +102,8 @@ OptionalNSObject AttributeInvoker::Invoke(const AXPropertyNode& property_node,
     auto storage_iterator = storage_->find(property_node.name_or_value);
     if (storage_iterator != storage_->end()) {
       target = storage_iterator->second;
-      if (!target) {
-        LOG(ERROR) << "Stored " << property_node.name_or_value
-                   << " target is null.";
-        return OptionalNSObject::Error();
-      }
+      if (!target)
+        return OptionalNSObject(target);
     }
   }
   // Case 2: try to get target from the tree indexer. The target may refer to
@@ -125,7 +122,7 @@ OptionalNSObject AttributeInvoker::Invoke(const AXPropertyNode& property_node,
     // where a scripting instruction with no target are used. For example,
     // `AXRole` property filter means it is applied to all nodes and `AXRole`
     // attribute should be called for all nodes in the tree.
-    if (node) {
+    if (IsDumpingTree()) {
       if (property_node.IsTarget()) {
         LOG(ERROR) << "Failed to parse '" << property_node.name_or_value
                    << "' target in '" << property_node.ToFlatString() << "'";
@@ -157,14 +154,10 @@ OptionalNSObject AttributeInvoker::Invoke(const AXPropertyNode& property_node,
   // Invoke the call chain.
   while (current_node) {
     auto target_optional = InvokeFor(target, *current_node);
-    // Result of the current step is either null or error. Don't go any further.
-    if (!target_optional.IsNotNil()) {
-      if (target_optional.IsError() || target_optional.IsNotApplicable() ||
-          current_node->next.get())
-        return target_optional;
-      target = nil;
-      break;
-    }
+    // Result of the current step is state. Don't go any further.
+    if (!target_optional.HasValue())
+      return target_optional;
+
     target = *target_optional;
     current_node = current_node->next.get();
   }
@@ -224,13 +217,10 @@ OptionalNSObject AttributeInvoker::InvokeForAXElement(
         }
         return rvalue;
       }
-      // Getter
+      // Getter. Make sure to expose null values in ax scripts.
       id value = AttributeValueOf(target, attribute);
-      // Handle the case of AXMath attributes that may return null values.
-      if (!value && base::StartsWith(property_node.name_or_value, "AXMath"))
-        return OptionalNSObject(value);
-      return OptionalNSObject::NotNullOrNotApplicable(
-          AttributeValueOf(target, attribute));
+      return IsDumpingTree() ? OptionalNSObject::NotNullOrNotApplicable(value)
+                             : OptionalNSObject(value);
     }
   }
 
@@ -259,7 +249,7 @@ OptionalNSObject AttributeInvoker::InvokeForAXElement(
   // Unmatched attribute. No error for a tree dump calls because the tree dump
   // sets generic property filters not depending on a node, so we can be called
   // for an attribute not supported by the node.
-  if (node)
+  if (IsDumpingTree())
     return OptionalNSObject::NotApplicable();
 
   LOG(ERROR) << "Unrecognized '" << property_node.name_or_value
@@ -282,7 +272,7 @@ OptionalNSObject AttributeInvoker::InvokeForAXTextMarkerRange(
   // Unmatched attribute. No error for a tree dump calls because the tree dump
   // sets generic property filters not depending on a node, so we can be called
   // for an attribute not supported by the node.
-  if (node)
+  if (IsDumpingTree())
     return OptionalNSObject::NotApplicable();
 
   LOG(ERROR) << "Unrecognized '" << property_node.name_or_value

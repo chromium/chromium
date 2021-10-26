@@ -59,7 +59,7 @@ namespace component_updater {
 
 bool DesktopSharingHubComponentInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {
-  return false;
+  return true;
 }
 
 bool DesktopSharingHubComponentInstallerPolicy::RequiresNetworkEncryption()

@@ -497,10 +497,6 @@ void ScriptExecutor::SetTouchableElementArea(
       std::make_unique<ElementAreaProto>(touchable_element_area);
 }
 
-void ScriptExecutor::SetProgress(int progress) {
-  delegate_->SetProgress(progress);
-}
-
 bool ScriptExecutor::SetProgressActiveStepIdentifier(
     const std::string& active_step_identifier) {
   return delegate_->SetProgressActiveStepIdentifier(active_step_identifier);

@@ -2277,15 +2277,9 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
 
 // Check that iframe with embedded credentials are blocked.
 // See https://crbug.com/755892.
-#if defined(OS_MAC) || defined(OS_CHROMEOS)
 // TODO(crbug.com/1262910): Enable the test again.
-#define MAYBE_BlockCredentialedSubresources \
-  DISABLED_BlockCredentialedSubresources
-#else
-#define MAYBE_BlockCredentialedSubresources BlockCredentialedSubresources
-#endif
 IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
-                       MAYBE_BlockCredentialedSubresources) {
+                       DISABLED_BlockCredentialedSubresources) {
   if (!base::FeatureList::IsEnabled(features::kBlockCredentialedSubresources))
     return;
 

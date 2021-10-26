@@ -301,9 +301,9 @@ void PasswordReuseManagerImpl::SchedulePasswordHashUpdate(
   }
 
   if (should_log_metrics) {
-    metrics_util::LogProtectedPasswordHashCounts(
-        gaia_password_hash_list.size(), enterprise_password_hash_list.size(),
-        does_primary_account_exists, is_signed_in);
+    metrics_util::LogProtectedPasswordHashCounts(gaia_password_hash_list.size(),
+                                                 does_primary_account_exists,
+                                                 is_signed_in);
   }
 
   ScheduleTask(base::BindOnce(&PasswordReuseDetector::UseGaiaPasswordHash,

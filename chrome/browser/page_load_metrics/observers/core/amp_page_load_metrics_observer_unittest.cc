@@ -539,6 +539,7 @@ TEST_F(AMPPageLoadMetricsObserverTest,
   NavigationSimulator::CreateRendererInitiated(
       GURL("https://ampviewer.com/other"), main_rfh())
       ->CommitSameDocument();
+
   ukm::mojom::UkmEntryPtr entry = GetAmpPageLoadUkmEntry(amp_url);
   tester()->test_ukm_recorder().ExpectEntrySourceHasUrl(entry.get(), amp_url);
 
@@ -551,6 +552,70 @@ TEST_F(AMPPageLoadMetricsObserverTest,
       "SubFrame.InteractiveTiming.WorstUserInteractionLatency."
       "TotalEventduration",
       120);
+
+  tester()->histogram_tester().ExpectTotalCount(
+      "PageLoad.Clients.AMP.InteractiveTiming.WorstUserInteractionLatency."
+      "MaxEventDuration.Subframe",
+      1);
+  tester()->histogram_tester().ExpectTotalCount(
+      "PageLoad.Clients.AMP.InteractiveTiming.WorstUserInteractionLatency."
+      "TotalEventDuration.Subframe",
+      1);
+}
+
+TEST_F(
+    AMPPageLoadMetricsObserverTest,
+    SubFrameResponsivenessMetricsNormalizationWithoutSendingAllLatencies_FullNavigation) {
+  GURL amp_url("https://ampviewer.com/page");
+
+  NavigationSimulator::CreateRendererInitiated(amp_url, main_rfh())->Commit();
+
+  content::RenderFrameHost* subframe =
+      NavigationSimulator::NavigateAndCommitFromDocument(
+          GURL("https://ampsubframe.com/page"
+               "?amp_js_v=0.1#viewerUrl=https%3A%2F%2Fampviewer.com%2Fpage"),
+          content::RenderFrameHostTester::For(web_contents()->GetMainFrame())
+              ->AppendChild("subframe"));
+
+  page_load_metrics::mojom::FrameMetadata metadata;
+  metadata.behavior_flags =
+      blink::LoadingBehaviorFlag::kLoadingBehaviorAmpDocumentLoaded;
+  tester()->SimulateMetadataUpdate(metadata, subframe);
+
+  page_load_metrics::mojom::InputTiming input_timing;
+  input_timing.num_interactions = 10;
+  input_timing.max_event_durations =
+      UserInteractionLatencies::NewWorstInteractionLatency(
+          base::Milliseconds(100));
+  input_timing.total_event_durations =
+      UserInteractionLatencies::NewWorstInteractionLatency(
+          base::Milliseconds(120));
+  tester()->SimulateInputTimingUpdate(input_timing, subframe);
+
+  // Navigate the main frame to trigger metrics recording.
+  NavigationSimulator::CreateRendererInitiated(
+      GURL("https://ampviewer.com/other"), main_rfh())
+      ->CommitSameDocument();
+  ukm::mojom::UkmEntryPtr entry = GetAmpPageLoadUkmEntry(amp_url);
+  tester()->test_ukm_recorder().ExpectEntrySourceHasUrl(entry.get(), amp_url);
+
+  tester()->test_ukm_recorder().ExpectEntryMetric(
+      entry.get(),
+      "SubFrame.InteractiveTiming.WorstUserInteractionLatency.MaxEventduration",
+      100);
+  tester()->test_ukm_recorder().ExpectEntryMetric(
+      entry.get(),
+      "SubFrame.InteractiveTiming.WorstUserInteractionLatency."
+      "TotalEventduration",
+      120);
+  tester()->histogram_tester().ExpectTotalCount(
+      "PageLoad.Clients.AMP.InteractiveTiming.WorstUserInteractionLatency."
+      "MaxEventDuration.Subframe.FullNavigation",
+      1);
+  tester()->histogram_tester().ExpectTotalCount(
+      "PageLoad.Clients.AMP.InteractiveTiming.WorstUserInteractionLatency."
+      "TotalEventDuration.Subframe.FullNavigation",
+      1);
 }
 
 TEST_F(AMPPageLoadMetricsObserverTest,
@@ -663,6 +728,193 @@ TEST_F(AMPPageLoadMetricsObserverTest,
   for (auto& metric : ukm_list) {
     tester()->test_ukm_recorder().ExpectEntryMetric(entry.get(), metric.first,
                                                     metric.second);
+  }
+
+  std::vector<std::string> uma_list = {
+      "PageLoad.Clients.AMP.InteractiveTiming."
+      "AverageUserInteractionLatencyOverBudget.MaxEventDuration.Subframe",
+      "PageLoad.Clients.AMP.InteractiveTiming."
+      "SumOfUserInteractionLatencyOverBudget.MaxEventDuration.Subframe",
+      "PageLoad.Clients.AMP.InteractiveTiming."
+      "SlowUserInteractionLatencyOverBudget.HighPercentile.MaxEventDuration."
+      "Subframe",
+      "PageLoad.Clients.AMP.InteractiveTiming."
+      "SlowUserInteractionLatencyOverBudget.HighPercentile2.MaxEventDuration."
+      "Subframe",
+      "PageLoad.Clients.AMP.InteractiveTiming."
+      "WorstUserInteractionLatencyOverBudget.MaxEventDuration.Subframe",
+      "PageLoad.Clients.AMP.InteractiveTiming.WorstUserInteractionLatency."
+      "MaxEventDuration.Subframe",
+      "PageLoad.Clients.AMP.InteractiveTiming."
+      "AverageUserInteractionLatencyOverBudget.TotalEventDuration.Subframe",
+      "PageLoad.Clients.AMP.InteractiveTiming."
+      "SumOfUserInteractionLatencyOverBudget.TotalEventDuration.Subframe",
+      "PageLoad.Clients.AMP.InteractiveTiming."
+      "SlowUserInteractionLatencyOverBudget.HighPercentile.TotalEventDuration."
+      "Subframe",
+      "PageLoad.Clients.AMP.InteractiveTiming."
+      "SlowUserInteractionLatencyOverBudget.HighPercentile2.TotalEventDuration."
+      "Subframe",
+      "PageLoad.Clients.AMP.InteractiveTiming."
+      "WorstUserInteractionLatencyOverBudget.TotalEventDuration.Subframe",
+      "PageLoad.Clients.AMP.InteractiveTiming.WorstUserInteractionLatency."
+      "TotalEventDuration.Subframe",
+  };
+
+  for (auto& metric : uma_list) {
+    tester()->histogram_tester().ExpectTotalCount(metric, 1);
+  }
+}
+
+TEST_F(
+    AMPPageLoadMetricsObserverTest,
+    SubFrameResponsivenessMetricsNormalizationWithSendingAllLatencies_FullNavigation) {
+  // Flip the flag to send all user interaction latencies to the browser.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      blink::features::kSendAllUserInteractionLatencies);
+  GURL amp_url("https://ampviewer.com/page");
+
+  NavigationSimulator::CreateRendererInitiated(amp_url, main_rfh())->Commit();
+
+  content::RenderFrameHost* subframe =
+      NavigationSimulator::NavigateAndCommitFromDocument(
+          GURL("https://ampsubframe.com/page"
+               "?amp_js_v=0.1#viewerUrl=https%3A%2F%2Fampviewer.com%2Fpage"),
+          content::RenderFrameHostTester::For(web_contents()->GetMainFrame())
+              ->AppendChild("subframe"));
+
+  page_load_metrics::mojom::FrameMetadata metadata;
+  metadata.behavior_flags =
+      blink::LoadingBehaviorFlag::kLoadingBehaviorAmpDocumentLoaded;
+  tester()->SimulateMetadataUpdate(metadata, subframe);
+
+  page_load_metrics::mojom::InputTiming input_timing;
+  input_timing.num_interactions = 3;
+  input_timing.max_event_durations =
+      UserInteractionLatencies::NewUserInteractionLatencies({});
+  auto& max_event_durations =
+      input_timing.max_event_durations->get_user_interaction_latencies();
+  max_event_durations.emplace_back(UserInteractionLatency::New(
+      base::Milliseconds(50), UserInteractionType::kKeyboard));
+  max_event_durations.emplace_back(UserInteractionLatency::New(
+      base::Milliseconds(100), UserInteractionType::kTapOrClick));
+  max_event_durations.emplace_back(UserInteractionLatency::New(
+      base::Milliseconds(150), UserInteractionType::kDrag));
+
+  input_timing.total_event_durations =
+      UserInteractionLatencies::NewUserInteractionLatencies({});
+  auto& total_event_durations =
+      input_timing.total_event_durations->get_user_interaction_latencies();
+  total_event_durations.emplace_back(UserInteractionLatency::New(
+      base::Milliseconds(55), UserInteractionType::kKeyboard));
+  total_event_durations.emplace_back(UserInteractionLatency::New(
+      base::Milliseconds(105), UserInteractionType::kTapOrClick));
+  total_event_durations.emplace_back(UserInteractionLatency::New(
+      base::Milliseconds(155), UserInteractionType::kDrag));
+
+  tester()->SimulateInputTimingUpdate(input_timing, subframe);
+
+  // Navigate the main frame to trigger metrics recording.
+  NavigationSimulator::CreateRendererInitiated(
+      GURL("https://ampviewer.com/other"), main_rfh())
+      ->CommitSameDocument();
+  ukm::mojom::UkmEntryPtr entry = GetAmpPageLoadUkmEntry(amp_url);
+  tester()->test_ukm_recorder().ExpectEntrySourceHasUrl(entry.get(), amp_url);
+
+  std::vector<std::pair<std::string, int64_t>> ukm_list = {
+      std::make_pair("SubFrame.InteractiveTiming.WorstUserInteractionLatency."
+                     "MaxEventduration",
+                     150),
+      std::make_pair("SubFrame.InteractiveTiming.WorstUserInteractionLatency."
+                     "TotalEventduration",
+                     155),
+      std::make_pair(
+          "SubFrame.InteractiveTiming.AverageUserInteractionLatencyOverBudget."
+          "MaxEventduration",
+          16),
+      std::make_pair(
+          "SubFrame.InteractiveTiming.AverageUserInteractionLatencyOverBudget."
+          "TotalEventduration",
+          21),
+      std::make_pair(
+          "SubFrame.InteractiveTiming.SumOfUserInteractionLatencyOverBudget."
+          "MaxEventduration",
+          50),
+      std::make_pair(
+          "SubFrame.InteractiveTiming.SumOfUserInteractionLatencyOverBudget."
+          "TotalEventduration",
+          65),
+      std::make_pair(
+          "SubFrame.InteractiveTiming.SlowUserInteractionLatencyOverBudget."
+          "HighPercentile.MaxEventduration",
+          50),
+      std::make_pair(
+          "SubFrame.InteractiveTiming.SlowUserInteractionLatencyOverBudget."
+          "HighPercentile.TotalEventduration",
+          55),
+      std::make_pair(
+          "SubFrame.InteractiveTiming.SlowUserInteractionLatencyOverBudget."
+          "HighPercentile2.MaxEventduration",
+          50),
+      std::make_pair(
+          "SubFrame.InteractiveTiming.SlowUserInteractionLatencyOverBudget."
+          "HighPercentile2.TotalEventduration",
+          55),
+      std::make_pair(
+          "SubFrame.InteractiveTiming.WorstUserInteractionLatencyOverBudget."
+          "MaxEventduration",
+          50),
+      std::make_pair(
+          "SubFrame.InteractiveTiming.WorstUserInteractionLatencyOverBudget."
+          "TotalEventduration",
+          55),
+  };
+
+  for (auto& metric : ukm_list) {
+    tester()->test_ukm_recorder().ExpectEntryMetric(entry.get(), metric.first,
+                                                    metric.second);
+  }
+
+  std::vector<std::string> uma_list = {
+      "PageLoad.Clients.AMP.InteractiveTiming."
+      "AverageUserInteractionLatencyOverBudget.MaxEventDuration.Subframe."
+      "FullNavigation",
+      "PageLoad.Clients.AMP.InteractiveTiming."
+      "SumOfUserInteractionLatencyOverBudget.MaxEventDuration.Subframe."
+      "FullNavigation",
+      "PageLoad.Clients.AMP.InteractiveTiming."
+      "SlowUserInteractionLatencyOverBudget.HighPercentile.MaxEventDuration."
+      "Subframe.FullNavigation",
+      "PageLoad.Clients.AMP.InteractiveTiming."
+      "SlowUserInteractionLatencyOverBudget.HighPercentile2.MaxEventDuration."
+      "Subframe.FullNavigation",
+      "PageLoad.Clients.AMP.InteractiveTiming."
+      "WorstUserInteractionLatencyOverBudget.MaxEventDuration.Subframe."
+      "FullNavigation",
+      "PageLoad.Clients.AMP.InteractiveTiming.WorstUserInteractionLatency."
+      "MaxEventDuration.Subframe.FullNavigation",
+      "PageLoad.Clients.AMP.InteractiveTiming."
+      "AverageUserInteractionLatencyOverBudget.TotalEventDuration.Subframe."
+      "FullNavigation",
+      "PageLoad.Clients.AMP.InteractiveTiming."
+      "SumOfUserInteractionLatencyOverBudget.TotalEventDuration.Subframe."
+      "FullNavigation",
+      "PageLoad.Clients.AMP.InteractiveTiming."
+      "SlowUserInteractionLatencyOverBudget.HighPercentile.TotalEventDuration."
+      "Subframe.FullNavigation",
+      "PageLoad.Clients.AMP.InteractiveTiming."
+      "SlowUserInteractionLatencyOverBudget.HighPercentile2.TotalEventDuration."
+      "Subframe.FullNavigation",
+      "PageLoad.Clients.AMP.InteractiveTiming."
+      "WorstUserInteractionLatencyOverBudget.TotalEventDuration.Subframe."
+      "FullNavigation",
+      "PageLoad.Clients.AMP.InteractiveTiming.WorstUserInteractionLatency."
+      "TotalEventDuration.Subframe.FullNavigation",
+  };
+
+  for (auto& metric : uma_list) {
+    tester()->histogram_tester().ExpectTotalCount(metric, 1);
   }
 }
 

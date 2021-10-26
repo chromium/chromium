@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_MEDIA_SESSION_NOTIFICATION_ITEM_H_
-#define CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_MEDIA_SESSION_NOTIFICATION_ITEM_H_
+#ifndef COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_MEDIA_SESSION_NOTIFICATION_ITEM_H_
+#define COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_MEDIA_SESSION_NOTIFICATION_ITEM_H_
 
 #include <string>
 
@@ -24,9 +24,11 @@ namespace media_message_center {
 class MediaNotificationView;
 }  // namespace media_message_center
 
+namespace global_media_controls {
+
 // MediaSessionNotificationItem manages hiding/showing a media notification and
 // updating the metadata for a single media session.
-class MediaSessionNotificationItem
+class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaSessionNotificationItem
     : public media_message_center::MediaNotificationItem,
       public media_session::mojom::MediaControllerObserver,
       public media_session::mojom::MediaControllerImageObserver {
@@ -207,4 +209,6 @@ class MediaSessionNotificationItem
   base::WeakPtrFactory<MediaSessionNotificationItem> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_MEDIA_SESSION_NOTIFICATION_ITEM_H_
+}  // namespace global_media_controls
+
+#endif  // COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_MEDIA_SESSION_NOTIFICATION_ITEM_H_

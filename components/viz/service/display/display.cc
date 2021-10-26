@@ -631,6 +631,8 @@ void DebugDrawFrame(const AggregatedFrame& frame) {
     DBG_DRAW_TEXT_OPT("frame.root.material", DBG_OPT_GREEN,
                       display_rect.origin(),
                       base::NumberToString(static_cast<int>(quad->material)));
+    DBG_DRAW_TEXT_OPT("frame.root.display_rect", DBG_OPT_GREEN,
+                      display_rect.origin(), display_rect.ToString());
     DBG_DRAW_RECT("frame.root.quad", display_rect);
   }
 }

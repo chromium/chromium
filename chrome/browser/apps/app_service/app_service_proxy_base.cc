@@ -161,7 +161,7 @@ BrowserAppLauncher* AppServiceProxyBase::BrowserAppLauncher() {
   return browser_app_launcher_.get();
 }
 
-apps::PreferredAppsList& AppServiceProxyBase::PreferredApps() {
+apps::PreferredAppsListHandle& AppServiceProxyBase::PreferredApps() {
   return preferred_apps_;
 }
 

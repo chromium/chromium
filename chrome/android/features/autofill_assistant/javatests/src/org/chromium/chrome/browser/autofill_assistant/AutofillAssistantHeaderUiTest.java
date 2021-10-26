@@ -31,8 +31,6 @@ import android.widget.TextView;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.test.filters.MediumTest;
 
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Rule;
@@ -54,7 +52,6 @@ import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.components.browser_ui.widget.MaterialProgressBar;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
@@ -68,14 +65,12 @@ import java.util.List;
 public class AutofillAssistantHeaderUiTest {
     private static class ViewHolder {
         private final TextView mStatusMessage;
-        private final MaterialProgressBar mProgressBar;
         private final View mStepProgressBar;
         private final View mProfileIcon;
         private final ImageView mTtsButton;
 
         private ViewHolder(View rootView) {
             mStatusMessage = rootView.findViewById(R.id.status_message);
-            mProgressBar = rootView.findViewById(R.id.progress_bar);
             mStepProgressBar = rootView.findViewById(R.id.step_progress_bar);
             mProfileIcon = rootView.findViewById(R.id.profile_image);
             mTtsButton = (ImageView) rootView.findViewById(R.id.tts_button);
@@ -134,11 +129,7 @@ public class AutofillAssistantHeaderUiTest {
                 .check(matches(isDisplayed()))
                 .check(matches(withText("")));
 
-        onView(is(viewHolder.mProgressBar))
-                .check(matches(isDisplayed()))
-                .check(matches(hasProgress(0)));
-
-        onView(is(viewHolder.mStepProgressBar)).check(matches(not(isDisplayed())));
+        onView(is(viewHolder.mStepProgressBar)).check(matches(isDisplayed()));
 
         onView(is(viewHolder.mProfileIcon)).check(matches(isDisplayed()));
     }
@@ -158,14 +149,6 @@ public class AutofillAssistantHeaderUiTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> model.set(AssistantHeaderModel.STATUS_MESSAGE, "<b>Hello Bold</b>"));
         onView(is(viewHolder.mStatusMessage)).check(matches(withText("Hello Bold")));
-
-        int progress = 42;
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> model.set(AssistantHeaderModel.PROGRESS, progress));
-
-        onView(is(viewHolder.mProgressBar))
-                .check(matches(isDisplayed()))
-                .check(matches(hasProgress(progress)));
     }
 
     @Test
@@ -175,37 +158,16 @@ public class AutofillAssistantHeaderUiTest {
         AssistantHeaderCoordinator coordinator = createCoordinator(model);
         ViewHolder viewHolder = new ViewHolder(coordinator.getView());
 
-        onView(is(viewHolder.mProgressBar)).check(matches(isDisplayed()));
-        onView(is(viewHolder.mStepProgressBar)).check(matches(not(isDisplayed())));
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> model.set(AssistantHeaderModel.PROGRESS_VISIBLE, false));
-
-        onView(is(viewHolder.mProgressBar)).check(matches(not(isDisplayed())));
-        onView(is(viewHolder.mStepProgressBar)).check(matches(not(isDisplayed())));
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> model.set(AssistantHeaderModel.PROGRESS_VISIBLE, true));
-
-        onView(is(viewHolder.mProgressBar)).check(matches(isDisplayed()));
-        onView(is(viewHolder.mStepProgressBar)).check(matches(not(isDisplayed())));
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> model.set(AssistantHeaderModel.USE_STEP_PROGRESS_BAR, true));
-
-        onView(is(viewHolder.mProgressBar)).check(matches(not(isDisplayed())));
         onView(is(viewHolder.mStepProgressBar)).check(matches(isDisplayed()));
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> model.set(AssistantHeaderModel.PROGRESS_VISIBLE, false));
 
-        onView(is(viewHolder.mProgressBar)).check(matches(not(isDisplayed())));
         onView(is(viewHolder.mStepProgressBar)).check(matches(not(isDisplayed())));
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> model.set(AssistantHeaderModel.PROGRESS_VISIBLE, true));
 
-        onView(is(viewHolder.mProgressBar)).check(matches(not(isDisplayed())));
         onView(is(viewHolder.mStepProgressBar)).check(matches(isDisplayed()));
     }
 
@@ -339,19 +301,5 @@ public class AutofillAssistantHeaderUiTest {
         onView(is(viewHolder.mTtsButton)).perform(click());
 
         verify(mRunnableMock).run();
-    }
-
-    private static Matcher<View> hasProgress(int expectedProgress) {
-        return new BaseMatcher<View>() {
-            @Override
-            public boolean matches(Object o) {
-                return ((MaterialProgressBar) o).getProgressForTesting() == expectedProgress;
-            }
-
-            @Override
-            public void describeTo(Description description) {
-                description.appendText("hasProgress: " + expectedProgress);
-            }
-        };
     }
 }

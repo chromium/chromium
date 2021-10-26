@@ -2304,6 +2304,7 @@
 <translation id="8541158209346794904">อุปกรณ์บลูทูธ</translation>
 <translation id="8542014550340843547">เย็บด้วยลวดเย็บกระดาษด้านล่าง 3 ครั้ง</translation>
 <translation id="8543181531796978784">คุณสามารถ<ph name="BEGIN_ERROR_LINK" />รายงานปัญหาในการตรวจหา<ph name="END_ERROR_LINK" />ได้ หรือหากคุณเข้าใจถึงความเสี่ยงต่อความปลอดภัยของคุณ คุณสามารถ<ph name="BEGIN_LINK" />เข้าชมเว็บไซต์ที่ไม่ปลอดภัย<ph name="END_LINK" />ได้</translation>
+<translation id="8554010658308662631">โหลดเพิ่มเติม</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{รีเซ็ตสิทธิ์}other{รีเซ็ตสิทธิ์}}</translation>
 <translation id="8555010941760982128">ใช้รหัสนี้เมื่อชำระเงิน</translation>
 <translation id="8557066899867184262">CVC จะอยู่ที่ด้านหลังบัตร</translation>

@@ -53,7 +53,7 @@ OptimizationHintsComponentInstallerPolicy::
 
 bool OptimizationHintsComponentInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {
-  return false;
+  return true;
 }
 
 bool OptimizationHintsComponentInstallerPolicy::RequiresNetworkEncryption()

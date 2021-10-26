@@ -814,51 +814,38 @@ TEST_F(ControllerTest, InitialUrlLoads) {
   controller_->Start(initialUrl, std::make_unique<TriggerContext>());
 }
 
-TEST_F(ControllerTest, ProgressIncreasesAtStart) {
-  EXPECT_EQ(0, controller_->GetProgress());
-  EXPECT_CALL(mock_observer_, OnProgressChanged(5));
+TEST_F(ControllerTest, ProgressSetAtStart) {
+  EXPECT_CALL(mock_observer_, OnStepProgressBarConfigurationChanged(_));
+  EXPECT_CALL(mock_observer_, OnProgressActiveStepChanged(0));
   Start();
-  EXPECT_EQ(5, controller_->GetProgress());
-}
-
-TEST_F(ControllerTest, SetProgress) {
-  Start();
-  EXPECT_CALL(mock_observer_, OnProgressChanged(20));
-  controller_->SetProgress(20);
-  EXPECT_EQ(20, controller_->GetProgress());
-}
-
-TEST_F(ControllerTest, IgnoreProgressDecreases) {
-  Start();
-  EXPECT_CALL(mock_observer_, OnProgressChanged(Not(15))).Times(AnyNumber());
-  controller_->SetProgress(20);
-  controller_->SetProgress(15);
-  EXPECT_EQ(20, controller_->GetProgress());
+  EXPECT_EQ(0, controller_->GetProgressActiveStep());
 }
 
 TEST_F(ControllerTest, SetProgressStep) {
+  EXPECT_CALL(mock_observer_, OnStepProgressBarConfigurationChanged(_));
+  EXPECT_CALL(mock_observer_, OnProgressActiveStepChanged(0));
   Start();
 
   ShowProgressBarProto::StepProgressBarConfiguration config;
-  config.set_use_step_progress_bar(true);
   config.add_annotated_step_icons()->set_identifier("icon1");
   config.add_annotated_step_icons()->set_identifier("icon2");
-  EXPECT_CALL(mock_observer_, OnStepProgressBarConfigurationChanged(_))
-      .Times(1);
-  EXPECT_CALL(mock_observer_, OnProgressActiveStepChanged(_)).Times(0);
+  EXPECT_CALL(mock_observer_, OnStepProgressBarConfigurationChanged(_));
+  EXPECT_CALL(mock_observer_, OnProgressActiveStepChanged(0));
   controller_->SetStepProgressBarConfiguration(config);
-  EXPECT_TRUE(controller_->GetStepProgressBarConfiguration().has_value());
+  EXPECT_EQ(0, controller_->GetProgressActiveStep());
 
-  EXPECT_CALL(mock_observer_, OnProgressActiveStepChanged(1)).Times(1);
+  EXPECT_CALL(mock_observer_, OnProgressActiveStepChanged(1));
   controller_->SetProgressActiveStep(1);
-  EXPECT_EQ(1, *controller_->GetProgressActiveStep());
+  EXPECT_EQ(1, controller_->GetProgressActiveStep());
 }
 
 TEST_F(ControllerTest, IgnoreProgressStepDecreases) {
+  EXPECT_CALL(mock_observer_, OnProgressActiveStepChanged(0));
   Start();
 
+  EXPECT_CALL(mock_observer_, OnStepProgressBarConfigurationChanged(_));
+  EXPECT_CALL(mock_observer_, OnProgressActiveStepChanged(0));
   ShowProgressBarProto::StepProgressBarConfiguration config;
-  config.set_use_step_progress_bar(true);
   config.add_annotated_step_icons()->set_identifier("icon1");
   config.add_annotated_step_icons()->set_identifier("icon2");
   controller_->SetStepProgressBarConfiguration(config);
@@ -866,87 +853,86 @@ TEST_F(ControllerTest, IgnoreProgressStepDecreases) {
   EXPECT_CALL(mock_observer_, OnProgressActiveStepChanged(Not(1)))
       .Times(AnyNumber());
   controller_->SetProgressActiveStep(2);
+  controller_->SetProgressActiveStep(1);
 }
 
 TEST_F(ControllerTest, NewProgressStepConfigurationClampsStep) {
   Start();
 
   ShowProgressBarProto::StepProgressBarConfiguration config;
-  config.set_use_step_progress_bar(true);
   config.add_annotated_step_icons()->set_identifier("icon1");
   config.add_annotated_step_icons()->set_identifier("icon2");
   config.add_annotated_step_icons()->set_identifier("icon3");
   controller_->SetStepProgressBarConfiguration(config);
 
-  EXPECT_CALL(mock_observer_, OnProgressActiveStepChanged(3)).Times(1);
+  EXPECT_CALL(mock_observer_, OnProgressActiveStepChanged(3));
   controller_->SetProgressActiveStep(3);
-  EXPECT_EQ(3, *controller_->GetProgressActiveStep());
+  EXPECT_EQ(3, controller_->GetProgressActiveStep());
 
   ShowProgressBarProto::StepProgressBarConfiguration new_config;
-  new_config.set_use_step_progress_bar(true);
   new_config.add_annotated_step_icons()->set_identifier("icon1");
   new_config.add_annotated_step_icons()->set_identifier("icon2");
-  EXPECT_CALL(mock_observer_, OnProgressActiveStepChanged(2)).Times(1);
+  EXPECT_CALL(mock_observer_, OnProgressActiveStepChanged(2));
   controller_->SetStepProgressBarConfiguration(new_config);
-  EXPECT_EQ(2, *controller_->GetProgressActiveStep());
+  EXPECT_EQ(2, controller_->GetProgressActiveStep());
 }
 
 TEST_F(ControllerTest, ProgressStepWrapsNegativesToMax) {
   Start();
 
   ShowProgressBarProto::StepProgressBarConfiguration config;
-  config.set_use_step_progress_bar(true);
   config.add_annotated_step_icons()->set_identifier("icon1");
   config.add_annotated_step_icons()->set_identifier("icon2");
   config.add_annotated_step_icons()->set_identifier("icon3");
   controller_->SetStepProgressBarConfiguration(config);
 
-  EXPECT_CALL(mock_observer_, OnProgressActiveStepChanged(3)).Times(1);
+  EXPECT_CALL(mock_observer_, OnProgressActiveStepChanged(3));
   controller_->SetProgressActiveStep(-1);
-  EXPECT_EQ(3, *controller_->GetProgressActiveStep());
+  EXPECT_EQ(3, controller_->GetProgressActiveStep());
 }
 
 TEST_F(ControllerTest, ProgressStepClampsOverflowToMax) {
   Start();
 
   ShowProgressBarProto::StepProgressBarConfiguration config;
-  config.set_use_step_progress_bar(true);
   config.add_annotated_step_icons()->set_identifier("icon1");
   config.add_annotated_step_icons()->set_identifier("icon2");
   config.add_annotated_step_icons()->set_identifier("icon3");
   controller_->SetStepProgressBarConfiguration(config);
 
-  EXPECT_CALL(mock_observer_, OnProgressActiveStepChanged(3)).Times(1);
+  EXPECT_CALL(mock_observer_, OnProgressActiveStepChanged(3));
   controller_->SetProgressActiveStep(std::numeric_limits<int>::max());
-  EXPECT_EQ(3, *controller_->GetProgressActiveStep());
+  EXPECT_EQ(3, controller_->GetProgressActiveStep());
 }
 
 TEST_F(ControllerTest, SetProgressStepFromIdentifier) {
   Start();
 
   ShowProgressBarProto::StepProgressBarConfiguration config;
-  config.set_use_step_progress_bar(true);
   config.add_annotated_step_icons()->set_identifier("icon1");
   config.add_annotated_step_icons()->set_identifier("icon2");
   controller_->SetStepProgressBarConfiguration(config);
 
-  EXPECT_CALL(mock_observer_, OnProgressActiveStepChanged(1)).Times(1);
+  EXPECT_CALL(mock_observer_, OnProgressActiveStepChanged(1));
   EXPECT_TRUE(controller_->SetProgressActiveStepIdentifier("icon2"));
-  EXPECT_EQ(1, *controller_->GetProgressActiveStep());
+  EXPECT_EQ(1, controller_->GetProgressActiveStep());
 }
 
 TEST_F(ControllerTest, SetProgressStepFromUnknownIdentifier) {
+  EXPECT_CALL(mock_observer_, OnProgressActiveStepChanged(0));
   Start();
+  EXPECT_EQ(0, controller_->GetProgressActiveStep());
 
+  EXPECT_CALL(mock_observer_, OnStepProgressBarConfigurationChanged(_));
+  EXPECT_CALL(mock_observer_, OnProgressActiveStepChanged(0));
   ShowProgressBarProto::StepProgressBarConfiguration config;
-  config.set_use_step_progress_bar(true);
   config.add_annotated_step_icons()->set_identifier("icon1");
   config.add_annotated_step_icons()->set_identifier("icon2");
   controller_->SetStepProgressBarConfiguration(config);
 
   EXPECT_CALL(mock_observer_, OnProgressActiveStepChanged(_)).Times(0);
   EXPECT_FALSE(controller_->SetProgressActiveStepIdentifier("icon3"));
-  EXPECT_FALSE(controller_->GetProgressActiveStep().has_value());
+  EXPECT_EQ(0, controller_->GetProgressActiveStep());
 }
 
 TEST_F(ControllerTest, AttachUIWhenStarting) {
@@ -3162,7 +3148,6 @@ TEST_F(ControllerTest, NotifyObserversOfInitialStatusMessageAndProgressBar) {
   SetupActionsForScript("script", actions_response);
 
   ShowProgressBarProto::StepProgressBarConfiguration progress_bar_configuration;
-  progress_bar_configuration.set_use_step_progress_bar(true);
   progress_bar_configuration.add_annotated_step_icons()
       ->mutable_icon()
       ->set_icon(DrawableProto::PROGRESSBAR_DEFAULT_INITIAL_STEP);

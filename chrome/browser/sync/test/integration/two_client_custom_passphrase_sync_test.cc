@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
 #include "chrome/browser/sync/test/integration/encryption_helper.h"
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
@@ -15,6 +16,10 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
 
@@ -55,18 +60,27 @@ class TwoClientCustomPassphraseSyncTestScryptEnabledInPreTest
     : public TwoClientCustomPassphraseSyncTest {
  public:
   TwoClientCustomPassphraseSyncTestScryptEnabledInPreTest() {
+    // TODO(crbug.com/1263014): Update test to pass with Lacros enabled.
     if (content::IsPreTest()) {
       override_features_.InitWithFeatures(
           /*enabled_features=*/{switches::
                                     kSyncUseScryptForNewCustomPassphrases},
           /*disabled_features=*/{
-              switches::kSyncForceDisableScryptForCustomPassphrase});
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+            chromeos::features::kLacrosSupport,
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+                switches::kSyncForceDisableScryptForCustomPassphrase
+          });
     } else {
       override_features_.InitWithFeatures(
           /*enabled_features=*/{},
           /*disabled_features=*/{
-              switches::kSyncUseScryptForNewCustomPassphrases,
-              switches::kSyncForceDisableScryptForCustomPassphrase});
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+            chromeos::features::kLacrosSupport,
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+                switches::kSyncUseScryptForNewCustomPassphrases,
+                switches::kSyncForceDisableScryptForCustomPassphrase
+          });
     }
   }
 

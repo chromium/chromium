@@ -257,6 +257,15 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
 
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
+  std::string html_contents;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    if (!base::ReadFileToString(file_path, &html_contents)) {
+      ADD_FAILURE() << "File not found: " << file_path.LossyDisplayName();
+      return;
+    }
+  }
+
   // Exit without running the test if we can't find an expectation file.
   // This is used to skip certain tests on certain platforms.
   // We have to check for this in advance in order to avoid waiting on a
@@ -275,20 +284,6 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
   if (!expected_lines) {
     LOG(INFO) << "Skipping this test on this platform.";
     return;
-  }
-
-  std::string html_contents;
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    // Exit without running the test if the source file is missing, since that
-    // was the behavior prior to http://crrev.com/c/1661175.
-    // It would be preferable if we were to fail the test instead.
-    // http://crbug.com/975830
-    if (!base::ReadFileToString(file_path, &html_contents)) {
-      LOG(INFO) << "File not found: " << file_path.LossyDisplayName();
-      LOG(INFO) << "Skipping test.";
-      return;
-    }
   }
 
   // Parse the test html file and parse special directives, usually

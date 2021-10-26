@@ -99,7 +99,6 @@ class ScriptExecutorDelegate {
   virtual void WriteUserData(
       base::OnceCallback<void(UserData*, UserData::FieldChange*)>
           write_callback) = 0;
-  virtual void SetProgress(int progress) = 0;
   virtual bool SetProgressActiveStepIdentifier(
       const std::string& active_step_identifier) = 0;
   virtual void SetProgressActiveStep(int active_step) = 0;

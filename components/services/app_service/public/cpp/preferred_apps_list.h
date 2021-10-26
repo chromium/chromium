@@ -10,8 +10,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/observer_list.h"
-#include "base/observer_list_types.h"
+#include "components/services/app_service/public/cpp/preferred_apps_list_handle.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -21,65 +20,19 @@ namespace apps {
 
 // The preferred apps set by the user. The preferred apps is stored as
 // an list of |intent_filter| vs. app_id.
-class PreferredAppsList {
+class PreferredAppsList : public PreferredAppsListHandle {
  public:
-  class Observer : public base::CheckedObserver {
-   public:
-    virtual void OnPreferredAppChanged(const std::string& app_id,
-                                       bool is_preferred_app) = 0;
-
-    // Called when the PreferredAppsList object (the thing that this observer
-    // observes) will be destroyed. In response, the observer, |this|, should
-    // call "cache->RemoveObserver(this)", whether directly or indirectly (e.g.
-    // via base::ScopedObservation::Remove or via Observe(nullptr)).
-    virtual void OnPreferredAppsListWillBeDestroyed(
-        PreferredAppsList* list) = 0;
-
-    Observer(const Observer&) = delete;
-    Observer& operator=(const Observer&) = delete;
-
-   protected:
-    // Use this constructor when the observer |this| is tied to a single
-    // PreferredAppsList for its entire lifetime, or until the observee (the
-    // PreferredAppsList) is destroyed, whichever comes first.
-    explicit Observer(PreferredAppsList* list);
-
-    // Use this constructor when the observer |this| wants to observe a
-    // PreferredAppsList for part of its lifetime. It can then call Observe() to
-    // start and stop observing.
-    Observer();
-    ~Observer() override;
-
-    // Start observing a different PreferredAppsList. |cache| may be nullptr,
-    // meaning to stop observing.
-    void Observe(PreferredAppsList* list);
-
-   private:
-    PreferredAppsList* list_ = nullptr;
-  };
-
   PreferredAppsList();
   ~PreferredAppsList();
-
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
 
   PreferredAppsList(const PreferredAppsList&) = delete;
   PreferredAppsList& operator=(const PreferredAppsList&) = delete;
 
   using PreferredApps = std::vector<apps::mojom::PreferredAppPtr>;
 
-  // Find preferred app id for an |intent|.
-  absl::optional<std::string> FindPreferredAppForIntent(
-      const apps::mojom::IntentPtr& intent);
-
-  // Find preferred app id for an |url|.
-  absl::optional<std::string> FindPreferredAppForUrl(const GURL& url);
-
-  // Returns a list of app IDs that are set as preferred app to an intent
-  // filter in the |intent_filters| list.
-  base::flat_set<std::string> FindPreferredAppsForFilters(
-      const std::vector<apps::mojom::IntentFilterPtr>& intent_filters);
+  // Initialize the preferred app with empty list or existing |preferred_apps|;
+  void Init();
+  void Init(PreferredApps& preferred_apps);
 
   // Add a preferred app for an |intent_filter|, and returns a group of
   // |app_ids| that is no longer preferred app of their corresponding
@@ -111,21 +64,20 @@ class PreferredAppsList {
   // |changes->removed_filters|, it be removed and then immediately added back.
   void ApplyBulkUpdate(apps::mojom::PreferredAppChangesPtr changes);
 
-  // Initialize the preferred app with empty list or existing |preferred_apps|;
-  void Init();
-  void Init(PreferredApps& preferred_apps);
-
-  // Get a copy of the preferred apps.
-  PreferredApps GetValue();
-
-  bool IsInitialized();
-
-  const PreferredApps& GetReference() const;
-
-  // Get the entry size of the preferred app list.
-  size_t GetEntrySize();
-
-  bool IsPreferredAppForSupportedLinks(const std::string& app_id);
+  // PreferredAppsListHandler overrides:
+  bool IsInitialized() const override;
+  size_t GetEntrySize() const override;
+  PreferredApps GetValue() const override;
+  const PreferredApps& GetReference() const override;
+  bool IsPreferredAppForSupportedLinks(
+      const std::string& app_id) const override;
+  absl::optional<std::string> FindPreferredAppForUrl(
+      const GURL& url) const override;
+  absl::optional<std::string> FindPreferredAppForIntent(
+      const apps::mojom::IntentPtr& intent) const override;
+  base::flat_set<std::string> FindPreferredAppsForFilters(
+      const std::vector<apps::mojom::IntentFilterPtr>& intent_filters)
+      const override;
 
  private:
   // Check if the entry already exists in the preferred app list.
@@ -133,7 +85,6 @@ class PreferredAppsList {
                    const apps::mojom::IntentFilterPtr& intent_filter);
 
   PreferredApps preferred_apps_;
-  base::ObserverList<Observer> observers_;
   bool initialized_ = false;
 };
 

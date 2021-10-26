@@ -440,6 +440,15 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+                       Script_NullValue) {
+  TestScript(R"~~(data:text/html,
+                    <input id='input'>)~~",
+             {"input.AXTitleUIElement"},
+             R"~~(input.AXTitleUIElement=NULL
+)~~");
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
                        Script_Comment) {
   TestScript(R"~~(data:text/html,
                     <input id='textbox' aria-label='input'>)~~",
@@ -558,6 +567,16 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
              {"text:= p.AXChildren[0]", "text.AXRole"},
              R"~~(text=:3
 text.AXRole='AXStaticText'
+)~~");
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+                       Script_Variables_Null) {
+  TestScript(R"~~(data:text/html,
+                    <p id='p'>Paragraph</p>)~~",
+             {"var:= p.AXTitleUIElement", "var"},
+             R"~~(var=NULL
+var=NULL
 )~~");
 }
 

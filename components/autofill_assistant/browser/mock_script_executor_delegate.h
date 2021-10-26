@@ -95,7 +95,6 @@ class MockScriptExecutorDelegate : public ScriptExecutorDelegate {
               (base::OnceCallback<void(UserData*, UserData::FieldChange*)>
                    write_callback),
               (override));
-  MOCK_METHOD(void, SetProgress, (int progress), (override));
   MOCK_METHOD(bool,
               SetProgressActiveStepIdentifier,
               (const std::string& active_step_identifier),

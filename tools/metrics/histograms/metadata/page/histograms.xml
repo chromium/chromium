@@ -476,6 +476,39 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram
+    name="PageLoad.Clients.AMP.InteractiveTiming.{NormalizedResponsivenessMetric}.{UserInteractionLatency}.SubFrame{FullNavigation}"
+    units="ms" expires_after="2022-05-01">
+  <owner>hbsong@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    The {NormalizedResponsivenessMetric} of a page load, in AMP subframes, in
+    ms. For this metric, we measure the latency of a user interaction by the
+    {UserInteractionLatency} within the user interaction. Full navigation means
+    we only include non-same-document navigations, otherwise we only include
+    same-document navigations.
+
+    Recorded at the end of the AMP document lifetime, such as when the document
+    is being navigated away from.
+  </summary>
+  <token key="FullNavigation">
+    <variant name=""/>
+    <variant name=".FullNavigation"/>
+  </token>
+  <token key="NormalizedResponsivenessMetric">
+    <variant name="AverageUserInteractionLatencyOverBudget"/>
+    <variant name="SlowUserInteractionLatencyOverBudget.HighPercentile"/>
+    <variant name="SlowUserInteractionLatencyOverBudget.HighPercentile2"/>
+    <variant name="SumOfUserInteractionLatencyOverBudget"/>
+    <variant name="WorstUserInteractionLatency"/>
+    <variant name="WorstUserInteractionLatencyOverBudget"/>
+  </token>
+  <token key="UserInteractionLatency">
+    <variant name="MaxEventDuration"/>
+    <variant name="TotalEventDuration"/>
+  </token>
+</histogram>
+
+<histogram
     name="PageLoad.Clients.AMP.LayoutInstability.CumulativeShiftScore.Subframe"
     units="scorex10" expires_after="2022-03-06">
   <owner>bmcquade@chromium.org</owner>
@@ -2041,6 +2074,37 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     meaningful input with longest queuing delay per navigation. Excludes
     scrolls.
   </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.InteractiveTiming.{NormalizedResponsivenessMetric}{Bfcache}.{UserInteractionLatency}"
+    units="ms" expires_after="2022-05-01">
+  <owner>hbsong@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    The {NormalizedResponsivenessMetric} of a page load {Bfcache}, in ms. For
+    this metric, we measure the latency of a user interaction by the
+    {UserInteractionLatency} within the user interaction.
+
+    Recorded at the end of the page load lifetime, such as when users navigate
+    to a new web page.
+  </summary>
+  <token key="Bfcache">
+    <variant name=""/>
+    <variant name=".AfterBackForwardCacheRestore"/>
+  </token>
+  <token key="NormalizedResponsivenessMetric">
+    <variant name="AverageUserInteractionLatencyOverBudget"/>
+    <variant name="SlowUserInteractionLatencyOverBudget.HighPercentile"/>
+    <variant name="SlowUserInteractionLatencyOverBudget.HighPercentile2"/>
+    <variant name="SumOfUserInteractionLatencyOverBudget"/>
+    <variant name="WorstUserInteractionLatency"/>
+    <variant name="WorstUserInteractionLatencyOverBudget"/>
+  </token>
+  <token key="UserInteractionLatency">
+    <variant name="MaxEventDuration"/>
+    <variant name="TotalEventDuration"/>
+  </token>
 </histogram>
 
 <histogram name="PageLoad.Internal.ClientRedirect.FirstPaintToNavigation"

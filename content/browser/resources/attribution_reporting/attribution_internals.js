@@ -302,9 +302,9 @@ class Source {
    */
   constructor(mojo) {
     this.sourceEventId = mojo.sourceEventId;
-    this.impressionOrigin = UrlToText(mojo.impressionOrigin);
-    this.conversionDestination = UrlToText(mojo.conversionDestination);
-    this.reportingOrigin = UrlToText(mojo.reportingOrigin);
+    this.impressionOrigin = OriginToText(mojo.impressionOrigin);
+    this.attributionDestination = mojo.attributionDestination;
+    this.reportingOrigin = OriginToText(mojo.reportingOrigin);
     this.impressionTime = new Date(mojo.impressionTime);
     this.expiryTime = new Date(mojo.expiryTime);
     this.sourceType = SourceTypeToText(mojo.sourceType);
@@ -322,7 +322,7 @@ class SourceTableModel extends TableModel {
     this.cols = [
       new Column('Source Event ID', (e) => e.sourceEventId),
       new Column('Source Origin', (e) => e.impressionOrigin),
-      new Column('Destination', (e) => e.conversionDestination),
+      new Column('Destination', (e) => e.attributionDestination),
       new Column('Report To', (e) => e.reportingOrigin),
       new DateColumn('Source Registration Time', (e) => e.impressionTime),
       new DateColumn('Expiry Time', (e) => e.expiryTime),
@@ -342,7 +342,7 @@ class Report {
    */
   constructor(mojo) {
     this.reportBody = mojo.reportBody;
-    this.conversionOrigin = UrlToText(mojo.conversionOrigin);
+    this.attributionDestination = mojo.attributionDestination;
     this.reportUrl = mojo.reportUrl.url;
     this.triggerTime = new Date(mojo.triggerTime);
     this.reportTime = new Date(mojo.reportTime);
@@ -374,7 +374,7 @@ class ReportTableModel extends TableModel {
 
     this.cols = [
       new CodeColumn('Report Body', (e) => e.reportBody),
-      new Column('Destination', (e) => e.conversionOrigin),
+      new Column('Destination', (e) => e.attributionDestination),
       new Column('Report URL', (e) => e.reportUrl),
       new DateColumn('Trigger Time', (e) => e.triggerTime),
       new DateColumn('Report Time', (e) => e.reportTime),
@@ -405,7 +405,7 @@ let pageHandler = null;
  * @param {Origin} origin Origin to convert
  * @return {string}
  */
-function UrlToText(origin) {
+function OriginToText(origin) {
   if (origin.host.length == 0) {
     return 'Null';
   }

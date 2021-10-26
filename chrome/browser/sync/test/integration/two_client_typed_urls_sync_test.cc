@@ -11,6 +11,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/sessions/session_service.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
@@ -23,6 +24,10 @@
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "content/public/test/browser_test.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#endif
 
 using base::ASCIIToUTF16;
 using bookmarks::BookmarkNode;
@@ -763,10 +768,25 @@ IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTest, BookmarksWithTypedVisit) {
   ASSERT_EQ(1, GetVisitCountForFirstURL(0));
 }
 
+class TwoClientTypedUrlsSyncTestWithoutLacrosSupport
+    : public TwoClientTypedUrlsSyncTest {
+ public:
+  TwoClientTypedUrlsSyncTestWithoutLacrosSupport() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // TODO(crbug.com/1263014): Update test to pass with Lacros enabled.
+    feature_list_.InitAndDisableFeature(chromeos::features::kLacrosSupport);
+#endif
+  }
+  ~TwoClientTypedUrlsSyncTestWithoutLacrosSupport() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // Regression test for one part crbug.com/1075573. The fix for the issue was
 // general, so typed_urls is somewhat arbitrary choice (typed_urls were the most
 // affected by the issue).
-IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTest,
+IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTestWithoutLacrosSupport,
                        PRE_ResetWithDuplicateMetadata) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
@@ -790,7 +810,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTest,
   WriteMetadataToClient(1, storage_key, duplicate_metadata);
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTest, ResetWithDuplicateMetadata) {
+IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTestWithoutLacrosSupport,
+                       ResetWithDuplicateMetadata) {
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 

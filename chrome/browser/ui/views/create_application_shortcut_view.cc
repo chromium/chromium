@@ -22,7 +22,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/box_layout.h"
 
 #if defined(OS_WIN)
 #include "base/win/shortcut.h"
@@ -151,46 +151,15 @@ void CreateChromeApplicationShortcutView::InitControls() {
 
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
 
-  // Layout controls
-  views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
-
-  static const int kHeaderColumnSetId = 0;
-  views::ColumnSet* column_set = layout->AddColumnSet(kHeaderColumnSetId);
-  column_set->AddColumn(views::GridLayout::FILL, views::GridLayout::CENTER, 1.0,
-                        views::GridLayout::ColumnSize::kFixed, 0, 0);
-
-  static const int kTableColumnSetId = 1;
-  column_set = layout->AddColumnSet(kTableColumnSetId);
-  column_set->AddPaddingColumn(
-      views::GridLayout::kFixedSize,
-      provider->GetDistanceMetric(DISTANCE_SUBSECTION_HORIZONTAL_INDENT));
-  column_set->AddColumn(views::GridLayout::FILL, views::GridLayout::FILL, 1.0,
-                        views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-
-  layout->StartRow(views::GridLayout::kFixedSize, kHeaderColumnSetId);
-  layout->AddView(std::move(create_shortcuts_label));
-
-  layout->AddPaddingRow(
-      views::GridLayout::kFixedSize,
-      provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL));
-  layout->StartRow(views::GridLayout::kFixedSize, kTableColumnSetId);
-  desktop_check_box_ = layout->AddView(std::move(desktop_check_box));
-
-  const int vertical_spacing =
-      provider->GetDistanceMetric(DISTANCE_RELATED_CONTROL_VERTICAL_SMALL);
-  if (menu_check_box) {
-    layout->AddPaddingRow(views::GridLayout::kFixedSize, vertical_spacing);
-    layout->StartRow(views::GridLayout::kFixedSize, kTableColumnSetId);
-    menu_check_box_ = layout->AddView(std::move(menu_check_box));
-  }
-
-  if (quick_launch_check_box) {
-    layout->AddPaddingRow(views::GridLayout::kFixedSize, vertical_spacing);
-    layout->StartRow(views::GridLayout::kFixedSize, kTableColumnSetId);
-    quick_launch_check_box_ =
-        layout->AddView(std::move(quick_launch_check_box));
-  }
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
+      provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL)));
+  AddChildView(std::move(create_shortcuts_label));
+  desktop_check_box_ = AddChildView(std::move(desktop_check_box));
+  if (menu_check_box)
+    menu_check_box_ = AddChildView(std::move(menu_check_box));
+  if (quick_launch_check_box)
+    quick_launch_check_box_ = AddChildView(std::move(quick_launch_check_box));
 }
 
 gfx::Size CreateChromeApplicationShortcutView::CalculatePreferredSize() const {

@@ -204,7 +204,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXStartTextMarker) {
-  RunTypedTest<kMacTextMarker>("ax_start_text_marker.html");
+  RunTypedTest<kMacTextMarker>("ax-start-text-marker.html");
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,

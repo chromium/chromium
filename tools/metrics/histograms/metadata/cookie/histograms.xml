@@ -830,6 +830,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Cookie.SameSiteNoneIsSecure" enum="Boolean"
     expires_after="2021-10-25">
+  <obsolete>
+    Removed Oct 2021. No longer useful.
+  </obsolete>
   <owner>bingler@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>

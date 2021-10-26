@@ -2,118 +2,78 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DangerType, PageCallbackRouter, PageHandlerInterface, PageInterface, PageRemote, States} from 'chrome://downloads/downloads.js';
-
+import {DangerType, IconLoader, MojomData, PageCallbackRouter, PageHandlerInterface, PageRemote, States} from 'chrome://downloads/downloads.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestDownloadsProxy {
+  callbackRouter: PageCallbackRouter;
+  callbackRouterRemote: PageRemote;
+  handler: FakePageHandler;
+
   constructor() {
-    /** @type {PageCallbackRouter} */
     this.callbackRouter = new PageCallbackRouter();
 
-    /** @type {!PageRemote} */
     this.callbackRouterRemote =
         this.callbackRouter.$.bindNewPipeAndPassRemote();
 
-    /** @type {PageHandlerInterface} */
     this.handler = new FakePageHandler(this.callbackRouterRemote);
   }
 }
 
-/** @implements {PageHandlerInterface} */
-class FakePageHandler {
-  /** @param {PageInterface} */
-  constructor(callbackRouterRemote) {
-    /** @private {PageInterface} */
-    this.callbackRouterRemote_ = callbackRouterRemote;
+class FakePageHandler implements PageHandlerInterface {
+  private callbackRouterRemote_: PageRemote;
+  private callTracker_: TestBrowserProxy = new TestBrowserProxy(['remove']);
 
-    /** @private {TestBrowserProxy} */
+  constructor(callbackRouterRemote: PageRemote) {
+    this.callbackRouterRemote_ = callbackRouterRemote;
     this.callTracker_ = new TestBrowserProxy(['remove']);
   }
 
-  /**
-   * @param {string} methodName
-   * @return {!Promise}
-   */
-  whenCalled(methodName) {
+  whenCalled(methodName: string): Promise<void> {
     return this.callTracker_.whenCalled(methodName);
   }
 
-  /** @override */
-  async remove(id) {
-    this.callbackRouterRemote_.removeItem(id);
+  async remove(id: string) {
+    this.callbackRouterRemote_.removeItem(0);
     await this.callbackRouterRemote_.$.flushForTesting();
     this.callTracker_.methodCalled('remove', id);
   }
 
-  /** @override */
-  getDownloads(searchTerms) {}
-
-  /** @override */
-  openFileRequiringGesture(id) {}
-
-  /** @override */
-  drag(id) {}
-
-  /** @override */
-  saveDangerousRequiringGesture(id) {}
-
-  /** @override */
-  discardDangerous(id) {}
-
-  /** @override */
-  retryDownload(id) {}
-
-  /** @override */
-  show(id) {}
-
-  /** @override */
-  pause(id) {}
-
-  /** @override */
-  resume(id) {}
-
-  /** @override */
+  getDownloads(_searchTerms: Array<string>) {}
+  openFileRequiringGesture(_id: string) {}
+  drag(_id: string) {}
+  saveDangerousRequiringGesture(_id: string) {}
+  acceptIncognitoWarning(_id: string) {}
+  discardDangerous(_id: string) {}
+  retryDownload(_id: string) {}
+  show(_id: string) {}
+  pause(_id: string) {}
+  resume(_id: string) {}
   undo() {}
-
-  /** @override */
-  cancel(id) {}
-
-  /** @override */
+  cancel(_id: string) {}
   clearAll() {}
-
-  /** @override */
   openDownloadsFolderRequiringGesture() {}
+  openDuringScanningRequiringGesture(_id: string) {}
 }
 
-export class TestIconLoader extends TestBrowserProxy {
+export class TestIconLoader extends TestBrowserProxy implements IconLoader {
+  private shouldIconsLoad_: boolean = true;
+
   constructor() {
     super(['loadIcon']);
-
-    /** @private */
-    this.shouldIconsLoad_ = true;
   }
 
-  /** @param {boolean} shouldIconsLoad */
-  setShouldIconsLoad(shouldIconsLoad) {
+  setShouldIconsLoad(shouldIconsLoad: boolean) {
     this.shouldIconsLoad_ = shouldIconsLoad;
   }
 
-  /**
-   * @param {!HTMLImageElement} imageEl
-   * @param {string} filePath
-   */
-  loadIcon(imageEl, filePath) {
+  loadIcon(_imageEl: HTMLImageElement, filePath: string) {
     this.methodCalled('loadIcon', filePath);
     return Promise.resolve(this.shouldIconsLoad_);
   }
 }
 
-/**
- * @param {Object=} config
- * @return {!downloads.Data}
- */
-export function createDownload(config) {
+export function createDownload(config?: Partial<MojomData>): MojomData {
   return Object.assign(
       {
         byExtId: '',
@@ -121,20 +81,22 @@ export function createDownload(config) {
         dangerType: DangerType.NOT_DANGEROUS,
         dateString: '',
         fileExternallyRemoved: false,
-        filePath: '/some/file/path',
         fileName: 'download 1',
+        filePath: '/some/file/path',
         fileUrl: 'file:///some/file/path',
-        id: '',
+        hideDate: false,
+        id: '123',
         isDangerous: false,
         isMixedContent: false,
         lastReasonText: '',
         otr: false,
         percent: 100,
         progressStatusText: '',
-        showInFolderText: '',
         resume: false,
         retry: false,
         return: false,
+        shouldShowIncognitoWarning: false,
+        showInFolderText: '',
         sinceString: 'Today',
         started: Date.now() - 10000,
         state: States.COMPLETE,

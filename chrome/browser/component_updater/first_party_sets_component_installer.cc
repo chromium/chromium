@@ -109,8 +109,7 @@ const char
 
 bool FirstPartySetsComponentInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {
-  // False since this is a data, non-binary component.
-  return false;
+  return true;
 }
 
 bool FirstPartySetsComponentInstallerPolicy::RequiresNetworkEncryption() const {

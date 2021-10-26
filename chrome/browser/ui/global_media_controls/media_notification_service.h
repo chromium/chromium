@@ -15,9 +15,9 @@
 #include "chrome/browser/ui/global_media_controls/cast_media_notification_producer.h"
 #include "chrome/browser/ui/global_media_controls/media_item_ui_device_selector_delegate.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_device_provider.h"
-#include "chrome/browser/ui/global_media_controls/media_session_notification_producer.h"
-#include "chrome/browser/ui/global_media_controls/media_session_notification_producer_observer.h"
 #include "chrome/browser/ui/global_media_controls/presentation_request_notification_producer.h"
+#include "components/global_media_controls/public/media_session_item_producer.h"
+#include "components/global_media_controls/public/media_session_item_producer_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -40,7 +40,7 @@ class CastDialogController;
 class MediaNotificationService
     : public KeyedService,
       public MediaItemUIDeviceSelectorDelegate,
-      public MediaSessionNotificationProducerObserver {
+      public global_media_controls::MediaSessionItemProducerObserver {
  public:
   MediaNotificationService(Profile* profile, bool show_from_all_profiles);
   MediaNotificationService(const MediaNotificationService&) = delete;
@@ -65,7 +65,7 @@ class MediaNotificationService
       const std::string& id,
       base::RepeatingCallback<void(bool)> callback) override;
 
-  // MediaSessionNotificationProducerObserver:
+  // global_media_controls::MediaSessionItemProducerObserver:
   void OnMediaSessionItemCreated(const std::string& id) override;
   void OnMediaSessionItemDestroyed(const std::string& id) override;
   void OnMediaSessionActionButtonPressed(
@@ -161,8 +161,8 @@ class MediaNotificationService
 
   std::unique_ptr<global_media_controls::MediaItemManager> item_manager_;
 
-  std::unique_ptr<MediaSessionNotificationProducer>
-      media_session_notification_producer_;
+  std::unique_ptr<global_media_controls::MediaSessionItemProducer>
+      media_session_item_producer_;
   std::unique_ptr<CastMediaNotificationProducer> cast_notification_producer_;
   std::unique_ptr<PresentationRequestNotificationProducer>
       presentation_request_notification_producer_;

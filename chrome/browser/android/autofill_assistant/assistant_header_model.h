@@ -31,7 +31,6 @@ class AssistantHeaderModel {
       const std::string& profile_icon_menu_settings_message);
   void SetProfileIconMenuSendFeedbackMessage(
       const std::string& profile_icon_menu_send_feedback_message);
-  void SetProgress(int progress);
   void SetProgressActiveStep(int active_step);
   void SetProgressVisible(bool visible);
   void SetProgressBarErrorState(bool error);

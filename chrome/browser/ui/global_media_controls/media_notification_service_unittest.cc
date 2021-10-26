@@ -17,12 +17,12 @@
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/global_media_controls/cast_media_notification_producer.h"
-#include "chrome/browser/ui/global_media_controls/media_session_notification_item.h"
-#include "chrome/browser/ui/global_media_controls/media_session_notification_producer.h"
 #include "chrome/browser/ui/global_media_controls/test_helper.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/global_media_controls/public/media_item_manager.h"
+#include "components/global_media_controls/public/media_session_item_producer.h"
+#include "components/global_media_controls/public/media_session_notification_item.h"
 #include "components/global_media_controls/public/test/mock_media_dialog_delegate.h"
 #include "components/media_message_center/media_notification_item.h"
 #include "components/media_message_center/media_notification_util.h"
@@ -102,15 +102,14 @@ class MediaNotificationServiceTest : public ChromeRenderViewHostTestHarness {
 
   void SimulateFocusGained(const base::UnguessableToken& id,
                            bool controllable) {
-    service_->media_session_notification_producer_->OnFocusGained(
+    service_->media_session_item_producer_->OnFocusGained(
         CreateFocusRequest(id, controllable));
   }
 
   void SimulateFocusLost(const base::UnguessableToken& id) {
     AudioFocusRequestStatePtr focus(AudioFocusRequestState::New());
     focus->request_id = id;
-    service_->media_session_notification_producer_->OnFocusLost(
-        std::move(focus));
+    service_->media_session_item_producer_->OnFocusLost(std::move(focus));
   }
 
   void SimulateNecessaryMetadata(const base::UnguessableToken& id) {
@@ -120,13 +119,18 @@ class MediaNotificationServiceTest : public ChromeRenderViewHostTestHarness {
     // service, but since the service doesn't run for this test, we'll manually
     // grab the MediaNotificationItem from the MediaNotificationService and
     // set the metadata.
-    auto item_itr = sessions().find(id.ToString());
-    ASSERT_NE(sessions().end(), item_itr);
+    auto item =
+        service_->media_session_item_producer_->GetMediaItem(id.ToString());
+    ASSERT_NE(nullptr, item);
 
     media_session::MediaMetadata metadata;
     metadata.title = u"title";
     metadata.artist = u"artist";
-    item_itr->second.item()->MediaSessionMetadataChanged(std::move(metadata));
+
+    auto* session_item =
+        static_cast<global_media_controls::MediaSessionNotificationItem*>(
+            item.get());
+    session_item->MediaSessionMetadataChanged(std::move(metadata));
   }
 
   bool HasActiveItems() const {
@@ -157,12 +161,6 @@ class MediaNotificationServiceTest : public ChromeRenderViewHostTestHarness {
     service_->cast_notification_producer_->OnRoutesUpdated(routes, {});
   }
 
-  MediaSessionNotificationProducer::Session* GetSession(
-      const base::UnguessableToken& id) {
-    return service_->media_session_notification_producer_->GetSession(
-        id.ToString());
-  }
-
   MediaNotificationService::PresentationManagerObservation*
   GetPresentationObservation(const base::UnguessableToken& id) {
     auto it = service_->presentation_manager_observations_.find(id.ToString());
@@ -172,11 +170,6 @@ class MediaNotificationServiceTest : public ChromeRenderViewHostTestHarness {
   }
 
   MediaNotificationService* service() { return service_.get(); }
-
-  std::map<std::string, MediaSessionNotificationProducer::Session>& sessions()
-      const {
-    return service_->media_session_notification_producer_->sessions_;
-  }
 
  private:
   std::unique_ptr<MediaNotificationService> service_;
@@ -460,7 +453,7 @@ TEST_F(MediaNotificationServiceCastTest,
   auto* context_ptr = context.get();
 
   // If there only exists a media session notification, pass |context| to
-  // MediaSessionNotificationProducer.
+  // global_media_controls::MediaSessionItemProducer.
   EXPECT_CALL(mock_error_cb, Run).Times(0);
   service()->OnStartPresentationContextCreated(std::move(context));
 

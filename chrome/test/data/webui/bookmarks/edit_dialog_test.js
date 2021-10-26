@@ -5,8 +5,8 @@
 import 'chrome://bookmarks/bookmarks.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {TestStore} from 'chrome://test/bookmarks/test_store.js';
-import {createFolder, createItem, replaceBody} from 'chrome://test/bookmarks/test_util.js';
+import {TestStore} from './test_store.js';
+import {createFolder, createItem, replaceBody} from './test_util.js';
 
 suite('<bookmarks-edit-dialog>', function() {
   let dialog;

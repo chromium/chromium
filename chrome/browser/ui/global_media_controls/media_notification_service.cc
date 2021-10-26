@@ -16,8 +16,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_device_provider_impl.h"
-#include "chrome/browser/ui/global_media_controls/media_session_notification_item.h"
-#include "chrome/browser/ui/global_media_controls/media_session_notification_producer.h"
 #include "chrome/browser/ui/media_router/media_router_ui.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/global_media_controls/public/media_dialog_delegate.h"
@@ -143,13 +141,13 @@ MediaNotificationService::MediaNotificationService(
   content::GetMediaSessionService().BindMediaControllerManager(
       controller_manager_remote.BindNewPipeAndPassReceiver());
 
-  media_session_notification_producer_ =
-      std::make_unique<MediaSessionNotificationProducer>(
+  media_session_item_producer_ =
+      std::make_unique<global_media_controls::MediaSessionItemProducer>(
           std::move(audio_focus_remote), std::move(controller_manager_remote),
           item_manager_.get(), source_id);
 
-  media_session_notification_producer_->AddObserver(this);
-  item_manager_->AddItemProducer(media_session_notification_producer_.get());
+  media_session_item_producer_->AddObserver(this);
+  item_manager_->AddItemProducer(media_session_item_producer_.get());
 
   if (media_router::MediaRouterEnabled(profile)) {
     if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsForCast)) {
@@ -173,9 +171,9 @@ MediaNotificationService::MediaNotificationService(
 }
 
 MediaNotificationService::~MediaNotificationService() {
-  media_session_notification_producer_->RemoveObserver(this);
+  media_session_item_producer_->RemoveObserver(this);
   presentation_manager_observations_.clear();
-  item_manager_->RemoveItemProducer(media_session_notification_producer_.get());
+  item_manager_->RemoveItemProducer(media_session_item_producer_.get());
 }
 
 void MediaNotificationService::Shutdown() {
@@ -196,7 +194,7 @@ void MediaNotificationService::Shutdown() {
 
 void MediaNotificationService::OnAudioSinkChosen(const std::string& item_id,
                                                  const std::string& sink_id) {
-  media_session_notification_producer_->SetAudioSinkId(item_id, sink_id);
+  media_session_item_producer_->SetAudioSinkId(item_id, sink_id);
 }
 
 base::CallbackListSubscription
@@ -213,7 +211,7 @@ base::CallbackListSubscription
 MediaNotificationService::RegisterIsAudioOutputDeviceSwitchingSupportedCallback(
     const std::string& id,
     base::RepeatingCallback<void(bool)> callback) {
-  return media_session_notification_producer_
+  return media_session_item_producer_
       ->RegisterIsAudioOutputDeviceSwitchingSupportedCallback(
           id, std::move(callback));
 }
@@ -389,8 +387,7 @@ void MediaNotificationService::OnCastStarted(
   if (!request_id)
     return;
 
-  auto item =
-      media_session_notification_producer_->GetMediaItem(request_id.ToString());
+  auto item = media_session_item_producer_->GetMediaItem(request_id.ToString());
   if (!item)
     return;
 
@@ -407,8 +404,7 @@ bool MediaNotificationService::HasCastNotificationsForWebContents(
 bool MediaNotificationService::HasActiveControllableSessionForWebContents(
     content::WebContents* web_contents) const {
   DCHECK(web_contents);
-  auto item_ids =
-      media_session_notification_producer_->GetActiveControllableItemIds();
+  auto item_ids = media_session_item_producer_->GetActiveControllableItemIds();
   return std::any_of(
       item_ids.begin(), item_ids.end(), [web_contents](const auto& item_id) {
         return web_contents ==
@@ -421,7 +417,7 @@ MediaNotificationService::GetActiveControllableSessionForWebContents(
     content::WebContents* web_contents) const {
   DCHECK(web_contents);
   for (const auto& item_id :
-       media_session_notification_producer_->GetActiveControllableItemIds()) {
+       media_session_item_producer_->GetActiveControllableItemIds()) {
     if (web_contents ==
         content::MediaSession::GetWebContentsFromRequestId(item_id)) {
       return item_id;

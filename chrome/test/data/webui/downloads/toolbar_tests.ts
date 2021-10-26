@@ -4,15 +4,14 @@
 
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {SearchService} from 'chrome://downloads/downloads.js';
+import {CrToastManagerElement, DownloadsToolbarElement, SearchService} from 'chrome://downloads/downloads.js';
+import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+
 import {createDownload} from './test_support.js';
 
 suite('toolbar tests', function() {
-  /** @type {!downloads.Toolbar} */
-  let toolbar;
-
-  /** @type {!CrToastManagerElement} */
-  let toastManager;
+  let toolbar: DownloadsToolbarElement;
+  let toastManager: CrToastManagerElement;
 
   setup(function() {
     class TestSearchService extends SearchService {
@@ -51,8 +50,8 @@ suite('toolbar tests', function() {
   });
 
   test('clear all shown/hidden', () => {
-    const clearAll =
-        toolbar.shadowRoot.querySelector('#moreActionsMenu button');
+    const clearAll = toolbar.shadowRoot!.querySelector<HTMLElement>(
+        '#moreActionsMenu button')!;
     assertTrue(clearAll.hidden);
     toolbar.hasClearableDownloads = true;
     assertFalse(clearAll.hidden);
@@ -64,7 +63,8 @@ suite('toolbar tests', function() {
     assertFalse(toastManager.isToastOpen);
     assertFalse(toastManager.slottedHidden);
     toolbar.hasClearableDownloads = true;
-    toolbar.shadowRoot.querySelector('#moreActionsMenu button').click();
+    toolbar.shadowRoot!.querySelector<HTMLElement>(
+                           '#moreActionsMenu button')!.click();
     assertTrue(toastManager.isToastOpen);
     assertTrue(toastManager.slottedHidden);
   });
@@ -77,7 +77,8 @@ suite('toolbar tests', function() {
     toastManager.show('', /* hideSlotted= */ false);
     assertFalse(toastManager.slottedHidden);
     toolbar.hasClearableDownloads = true;
-    toolbar.shadowRoot.querySelector('#moreActionsMenu button').click();
+    toolbar.shadowRoot!.querySelector<HTMLElement>(
+                           '#moreActionsMenu button')!.click();
     assertTrue(toastManager.isToastOpen);
     assertTrue(toastManager.slottedHidden);
   });
@@ -90,7 +91,8 @@ suite('toolbar tests', function() {
     toastManager.show('', /* hideSlotted= */ true);
     assertTrue(toastManager.slottedHidden);
     toolbar.hasClearableDownloads = true;
-    toolbar.shadowRoot.querySelector('#moreActionsMenu button').click();
+    toolbar.shadowRoot!.querySelector<HTMLElement>(
+                           '#moreActionsMenu button')!.click();
     assertTrue(toastManager.isToastOpen);
     assertFalse(toastManager.slottedHidden);
   });

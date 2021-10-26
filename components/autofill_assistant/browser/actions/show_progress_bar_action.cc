@@ -39,10 +39,6 @@ void ShowProgressBarAction::InternalProcessAction(
   }
 
   switch (proto_.show_progress_bar().progress_indicator_case()) {
-    case ShowProgressBarProto::ProgressIndicatorCase::kProgress:
-      delegate_->SetProgress(
-          base::clamp(proto_.show_progress_bar().progress(), 0, 100));
-      break;
     case ShowProgressBarProto::ProgressIndicatorCase::kActiveStep:
       delegate_->SetProgressActiveStep(
           proto_.show_progress_bar().active_step());
@@ -55,7 +51,6 @@ void ShowProgressBarAction::InternalProcessAction(
       }
       break;
     case ShowProgressBarProto::ProgressIndicatorCase::kCompleteProgress:
-      delegate_->SetProgress(100);
       delegate_->SetProgressActiveStep(-1);
       break;
     default:

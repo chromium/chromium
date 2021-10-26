@@ -35,17 +35,12 @@ public class AssistantHeaderModel extends PropertyModel {
     public static final WritableObjectPropertyKey<String> PROFILE_ICON_MENU_SEND_FEEDBACK_MESSAGE =
             new WritableObjectPropertyKey<>();
 
-    public static final WritableIntPropertyKey PROGRESS = new WritableIntPropertyKey();
-
     public static final WritableIntPropertyKey PROGRESS_ACTIVE_STEP = new WritableIntPropertyKey();
 
     public static final WritableBooleanPropertyKey PROGRESS_BAR_ERROR =
             new WritableBooleanPropertyKey();
 
     public static final WritableBooleanPropertyKey PROGRESS_VISIBLE =
-            new WritableBooleanPropertyKey();
-
-    public static final WritableBooleanPropertyKey USE_STEP_PROGRESS_BAR =
             new WritableBooleanPropertyKey();
 
     public static final WritableObjectPropertyKey<List<AssistantDrawable>> STEP_PROGRESS_BAR_ICONS =
@@ -71,10 +66,9 @@ public class AssistantHeaderModel extends PropertyModel {
 
     public AssistantHeaderModel() {
         super(STATUS_MESSAGE, BUBBLE_MESSAGE, PROFILE_ICON_MENU_SETTINGS_MESSAGE,
-                PROFILE_ICON_MENU_SEND_FEEDBACK_MESSAGE, PROGRESS, PROGRESS_ACTIVE_STEP,
-                PROGRESS_BAR_ERROR, PROGRESS_VISIBLE, USE_STEP_PROGRESS_BAR,
-                STEP_PROGRESS_BAR_ICONS, SPIN_POODLE, FEEDBACK_BUTTON_CALLBACK, CHIPS,
-                CHIPS_VISIBLE, TTS_BUTTON_VISIBLE, TTS_BUTTON_STATE, TTS_BUTTON_CALLBACK,
+                PROFILE_ICON_MENU_SEND_FEEDBACK_MESSAGE, PROGRESS_ACTIVE_STEP, PROGRESS_BAR_ERROR,
+                PROGRESS_VISIBLE, STEP_PROGRESS_BAR_ICONS, SPIN_POODLE, FEEDBACK_BUTTON_CALLBACK,
+                CHIPS, CHIPS_VISIBLE, TTS_BUTTON_VISIBLE, TTS_BUTTON_STATE, TTS_BUTTON_CALLBACK,
                 DISABLE_ANIMATIONS_FOR_TESTING);
         set(CHIPS, new ArrayList<>());
         set(PROGRESS_VISIBLE, true);
@@ -103,11 +97,6 @@ public class AssistantHeaderModel extends PropertyModel {
     }
 
     @CalledByNative
-    private void setProgress(int progress) {
-        set(PROGRESS, progress);
-    }
-
-    @CalledByNative
     private void setProgressActiveStep(int activeStep) {
         set(PROGRESS_ACTIVE_STEP, activeStep);
     }
@@ -120,11 +109,6 @@ public class AssistantHeaderModel extends PropertyModel {
     @CalledByNative
     private void setProgressVisible(boolean visible) {
         set(PROGRESS_VISIBLE, visible);
-    }
-
-    @CalledByNative
-    private void setUseStepProgressBar(boolean useNewProgressBar) {
-        set(USE_STEP_PROGRESS_BAR, useNewProgressBar);
     }
 
     @CalledByNative

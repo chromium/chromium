@@ -244,12 +244,10 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
         startAutofillAssistantOnTab(TEST_PAGE_A);
 
         waitUntilViewMatchesCondition(withText("Area visible"), isCompletelyDisplayed());
-        onView(withId(R.id.progress_bar)).check(matches(not(isDisplayed())));
         onView(withId(R.id.step_progress_bar)).check(matches(isDisplayed()));
 
         tapElement(mTestRule, "touch_area_one");
         waitUntilViewMatchesCondition(withText("Area invisible"), isCompletelyDisplayed());
-        onView(withId(R.id.progress_bar)).check(matches(not(isDisplayed())));
         onView(withId(R.id.step_progress_bar)).check(matches(not(isDisplayed())));
     }
 
@@ -303,7 +301,6 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
         onView(withId(R.id.button_init_ok)).perform(click());
         waitUntilViewMatchesCondition(withText("Done"), isCompletelyDisplayed());
         onView(withText("Loading regular script")).check(matches(isDisplayed()));
-        onView(withId(R.id.progress_bar)).check(matches(not(isDisplayed())));
         onView(withId(R.id.step_progress_bar)).check(matches(isDisplayed()));
         Assert.assertFalse(AutofillAssistantPreferencesUtil.getShowOnboarding());
     }

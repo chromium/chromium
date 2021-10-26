@@ -5,13 +5,11 @@
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {BrowserProxy, SearchService} from 'chrome://downloads/downloads.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+
 import {TestDownloadsProxy} from './test_support.js';
 
-/**
- * @param {!Array<string>} list
- * @return {string}
- */
-function str(list) {
+function str(list: string[]): string {
   return JSON.stringify(list);
 }
 

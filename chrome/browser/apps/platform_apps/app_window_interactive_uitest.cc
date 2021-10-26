@@ -248,8 +248,9 @@ IN_PROC_BROWSER_TEST_F(AppWindowInteractiveTest,
   EXPECT_TRUE(GetFirstAppWindow()->GetBaseWindow()->IsFullscreen());
 }
 
-#if defined(OS_MAC)
+#if defined(OS_MAC) || defined(THREAD_SANITIZER)
 // http://crbug.com/404081
+// http://crbug.com/1263448 (tsan)
 #define MAYBE_TestInnerBounds DISABLED_TestInnerBounds
 #else
 #define MAYBE_TestInnerBounds TestInnerBounds

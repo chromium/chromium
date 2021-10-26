@@ -2,14 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/global_media_controls/media_session_notification_producer.h"
+#include "components/global_media_controls/public/media_session_item_producer.h"
 
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/ui/global_media_controls/media_session_notification_producer_observer.h"
 #include "components/global_media_controls/public/media_item_manager.h"
 #include "components/global_media_controls/public/media_item_ui.h"
+#include "components/global_media_controls/public/media_session_item_producer_observer.h"
 #include "media/base/media_switches.h"
+
+namespace global_media_controls {
 
 namespace {
 
@@ -41,8 +43,8 @@ base::TimeDelta GetAutoDismissTimerValue() {
 
 }  // namespace
 
-MediaSessionNotificationProducer::Session::Session(
-    MediaSessionNotificationProducer* owner,
+MediaSessionItemProducer::Session::Session(
+    MediaSessionItemProducer* owner,
     const std::string& id,
     std::unique_ptr<MediaSessionNotificationItem> item,
     mojo::Remote<media_session::mojom::MediaController> controller)
@@ -53,7 +55,7 @@ MediaSessionNotificationProducer::Session::Session(
   SetController(std::move(controller));
 }
 
-MediaSessionNotificationProducer::Session::~Session() {
+MediaSessionItemProducer::Session::~Session() {
   // If we've been marked inactive, then we've already recorded inactivity as
   // the dismiss reason.
   if (is_marked_inactive_)
@@ -63,7 +65,7 @@ MediaSessionNotificationProducer::Session::~Session() {
       GlobalMediaControlsDismissReason::kMediaSessionStopped));
 }
 
-void MediaSessionNotificationProducer::Session::MediaSessionInfoChanged(
+void MediaSessionItemProducer::Session::MediaSessionInfoChanged(
     media_session::mojom::MediaSessionInfoPtr session_info) {
   is_playing_ =
       session_info && session_info->playback_state ==
@@ -87,7 +89,7 @@ void MediaSessionNotificationProducer::Session::MediaSessionInfoChanged(
   StartInactiveTimer();
 }
 
-void MediaSessionNotificationProducer::Session::MediaSessionActionsChanged(
+void MediaSessionItemProducer::Session::MediaSessionActionsChanged(
     const std::vector<media_session::mojom::MediaSessionAction>& actions) {
   bool is_audio_device_switching_supported =
       base::ranges::find(
@@ -102,17 +104,17 @@ void MediaSessionNotificationProducer::Session::MediaSessionActionsChanged(
   }
 }
 
-void MediaSessionNotificationProducer::Session::MediaSessionPositionChanged(
+void MediaSessionItemProducer::Session::MediaSessionPositionChanged(
     const absl::optional<media_session::MediaPosition>& position) {
   OnSessionInteractedWith();
 }
 
-void MediaSessionNotificationProducer::Session::OnRequestIdReleased() {
+void MediaSessionItemProducer::Session::OnRequestIdReleased() {
   // The request ID is released when the tab is closed.
   set_dismiss_reason(GlobalMediaControlsDismissReason::kTabClosed);
 }
 
-void MediaSessionNotificationProducer::Session::SetController(
+void MediaSessionItemProducer::Session::SetController(
     mojo::Remote<media_session::mojom::MediaController> controller) {
   if (controller.is_bound()) {
     observer_receiver_.reset();
@@ -121,13 +123,13 @@ void MediaSessionNotificationProducer::Session::SetController(
   }
 }
 
-void MediaSessionNotificationProducer::Session::set_dismiss_reason(
+void MediaSessionItemProducer::Session::set_dismiss_reason(
     GlobalMediaControlsDismissReason reason) {
   DCHECK(!dismiss_reason_.has_value());
   dismiss_reason_ = reason;
 }
 
-void MediaSessionNotificationProducer::Session::OnSessionInteractedWith() {
+void MediaSessionItemProducer::Session::OnSessionInteractedWith() {
   // If we're not currently tracking inactive time, then no action is needed.
   if (!inactive_timer_.IsRunning() && !is_marked_inactive_)
     return;
@@ -142,16 +144,15 @@ void MediaSessionNotificationProducer::Session::OnSessionInteractedWith() {
   StartInactiveTimer();
 }
 
-bool MediaSessionNotificationProducer::Session::IsPlaying() const {
+bool MediaSessionItemProducer::Session::IsPlaying() const {
   return is_playing_;
 }
 
-void MediaSessionNotificationProducer::Session::SetAudioSinkId(
-    const std::string& id) {
+void MediaSessionItemProducer::Session::SetAudioSinkId(const std::string& id) {
   controller_->SetAudioSinkId(id);
 }
 
-base::CallbackListSubscription MediaSessionNotificationProducer::Session::
+base::CallbackListSubscription MediaSessionItemProducer::Session::
     RegisterIsAudioDeviceSwitchingSupportedCallback(
         base::RepeatingCallback<void(bool)> callback) {
   callback.Run(is_audio_device_switching_supported_);
@@ -160,13 +161,13 @@ base::CallbackListSubscription MediaSessionNotificationProducer::Session::
 }
 
 // static
-void MediaSessionNotificationProducer::Session::RecordDismissReason(
+void MediaSessionItemProducer::Session::RecordDismissReason(
     GlobalMediaControlsDismissReason reason) {
   base::UmaHistogramEnumeration("Media.GlobalMediaControls.DismissReason",
                                 reason);
 }
 
-void MediaSessionNotificationProducer::Session::StartInactiveTimer() {
+void MediaSessionItemProducer::Session::StartInactiveTimer() {
   DCHECK(!inactive_timer_.IsRunning());
 
   // Using |base::Unretained()| here is okay since |this| owns
@@ -175,12 +176,11 @@ void MediaSessionNotificationProducer::Session::StartInactiveTimer() {
   // rest of the code to continue running as expected.
   inactive_timer_.Start(
       FROM_HERE, GetAutoDismissTimerValue(),
-      base::BindOnce(
-          &MediaSessionNotificationProducer::Session::OnInactiveTimerFired,
-          base::Unretained(this)));
+      base::BindOnce(&MediaSessionItemProducer::Session::OnInactiveTimerFired,
+                     base::Unretained(this)));
 }
 
-void MediaSessionNotificationProducer::Session::OnInactiveTimerFired() {
+void MediaSessionItemProducer::Session::OnInactiveTimerFired() {
   // If the session has been paused and inactive for long enough, then mark it
   // as inactive.
   is_marked_inactive_ = true;
@@ -188,8 +188,7 @@ void MediaSessionNotificationProducer::Session::OnInactiveTimerFired() {
   owner_->OnSessionBecameInactive(id_);
 }
 
-void MediaSessionNotificationProducer::Session::
-    RecordInteractionDelayAfterPause() {
+void MediaSessionItemProducer::Session::RecordInteractionDelayAfterPause() {
   base::TimeDelta time_since_last_interaction =
       base::TimeTicks::Now() - last_interaction_time_;
   base::UmaHistogramCustomTimes(
@@ -197,7 +196,7 @@ void MediaSessionNotificationProducer::Session::
       time_since_last_interaction, base::Minutes(1), base::Days(1), 100);
 }
 
-void MediaSessionNotificationProducer::Session::MarkActiveIfNecessary() {
+void MediaSessionItemProducer::Session::MarkActiveIfNecessary() {
   if (!is_marked_inactive_)
     return;
   is_marked_inactive_ = false;
@@ -205,11 +204,11 @@ void MediaSessionNotificationProducer::Session::MarkActiveIfNecessary() {
   owner_->OnSessionBecameActive(id_);
 }
 
-MediaSessionNotificationProducer::MediaSessionNotificationProducer(
+MediaSessionItemProducer::MediaSessionItemProducer(
     mojo::Remote<media_session::mojom::AudioFocusManager> audio_focus_remote,
     mojo::Remote<media_session::mojom::MediaControllerManager>
         controller_manager_remote,
-    global_media_controls::MediaItemManager* item_manager,
+    MediaItemManager* item_manager,
     absl::optional<base::UnguessableToken> source_id)
     : audio_focus_remote_(std::move(audio_focus_remote)),
       controller_manager_remote_(std::move(controller_manager_remote)),
@@ -221,37 +220,35 @@ MediaSessionNotificationProducer::MediaSessionNotificationProducer(
 
     audio_focus_remote_->GetSourceFocusRequests(
         *source_id,
-        base::BindOnce(
-            &MediaSessionNotificationProducer::OnReceivedAudioFocusRequests,
-            weak_ptr_factory_.GetWeakPtr()));
+        base::BindOnce(&MediaSessionItemProducer::OnReceivedAudioFocusRequests,
+                       weak_ptr_factory_.GetWeakPtr()));
   } else {
     audio_focus_remote_->AddObserver(
         audio_focus_observer_receiver_.BindNewPipeAndPassRemote());
 
-    audio_focus_remote_->GetFocusRequests(base::BindOnce(
-        &MediaSessionNotificationProducer::OnReceivedAudioFocusRequests,
-        weak_ptr_factory_.GetWeakPtr()));
+    audio_focus_remote_->GetFocusRequests(
+        base::BindOnce(&MediaSessionItemProducer::OnReceivedAudioFocusRequests,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
-MediaSessionNotificationProducer::~MediaSessionNotificationProducer() = default;
+MediaSessionItemProducer::~MediaSessionItemProducer() = default;
 
 base::WeakPtr<media_message_center::MediaNotificationItem>
-MediaSessionNotificationProducer::GetMediaItem(const std::string& id) {
+MediaSessionItemProducer::GetMediaItem(const std::string& id) {
   auto it = sessions_.find(id);
   return it == sessions_.end() ? nullptr : it->second.item()->GetWeakPtr();
 }
 
-std::set<std::string>
-MediaSessionNotificationProducer::GetActiveControllableItemIds() {
+std::set<std::string> MediaSessionItemProducer::GetActiveControllableItemIds() {
   return active_controllable_session_ids_;
 }
 
-bool MediaSessionNotificationProducer::HasFrozenItems() {
+bool MediaSessionItemProducer::HasFrozenItems() {
   return !frozen_session_ids_.empty();
 }
 
-void MediaSessionNotificationProducer::OnFocusGained(
+void MediaSessionItemProducer::OnFocusGained(
     media_session::mojom::AudioFocusRequestStatePtr session) {
   const std::string id = session->request_id->ToString();
 
@@ -290,7 +287,7 @@ void MediaSessionNotificationProducer::OnFocusGained(
   }
 }
 
-void MediaSessionNotificationProducer::OnFocusLost(
+void MediaSessionItemProducer::OnFocusLost(
     media_session::mojom::AudioFocusRequestStatePtr session) {
   const std::string id = session->request_id->ToString();
 
@@ -306,15 +303,14 @@ void MediaSessionNotificationProducer::OnFocusLost(
   }
 
   // Otherwise, freeze it in case it regains focus quickly.
-  it->second.item()->Freeze(
-      base::BindOnce(&MediaSessionNotificationProducer::OnItemUnfrozen,
-                     base::Unretained(this), id));
+  it->second.item()->Freeze(base::BindOnce(
+      &MediaSessionItemProducer::OnItemUnfrozen, base::Unretained(this), id));
   active_controllable_session_ids_.erase(id);
   frozen_session_ids_.insert(id);
   item_manager_->OnItemsChanged();
 }
 
-void MediaSessionNotificationProducer::OnRequestIdReleased(
+void MediaSessionItemProducer::OnRequestIdReleased(
     const base::UnguessableToken& request_id) {
   const std::string id = request_id.ToString();
   auto it = sessions_.find(id);
@@ -326,8 +322,7 @@ void MediaSessionNotificationProducer::OnRequestIdReleased(
   RemoveItem(id);
 }
 
-void MediaSessionNotificationProducer::OnMediaItemUIClicked(
-    const std::string& id) {
+void MediaSessionItemProducer::OnMediaItemUIClicked(const std::string& id) {
   auto it = sessions_.find(id);
   if (it == sessions_.end())
     return;
@@ -340,8 +335,7 @@ void MediaSessionNotificationProducer::OnMediaItemUIClicked(
   it->second.item()->Raise();
 }
 
-void MediaSessionNotificationProducer::OnMediaItemUIDismissed(
-    const std::string& id) {
+void MediaSessionItemProducer::OnMediaItemUIDismissed(const std::string& id) {
   Session* session = GetSession(id);
   if (!session) {
     return;
@@ -352,37 +346,35 @@ void MediaSessionNotificationProducer::OnMediaItemUIDismissed(
   session->item()->Dismiss();
 }
 
-void MediaSessionNotificationProducer::AddObserver(
-    MediaSessionNotificationProducerObserver* observer) {
+void MediaSessionItemProducer::AddObserver(
+    MediaSessionItemProducerObserver* observer) {
   observers_.AddObserver(observer);
 }
 
-void MediaSessionNotificationProducer::RemoveObserver(
-    MediaSessionNotificationProducerObserver* observer) {
+void MediaSessionItemProducer::RemoveObserver(
+    MediaSessionItemProducerObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void MediaSessionNotificationProducer::OnItemShown(
-    const std::string& id,
-    global_media_controls::MediaItemUI* item_ui) {
+void MediaSessionItemProducer::OnItemShown(const std::string& id,
+                                           MediaItemUI* item_ui) {
   if (item_ui)
     item_ui_observer_set_.Observe(id, item_ui);
 }
 
-bool MediaSessionNotificationProducer::IsItemActivelyPlaying(
-    const std::string& id) {
+bool MediaSessionItemProducer::IsItemActivelyPlaying(const std::string& id) {
   const auto it = sessions_.find(id);
   return it == sessions_.end() ? false : it->second.IsPlaying();
 }
 
-void MediaSessionNotificationProducer::HideItem(const std::string& id) {
+void MediaSessionItemProducer::HideItem(const std::string& id) {
   active_controllable_session_ids_.erase(id);
   frozen_session_ids_.erase(id);
 
   item_manager_->HideItem(id);
 }
 
-void MediaSessionNotificationProducer::RemoveItem(const std::string& id) {
+void MediaSessionItemProducer::RemoveItem(const std::string& id) {
   active_controllable_session_ids_.erase(id);
   frozen_session_ids_.erase(id);
   inactive_session_ids_.erase(id);
@@ -394,7 +386,7 @@ void MediaSessionNotificationProducer::RemoveItem(const std::string& id) {
   sessions_.erase(id);
 }
 
-void MediaSessionNotificationProducer::ActivateItem(const std::string& id) {
+void MediaSessionItemProducer::ActivateItem(const std::string& id) {
   DCHECK(HasSession(id));
   if (base::Contains(inactive_session_ids_, id))
     return;
@@ -403,29 +395,28 @@ void MediaSessionNotificationProducer::ActivateItem(const std::string& id) {
   item_manager_->ShowItem(id);
 }
 
-bool MediaSessionNotificationProducer::HasSession(const std::string& id) const {
+bool MediaSessionItemProducer::HasSession(const std::string& id) const {
   return base::Contains(sessions_, id);
 }
 
-void MediaSessionNotificationProducer::LogMediaSessionActionButtonPressed(
+void MediaSessionItemProducer::LogMediaSessionActionButtonPressed(
     const std::string& id,
     media_session::mojom::MediaSessionAction action) {
   for (auto& observer : observers_)
     observer.OnMediaSessionActionButtonPressed(id, action);
 }
 
-void MediaSessionNotificationProducer::SetAudioSinkId(
-    const std::string& id,
-    const std::string& sink_id) {
+void MediaSessionItemProducer::SetAudioSinkId(const std::string& id,
+                                              const std::string& sink_id) {
   auto it = sessions_.find(id);
   DCHECK(it != sessions_.end());
   it->second.SetAudioSinkId(sink_id);
 }
 
-base::CallbackListSubscription MediaSessionNotificationProducer::
-    RegisterIsAudioOutputDeviceSwitchingSupportedCallback(
-        const std::string& id,
-        base::RepeatingCallback<void(bool)> callback) {
+base::CallbackListSubscription
+MediaSessionItemProducer::RegisterIsAudioOutputDeviceSwitchingSupportedCallback(
+    const std::string& id,
+    base::RepeatingCallback<void(bool)> callback) {
   auto it = sessions_.find(id);
   DCHECK(it != sessions_.end());
 
@@ -433,14 +424,13 @@ base::CallbackListSubscription MediaSessionNotificationProducer::
       std::move(callback));
 }
 
-MediaSessionNotificationProducer::Session*
-MediaSessionNotificationProducer::GetSession(const std::string& id) {
+MediaSessionItemProducer::Session* MediaSessionItemProducer::GetSession(
+    const std::string& id) {
   auto it = sessions_.find(id);
   return it == sessions_.end() ? nullptr : &it->second;
 }
 
-void MediaSessionNotificationProducer::OnSessionBecameActive(
-    const std::string& id) {
+void MediaSessionItemProducer::OnSessionBecameActive(const std::string& id) {
   DCHECK(base::Contains(inactive_session_ids_, id));
 
   auto it = sessions_.find(id);
@@ -456,8 +446,7 @@ void MediaSessionNotificationProducer::OnSessionBecameActive(
   item_manager_->ShowItem(id);
 }
 
-void MediaSessionNotificationProducer::OnSessionBecameInactive(
-    const std::string& id) {
+void MediaSessionItemProducer::OnSessionBecameInactive(const std::string& id) {
   // If this session is already marked inactive, then there's nothing to do.
   if (base::Contains(inactive_session_ids_, id))
     return;
@@ -471,20 +460,22 @@ void MediaSessionNotificationProducer::OnSessionBecameInactive(
   item_manager_->HideItem(id);
 }
 
-void MediaSessionNotificationProducer::HideMediaDialog() {
+void MediaSessionItemProducer::HideMediaDialog() {
   item_manager_->HideDialog();
 }
 
-void MediaSessionNotificationProducer::OnReceivedAudioFocusRequests(
+void MediaSessionItemProducer::OnReceivedAudioFocusRequests(
     std::vector<media_session::mojom::AudioFocusRequestStatePtr> sessions) {
   for (auto& session : sessions)
     OnFocusGained(std::move(session));
 }
 
-void MediaSessionNotificationProducer::OnItemUnfrozen(const std::string& id) {
+void MediaSessionItemProducer::OnItemUnfrozen(const std::string& id) {
   frozen_session_ids_.erase(id);
 
   active_controllable_session_ids_.insert(id);
 
   item_manager_->OnItemsChanged();
 }
+
+}  // namespace global_media_controls

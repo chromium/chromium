@@ -327,6 +327,7 @@
 <translation id="133535873114485416">선호하는 입력 방식</translation>
 <translation id="1335929031622236846">기기 등록</translation>
 <translation id="1336902454946927954">지문을 인식할 수 없어 보안 키가 잠겼습니다. 보안 키를 잠금 해제하려면 PIN을 입력하세요.</translation>
+<translation id="1338631221631423366">페어링 중...</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" />에서 이 애플리케이션을 열려고 합니다.</translation>
 <translation id="1338950911836659113">삭제 중...</translation>
 <translation id="1339009753652684748">"Hey Google"이라고 말하여 어시스턴트에 액세스 배터리를 절약하려면 '사용(권장)'을 선택하세요. 기기가 전원에 연결되어 있거나 충전 중일 때만 어시스턴트가 응답합니다.</translation>
@@ -6561,6 +6562,7 @@
 <translation id="7887864092952184874">블루투스 마우스 페어링됨</translation>
 <translation id="7889371445710865055">음성기록 언어 변경</translation>
 <translation id="7890147169288018054">IP 또는 MAC 주소와 같은 네트워크 정보 보기</translation>
+<translation id="7892384782944609022">페어링할 수 없습니다. 기기를 선택하고 다시 시도하세요.</translation>
 <translation id="7893008570150657497">컴퓨터에서 사진, 음악, 기타 미디어에 액세스</translation>
 <translation id="7893153962594818789">이 <ph name="DEVICE_TYPE" />에서 블루투스가 사용 중지되어 있습니다. 비밀번호를 입력하고 블루투스를 사용 설정하세요.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" />(기본)</translation>
