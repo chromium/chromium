@@ -43,7 +43,7 @@ AudioDeviceListenerWin::AudioDeviceListenerWin(
   // as "Windows Server 2008 R2" where the desktop experience isn't available.
   auto device_enumerator = CoreAudioUtil::CreateDeviceEnumerator();
   if (!device_enumerator) {
-    DLOG(ERROR) << "Failed to create device enumeration.";
+    DLOG(ERROR) << "Failed to create device enumeration. try upgrading windows";
     return;
   }
 
