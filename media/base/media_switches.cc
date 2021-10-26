@@ -753,11 +753,6 @@ const base::Feature kDirectShowGetPhotoState{"DirectShowGetPhotoState",
 const base::Feature kIncludeIRCamerasInDeviceEnumeration{
     "IncludeIRCamerasInDeviceEnumeration", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables asynchronous H264 HW encode acceleration using Media Foundation for
-// Windows.
-const base::Feature kMediaFoundationAsyncH264Encoding{
-    "MediaFoundationAsyncH264Encoding", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables AV1 decode acceleration for Windows.
 const base::Feature MEDIA_EXPORT kMediaFoundationAV1Decoding{
     "MediaFoundationAV1Decoding", base::FEATURE_ENABLED_BY_DEFAULT};

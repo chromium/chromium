@@ -40,7 +40,7 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // works on Windows 7. Some attributes of the encoder are not supported on old
   // systems, which may impact the performance or quality of the output.
   explicit MediaFoundationVideoEncodeAccelerator(bool compatible_with_win7,
-                                                 bool enable_async_mft);
+                                                 bool use_async_h264);
 
   MediaFoundationVideoEncodeAccelerator(
       const MediaFoundationVideoEncodeAccelerator&) = delete;
@@ -145,8 +145,8 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
 
   const bool compatible_with_win7_;
 
-  // Flag to enable the usage of MFTEnumEx.
-  const bool enable_async_mft_;
+  // Flag to enable the usage of MFTEnumEx for H.264.
+  const bool use_async_h264_;
 
   // Whether asynchronous hardware encoder enabled or not.
   bool is_async_mft_;

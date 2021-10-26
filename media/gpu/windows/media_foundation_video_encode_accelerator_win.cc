@@ -182,10 +182,10 @@ struct MediaFoundationVideoEncodeAccelerator::BitstreamBufferRef {
 // See bug: http://crbug.com/777659.
 MediaFoundationVideoEncodeAccelerator::MediaFoundationVideoEncodeAccelerator(
     bool compatible_with_win7,
-    bool enable_async_mft)
+    bool use_async_h264)
     : compatible_with_win7_(compatible_with_win7),
-      enable_async_mft_(enable_async_mft),
-      is_async_mft_(false),
+      use_async_h264_(use_async_h264),
+      is_async_mft_(true),
       input_required_(false),
       main_client_task_runner_(base::ThreadTaskRunnerHandle::Get()),
       encoder_thread_("MFEncoderThread") {}
@@ -569,7 +569,7 @@ uint32_t MediaFoundationVideoEncodeAccelerator::EnumerateHardwareEncoders(
 
   uint32_t count = 0;
   HRESULT hr = E_FAIL;
-  if (enable_async_mft_) {
+  if (use_async_h264_) {
     // Use MFTEnumEx to find hardware encoder.
     hr = MFTEnumEx(MFT_CATEGORY_VIDEO_ENCODER, flags, &input_info, &output_info,
                    pp_activate, &count);
