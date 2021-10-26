@@ -33,6 +33,39 @@ var availableTests = [
     });
   },
 
+  function addPasswordWhenOperationSucceeds() {
+    chrome.passwordsPrivate.addPassword(
+        /* @type {chrome.passwordsPrivate.AddPasswordOptions} */
+        {
+          url: 'https://example.com',
+          username: 'username',
+          password: 'password',
+          useAccountStore: false
+        },
+        () => {
+          chrome.test.assertNoLastError();
+          chrome.test.succeed();
+        });
+  },
+
+  function addPasswordWhenOperationFails() {
+    chrome.passwordsPrivate.addPassword(
+        /* @type {chrome.passwordsPrivate.AddPasswordOptions} */
+        {
+          url: 'https://example.com',
+          username: 'username',
+          password: '',
+          useAccountStore: true
+        },
+        () => {
+          chrome.test.assertLastError(
+              'Could not add the password. Either the url is invalid, the ' +
+              'password is empty or an entry with such origin and username ' +
+              'already exists.');
+          chrome.test.succeed();
+        });
+  },
+
   function changeSavedPasswordSucceeds() {
     chrome.passwordsPrivate.changeSavedPassword(
         [0], 'new_user', 'new_pass', () => {

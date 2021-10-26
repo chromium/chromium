@@ -128,6 +128,16 @@ IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest,
       << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest,
+                       AddPasswordWhenOperationSucceeds) {
+  EXPECT_TRUE(RunPasswordsSubtest("addPasswordWhenOperationSucceeds"))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, AddPasswordWhenOperationFails) {
+  EXPECT_TRUE(RunPasswordsSubtest("addPasswordWhenOperationFails")) << message_;
+}
+
 IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, ChangeSavedPasswordSucceeds) {
   EXPECT_TRUE(RunPasswordsSubtest("changeSavedPasswordSucceeds")) << message_;
 }

@@ -412,4 +412,22 @@ ResponseAction PasswordsPrivateGetUrlCollectionFunction::Run() {
           url_collection.value())));
 }
 
+// PasswordsPrivateAddPasswordFunction
+ResponseAction PasswordsPrivateAddPasswordFunction::Run() {
+  auto parameters = api::passwords_private::AddPassword::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(parameters);
+
+  if (!GetDelegate(browser_context())
+           ->AddPassword(parameters->options.url,
+                         base::UTF8ToUTF16(parameters->options.username),
+                         base::UTF8ToUTF16(parameters->options.password),
+                         parameters->options.use_account_store)) {
+    return RespondNow(Error(
+        "Could not add the password. Either the url is invalid, the password "
+        "is empty or an entry with such origin and username already exists."));
+  }
+
+  return RespondNow(NoArguments());
+}
+
 }  // namespace extensions
