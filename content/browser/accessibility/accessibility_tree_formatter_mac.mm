@@ -56,6 +56,7 @@ const char kRangeLenDictAttr[] = "len";
 
 const char kNULLValue[] = "_const_NULL";
 const char kFailedToParseError[] = "_const_ERROR:FAILED_TO_PARSE";
+const char kNotApplicable[] = "_const_n/a";
 
 }  // namespace
 
@@ -138,13 +139,18 @@ std::string AccessibilityTreeFormatterMac::EvaluateScript(
     DCHECK(instructions[index].IsScript());
     const AXPropertyNode& property_node = instructions[index].AsScript();
     OptionalNSObject value = invoker.Invoke(property_node);
-    if (value.IsNotApplicable()) {
+    if (value.IsUnsupported()) {
       continue;
     }
 
-    base::Value result = value.IsError()
-                             ? base::Value(kFailedToParseError)
-                             : PopulateObject(*value, &line_indexer);
+    base::Value result;
+    if (value.IsError()) {
+      result = base::Value(kFailedToParseError);
+    } else if (value.IsNotApplicable()) {
+      result = base::Value(kNotApplicable);
+    } else {
+      result = PopulateObject(*value, &line_indexer);
+    }
 
     scripts.Append(property_node.ToString() + "=" + AXFormatValue(result));
   }
@@ -232,7 +238,7 @@ void AccessibilityTreeFormatterMac::AddProperties(
        PropertyFilterNodesFor(line_index)) {
     AttributeInvoker invoker(node, line_indexer);
     OptionalNSObject value = invoker.Invoke(property_node);
-    if (value.IsNotApplicable()) {
+    if (value.IsNotApplicable() || value.IsUnsupported()) {
       continue;
     }
     if (value.IsError()) {

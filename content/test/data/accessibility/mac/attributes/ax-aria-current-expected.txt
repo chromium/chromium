@@ -5,4 +5,4 @@ date.AXARIACurrent='date'
 time.AXARIACurrent='time'
 true.AXARIACurrent='true'
 false.AXARIACurrent='false'
-none.AXARIACurrent=ERROR:FAILED_TO_PARSE
+none.AXARIACurrent=n/a

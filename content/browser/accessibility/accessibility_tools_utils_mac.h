@@ -18,6 +18,11 @@ namespace content {
 namespace a11y {
 
 //
+// Returns true if the given accessibility attribute is valid, and could have
+// been exposed on certain accessibility objects.
+CONTENT_EXPORT bool IsValidAttribute(const std::string& attribute);
+
+//
 // Return true if the given object is internal BrowserAccessibilityCocoa.
 //
 CONTENT_EXPORT bool IsBrowserAccessibilityCocoa(const id node);

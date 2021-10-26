@@ -12,6 +12,7 @@
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/platform/ax_platform_node_mac.h"
+#include "ui/accessibility/platform/ax_private_attributes_mac.h"
 #include "ui/base/l10n/l10n_util.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -24,16 +25,6 @@ AXAnnouncementSpec::~AXAnnouncementSpec() = default;
 }  // namespace ui
 
 namespace {
-
-// Private WebKit accessibility attributes.
-NSString* const NSAccessibilityAccessKeyAttribute = @"AXAccessKey";
-NSString* const NSAccessibilityARIAAtomicAttribute = @"AXARIAAtomic";
-NSString* const NSAccessibilityARIABusyAttribute = @"AXARIABusy";
-NSString* const NSAccessibilityARIACurrentAttribute = @"AXARIACurrent";
-NSString* const NSAccessibilityARIALiveAttribute = @"AXARIALive";
-NSString* const NSAccessibilityARIARelevantAttribute = @"AXARIARelevant";
-NSString* const NSAccessibilityAutocompleteValueAttribute =
-    @"AXAutocompleteValue";
 
 // Same length as web content/WebKit.
 static int kLiveRegionDebounceMillis = 20;

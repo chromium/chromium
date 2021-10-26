@@ -33,32 +33,48 @@ struct NodeComparator {
 using LineIndexer =
     ui::AXTreeIndexer<GetDOMId, NSArray*, ChildrenOf, NodeComparator>;
 
-// Implements stateful id values. Can be either id or be in
-// error or not applciable state. Similar to absl::optional, but tri-state
-// allowing nullable values.
+// Implements stateful id values. Similar to absl::optional, but
+// multi-state allowing nullable values.
 class CONTENT_EXPORT OptionalNSObject final {
  public:
-  enum { ID, ERROR, NOT_APPLICABLE };
+  enum {
+    // Indicates a valid value; can be nil.
+    kId,
 
-  static OptionalNSObject Error() { return OptionalNSObject(ERROR); }
+    // Indicates a call error, and may also indicate a parser error.
+    kError,
+
+    // Indicates a called property is not applicable to the object.
+    kNotApplicable,
+
+    // Indicates the property can't have an associated object.
+    kUnsupported,
+  };
+
+  static OptionalNSObject Unsupported() {
+    return OptionalNSObject(kUnsupported);
+  }
+  static OptionalNSObject Error() { return OptionalNSObject(kError); }
   static OptionalNSObject NotApplicable() {
-    return OptionalNSObject(NOT_APPLICABLE);
+    return OptionalNSObject(kNotApplicable);
   }
   static OptionalNSObject NotNilOrError(id other_value) {
-    return OptionalNSObject(other_value, other_value ? ID : ERROR);
+    return OptionalNSObject(other_value, other_value != nil ? kId : kError);
   }
   static OptionalNSObject NotNullOrNotApplicable(id other_value) {
-    return OptionalNSObject(other_value, other_value ? ID : NOT_APPLICABLE);
+    return OptionalNSObject(other_value,
+                            other_value != nil ? kId : kNotApplicable);
   }
 
   explicit OptionalNSObject(int flag) : value(nil), flag(flag) {}
-  explicit OptionalNSObject(id value, int flag = ID)
+  explicit OptionalNSObject(id value, int flag = kId)
       : value(value), flag(flag) {}
 
-  bool IsNotApplicable() const { return flag == NOT_APPLICABLE; }
-  bool IsError() const { return flag == ERROR; }
+  bool IsUnsupported() const { return flag == kUnsupported; }
+  bool IsNotApplicable() const { return flag == kNotApplicable; }
+  bool IsError() const { return flag == kError; }
   bool IsNotNil() const { return value != nil; }
-  bool HasValue() { return flag == ID; }
+  bool HasValue() { return flag == kId; }
   constexpr const id& operator*() const& { return value; }
 
   std::string ToString() const;
