@@ -1223,6 +1223,10 @@ const base::Feature kWindowsFollowCursor{"WindowsFollowCursor",
 const base::Feature kDeviceActiveClient{"DeviceActiveClient",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables or disables whether to store UMA logs per-user and whether metrics
+// consent is per-user.
+const base::Feature kPerUserMetrics{"PerUserMetricsConsent",
+                                    base::FEATURE_DISABLED_BY_DEFAULT};
 ////////////////////////////////////////////////////////////////////////////////
 
 bool AreContextualNudgesEnabled() {

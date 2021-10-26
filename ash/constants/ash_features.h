@@ -325,6 +325,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kOverviewButton;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kPcieBillboardNotification;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kPerDeskShelf;
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kPerUserMetrics;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kPerformantSplitViewResizing;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kPhoneHub;
