@@ -36,9 +36,6 @@ def _CommitPositionNumber(commit_pos):
   as the value of "rev" in the data passed to results_dashboard.SendResults.
   """
 
-  # In case r_chromium is set to None, this logging wil help see which
-  # commit_pos value caused it.
-  logging.info("got_revision_cp flag has value: %s.", commit_pos)
   return int(re.search(r'{#(\d+)}', commit_pos).group(1))
 
 
