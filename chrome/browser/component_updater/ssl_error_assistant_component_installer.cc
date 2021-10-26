@@ -69,7 +69,7 @@ namespace component_updater {
 
 bool SSLErrorAssistantComponentInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {
-  return false;
+  return true;
 }
 
 bool SSLErrorAssistantComponentInstallerPolicy::RequiresNetworkEncryption()
