@@ -143,7 +143,7 @@ AppListBubblePresenter::AppListBubblePresenter(
 AppListBubblePresenter::~AppListBubblePresenter() {
   if (bubble_widget_)
     bubble_widget_->CloseNow();
-  CHECK(!IsInObserverList());
+  CHECK(!views::WidgetObserver::IsInObserverList());
 }
 
 void AppListBubblePresenter::Show(int64_t display_id) {
@@ -162,7 +162,6 @@ void AppListBubblePresenter::Show(int64_t display_id) {
       std::make_unique<AppListBubbleView>(controller_, drag_and_drop_host));
   // The widget bounds sometimes depend on the height of the apps grid, so set
   // the bounds after creating and setting the contents.
-  // TODO(jamescook): Update bounds on display configuration change.
   bubble_widget_->SetBounds(ComputeBubbleBounds(root_window, bubble_view_));
 
   // Arrow left/right and up/down triggers the same focus movement as
@@ -243,6 +242,19 @@ void AppListBubblePresenter::OnWidgetDestroying(views::Widget* widget) {
   bubble_widget_->RemoveObserver(this);
   bubble_widget_ = nullptr;
   bubble_view_ = nullptr;
+}
+
+void AppListBubblePresenter::OnDisplayMetricsChanged(
+    const display::Display& display,
+    uint32_t changed_metrics) {
+  if (!IsShowing())
+    return;
+  // Ignore changes to displays that aren't showing the launcher.
+  if (display.id() != GetDisplayId())
+    return;
+  aura::Window* root_window =
+      bubble_widget_->GetNativeWindow()->GetRootWindow();
+  bubble_widget_->SetBounds(ComputeBubbleBounds(root_window, bubble_view_));
 }
 
 void AppListBubblePresenter::OnPressOutsideBubble() {

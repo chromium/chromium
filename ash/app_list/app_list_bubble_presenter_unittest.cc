@@ -278,6 +278,24 @@ TEST_F(AppListBubblePresenterTest, BubbleOpensInBottomRightForBottomShelfRTL) {
                      GetPrimaryDisplay().work_area().bottom_right()));
 }
 
+// Regression test for https://crbug.com/1263697
+TEST_F(AppListBubblePresenterTest,
+       BubbleStaysInBottomLeftAfterScreenResolutionChange) {
+  AppListBubblePresenter* presenter = GetBubblePresenter();
+  presenter->Show(GetPrimaryDisplay().id());
+
+  // Changing to a large display keeps the bubble in the corner.
+  UpdateDisplay("2100x2000");
+  Widget* widget = presenter->bubble_widget_for_test();
+  EXPECT_TRUE(IsNear(widget->GetWindowBoundsInScreen().bottom_left(),
+                     GetPrimaryDisplay().work_area().bottom_left()));
+
+  // Changing to a small display keeps the bubble in the corner.
+  UpdateDisplay("800x600");
+  EXPECT_TRUE(IsNear(widget->GetWindowBoundsInScreen().bottom_left(),
+                     GetPrimaryDisplay().work_area().bottom_left()));
+}
+
 TEST_F(AppListBubblePresenterTest, BubbleSizedForDisplay) {
   const int default_bubble_height = 688;
   UpdateDisplay("800x900");
