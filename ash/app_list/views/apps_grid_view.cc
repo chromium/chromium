@@ -714,8 +714,6 @@ void AppsGridView::EndDrag(bool cancel) {
   // Hide the |current_ghost_view_| for item drag that started
   // within |apps_grid_view_|.
   BeginHideCurrentGhostImageView();
-  MaybeStopPageFlip();
-  StopAutoScroll();
   if (was_dragging)
     SetFocusAfterEndDrag();  // Maybe focus the search box.
 
@@ -789,6 +787,9 @@ void AppsGridView::ClearDragState() {
 
   if (folder_item_reparent_timer_.IsRunning())
     folder_item_reparent_timer_.Stop();
+
+  MaybeStopPageFlip();
+  StopAutoScroll();
 
   drag_view_ = nullptr;
   drag_item_ = nullptr;
@@ -1663,8 +1664,6 @@ void AppsGridView::EndDragFromReparentItemInRootLevel(
   // Hide the |current_ghost_view_| after completed drag from within
   // folder to |apps_grid_view_|.
   BeginHideCurrentGhostImageView();
-  MaybeStopPageFlip();
-  StopAutoScroll();
   SetFocusAfterEndDrag();  // Maybe focus the search box.
 
   AnimateDragIconToTargetPosition(
