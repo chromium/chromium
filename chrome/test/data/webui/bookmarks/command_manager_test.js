@@ -154,7 +154,6 @@ suite('<bookmarks-command-manager>', function() {
     store.notifyObservers();
 
     commandManager.openCommandMenuAtPosition(0, 0, MenuSource.ITEM);
-    assertTrue(commandManager.hasAnySublabel_);
     assertEquals('2', commandManager.getCommandSublabel_(Command.OPEN_NEW_TAB));
   });
 
@@ -611,7 +610,7 @@ suite('<bookmarks-item> CommandManager integration', function() {
   });
 
   test('context menu disappears immediately on right click', async function() {
-    commandManager.updateForPaste_ = function() {
+    commandManager.updateCanPaste_ = function() {
       this.canPaste_ = true;
       return Promise.resolve();
     };
@@ -675,7 +674,7 @@ suite('<bookmarks-command-manager> whole page integration', function() {
     const app = document.createElement('bookmarks-app');
     replaceBody(app);
 
-    commandManager = CommandManager.getInstance();
+    commandManager = BookmarksCommandManagerElement.getInstance();
 
     await promise;
 

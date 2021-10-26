@@ -201,11 +201,6 @@ suite('<bookmarks-list> command manager integration test', function() {
   test('show context menu', async () => {
     const commandManager =
         app.shadowRoot.querySelector('bookmarks-command-manager');
-    commandManager.updateForPaste_ = function() {
-      this.canPaste_ = true;
-      return Promise.resolve();
-    };
-
     proxy.resetResolver('recordInHistogram');
     const list = app.shadowRoot.querySelector('bookmarks-list');
     list.dispatchEvent(new CustomEvent(
