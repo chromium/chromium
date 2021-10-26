@@ -22,8 +22,8 @@ _MANAGED_REPO_NAME = 'chrome-runner'
 class PkgRepo(object):
   """Abstract interface for a repository used to serve packages to devices."""
 
-  def __init__(self, target):
-    self._target = target
+  def __init__(self):
+    pass
 
   def PublishPackage(self, package_path):
     pm_tool = common.GetHostToolPathFromPlatform('pm')
@@ -39,8 +39,7 @@ class PkgRepo(object):
     subprocess.check_call([
         pm_tool, 'publish', '-a', '-f', package_path, '-r',
         self.GetPath(), '-vt', '-v'
-    ],
-                          stderr=subprocess.STDOUT)
+    ], stderr=subprocess.STDOUT)
 
   def GetPath(self):
     pass
@@ -50,8 +49,9 @@ class ManagedPkgRepo(PkgRepo):
   """Creates and serves packages from an ephemeral repository."""
 
   def __init__(self, target):
-    PkgRepo.__init__(self, target)
+    super(ManagedPkgRepo, self).__init__()
     self._with_count = 0
+    self._target = target
 
     self._pkg_root = tempfile.mkdtemp()
     pm_tool = common.GetHostToolPathFromPlatform('pm')
@@ -192,8 +192,12 @@ class ExternalPkgRepo(PkgRepo):
   """Publishes packages to a package repository located and served externally
   (ie. located under a Fuchsia build directory and served by "fx serve"."""
 
-  def __init__(self, pkg_root):
+  def __init__(self, pkg_root, symbol_root):
+    super(PkgRepo, self).__init__()
+
     self._pkg_root = pkg_root
+    self._symbol_root = symbol_root
+
     logging.info('Using existing package root: {}'.format(pkg_root))
     logging.info(
         'ATTENTION: This will not start a package server. Please run "fx serve" manually.'
@@ -202,8 +206,35 @@ class ExternalPkgRepo(PkgRepo):
   def GetPath(self):
     return self._pkg_root
 
+  def PublishPackage(self, package_path):
+    super(ExternalPkgRepo, self).PublishPackage(package_path)
+
+    self._InstallSymbols(os.path.join(os.path.dirname(package_path), 'ids.txt'))
+
   def __enter__(self):
     return self
 
   def __exit__(self, type, value, tb):
     pass
+
+  def _InstallSymbols(self, package_path):
+    """Installs debug symbols for a packageinto the GDB-standard symbol
+    directory located at |self.symbol_root|."""
+
+    ids_txt_path = os.path.join(os.path.dirname(package_path), 'ids.txt')
+    for entry in open(ids_txt_path, 'r'):
+      build_id, binary_relpath = entry.strip().split(' ')
+      binary_abspath = os.path.abspath(
+          os.path.join(os.path.dirname(ids_txt_path), binary_relpath))
+      symbol_dir = os.path.join(self._symbol_root, build_id[:2])
+      symbol_file = os.path.join(symbol_dir, build_id[2:] + '.debug')
+
+      if not os.path.exists(symbol_dir):
+        os.makedirs(symbol_dir)
+
+      if os.path.islink(symbol_file) or os.path.exists(symbol_file):
+        # Clobber the existing entry to ensure that the symlink's target is
+        # up to date.
+        os.unlink(symbol_file)
+
+      os.symlink(os.path.relpath(binary_abspath, symbol_dir), symbol_file)
