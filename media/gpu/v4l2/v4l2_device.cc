@@ -13,6 +13,7 @@
 #include <set>
 
 #include <libdrm/drm_fourcc.h>
+#include <linux/media.h>
 #include <linux/videodev2.h>
 #include <string.h>
 #include <sys/mman.h>
@@ -21,6 +22,7 @@
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "media/base/bind_to_current_loop.h"
@@ -37,8 +39,6 @@
 #if defined(AML_V4L2)
 #include "media/gpu/v4l2/aml_v4l2_device.h"
 #endif
-
-#define REQUEST_DEVICE "/dev/media-dec0"
 
 namespace media {
 
@@ -2122,15 +2122,63 @@ V4L2RequestsQueue* V4L2Device::GetRequestsQueue() {
     return requests_queue_.get();
 
   requests_queue_creation_called_ = true;
-  int media_fd = open(REQUEST_DEVICE, O_RDWR, 0);
-  if (media_fd < 0) {
-    VPLOGF(1) << "Failed to open media device.";
+
+  struct v4l2_capability caps;
+  if (Ioctl(VIDIOC_QUERYCAP, &caps)) {
+    VPLOGF(1) << "Failed to query device capabilities.";
+    return nullptr;
+  }
+
+  // Some devices, namely the RK3399, have multiple hardware decoder blocks.
+  // We have to find and use the matching media device, or the kernel gets
+  // confused.
+  // Note that the match persists for the lifetime of V4L2Device. In practice
+  // this should be fine, since |GetRequestsQueue()| is only called after
+  // the codec format is configured, and the VD/VDA instance is always tied
+  // to a specific format, so it will never need to switch media devices.
+  static const std::string kRequestDevicePrefix = "/dev/media-dec";
+
+  // We are sandboxed, so we can't query directory contents to check which
+  // devices are actually available. Try to open the first 10; if not present,
+  // we will just fail to open immediately.
+  base::ScopedFD media_fd;
+  for (int i = 0; i < 10; ++i) {
+    const auto path = kRequestDevicePrefix + base::NumberToString(i);
+    base::ScopedFD candidate_media_fd(
+        HANDLE_EINTR(open(path.c_str(), O_RDWR, 0)));
+    if (!candidate_media_fd.is_valid()) {
+      VPLOGF(2) << "Failed to open media device: " << path;
+      continue;
+    }
+
+    struct media_device_info media_info;
+    if (HANDLE_EINTR(ioctl(candidate_media_fd.get(), MEDIA_IOC_DEVICE_INFO,
+                           &media_info)) < 0) {
+      VPLOGF(2) << "Failed to Query media device info.";
+      continue;
+    }
+
+    // We match the video device and the media controller by the driver
+    // field. The mtk-vcodec driver does not fill the card and bus fields
+    // properly, so those won't work.
+    if (strncmp(reinterpret_cast<const char*>(caps.driver),
+                reinterpret_cast<const char*>(media_info.driver),
+                sizeof(caps.driver))) {
+      continue;
+    }
+
+    media_fd = std::move(candidate_media_fd);
+    break;
+  }
+
+  if (!media_fd.is_valid()) {
+    VLOGF(1) << "Failed to open matching media device.";
     return nullptr;
   }
 
   // Not using std::make_unique because constructor is private.
-  std::unique_ptr<V4L2RequestsQueue> requests_queue(new V4L2RequestsQueue(
-      base::ScopedFD(media_fd)));
+  std::unique_ptr<V4L2RequestsQueue> requests_queue(
+      new V4L2RequestsQueue(std::move(media_fd)));
   requests_queue_ = std::move(requests_queue);
 
   return requests_queue_.get();
