@@ -332,8 +332,7 @@ IN_PROC_BROWSER_TEST_F(ComponentCloudPolicyTest, MAYBE_InstallNewExtension) {
 // get policy for components working again.
 // Signing out on Lacros is not possible.
 #if !defined(OS_CHROMEOS)
-// Flaky, see https://crbug.com/1205239
-IN_PROC_BROWSER_TEST_F(ComponentCloudPolicyTest, DISABLED_SignOutAndBackIn) {
+IN_PROC_BROWSER_TEST_F(ComponentCloudPolicyTest, SignOutAndBackIn) {
   // Read the initial policy.
   ExtensionTestMessageListener initial_policy_listener(kTestPolicyJSON, true);
   event_listener_->Reply("get-policy-Name");
