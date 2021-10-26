@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/android/jni_android.h"
+#include "components/autofill_assistant/browser/autofill_assistant_tts_controller.h"
 #include "components/autofill_assistant/browser/bottom_sheet_state.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
@@ -147,6 +148,11 @@ std::unique_ptr<Service> GetServiceToInject(JNIEnv* env,
 // integration tests which provide a test service request sender to communicate
 // with.
 std::unique_ptr<ServiceRequestSender> GetServiceRequestSenderToInject(
+    JNIEnv* env);
+
+// Returns the TTS controller to inject, if any. This is used for integration
+// tests which provide a test TTS controller.
+std::unique_ptr<AutofillAssistantTtsController> GetTtsControllerToInject(
     JNIEnv* env);
 
 }  // namespace ui_controller_android_utils

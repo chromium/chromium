@@ -14,7 +14,7 @@
 #include "chrome/android/features/autofill_assistant/jni_headers/AssistantDrawable_jni.h"
 #include "chrome/android/features/autofill_assistant/jni_headers/AssistantInfoPopup_jni.h"
 #include "chrome/android/features/autofill_assistant/jni_headers/AssistantValue_jni.h"
-#include "chrome/android/features/autofill_assistant/jni_headers/AutofillAssistantServiceInjector_jni.h"
+#include "chrome/android/features/autofill_assistant/jni_headers/AutofillAssistantDependencyInjector_jni.h"
 #include "chrome/browser/android/autofill_assistant/client_android.h"
 #include "chrome/browser/android/tab_android.h"
 #include "components/autofill_assistant/browser/generic_ui_java_generated_enums.h"
@@ -536,7 +536,7 @@ bool IsCustomTab(content::WebContents* web_contents) {
 std::unique_ptr<Service> GetServiceToInject(JNIEnv* env,
                                             ClientAndroid* client_android) {
   jlong jtest_service_to_inject =
-      Java_AutofillAssistantServiceInjector_getServiceToInject(
+      Java_AutofillAssistantDependencyInjector_getServiceToInject(
           env, reinterpret_cast<intptr_t>(client_android));
   std::unique_ptr<Service> test_service = nullptr;
   if (jtest_service_to_inject) {
@@ -549,7 +549,7 @@ std::unique_ptr<Service> GetServiceToInject(JNIEnv* env,
 std::unique_ptr<ServiceRequestSender> GetServiceRequestSenderToInject(
     JNIEnv* env) {
   jlong jtest_service_request_sender_to_inject =
-      Java_AutofillAssistantServiceInjector_getServiceRequestSenderToInject(
+      Java_AutofillAssistantDependencyInjector_getServiceRequestSenderToInject(
           env);
   std::unique_ptr<ServiceRequestSender> test_service_request_sender;
   if (jtest_service_request_sender_to_inject) {
@@ -557,6 +557,18 @@ std::unique_ptr<ServiceRequestSender> GetServiceRequestSenderToInject(
         reinterpret_cast<void*>(jtest_service_request_sender_to_inject)));
   }
   return test_service_request_sender;
+}
+
+std::unique_ptr<AutofillAssistantTtsController> GetTtsControllerToInject(
+    JNIEnv* env) {
+  jlong jtest_tts_controller_to_inject =
+      Java_AutofillAssistantDependencyInjector_getTtsControllerToInject(env);
+  std::unique_ptr<AutofillAssistantTtsController> test_tts_controller;
+  if (jtest_tts_controller_to_inject) {
+    test_tts_controller.reset(static_cast<AutofillAssistantTtsController*>(
+        reinterpret_cast<void*>(jtest_tts_controller_to_inject)));
+  }
+  return test_tts_controller;
 }
 
 }  // namespace ui_controller_android_utils

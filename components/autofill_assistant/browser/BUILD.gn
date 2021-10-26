@@ -542,6 +542,8 @@ if (is_android) {
   static_library("test_support") {
     testonly = true
     sources = [
+      "java_tts_controller.cc",
+      "java_tts_controller.h",
       "service/java_service.cc",
       "service/java_service.h",
       "service/java_service_request_sender.cc",
