@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/secure_channel/single_client_message_proxy_impl.h"
+#include "chromeos/services/secure_channel/single_client_proxy_impl.h"
 
 #include <memory>
 #include <string>
@@ -20,7 +20,7 @@
 #include "chromeos/services/secure_channel/fake_client_connection_parameters.h"
 #include "chromeos/services/secure_channel/fake_file_payload_listener.h"
 #include "chromeos/services/secure_channel/fake_message_receiver.h"
-#include "chromeos/services/secure_channel/fake_single_client_message_proxy.h"
+#include "chromeos/services/secure_channel/fake_single_client_proxy.h"
 #include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -34,14 +34,17 @@ namespace {
 const char kTestFeature[] = "testFeature";
 }  // namespace
 
-class SecureChannelSingleClientMessageProxyImplTest : public testing::Test {
+class SecureChannelSingleClientProxyImplTest : public testing::Test {
  protected:
-  SecureChannelSingleClientMessageProxyImplTest() = default;
-  ~SecureChannelSingleClientMessageProxyImplTest() override = default;
+  SecureChannelSingleClientProxyImplTest() = default;
+  SecureChannelSingleClientProxyImplTest(
+      const SecureChannelSingleClientProxyImplTest&) = delete;
+  SecureChannelSingleClientProxyImplTest& operator=(
+      const SecureChannelSingleClientProxyImplTest&) = delete;
+  ~SecureChannelSingleClientProxyImplTest() override = default;
 
   void SetUp() override {
-    fake_proxy_delegate_ =
-        std::make_unique<FakeSingleClientMessageProxyDelegate>();
+    fake_proxy_delegate_ = std::make_unique<FakeSingleClientProxyDelegate>();
 
     auto fake_message_receiver = std::make_unique<FakeMessageReceiver>();
     fake_message_receiver_ = fake_message_receiver.get();
@@ -53,7 +56,7 @@ class SecureChannelSingleClientMessageProxyImplTest : public testing::Test {
     fake_client_connection_parameters_->set_message_receiver(
         std::move(fake_message_receiver));
 
-    proxy_ = SingleClientMessageProxyImpl::Factory::Create(
+    proxy_ = SingleClientProxyImpl::Factory::Create(
         fake_proxy_delegate_.get(),
         std::move(fake_client_connection_parameters));
 
@@ -62,9 +65,9 @@ class SecureChannelSingleClientMessageProxyImplTest : public testing::Test {
   }
 
   void CompletePendingMojoCalls() {
-    // FlushForTesting is a function on SingleClientMessageProxyImpl, so a cast
+    // FlushForTesting is a function on SingleClientProxyImpl, so a cast
     // is necessary.
-    auto* proxy = static_cast<SingleClientMessageProxyImpl*>(proxy_.get());
+    auto* proxy = static_cast<SingleClientProxyImpl*>(proxy_.get());
     proxy->FlushForTesting();
   }
 
@@ -83,9 +86,8 @@ class SecureChannelSingleClientMessageProxyImplTest : public testing::Test {
         fake_client_connection_parameters_->channel();
     channel->SendMessage(
         message,
-        base::BindOnce(
-            &SecureChannelSingleClientMessageProxyImplTest::OnMessageSent,
-            base::Unretained(this), message_counter));
+        base::BindOnce(&SecureChannelSingleClientProxyImplTest::OnMessageSent,
+                       base::Unretained(this), message_counter));
     channel.FlushForTesting();
 
     EXPECT_EQ(num_send_message_requests_before_call + 1u,
@@ -124,7 +126,7 @@ class SecureChannelSingleClientMessageProxyImplTest : public testing::Test {
     EXPECT_EQ(payload, received_messages.back());
   }
 
-  FakeSingleClientMessageProxyDelegate* fake_proxy_delegate() {
+  FakeSingleClientProxyDelegate* fake_proxy_delegate() {
     return fake_proxy_delegate_.get();
   }
 
@@ -170,7 +172,7 @@ class SecureChannelSingleClientMessageProxyImplTest : public testing::Test {
     mojo::Remote<mojom::Channel>& channel =
         fake_client_connection_parameters_->channel();
     channel->GetConnectionMetadata(base::BindOnce(
-        &SecureChannelSingleClientMessageProxyImplTest::OnConnectionMetadata,
+        &SecureChannelSingleClientProxyImplTest::OnConnectionMetadata,
         base::Unretained(this)));
     channel.FlushForTesting();
 
@@ -248,7 +250,7 @@ class SecureChannelSingleClientMessageProxyImplTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
 
-  std::unique_ptr<FakeSingleClientMessageProxyDelegate> fake_proxy_delegate_;
+  std::unique_ptr<FakeSingleClientProxyDelegate> fake_proxy_delegate_;
   FakeClientConnectionParameters* fake_client_connection_parameters_;
   FakeMessageReceiver* fake_message_receiver_;
 
@@ -257,19 +259,17 @@ class SecureChannelSingleClientMessageProxyImplTest : public testing::Test {
 
   mojom::ConnectionMetadataPtr last_metadata_from_channel_;
 
-  std::unique_ptr<SingleClientMessageProxy> proxy_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelSingleClientMessageProxyImplTest);
+  std::unique_ptr<SingleClientProxy> proxy_;
 };
 
-TEST_F(SecureChannelSingleClientMessageProxyImplTest,
+TEST_F(SecureChannelSingleClientProxyImplTest,
        SendReceiveAndDisconnect_ClientDisconnection) {
   SendMessageAndVerifyState("message1");
   HandleReceivedMessageAndVerifyState(kTestFeature, "message2");
   DisconnectFromClientSide();
 }
 
-TEST_F(SecureChannelSingleClientMessageProxyImplTest,
+TEST_F(SecureChannelSingleClientProxyImplTest,
        SendReceiveAndDisconnect_RemoteDeviceDisconnection) {
   SendMessageAndVerifyState("message1");
   HandleReceivedMessageAndVerifyState(kTestFeature, "message2");
@@ -277,8 +277,7 @@ TEST_F(SecureChannelSingleClientMessageProxyImplTest,
   DisconnectFromRemoteDeviceSide();
 }
 
-TEST_F(SecureChannelSingleClientMessageProxyImplTest,
-       SendWithDeferredCompletion) {
+TEST_F(SecureChannelSingleClientProxyImplTest, SendWithDeferredCompletion) {
   auto& send_message_requests = fake_proxy_delegate()->send_message_requests();
 
   // Send two messages, but do not wait for the first to send successfully
@@ -300,14 +299,14 @@ TEST_F(SecureChannelSingleClientMessageProxyImplTest,
   DisconnectFromRemoteDeviceSide();
 }
 
-TEST_F(SecureChannelSingleClientMessageProxyImplTest,
+TEST_F(SecureChannelSingleClientProxyImplTest,
        ReceiveMessagesFromMultipleFeatures) {
   HandleReceivedMessageAndVerifyState(kTestFeature, "message1");
   HandleReceivedMessageAndVerifyState("otherFeature", "message2");
   DisconnectFromRemoteDeviceSide();
 }
 
-TEST_F(SecureChannelSingleClientMessageProxyImplTest, ConnectionMetadata) {
+TEST_F(SecureChannelSingleClientProxyImplTest, ConnectionMetadata) {
   std::vector<mojom::ConnectionCreationDetail> creation_details{
       mojom::ConnectionCreationDetail::
           REMOTE_DEVICE_USED_BACKGROUND_BLE_ADVERTISING};
@@ -324,7 +323,7 @@ TEST_F(SecureChannelSingleClientMessageProxyImplTest, ConnectionMetadata) {
   EXPECT_EQ(-24, metadata->bluetooth_connection_metadata->current_rssi);
 }
 
-TEST_F(SecureChannelSingleClientMessageProxyImplTest,
+TEST_F(SecureChannelSingleClientProxyImplTest,
        RegisterOnePayloadFileAndReceiveMultipleUpdates) {
   FakeFilePayloadListener fake_file_payload_listener;
 
@@ -345,7 +344,7 @@ TEST_F(SecureChannelSingleClientMessageProxyImplTest,
   EXPECT_FALSE(fake_file_payload_listener.is_connected());
 }
 
-TEST_F(SecureChannelSingleClientMessageProxyImplTest,
+TEST_F(SecureChannelSingleClientProxyImplTest,
        RegisterMultiplePayloadFilesAndReceiveUpdates) {
   FakeFilePayloadListener first_payload_listener;
   FakeFilePayloadListener second_payload_listener;
@@ -370,7 +369,7 @@ TEST_F(SecureChannelSingleClientMessageProxyImplTest,
   EXPECT_FALSE(second_payload_listener.is_connected());
 }
 
-TEST_F(SecureChannelSingleClientMessageProxyImplTest,
+TEST_F(SecureChannelSingleClientProxyImplTest,
        RemoteDeviceDisconnectsBeforeTransfersComplete) {
   FakeFilePayloadListener fake_file_payload_listener;
   RegisterPayloadFileAndVerifyResult(/*payload_id=*/1234,
@@ -384,8 +383,7 @@ TEST_F(SecureChannelSingleClientMessageProxyImplTest,
   EXPECT_FALSE(fake_file_payload_listener.is_connected());
 }
 
-TEST_F(SecureChannelSingleClientMessageProxyImplTest,
-       RegisterPayloadFileFails) {
+TEST_F(SecureChannelSingleClientProxyImplTest, RegisterPayloadFileFails) {
   FakeFilePayloadListener fake_file_payload_listener;
   RegisterPayloadFileAndVerifyResult(/*payload_id=*/1234,
                                      /*expect_sucess=*/false,

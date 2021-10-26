@@ -2,42 +2,42 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_SECURE_CHANNEL_SINGLE_CLIENT_MESSAGE_PROXY_IMPL_H_
-#define CHROMEOS_SERVICES_SECURE_CHANNEL_SINGLE_CLIENT_MESSAGE_PROXY_IMPL_H_
+#ifndef CHROMEOS_SERVICES_SECURE_CHANNEL_SINGLE_CLIENT_PROXY_IMPL_H_
+#define CHROMEOS_SERVICES_SECURE_CHANNEL_SINGLE_CLIENT_PROXY_IMPL_H_
 
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chromeos/services/secure_channel/channel_impl.h"
 #include "chromeos/services/secure_channel/client_connection_parameters.h"
 #include "chromeos/services/secure_channel/file_transfer_update_callback.h"
 #include "chromeos/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
-#include "chromeos/services/secure_channel/single_client_message_proxy.h"
+#include "chromeos/services/secure_channel/single_client_proxy.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromeos {
 
 namespace secure_channel {
 
-// Concrete SingleClientMessageProxy implementation, which utilizes a
-// ChannelImpl and mojo::Remote<MessageReceiver> to send/receive messages.
-class SingleClientMessageProxyImpl : public SingleClientMessageProxy,
-                                     public ChannelImpl::Delegate {
+// Concrete SingleClientProxy implementation, which forwards client requests to
+// its delegate, and utilizes a mojo::Remote<MessageReceiver> to receive
+// incoming messages.
+class SingleClientProxyImpl : public SingleClientProxy,
+                              public ChannelImpl::Delegate {
  public:
   class Factory {
    public:
-    static std::unique_ptr<SingleClientMessageProxy> Create(
-        SingleClientMessageProxy::Delegate* delegate,
+    static std::unique_ptr<SingleClientProxy> Create(
+        SingleClientProxy::Delegate* delegate,
         std::unique_ptr<ClientConnectionParameters>
             client_connection_parameters);
     static void SetFactoryForTesting(Factory* factory);
 
    protected:
     virtual ~Factory();
-    virtual std::unique_ptr<SingleClientMessageProxy> CreateInstance(
-        SingleClientMessageProxy::Delegate* delegate,
+    virtual std::unique_ptr<SingleClientProxy> CreateInstance(
+        SingleClientProxy::Delegate* delegate,
         std::unique_ptr<ClientConnectionParameters>
             client_connection_parameters) = 0;
 
@@ -45,19 +45,21 @@ class SingleClientMessageProxyImpl : public SingleClientMessageProxy,
     static Factory* test_factory_;
   };
 
-  ~SingleClientMessageProxyImpl() override;
+  SingleClientProxyImpl(const SingleClientProxyImpl&) = delete;
+  SingleClientProxyImpl& operator=(const SingleClientProxyImpl&) = delete;
+  ~SingleClientProxyImpl() override;
 
-  // SingleClientMessageProxy:
+  // SingleClientProxy:
   const base::UnguessableToken& GetProxyId() override;
 
  private:
-  friend class SecureChannelSingleClientMessageProxyImplTest;
+  friend class SecureChannelSingleClientProxyImplTest;
 
-  SingleClientMessageProxyImpl(
-      SingleClientMessageProxy::Delegate* delegate,
+  SingleClientProxyImpl(
+      SingleClientProxy::Delegate* delegate,
       std::unique_ptr<ClientConnectionParameters> client_connection_parameters);
 
-  // SingleClientMessageProxy:
+  // SingleClientProxy:
   void HandleReceivedMessage(const std::string& feature,
                              const std::string& payload) override;
   void HandleRemoteDeviceDisconnection() override;
@@ -80,12 +82,10 @@ class SingleClientMessageProxyImpl : public SingleClientMessageProxy,
   std::unique_ptr<ClientConnectionParameters> client_connection_parameters_;
   std::unique_ptr<ChannelImpl> channel_;
   mojo::Remote<mojom::MessageReceiver> message_receiver_remote_;
-
-  DISALLOW_COPY_AND_ASSIGN(SingleClientMessageProxyImpl);
 };
 
 }  // namespace secure_channel
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_SERVICES_SECURE_CHANNEL_SINGLE_CLIENT_MESSAGE_PROXY_IMPL_H_
+#endif  // CHROMEOS_SERVICES_SECURE_CHANNEL_SINGLE_CLIENT_PROXY_IMPL_H_

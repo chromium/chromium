@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_SECURE_CHANNEL_FAKE_SINGLE_CLIENT_MESSAGE_PROXY_H_
-#define CHROMEOS_SERVICES_SECURE_CHANNEL_FAKE_SINGLE_CLIENT_MESSAGE_PROXY_H_
+#ifndef CHROMEOS_SERVICES_SECURE_CHANNEL_FAKE_SINGLE_CLIENT_PROXY_H_
+#define CHROMEOS_SERVICES_SECURE_CHANNEL_FAKE_SINGLE_CLIENT_PROXY_H_
 
 #include <string>
 #include <utility>
@@ -15,26 +15,25 @@
 #include "chromeos/services/secure_channel/file_transfer_update_callback.h"
 #include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "chromeos/services/secure_channel/register_payload_file_request.h"
-#include "chromeos/services/secure_channel/single_client_message_proxy.h"
+#include "chromeos/services/secure_channel/single_client_proxy.h"
 
 namespace chromeos {
 
 namespace secure_channel {
 
-// Test SingleClientMessageProxy implementation.
-class FakeSingleClientMessageProxy : public SingleClientMessageProxy {
+// Test SingleClientProxy implementation.
+class FakeSingleClientProxy : public SingleClientProxy {
  public:
-  FakeSingleClientMessageProxy(
+  FakeSingleClientProxy(
       Delegate* delegate,
       base::OnceCallback<void(const base::UnguessableToken&)>
           destructor_callback =
               base::OnceCallback<void(const base::UnguessableToken&)>());
 
-  FakeSingleClientMessageProxy(const FakeSingleClientMessageProxy&) = delete;
-  FakeSingleClientMessageProxy& operator=(const FakeSingleClientMessageProxy&) =
-      delete;
+  FakeSingleClientProxy(const FakeSingleClientProxy&) = delete;
+  FakeSingleClientProxy& operator=(const FakeSingleClientProxy&) = delete;
 
-  ~FakeSingleClientMessageProxy() override;
+  ~FakeSingleClientProxy() override;
 
   bool was_remote_device_disconnection_handled() {
     return was_remote_device_disconnection_handled_;
@@ -44,17 +43,17 @@ class FakeSingleClientMessageProxy : public SingleClientMessageProxy {
     return processed_messages_;
   }
 
-  // SingleClientMessageProxy:
+  // SingleClientProxy:
   const base::UnguessableToken& GetProxyId() override;
 
   // Public for testing.
-  using SingleClientMessageProxy::GetConnectionMetadataFromDelegate;
-  using SingleClientMessageProxy::NotifyClientDisconnected;
-  using SingleClientMessageProxy::NotifySendMessageRequested;
-  using SingleClientMessageProxy::RegisterPayloadFileWithDelegate;
+  using SingleClientProxy::GetConnectionMetadataFromDelegate;
+  using SingleClientProxy::NotifyClientDisconnected;
+  using SingleClientProxy::NotifySendMessageRequested;
+  using SingleClientProxy::RegisterPayloadFileWithDelegate;
 
  private:
-  // SingleClientMessageProxy:
+  // SingleClientProxy:
   void HandleReceivedMessage(const std::string& feature,
                              const std::string& payload) override;
   void HandleRemoteDeviceDisconnection() override;
@@ -66,18 +65,16 @@ class FakeSingleClientMessageProxy : public SingleClientMessageProxy {
   bool was_remote_device_disconnection_handled_ = false;
 };
 
-// Test SingleClientMessageProxy::Delegate implementation.
-class FakeSingleClientMessageProxyDelegate
-    : public SingleClientMessageProxy::Delegate {
+// Test SingleClientProxy::Delegate implementation.
+class FakeSingleClientProxyDelegate : public SingleClientProxy::Delegate {
  public:
-  FakeSingleClientMessageProxyDelegate();
+  FakeSingleClientProxyDelegate();
 
-  FakeSingleClientMessageProxyDelegate(
-      const FakeSingleClientMessageProxyDelegate&) = delete;
-  FakeSingleClientMessageProxyDelegate& operator=(
-      const FakeSingleClientMessageProxyDelegate&) = delete;
+  FakeSingleClientProxyDelegate(const FakeSingleClientProxyDelegate&) = delete;
+  FakeSingleClientProxyDelegate& operator=(
+      const FakeSingleClientProxyDelegate&) = delete;
 
-  ~FakeSingleClientMessageProxyDelegate() override;
+  ~FakeSingleClientProxyDelegate() override;
 
   std::vector<std::tuple<std::string, std::string, base::OnceClosure>>&
   send_message_requests() {
@@ -109,7 +106,7 @@ class FakeSingleClientMessageProxyDelegate
   }
 
  private:
-  // SingleClientMessageProxy::Delegate:
+  // SingleClientProxy::Delegate:
   void OnSendMessageRequested(const std::string& message_feaure,
                               const std::string& message_payload,
                               base::OnceClosure on_sent_callback) override;
@@ -136,4 +133,4 @@ class FakeSingleClientMessageProxyDelegate
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_SERVICES_SECURE_CHANNEL_FAKE_SINGLE_CLIENT_MESSAGE_PROXY_H_
+#endif  // CHROMEOS_SERVICES_SECURE_CHANNEL_FAKE_SINGLE_CLIENT_PROXY_H_

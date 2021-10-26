@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/secure_channel/single_client_message_proxy.h"
+#include "chromeos/services/secure_channel/single_client_proxy.h"
 
 #include "base/callback.h"
 #include "chromeos/services/secure_channel/file_transfer_update_callback.h"
@@ -12,12 +12,12 @@ namespace chromeos {
 
 namespace secure_channel {
 
-SingleClientMessageProxy::SingleClientMessageProxy(Delegate* delegate)
+SingleClientProxy::SingleClientProxy(Delegate* delegate)
     : delegate_(delegate) {}
 
-SingleClientMessageProxy::~SingleClientMessageProxy() = default;
+SingleClientProxy::~SingleClientProxy() = default;
 
-void SingleClientMessageProxy::NotifySendMessageRequested(
+void SingleClientProxy::NotifySendMessageRequested(
     const std::string& message_feature,
     const std::string& message_payload,
     base::OnceClosure on_sent_callback) {
@@ -25,11 +25,11 @@ void SingleClientMessageProxy::NotifySendMessageRequested(
                                     std::move(on_sent_callback));
 }
 
-void SingleClientMessageProxy::NotifyClientDisconnected() {
+void SingleClientProxy::NotifyClientDisconnected() {
   delegate_->OnClientDisconnected(GetProxyId());
 }
 
-void SingleClientMessageProxy::RegisterPayloadFileWithDelegate(
+void SingleClientProxy::RegisterPayloadFileWithDelegate(
     int64_t payload_id,
     mojom::PayloadFilesPtr payload_files,
     FileTransferUpdateCallback file_transfer_update_callback,
@@ -39,7 +39,7 @@ void SingleClientMessageProxy::RegisterPayloadFileWithDelegate(
                                  std::move(registration_result_callback));
 }
 
-void SingleClientMessageProxy::GetConnectionMetadataFromDelegate(
+void SingleClientProxy::GetConnectionMetadataFromDelegate(
     base::OnceCallback<void(mojom::ConnectionMetadataPtr)> callback) {
   delegate_->GetConnectionMetadata(std::move(callback));
 }

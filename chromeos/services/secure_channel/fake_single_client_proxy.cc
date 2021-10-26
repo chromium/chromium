@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/secure_channel/fake_single_client_message_proxy.h"
+#include "chromeos/services/secure_channel/fake_single_client_proxy.h"
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
@@ -14,39 +14,36 @@ namespace chromeos {
 
 namespace secure_channel {
 
-FakeSingleClientMessageProxy::FakeSingleClientMessageProxy(
+FakeSingleClientProxy::FakeSingleClientProxy(
     Delegate* delegate,
     base::OnceCallback<void(const base::UnguessableToken&)> destructor_callback)
-    : SingleClientMessageProxy(delegate),
+    : SingleClientProxy(delegate),
       proxy_id_(base::UnguessableToken::Create()),
       destructor_callback_(std::move(destructor_callback)) {}
 
-FakeSingleClientMessageProxy::~FakeSingleClientMessageProxy() {
+FakeSingleClientProxy::~FakeSingleClientProxy() {
   if (destructor_callback_)
     std::move(destructor_callback_).Run(GetProxyId());
 }
 
-const base::UnguessableToken& FakeSingleClientMessageProxy::GetProxyId() {
+const base::UnguessableToken& FakeSingleClientProxy::GetProxyId() {
   return proxy_id_;
 }
 
-void FakeSingleClientMessageProxy::HandleReceivedMessage(
-    const std::string& feature,
-    const std::string& payload) {
+void FakeSingleClientProxy::HandleReceivedMessage(const std::string& feature,
+                                                  const std::string& payload) {
   processed_messages_.push_back(std::make_pair(feature, payload));
 }
 
-void FakeSingleClientMessageProxy::HandleRemoteDeviceDisconnection() {
+void FakeSingleClientProxy::HandleRemoteDeviceDisconnection() {
   was_remote_device_disconnection_handled_ = true;
 }
 
-FakeSingleClientMessageProxyDelegate::FakeSingleClientMessageProxyDelegate() =
-    default;
+FakeSingleClientProxyDelegate::FakeSingleClientProxyDelegate() = default;
 
-FakeSingleClientMessageProxyDelegate::~FakeSingleClientMessageProxyDelegate() =
-    default;
+FakeSingleClientProxyDelegate::~FakeSingleClientProxyDelegate() = default;
 
-void FakeSingleClientMessageProxyDelegate::OnSendMessageRequested(
+void FakeSingleClientProxyDelegate::OnSendMessageRequested(
     const std::string& message_feaure,
     const std::string& message_payload,
     base::OnceClosure on_sent_callback) {
@@ -54,7 +51,7 @@ void FakeSingleClientMessageProxyDelegate::OnSendMessageRequested(
       message_feaure, message_payload, std::move(on_sent_callback)));
 }
 
-void FakeSingleClientMessageProxyDelegate::RegisterPayloadFile(
+void FakeSingleClientProxyDelegate::RegisterPayloadFile(
     int64_t payload_id,
     mojom::PayloadFilesPtr payload_files,
     FileTransferUpdateCallback file_transfer_update_callback,
@@ -65,12 +62,12 @@ void FakeSingleClientMessageProxyDelegate::RegisterPayloadFile(
   std::move(registration_result_callback).Run(register_payload_file_result_);
 }
 
-void FakeSingleClientMessageProxyDelegate::GetConnectionMetadata(
+void FakeSingleClientProxyDelegate::GetConnectionMetadata(
     base::OnceCallback<void(mojom::ConnectionMetadataPtr)> callback) {
   return std::move(callback).Run(std::move(connection_metadata_for_next_call_));
 }
 
-void FakeSingleClientMessageProxyDelegate::OnClientDisconnected(
+void FakeSingleClientProxyDelegate::OnClientDisconnected(
     const base::UnguessableToken& proxy_id) {
   disconnected_proxy_id_ = proxy_id;
 

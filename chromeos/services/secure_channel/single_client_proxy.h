@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_SECURE_CHANNEL_SINGLE_CLIENT_MESSAGE_PROXY_H_
-#define CHROMEOS_SERVICES_SECURE_CHANNEL_SINGLE_CLIENT_MESSAGE_PROXY_H_
+#ifndef CHROMEOS_SERVICES_SECURE_CHANNEL_SINGLE_CLIENT_PROXY_H_
+#define CHROMEOS_SERVICES_SECURE_CHANNEL_SINGLE_CLIENT_PROXY_H_
 
 #include <string>
 
@@ -18,11 +18,15 @@ namespace chromeos {
 
 namespace secure_channel {
 
-// Proxies messages between clients and remote devices. When messages are sent
-// from the client, this proxy notifies its delegate, and when messages are
-// received from the remote device, HandleReceivedMessage() should be called so
-// that the message can be passed to the client.
-class SingleClientMessageProxy {
+// Proxies the communication channel between clients and remote devices.
+//
+// When the client makes a request to send message, register incoming file
+// payload, or get the connection metadata, the request will be forwarded to its
+// delegate.
+//
+// When messages are received from the remote device, HandleReceivedMessage()
+// should be called so that the message can be passed to the client.
+class SingleClientProxy {
  public:
   class Delegate {
    public:
@@ -41,10 +45,10 @@ class SingleClientMessageProxy {
         const base::UnguessableToken& proxy_id) = 0;
   };
 
-  SingleClientMessageProxy(const SingleClientMessageProxy&) = delete;
-  SingleClientMessageProxy& operator=(const SingleClientMessageProxy&) = delete;
+  SingleClientProxy(const SingleClientProxy&) = delete;
+  SingleClientProxy& operator=(const SingleClientProxy&) = delete;
 
-  virtual ~SingleClientMessageProxy();
+  virtual ~SingleClientProxy();
 
   // Should be called when any message is received over the connection.
   virtual void HandleReceivedMessage(const std::string& feature,
@@ -58,7 +62,7 @@ class SingleClientMessageProxy {
   virtual const base::UnguessableToken& GetProxyId() = 0;
 
  protected:
-  SingleClientMessageProxy(Delegate* delegate);
+  SingleClientProxy(Delegate* delegate);
 
   void NotifySendMessageRequested(const std::string& message_feature,
                                   const std::string& message_payload,
@@ -80,4 +84,4 @@ class SingleClientMessageProxy {
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_SERVICES_SECURE_CHANNEL_SINGLE_CLIENT_MESSAGE_PROXY_H_
+#endif  // CHROMEOS_SERVICES_SECURE_CHANNEL_SINGLE_CLIENT_PROXY_H_

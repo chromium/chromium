@@ -18,7 +18,7 @@
 #include "chromeos/services/secure_channel/multiplexed_channel.h"
 #include "chromeos/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
-#include "chromeos/services/secure_channel/single_client_message_proxy.h"
+#include "chromeos/services/secure_channel/single_client_proxy.h"
 
 namespace chromeos {
 
@@ -26,14 +26,14 @@ namespace secure_channel {
 
 // Concrete MultiplexedChannel, which uses an AuthenticatedChannel for its
 // underlying communication channel. Each client added to the channel is tracked
-// via a SingleClientMessageProxy.
+// via a SingleClientProxy.
 //
 // Since a MultiplexedChannel should only be active for one or more clients, all
 // MultiplexedChannelImpl objects must be created via the provided Factory
 // class, which verifies that at least one initial client is provided.
 class MultiplexedChannelImpl : public MultiplexedChannel,
                                public AuthenticatedChannel::Observer,
-                               public SingleClientMessageProxy::Delegate {
+                               public SingleClientProxy::Delegate {
  public:
   class Factory {
    public:
@@ -77,7 +77,7 @@ class MultiplexedChannelImpl : public MultiplexedChannel,
   void OnMessageReceived(const std::string& feature,
                          const std::string& payload) override;
 
-  // SingleClientMessageProxy::Delegate:
+  // SingleClientProxy::Delegate:
   void OnSendMessageRequested(const std::string& message_feaure,
                               const std::string& message_payload,
                               base::OnceClosure on_sent_callback) override;
@@ -96,7 +96,7 @@ class MultiplexedChannelImpl : public MultiplexedChannel,
   bool is_disconnected_ = false;
 
   std::unordered_map<base::UnguessableToken,
-                     std::unique_ptr<SingleClientMessageProxy>,
+                     std::unique_ptr<SingleClientProxy>,
                      base::UnguessableTokenHash>
       id_to_proxy_map_;
 

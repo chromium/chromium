@@ -19,11 +19,11 @@
 #include "chromeos/services/secure_channel/fake_client_connection_parameters.h"
 #include "chromeos/services/secure_channel/fake_connection_delegate.h"
 #include "chromeos/services/secure_channel/fake_multiplexed_channel.h"
-#include "chromeos/services/secure_channel/fake_single_client_message_proxy.h"
+#include "chromeos/services/secure_channel/fake_single_client_proxy.h"
 #include "chromeos/services/secure_channel/file_transfer_update_callback.h"
 #include "chromeos/services/secure_channel/public/cpp/shared/connection_medium.h"
 #include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
-#include "chromeos/services/secure_channel/single_client_message_proxy_impl.h"
+#include "chromeos/services/secure_channel/single_client_proxy_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -35,34 +35,33 @@ namespace {
 const char kTestDeviceId[] = "testDeviceId";
 const char kTestFeature[] = "testFeature";
 
-class FakeSingleClientMessageProxyImplFactory
-    : public SingleClientMessageProxyImpl::Factory {
+class FakeSingleClientProxyImplFactory : public SingleClientProxyImpl::Factory {
  public:
-  FakeSingleClientMessageProxyImplFactory() = default;
+  FakeSingleClientProxyImplFactory() = default;
 
-  FakeSingleClientMessageProxyImplFactory(
-      const FakeSingleClientMessageProxyImplFactory&) = delete;
-  FakeSingleClientMessageProxyImplFactory& operator=(
-      const FakeSingleClientMessageProxyImplFactory&) = delete;
+  FakeSingleClientProxyImplFactory(const FakeSingleClientProxyImplFactory&) =
+      delete;
+  FakeSingleClientProxyImplFactory& operator=(
+      const FakeSingleClientProxyImplFactory&) = delete;
 
-  ~FakeSingleClientMessageProxyImplFactory() override = default;
+  ~FakeSingleClientProxyImplFactory() override = default;
 
-  const SingleClientMessageProxy::Delegate* expected_delegate() {
+  const SingleClientProxy::Delegate* expected_delegate() {
     return expected_delegate_;
   }
 
-  // Contains all created FakeSingleClientMessageProxy pointers which have not
+  // Contains all created FakeSingleClientProxy pointers which have not
   // yet been deleted.
   std::unordered_map<base::UnguessableToken,
-                     FakeSingleClientMessageProxy*,
+                     FakeSingleClientProxy*,
                      base::UnguessableTokenHash>&
   id_to_active_proxy_map() {
     return id_to_active_proxy_map_;
   }
 
  private:
-  std::unique_ptr<SingleClientMessageProxy> CreateInstance(
-      SingleClientMessageProxy::Delegate* delegate,
+  std::unique_ptr<SingleClientProxy> CreateInstance(
+      SingleClientProxy::Delegate* delegate,
       std::unique_ptr<ClientConnectionParameters> client_connection_parameters)
       override {
     EXPECT_EQ(kTestFeature, client_connection_parameters->feature());
@@ -73,14 +72,14 @@ class FakeSingleClientMessageProxyImplFactory
     // Each call should have the same delegate.
     EXPECT_EQ(expected_delegate_, delegate);
 
-    std::unique_ptr<SingleClientMessageProxy> proxy = std::make_unique<
-        FakeSingleClientMessageProxy>(
-        delegate,
-        base::BindOnce(
-            &FakeSingleClientMessageProxyImplFactory::OnCreatedInstanceDeleted,
-            base::Unretained(this)));
-    FakeSingleClientMessageProxy* proxy_raw =
-        static_cast<FakeSingleClientMessageProxy*>(proxy.get());
+    std::unique_ptr<SingleClientProxy> proxy =
+        std::make_unique<FakeSingleClientProxy>(
+            delegate,
+            base::BindOnce(
+                &FakeSingleClientProxyImplFactory::OnCreatedInstanceDeleted,
+                base::Unretained(this)));
+    FakeSingleClientProxy* proxy_raw =
+        static_cast<FakeSingleClientProxy*>(proxy.get());
     id_to_active_proxy_map_[proxy->GetProxyId()] = proxy_raw;
 
     return proxy;
@@ -92,9 +91,9 @@ class FakeSingleClientMessageProxyImplFactory
     EXPECT_EQ(1u, num_deleted);
   }
 
-  SingleClientMessageProxy::Delegate* expected_delegate_ = nullptr;
+  SingleClientProxy::Delegate* expected_delegate_ = nullptr;
   std::unordered_map<base::UnguessableToken,
-                     FakeSingleClientMessageProxy*,
+                     FakeSingleClientProxy*,
                      base::UnguessableTokenHash>
       id_to_active_proxy_map_;
 };
@@ -107,9 +106,8 @@ class SecureChannelMultiplexedChannelImplTest : public testing::Test {
   ~SecureChannelMultiplexedChannelImplTest() override = default;
 
   void SetUp() override {
-    fake_proxy_factory_ =
-        std::make_unique<FakeSingleClientMessageProxyImplFactory>();
-    SingleClientMessageProxyImpl::Factory::SetFactoryForTesting(
+    fake_proxy_factory_ = std::make_unique<FakeSingleClientProxyImplFactory>();
+    SingleClientProxyImpl::Factory::SetFactoryForTesting(
         fake_proxy_factory_.get());
 
     fake_delegate_ = std::make_unique<FakeMultiplexedChannelDelegate>();
@@ -120,7 +118,7 @@ class SecureChannelMultiplexedChannelImplTest : public testing::Test {
   }
 
   void TearDown() override {
-    SingleClientMessageProxyImpl::Factory::SetFactoryForTesting(nullptr);
+    SingleClientProxyImpl::Factory::SetFactoryForTesting(nullptr);
   }
 
   void CreateChannel() {
@@ -141,7 +139,7 @@ class SecureChannelMultiplexedChannelImplTest : public testing::Test {
   }
 
   // If |complete_sending| is true, the "on sent" callback is invoked.
-  int SendMessageAndVerifyState(FakeSingleClientMessageProxy* sending_proxy,
+  int SendMessageAndVerifyState(FakeSingleClientProxy* sending_proxy,
                                 const std::string& feature,
                                 const std::string& payload,
                                 bool complete_sending = true) {
@@ -192,9 +190,8 @@ class SecureChannelMultiplexedChannelImplTest : public testing::Test {
     return base::Contains(sent_message_counters_, message_counter);
   }
 
-  void DisconnectClientAndVerifyState(
-      FakeSingleClientMessageProxy* sending_proxy,
-      bool expected_to_be_last_client) {
+  void DisconnectClientAndVerifyState(FakeSingleClientProxy* sending_proxy,
+                                      bool expected_to_be_last_client) {
     // If this is the last client left, disconnecting it should result in the
     // underlying channel becoming disconnected.
     bool is_last_client = id_to_active_proxy_map().size() == 1u;
@@ -262,8 +259,7 @@ class SecureChannelMultiplexedChannelImplTest : public testing::Test {
     EXPECT_TRUE(success);
   }
 
-  void CallGetConnectionMetadataFromDelegate(
-      FakeSingleClientMessageProxy* proxy) {
+  void CallGetConnectionMetadataFromDelegate(FakeSingleClientProxy* proxy) {
     proxy->GetConnectionMetadataFromDelegate(base::BindOnce(
         &SecureChannelMultiplexedChannelImplTest::OnGetConnectionMetadata,
         base::Unretained(this)));
@@ -280,7 +276,7 @@ class SecureChannelMultiplexedChannelImplTest : public testing::Test {
   }
 
   std::unordered_map<base::UnguessableToken,
-                     FakeSingleClientMessageProxy*,
+                     FakeSingleClientProxy*,
                      base::UnguessableTokenHash>&
   id_to_active_proxy_map() {
     return fake_proxy_factory_->id_to_active_proxy_map();
@@ -307,7 +303,7 @@ class SecureChannelMultiplexedChannelImplTest : public testing::Test {
   int next_send_message_counter_ = 0;
   std::unordered_set<int> sent_message_counters_;
 
-  std::unique_ptr<FakeSingleClientMessageProxyImplFactory> fake_proxy_factory_;
+  std::unique_ptr<FakeSingleClientProxyImplFactory> fake_proxy_factory_;
 
   std::vector<std::unique_ptr<ClientConnectionParameters>> initial_client_list_;
 

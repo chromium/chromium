@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/secure_channel/single_client_message_proxy_impl.h"
+#include "chromeos/services/secure_channel/single_client_proxy_impl.h"
 
 #include "base/callback.h"
 #include "base/memory/ptr_util.h"
@@ -14,35 +14,33 @@ namespace chromeos {
 namespace secure_channel {
 
 // static
-SingleClientMessageProxyImpl::Factory*
-    SingleClientMessageProxyImpl::Factory::test_factory_ = nullptr;
+SingleClientProxyImpl::Factory* SingleClientProxyImpl::Factory::test_factory_ =
+    nullptr;
 
 // static
-std::unique_ptr<SingleClientMessageProxy>
-SingleClientMessageProxyImpl::Factory::Create(
-    SingleClientMessageProxy::Delegate* delegate,
+std::unique_ptr<SingleClientProxy> SingleClientProxyImpl::Factory::Create(
+    SingleClientProxy::Delegate* delegate,
     std::unique_ptr<ClientConnectionParameters> client_connection_parameters) {
   if (test_factory_) {
     return test_factory_->CreateInstance(
         delegate, std::move(client_connection_parameters));
   }
 
-  return base::WrapUnique(new SingleClientMessageProxyImpl(
+  return base::WrapUnique(new SingleClientProxyImpl(
       delegate, std::move(client_connection_parameters)));
 }
 
 // static
-void SingleClientMessageProxyImpl::Factory::SetFactoryForTesting(
-    Factory* factory) {
+void SingleClientProxyImpl::Factory::SetFactoryForTesting(Factory* factory) {
   test_factory_ = factory;
 }
 
-SingleClientMessageProxyImpl::Factory::~Factory() = default;
+SingleClientProxyImpl::Factory::~Factory() = default;
 
-SingleClientMessageProxyImpl::SingleClientMessageProxyImpl(
-    SingleClientMessageProxy::Delegate* delegate,
+SingleClientProxyImpl::SingleClientProxyImpl(
+    SingleClientProxy::Delegate* delegate,
     std::unique_ptr<ClientConnectionParameters> client_connection_parameters)
-    : SingleClientMessageProxy(delegate),
+    : SingleClientProxy(delegate),
       client_connection_parameters_(std::move(client_connection_parameters)),
       channel_(std::make_unique<ChannelImpl>(this /* delegate */)) {
   DCHECK(client_connection_parameters_);
@@ -51,15 +49,14 @@ SingleClientMessageProxyImpl::SingleClientMessageProxyImpl(
       message_receiver_remote_.BindNewPipeAndPassReceiver());
 }
 
-SingleClientMessageProxyImpl::~SingleClientMessageProxyImpl() = default;
+SingleClientProxyImpl::~SingleClientProxyImpl() = default;
 
-const base::UnguessableToken& SingleClientMessageProxyImpl::GetProxyId() {
+const base::UnguessableToken& SingleClientProxyImpl::GetProxyId() {
   return client_connection_parameters_->id();
 }
 
-void SingleClientMessageProxyImpl::HandleReceivedMessage(
-    const std::string& feature,
-    const std::string& payload) {
+void SingleClientProxyImpl::HandleReceivedMessage(const std::string& feature,
+                                                  const std::string& payload) {
   // Ignore messages intended for other clients.
   if (feature != client_connection_parameters_->feature())
     return;
@@ -67,18 +64,18 @@ void SingleClientMessageProxyImpl::HandleReceivedMessage(
   message_receiver_remote_->OnMessageReceived(payload);
 }
 
-void SingleClientMessageProxyImpl::HandleRemoteDeviceDisconnection() {
+void SingleClientProxyImpl::HandleRemoteDeviceDisconnection() {
   channel_->HandleRemoteDeviceDisconnection();
 }
 
-void SingleClientMessageProxyImpl::OnSendMessageRequested(
+void SingleClientProxyImpl::OnSendMessageRequested(
     const std::string& message,
     base::OnceClosure on_sent_callback) {
   NotifySendMessageRequested(client_connection_parameters_->feature(), message,
                              std::move(on_sent_callback));
 }
 
-void SingleClientMessageProxyImpl::RegisterPayloadFile(
+void SingleClientProxyImpl::RegisterPayloadFile(
     int64_t payload_id,
     mojom::PayloadFilesPtr payload_files,
     FileTransferUpdateCallback file_transfer_update_callback,
@@ -88,18 +85,18 @@ void SingleClientMessageProxyImpl::RegisterPayloadFile(
                                   std::move(registration_result_callback));
 }
 
-void SingleClientMessageProxyImpl::GetConnectionMetadata(
+void SingleClientProxyImpl::GetConnectionMetadata(
     base::OnceCallback<void(mojom::ConnectionMetadataPtr)> callback) {
   GetConnectionMetadataFromDelegate(std::move(callback));
 }
 
-void SingleClientMessageProxyImpl::OnClientDisconnected() {
+void SingleClientProxyImpl::OnClientDisconnected() {
   NotifyClientDisconnected();
 }
 
-void SingleClientMessageProxyImpl::FlushForTesting() {
+void SingleClientProxyImpl::FlushForTesting() {
   DCHECK(message_receiver_remote_);
-  message_receiver_remote_.FlushForTesting();
+  message_receiver_remote_.FlushForTesting();  // IN-TEST
 }
 
 }  // namespace secure_channel
