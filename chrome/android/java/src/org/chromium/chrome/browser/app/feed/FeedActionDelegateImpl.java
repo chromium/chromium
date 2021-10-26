@@ -97,6 +97,12 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
         });
     }
 
+    @Override
+    public void onContentsChanged() {}
+
+    @Override
+    public void onStreamCreated() {}
+
     /**
      * A {@link TabObserver} that observes navigation related events that originate from Feed
      * interactions. Calls reportPageLoaded when navigation completes.

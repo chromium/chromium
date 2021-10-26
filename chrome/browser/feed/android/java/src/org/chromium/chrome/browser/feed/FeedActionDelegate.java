@@ -43,4 +43,18 @@ public interface FeedActionDelegate {
      * Add an item to the reading list.
      */
     void addToReadingList(String title, String url);
+
+    //
+    // Optional methods for handing events.
+    //
+
+    /**
+     * Informs that content on the Feed has changed.
+     */
+    void onContentsChanged();
+
+    /**
+     * Informs that the stream was created.
+     */
+    void onStreamCreated();
 }

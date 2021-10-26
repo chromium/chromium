@@ -46,6 +46,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/features/start_surface/BottomBarView.java",
     "java/src/org/chromium/chrome/features/start_surface/BottomBarViewBinder.java",
     "java/src/org/chromium/chrome/features/start_surface/ExploreSurfaceCoordinator.java",
+    "java/src/org/chromium/chrome/features/start_surface/ExploreSurfaceCoordinatorFactory.java",
     "java/src/org/chromium/chrome/features/start_surface/ExploreSurfaceFeedLifecycleManager.java",
     "java/src/org/chromium/chrome/features/start_surface/ExploreSurfaceNavigationDelegate.java",
     "java/src/org/chromium/chrome/features/start_surface/ExploreSurfaceViewBinder.java",

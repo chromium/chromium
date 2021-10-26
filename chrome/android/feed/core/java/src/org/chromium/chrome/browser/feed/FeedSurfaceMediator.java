@@ -11,7 +11,6 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.view.ViewGroup.MarginLayoutParams;
@@ -50,7 +49,6 @@ import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.ui.signin.SigninPromoController;
 import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger;
-import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuItemProperties;
 import org.chromium.components.feed.proto.wire.ReliabilityLoggingEnums.DiscoverLaunchResult;
@@ -82,8 +80,6 @@ public class FeedSurfaceMediator
                    ListMenu.Delegate, EnhancedProtectionPromoStateListener,
                    IdentityManager.Observer {
     private static final String TAG = "FeedSurfaceMediator";
-    @VisibleForTesting
-    public static final String FEED_CONTENT_FIRST_LOADED_TIME_MS_UMA = "FeedContentFirstLoadedTime";
     private static final int INTEREST_FEED_HEADER_POSITION = 0;
 
     private class FeedSurfaceHeaderSelectedCallback implements OnSectionHeaderSelectedListener {
@@ -221,14 +217,6 @@ public class FeedSurfaceMediator
 
     /** Whether the Feed content is loading. */
     private boolean mIsLoadingFeed;
-    /** Cached parameters for recording the histogram of "FeedContentFirstLoadedTime". */
-    private boolean mIsInstantStart;
-    private long mActivityCreationTimeMs;
-    private long mContentFirstAvailableTimeMs;
-    // Whether missing a histogram record when onOverviewShownAtLaunch() is called. It is possible
-    // that Feed content is still loading at that time and the {@link mContentFirstAvailableTimeMs}
-    // hasn't been set yet.
-    private boolean mHasPendingUmaRecording;
     private FeedScrollState mRestoreScrollState;
 
     private final HashMap<Integer, Stream> mTabToStreamMap = new HashMap<>();
@@ -545,15 +533,14 @@ public class FeedSurfaceMediator
     void onContentsChanged() {
         if (mSnapScrollHelper != null) mSnapScrollHelper.resetSearchBoxOnScroll(true);
 
-        if (mContentFirstAvailableTimeMs == 0) {
-            mContentFirstAvailableTimeMs = SystemClock.elapsedRealtime();
-            if (mHasPendingUmaRecording) {
-                maybeRecordContentLoadingTime();
-                mHasPendingUmaRecording = false;
-            }
-        }
+        mActionDelegate.onContentsChanged();
+
         mIsLoadingFeed = false;
         mStreamContentChanged = true;
+    }
+
+    public boolean isLoadingFeed() {
+        return mIsLoadingFeed;
     }
 
     /** Unbinds the stream and clear all the stream's contents. */
@@ -1105,24 +1092,6 @@ public class FeedSurfaceMediator
         } else {
             callback.onResult(false);
         }
-    }
-
-    void onOverviewShownAtLaunch(long activityCreationTimeMs, boolean isInstantStart) {
-        assert mActivityCreationTimeMs == 0;
-        mActivityCreationTimeMs = activityCreationTimeMs;
-        mIsInstantStart = isInstantStart;
-
-        if (!maybeRecordContentLoadingTime() && mIsLoadingFeed) {
-            mHasPendingUmaRecording = true;
-        }
-    }
-
-    private boolean maybeRecordContentLoadingTime() {
-        if (mActivityCreationTimeMs == 0 || mContentFirstAvailableTimeMs == 0) return false;
-
-        StartSurfaceConfiguration.recordHistogram(FEED_CONTENT_FIRST_LOADED_TIME_MS_UMA,
-                mContentFirstAvailableTimeMs - mActivityCreationTimeMs, mIsInstantStart);
-        return true;
     }
 
     private FeedScrollState getScrollStateForAutoScrollToTop() {

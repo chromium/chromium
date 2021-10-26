@@ -143,6 +143,8 @@ public class FeedSurfaceCoordinatorTest {
     private SectionHeaderView mSectionHeaderView;
     @Mock
     private BookmarkBridge mBookmarkBridge;
+    @Mock
+    private FeedActionDelegate mFeedActionDelegate;
 
     // Mocked JNI.
     @Mock
@@ -356,7 +358,7 @@ public class FeedSurfaceCoordinatorTest {
                 ()
                         -> { return null; },
                 new FeedLaunchReliabilityLoggingState(SURFACE_TYPE, SURFACE_CREATION_TIME_NS), null,
-                false, /*viewportView=*/null, /*actionDelegate=*/null,
+                false, /*viewportView=*/null, mFeedActionDelegate,
                 /*helpAndFeedbackLauncher=*/null, mFeedHooks);
     }
 }

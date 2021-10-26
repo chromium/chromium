@@ -13,7 +13,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.SystemClock;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -62,7 +61,6 @@ import org.chromium.chrome.browser.xsurface.HybridListRenderer;
 import org.chromium.chrome.browser.xsurface.ImageCacheHelper;
 import org.chromium.chrome.browser.xsurface.ProcessScope;
 import org.chromium.chrome.browser.xsurface.SurfaceScope;
-import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
@@ -89,9 +87,6 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
                                                SwipeRefreshLayout.OnRefreshListener,
                                                BackToTopBubbleScrollListener.ResultHandler,
                                                SurfaceCoordinator, FeedAutoplaySettingsDelegate {
-    @VisibleForTesting
-    public static final String FEED_STREAM_CREATED_TIME_MS_UMA = "FeedStreamCreatedTime";
-
     private static final String TAG = "FeedSurfaceCoordinator";
 
     protected final Activity mActivity;
@@ -115,7 +110,6 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
 
     private UiConfig mUiConfig;
     private FrameLayout mRootView;
-    private long mStreamCreatedTimeMs;
     private boolean mIsActive;
     private int mHeaderCount;
 
@@ -638,8 +632,8 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
         }
         mRecyclerView = setUpView();
 
-        mStreamCreatedTimeMs = SystemClock.elapsedRealtime();
         mStream = createFeedStream(true);
+        mActionDelegate.onStreamCreated();
         mFeedSurfaceLifecycleManager = mDelegate.createStreamLifecycleManager(mActivity, this);
         mRecyclerView.setBackgroundColor(
                 MaterialColors.getColor(mActivity, R.attr.default_bg_color_dynamic, TAG));
@@ -818,12 +812,6 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
             headers.add(getSigninPromoView());
         }
         setHeaders(headers);
-    }
-
-    public void onOverviewShownAtLaunch(long activityCreationTimeMs) {
-        mMediator.onOverviewShownAtLaunch(activityCreationTimeMs, mIsPlaceholderShownInitially);
-        StartSurfaceConfiguration.recordHistogram(FEED_STREAM_CREATED_TIME_MS_UMA,
-                mStreamCreatedTimeMs - activityCreationTimeMs, mIsPlaceholderShownInitially);
     }
 
     EnhancedProtectionPromoController getEnhancedProtectionPromoController() {
@@ -1034,6 +1022,10 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
     @Override
     public void removeObserver(SurfaceCoordinator.Observer observer) {
         mObservers.removeObserver(observer);
+    }
+
+    public boolean isLoadingFeed() {
+        return mMediator.isLoadingFeed();
     }
 
     private boolean isReliabilityLoggingEnabled() {

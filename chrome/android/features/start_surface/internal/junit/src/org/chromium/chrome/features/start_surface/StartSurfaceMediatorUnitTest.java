@@ -35,7 +35,7 @@ import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.MV_TILES_
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.TAB_SWITCHER_TITLE_TOP_MARGIN;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.TASKS_SURFACE_BODY_TOP_MARGIN;
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.BOTTOM_BAR_HEIGHT;
-import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.FEED_SURFACE_COORDINATOR;
+import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.EXPLORE_SURFACE_COORDINATOR;
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.IS_EXPLORE_SURFACE_VISIBLE;
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.IS_SECONDARY_SURFACE_VISIBLE;
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.IS_SHOWING_OVERVIEW;
@@ -63,7 +63,6 @@ import org.chromium.base.jank_tracker.DummyJankTracker;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
@@ -119,9 +118,9 @@ public class StartSurfaceMediatorUnitTest {
     @Mock
     private OmniboxStub mOmniboxStub;
     @Mock
-    private ExploreSurfaceCoordinator.FeedSurfaceController mFeedSurfaceController;
+    private ExploreSurfaceCoordinator mExploreSurfaceCoordinator;
     @Mock
-    private FeedSurfaceCoordinator mFeedSurfaceCoordinator;
+    private ExploreSurfaceCoordinatorFactory mExploreSurfaceCoordinatorFactory;
     @Mock
     private NightModeStateProvider mNightModeStateProvider;
     @Mock
@@ -639,7 +638,7 @@ public class StartSurfaceMediatorUnitTest {
         assertThat(mPropertyModel.get(MV_TILES_VISIBLE), equalTo(true));
         assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(true));
         assertThat(mPropertyModel.get(IS_SECONDARY_SURFACE_VISIBLE), equalTo(false));
-        assertThat(mPropertyModel.get(FEED_SURFACE_COORDINATOR), equalTo(null));
+        assertThat(mPropertyModel.get(EXPLORE_SURFACE_COORDINATOR), equalTo(null));
 
         mediator.setSecondaryTasksSurfacePropertyModel(mSecondaryTasksSurfacePropertyModel);
         mediator.onClick(mock(View.class));
@@ -653,7 +652,7 @@ public class StartSurfaceMediatorUnitTest {
         assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_FAKE_SEARCH_BOX_VISIBLE),
                 equalTo(false));
         assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_INCOGNITO), equalTo(false));
-        assertThat(mPropertyModel.get(FEED_SURFACE_COORDINATOR), equalTo(null));
+        assertThat(mPropertyModel.get(EXPLORE_SURFACE_COORDINATOR), equalTo(null));
 
         mediator.onBackPressed();
         assertThat(mediator.getStartSurfaceState(), equalTo(StartSurfaceState.SHOWN_HOMEPAGE));
@@ -663,7 +662,7 @@ public class StartSurfaceMediatorUnitTest {
         assertThat(mPropertyModel.get(MV_TILES_VISIBLE), equalTo(true));
         assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(true));
         assertThat(mPropertyModel.get(IS_SECONDARY_SURFACE_VISIBLE), equalTo(false));
-        assertThat(mPropertyModel.get(FEED_SURFACE_COORDINATOR), equalTo(null));
+        assertThat(mPropertyModel.get(EXPLORE_SURFACE_COORDINATOR), equalTo(null));
 
         mediator.startedHiding();
         assertThat(mediator.getStartSurfaceState(), equalTo(StartSurfaceState.NOT_SHOWN));
@@ -1019,30 +1018,31 @@ public class StartSurfaceMediatorUnitTest {
 
         mediator.setOverviewState(StartSurfaceState.SHOWING_HOMEPAGE);
         mPropertyModel.set(IS_EXPLORE_SURFACE_VISIBLE, true);
-        when(mFeedSurfaceController.createFeedSurfaceCoordinator(
-                     anyBoolean(), anyBoolean(), anyInt()))
-                .thenReturn(mFeedSurfaceCoordinator);
+        when(mExploreSurfaceCoordinatorFactory.create(anyBoolean(), anyBoolean(), anyInt()))
+                .thenReturn(mExploreSurfaceCoordinator);
         mediator.showOverview(false);
         mainTabGridController.verify(mMainTabGridController).showOverview(eq(false));
         assertThat(mediator.getStartSurfaceState(), equalTo(StartSurfaceState.SHOWN_HOMEPAGE));
-        assertThat(mPropertyModel.get(FEED_SURFACE_COORDINATOR), equalTo(mFeedSurfaceCoordinator));
+        assertThat(mPropertyModel.get(EXPLORE_SURFACE_COORDINATOR),
+                equalTo(mExploreSurfaceCoordinator));
 
         doReturn(TabLaunchType.FROM_START_SURFACE).when(mTab).getLaunchType();
         mediator.hideOverview(true);
         mOverviewModeObserverCaptor.getValue().startedHiding();
         mOverviewModeObserverCaptor.getValue().finishedHiding();
-        assertNull(mPropertyModel.get(FEED_SURFACE_COORDINATOR));
+        assertNull(mPropertyModel.get(EXPLORE_SURFACE_COORDINATOR));
 
         mediator.setOverviewState(StartSurfaceState.SHOWING_PREVIOUS);
         mediator.showOverview(false);
         assertThat(mediator.getStartSurfaceState(), equalTo(StartSurfaceState.SHOWN_HOMEPAGE));
-        assertThat(mPropertyModel.get(FEED_SURFACE_COORDINATOR), equalTo(mFeedSurfaceCoordinator));
+        assertThat(mPropertyModel.get(EXPLORE_SURFACE_COORDINATOR),
+                equalTo(mExploreSurfaceCoordinator));
 
         doReturn(TabLaunchType.FROM_LINK).when(mTab).getLaunchType();
         mediator.hideOverview(true);
         mOverviewModeObserverCaptor.getValue().startedHiding();
         mOverviewModeObserverCaptor.getValue().finishedHiding();
-        assertNull(mPropertyModel.get(FEED_SURFACE_COORDINATOR));
+        assertNull(mPropertyModel.get(EXPLORE_SURFACE_COORDINATOR));
     }
 
     @Test
@@ -1100,7 +1100,9 @@ public class StartSurfaceMediatorUnitTest {
         verify(mMainTabGridController).showOverview(eq(false));
 
         when(mMainTabGridController.overviewVisible()).thenReturn(true);
-        mediator.initWithNative(mOmniboxStub, mFeedSurfaceController, mPrefService);
+        mediator.initWithNative(mOmniboxStub, mExploreSurfaceCoordinatorFactory, mPrefService);
+        when(mMainTabGridController.overviewVisible()).thenReturn(true);
+        mediator.initWithNative(mOmniboxStub, mExploreSurfaceCoordinatorFactory, mPrefService);
         assertThat(mPropertyModel.get(IS_EXPLORE_SURFACE_VISIBLE), equalTo(true));
     }
 
@@ -1139,17 +1141,13 @@ public class StartSurfaceMediatorUnitTest {
 
         mediator.setOverviewState(StartSurfaceState.SHOWING_HOMEPAGE);
         mPropertyModel.set(IS_EXPLORE_SURFACE_VISIBLE, true);
-        when(mFeedSurfaceController.createFeedSurfaceCoordinator(
-                     anyBoolean(), anyBoolean(), anyInt()))
-                .thenReturn(mFeedSurfaceCoordinator);
+        when(mExploreSurfaceCoordinatorFactory.create(anyBoolean(), anyBoolean(), anyInt()))
+                .thenReturn(mExploreSurfaceCoordinator);
         mediator.showOverview(false);
         assertThat(mediator.getStartSurfaceState(), equalTo(StartSurfaceState.SHOWN_HOMEPAGE));
 
-        FeedSurfaceCoordinator feedSurfaceCoordinator =
-                mPropertyModel.get(FEED_SURFACE_COORDINATOR);
-        assertThat(feedSurfaceCoordinator, equalTo(mFeedSurfaceCoordinator));
-
-        assertFalse(feedSurfaceCoordinator.isPlaceholderShown());
+        assertThat(mPropertyModel.get(EXPLORE_SURFACE_COORDINATOR),
+                equalTo(mExploreSurfaceCoordinator));
     }
 
     @Test
@@ -1184,8 +1182,10 @@ public class StartSurfaceMediatorUnitTest {
             boolean isStartSurfaceEnabled, boolean excludeMVTiles, boolean hadWarmStart) {
         StartSurfaceMediator mediator = createStartSurfaceMediatorWithoutInit(
                 isStartSurfaceEnabled, excludeMVTiles, hadWarmStart);
-        mediator.initWithNative(
-                mOmniboxStub, isStartSurfaceEnabled ? mFeedSurfaceController : null, mPrefService);
+        mediator.initWithNative(mOmniboxStub,
+                isStartSurfaceEnabled ? mExploreSurfaceCoordinatorFactory : null, mPrefService);
+        mediator.initWithNative(mOmniboxStub,
+                isStartSurfaceEnabled ? mExploreSurfaceCoordinatorFactory : null, mPrefService);
         return mediator;
     }
 

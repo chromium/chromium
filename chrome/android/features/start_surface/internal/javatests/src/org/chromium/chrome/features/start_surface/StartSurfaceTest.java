@@ -85,8 +85,6 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
 import org.chromium.chrome.browser.feed.FeedPlaceholderLayout;
-import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
-import org.chromium.chrome.browser.feed.FeedSurfaceMediator;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -771,13 +769,13 @@ public class StartSurfaceTest {
         Assert.assertEquals(expectedRecordCount,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         StartSurfaceConfiguration.getHistogramName(
-                                FeedSurfaceMediator.FEED_CONTENT_FIRST_LOADED_TIME_MS_UMA,
+                                ExploreSurfaceCoordinator.FEED_CONTENT_FIRST_LOADED_TIME_MS_UMA,
                                 isInstantStart)));
 
         Assert.assertEquals(expectedRecordCount,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         StartSurfaceConfiguration.getHistogramName(
-                                FeedSurfaceCoordinator.FEED_STREAM_CREATED_TIME_MS_UMA,
+                                ExploreSurfaceCoordinator.FEED_STREAM_CREATED_TIME_MS_UMA,
                                 isInstantStart)));
 
         Assert.assertEquals(isInstantReturn() ? 1 : 0,

@@ -119,7 +119,7 @@ public class StartSurfaceCoordinator implements StartSurface {
 
     // Non-null in SurfaceMode.SINGLE_PANE modes.
     @Nullable
-    private ExploreSurfaceCoordinator mExploreSurfaceCoordinator;
+    private ExploreSurfaceCoordinatorFactory mExploreSurfaceCoordinatorFactory;
 
     // Non-null in SurfaceMode.SINGLE_PANE modes.
     // TODO(crbug.com/982018): Get rid of this reference since the mediator keeps a reference to it.
@@ -385,7 +385,7 @@ public class StartSurfaceCoordinator implements StartSurface {
 
         mIsInitializedWithNative = true;
         if (mIsStartSurfaceEnabled) {
-            mExploreSurfaceCoordinator = new ExploreSurfaceCoordinator(mActivity,
+            mExploreSurfaceCoordinatorFactory = new ExploreSurfaceCoordinatorFactory(mActivity,
                     mTasksSurface.getBodyViewContainer(), mPropertyModel, mBottomSheetController,
                     mParentTabSupplier, new ScrollableContainerDelegateImpl(), mSnackbarManager,
                     mShareDelegateSupplier, mWindowAndroid, mTabModelSelector, mToolbarSupplier,
@@ -393,9 +393,7 @@ public class StartSurfaceCoordinator implements StartSurface {
         }
         mStartSurfaceMediator.initWithNative(
                 mIsStartSurfaceEnabled ? mOmniboxStubSupplier.get() : null,
-                mExploreSurfaceCoordinator != null
-                        ? mExploreSurfaceCoordinator.getFeedSurfaceController()
-                        : null,
+                mExploreSurfaceCoordinatorFactory,
                 UserPrefs.get(Profile.getLastUsedRegularProfile()));
 
         if (mTabSwitcher != null) {
