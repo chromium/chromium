@@ -129,8 +129,8 @@ class TestResultSinkMessage(TestResultSinkTestBase):
                 'value': 'CRASH'
             },
             {
-                'key': 'web_tests_flag_specific_config_name',
-                'value': ''
+                'key': 'web_tests_base_timeout',
+                'value': '6000'
             },
             {
                 'key': 'web_tests_used_expectations_file',
@@ -185,8 +185,8 @@ class TestResultSinkMessage(TestResultSinkTestBase):
                 'value': 'CRASH'
             },
             {
-                'key': 'web_tests_flag_specific_config_name',
-                'value': ''
+                'key': 'web_tests_base_timeout',
+                'value': '6000'
             },
             {
                 'key': 'web_tests_used_expectations_file',
