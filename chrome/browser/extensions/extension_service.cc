@@ -306,7 +306,7 @@ bool ExtensionService::OnExternalExtensionUpdateUrlFound(
     // We can reach here if the extension from an equal or higher priority
     // source is already present in the |pending_extension_list_|. No need to
     // report the failure in this case.
-    if (!pending_extension_manager()->GetById(info.extension_id)) {
+    if (!pending_extension_manager()->IsIdPending(info.extension_id)) {
       install_stage_tracker->ReportFailure(
           info.extension_id,
           InstallStageTracker::FailureReason::PENDING_ADD_FAILED);
