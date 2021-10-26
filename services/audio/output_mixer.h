@@ -11,7 +11,7 @@
 #include "base/callback.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/audio_parameters.h"
-#include "services/audio/snoopable.h"
+#include "services/audio/reference_output.h"
 
 namespace media {
 class AudioOutputStream;
@@ -20,11 +20,11 @@ class AudioOutputStream;
 namespace audio {
 
 // Manages mixing and rendering of all audio outputs going to a specific output
-// device. As Snoopable provides to Snoopers an ability to snoop on the audio
-// mix being rendered. If there is at least one snooper listening, the mixer
-// is mixing all the audio output and rendering the mix as a single audio output
-// stream. Otherwise the streams are rendered independently.
-class OutputMixer : public Snoopable {
+// device. As ReferenceOutput provides to Listeners an ability to listen to the
+// audio mix being rendered. If there is at least one listener connected, the
+// mixer is mixing all the audio output and rendering the mix as a single audio
+// output stream. Otherwise the streams are rendered independently.
+class OutputMixer : public ReferenceOutput {
  public:
   // Callback to be used by OutputMixer to create actual output streams playing
   // audio.
