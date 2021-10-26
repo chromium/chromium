@@ -327,6 +327,7 @@
 <translation id="133535873114485416">Syöttötapa</translation>
 <translation id="1335929031622236846">Rekisteröi laite</translation>
 <translation id="1336902454946927954">Suojausavaimesi on lukittu, koska sormenjälkeäsi ei voitu tunnistaa. Avaa lukitus lisäämällä PIN-koodisi.</translation>
+<translation id="1338631221631423366">Laiteparia muodostetaan…</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> haluaa avata tämän sovelluksen.</translation>
 <translation id="1338950911836659113">Poistetaan…</translation>
 <translation id="1339009753652684748">Käytä Assistantia sanomalla "Ok Google". Jos haluat säästää virtaa, valitse Käytössä (suositus). Assistant vastaa vain, jos laite on kytketty virtalähteeseen tai laturiin.</translation>
@@ -6559,6 +6560,7 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="7887864092952184874">Laitepari muodostettu Bluetooth-hiiren kanssa</translation>
 <translation id="7889371445710865055">Vaihda sanelun kieli</translation>
 <translation id="7890147169288018054">Katso verkon tietoja, esim. IP- tai MAC-osoite</translation>
+<translation id="7892384782944609022">Laiteparia ei voitu muodostaa. Yritä uudelleen valitsemalla laite.</translation>
 <translation id="7893008570150657497">käyttää kuvia, musiikkia ja muuta tietokoneesi mediaa</translation>
 <translation id="7893153962594818789"><ph name="DEVICE_TYPE" /> ei käytä Bluetoothia tällä hetkellä. Lisää salasana ja laita Bluetooth päälle.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Oletus)</translation>

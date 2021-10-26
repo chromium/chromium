@@ -131,6 +131,7 @@
 <translation id="2122305276694332719">Аўтаматычнае падключэнне да схаванай сеткі дазваляе іншым бачыць вашу прыладу і некаторыя налады сеткі, а таму не рэкамендуецца.</translation>
 <translation id="2125607626296734455">Кхмерская</translation>
 <translation id="2139545522194199494">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, знаходзіцца пад кіраваннем адміністратара, падключыцца</translation>
+<translation id="2141347188420181405">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, заблакіравана адміністратарам, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, падрабязныя звесткі</translation>
 <translation id="2142680004883808240">Руская (фанетычная раскладка YaZHert)</translation>
 <translation id="2143778271340628265">Ручная канфігурацыя проксі</translation>
 <translation id="2163152940313951844">Недапушчальны сімвал: <ph name="CHARACTER_NAME" /></translation>
@@ -185,6 +186,7 @@
 <translation id="2563185590376525700">Жаба</translation>
 <translation id="2578394532502990878">Тамільская (фанетычная раскладка)</translation>
 <translation id="2579959351793446050">Орыя</translation>
+<translation id="2602810353103180630">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, заблакіравана адміністратарам, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, падрабязныя звесткі</translation>
 <translation id="2614589611416690597">Відэа <ph name="VIDEO_TYPE" /></translation>
 <translation id="2617342710774726426">SIM-карта заблакіравана</translation>
 <translation id="2620090360073999360">Зараз звязацца з Google Дыскам не ўдалося.</translation>

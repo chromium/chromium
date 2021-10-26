@@ -2270,6 +2270,7 @@
       如果設定這項政策，使用者將無法變更設定。如果不設定，系統會停用「連接 AC 電源時啟動」功能，且使用者無法啟用。</translation>
 <translation id="3660562134618097814">登入時移轉 SAML IdP Cookie</translation>
 <translation id="3665437376055221832">只在沒有任何符合自動選取政策的憑證時提示使用者。</translation>
+<translation id="3674010627788940405">不支援 CORS 非萬用字元要求標頭。</translation>
 <translation id="3685979383016152590">你可以透過這項政策指定要套用到大量印表機設定的存取權政策，藉此控管要為使用者提供 <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> 的哪些印表機。
 
       * <ph name="PRINTERS_BLOCKLIST" /> (值為 0) 會採用 <ph name="PRINTERS_BULK_BLOCKLIST" />，禁止使用者存取特定印表機
@@ -2966,6 +2967,11 @@
 
       如果是 <ph name="PRODUCT_NAME" />，只有在已透過 <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> 註冊裝置的情況下，這項政策才會生效。
       如果是 <ph name="PRODUCT_OS_NAME" />，這項政策會一律生效。</translation>
+<translation id="4570859815763368584">自 M68 起已淘汰，請改用 DefaultPopupsSetting。
+
+      如需完整說明，請前往 https://www.chromestatus.com/feature/5675755719622656。
+      如果啟用這項政策，即可同時在多個網站中進行瀏覽及開啟新視窗/分頁。
+      如果停用這項政策或不予設定，則無法同時在多個網站中進行瀏覽及開啟新視窗/分頁。</translation>
 <translation id="4574215366111396039">Chrome 會封鎖在沙箱 iframe 中瀏覽外部通訊協定的作業，詳情請參閱 https://chromestatus.com/features/5680742077038592。
 
       如果將這項政策設為 True，就代表允許 Chrome 封鎖這類瀏覽作業。
@@ -3309,6 +3315,7 @@
 <translation id="5025239932007658691">如果將這項政策設為啟用或不設定，<ph name="PRODUCT_NAME" /> 會不定時向 Google 伺服器傳送查詢，以擷取準確的時間戳記。
 
       如果將這項政策設為停用，系統會禁止 <ph name="PRODUCT_NAME" /> 傳送這類查詢。</translation>
+<translation id="5039110755072335605">CORS 非萬用字元要求標頭支援</translation>
 <translation id="504116558738617678">只有在裝置未受管理或只有一位使用者時，才顯示磁碟空間不足的警告</translation>
 <translation id="5049105847726444023">將這項政策設為 Enabled 或不予設定，代表使用者可透過工具列上的切換圖示開啟側邊面板，查看 <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> 搜尋結果。
 
@@ -5865,6 +5872,15 @@
       如果將這項政策設為停用或不予設定，登入時會導向一般設定檔。</translation>
 <translation id="8151299379693359769">根據遠端認證啟用額外的安全性檢查 (選用，預設值：True)。</translation>
 <translation id="8151490482515839285">啟用資料外洩防護回報功能</translation>
+<translation id="8151949408479239790">設定 CORS 非萬用字元要求標頭的支援功能。
+
+      <ph name="PRODUCT_NAME" /> 97 版新增 CORS 非萬用字元要求標頭的支援功能。當指令碼透過 fetch() 和含有已新增指令碼 Authorization 標頭的 XMLHttpRequest 發出跨來源網路要求時，該標頭在 CORS 預檢回應中必須獲得 Access-Control-Allow-Headers 標頭的明確允許。此處的「明確」是指萬用字元符號「*」不會涵蓋 Authorization 標頭。詳情請參閱 <ph name="CORS_NON_WILDCARD_REQUEST_HEADERS_FEATURE_URL" />。
+
+      如果不設定這項政策或設為 True，<ph name="PRODUCT_NAME" /> 會支援 CORS 非萬用字元要求標頭，且裝置行為將如上所述。
+
+      如果不設定這項政策或設為 False，Chrome 會允許萬用字元符號「*」在 CORS 預檢回應的 Access-Control-Allow-Headers 標頭中涵蓋 Authorization 標頭。
+
+      這項 Enterprise 政策僅是暫時性措施，預計將於 <ph name="PRODUCT_NAME" /> 第 103 版之後移除。</translation>
 <translation id="8158758865057576716">允許建立 <ph name="PRODUCT_NAME" /> 設定檔資料的漫遊複本。</translation>
 <translation id="8158897487095710470">如果將這項政策設為 True，系統會在 <ph name="PRODUCT_NAME" /> 中顯示書籤列。如果將這項政策設為 False，使用者一律不會看到書籤列。
 
@@ -6015,6 +6031,7 @@
 
       如果停用這項政策，對於螢幕畫面分享 API 的任何呼叫就會失敗並傳回錯誤訊息；不過，如果網站與下列任何政策中的來源模式相符，系統就不會考量這項政策 (網站將可以使用螢幕畫面分享 API)：<ph name="SCREEN_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />、<ph name="WINDOW_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />、<ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />、<ph name="SAME_ORIGIN_TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />。
       </translation>
+<translation id="8310392396850884147">支援 CORS 非萬用字元要求標頭。</translation>
 <translation id="8312129124898414409">允許您設定網站是否可以使用金鑰產生功能。您可以允許或禁止所有網站使用金鑰產生功能。
 
           如果未設定這項政策，系統會使用「BlockKeygen」，不過使用者可以變更此設定。</translation>

@@ -2314,6 +2314,7 @@ Yderligere oplysninger:
 <translation id="8541158209346794904">Bluetooth-enhed</translation>
 <translation id="8542014550340843547">Trehæftning nederst</translation>
 <translation id="8543181531796978784">Du kan <ph name="BEGIN_ERROR_LINK" />rapportere et registreringsproblem<ph name="END_ERROR_LINK" /> eller, hvis du forstår den sikkerhedsrisiko, du udsætter dig for, <ph name="BEGIN_LINK" />kan du gå til dette usikre website<ph name="END_LINK" />.</translation>
+<translation id="8554010658308662631">Indlæs flere</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Nulstil tilladelse}one{Nulstil tilladelse}other{Nulstil tilladelser}}</translation>
 <translation id="8555010941760982128">Angiv denne kode ved betalingen</translation>
 <translation id="8557066899867184262">Kontrolkoden findes på bagsiden af kortet.</translation>

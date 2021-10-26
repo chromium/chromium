@@ -29,6 +29,7 @@
 <translation id="1743802530341753419">ఏదైనా పరికరానికి కనెక్ట్ చేయగలిగేలా సైట్‌లను అనుమతించే ముందు మిమ్మల్ని అడుగుతుంది (సిఫార్సు చేయడమైనది)</translation>
 <translation id="1779089405699405702">చిత్ర డీకోడర్</translation>
 <translation id="1818308510395330587">ARని వినియోగించడానికి <ph name="APP_NAME" />ని అనుమతించేందుకు, <ph name="BEGIN_LINK" />Android సెట్టింగ్‌ల<ph name="END_LINK" />లో కూడా కెమెరాను ఆన్ చేయండి.</translation>
+<translation id="1864927262126810325"><ph name="SOURCE_NAME" /> నుండి</translation>
 <translation id="1887786770086287077">ఈ పరికరానికి స్థానం యాక్సెస్ ఆఫ్ చేయబడింది. దీనిని <ph name="BEGIN_LINK" />Android సెట్టింగ్‌లు<ph name="END_LINK" />లో తిరిగి ఆన్ చేయండి.</translation>
 <translation id="1919345977826869612">యాడ్స్</translation>
 <translation id="1919950603503897840">పరిచయాలను ఎంచుకోండి</translation>
@@ -236,6 +237,7 @@
 <translation id="7016516562562142042">ప్రస్తుత శోధన ఇంజిన్‌కు అనుమతించబడింది</translation>
 <translation id="7053983685419859001">నిరోధించు</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 ఎంచుకోబడింది}other{# ఎంచుకోబడ్డాయి}}</translation>
+<translation id="7070090581017165256">ఈ సైట్ గురించి</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> ఎంచుకోబడ్డాయి.  ఎంపికలు స్క్రీన్ పైభాగానికి సమీపంలో అందుబాటులో ఉన్నాయి</translation>
 <translation id="7141896414559753902">మళ్లింపులు, పాప్-అప్‌లను చూపనివ్వకుండా సైట్‌లను బ్లాక్ చేస్తుంది (సిఫార్సు చేయడమైనది)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>

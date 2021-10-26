@@ -328,6 +328,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="133535873114485416">Gustong input</translation>
 <translation id="1335929031622236846">Ipa-enroll ang iyong device</translation>
 <translation id="1336902454946927954">Naka-lock ang iyong security key dahil hindi makilala ang fingerprint mo. Para i-unlock ito, ilagay ang iyong PIN.</translation>
+<translation id="1338631221631423366">Ipinapares...</translation>
 <translation id="1338802252451106843">Gustong buksan ng <ph name="ORIGIN" /> ang application na ito.</translation>
 <translation id="1338950911836659113">Nagtatanggal...</translation>
 <translation id="1339009753652684748">I-access ang iyong Assistant kapag sinabi mong "Hey Google." Para makatipid ng baterya, piliin ang “Naka-on (Inirerekomenda.)” Sasagot lang ang iyong Assistant kapag nakasaksak o nagcha-charge ang device mo.</translation>
@@ -6565,6 +6566,7 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="7887864092952184874">Naipares ang bluetooth mouse</translation>
 <translation id="7889371445710865055">Palitan ang wika sa Dictation</translation>
 <translation id="7890147169288018054">Tingnan ang impormasyon ng network, gaya ng iyong IP o MAC address</translation>
+<translation id="7892384782944609022">Hindi maipares. Pumili ng device para subukan ulit.</translation>
 <translation id="7893008570150657497">Ma-access ang mga larawan, musika, at iba pang media mula sa iyong computer</translation>
 <translation id="7893153962594818789">Naka-off ang Bluetooth sa <ph name="DEVICE_TYPE" /> na ito. Ilagay ang iyong password, at i-on ang Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Default)</translation>

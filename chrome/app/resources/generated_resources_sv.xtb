@@ -327,6 +327,7 @@
 <translation id="133535873114485416">Föredraget inmatningssätt</translation>
 <translation id="1335929031622236846">Registrera din enhet</translation>
 <translation id="1336902454946927954">Säkerhetsnyckeln är låst eftersom ditt fingeravtryck inte kändes igen. Lås upp den genom att ange pinkoden.</translation>
+<translation id="1338631221631423366">Parkopplar …</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> vill öppna den här appen.</translation>
 <translation id="1338950911836659113">Uppgifterna tas bort ...</translation>
 <translation id="1339009753652684748">Starta assistenten när du säger ”Hey Google”. Batteriet räcker längre om du väljer På (rekommenderas). Assistenten svarar bara när enheten är ansluten till ett vägguttag eller laddas.</translation>
@@ -6564,6 +6565,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7887864092952184874">Bluetooth-musen har kopplats</translation>
 <translation id="7889371445710865055">Ändra dikteringsspråk</translation>
 <translation id="7890147169288018054">Visa nätverksinformation, t.ex. IP- eller MAC-adress</translation>
+<translation id="7892384782944609022">Det gick inte att genomföra kopplingen. Välj en enhet och försök igen.</translation>
 <translation id="7893008570150657497">Få åtkomst till foton, musik och andra medier från datorn</translation>
 <translation id="7893153962594818789">Bluetooth är inaktiverat på <ph name="DEVICE_TYPE" />. Ange lösenordet och aktivera Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Standard)</translation>

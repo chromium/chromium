@@ -328,6 +328,7 @@
 <translation id="133535873114485416">Foretrukket input</translation>
 <translation id="1335929031622236846">Tilmeld din enhed</translation>
 <translation id="1336902454946927954">Din sikkerhedsnøgle er låst, fordi dit fingeraftryk ikke blev genkendt. Du kan låse den op ved at angive din pinkode.</translation>
+<translation id="1338631221631423366">Parrer...</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> vil gerne åbne denne app.</translation>
 <translation id="1338950911836659113">Sletter...</translation>
 <translation id="1339009753652684748">Få adgang til Google Assistent, når du siger "Hey Google". Du kan spare på batteriet ved at vælge "Til (anbefales)". Google Assistent svarer kun, når din enhed oplader eller er sluttet til en strømkilde.</translation>
@@ -6564,6 +6565,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7887864092952184874">Bluetooth-mus er parret</translation>
 <translation id="7889371445710865055">Skift dikteringssprog</translation>
 <translation id="7890147169288018054">Se netværksoplysninger som f.eks. din IP- eller MAC-adresse</translation>
+<translation id="7892384782944609022">Parringen mislykkedes. Vælg en enhed for at prøve igen.</translation>
 <translation id="7893008570150657497">Få adgang til billeder, musik og andre medier fra din computer</translation>
 <translation id="7893153962594818789">Bluetooth er slået fra på denne <ph name="DEVICE_TYPE" />. Angiv din adgangskode, og slå Bluetooth til.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Standard)</translation>

@@ -326,6 +326,7 @@
 <translation id="133535873114485416">Metoda preferată de introducere</translation>
 <translation id="1335929031622236846">Înregistrează dispozitivul</translation>
 <translation id="1336902454946927954">Cheia de securitate este blocată, deoarece amprenta nu a fost recunoscută. Introdu codul PIN ca să o deblochezi.</translation>
+<translation id="1338631221631423366">Se asociază…</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> intenționează să deschidă această aplicație.</translation>
 <translation id="1338950911836659113">Se șterge…</translation>
 <translation id="1339009753652684748">Accesează Asistentul rostind „Ok Google”. Pentru a economisi bateria, alege „Activat (recomandat)”. Asistentul va răspunde doar atunci când dispozitivul este conectat la o sursă de alimentare sau când se încarcă.</translation>
@@ -6551,6 +6552,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7887864092952184874">Mouse Bluetooth conectat</translation>
 <translation id="7889371445710865055">Schimbă limba de dictare</translation>
 <translation id="7890147169288018054">Vezi informații despre rețea, cum ar fi adresa IP sau MAC</translation>
+<translation id="7892384782944609022">Asocierea nu a reușit. Selectează dispozitivul pentru a încerca din nou.</translation>
 <translation id="7893008570150657497">să acceseze fotografii, muzică și alte tipuri de conținut media de pe computer;</translation>
 <translation id="7893153962594818789">Conexiunea Bluetooth este dezactivată pe acest dispozitiv <ph name="DEVICE_TYPE" />. Introdu parola și activează Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Prestabilit)</translation>

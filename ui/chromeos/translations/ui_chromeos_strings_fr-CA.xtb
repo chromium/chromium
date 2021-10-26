@@ -131,6 +131,7 @@
 <translation id="2122305276694332719">La connexion automatique à un réseau masqué permet aux autres personnes de voir votre appareil et certains paramètres réseau, et n'est pas recommandée.</translation>
 <translation id="2125607626296734455">Khmer</translation>
 <translation id="2139545522194199494">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, géré par votre administrateur, connexion</translation>
+<translation id="2141347188420181405">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, puissance du signal <ph name="SIGNAL_STRENGTH" /> %, bloqué par votre administrateur, détails</translation>
 <translation id="2142680004883808240">Russe avec clavier phonétique YaZHert</translation>
 <translation id="2143778271340628265">Configuration manuelle du mandataire</translation>
 <translation id="2163152940313951844">Caractère incorrect : <ph name="CHARACTER_NAME" /></translation>
@@ -185,6 +186,7 @@
 <translation id="2563185590376525700">Grenouille</translation>
 <translation id="2578394532502990878">Tamoul (phonétique)</translation>
 <translation id="2579959351793446050">Odia</translation>
+<translation id="2602810353103180630">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, puissance du signal <ph name="SIGNAL_STRENGTH" /> %, bloqué par votre administrateur, détails</translation>
 <translation id="2614589611416690597">Vidéo <ph name="VIDEO_TYPE" /></translation>
 <translation id="2617342710774726426">La carte SIM est verrouillée</translation>
 <translation id="2620090360073999360">Google Disque est temporairement inaccessible.</translation>

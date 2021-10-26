@@ -2228,6 +2228,7 @@
       このポリシーを設定した場合、ユーザーは設定を変更できません。未設定の場合、AC 電源接続時の起動は無効になり、ユーザーはこれを有効にすることができません。</translation>
 <translation id="3660562134618097814">ログイン時に SAML IdP Cookie を転送する</translation>
 <translation id="3665437376055221832">自動選択と一致する証明書がない場合のみユーザーにメッセージを表示</translation>
+<translation id="3674010627788940405">CORS 非ワイルドカード リクエスト ヘッダーをサポートしない。</translation>
 <translation id="3685979383016152590">このポリシーでは、プリンタの一括設定に適用するアクセス ポリシーを指定して、ユーザーが <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> のどのプリンタを使用できるかを制御できます。
 
       * <ph name="PRINTERS_BLOCKLIST" />（値 0）: <ph name="PRINTERS_BULK_BLOCKLIST" /> を使用して指定プリンタへのアクセスを制限します
@@ -2911,6 +2912,11 @@
 
       <ph name="PRODUCT_NAME" /> の場合、このポリシーは <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> で登録されたマシンでのみ有効です。
       <ph name="PRODUCT_OS_NAME" /> の場合、このポリシーは常に有効です。</translation>
+<translation id="4570859815763368584">M68 でサポートを終了します。代わりに DefaultPopupsSetting を使用してください。
+
+      詳しくは、https://www.chromestatus.com/feature/5675755719622656 をご覧ください。
+      このポリシーが有効な場合、サイトでは移動と同時に新しいウィンドウやタブを開くことができます。
+      このポリシーが無効または未設定の場合、サイトでは移動と同時に新しいウィンドウやタブを開くことはできません。</translation>
 <translation id="4574215366111396039">Chrome はサンドボックス化された iframe 内で外部プロトコルへの移動をブロックします。https://chromestatus.com/features/5680742077038592 をご覧ください。True の場合は、該当する移動を Chrome がブロックできるようになります。False の場合は、該当する移動を Chrome がブロックするのを防ぎます。このデフォルトは True で、セキュリティ機能が有効になっています。このポリシーは、新しい制限の影響を受ける社内ウェブサイトの
       更新に時間がかかる場合に使用できます。このエンタープライズ ポリシーは一時的なものであり、
 <ph name="PRODUCT_NAME" /> バージョン 104 以降で削除される予定です。
@@ -3239,6 +3245,7 @@
 
       * <ph name="MODE_ENUM_PRE_MOUNT" />: <ph name="SHARE_URL_FIELD_NAME" /> がマウントされます。</translation>
 <translation id="5025239932007658691">このポリシーを有効に設定するか未設定のままにした場合、<ph name="PRODUCT_NAME" /> は正確なタイムスタンプを取得するため、Google サーバーに不定期のクエリを送信します。このポリシーを無効に設定すると、<ph name="PRODUCT_NAME" /> がこれらのクエリを送信するのを停止できます。</translation>
+<translation id="5039110755072335605">CORS 非ワイルドカード リクエスト ヘッダーのサポート</translation>
 <translation id="504116558738617678">デバイスが管理対象外またはユーザーが 1 人のみの場合に限り、ディスクの空き容量不足を通知する</translation>
 <translation id="5049105847726444023">このポリシーを有効に設定するか未設定のままにした場合、ユーザーはツールバーのアイコンを切り替えることでサイドパネルに最新の <ph name="GOOGLE_SEARCH_PRODUCT_NAME" />結果を表示できるようになります。
 
@@ -5728,6 +5735,15 @@
       このポリシーが無効に設定されているか未設定の場合は、ログイン時に通常のプロフィールが適用されます。</translation>
 <translation id="8151299379693359769">リモート認証に基づく追加のセキュリティ チェックを有効にします（省略可、デフォルト値は True）。</translation>
 <translation id="8151490482515839285">データ漏洩防止レポートを有効にする</translation>
+<translation id="8151949408479239790">CORS 非ワイルドカード リクエスト ヘッダーをサポートするかどうかを設定します。
+
+      <ph name="PRODUCT_NAME" /> バージョン 97 より、CORS 非ワイルドカード リクエスト ヘッダーがサポートされるようになりました。スクリプトによって追加された Authorization ヘッダーを使用して fetch() や XMLHttpRequest でクロスオリジン ネットワーク リクエストを行う場合、CORS プリフライト レスポンスの Access-Control-Allow-Headers ヘッダーで Authorization ヘッダーが明示的に許可されている必要があります。この場合の「明示的に」は、Authorization ヘッダーがワイルドカード記号「*」で表されていないことを意味します。詳しくは、<ph name="CORS_NON_WILDCARD_REQUEST_HEADERS_FEATURE_URL" /> をご覧ください。
+
+      このポリシーを未設定のままにするか true に設定した場合、<ph name="PRODUCT_NAME" /> は CORS 非ワイルドカード リクエスト ヘッダーをサポートし、前述のとおり動作します。
+
+      このポリシーを false に設定した場合、Chrome では CORS プリフライト レスポンスの Access-Control-Allow-Headers ヘッダーで、ワイルドカード記号「*」で表された Authorization ヘッダーが許可されます。
+
+      このエンタープライズ ポリシーは一時的なものであり、<ph name="PRODUCT_NAME" /> バージョン 103 以降で削除される予定です。</translation>
 <translation id="8158758865057576716"><ph name="PRODUCT_NAME" /> プロフィール データのローミング コピーの作成を有効にする。</translation>
 <translation id="8158897487095710470">このポリシーを True に設定した場合、<ph name="PRODUCT_NAME" /> にブックマーク バーが表示されます。このポリシーを False に設定した場合、ブックマーク バーは表示されません。このポリシーを設定した場合、ユーザーは設定を変更できません。ポリシーが設定されていない場合は、この機能を使用するかどうかをユーザーが指定します。</translation>
 <translation id="8159760979508295709">「カーソルによるハイライト表示」のユーザー補助機能を有効にします。
@@ -5881,6 +5897,7 @@
       <ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />、
       <ph name="SAME_ORIGIN_TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />
       </translation>
+<translation id="8310392396850884147">CORS 非ワイルドカード リクエスト ヘッダーをサポートする。</translation>
 <translation id="8312129124898414409">ウェブサイトがキー生成を使用できるかどうかを設定します。すべてのサイトを対象に、キー生成の使用を許可または禁止できます。
 
           このポリシーが未設定の場合は「BlockKeygen」が使用されます。ユーザーはこの設定を変更できます。</translation>

@@ -131,6 +131,7 @@
 <translation id="2122305276694332719">Gizlədilmiş şəbəkəyə avtomatik qoşulduqda başqaları cihaz və şəbəkə ayarlarınızı görəcək. Bu, tövsiyə edilmir.</translation>
 <translation id="2125607626296734455">Xmer</translation>
 <translation id="2139545522194199494"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> şəbəkə, <ph name="NETWORK_NAME" />, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />%, Administratorunuz tərəfindən idarə olunur, Qoşulun</translation>
+<translation id="2141347188420181405">Şəbəkə <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />%, Administrator tərəfindən bloklanıb, Detallar</translation>
 <translation id="2142680004883808240">Fonetik YaZHert klaviaturası ilə Rus dili</translation>
 <translation id="2143778271340628265">Manual proksi sazlaması</translation>
 <translation id="2163152940313951844">Yanlış simvol: <ph name="CHARACTER_NAME" /></translation>
@@ -185,6 +186,7 @@
 <translation id="2563185590376525700">Qurbağa</translation>
 <translation id="2578394532502990878">Tamil dili (Fonetik)</translation>
 <translation id="2579959351793446050">Oriya dili</translation>
+<translation id="2602810353103180630">Şəbəkə <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />%, Administrator tərəfindən bloklanıb, Detallar</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> videosu</translation>
 <translation id="2617342710774726426">SIM kart kilidlənib</translation>
 <translation id="2620090360073999360">Hazırda Google Diskə daxil olmaq mümkün deyil.</translation>

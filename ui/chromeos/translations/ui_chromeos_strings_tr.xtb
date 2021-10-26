@@ -131,6 +131,7 @@
 <translation id="2122305276694332719">Gizli bir ağa otomatik olarak bağlanmak başkalarının cihazınızı ve bazı ağ ayarlarını görmesine olanak sağladığından önerilmez.</translation>
 <translation id="2125607626296734455">Kmerce</translation>
 <translation id="2139545522194199494">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, %<ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, Yöneticiniz tarafından yönetiliyor, Bağlan</translation>
+<translation id="2141347188420181405">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Sinyal Gücü %<ph name="SIGNAL_STRENGTH" />, Yöneticiniz tarafından engellenmiş, Ayrıntılar</translation>
 <translation id="2142680004883808240">Fonetik YaZHert klavye ile Rusça</translation>
 <translation id="2143778271340628265">El ile proxy yapılandırması</translation>
 <translation id="2163152940313951844">Geçersiz karakter: <ph name="CHARACTER_NAME" /></translation>
@@ -185,6 +186,7 @@
 <translation id="2563185590376525700">Kurbağa</translation>
 <translation id="2578394532502990878">Tamilce Fonetik</translation>
 <translation id="2579959351793446050">Oriya</translation>
+<translation id="2602810353103180630">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Sinyal Gücü %<ph name="SIGNAL_STRENGTH" />, Yöneticiniz tarafından engellenmiş, Ayrıntılar</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> video</translation>
 <translation id="2617342710774726426">SIM kart kilitli</translation>
 <translation id="2620090360073999360">Google Drive'a şu anda erişilemiyor.</translation>

@@ -329,6 +329,7 @@
 <translation id="133535873114485416">קלט מועדף</translation>
 <translation id="1335929031622236846">רישום המכשיר שלך</translation>
 <translation id="1336902454946927954">מפתח האבטחה נעול מאחר שאי אפשר לזהות את טביעת האצבע שלך. כדי לבטל את הנעילה, יש להזין את קוד האימות.</translation>
+<translation id="1338631221631423366">מתבצעת התאמה…</translation>
 <translation id="1338802252451106843">האתר <ph name="ORIGIN" /> רוצה לפתוח את האפליקציה הזו.</translation>
 <translation id="1338950911836659113">המחיקה מתבצעת...</translation>
 <translation id="1339009753652684748">‏כשאומרים "Hey Google", מתבצעת גישה ל-Assistant. כדי לחסוך בצריכת הסוללה, אפשר לבחור באפשרות "מופעל (מומלץ)". Assistant תגיב רק כשהמכשיר מחובר לחשמל או נמצא בטעינה.</translation>
@@ -6563,6 +6564,7 @@
 <translation id="7887864092952184874">‏עכבר Bluetooth מחובר</translation>
 <translation id="7889371445710865055">שינוי שפת ההכתבה</translation>
 <translation id="7890147169288018054">‏הצגה של פרטי רשת, כמו כתובת IP או MAC</translation>
+<translation id="7892384782944609022">ההתאמה נכשלה. כדי לנסות שוב, צריך לבחור מכשיר.</translation>
 <translation id="7893008570150657497">לגשת לתמונות, מוזיקה ומדיה נוספת מהמחשב שלך</translation>
 <translation id="7893153962594818789">‏Bluetooth מושבת ב-<ph name="DEVICE_TYPE" /> זה. עליך להזין את הסיסמה שלך כדי להפעיל את Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (ברירת מחדל)</translation>
