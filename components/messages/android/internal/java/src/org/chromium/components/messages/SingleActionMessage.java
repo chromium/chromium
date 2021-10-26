@@ -167,6 +167,11 @@ public class SingleActionMessage implements MessageStateHandler {
         return mMessageDismissed;
     }
 
+    @VisibleForTesting
+    PropertyModel getModelForTesting() {
+        return mModel;
+    }
+
     @Override
     @MessageIdentifier
     public int getMessageIdentifier() {

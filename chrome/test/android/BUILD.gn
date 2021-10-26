@@ -346,6 +346,7 @@ android_library("chrome_java_test_support") {
     "//components/infobars/android:java",
     "//components/infobars/core:infobar_enums_java",
     "//components/location/android:location_java",
+    "//components/messages/android:java",
     "//components/omnibox/browser:browser_java",
     "//components/policy/android:policy_java",
     "//components/policy/android:policy_java_test_support",
