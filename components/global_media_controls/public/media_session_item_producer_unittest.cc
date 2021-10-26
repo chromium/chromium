@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/global_media_controls/media_session_notification_producer.h"
+#include "components/global_media_controls/public/media_session_item_producer.h"
 
 #include <memory>
 #include <utility>
@@ -12,13 +12,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/unguessable_token.h"
-#include "chrome/browser/ui/global_media_controls/media_session_notification_item.h"
-#include "chrome/browser/ui/global_media_controls/test_helper.h"
+#include "components/global_media_controls/public/media_session_notification_item.h"
 #include "components/global_media_controls/public/test/mock_media_item_manager.h"
 #include "components/media_message_center/media_notification_item.h"
 #include "components/media_message_center/media_notification_util.h"
-#include "content/public/test/browser_task_environment.h"
 #include "media/base/media_switches.h"
 #include "services/media_session/public/cpp/test/mock_audio_focus_manager.h"
 #include "services/media_session/public/cpp/test/mock_media_controller_manager.h"
@@ -37,10 +36,12 @@ using testing::Expectation;
 using testing::NiceMock;
 using testing::Return;
 
-class MediaSessionNotificationProducerTest : public testing::Test {
+namespace global_media_controls {
+
+class MediaSessionItemProducerTest : public testing::Test {
  public:
-  MediaSessionNotificationProducerTest() = default;
-  ~MediaSessionNotificationProducerTest() override = default;
+  MediaSessionItemProducerTest() = default;
+  ~MediaSessionItemProducerTest() override = default;
 
   void SetUp() override {
     audio_focus_manager_ = std::make_unique<
@@ -65,7 +66,7 @@ class MediaSessionNotificationProducerTest : public testing::Test {
         controller_manager_remote(
             media_controller_manager_->GetPendingRemote());
 
-    producer_ = std::make_unique<MediaSessionNotificationProducer>(
+    producer_ = std::make_unique<MediaSessionItemProducer>(
         std::move(audio_focus_remote), std::move(controller_manager_remote),
         &item_manager_, absl::nullopt);
 
@@ -229,35 +230,31 @@ class MediaSessionNotificationProducerTest : public testing::Test {
         "Media.GlobalMediaControls.InteractionDelayAfterPause", 0);
   }
 
-  MediaSessionNotificationProducer::Session* GetSession(
+  MediaSessionItemProducer::Session* GetSession(
       const base::UnguessableToken& id) {
     return producer_->GetSession(id.ToString());
   }
 
-  std::map<std::string, MediaSessionNotificationProducer::Session>& sessions()
-      const {
+  std::map<std::string, MediaSessionItemProducer::Session>& sessions() const {
     return producer_->sessions_;
   }
 
-  global_media_controls::test::MockMediaItemManager& item_manager() {
-    return item_manager_;
-  }
+  test::MockMediaItemManager& item_manager() { return item_manager_; }
 
  private:
-  content::BrowserTaskEnvironment task_environment_{
+  base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  global_media_controls::test::MockMediaItemManager item_manager_;
+  test::MockMediaItemManager item_manager_;
   std::unique_ptr<media_session::test::MockAudioFocusManager>
       audio_focus_manager_;
   std::unique_ptr<media_session::test::MockMediaControllerManager>
       media_controller_manager_;
-  std::unique_ptr<MediaSessionNotificationProducer> producer_;
+  std::unique_ptr<MediaSessionItemProducer> producer_;
   base::HistogramTester histogram_tester_;
 };
 
-TEST_F(MediaSessionNotificationProducerTest,
-       ShowControllableOnGainAndHideOnLoss) {
+TEST_F(MediaSessionItemProducerTest, ShowControllableOnGainAndHideOnLoss) {
   // Simulate a new active, controllable media session.
   EXPECT_CALL(item_manager(), ShowItem(_));
   base::UnguessableToken id = SimulatePlayingControllableMedia();
@@ -283,7 +280,7 @@ TEST_F(MediaSessionNotificationProducerTest,
   testing::Mock::VerifyAndClearExpectations(&item_manager());
 }
 
-TEST_F(MediaSessionNotificationProducerTest, DoesNotShowUncontrollableSession) {
+TEST_F(MediaSessionItemProducerTest, DoesNotShowUncontrollableSession) {
   base::UnguessableToken id = base::UnguessableToken::Create();
 
   // When focus is gained, we should not show an active session.
@@ -301,7 +298,7 @@ TEST_F(MediaSessionNotificationProducerTest, DoesNotShowUncontrollableSession) {
   EXPECT_FALSE(HasActiveItems());
 }
 
-TEST_F(MediaSessionNotificationProducerTest,
+TEST_F(MediaSessionItemProducerTest,
        DoesNotShowControllableSessionThatBecomesUncontrollable) {
   // Start playing active media.
   base::UnguessableToken id = SimulatePlayingControllableMedia();
@@ -334,8 +331,7 @@ TEST_F(MediaSessionNotificationProducerTest,
   EXPECT_FALSE(HasFrozenItems());
 }
 
-TEST_F(MediaSessionNotificationProducerTest,
-       HideAfterTimeoutAndActiveAgainOnPlay) {
+TEST_F(MediaSessionItemProducerTest, HideAfterTimeoutAndActiveAgainOnPlay) {
   // First, start an active session.
   base::UnguessableToken id = SimulatePlayingControllableMedia();
   EXPECT_TRUE(HasActiveItems());
@@ -371,7 +367,7 @@ TEST_F(MediaSessionNotificationProducerTest,
   testing::Mock::VerifyAndClearExpectations(&item_manager());
 }
 
-TEST_F(MediaSessionNotificationProducerTest,
+TEST_F(MediaSessionItemProducerTest,
        BecomesActiveIfMediaStartsPlayingWithinTimeout) {
   // First, start playing active media.
   base::UnguessableToken id = SimulatePlayingControllableMedia();
@@ -396,7 +392,7 @@ TEST_F(MediaSessionNotificationProducerTest,
   testing::Mock::VerifyAndClearExpectations(&item_manager());
 }
 
-TEST_F(MediaSessionNotificationProducerTest,
+TEST_F(MediaSessionItemProducerTest,
        SessionIsRemovedImmediatelyWhenATabCloses) {
   // Start playing active media.
   base::UnguessableToken id = SimulatePlayingControllableMedia();
@@ -414,7 +410,7 @@ TEST_F(MediaSessionNotificationProducerTest,
       GlobalMediaControlsDismissReason::kTabClosed, 1);
 }
 
-TEST_F(MediaSessionNotificationProducerTest, DismissesMediaSession) {
+TEST_F(MediaSessionItemProducerTest, DismissesMediaSession) {
   // First, start playing active media.
   base::UnguessableToken id = SimulatePlayingControllableMedia();
   EXPECT_TRUE(HasActiveItems());
@@ -431,8 +427,7 @@ TEST_F(MediaSessionNotificationProducerTest, DismissesMediaSession) {
 
 // Regression test for https://crbug.com/1015903: we could end up in a
 // situation where the toolbar icon was disabled indefinitely.
-TEST_F(MediaSessionNotificationProducerTest,
-       LoseGainLoseDoesNotCauseRaceCondition) {
+TEST_F(MediaSessionItemProducerTest, LoseGainLoseDoesNotCauseRaceCondition) {
   // First, start an active session and include artwork.
   base::UnguessableToken id = SimulatePlayingControllableMedia();
   SimulateHasArtwork(id);
@@ -466,7 +461,7 @@ TEST_F(MediaSessionNotificationProducerTest,
   testing::Mock::VerifyAndClearExpectations(&item_manager());
 }
 
-TEST_F(MediaSessionNotificationProducerTest, HidesInactiveNotifications) {
+TEST_F(MediaSessionItemProducerTest, HidesInactiveNotifications) {
   // Start playing active media.
   base::UnguessableToken id = SimulatePlayingControllableMedia();
   EXPECT_TRUE(HasActiveItems());
@@ -502,7 +497,7 @@ TEST_F(MediaSessionNotificationProducerTest, HidesInactiveNotifications) {
       GlobalMediaControlsDismissReason::kTabClosed, 0);
 }
 
-TEST_F(MediaSessionNotificationProducerTest, InactiveBecomesActive_PlayPause) {
+TEST_F(MediaSessionItemProducerTest, InactiveBecomesActive_PlayPause) {
   // Start playing active media.
   base::UnguessableToken id = SimulatePlayingControllableMedia();
   EXPECT_TRUE(HasActiveItems());
@@ -529,7 +524,7 @@ TEST_F(MediaSessionNotificationProducerTest, InactiveBecomesActive_PlayPause) {
   EXPECT_FALSE(IsSessionInactive(id));
 }
 
-TEST_F(MediaSessionNotificationProducerTest, InactiveBecomesActive_Seeking) {
+TEST_F(MediaSessionItemProducerTest, InactiveBecomesActive_Seeking) {
   // Start playing active media.
   base::UnguessableToken id = SimulatePlayingControllableMedia();
   EXPECT_TRUE(HasActiveItems());
@@ -562,8 +557,7 @@ TEST_F(MediaSessionNotificationProducerTest, InactiveBecomesActive_Seeking) {
   EXPECT_TRUE(IsSessionInactive(id));
 }
 
-TEST_F(MediaSessionNotificationProducerTest,
-       DelaysHidingNotifications_PlayPause) {
+TEST_F(MediaSessionItemProducerTest, DelaysHidingNotifications_PlayPause) {
   // Start playing active media.
   base::UnguessableToken id = SimulatePlayingControllableMedia();
   EXPECT_TRUE(HasActiveItems());
@@ -590,8 +584,7 @@ TEST_F(MediaSessionNotificationProducerTest,
   EXPECT_FALSE(HasActiveItems());
 }
 
-TEST_F(MediaSessionNotificationProducerTest,
-       DelaysHidingNotifications_Interactions) {
+TEST_F(MediaSessionItemProducerTest, DelaysHidingNotifications_Interactions) {
   // Start playing active media.
   base::UnguessableToken id = SimulatePlayingControllableMedia();
   EXPECT_TRUE(HasActiveItems());
@@ -624,8 +617,7 @@ TEST_F(MediaSessionNotificationProducerTest,
   EXPECT_FALSE(HasActiveItems());
 }
 
-TEST_F(MediaSessionNotificationProducerTest,
-       HidingNotification_FeatureDisabled) {
+TEST_F(MediaSessionItemProducerTest, HidingNotification_FeatureDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
       media::kGlobalMediaControlsAutoDismiss);
@@ -654,7 +646,7 @@ TEST_F(MediaSessionNotificationProducerTest,
   ExpectHistogramInteractionDelayAfterPause(base::Minutes(61), 1);
 }
 
-TEST_F(MediaSessionNotificationProducerTest, HidingNotification_TimerParams) {
+TEST_F(MediaSessionItemProducerTest, HidingNotification_TimerParams) {
   const int kTimerInMinutes = 6;
   base::test::ScopedFeatureList scoped_feature_list;
   base::FieldTrialParams params;
@@ -691,3 +683,5 @@ TEST_F(MediaSessionNotificationProducerTest, HidingNotification_TimerParams) {
   AdvanceClockMinutes(kTimerInMinutes + 1);
   EXPECT_FALSE(HasActiveItems());
 }
+
+}  // namespace global_media_controls
