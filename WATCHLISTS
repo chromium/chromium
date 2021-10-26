@@ -1750,10 +1750,6 @@
     'startup': {
       'filepath': 'chrome/browser/ui/startup/',
     },
-    'status_area': {
-      'filepath': 'ash/system/'\
-                  '|google_apis/calendar/',
-    },
     'storage_service' : {
       'filepath': 'components/services/storage/',
     },
@@ -2786,7 +2782,6 @@
     'startup': ['nicolaso+watch@chromium.org',
                 'pastarmovj+watch@chromium.org',
                 'ydago+watch@chromium.org'],
-    'status_area': ['cros-status-area-eng+watchlist@google.com'],
     'storage_service': ['dmurph+watching-storageservice@chromium.org'],
     'structured_headers': ['iclelland+watch@chromium.org'],
     'styleguide': ['danakj+watch@chromium.org',
