@@ -678,7 +678,7 @@
   {
     "name": "chrome-share-long-screenshot",
     "owners": [ "skare", "chrome-sharing-eng@google.com" ],
-    "expiry_milestone": 96
+    "expiry_milestone": 100
   },
   {
     "name": "chrome-sharing-hub-launch-adjacent",
@@ -4836,7 +4836,7 @@
   {
     "name": "send-tab-to-self-v2",
     "owners": ["kmilka", "chrome-sharing-eng@google.com"],
-    "expiry_milestone": 95
+    "expiry_milestone": 100
   },
   {
     "name": "send-tab-to-self-when-signed-in",
@@ -4878,12 +4878,12 @@
   {
     "name": "share-usage-ranking",
     "owners": [ "ellyjones", "chrome-sharing-eng@google.com" ],
-    "expiry_milestone": 96
+    "expiry_milestone": 100
   },
   {
     "name": "share-usage-ranking-fixed-more",
     "owners": [ "ellyjones", "chrome-sharing-eng@google.com" ],
-    "expiry_milestone": 96
+    "expiry_milestone": 100
   },
   {
     "name": "shared-clipboard-ui",
