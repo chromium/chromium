@@ -130,6 +130,10 @@
 #include "mojo/public/cpp/platform/socket_utils_posix.h"
 #endif
 
+#if defined(OS_FUCHSIA)
+#include "ui/platform_window/fuchsia/initialize_presenter_api_view.h"
+#endif  // defined(OS_FUCHSIA)
+
 namespace content {
 namespace {
 
@@ -394,6 +398,14 @@ void BrowserTestBase::SetUp() {
   // device or vm bots), we use hardware GL.
   if (base::SysInfo::IsRunningOnChromeOS())
     use_software_gl = false;
+#endif
+
+#if defined(OS_FUCHSIA)
+  // GPU support is not available to tests.
+  // TODO(crbug.com/1259462): Enable GPU support.
+  command_line->AppendSwitch(switches::kDisableGpu);
+
+  ui::fuchsia::IgnorePresentCallsForTest();
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

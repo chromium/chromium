@@ -46,7 +46,6 @@ int main(int argc, char** argv) {
   auto* command_line = base::CommandLine::ForCurrentProcess();
   command_line->AppendSwitchASCII(switches::kOzonePlatform, "scenic");
   command_line->AppendSwitchASCII(switches::kEnableLogging, "stderr");
-  command_line->AppendSwitch(switches::kDisableGpu);
 
   // Indicate to all processes that they are being run as part of a browser
   // test, so that dependencies which might compromise test isolation

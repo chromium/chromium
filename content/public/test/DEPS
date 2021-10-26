@@ -48,5 +48,8 @@ specific_include_rules = {
   # directly.
   "content_browser_test_shell_main_delegate.h": [
     "+content/shell/app/shell_main_delegate.h"
+  ],
+  "browser_test_base.cc": [
+    "+ui/platform_window/fuchsia/initialize_presenter_api_view.h"
   ]
 }

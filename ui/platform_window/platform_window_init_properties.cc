@@ -20,8 +20,4 @@ PlatformWindowInitProperties::PlatformWindowInitProperties(
 
 PlatformWindowInitProperties::~PlatformWindowInitProperties() = default;
 
-#if defined(OS_FUCHSIA)
-bool PlatformWindowInitProperties::allow_null_view_token_for_test = false;
-#endif
-
 }  // namespace ui
