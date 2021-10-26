@@ -1486,7 +1486,14 @@ content::RenderAccessibility* PdfAccessibilityTree::GetRenderAccessibility() {
   // If RenderAccessibility is unable to generate valid positive IDs,
   // we shouldn't use it. This can happen if Blink accessibility is disabled
   // after we started generating the accessible PDF.
+  base::WeakPtr<PdfAccessibilityTree> weak_this =
+      weak_ptr_factory_.GetWeakPtr();
   if (render_accessibility->GenerateAXID() <= 0)
+    return nullptr;
+
+  // GenerateAXID() above can cause self deletion. Returning nullptr will cause
+  // callers to stop doing work.
+  if (!weak_this)
     return nullptr;
 
   return render_accessibility;
