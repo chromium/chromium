@@ -184,6 +184,15 @@ void FillInDefaultScalingListData(H265ScalingListData* scaling_list_data,
     }                                                                \
   } while (0)
 
+#define EQ_OR_RETURN(shdr1, shdr2, field)                                 \
+  do {                                                                    \
+    if ((shdr1->field) != (shdr2->field)) {                               \
+      DVLOG(1) << "Error in stream, slice header fields must match for: " \
+               << #field;                                                 \
+      return kInvalidStream;                                              \
+    }                                                                     \
+  } while (0)
+
 H265NALU::H265NALU() {
   memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
 }
@@ -1242,6 +1251,24 @@ H265Parser::Result H265Parser::ParseSliceHeader(const H265NALU& nalu,
     READ_UE_OR_RETURN(&slice_segment_header_extension_length);
     IN_RANGE_OR_RETURN(slice_segment_header_extension_length, 0, 256);
     SKIP_BITS_OR_RETURN(slice_segment_header_extension_length * 8);
+  }
+
+  if (prior_shdr) {
+    // Validate the fields that must match between slice headers for the same
+    // picture.
+    EQ_OR_RETURN(shdr, prior_shdr, slice_pic_parameter_set_id);
+    EQ_OR_RETURN(shdr, prior_shdr, pic_output_flag);
+    EQ_OR_RETURN(shdr, prior_shdr, no_output_of_prior_pics_flag);
+    EQ_OR_RETURN(shdr, prior_shdr, slice_pic_order_cnt_lsb);
+    EQ_OR_RETURN(shdr, prior_shdr, short_term_ref_pic_set_sps_flag);
+
+    // All the other fields we need to compare are contiguous, so compare them
+    // as one memory range.
+    size_t block_start = offsetof(H265SliceHeader, short_term_ref_pic_set_idx);
+    size_t block_end = offsetof(H265SliceHeader, slice_sao_luma_flag);
+    TRUE_OR_RETURN(!memcmp(reinterpret_cast<uint8_t*>(shdr) + block_start,
+                           reinterpret_cast<uint8_t*>(prior_shdr) + block_start,
+                           block_end - block_start));
   }
 
   // byte_alignment()
