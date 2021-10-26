@@ -35,6 +35,7 @@ PageInfoAboutThisSiteContentView::PageInfoAboutThisSiteContentView(
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
   AddChildView(CreateSourceLabel(info_));
+  presenter_->InitializeUiState(this, base::DoNothing());
 }
 
 PageInfoAboutThisSiteContentView::~PageInfoAboutThisSiteContentView() = default;

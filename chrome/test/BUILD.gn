@@ -2946,6 +2946,7 @@ if (!is_android && !is_fuchsia) {
       }
       deps += [
         ":test_support_ui",
+        "//components/page_info:proto",
         "//ui/base/dragdrop:types",
         "//ui/views",
         "//url",
