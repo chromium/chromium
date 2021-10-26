@@ -92,6 +92,7 @@ class NavigationUIData;
 class NavigatorDelegate;
 class PrefetchedSignedExchangeCache;
 class ServiceWorkerMainResourceHandle;
+class SiteInfo;
 struct SubresourceLoaderParams;
 
 // The primary implementation of NavigationHandle.

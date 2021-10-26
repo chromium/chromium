@@ -50,6 +50,7 @@ namespace content {
 class BrowserContext;
 class IsolationContext;
 class ResourceContext;
+class SiteInfo;
 
 // ProcessLock is a core part of Site Isolation, which is used to determine
 // which documents are allowed to load in a process and which site data the

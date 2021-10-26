@@ -27,6 +27,7 @@
 #include "content/browser/font_access/font_enumeration_cache.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/site_info.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/public/browser/browser_child_process_host_iterator.h"

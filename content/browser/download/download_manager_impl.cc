@@ -47,6 +47,7 @@
 #include "content/browser/file_system/file_system_url_loader_factory.h"
 #include "content/browser/loader/file_url_loader_factory.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
+#include "content/browser/site_info.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"

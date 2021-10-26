@@ -9,6 +9,7 @@
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/site_info.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/frame.mojom.h"
 #include "content/public/browser/web_contents.h"

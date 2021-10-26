@@ -43,6 +43,7 @@ class FrameTree;
 class FrameTreeNode;
 class NavigationRequest;
 class RenderFrameHostImpl;
+class SiteInfo;
 class SiteInstance;
 struct LoadCommittedDetails;
 

@@ -28,6 +28,7 @@
 #include "content/browser/isolated_origin_util.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
+#include "content/browser/site_info.h"
 #include "content/browser/webui/url_data_manager_backend.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_or_resource_context.h"
