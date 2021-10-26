@@ -2669,10 +2669,7 @@ class ComputedStyle : public ComputedStyleBase,
     return EBoxSizing::kContentBox;
   }
 
-  bool ForceDark() const {
-    return DarkColorScheme() && ColorSchemeForced() &&
-           !HasFilterInducingProperty();
-  }
+  bool ForceDark() const { return DarkColorScheme() && ColorSchemeForced(); }
 
  private:
   EClear Clear() const { return ClearInternal(); }
