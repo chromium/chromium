@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "components/optimization_guide/content/browser/page_content_annotations_common.h"
+#include "components/optimization_guide/core/page_content_annotations_common.h"
 
 namespace optimization_guide {
 
