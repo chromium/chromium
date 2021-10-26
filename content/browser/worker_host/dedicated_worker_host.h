@@ -25,6 +25,7 @@
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom.h"
 #include "third_party/blink/public/mojom/idle/idle_manager.mojom-forward.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom.h"
 #include "third_party/blink/public/mojom/loader/content_security_notifier.mojom.h"
@@ -56,8 +57,10 @@ class CrossOriginEmbedderPolicyReporter;
 // of the worker is destroyed. This lives on the UI thread.
 // TODO(crbug.com/1177652): Align this class's lifetime with the associated
 // frame.
-class DedicatedWorkerHost final : public blink::mojom::DedicatedWorkerHost,
-                                  public RenderProcessHostObserver {
+class DedicatedWorkerHost final
+    : public blink::mojom::DedicatedWorkerHost,
+      public blink::mojom::BackForwardCacheControllerHost,
+      public RenderProcessHostObserver {
  public:
   DedicatedWorkerHost(
       DedicatedWorkerServiceImpl* service,
@@ -155,6 +158,12 @@ class DedicatedWorkerHost final : public blink::mojom::DedicatedWorkerHost,
   ServiceWorkerMainResourceHandle* service_worker_handle() {
     return service_worker_handle_.get();
   }
+
+  // blink::mojom::BackForwardCacheControllerHost:
+  void EvictFromBackForwardCache(
+      blink::mojom::RendererEvictionReason reason) override;
+  void DidChangeBackForwardCacheDisablingFeatures(
+      uint64_t features_mask) override;
 
   base::WeakPtr<DedicatedWorkerHost> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
@@ -294,6 +303,8 @@ class DedicatedWorkerHost final : public blink::mojom::DedicatedWorkerHost,
   mojo::Receiver<blink::mojom::BrowserInterfaceBroker> broker_receiver_{
       &broker_};
   mojo::Receiver<blink::mojom::DedicatedWorkerHost> host_receiver_;
+  mojo::Receiver<blink::mojom::BackForwardCacheControllerHost>
+      back_forward_cache_controller_host_receiver_{this};
 
   // Indicates if subresource loaders of this worker support file URLs.
   bool file_url_support_ = false;

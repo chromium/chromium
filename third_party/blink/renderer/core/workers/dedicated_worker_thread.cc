@@ -49,10 +49,14 @@ DedicatedWorkerThread::DedicatedWorkerThread(
     ExecutionContext* parent_execution_context,
     DedicatedWorkerObjectProxy& worker_object_proxy,
     mojo::PendingRemote<mojom::blink::DedicatedWorkerHost>
-        dedicated_worker_host)
+        dedicated_worker_host,
+    mojo::PendingRemote<mojom::blink::BackForwardCacheControllerHost>
+        back_forward_cache_controller_host)
     : WorkerThread(worker_object_proxy),
       worker_object_proxy_(worker_object_proxy),
-      pending_dedicated_worker_host_(std::move(dedicated_worker_host)) {
+      pending_dedicated_worker_host_(std::move(dedicated_worker_host)),
+      pending_back_forward_cache_controller_host_(
+          std::move(back_forward_cache_controller_host)) {
   FrameOrWorkerScheduler* scheduler =
       parent_execution_context ? parent_execution_context->GetScheduler()
                                : nullptr;
@@ -72,7 +76,8 @@ WorkerOrWorkletGlobalScope* DedicatedWorkerThread::CreateWorkerGlobalScope(
   DCHECK(pending_dedicated_worker_host_);
   return DedicatedWorkerGlobalScope::Create(
       std::move(creation_params), this, time_origin_,
-      std::move(pending_dedicated_worker_host_));
+      std::move(pending_dedicated_worker_host_),
+      std::move(pending_back_forward_cache_controller_host_));
 }
 
 }  // namespace blink

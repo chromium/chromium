@@ -258,7 +258,8 @@ void DedicatedWorker::OnHostCreated(
                   network::mojom::ReferrerPolicy::kDefault,
                   Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
                   absl::nullopt /* response_address_space */,
-                  String() /* source_code */, reject_coep_unsafe_none);
+                  String() /* source_code */, reject_coep_unsafe_none,
+                  mojo::NullRemote() /* back_forward_cache_controller_host */);
     return;
   }
   NOTREACHED() << "Invalid type: " << IDLEnumAsString(options_->type());
@@ -316,7 +317,10 @@ void DedicatedWorker::OnWorkerHostCreated(
 
 void DedicatedWorker::OnScriptLoadStarted(
     std::unique_ptr<WorkerMainScriptLoadParameters>
-        worker_main_script_load_params) {
+        worker_main_script_load_params,
+    CrossVariantMojoRemote<
+        mojom::blink::BackForwardCacheControllerHostInterfaceBase>
+        back_forward_cache_controller_host) {
   DCHECK(base::FeatureList::IsEnabled(features::kPlzDedicatedWorker));
   // Specify empty source code here because scripts will be fetched on the
   // worker thread.
@@ -324,7 +328,8 @@ void DedicatedWorker::OnScriptLoadStarted(
                 network::mojom::ReferrerPolicy::kDefault,
                 Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
                 absl::nullopt /* response_address_space */,
-                String() /* source_code */, RejectCoepUnsafeNone(false));
+                String() /* source_code */, RejectCoepUnsafeNone(false),
+                std::move(back_forward_cache_controller_host));
 }
 
 void DedicatedWorker::OnScriptLoadStartFailed() {
@@ -385,7 +390,8 @@ void DedicatedWorker::OnFinished() {
                               ->GetParsedPolicies())
             : Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
         classic_script_loader_->ResponseAddressSpace(),
-        classic_script_loader_->SourceText(), RejectCoepUnsafeNone(false));
+        classic_script_loader_->SourceText(), RejectCoepUnsafeNone(false),
+        mojo::NullRemote() /* back_forward_cache_controller_host */);
     probe::ScriptImported(GetExecutionContext(),
                           classic_script_loader_->Identifier(),
                           classic_script_loader_->SourceText());
@@ -402,7 +408,9 @@ void DedicatedWorker::ContinueStart(
         response_content_security_policies,
     absl::optional<network::mojom::IPAddressSpace> response_address_space,
     const String& source_code,
-    RejectCoepUnsafeNone reject_coep_unsafe_none) {
+    RejectCoepUnsafeNone reject_coep_unsafe_none,
+    mojo::PendingRemote<mojom::blink::BackForwardCacheControllerHost>
+        back_forward_cache_controller_host) {
   context_proxy_->StartWorkerGlobalScope(
       CreateGlobalScopeCreationParams(
           script_url, referrer_policy,
@@ -411,7 +419,8 @@ void DedicatedWorker::ContinueStart(
       std::move(worker_main_script_load_params), options_, script_url,
       *outside_fetch_client_settings_object_, v8_stack_trace_id_, source_code,
       reject_coep_unsafe_none, token_,
-      std::move(pending_dedicated_worker_host_));
+      std::move(pending_dedicated_worker_host_),
+      std::move(back_forward_cache_controller_host));
 }
 
 std::unique_ptr<GlobalScopeCreationParams>
