@@ -70,13 +70,13 @@ void Size::Enlarge(int grow_width, int grow_height) {
 }
 
 void Size::SetToMin(const Size& other) {
-  width_ = width() <= other.width() ? width() : other.width();
-  height_ = height() <= other.height() ? height() : other.height();
+  width_ = std::min(width_, other.width_);
+  height_ = std::min(height_, other.height_);
 }
 
 void Size::SetToMax(const Size& other) {
-  width_ = width() >= other.width() ? width() : other.width();
-  height_ = height() >= other.height() ? height() : other.height();
+  width_ = std::max(width_, other.width_);
+  height_ = std::max(height_, other.height_);
 }
 
 std::string Size::ToString() const {

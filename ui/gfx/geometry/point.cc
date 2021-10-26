@@ -53,13 +53,13 @@ CGPoint Point::ToCGPoint() const {
 #endif
 
 void Point::SetToMin(const Point& other) {
-  x_ = x_ <= other.x_ ? x_ : other.x_;
-  y_ = y_ <= other.y_ ? y_ : other.y_;
+  x_ = std::min(x_, other.x_);
+  y_ = std::min(y_, other.y_);
 }
 
 void Point::SetToMax(const Point& other) {
-  x_ = x_ >= other.x_ ? x_ : other.x_;
-  y_ = y_ >= other.y_ ? y_ : other.y_;
+  x_ = std::max(x_, other.x_);
+  y_ = std::max(y_, other.y_);
 }
 
 std::string Point::ToString() const {
