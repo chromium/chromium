@@ -361,7 +361,24 @@ void TemplateUrlServiceAndroid::GetTemplateUrls(
     const base::android::JavaParamRef<jobject>& template_url_list_obj) {
   std::vector<TemplateURL*> template_urls =
       template_url_service_->GetTemplateURLs();
+
+  // Clean up duplication between a Play API template URL and a corresponding
+  // prepopulated template URL.
+  auto play_api_it =
+      std::find_if(template_urls.begin(), template_urls.end(),
+                   [](TemplateURL* template_url) {
+                     return template_url->created_from_play_api();
+                   });
+  TemplateURL* play_api_turl =
+      play_api_it != template_urls.end() ? *play_api_it : nullptr;
+
   for (TemplateURL* template_url : template_urls) {
+    // When Play API template URL supercedes the current template URL, skip it.
+    if (play_api_turl && play_api_turl->keyword() == template_url->keyword() &&
+        play_api_turl->IsBetterThanEngineWithConflictingKeyword(template_url)) {
+      continue;
+    }
+
     base::android::ScopedJavaLocalRef<jobject> j_template_url =
         CreateTemplateUrlAndroid(env, template_url);
     Java_TemplateUrlService_addTemplateUrlToList(env, template_url_list_obj,
