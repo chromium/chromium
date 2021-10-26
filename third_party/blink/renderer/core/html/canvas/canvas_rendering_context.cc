@@ -46,6 +46,10 @@ CanvasRenderingContext::CanvasRenderingContext(
       creation_attributes_(attrs),
       canvas_rendering_type_(canvas_rendering_API) {}
 
+SkColorInfo CanvasRenderingContext::CanvasRenderingContextSkColorInfo() const {
+  return CanvasRenderingContextColorParams().GetSkColorInfo();
+}
+
 void CanvasRenderingContext::Dispose() {
   RenderTaskEnded();
 

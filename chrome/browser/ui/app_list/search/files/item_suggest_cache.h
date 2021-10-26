@@ -112,6 +112,12 @@ class ItemSuggestCache {
   static constexpr base::FeatureParam<int> kMinMinutesBetweenUpdates{
       &kExperiment, "min_minutes_between_updates", 15};
 
+  // Whether ItemSuggest should be queried more than once per session. Multiple
+  // queries are issued if either this param is true or the suggested files
+  // experiment is enabled.
+  static constexpr base::FeatureParam<bool> kMultipleQueriesPerSession{
+      &kExperiment, "multiple_queries_per_session", false};
+
   // Returns the body for the itemsuggest request. Affected by |kExperiment|.
   std::string GetRequestBody();
 
@@ -138,6 +144,8 @@ class ItemSuggestCache {
   const bool enabled_;
   const GURL server_url_;
   const base::TimeDelta min_time_between_updates_;
+  // Whether we should query item suggest more than once per session.
+  const bool multiple_queries_per_session_;
 
   Profile* profile_;
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher> token_fetcher_;

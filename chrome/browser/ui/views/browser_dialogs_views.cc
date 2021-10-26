@@ -76,18 +76,11 @@ void ShowBrowserModal(Browser* browser,
 void ShowBubble(Browser* browser,
                 ui::ElementIdentifier anchor_element_id,
                 std::unique_ptr<ui::DialogModel> dialog_model) {
-  // TODO(pbos): ui::ElementIdentifier to views::View lookup should probably
-  // live in a utility function or ElementTrackerViews?
-  ui::TrackedElement* const tracked_element =
-      ui::ElementTracker::GetElementTracker()->GetUniqueElement(
-          anchor_element_id,
-          views::ElementTrackerViews::GetInstance()->GetContextForView(
-              BrowserView::GetBrowserViewForBrowser(browser)));
-  DCHECK(tracked_element);
-  // This assumes that the tracked element is actually a View and nothing inside
-  // say WebUI.
   views::View* const anchor_view =
-      tracked_element->AsA<views::TrackedElementViews>()->view();
+      views::ElementTrackerViews::GetInstance()->GetUniqueView(
+          anchor_element_id,
+          views::ElementTrackerViews::GetContextForView(
+              BrowserView::GetBrowserViewForBrowser(browser)));
   DCHECK(anchor_view);
   // TODO(pbos): Add a version of BubbleBorder::Arrow that infers position
   // automatically based on the anchor's position relative to its widget.

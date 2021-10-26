@@ -56,7 +56,7 @@ class HTMLCanvasPainterTestForCAP : public PaintControllerPaintTest {
   std::unique_ptr<Canvas2DLayerBridge> MakeCanvas2DLayerBridge(
       const IntSize& size) {
     return std::make_unique<Canvas2DLayerBridge>(size, RasterMode::kGPU,
-                                                 CanvasColorParams());
+                                                 kNonOpaque);
   }
 
  private:

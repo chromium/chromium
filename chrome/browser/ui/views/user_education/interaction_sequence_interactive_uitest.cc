@@ -26,14 +26,6 @@
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_sequence_views.h"
 
-namespace {
-
-views::View* ElementToView(ui::TrackedElement* element) {
-  return element->AsA<views::TrackedElementViews>()->view();
-}
-
-}  // namespace
-
 // This test ensures basic compatibility of InteractionSequence[Views] and a
 // live browser. It verifies that a simple journey of opening the main menu and
 // identifying a specific menu item works.
@@ -55,9 +47,9 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceUITest, OpenMainMenuAndViewHelpItem) {
 
   // Demonstrate that we can find the app button without having to pick through
   // the BrowserView hierarcny.
-  views::View* const button_view = ElementToView(
-      ui::ElementTracker::GetElementTracker()->GetFirstMatchingElement(
-          kAppMenuButtonElementId, context));
+  views::View* const button_view =
+      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+          kAppMenuButtonElementId, context);
   BrowserAppMenuButton* const app_menu_button =
       static_cast<BrowserAppMenuButton*>(button_view);
   DCHECK_EQ(std::string("BrowserAppMenuButton"),
@@ -103,9 +95,7 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceUITest, OpenMainMenuAndViewHelpItem) {
   views::MenuItemView* const history_menu_item =
       app_menu_button->app_menu()->root_menu_item()->GetMenuItemByID(
           IDC_RECENT_TABS_MENU);
-  EXPECT_EQ(
-      history_menu_item,
-      ElementToView(
-          ui::ElementTracker::GetElementTracker()->GetFirstMatchingElement(
-              AppMenuModel::kHistoryMenuItem, context)));
+  EXPECT_EQ(history_menu_item,
+            views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+                AppMenuModel::kHistoryMenuItem, context));
 }

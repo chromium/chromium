@@ -241,7 +241,6 @@ MEDIA_EXPORT extern const base::Feature kMultiPlaneVideoToolboxSharedImages;
 MEDIA_EXPORT extern const base::Feature kDelayCopyNV12Textures;
 MEDIA_EXPORT extern const base::Feature kDirectShowGetPhotoState;
 MEDIA_EXPORT extern const base::Feature kIncludeIRCamerasInDeviceEnumeration;
-MEDIA_EXPORT extern const base::Feature kMediaFoundationAsyncH264Encoding;
 MEDIA_EXPORT extern const base::Feature kMediaFoundationAV1Decoding;
 MEDIA_EXPORT extern const base::Feature kMediaFoundationAV1Encoding;
 MEDIA_EXPORT extern const base::Feature kMediaFoundationVideoCapture;

@@ -234,7 +234,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': '8744f3b84ddcf9fc7b817e2893463ecb74e4c2a1',
+  'skia_revision': '0d3f184582ee30a8af34b6bae5509fb4ef4a6a64',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
@@ -250,7 +250,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling PDFium
   # and whatever else without interference from each other.
-  'pdfium_revision': 'b6a909b9a79b39e179e3c557b6f22989fce48d49',
+  'pdfium_revision': 'f5bdf5a158dc51c27dde25a1685f3aa1a874d377',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling BoringSSL
   # and whatever else without interference from each other.
@@ -309,7 +309,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': '5c94fd9c20ee495b86f1b6893b4277f405ce09fb',
+  'devtools_frontend_revision': '0cd7b4721dea3514d2dac578e1d3549dd021af24',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -349,7 +349,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'dawn_revision': '55aa57f2ecf4c8da59eaa8fe115247c724c52329',
+  'dawn_revision': 'f4c8a6ac9ba5f0032cec430b82080608c90d3567',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
@@ -1029,7 +1029,7 @@ deps = {
   },
 
   'src/third_party/depot_tools':
-    Var('chromium_git') + '/chromium/tools/depot_tools.git' + '@' + '7bd4c881889e2306865a23d0f07fd7872240a2fb',
+    Var('chromium_git') + '/chromium/tools/depot_tools.git' + '@' + '378395bfb59d80bcbcbd8087b5bad72ec1d89bd2',
 
   'src/third_party/devtools-frontend/src':
     Var('chromium_git') + '/devtools/devtools-frontend' + '@' + Var('devtools_frontend_revision'),
@@ -1512,7 +1512,7 @@ deps = {
   },
 
   'src/third_party/re2/src':
-    Var('chromium_git') + '/external/github.com/google/re2.git' + '@' + '8cbfdde4ef25e1983b714d9819d4dcba34cd5102',
+    Var('chromium_git') + '/external/github.com/google/re2.git' + '@' + 'e90569de09a9a3dd1f2dec189f77b52d17e4faea',
 
   'src/third_party/r8': {
       'packages': [
@@ -1694,7 +1694,7 @@ deps = {
     Var('chromium_git') + '/v8/v8.git' + '@' +  Var('v8_revision'),
 
   'src-internal': {
-    'url': 'https://chrome-internal.googlesource.com/chrome/src-internal.git@69b20a87e9950d6364c70992b04cfdb71d77c99d',
+    'url': 'https://chrome-internal.googlesource.com/chrome/src-internal.git@de4ecfa73bf49745fe1c93e35e50ebbbfce0d90a',
     'condition': 'checkout_src_internal',
   },
 

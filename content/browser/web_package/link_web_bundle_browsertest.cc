@@ -10,6 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
+#include "build/build_config.h"
 #include "components/web_package/web_bundle_builder.h"
 #include "components/web_package/web_bundle_utils.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -259,7 +260,13 @@ class LinkWebBundleBrowserTest
       net::EmbeddedTestServer::Type::TYPE_HTTPS};
 };
 
-IN_PROC_BROWSER_TEST_P(LinkWebBundleBrowserTest, ChangeLinkElementHref) {
+#if defined(OS_MAC)
+// TODO(https://crbug.com/1263334): Flakes on macOS.
+#define MAYBE_ChangeLinkElementHref DISABLED_ChangeLinkElementHref
+#else
+#define MAYBE_ChangeLinkElementHref ChangeLinkElementHref
+#endif  // defined(OS_MAC)
+IN_PROC_BROWSER_TEST_P(LinkWebBundleBrowserTest, MAYBE_ChangeLinkElementHref) {
   GURL url(https_server()->GetURL("/web_bundle/empty.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -306,7 +313,13 @@ IN_PROC_BROWSER_TEST_P(LinkWebBundleBrowserTest, ChangeLinkElementHref) {
   EXPECT_EQ("\"webbundle loaded after change\"", message);
 }
 
-IN_PROC_BROWSER_TEST_P(LinkWebBundleBrowserTest, RemoveLinkElement) {
+#if defined(OS_MAC)
+// TODO(https://crbug.com/1263334): Flakes on macOS.
+#define MAYBE_RemoveLinkElement DISABLED_RemoveLinkElement
+#else
+#define MAYBE_RemoveLinkElement RemoveLinkElement
+#endif  // defined(OS_MAC)
+IN_PROC_BROWSER_TEST_P(LinkWebBundleBrowserTest, MAYBE_RemoveLinkElement) {
   GURL url(https_server()->GetURL("/web_bundle/empty.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 

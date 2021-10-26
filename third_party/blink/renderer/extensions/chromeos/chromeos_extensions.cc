@@ -11,23 +11,23 @@
 namespace blink {
 
 namespace {
-void ChromeOSExposedConstructCallback(
+void ChromeOSDataPropertyGetCallback(
     v8::Local<v8::Name> v8_property_name,
     const v8::PropertyCallbackInfo<v8::Value>& info) {
-  bindings::V8SetReturnValue(info, V8ChromeOS::GetWrapperTypeInfo(),
-                             bindings::V8ReturnValue::kNamespaceObject);
+  v8::Local<v8::Context> creation_context = info.Holder()->CreationContext();
+  bindings::V8SetReturnValue(info, MakeGarbageCollected<ChromeOS>(),
+                             creation_context);
 }
 
 void InstallChromeOSExtensions(ScriptState* script_state) {
   auto global_proxy = script_state->GetContext()->Global();
 
   global_proxy
-      ->SetLazyDataProperty(
-          script_state->GetContext(),
-          V8String(script_state->GetIsolate(),
-                   V8ChromeOS::GetWrapperTypeInfo()->interface_name),
-          ChromeOSExposedConstructCallback, v8::Local<v8::Value>(),
-          v8::DontEnum, v8::SideEffectType::kHasNoSideEffect)
+      ->SetLazyDataProperty(script_state->GetContext(),
+                            V8String(script_state->GetIsolate(), "chromeos"),
+                            ChromeOSDataPropertyGetCallback,
+                            v8::Local<v8::Value>(), v8::DontEnum,
+                            v8::SideEffectType::kHasNoSideEffect)
       .ToChecked();
 }
 
