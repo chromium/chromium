@@ -39,6 +39,7 @@ const char kLayerId[] = "layerId";
 const char kLayerTreeId[] = "layerTreeId";
 const char kPixelRefId[] = "pixelRefId";
 const char kFrameSequenceNumber[] = "frameSeqId";
+const char kHasPartialUpdate[] = "hasPartialUpdate";
 
 const char kImageUploadTask[] = "ImageUploadTask";
 const char kImageDecodeTask[] = "ImageDecodeTask";
