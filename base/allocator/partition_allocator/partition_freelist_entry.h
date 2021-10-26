@@ -27,7 +27,7 @@ namespace {
 #if defined(PA_HAS_FREELIST_HARDENING) || DCHECK_IS_ON()
 [[noreturn]] NOINLINE void FreelistCorruptionDetected(size_t extra) {
   // Make it visible in minidumps.
-  PA_DEBUG_DATA_ON_STACK(1, "extra", extra);
+  PA_DEBUG_DATA_ON_STACK("extra", extra);
   IMMEDIATE_CRASH();
 }
 #endif  // defined(PA_HAS_FREELIST_HARDENING) || DCHECK_IS_ON()

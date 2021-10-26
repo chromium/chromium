@@ -112,6 +112,10 @@ struct DebugKv {
 };
 }  // namespace pa
 
+#define PA_CONCAT(x, y) x##y
+#define PA_CONCAT2(x, y) PA_CONCAT(x, y)
+#define PA_DEBUG_UNIQUE_NAME PA_CONCAT2(kv, __LINE__)
+
 // Puts a key-value pair on the stack for debugging. `base::debug::Alias()`
 // makes sure a local variable is saved on the stack, but the variables can be
 // hard to find in crash reports, particularly if the frame pointer is not
@@ -119,9 +123,8 @@ struct DebugKv {
 //
 // This puts a key right before the value on the stack. The key has to be a C
 // string, which gets truncated if it's longer than 8 characters.
-//
-// Suffix is a unique suffix used for the local variable name. Example use:
-// PA_DEBUG_DATA_ON_STACK(1, "size", 0x42)
+// Example use:
+// PA_DEBUG_DATA_ON_STACK("size", 0x42)
 //
 // Sample output in lldb:
 // (lldb) x 0x00007fffffffd0d0 0x00007fffffffd0f0
@@ -131,8 +134,8 @@ struct DebugKv {
 // With gdb, one can use:
 // x/8g <STACK_POINTER>
 // to see the data. With lldb, "x <STACK_POINTER> <FRAME_POJNTER>" can be used.
-#define PA_DEBUG_DATA_ON_STACK(suffix, name, value) \
-  pa::DebugKv kv##suffix{name, value};              \
-  base::debug::Alias(&kv##suffix);
+#define PA_DEBUG_DATA_ON_STACK(name, value)      \
+  pa::DebugKv PA_DEBUG_UNIQUE_NAME{name, value}; \
+  base::debug::Alias(&PA_DEBUG_UNIQUE_NAME);
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_CHECK_H_

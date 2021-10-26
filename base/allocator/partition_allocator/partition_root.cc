@@ -482,7 +482,7 @@ template <bool thread_safe>
   // stacks, and other allocators will also consume address space).
   const size_t kReasonableVirtualSize = (is_wow_64 ? 2800 : 1024) * 1024 * 1024;
   // Make it obvious whether we are running on 64-bit Windows.
-  PA_DEBUG_DATA_ON_STACK(1, "is_wow_64", static_cast<size_t>(is_wow_64));
+  PA_DEBUG_DATA_ON_STACK("is_wow_64", static_cast<size_t>(is_wow_64));
 #else
   constexpr size_t kReasonableVirtualSize =
       // 1.5GiB elsewhere, since address space is typically 3GiB.
@@ -493,8 +493,18 @@ template <bool thread_safe>
         virtual_address_space_size);
   }
 
-  // Make the virtual size visible to crash reports all the time.
-  PA_DEBUG_DATA_ON_STACK(2, "va_size", virtual_address_space_size);
+  // Out of memory can be due to multiple causes, such as:
+  // - Out of GigaCage virtual address space
+  // - Out of commit due to either our process, or another one
+  // - Excessive allocations in the current process
+  //
+  // Saving these values make it easier to distinguish between these. See the
+  // documentation in PA_DEBUG_DATA_ON_STACK() on how to get these from
+  // minidumps.
+  PA_DEBUG_DATA_ON_STACK("va_size", virtual_address_space_size);
+  PA_DEBUG_DATA_ON_STACK("alloc", get_total_size_of_allocated_bytes());
+  PA_DEBUG_DATA_ON_STACK("commit", get_total_size_of_committed_pages());
+  PA_DEBUG_DATA_ON_STACK("size", size);
 
 #endif
   if (internal::g_oom_handling_function)

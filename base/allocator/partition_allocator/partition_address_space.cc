@@ -44,7 +44,7 @@ NOINLINE void HandleGigaCageAllocFailureOutOfCommitCharge() {
 NOINLINE void HandleGigaCageAllocFailure() {
   NO_CODE_FOLDING();
   uint32_t alloc_page_error_code = base::GetAllocPageErrorCode();
-  base::debug::Alias(&alloc_page_error_code);
+  PA_DEBUG_DATA_ON_STACK("error", static_cast<size_t>(alloc_page_error_code));
   // It's important to easily differentiate these two failures on Windows, so
   // crash with different stacks.
 #if defined(OS_WIN)
