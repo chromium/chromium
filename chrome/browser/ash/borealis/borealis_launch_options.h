@@ -21,7 +21,7 @@ class BorealisLaunchOptions {
   // Creates a per-profile instance of the launch options manager for Borealis.
   explicit BorealisLaunchOptions(Profile* profile);
 
-  absl::optional<base::File> GetExtraDisk();
+  absl::optional<base::FilePath> GetExtraDisk();
 
  private:
   base::CommandLine GetLaunchOptions();

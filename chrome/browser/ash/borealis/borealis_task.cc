@@ -124,12 +124,22 @@ bool GetDeveloperMode() {
   return output == "1";
 }
 
-absl::optional<base::File> ReturnFileOnlyInDeveloperMode(
-    absl::optional<base::File> file) {
-  if (file && GetDeveloperMode()) {
-    return file;
+absl::optional<base::File> GetExtraDiskIfInDeveloperMode(
+    absl::optional<base::FilePath> file_path) {
+  if (!file_path)
+    return absl::nullopt;
+
+  if (!GetDeveloperMode())
+    return absl::nullopt;
+
+  base::File file(file_path.value(), base::File::FLAG_OPEN |
+                                         base::File::FLAG_READ |
+                                         base::File::FLAG_WRITE);
+  if (!file.IsValid()) {
+    LOG(WARNING) << "Failed to open " << file_path.value();
+    return absl::nullopt;
   }
-  return absl::nullopt;
+  return file;
 }
 
 }  // namespace
@@ -138,13 +148,13 @@ StartBorealisVm::StartBorealisVm() : BorealisTask("StartBorealisVm") {}
 StartBorealisVm::~StartBorealisVm() = default;
 
 void StartBorealisVm::RunInternal(BorealisContext* context) {
-  absl::optional<base::File> external_disk =
+  absl::optional<base::FilePath> external_disk =
       borealis::BorealisService::GetForProfile(context->profile())
           ->LaunchOptions()
           .GetExtraDisk();
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, base::MayBlock(),
-      base::BindOnce(&ReturnFileOnlyInDeveloperMode, std::move(external_disk)),
+      base::BindOnce(&GetExtraDiskIfInDeveloperMode, std::move(external_disk)),
       base::BindOnce(&StartBorealisVm::StartBorealisWithExternalDisk,
                      weak_factory_.GetWeakPtr(), context));
 }

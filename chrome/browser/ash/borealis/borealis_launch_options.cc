@@ -19,17 +19,10 @@ const char kExtraDiskSwitch[] = "extra-disk";
 BorealisLaunchOptions::BorealisLaunchOptions(Profile* profile)
     : profile_(profile), launch_options_(GetLaunchOptions()) {}
 
-absl::optional<base::File> BorealisLaunchOptions::GetExtraDisk() {
+absl::optional<base::FilePath> BorealisLaunchOptions::GetExtraDisk() {
   if (launch_options_.HasSwitch(kExtraDiskSwitch)) {
-    base::File file(
-        base::FilePath(launch_options_.GetSwitchValueASCII(kExtraDiskSwitch)),
-        base::File::FLAG_OPEN | base::File::FLAG_READ | base::File::FLAG_WRITE);
-    if (!file.IsValid()) {
-      LOG(WARNING) << "Failed to open "
-                   << launch_options_.GetSwitchValueASCII(kExtraDiskSwitch);
-      return absl::nullopt;
-    }
-    return file;
+    return base::FilePath(
+        launch_options_.GetSwitchValueASCII(kExtraDiskSwitch));
   }
   return absl::nullopt;
 }
