@@ -122,18 +122,6 @@ constexpr std::array<const char* const, 7> kPrinterInfoAndStatus{
      kDocumentFormatSupported, kPrinterState, kPrinterStateReasons,
      kPrinterStateMessage}};
 
-// Converts an JobStateReason to the exact string returned by CUPS.
-constexpr base::StringPiece ToJobStateReasonString(
-    CupsJob::JobStateReason stateReason) {
-  switch (stateReason) {
-    case CupsJob::JobStateReason::kJobCompletedWithErrors:
-      return kJobCompletedWithErrors;
-    case CupsJob::JobStateReason::kCupsHeldForAuthentication:
-      return kCupsHeldForAuthentication;
-  }
-  return "";
-}
-
 // Converts an IPP attribute `attr` to the appropriate JobState enum.
 CupsJob::JobState ToJobState(ipp_attribute_t* attr) {
   DCHECK_EQ(IPP_TAG_ENUM, ippGetValueTag(attr));
@@ -391,6 +379,17 @@ bool CupsJob::ContainsStateReason(CupsJob::JobStateReason reason) const {
 PrinterInfo::PrinterInfo() = default;
 
 PrinterInfo::~PrinterInfo() = default;
+
+const base::StringPiece ToJobStateReasonString(
+    CupsJob::JobStateReason state_reason) {
+  switch (state_reason) {
+    case CupsJob::JobStateReason::kJobCompletedWithErrors:
+      return kJobCompletedWithErrors;
+    case CupsJob::JobStateReason::kCupsHeldForAuthentication:
+      return kCupsHeldForAuthentication;
+  }
+  return "";
+}
 
 std::string PrinterUriFromName(const std::string& id) {
   return base::StringPrintf("ipp://localhost/printers/%s", id.c_str());
