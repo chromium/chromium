@@ -38,11 +38,12 @@ specific_include_rules = {
     ],
     ".*_decoder_fuzzer.cc": [
         "+base/run_loop.h",
-        "+testing/libfuzzer/proto/lpm_interface.h",
     ],
     ".*_encoder_fuzzer.cc": [
         "+base/at_exit.h",
         "+base/run_loop.h",
+    ],
+    ".*_fuzzer.cc": [
         "+testing/libfuzzer/proto/lpm_interface.h",
     ],
     "canvas_fuzzer.cc": [
