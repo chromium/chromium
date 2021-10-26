@@ -7276,3 +7276,4 @@ crbug.com/1261770 crbug.com/1245166 [ Linux ] virtual/wbn-from-network/external/
 
 # Sheriff 2021-10-26
 crbug.com/1263349 [ Linux ] external/wpt/resource-timing/object-not-found-after-cross-origin-redirect.html [ Failure Pass ]
+crbug.com/1263354 [ Linux ] virtual/plz-dedicated-worker/external/wpt/resource-timing/object-not-found-adds-entry.html [ Failure Pass ]
