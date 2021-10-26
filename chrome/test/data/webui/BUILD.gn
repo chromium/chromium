@@ -627,6 +627,14 @@ generate_grd("build_chai_grdp") {
   input_files = [ "chai.js" ]
 }
 
+generate_grd("build_web_ui_test_mojo_grdp") {
+  grd_prefix = "webui_generated_test"
+  out_grd = "$target_gen_dir/web_ui_test_mojo_resources.grdp"
+  input_files_base_dir = rebase_path(target_gen_dir, root_build_dir)
+  input_files = [ "web_ui_test.mojom-webui.js" ]
+  deps = [ "..:web_ui_test_mojom_js_module" ]
+}
+
 generate_grd("build_grd") {
   grd_prefix = "webui_generated_test"
   output_files_base_dir = "test/data/grit"
@@ -635,12 +643,21 @@ generate_grd("build_grd") {
   input_files_base_dir = rebase_path(".", "//")
   input_files = [
     "chai_assert.js",
+    "mojo_webui_test_support.js",
     "test_browser_proxy.js",
     "test_util.js",
   ]
 
-  deps = [ ":build_chai_grdp" ]
-  grdp_files = [ "$target_gen_dir/chai_resources.grdp" ]
+  deps = [
+    ":build_chai_grdp",
+    ":build_web_ui_test_mojo_grdp",
+    "downloads:build_grdp",
+  ]
+  grdp_files = [
+    "$target_gen_dir/chai_resources.grdp",
+    "$target_gen_dir/web_ui_test_mojo_resources.grdp",
+    "$target_gen_dir/downloads/resources.grdp",
+  ]
 
   if (enable_print_preview) {
     deps += [ "print_preview:build_grdp" ]
@@ -660,6 +677,7 @@ ts_definitions("generate_definitions") {
   out_dir = "$target_gen_dir/tsc"
   js_files = [
     "chai_assert.js",
+    "mojo_webui_test_support.js",
     "test_browser_proxy.js",
     "test_util.js",
   ]
