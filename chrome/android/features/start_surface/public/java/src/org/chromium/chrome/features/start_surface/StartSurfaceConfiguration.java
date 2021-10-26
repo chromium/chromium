@@ -150,10 +150,12 @@ public class StartSurfaceConfiguration {
     private static final String REGULAR_START_SUBFIX = ".NoInstant";
 
     /**
-     * @return Whether the Start Surface is enabled.
-     * @Deprecated Use {@link ReturnToStartSurfaceUtil#isStartSurfaceHomepageEnabled()} instead.
+     * @return Whether the Start Surface feature flag is enabled.
+     * @Deprecated Use {@link
+     * org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil#isStartSurfaceEnabled()}
+     * instead.
      */
-    public static boolean isStartSurfaceEnabled() {
+    public static boolean isStartSurfaceFlagEnabled() {
         return CachedFeatureFlags.isEnabled(ChromeFeatureList.START_SURFACE_ANDROID)
                 && !SysUtils.isLowEndDevice();
     }
@@ -162,7 +164,7 @@ public class StartSurfaceConfiguration {
      * @return Whether the Start Surface SinglePane is enabled.
      */
     public static boolean isStartSurfaceSinglePaneEnabled() {
-        return isStartSurfaceEnabled() && START_SURFACE_VARIATION.getValue().equals("single");
+        return isStartSurfaceFlagEnabled() && START_SURFACE_VARIATION.getValue().equals("single");
     }
 
     /**
