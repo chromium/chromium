@@ -189,31 +189,6 @@ TEST_F(PromptActionTest, SelectButtons) {
   (*user_actions_)[0].Call(std::make_unique<TriggerContext>());
 }
 
-TEST_F(PromptActionTest, ReportDirectAction) {
-  // Ok has a chip and a direct action.
-  auto* ok_proto = prompt_proto_->add_choices();
-  ok_proto->mutable_chip()->set_text("Ok");
-  ok_proto->mutable_direct_action()->add_names("ok");
-  ok_proto->set_server_payload("ok");
-
-  // Maybe only has a mappings to direct actions.
-  auto* maybe_proto = prompt_proto_->add_choices();
-  maybe_proto->mutable_direct_action()->add_names("maybe");
-  maybe_proto->mutable_direct_action()->add_names("I_guess");
-  maybe_proto->set_server_payload("maybe");
-
-  PromptAction action(&mock_action_delegate_, proto_);
-  action.ProcessAction(callback_.Get());
-
-  ASSERT_THAT(user_actions_, Pointee(SizeIs(2)));
-
-  EXPECT_THAT((*user_actions_)[0].direct_action().names, ElementsAre("ok"));
-  EXPECT_FALSE((*user_actions_)[0].chip().empty());
-  EXPECT_THAT((*user_actions_)[1].direct_action().names,
-              UnorderedElementsAre("maybe", "I_guess"));
-  EXPECT_TRUE((*user_actions_)[1].chip().empty());
-}
-
 TEST_F(PromptActionTest, ShowOnlyIfElementExists) {
   auto* ok_proto = prompt_proto_->add_choices();
   ok_proto->mutable_chip()->set_text("Ok");

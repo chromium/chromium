@@ -1900,34 +1900,6 @@ TEST_F(ScriptExecutorTest, InterceptUserActions) {
   EXPECT_EQ(AutofillAssistantState::RUNNING, delegate_.GetState());
 }
 
-TEST_F(ScriptExecutorTest, ReportDirectActionsChoices) {
-  ActionsResponseProto actions_response;
-  actions_response.add_actions()
-      ->mutable_prompt()
-      ->add_choices()
-      ->mutable_direct_action()
-      ->add_names("done");
-
-  EXPECT_CALL(mock_service_, OnGetActions(_, _, _, _, _, _))
-      .WillOnce(RunOnceCallback<5>(net::HTTP_OK, Serialize(actions_response)));
-
-  std::vector<ProcessedActionProto> processed_actions_capture;
-  EXPECT_CALL(mock_service_, OnGetNextActions(_, _, _, _, _, _))
-      .WillOnce(SaveArg<3>(&processed_actions_capture));
-
-  executor_->Run(&user_data_, executor_callback_.Get());
-
-  ASSERT_NE(nullptr, delegate_.GetUserActions());
-  ASSERT_THAT(*delegate_.GetUserActions(), SizeIs(1));
-  TriggerContext::Options options;
-  options.is_direct_action = true;
-  (*delegate_.GetUserActions())[0].Call(std::make_unique<TriggerContext>(
-      std::make_unique<ScriptParameters>(), options));
-
-  ASSERT_THAT(processed_actions_capture, SizeIs(1));
-  EXPECT_TRUE(processed_actions_capture[0].direct_action());
-}
-
 TEST_F(ScriptExecutorTest, PauseAndResume) {
   ActionsResponseProto actions_response;
   actions_response.add_actions()->mutable_tell()->set_message("Tell");

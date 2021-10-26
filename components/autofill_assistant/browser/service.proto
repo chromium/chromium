@@ -961,16 +961,11 @@ message ProcessedActionProto {
   // Collects the timing stats related to the action execution.
   optional ActionTimingStats timing_stats = 32;
 
-  // If true, the user triggered, during the client action, at least one user
-  // action, such as a prompt choice, through a direct action instead of
-  // selecting a chip on the UI. This is meant for monitoring and debugging.
-  optional bool direct_action = 24;
-
   // Tracks whether the action triggered a slow website warning and whether it
   // was shown to the user.
   optional SlowWarningStatus slow_warning_status = 34;
 
-  reserved 3, 4, 6 to 14, 16 to 18, 26, 27, 29, 30;
+  reserved 3, 4, 6 to 14, 16 to 18, 24, 26, 27, 29, 30;
 }
 
 // Extended information about the action status, which provides more details
@@ -2083,9 +2078,6 @@ message PromptProto {
     // The chip to display to the UI.
     optional ChipProto chip = 11;
 
-    // Map this choice to a direct action.
-    optional DirectActionProto direct_action = 12;
-
     // Auto-select this choice when the condition is met.
     optional ElementConditionProto auto_select_when = 15;
 
@@ -2100,7 +2092,7 @@ message PromptProto {
     // be transmitted as-is by the client without interpreting.
     optional bytes server_payload = 5;
 
-    reserved 4, 6, 8, 13, 14, 17;
+    reserved 4, 6, 8, 12 to 14, 17;
   }
   repeated Choice choices = 4;
 
@@ -2409,8 +2401,6 @@ message CollectUserDataProto {
   // Optional specification for the confirm button (defaults to standard confirm
   // chip if not specified).
   optional ChipProto confirm_chip = 33;
-  // Optionally allows confirming through the given direct actions.
-  optional DirectActionProto confirm_direct_action = 10;
   // The initial state of the terms & conditions choice.
   optional TermsAndConditionsState terms_and_conditions_state = 8;
   // When 'false', hide the terms and conditions box in the UI.
@@ -2485,7 +2475,7 @@ message CollectUserDataProto {
   }
   optional UserDataProto user_data = 37;
 
-  reserved 7, 14, 15, 26;
+  reserved 7, 10, 14, 15, 26;
 }
 
 // Stop Autofill Assistant.
@@ -2779,8 +2769,7 @@ message ShowFormProto {
   // form inputs are valid.
   optional ChipProto chip = 2;
 
-  // Optionally allow confirming the prompt using given direct actions.
-  optional DirectActionProto direct_action = 3;
+  reserved 3;
 }
 
 message FormProto {

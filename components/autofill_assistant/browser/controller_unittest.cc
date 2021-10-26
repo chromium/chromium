@@ -3304,7 +3304,7 @@ TEST_F(ControllerTest, OnScriptErrorWillAppendVanishingFeedbackChip) {
 TEST_F(ControllerTest, UpdateChipVisibility) {
   InSequence seq;
 
-  UserAction user_action(ChipProto(), DirectActionProto(), true, std::string());
+  UserAction user_action(ChipProto(), true, std::string());
   EXPECT_CALL(mock_observer_,
               OnUserActionsChanged(UnorderedElementsAre(Property(
                   &UserAction::chip, Field(&Chip::visible, Eq(true))))))

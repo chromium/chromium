@@ -929,9 +929,6 @@ bool CollectUserDataAction::CreateOptionsFromProto() {
     confirm_chip->set_type(HIGHLIGHTED_ACTION);
   }
 
-  *collect_user_data_options_->confirm_action.mutable_direct_action() =
-      collect_user_data.confirm_direct_action();
-
   for (auto action : collect_user_data.additional_actions()) {
     collect_user_data_options_->additional_actions.push_back(action);
   }
