@@ -10,7 +10,7 @@ load("//lib/branches.star", "branches")
 load("//project.star", "settings")
 
 lucicfg.check_version(
-    min = "1.28.0",
+    min = "1.29.1",
     message = "Update depot_tools",
 )
 
