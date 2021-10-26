@@ -150,8 +150,16 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest,
                                       1);
 }
 
+// Disabled on Windows and ChromeOS due to flakes: crbug.com/1263465.
+#if defined(OS_CHROMEOS) || defined(OS_WIN)
+#define MAYBE_DirectNavigationWithToggleToBasic \
+  DISABLED_DirectNavigationWithToggleToBasic
+#else
+#define MAYBE_DirectNavigationWithToggleToBasic \
+  DirectNavigationWithToggleToBasic
+#endif
 IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest,
-                       DirectNavigationWithToggleToBasic) {
+                       MAYBE_DirectNavigationWithToggleToBasic) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
