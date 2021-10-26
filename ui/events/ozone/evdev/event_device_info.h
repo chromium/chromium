@@ -183,6 +183,9 @@ class COMPONENT_EXPORT(EVDEV) EventDeviceInfo {
   // device is used to track the mute switch state.
   bool IsMicrophoneMuteSwitchDevice() const;
 
+  // Determine if this device uses libinput for touchpad.
+  bool UseLibinput() const;
+
   // The device type (internal or external.)
   InputDeviceType device_type() const { return device_type_; }
 

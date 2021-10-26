@@ -12,7 +12,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/ptr_util.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -70,30 +69,6 @@ struct OpenInputDeviceParams {
   SharedPalmDetectionFilterState* shared_palm_state;
 };
 
-#if defined(USE_LIBINPUT)
-// Certain devices need to be forced to use libinput in place of
-// evdev/libgestures
-constexpr struct {
-  uint16_t vendor;
-  uint16_t product_id;
-} kForceLibinputlist[] = {
-    {0x0002, 0x000e},  // HP Stream 14 touchpad
-    {0x044e, 0x120a},  // Dell Latitude 3480 touchpad
-};
-
-bool IsForceLibinput(const EventDeviceInfo& devinfo) {
-  for (auto entry : kForceLibinputlist) {
-    if (devinfo.vendor_id() == entry.vendor &&
-        devinfo.product_id() == entry.product_id) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
-#endif
-
 #if defined(USE_EVDEV_GESTURES)
 void SetGestureIntProperty(GesturePropertyProvider* provider,
                            int id,
@@ -125,22 +100,10 @@ std::unique_ptr<EventConverterEvdev> CreateConverter(
     const EventDeviceInfo& devinfo) {
 #if defined(USE_LIBINPUT)
   // Use LibInputEventConverter for odd touchpads
-  if (devinfo.HasTouchpad()) {
-    bool useLibinput = false;
-    auto overridden_state =
-        base::FeatureList::GetStateIfOverridden(ui::kLibinputHandleTouchpad);
-    if (overridden_state.has_value()) {
-      useLibinput = overridden_state.value();
-    } else {
-      useLibinput = !devinfo.HasMultitouch() || !devinfo.HasValidMTAbsXY() ||
-                    !devinfo.IsSemiMultitouch() || IsForceLibinput(devinfo);
-    }
-    if (useLibinput) {
-      return LibInputEventConverter::Create(params.path, params.id, devinfo,
-                                            params.cursor, params.dispatcher);
-    }
+  if (devinfo.UseLibinput()) {
+    return LibInputEventConverter::Create(params.path, params.id, devinfo,
+                                          params.cursor, params.dispatcher);
   }
-
 #endif
 
 #if defined(USE_EVDEV_GESTURES)

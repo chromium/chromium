@@ -196,6 +196,7 @@ source_set("event_device_info") {
   deps = [
     "//base",
     "//ui/events/devices",
+    "//ui/events/ozone",
   ]
 
   visibility += [
