@@ -196,7 +196,7 @@ TabHoverCardBubbleView::FilenameElider::FindImageDimensions(
   // Find the start of the extension.
   const auto paren_pos = text.find_last_of(u'(');
   if (paren_pos == 0 || paren_pos == std::u16string::npos ||
-      !std::isspace(text[paren_pos - 1])) {
+      text[paren_pos - 1] != u' ') {
     return std::u16string::npos;
   }
 
