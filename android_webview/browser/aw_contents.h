@@ -145,6 +145,7 @@ class AwContents : public FindHelper::Listener,
                      int h,
                      int ow,
                      int oh);
+  void OnConfigurationChanged(JNIEnv* env);
   void SetViewVisibility(JNIEnv* env,
                          const base::android::JavaParamRef<jobject>& obj,
                          bool visible);

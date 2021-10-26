@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.core.graphics.ColorUtils;
 
 import org.chromium.base.Log;
@@ -45,6 +46,8 @@ public class DarkModeHelper {
         int NIGHT_MODE_COUNT = 3;
     }
 
+    private static Integer sLightThemeForTesting;
+
     @NightMode
     public static int getNightMode(Context context) {
         int nightMode =
@@ -62,6 +65,7 @@ public class DarkModeHelper {
 
     @LightTheme
     public static int getLightTheme(Context context) {
+        if (sLightThemeForTesting != null) return sLightThemeForTesting;
         int lightTheme = LightTheme.LIGHT_THEME_UNDEFINED;
         TypedArray a =
                 context.getTheme().obtainStyledAttributes(new int[] {android.R.attr.isLightTheme});
@@ -71,6 +75,11 @@ public class DarkModeHelper {
         }
         a.recycle();
         return lightTheme;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    public static void setsLightThemeForTesting(@LightTheme int lightThemeForTesting) {
+        sLightThemeForTesting = Integer.valueOf(lightThemeForTesting);
     }
 
     @TextLuminance

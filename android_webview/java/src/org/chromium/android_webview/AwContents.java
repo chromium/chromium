@@ -1617,6 +1617,11 @@ public class AwContents implements SmartClipProvider {
         return AwContentsJni.get().getEffectivePriority(mNativeAwContents, AwContents.this);
     }
 
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    public AwDarkMode getAwDarkModeForTesting() {
+        return mAwDarkMode;
+    }
+
     /**
      * Destroys this object and deletes its native counterpart.
      */
@@ -3116,6 +3121,7 @@ public class AwContents implements SmartClipProvider {
     public void onConfigurationChanged(Configuration newConfig) {
         if (TRACE) Log.i(TAG, "%s onConfigurationChanged", this);
         mAwViewMethods.onConfigurationChanged(newConfig);
+        AwContentsJni.get().onConfigurationChanged(mNativeAwContents);
     }
 
     /**
@@ -4396,5 +4402,6 @@ public class AwContents implements SmartClipProvider {
                 long nativeAwContents, AwContents caller, String jsObjectName);
         WebMessageListenerInfo[] getJsObjectsInfo(
                 long nativeAwContents, AwContents caller, Class clazz);
+        void onConfigurationChanged(long nativeAwContents);
     }
 }
