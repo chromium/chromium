@@ -263,7 +263,7 @@ public class FeedSurfaceMediator
         mPrefChangeRegistrar.addObserver(Pref.ENABLE_SNIPPETS, this::updateContent);
 
         if (openingTabId == FeedSurfaceCoordinator.StreamTabId.DEFAULT) {
-            mRestoreTabId = getPrefService().getInteger(Pref.LAST_SEEN_FEED_TYPE);
+            mRestoreTabId = FeedSurfaceCoordinator.StreamTabId.FOR_YOU;
         } else {
             mRestoreTabId = openingTabId;
         }
