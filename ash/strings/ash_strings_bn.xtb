@@ -339,6 +339,7 @@
 <translation id="3509391053705095206">আপনার ফোন খুঁজে পাওয়া যায়নি। আপনার ফোনের ব্লুটুথ চালু আছে কিনা তা ভালভাবে দেখে নিন।</translation>
 <translation id="3510164367642747937">মাউস কার্সার হাইলাইট করুন</translation>
 <translation id="3513798432020909783">অ্যাকাউন্টটি <ph name="MANAGER_EMAIL" /> ম্যানেজ করছেন</translation>
+<translation id="352245152354538528">{0,plural, =1{১ মিনিটের মধ্যে ডিভাইস আপডেট করুন}one{# মিনিটের মধ্যে ডিভাইস আপডেট করুন}other{# মিনিটের মধ্যে ডিভাইস আপডেট করুন}}</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" />টি ডিভাইসে কানেক্ট করা হয়েছে</translation>
 <translation id="3552189655002856821">ওয়াই-ফাই বন্ধ করা আছে</translation>
 <translation id="3560866052109807830">মার্কার ড্রয়িং টুল</translation>
@@ -427,6 +428,7 @@
 <translation id="4146833061457621061">মিউজিক চালান</translation>
 <translation id="4157822100366708405">ডার্ক থিম সেটিংস</translation>
 <translation id="4173958948577803258">বৃ</translation>
+<translation id="4177913004758410636">{0,plural, =1{এক দিনের মধ্যে ডিভাইস আপডেট করুন}one{# দিনের মধ্যে ডিভাইস আপডেট করুন}other{# দিনের মধ্যে ডিভাইস আপডেট করুন}}</translation>
 <translation id="4181841719683918333">ভাষাসমূহ</translation>
 <translation id="4195877955194704651">অটোমেটিক ক্লিক বোতাম</translation>
 <translation id="4197790712631116042">বন্ধ করা আছে</translation>
@@ -480,6 +482,7 @@
 <translation id="445864333228800152">শুভ সন্ধ্যা,</translation>
 <translation id="4458688154122353284">স্ক্রিন রেকর্ডিং বন্ধ করুন</translation>
 <translation id="4471354919263203780">স্পিচ শনাক্তকরণ ফাইল ডাউনলোড করা হচ্ছে... <ph name="PERCENT" />%</translation>
+<translation id="4471432286288241507">{0,plural, =0{এখনই ডিভাইস আপডেট করুন}=1{১ সেকেন্ডের মধ্যে ডিভাইস আপডেট করুন}one{# সেকেন্ডের মধ্যে ডিভাইস আপডেট করুন}other{# সেকেন্ডের মধ্যে ডিভাইস আপডেট করুন}}</translation>
 <translation id="4472575034687746823">শুরু করা যাক</translation>
 <translation id="4477350412780666475">পরের ট্র্যাক চালান</translation>
 <translation id="4477892968187500306">Google যাচাই করেনি এমন অ্যাপও এই ডিভাইসে থাকে পারে।</translation>
@@ -739,6 +742,7 @@
 <translation id="6482559668224714696">ফুল-স্ক্রিন ম্যাগনিফায়ার</translation>
 <translation id="6490471652906364588">USB-C ডিভাইস (ডান পোর্ট)</translation>
 <translation id="649452524636452238">স্মার্ট কার্ড পিন</translation>
+<translation id="6495400115277918834">ছবির-মধ্যে-ছবি ফিচার চালু করা হয়েছে, ফোকাস করতে Alt+Shift+V প্রেস করুন</translation>
 <translation id="6500818810472529210">Google Search-এ ফলাফল দেখুন</translation>
 <translation id="6501401484702599040"><ph name="RECEIVER_NAME" /> এ স্ক্রিন কাস্ট করা হচ্ছে</translation>
 <translation id="6520517963145875092">ছবি তুলতে একটি উইন্ডো বেছে নিন</translation>
@@ -749,6 +753,7 @@
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> এ কাস্ট করা হচ্ছে</translation>
 <translation id="6559976592393364813">অ্যাডমিনিস্ট্রেটরকে জিজ্ঞাসা করুন</translation>
 <translation id="6565007273808762236">ই-সিম কানেকশন উপলভ্য নেই</translation>
+<translation id="6570831796530454248">{0,plural, =1{১ ঘণ্টার মধ্যে ডিভাইস আপডেট করুন}one{# ঘণ্টার মধ্যে ডিভাইস আপডেট করুন}other{# ঘণ্টার মধ্যে ডিভাইস আপডেট করুন}}</translation>
 <translation id="6570902864550063460">USB দিয়ে চার্জ হচ্ছে</translation>
 <translation id="6585808820553845416"><ph name="SESSION_TIME_REMAINING" /> এর মধ্যে সেশন শেষ হয়ে যাবে৷</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>

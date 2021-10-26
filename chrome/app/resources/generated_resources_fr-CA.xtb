@@ -3045,6 +3045,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4115002065223188701">Réseau hors de portée</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="4117637339509843559">Mode sombre</translation>
+<translation id="4117714603282104018">Vibration haptique du pavé tactile</translation>
 <translation id="4118579674665737931">Veuillez redémarrer l'appareil et réessayer.</translation>
 <translation id="412022815379960229">Commencez à explorer vos souvenirs à partir de Google Photos, dès que vous êtes connecté.</translation>
 <translation id="4120388883569225797">Impossible de réinitialiser cette clé de sécurité</translation>
@@ -5488,6 +5489,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6810613314571580006">Connexion automatique à des sites Web à l'aide d'authentifiants enregistrés. Lorsque la fonctionnalité est désactivée, une confirmation vous est demandée avant chaque connexion à un site Web.</translation>
 <translation id="6810768462515084623">Erreur! Votre mot de passe semble avoir expiré. Veuillez le renouveler sur un autre appareil et réessayer.</translation>
 <translation id="6811034713472274749">La page est prête pour consultation</translation>
+<translation id="6811151703183939603">Ferme</translation>
 <translation id="6811332638216701903">Nom d'hôte DHCP</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> ne peut pas être exécuté en tant que « racine ».</translation>
 <translation id="6812841287760418429">Conserver les modifications</translation>
@@ -6784,6 +6786,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="811994229154425014">Appuyer deux fois sur la barre d'espacement pour entrer un point</translation>
 <translation id="8120505434908124087">Installer un profil eSIM</translation>
 <translation id="812260729110117038">Les annonceurs et les éditeurs peuvent étudier l'efficacité des annonces sans vous suivre sur tous les sites.</translation>
+<translation id="81231173274944570">Activer la vibration haptique. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="81238879832906896">Fleur jaune et blanche</translation>
 <translation id="8124313775439841391">ONC géré</translation>
 <translation id="813082847718468539">Afficher l'information sur le site</translation>
@@ -7860,6 +7863,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Application}one{Application}other{Applications}}</translation>
 <translation id="964790508619473209">Position des écrans</translation>
 <translation id="965211523698323809">Envoyez et recevez des messages texte à partir de votre <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
+<translation id="96535553604365597">Signaler un problème avec Google Cast</translation>
 <translation id="967398046773905967">N'autoriser aucun site à accéder à des appareils HID</translation>
 <translation id="967624055006145463">Données stockées</translation>
 <translation id="96774243435178359">Imprimantes gérées</translation>

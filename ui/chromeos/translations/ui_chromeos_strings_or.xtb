@@ -131,6 +131,7 @@
 <translation id="2122305276694332719">ଏକ ଗୋପନୀୟ ଥିବା ନେଟ୍‌ୱାର୍କ ସହିତ ସ୍ୱଚାଳିତ ଭାବରେ ସଂଯୋଗ କଲେ ଅନ୍ୟ ଲୋକମାନେ ଆପଣଙ୍କ ଡିଭାଇସ୍ ଆଉ କିଛି ନେଟ୍‌ୱାର୍କ ସେଟିଂସ୍‌କୁ ଦେଖିପାରିବେ ଏବଂ ଏହା ସୁପାରିଶ କରାଯାଏ ନାହିଁ।</translation>
 <translation id="2125607626296734455">ଖମେର୍</translation>
 <translation id="2139545522194199494"><ph name="NETWORK_COUNT" />ଟିର <ph name="NETWORK_INDEX" /> ନେଟ୍‌ୱାର୍କ, <ph name="NETWORK_NAME" />, ସିଗ୍‍ନାଲ୍‍ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />% ଆପଣଙ୍କର ଆଡ୍‍ମିନିଷ୍ଟ୍ରେଟର୍‍ଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ, ସଂଯୋଗ କରନ୍ତୁ</translation>
+<translation id="2141347188420181405"><ph name="NETWORK_COUNT" />ଟିରୁ <ph name="NETWORK_INDEX" /> ନମ୍ବର ନେଟୱାର୍କ, <ph name="NETWORK_NAME" />, ସିଗନାଲ କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ବ୍ଲକ କରାଯାଇଛି, ବିବରଣୀ</translation>
 <translation id="2142680004883808240">ଫୋନେଟିକ୍ YaZHert କୀବୋର୍ଡ ସହ ଋଷୀୟ</translation>
 <translation id="2143778271340628265">ମାନୁଆଲ୍ ପ୍ରକ୍ସି କନ୍‌ଫିଗ୍‌ରେସନ୍</translation>
 <translation id="2163152940313951844">ଅବୈଧ ବର୍ଣ୍ଣ: <ph name="CHARACTER_NAME" /></translation>
@@ -185,6 +186,7 @@
 <translation id="2563185590376525700">ବେଙ୍ଗ</translation>
 <translation id="2578394532502990878">ତାମିଲ ଫୋନେଟିକ୍</translation>
 <translation id="2579959351793446050">ଓଡ଼ିଆ</translation>
+<translation id="2602810353103180630"><ph name="NETWORK_COUNT" />ଟିରୁ <ph name="NETWORK_INDEX" /> ନମ୍ବର ନେଟୱାର୍କ, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ସିଗନାଲ କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ବ୍ଲକ କରାଯାଇଛି, ବିବରଣୀ</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> ଭିଡିଓ</translation>
 <translation id="2617342710774726426">SIM କାର୍ଡ ଲକ୍‍ ହୋଇଯାଇଛି।</translation>
 <translation id="2620090360073999360">ଏହି ସମୟରେ Google Driveରେ ପହଞ୍ଚି ହେବ ନାହିଁ।</translation>

@@ -325,6 +325,7 @@
 <translation id="133535873114485416">Método de entrada preferido</translation>
 <translation id="1335929031622236846">Inscribe tu dispositivo</translation>
 <translation id="1336902454946927954">Se bloqueó la llave de seguridad porque no se reconoció tu huella dactilar. Para desbloquearla, ingresa el PIN.</translation>
+<translation id="1338631221631423366">Vinculando…</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> quiere abrir esta app.</translation>
 <translation id="1338950911836659113">Eliminando…</translation>
 <translation id="1339009753652684748">Di "Hey Google" para acceder a tu Asistente. Para ahorrar batería, elige "Activado (recomendado)". Tu Asistente responderá únicamente cuando el dispositivo esté conectado a una fuente de energía o se esté cargando.</translation>
@@ -3040,6 +3041,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4115002065223188701">La red está fuera de alcance</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="4117637339509843559">Modo oscuro</translation>
+<translation id="4117714603282104018">Respuesta del panel táctil</translation>
 <translation id="4118579674665737931">Reinicia el dispositivo y vuelve a intentarlo.</translation>
 <translation id="412022815379960229">Accede a tu cuenta y explora tus recuerdos de Google Fotos.</translation>
 <translation id="4120388883569225797">No se puede restablecer esta llave de seguridad</translation>
@@ -5483,6 +5485,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6810613314571580006">Accede automáticamente a los sitios web con las credenciales almacenadas. Si la función está inhabilitada, deberás confirmar siempre tu identidad para acceder a un sitio web.</translation>
 <translation id="6810768462515084623">Parece que caducó la contraseña. Renuévala en otro dispositivo y vuelve a intentarlo.</translation>
 <translation id="6811034713472274749">Ya puedes ver la página</translation>
+<translation id="6811151703183939603">Firme</translation>
 <translation id="6811332638216701903">Nombre de host DHCP</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> no se puede ejecutar como raíz.</translation>
 <translation id="6812841287760418429">Conservar cambios</translation>
@@ -6543,6 +6546,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7887864092952184874">Mouse Bluetooth sincronizado</translation>
 <translation id="7889371445710865055">Cambiar el idioma de dictado</translation>
 <translation id="7890147169288018054">Ver información sobre la red, como tu dirección MAC o IP</translation>
+<translation id="7892384782944609022">No se pudo realizar la vinculación. Selecciona el dispositivo y vuelve a intentarlo.</translation>
 <translation id="7893008570150657497">Acceder a fotos, música y otros medios desde tu computadora</translation>
 <translation id="7893153962594818789">Bluetooth está desactivado en esta <ph name="DEVICE_TYPE" />. Ingresa tu contraseña y activa Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (predeterminado)</translation>
@@ -6780,6 +6784,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="811994229154425014">Doble espacio para escribir un punto</translation>
 <translation id="8120505434908124087">Instalar el perfil de eSIM</translation>
 <translation id="812260729110117038">Los anunciantes y los publicadores pueden analizar la eficacia de los anuncios sin que estos hagan un seguimiento de los sitios que visitas.</translation>
+<translation id="81231173274944570">Habilitar respuesta táctil. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="81238879832906896">Flor amarilla y blanca</translation>
 <translation id="8124313775439841391">ONC administrado</translation>
 <translation id="813082847718468539">Consulta la información del sitio</translation>
@@ -7855,6 +7860,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Aplicación}other{Aplicaciones}}</translation>
 <translation id="964790508619473209">Disposición de la pantalla</translation>
 <translation id="965211523698323809">Usa tu <ph name="DEVICE_TYPE" /> para enviar o recibir mensajes de texto. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
+<translation id="96535553604365597">Informar un problema con Google Cast</translation>
 <translation id="967398046773905967">No permitir que ningún sitio acceda a dispositivos HID</translation>
 <translation id="967624055006145463">Datos almacenados</translation>
 <translation id="96774243435178359">Impresoras administradas</translation>

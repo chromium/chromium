@@ -300,6 +300,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1842969606798536927">Betal</translation>
 <translation id="1856713167556118146">Dette gjør Inkognito ikke</translation>
 <translation id="1863257867908022953">Skuff 12</translation>
+<translation id="1864927262126810325">Fra <ph name="SOURCE_NAME" /></translation>
 <translation id="1871208020102129563">Mellomtjeneren er angitt til å bruke statiske proxytjenere, ikke en nettadresse med .pac-skript.</translation>
 <translation id="1871284979644508959">Obligatorisk felt</translation>
 <translation id="1875025161375567525">Fotoskuff</translation>
@@ -962,6 +963,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4117700440116928470">Omfanget for innstillingen støttes ikke.</translation>
 <translation id="4121428309786185360">Utløper </translation>
 <translation id="4123572138124678573">Tre hull bunn</translation>
+<translation id="4127575959421463246">Ser du etter ChromeOS-flaggene? Besøk</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 til}other{# til}}</translation>
 <translation id="4130226655945681476">Sjekk nettverkskablene, modemet og ruteren</translation>
 <translation id="4133224101597112888">«Del denne fanen»-knappen – trykk på Enter for å dele denne fanen via en link, en QR-kode, casting eller annet.</translation>
@@ -1133,6 +1135,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4606870351894164739">Virkningsfull</translation>
 <translation id="4607603470419975064">Knappen «Se Chrome-tips» – trykk på Enter for å lære om Chrome-funksjoner</translation>
 <translation id="4607608436550361748">Se Chrome-tips</translation>
+<translation id="4627675673814409125">Denne regelen kan ikke konfigureres på Chrome-profilnivå og blir derfor ignorert.</translation>
 <translation id="4628948037717959914">Bilde</translation>
 <translation id="4631649115723685955">Penger tilbake er tilknyttet</translation>
 <translation id="4636930964841734540">Info</translation>
@@ -1764,6 +1767,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="674375294223700098">Ukjent feil med tjenersertifikat.</translation>
 <translation id="6744009308914054259">Mens du venter på å koble til, kan du gå til Nedlastinger for å lese artikler uten nett.</translation>
 <translation id="6753269504797312559">Retningslinjeverdi</translation>
+<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Enheten din gikk inn i hvilemodus.</translation>
 <translation id="6767985426384634228">Oppdatere adresse?</translation>
 <translation id="6768213884286397650">Hagaki (postkort)</translation>
@@ -1851,6 +1855,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="706295145388601875">Legg til og administrer adresser i Chrome-innstillingene</translation>
 <translation id="7064851114919012435">Kontaktinformasjon</translation>
 <translation id="7068733155164172741">Skriv inn den <ph name="OTP_LENGTH" />-sifrede koden</translation>
+<translation id="7070090581017165256">Om dette nettstedet</translation>
 <translation id="70705239631109039">Tilkoblingen er ikke helt sikker</translation>
 <translation id="7075452647191940183">Forespørselen er for stor</translation>
 <translation id="7079718277001814089">Dette nettstedet inneholder skadelig programvare</translation>
@@ -2094,6 +2099,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7813600968533626083">Vil du fjerne skjemaforslaget fra Chrome?</translation>
 <translation id="781440967107097262">Vil du dele utklippstavlen din?</translation>
 <translation id="7815407501681723534">Fant <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> for «<ph name="SEARCH_STRING" />»</translation>
+<translation id="782125616001965242">Vis informasjon om dette nettstedet</translation>
 <translation id="782886543891417279">Det kan hende at Wi-Fi-nettverket du bruker (<ph name="WIFI_NAME" />), krever at du besøker en påloggingsside.</translation>
 <translation id="7836231406687464395">Postfix (konvolutt)</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Ingen}=1{1 app (<ph name="EXAMPLE_APP_1" />)}=2{2 apper (<ph name="EXAMPLE_APP_1" /> og <ph name="EXAMPLE_APP_2" />)}other{# apper (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
@@ -2372,6 +2378,7 @@ Mer informasjon:
 <translation id="8792626944327216835">mikrofon</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> har slått på Chrome Enterprise Connectors i nettleseren din. Disse koblingene har tilgang til noen av dataene dine.</translation>
 <translation id="8798099450830957504">Standard</translation>
+<translation id="8798739476508189189">Ser du etter nettleserflagg? Besøk</translation>
 <translation id="8805819170075074995">Listeoppføringen «<ph name="LANGUAGE_ID" />»: Oppføringen er ignorert fordi den også er inkludert i regelen SpellcheckLanguage.</translation>
 <translation id="8807160976559152894">Beskjær etter hver side</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å oppdatere Chrome fra Chrome-innstillingene</translation>
@@ -2477,6 +2484,7 @@ Mer informasjon:
 <translation id="9157595877708044936">Konfigurerer ...</translation>
 <translation id="9158625974267017556">C6 (konvolutt)</translation>
 <translation id="9164029392738894042">Nøyaktighetssjekk</translation>
+<translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">Tillatt nettsteder å sjekke om du har noen lagrede betalingsmåter</translation>
 <translation id="9169664750068251925">Blokkér alltid på dette nettstedet</translation>
 <translation id="9169931577761441333">Legg til <ph name="APP_NAME" /> på startskjermen</translation>

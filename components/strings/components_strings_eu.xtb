@@ -296,6 +296,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1842969606798536927">Ordaindu</translation>
 <translation id="1856713167556118146">Zer ez du egiten ezkutuko moduak?</translation>
 <translation id="1863257867908022953">12. erretilua</translation>
+<translation id="1864927262126810325">Iturburua: <ph name="SOURCE_NAME" /></translation>
 <translation id="1871208020102129563">Proxy-zerbitzari finkoak erabiltzeko konfiguratu da proxya, ez .pac scripteko URLak erabiltzeko.</translation>
 <translation id="1871284979644508959">Derrigorrezko eremua</translation>
 <translation id="1875025161375567525">Argazkietarako erretilua</translation>
@@ -953,6 +954,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4117700440116928470">Ez da gidalerro-esparrua onartzen.</translation>
 <translation id="4121428309786185360">Iraungitze data:</translation>
 <translation id="4123572138124678573">Hiru zulo behean</translation>
+<translation id="4127575959421463246">ChromeOS-ko eginbide esperimentalen bila zabiltza? Joan helbide honetara:</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{Beste 1}other{Beste #}}</translation>
 <translation id="4130226655945681476">Sareko kablea, modema eta bideratzailea egiaztatu.</translation>
 <translation id="4133224101597112888">Fitxa partekatzeko botoia: sakatu "Sartu" fitxa partekatzeko; horretarako, partekatu esteka, sortu QR kode bat, igor ezazu eta egin beste hainbat gauza.</translation>
@@ -1120,6 +1122,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4606870351894164739">Txundigarria</translation>
 <translation id="4607603470419975064">Chrome-ri buruzko aholkuak ikusteko botoia: sakatu "Sartu" Chrome-ren eginbideei buruzko informazioa lortzeko</translation>
 <translation id="4607608436550361748">Ikusi Chrome-ri buruzko aholkuak</translation>
+<translation id="4627675673814409125">Gidalerro hori ezin da ezarri Chrome-ko profilean eta ez ikusi egingo zaio.</translation>
 <translation id="4628948037717959914">Argazkia</translation>
 <translation id="4631649115723685955">Dirua berreskuratzeko aukerarekin</translation>
 <translation id="4636930964841734540">Informazioa</translation>
@@ -1750,6 +1753,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="674375294223700098">Zerbitzari-ziurtagiriaren errore ezezaguna.</translation>
 <translation id="6744009308914054259">Konexio baten zain zauden bitartean, Deskargak atalera joan zaitezke konexiorik behar ez duten artikuluak irakurtzera.</translation>
 <translation id="6753269504797312559">Gidalerroaren balioa</translation>
+<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Inaktibo geratu da gailua.</translation>
 <translation id="6767985426384634228">Helbidea eguneratu nahi duzu?</translation>
 <translation id="6768213884286397650">Hagaki (postala)</translation>
@@ -1837,6 +1841,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="706295145388601875">Gehitu eta kudeatu helbideak Chrome-ren ezarpenetan</translation>
 <translation id="7064851114919012435">Harremanetarako informazioa</translation>
 <translation id="7068733155164172741">Idatzi <ph name="OTP_LENGTH" /> digituko kodea</translation>
+<translation id="7070090581017165256">Webgune honi buruz</translation>
 <translation id="70705239631109039">Konexioa ez da guztiz segurua</translation>
 <translation id="7075452647191940183">Eskaera handiegia da</translation>
 <translation id="7079718277001814089">Webguneak malwarea dauka</translation>
@@ -2081,6 +2086,7 @@ Xehetasun gehiago:
 <translation id="7813600968533626083">Inprimaki-iradokizuna Chrome-tik kendu nahi duzu?</translation>
 <translation id="781440967107097262">Arbela partekatu nahi duzu?</translation>
 <translation id="7815407501681723534">"<ph name="SEARCH_STRING" />" bilaketaren <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> aurkitu dira.</translation>
+<translation id="782125616001965242">Erakutsi webgune honi buruzko informazioa</translation>
 <translation id="782886543891417279">Baliteke darabilzun Wi-Fi konexioaren (<ph name="WIFI_NAME" />) saio-hasierako orrira joan behar izatea.</translation>
 <translation id="7836231406687464395">Postfix (gutun-azala)</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Bat ere ez}=1{1 aplikazio (<ph name="EXAMPLE_APP_1" />)}=2{2 aplikazio (<ph name="EXAMPLE_APP_1" /> eta <ph name="EXAMPLE_APP_2" />)}other{# aplikazio (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> eta<ph name="AND_MORE" />)}}</translation>
@@ -2359,6 +2365,7 @@ Xehetasun gehiago:
 <translation id="8792626944327216835">mikrofonoa</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> domeinuak Chrome Enterprise Connectors gaitu du arakatzailean. Konektore horiek zure datu batzuetarako sarbidea dute.</translation>
 <translation id="8798099450830957504">Lehenetsia</translation>
+<translation id="8798739476508189189">Eginbide esperimentalen bila zabiltza? Joan helbide honetara:</translation>
 <translation id="8805819170075074995">"<ph name="LANGUAGE_ID" />" zerrenda-sarrera: sarrerari ez ikusi egin zaio, SpellcheckLanguage gidalerroan ere agertzen delako.</translation>
 <translation id="8807160976559152894">Moztu orri bakoitzaren amaieran</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />: sakatu tabuladorea eta, ondoren, sakatu Sartu Chrome eguneratzeko Chrome-ren ezarpenetan</translation>
@@ -2464,6 +2471,7 @@ Xehetasun gehiago:
 <translation id="9157595877708044936">Konfiguratzen…</translation>
 <translation id="9158625974267017556">C6 (gutun-azala)</translation>
 <translation id="9164029392738894042">Zehaztasun-egiaztapena</translation>
+<translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">Baimendu webguneei gordetako ordainketa-metodorik duzun egiaztatzea</translation>
 <translation id="9169664750068251925">Blokeatu beti webgune honetan</translation>
 <translation id="9169931577761441333">Gehitu <ph name="APP_NAME" /> hasierako pantailan</translation>

@@ -339,6 +339,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="3509391053705095206">Ihr Smartphone wurde nicht gefunden. Auf Ihrem Smartphone muss Bluetooth aktiviert sein.</translation>
 <translation id="3510164367642747937">Cursor hervorheben</translation>
 <translation id="3513798432020909783">Konto verwaltet von <ph name="MANAGER_EMAIL" /></translation>
+<translation id="352245152354538528">{0,plural, =1{Gerät innerhalb von 1 Minute neu starten}other{Gerät innerhalb von # Minuten neu starten}}</translation>
 <translation id="353086728817903341">Mit <ph name="NUM_DEVICES" /> Geräten verbunden</translation>
 <translation id="3552189655002856821">WLAN ist deaktiviert</translation>
 <translation id="3560866052109807830">Markierungs-Zeichentools</translation>
@@ -427,6 +428,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="4146833061457621061">Musik abspielen</translation>
 <translation id="4157822100366708405">Einstellungen für dunkles Design</translation>
 <translation id="4173958948577803258">D</translation>
+<translation id="4177913004758410636">{0,plural, =1{Gerät innerhalb eines Tages neu starten}other{Gerät innerhalb von # Tagen neu starten}}</translation>
 <translation id="4181841719683918333">Sprachen</translation>
 <translation id="4195877955194704651">Schaltfläche für automatische Klicks</translation>
 <translation id="4197790712631116042">Aus</translation>
@@ -480,6 +482,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="445864333228800152">Guten Abend,</translation>
 <translation id="4458688154122353284">Bildschirmaufzeichnung beenden</translation>
 <translation id="4471354919263203780">Spracherkennungsdateien werden heruntergeladen... <ph name="PERCENT" /> %</translation>
+<translation id="4471432286288241507">{0,plural, =0{Gerät jetzt neu starten}=1{Gerät innerhalb von 1 Sekunde neu starten}other{Gerät innerhalb von # Sekunden neu starten}}</translation>
 <translation id="4472575034687746823">Jetzt starten</translation>
 <translation id="4477350412780666475">Nächster Titel</translation>
 <translation id="4477892968187500306">Auf diesem Gerät befinden sich möglicherweise Apps, die nicht von Google geprüft wurden.</translation>
@@ -739,6 +742,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="6482559668224714696">Vollbildlupe</translation>
 <translation id="6490471652906364588">USB-C-Gerät (Port rechts)</translation>
 <translation id="649452524636452238">Smartcard-PIN</translation>
+<translation id="6495400115277918834">„Bild im Bild“ gestartet, zum Hervorheben Alt + Umschalttaste + V drücken</translation>
 <translation id="6500818810472529210">Ergebnis in der Google Suche anzeigen</translation>
 <translation id="6501401484702599040">Bildschirm wird an <ph name="RECEIVER_NAME" /> gestreamt</translation>
 <translation id="6520517963145875092">Fenster auswählen, das aufgenommen werden soll</translation>
@@ -749,6 +753,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="6542521951477560771">Inhalte werden an <ph name="RECEIVER_NAME" /> gestreamt</translation>
 <translation id="6559976592393364813">Administrator fragen</translation>
 <translation id="6565007273808762236">eSIM-Verbindung nicht verfügbar</translation>
+<translation id="6570831796530454248">{0,plural, =1{Gerät innerhalb von einer Stunde neu starten}other{Gerät innerhalb von # Stunden neu starten}}</translation>
 <translation id="6570902864550063460">Aufladen über USB</translation>
 <translation id="6585808820553845416">Sitzung endet in <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>

@@ -296,6 +296,7 @@
 <translation id="1842969606798536927">결제</translation>
 <translation id="1856713167556118146">시크릿 모드에서 제공되지 않는 기능</translation>
 <translation id="1863257867908022953">트레이 12</translation>
+<translation id="1864927262126810325">출처: <ph name="SOURCE_NAME" /></translation>
 <translation id="1871208020102129563">프록시가 .pac 스크립트 URL이 아닌 고정 프록시 서버를 사용하도록 설정됩니다.</translation>
 <translation id="1871284979644508959">필수 입력란</translation>
 <translation id="1875025161375567525">사진 트레이</translation>
@@ -957,6 +958,7 @@
 <translation id="4117700440116928470">지원되지 않는 정책 범위입니다.</translation>
 <translation id="4121428309786185360">만료일:</translation>
 <translation id="4123572138124678573">하단 3공 펀칭</translation>
+<translation id="4127575959421463246">ChromeOS 플래그를 찾으시나요? 방문</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{외 1개}other{외 #개}}</translation>
 <translation id="4130226655945681476">네트워크 케이블, 모뎀, 라우터 확인</translation>
 <translation id="4133224101597112888">탭 공유 버튼, 링크 공유, QR 코드 생성, 전송 등의 옵션으로 이 탭을 공유하려면 Enter를 누르세요.</translation>
@@ -1124,6 +1126,7 @@
 <translation id="4606870351894164739">강렬함</translation>
 <translation id="4607603470419975064">Chrome 도움말 보기 버튼, Enter를 눌러 Chrome 기능 자세히 알아보기</translation>
 <translation id="4607608436550361748">Chrome 도움말 보기</translation>
+<translation id="4627675673814409125">이 정책은 Chrome 프로필 수준에서 설정할 수 없으며 무시됩니다.</translation>
 <translation id="4628948037717959914">사진</translation>
 <translation id="4631649115723685955">캐시백 연결됨</translation>
 <translation id="4636930964841734540">정보</translation>
@@ -1755,6 +1758,7 @@
 <translation id="674375294223700098">알 수 없는 서버 인증서 오류입니다.</translation>
 <translation id="6744009308914054259">연결을 기다리는 동안 다운로드에서 오프라인 기사를 읽을 수 있습니다.</translation>
 <translation id="6753269504797312559">정책 값</translation>
+<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">기기가 절전 모드 상태입니다.</translation>
 <translation id="6767985426384634228">주소를 업데이트하시겠습니까?</translation>
 <translation id="6768213884286397650">Hagaki(엽서)</translation>
@@ -1842,6 +1846,7 @@
 <translation id="706295145388601875">Chrome 설정에서 주소 추가 및 관리</translation>
 <translation id="7064851114919012435">연락처 정보</translation>
 <translation id="7068733155164172741"><ph name="OTP_LENGTH" />자리 코드 입력</translation>
+<translation id="7070090581017165256">사이트 정보</translation>
 <translation id="70705239631109039">연결의 보안이 완벽하지 않음</translation>
 <translation id="7075452647191940183">요청이 너무 큼</translation>
 <translation id="7079718277001814089">이 사이트에 멀웨어가 있습니다.</translation>
@@ -2085,6 +2090,7 @@
 <translation id="7813600968533626083">Chrome에서 추천검색어를 삭제하시겠습니까?</translation>
 <translation id="781440967107097262">클립보드를 공유하시겠습니까?</translation>
 <translation id="7815407501681723534">'<ph name="SEARCH_STRING" />'에 대해 <ph name="SEARCH_RESULTS" /> <ph name="NUMBER_OF_RESULTS" />개의 검색 결과를 찾았습니다.</translation>
+<translation id="782125616001965242">이 사이트에 관한 정보 표시</translation>
 <translation id="782886543891417279">사용 중인 Wi-Fi(<ph name="WIFI_NAME" />)에서 로그인 페이지 방문을 요청할 수 있습니다.</translation>
 <translation id="7836231406687464395">Postfix(봉투)</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{없음}=1{앱 1개(<ph name="EXAMPLE_APP_1" />)}=2{앱 2개(<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{앱 #개(<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
@@ -2363,6 +2369,7 @@
 <translation id="8792626944327216835">마이크</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" />에서 브라우저에 Chrome Enterprise 커넥터를 사용 설정했습니다. 커넥터가 내 데이터 중 일부에 액세스할 수 있습니다.</translation>
 <translation id="8798099450830957504">기본값</translation>
+<translation id="8798739476508189189">브라우저 플래그를 찾으시나요? 방문</translation>
 <translation id="8805819170075074995">목록 항목 '<ph name="LANGUAGE_ID" />': SpellcheckLanguage 정책에도 포함되었기 때문에 항목이 무시되었습니다.</translation>
 <translation id="8807160976559152894">각 페이지 뒤에 트림</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome 설정에서 Chrome을 업데이트하려면 Tab을 누른 다음 Enter 누르기</translation>
@@ -2468,6 +2475,7 @@
 <translation id="9157595877708044936">설정 중...</translation>
 <translation id="9158625974267017556">C6(봉투)</translation>
 <translation id="9164029392738894042">정확성 검사</translation>
+<translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">사이트에서 저장된 결제 수단이 있는지 확인하도록 허용</translation>
 <translation id="9169664750068251925">이 사이트에서 항상 차단</translation>
 <translation id="9169931577761441333">홈 화면에 <ph name="APP_NAME" /> 추가</translation>

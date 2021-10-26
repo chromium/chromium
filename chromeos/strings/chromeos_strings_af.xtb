@@ -42,6 +42,7 @@
 <translation id="150962533380566081">Ongeldige PUK.</translation>
 <translation id="1510238584712386396">Lanseerder</translation>
 <translation id="155865706765934889">Raakpaneel</translation>
+<translation id="1567064801249837505">Albums</translation>
 <translation id="1572585716423026576">Stel as muurpapier</translation>
 <translation id="1621067168122174824">Laat loop laaitoets</translation>
 <translation id="1639239467298939599">Laai tans</translation>
@@ -55,6 +56,7 @@
 <translation id="1717874160321062422">Bestuur deur <ph name="FIRST_MANAGER" /> en <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Naambedieners</translation>
 <translation id="1731082422893354635">Bluetooth-raakpaneel</translation>
+<translation id="1753496554272155572">Verlaat muurpapiervoorskou</translation>
 <translation id="175763766237925754">Goed (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -368,6 +370,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="6657585470893396449">Wagwoord</translation>
 <translation id="6704062477274546131">DNS-ontbinding</translation>
 <translation id="6747215703636344499">Gestop – uitvoer is vol</translation>
+<translation id="6749473226660745022">Foto's</translation>
 <translation id="6756731097889387912">Kon nie skandering kanselleer nie</translation>
 <translation id="6766275201586212568">Mislukte DNS-resolusies</translation>
 <translation id="6768237774506518020">Hoë DNS-resolusiemislukkingkoers</translation>

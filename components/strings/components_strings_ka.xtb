@@ -2306,6 +2306,7 @@
 <translation id="8541158209346794904">Bluetooth მოწყობილობა</translation>
 <translation id="8542014550340843547">სამმაგად დასტეპლერება ქვემოთ</translation>
 <translation id="8543181531796978784">შეგიძლიათ <ph name="BEGIN_ERROR_LINK" />მოგვახსენოთ გამოვლენასთან დაკავშირებული პრობლემა<ph name="END_ERROR_LINK" /> ან თუ აცნობიერებთ უსაფრთხოებასთან დაკავშირებულ რისკებს, <ph name="BEGIN_LINK" />გადახვიდეთ ამ არასაიმედო საიტზე<ph name="END_LINK" />.</translation>
+<translation id="8554010658308662631">მეტის ჩატვირთვა</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{ნებართვის გადაყენება}other{ნებართვების გადაყენება}}</translation>
 <translation id="8555010941760982128">გამოიყენეთ ეს კოდი შეკვეთის გაფორმებისას</translation>
 <translation id="8557066899867184262">CVC მითითებულია თქვენი ბარათის უკანა ნაწილზე.</translation>

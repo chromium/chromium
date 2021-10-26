@@ -17,6 +17,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">Erstat</translation>
 <translation id="1073899992769346247">Udskift eller genoplad batteriet</translation>
+<translation id="1081015718268701546">Linux-apps understøttes ikke i øjeblikket. Andre apps gemmes.</translation>
 <translation id="108486256082349153">Mobil: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Goddag, <ph name="GIVEN_NAME" /></translation>
 <translation id="109942774857561566">Jeg keder mig</translation>
@@ -43,6 +44,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1225748608451425081">Din Chromebook er låst på grund af et kendt problem. Du kan logge ind om: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Stop med at vælge</translation>
 <translation id="1239161794459865856">Der er forbindelse til <ph name="FEATURE_NAME" />.</translation>
+<translation id="1246890715821376239">Apps, der ikke understøttes</translation>
 <translation id="1247372569136754018">Mikrofon (indbygget)</translation>
 <translation id="1252999807265626933">Oplader fra <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Hvordan er vejret?</translation>
@@ -168,6 +170,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2148716181193084225">I dag</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Prøv igen</translation>
 <translation id="2170530631236737939">Stryg nedad med tre fingre for at lukke oversigten</translation>
+<translation id="2201071101391734388">Seneste billede <ph name="INDEX" /> af <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2208323208084708176">Samlet skrivebordstilstand</translation>
 <translation id="2220572644011485463">Pin- eller adgangskode</translation>
 <translation id="2222841058024245321">Skrivebord 7</translation>
@@ -291,6 +294,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="3151786313568798007">Retning</translation>
 <translation id="3153444934357957346">Du kan kun have op til <ph name="MULTI_PROFILE_USER_LIMIT" /> konti i samlet login fra flere konti.</translation>
 <translation id="3154351730702813399">Administratoren af enheden kan overvåge din browseraktivitet.</translation>
+<translation id="316086887565479535">Der er apps, som ikke understøttes, i skabelonen</translation>
 <translation id="3181441307743005334">Genstarten kan tage lidt tid</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Forbundet til en enhed}one{Forbundet til # enhed}other{Forbundet til # enheder}}</translation>
 <translation id="320207200541803018">Indstil timer</translation>
@@ -388,6 +392,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="383058930331066723">Tilstanden Batterisparefunktion er aktiveret</translation>
 <translation id="3835880383832568924">Åbn appen Genveje for at se opdateringerne</translation>
 <translation id="383629559565718788">Vis tastaturindstillinger</translation>
+<translation id="384082539148746321">Vil du slette skabelonen?</translation>
 <translation id="3846214748874656680">Afslut fuld skærm</translation>
 <translation id="3846575436967432996">Der er ingen tilgængelige netværksoplysninger</translation>
 <translation id="385051799172605136">Tilbage</translation>
@@ -822,6 +827,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="7029814467594812963">Afslut session</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistent</translation>
 <translation id="7042322267639375032">Skjul statusområde</translation>
+<translation id="7045033600005038336">Vil du erstatte skabelonen?</translation>
 <translation id="7045595904618419789">Start forstørrelse</translation>
 <translation id="7055381872777910864">O</translation>
 <translation id="7055910611768509537">Styluspennen har ikke været i brug i over en uge</translation>
@@ -958,6 +964,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="8036504271468642248">Forrige sætning</translation>
 <translation id="8042893070933512245">Åbn menuen med indstillinger for hjælpefunktioner</translation>
 <translation id="8048123526339889627">Bluetooth-indstillinger</translation>
+<translation id="8051716679295756675">Der findes allerede en skabelon med navnet <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="8052898407431791827">Kopieret til udklipsholder</translation>
 <translation id="8054466585765276473">Beregner batteritid.</translation>
 <translation id="8061464966246066292">Høj kontrast</translation>
@@ -1063,6 +1070,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="8876661425082386199">Tjek din forbindelse</translation>
 <translation id="8877788021141246043">Opret en påmindelse</translation>
 <translation id="8878886163241303700">Udvider skærm</translation>
+<translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> slettes permanent</translation>
 <translation id="890616557918890486">Skift kilde</translation>
 <translation id="8909138438987180327">Batteriet er på <ph name="PERCENTAGE" /> procent.</translation>
 <translation id="8913384980486163186">Med tema (standard)</translation>

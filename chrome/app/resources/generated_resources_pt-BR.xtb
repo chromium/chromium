@@ -328,6 +328,7 @@
 <translation id="133535873114485416">Entrada preferencial</translation>
 <translation id="1335929031622236846">Inscrever seu dispositivo</translation>
 <translation id="1336902454946927954">A chave de segurança está bloqueada porque sua impressão digital não foi reconhecida. Para desbloquear, digite seu PIN.</translation>
+<translation id="1338631221631423366">Pareando…</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> quer abrir esse aplicativo.</translation>
 <translation id="1338950911836659113">Excluindo...</translation>
 <translation id="1339009753652684748">Acesse o Google Assistente sempre que você disser "Ok Google". Para economizar bateria, selecione “Ativado (recomendado)”. O Google Assistente responderá apenas quando o dispositivo estiver conectado ou carregando.</translation>
@@ -6567,6 +6568,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7887864092952184874">Mouse Bluetooth pareado</translation>
 <translation id="7889371445710865055">Mudar idioma do Ditado</translation>
 <translation id="7890147169288018054">Ver informações da rede, como seu endereço IP ou MAC</translation>
+<translation id="7892384782944609022">Não foi possível parear. Selecione o dispositivo para tentar novamente.</translation>
 <translation id="7893008570150657497">Acessar fotos, música e outras mídias em seu computador</translation>
 <translation id="7893153962594818789">O Bluetooth está desativado neste <ph name="DEVICE_TYPE" />. Digite sua senha e ative o Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (padrão)</translation>

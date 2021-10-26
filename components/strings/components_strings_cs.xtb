@@ -296,6 +296,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1842969606798536927">Zaplatit</translation>
 <translation id="1856713167556118146">Co anonymní režim nedělá</translation>
 <translation id="1863257867908022953">Přihrádka 12</translation>
+<translation id="1864927262126810325">Od <ph name="SOURCE_NAME" /></translation>
 <translation id="1871208020102129563">Proxy je nastaveno na používání pevně daných serverů proxy, nikoliv adresy URL skriptu PAC.</translation>
 <translation id="1871284979644508959">Povinné pole</translation>
 <translation id="1875025161375567525">Foto přihrádka</translation>
@@ -953,6 +954,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4117700440116928470">Rozsah zásady není podporován.</translation>
 <translation id="4121428309786185360">Konec platnosti</translation>
 <translation id="4123572138124678573">Tři otvory dole</translation>
+<translation id="4127575959421463246">Hledáte příznaky Chrome OS? Navštívit</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 další}few{# další}many{# další}other{# dalších}}</translation>
 <translation id="4130226655945681476">Zkontrolovat síťové kabely, modem a směrovač</translation>
 <translation id="4133224101597112888">Tlačítko sdílení karty. Stisknutím klávesy Enter tuto kartu můžete sdílet pomocí odkazu, QR kódu, odesláním apod.</translation>
@@ -1120,6 +1122,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4606870351894164739">Působivé</translation>
 <translation id="4607603470419975064">Tlačítko Zobrazit tipy k Chromu, stisknutím klávesy Enter zobrazíte další informace o funkcích Chromu</translation>
 <translation id="4607608436550361748">Zobrazit tipy k Chromu</translation>
+<translation id="4627675673814409125">Tuto zásadu nelze nastavit na úrovni profilu Chrome, bude proto ignorována.</translation>
 <translation id="4628948037717959914">Fotka</translation>
 <translation id="4631649115723685955">Cashback je propojen</translation>
 <translation id="4636930964841734540">Informace</translation>
@@ -1750,6 +1753,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="674375294223700098">Neznámá chyba certifikátu serveru.</translation>
 <translation id="6744009308914054259">Zatímco čekáte na připojení, v sekci Stažené soubory si můžete přečíst offline články.</translation>
 <translation id="6753269504797312559">Hodnota zásady</translation>
+<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Zařízení přešlo do režimu spánku.</translation>
 <translation id="6767985426384634228">Aktualizovat adresu?</translation>
 <translation id="6768213884286397650">Hagaki (pohlednice)</translation>
@@ -1837,6 +1841,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="706295145388601875">Přidávejte a spravujte adresy v nastavení Chromu</translation>
 <translation id="7064851114919012435">Kontaktní údaje</translation>
 <translation id="7068733155164172741">Zadejte <ph name="OTP_LENGTH" />místný kód</translation>
+<translation id="7070090581017165256">O tomto webu</translation>
 <translation id="70705239631109039">Vaše připojení není plně zabezpečené</translation>
 <translation id="7075452647191940183">Požadavek je příliš velký</translation>
 <translation id="7079718277001814089">Tento web obsahuje malware</translation>
@@ -2080,6 +2085,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7813600968533626083">Odstranit návrh položky formuláře z Chromu?</translation>
 <translation id="781440967107097262">Sdílet schránku?</translation>
 <translation id="7815407501681723534">Nalezené <ph name="SEARCH_RESULTS" /> pro dotaz „<ph name="SEARCH_STRING" />“: <ph name="NUMBER_OF_RESULTS" /></translation>
+<translation id="782125616001965242">Zobrazit informace o tomto webu</translation>
 <translation id="782886543891417279">Síť Wi-Fi, kterou používáte (<ph name="WIFI_NAME" />), může vyžadovat, abyste navštívili její stránku přihlášení.</translation>
 <translation id="7836231406687464395">Postfix (obálka)</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Žádné}=1{1 aplikace (<ph name="EXAMPLE_APP_1" />)}=2{2 aplikace (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}few{# aplikace (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}many{# aplikace (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# aplikací (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
@@ -2293,6 +2299,7 @@ Další podrobnosti:
 <translation id="8541158209346794904">Zařízení Bluetooth</translation>
 <translation id="8542014550340843547">Tři sponky dole</translation>
 <translation id="8543181531796978784">Můžete <ph name="BEGIN_ERROR_LINK" />nahlásit problém se zjištěným webem<ph name="END_ERROR_LINK" />. Pokud bezpečnostní rizika chápete, můžete <ph name="BEGIN_LINK" />tento nespolehlivý web navštívit<ph name="END_LINK" />.</translation>
+<translation id="8554010658308662631">Načíst další</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Resetovat oprávnění}few{Resetovat oprávnění}many{Resetovat oprávnění}other{Resetovat oprávnění}}</translation>
 <translation id="8555010941760982128">Při placení použijte tento kód</translation>
 <translation id="8557066899867184262">Kód CVC je uveden na zadní straně karty.</translation>
@@ -2359,6 +2366,7 @@ Další podrobnosti:
 <translation id="8792626944327216835">mikrofon</translation>
 <translation id="8793655568873652685">Administrátor organizace <ph name="ENROLLMENT_DOMAIN" /> vám v prohlížeči zapnul konektory Chrome Enterprise Connectors. Tyto konektory mají přístup k některým vašim datům.</translation>
 <translation id="8798099450830957504">Výchozí</translation>
+<translation id="8798739476508189189">Hledáte příznaky prohlížeče? Navštívit</translation>
 <translation id="8805819170075074995">Položka seznamu „<ph name="LANGUAGE_ID" />“: Položka byla ignorována, protože je zahrnuta také v zásadě SpellcheckLanguage.</translation>
 <translation id="8807160976559152894">Oříznutí za každou stránkou</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím klávesy Tab a poté Enter aktualizujete Chrome v nastavení Chromu</translation>
@@ -2464,6 +2472,7 @@ Další podrobnosti:
 <translation id="9157595877708044936">Nastavování...</translation>
 <translation id="9158625974267017556">C6 (obálka)</translation>
 <translation id="9164029392738894042">Kontrola přesnosti</translation>
+<translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">Povolit webům zjišťovat, zda máte uložené platební metody</translation>
 <translation id="9169664750068251925">Blokovat vždy na tomto webu</translation>
 <translation id="9169931577761441333">Přidat aplikaci <ph name="APP_NAME" /> na plochu</translation>

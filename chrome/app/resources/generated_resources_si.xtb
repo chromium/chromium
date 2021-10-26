@@ -328,6 +328,7 @@
 <translation id="133535873114485416">වඩා කැමති ආදාන</translation>
 <translation id="1335929031622236846">ඔබේ උපාංගය ඇතුළත් කරන්න</translation>
 <translation id="1336902454946927954">ඔබේ ඇඟිලි සලකුණ හඳුනාගත නොහැකි වූ බැවින් ඔබේ ආරක්‍ෂක යතුර අගුලු වැටී ඇත. අගුලු ඇරීමට, ඔබේ රහස් අංකය ඇතුළත් කරන්න.</translation>
+<translation id="1338631221631423366">යුගල කරමින්...</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> හට මෙම යෙදුම විවෘත කිරීමට අවශ්‍යයි.</translation>
 <translation id="1338950911836659113">ඉවත්කරමින්...</translation>
 <translation id="1339009753652684748">ඔබ "Hey Google" යැයි කියන විට ඔබගේ සහායක වෙත ප්‍රවේශ වන්න බැටරිය සුරැකීමට, “ක්‍රියාත්මකයි (නිර්දේශිතයි)” තෝරන්න. ඔබගේ සහායක ඔබගේ උපාංගය පේනුගත කර ඇති විට හෝ ආරෝපණ වන විට පමණක් ප්‍රතිචාර දක්වයි.</translation>
@@ -3050,6 +3051,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4115002065223188701">ජාලය පරාසයෙන් බැහැරය</translation>
 <translation id="4115378294792113321">මැජෙන්ටා</translation>
 <translation id="4117637339509843559">අඳුරු ප්‍රකාරය</translation>
+<translation id="4117714603282104018">ස්පර්ශ පෑඩ ස්පෘශ්‍ය ප්‍රතිපෝෂණය</translation>
 <translation id="4118579674665737931">උපාංගය යළි පණ ගන්වා නැවත උත්සාහ කරන්න.</translation>
 <translation id="412022815379960229">ඔබ පුරා ඇති සැම විටම, Google ඡායාරූප වෙතින් ඔබේ මතක ගවේෂණය කිරීම ආරම්භ කරන්න.</translation>
 <translation id="4120388883569225797">මෙම ආරක්‍ෂක යතුර යළි සැකසිය නොහැක</translation>
@@ -5492,6 +5494,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6810613314571580006">ගබඩා කළ අක්තපත්‍ර භාවිතයෙන් වෙබ් අඩවි වෙත ස්වයංක්‍රීයව පුරන්න. විශේෂාංගය අබල කර ඇති විට, ඔබ වෙබ් අඩවියකට පිරීමට පෙර සෑම විටම ඔබට තහවුරු කිරීමට පවසනු ඇත.</translation>
 <translation id="6810768462515084623">අපොයි! ඔබේ මුරපදය කල් ඉකුත් වූ බව පෙනේ. වෙනත් උපාංගයක එය අලුත් කර නැවත උත්සාහ කරන්න.</translation>
 <translation id="6811034713472274749">පිටුව බැලීමට සූදානම්</translation>
+<translation id="6811151703183939603">දැඩි</translation>
 <translation id="6811332638216701903">DHCP සත්කාරක නම</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> හට මූලය ලෙස ධාවනය විය නොහැක.</translation>
 <translation id="6812841287760418429">වෙනස්කම් තබාගන්න</translation>
@@ -6550,6 +6553,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7887864092952184874">Bluetooth මවුසය යුගල කරන ලදි</translation>
 <translation id="7889371445710865055">අනුලේඛන භාෂාව වෙනස් කරන්න</translation>
 <translation id="7890147169288018054">ඔබේ IP හෝ MAC ලිපිනය යනාදි ජාල තොරතුරු බලන්න</translation>
+<translation id="7892384782944609022">යුගල කිරීමට නොහැකි විය. නැවත උත්සාහ කිරීමට උපාංගය තෝරන්න.</translation>
 <translation id="7893008570150657497">ප්‍රවේශ ඡායාරූප, සංගීතය, සහ ඔබේ පරිගණකයේ අනෙකුත් මාධ්‍ය</translation>
 <translation id="7893153962594818789">මෙම <ph name="DEVICE_TYPE" /> මත බ්ලූටූත් ක්‍රියාවිරහිතයි. ඔබේ මුරපදය ඇතුළු කර, බ්ලූටූත් ක්‍රියාත්මක කරන්න.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (පෙරනිමිය)</translation>
@@ -6786,6 +6790,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="811994229154425014">නැවතීමේ තිත ටයිප් කිරීමට ස්පේස් බාර් එක දෙවරක් ඔබන්න</translation>
 <translation id="8120505434908124087">eSIM පැතිකඩ ස්ථාපනය කරන්න</translation>
 <translation id="812260729110117038">වෙළඳ ප්‍රචාරකයන්ට සහ ප්‍රකාශකයින්ට අඩවි හරහා ඔබව හඹා නොයන ආකාරයකින් වෙළඳ දැන්වීම්වල ඵලදායීතාවය අධ්‍යයනය කළ හැකිය.</translation>
+<translation id="81231173274944570">ස්පෘශ්‍ය ප්‍රතිපෝෂණය සබල කරන්න. <ph name="LINK_BEGIN" />තව දැන ගන්න<ph name="LINK_END" /></translation>
 <translation id="81238879832906896">කහ සහ සුදු මල</translation>
 <translation id="8124313775439841391">පාලිත ONC</translation>
 <translation id="813082847718468539">අඩවි තොරතුරු පෙන්වන්න</translation>
@@ -7862,6 +7867,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{යෙදුම}one{යෙදුම්}other{යෙදුම්}}</translation>
 <translation id="964790508619473209">තිර පිළියෙළ</translation>
 <translation id="965211523698323809">ඔබේ <ph name="DEVICE_TYPE" /> වෙතින් පාඨ පණිවුඩ යවන්න සහ ලබන්න. <ph name="LINK_BEGIN" />තවත් දැන ගන්න<ph name="LINK_END" /></translation>
+<translation id="96535553604365597">Google Cast සමගින් වන ගැටලුවක් වාර්තා කරන්න</translation>
 <translation id="967398046773905967">කිසිඳු වෙබ් අඩවියකට HID උපාංග වෙත ප්‍රවේශ වීමට ඉඩ නොදෙන්න</translation>
 <translation id="967624055006145463">දත්ත ගබඩා කර ඇත</translation>
 <translation id="96774243435178359">කළමනාකරණය කෙරෙන මුද්‍රණ යන්ත්‍ර</translation>

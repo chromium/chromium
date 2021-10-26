@@ -131,6 +131,7 @@
 <translation id="2122305276694332719">සැඟවුණු ජාලයකට ස්වයංක්‍රීයව සම්බන්ධ කිරීම අන් අයට ඔබේ උපාංගය සහ යම් ජාල සැකසීම් බැලීමට ඉඩ සලසන අතර, එය නිර්දේශ නොකෙරේ.</translation>
 <translation id="2125607626296734455">ඛමර්</translation>
 <translation id="2139545522194199494"><ph name="NETWORK_COUNT" />න් <ph name="NETWORK_INDEX" /> වැනි ජාලය, <ph name="NETWORK_NAME" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%, ඔබේ පරිපාලකයා විසින් කළමනාකරණය කරයි, සබඳින්න</translation>
+<translation id="2141347188420181405"><ph name="NETWORK_COUNT" />කින් <ph name="NETWORK_INDEX" />වන ජාලය, <ph name="NETWORK_NAME" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%, ඔබගේ පරිපාලක විසින් අවහිර කර ඇත, විස්තර</translation>
 <translation id="2142680004883808240">ශබ්දිම YaZHert යතුරුපුවරුව සමඟ රුසියානු</translation>
 <translation id="2143778271340628265">හස්තීය ප්‍රොක්සි වින්‍යාසකරණය</translation>
 <translation id="2163152940313951844">අවලංගු අනුලකුණ: <ph name="CHARACTER_NAME" /></translation>
@@ -185,6 +186,7 @@
 <translation id="2563185590376525700">ගෙම්බා</translation>
 <translation id="2578394532502990878">දෙමළ ශබ්දිම</translation>
 <translation id="2579959351793446050">ඔඩියා</translation>
+<translation id="2602810353103180630"><ph name="NETWORK_COUNT" />කින් <ph name="NETWORK_INDEX" />වන ජාලය, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /> සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%, ඔබගේ පරිපාලක විසින් අවහිර කර ඇත, විස්තර</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> වීඩියෝ</translation>
 <translation id="2617342710774726426">SIM පත අගුළු වැටී ඇත</translation>
 <translation id="2620090360073999360">මේ අවස්ථාවේ Google Drive වෙත ලගාවිය නොහැක.</translation>

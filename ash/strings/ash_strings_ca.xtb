@@ -17,6 +17,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">Substitueix</translation>
 <translation id="1073899992769346247">Substitueix o recarrega la bateria</translation>
+<translation id="1081015718268701546">Actualment, les aplicacions de Linux no s'admeten. Les altres aplicacions es desaran.</translation>
 <translation id="108486256082349153">Mòbil: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Bona tarda, <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">M'avorreixo</translation>
@@ -43,6 +44,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1225748608451425081">El Chromebook està bloquejat a causa d'un problema conegut. Podràs iniciar-hi la sessió d'aquí a: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Deixa de seleccionar</translation>
 <translation id="1239161794459865856">La funció <ph name="FEATURE_NAME" /> està connectada.</translation>
+<translation id="1246890715821376239">Aplicacions no admeses</translation>
 <translation id="1247372569136754018">Micròfon (intern)</translation>
 <translation id="1252999807265626933">S'està carregant amb: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Quin temps fa?</translation>
@@ -168,6 +170,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2148716181193084225">Avui</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />. Torna-ho a provar</translation>
 <translation id="2170530631236737939">Fes lliscar tres dits cap avall per sortir de Visió general</translation>
+<translation id="2201071101391734388">Foto recent <ph name="INDEX" /> de <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2208323208084708176">Mode d'escriptori unificat</translation>
 <translation id="2220572644011485463">PIN o contrasenya</translation>
 <translation id="2222841058024245321">Escriptori 7</translation>
@@ -291,6 +294,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3151786313568798007">Orientació</translation>
 <translation id="3153444934357957346">Només pots tenir <ph name="MULTI_PROFILE_USER_LIMIT" /> comptes com a màxim en un inici de sessió múltiple.</translation>
 <translation id="3154351730702813399">És possible que l'administrador del dispositiu supervisi l'activitat de navegació.</translation>
+<translation id="316086887565479535">Aplicacions no admeses a la plantilla</translation>
 <translation id="3181441307743005334">Pot tardar una estona a reiniciar-se</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Connectat a un dispositiu}other{Connectat a # dispositius}}</translation>
 <translation id="320207200541803018">Inicia el temporitzador</translation>
@@ -388,6 +392,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="383058930331066723">El mode d'estalvi de bateria està activat</translation>
 <translation id="3835880383832568924">Per veure les actualitzacions, obre l'aplicació Dreceres</translation>
 <translation id="383629559565718788">Mostra la configuració del teclat</translation>
+<translation id="384082539148746321">Vols suprimir la plantilla?</translation>
 <translation id="3846214748874656680">Surt de la pantalla completa</translation>
 <translation id="3846575436967432996">No hi ha informació de xarxa disponible</translation>
 <translation id="385051799172605136">Enrere</translation>
@@ -822,6 +827,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="7029814467594812963">Tanca la sessió</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Assistent de Google</translation>
 <translation id="7042322267639375032">Replega l'àrea d'estat</translation>
+<translation id="7045033600005038336">Vols substituir la plantilla?</translation>
 <translation id="7045595904618419789">Inicia la lupa</translation>
 <translation id="7055381872777910864">Dc.</translation>
 <translation id="7055910611768509537">El llapis òptic no s'utilitza des de fa més d'una setmana</translation>
@@ -958,6 +964,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="8036504271468642248">Frase anterior</translation>
 <translation id="8042893070933512245">Obre el menú de configuració d'accessibilitat</translation>
 <translation id="8048123526339889627">Configuració del Bluetooth</translation>
+<translation id="8051716679295756675">La plantilla anomenada <ph name="DESK_TEMPLATE_NAME" /> ja existeix</translation>
 <translation id="8052898407431791827">S'ha copiat al porta-retalls</translation>
 <translation id="8054466585765276473">S'està calculant el temps de la bateria.</translation>
 <translation id="8061464966246066292">Contrast alt</translation>
@@ -1063,6 +1070,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="8876661425082386199">Comprova la connexió</translation>
 <translation id="8877788021141246043">Configura un recordatori</translation>
 <translation id="8878886163241303700">Ampliació de la pantalla</translation>
+<translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> se suprimirà permanentment</translation>
 <translation id="890616557918890486">Canvia la font</translation>
 <translation id="8909138438987180327">La bateria està a un <ph name="PERCENTAGE" />%.</translation>
 <translation id="8913384980486163186">Amb temàtica (opció predeterminada)</translation>

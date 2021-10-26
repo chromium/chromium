@@ -29,6 +29,7 @@
 <translation id="1743802530341753419">Pyydä lupaa, kun sivustot yrittävät yhdistää laitteeseen (suositus)</translation>
 <translation id="1779089405699405702">Kuvien dekooderi</translation>
 <translation id="1818308510395330587">Laita kamera päälle myös <ph name="BEGIN_LINK" />Androidin asetuksista<ph name="END_LINK" />, jotta <ph name="APP_NAME" /> voi käyttää AR:ää.</translation>
+<translation id="1864927262126810325">Lähde: <ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">Sijainti on pois päältä tällä laitteella. Voit laittaa sen päälle <ph name="BEGIN_LINK" />Android-asetuksista<ph name="END_LINK" />.</translation>
 <translation id="1919345977826869612">Mainokset</translation>
 <translation id="1919950603503897840">Valitse kontaktit</translation>
@@ -236,6 +237,7 @@
 <translation id="7016516562562142042">Sallittu nykyisellä hakukoneella</translation>
 <translation id="7053983685419859001">Estä</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 valittu}other{# valittu}}</translation>
+<translation id="7070090581017165256">Tietoja tästä sivustosta</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> valittu. Toimintoja on käytettävissä näytön yläosassa.</translation>
 <translation id="7141896414559753902">Estä ponnahdusikkunoiden näyttäminen sivustoilla (suositus)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kt</translation>

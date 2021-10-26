@@ -131,6 +131,7 @@
 <translation id="2122305276694332719">कुनै लुकाइएको नेटवर्कमा स्वतः जोड्नुले तपाईंको यन्त्र र नेटवर्कसम्बन्धी केही सेटिङ अरूले देख्न सक्ने हुनाले यसो गर्न सिफारिस गरिँदैन।</translation>
 <translation id="2125607626296734455">खमेर</translation>
 <translation id="2139545522194199494"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /> मध्ये नेटवर्क <ph name="NETWORK_INDEX" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, तपाईंका प्रशासकले व्यवस्थित गर्नुभएको छ, जोड्नुहोस्</translation>
+<translation id="2141347188420181405"><ph name="NETWORK_COUNT" /> मध्ये <ph name="NETWORK_INDEX" /> औँ नेटवर्क, <ph name="NETWORK_NAME" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, तपाईंका एड्मिनले ब्लक गरेको, विवरणहरू</translation>
 <translation id="2142680004883808240">रसियाली फोनेटिक YaZHert किबोर्ड</translation>
 <translation id="2143778271340628265">म्यानुअल प्रोक्सी कन्फिगरेसन</translation>
 <translation id="2163152940313951844">अमान्य वर्ण: <ph name="CHARACTER_NAME" /></translation>
@@ -185,6 +186,7 @@
 <translation id="2563185590376525700">भ्यागुतो</translation>
 <translation id="2578394532502990878">तमिल फोनेटिक</translation>
 <translation id="2579959351793446050">ओडिया</translation>
+<translation id="2602810353103180630"><ph name="NETWORK_COUNT" /> मध्ये <ph name="NETWORK_INDEX" /> औँ नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, तपाईंका एड्मिनले ब्लक गरेको, विवरणहरू</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> भिडियो</translation>
 <translation id="2617342710774726426">SIM कार्ड लक गरिएको छ</translation>
 <translation id="2620090360073999360">यस समुमा Google ड्राइभ को पहुँच गर्न सकिँदैन।</translation>

@@ -29,6 +29,7 @@
 <translation id="1743802530341753419">Fråga innan webbplatser tillåts ansluta till en enhet (rekommenderas)</translation>
 <translation id="1779089405699405702">Bildavkodare</translation>
 <translation id="1818308510395330587">Om du vill att <ph name="APP_NAME" /> ska använda AR måste du även aktivera kameran i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>
+<translation id="1864927262126810325">Från <ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">Platsåtkomst har inaktiverats på enheten. Aktivera det i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>
 <translation id="1919345977826869612">Annonser</translation>
 <translation id="1919950603503897840">Välj kontakter</translation>
@@ -236,6 +237,7 @@
 <translation id="7016516562562142042">Tillåt för den nuvarande sökmotorn</translation>
 <translation id="7053983685419859001">Blockera</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 har valts}other{# har valts}}</translation>
+<translation id="7070090581017165256">Om den här webbplatsen</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> har valts. Alternativ finns högt upp på skärmen</translation>
 <translation id="7141896414559753902">Blockera webbplatser från att visa popup-fönster (rekommenderas)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>

@@ -131,6 +131,7 @@
 <translation id="2122305276694332719">اتصال خودکار به شبکه‌ای پنهان به دیگران امکان می‌دهد دستگاه و برخی تنظیمات شبکه‌تان را ببینند، و توصیه نمی‌شود.</translation>
 <translation id="2125607626296734455">خمر</translation>
 <translation id="2139545522194199494">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" />٪، تحت‌مدیریت سرپرست، اتصال</translation>
+<translation id="2141347188420181405">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" />٪، سرپرستتان آن را مسدود کرده است، جزئیات</translation>
 <translation id="2142680004883808240">‏روسی با صفحه‌کلید آوایی YaZHert</translation>
 <translation id="2143778271340628265">پیکربندی پراکسی دستی</translation>
 <translation id="2163152940313951844">نویسه نامعتبر: <ph name="CHARACTER_NAME" /></translation>
@@ -185,6 +186,7 @@
 <translation id="2563185590376525700">قورباغه</translation>
 <translation id="2578394532502990878">تامیل (آوایی)</translation>
 <translation id="2579959351793446050">اوریه</translation>
+<translation id="2602810353103180630">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="CONNECTION_STATUS" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" />٪، سرپرستتان آن را مسدود کرده است، جزئیات</translation>
 <translation id="2614589611416690597">ویدیوی <ph name="VIDEO_TYPE" /></translation>
 <translation id="2617342710774726426">سیم‌کارت قفل است</translation>
 <translation id="2620090360073999360">‏دسترسی به Google Drive در حال حاضر ممکن نیست.</translation>

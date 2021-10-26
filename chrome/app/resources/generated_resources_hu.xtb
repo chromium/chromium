@@ -327,6 +327,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="133535873114485416">Elsődleges bevitel</translation>
 <translation id="1335929031622236846">Az eszköz regisztrálása</translation>
 <translation id="1336902454946927954">A biztonsági kulcsot zároltuk, mert nem tudtuk azonosítani az ujjlenyomatot. A feloldáshoz adja meg a PIN-kódot.</translation>
+<translation id="1338631221631423366">Párosítás…</translation>
 <translation id="1338802252451106843">A(z) <ph name="ORIGIN" /> meg akarja nyitni ezt az alkalmazást.</translation>
 <translation id="1338950911836659113">Törlés…</translation>
 <translation id="1339009753652684748">Az „Ok Google” parancsszó kimondásával hozzáférhet Segédjéhez. Ha a „Be (javasolt)” beállítást választja ki, akkor az akkumulátor üzemidejének növelése érdekében Segédje csak akkor reagál, amikor az eszköz áramforrásra csatlakozik.</translation>
@@ -6565,6 +6566,7 @@ Nyomja meg valamelyik hozzárendelt kapcsolót vagy billentyűt a hozzárendelé
 <translation id="7887864092952184874">Bluetooth-egér párosítva</translation>
 <translation id="7889371445710865055">A diktálás nyelvének módosítása</translation>
 <translation id="7890147169288018054">Hálózati adatok megtekintése (pl. IP- és MAC-cím)</translation>
+<translation id="7892384782944609022">Sikertelen párosítás. Válassza ki a kívánt eszközt az újrapróbálkozáshoz.</translation>
 <translation id="7893008570150657497">Fényképek, zene és egyéb multimédiás anyagok elérése a számítógépről</translation>
 <translation id="7893153962594818789">A Bluetooth ki van kapcsolva ezen a(z) <ph name="DEVICE_TYPE" /> eszközön. Adja meg jelszavát, és kapcsolja be a Bluetooth-t.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Alapértelmezett)</translation>

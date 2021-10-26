@@ -131,6 +131,7 @@
 <translation id="2122305276694332719">La connessione automatica a una rete nascosta consente ad altre persone di rilevare il tuo dispositivo e alcune impostazioni di rete, pertanto è sconsigliata.</translation>
 <translation id="2125607626296734455">Khmer</translation>
 <translation id="2139545522194199494">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />%, gestita dall'amministratore, connetti</translation>
+<translation id="2141347188420181405">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, intensità del segnale: <ph name="SIGNAL_STRENGTH" />%, bloccata dall'amministratore, dettagli</translation>
 <translation id="2142680004883808240">Russo con tastiera fonetica YaZHert</translation>
 <translation id="2143778271340628265">Configurazione manuale del proxy</translation>
 <translation id="2163152940313951844">Carattere non valido: <ph name="CHARACTER_NAME" /></translation>
@@ -185,6 +186,7 @@
 <translation id="2563185590376525700">Rana</translation>
 <translation id="2578394532502990878">Tamil fonetica</translation>
 <translation id="2579959351793446050">Odia</translation>
+<translation id="2602810353103180630">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, intensità del segnale: <ph name="SIGNAL_STRENGTH" />%, bloccata dall'amministratore, dettagli</translation>
 <translation id="2614589611416690597">Video <ph name="VIDEO_TYPE" /></translation>
 <translation id="2617342710774726426">La scheda SIM è bloccata</translation>
 <translation id="2620090360073999360">Al momento non è possibile raggiungere Google Drive.</translation>

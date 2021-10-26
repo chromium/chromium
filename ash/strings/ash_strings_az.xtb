@@ -17,6 +17,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">Əvəz edin</translation>
 <translation id="1073899992769346247">Batareyanı dəyişin və ya şarj edin</translation>
+<translation id="1081015718268701546">Linux tətbiqləri hazırda dəstəklənmir. Digər tətbiqlər yadda saxlanılacaq.</translation>
 <translation id="108486256082349153">Mobil: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Günortanız xeyir, <ph name="GIVEN_NAME" /></translation>
 <translation id="109942774857561566">Darıxıram</translation>
@@ -43,6 +44,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1225748608451425081">Chromebook cihazınız məlum problemə görə kilidlənib. Bu müddətdən sonra daxil ola biləcəksiniz: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Seçməyi dayandırın</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> qoşulub.</translation>
+<translation id="1246890715821376239">Dəstəklənməyən tətbiqlər</translation>
 <translation id="1247372569136754018">Mikrofon (daxili)</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> mənbəsindən qidalanır</translation>
 <translation id="1255033239764210633">Hava necədir?</translation>
@@ -168,6 +170,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="2148716181193084225">Bu gün</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Yenidən cəhd edin</translation>
 <translation id="2170530631236737939">İcmaldan çıxmaq üçün üç barmaq ilə aşağı çəkin</translation>
+<translation id="2201071101391734388">Son foto <ph name="INDEX" />/<ph name="TOTAL_COUNT" />.</translation>
 <translation id="2208323208084708176">Vahid masa üstü rejimi</translation>
 <translation id="2220572644011485463">PIN və ya parol</translation>
 <translation id="2222841058024245321">Masa 7</translation>
@@ -291,6 +294,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="3151786313568798007">Oriyentasiya</translation>
 <translation id="3153444934357957346">Çoxsaylı girişdə maksimum <ph name="MULTI_PROFILE_USER_LIMIT" /> hesabınız ola bilər.</translation>
 <translation id="3154351730702813399">Cihaz admini axtarış fəaliyyətinizi izləyə bilər.</translation>
+<translation id="316086887565479535">Şablonda dəstəklənməyən tətbiqlər</translation>
 <translation id="3181441307743005334">Yenidən başlatmaq bir qədər vaxt apara bilər</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Cihaza qoşuldunuz}other{# cihaza qoşuldunuz}}</translation>
 <translation id="320207200541803018">Taymer ayarlayın</translation>
@@ -388,6 +392,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="383058930331066723">Enerjiyə qənaət rejimi aktivdir</translation>
 <translation id="3835880383832568924">Güncəlləmələri görmək üçün Qısayollar tətbiqini açın</translation>
 <translation id="383629559565718788">Klaviatura ayarlarını göstərin</translation>
+<translation id="384082539148746321">Şablon silinsin?</translation>
 <translation id="3846214748874656680">Tam ekrandan çıxın</translation>
 <translation id="3846575436967432996">Heç bir şəbəkə məlumatı yoxdur</translation>
 <translation id="385051799172605136">Geri</translation>
@@ -822,6 +827,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="7029814467594812963">Sessiyadan çıxın</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistent</translation>
 <translation id="7042322267639375032">Status sahəsini yığcamlaşdırın</translation>
+<translation id="7045033600005038336">Şablon əvəz edilsin?</translation>
 <translation id="7045595904618419789">Böyüdücünü başladın</translation>
 <translation id="7055381872777910864">Ç</translation>
 <translation id="7055910611768509537">Qələm bir həftədən çoxdur ki, istifadə edilməyib</translation>
@@ -958,6 +964,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="8036504271468642248">Əvvəlki cümlə</translation>
 <translation id="8042893070933512245">Əlçatımlılıq ayarları menyusunu açın</translation>
 <translation id="8048123526339889627">Bluetooth ayarları</translation>
+<translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> adlı şablon artıq mövcuddur</translation>
 <translation id="8052898407431791827">Mübadilə buferinə kopyalandı</translation>
 <translation id="8054466585765276473">Enerji vaxtı hesablanır.</translation>
 <translation id="8061464966246066292">Yüksək kontrast</translation>
@@ -1063,6 +1070,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="8876661425082386199">Bağlantını yoxlayın</translation>
 <translation id="8877788021141246043">Xatırlatma ayarlayın</translation>
 <translation id="8878886163241303700">Ekran böyüdülür</translation>
+<translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> həmişəlik silinəcək</translation>
 <translation id="890616557918890486">Mənbəni dəyişin</translation>
 <translation id="8909138438987180327">Batareya <ph name="PERCENTAGE" /> faizdir.</translation>
 <translation id="8913384980486163186">Temalı (defolt)</translation>

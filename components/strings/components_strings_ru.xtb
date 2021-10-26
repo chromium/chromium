@@ -296,6 +296,7 @@
 <translation id="1842969606798536927">Оплатить</translation>
 <translation id="1856713167556118146">Что сохраняется в режиме инкогнито</translation>
 <translation id="1863257867908022953">Лоток 12</translation>
+<translation id="1864927262126810325">Источник: <ph name="SOURCE_NAME" /></translation>
 <translation id="1871208020102129563">Выбрано использование фиксированных прокси-серверов, а не URL PAC-скрипта.</translation>
 <translation id="1871284979644508959">Поле, обязательное для заполнения</translation>
 <translation id="1875025161375567525">Фотолоток</translation>
@@ -956,6 +957,7 @@
 <translation id="4117700440116928470">Область действия правил не поддерживается.</translation>
 <translation id="4121428309786185360">Срок действия</translation>
 <translation id="4123572138124678573">Три отверстия снизу</translation>
+<translation id="4127575959421463246">Ищете экспериментальные параметры Chrome OS? Перейти</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{ещё 1 вариант}one{ещё # вариант}few{ещё # варианта}many{ещё # вариантов}other{ещё # варианта}}</translation>
 <translation id="4130226655945681476">Проверьте сетевые кабели, модем и маршрутизатор.</translation>
 <translation id="4133224101597112888">Кнопка "Поделиться вкладкой". Нажмите Ввод, чтобы поделиться этой вкладкой с помощью ссылки, QR-кода, трансляции и т. д.</translation>
@@ -1123,6 +1125,7 @@
 <translation id="4606870351894164739">Эффектный</translation>
 <translation id="4607603470419975064">Кнопка "Посмотреть советы по работе с Chrome". Чтобы узнать больше о функциях Chrome, нажмите Ввод.</translation>
 <translation id="4607608436550361748">Посмотреть советы по работе с Chrome</translation>
+<translation id="4627675673814409125">Это правило нельзя установить на уровне профиля Chrome, поэтому оно будет игнорироваться.</translation>
 <translation id="4628948037717959914">Фото</translation>
 <translation id="4631649115723685955">С кешбэком</translation>
 <translation id="4636930964841734540">Информация</translation>
@@ -1754,6 +1757,7 @@
 <translation id="674375294223700098">Неизвестная ошибка сертификата сервера.</translation>
 <translation id="6744009308914054259">В ожидании подключения вы можете открыть скачанные файлы и почитать статьи офлайн.</translation>
 <translation id="6753269504797312559">Значение правила</translation>
+<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Устройство находится в спящем режиме.</translation>
 <translation id="6767985426384634228">Изменить адрес?</translation>
 <translation id="6768213884286397650">Hagaki (открытка)</translation>
@@ -1841,6 +1845,7 @@
 <translation id="706295145388601875">Добавить и изменить адреса в настройках Chrome</translation>
 <translation id="7064851114919012435">Контактные данные</translation>
 <translation id="7068733155164172741">Введите <ph name="OTP_LENGTH" />-значный код</translation>
+<translation id="7070090581017165256">О сайте</translation>
 <translation id="70705239631109039">Подключение к сайту небезопасно</translation>
 <translation id="7075452647191940183">Запрос слишком велик.</translation>
 <translation id="7079718277001814089">Этот сайт содержит вредоносное ПО</translation>
@@ -2085,6 +2090,7 @@
 <translation id="7813600968533626083">Удалить подсказку из Chrome?</translation>
 <translation id="781440967107097262">Предоставить доступ к буферу обмена?</translation>
 <translation id="7815407501681723534"><ph name="SEARCH_RESULTS" /> по запросу "<ph name="SEARCH_STRING" />" (<ph name="NUMBER_OF_RESULTS" />)</translation>
+<translation id="782125616001965242">Показать информацию об этом сайте</translation>
 <translation id="782886543891417279">Возможно, вам нужно перейти на страницу входа сети Wi-Fi (<ph name="WIFI_NAME" />).</translation>
 <translation id="7836231406687464395">Postfix (конверт)</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Нет}=1{1 приложение (<ph name="EXAMPLE_APP_1" />)}=2{2 приложения (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# приложение (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}few{# приложения (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}many{# приложений (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}other{# приложения (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
@@ -2297,6 +2303,7 @@
 <translation id="8541158209346794904">Устройство Bluetooth</translation>
 <translation id="8542014550340843547">Три скобы внизу</translation>
 <translation id="8543181531796978784"><ph name="BEGIN_ERROR_LINK" />Сообщите о зараженном сайте<ph name="END_ERROR_LINK" />. Если вы готовы подвергнуть риску личные данные, то можете <ph name="BEGIN_LINK" />перейти на страницу<ph name="END_LINK" />.</translation>
+<translation id="8554010658308662631">Ещё</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Сбросить разрешение}one{Сбросить все разрешения}few{Сбросить все разрешения}many{Сбросить все разрешения}other{Сбросить все разрешения}}</translation>
 <translation id="8555010941760982128">Укажите этот код при оформлении заказа</translation>
 <translation id="8557066899867184262">CVC-код указан на обратной стороне карты.</translation>
@@ -2362,6 +2369,7 @@
 <translation id="8792626944327216835">Микрофон</translation>
 <translation id="8793655568873652685">Домен <ph name="ENROLLMENT_DOMAIN" /> включил в браузере коннекторы Chrome Enterprise Connectors. У них есть доступ к некоторым вашим данным.</translation>
 <translation id="8798099450830957504">По умолчанию</translation>
+<translation id="8798739476508189189">Ищете экспериментальные параметры браузера? Перейти</translation>
 <translation id="8805819170075074995">Элемент списка "<ph name="LANGUAGE_ID" />": элемент проигнорирован, поскольку он уже включен в правило SpellcheckLanguage.</translation>
 <translation id="8807160976559152894">Подрезать после каждой страницы</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab и затем Ввод, чтобы обновить Chrome.</translation>
@@ -2467,6 +2475,7 @@
 <translation id="9157595877708044936">Настройка...</translation>
 <translation id="9158625974267017556">C6 (конверт)</translation>
 <translation id="9164029392738894042">Проверка точности</translation>
+<translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">Разрешить сайтам проверять наличие сохраненных способов оплаты</translation>
 <translation id="9169664750068251925">Всегда блокировать на этом сайте</translation>
 <translation id="9169931577761441333">Добавить приложение "<ph name="APP_NAME" />" на главный экран</translation>

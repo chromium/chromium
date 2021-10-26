@@ -301,6 +301,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1842969606798536927">Fizetés</translation>
 <translation id="1856713167556118146">Mire nem képes az inkognitó mód?</translation>
 <translation id="1863257867908022953">12. tálca</translation>
+<translation id="1864927262126810325">Forrás: <ph name="SOURCE_NAME" /></translation>
 <translation id="1871208020102129563">A proxy fix proxyszerverek használatára van beállítva, nem pedig .pac típusú szkript URL címének használatára.</translation>
 <translation id="1871284979644508959">Kötelező mező</translation>
 <translation id="1875025161375567525">Fotótálca</translation>
@@ -961,6 +962,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4117700440116928470">Az irányelv hatásköre nem támogatott.</translation>
 <translation id="4121428309786185360">Lejár:</translation>
 <translation id="4123572138124678573">Három lyuk alul</translation>
+<translation id="4127575959421463246">A ChromeOS-jelzőket keresi? Keresse fel a következő oldalt:</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 egyéb}other{# egyéb}}</translation>
 <translation id="4130226655945681476">A hálózati kábelek, a modem és a router ellenőrzése</translation>
 <translation id="4133224101597112888">A lap megosztása gomb. Az Enter billentyű megnyomásával megoszthatja ezt a lapot a link megosztása, QR-kód létrehozása, átküldés és egyebek révén.</translation>
@@ -1132,6 +1134,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4606870351894164739">Hatásos</translation>
 <translation id="4607603470419975064">Chrome-tippek megjelenítése gomb, nyomja meg az Enter billentyűt a Chrome funkcióival kapcsolatos további információkért</translation>
 <translation id="4607608436550361748">Chrome-tippek megjelenítése</translation>
+<translation id="4627675673814409125">Ez az irányelv nem állítható be a Chrome-profil szintjén, ezért figyelmen kívül hagyja a rendszer.</translation>
 <translation id="4628948037717959914">Fénykép</translation>
 <translation id="4631649115723685955">Pénzvisszatérítéssel összekapcsolva</translation>
 <translation id="4636930964841734540">Információ</translation>
@@ -1763,6 +1766,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="674375294223700098">Ismeretlen szervertanúsítvány-hiba.</translation>
 <translation id="6744009308914054259">Miközben kapcsolatra vár, a Letöltések között elolvashatja az offline cikkeket.</translation>
 <translation id="6753269504797312559">Házirend értéke</translation>
+<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Eszköze alvó üzemmódba váltott.</translation>
 <translation id="6767985426384634228">Frissíti a címet?</translation>
 <translation id="6768213884286397650">Hagaki (képeslap)</translation>
@@ -1850,6 +1854,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="706295145388601875">Címek hozzáadása és kezelése a Chrome-beállítások között</translation>
 <translation id="7064851114919012435">Kapcsolatfelvételi adatok</translation>
 <translation id="7068733155164172741">Adja meg a kapott, <ph name="OTP_LENGTH" /> számjegyből álló kódot</translation>
+<translation id="7070090581017165256">A webhelyről</translation>
 <translation id="70705239631109039">Kapcsolata nem teljesen biztonságos</translation>
 <translation id="7075452647191940183">A kérés túl nagy</translation>
 <translation id="7079718277001814089">A webhely rosszindulatú programokat tartalmaz</translation>
@@ -2094,6 +2099,7 @@ További részletek:
 <translation id="7813600968533626083">Eltávolítja a javaslatot a Chrome-ból?</translation>
 <translation id="781440967107097262">Engedélyezi a vágólap megosztását?</translation>
 <translation id="7815407501681723534"><ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> található a(z) „<ph name="SEARCH_STRING" />” kifejezésre</translation>
+<translation id="782125616001965242">Információ megjelenítése erről a webhelyről</translation>
 <translation id="782886543891417279">Az Ön által használt Wi-Fi-hálózat (<ph name="WIFI_NAME" />) megkövetelheti a bejelentkezést a bejelentkezési oldalán.</translation>
 <translation id="7836231406687464395">Postfix (boríték)</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Nincs}=1{1 alkalmazás (<ph name="EXAMPLE_APP_1" />)}=2{2 alkalmazás (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# alkalmazás (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
@@ -2307,6 +2313,7 @@ További részletek:
 <translation id="8541158209346794904">Bluetooth-eszköz</translation>
 <translation id="8542014550340843547">Három kapocs alul</translation>
 <translation id="8543181531796978784">Lehetősége van arra, hogy <ph name="BEGIN_ERROR_LINK" />jelentse az észlelési problémát<ph name="END_ERROR_LINK" />, ha pedig tisztában van a biztonságát fenyegető kockázatokkal, <ph name="BEGIN_LINK" />felkeresheti a nem biztonságos webhelyet<ph name="END_LINK" />.</translation>
+<translation id="8554010658308662631">Továbbiak betöltése</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Engedély visszaállítása}other{Engedélyek visszaállítása}}</translation>
 <translation id="8555010941760982128">Adja meg ezt a kódot a fizetésnél:</translation>
 <translation id="8557066899867184262">A CVC-kód a kártya hátulján található.</translation>
@@ -2373,6 +2380,7 @@ További részletek:
 <translation id="8792626944327216835">mikrofon</translation>
 <translation id="8793655568873652685">A(z) <ph name="ENROLLMENT_DOMAIN" /> bekapcsolta a Chrome Enterprise Connectors integrációs eszközöket az Ön böngészőjében. Az eszközök hozzáférnek bizonyos adatokhoz.</translation>
 <translation id="8798099450830957504">Alapértelmezett</translation>
+<translation id="8798739476508189189">Böngészőjelzőket keres? Keresse fel a következő oldalt:</translation>
 <translation id="8805819170075074995">„<ph name="LANGUAGE_ID" />” listabejegyzés: A bejegyzést figyelmen kívül hagyja a rendszer, mert szerepel a SpellcheckLanguage házirendben is.</translation>
 <translation id="8807160976559152894">Vágás minden oldal után</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, nyomja le a Tab, majd az Enter billentyűt a Chrome-nak a Chrome beállításaiban való frissítéséhez</translation>
@@ -2478,6 +2486,7 @@ További részletek:
 <translation id="9157595877708044936">Előkészítés...</translation>
 <translation id="9158625974267017556">C6 (boríték)</translation>
 <translation id="9164029392738894042">Pontosság ellenőrzése</translation>
+<translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">Engedélyezés a webhelyek számára, hogy ellenőrizzék, van-e elmentett fizetési módja</translation>
 <translation id="9169664750068251925">Mindig tiltsa ezen az oldalon</translation>
 <translation id="9169931577761441333"><ph name="APP_NAME" /> hozzáadása a kezdőképernyőhöz</translation>

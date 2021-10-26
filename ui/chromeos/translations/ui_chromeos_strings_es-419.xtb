@@ -131,6 +131,7 @@
 <translation id="2122305276694332719">Si permites que tu dispositivo se conecte a una red oculta de forma automática, otras personas podrán ver tu dispositivo y algunas opciones de configuración de red, lo cual no es recomendable.</translation>
 <translation id="2125607626296734455">Jemer</translation>
 <translation id="2139545522194199494">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" />%, administrada por tu administrador, conectar</translation>
+<translation id="2141347188420181405">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" />%, bloqueada por tu administrador, detalles</translation>
 <translation id="2142680004883808240">Ruso con teclado fonético YaZHert</translation>
 <translation id="2143778271340628265">Configuración manual de proxy</translation>
 <translation id="2163152940313951844">Carácter no válido: <ph name="CHARACTER_NAME" /></translation>
@@ -185,6 +186,7 @@
 <translation id="2563185590376525700">Rana</translation>
 <translation id="2578394532502990878">Tamil (fonético)</translation>
 <translation id="2579959351793446050">Oriya</translation>
+<translation id="2602810353103180630">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" />%, bloqueda por tu administrador, detalles</translation>
 <translation id="2614589611416690597">Video <ph name="VIDEO_TYPE" /></translation>
 <translation id="2617342710774726426">La tarjeta SIM está bloqueada</translation>
 <translation id="2620090360073999360">No se puede acceder a Google Drive en este momento.</translation>

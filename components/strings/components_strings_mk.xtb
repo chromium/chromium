@@ -301,6 +301,7 @@
 <translation id="1842969606798536927">Плати</translation>
 <translation id="1856713167556118146">Што не прави „Инкогнито“</translation>
 <translation id="1863257867908022953">Фиока 12</translation>
+<translation id="1864927262126810325">Од <ph name="SOURCE_NAME" /></translation>
 <translation id="1871208020102129563">Прокси е поставен да користи фиксни прокси-сервери, а не ПАК-скрипта на URL.</translation>
 <translation id="1871284979644508959">Задолжително поле</translation>
 <translation id="1875025161375567525">Фиока за фотографии</translation>
@@ -963,6 +964,7 @@
 <translation id="4117700440116928470">Обемот на политиката не е поддржан.</translation>
 <translation id="4121428309786185360">Истекува на</translation>
 <translation id="4123572138124678573">Три дупки долу</translation>
+<translation id="4127575959421463246">Барате ознаки за ChromeOS? Оди</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 друга}one{# друга}other{# други}}</translation>
 <translation id="4130226655945681476">Да ги проверите мрежните кабли, модемот и рутерот</translation>
 <translation id="4133224101597112888">Копче „Споделете ја картичкава“, притиснете Enter за да ја споделите картичкава со споделување линк, создавање QR-код, емитување и друго.</translation>
@@ -1134,6 +1136,7 @@
 <translation id="4606870351894164739">Забележителен</translation>
 <translation id="4607603470419975064">Копче за гледање совети за Chrome, притиснете го копчето Enter за да дознаете за функциите на Chrome</translation>
 <translation id="4607608436550361748">Видете ги советите за Chrome</translation>
+<translation id="4627675673814409125">Правилово не може да се постави на ниво на профил на Chrome и ќе се игнорира.</translation>
 <translation id="4628948037717959914">Фотографија</translation>
 <translation id="4631649115723685955">Со поврат на готовина</translation>
 <translation id="4636930964841734540">Информации</translation>
@@ -1765,6 +1768,7 @@
 <translation id="674375294223700098">Непозната грешка со сертификат на сервер.</translation>
 <translation id="6744009308914054259">Додека чекате врска, може да одите во „Преземања“ за да ги прочитате офлајн статиите.</translation>
 <translation id="6753269504797312559">Вредност на политика</translation>
+<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Уредот е во режим на спиење.</translation>
 <translation id="6767985426384634228">Да се ажурира адресата?</translation>
 <translation id="6768213884286397650">Hagaki (разгледница)</translation>
@@ -1852,6 +1856,7 @@
 <translation id="706295145388601875">Додавајте и управувајте со адреси во поставките за Chrome</translation>
 <translation id="7064851114919012435">Информации за контакт</translation>
 <translation id="7068733155164172741">Внесете го <ph name="OTP_LENGTH" />-цифрениот код</translation>
+<translation id="7070090581017165256">За сајтов</translation>
 <translation id="70705239631109039">Вашата врска не е потполно безбедна</translation>
 <translation id="7075452647191940183">Барањето е предолго</translation>
 <translation id="7079718277001814089">Сајтов содржи злонамерен софтвер</translation>
@@ -2096,6 +2101,7 @@
 <translation id="7813600968533626083">Отстрани ги предлозите за формулари од Chrome?</translation>
 <translation id="781440967107097262">Да се сподели привремената меморија?</translation>
 <translation id="7815407501681723534">Пронајдени се <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> за „<ph name="SEARCH_STRING" />“</translation>
+<translation id="782125616001965242">Прикажи информации за сајтов</translation>
 <translation id="782886543891417279">Wi-Fi што го користите (<ph name="WIFI_NAME" />) може да бара да ја посетите страницата за најавување.</translation>
 <translation id="7836231406687464395">Postfix (плик)</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Ништо}=1{1 апликација (<ph name="EXAMPLE_APP_1" />)}=2{2 апликации (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# апликација (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# апликации (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
@@ -2309,6 +2315,7 @@
 <translation id="8541158209346794904">Уред со Bluetooth</translation>
 <translation id="8542014550340843547">Тројно спојување долу</translation>
 <translation id="8543181531796978784">Може да <ph name="BEGIN_ERROR_LINK" />пријавите проблем со откривањето<ph name="END_ERROR_LINK" /> или, доколку ги разбирате ризиците по безбедноста, <ph name="BEGIN_LINK" />посетете ја оваа небезбедна страница<ph name="END_LINK" />.</translation>
+<translation id="8554010658308662631">Вчитај повеќе</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Ресетирај ја дозволата}one{Ресетирај ги дозволите}other{Ресетирај ги дозволите}}</translation>
 <translation id="8555010941760982128">Користете го кодов при наплатата</translation>
 <translation id="8557066899867184262">CVC-бројот се наоѓа на задната страна на картичката.</translation>
@@ -2374,6 +2381,7 @@
 <translation id="8792626944327216835">микрофон</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> вклучил Chrome Enterprise Connectors на вашиот прелистувач. Овие конектори имаат пристап до дел од вашите податоци.</translation>
 <translation id="8798099450830957504">Стандардно</translation>
+<translation id="8798739476508189189">Барате ознаки за прелистувач? Оди</translation>
 <translation id="8805819170075074995">Запис во список „<ph name="LANGUAGE_ID" />“: записот е игнориран бидејќи е вклучен и во правилото SpellcheckLanguage.</translation>
 <translation id="8807160976559152894">Кратење по секоја страница</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, а потоа Enter за да го ажурирате Chrome од поставките за Chrome</translation>
@@ -2479,6 +2487,7 @@
 <translation id="9157595877708044936">Се поставува…</translation>
 <translation id="9158625974267017556">C6 (плик)</translation>
 <translation id="9164029392738894042">Проверка на прецизноста</translation>
+<translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">Дозволете сајтовите да проверуваат дали имате зачувани начини на плаќање</translation>
 <translation id="9169664750068251925">Секогаш блокирај на оваа локација</translation>
 <translation id="9169931577761441333">Додајте ја <ph name="APP_NAME" /> на почетниот екран</translation>

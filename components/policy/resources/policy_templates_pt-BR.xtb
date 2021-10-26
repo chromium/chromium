@@ -2296,6 +2296,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
       Se você definir a política, os usuários não poderão mudá-la. Se ela não for definida, a inicialização em CA ficará desativada e os usuários não poderão ativá-la.</translation>
 <translation id="3660562134618097814">Transferir cookies do IDP de SAML durante o login</translation>
 <translation id="3665437376055221832">Consultar o usuário apenas quando nenhum certificado corresponder à seleção automática.</translation>
+<translation id="3674010627788940405">Não oferecer suporte a cabeçalhos de solicitação de CORS sem caractere curinga.</translation>
 <translation id="3685979383016152590">A definição da política designa qual política de acesso se aplica à configuração em massa de impressoras, controlando quais impressoras da <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> estão disponíveis para os usuários.
 
       * <ph name="PRINTERS_BLOCKLIST" /> (valor 0) usa <ph name="PRINTERS_BULK_BLOCKLIST" /> para restringir o acesso às impressoras especificadas.
@@ -2998,6 +2999,11 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
 
       Para o <ph name="PRODUCT_NAME" />, esta política só é eficaz quando a máquina está registrada na <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
       Para o <ph name="PRODUCT_OS_NAME" />, esta política sempre é eficaz.</translation>
+<translation id="4570859815763368584">Uso descontinuado na versão M68. Use a política DefaultPopupsSetting.
+
+      Para ver a explicação detalhada, acesse https://www.chromestatus.com/feature/5675755719622656.
+      Se esta política estiver ativada, os sites terão permissão para navegar e abrir novas janelas/guias simultaneamente.
+      Se esta política estiver desativada ou for deixada sem definição, os sites não terão permissão para navegar e abrir uma nova janela/guia simultaneamente.</translation>
 <translation id="4574215366111396039">O Chrome bloqueará a navegação para protocolos externos no
       iframe dentro do sandbox. Consulte https://chromestatus.com/features/5680742077038592.
 
@@ -3347,6 +3353,7 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
 <translation id="5025239932007658691">Se a política for definida como "Ativada" ou não for definida, o <ph name="PRODUCT_NAME" /> enviará consultas ocasionais a um servidor do Google para recuperar um carimbo de data/hora preciso.
 
       Se ela for definida como "Desativada", o <ph name="PRODUCT_NAME" /> não enviará essas consultas.</translation>
+<translation id="5039110755072335605">Suporte a cabeçalhos de solicitação de CORS sem caractere curinga</translation>
 <translation id="504116558738617678">Mostrar alertas de pouco espaço no disco apenas quando o dispositivo não tiver gerenciamento ou quando houver apenas um usuário</translation>
 <translation id="5049105847726444023">Se a política for definida como "Ativada" ou for deixada sem definição, os usuários poderão ver os resultados mais recentes da <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> em um painel lateral ao ativar um ícone na barra de ferramentas.
 
@@ -5943,6 +5950,15 @@ Se a política não for definida, a tela de privacidade ficará inicialmente des
       Se a política for desativada ou não for definida, o login levará a perfis regulares.</translation>
 <translation id="8151299379693359769">Ativar uma verificação de segurança extra baseada no atestado remoto (opcional, padrão: verdadeiro).</translation>
 <translation id="8151490482515839285">Ativar relatórios para prevenção de vazamento de dados</translation>
+<translation id="8151949408479239790">Configura o suporte a cabeçalhos de solicitação de CORS sem caractere curinga.
+
+      A versão 97 do <ph name="PRODUCT_NAME" /> introduz o suporte a cabeçalhos de solicitação de CORS sem caractere curinga. Diante de uma solicitação de rede entre origens usando fetch() e XMLHttpRequest com um cabeçalho Authorization adicionado pelo script, o cabeçalho precisa receber autorização explícita do cabeçalho Access-Control-Allow-Headers na resposta de simulação do CORS. Ou seja, o caractere curinga "*" não inclui o cabeçalho Authorization. Para ver mais detalhes, consulte <ph name="CORS_NON_WILDCARD_REQUEST_HEADERS_FEATURE_URL" />.
+
+      Se esta política for deixada sem definição ou for definida como verdadeira, o <ph name="PRODUCT_NAME" /> oferecerá suporte a cabeçalhos de solicitação de CORS sem caractere curinga e se comportará conforme descrito acima.
+
+      Se esta política for definida como falsa, o Chrome permitirá o uso do caractere curinga (*) no cabeçalho Access-Control-Allow-Headers da resposta de simulação do CORS para incluir o cabeçalho Authorization.
+
+      A política corporativa é temporária e será removida após a versão 103 do <ph name="PRODUCT_NAME" />.</translation>
 <translation id="8158758865057576716">Permite a criação de cópias em roaming dos dados de perfil do <ph name="PRODUCT_NAME" />.</translation>
 <translation id="8158897487095710470">Se a política for definida como verdadeira, a barra de favoritos será exibida no <ph name="PRODUCT_NAME" />. Se ela for definida como falsa, os usuários não poderão ver a barra de favoritos.
 
@@ -6098,6 +6114,7 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
       <ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" /> ou
       <ph name="SAME_ORIGIN_TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />.
       </translation>
+<translation id="8310392396850884147">Oferecer suporte a cabeçalhos de solicitação de CORS sem caractere curinga.</translation>
 <translation id="8312129124898414409">Permite que você defina se os websites estão autorizados a usar a geração de chaves. O uso da geração de chaves pode ser permitido para todos os websites ou negado para todos eles.
 
           Se esta política não for definida, será usada a política "BlockKeygen", mas o usuário poderá modificá-la.</translation>

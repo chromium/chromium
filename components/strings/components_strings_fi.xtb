@@ -300,6 +300,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1842969606798536927">Maksa</translation>
 <translation id="1856713167556118146">Mitä incognito ei tee</translation>
 <translation id="1863257867908022953">Lokero 12</translation>
+<translation id="1864927262126810325">Lähde: <ph name="SOURCE_NAME" /></translation>
 <translation id="1871208020102129563">Välityspalvelin on asetettu käyttämään kiinteitä välityspalvelimia, ei .pac-URL-osoitetta.</translation>
 <translation id="1871284979644508959">Pakollinen tieto</translation>
 <translation id="1875025161375567525">Kuvalokero</translation>
@@ -963,6 +964,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4117700440116928470">Käytännön laajuutta ei tueta.</translation>
 <translation id="4121428309786185360">Vanhenee</translation>
 <translation id="4123572138124678573">Kolme reikää alareunassa</translation>
+<translation id="4127575959421463246">Etsitkö ChromeOS-merkintöjä? Avaa</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 muu}other{# muuta}}</translation>
 <translation id="4130226655945681476">Tarkista verkkojohdot, modeemi ja reititin.</translation>
 <translation id="4133224101597112888">Jaa tämä välilehti ‑painike, jaa tämä välilehti esimerkiksi linkin kautta, luomalla QR-koodin tai striimaamalla painamalla Enter.</translation>
@@ -1134,6 +1136,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4606870351894164739">Vaikuttava</translation>
 <translation id="4607603470419975064">Katso Chromen vinkkejä ‑painike, katso lisätietoja Chromen ominaisuuksista painamalla Enter</translation>
 <translation id="4607608436550361748">Katso Chromen vinkkejä</translation>
+<translation id="4627675673814409125">Käytäntöä ei voi määrittää Chrome-profiilin tasolta, ja määritys ohitetaan.</translation>
 <translation id="4628948037717959914">Kuva</translation>
 <translation id="4631649115723685955">Hyvitystarjous linkitetty</translation>
 <translation id="4636930964841734540">Tietoja</translation>
@@ -1765,6 +1768,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="674375294223700098">Tuntematon palvelimen varmennevirhe.</translation>
 <translation id="6744009308914054259">Voit lukea artikkeleita offline-tilassa Lataukset-kohdassa, kun odotat yhteyden muodostamista.</translation>
 <translation id="6753269504797312559">Käytännön arvo</translation>
+<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Laitteesi siirtyi virransäästötilaan.</translation>
 <translation id="6767985426384634228">Päivitetäänkö osoite?</translation>
 <translation id="6768213884286397650">Hagaki (postikortti)</translation>
@@ -1852,6 +1856,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="706295145388601875">Lisää ja muuta osoitteita Chromen asetuksista</translation>
 <translation id="7064851114919012435">Yhteystiedot</translation>
 <translation id="7068733155164172741">Lisää <ph name="OTP_LENGTH" />-numeroinen koodi</translation>
+<translation id="7070090581017165256">Tietoja tästä sivustosta</translation>
 <translation id="70705239631109039">Yhteytesi ei ole täysin suojattu</translation>
 <translation id="7075452647191940183">Pyyntö on liian suuri</translation>
 <translation id="7079718277001814089">Tämä sivusto sisältää haittaohjelmia</translation>
@@ -2096,6 +2101,7 @@ Lisätietoja:
 <translation id="7813600968533626083">Poistetaanko lomake-ehdotus Chromen tiedoista?</translation>
 <translation id="781440967107097262">Jaetaanko leikepöytä?</translation>
 <translation id="7815407501681723534">Haku <ph name="SEARCH_STRING" /> tuotti <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" />.</translation>
+<translation id="782125616001965242">Näytä tietoja tästä sivustosta</translation>
 <translation id="782886543891417279">Käyttämäsi Wi-Fi (<ph name="WIFI_NAME" />) saattaa edellyttää kirjautumista.</translation>
 <translation id="7836231406687464395">Postfix (kirjekuori)</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Ei mitään}=1{1 sovellus (<ph name="EXAMPLE_APP_1" />)}=2{2 sovellusta (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# sovellusta (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
@@ -2375,6 +2381,7 @@ Lisätietoja:
 <translation id="8792626944327216835">mikrofoni</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> on laittanut Chrome Enterprise Connectorsin päälle selaimessasi. Nämä liittimet pääsevät osaan datastasi.</translation>
 <translation id="8798099450830957504">Oletus</translation>
+<translation id="8798739476508189189">Etsitkö selaimen merkintöjä? Avaa</translation>
 <translation id="8805819170075074995">Luettelokohde <ph name="LANGUAGE_ID" />: Kohde on ohitettu, koska se sisältyy myös SpellcheckLanguage-käytäntöön.</translation>
 <translation id="8807160976559152894">Leikkaa jokaisen sivun jälkeen</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, päivitä Chrome sen asetuksista painamalla sarkainta ja sitten Enter</translation>
@@ -2480,6 +2487,7 @@ Lisätietoja:
 <translation id="9157595877708044936">Valmistellaan...</translation>
 <translation id="9158625974267017556">C6 (kirjekuori)</translation>
 <translation id="9164029392738894042">Tarkkuuden tarkistaminen</translation>
+<translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">Salli sivustojen tarkastaa, oletko tallentanut maksutapoja</translation>
 <translation id="9169664750068251925">Estä aina tämä sivusto</translation>
 <translation id="9169931577761441333">Lisää <ph name="APP_NAME" /> aloitusnäytölle</translation>

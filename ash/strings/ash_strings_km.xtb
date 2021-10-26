@@ -17,6 +17,7 @@
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />៖ <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">ជំនួស</translation>
 <translation id="1073899992769346247">ប្ដូរ ឬសាកថ្ម​ឡើងវិញ</translation>
+<translation id="1081015718268701546">បច្ចុប្បន្ននេះ មិនអាចប្រើកម្មវិធី Linux បានទេ។ កម្មវិធីផ្សេងទៀតនឹងត្រូវបានរក្សាទុក។</translation>
 <translation id="108486256082349153">បណ្ដាញទូរសព្ទចល័ត៖ <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">ទិវា​សួស្ដី <ph name="GIVEN_NAME" /></translation>
 <translation id="109942774857561566">ខ្ញុំ​ធុញ</translation>
@@ -43,6 +44,7 @@
 <translation id="1225748608451425081">Chromebook របស់អ្នក​ជាប់សោ ដោយសារបញ្ហាដែលស្គាល់។ អ្នកនឹងអាចចូលគណនី បន្ទាប់ពីរយៈពេល៖ <ph name="TIME_LEFT" /> ទៀត។</translation>
 <translation id="1229194443904279055">ឈប់​ជ្រើសរើស</translation>
 <translation id="1239161794459865856">បានភ្ជាប់ <ph name="FEATURE_NAME" />។</translation>
+<translation id="1246890715821376239">កម្មវិធីដែលមិនអាចប្រើបាន</translation>
 <translation id="1247372569136754018">មីក្រូហ្វូន (ខាងក្នុង)</translation>
 <translation id="1252999807265626933">កំពុងសាកពី <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">តើអាកាសធាតុ​យ៉ាងម៉េចដែរ?</translation>
@@ -168,6 +170,7 @@
 <translation id="2148716181193084225">ថ្ងៃនេះ</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />៖ ព្យាយាម​ម្ដងទៀត</translation>
 <translation id="2170530631236737939">អូសចុះក្រោម​ដោយប្រើ​ម្រាមដៃបី ដើម្បីចាកចេញពី​ទិដ្ឋភាពរួម</translation>
+<translation id="2201071101391734388">រូបថតថ្មីៗ <ph name="INDEX" /> សន្លឹកក្នុងចំណោម <ph name="TOTAL_COUNT" /> សន្លឹក។</translation>
 <translation id="2208323208084708176">របៀបដេស៍ថបរួមតែមួយ។</translation>
 <translation id="2220572644011485463">កូដ PIN ឬពាក្យសម្ងាត់</translation>
 <translation id="2222841058024245321">តុទី 7</translation>
@@ -291,6 +294,7 @@
 <translation id="3151786313568798007">ទិសដៅ</translation>
 <translation id="3153444934357957346">អ្នកអាចមានគណនីត្រឹមតែ <ph name="MULTI_PROFILE_USER_LIMIT" /> ប៉ុណ្ណោះ សម្រាប់ការចូលគណនីច្រើន។</translation>
 <translation id="3154351730702813399">អ្នកគ្រប់គ្រងឧបករណ៍នេះអាចនឹងត្រួតពិនិត្យសកម្មភាពរុករករបស់អ្នក។</translation>
+<translation id="316086887565479535">កម្មវិធីដែលមិនអាចប្រើបាននៅក្នុងទម្រង់គំរូ</translation>
 <translation id="3181441307743005334">ការចាប់ផ្ដើម​ឡើងវិញអាច​ចំណាយ​ពេលបន្តិច</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{បាន​ភ្ជាប់​ទៅ​ឧបករណ៍មួយ}other{បាន​ភ្ជាប់​ទៅ​ឧបករណ៍ #}}</translation>
 <translation id="320207200541803018">កំណត់កម្មវិធីកំណត់ម៉ោង</translation>
@@ -339,6 +343,7 @@
 <translation id="3509391053705095206">រកទូរសព្ទរបស់អ្នក​មិនឃើញទេ។ សូមប្រាកដ​ថាបាន​បើកប៊្លូធូស​ទូរសព្ទ​របស់​អ្នក។</translation>
 <translation id="3510164367642747937">រំលេច​ទស្សន៍ទ្រនិច​កណ្ដុរ</translation>
 <translation id="3513798432020909783">គណនី​ស្ថិត​ក្រោមការគ្រប់គ្រង​របស់ <ph name="MANAGER_EMAIL" /></translation>
+<translation id="352245152354538528">{0,plural, =1{ដំឡើងកំណែ​ឧបករណ៍​ក្នុងរយៈពេល 1 នាទី​}other{ដំឡើងកំណែ​ឧបករណ៍​ក្នុងរយៈពេល # នាទី​}}</translation>
 <translation id="353086728817903341">បានភ្ជាប់ជាមួយ​ឧបករណ៍ <ph name="NUM_DEVICES" /> គ្រឿង</translation>
 <translation id="3552189655002856821">បានបិទ Wi-Fi</translation>
 <translation id="3560866052109807830">ឧបករណ៍​គូរហ្វឺត</translation>
@@ -387,6 +392,7 @@
 <translation id="383058930331066723">មុខងារសន្សំថ្ម​ត្រូវបានបើក</translation>
 <translation id="3835880383832568924">ដើម្បីមើលបច្ចុប្បន្នភាព សូមបើកកម្មវិធីផ្លូវ​កាត់</translation>
 <translation id="383629559565718788">បង្ហាញ​ការកំណត់​ក្ដារ​ចុច</translation>
+<translation id="384082539148746321">លុប​ទម្រង់​គំរូឬ?</translation>
 <translation id="3846214748874656680">ចាកចេញពីអេក្រង់ពេញ</translation>
 <translation id="3846575436967432996">គ្មានព័ត៌មានបណ្តាញទេ</translation>
 <translation id="385051799172605136">ថយក្រោយ</translation>
@@ -427,6 +433,7 @@
 <translation id="4146833061457621061">ចាក់​តន្ត្រី</translation>
 <translation id="4157822100366708405">ការកំណត់​រចនាប័ទ្មងងឹត</translation>
 <translation id="4173958948577803258">ព្រហ</translation>
+<translation id="4177913004758410636">{0,plural, =1{ដំឡើងកំណែ​ឧបករណ៍​ក្នុងរយៈពេល​មួយថ្ងៃ​}other{ដំឡើងកំណែ​ឧបករណ៍​ក្នុងរយៈពេល # ថ្ងៃ​}}</translation>
 <translation id="4181841719683918333">ភាសា</translation>
 <translation id="4195877955194704651">ប៊ូតុងចុច​ស្វ័យប្រវត្តិ</translation>
 <translation id="4197790712631116042">បិទ</translation>
@@ -480,6 +487,7 @@
 <translation id="445864333228800152">សាយណ្ហ​សួស្ដី</translation>
 <translation id="4458688154122353284">បញ្ឈប់​ការថត​អេក្រង់</translation>
 <translation id="4471354919263203780">កំពុងទាញយក​ឯកសារ​សម្គាល់ការនិយាយ... <ph name="PERCENT" />%</translation>
+<translation id="4471432286288241507">{0,plural, =0{ដំឡើងកំណែ​ឧបករណ៍​ឥឡូវនេះ}=1{ដំឡើងកំណែ​ឧបករណ៍​ក្នុងរយៈពេល 1 វិនាទី​}other{ដំឡើងកំណែ​ឧបករណ៍​ក្នុងរយៈពេល # វិនាទី​}}</translation>
 <translation id="4472575034687746823">ចាប់ផ្ដើម</translation>
 <translation id="4477350412780666475">សំនៀង​បន្ទាប់</translation>
 <translation id="4477892968187500306">ឧបករណ៍នេះ​អាចមាន​កម្មវិធី​ដែល​មិនត្រូវបាន​ផ្ទៀងផ្ទាត់​ដោយ Google។</translation>
@@ -739,6 +747,7 @@
 <translation id="6482559668224714696">កែវ​ពង្រីក​ពេញ​អេក្រង់</translation>
 <translation id="6490471652906364588">ឧបករណ៍ USB-C (រន្ធខាងស្តាំ)</translation>
 <translation id="649452524636452238">កូដ PIN របស់​កាត​ឆ្លាតវៃ</translation>
+<translation id="6495400115277918834">មុខងាររូបក្នុងរូបបានចាប់ផ្ដើម, ចុច Alt+Shift+V ដើម្បីផ្ដោត</translation>
 <translation id="6500818810472529210">មើលលទ្ធផលនៅក្នុង​កម្មវិធីស្វែងរកនៅលើ Google</translation>
 <translation id="6501401484702599040">កំពុងខាសអេក្រង់ទៅ <ph name="RECEIVER_NAME" /></translation>
 <translation id="6520517963145875092">ជ្រើសរើសវិនដូណាមួយ ដើម្បីថត</translation>
@@ -749,6 +758,7 @@
 <translation id="6542521951477560771">កំពុង​បញ្ជូនទៅ <ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">ស្នើសុំ​អ្នកគ្រប់គ្រង</translation>
 <translation id="6565007273808762236">មិនអាចភ្ជាប់ eSIM បានទេ</translation>
+<translation id="6570831796530454248">{0,plural, =1{ដំឡើងកំណែ​ឧបករណ៍​ក្នុងរយៈពេល​មួយ​ម៉ោង​}other{ដំឡើងកំណែ​ឧបករណ៍​ក្នុងរយៈពេល # ម៉ោង​}}</translation>
 <translation id="6570902864550063460">កំពុងសាកថ្មតាមរយៈ USB</translation>
 <translation id="6585808820553845416">វេនបញ្ចប់ក្នុង <ph name="SESSION_TIME_REMAINING" />។</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
@@ -817,6 +827,7 @@
 <translation id="7029814467594812963">ចាកចេញពីវេន</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google ជំនួយការ</translation>
 <translation id="7042322267639375032">បង្រួម​តំបន់​ស្ថានភាព</translation>
+<translation id="7045033600005038336">ប្ដូរទម្រង់គំរូឬ?</translation>
 <translation id="7045595904618419789">ចាប់ផ្ដើម​កែវពង្រីក</translation>
 <translation id="7055381872777910864">ព</translation>
 <translation id="7055910611768509537">មិនបានប្រើប៊ិកជាងមួយសប្ដាហ៍ហើយ</translation>
@@ -953,6 +964,7 @@
 <translation id="8036504271468642248">ប្រយោគ​មុន</translation>
 <translation id="8042893070933512245">បើកម៉ឺនុយការកំណត់ភាពងាយស្រួល</translation>
 <translation id="8048123526339889627">ការកំណត់​ប៊្លូធូស</translation>
+<translation id="8051716679295756675">ទម្រង់គំរូដែលមានឈ្មោះថា <ph name="DESK_TEMPLATE_NAME" /> មានរួចហើយ</translation>
 <translation id="8052898407431791827">បានចម្លង​ទៅ​ឃ្លីបបត</translation>
 <translation id="8054466585765276473">កំពុងគណនារយៈពេលថាមពលថ្ម។</translation>
 <translation id="8061464966246066292">កម្រិត​ពន្លឺខ្ពស់</translation>
@@ -1058,6 +1070,7 @@
 <translation id="8876661425082386199">សូមពិនិត្យមើលការតភ្ជាប់របស់អ្នក</translation>
 <translation id="8877788021141246043">កំណត់​ការរំលឹក</translation>
 <translation id="8878886163241303700">អេក្រង់ពង្រីក</translation>
+<translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> នឹងលុបជាអចិន្ត្រៃយ៍</translation>
 <translation id="890616557918890486">ប្ដូរប្រភព</translation>
 <translation id="8909138438987180327">ថ្ម​មានកម្រិត <ph name="PERCENTAGE" /> ភាគរយ។</translation>
 <translation id="8913384980486163186">រចនាប័ទ្ម (លំនាំដើម)</translation>

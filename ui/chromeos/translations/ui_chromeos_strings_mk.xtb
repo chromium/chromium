@@ -131,6 +131,7 @@
 <translation id="2122305276694332719">Автоматското поврзување на скриена мрежа им овозможува на другите да го видат вашиот уред и некои други мрежни поставки и не се препорачува.</translation>
 <translation id="2125607626296734455">кмерски</translation>
 <translation id="2139545522194199494">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, управувана од администраторот, поврзи</translation>
+<translation id="2141347188420181405">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, јачина на сигналот <ph name="SIGNAL_STRENGTH" /> %, блокирано од вашиот администратор, детали</translation>
 <translation id="2142680004883808240">руски со фонетска тастатура YaZHert</translation>
 <translation id="2143778271340628265">Рачна конфигурација на прокси</translation>
 <translation id="2163152940313951844">Неважечки знак: <ph name="CHARACTER_NAME" /></translation>
@@ -185,6 +186,7 @@
 <translation id="2563185590376525700">Жаба</translation>
 <translation id="2578394532502990878">фонетски тамилски</translation>
 <translation id="2579959351793446050">одија</translation>
+<translation id="2602810353103180630">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, блокирано од администраторот, детали</translation>
 <translation id="2614589611416690597">Видео: <ph name="VIDEO_TYPE" /></translation>
 <translation id="2617342710774726426">SIM-картичката е заклучена</translation>
 <translation id="2620090360073999360">Не може да се достапи до Google Диск во моментов.</translation>

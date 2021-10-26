@@ -300,6 +300,7 @@
 <translation id="1842969606798536927">Төлем</translation>
 <translation id="1856713167556118146">Инкогнито режимінде орындалмайды</translation>
 <translation id="1863257867908022953">12-науа</translation>
+<translation id="1864927262126810325"><ph name="SOURCE_NAME" /> дереккөзінен</translation>
 <translation id="1871208020102129563">Прокси .pac сценарий URL мекенжайын емес, бекітілген прокси серверлерін пайдалануға орнатылған.</translation>
 <translation id="1871284979644508959">Міндетті өріс</translation>
 <translation id="1875025161375567525">Фото науасы</translation>
@@ -961,6 +962,7 @@
 <translation id="4117700440116928470">Саясат аясына қолдау көрсетілмеген.</translation>
 <translation id="4121428309786185360">Аяқталу күні</translation>
 <translation id="4123572138124678573">Төменгі жағын үш рет тесу</translation>
+<translation id="4127575959421463246">ChromeOS жалаушаларын іздеудесіз бе? Кіру</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{тағы 1}other{тағы #}}</translation>
 <translation id="4130226655945681476">Желі кабельдерін, модем және роутерді тексеру</translation>
 <translation id="4133224101597112888">"Осы қойындыны бөлісу" түймесі, сілтемені бөлісу, QR кодын жасау, трансляциялау және т.б. арқылы осы қойындыны бөлісу үшін Enter пернесін басыңыз.</translation>
@@ -1132,6 +1134,7 @@
 <translation id="4606870351894164739">Әсерлі</translation>
 <translation id="4607603470419975064">"Chrome кеңестерін көру" түймесі, Chrome функциялары туралы білу үшін Enter түймесін басыңыз.</translation>
 <translation id="4607608436550361748">Chrome кеңестерін көру</translation>
+<translation id="4627675673814409125">Бұл саясатты Chrome профилі деңгейінде орнатуға болмайды және ол еленбейді.</translation>
 <translation id="4628948037717959914">Фотосурет</translation>
 <translation id="4631649115723685955">Байланыстырылған кешбэк</translation>
 <translation id="4636930964841734540">Ақпарат</translation>
@@ -1763,6 +1766,7 @@
 <translation id="674375294223700098">Белгісіз сервер сертификатының қатесі.</translation>
 <translation id="6744009308914054259">Байланыстың орнауын күткен кезде, офлайн режимдегі мақалаларды оқу үшін "Жүктеп алынғандар" бөліміне кіруіңізге болады.</translation>
 <translation id="6753269504797312559">Саясат мәні</translation>
+<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Құрылғы ұйқы күйіне өтті.</translation>
 <translation id="6767985426384634228">Мекенжайды жаңарту керек пе?</translation>
 <translation id="6768213884286397650">Hagaki (Postcard)</translation>
@@ -1850,6 +1854,7 @@
 <translation id="706295145388601875">Chrome параметрлері арқылы мекенжайларды қосу және басқару</translation>
 <translation id="7064851114919012435">Байланыс ақпараты</translation>
 <translation id="7068733155164172741"><ph name="OTP_LENGTH" /> цифрлық кодты енгізіңіз</translation>
+<translation id="7070090581017165256">Осы сайт туралы</translation>
 <translation id="70705239631109039">Байланысыңыз толықтай қауіпсіз емес</translation>
 <translation id="7075452647191940183">Сұрау өлшемі өте үлкен.</translation>
 <translation id="7079718277001814089">Бұл сайтта зиянды бағдарлама бар</translation>
@@ -2094,6 +2099,7 @@
 <translation id="7813600968533626083">Chrome браузерінен форма ұсынысын өшіру қажет пе?</translation>
 <translation id="781440967107097262">Буфер бөлісілсін бе?</translation>
 <translation id="7815407501681723534">"<ph name="SEARCH_STRING" />" үшін <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> табылды</translation>
+<translation id="782125616001965242">Осы сайт туралы ақпарат көрсетіледі.</translation>
 <translation id="782886543891417279">Сіз пайдаланып жатқан Wi-Fi (<ph name="WIFI_NAME" />) желісі оның кіру бетіне кіруіңізді талап етеді.</translation>
 <translation id="7836231406687464395">Postfix (Envelope)</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Жоқ}=1{1 қолданба (<ph name="EXAMPLE_APP_1" />)}=2{2 қолданба (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# қолданба (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
@@ -2372,6 +2378,7 @@
 <translation id="8792626944327216835">микрофон</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> сіздің браузеріңізде Chrome Enterprise Connectors функциясын қосып қойды. Бұл коннекторлар кейбір деректеріңізді пайдалануы мүмкін.</translation>
 <translation id="8798099450830957504">Әдепкі</translation>
+<translation id="8798739476508189189">Браузер жалаушаларын іздеудесіз бе? Кіру</translation>
 <translation id="8805819170075074995">"<ph name="LANGUAGE_ID" />" тізім жазбасы: жазба еленбейді, себебі ол SpellcheckLanguage саясатына енгізілген.</translation>
 <translation id="8807160976559152894">Әр беттен кейін кесу</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome параметрлерінде Chrome-ды жаңарту үшін Tab, одан кейін Enter пернесін басыңыз.</translation>
@@ -2477,6 +2484,7 @@
 <translation id="9157595877708044936">Орнатылуда…</translation>
 <translation id="9158625974267017556">C6 (Envelope)</translation>
 <translation id="9164029392738894042">Дәлдікті тексеру</translation>
+<translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">Сайттардың сізде сақталған төлеу әдістері бар-жоғын тексеруіне рұқсат ету</translation>
 <translation id="9169664750068251925">Бұл сайтта әрқашан тыйым салу</translation>
 <translation id="9169931577761441333">Негізі экранға <ph name="APP_NAME" /> қолданбасын енгізу</translation>

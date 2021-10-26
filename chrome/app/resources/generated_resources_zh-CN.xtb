@@ -3038,6 +3038,7 @@
 <translation id="4115002065223188701">检测不到网络</translation>
 <translation id="4115378294792113321">洋红色</translation>
 <translation id="4117637339509843559">深色模式</translation>
+<translation id="4117714603282104018">触控板触感反馈</translation>
 <translation id="4118579674665737931">请重新启动此设备，然后重试。</translation>
 <translation id="412022815379960229">登录后即可开始浏览您在 Google 相册中的“回忆”集锦。</translation>
 <translation id="4120388883569225797">无法重置此安全密钥</translation>
@@ -5481,6 +5482,7 @@
 <translation id="6810613314571580006">使用存储的凭据自动登录网站。停用该功能后，系统会在您每次登录网站之前要求您进行确认。</translation>
 <translation id="6810768462515084623">糟糕！您的密码好像已过期。请在另一部设备上更新密码，然后重试。</translation>
 <translation id="6811034713472274749">页面已可供查看</translation>
+<translation id="6811151703183939603">重</translation>
 <translation id="6811332638216701903">DHCP 主机名</translation>
 <translation id="6812349420832218321">不能以根用户身份运行 <ph name="PRODUCT_NAME" />。</translation>
 <translation id="6812841287760418429">保留更改</translation>
@@ -6777,6 +6779,7 @@
 <translation id="811994229154425014">按两下空格键时输入句点</translation>
 <translation id="8120505434908124087">安装 eSIM 卡配置文件</translation>
 <translation id="812260729110117038">广告主和发布商可通过一种不会对您进行跨网站跟踪的方式研究广告的效果。</translation>
+<translation id="81231173274944570">启用触感反馈。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="81238879832906896">黄色和白色花朵</translation>
 <translation id="8124313775439841391">受管理的 ONC</translation>
 <translation id="813082847718468539">查看网站信息</translation>
@@ -7852,6 +7855,7 @@
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{应用}other{应用}}</translation>
 <translation id="964790508619473209">屏幕排列方式</translation>
 <translation id="965211523698323809">通过您的<ph name="DEVICE_TYPE" />收发短信。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
+<translation id="96535553604365597">报告与 Google Cast 有关的问题</translation>
 <translation id="967398046773905967">禁止任何网站访问 HID 设备</translation>
 <translation id="967624055006145463">已存储的数据</translation>
 <translation id="96774243435178359">受管理的打印机</translation>

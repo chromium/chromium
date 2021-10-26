@@ -296,6 +296,7 @@
 <translation id="1842969606798536927">付款</translation>
 <translation id="1856713167556118146">无痕模式不会做什么</translation>
 <translation id="1863257867908022953">纸匣 12</translation>
+<translation id="1864927262126810325">来自<ph name="SOURCE_NAME" /></translation>
 <translation id="1871208020102129563">代理已设置为使用固定的代理服务器，而不是 .pac 脚本网址。</translation>
 <translation id="1871284979644508959">必填字段</translation>
 <translation id="1875025161375567525">照片匣</translation>
@@ -953,6 +954,7 @@
 <translation id="4117700440116928470">政策范围不受支持。</translation>
 <translation id="4121428309786185360">截止日期</translation>
 <translation id="4123572138124678573">三孔（底部）</translation>
+<translation id="4127575959421463246">正在寻找 Chrome 操作系统 flag？请访问</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 项其他内容}other{# 项其他内容}}</translation>
 <translation id="4130226655945681476">检查网线、调制解调器和路由器</translation>
 <translation id="4133224101597112888">“分享此标签页”按钮，按 Enter 键即可通过分享链接、创建二维码、投射等操作分享此标签页。</translation>
@@ -1120,6 +1122,7 @@
 <translation id="4606870351894164739">富有影响力</translation>
 <translation id="4607603470419975064">“查看 Chrome 提示”按钮，按 Enter 键即可了解各项 Chrome 功能</translation>
 <translation id="4607608436550361748">查看 Chrome 提示</translation>
+<translation id="4627675673814409125">此政策无法在 Chrome 个人资料级别设置，因而会被忽略。</translation>
 <translation id="4628948037717959914">照片</translation>
 <translation id="4631649115723685955">已关联返现</translation>
 <translation id="4636930964841734540">信息</translation>
@@ -1750,6 +1753,7 @@
 <translation id="674375294223700098">未知的服务器证书错误。</translation>
 <translation id="6744009308914054259">在等待连接时，您可以前往“下载内容”页面阅读离线文章。</translation>
 <translation id="6753269504797312559">政策值</translation>
+<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">您的设备已进入休眠模式。</translation>
 <translation id="6767985426384634228">更新地址？</translation>
 <translation id="6768213884286397650">Hagaki (Postcard)</translation>
@@ -1837,6 +1841,7 @@
 <translation id="706295145388601875">在 Chrome 设置中添加和管理地址</translation>
 <translation id="7064851114919012435">联系信息</translation>
 <translation id="7068733155164172741">输入 <ph name="OTP_LENGTH" /> 位数的动态密码</translation>
+<translation id="7070090581017165256">关于此网站</translation>
 <translation id="70705239631109039">您的连接存在安全隐患</translation>
 <translation id="7075452647191940183">请求过大</translation>
 <translation id="7079718277001814089">此网站包含恶意软件</translation>
@@ -2081,6 +2086,7 @@
 <translation id="7813600968533626083">从 Chrome 中移除表单建议？</translation>
 <translation id="781440967107097262">分享剪贴板？</translation>
 <translation id="7815407501681723534">找到了 <ph name="NUMBER_OF_RESULTS" /> 个与“<ph name="SEARCH_STRING" />”相符的<ph name="SEARCH_RESULTS" /></translation>
+<translation id="782125616001965242">显示此网站的相关信息</translation>
 <translation id="782886543891417279">您要使用的 Wi-Fi 网络（<ph name="WIFI_NAME" />）可能需要您访问其登录页面。</translation>
 <translation id="7836231406687464395">Postfix (Envelope)</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{无}=1{1 个应用（<ph name="EXAMPLE_APP_1" />）}=2{2 个应用（<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />）}other{# 个应用（<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />、<ph name="AND_MORE" />）}}</translation>
@@ -2360,6 +2366,7 @@
 <translation id="8792626944327216835">麦克风</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> 在您的浏览器中启用了 Chrome 企业版接口。这些接口可以访问您的部分数据。</translation>
 <translation id="8798099450830957504">默认</translation>
+<translation id="8798739476508189189">正在寻找浏览器 flag？请访问</translation>
 <translation id="8805819170075074995">列表条目“<ph name="LANGUAGE_ID" />”：该条目因同时存在于 SpellcheckLanguage 政策中而被忽略。</translation>
 <translation id="8807160976559152894">完成每页后裁切</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可前往 Chrome 设置以更新 Chrome</translation>
@@ -2465,6 +2472,7 @@
 <translation id="9157595877708044936">正在设置...</translation>
 <translation id="9158625974267017556">C6 (Envelope)</translation>
 <translation id="9164029392738894042">准确度检查</translation>
+<translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">允许网站检查您是否已保存付款方式</translation>
 <translation id="9169664750068251925">在此网站上始终阻止</translation>
 <translation id="9169931577761441333">将“<ph name="APP_NAME" />”添加到主屏幕</translation>

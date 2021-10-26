@@ -325,6 +325,7 @@
 <translation id="133535873114485416">Metodo di immissione preferito</translation>
 <translation id="1335929031622236846">Registra il tuo dispositivo</translation>
 <translation id="1336902454946927954">Il token di sicurezza è bloccato perché non è stato possibile riconoscere la tua impronta. Per sbloccarlo, inserisci il PIN.</translation>
+<translation id="1338631221631423366">Accoppiamento in corso…</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> vuole aprire questa applicazione.</translation>
 <translation id="1338950911836659113">Eliminazione in corso...</translation>
 <translation id="1339009753652684748">Accedi all'assistente quando dici "Hey Google". Per consumare meno batteria, seleziona "On (opzione consigliata)". L'assistente risponderà soltanto quando il dispositivo è collegato a una fonte di alimentazione o in carica.</translation>
@@ -3043,6 +3044,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="4115002065223188701">Rete fuori portata</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="4117637339509843559">Modalità Buio</translation>
+<translation id="4117714603282104018">Feedback aptico touchpad</translation>
 <translation id="4118579674665737931">Riavvia il dispositivo e riprova.</translation>
 <translation id="412022815379960229">Inizia a esplorare i tuoi ricordi di Google Foto quando hai eseguito l'accesso.</translation>
 <translation id="4120388883569225797">Impossibile reimpostare questo token di sicurezza</translation>
@@ -5486,6 +5488,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6810613314571580006">Accedi automaticamente ai siti web utilizzando credenziali memorizzate. Quando la funzione non è attiva, ti viene chiesta la conferma prima di ogni accesso ai siti web.</translation>
 <translation id="6810768462515084623">Spiacenti. Sembra che la password sia scaduta. Rinnovala su un altro dispositivo e riprova.</translation>
 <translation id="6811034713472274749">La pagina è pronta per essere visualizzata</translation>
+<translation id="6811151703183939603">Decisa</translation>
 <translation id="6811332638216701903">Nome host DHCP</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> non può essere eseguito come root.</translation>
 <translation id="6812841287760418429">Mantieni le modifiche</translation>
@@ -6546,6 +6549,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7887864092952184874">Mouse Bluetooth accoppiato</translation>
 <translation id="7889371445710865055">Cambia lingua dettatura</translation>
 <translation id="7890147169288018054">Visualizzazione di informazioni della rete, ad esempio il tuo indirizzo IP o MAC</translation>
+<translation id="7892384782944609022">Impossibile accoppiare. Seleziona il dispositivo per riprovare.</translation>
 <translation id="7893008570150657497">Accesso a foto, musica e altri contenuti multimediali dal computer</translation>
 <translation id="7893153962594818789">Il Bluetooth non è attivo su questo dispositivo <ph name="DEVICE_TYPE" />. Inserisci la password e attiva il Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (predefinito)</translation>
@@ -6783,6 +6787,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="811994229154425014">Doppio spazio per digitare il punto</translation>
 <translation id="8120505434908124087">Installa profilo eSIM</translation>
 <translation id="812260729110117038">Gli inserzionisti e i publisher possono esaminare l'efficacia degli annunci senza tracciarti tra i siti.</translation>
+<translation id="81231173274944570">Attiva il feedback aptico. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="81238879832906896">Fiore bianco e giallo</translation>
 <translation id="8124313775439841391">ONC gestito</translation>
 <translation id="813082847718468539">Visualizza informazioni sul sito</translation>
@@ -7858,6 +7863,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Applicazione}other{Applicazioni}}</translation>
 <translation id="964790508619473209">Disposizione dello schermo</translation>
 <translation id="965211523698323809">Invia e ricevi SMS da <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
+<translation id="96535553604365597">Segnala un problema con Google Cast</translation>
 <translation id="967398046773905967">Non consentire ai siti di accedere ai dispositivi HID</translation>
 <translation id="967624055006145463">Dati memorizzati</translation>
 <translation id="96774243435178359">Stampanti gestite</translation>

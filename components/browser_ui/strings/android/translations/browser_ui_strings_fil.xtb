@@ -29,6 +29,7 @@
 <translation id="1743802530341753419">Magtanong bago payagan ang mga site na kumonekta sa isang device (inirerekomenda)</translation>
 <translation id="1779089405699405702">Pang-decode ng larawan</translation>
 <translation id="1818308510395330587">Para payagan ang <ph name="APP_NAME" /> na gumamit ng AR, i-on din ang camera sa <ph name="BEGIN_LINK" />Mga Setting ng Android<ph name="END_LINK" />.</translation>
+<translation id="1864927262126810325">Mula sa <ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">Naka-off ang access sa lokasyon para sa device na ito. I-on ito sa <ph name="BEGIN_LINK" />Mga Setting ng Android<ph name="END_LINK" />.</translation>
 <translation id="1919345977826869612">Mga Ad</translation>
 <translation id="1919950603503897840">Pumili ng mga contact</translation>
@@ -236,6 +237,7 @@
 <translation id="7016516562562142042">Pinapayagan para sa kasalukuyang search engine</translation>
 <translation id="7053983685419859001">I-block</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 ang napili}one{# ang napili}other{# ang napili}}</translation>
+<translation id="7070090581017165256">Tungkol sa site na ito</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> ang napili.  Available ang mga opsyon malapit sa itaas ng screen</translation>
 <translation id="7141896414559753902">I-block ang pagpapakita ng mga site ng mga pop-up at pag-redirect (inirerekomenda)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>

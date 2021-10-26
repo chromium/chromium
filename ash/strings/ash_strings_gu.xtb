@@ -17,6 +17,7 @@
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">બદલો</translation>
 <translation id="1073899992769346247">બૅટરી બદલો અથવા તેને રિચાર્જ કરો</translation>
+<translation id="1081015718268701546">હાલમાં Linux ઍપને સપોર્ટ કરવામાં આવતો નથી. અન્ય ઍપ સાચવવામાં આવશે.</translation>
 <translation id="108486256082349153">સેલ્યુલર: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">ગુડ આફ્ટરનૂન <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">મને કંટાળો આવે છે</translation>
@@ -43,6 +44,7 @@
 <translation id="1225748608451425081">એક જાણીતી સમસ્યાને કારણે તમારું Chromebook લૉક થઈ ગયું છે. અહીં જણાવેલા સમય પછી તમે સાઇન ઇન કરી શકશો: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">પસંદ કરવાનું બંધ કરો</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> કનેક્ટ કરેલું છે.</translation>
+<translation id="1246890715821376239">સપોર્ટ ન કરવામાં આવતી ઍપ</translation>
 <translation id="1247372569136754018">માઇક્રોફોન (આંતરિક)</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> પરથી ચાર્જ કરી રહ્યાં છે</translation>
 <translation id="1255033239764210633">હવામાન કેવું છે?</translation>
@@ -168,6 +170,7 @@
 <translation id="2148716181193084225">આજે</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: ફરી પ્રયાસ કરો</translation>
 <translation id="2170530631236737939">ઓવરવ્યૂમાંથી બહાર નીકળવા માટે, ત્રણ આંગળી વડે નીચેની તરફ સ્વાઇપ કરો</translation>
+<translation id="2201071101391734388">તાજેતરના <ph name="TOTAL_COUNT" /> ફોટામાંથી <ph name="INDEX" /> નંબરનો ફોટો.</translation>
 <translation id="2208323208084708176">એકીકૃત ડેસ્કટૉપ મોડ</translation>
 <translation id="2220572644011485463">PIN અથવા પાસવર્ડ</translation>
 <translation id="2222841058024245321">ડેસ્ક 7</translation>
@@ -291,6 +294,7 @@
 <translation id="3151786313568798007">ઓરિએન્ટેશન</translation>
 <translation id="3153444934357957346">તમે એકથી વધુ સાઇન ઇનમાં માત્ર <ph name="MULTI_PROFILE_USER_LIMIT" /> સુધી એકાઉન્ટ રાખી શકો છો.</translation>
 <translation id="3154351730702813399">ડિવાઇસ વ્યવસ્થાપક તમારી બ્રાઉઝિંગ પ્રવૃત્તિને મોનિટર કરી શકે છે.</translation>
+<translation id="316086887565479535">સપોર્ટ ન કરવામાં આવતી ઍપ નમૂનામાં છે</translation>
 <translation id="3181441307743005334">ફરી શરૂ થવામાં થોડો સમય લાગી શકે છે</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{ઉપકરણ સાથે કનેક્ટ કર્યું}one{# ઉપકરણો સાથે કનેક્ટ કર્યું}other{# ઉપકરણો સાથે કનેક્ટ કર્યું}}</translation>
 <translation id="320207200541803018">ટાઇમર સેટ કરો</translation>
@@ -388,6 +392,7 @@
 <translation id="383058930331066723">બૅટરી સેવર મોડ ચાલુ છે</translation>
 <translation id="3835880383832568924">અપડેટ જોવા માટે, Shortcuts ઍપ ખોલો</translation>
 <translation id="383629559565718788">કીબોર્ડ સેટિંગ બતાવો</translation>
+<translation id="384082539148746321">નમૂનો ડિલીટ કરીએ?</translation>
 <translation id="3846214748874656680">પૂર્ણસ્ક્રીનથી બહાર નીકળો</translation>
 <translation id="3846575436967432996">કોઈ નેટવર્ક માહિતી ઉપલબ્ધ નથી</translation>
 <translation id="385051799172605136">પાછળ</translation>
@@ -822,6 +827,7 @@
 <translation id="7029814467594812963">સત્રમાંથી બહાર નીકળો</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google આસિસ્ટંટ</translation>
 <translation id="7042322267639375032">સ્ટેટસ એરિયા ઓછો કરો</translation>
+<translation id="7045033600005038336">નમૂનો બદલીએ?</translation>
 <translation id="7045595904618419789">મૅગ્નિફાયર ચાલુ કરો</translation>
 <translation id="7055381872777910864">બુ</translation>
 <translation id="7055910611768509537">એક અઠવાડિયા કરતાં વધુ સમયથી સ્ટાઇલસનો વપરાશ કરવામાં આવ્યો નથી</translation>
@@ -958,6 +964,7 @@
 <translation id="8036504271468642248">પહેલાંનું વાક્ય</translation>
 <translation id="8042893070933512245">ઍક્સેસિબિલિટી સેટિંગ મેનૂ ખોલો</translation>
 <translation id="8048123526339889627">બ્લૂટૂથ સેટિંગ</translation>
+<translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> નામનો નમૂનો પહેલેથી જ અસ્તિત્વમાં છે</translation>
 <translation id="8052898407431791827">ક્લિપબોર્ડ પર કૉપિ કર્યો</translation>
 <translation id="8054466585765276473">બેટરી સમયની ગણના કરે છે.</translation>
 <translation id="8061464966246066292">ઉચ્ચ કોન્ટ્રાસ્ટ</translation>
@@ -1063,6 +1070,7 @@
 <translation id="8876661425082386199">તમારું કનેક્શન ચેક કરો</translation>
 <translation id="8877788021141246043">રિમાઇન્ડર સેટ કરો</translation>
 <translation id="8878886163241303700">સ્ક્રીનને વિસ્તૃત કરી રહ્યું છે</translation>
+<translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" />ને કાયમ માટે ડિલીટ કરવામાં આવશે</translation>
 <translation id="890616557918890486">સ્રોત બદલો</translation>
 <translation id="8909138438987180327">બૅટરી <ph name="PERCENTAGE" /> ટકા પર છે.</translation>
 <translation id="8913384980486163186">થીમ આધારિત (ડિફૉલ્ટ)</translation>

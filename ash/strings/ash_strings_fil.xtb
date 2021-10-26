@@ -17,6 +17,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">Palitan</translation>
 <translation id="1073899992769346247">Palitan o i-recharge ang baterya</translation>
+<translation id="1081015718268701546">Hindi sinusuportahan sa kasalukuyan ang mga Linux app. Mase-save ang iba pang app.</translation>
 <translation id="108486256082349153">Cellular: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Magandang hapon <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">Naiinip ako</translation>
@@ -43,6 +44,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1225748608451425081">Na-lock ang iyong Chromebook dahil sa hindi alam na isyu. Makakapag-sign in ka pagkalipas ng: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Ihinto ang pagpili</translation>
 <translation id="1239161794459865856">Nakakonekta ang <ph name="FEATURE_NAME" />.</translation>
+<translation id="1246890715821376239">Mga hindi sinusuportahang app</translation>
 <translation id="1247372569136754018">Mikropono (internal)</translation>
 <translation id="1252999807265626933">Nagcha-charge mula sa <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Ano'ng lagay ng panahon?</translation>
@@ -168,6 +170,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2148716181193084225">Ngayon</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Subukan ulit</translation>
 <translation id="2170530631236737939">Mag-swipe pababa gamit ang tatlong daliri para lumabas sa Overview</translation>
+<translation id="2201071101391734388">Kamakailang larawan <ph name="INDEX" /> ng <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2208323208084708176">Unified desktop mode</translation>
 <translation id="2220572644011485463">PIN o password</translation>
 <translation id="2222841058024245321">Desk 7</translation>
@@ -291,6 +294,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3151786313568798007">Oryentasyon</translation>
 <translation id="3153444934357957346">Maaari ka lang magkaroon ng hanggang <ph name="MULTI_PROFILE_USER_LIMIT" /> (na) account sa maraming pag-sign in.</translation>
 <translation id="3154351730702813399">Maaaring subaybayan ng admin ng device ang iyong aktibidad sa pag-browse.</translation>
+<translation id="316086887565479535">Mga hindi sinusuportahang app sa template</translation>
 <translation id="3181441307743005334">Posibleng magtagal nang ilang sandali ang pag-restart</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Nakakonekta sa isang device}one{Nakakonekta sa # device}other{Nakakonekta sa # na device}}</translation>
 <translation id="320207200541803018">Magtakda ng timer</translation>
@@ -388,6 +392,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="383058930331066723">Naka-on ang battery saver mode</translation>
 <translation id="3835880383832568924">Para makita ang mga update, buksan ang Shortcuts app</translation>
 <translation id="383629559565718788">Ipakita ang mga setting ng keyboard</translation>
+<translation id="384082539148746321">I-delete ang template?</translation>
 <translation id="3846214748874656680">Lumabas sa fullscreen</translation>
 <translation id="3846575436967432996">Walang available na impormasyon sa network</translation>
 <translation id="385051799172605136">Bumalik</translation>
@@ -822,6 +827,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="7029814467594812963">Lumabas sa session</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistant</translation>
 <translation id="7042322267639375032">I-collapse ang lugar ng status</translation>
+<translation id="7045033600005038336">Palitan ang template?</translation>
 <translation id="7045595904618419789">Simulan ang magnifier</translation>
 <translation id="7055381872777910864">M</translation>
 <translation id="7055910611768509537">Hindi nagamit ang stylus sa loob ng mahigit isang linggo</translation>
@@ -958,6 +964,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="8036504271468642248">Nakaraang pangungusap</translation>
 <translation id="8042893070933512245">Buksan ang menu ng mga setting ng accessibility</translation>
 <translation id="8048123526339889627">Mga Setting ng Bluetooth</translation>
+<translation id="8051716679295756675">May template nang may pangalang <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="8052898407431791827">Kinopya sa clipboard</translation>
 <translation id="8054466585765276473">Kinakalkula ang oras ng baterya.</translation>
 <translation id="8061464966246066292">Mataas na contrast</translation>
@@ -1063,6 +1070,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="8876661425082386199">Suriin ang iyong koneksyon</translation>
 <translation id="8877788021141246043">Magtakda ng paalala</translation>
 <translation id="8878886163241303700">Pinapalawak ang screen</translation>
+<translation id="8896630965521842259">Permanenteng ide-delete ang <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="890616557918890486">Baguhin ang source</translation>
 <translation id="8909138438987180327">Nasa <ph name="PERCENTAGE" /> porsyento ang baterya.</translation>
 <translation id="8913384980486163186">Themed (default)</translation>

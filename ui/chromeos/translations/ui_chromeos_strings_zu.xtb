@@ -131,6 +131,7 @@
 <translation id="2122305276694332719">Ukuxhumeka ngokuzenzakalela kunethiwekhi efihliwe kuvumela abanye ukuthi babone idivayisi yakho nezinye izilungiselelo zenethiwekhi futhi akunconyiwe.</translation>
 <translation id="2125607626296734455">Isi-Khmer</translation>
 <translation id="2139545522194199494">Inethiwekhi <ph name="NETWORK_INDEX" /> ye-<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, amandla esignali <ph name="SIGNAL_STRENGTH" />%, kuphethwe umlawuli, xhuma</translation>
+<translation id="2141347188420181405">Inethiwekhi ye-<ph name="NETWORK_INDEX" /> kwezingu-<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Amandla Wesignali <ph name="SIGNAL_STRENGTH" />%, Kuvinjelwe Umphathi wakho, Imininingwane</translation>
 <translation id="2142680004883808240">Isi-Russian esinekhibhodi ye-Phonetic YaZHert</translation>
 <translation id="2143778271340628265">Ukulungiselelwa okwenziwa ngesandla kommeleli</translation>
 <translation id="2163152940313951844">Inhlamvu engavumelekile: <ph name="CHARACTER_NAME" /></translation>
@@ -185,6 +186,7 @@
 <translation id="2563185590376525700">Ixoxo</translation>
 <translation id="2578394532502990878">I-Tamil Phonetic</translation>
 <translation id="2579959351793446050">Isi-Odia</translation>
+<translation id="2602810353103180630">Inethiwekhi engu-<ph name="NETWORK_INDEX" /> kwezingu-<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Amandla Wesinglai<ph name="SIGNAL_STRENGTH" />%, Kuvinjelwe Umphathi wakho, Imininingwane</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> ividiyo</translation>
 <translation id="2617342710774726426">I-SIM card ikhiyiwe</translation>
 <translation id="2620090360073999360">I-Google Drayivu ayikwazi ukufinyelelwa ngalesi sikhathi.</translation>

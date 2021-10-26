@@ -131,6 +131,7 @@
 <translation id="2122305276694332719">লুকাই থকা কোনো নেটৱৰ্কত স্বয়ংক্ৰিয়ভাৱে সংযুক্ত কৰাটোৱে অন্য লোকক আপোনাৰ ডিভাইচ আৰু নেটৱৰ্কৰ কিছুমান ছেটিং চাবলৈ দিয়ে আৰু সেয়েহে সেয়া চুপাৰিছ কৰা নহয়।</translation>
 <translation id="2125607626296734455">খ্‌মেৰ</translation>
 <translation id="2139545522194199494"><ph name="NETWORK_COUNT" />টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে, সংযোগ কৰক</translation>
+<translation id="2141347188420181405"><ph name="NETWORK_COUNT" /> টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" /> নম্বৰটো, <ph name="NETWORK_NAME" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, আপোনাৰ প্ৰশাসকে অৱৰোধ কৰিছে, সবিশেষ</translation>
 <translation id="2142680004883808240">ফ’নেটিক YaZHert কীব’ৰ্ডৰ সৈতে ৰাছিয়ান</translation>
 <translation id="2143778271340628265">মেনুৱেল প্ৰ’ক্সি কনফিগাৰেশ্বন</translation>
 <translation id="2163152940313951844">অমান্য বৰ্ণ: <ph name="CHARACTER_NAME" /></translation>
@@ -185,6 +186,7 @@
 <translation id="2563185590376525700">ভেকুলী</translation>
 <translation id="2578394532502990878">তামিল ফ’নেটিক</translation>
 <translation id="2579959351793446050">ওড়িয়া</translation>
+<translation id="2602810353103180630"><ph name="NETWORK_COUNT" /> টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" /> নম্বৰটো, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, আপোনাৰ প্ৰশাসকে অৱৰোধ কৰিছে, সবিশেষ</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> ভিডিঅ’</translation>
 <translation id="2617342710774726426">ছিম কাৰ্ড লক কৰা হৈছে</translation>
 <translation id="2620090360073999360">এই মুহূৰ্তত Google Driveৰ সৈতে সংযোগ স্থাপন কৰিব নোৱাৰি।</translation>

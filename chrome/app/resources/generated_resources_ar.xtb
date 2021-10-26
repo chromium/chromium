@@ -329,6 +329,7 @@
 <translation id="133535873114485416">الإدخال المفضَّل</translation>
 <translation id="1335929031622236846">تسجيل الجهاز</translation>
 <translation id="1336902454946927954">تم قفل مفتاح الأمان لأنه لم يتم التعرّف على بصمة الإصبع. لفتح القفل، أدخِل رقم التعريف الشخصي.</translation>
+<translation id="1338631221631423366">جارٍ الإقران…</translation>
 <translation id="1338802252451106843">يريد <ph name="ORIGIN" /> فتح هذا التطبيق.</translation>
 <translation id="1338950911836659113">جارٍ الحذف...</translation>
 <translation id="1339009753652684748">‏يمكنك الوصول إلى "مساعد Google" عند قول "Ok Google". لتوفير طاقة البطارية، اختَر "تفعيل (مُقترح)". ولن تستجيب خدمة "مساعد Google" إلا عند توصيل جهازك بمصدر طاقة أو عند شحنه.</translation>
@@ -6551,6 +6552,7 @@
 <translation id="7887864092952184874">ماوس بلوتوث مقترن</translation>
 <translation id="7889371445710865055">تغيير لغة الإملاء</translation>
 <translation id="7890147169288018054">‏الاطّلاع على معلومات الشبكة، مثل عناوين IP أو MAC</translation>
+<translation id="7892384782944609022">تعذر الإقران. يُرجى اختيار جهاز لإعادة المحاولة.</translation>
 <translation id="7893008570150657497">الوصول إلى الصور والموسيقى والوسائط الأخرى من جهاز الكمبيوتر</translation>
 <translation id="7893153962594818789">تم إيقاف البلوتوث في جهاز <ph name="DEVICE_TYPE" /> هذا. أدخل كلمة مرورك، وشغّل البلوتوث.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (التلقائي)</translation>

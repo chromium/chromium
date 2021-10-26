@@ -326,6 +326,7 @@
 <translation id="133535873114485416">ተመራጭ ግቤት</translation>
 <translation id="1335929031622236846">መሣሪያዎን ያስመዝግቡ</translation>
 <translation id="1336902454946927954">የእርስዎ የደህነት ቁልፍ የእርስዎ የጣት አሻራ ተለይቶ ሊታወቅ ስለሚችል ተቆልፏል። ለመክፈት የእርስዎን ፒን ያስገቡ።</translation>
+<translation id="1338631221631423366">በማጣመር ላይ…</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> ይህን መተግበሪያ መክፈት ይፈልጋል።</translation>
 <translation id="1338950911836659113">በመሰረዝ ላይ...</translation>
 <translation id="1339009753652684748">«Hey Google» ሲሉ ረዳትዎን ይድረሱ። ባትሪን ለመቆጠብ «በርቷል (የሚመከር።)»ን ይምረጡ። የእርስዎ ረዳት ምላሽ የሚሰጠው መሣሪያዎ ተሰክቶ ወይም ኃይል እየሞላ ከሆነ ብቻ ነው።</translation>
@@ -6555,6 +6556,7 @@
 <translation id="7887864092952184874">የብሉቱዝ መዳፊት ተጣምሯል</translation>
 <translation id="7889371445710865055">የቃል ጽሕፈት ቋንቋን ይቀይሩ</translation>
 <translation id="7890147169288018054">እንደ የእርስዎ አይፒ ወይም ማክ አድራሻ ያሉ የአውታረ መረብ መረጃዎችን ይመልከቱ</translation>
+<translation id="7892384782944609022">ማጣመር አልተቻለም። እንደገና ለመሞከር መሣሪያ ይምረጡ።</translation>
 <translation id="7893008570150657497">የኮምፒውተርዎን ፎቶዎች፣ ሙዚቃ እና ሌላ ማህደረ  መረጃ  ይደርሳል</translation>
 <translation id="7893153962594818789">በዚህ <ph name="DEVICE_TYPE" /> ላይ ብሉቱዝ ጠፍቷል። የእርስዎን የይለፍ ቃል ያስገቡ እና ብሉቱዝን ያብሩ።</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (ነባሪ)</translation>

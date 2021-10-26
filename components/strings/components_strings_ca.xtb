@@ -296,6 +296,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1842969606798536927">Paga</translation>
 <translation id="1856713167556118146">Què no fa el mode d'incògnit</translation>
 <translation id="1863257867908022953">Safata 12</translation>
+<translation id="1864927262126810325">De: <ph name="SOURCE_NAME" /></translation>
 <translation id="1871208020102129563">El servidor intermediari està configurat perquè utilitzi servidors intermediaris fixos, en lloc d'un URL de script .pac.</translation>
 <translation id="1871284979644508959">Camp obligatori</translation>
 <translation id="1875025161375567525">Safata de fotos</translation>
@@ -957,6 +958,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4117700440116928470">L'àmbit de la política no s'admet.</translation>
 <translation id="4121428309786185360">Caduca el</translation>
 <translation id="4123572138124678573">Encunyació triple a la part inferior</translation>
+<translation id="4127575959421463246">Cerques les marques de Chrome OS? Visita</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 element més}other{# elements més}}</translation>
 <translation id="4130226655945681476">Comprova els cables de xarxa, el mòdem i l'encaminador.</translation>
 <translation id="4133224101597112888">Botó Comparteix aquesta pestanya: prem Retorn per compartir aquesta pestanya mitjançant l'enllaç, creant un codi QR, fent una emissió i d'altres maneres.</translation>
@@ -1124,6 +1126,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4606870351894164739">Impactant</translation>
 <translation id="4607603470419975064">Botó Mostra consells per a Chrome: prem Retorn per obtenir informació sobre les funcions de Chrome</translation>
 <translation id="4607608436550361748">Mostra consells per a Chrome</translation>
+<translation id="4627675673814409125">Aquesta política no es pot establir a nivell del perfil de Chrome i s'ignorarà.</translation>
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4631649115723685955">Devolució de diners associada</translation>
 <translation id="4636930964841734540">Informació</translation>
@@ -1755,6 +1758,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="674375294223700098">Error de certificat del servidor desconegut.</translation>
 <translation id="6744009308914054259">Mentre esperes a tenir connexió, pots visitar Baixades per llegir articles sense connexió.</translation>
 <translation id="6753269504797312559">Valor de la política</translation>
+<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">El dispositiu ha entrat en mode de repòs.</translation>
 <translation id="6767985426384634228">Vols actualitzar l'adreça?</translation>
 <translation id="6768213884286397650">Hagaki (postal)</translation>
@@ -1842,6 +1846,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="706295145388601875">Afegeix i gestiona adreces a la configuració de Chrome</translation>
 <translation id="7064851114919012435">Informació de contacte</translation>
 <translation id="7068733155164172741">Introdueix el codi de <ph name="OTP_LENGTH" /> dígits</translation>
+<translation id="7070090581017165256">Sobre aquest lloc web</translation>
 <translation id="70705239631109039">La connexió no és del tot segura</translation>
 <translation id="7075452647191940183">La sol·licitud és massa llarga</translation>
 <translation id="7079718277001814089">Aquest lloc web conté programari maliciós</translation>
@@ -2086,6 +2091,7 @@ Detalls addicionals:
 <translation id="7813600968533626083">Voleu suprimir el suggeriment de formulari de Chrome?</translation>
 <translation id="781440967107097262">Vols compartir el porta-retalls?</translation>
 <translation id="7815407501681723534">S'han trobat <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> per a "<ph name="SEARCH_STRING" />"</translation>
+<translation id="782125616001965242">Mostra informació sobre aquest lloc web</translation>
 <translation id="782886543891417279">És possible que la xarxa Wi-Fi (<ph name="WIFI_NAME" />) que esteu fent servir requereixi que visiteu la seva pàgina d'inici de sessió.</translation>
 <translation id="7836231406687464395">Postfix (sobre)</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Cap}=1{1 aplicació (<ph name="EXAMPLE_APP_1" />)}=2{2 aplicacions (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# aplicacions (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
@@ -2299,6 +2305,7 @@ Detalls addicionals:
 <translation id="8541158209346794904">Dispositiu Bluetooth</translation>
 <translation id="8542014550340843547">Grapat triple a la part inferior</translation>
 <translation id="8543181531796978784">Podeu <ph name="BEGIN_ERROR_LINK" />informar d'un problema de detecció<ph name="END_ERROR_LINK" /> o, si enteneu els riscos que això comporta per a la vostra seguretat, <ph name="BEGIN_LINK" />visiteu aquest lloc no segur<ph name="END_LINK" />.</translation>
+<translation id="8554010658308662631">Carrega'n més</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Restableix el permís}other{Restableix els permisos}}</translation>
 <translation id="8555010941760982128">Utilitza aquest codi en el moment de tramitar la compra</translation>
 <translation id="8557066899867184262">El CVC es troba a la part posterior de la targeta.</translation>
@@ -2364,6 +2371,7 @@ Detalls addicionals:
 <translation id="8792626944327216835">micròfon</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> ha activat Chrome Enterprise Connectors al navegador. Aquests connectors tenen accés a algunes de les teves dades.</translation>
 <translation id="8798099450830957504">Predeterminat</translation>
+<translation id="8798739476508189189">Cerques les marques del navegador? Visita</translation>
 <translation id="8805819170075074995">Entrada "<ph name="LANGUAGE_ID" />" de la llista: l'entrada s'ha ignorat perquè també s'inclou a la política SpellcheckLanguage.</translation>
 <translation id="8807160976559152894">Retalla després de cada pàgina</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />; prem Tab i després Retorn per actualitzar Chrome des de la configuració de Chrome</translation>
@@ -2469,6 +2477,7 @@ Detalls addicionals:
 <translation id="9157595877708044936">S'està configurant...</translation>
 <translation id="9158625974267017556">C6 (sobre)</translation>
 <translation id="9164029392738894042">Comprovació de la precisió</translation>
+<translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">Permet que els llocs web comprovin si tens formes de pagament desades</translation>
 <translation id="9169664750068251925">Bloqueja sempre en aquest lloc</translation>
 <translation id="9169931577761441333">Afegeix <ph name="APP_NAME" /> a la pantalla d'inici</translation>

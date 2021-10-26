@@ -2307,6 +2307,7 @@ Detalhes adicionais:
 <translation id="8541158209346794904">Dispositivo Bluetooth</translation>
 <translation id="8542014550340843547">Agrafo triplo na parte inferior</translation>
 <translation id="8543181531796978784">Pode <ph name="BEGIN_ERROR_LINK" />comunicar um problema de deteção<ph name="END_ERROR_LINK" /> ou, se compreende os riscos para a sua segurança, <ph name="BEGIN_LINK" />aceda a este site não seguro<ph name="END_LINK" />.</translation>
+<translation id="8554010658308662631">Carregar mais</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Repor autorização}other{Repor autorizações}}</translation>
 <translation id="8555010941760982128">Utilize este código no pagamento</translation>
 <translation id="8557066899867184262">O Código de Segurança/CVC está localizado no verso do cartão.</translation>

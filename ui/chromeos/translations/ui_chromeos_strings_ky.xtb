@@ -131,6 +131,7 @@
 <translation id="2122305276694332719">Жашырылган тармакка автоматтык түрдө туташуу түзмөгүңүздү жана тармактын айрым жөндөөлөрүн башкаларга көрсөтүп турат, андыктан аны колдонуу сунушталбайт.</translation>
 <translation id="2125607626296734455">Хмерче</translation>
 <translation id="2139545522194199494"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" />%, Администраторуңуз башкарат, Туташуу</translation>
+<translation id="2141347188420181405"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" />%, Администраторуңуз бөгөттөп койгон, Чоо-жайы</translation>
 <translation id="2142680004883808240">Орусча (YaZHert фонетикалык баскычтобу)</translation>
 <translation id="2143778271340628265">Проксини кол менен конфигурациялоо</translation>
 <translation id="2163152940313951844">Жараксыз символ: <ph name="CHARACTER_NAME" /></translation>
@@ -185,6 +186,7 @@
 <translation id="2563185590376525700">Бака</translation>
 <translation id="2578394532502990878">Тамилче (фонетикалык)</translation>
 <translation id="2579959351793446050">Одияча</translation>
+<translation id="2602810353103180630"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" />%, Администраторуңуз бөгөттөп койгон, Чоо-жайы</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> форматындагы видео</translation>
 <translation id="2617342710774726426">SIM-карта кулпуланган</translation>
 <translation id="2620090360073999360">Учурда Google Drive'га жетүү мүмкүн эмес.</translation>

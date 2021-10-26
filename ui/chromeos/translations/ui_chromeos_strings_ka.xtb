@@ -131,6 +131,7 @@
 <translation id="2122305276694332719">დამალულ ქსელთან ავტომატურად დაკავშირება საშუალებას მისცემს სხვებს, იხილონ თქვენი მოწყობილობა და ქსელის ზოგიერთი პარამეტრი, ამიტომ ეს არ არის რეკომენდებული.</translation>
 <translation id="2125607626296734455">ქხმერული</translation>
 <translation id="2139545522194199494">ქსელი <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />%, მართავს თქვენი ადმინისტრატორი, დაკავშირება</translation>
+<translation id="2141347188420181405">ქსელი <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />%, დაბლოკილია თქვენი ადმინისტრატორის მიერ, დეტალები</translation>
 <translation id="2142680004883808240">რუსული ფონეტიკური YaZHert კლავიატურით</translation>
 <translation id="2143778271340628265">მექანიკური პროქსის კონფიგურაცია</translation>
 <translation id="2163152940313951844">არასწორი სიმბოლო: <ph name="CHARACTER_NAME" /></translation>
@@ -185,6 +186,7 @@
 <translation id="2563185590376525700">ბაყაყი</translation>
 <translation id="2578394532502990878">ტამილური ფონეტიკური</translation>
 <translation id="2579959351793446050">ორია</translation>
+<translation id="2602810353103180630">ქსელი <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />%, დაბლოკილია თქვენი ადმინისტრატორის მიერ, დეტალები</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> ვიდეო</translation>
 <translation id="2617342710774726426">SIM ბარათი დაბლოკილია</translation>
 <translation id="2620090360073999360">Google Drive-ზე წვდომა ამჟამად შეუძლებელია.</translation>

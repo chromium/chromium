@@ -327,6 +327,7 @@
 <translation id="133535873114485416">Phương thức nhập ưu tiên</translation>
 <translation id="1335929031622236846">Đăng ký thiết bị của bạn</translation>
 <translation id="1336902454946927954">Khóa bảo mật của bạn đã bị khóa do hệ thống không nhận dạng được vân tay của bạn. Để mở khóa, hãy nhập mã PIN của bạn.</translation>
+<translation id="1338631221631423366">Đang ghép nối...</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> muốn mở ứng dụng này.</translation>
 <translation id="1338950911836659113">Đang xóa...</translation>
 <translation id="1339009753652684748">Nói "Ok Google" khi bạn muốn dùng Trợ lý. Để tiết kiệm pin, hãy chọn “Bật (Khuyên dùng)”. Trợ lý của bạn sẽ chỉ phản hồi khi thiết bị đã cắm điện hoặc đang sạc.</translation>
@@ -6567,6 +6568,7 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7887864092952184874">Đã ghép nối chuột Bluetooth</translation>
 <translation id="7889371445710865055">Thay đổi ngôn ngữ cho tính năng Nhập bằng giọng nói</translation>
 <translation id="7890147169288018054">Xem thông tin mạng, chẳng hạn như địa chỉ IP hoặc MAC</translation>
+<translation id="7892384782944609022">Không thể ghép nối. Hãy chọn thiết bị để thử lại.</translation>
 <translation id="7893008570150657497">Truy cập ảnh, nhạc và các phương tiện khác từ máy tính của bạn</translation>
 <translation id="7893153962594818789">Bluetooth đang tắt trên <ph name="DEVICE_TYPE" /> này. Hãy nhập mật khẩu của bạn và bật Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Mặc định)</translation>

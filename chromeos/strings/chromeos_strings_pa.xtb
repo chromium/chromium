@@ -42,6 +42,7 @@
 <translation id="150962533380566081">ਅਵੈਧ PUK।</translation>
 <translation id="1510238584712386396">ਲੌਂਚਰ</translation>
 <translation id="155865706765934889">ਟਚਪੈਡ</translation>
+<translation id="1567064801249837505">ਐਲਬਮਾਂ</translation>
 <translation id="1572585716423026576">ਵਾਲਪੇਪਰ ਵਜੋਂ ਸੈੱਟ ਕਰੋ</translation>
 <translation id="1621067168122174824">ਚਾਰਜ ਟੈਸਟ ਚਲਾਓ</translation>
 <translation id="1639239467298939599">ਲੋਡ ਕਰ ਰਿਹਾ ਹੈ</translation>
@@ -55,6 +56,7 @@
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> ਅਤੇ <ph name="SECOND_MANAGER" /> ਵੱਲੋਂ ਪ੍ਰਬੰਧਨ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="1726100011689679555">ਨਾਮ ਸਰਵਰ</translation>
 <translation id="1731082422893354635">ਬਲੂਟੁੱਥ ਟੱਚਪੈਡ</translation>
+<translation id="1753496554272155572">ਵਾਲਪੇਪਰ ਦੀ ਪੂਰਵ-ਝਲਕ ਤੋਂ ਬਾਹਰ ਜਾਓ</translation>
 <translation id="175763766237925754">ਵਧੀਆ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -367,6 +369,7 @@
 <translation id="6657585470893396449">ਪਾਸਵਰਡ</translation>
 <translation id="6704062477274546131">DNS ਰੈਜ਼ੋਲਿਊਸ਼ਨ</translation>
 <translation id="6747215703636344499">ਬੰਦ ਹੋ ਗਿਆ - ਆਊਟਪੁੱਟ ਭਰ ਗਿਆ ਹੈ</translation>
+<translation id="6749473226660745022">ਫ਼ੋਟੋਆਂ</translation>
 <translation id="6756731097889387912">ਸਕੈਨਿੰਗ ਨੂੰ ਰੱਦ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
 <translation id="6766275201586212568">ਅਸਫਲ DNS ਰੈਜ਼ੋਲਿਊਸ਼ਨ</translation>
 <translation id="6768237774506518020">DNS ਰੈਜ਼ੋਲਿਊਸ਼ਨ ਦੀ ਉੱਚ ਅਸਫਲ ਦਰ</translation>

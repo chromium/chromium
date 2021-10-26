@@ -131,6 +131,7 @@
 <translation id="2122305276694332719">Việc tự động kết nối vào một mạng ẩn sẽ cho phép những người khác nhìn thấy thiết bị và một số tùy chọn cài đặt mạng của bạn. Bạn không nên bật tùy chọn này.</translation>
 <translation id="2125607626296734455">Tiếng Khmer</translation>
 <translation id="2139545522194199494">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />%, Do quản trị viên của bạn quản lý, Kết nối</translation>
+<translation id="2141347188420181405">Mạng <ph name="NETWORK_INDEX" /> trong tổng số <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />%, Quản trị viên của bạn đã chặn, Thông tin chi tiết</translation>
 <translation id="2142680004883808240">Tiếng Nga bằng bàn phím phiên âm YaZHert</translation>
 <translation id="2143778271340628265">Cấu hình proxy thủ công</translation>
 <translation id="2163152940313951844">Ký tự không hợp lệ: <ph name="CHARACTER_NAME" /></translation>
@@ -185,6 +186,7 @@
 <translation id="2563185590376525700">Ếch</translation>
 <translation id="2578394532502990878">Tiếng Tamil (phiên âm)</translation>
 <translation id="2579959351793446050">Tiếng Odia</translation>
+<translation id="2602810353103180630">Mạng <ph name="NETWORK_INDEX" /> trong tổng số <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />%, Quản trị viên của bạn đã chặn, Thông tin chi tiết</translation>
 <translation id="2614589611416690597">Video <ph name="VIDEO_TYPE" /></translation>
 <translation id="2617342710774726426">Thẻ SIM bị khóa</translation>
 <translation id="2620090360073999360">Không thể kết nối với Google Drive tại thời điểm này.</translation>

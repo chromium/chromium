@@ -131,6 +131,7 @@
 <translation id="2122305276694332719">Ako se automatski povežete na skrivenu mrežu, drugi mogu da vide vaš uređaj i neka podešavanja mreže, zbog čega vam to ne preporučujemo.</translation>
 <translation id="2125607626296734455">kmerski</translation>
 <translation id="2139545522194199494"><ph name="NETWORK_INDEX" />. mreža od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, upravlja administrator, poveži</translation>
+<translation id="2141347188420181405"><ph name="NETWORK_INDEX" />. mreža od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, blokirao administrator, detalji</translation>
 <translation id="2142680004883808240">ruski sa fonetskom tastaturom YaZHert</translation>
 <translation id="2143778271340628265">Ručna konfiguracija proksija</translation>
 <translation id="2163152940313951844">Nevažeći znak: <ph name="CHARACTER_NAME" /></translation>
@@ -185,6 +186,7 @@
 <translation id="2563185590376525700">Žaba</translation>
 <translation id="2578394532502990878">fonetski tamilski</translation>
 <translation id="2579959351793446050">orija</translation>
+<translation id="2602810353103180630"><ph name="NETWORK_INDEX" />. mreža od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, blokirao administrator, detalji</translation>
 <translation id="2614589611416690597">Video <ph name="VIDEO_TYPE" /></translation>
 <translation id="2617342710774726426">SIM kartica je zaključana</translation>
 <translation id="2620090360073999360">Trenutno nije moguće uspostaviti vezu sa Google diskom.</translation>

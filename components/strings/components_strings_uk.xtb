@@ -300,6 +300,7 @@
 <translation id="1842969606798536927">Оплатити</translation>
 <translation id="1856713167556118146">Що зберігається в анонімному режимі</translation>
 <translation id="1863257867908022953">Лоток 12</translation>
+<translation id="1864927262126810325">Джерело: <ph name="SOURCE_NAME" /></translation>
 <translation id="1871208020102129563">Проксі-сервер налаштовано на використання фіксованих проксі-серверів, а не URL-адреси сценарію .pac.</translation>
 <translation id="1871284979644508959">Обов’язкове поле</translation>
 <translation id="1875025161375567525">Лоток для фотографій</translation>
@@ -962,6 +963,7 @@
 <translation id="4117700440116928470">Правило не підтримується.</translation>
 <translation id="4121428309786185360">Діє до</translation>
 <translation id="4123572138124678573">Пробити три отвори внизу</translation>
+<translation id="4127575959421463246">Шукаєте експериментальні параметри для ОС Chrome? Перейти</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{і ще 1 елемент даних}one{і ще # елемент даних}few{і ще # елементи даних}many{і ще # елементів даних}other{і ще # елемента даних}}</translation>
 <translation id="4130226655945681476">перевірити мережевий кабель, модем і маршрутизатор</translation>
 <translation id="4133224101597112888">Кнопка "Поділитися цією вкладкою"; натисніть Enter, щоб поділитися цією вкладкою (надіслати посилання, створити QR-код, транслювати її тощо).</translation>
@@ -1133,6 +1135,7 @@
 <translation id="4606870351894164739">Вражаючий</translation>
 <translation id="4607603470419975064">Кнопка "Переглянути поради щодо Chrome"; натисніть Enter, щоб дізнатися про функції Chrome</translation>
 <translation id="4607608436550361748">Переглянути поради щодо Chrome</translation>
+<translation id="4627675673814409125">Це правило не можна налаштувати на рівні профілю Chrome, тому воно ігноруватиметься.</translation>
 <translation id="4628948037717959914">Фотографія</translation>
 <translation id="4631649115723685955">З кешбеком</translation>
 <translation id="4636930964841734540">Інформація</translation>
@@ -1764,6 +1767,7 @@
 <translation id="674375294223700098">Помилка "Невідомий сертифікат сервера".</translation>
 <translation id="6744009308914054259">Очікуючи на з’єднання, можете перейти в папку "Завантаження" й переглянути статті, доступні в режимі офлайн.</translation>
 <translation id="6753269504797312559">Значення правила</translation>
+<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Ваш пристрій перейшов у режим сну.</translation>
 <translation id="6767985426384634228">Оновити адресу?</translation>
 <translation id="6768213884286397650">Hagaki (листівка)</translation>
@@ -1851,6 +1855,7 @@
 <translation id="706295145388601875">Додайте адреси та керуйте ними в налаштуваннях Chrome</translation>
 <translation id="7064851114919012435">Контактна інформація</translation>
 <translation id="7068733155164172741">Введіть <ph name="OTP_LENGTH" />-значний код</translation>
+<translation id="7070090581017165256">Про цей сайт</translation>
 <translation id="70705239631109039">З'єднання не повністю захищене</translation>
 <translation id="7075452647191940183">Запит завеликий</translation>
 <translation id="7079718277001814089">Цей сайт містить зловмисне програмне забезпечення</translation>
@@ -2095,6 +2100,7 @@
 <translation id="7813600968533626083">Видалити дані для автозаповнення форм із Chrome?</translation>
 <translation id="781440967107097262">Надати доступ до буфера обміну?</translation>
 <translation id="7815407501681723534">Знайдено результатів за запитом "<ph name="SEARCH_STRING" />": <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /></translation>
+<translation id="782125616001965242">Показати відомості про цей сайт</translation>
 <translation id="782886543891417279">Можливо, щоб під’єднатися до цієї мережі Wi-Fi (<ph name="WIFI_NAME" />), потрібно відвідати її сторінку входу.</translation>
 <translation id="7836231406687464395">Postfix (конверт)</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Немає}=1{1 додаток (<ph name="EXAMPLE_APP_1" />)}=2{2 додатки (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# додаток (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}few{# додатки (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}many{# додатків (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}other{# додатка (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
@@ -2308,6 +2314,7 @@
 <translation id="8541158209346794904">Пристрій Bluetooth</translation>
 <translation id="8542014550340843547">Тричі скріпити внизу</translation>
 <translation id="8543181531796978784">Ви можете <ph name="BEGIN_ERROR_LINK" />повідомити про проблему з пошуком<ph name="END_ERROR_LINK" /> або <ph name="BEGIN_LINK" />перейти на цей незахищений сайт<ph name="END_LINK" /> (якщо розумієте, наскільки це небезпечно).</translation>
+<translation id="8554010658308662631">Більше</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Скинути дозвіл}one{Скинути дозволи}few{Скинути дозволи}many{Скинути дозволи}other{Скинути дозволи}}</translation>
 <translation id="8555010941760982128">Використайте цей код під час оплати</translation>
 <translation id="8557066899867184262">Код CVC розташований на зворотному боці картки.</translation>
@@ -2374,6 +2381,7 @@
 <translation id="8792626944327216835">мікрофон</translation>
 <translation id="8793655568873652685">Домен <ph name="ENROLLMENT_DOMAIN" /> увімкнув Chrome Enterprise Connectors у веб-переглядачі. Ці конектори мають доступ до деяких ваших даних.</translation>
 <translation id="8798099450830957504">За умовчанням</translation>
+<translation id="8798739476508189189">Шукаєте експериментальні параметри для веб-переглядача? Перейти</translation>
 <translation id="8805819170075074995">Елемент списку <ph name="LANGUAGE_ID" />: елемент ігнорується, оскільки його також включено в правило SpellcheckLanguage.</translation>
 <translation id="8807160976559152894">Обрізати після кожної сторінки</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб оновити веб-переглядач Chrome у його налаштуваннях</translation>
@@ -2479,6 +2487,7 @@
 <translation id="9157595877708044936">Налаштування...</translation>
 <translation id="9158625974267017556">C6 (конверт)</translation>
 <translation id="9164029392738894042">Перевірка точності</translation>
+<translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">Дозволити сайтам перевіряти, чи у вас є збережені способи оплати</translation>
 <translation id="9169664750068251925">Завжди блокувати на цьому сайті</translation>
 <translation id="9169931577761441333">Додати додаток <ph name="APP_NAME" /> на головний екран</translation>

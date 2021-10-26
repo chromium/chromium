@@ -140,6 +140,7 @@
 <translation id="1137589305610962734">यह डेटा कुछ समय के लिए है</translation>
 <translation id="1137673463384776352"><ph name="APP" /> में लिंक खोलें</translation>
 <translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{नई सूचना}one{# नई सूचना}other{# नई सूचनाएं}}</translation>
+<translation id="1139138655591555207">सहायता वाले इस बबल पर फ़ोकस करने के लिए |<ph name="ACCELERATOR" />| दबाएं.</translation>
 <translation id="1139343347646843679">Linux को कॉन्फ़िगर करने में गड़बड़ी हुई. कृपया अपने एडमिन से संपर्क करें.</translation>
 <translation id="1139923033416533844">स्टोरेज का इस्तेमाल</translation>
 <translation id="1140351953533677694">अपने ब्लूटूथ और Serial डिवाइस एक्सेस करें</translation>
@@ -535,6 +536,7 @@
 <translation id="1549275686094429035">एआरसी चालू है</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> ऐक्‍सेस करना चाहता है <ph name="VOLUME_NAME" />. वह आपकी फ़ाइलों में बदलाव कर सकता है या उन्‍हें मिटा सकता है.</translation>
 <translation id="1552301827267621511">"<ph name="EXTENSION_NAME" />" एक्सटेंशन ने <ph name="SEARCH_PROVIDER_DOMAIN" /> का इस्तेमाल करने के लिए सर्च इंजन बदला है</translation>
+<translation id="1552522962296937598">Smart display lock and detect if others peeking from behind</translation>
 <translation id="1553538517812678578">असीमित</translation>
 <translation id="1555130319947370107">नीला</translation>
 <translation id="1556537182262721003">एक्सटेंशन निर्देशिका को प्रोफ़ाइल में नहीं ले जा सका.</translation>
@@ -1081,6 +1083,7 @@
 <translation id="2090165459409185032">अपनी खाता जानकारी पुनर्प्राप्‍त करने के लिए, यहां जाएं: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">आपके लॉग इन करने पर अपने-आप कनेक्ट हो जाता है</translation>
 <translation id="2090876986345970080">सिस्‍टम सुरक्षा सेटिंग</translation>
+<translation id="2092038932007199943">Notify you or temporary dim your screen when someone is snooping from behind</translation>
 <translation id="2096715839409389970">तीसरे पक्ष की कुकी मिटाएं</translation>
 <translation id="2098805196501063469">बचे हुए पासवर्ड जांचें</translation>
 <translation id="2099172618127234427">आप Chrome OS की डीबग करने वाली सुविधाएं चालू कर रहे हैं जिससे sshd daemon सेट हो जाएगा और यूएसबी डिवाइस से बूट करना चालू हो जाएगा.</translation>
@@ -3050,9 +3053,11 @@
 <translation id="4110490973560452005">डाउनलोड पूरा हो गया: <ph name="FILE_NAME" />. डाउनलोड बार वाले हिस्से पर जाने के लिए Shift+F6 दबाएं.</translation>
 <translation id="4110686435123617899">एल्बम चुनें <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ऑफ़लाइन)</translation>
+<translation id="4112809168763360620">Smart privacy protections</translation>
 <translation id="4115002065223188701">नेटवर्क नहीं मिल रहा है</translation>
 <translation id="4115378294792113321">मैजेंटा</translation>
 <translation id="4117637339509843559">गहरे रंग वाला मोड</translation>
+<translation id="4117714603282104018">टचपैड हैप्टिक फ़ीडबैक</translation>
 <translation id="4118579674665737931">कृपया डिवाइस को फिर से चालू करें और दोबारा कोशिश करें.</translation>
 <translation id="412022815379960229">आप जब भी साइन इन हों, Google Photos में सेव की गई अपनी यादों को एक्सप्लोर करें.</translation>
 <translation id="4120388883569225797">यह सुरक्षा कुंजी रीसेट नहीं हो पा रही है</translation>
@@ -3097,6 +3102,7 @@
 <translation id="4175137578744761569">हल्का बैंगनी और सफ़ेद</translation>
 <translation id="4175737294868205930">स्थायी जगह</translation>
 <translation id="4176463684765177261">बंद किया गया</translation>
+<translation id="417971315778328003">जारी रखने के लिए, पिन या पासवर्ड सेट करें</translation>
 <translation id="4180788401304023883">CA प्रमाणपत्र "<ph name="CERTIFICATE_NAME" />" मिटाएं?</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">भाषाएं</translation>
@@ -3131,6 +3137,7 @@
 <translation id="4231095370974836764">Google Play से अपने <ph name="DEVICE_TYPE" /> पर ऐप्लिकेशन और गेम इंस्टॉल करें. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos कॉन्फ़िगर करें</translation>
 <translation id="4235965441080806197">साइन इन रद्द करें</translation>
+<translation id="4238175133949127631">Temporary dim screen</translation>
 <translation id="4241182343707213132">संगठन में इस्तेमाल होने वाले ऐप्लिकेशन अपडेट करने के लिए रीस्टार्ट करें</translation>
 <translation id="4242145785130247982">एक से ज़्यादा क्लाइंट प्रमाणपत्र काम नहीं करते</translation>
 <translation id="4242533952199664413">सेटिंग खोलें</translation>
@@ -4649,6 +4656,7 @@
 <translation id="5901494423252125310">प्रिंटर का दरवाज़ा खुला है</translation>
 <translation id="5901630391730855834">पीला</translation>
 <translation id="5904614460720589786">कॉन्फ़िगर करते समय हुई गड़बड़ी की वजह से <ph name="APP_NAME" /> को सेट अप नहीं किया जा सका. कृपया अपने एडमिन से संपर्क करें. गड़बड़ी कोड: <ph name="ERROR_CODE" />.</translation>
+<translation id="5906278356170001460">This feature uses the front camera for detection. The data is securely processed and discarded afterwards. Google doesn't use your data for any other purposes.</translation>
 <translation id="5906655207909574370">करीब अप टू डेट हो गया है! अपडेट करना पूरा करने के लिए अपना डिवाइस फिर से प्रारंभ करें.</translation>
 <translation id="5906732635754427568">इस ऐप्लिकेशन से जुड़े डेटा को इस डिवाइस से हटा दिया जाएगा.</translation>
 <translation id="5908474332780919512">साइन इन करने पर ऐप्लिकेशन को चालू करें</translation>
@@ -4801,6 +4809,7 @@
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />ध्यान दें:<ph name="END_BOLD" /> किसी मिलती-जुलती आवाज़ या रिकॉर्डिंग से भी <ph name="SUPERVISED_USER_NAME" /> के निजी खोज नतीजे ऐक्सेस किए जा सकते हैं. बैटरी बचाने के लिए, आप <ph name="SUPERVISED_USER_NAME" /> की Assistant सेटिंग में "Ok Google" सिर्फ़ तब चालू रखना चुन सकते हैं, जब डिवाइस किसी पावर सोर्स से कनेक्ट हो.</translation>
 <translation id="6064217302520318294">स्क्रीन लॉक</translation>
 <translation id="6065289257230303064">प्रमाणपत्र विषय निर्देशिका विशेषताएं</translation>
+<translation id="6065691521254183160">सहायता वाले इस बबल और यह जिस एलिमेंट की ओर इशारा कर रहा है उनके बीच फ़ोकस को टॉगल करने के लिए |<ph name="ACCELERATOR" />| दबाएं.</translation>
 <translation id="6066794465984119824">इमेज हैश सेट नहीं किया गया है</translation>
 <translation id="6069464830445383022">आपको Chromebook में Google खाते से साइन इन करना होगा</translation>
 <translation id="6069671174561668781">वॉलपेपर सेट करें</translation>
@@ -4826,6 +4835,7 @@
 <translation id="6085886413119427067">वेबसाइटों से सुरक्षित कनेक्शन की मदद से जुड़ने का तरीका तय करें</translation>
 <translation id="6086004606538989567">आपने जिस खाते की पुष्टि की है उसके पास इस डिवाइस को ऐक्सेस करने की अनुमति नहीं है.</translation>
 <translation id="6086846494333236931">आपके नियंत्रक द्वारा इंस्‍टॉल किया गया</translation>
+<translation id="6086898065659145625">आपका फ़ोन आस-पास होने पर, Smart Lock आपको अपने-आप लॉगिन कर देगा.</translation>
 <translation id="6087960857463881712">बढ़िया चेहरा</translation>
 <translation id="608912389580139775">इस पेज को अपनी रीडिंग लिस्ट में जोड़ने के लिए, बुकमार्क आइकॉन पर क्लिक करें</translation>
 <translation id="6091761513005122595">शेयर माउंट करना सफल रहा.</translation>
@@ -5291,6 +5301,7 @@
 <translation id="659005207229852190">सुरक्षा जांच पूरी हो गई.</translation>
 <translation id="6590458744723262880">फ़ोल्‍डर का नाम बदलें</translation>
 <translation id="6592267180249644460">WebRTC लॉग कैप्चर किया गया <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
+<translation id="659230975550262204">Show me an eye icon in the status area</translation>
 <translation id="6592808042417736307">आपका फ़िंगरप्रिंट कैप्चर कर लिया गया</translation>
 <translation id="6593881952206664229">हो सकता है कि कॉपीराइट वाला मीडिया न चले</translation>
 <translation id="6594011207075825276">क्रम से लगाए गए डिवाइस ढूंढे जा रहे हैं...</translation>
@@ -5491,6 +5502,7 @@
 <translation id="6810613314571580006">स्टोर किए गए क्रेडेंशियल का इस्तेमाल करके वेबसाइट में अपने आप साइन इन करें. जब यह सुविधा बंद होगी, तो किसी वेबसाइट में साइन इन करने से पहले आपसे हर बार पुष्टि करने के लिए कहा जाएगा.</translation>
 <translation id="6810768462515084623">ओह हो!  ऐसा लगता है कि आपके पासवर्ड की तारीख खत्म हो गई है. कृपया किसी दूसरे डिवाइस पर उसका नवीनीकरण करें और फिर से कोशिश करें.</translation>
 <translation id="6811034713472274749">पेज देखने के लिए तैयार है</translation>
+<translation id="6811151703183939603">ज़ोर से दबाएं (फ़र्म)</translation>
 <translation id="6811332638216701903">डीएचसीपी होस्टनाम</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> को रूट की तरह नहीं चलाया जा सकता.</translation>
 <translation id="6812841287760418429">बदलावों को बनाए रखें</translation>
@@ -5729,6 +5741,7 @@
 <translation id="7053983685419859001">ब्लॉक करें</translation>
 <translation id="7055152154916055070">रीडायरेक्ट ब्लॉक किया गया:</translation>
 <translation id="7055451306017383754">शेयर करना बंद नहीं किया जा सका, क्योंकि एक ऐप्लिकेशन इस फ़ोल्डर का इस्तेमाल कर रहा है. जब Parallels Desktop अगली बार बंद होगा, तब इस फ़ोल्डर को शेयर करना बंद कर दिया जाएगा.</translation>
+<translation id="7056011684066172642">Screen locks automatically if you walk off, and won't turn off if you're in front of it</translation>
 <translation id="7056418393177503237">{0,plural, =1{गुप्त विंडो}one{# गुप्त विंडो को खोलें}other{# गुप्त विंडो खोलें}}</translation>
 <translation id="7056526158851679338">&amp;उपकरणों की जाँच करें</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{सुरक्षा जांच 1 मिनट पहले की गई है}one{सुरक्षा जांच {NUM_MINS} मिनट पहले की गई है}other{सुरक्षा जांच {NUM_MINS} मिनट पहले की गई है}}</translation>
@@ -6443,6 +6456,7 @@
 <translation id="7797246427375693110"><ph name="TIME" /> पर अपने-आप चालू / बंद हो जाएगा</translation>
 <translation id="7797571222998226653">बंद है</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> को अपने-आप ब्लॉक किया गया है</translation>
+<translation id="7799220949286681310">Smart screen lock</translation>
 <translation id="7799299114731150374">वॉलपेपर सही तरीके से सेट हो गया</translation>
 <translation id="7799817062559422778">हल्के रंग वाला मोड</translation>
 <translation id="7800159967992492578">खोज के लिए स्क्रीन के बाईं ओर दिया गया बटन टॉगल करें. बाईं और दी गई खोज की सुविधा चालू है.</translation>
@@ -6592,6 +6606,7 @@
 <translation id="7933518760693751884">बुकमार्क आइकॉन पर क्लिक करके, किसी पेज को बाद में पढ़ने के लिए सेव करें</translation>
 <translation id="7933634003144813719">शेयर किए गए फ़ोल्डर प्रबंधित करें</translation>
 <translation id="793531125873261495">वर्चुअल मशीन डाउनलोड करने में गड़बड़ी हुई. कृपया फिर से कोशिश करें.</translation>
+<translation id="7935451262452051102"><ph name="PERCENT" />% पूरा हो गया है</translation>
 <translation id="7938594894617528435">वर्तमान में ऑफ़लाइन</translation>
 <translation id="7939062555109487992">अतिरिक्त सेटिंग</translation>
 <translation id="7939412583708276221">फिर भी रखें</translation>
@@ -6724,6 +6739,7 @@
 <translation id="8062844841289846053">{COUNT,plural, =1{काग़ज़ की 1 शीट}one{काग़ज़ की {COUNT} शीट}other{काग़ज़ की {COUNT} शीट}}</translation>
 <translation id="8063235345342641131">डिफ़ॉल्ट हरा अवतार</translation>
 <translation id="8063535366119089408">फ़ाइल देखें</translation>
+<translation id="8064269957688233720">जब यह Chromebook स्लीप मोड से एक्टिव मोड में जाए, तब अपने फ़ोन के डेटा की सुरक्षा करें.</translation>
 <translation id="8064279191081105977"><ph name="GROUP_NAME" /> ग्रुप - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">कनेक्शन डायलॉग</translation>
 <translation id="8068253693380742035">साइन इन करने के लिए टच करें</translation>
@@ -6783,6 +6799,7 @@
 <translation id="811994229154425014">पीरियड टाइप करने के लिए दो बार स्पेस बटन दबाएं</translation>
 <translation id="8120505434908124087">ई-सिम प्रोफ़ाइल इंस्टॉल करें</translation>
 <translation id="812260729110117038">प्रकाशक और विज्ञापन देने वाले, सभी साइटों पर आपको ट्रैक किए बिना, किसी खास तरीके से अपने विज्ञापनों के असर का अध्ययन कर सकते हैं.</translation>
+<translation id="81231173274944570">हैप्टिक फ़ीडबैक चालू करें. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="81238879832906896">पीला और सफ़ेद फूल</translation>
 <translation id="8124313775439841391">प्रबंधित ONC</translation>
 <translation id="813082847718468539">साइट जानकारी देखें</translation>
@@ -7376,6 +7393,7 @@
 <translation id="8770406935328356739">एक्‍सटेंशन मूल निर्देशिका</translation>
 <translation id="8771300903067484968">स्टार्ट पेज के बैकग्राउंड को डिफ़ॉल्ट बैकग्राउंड पर रीसेट कर दिया गया है.</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> को सेव करें</translation>
+<translation id="8773350724590665675">Snooping protection</translation>
 <translation id="8774379074441005279">बहाल करने की पुष्टि करें</translation>
 <translation id="8774934320277480003">शीर्ष हाशिया</translation>
 <translation id="8775144690796719618">गलत यूआरएल</translation>
@@ -7858,6 +7876,7 @@
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{ऐप्लिकेशन}one{ऐप्लिकेशन}other{ऐप्लिकेशन}}</translation>
 <translation id="964790508619473209">स्क्रीन की सेटिंग</translation>
 <translation id="965211523698323809">अपने <ph name="DEVICE_TYPE" /> से मैसेज भेजें और पाएं. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
+<translation id="96535553604365597">Google Cast में आ रही समस्या के बारे में शिकायत करें</translation>
 <translation id="967398046773905967">किसी भी साइट को एचआईडी डिवाइस ऐक्सेस न करने दें</translation>
 <translation id="967624055006145463">डेटा संग्रहित किया गया</translation>
 <translation id="96774243435178359">मैनेज किए गए प्रिंटर</translation>

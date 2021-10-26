@@ -131,6 +131,7 @@
 <translation id="2122305276694332719">As jy outomaties aan 'n versteekte netwerk koppel, laat dit ander mense toe om jou toestel en van jou netwerkinstellings te sien. Dit word nie aanbeveel nie.</translation>
 <translation id="2125607626296734455">Khmer</translation>
 <translation id="2139545522194199494">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, seinsterkte <ph name="SIGNAL_STRENGTH" />%, deur jou administrateur bestuur, koppel</translation>
+<translation id="2141347188420181405">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Seinsterkte <ph name="SIGNAL_STRENGTH" />%, Geblokkeer deur jou administrateur, Besonderhede</translation>
 <translation id="2142680004883808240">Russies met fonetiese YaZHert-sleutelbord</translation>
 <translation id="2143778271340628265">Handmatige instaanbedieneropstelling</translation>
 <translation id="2163152940313951844">Ongeldige karakter: <ph name="CHARACTER_NAME" /></translation>
@@ -185,6 +186,7 @@
 <translation id="2563185590376525700">Padda</translation>
 <translation id="2578394532502990878">Tamil-foneties</translation>
 <translation id="2579959351793446050">Odia</translation>
+<translation id="2602810353103180630">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Seinsterkte <ph name="SIGNAL_STRENGTH" />%, Geblokkeer deur jou administrateur, Besonderhede</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" />-video</translation>
 <translation id="2617342710774726426">SIM-kaart is gesluit</translation>
 <translation id="2620090360073999360">Google Drive kan nie op hierdie oomblik bereik word nie.</translation>

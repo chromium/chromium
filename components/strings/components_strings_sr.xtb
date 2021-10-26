@@ -2308,6 +2308,7 @@
 <translation id="8541158209346794904">Bluetooth уређај</translation>
 <translation id="8542014550340843547">Троструко спајање на дну</translation>
 <translation id="8543181531796978784">Можете да <ph name="BEGIN_ERROR_LINK" />пријавите проблем са откривањем<ph name="END_ERROR_LINK" /> или, ако схватате безбедносне ризике, <ph name="BEGIN_LINK" />посетите овај небезбедан сајт<ph name="END_LINK" />.</translation>
+<translation id="8554010658308662631">Учитај још</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Ресетуј дозволу}one{Ресетуј дозволе}few{Ресетуј дозволе}other{Ресетуј дозволе}}</translation>
 <translation id="8555010941760982128">Користите овај кôд при плаћању</translation>
 <translation id="8557066899867184262">CVC је на полеђини картице.</translation>

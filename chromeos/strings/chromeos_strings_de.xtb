@@ -42,6 +42,7 @@
 <translation id="150962533380566081">Ungültiger PUK.</translation>
 <translation id="1510238584712386396">Launcher</translation>
 <translation id="155865706765934889">Touchpad</translation>
+<translation id="1567064801249837505">Alben</translation>
 <translation id="1572585716423026576">Als Hintergrund festlegen</translation>
 <translation id="1621067168122174824">Ladetest ausführen</translation>
 <translation id="1639239467298939599">Wird geladen...</translation>
@@ -55,6 +56,7 @@
 <translation id="1717874160321062422">Verwaltet von <ph name="FIRST_MANAGER" /> und <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Nameserver</translation>
 <translation id="1731082422893354635">Bluetooth-Touchpad</translation>
+<translation id="1753496554272155572">Hintergrundvorschau beenden</translation>
 <translation id="175763766237925754">Gut (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -368,6 +370,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="6657585470893396449">Passwort</translation>
 <translation id="6704062477274546131">DNS-Auflösung</translation>
 <translation id="6747215703636344499">Angehalten – Ausgabefach ist voll</translation>
+<translation id="6749473226660745022">Fotos</translation>
 <translation id="6756731097889387912">Scannen konnte nicht abgebrochen werden</translation>
 <translation id="6766275201586212568">Fehlgeschlagene DNS-Auflösungen</translation>
 <translation id="6768237774506518020">Hohe Fehlerrate bei der DNS-Auflösung</translation>

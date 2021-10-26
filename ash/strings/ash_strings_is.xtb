@@ -17,6 +17,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">Skipta út</translation>
 <translation id="1073899992769346247">Skiptu um eða hladdu rafhlöðuna</translation>
+<translation id="1081015718268701546">Linux-forrit eru ekki studd eins og er. Önnur forrit verða vistuð.</translation>
 <translation id="108486256082349153">Farsímakerfi: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Góðan dag <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">Mér leiðist</translation>
@@ -43,6 +44,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1225748608451425081">Chromebook er læst vegna þekkts vandamáls. Þú getur skráð þig aftur inn eftir: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Hætta að velja</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> er tengt.</translation>
+<translation id="1246890715821376239">Óstudd forrit</translation>
 <translation id="1247372569136754018">Hljóðnemi (innbyggður)</translation>
 <translation id="1252999807265626933">Verið er að hlaða með <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Hvernig er veðrið?</translation>
@@ -168,6 +170,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2148716181193084225">Í dag</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Reyna aftur</translation>
 <translation id="2170530631236737939">Strjúktu niður með þremur fingrum til að loka Yfirliti.</translation>
+<translation id="2201071101391734388">Nýleg mynd <ph name="INDEX" /> af <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2208323208084708176">Sameinuð skjáborðsstilling</translation>
 <translation id="2220572644011485463">PIN-númer eða aðgangsorð</translation>
 <translation id="2222841058024245321">Skrifborð 7</translation>
@@ -291,6 +294,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="3151786313568798007">Stefna</translation>
 <translation id="3153444934357957346">Þú getur aðeins verið með <ph name="MULTI_PROFILE_USER_LIMIT" /> reikninga í innskráningu á marga reikninga.</translation>
 <translation id="3154351730702813399">Stjórnandi tækisins gæti fylgst með vafravirkni þinni.</translation>
+<translation id="316086887565479535">Óstudd forrit í sniðmáti</translation>
 <translation id="3181441307743005334">Endurræsing gæti tekið nokkurn tíma</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Tengdist við tæki}one{Tengdist við # tæki}other{Tengdist við # tæki}}</translation>
 <translation id="320207200541803018">Stilltur teljari</translation>
@@ -388,6 +392,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="383058930331066723">Kveikt er á rafhlöðusparnaði</translation>
 <translation id="3835880383832568924">Opnaðu flýtileiðaforritið til að sjá uppfærslurnar</translation>
 <translation id="383629559565718788">Sýna lyklaborðsstillingar</translation>
+<translation id="384082539148746321">Eyða sniðmáti?</translation>
 <translation id="3846214748874656680">Hætta að nota allan skjáinn</translation>
 <translation id="3846575436967432996">Engar netupplýsingar tiltækar</translation>
 <translation id="385051799172605136">Til baka</translation>
@@ -822,6 +827,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="7029814467594812963">Loka lotu</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google hjálpari</translation>
 <translation id="7042322267639375032">Minnka stöðusvæði</translation>
+<translation id="7045033600005038336">Skipta út sniðmáti?</translation>
 <translation id="7045595904618419789">Ræsa stækkun</translation>
 <translation id="7055381872777910864">M</translation>
 <translation id="7055910611768509537">Penninn hefur ekki verið notaður í meira en viku</translation>
@@ -958,6 +964,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="8036504271468642248">Fyrri setning</translation>
 <translation id="8042893070933512245">Opna valmynd aðgengisstillinga</translation>
 <translation id="8048123526339889627">Bluetooth-stillingar</translation>
+<translation id="8051716679295756675">Sniðmát sem heitir <ph name="DESK_TEMPLATE_NAME" /> er þegar til</translation>
 <translation id="8052898407431791827">Afritað á klippiborð</translation>
 <translation id="8054466585765276473">Reiknar rafhlöðuendingu.</translation>
 <translation id="8061464966246066292">Mikil birtuskil</translation>
@@ -1063,6 +1070,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="8876661425082386199">Athugaðu tenginguna</translation>
 <translation id="8877788021141246043">Stilla áminningu</translation>
 <translation id="8878886163241303700">Framlengir skjá</translation>
+<translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> verður eytt varanlega</translation>
 <translation id="890616557918890486">Breyta uppruna</translation>
 <translation id="8909138438987180327">Rafhlaða í <ph name="PERCENTAGE" />%.</translation>
 <translation id="8913384980486163186">Þema (sjálfgefið)</translation>

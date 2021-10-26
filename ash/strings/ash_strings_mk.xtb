@@ -17,6 +17,7 @@
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">Замени</translation>
 <translation id="1073899992769346247">Заменете ја или наполнете ја батеријата</translation>
+<translation id="1081015718268701546">Апликациите за Linux не се поддржани во моментов. Другите апликации ќе се зачуваат.</translation>
 <translation id="108486256082349153">Мобилен уред: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Добар ден <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">Досадно ми е</translation>
@@ -43,6 +44,7 @@
 <translation id="1225748608451425081">Вашиот Chromebook е заклучен поради познат проблем. Ќе може да се најавите по: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Сопрете со избирање</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> е поврзана.</translation>
+<translation id="1246890715821376239">Неподдржани апликации</translation>
 <translation id="1247372569136754018">Микрофон (внатрешен)</translation>
 <translation id="1252999807265626933">Се полни од <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Какво е времето?</translation>
@@ -168,6 +170,7 @@
 <translation id="2148716181193084225">Денес</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Обиди се пак</translation>
 <translation id="2170530631236737939">Повлечете надолу со три прста за да излезете од „Преглед“</translation>
+<translation id="2201071101391734388">Неодамнешна фотографија: <ph name="INDEX" /> од <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2208323208084708176">Режим на единствена работна површина</translation>
 <translation id="2220572644011485463">PIN или лозинка</translation>
 <translation id="2222841058024245321">Работна површина 7</translation>
@@ -291,6 +294,7 @@
 <translation id="3151786313568798007">Ориентација</translation>
 <translation id="3153444934357957346">Може да имате само до <ph name="MULTI_PROFILE_USER_LIMIT" /> сметки при многукратно најавување.</translation>
 <translation id="3154351730702813399">Администраторот на уредот може да ви го следи прелистувањето.</translation>
+<translation id="316086887565479535">Неподдржани апликации во шаблон</translation>
 <translation id="3181441307743005334">Рестартирањето може да потрае</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Поврзан со уред}one{Поврзан со # уред}other{Поврзан со # уреди}}</translation>
 <translation id="320207200541803018">Постави тајмер</translation>
@@ -389,6 +393,7 @@
 <translation id="383058930331066723">Режимот „Штедач на батерија“ е вклучен</translation>
 <translation id="3835880383832568924">За да ги видите ажурирањата, отворете ја апликацијата Shortcuts</translation>
 <translation id="383629559565718788">Прикажи ги поставките за тастатура</translation>
+<translation id="384082539148746321">Да се избрише шаблонот?</translation>
 <translation id="3846214748874656680">Излези од цел екран</translation>
 <translation id="3846575436967432996">Нема достапни информации за мрежа</translation>
 <translation id="385051799172605136">Назад</translation>
@@ -823,6 +828,7 @@
 <translation id="7029814467594812963">Излези од сесијата</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, „Помошник на Google“</translation>
 <translation id="7042322267639375032">Собери ја статусната област</translation>
+<translation id="7045033600005038336">Да се замени шаблонот?</translation>
 <translation id="7045595904618419789">Стартувај ја лупата</translation>
 <translation id="7055381872777910864">Ср</translation>
 <translation id="7055910611768509537">Пенкалото не е користено подолго од една седмица</translation>
@@ -959,6 +965,7 @@
 <translation id="8036504271468642248">Претходна реченица</translation>
 <translation id="8042893070933512245">Отворете го менито со поставки за пристапност</translation>
 <translation id="8048123526339889627">Поставки за Bluetooth</translation>
+<translation id="8051716679295756675">Веќе постои шаблон со име <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="8052898407431791827">Копирано во привремената меморија</translation>
 <translation id="8054466585765276473">пресметување време на батерија.</translation>
 <translation id="8061464966246066292">Висок контраст</translation>
@@ -1064,6 +1071,7 @@
 <translation id="8876661425082386199">Проверете ја врската</translation>
 <translation id="8877788021141246043">Потсетник</translation>
 <translation id="8878886163241303700">Проширување екран</translation>
+<translation id="8896630965521842259">Трајно ќе се избрише <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="890616557918890486">Промени го изворот</translation>
 <translation id="8909138438987180327">Батеријата е на <ph name="PERCENTAGE" /> %.</translation>
 <translation id="8913384980486163186">Тематски (стандарден)</translation>

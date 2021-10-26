@@ -29,6 +29,7 @@
 <translation id="1743802530341753419">Kérdezzen rá, mielőtt engedélyezné a webhelyek számára egy adott eszközhöz való csatlakozást (ajánlott)</translation>
 <translation id="1779089405699405702">Képdekóder</translation>
 <translation id="1818308510395330587">Ahhoz, hogy a(z) <ph name="APP_NAME" /> használhassa az AR-t, a kamerát az <ph name="BEGIN_LINK" />Android-beállítások<ph name="END_LINK" /> között is be kell kapcsolni.</translation>
+<translation id="1864927262126810325">Forrás: <ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">A helyhozzáférés ki van kapcsolva ennél az eszköznél. A funkciót az <ph name="BEGIN_LINK" />Android-beállításokban<ph name="END_LINK" /> tudja bekapcsolni.</translation>
 <translation id="1919345977826869612">Hirdetések</translation>
 <translation id="1919950603503897840">Névjegyek kiválasztása</translation>
@@ -236,6 +237,7 @@
 <translation id="7016516562562142042">Engedélyezett a jelenlegi keresőmotor számára</translation>
 <translation id="7053983685419859001">Letiltás</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 elem kijelölve}other{# elem kijelölve}}</translation>
+<translation id="7070090581017165256">A webhelyről</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> elem kiválasztva. A lehetőségek a képernyő tetején találhatók.</translation>
 <translation id="7141896414559753902">Előugró ablakok és átirányítások letiltása a webhelyeken (ajánlott)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>

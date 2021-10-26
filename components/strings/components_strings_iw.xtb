@@ -300,6 +300,7 @@
 <translation id="1842969606798536927">לתשלום</translation>
 <translation id="1856713167556118146">מה לא קורה במצב האנונימי</translation>
 <translation id="1863257867908022953">מגש 12</translation>
+<translation id="1864927262126810325">מקור: <ph name="SOURCE_NAME" /></translation>
 <translation id="1871208020102129563">‏שרת ה-Proxy מוגדר להשתמש בשרתי Proxy קבועים, לא בכתובת אתר של סקריפט ‎.Pac</translation>
 <translation id="1871284979644508959">שדה חובה</translation>
 <translation id="1875025161375567525">מגש התמונות</translation>
@@ -962,6 +963,7 @@
 <translation id="4117700440116928470">היקף המדיניות אינו נתמך.</translation>
 <translation id="4121428309786185360">בתוקף עד </translation>
 <translation id="4123572138124678573">3 ניקובים בחלק התחתון</translation>
+<translation id="4127575959421463246">‏רוצה למצוא את התכונות הניסיוניות של ChromeOS? אפשר להיכנס אל</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{אחד נוסף}two{שניים נוספים}many{# נוספים}other{# נוספים}}</translation>
 <translation id="4130226655945681476">כדאי לבדוק את כבלי הרשת, את המודם ואת הנתב</translation>
 <translation id="4133224101597112888">‏לחצן לשיתוף הכרטיסייה הזו, מקישים על Enter כדי לשתף את הכרטיסייה הזו על ידי שיתוף הקישור, יצירת קוד QR, העברה (cast) ועוד.</translation>
@@ -1131,6 +1133,7 @@
 <translation id="4606870351894164739">מרשים</translation>
 <translation id="4607603470419975064">‏לחצן להצגת טיפים של Chrome, מקישים על Enter כדי לקבל מידע על התכונות של Chrome</translation>
 <translation id="4607608436550361748">‏הצגת טיפים לשימוש ב-Chrome</translation>
+<translation id="4627675673814409125">‏לא ניתן להגדיר את המדיניות הזאת ברמה של פרופיל Chrome. המערכת תתעלם מהמדיניות.</translation>
 <translation id="4628948037717959914">תמונה</translation>
 <translation id="4631649115723685955">הקאשבק מקושר</translation>
 <translation id="4636930964841734540">מידע</translation>
@@ -1767,6 +1770,7 @@ Del</translation>
 <translation id="674375294223700098">שגיאת אישור שרת לא ידוע.</translation>
 <translation id="6744009308914054259">בזמן ההמתנה לחיבור אפשר לעבור אל 'הורדות' כדי לקרוא מאמרים אופליין.</translation>
 <translation id="6753269504797312559">ערך מדיניות</translation>
+<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">המכשיר עבר למצב שינה.</translation>
 <translation id="6767985426384634228">לעדכן את הכתובת?</translation>
 <translation id="6768213884286397650">Hagaki (Postcard)‎</translation>
@@ -1854,6 +1858,7 @@ Del</translation>
 <translation id="706295145388601875">‏ניתן להוסיף ולנהל כתובות בהגדרות Chrome</translation>
 <translation id="7064851114919012435">פרטים ליצירת קשר</translation>
 <translation id="7068733155164172741">יש להזין קוד בן <ph name="OTP_LENGTH" /> ספרות</translation>
+<translation id="7070090581017165256">מידע על האתר הזה</translation>
 <translation id="70705239631109039">החיבור שלך לא מאובטח לחלוטין</translation>
 <translation id="7075452647191940183">הבקשה גדולה מדי</translation>
 <translation id="7079718277001814089">האתר הזה מכיל תוכנה זדונית</translation>
@@ -2098,6 +2103,7 @@ Del</translation>
 <translation id="7813600968533626083">‏האם להסיר מ-Chrome הצעות בשביל טפסים?</translation>
 <translation id="781440967107097262">לשתף את הלוח?</translation>
 <translation id="7815407501681723534">נמצאו <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> בנושא '<ph name="SEARCH_STRING" />'</translation>
+<translation id="782125616001965242">הצגת מידע על האתר הזה</translation>
 <translation id="782886543891417279">‏ייתכן שרשת ה-Wi-Fi דורשת כניסה לדף ההתחברות שלה. (<ph name="WIFI_NAME" />).</translation>
 <translation id="7836231406687464395">Postfix (Envelope)‎</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{ללא}=1{אפליקציה אחת (<ph name="EXAMPLE_APP_1" />)}=2{2 אפליקציות (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}many{# אפליקציות (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}other{# אפליקציות (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
@@ -2376,6 +2382,7 @@ Del</translation>
 <translation id="8792626944327216835">מיקרופון</translation>
 <translation id="8793655568873652685">‏הדומיין <ph name="ENROLLMENT_DOMAIN" /> הפעיל את Chrome Enterprise Connectors בדפדפן שלך. למחברים האלה יש גישה אל חלק מהנתונים שלך.</translation>
 <translation id="8798099450830957504">ברירת מחדל</translation>
+<translation id="8798739476508189189">רוצה למצוא את התכונות הניסיוניות של הדפדפן? אפשר להיכנס אל</translation>
 <translation id="8805819170075074995">‏ערך רשימה "<ph name="LANGUAGE_ID" />": המערכת התעלמה מהערך מאחר שהוא כלול גם במדיניות SpellcheckLanguage.</translation>
 <translation id="8807160976559152894">חיתוך אחרי כל עמוד</translation>
 <translation id="8816395686387277279">‏<ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, יש להקיש על Tab ואז על Enter כדי לעדכן את דפדפן Chrome בהגדרות Chrome</translation>
@@ -2481,6 +2488,7 @@ Del</translation>
 <translation id="9157595877708044936">ההגדרה מתבצעת...</translation>
 <translation id="9158625974267017556">C6 (Envelope)‎</translation>
 <translation id="9164029392738894042">בדיקת דיוק</translation>
+<translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">מתן הרשאה לאתרים לבדוק אם שמרת אמצעי תשלום</translation>
 <translation id="9169664750068251925">אני רוצה לחסום תמיד באתר זה</translation>
 <translation id="9169931577761441333">הוספה של <ph name="APP_NAME" /> למסך דף הבית</translation>

@@ -296,6 +296,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1842969606798536927">Bayar</translation>
 <translation id="1856713167556118146">Yang tidak dilakukan mode Samaran</translation>
 <translation id="1863257867908022953">Baki 12</translation>
+<translation id="1864927262126810325">Dari <ph name="SOURCE_NAME" /></translation>
 <translation id="1871208020102129563">Proxy disetel untuk menggunakan server proxy tetap, bukan URL skrip .pac.</translation>
 <translation id="1871284979644508959">Bidang wajib diisi</translation>
 <translation id="1875025161375567525">Baki Foto</translation>
@@ -956,6 +957,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="4117700440116928470">Lingkup kebijakan tidak didukung.</translation>
 <translation id="4121428309786185360">Kedaluwarsa pada</translation>
 <translation id="4123572138124678573">Tiga lubang di bawah</translation>
+<translation id="4127575959421463246">Mencari tanda ChromeOS? Buka</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 lainnya}other{# lainnya}}</translation>
 <translation id="4130226655945681476">Periksa kabel jaringan, modem, dan router</translation>
 <translation id="4133224101597112888">Tombol Bagikan tab ini, tekan Enter untuk berbagi tab ini dengan membagikan link, membuat kode QR, melakukan transmisi, dan lainnya.</translation>
@@ -1123,6 +1125,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="4606870351894164739">Berpengaruh</translation>
 <translation id="4607603470419975064">Tombol Lihat tips Chrome, tekan Enter untuk mempelajari fitur-fitur Chrome</translation>
 <translation id="4607608436550361748">Lihat tips Chrome</translation>
+<translation id="4627675673814409125">Kebijakan ini tidak dapat disetel di tingkat profil Chrome dan akan diabaikan.</translation>
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4631649115723685955">Disertai cashback</translation>
 <translation id="4636930964841734540">Info</translation>
@@ -1754,6 +1757,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="674375294223700098">Kesalahan sertifikat server tidak dikenal.</translation>
 <translation id="6744009308914054259">Sambil menunggu koneksi, Anda dapat mengunjungi Hasil Download untuk membaca artikel secara offline.</translation>
 <translation id="6753269504797312559">Nilai kebijakan</translation>
+<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Perangkat Anda sedang dalam mode tidur.</translation>
 <translation id="6767985426384634228">Perbarui Alamat?</translation>
 <translation id="6768213884286397650">Hagaki (Postcard)</translation>
@@ -1841,6 +1845,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="706295145388601875">Tambahkan dan kelola alamat di setelan Chrome</translation>
 <translation id="7064851114919012435">Info kontak</translation>
 <translation id="7068733155164172741">Masukkan kode <ph name="OTP_LENGTH" /> digit</translation>
+<translation id="7070090581017165256">Tentang situs ini</translation>
 <translation id="70705239631109039">Koneksi Anda tidak sepenuhnya aman</translation>
 <translation id="7075452647191940183">Permintaan terlalu besar</translation>
 <translation id="7079718277001814089">Situs ini berisi malware</translation>
@@ -2083,6 +2088,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="7813600968533626083">Hapus sebagai saran dari Chrome?</translation>
 <translation id="781440967107097262">Bagikan papan klip?</translation>
 <translation id="7815407501681723534">Ditemukan <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> hasil untuk '<ph name="SEARCH_STRING" />'</translation>
+<translation id="782125616001965242">Tampilkan informasi tentang situs ini</translation>
 <translation id="782886543891417279">Wi-Fi yang digunakan (<ph name="WIFI_NAME" />) mungkin mewajibkan Anda mengunjungi halaman masuknya.</translation>
 <translation id="7836231406687464395">Postfix (Envelope)</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Tidak ada}=1{1 aplikasi (<ph name="EXAMPLE_APP_1" />)}=2{2 aplikasi (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# aplikasi (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
@@ -2359,6 +2365,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8792626944327216835">mikrofon</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> telah mengaktifkan Chrome Enterprise Connectors di browser Anda. Konektor ini memiliki akses ke beberapa data Anda.</translation>
 <translation id="8798099450830957504">Default</translation>
+<translation id="8798739476508189189">Mencari tanda bowser? Buka</translation>
 <translation id="8805819170075074995">Entri daftar "<ph name="LANGUAGE_ID" />": Entri diabaikan karena entri tersebut juga disertakan dalam kebijakan SpellcheckLanguage.</translation>
 <translation id="8807160976559152894">Trim setelah setiap halaman tercetak</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk mengupdate Chrome dari setelan Chrome</translation>
@@ -2464,6 +2471,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="9157595877708044936">Menyiapkan...</translation>
 <translation id="9158625974267017556">C6 (Envelope)</translation>
 <translation id="9164029392738894042">Pemeriksaan Akurasi</translation>
+<translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">Izinkan situs memeriksa apakah Anda telah menyimpan metode pembayaran atau belum</translation>
 <translation id="9169664750068251925">Selalu cekal di situs ini</translation>
 <translation id="9169931577761441333">Tambahkan <ph name="APP_NAME" /> ke layar Utama</translation>

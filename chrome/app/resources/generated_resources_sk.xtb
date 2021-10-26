@@ -327,6 +327,7 @@
 <translation id="133535873114485416">Preferovaný vstup</translation>
 <translation id="1335929031622236846">Registrácia vášho zariadenia</translation>
 <translation id="1336902454946927954">Bezpečnostný kľúč je uzamknutý, pretože sa nepodarilo rozpoznať odtlačok prsta. Ak ho chcete odomknúť, zadajte PIN.</translation>
+<translation id="1338631221631423366">Páruje sa…</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> chcete otvoriť túto aplikáciu.</translation>
 <translation id="1338950911836659113">Prebieha odstraňovanie...</translation>
 <translation id="1339009753652684748">Aktivujte svojho Asistenta vyslovením výrazu „Hey Google“. Ak chcete šetriť batériu, vyberte Zapnutý (odporúčané). Váš Asistent bude reagovať iba vtedy, keď bude zariadenie pripojené do zásuvky alebo sa bude nabíjať.</translation>
@@ -6552,6 +6553,7 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="7887864092952184874">Myš Bluetooth bola spárovaná</translation>
 <translation id="7889371445710865055">Zmena jazyka diktovania</translation>
 <translation id="7890147169288018054">Zobrazte si informácie o sieti, napríklad adresu IP alebo MAC</translation>
+<translation id="7892384782944609022">Nepodarilo sa spárovať. Vyberte zariadenie a skúste to znova.</translation>
 <translation id="7893008570150657497">Mať prístup k fotkám, hudbe a ďalším médiám z vášho počítača</translation>
 <translation id="7893153962594818789">V tomto zariadení <ph name="DEVICE_TYPE" /> je rozhranie Bluetooth vypnuté. Zadajte heslo a Bluetooth zapnite.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (predvolené nastavenie)</translation>

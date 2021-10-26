@@ -29,6 +29,7 @@
 <translation id="1743802530341753419">ጣቢያዎች ከአንድ መሣሪያ ጋር እንዲገናኙ ከመፍቀድ በፊት ጠይቅ (የሚመከር)</translation>
 <translation id="1779089405699405702">ስውር ምስል መፍቻ</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> ኤአር እንዲጠቀም ለማስቻል፣ በ <ph name="BEGIN_LINK" />Android ቅንብሮች<ph name="END_LINK" /> ውስጥ ካሜራን በተጨማሪ ያብሩ።</translation>
+<translation id="1864927262126810325">ከ<ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">የአካባቢ መዳረሻ ለዚህ መሣሪያ ጠፍቷል። በ<ph name="BEGIN_LINK" />Android ቅንብሮች<ph name="END_LINK" /> ውስጥ ያብሩት።</translation>
 <translation id="1919345977826869612">ማስታወቂያዎች</translation>
 <translation id="1919950603503897840">ዕውቂያዎችን ምረጥ</translation>
@@ -236,6 +237,7 @@
 <translation id="7016516562562142042">ለአሁኑ የፍለጋ ፕሮግራም ተፈቅዷል</translation>
 <translation id="7053983685419859001">አግድ</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 ተመርጧል}one{# ተመርጠዋል}other{# ተመርጠዋል}}</translation>
+<translation id="7070090581017165256">ስለዚህ ጣቢያ</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> ተመርጠዋል።  አማራጮች ከማያ ገጹ አናት አጠገብ ይገኛሉ</translation>
 <translation id="7141896414559753902">ጣቢያዎች ብቅ-ባዮችን እንዳያሳዩ ያግዱ (የሚመከር)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> ኪባ</translation>
