@@ -127,7 +127,7 @@
 <translation id="3488065109653206955">به‌طور نسبی فعال شده است</translation>
 <translation id="3527036260304016759">انجام نشد - خطای نامشخص</translation>
 <translation id="3532980081107202182">تقریباً <ph name="MIN_REMAINING" /> دقیقه باقی مانده است</translation>
-<translation id="3540383942695635079">‏نشانی MAC</translation>
+<translation id="3540383942695635079">نشانی واد</translation>
 <translation id="357889014807611375">‏Wi-Fi کنتوردار</translation>
 <translation id="3582041541988388905">اتصال <ph name="NETWORK_NAME" /> شناسایی نشد</translation>
 <translation id="3595596368722241419">باتری پر است</translation>
@@ -367,7 +367,7 @@
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{اسکن کامل شد. ۱ صفحه اسکن شد}one{اسکن کامل شد. {NUMBER_OF_PAGES} صفحه اسکن شد}other{اسکن کامل شد. {NUMBER_OF_PAGES} صفحه اسکن شد}}</translation>
 <translation id="7469648432129124067">درگاهی شناسایی شد</translation>
 <translation id="7487067081878637334">فناوری</translation>
-<translation id="7490813197707563893">‏نشانی MAC</translation>
+<translation id="7490813197707563893">نشانی واد</translation>
 <translation id="7497215489070763236">گواهینامه مرکز صدور گواهی سرور</translation>
 <translation id="7502658306369382406">‏نشانی IPv6</translation>
 <translation id="7515998400212163428">Android</translation>

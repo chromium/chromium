@@ -3,7 +3,7 @@
 <translationbundle lang="de">
 <translation id="1028699632127661925">Wird an <ph name="DEVICE_NAME" /> gesendet…</translation>
 <translation id="111910763555783249">Benachrichtigungseinstellungen</translation>
-<translation id="1127811143501539442">{DAYS,plural, =1{1 Tag her}other{# Tage her}}</translation>
+<translation id="1127811143501539442">{DAYS,plural, =1{vor 1 Tag}other{vor # Tagen}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{vor 1 Minute}other{vor # Minuten}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1 min}other{# min}}</translation>
 <translation id="1181037720776840403">Entfernen</translation>
@@ -235,7 +235,7 @@
 <translation id="8086866675552927481">{MINUTES,plural, =1{in 1 min}other{in # min}}</translation>
 <translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" /> + <ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8090736967111090568">Rufnummer von <ph name="ORIGIN" /></translation>
-<translation id="8106081041558092062">{HOURS,plural, =1{1 Stunde her}other{# Stunden her}}</translation>
+<translation id="8106081041558092062">{HOURS,plural, =1{vor 1 Stunde}other{vor # Stunden}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{Noch 1 s}other{Noch # s}}</translation>
 <translation id="8134065097954893699">Diese Seite neu laden</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, automatische Vervollständigung</translation>
