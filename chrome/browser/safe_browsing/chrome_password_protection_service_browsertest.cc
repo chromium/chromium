@@ -61,8 +61,6 @@ using ::testing::ElementsAre;
 
 namespace {
 
-const char kGaiaPasswordChangeHistogramName[] =
-    "PasswordProtection.GaiaPasswordReusesBeforeGaiaPasswordChanged";
 const char kLoginPageUrl[] = "/safe_browsing/login_page.html";
 const char kChangePasswordUrl[] = "/safe_browsing/change_password_page.html";
 
@@ -606,8 +604,6 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
             profile->GetPrefs()
                 ->GetDictionary(prefs::kSafeBrowsingUnhandledGaiaPasswordReuses)
                 ->DictSize());
-  EXPECT_THAT(histograms.GetAllSamples(kGaiaPasswordChangeHistogramName),
-              testing::ElementsAre(base::Bucket(2, 1)));
 }
 
 IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,

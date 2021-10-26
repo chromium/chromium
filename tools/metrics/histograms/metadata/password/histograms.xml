@@ -2908,6 +2908,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="PasswordProtection.GaiaPasswordReusesBeforeGaiaPasswordChanged"
     units="reuses" expires_after="2021-01-30">
+  <obsolete>
+    Removed 10-2021 due to lack of use
+  </obsolete>
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -2920,13 +2923,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordProtection.InterstitialAction"
-    enum="PasswordProtectionWarningAction" expires_after="2021-01-30">
-  <owner>vakh@chromium.org</owner>
+    enum="PasswordProtectionWarningAction" expires_after="2022-10-25">
+  <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Records how a user interacts with the password protection interstitial
     (a.k.a chrome://reset-password page). Logged when the interstitial is shown
-    and when the user chooses to change their password.
+    and when the user chooses to change their password. Warning: this histogram
+    was expired from 2021-01-30 to 2021-10-25; data may be missing.
   </summary>
 </histogram>
 
@@ -2976,6 +2980,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PasswordProtection.PageZoomFactor" units="units"
     expires_after="2021-01-30">
+  <obsolete>
+    Removed 10-2021 due to lack of use
+  </obsolete>
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -2985,12 +2992,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="PasswordProtection.PasswordAlertModeOutcome"
-    enum="PasswordProtectionRequestOutcome" expires_after="2021-01-30">
-  <owner>vakh@chromium.org</owner>
+    enum="PasswordProtectionRequestOutcome" expires_after="2022-10-25">
+  <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Records the outcome of the password alert mode, indicating if password alert
-    warning is shown successfully or if it is skipped for some reason.
+    warning is shown successfully or if it is skipped for some reason. Warning:
+    this histogram was expired from 2021-01-30 to 2021-10-25; data may be
+    missing.
   </summary>
 </histogram>
 
