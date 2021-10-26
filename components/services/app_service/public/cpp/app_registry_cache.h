@@ -6,6 +6,7 @@
 #define COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_APP_REGISTRY_CACHE_H_
 
 #include <map>
+#include <utility>
 #include <vector>
 
 #include "base/compiler_specific.h"
@@ -33,6 +34,10 @@ namespace apps {
 // This class is not thread-safe.
 //
 // See components/services/app_service/README.md for more details.
+//
+// TODO(crbug.com/1253250): Remove all apps::mojom related code.
+// 1. Modify comments.
+// 2. Replace mojom related functions with non-mojom functions.
 class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
  public:
   class COMPONENT_EXPORT(APP_UPDATE) Observer : public base::CheckedObserver {
@@ -108,6 +113,9 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
   // scope. The caller presumably calls OnApps(std::move(deltas)).
   void OnApps(std::vector<apps::mojom::AppPtr> deltas,
               apps::mojom::AppType app_type,
+              bool should_notify_initialized);
+  void OnApps(std::vector<std::unique_ptr<App>> deltas,
+              apps::AppType app_type,
               bool should_notify_initialized);
 
   apps::mojom::AppType GetAppType(const std::string& app_id);
@@ -187,6 +195,7 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
 
  private:
   void DoOnApps(std::vector<apps::mojom::AppPtr> deltas);
+  void DoOnApps(std::vector<std::unique_ptr<App>> deltas);
 
   // NOINLINE should force this function to appear on the stack in crash dumps.
   // https://crbug.com/1237267.
@@ -196,6 +205,7 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
 
   // Maps from app_id to the latest state: the "sum" of all previous deltas.
   std::map<std::string, apps::mojom::AppPtr> mojom_states_;
+  std::map<std::string, std::unique_ptr<App>> states_;
 
   // Track the deltas being processed or are about to be processed by OnApps.
   // They are separate to manage the "notification and merging might be delayed
@@ -215,6 +225,8 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
   // and mojom_deltas_pending_ will stay empty.
   std::map<std::string, apps::mojom::App*> mojom_deltas_in_progress_;
   std::vector<apps::mojom::AppPtr> mojom_deltas_pending_;
+  std::map<std::string, App*> deltas_in_progress_;
+  std::vector<std::unique_ptr<App>> deltas_pending_;
 
   // Saves app types which will finish initialization, and OnAppTypeInitialized
   // will be called to notify observers.

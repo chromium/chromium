@@ -90,6 +90,35 @@ void AppRegistryCache::OnApps(std::vector<apps::mojom::AppPtr> deltas,
   OnAppTypeInitialized();
 }
 
+void AppRegistryCache::OnApps(std::vector<std::unique_ptr<App>> deltas,
+                              apps::AppType app_type,
+                              bool should_notify_initialized) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
+
+  // TODO(crbug.com/1253250): Modify in_progress_initialized_app_types_ based on
+  // the `App` struct when the `App` struct replaces the mojom `App` struct for
+  // all publishers, to prevent OnAppTypeInitialized to be called twice for both
+  // the mojom struct and non-mojom struct.
+
+  if (!deltas_in_progress_.empty()) {
+    std::move(deltas.begin(), deltas.end(),
+              std::back_inserter(deltas_pending_));
+    return;
+  }
+
+  DoOnApps(std::move(deltas));
+  while (!deltas_pending_.empty()) {
+    std::vector<std::unique_ptr<App>> pending;
+    pending.swap(deltas_pending_);
+    DoOnApps(std::move(pending));
+  }
+
+  // TODO(crbug.com/1253250): Modify and add OnAppTypeInitialized for the `App`
+  // struct when the `App` struct replaces the mojom `App` struct for all
+  // publishers, to prevent OnAppTypeInitialized to be called twice for both the
+  // mojom struct and non-mojom struct.
+}
+
 void AppRegistryCache::DoOnApps(std::vector<apps::mojom::AppPtr> deltas) {
   // Merge any deltas elements that have the same app_id. If an observer's
   // OnAppUpdate calls back into this AppRegistryCache then we can therefore
@@ -148,6 +177,51 @@ void AppRegistryCache::DoOnApps(std::vector<apps::mojom::AppPtr> deltas) {
     }
   }
   mojom_deltas_in_progress_.clear();
+}
+
+void AppRegistryCache::DoOnApps(std::vector<std::unique_ptr<App>> deltas) {
+  // Merge any deltas elements that have the same app_id. If an observer's
+  // OnAppUpdate calls back into this AppRegistryCache then we can therefore
+  // present a single delta for any given app_id.
+  for (auto& delta : deltas) {
+    auto d_iter = deltas_in_progress_.find(delta->app_id);
+    if (d_iter != deltas_in_progress_.end()) {
+      if (delta->readiness == Readiness::kRemoved) {
+        // Ensure that removed deltas are *not* merged, so that the last update
+        // before the merge is sent separately.
+        deltas_pending_.push_back(std::move(delta));
+      } else {
+        AppUpdate::Merge(d_iter->second, delta.get());
+      }
+    } else {
+      deltas_in_progress_[delta->app_id] = delta.get();
+    }
+  }
+
+  // TODO(crbug.com/1253250): Modify and add OnAppUpdate for the `App`
+  // struct when the `App` struct replaces the mojom `App` struct for all
+  // publishers, to prevent OnAppUpdate to be called twice for both the
+  // mojom struct and non-mojom struct.
+
+  // Update the states for every de-duplicated delta.
+  for (const auto& d_iter : deltas_in_progress_) {
+    auto s_iter = states_.find(d_iter.first);
+    apps::App* state =
+        (s_iter != states_.end()) ? s_iter->second.get() : nullptr;
+    apps::App* delta = d_iter.second;
+
+    if (delta->readiness != Readiness::kRemoved) {
+      if (state) {
+        AppUpdate::Merge(state, delta);
+      } else {
+        states_.insert(std::make_pair(delta->app_id, delta->Clone()));
+      }
+    } else {
+      DCHECK(!state || state->readiness != Readiness::kReady);
+      states_.erase(d_iter.first);
+    }
+  }
+  deltas_in_progress_.clear();
 }
 
 apps::mojom::AppType AppRegistryCache::GetAppType(const std::string& app_id) {

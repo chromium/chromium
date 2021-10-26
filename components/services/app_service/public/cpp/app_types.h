@@ -6,6 +6,7 @@
 #define COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_APP_TYPES_H_
 
 #include <string>
+#include <utility>
 
 #include "base/macros.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
@@ -60,6 +61,8 @@ struct COMPONENT_EXPORT(APP_UPDATE) App {
 
   ~App();
 
+  std::unique_ptr<App> Clone() const;
+
   AppType app_type;
   std::string app_id;
 
@@ -78,6 +81,9 @@ struct COMPONENT_EXPORT(APP_UPDATE) App {
   absl::optional<IconKey> icon_key;
 
   // TODO(crbug.com/1253250): Add other App struct fields.
+
+  // When adding new fields to the App type, the `Clone` function and the
+  // `AppUpdate` class should also be updated.
 };
 
 }  // namespace apps
