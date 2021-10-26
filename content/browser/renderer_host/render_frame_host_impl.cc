@@ -12559,12 +12559,16 @@ bool RenderFrameHostImpl::DocumentUsedWebOTP() {
 
 void RenderFrameHostImpl::SetFrameTreeNode(FrameTreeNode& frame_tree_node) {
   frame_tree_node_ = &frame_tree_node;
-  frame_tree_ = frame_tree_node_->frame_tree();
+  SetFrameTree(*frame_tree_node_->frame_tree());
 }
 
 void RenderFrameHostImpl::SetFrameTree(FrameTree& frame_tree) {
   DCHECK_EQ(frame_tree_node_->frame_tree(), &frame_tree);
   frame_tree_ = &frame_tree;
+  render_view_host()->SetFrameTree(frame_tree);
+  if (GetRenderWidgetHost()) {
+    GetRenderWidgetHost()->SetFrameTree(frame_tree);
+  }
 }
 
 void RenderFrameHostImpl::SetPolicyContainerForEarlyCommitAfterCrash(

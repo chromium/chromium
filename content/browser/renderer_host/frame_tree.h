@@ -67,7 +67,7 @@ class CONTENT_EXPORT FrameTree {
   class NodeRange;
 
   class CONTENT_EXPORT NodeIterator
-      : public std::iterator<std::forward_iterator_tag, FrameTreeNode> {
+      : public std::iterator<std::forward_iterator_tag, FrameTreeNode*> {
    public:
     NodeIterator(const NodeIterator& other);
     ~NodeIterator();
