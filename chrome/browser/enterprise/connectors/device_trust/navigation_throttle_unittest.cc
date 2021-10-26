@@ -38,10 +38,17 @@ base::Value::ListStorage GetTrustedUrls() {
   return trusted_urls;
 }
 
-#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
 constexpr char kChallenge[] = R"({"challenge": "encrypted_challenge_string"})";
 
-#endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
+scoped_refptr<net::HttpResponseHeaders> GetHeaderChallenge(
+    const std::string& challenge) {
+  std::string raw_response_headers =
+      "HTTP/1.1 200 OK\r\n"
+      "x-verified-access-challenge: " +
+      challenge + "\r\n";
+  return base::MakeRefCounted<net::HttpResponseHeaders>(
+      net::HttpUtil::AssembleRawHeaders(raw_response_headers));
+}
 
 }  // namespace
 
@@ -105,21 +112,6 @@ TEST_F(DeviceTrustNavigationThrottleTest, NoHeaderDeviceTrustOnRequest) {
   EXPECT_EQ(NavigationThrottle::PROCEED, throttle->WillStartRequest().action());
 }
 
-// TODO(b/194041030): Enable for Chrome OS after navigation is deferred before
-// the challenge response is created.
-#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
-namespace {
-scoped_refptr<net::HttpResponseHeaders> GetHeaderChallenge(
-    const std::string& challenge) {
-  std::string raw_response_headers =
-      "HTTP/1.1 200 OK\r\n"
-      "x-verified-access-challenge: " +
-      challenge + "\r\n";
-  return base::MakeRefCounted<net::HttpResponseHeaders>(
-      net::HttpUtil::AssembleRawHeaders(raw_response_headers));
-}
-}  // namespace
-
 TEST_F(DeviceTrustNavigationThrottleTest, BuildChallengeResponseFromHeader) {
   content::MockNavigationHandle test_handle(GURL("https://www.example.com/"),
                                             main_frame());
@@ -133,6 +125,5 @@ TEST_F(DeviceTrustNavigationThrottleTest, BuildChallengeResponseFromHeader) {
 
   EXPECT_EQ(NavigationThrottle::DEFER, throttle->WillStartRequest().action());
 }
-#endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
 
 }  // namespace enterprise_connectors
