@@ -3319,8 +3319,6 @@ crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc-extensions/RTCRtpSynchronizatio
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/webrtc-extensions/RTCRtpSynchronizationSource-captureTimestamp.html [ Skip Timeout ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/webrtc-extensions/RTCRtpSynchronizationSource-senderCaptureTimeOffset.html [ Skip Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc-extensions/RTCRtpSynchronizationSource-senderCaptureTimeOffset.html [ Skip Timeout ]
-crbug.com/626703 [ Mac10.14 ] virtual/webrtc-extensions-senderCaptureTimeOffset/external/wpt/webrtc-extensions/RTCRtpSynchronizationSource-senderCaptureTimeOffset.html [ Skip Timeout ]
-crbug.com/626703 [ Mac11.0 ] virtual/webrtc-extensions-senderCaptureTimeOffset/external/wpt/webrtc-extensions/RTCRtpSynchronizationSource-senderCaptureTimeOffset.html [ Skip Timeout ]
 crbug.com/626703 [ Mac10.14 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCPeerConnection-track-stats.https.html [ Skip Timeout ]
 crbug.com/626703 [ Mac11.0 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCPeerConnection-track-stats.https.html [ Skip Timeout ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/webrtc/RTCSctpTransport-events.html [ Timeout ]
@@ -3774,13 +3772,6 @@ crbug.com/1220220 external/wpt/html/rendering/non-replaced-elements/form-control
 
 # Tests pass under virtual/webrtc-wpt-plan-b
 virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCPeerConnection-operations.https.html [ Pass ]
-
-# Temporarily disable to unblock a WebRTC roll
-crbug.com/webrtc/10739 [ Win ] external/wpt/webrtc-extensions/RTCRtpSynchronizationSource-senderCaptureTimeOffset.html [ Failure Pass ]
-crbug.com/webrtc/10739 [ Linux ] external/wpt/webrtc-extensions/RTCRtpSynchronizationSource-senderCaptureTimeOffset.html [ Failure Pass ]
-crbug.com/webrtc/10739 [ Mac10.12 ] external/wpt/webrtc-extensions/RTCRtpSynchronizationSource-senderCaptureTimeOffset.html [ Failure Pass ]
-crbug.com/webrtc/10739 [ Mac10.13 ] external/wpt/webrtc-extensions/RTCRtpSynchronizationSource-senderCaptureTimeOffset.html [ Failure Pass ]
-crbug.com/webrtc/10739 [ Mac10.15 ] external/wpt/webrtc-extensions/RTCRtpSynchronizationSource-senderCaptureTimeOffset.html [ Failure Pass ]
 
 crbug.com/1131471 external/wpt/web-locks/clientids.tentative.https.html [ Failure ]
 
