@@ -64,9 +64,6 @@ const base::Feature kFileAnalysisMimeTypeSniff{
 const base::Feature kFileTypePoliciesTag{"FileTypePoliciesTag",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kClientSideDetectionWithToken{
-    "SafeBrowsingCSDRequestWithToken", base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kDelayedWarnings{"SafeBrowsingDelayedWarnings",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -171,7 +168,6 @@ constexpr struct {
     {&kClientSideDetectionModelIsFlatBuffer, true},
     {&kClientSideDetectionModelVersion, true},
     {&kClientSideDetectionReferrerChain, true},
-    {&kClientSideDetectionWithToken, true},
     {&kDelayedWarnings, true},
     {&kFileTypePoliciesTag, true},
     {&kOmitNonUserGesturesFromReferrerChain, true},
