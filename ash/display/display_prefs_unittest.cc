@@ -409,9 +409,7 @@ TEST_F(DisplayPrefsTest, BasicStores) {
       local_state()->GetDictionary(prefs::kDisplayProperties);
   const base::DictionaryValue* property = nullptr;
   EXPECT_TRUE(properties->GetDictionary(base::NumberToString(id1), &property));
-  int rotation = 0;
-  EXPECT_TRUE(property->GetInteger("rotation", &rotation));
-  EXPECT_EQ(1, rotation);
+  EXPECT_EQ(1, property->FindIntKey("rotation"));
 
   absl::optional<double> display_zoom_1 =
       property->FindDoubleKey("display_zoom_factor");
@@ -419,19 +417,13 @@ TEST_F(DisplayPrefsTest, BasicStores) {
   EXPECT_NEAR(*display_zoom_1, zoom_factor_1, 0.0001);
 
   // Internal display never registered the resolution.
-  int width = 0, height = 0;
-  EXPECT_FALSE(property->GetInteger("width", &width));
-  EXPECT_FALSE(property->GetInteger("height", &height));
+  EXPECT_FALSE(property->FindIntKey("width"));
+  EXPECT_FALSE(property->FindIntKey("height"));
 
-  int top = 0, left = 0, bottom = 0, right = 0;
-  EXPECT_TRUE(property->GetInteger("insets_top", &top));
-  EXPECT_TRUE(property->GetInteger("insets_left", &left));
-  EXPECT_TRUE(property->GetInteger("insets_bottom", &bottom));
-  EXPECT_TRUE(property->GetInteger("insets_right", &right));
-  EXPECT_EQ(10, top);
-  EXPECT_EQ(11, left);
-  EXPECT_EQ(12, bottom);
-  EXPECT_EQ(13, right);
+  EXPECT_EQ(10, property->FindIntKey("insets_top"));
+  EXPECT_EQ(11, property->FindIntKey("insets_left"));
+  EXPECT_EQ(12, property->FindIntKey("insets_bottom"));
+  EXPECT_EQ(13, property->FindIntKey("insets_right"));
 
   display::TouchDeviceManager* tdm = display_manager()->touch_device_manager();
   display::test::TouchDeviceManagerTestApi tdm_test_api(tdm);
@@ -459,25 +451,22 @@ TEST_F(DisplayPrefsTest, BasicStores) {
   std::string touch_str;
 
   EXPECT_TRUE(properties->GetDictionary(base::NumberToString(id2), &property));
-  EXPECT_TRUE(property->GetInteger("rotation", &rotation));
-  EXPECT_EQ(0, rotation);
+  EXPECT_EQ(0, property->FindIntKey("rotation"));
 
   absl::optional<double> display_zoom_2 =
       property->FindDoubleKey("display_zoom_factor");
   ASSERT_TRUE(display_zoom_2);
   EXPECT_NEAR(*display_zoom_2, zoom_factor_2, 0.0001);
 
-  EXPECT_FALSE(property->GetInteger("insets_top", &top));
-  EXPECT_FALSE(property->GetInteger("insets_left", &left));
-  EXPECT_FALSE(property->GetInteger("insets_bottom", &bottom));
-  EXPECT_FALSE(property->GetInteger("insets_right", &right));
+  EXPECT_FALSE(property->FindIntKey("insets_top"));
+  EXPECT_FALSE(property->FindIntKey("insets_left"));
+  EXPECT_FALSE(property->FindIntKey("insets_bottom"));
+  EXPECT_FALSE(property->FindIntKey("insets_right"));
 
   // Resolution is saved only when the resolution is set
   // by DisplayManager::SetDisplayMode
-  width = 0;
-  height = 0;
-  EXPECT_FALSE(property->GetInteger("width", &width));
-  EXPECT_FALSE(property->GetInteger("height", &height));
+  EXPECT_FALSE(property->FindIntKey("width"));
+  EXPECT_FALSE(property->FindIntKey("height"));
 
   display::ManagedDisplayMode mode(gfx::Size(300, 200), 60.0f, false, false,
                                    1.25f /* device_scale_factor */);
@@ -488,23 +477,16 @@ TEST_F(DisplayPrefsTest, BasicStores) {
   EXPECT_EQ(id2, display::Screen::GetScreen()->GetPrimaryDisplay().id());
 
   EXPECT_TRUE(properties->GetDictionary(base::NumberToString(id1), &property));
-  width = 0;
-  height = 0;
   // Internal display shouldn't store its resolution.
-  EXPECT_FALSE(property->GetInteger("width", &width));
-  EXPECT_FALSE(property->GetInteger("height", &height));
+  EXPECT_FALSE(property->FindIntKey("width"));
+  EXPECT_FALSE(property->FindIntKey("height"));
 
   // External display's resolution must be stored this time because
   // it's not best.
-  int device_scale_factor = 0;
   EXPECT_TRUE(properties->GetDictionary(base::NumberToString(id2), &property));
-  EXPECT_TRUE(property->GetInteger("width", &width));
-  EXPECT_TRUE(property->GetInteger("height", &height));
-  EXPECT_TRUE(
-      property->GetInteger("device-scale-factor", &device_scale_factor));
-  EXPECT_EQ(300, width);
-  EXPECT_EQ(200, height);
-  EXPECT_EQ(1250, device_scale_factor);
+  EXPECT_EQ(property->FindIntKey("width"), 300);
+  EXPECT_EQ(property->FindIntKey("height"), 200);
+  EXPECT_EQ(property->FindIntKey("device-scale-factor"), 1250);
 
   // The layout is swapped.
   EXPECT_TRUE(displays->GetDictionary(key, &layout_value));
@@ -540,8 +522,8 @@ TEST_F(DisplayPrefsTest, BasicStores) {
   EXPECT_EQ(id2, stored_placement.parent_display_id);
 
   EXPECT_TRUE(properties->GetDictionary(base::NumberToString(id1), &property));
-  EXPECT_FALSE(property->GetInteger("width", &width));
-  EXPECT_FALSE(property->GetInteger("height", &height));
+  EXPECT_FALSE(property->FindIntKey("width"));
+  EXPECT_FALSE(property->FindIntKey("height"));
 
   external_display_mirror_info =
       local_state()->GetList(prefs::kExternalDisplayMirrorInfo);
@@ -553,10 +535,8 @@ TEST_F(DisplayPrefsTest, BasicStores) {
   // External display's selected resolution must not change
   // by mirroring.
   EXPECT_TRUE(properties->GetDictionary(base::NumberToString(id2), &property));
-  EXPECT_TRUE(property->GetInteger("width", &width));
-  EXPECT_TRUE(property->GetInteger("height", &height));
-  EXPECT_EQ(300, width);
-  EXPECT_EQ(200, height);
+  EXPECT_EQ(300, property->FindIntKey("width"));
+  EXPECT_EQ(200, property->FindIntKey("height"));
 
   // Set new display's selected resolution.
   display_manager()->RegisterDisplayProperty(
@@ -581,8 +561,8 @@ TEST_F(DisplayPrefsTest, BasicStores) {
 
   // Best resolution should not be saved.
   EXPECT_TRUE(properties->GetDictionary(base::NumberToString(id2), &property));
-  EXPECT_FALSE(property->GetInteger("width", &width));
-  EXPECT_FALSE(property->GetInteger("height", &height));
+  EXPECT_FALSE(property->FindIntKey("width"));
+  EXPECT_FALSE(property->FindIntKey("height"));
 
   // Set yet another new display's selected resolution.
   display_manager()->RegisterDisplayProperty(
@@ -604,10 +584,8 @@ TEST_F(DisplayPrefsTest, BasicStores) {
 
   // External display's selected resolution must be updated.
   EXPECT_TRUE(properties->GetDictionary(base::NumberToString(id2), &property));
-  EXPECT_TRUE(property->GetInteger("width", &width));
-  EXPECT_TRUE(property->GetInteger("height", &height));
-  EXPECT_EQ(500, width);
-  EXPECT_EQ(400, height);
+  EXPECT_EQ(500, property->FindIntKey("width"));
+  EXPECT_EQ(400, property->FindIntKey("height"));
 }
 
 TEST_F(DisplayPrefsTest, PreventStore) {
@@ -631,9 +609,8 @@ TEST_F(DisplayPrefsTest, PreventStore) {
       local_state()->GetDictionary(prefs::kDisplayProperties);
   const base::DictionaryValue* property = nullptr;
   EXPECT_TRUE(properties->GetDictionary(base::NumberToString(id), &property));
-  int width = 0, height = 0;
-  EXPECT_FALSE(property->GetInteger("width", &width));
-  EXPECT_FALSE(property->GetInteger("height", &height));
+  EXPECT_FALSE(property->FindIntKey("width"));
+  EXPECT_FALSE(property->FindIntKey("height"));
 
   // Revert the change.
   shell->resolution_notification_controller()->RevertResolutionChange(false);
@@ -646,10 +623,8 @@ TEST_F(DisplayPrefsTest, PreventStore) {
 
   property = nullptr;
   EXPECT_TRUE(properties->GetDictionary(base::NumberToString(id), &property));
-  EXPECT_TRUE(property->GetInteger("width", &width));
-  EXPECT_TRUE(property->GetInteger("height", &height));
-  EXPECT_EQ(300, width);
-  EXPECT_EQ(200, height);
+  EXPECT_EQ(300, property->FindIntKey("width"));
+  EXPECT_EQ(200, property->FindIntKey("height"));
 }
 
 TEST_F(DisplayPrefsTest, StoreForSwappedDisplay) {
@@ -947,9 +922,7 @@ TEST_F(DisplayPrefsTest, DontSaveTabletModeControllerRotations) {
   const base::DictionaryValue* property = nullptr;
   EXPECT_TRUE(properties->GetDictionary(
       base::NumberToString(display::Display::InternalDisplayId()), &property));
-  int rotation = -1;
-  EXPECT_TRUE(property->GetInteger("rotation", &rotation));
-  EXPECT_EQ(display::Display::ROTATE_0, rotation);
+  EXPECT_EQ(display::Display::ROTATE_0, property->FindIntKey("rotation"));
 
   // Trigger a save, the acceleration rotation should not be saved as the user
   // rotation.
@@ -958,9 +931,7 @@ TEST_F(DisplayPrefsTest, DontSaveTabletModeControllerRotations) {
   property = nullptr;
   EXPECT_TRUE(properties->GetDictionary(
       base::NumberToString(display::Display::InternalDisplayId()), &property));
-  rotation = -1;
-  EXPECT_TRUE(property->GetInteger("rotation", &rotation));
-  EXPECT_EQ(display::Display::ROTATE_0, rotation);
+  EXPECT_EQ(display::Display::ROTATE_0, property->FindIntKey("rotation"));
 }
 
 // Tests that the rotation state is saved without a user being logged in.
@@ -980,11 +951,9 @@ TEST_F(DisplayPrefsTest, StoreRotationStateNoLogin) {
   EXPECT_TRUE(properties->GetBoolean("lock", &rotation_lock));
   EXPECT_EQ(current_rotation_lock, rotation_lock);
 
-  int orientation;
   display::Display::Rotation current_rotation =
       GetCurrentInternalDisplayRotation();
-  EXPECT_TRUE(properties->GetInteger("orientation", &orientation));
-  EXPECT_EQ(current_rotation, orientation);
+  EXPECT_EQ(current_rotation, properties->FindIntKey("orientation"));
 }
 
 // Tests that the rotation state is saved when a guest is logged in.
@@ -1005,11 +974,9 @@ TEST_F(DisplayPrefsTest, StoreRotationStateGuest) {
   EXPECT_TRUE(properties->GetBoolean("lock", &rotation_lock));
   EXPECT_EQ(current_rotation_lock, rotation_lock);
 
-  int orientation;
   display::Display::Rotation current_rotation =
       GetCurrentInternalDisplayRotation();
-  EXPECT_TRUE(properties->GetInteger("orientation", &orientation));
-  EXPECT_EQ(current_rotation, orientation);
+  EXPECT_EQ(current_rotation, properties->FindIntKey("orientation"));
 }
 
 // Tests that the rotation state is saved when a normal user is logged in.
@@ -1030,11 +997,9 @@ TEST_F(DisplayPrefsTest, StoreRotationStateNormalUser) {
   EXPECT_TRUE(properties->GetBoolean("lock", &rotation_lock));
   EXPECT_EQ(current_rotation_lock, rotation_lock);
 
-  int orientation;
   display::Display::Rotation current_rotation =
       GetCurrentInternalDisplayRotation();
-  EXPECT_TRUE(properties->GetInteger("orientation", &orientation));
-  EXPECT_EQ(current_rotation, orientation);
+  EXPECT_EQ(current_rotation, properties->FindIntKey("orientation"));
 }
 
 // Tests that rotation state is loaded without a user being logged in, and that

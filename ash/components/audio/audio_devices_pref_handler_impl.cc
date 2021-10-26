@@ -152,9 +152,8 @@ bool AudioDevicesPrefHandlerImpl::GetMuteValue(const AudioDevice& device) {
   if (!device_mute_settings_->HasKey(device_id_str))
     MigrateDeviceMuteSettings(device_id_str, device);
 
-  int mute = kPrefMuteOff;
-  device_mute_settings_->GetInteger(device_id_str, &mute);
-
+  int mute =
+      device_mute_settings_->FindIntKey(device_id_str).value_or(kPrefMuteOff);
   return (mute == kPrefMuteOn);
 }
 
