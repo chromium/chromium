@@ -51,6 +51,7 @@
 <translation id="2121284319307530122">重新啟動以更新 &amp;Chrome</translation>
 <translation id="2123055963409958220">只要報告<ph name="BEGIN_LINK" />目前的設定<ph name="END_LINK" />，就能助我們一臂之力，讓 Chrome 更臻完美</translation>
 <translation id="2151406531797534936">請立即重新啟動 Chrome</translation>
+<translation id="2189289170880510015">自訂 Chrome 最重要的部分隱私權選項</translation>
 <translation id="2246246234298806438">缺乏內置的 PDF 檢視器時，Google Chrome 無法顯示列印預覽。</translation>
 <translation id="2290014774651636340">缺少 Google API 金鑰，系統將停用 Google Chrome 的部分功能。</translation>
 <translation id="2290095356545025170">確定要解除安裝 Google Chrome 嗎？</translation>
@@ -113,6 +114,7 @@
 <translation id="3596080736082218006">{COUNT,plural, =0{管理員要求您重新啟動 Chrome，以套用更新}=1{管理員要求您重新啟動 Chrome，以套用更新。您的無痕式視窗不會重新開啟。}other{管理員要求您重新啟動 Chrome，以套用更新。您的 # 個無痕式視窗不會重新開啟。}}</translation>
 <translation id="3622797965165704966">無論是登入 Google 帳戶使用 Chrome，還是以 Google 帳戶使用共用電腦，現在都更輕而易舉。</translation>
 <translation id="3673813398384385993">Chrome 發現「<ph name="EXTENSION_NAME" />」含有惡意軟件</translation>
+<translation id="3678552270983184277">預設設定適用於大多數使用者，但你也可以根據自己習慣使用 Chrome 的方式自訂設定</translation>
 <translation id="3718181793972440140">這會刪除此裝置上的 1 個項目。如果日後想擷取資料，請以 <ph name="USER_EMAIL" /> 的身分登入 Chrome。</translation>
 <translation id="3735758079232443276">擴充功能「<ph name="EXTENSION_NAME" />」已變更 Chrome 啟動時所顯示的網頁。</translation>
 <translation id="3779473566290487688">如要取得日後的 Google Chrome 更新，您將需要 OS X 10.11 或以上版本。此電腦正在使用 OS X 10.10。</translation>

@@ -817,7 +817,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="7055381872777910864">sri</translation>
 <translation id="7055910611768509537">Pisaljka nije korištena više od tjedan dana</translation>
 <translation id="7066646422045619941">Tu mrežu onemogućio je vaš administrator.</translation>
-<translation id="7067196344162293536">Automatski izmjenjuj</translation>
+<translation id="7067196344162293536">Autom. zakretanje</translation>
 <translation id="7068360136237591149">Otvori datoteke</translation>
 <translation id="7076293881109082629">Prijava</translation>
 <translation id="7088960765736518739">Prekidač za pristup</translation>
@@ -1001,7 +1001,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> ima <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Pritisnite Alt + Pretraživanje ili Shift da biste otkazali.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> ne podržava razlučivost <ph name="SPECIFIED_RESOLUTION" />. Razlučivost je promijenjena u <ph name="FALLBACK_RESOLUTION" />. Kliknite Potvrdi da biste zadržali promjene. Prethodne postavke vratit će se za <ph name="TIMEOUT_SECONDS" />.</translation>
-<translation id="8513108775083588393">Aut. zakret.</translation>
+<translation id="8513108775083588393">Autom. zakret.</translation>
 <translation id="851458219935658693">Prikaži prozore s trenutačne radne površine, odabran je izborni gumb</translation>
 <translation id="8517041960877371778">Uređaj <ph name="DEVICE_TYPE" /> možda se neće puniti dok je uključen.</translation>
 <translation id="8553395910833293175">Već je dodijeljeno svim radnim površinama.</translation>

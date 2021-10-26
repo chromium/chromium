@@ -2080,6 +2080,7 @@
 <translation id="310671807099593501">網站正在使用藍牙</translation>
 <translation id="3108931485517391283">無法接收</translation>
 <translation id="3109724472072898302">已收合</translation>
+<translation id="311214366526552035">仍要下載</translation>
 <translation id="311394601889664316">不允許網站編輯裝置上的檔案或資料夾</translation>
 <translation id="3115147772012638511">等候快取…</translation>
 <translation id="3115580024857770654">收合全部</translation>
@@ -2359,6 +2360,7 @@
 <translation id="3429160811076349561">試用功能已關閉</translation>
 <translation id="3429271624041785769">網頁內容語言</translation>
 <translation id="3429275422858276529">將此網頁加入書籤，以便日後輕鬆查找</translation>
+<translation id="343115368966109153">要下載「<ph name="FILE_NAME" />」嗎？使用這部裝置的所有人都會看到該檔案。</translation>
 <translation id="3432227430032737297">移除所有顯示項目</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433621910545056227">糟糕！系統無法鎖定裝置安裝時的屬性。</translation>
@@ -2700,6 +2702,7 @@
 <translation id="3777806571986431400">擴充功能已啟用</translation>
 <translation id="3778152852029592020">下載操作已取消。</translation>
 <translation id="3778208826288864398">由於您輸入太多次錯誤的 PIN，因此安全密鑰已被鎖定。您需要重設安全密鑰。</translation>
+<translation id="3778369586810509692">系統會將這個檔案儲存在裝置上，所有人都能查看。</translation>
 <translation id="3778740492972734840">開發人員工具(&amp;D)</translation>
 <translation id="3778868487658107119">度身訂造的「Google 助理」隨時為您提供協助，不但可根據您的問題提供解答，還可以按指令執行各種操作。</translation>
 <translation id="3781742599892759500">Linux 的麥克風存取權</translation>
@@ -4715,6 +4718,7 @@
 <translation id="597235323114979258">顯示更多目的地</translation>
 <translation id="5972666587303800813">無操作服務</translation>
 <translation id="5972708806901999743">移至頂部</translation>
+<translation id="5972801171078377748">不要再顯示</translation>
 <translation id="5972826969634861500">啟動 <ph name="PRODUCT_NAME" /></translation>
 <translation id="5973041996755340290">「<ph name="CLIENT_NAME" />」已開始為此瀏覽器偵錯</translation>
 <translation id="5973605538625120605">變更 PIN</translation>

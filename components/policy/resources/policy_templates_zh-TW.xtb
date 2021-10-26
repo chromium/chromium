@@ -1004,6 +1004,7 @@
 <translation id="2204379573346866896">在這個小時內經過的分鐘數。</translation>
 <translation id="2204753382813641270">控制檔案櫃自動隱藏功能</translation>
 <translation id="2208976000652006649">使用 POST 的搜尋網址參數</translation>
+<translation id="2212603374276864511">允許使用者使用預先設定的桌面範本</translation>
 <translation id="2213059592185933570">啟用漫遊設定檔建立功能</translation>
 <translation id="2215238871726750562">如果將這項政策設為 True，系統不會在工作階段開始時啟動瀏覽器視窗。
 
@@ -1953,6 +1954,7 @@
         * 如果設為 4，系統將在裝置完成註冊後，於使用者登入前更新 <ph name="TPM_FIRMWARE_UPDATE_TPM" /> 韌體。
 
       如果未設定這項政策，則系統無法更新 <ph name="TPM_FIRMWARE_UPDATE_TPM" /> 韌體。</translation>
+<translation id="3232563711929146405">停用網路服務沙箱</translation>
 <translation id="3232691106293445015">不安全的 HTTP 連線無法使用<ph name="BASIC_AUTH" />驗證；必須採用 HTTPS 連線</translation>
 <translation id="3235085623859932253"> 如果停用這項政策，使用者將無法透過 PCIe 通道完全連結 Thunderbolt/USB4 周邊裝置。
 
@@ -2071,6 +2073,7 @@
       如果不設定，系統會使用 0 毫秒做為逾時時間。
 
       如果不設定 <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" /> 政策，則這項政策不會有任何作用。</translation>
+<translation id="3399859571630358395">強制停用快速配對功能 (快速藍牙配對)。</translation>
 <translation id="341285788698114069">這項政策可控管音訊程序在 Windows 系統上的優先順序。
       如果啟用這項政策，系統將以高於一般優先順序的次序執行音訊程序。
       如果停用這項政策，系統將以一般優先順序執行音訊程序。
@@ -2186,6 +2189,7 @@
 
       如果想進一步瞭解有效的網址模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。</translation>
 <translation id="3540935459049973317">個別應用程式的時間限制</translation>
+<translation id="354592434146464541">禁止使用者使用預先設定的桌面範本</translation>
 <translation id="3547954654003013442">Proxy 設定</translation>
 <translation id="3550122827225052130">請注意，這項政策已遭淘汰，並將在 <ph name="PRODUCT_OS_NAME" />第 85 版中移除。請改用 <ph name="SCREEN_LOCK_DELAYS_POLICY_NAME" />。
 
@@ -2943,6 +2947,7 @@
 <translation id="4557134566541205630">預設搜尋引擎新分頁網址</translation>
 <translation id="4558166110367609724">自動略過《服務條款》並載入瀏覽器。</translation>
 <translation id="4559846397119102037">允許使用 <ph name="LACROS_NAME" /></translation>
+<translation id="4561560385824323005">允許使用者選取預先設定的桌面版面配置以便載入</translation>
 <translation id="4562165737444703281">允許使用者啟用/設定 Crostini 連接埠轉送</translation>
 <translation id="456686782928669977">這項政策可控管是否要從 <ph name="IE_PRODUCT_NAME" /> 的 SiteList 政策載入規則。
 
@@ -3284,6 +3289,7 @@
 <translation id="5017369989680827157">如果將這項政策設為 True 或不設定，使用者即可控制 UI 中的地址自動填入功能。
 
       如果將這項政策設為 False，自動填入功能一律不會建議或填入地址資訊，也不會在使用者瀏覽網頁時儲存其提交的其他地址資訊。</translation>
+<translation id="5017691827598069017">啟用快速配對功能 (快速藍牙配對)</translation>
 <translation id="5021550478471824215">你可以透過這項政策，指定預設網路共用檔案清單。每個清單項目都是一個物件，包含兩種屬性：<ph name="SHARE_URL_FIELD_NAME" /> 和 <ph name="MODE_FIELD_NAME" />。
 
       <ph name="SHARE_URL_FIELD_NAME" /> 應為共用網址。
@@ -3398,6 +3404,7 @@
       如要進一步瞭解有效的<ph name="URL_LABEL" />模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是這項政策許可的值。</translation>
 <translation id="5177260184597743704">OnSecurityEvent Chrome Enterprise Connector 的配置政策</translation>
 <translation id="5178479074002209469">布林值標記，表示這項政策要求進行更新時，是否要讓未受管理的使用者工作階段接收通知並強制登出。</translation>
+<translation id="5179853299156742425">可下載桌面範本的網址。</translation>
 <translation id="5182055907976889880">設定在 <ph name="PRODUCT_OS_NAME" /> 中使用 Google 雲端硬碟。</translation>
 <translation id="5182483318861266793">將檔案櫃放在畫面的右側</translation>
 <translation id="51859390023061147">停用完整還原功能。</translation>
@@ -3453,6 +3460,7 @@
       如果政策未設定或無效，則行為會等同於「等待目標版本跟上版本降級」。</translation>
 <translation id="5229339291699779956">為 Thunderbolt/USB4 周邊裝置啟用 PCIe 通道，讓周邊裝置執行完整功能</translation>
 <translation id="523505283826916779">無障礙設定</translation>
+<translation id="5238976843489093540">強制啟用快速配對功能 (快速藍牙配對)。</translation>
 <translation id="52393120393725840">如果將這項政策設為啟用，<ph name="PRODUCT_NAME" /> 就能幫使用者記住密碼，並在他們下次登入網站時提供。
 
       如果設為停用，使用者就無法儲存新密碼，但先前儲存的密碼仍可供使用。
@@ -3802,6 +3810,8 @@
 <translation id="5625771176514429288">系統會允許 Chrome 應用程式在這些平台上執行。</translation>
 <translation id="5630352020869108293">還原上次工作階段</translation>
 <translation id="5633871703004128675">啟用插入點醒目顯示無障礙功能</translation>
+<translation id="5639454129004500060">如果設定這項政策，該政策會納入用來下載桌面範本檔案的資訊。檔案中有要為當前使用者佈建的桌面範本。
+      如果未設定這項政策，桌面範本清單中就不會加入任何預先設定的桌面範本。如果 <ph name="DESK_TEMPLATES_ENABLED_POLICY_NAME" /> 政策不是設為 true，則這項政策不會有任何作用。</translation>
 <translation id="5641279111657132737">這項政策已遭淘汰，請改用「<ph name="AUTH_SERVER_ALLOWLIST_POLICY_NAME" />」政策。
 
       你可以透過這項政策指定允許整合驗證的伺服器。只有當 Proxy 或這份許可清單中的伺服器傳送驗證要求給 <ph name="PRODUCT_NAME" /> 時，系統才會啟用整合驗證。
@@ -3941,6 +3951,7 @@
 <translation id="5809728392451418079">設定裝置本機帳戶的顯示名稱</translation>
 <translation id="5814301096961727113">設定互動朗讀在登入畫面的預設狀態</translation>
 <translation id="5815129011704381141">更新完成後自動重新啟動</translation>
+<translation id="5816106589769772877">如果將這項政策設為 Enabled，使用者就能使用預先設定的桌面版面配置範本。如果將這項政策設為 Disabled 或不設定，則會導致使用者無法使用這些範本。</translation>
 <translation id="582857022372205358">啟用短邊雙面列印</translation>
 <translation id="5830196507442186669">允許裝置在 <ph name="PRODUCT_OS_NAME" />中使用 <ph name="BOREALIS_NAME" /></translation>
 <translation id="5832274826894536455">已淘汰的政策</translation>
@@ -4191,6 +4202,7 @@
 <translation id="6174065452773547810">如果將這項政策設為 Enabled 或不設定，裝置就能取得精細回報控制項。
       如果將這項政策設為 Disabled，表示已註冊的裝置不會取得精細回報控制項。</translation>
 <translation id="6178075938488052838">這項政策可控管哪些使用者能夠啟動 <ph name="PRODUCT_OS_NAME" />工作階段，但不會禁止使用者在 Android 應用程式中登入其他 Google 帳戶。如要禁止使用者登入其他 Google 帳戶，你可以在 <ph name="ARC_POLICY_POLICY_NAME" /> 中設定 Android 專屬的 <ph name="ACCOUNT_TYPES_WITH_MANAGEMENT_DISABLED_CLOUDDPC_POLICY_NAME" /> 政策。</translation>
+<translation id="6181304954168534748">桌面範本的 SHA-256 雜湊。</translation>
 <translation id="6181618732396778048">不允許任何網站要求檔案和目錄的寫入權限。</translation>
 <translation id="6181783961196084973">用於切換應用程式活動收集功能的值。如果設為 True，系統會將使用者的應用程式活動回報給伺服器，以便在兒童和家長的 <ph name="PRODUCT_NAME" /> 應用程式中顯示這些資訊。如果設為 False，個別應用程式的時間限制功能仍可正常運作，但系統不會將任何資料回報給伺服器，因此 <ph name="PRODUCT_NAME" /> 也不會顯示相關資訊。</translation>
 <translation id="6183327369896253878">你可以透過這項政策修正 <ph name="PRODUCT_OS_NAME" />在啟動器列中顯示為固定應用程式的應用程式 ID，且使用者無法進行變更。
@@ -5777,6 +5789,10 @@
 <translation id="8101381354936029836">政策不可部分完成的群組：</translation>
 <translation id="8102913158860568230">預設媒體串流設定</translation>
 <translation id="8104962233214241919">自動為這些網站選取用戶端憑證</translation>
+<translation id="8111502498815410897">設定這項政策會導致系統強制啟用/停用快速配對功能。
+      快速配對是全新的藍牙配對流程，可連結配對的周邊裝置和 GAIA 帳戶。
+      這能讓其他以同一個 GAIA 帳戶登入的 Chrome OS (和 Android) 裝置自動進行配對。
+      如果不設定，快速配對功能會採用 Chrome OS 的預設設定 (啟用)。</translation>
 <translation id="8114382167597081590">不強制執行 YouTube 嚴格篩選模式</translation>
 <translation id="8117921351531866504">你可以設定網站是否能檢查使用者有沒有已儲存的付款方式。
 
@@ -5888,6 +5904,7 @@
       如未設定這項政策，<ph name="PRODUCT_OS_NAME" /> 就會使用裝置本機帳戶的電子郵件帳戶 ID 當做登入畫面的顯示名稱。
 
       這項政策對於一般使用者帳戶無效。</translation>
+<translation id="8257863622304579015">啟用網路服務沙箱</translation>
 <translation id="8259375588339409826">Chromium 和 Google Chrome 支援同一套政策。請注意，這份文件可能包含未發布的政策 (即「支援環境」項目是指尚未發布的 <ph name="PRODUCT_NAME" /> 版本)，後續有關這些政策的變更與移除恕不另行通知，我們也不提供任何方面的保證，包括安全性和隱私權方面的保證。
 
 這些政策僅適用於設定貴機構內部的 <ph name="PRODUCT_NAME" /> 執行個體。如果在機構外 (例如公開發布的程式中) 使用這些政策，會被視為惡意軟體行徑，且 Google 和防毒軟體廠商可能會將其標示為惡意軟體。
@@ -6386,6 +6403,11 @@
 
       如果不設定這項政策，系統會使用平台專屬的預設值：<ph name="MS_WIN_NAME" /> 使用 <ph name="IE_PRODUCT_NAME" />、<ph name="MAC_OS_NAME" /> 使用 <ph name="SAFARI_PRODUCT_NAME" />。<ph name="LINUX_OS_NAME" /> 將無法啟動替代瀏覽器。</translation>
 <translation id="8836975838488342340">存取碼的有效時限 (以秒為單位)。</translation>
+<translation id="8839799083601163225">這項政策可控管系統是否會採用沙箱機制執行網路服務程序。
+      如果啟用這項政策，系統會採用沙箱機制執行網路服務程序。
+      如果停用這項政策，系統將不採用沙箱機制執行網路服務程序。如果不採用沙箱機制執行網路服務，可能會讓使用者面臨額外的安全性風險。
+      如果不設定這項政策，系統會使用網路沙箱的預設設定。這可能會因 <ph name="PRODUCT_NAME" /> 版本、目前執行的實測和平台而異。
+      設置這項政策是為了讓企業能彈性停用網路沙箱，避免第三方軟體干擾網路服務沙箱運作。</translation>
 <translation id="8842208363354615697">允許啟用僅限 HTTPS 模式</translation>
 <translation id="885147810817138322">向使用者顯示媒體推薦內容</translation>
 <translation id="8852579753940989645">啟用轉譯器程式碼完整性功能</translation>
