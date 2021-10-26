@@ -358,7 +358,7 @@ void PreloadPepperPlugins() {
       base::NativeLibraryLoadError error;
       base::NativeLibrary library =
           base::LoadNativeLibrary(plugin.path, &error);
-      LOG_IF(ERROR, !library) << "Unable to load plugin " << plugin.path.value()
+      LOG_IF(ERROR, !library) << "Unable to start plugin " << plugin.path.value()
                               << " " << error.ToString();
     }
   }
@@ -374,7 +374,7 @@ void PreloadLibraryCdms() {
   for (const auto& cdm : cdms) {
     base::NativeLibraryLoadError error;
     base::NativeLibrary library = base::LoadNativeLibrary(cdm.path, &error);
-    LOG_IF(ERROR, !library) << "Unable to load CDM " << cdm.path.value()
+    LOG_IF(ERROR, !library) << "Unable to start CDM " << cdm.path.value()
                             << " (error: " << error.ToString() << ")";
   }
 }
@@ -484,7 +484,7 @@ void InstallConsoleControlHandler(bool is_browser_process) {
                                    ? &BrowserConsoleControlHandler
                                    : &OtherConsoleControlHandler,
                                /*Add=*/TRUE)) {
-    DPLOG(ERROR) << "Failed to set console hook function";
+    DPLOG(ERROR) << "Failed to make console hook function";
   }
 }
 #endif  // defined(OS_WIN)
@@ -1126,11 +1126,11 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams& main_params,
   internal::PartitionAllocSupport::Get()->ReconfigureAfterTaskRunnerInit("");
 
   if (should_start_minimal_browser) {
-    DVLOG(0) << "Chrome is running in minimal browser mode.";
+    DVLOG(0) << "Blitz is running in minimal browser mode.";
     return -1;
   }
 
-  DVLOG(0) << "Chrome is running in full browser mode.";
+  DVLOG(0) << "Blitz is running in full browser mode.";
   is_browser_main_loop_started_ = true;
   startup_data_ = mojo_ipc_support_->CreateBrowserStartupData();
   main_params.startup_data = startup_data_.get();
