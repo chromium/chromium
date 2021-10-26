@@ -140,7 +140,7 @@
   },
   {
     "name": "android-force-app-language-prompt",
-    "owners": [" perrier", "chrome-language@google.com"],
+    "owners": [ "perrier", "chrome-language@google.com" ],
     "expiry_milestone": 97
   },
   {
@@ -1464,7 +1464,7 @@
   },
   {
     "name": "enable-autofill-credit-card-upload-feedback",
-    "owners": [ "siyua@chromium.org, payments-autofill-team@google.com" ],
+    "owners": [ "siyua@chromium.org", "payments-autofill-team@google.com" ],
     "expiry_milestone": 96
   },
   {
