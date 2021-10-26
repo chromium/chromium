@@ -1081,6 +1081,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PasswordManager.ChromeSignInPageHashSaved"
     enum="ChromeSignInPageHashSaved" expires_after="2021-02-01">
+  <obsolete>
+    Removed in 10-2021, since it expired long ago.
+  </obsolete>
   <owner>vakh@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
