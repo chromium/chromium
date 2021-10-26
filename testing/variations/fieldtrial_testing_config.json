@@ -3435,6 +3435,24 @@
             ]
         }
     ],
+    "EnableDangerousDownloadDialog": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledFilledNegativeButton",
+                    "params": {
+                        "filled_negative_button": "true"
+                    },
+                    "enable_features": [
+                        "EnableDangerousDownloadDialog"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableDuplicateDownloadDialog": [
         {
             "platforms": [
