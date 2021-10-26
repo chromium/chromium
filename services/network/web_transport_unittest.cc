@@ -364,7 +364,7 @@ struct PrintStringPiece {
 
 INSTANTIATE_TEST_SUITE_P(WebTransportTests,
                          WebTransportTest,
-                         testing::Values("quic-transport", "https"),
+                         testing::Values("https"),
                          PrintStringPiece());
 
 TEST_P(WebTransportTest, ConnectSuccessfully) {
@@ -703,7 +703,7 @@ class WebTransportWithCustomCertificateTest : public WebTransportTest {
 
 INSTANTIATE_TEST_SUITE_P(WebTransportWithCustomCertificateTests,
                          WebTransportWithCustomCertificateTest,
-                         testing::Values("quic-transport", "https"),
+                         testing::Values("https"),
                          PrintStringPiece());
 
 TEST_P(WebTransportWithCustomCertificateTest, WithValidFingerprint) {
