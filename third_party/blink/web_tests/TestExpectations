@@ -6192,7 +6192,6 @@ crbug.com/1208173 [ Mac ] external/wpt/css/filter-effects/backdrop-filter-basic-
 crbug.com/1208173 [ Mac ] external/wpt/css/filter-effects/css-filters-animation-opacity.html [ Failure ]
 crbug.com/1208173 [ Mac ] svg/custom/svg-root-with-opacity.html [ Failure ]
 crbug.com/1208173 [ Mac ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/background-image-alpha.https.html [ Failure ]
-crbug.com/1208173 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-image.html [ Failure ]
 crbug.com/1208173 [ Mac ] virtual/oopr-canvas2d/fast/canvas/color-space/canvas-createImageBitmap-p3.html [ Failure ]
 crbug.com/1208173 [ Mac ] virtual/prefer_compositing_to_lcd_text/compositing/overflow/nested-render-surfaces-with-rotation.html [ Failure ]
 crbug.com/1208173 [ Mac ] virtual/scalefactor200/external/wpt/css/filter-effects/backdrop-filter-basic-opacity-2.html [ Failure ]
@@ -6868,3 +6867,6 @@ crbug.com/1254963 [ Win ] external/wpt/mathml/presentation-markup/mrow/inferred-
 
 # Skip devtools test hitting an unexpected tracing infrastructure exception 2021-10-04
 crbug.com/1255679 http/tests/devtools/service-workers/service-workers-wasm-test.js [ Skip ]
+crbug.com/1208173 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-image.html [ Pass Timeout ]
+crbug.com/1208173 [ Mac ] virtual/gpu/fast/canvas/canvas-blending-color-over-color.html [ Pass Timeout ]
+crbug.com/1208173 [ Mac ] virtual/gpu/fast/canvas/canvas-blending-color-over-gradient.html [ Pass Timeout ]
