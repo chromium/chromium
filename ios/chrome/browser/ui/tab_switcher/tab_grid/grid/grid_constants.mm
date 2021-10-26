@@ -102,5 +102,5 @@ const CGFloat kScrollThresholdForPlusSignButtonHide =
 const CGFloat kPlusSignImageYCenterConstant =
     kGridLayoutLineSpacingCompactCompactLimitedWidth +
     kGridCellSelectionRingGapWidth + kGridCellSelectionRingTintWidth +
-    kGridCellSizeSmall.height / 2 + 2;
+    kGridCellSizeSmall.height / 2 - 1;
 const CGFloat kPlusSignButtonWidth = 156;
