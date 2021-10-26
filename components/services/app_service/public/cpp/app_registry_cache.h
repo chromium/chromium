@@ -194,6 +194,8 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
   bool IsAppTypeInitialized(apps::mojom::AppType app_type) const;
 
  private:
+  friend class AppRegistryCacheTest;
+
   void DoOnApps(std::vector<apps::mojom::AppPtr> deltas);
   void DoOnApps(std::vector<std::unique_ptr<App>> deltas);
 

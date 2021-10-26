@@ -32,7 +32,7 @@ import java.util.List;
 @JNINamespace("autofill_assistant")
 public class AutofillAssistantTestService
         implements AutofillAssistantService,
-                   AutofillAssistantServiceInjector.NativeServiceProvider {
+                   AutofillAssistantDependencyInjector.NativeServiceProvider {
     public enum ScriptsReturnMode {
         ONE_BY_ONE,
         ALL_AT_ONCE,
@@ -83,7 +83,7 @@ public class AutofillAssistantTestService
      * in order to take effect!
      */
     void scheduleForInjection() {
-        AutofillAssistantServiceInjector.setServiceToInject(this);
+        AutofillAssistantDependencyInjector.setServiceToInject(this);
     }
 
     /**

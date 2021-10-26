@@ -43,7 +43,9 @@ class DedicatedWorkerThreadForTest final : public DedicatedWorkerThread {
       : DedicatedWorkerThread(
             parent_execution_context,
             worker_object_proxy,
-            mojo::PendingRemote<mojom::blink::DedicatedWorkerHost>()) {
+            mojo::PendingRemote<mojom::blink::DedicatedWorkerHost>(),
+            mojo::PendingRemote<
+                mojom::blink::BackForwardCacheControllerHost>()) {
     worker_backing_thread_ = std::make_unique<WorkerBackingThread>(
         ThreadCreationParams(ThreadType::kTestThread));
   }
@@ -57,7 +59,8 @@ class DedicatedWorkerThreadForTest final : public DedicatedWorkerThread {
     }
     auto* global_scope = DedicatedWorkerGlobalScope::Create(
         std::move(creation_params), this, time_origin_,
-        mojo::PendingRemote<mojom::blink::DedicatedWorkerHost>());
+        mojo::PendingRemote<mojom::blink::DedicatedWorkerHost>(),
+        mojo::PendingRemote<mojom::blink::BackForwardCacheControllerHost>());
     // Initializing a global scope with a dummy creation params may emit warning
     // messages (e.g., invalid CSP directives). Clear them here for tests that
     // check console messages (i.e., UseCounter tests).

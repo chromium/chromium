@@ -53,6 +53,11 @@ class WorkerDevToolsAgentHost : public DevToolsAgentHostImpl {
       mojo::PendingRemote<blink::mojom::DevToolsAgent> agent_remote,
       mojo::PendingReceiver<blink::mojom::DevToolsAgentHost> host_receiver);
 
+  void ChildWorkerCreated(
+      const GURL& url,
+      const std::string& name,
+      base::OnceCallback<void(DevToolsAgentHostImpl*)> callback);
+
   const base::UnguessableToken& devtools_worker_token() const {
     return devtools_worker_token_;
   }
@@ -68,8 +73,8 @@ class WorkerDevToolsAgentHost : public DevToolsAgentHostImpl {
   protocol::TargetAutoAttacher* auto_attacher() override;
 
   const int process_id_;
-  const GURL url_;
-  const std::string name_;
+  GURL url_;
+  std::string name_;
   const std::string parent_id_;
   std::unique_ptr<protocol::TargetAutoAttacher> auto_attacher_;
   base::OnceCallback<void(DevToolsAgentHostImpl*)> destroyed_callback_;

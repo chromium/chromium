@@ -496,6 +496,21 @@
             ]
         }
     ],
+    "AndroidMessagesAdsBlocked": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_2021-09-24",
+                    "enable_features": [
+                        "MessagesForAndroidAdsBlocked"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidMessagesPopupBlocked": [
         {
             "platforms": [

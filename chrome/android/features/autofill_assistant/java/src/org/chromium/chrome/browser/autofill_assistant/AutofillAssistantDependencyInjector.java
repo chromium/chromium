@@ -8,12 +8,10 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 
 /**
- * Provides access to a service which is to be injected upon client startup.
- *
- * <p> This is intended to allow tests to inject test services to be used by the native side. </p>
+ * Facilitates injection of test dependencies for use in integration tests.
  */
 @JNINamespace("autofill_assistant")
-public class AutofillAssistantServiceInjector {
+public class AutofillAssistantDependencyInjector {
     /**
      * Interface for service providers.
      */
@@ -35,6 +33,16 @@ public class AutofillAssistantServiceInjector {
     }
 
     /**
+     * Interface for TTS controller providers.
+     */
+    public interface NativeTtsControllerProvider {
+        /**
+         * Returns a pointer to a native TTS controller, or 0 on failure.
+         */
+        long createNativeTtsController();
+    }
+
+    /**
      * Provider to create the native service to inject. Will be automatically called upon client
      * startup.
      */
@@ -45,6 +53,12 @@ public class AutofillAssistantServiceInjector {
      * upon trigger script startup.
      */
     private static NativeServiceRequestSenderProvider sNativeServiceRequestSenderProvider;
+
+    /**
+     * Provider to create the native TTS controller to inject. Will be automatically called upon
+     * startup.
+     */
+    private static NativeTtsControllerProvider sNativeTtsControllerProvider;
 
     /**
      * Sets a service provider to create a native service to inject upon client startup.
@@ -60,6 +74,15 @@ public class AutofillAssistantServiceInjector {
     public static void setServiceRequestSenderToInject(
             NativeServiceRequestSenderProvider nativeServiceRequestSenderProvider) {
         sNativeServiceRequestSenderProvider = nativeServiceRequestSenderProvider;
+    }
+
+    /**
+     * Sets a TTS controller provider to create a native TTS controller to inject upon startup.
+     * @param nativeTtsControllerProvider
+     */
+    public static void setTtsControllerToInject(
+            NativeTtsControllerProvider nativeTtsControllerProvider) {
+        sNativeTtsControllerProvider = nativeTtsControllerProvider;
     }
 
     /**
@@ -95,10 +118,33 @@ public class AutofillAssistantServiceInjector {
     }
 
     /**
+     * Returns the native pointer to the TTS controller to inject, or 0 if no TTS controller has
+     * been set (and the default should be used).
+     *
+     * <p>Please note: the caller must ensure to take ownership of the returned native pointer,
+     * else it will leak!</p>
+     */
+    @CalledByNative
+    public static long getTtsControllerToInject() {
+        if (sNativeTtsControllerProvider == null) {
+            return 0;
+        }
+
+        return sNativeTtsControllerProvider.createNativeTtsController();
+    }
+
+    /**
      * Returns whether a provider for a service request sender to inject has been provided.
      * Generally, this means that we are in a test environment.
      */
     public static boolean hasServiceRequestSenderToInject() {
         return sNativeServiceRequestSenderProvider != null;
+    }
+
+    /**
+     * Returns whether a provider for a TTS controller to inject has been provided.
+     */
+    public static boolean hasTtsControllerToInject() {
+        return sNativeTtsControllerProvider != null;
     }
 }

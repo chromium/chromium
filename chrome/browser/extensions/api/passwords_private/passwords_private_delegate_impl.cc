@@ -221,6 +221,23 @@ PasswordsPrivateDelegateImpl::GetUrlCollection(const std::string& url) {
           password_manager_util::StripAuthAndParams(url_with_scheme)));
 }
 
+bool PasswordsPrivateDelegateImpl::AddPassword(const std::string& url,
+                                               const std::u16string& username,
+                                               const std::u16string& password,
+                                               bool use_account_store) {
+  password_manager::PasswordForm form;
+  form.url = password_manager_util::StripAuthAndParams(
+      password_manager_util::ConstructGURLWithScheme(url));
+  form.signon_realm = password_manager::GetSignonRealm(form.url);
+  form.username_value = username;
+  form.password_value = password;
+  form.in_store = use_account_store
+                      ? password_manager::PasswordForm::Store::kAccountStore
+                      : password_manager::PasswordForm::Store::kProfileStore;
+  form.type = password_manager::PasswordForm::Type::kManuallyAdded;
+  return saved_passwords_presenter_.AddPassword(form);
+}
+
 bool PasswordsPrivateDelegateImpl::ChangeSavedPassword(
     const std::vector<int>& ids,
     const std::u16string& new_username,

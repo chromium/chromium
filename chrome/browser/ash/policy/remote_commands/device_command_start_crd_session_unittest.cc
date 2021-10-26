@@ -55,7 +55,6 @@ constexpr char kTestNoOAuthTokenReason[] = "Not authorized.";
 constexpr char kTestAccountEmail[] = "test.account.email@example.com";
 
 constexpr char kIdlenessCutoffFieldName[] = "idlenessCutoffSec";
-constexpr char kTerminateUponInputFieldName[] = "terminateUponInput";
 constexpr char kAckedUserPresenceFieldName[] = "ackedUserPresence";
 
 // Macro expecting success. We are using a macro because a function would
@@ -76,12 +75,10 @@ constexpr char kAckedUserPresenceFieldName[] = "ackedUserPresence";
     EXPECT_EQ(result.payload, CreateErrorPayload(error_code, ##__VA_ARGS__)); \
   })
 
-em::RemoteCommand GenerateCommandProto(
-    RemoteCommandJob::UniqueIDType unique_id,
-    base::TimeDelta age_of_command,
-    base::TimeDelta idleness_cutoff,
-    bool terminate_upon_input,
-    absl::optional<bool> acked_user_presence) {
+em::RemoteCommand GenerateCommandProto(RemoteCommandJob::UniqueIDType unique_id,
+                                       base::TimeDelta age_of_command,
+                                       base::TimeDelta idleness_cutoff,
+                                       bool acked_user_presence) {
   em::RemoteCommand command_proto;
   command_proto.set_type(
       enterprise_management::RemoteCommand_Type_DEVICE_START_CRD_SESSION);
@@ -92,12 +89,8 @@ em::RemoteCommand GenerateCommandProto(
   base::Value root_dict(base::Value::Type::DICTIONARY);
   root_dict.SetKey(kIdlenessCutoffFieldName,
                    base::Value((int)idleness_cutoff.InSeconds()));
-  root_dict.SetKey(kTerminateUponInputFieldName,
-                   base::Value(terminate_upon_input));
-  if (acked_user_presence.has_value()) {
-    root_dict.SetKey(kAckedUserPresenceFieldName,
-                     base::Value(acked_user_presence.value()));
-  }
+  root_dict.SetKey(kAckedUserPresenceFieldName,
+                   base::Value(acked_user_presence));
   base::JSONWriter::Write(root_dict, &payload);
   command_proto.set_payload(payload);
   return command_proto;
@@ -274,8 +267,6 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
 
   void SetOAuthToken(std::string value) { oauth_token_ = value; }
 
-  void SetTerminateUponInput(bool value) { terminate_upon_input_ = value; }
-
   void SetAckedUserPresence(bool value) { acked_user_presence_ = value; }
 
   void SetRobotAccountUserName(const std::string& user_name) {
@@ -296,12 +287,12 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
   ash::FakeChromeUserManager& user_manager() { return *user_manager_; }
 
   void InitializeJob() {
-    bool success = job().Init(
-        base::TimeTicks::Now(),
-        GenerateCommandProto(
-            kUniqueID, base::TimeTicks::Now() - test_start_time_,
-            idleness_cutoff_, terminate_upon_input_, acked_user_presence_),
-        nullptr);
+    bool success =
+        job().Init(base::TimeTicks::Now(),
+                   GenerateCommandProto(
+                       kUniqueID, base::TimeTicks::Now() - test_start_time_,
+                       idleness_cutoff_, acked_user_presence_),
+                   nullptr);
 
     if (oauth_token_)
       job().SetOAuthTokenForTest(oauth_token_.value());
@@ -335,8 +326,7 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
 
   absl::optional<std::string> oauth_token_;
   base::TimeDelta idleness_cutoff_ = base::Seconds(30);
-  bool terminate_upon_input_ = false;
-  absl::optional<bool> acked_user_presence_;
+  bool acked_user_presence_ = false;
 
   // Automatically installed as a singleton upon creation.
   std::unique_ptr<ui::UserActivityDetector> user_activity_detector_;
@@ -622,34 +612,6 @@ TEST_F(DeviceCommandStartCrdSessionJobTest,
             crd_host_delegate().session_parameters().user_name);
 }
 
-TEST_F(DeviceCommandStartCrdSessionJobTest,
-       ShouldPassTerminateUponInputTrueToDelegateForKioskUser) {
-  LogInAsAutoLaunchedKioskAppUser();
-  SetOAuthToken(kTestOAuthToken);
-
-  SetTerminateUponInput(true);
-
-  Result result = RunJobAndWaitForResult();
-  EXPECT_SUCCESS(result);
-
-  EXPECT_EQ(true,
-            crd_host_delegate().session_parameters().terminate_upon_input);
-}
-
-TEST_F(DeviceCommandStartCrdSessionJobTest,
-       ShouldPassTerminateUponInputFalseToDelegate) {
-  LogInAsAutoLaunchedKioskAppUser();
-  SetOAuthToken(kTestOAuthToken);
-
-  SetTerminateUponInput(false);
-
-  Result result = RunJobAndWaitForResult();
-  EXPECT_SUCCESS(result);
-
-  EXPECT_EQ(false,
-            crd_host_delegate().session_parameters().terminate_upon_input);
-}
-
 TEST_F(
     DeviceCommandStartCrdSessionJobTest,
     ShouldPassTerminateUponInputTrueToDelegateForKioskUserIfAckedUserPresenceSetFalse) {
@@ -671,38 +633,6 @@ TEST_F(
   LogInAsAutoLaunchedKioskAppUser();
   SetOAuthToken(kTestOAuthToken);
 
-  SetAckedUserPresence(true);
-
-  Result result = RunJobAndWaitForResult();
-  EXPECT_SUCCESS(result);
-
-  EXPECT_EQ(false,
-            crd_host_delegate().session_parameters().terminate_upon_input);
-}
-
-TEST_F(
-    DeviceCommandStartCrdSessionJobTest,
-    TerminateUponInputFieldShouldBeIgnoredIfAckedUserPresenseFieldIsSetFalse) {
-  LogInAsAutoLaunchedKioskAppUser();
-  SetOAuthToken(kTestOAuthToken);
-
-  SetTerminateUponInput(false);
-  SetAckedUserPresence(false);
-
-  Result result = RunJobAndWaitForResult();
-  EXPECT_SUCCESS(result);
-
-  EXPECT_EQ(true,
-            crd_host_delegate().session_parameters().terminate_upon_input);
-}
-
-TEST_F(
-    DeviceCommandStartCrdSessionJobTest,
-    TerminateUponInputFieldShouldBeIgnoredIfAckedUserPresenseFieldIsSetTrue) {
-  LogInAsAutoLaunchedKioskAppUser();
-  SetOAuthToken(kTestOAuthToken);
-
-  SetTerminateUponInput(true);
   SetAckedUserPresence(true);
 
   Result result = RunJobAndWaitForResult();
@@ -771,34 +701,6 @@ TEST_F(DeviceCommandStartCrdSessionJobTest,
 
   EXPECT_EQ(true,
             crd_host_delegate().session_parameters().show_confirmation_dialog);
-}
-
-TEST_F(DeviceCommandStartCrdSessionJobTest,
-       ShouldPassTerminateUponInputFalseToDelegateForAffiliatedUser) {
-  LogInAsAffiliatedUser();
-  SetOAuthToken(kTestOAuthToken);
-
-  SetTerminateUponInput(true);
-
-  Result result = RunJobAndWaitForResult();
-  EXPECT_SUCCESS(result);
-
-  EXPECT_EQ(false,
-            crd_host_delegate().session_parameters().terminate_upon_input);
-}
-
-TEST_F(DeviceCommandStartCrdSessionJobTest,
-       ShouldPassTerminateUponInputFalseToDelegateForManagedGuestUser) {
-  LogInAsManagedGuestSessionUser();
-  SetOAuthToken(kTestOAuthToken);
-
-  SetTerminateUponInput(true);
-
-  Result result = RunJobAndWaitForResult();
-  EXPECT_SUCCESS(result);
-
-  EXPECT_EQ(false,
-            crd_host_delegate().session_parameters().terminate_upon_input);
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobTest,

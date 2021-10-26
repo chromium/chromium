@@ -45,11 +45,6 @@ constexpr char kTachyonOAuth2Scope[] =
 // activity.
 const char kIdlenessCutoffFieldName[] = "idlenessCutoffSec";
 
-// Regulates if remote session should be terminated upon any local input event.
-// TODO(b/199824492): Remove the flag.
-[[deprecated("Please, use ackedUserPresence flag")]] const char
-    kTerminateUponInputFieldName[] = "terminateUponInput";
-
 // True if the admin has confirmed that they want to start the CRD session
 // while a user is currently using the device.
 const char kAckedUserPresenceFieldName[] = "ackedUserPresence";
@@ -248,13 +243,8 @@ bool DeviceCommandStartCrdSessionJob::ParseCommandPayload(
   idleness_cutoff_ =
       base::Seconds(root->FindIntKey(kIdlenessCutoffFieldName).value_or(0));
 
-  if (root->FindBoolKey(kAckedUserPresenceFieldName).has_value()) {
-    acked_user_presence_ =
-        root->FindBoolKey(kAckedUserPresenceFieldName).value();
-  } else if (root->FindBoolKey(kTerminateUponInputFieldName).has_value()) {
-    acked_user_presence_ =
-        !root->FindBoolKey(kTerminateUponInputFieldName).value();
-  }
+  acked_user_presence_ =
+      root->FindBoolKey(kAckedUserPresenceFieldName).value_or(false);
 
   return true;
 }

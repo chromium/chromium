@@ -37,7 +37,6 @@ class UserAction {
   // Initializes user action from proto.
   UserAction(const UserActionProto& action);
   UserAction(const ChipProto& chip,
-             const DirectActionProto& direct_action,
              bool enabled,
              const std::string& identifier);
 
@@ -72,11 +71,6 @@ class UserAction {
     callback_ = std::move(callback);
   }
 
-  // Intercept calls to this action.
-  void AddInterceptor(
-      base::OnceCallback<void(UserAction::Callback,
-                              std::unique_ptr<TriggerContext>)> interceptor);
-
   // Call this action within the specific context, if a callback is set.
   void Call(std::unique_ptr<TriggerContext> context) {
     if (!callback_)
@@ -92,6 +86,7 @@ class UserAction {
 
   // Specifies how the user can perform the action as a direct action. Might be
   // empty.
+  // TODO(b/204057224): Extract script execution logic from this class.
   DirectAction direct_action_;
 
   // Whether the action is enabled. The chip for a disabled action might still

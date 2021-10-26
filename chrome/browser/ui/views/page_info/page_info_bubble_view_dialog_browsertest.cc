@@ -5,6 +5,9 @@
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 
 #include "build/build_config.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/page_info/about_this_site_service_factory.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -16,12 +19,15 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
+#include "components/page_info/about_this_site_service.h"
 #include "components/page_info/features.h"
 #include "components/page_info/page_info.h"
+#include "components/page_info/proto/about_this_site_metadata.pb.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_test_util.h"
 #include "components/safe_browsing/core/browser/password_protection/metrics_util.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/test/browser_test.h"
+#include "net/dns/mock_host_resolver.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_certificate_data.h"
 #include "net/test/test_data_directory.h"
@@ -29,6 +35,7 @@
 namespace {
 
 constexpr char kExpiredCertificateFile[] = "expired_cert.pem";
+constexpr char kAboutThisSiteUrl[] = "a.test";
 
 class ClickEvent : public ui::Event {
  public:
@@ -458,3 +465,82 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewDialogBrowserTest,
 INSTANTIATE_TEST_SUITE_P(All,
                          PageInfoBubbleViewDialogBrowserTest,
                          ::testing::Values(false, true));
+
+class PageInfoBubbleViewAboutThisSiteDialogBrowserTest
+    : public DialogBrowserTest {
+ public:
+  PageInfoBubbleViewAboutThisSiteDialogBrowserTest() {
+    feature_list_.InitWithFeatures({page_info::kPageInfoAboutThisSite}, {});
+  }
+
+  void SetUpOnMainThread() override {
+    https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    https_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+    ASSERT_TRUE(https_server_.Start(8080));
+
+    host_resolver()->AddRule("*", "127.0.0.1");
+
+    optimization_guide::OptimizationMetadata optimization_metadata;
+    page_info::proto::AboutThisSiteMetadata metadata;
+    auto* site_info = metadata.mutable_site_info();
+
+    auto* description = site_info->mutable_description();
+    description->set_description(
+        "A domain used in illustrative examples in documents");
+    description->set_lang("en_US");
+    description->set_name("Example");
+    description->mutable_source()->set_url("https://example.com");
+    description->mutable_source()->set_label("Example source");
+
+    optimization_metadata.SetAnyMetadataForTesting(metadata);
+
+    auto* optimization_guide_decider =
+        OptimizationGuideKeyedServiceFactory::GetForProfile(
+            browser()->profile());
+    optimization_guide_decider->AddHintForTesting(
+        GetUrl(kAboutThisSiteUrl), optimization_guide::proto::ABOUT_THIS_SITE,
+        optimization_metadata);
+  }
+
+  // DialogBrowserTest:
+  void ShowUi(const std::string& name) override {
+    // Bubble dialogs' bounds may exceed the display's work area.
+    // https://crbug.com/893292.
+    set_should_verify_dialog_bounds(false);
+
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GetUrl(kAboutThisSiteUrl)));
+    OpenPageInfoBubble(browser());
+
+    if (name == "AboutThisSite") {
+      // No further action needed, default case.
+    }
+
+    if (name == "AboutThisSiteSubpage") {
+      PageInfoNewBubbleView* bubble_view = static_cast<PageInfoNewBubbleView*>(
+          PageInfoBubbleView::GetPageInfoBubbleForTesting());
+      auto* service =
+          AboutThisSiteServiceFactory::GetForProfile(browser()->profile());
+      bubble_view->OpenAboutThisSitePage(
+          service->GetAboutThisSiteInfo(GetUrl(kAboutThisSiteUrl)).value());
+    }
+  }
+
+  GURL GetUrl(const std::string& host) {
+    return https_server_.GetURL(host, "/title1.html");
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
+};
+
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewAboutThisSiteDialogBrowserTest,
+                       InvokeUi_AboutThisSite) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewAboutThisSiteDialogBrowserTest,
+                       InvokeUi_AboutThisSiteSubpage) {
+  ShowAndVerifyUi();
+}

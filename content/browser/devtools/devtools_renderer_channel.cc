@@ -175,6 +175,10 @@ void DevToolsRendererChannel::ChildWorkerCreated(
     scoped_refptr<WorkerDevToolsAgentHost> agent_host =
         WorkerDevToolsManager::GetInstance().GetDevToolsHostFromToken(
             devtools_worker_token);
+    agent_host->ChildWorkerCreated(
+        url, name,
+        base::BindOnce(&DevToolsRendererChannel::ChildWorkerDestroyed,
+                       weak_factory_.GetWeakPtr()));
     agent_host->SetRenderer(process_id_, std::move(worker_devtools_agent),
                             std::move(host_receiver));
 

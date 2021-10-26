@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../mojo_webui_test_support.js';
+import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {BrowserProxy, DangerType, States} from 'chrome://downloads/downloads.js';
 import {isMac} from 'chrome://resources/js/cr.m.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {createDownload, TestDownloadsProxy} from 'chrome://test/downloads/test_support.js';
+import {createDownload, TestDownloadsProxy} from './test_support.js';
 
 suite('manager tests', function() {
   /** @type {!downloads.Manager} */

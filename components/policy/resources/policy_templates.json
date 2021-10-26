@@ -8628,7 +8628,8 @@
       'features': {
         # The case where a user is already signed into an unmanaged account cannot be handled right now and hence this is not dynamic.
         'dynamic_refresh': False,
-        'per_profile': True,
+        # This policy applies at the OS level and affects all browser Profiles.
+        'per_profile': False,
       },
       'items': [
         {

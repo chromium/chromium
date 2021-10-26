@@ -43,36 +43,6 @@ bool IsFullScreenMode(content::WebContents* web_contents, Browser* browser) {
   return !location_bar || !location_bar->IsDrawn();
 }
 
-bool ShouldBubbleStartOpen(permissions::PermissionPrompt::Delegate* delegate) {
-  if (base::FeatureList::IsEnabled(
-          permissions::features::kPermissionChipGestureSensitive)) {
-    auto requests = delegate->Requests();
-    const bool has_gesture =
-        std::any_of(requests.begin(), requests.end(), [](auto* request) {
-          return request->GetGestureType() ==
-                 permissions::PermissionRequestGestureType::GESTURE;
-        });
-    if (has_gesture)
-      return true;
-  }
-  if (base::FeatureList::IsEnabled(
-          permissions::features::kPermissionChipRequestTypeSensitive)) {
-    // Notifications and geolocation are targeted here because they are usually
-    // not necessary for the website to function correctly, so they can safely
-    // be given less prominence.
-    auto requests = delegate->Requests();
-    const bool is_geolocation_or_notifications =
-        std::any_of(requests.begin(), requests.end(), [](auto* request) {
-          auto request_type = request->request_type();
-          return request_type == permissions::RequestType::kNotifications ||
-                 request_type == permissions::RequestType::kGeolocation;
-        });
-    if (!is_geolocation_or_notifications)
-      return true;
-  }
-  return false;
-}
-
 }  // namespace
 
 std::unique_ptr<permissions::PermissionPrompt> CreatePermissionPrompt(
@@ -182,7 +152,7 @@ void PermissionPromptImpl::UpdateAnchor() {
       DCHECK(!prompt_bubble_);
 
       if (!lbv->chip()) {
-        chip_ = lbv->DisplayChip(delegate_, ShouldBubbleStartOpen(delegate_));
+        chip_ = lbv->DisplayChip(delegate_);
       }
       // If there is fresh pending request shown as chip UI and location bar
       // isn't visible anymore, show bubble UI instead.
@@ -224,18 +194,10 @@ PermissionPromptImpl::GetPromptDisposition() const {
     case PermissionPromptStyle::kBubbleOnly:
       return permissions::PermissionPromptDisposition::ANCHORED_BUBBLE;
     case PermissionPromptStyle::kChip:
-      return ShouldBubbleStartOpen(delegate_)
-                 ? permissions::PermissionPromptDisposition::
-                       LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE
-                 : permissions::PermissionPromptDisposition::
-                       LOCATION_BAR_LEFT_CHIP;
+      return permissions::PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP;
     case PermissionPromptStyle::kQuietChip:
-      return permissions::PermissionUiSelector::ShouldSuppressAnimation(
-                 delegate_->ReasonForUsingQuietUi())
-                 ? permissions::PermissionPromptDisposition::
-                       LOCATION_BAR_LEFT_QUIET_ABUSIVE_CHIP
-                 : permissions::PermissionPromptDisposition::
-                       LOCATION_BAR_LEFT_QUIET_CHIP;
+      return permissions::PermissionPromptDisposition::
+          LOCATION_BAR_LEFT_QUIET_CHIP;
     case PermissionPromptStyle::kLocationBarRightIcon: {
       return permissions::PermissionUiSelector::ShouldSuppressAnimation(
                  delegate_->ReasonForUsingQuietUi())
@@ -327,7 +289,7 @@ void PermissionPromptImpl::ShowChip() {
                        delegate_->ReasonForUsingQuietUi()));
     prompt_style_ = PermissionPromptStyle::kQuietChip;
   } else {
-    chip_ = lbv->DisplayChip(delegate_, ShouldBubbleStartOpen(delegate_));
+    chip_ = lbv->DisplayChip(delegate_);
     prompt_style_ = PermissionPromptStyle::kChip;
   }
 }

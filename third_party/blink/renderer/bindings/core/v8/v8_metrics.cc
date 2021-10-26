@@ -97,7 +97,35 @@ constexpr int32_t CappedEfficacyInKBPerMs(double efficacy_in_bytes_per_us) {
   return base::saturated_cast<int32_t>(efficacy_in_bytes_per_us * 1000 / 1024);
 }
 
-void CheckCppEvents(const v8::metrics::GarbageCollectionFullCycle& event) {
+// Returns true if |event| contains valid cpp histogram values.
+bool CheckCppEvents(const v8::metrics::GarbageCollectionFullCycle& event) {
+  if (event.total_cpp.mark_wall_clock_duration_in_us == -1) {
+    // If a cpp field in |event| is uninitialized, all cpp fields should be
+    // uninitialized.
+    DCHECK_EQ(-1, event.total_cpp.mark_wall_clock_duration_in_us);
+    DCHECK_EQ(-1, event.total_cpp.weak_wall_clock_duration_in_us);
+    DCHECK_EQ(-1, event.total_cpp.compact_wall_clock_duration_in_us);
+    DCHECK_EQ(-1, event.total_cpp.sweep_wall_clock_duration_in_us);
+    DCHECK_EQ(-1, event.main_thread_cpp.mark_wall_clock_duration_in_us);
+    DCHECK_EQ(-1, event.main_thread_cpp.weak_wall_clock_duration_in_us);
+    DCHECK_EQ(-1, event.main_thread_cpp.compact_wall_clock_duration_in_us);
+    DCHECK_EQ(-1, event.main_thread_cpp.sweep_wall_clock_duration_in_us);
+    DCHECK_EQ(-1, event.main_thread_atomic_cpp.mark_wall_clock_duration_in_us);
+    DCHECK_EQ(-1, event.main_thread_atomic_cpp.weak_wall_clock_duration_in_us);
+    DCHECK_EQ(-1,
+              event.main_thread_atomic_cpp.compact_wall_clock_duration_in_us);
+    DCHECK_EQ(-1, event.main_thread_atomic_cpp.sweep_wall_clock_duration_in_us);
+    DCHECK_EQ(-1, event.objects_cpp.bytes_before);
+    DCHECK_EQ(-1, event.objects_cpp.bytes_after);
+    DCHECK_EQ(-1, event.objects_cpp.bytes_freed);
+    DCHECK_EQ(-1, event.memory_cpp.bytes_freed);
+    // TODO(chromium:1056170): Enable the following checks after adding default
+    // values to the below fields.
+    // DCHECK_EQ(-1.0, event.efficiency_cpp_in_bytes_per_us);
+    // DCHECK_EQ(-1.0, event.main_thread_efficiency_cpp_in_bytes_per_us);
+    // DCHECK_EQ(-1.0, event.collection_rate_cpp_in_percent);
+    return false;
+  }
   // Check that all used values have been initialized.
   DCHECK_LE(0, event.total_cpp.mark_wall_clock_duration_in_us);
   DCHECK_LE(0, event.total_cpp.weak_wall_clock_duration_in_us);
@@ -118,6 +146,7 @@ void CheckCppEvents(const v8::metrics::GarbageCollectionFullCycle& event) {
   DCHECK_LE(0, event.efficiency_cpp_in_bytes_per_us);
   DCHECK_LE(0, event.main_thread_efficiency_cpp_in_bytes_per_us);
   DCHECK_LE(0, event.collection_rate_cpp_in_percent);
+  return true;
 }
 
 }  // namespace
@@ -125,9 +154,8 @@ void CheckCppEvents(const v8::metrics::GarbageCollectionFullCycle& event) {
 void V8MetricsRecorder::AddMainThreadEvent(
     const v8::metrics::GarbageCollectionFullCycle& event,
     ContextId context_id) {
-  if (!IsMainThread())
+  if (!CheckCppEvents(event))
     return;
-  CheckCppEvents(event);
   // Report throughput metrics:
   UMA_HISTOGRAM_TIMES(
       "V8.GC.Cycle.Full.Cpp",
@@ -200,45 +228,47 @@ void V8MetricsRecorder::AddMainThreadEvent(
   static constexpr size_t kMaxSize = 4 * 1024 * 1024;
   static constexpr size_t kNumBuckets = 50;
 
-  DEFINE_STATIC_LOCAL(
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(
       CustomCountHistogram, object_size_before_histogram,
       ("V8.GC.Cycle.Objects.Before.Full.Cpp", kMinSize, kMaxSize, kNumBuckets));
   object_size_before_histogram.Count(
       CappedSizeInKB(event.objects_cpp.bytes_before));
 
-  DEFINE_STATIC_LOCAL(
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(
       CustomCountHistogram, object_size_after_histogram,
       ("V8.GC.Cycle.Objects.After.Full.Cpp", kMinSize, kMaxSize, kNumBuckets));
   object_size_after_histogram.Count(
       CappedSizeInKB(event.objects_cpp.bytes_after));
 
-  DEFINE_STATIC_LOCAL(
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(
       CustomCountHistogram, object_size_freed_histogram,
       ("V8.GC.Cycle.Objects.Freed.Full.Cpp", kMinSize, kMaxSize, kNumBuckets));
   object_size_freed_histogram.Count(
       CappedSizeInKB(event.objects_cpp.bytes_freed));
 
-  DEFINE_STATIC_LOCAL(
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(
       CustomCountHistogram, memory_size_freed_histogram,
       ("V8.GC.Cycle.Memory.Freed.Full.Cpp", kMinSize, kMaxSize, kNumBuckets));
   memory_size_freed_histogram.Count(
       CappedSizeInKB(event.memory_cpp.bytes_freed));
 
   // Report efficacy metrics:
-  DEFINE_STATIC_LOCAL(
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(
       CustomCountHistogram, efficacy_histogram,
       ("V8.GC.Cycle.Efficiency.Full.Cpp", kMinSize, kMaxSize, kNumBuckets));
   efficacy_histogram.Count(
       CappedEfficacyInKBPerMs(event.efficiency_cpp_in_bytes_per_us));
 
-  DEFINE_STATIC_LOCAL(CustomCountHistogram, efficacy_main_thread_cpp_histogram,
-                      ("V8.GC.Cycle.Efficiency.MainThread.Full.Cpp", kMinSize,
-                       kMaxSize, kNumBuckets));
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(CustomCountHistogram,
+                                  efficacy_main_thread_cpp_histogram,
+                                  ("V8.GC.Cycle.Efficiency.MainThread.Full.Cpp",
+                                   kMinSize, kMaxSize, kNumBuckets));
   efficacy_main_thread_cpp_histogram.Count(CappedEfficacyInKBPerMs(
       event.main_thread_efficiency_cpp_in_bytes_per_us));
 
-  DEFINE_STATIC_LOCAL(CustomCountHistogram, collection_rate_histogram,
-                      ("V8.GC.Cycle.CollectionRate.Full.Cpp", 0, 100, 20));
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(
+      CustomCountHistogram, collection_rate_histogram,
+      ("V8.GC.Cycle.CollectionRate.Full.Cpp", 0, 100, 20));
   collection_rate_histogram.Count(base::saturated_cast<base::Histogram::Sample>(
       100 * event.collection_rate_cpp_in_percent));
 }
@@ -255,8 +285,6 @@ void ReportCppIncrementalLatencyEvent(int64_t duration_us) {
 void V8MetricsRecorder::AddMainThreadEvent(
     const v8::metrics::GarbageCollectionFullMainThreadIncrementalMark& event,
     ContextId context_id) {
-  if (!IsMainThread())
-    return;
   if (event.cpp_wall_clock_duration_in_us != -1) {
     // This is only a latency event.
     UMA_HISTOGRAM_TIMES(
@@ -278,8 +306,6 @@ void V8MetricsRecorder::AddMainThreadEvent(
 void V8MetricsRecorder::AddMainThreadEvent(
     const v8::metrics::GarbageCollectionFullMainThreadIncrementalSweep& event,
     ContextId context_id) {
-  if (!IsMainThread())
-    return;
   if (event.cpp_wall_clock_duration_in_us != -1) {
     // This is only a latency event.
     UMA_HISTOGRAM_TIMES(

@@ -49,8 +49,8 @@ void ShowFormAction::OnFormValuesChanged(const FormProto::Result* form_result) {
 
   // Show "Continue" chip.
   UserAction user_action =
-      UserAction(proto_.show_form().chip(), proto_.show_form().direct_action(),
-                 /* enabled = */ true, /* identifier = */ std::string());
+      UserAction(proto_.show_form().chip(), /* enabled = */ true,
+                 /* identifier = */ std::string());
   if (user_action.chip().empty()) {
     user_action.chip().text = GetDisplayStringUTF8(
         ClientSettingsProto::PAYMENT_INFO_CONFIRM, delegate_->GetSettings());

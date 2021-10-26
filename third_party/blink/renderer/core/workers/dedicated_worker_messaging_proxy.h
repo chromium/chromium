@@ -9,6 +9,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink-forward.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/messaging/transferable_message.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/worker/dedicated_worker_host.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -51,7 +52,9 @@ class CORE_EXPORT DedicatedWorkerMessagingProxy
       RejectCoepUnsafeNone reject_coep_unsafe_none,
       const blink::DedicatedWorkerToken& token,
       mojo::PendingRemote<mojom::blink::DedicatedWorkerHost>
-          dedicated_worker_host);
+          dedicated_worker_host,
+      mojo::PendingRemote<mojom::blink::BackForwardCacheControllerHost>
+          back_forward_cache_controller_host);
   void PostMessageToWorkerGlobalScope(BlinkTransferableMessage);
 
   bool HasPendingActivity() const;
@@ -107,6 +110,8 @@ class CORE_EXPORT DedicatedWorkerMessagingProxy
   // Passed to DedicatedWorkerThread on worker thread creation.
   mojo::PendingRemote<mojom::blink::DedicatedWorkerHost>
       pending_dedicated_worker_host_;
+  mojo::PendingRemote<mojom::blink::BackForwardCacheControllerHost>
+      pending_back_forward_cache_controller_host_;
 };
 
 }  // namespace blink

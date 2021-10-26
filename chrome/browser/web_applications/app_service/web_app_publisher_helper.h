@@ -182,6 +182,8 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
 
   void OpenNativeSettings(const std::string& app_id);
 
+  apps::mojom::WindowMode GetWindowMode(const std::string& app_id);
+
   void SetWindowMode(const std::string& app_id,
                      apps::mojom::WindowMode window_mode);
 

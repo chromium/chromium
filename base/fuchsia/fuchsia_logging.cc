@@ -8,6 +8,10 @@
 
 #include <iomanip>
 
+#include "base/location.h"
+#include "base/process/process.h"
+#include "base/strings/string_piece.h"
+
 namespace logging {
 
 ZxLogMessage::ZxLogMessage(const char* file_path,
@@ -24,3 +28,21 @@ ZxLogMessage::~ZxLogMessage() {
 }
 
 }  // namespace logging
+
+namespace base {
+
+fit::function<void(zx_status_t)> LogFidlErrorAndExitProcess(
+    const Location& from_here,
+    StringPiece protocol_name) {
+  return [from_here, protocol_name](zx_status_t status) {
+    {
+      logging::ZxLogMessage(from_here.file_name(), from_here.line_number(),
+                            logging::LOGGING_ERROR, status)
+              .stream()
+          << protocol_name << " disconnected unexpectedly.";
+    }
+    base::Process::TerminateCurrentProcessImmediately(1);
+  };
+}
+
+}  // namespace base

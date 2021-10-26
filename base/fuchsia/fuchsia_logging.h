@@ -5,11 +5,13 @@
 #ifndef BASE_FUCHSIA_FUCHSIA_LOGGING_H_
 #define BASE_FUCHSIA_FUCHSIA_LOGGING_H_
 
+#include <lib/fit/function.h>
 #include <zircon/types.h>
 
 #include "base/base_export.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/strings/string_piece_forward.h"
 #include "build/build_config.h"
 
 // Use the ZX_LOG family of macros along with a zx_status_t containing a Zircon
@@ -63,5 +65,21 @@ class BASE_EXPORT ZxLogMessage : public logging::LogMessage {
 #define ZX_DCHECK(condition, zx_err)                                         \
   LAZY_STREAM(ZX_LOG_STREAM(DCHECK, zx_err), DCHECK_IS_ON() && !(condition)) \
       << "Check failed: " #condition << ". "
+
+namespace base {
+
+class Location;
+
+// Returns a function suitable for use as error-handler for a FIDL binding or
+// helper (e.g. ScenicSession) required by the process to function. Typically
+// it is unhelpful to simply crash on such failures, so the returned handler
+// will instead log an ERROR and exit the process.
+// The Location and protocol name string must be kept valid by the caller, for
+// as long as the returned fit::function<> remains live.
+BASE_EXPORT fit::function<void(zx_status_t)> LogFidlErrorAndExitProcess(
+    const Location& from_here,
+    StringPiece protocol_name);
+
+}  // namespace base
 
 #endif  // BASE_FUCHSIA_FUCHSIA_LOGGING_H_

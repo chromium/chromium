@@ -30,7 +30,11 @@ if (is_android) {
       "//chrome/browser/tabmodel:java",
       "//chrome/browser/ui/messages/android:java",
       "//chrome/test/android:chrome_java_test_support",
+      "//components/browser_ui/modaldialog/android:java",
       "//components/infobars/android:java",
+      "//components/messages/android:java",
+      "//components/messages/android/internal:java",
+      "//components/messages/android/test:test_support_java",
       "//components/safe_browsing/android:safe_browsing_java",
       "//components/subresource_filter/android:java",
       "//content/public/test/android:content_java_test_support",
@@ -39,6 +43,7 @@ if (is_android) {
       "//third_party/android_support_test_runner:runner_java",
       "//third_party/androidx:androidx_test_runner_java",
       "//third_party/junit",
+      "//ui/android:ui_no_recycler_view_java",
       "//url:gurl_java",
     ]
   }

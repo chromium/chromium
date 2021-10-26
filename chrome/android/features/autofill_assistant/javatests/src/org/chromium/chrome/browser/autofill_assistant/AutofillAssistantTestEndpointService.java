@@ -12,7 +12,7 @@ import org.chromium.base.annotations.NativeMethods;
  */
 @JNINamespace("autofill_assistant")
 public class AutofillAssistantTestEndpointService
-        implements AutofillAssistantServiceInjector.NativeServiceProvider {
+        implements AutofillAssistantDependencyInjector.NativeServiceProvider {
     private final String mEndpointUrl;
 
     /**
@@ -31,7 +31,7 @@ public class AutofillAssistantTestEndpointService
      * in order to take effect!
      */
     void scheduleForInjection() {
-        AutofillAssistantServiceInjector.setServiceToInject(this);
+        AutofillAssistantDependencyInjector.setServiceToInject(this);
     }
 
     @Override

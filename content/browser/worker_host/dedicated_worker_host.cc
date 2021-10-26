@@ -382,7 +382,8 @@ void DedicatedWorkerHost::DidStartScriptLoad(
       std::move(main_script_load_params),
       std::move(subresource_loader_factories),
       subresource_loader_updater_.BindNewPipeAndPassReceiver(),
-      std::move(controller));
+      std::move(controller),
+      back_forward_cache_controller_host_receiver_.BindNewPipeAndPassRemote());
 
   // |service_worker_remote_object| is an associated remote, so calls can't be
   // made on it until its receiver is sent. Now that the receiver was sent, it
@@ -796,6 +797,29 @@ DedicatedWorkerHost::GetWorkerCoepReporter() {
   // ancestor render frame has already been closed or navigated and this worker
   // will also be terminated soon.
   return ancestor_coep_reporter_;
+}
+
+void DedicatedWorkerHost::EvictFromBackForwardCache(
+    blink::mojom::RendererEvictionReason reason) {
+  RenderFrameHostImpl* ancestor_render_frame_host =
+      RenderFrameHostImpl::FromID(ancestor_render_frame_host_id_);
+  if (!ancestor_render_frame_host) {
+    // The frame may have already been closed.
+    return;
+  }
+  ancestor_render_frame_host->EvictFromBackForwardCache(reason);
+}
+
+void DedicatedWorkerHost::DidChangeBackForwardCacheDisablingFeatures(
+    uint64_t features_mask) {
+  RenderFrameHostImpl* ancestor_render_frame_host =
+      RenderFrameHostImpl::FromID(ancestor_render_frame_host_id_);
+  if (!ancestor_render_frame_host) {
+    // The frame may have already been closed.
+    return;
+  }
+  ancestor_render_frame_host->DidChangeBackForwardCacheDisablingFeatures(
+      features_mask);
 }
 
 }  // namespace content

@@ -6,65 +6,83 @@
  * @fileoverview Polymer element for Family Link Notice screen.
  */
 
-Polymer({
-  is: 'family-link-notice-element',
+/* #js_imports_placeholder */
 
-  behaviors: [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {LoginScreenBehaviorInterface}
+ * @implements {OobeI18nBehaviorInterface}
+ */
+const FamilyLinkScreenElementBase = Polymer.mixinBehaviors(
+    [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
+    Polymer.Element);
 
-  EXTERNAL_API: [
-    'setDisplayEmail',
-    'setDomain',
-    'setIsNewGaiaAccount',
-  ],
+class FamilyLinkNotice extends FamilyLinkScreenElementBase {
+  static get is() {
+    return 'family-link-notice-element';
+  }
 
-  properties: {
+  /* #html_template_placeholder */
 
-    /**
-     * If the gaia account is newly created
-     */
-    isNewGaiaAccount_: {
-      type: Boolean,
-      value: false,
-    },
+  static get properties() {
+    return {
+      /**
+       * If the gaia account is newly created
+       */
+      isNewGaiaAccount_: {
+        type: Boolean,
+      },
 
-    /**
-     * The email address to be displayed
-     */
-    email_: {
-      type: String,
-      value: '',
-    },
+      /**
+       * The email address to be displayed
+       */
+      email_: {
+        type: String,
+      },
 
-    /**
-     * The enterprise domain to be displayed
-     */
-    domain_: {
-      type: String,
-      value: '',
-    },
+      /**
+       * The enterprise domain to be displayed
+       */
+      domain_: {
+        type: String,
+      },
+    };
+  }
 
-  },
+  constructor() {
+    super();
+    this.isNewGaiaAccount_ = false;
+    this.email_ = '';
+    this.domain_ = '';
+  }
 
+  /** Overridden from LoginScreenBehavior. */
+  // clang-format off
+  get EXTERNAL_API() {
+    return [
+      'setDisplayEmail',
+      'setDomain',
+      'setIsNewGaiaAccount'
+    ];
+  }
+
+  // clang-format on
+
+  /** @override */
   ready() {
-    this.initializeLoginScreen('FamilyLinkNoticeScreen', {
-      resetAllowed: true,
-    });
-  },
+    super.ready();
+    this.initializeLoginScreen('FamilyLinkNoticeScreen', {resetAllowed: true});
+  }
 
   /**
    * Returns default event target element.
    * @type {Object}
+   * @suppress {missingProperties}
    */
   get defaultControl() {
     return this.$.familyLinkDialog;
-  },
-
-  /*
-   * Executed on language change.
-   */
-  updateLocalizedContent() {
-    this.i18nUpdateLocale();
-  },
+  }
 
   /**
    * Sets email address.
@@ -72,7 +90,7 @@ Polymer({
    */
   setDisplayEmail(email) {
     this.email_ = email;
-  },
+  }
 
   /**
    * Sets enterprise domain.
@@ -80,7 +98,7 @@ Polymer({
    */
   setDomain(domain) {
     this.domain_ = domain;
-  },
+  }
 
   /**
    * Sets if the gaia account is newly created.
@@ -88,7 +106,7 @@ Polymer({
    */
   setIsNewGaiaAccount(isNewGaiaAccount) {
     this.isNewGaiaAccount_ = isNewGaiaAccount;
-  },
+  }
 
   /**
    * Returns the title of the dialog based on if account is managed. Account is
@@ -103,7 +121,7 @@ Polymer({
     } else {
       return this.i18n('familyLinkDialogTitle');
     }
-  },
+  }
 
   /**
    * Formats and returns the subtitle of the dialog based on if account is
@@ -122,7 +140,7 @@ Polymer({
         return this.i18n('familyLinkDialogExistingGaiaAccountSubtitle');
       }
     }
-  },
+  }
 
   /**
    * On-tap event handler for Continue button.
@@ -131,6 +149,7 @@ Polymer({
    */
   onContinueButtonPressed_() {
     this.userActed('continue');
-  },
+  }
+}
 
-});
+customElements.define(FamilyLinkNotice.is, FamilyLinkNotice);

@@ -170,6 +170,13 @@ password_manager::PasswordForm CreateSampleForm() {
   return form;
 }
 
+MATCHER_P(PasswordUiEntryDataEquals, expected, "") {
+  return testing::Value(expected.get().urls.link, arg.urls.link) &&
+         testing::Value(expected.get().username, arg.username) &&
+         testing::Value(expected.get().from_account_store,
+                        arg.from_account_store);
+}
+
 }  // namespace
 
 class PasswordsPrivateDelegateImplTest : public testing::Test {
@@ -332,6 +339,43 @@ TEST_F(PasswordsPrivateDelegateImplTest,
   EXPECT_EQ(first_frontend_id, second_frontend_id);
 }
 
+TEST_F(PasswordsPrivateDelegateImplTest, AddPassword) {
+  PasswordsPrivateDelegateImpl delegate(&profile_);
+  // Spin the loop to allow PasswordStore tasks posted on the creation of
+  // |delegate| to be completed.
+  base::RunLoop().RunUntilIdle();
+
+  // Double check that the contents of the passwords list matches our
+  // expectation.
+  base::MockCallback<PasswordsPrivateDelegate::UiEntriesCallback> callback;
+  EXPECT_CALL(callback, Run(SizeIs(0)));
+  delegate.GetSavedPasswordsList(callback.Get());
+
+  EXPECT_TRUE(delegate.AddPassword("example1.com", u"username1", u"password1",
+                                   /*use_account_store=*/true));
+  EXPECT_TRUE(delegate.AddPassword("http://example2.com/login?param=value",
+                                   /*username=*/u"", u"password2",
+                                   /*use_account_store=*/false));
+  // Spin the loop to allow PasswordStore tasks posted when adding the
+  // password to be completed.
+  base::RunLoop().RunUntilIdle();
+
+  // Check that adding passwords got reflected in the passwords list.
+  api::passwords_private::PasswordUiEntry expected_entry1;
+  expected_entry1.urls.link = "https://example1.com/";
+  expected_entry1.username = "username1";
+  expected_entry1.from_account_store = true;
+  api::passwords_private::PasswordUiEntry expected_entry2;
+  expected_entry2.urls.link = "http://example2.com/login";
+  expected_entry2.username = "";
+  expected_entry2.from_account_store = false;
+  EXPECT_CALL(callback,
+              Run(testing::UnorderedElementsAre(
+                  PasswordUiEntryDataEquals(testing::ByRef(expected_entry1)),
+                  PasswordUiEntryDataEquals(testing::ByRef(expected_entry2)))));
+  delegate.GetSavedPasswordsList(callback.Get());
+}
+
 TEST_F(PasswordsPrivateDelegateImplTest, ChangeSavedPassword) {
   password_manager::PasswordForm sample_form = CreateSampleForm();
   SetUpPasswordStore({sample_form});
@@ -343,15 +387,13 @@ TEST_F(PasswordsPrivateDelegateImplTest, ChangeSavedPassword) {
 
   // Double check that the contents of the passwords list matches our
   // expectation.
-  bool got_passwords = false;
-  delegate.GetSavedPasswordsList(base::BindLambdaForTesting(
-      [&](const PasswordsPrivateDelegate::UiEntries& password_list) {
-        got_passwords = true;
-        ASSERT_EQ(1u, password_list.size());
+  base::MockCallback<PasswordsPrivateDelegate::UiEntriesCallback> callback;
+  EXPECT_CALL(callback, Run(SizeIs(1)))
+      .WillOnce([&](const PasswordsPrivateDelegate::UiEntries& passwords) {
         EXPECT_EQ(sample_form.username_value,
-                  base::UTF8ToUTF16(password_list[0].username));
-      }));
-  EXPECT_TRUE(got_passwords);
+                  base::UTF8ToUTF16(passwords[0].username));
+      });
+  delegate.GetSavedPasswordsList(callback.Get());
   int sample_form_id = delegate.GetPasswordIdGeneratorForTesting().GenerateId(
       password_manager::CreateSortKey(sample_form));
 
@@ -363,14 +405,11 @@ TEST_F(PasswordsPrivateDelegateImplTest, ChangeSavedPassword) {
   base::RunLoop().RunUntilIdle();
 
   // Check that the changing the password got reflected in the passwords list.
-  got_passwords = false;
-  delegate.GetSavedPasswordsList(base::BindLambdaForTesting(
-      [&](const PasswordsPrivateDelegate::UiEntries& password_list) {
-        got_passwords = true;
-        ASSERT_EQ(1u, password_list.size());
-        EXPECT_EQ("new_user", password_list[0].username);
-      }));
-  EXPECT_TRUE(got_passwords);
+  EXPECT_CALL(callback, Run(SizeIs(1)))
+      .WillOnce([](const PasswordsPrivateDelegate::UiEntries& passwords) {
+        EXPECT_EQ("new_user", passwords[0].username);
+      });
+  delegate.GetSavedPasswordsList(callback.Get());
 }
 
 // Checking callback result of RequestPlaintextPassword with reason Copy.

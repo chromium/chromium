@@ -463,7 +463,8 @@
               "fast/workers",
               "http/tests/inspector-protocol/fetch",
               "http/tests/origin_trials",
-              "http/tests/workers"],
+              "http/tests/workers",
+              "inspector-protocol/worker"],
     "args": ["--enable-features=PlzDedicatedWorker,SharedArrayBuffer"]
   },
   {

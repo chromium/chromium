@@ -87,7 +87,7 @@ class PermissionRequestManagerTest
   }
 
   void Closing() {
-    manager_->Dismiss();
+    manager_->Closing();
     base::RunLoop().RunUntilIdle();
   }
 

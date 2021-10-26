@@ -456,13 +456,6 @@ void ScriptExecutor::Prompt(
   }
 
   if (user_actions != nullptr) {
-    for (auto& user_action : *user_actions) {
-      if (!user_action.HasCallback())
-        continue;
-
-      user_action.AddInterceptor(base::BindOnce(
-          &ScriptExecutor::OnChosen, weak_ptr_factory_.GetWeakPtr()));
-    }
     delegate_->SetUserActions(std::move(user_actions));
   }
 }
@@ -482,14 +475,6 @@ void ScriptExecutor::CleanUpAfterPrompt() {
 void ScriptExecutor::SetBrowseDomainsAllowlist(
     std::vector<std::string> domains) {
   delegate_->SetBrowseDomainsAllowlist(std::move(domains));
-}
-
-void ScriptExecutor::OnChosen(UserAction::Callback callback,
-                              std::unique_ptr<TriggerContext> context) {
-  if (context->GetDirectAction()) {
-    current_action_data_.direct_action = true;
-  }
-  std::move(callback).Run(std::move(context));
 }
 
 void ScriptExecutor::RetrieveElementFormAndFieldData(
@@ -998,7 +983,6 @@ void ScriptExecutor::OnProcessedAction(
 
   auto& processed_action = processed_actions_.back();
   processed_action.set_run_time_ms(run_time.InMilliseconds());
-  processed_action.set_direct_action(current_action_data_.direct_action);
   *processed_action.mutable_navigation_info() =
       current_action_data_.navigation_info;
 

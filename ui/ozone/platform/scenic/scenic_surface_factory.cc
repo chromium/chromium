@@ -47,9 +47,8 @@ fuchsia::ui::scenic::ScenicPtr ConnectToScenic() {
       base::ComponentContextForProcess()
           ->svc()
           ->Connect<fuchsia::ui::scenic::Scenic>();
-  scenic.set_error_handler([](zx_status_t status) {
-    ZX_LOG(FATAL, status) << "Scenic connection failed";
-  });
+  scenic.set_error_handler(
+      base::LogFidlErrorAndExitProcess(FROM_HERE, "fuchsia.ui.scenic.Scenic"));
   return scenic;
 }
 

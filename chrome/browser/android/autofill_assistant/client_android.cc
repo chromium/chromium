@@ -629,12 +629,17 @@ void ClientAndroid::CreateController(
   }
 
   DestroyController();
+  std::unique_ptr<AutofillAssistantTtsController> tts_controller =
+      ui_controller_android_utils::GetTtsControllerToInject(
+          AttachCurrentThread());
+  if (!tts_controller) {
+    tts_controller = std::make_unique<AutofillAssistantTtsController>(
+        content::TtsController::GetInstance());
+  }
   controller_ = std::make_unique<Controller>(
       web_contents_, /* client= */ this, base::DefaultTickClock::GetInstance(),
       RuntimeManagerImpl::GetForWebContents(web_contents_)->GetWeakPtr(),
-      std::move(service),
-      std::make_unique<AutofillAssistantTtsController>(
-          content::TtsController::GetInstance()));
+      std::move(service), std::move(tts_controller));
   controller_->SetStatusMessage(status_message);
   if (progress_bar_config) {
     controller_->SetStepProgressBarConfiguration(*progress_bar_config);

@@ -27,6 +27,12 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   // not empty.
   absl::optional<api::passwords_private::UrlCollection> GetUrlCollection(
       const std::string& url) override;
+  // Fake implementation of AddPassword. This returns true if |url| and
+  // |password| aren't empty.
+  bool AddPassword(const std::string& url,
+                   const std::u16string& username,
+                   const std::u16string& password,
+                   bool use_account_store) override;
   // Fake implementation of ChangeSavedPassword. This succeeds if the current
   // list of entries has each of the ids, vector of ids isn't empty and if the
   // new password isn't empty.

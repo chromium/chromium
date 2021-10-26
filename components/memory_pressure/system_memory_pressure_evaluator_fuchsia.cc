@@ -39,9 +39,8 @@ SystemMemoryPressureEvaluatorFuchsia::SystemMemoryPressureEvaluatorFuchsia(
     std::unique_ptr<memory_pressure::MemoryPressureVoter> voter)
     : memory_pressure::SystemMemoryPressureEvaluator(std::move(voter)),
       binding_(this) {
-  binding_.set_error_handler([](zx_status_t status) {
-    ZX_LOG(FATAL, status) << "fuchsia.memorypressure.Provider disconnected";
-  });
+  binding_.set_error_handler(base::LogFidlErrorAndExitProcess(
+      FROM_HERE, "fuchsia.memorypressure.Provider"));
 
   DVLOG(1) << "Registering for memory pressure updates.";
   auto provider = base::ComponentContextForProcess()

@@ -72,6 +72,13 @@ TestPasswordsPrivateDelegate::GetUrlCollection(const std::string& url) {
       api::passwords_private::UrlCollection());
 }
 
+bool TestPasswordsPrivateDelegate::AddPassword(const std::string& url,
+                                               const std::u16string& username,
+                                               const std::u16string& password,
+                                               bool use_account_store) {
+  return !url.empty() && !password.empty();
+}
+
 bool TestPasswordsPrivateDelegate::ChangeSavedPassword(
     const std::vector<int>& ids,
     const std::u16string& new_username,
