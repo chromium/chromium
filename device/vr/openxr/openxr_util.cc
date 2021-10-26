@@ -5,11 +5,14 @@
 #include "device/vr/openxr/openxr_util.h"
 
 #include <string>
+#include <cstring>
 
 #include "base/check_op.h"
 #include "base/cxx17_backports.h"
 #include "base/version.h"
+#if defined(OS_WIN)
 #include "base/win/scoped_handle.h"
+#endif
 #include "build/build_config.h"
 #include "components/version_info/version_info.h"
 #include "ui/gfx/geometry/angle_conversions.h"
@@ -95,11 +98,7 @@ XrResult CreateInstance(
 
   std::string application_name = version_info::GetProductName() + " " +
                                  version_info::GetMajorVersionNumber();
-  errno_t error =
-      strcpy_s(instance_create_info.applicationInfo.applicationName,
-               base::size(instance_create_info.applicationInfo.applicationName),
-               application_name.c_str());
-  DCHECK_EQ(error, 0);
+  strcpy(instance_create_info.applicationInfo.applicationName, application_name.c_str());
 
   base::Version version = version_info::GetVersion();
   DCHECK_EQ(version.components().size(), 4uLL);
@@ -108,10 +107,7 @@ XrResult CreateInstance(
   // application version will be the build number of each vendor
   instance_create_info.applicationInfo.applicationVersion = build;
 
-  error = strcpy_s(instance_create_info.applicationInfo.engineName,
-                   base::size(instance_create_info.applicationInfo.engineName),
-                   "Chromium");
-  DCHECK_EQ(error, 0);
+  strcpy(instance_create_info.applicationInfo.engineName, "Chromium");
 
   // engine version should be the build number of chromium
   instance_create_info.applicationInfo.engineVersion = build;
@@ -124,8 +120,19 @@ XrResult CreateInstance(
   // to validate these extensions.
   // Since the OpenXR backend only knows how to draw with D3D11 at the moment,
   // the XR_KHR_D3D11_ENABLE_EXTENSION_NAME is required.
-  std::vector<const char*> extensions{XR_KHR_D3D11_ENABLE_EXTENSION_NAME};
-
+  std::vector<const char*> extensions;
+#ifdef XR_USE_GRAPHICS_API_D3D11
+  extensions.push_back(XR_KHR_D3D11_ENABLE_EXTENSION_NAME);
+#endif
+#ifdef XR_USE_GRAPHICS_API_OPENGL
+  extensions.push_back(XR_KHR_OPENGL_ENABLE_EXTENSION_NAME);
+#endif
+#ifdef XR_USE_GRAPHICS_API_OPENGL_ES
+  extensions.push_back(XR_KHR_OPENGL_ES_ENABLE_EXTENSION_NAME);
+#endif
+#ifdef XR_USE_GRAPHICS_API_VULKAN
+  extensions.push_back(XR_KHR_VULKAN_ENABLE_EXTENSION_NAME);
+#endif
   // If we are in an app container, we must require the app container extension
   // to ensure robust execution of the OpenXR runtime
   if (IsRunningInWin32AppContainer()) {

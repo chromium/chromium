@@ -4,7 +4,11 @@
 
 #include "device/vr/openxr/openxr_controller.h"
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <stdint.h>
+#include <string.h>
+#include <cstring>
 
 #include "base/check.h"
 #include "base/cxx17_backports.h"
@@ -179,26 +183,14 @@ XrResult OpenXrController::Initialize(
   path_helper_ = path_helper;
   extension_helper_ = &extension_helper;
 
-  std::string action_set_name =
-      std::string(GetStringFromType(type_)) + "_action_set";
+  std::string action_set_name = std::string(GetStringFromType(type_)) + "_action_set";
 
-  XrActionSetCreateInfo action_set_create_info = {
-      XR_TYPE_ACTION_SET_CREATE_INFO};
+  XrActionSetCreateInfo action_set_create_info = {XR_TYPE_ACTION_SET_CREATE_INFO};
 
-  errno_t error = strcpy_s(action_set_create_info.actionSetName,
-                           base::size(action_set_create_info.actionSetName),
-                           action_set_name.c_str());
-  DCHECK(!error);
-  error = strcpy_s(action_set_create_info.localizedActionSetName,
-                   base::size(action_set_create_info.localizedActionSetName),
-                   action_set_name.c_str());
-  DCHECK(!error);
-
-  RETURN_IF_XR_FAILED(
-      xrCreateActionSet(instance_, &action_set_create_info, &action_set_));
-
+  strcpy(action_set_create_info.actionSetName, action_set_name.c_str());
+  strcpy(action_set_create_info.localizedActionSetName, action_set_name.c_str());
+  RETURN_IF_XR_FAILED(xrCreateActionSet(instance_, &action_set_create_info, &action_set_));
   RETURN_IF_XR_FAILED(InitializeControllerActions());
-
   SuggestBindings(bindings);
   RETURN_IF_XR_FAILED(InitializeControllerSpaces());
 
@@ -615,15 +607,8 @@ XrResult OpenXrController::CreateAction(XrActionType type,
   DCHECK(action);
   XrActionCreateInfo action_create_info = {XR_TYPE_ACTION_CREATE_INFO};
   action_create_info.actionType = type;
-
-  errno_t error =
-      strcpy_s(action_create_info.actionName,
-               base::size(action_create_info.actionName), action_name.data());
-  DCHECK(error == 0);
-  error = strcpy_s(action_create_info.localizedActionName,
-                   base::size(action_create_info.localizedActionName),
-                   action_name.data());
-  DCHECK(error == 0);
+  strcpy(action_create_info.actionName, action_name.data());
+  strcpy(action_create_info.localizedActionName, action_name.data());
   return xrCreateAction(action_set_, &action_create_info, action);
 }
 

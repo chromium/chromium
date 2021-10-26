@@ -5,8 +5,29 @@
 #ifndef DEVICE_VR_OPENXR_OPENXR_EXTENSION_HELPER_H_
 #define DEVICE_VR_OPENXR_OPENXR_EXTENSION_HELPER_H_
 
+#ifdef XR_USE_GRAPHICS_API_D3D11
 #include <d3d11.h>
+#endif
+
+#ifdef XR_USE_GRAPHICS_API_VULKAN
+#include <vulkan/vulkan.h>
+#endif
+
+#ifdef XR_USE_GRAPHICS_API_OPENGL
+#if defined(XR_USE_PLATFORM_XLIB) || defined(XR_USE_PLATFORM_XCB)
+#include <GL/glx.h>
+#endif  // (XR_USE_PLATFORM_XLIB || XR_USE_PLATFORM_XCB)
+#ifdef XR_USE_PLATFORM_XCB
+#include <xcb/glx.h>
+#endif  // XR_USE_PLATFORM_XCB
+#ifdef XR_USE_PLATFORM_MACOS
+#include <CL/cl_gl_ext.h>
+#endif  // XR_USE_PLATFORM_MACOS
+#endif  // XR_USE_GRAPHICS_API_OPENGL
+
 #include <vector>
+#include <cstring>
+#include <algorithm>
 
 #include "base/logging.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
@@ -16,9 +37,12 @@ namespace device {
 struct OpenXrExtensionMethods {
   OpenXrExtensionMethods();
   ~OpenXrExtensionMethods();
+
+#ifdef XR_USE_GRAPHICS_API_D3D11
   // D3D
   PFN_xrGetD3D11GraphicsRequirementsKHR xrGetD3D11GraphicsRequirementsKHR{
       nullptr};
+#endif
 
   // Hand Tracking
   PFN_xrCreateHandTrackerEXT xrCreateHandTrackerEXT{nullptr};

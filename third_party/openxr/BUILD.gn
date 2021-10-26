@@ -1,9 +1,7 @@
 # Copyright 2019 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 import("//device/vr/buildflags/buildflags.gni")
-
 if (enable_openxr) {
   source_set("openxr_headers") {
     sources = [
@@ -13,7 +11,6 @@ if (enable_openxr) {
       "src/src/common/hex_and_handles.h",
       "src/src/common/loader_interfaces.h",
     ]
-
     public_configs = [ ":config" ]
   }
   source_set("openxr") {
@@ -51,31 +48,17 @@ if (enable_openxr) {
       "src/src/xr_generated_dispatch_table.c",
       "src/src/xr_generated_dispatch_table.h",
     ]
-
     include_dirs = [
       "src/include",
       "src/src/common",
       "src/src",
     ]
-
     deps = [ "//third_party/jsoncpp" ]
-
     public_configs = [ ":config" ]
-
     defines = [
       "OPENXR_NON_CMAKE_BUILD",
-      "DISABLE_STD_FILESYSTEM",
-    ]
-
-    cflags_cc = [
-      "-Wno-format",
-      "-Wno-microsoft-cast",
-      "-Wno-microsoft-include",
-      "-Wno-unused-function",
-      "-Wno-extra-semi",
     ]
   }
-
   config("config") {
     # These build define flags need to be set for openxr.h to define
     # constants related to Windows and D3D.
@@ -85,6 +68,28 @@ if (enable_openxr) {
         "XR_OS_WINDOWS",
         "XR_USE_PLATFORM_WIN32",
         "XR_USE_GRAPHICS_API_D3D11",
+        "DISABLE_STD_FILESYSTEM",
+      ]
+      cflags_cc = [
+        "-Wno-format",
+        "-Wno-microsoft-cast",
+        "-Wno-microsoft-include",
+        "-Wno-unused-function",
+        "-Wno-extra-semi",
+      ]
+    }
+    # It's easier for Linux:
+    if (is_linux) {
+      defines = [
+        "XRLOADER_DISABLE_EXCEPTION_HANDLING",
+        "XRAPI_DLL_EXPORT",
+        "XR_OS_LINUX",
+        "XR_USE_GRAPHICS_API_OPENGL",
+        "XR_USE_GRAPHICS_API_VULKAN",
+        "XR_USE_PLATFORM_WAYLAND",
+        "XR_USE_PLATFORM_XCB",
+        "XR_USE_PLATFORM_XLIB",
+        "XR_USE_TIMESPEC",
       ]
     }
   }

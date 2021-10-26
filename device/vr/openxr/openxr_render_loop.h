@@ -14,7 +14,12 @@
 #include "device/vr/openxr/context_provider_callbacks.h"
 #include "device/vr/openxr/openxr_anchor_manager.h"
 #include "device/vr/openxr/openxr_util.h"
+#if defined(OS_WIN)
 #include "device/vr/windows/compositor_base.h"
+#endif
+#if defined(OS_LINUX)
+#include "device/vr/linux/compositor_base.h"
+#endif
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"

@@ -5,9 +5,12 @@
 #ifndef DEVICE_VR_OPENXR_OPENXR_API_WRAPPER_H_
 #define DEVICE_VR_OPENXR_OPENXR_API_WRAPPER_H_
 
+#ifdef XR_USE_GRAPHICS_API_D3D11
 #include <d3d11_4.h>
-#include <stdint.h>
 #include <wrl.h>
+#endif
+
+#include <stdint.h>
 #include <memory>
 #include <vector>
 
@@ -59,16 +62,20 @@ class OpenXrApiWrapper {
   bool UpdateAndGetSessionEnded();
 
   XrResult InitSession(
+#ifdef XR_USE_GRAPHICS_API_D3D11
       const Microsoft::WRL::ComPtr<ID3D11Device>& d3d_device,
+#endif
       const OpenXrExtensionHelper& extension_helper,
       const SessionEndedCallback& on_session_ended_callback,
       const VisibilityChangedCallback& visibility_changed_callback);
 
   XrSpace GetReferenceSpace(device::mojom::XRReferenceSpaceType type) const;
 
+#ifdef XR_USE_GRAPHICS_API_D3D11
   XrResult BeginFrame(Microsoft::WRL::ComPtr<ID3D11Texture2D>* texture,
                       gpu::MailboxHolder* mailbox_holder);
   XrResult EndFrame();
+#endif
   bool HasPendingFrame() const;
   bool HasFrameState() const;
 
@@ -80,8 +87,11 @@ class OpenXrApiWrapper {
   const std::vector<XrViewConfigurationView>& GetViewConfigs() const;
   gfx::Size GetSwapchainSize() const;
   XrTime GetPredictedDisplayTime() const;
+
+#ifdef XR_USE_GRAPHICS_API_D3D11
   XrResult GetLuid(LUID* luid,
                    const OpenXrExtensionHelper& extension_helper) const;
+#endif
   bool GetStageParameters(XrExtent2Df* stage_bounds,
                           gfx::Transform* local_from_stage);
 
@@ -99,9 +109,11 @@ class OpenXrApiWrapper {
   bool IsUsingSharedImages() const;
 
   static void DEVICE_VR_EXPORT SetTestHook(VRTestHook* hook);
+
+#ifdef XR_USE_GRAPHICS_API_D3D11
   void StoreFence(Microsoft::WRL::ComPtr<ID3D11Fence> d3d11_fence,
                   int16_t frame_index);
-
+#endif
   static mojom::XREye GetEyeFromIndex(int i);
 
   // The number of views the OpenXR runtime is returning on each frame.
@@ -127,8 +139,10 @@ class OpenXrApiWrapper {
   XrResult ProcessEvents();
   void EnsureEventPolling();
 
+#ifdef XR_USE_GRAPHICS_API_D3D11
   XrResult CreateSession(
       const Microsoft::WRL::ComPtr<ID3D11Device>& d3d_device);
+#endif
   XrResult CreateSwapchain();
   XrResult CreateSpace(XrReferenceSpaceType type, XrSpace* space);
 
@@ -184,13 +198,19 @@ class OpenXrApiWrapper {
   // When shared images are being used, there is a corresponding MailboxHolder
   // and D3D11Fence for each D3D11 texture in the vector.
   struct SwapChainInfo {
+#ifdef XR_USE_GRAPHICS_API_D3D11
     explicit SwapChainInfo(ID3D11Texture2D*);
+#endif
     ~SwapChainInfo();
     SwapChainInfo(SwapChainInfo&&);
 
+#ifdef XR_USE_GRAPHICS_API_D3D11
     ID3D11Texture2D* d3d11_texture = nullptr;
+#endif
     gpu::MailboxHolder mailbox_holder;
+#ifdef XR_USE_GRAPHICS_API_D3D11
     Microsoft::WRL::ComPtr<ID3D11Fence> d3d11_fence;
+#endif
   };
   std::vector<SwapChainInfo> color_swapchain_images_;
 

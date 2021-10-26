@@ -4,7 +4,9 @@
 
 #include "device/vr/openxr/openxr_render_loop.h"
 
+#ifdef XR_USE_PLATFORM_WIN32
 #include <d3d11_4.h>
+#endif
 
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
@@ -52,13 +54,16 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
   mojom::XRFrameDataPtr frame_data = mojom::XRFrameData::New();
   frame_data->frame_id = next_frame_id_;
 
+#ifdef XR_USE_PLATFORM_WIN32
   Microsoft::WRL::ComPtr<ID3D11Texture2D> texture;
+#endif
   gpu::MailboxHolder mailbox_holder;
+#ifdef XR_USE_PLATFORM_WIN32
   if (XR_FAILED(openxr_->BeginFrame(&texture, &mailbox_holder))) {
     return frame_data;
   }
-
   texture_helper_.SetBackbuffer(std::move(texture));
+#endif
   if (!mailbox_holder.mailbox.IsZero()) {
     frame_data->buffer_holder = mailbox_holder;
   }
@@ -130,6 +135,7 @@ void OpenXrRenderLoop::StartRuntime(
   VisibilityChangedCallback on_visibility_state_changed = base::BindRepeating(
       &OpenXrRenderLoop::SetVisibilityState, weak_ptr_factory_.GetWeakPtr());
 
+#ifdef XR_USE_PLATFORM_WIN32
   texture_helper_.SetUseBGRA(true);
   LUID luid;
   if (XR_FAILED(openxr->GetLuid(&luid, extension_helper_)) ||
@@ -142,11 +148,14 @@ void OpenXrRenderLoop::StartRuntime(
     texture_helper_.Reset();
     return std::move(start_runtime_callback).Run(false);
   }
+#endif
 
   // Starting session succeeded so we can set the member variable.
   // Any additional code added below this should never fail.
   openxr_ = std::move(openxr);
+#ifdef XR_USE_PLATFORM_WIN32
   texture_helper_.SetDefaultSize(openxr_->GetSwapchainSize());
+#endif
 
   SendInitialDisplayInfo();
 
@@ -158,7 +167,9 @@ void OpenXrRenderLoop::StopRuntime() {
   // first, input_helper_destructor will try to call the actual openxr runtime
   // rather than the mock in tests.
   openxr_ = nullptr;
+#ifdef XR_USE_PLATFORM_WIN32
   texture_helper_.Reset();
+#endif
   context_provider_.reset();
 }
 
@@ -230,19 +241,25 @@ bool OpenXrRenderLoop::HasSessionEnded() {
 }
 
 bool OpenXrRenderLoop::SubmitCompositedFrame() {
+#ifdef XR_USE_PLATFORM_WIN32
   return XR_SUCCEEDED(openxr_->EndFrame());
+#else
+  return true;
+#endif
 }
 
 void OpenXrRenderLoop::ClearPendingFrameInternal() {
   // Complete the frame if OpenXR has started one with BeginFrame. This also
   // releases the swapchain image that was acquired in BeginFrame so that the
   // next frame can acquire it.
+#ifdef XR_USE_PLATFORM_WIN32
   if (openxr_->HasPendingFrame() && XR_FAILED(openxr_->EndFrame())) {
     // The start of the next frame will detect that the session has ended via
     // HasSessionEnded and will exit presentation.
     StopRuntime();
     return;
   }
+#endif
 }
 
 bool OpenXrRenderLoop::IsUsingSharedImages() const {
@@ -272,6 +289,7 @@ void OpenXrRenderLoop::OnWebXrTokenSignaled(
     return;
   }
 
+#ifdef XR_USE_PLATFORM_WIN32
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
       texture_helper_.GetDevice();
   Microsoft::WRL::ComPtr<ID3D11Device5> d3d11_device5;
@@ -315,6 +333,7 @@ void OpenXrRenderLoop::OnWebXrTokenSignaled(
   // to remember the swap chain index, use frame_index %
   // color_swapchain_images_.size() to keep them separated from one another.
   openxr_->StoreFence(std::move(d3d11_fence), frame_index);
+#endif
 
   gpu::gles2::GLES2Interface* gl = context_provider_->ContextGL();
   gl->DestroyGpuFenceCHROMIUM(id);

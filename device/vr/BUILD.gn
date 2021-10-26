@@ -182,9 +182,17 @@ if (enable_vr) {
           "windows/flip_pixel_shader.h",
           "windows/geometry_shader.h",
           "windows/vertex_shader.h",
+          "windows/compositor_base.cc",
+          "windows/compositor_base.h",
         ]
 
         deps += [ ":directx_helpers" ]
+      }
+      if (is_linux) {
+        sources += [
+          "linux/compositor_base.cc",
+          "linux/compositor_base.h",
+        ]
       }
 
       sources += [
@@ -227,8 +235,6 @@ if (enable_vr) {
         "openxr/openxr_util.cc",
         "openxr/openxr_util.h",
         "test/test_hook.h",
-        "windows/compositor_base.cc",
-        "windows/compositor_base.h",
       ]
 
       deps += [

@@ -5,7 +5,14 @@
 #ifndef DEVICE_VR_OPENXR_TEST_OPENXR_TEST_HELPER_H_
 #define DEVICE_VR_OPENXR_TEST_OPENXR_TEST_HELPER_H_
 
+#ifdef XR_USE_GRAPHICS_API_D3D11
 #include <d3d11.h>
+#endif
+
+#ifdef XR_USE_GRAPHICS_API_VULKAN
+#include <vulkan/vulkan.h>
+#endif
+
 #include <unknwn.h>
 #include <wrl.h>
 #include <array>

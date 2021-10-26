@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "device/vr/windows/compositor_base.h"
+#include "device/vr/linux/compositor_base.h"
 
 #include "base/bind.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gfx/geometry/angle_conversions.h"
-#include "ui/gfx/geometry/transform.h"
-
-#include "device/vr/windows/d3d11_texture_helper.h"
+#include "ui/gfx/transform.h"
 
 namespace {
 // Number of frames to use for sliding averages for pose timings,
@@ -60,7 +58,7 @@ XRCompositorCommon::OutstandingFrame::OutstandingFrame() = default;
 XRCompositorCommon::OutstandingFrame::~OutstandingFrame() = default;
 
 XRCompositorCommon::XRCompositorCommon()
-    : base::Thread("WindowsXRCompositor"),
+    : base::Thread("LinuxXRCompositor"),
       main_thread_task_runner_(base::ThreadTaskRunnerHandle::Get()),
       webxr_js_time_(kSlidingAverageSize),
       webxr_gpu_time_(kSlidingAverageSize) {
@@ -139,16 +137,6 @@ void XRCompositorCommon::SubmitFrameWithTextureHandle(
 
   pending_frame_->waiting_for_webxr_ = false;
   pending_frame_->submit_frame_time_ = base::TimeTicks::Now();
-
-  base::win::ScopedHandle scoped_handle = texture_handle.is_valid()
-                                              ? texture_handle.TakeHandle()
-                                              : base::win::ScopedHandle();
-  texture_helper_.SetSourceTexture(std::move(scoped_handle), left_webxr_bounds_,
-                                   right_webxr_bounds_);
-  pending_frame_->webxr_submitted_ = true;
-
-  // Regardless of success - try to composite what we have.
-  MaybeCompositeAndSubmit();
 }
 
 void XRCompositorCommon::CleanUp() {
@@ -292,11 +280,10 @@ void XRCompositorCommon::StartRuntimeFinish(
   session->enviroment_blend_mode = GetEnvironmentBlendMode(options->mode);
   session->interaction_mode = GetInteractionMode(options->mode);
 
-  main_thread_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), true, std::move(session)));
+  main_thread_task_runner_->PostTask(FROM_HERE, base::BindOnce(std::move(callback), true, std::move(session)));
   is_presenting_ = true;
 
-  texture_helper_.SetSourceAndOverlayVisible(webxr_visible_, overlay_visible_);
+  //texture_helper_.SetSourceAndOverlayVisible(webxr_visible_, overlay_visible_);
 }
 
 void XRCompositorCommon::ExitPresent() {
@@ -318,11 +305,8 @@ void XRCompositorCommon::ExitPresent() {
   overlay_visible_ = false;
   overlay_receiver_.reset();
 
-  texture_helper_.SetSourceAndOverlayVisible(false, false);
-
   if (on_presentation_ended_) {
-    main_thread_task_runner_->PostTask(FROM_HERE,
-                                       std::move(on_presentation_ended_));
+    main_thread_task_runner_->PostTask(FROM_HERE, std::move(on_presentation_ended_));
   }
 }
 
@@ -493,13 +477,6 @@ void XRCompositorCommon::SubmitOverlayTexture(
   }
 
   pending_frame_->waiting_for_overlay_ = false;
-
-  texture_helper_.SetOverlayTexture(texture_handle.TakeHandle(), left_bounds,
-                                    right_bounds);
-  pending_frame_->overlay_submitted_ = true;
-
-  // Regardless of success - try to composite what we have.
-  MaybeCompositeAndSubmit();
 }
 
 void XRCompositorCommon::RequestNextOverlayPose(
@@ -528,9 +505,6 @@ void XRCompositorCommon::SetOverlayAndWebXRVisibility(bool overlay_visible,
     pending_frame_->waiting_for_overlay_ =
         pending_frame_->waiting_for_overlay_ && overlay_visible;
   }
-
-  // Update texture helper.
-  texture_helper_.SetSourceAndOverlayVisible(webxr_visible, overlay_visible);
 
   // Maybe composite and submit if we have a pending that is now valid to
   // submit.
@@ -562,56 +536,6 @@ void XRCompositorCommon::MaybeCompositeAndSubmit() {
       !(pending_frame_->overlay_submitted_ && overlay_visible_)) {
     // Nothing visible was submitted - we can't composite/submit to headset.
     no_submit = true;
-  }
-
-  bool copy_successful;
-
-  // If so, tell texture helper to composite, then grab the output texture, and
-  // submit. If we submitted, set up the next frame, and send outstanding pose
-  // requests.
-  if (no_submit) {
-    copy_successful = false;
-    texture_helper_.CleanupNoSubmit();
-  } else {
-    copy_successful = texture_helper_.UpdateBackbufferSizes() &&
-                      texture_helper_.CompositeToBackBuffer();
-    if (copy_successful) {
-      pending_frame_->frame_ready_time_ = base::TimeTicks::Now();
-      if (!SubmitCompositedFrame()) {
-        ExitPresent();
-        // ExitPresent() clears pending_frame_, so return here to avoid
-        // accessing it below.
-        return;
-      }
-    }
-  }
-
-  if (pending_frame_->webxr_submitted_ && copy_successful) {
-    // We've submitted a frame.
-    webxr_js_time_.AddSample(pending_frame_->submit_frame_time_ -
-                             pending_frame_->sent_frame_data_time_);
-    webxr_gpu_time_.AddSample(pending_frame_->frame_ready_time_ -
-                              pending_frame_->submit_frame_time_);
-
-    TRACE_EVENT_INSTANT2(
-        "gpu", "WebXR frame time (ms)", TRACE_EVENT_SCOPE_THREAD, "javascript",
-        webxr_js_time_.GetAverage().InMillisecondsF(), "rendering",
-        webxr_gpu_time_.GetAverage().InMillisecondsF());
-    fps_meter_.AddFrame(base::TimeTicks::Now());
-    TRACE_COUNTER1("gpu", "WebXR FPS", fps_meter_.GetFPS());
-  }
-
-  if (pending_frame_->webxr_submitted_ && submit_client_) {
-    // Tell WebVR that we are done with the texture (if we got a texture)
-    submit_client_->OnSubmitFrameTransferred(copy_successful);
-    submit_client_->OnSubmitFrameRendered();
-    TRACE_EVENT1("xr", "SubmitFrameTransferred", "success", copy_successful);
-  }
-
-  if (pending_frame_->overlay_submitted_ && overlay_submit_callback_) {
-    // Tell the browser/overlay that we are done with its texture so it can be
-    // reused.
-    std::move(overlay_submit_callback_).Run(copy_successful);
   }
 
   ClearPendingFrame();

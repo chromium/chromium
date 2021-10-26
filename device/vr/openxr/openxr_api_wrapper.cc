@@ -4,7 +4,11 @@
 
 #include "device/vr/openxr/openxr_api_wrapper.h"
 
+#ifdef XR_USE_PLATFORM_WIN32
 #include <dxgi1_2.h>
+#include "gpu/ipc/common/gpu_memory_buffer_impl_dxgi.h"
+#endif
+
 #include <stdint.h>
 #include <algorithm>
 #include <array>
@@ -21,7 +25,6 @@
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "gpu/ipc/common/gpu_memory_buffer_impl_dxgi.h"
 #include "ui/gfx/geometry/angle_conversions.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/quaternion.h"
@@ -58,8 +61,10 @@ std::unique_ptr<OpenXrApiWrapper> OpenXrApiWrapper::Create(
   return openxr;
 }
 
+#ifdef XR_USE_PLATFORM_WIN32
 OpenXrApiWrapper::SwapChainInfo::SwapChainInfo(ID3D11Texture2D* d3d11_texture)
     : d3d11_texture(d3d11_texture) {}
+#endif
 OpenXrApiWrapper::SwapChainInfo::~SwapChainInfo() = default;
 OpenXrApiWrapper::SwapChainInfo::SwapChainInfo(SwapChainInfo&&) = default;
 
@@ -313,6 +318,8 @@ OpenXrApiWrapper::GetOrCreateSceneUnderstandingManager(
 // Callers of this function must check the XrResult return value and destroy
 // this OpenXrApiWrapper object on failure to clean up any intermediate
 // objects that may have been created before the failure.
+
+#ifdef XR_USE_GRAPHICS_API_D3D11
 XrResult OpenXrApiWrapper::InitSession(
     const Microsoft::WRL::ComPtr<ID3D11Device>& d3d_device,
     const OpenXrExtensionHelper& extension_helper,
@@ -430,6 +437,7 @@ XrResult OpenXrApiWrapper::CreateSwapchain() {
 
   return XR_SUCCESS;
 }
+#endif
 
 XrSpace OpenXrApiWrapper::GetReferenceSpace(
     device::mojom::XRReferenceSpaceType type) const {
@@ -489,6 +497,7 @@ void OpenXrApiWrapper::CreateSharedMailboxes(
   gpu::SharedImageInterface* shared_image_interface =
       context_provider->SharedImageInterface();
 
+#ifdef XR_USE_PLATFORM_WIN32
   // Create the MailboxHolders for each texture in the swap chain
   for (size_t i = 0; i < color_swapchain_images_.size(); i++) {
     Microsoft::WRL::ComPtr<IDXGIResource1> dxgi_resource;
@@ -550,6 +559,7 @@ void OpenXrApiWrapper::CreateSharedMailboxes(
     mailbox_holder.sync_token = shared_image_interface->GenVerifiedSyncToken();
     mailbox_holder.texture_target = GL_TEXTURE_2D;
   }
+#endif
 }
 
 bool OpenXrApiWrapper::IsUsingSharedImages() const {
@@ -557,6 +567,7 @@ bool OpenXrApiWrapper::IsUsingSharedImages() const {
           !color_swapchain_images_[0].mailbox_holder.mailbox.IsZero());
 }
 
+#ifdef XR_USE_PLATFORM_WIN32
 void OpenXrApiWrapper::StoreFence(
     Microsoft::WRL::ComPtr<ID3D11Fence> d3d11_fence,
     int16_t frame_index) {
@@ -566,6 +577,7 @@ void OpenXrApiWrapper::StoreFence(
         std::move(d3d11_fence);
   }
 }
+#endif
 
 XrResult OpenXrApiWrapper::CreateSpace(XrReferenceSpaceType type,
                                        XrSpace* space) {
@@ -593,6 +605,7 @@ XrResult OpenXrApiWrapper::BeginSession() {
   return xr_result;
 }
 
+#ifdef XR_USE_PLATFORM_WIN32
 XrResult OpenXrApiWrapper::BeginFrame(
     Microsoft::WRL::ComPtr<ID3D11Texture2D>* texture,
     gpu::MailboxHolder* mailbox_holder) {
@@ -669,6 +682,7 @@ XrResult OpenXrApiWrapper::EndFrame() {
 
   return XR_SUCCESS;
 }
+#endif
 
 bool OpenXrApiWrapper::HasPendingFrame() const {
   return pending_frame_;
@@ -831,6 +845,7 @@ std::vector<mojom::XRInputSourceStatePtr> OpenXrApiWrapper::GetInputState(
                                       GetPredictedDisplayTime());
 }
 
+#ifdef XR_USE_PLATFORM_WIN32
 XrResult OpenXrApiWrapper::GetLuid(
     LUID* luid,
     const OpenXrExtensionHelper& extension_helper) const {
@@ -851,6 +866,7 @@ XrResult OpenXrApiWrapper::GetLuid(
 
   return XR_SUCCESS;
 }
+#endif
 
 void OpenXrApiWrapper::EnsureEventPolling() {
   // Events are usually processed at the beginning of a frame. When frames

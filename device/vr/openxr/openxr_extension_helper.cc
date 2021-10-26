@@ -40,12 +40,14 @@ OpenXrExtensionHelper::OpenXrExtensionHelper(
     : extension_enumeration_(extension_enumeration) {
   // Failure to query a method results in a nullptr
 
+#ifdef XR_USE_GRAPHICS_API_D3D11
   // D3D11
   (void)xrGetInstanceProcAddr(
       instance, "xrGetD3D11GraphicsRequirementsKHR",
       reinterpret_cast<PFN_xrVoidFunction*>(
           const_cast<PFN_xrGetD3D11GraphicsRequirementsKHR*>(
               &extension_methods_.xrGetD3D11GraphicsRequirementsKHR)));
+#endif
 
   // Hand tracking methods
   (void)xrGetInstanceProcAddr(

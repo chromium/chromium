@@ -15,7 +15,7 @@ declare_args() {
 
   # To build with OpenXR support, the OpenXR Loader needs to be pulled to
   # third_party/openxr.
-  enable_openxr = checkout_openxr && is_win
+  enable_openxr = ( is_win || is_linux )
 }
 
 declare_args() {
