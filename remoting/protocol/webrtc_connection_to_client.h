@@ -34,7 +34,6 @@ class WebrtcConnectionToClient : public ConnectionToClient,
   WebrtcConnectionToClient(
       std::unique_ptr<Session> session,
       scoped_refptr<protocol::TransportContext> transport_context,
-      scoped_refptr<base::SingleThreadTaskRunner> video_encode_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner);
 
   WebrtcConnectionToClient(const WebrtcConnectionToClient&) = delete;
@@ -94,7 +93,6 @@ class WebrtcConnectionToClient : public ConnectionToClient,
 
   WebrtcVideoEncoderFactory* video_encoder_factory_;
 
-  scoped_refptr<base::SingleThreadTaskRunner> video_encode_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner_;
 
   SessionOptions session_options_;

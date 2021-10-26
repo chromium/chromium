@@ -237,8 +237,7 @@ void ChromotingHost::OnIncomingSession(
   if (session->config().protocol() ==
       protocol::SessionConfig::Protocol::WEBRTC) {
     connection = std::make_unique<protocol::WebrtcConnectionToClient>(
-        base::WrapUnique(session), transport_context_,
-        video_encode_task_runner_, audio_task_runner_);
+        base::WrapUnique(session), transport_context_, audio_task_runner_);
   } else {
     connection = std::make_unique<protocol::IceConnectionToClient>(
         base::WrapUnique(session), transport_context_,
