@@ -52,6 +52,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="2121284319307530122">Fungua tena ili Usasishe &amp;Chrome</translation>
 <translation id="2123055963409958220">Saidia kuboresha Chrome kwa kuripoti kuhusu <ph name="BEGIN_LINK" />mipangilio ya sasa<ph name="END_LINK" /></translation>
 <translation id="2151406531797534936">Tafadhali zima kisha uwashe Chrome sasa</translation>
+<translation id="2189289170880510015">Wekea mapendeleo baadhi ya chaguo muhimu zaidi za Chrome kuhusu faragha</translation>
 <translation id="2246246234298806438">Google Chrome haiwezi kuonyesha uhakiki wa kuchapisha wakati kionyeshi kilichojengewa ndani cha PDF kinakosekana.</translation>
 <translation id="2290014774651636340">Funguo za API za Google zinakosekana. Baadhi ya utendaji wa Google Chrome utazimwa.</translation>
 <translation id="2290095356545025170">Je, una hakika kuwa ungependa kusanidua Google Chrome?</translation>
@@ -114,6 +115,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="3596080736082218006">{COUNT,plural, =0{Msimamizi wako anataka ufungue Chrome tena ili utumie sasisho}=1{Msimamizi wako anataka ufungue Chrome tena ili utumie sasisho. Haitafungua upya dirisha fiche.}other{Msimamizi wako anataka ufungue Chrome tena ili utumie sasisho. Haitafungua upya madirisha # fiche.}}</translation>
 <translation id="3622797965165704966">Sasa ni rahisi zaidi kutumia Chrome pamoja na Akaunti yako ya Google na kwenye kompyuta zinazoshirikiwa.</translation>
 <translation id="3673813398384385993">Chrome imegundua kwamba "<ph name="EXTENSION_NAME" />" ina programu hasidi</translation>
+<translation id="3678552270983184277">Mipangilio chaguomsingi hufanya kazi kwa watu wengi, lakini unaweza kuiwekea mapendeleo ili itosheleze jinsi unavyopenda kutumia Chrome</translation>
 <translation id="3718181793972440140">Hatua hii itafuta kipengee 1 kwenye kifaa hiki. Ili urejeshe data yako baadaye, ingia katika Chrome ukitumia <ph name="USER_EMAIL" />.</translation>
 <translation id="3735758079232443276">Kiendelezi hiki "<ph name="EXTENSION_NAME" />" kimebadilisha ukurasa unaoonyeshwa unapoanzisha Chrome.</translation>
 <translation id="3779473566290487688">Ili uweze kupokea taarifa za Google Chrome wakati ujao, utahitaji toleo la OS X 10.11 au toleo jipya zaidi. Kompyuta hii inatumia OS X 10.10.</translation>

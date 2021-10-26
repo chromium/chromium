@@ -5221,7 +5221,7 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 
       Si se inhabilita la política, se impedirá el descubrimiento de dispositivos locales.
       </translation>
-<translation id="7167436895080860385">Permitir que los usuarios muestren contraseñas en el Gestor de contraseñas (obsoleto)</translation>
+<translation id="7167436895080860385">Permitir que los usuarios muestren contraseñas en el gestor de contraseñas (obsoleto)</translation>
 <translation id="7173856672248996428">Perfil efímero</translation>
 <translation id="717630378807352957">Permitir todas las impresoras del archivo de configuración.</translation>
 <translation id="7177293255621000064">Si se le asigna el valor "true" a esta política, todos los tipos de medios de almacenamiento externo (unidades flash USB, unidades de disco duro externas, tarjetas SD, otras tarjetas de memoria, otros tipos de almacenamiento óptico, etc.) dejarán de estar disponibles en el explorador de archivos. Si se le asigna el valor "false" o no se le asigna ningún valor, los usuarios podrán usar el almacenamiento externo en su dispositivo.
@@ -5992,7 +5992,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
           Cuando no se configura esta política, se lleva a cabo la acción predeterminada, que es la suspensión.
 
           Si la acción es la suspensión, <ph name="PRODUCT_OS_NAME" /> se puede configurar por separado para bloquear o no la pantalla antes de entrar en modo de suspensión.</translation>
-<translation id="8214600119442850823">Permite configurar el Gestor de contraseñas.</translation>
+<translation id="8214600119442850823">Permite configurar el gestor de contraseñas.</translation>
 <translation id="8217664958939773083">Si a esta política se le asigna el valor <ph name="ENABLED" /> o no se le asigna ninguno, se podrá utilizar el modo sin interfaz gráfica. Si se le asigna el valor <ph name="DISABLED" />, no se podrá utilizar el modo sin interfaz gráfica.</translation>
 <translation id="8220023426952118761">Velocidad de descarga deseada en kilobits por segundo.</translation>
 <translation id="8220156281401380422">Configurar la lista de permitidos de mensajes nativos</translation>
