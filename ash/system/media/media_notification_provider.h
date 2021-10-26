@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PUBLIC_CPP_MEDIA_NOTIFICATION_PROVIDER_H_
-#define ASH_PUBLIC_CPP_MEDIA_NOTIFICATION_PROVIDER_H_
+#ifndef ASH_SYSTEM_MEDIA_MEDIA_NOTIFICATION_PROVIDER_H_
+#define ASH_SYSTEM_MEDIA_MEDIA_NOTIFICATION_PROVIDER_H_
 
 #include <memory>
 
-#include "ash/public/cpp/ash_public_export.h"
+#include "ash/ash_export.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace media_message_center {
@@ -19,10 +19,11 @@ class View;
 }  // namespace views
 
 namespace ash {
+
 class MediaNotificationProviderObserver;
 
 // Interface used to send media notification info from browser to ash.
-class ASH_PUBLIC_EXPORT MediaNotificationProvider {
+class ASH_EXPORT MediaNotificationProvider {
  public:
   // Get the global instance.
   static MediaNotificationProvider* Get();
@@ -63,4 +64,4 @@ class ASH_PUBLIC_EXPORT MediaNotificationProvider {
 
 }  // namespace ash
 
-#endif  // ASH_PUBLIC_CPP_MEDIA_NOTIFICATION_PROVIDER_H_
+#endif  // ASH_SYSTEM_MEDIA_MEDIA_NOTIFICATION_PROVIDER_H_

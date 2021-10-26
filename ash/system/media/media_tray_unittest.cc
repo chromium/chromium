@@ -4,9 +4,9 @@
 
 #include "ash/system/media/media_tray.h"
 
-#include "ash/public/cpp/media_notification_provider.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
+#include "ash/system/media/media_notification_provider.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
@@ -26,7 +26,8 @@ constexpr gfx::Size kMockTraySize = gfx::Size(48, 48);
 
 class MockMediaNotificationProvider : public MediaNotificationProvider {
  public:
-  MockMediaNotificationProvider() {
+  MockMediaNotificationProvider()
+      : old_provider_(MediaNotificationProvider::Get()) {
     MediaNotificationProvider::Set(this);
 
     ON_CALL(*this, GetMediaNotificationListView(_)).WillByDefault([](auto) {
@@ -35,7 +36,7 @@ class MockMediaNotificationProvider : public MediaNotificationProvider {
   }
 
   ~MockMediaNotificationProvider() override {
-    MediaNotificationProvider::Set(nullptr);
+    MediaNotificationProvider::Set(old_provider_);
   }
 
   // Medianotificationprovider implementations.
@@ -60,6 +61,7 @@ class MockMediaNotificationProvider : public MediaNotificationProvider {
  private:
   bool has_active_notifications_ = false;
   bool has_frozen_notifications_ = false;
+  MediaNotificationProvider* const old_provider_;
 };
 
 // Mock tray button used to test media tray bubble's anchor update.
@@ -87,16 +89,17 @@ class MediaTrayTest : public AshTestBase {
 
   void SetUp() override {
     feature_list_.InitAndEnableFeature(media::kGlobalMediaControlsForChromeOS);
-    provider_ = std::make_unique<MockMediaNotificationProvider>();
     AshTestBase::SetUp();
+
+    provider_ = std::make_unique<MockMediaNotificationProvider>();
 
     media_tray_ = status_area_widget()->media_tray();
     ASSERT_TRUE(MediaTray::IsPinnedToShelf());
   }
 
   void TearDown() override {
-    provider_.reset();
     mock_tray_.reset();
+    provider_.reset();
     AshTestBase::TearDown();
   }
 

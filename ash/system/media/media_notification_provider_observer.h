@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PUBLIC_CPP_MEDIA_NOTIFICATION_PROVIDER_OBSERVER_H_
-#define ASH_PUBLIC_CPP_MEDIA_NOTIFICATION_PROVIDER_OBSERVER_H_
+#ifndef ASH_SYSTEM_MEDIA_MEDIA_NOTIFICATION_PROVIDER_OBSERVER_H_
+#define ASH_SYSTEM_MEDIA_MEDIA_NOTIFICATION_PROVIDER_OBSERVER_H_
 
 #include "base/observer_list_types.h"
 
@@ -22,4 +22,4 @@ class MediaNotificationProviderObserver : public base::CheckedObserver {
 
 }  // namespace ash
 
-#endif  // ASH_PUBLIC_CPP_MEDIA_NOTIFICATION_PROVIDER_OBSERVER_H_
+#endif  // ASH_SYSTEM_MEDIA_MEDIA_NOTIFICATION_PROVIDER_OBSERVER_H_

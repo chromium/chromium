@@ -2,35 +2,43 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/media_notification_provider_impl.h"
+#include "ash/system/media/media_notification_provider_impl.h"
 
-#include "ash/public/cpp/media_notification_provider_observer.h"
+#include "ash/system/media/media_notification_provider.h"
+#include "ash/system/media/media_notification_provider_observer.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/global_media_controls/public/media_item_manager.h"
 #include "components/global_media_controls/public/media_session_item_producer.h"
 #include "components/global_media_controls/public/views/media_item_ui_list_view.h"
 #include "components/global_media_controls/public/views/media_item_ui_view.h"
-#include "content/public/browser/media_session_service.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/media_session/public/cpp/media_session_service.h"
 #include "ui/views/view.h"
 
-MediaNotificationProviderImpl::MediaNotificationProviderImpl()
+namespace ash {
+
+MediaNotificationProviderImpl::MediaNotificationProviderImpl(
+    media_session::MediaSessionService* service)
     : item_manager_(global_media_controls::MediaItemManager::Create()) {
+  DCHECK_EQ(nullptr, MediaNotificationProvider::Get());
+  MediaNotificationProvider::Set(this);
+
   item_manager_->AddObserver(this);
+
+  if (!service)
+    return;
 
   mojo::Remote<media_session::mojom::AudioFocusManager> audio_focus_remote;
   mojo::Remote<media_session::mojom::MediaControllerManager>
       controller_manager_remote;
 
-  auto& service = content::GetMediaSessionService();
-
   // Connect to receive audio focus events.
-  service.BindAudioFocusManager(
+  service->BindAudioFocusManager(
       audio_focus_remote.BindNewPipeAndPassReceiver());
 
   // Connect to the controller manager so we can create media controllers for
   // media sessions.
-  service.BindMediaControllerManager(
+  service->BindMediaControllerManager(
       controller_manager_remote.BindNewPipeAndPassReceiver());
 
   media_session_item_producer_ =
@@ -42,6 +50,9 @@ MediaNotificationProviderImpl::MediaNotificationProviderImpl()
 }
 
 MediaNotificationProviderImpl::~MediaNotificationProviderImpl() {
+  DCHECK_EQ(this, MediaNotificationProvider::Get());
+  MediaNotificationProvider::Set(nullptr);
+
   item_manager_->RemoveObserver(this);
 
   for (auto item_ui_pair : observed_item_uis_)
@@ -149,3 +160,5 @@ void MediaNotificationProviderImpl::OnMediaItemUIDestroyed(
   iter->second->RemoveObserver(this);
   observed_item_uis_.erase(iter);
 }
+
+}  // namespace ash

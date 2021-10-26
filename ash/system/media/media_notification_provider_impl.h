@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_MEDIA_NOTIFICATION_PROVIDER_IMPL_H_
-#define CHROME_BROWSER_UI_ASH_MEDIA_NOTIFICATION_PROVIDER_IMPL_H_
+#ifndef ASH_SYSTEM_MEDIA_MEDIA_NOTIFICATION_PROVIDER_IMPL_H_
+#define ASH_SYSTEM_MEDIA_MEDIA_NOTIFICATION_PROVIDER_IMPL_H_
 
 #include <map>
 
-#include "ash/public/cpp/media_notification_provider.h"
+#include "ash/ash_export.h"
+#include "ash/system/media/media_notification_provider.h"
 #include "base/observer_list.h"
 #include "components/global_media_controls/public/media_dialog_delegate.h"
 #include "components/global_media_controls/public/media_item_manager_observer.h"
@@ -21,19 +22,25 @@ class MediaItemUIListView;
 class MediaSessionItemProducer;
 }  // namespace global_media_controls
 
-class MediaNotificationProviderImpl
-    : public ash::MediaNotificationProvider,
+namespace media_session {
+class MediaSessionService;
+}  // namespace media_session
+
+namespace ash {
+
+class ASH_EXPORT MediaNotificationProviderImpl
+    : public MediaNotificationProvider,
       public global_media_controls::MediaDialogDelegate,
       public global_media_controls::MediaItemManagerObserver,
       public global_media_controls::MediaItemUIObserver {
  public:
-  MediaNotificationProviderImpl();
+  explicit MediaNotificationProviderImpl(
+      media_session::MediaSessionService* service);
   ~MediaNotificationProviderImpl() override;
 
-  // ash::MediaNotificationProvider:
-  void AddObserver(ash::MediaNotificationProviderObserver* observer) override;
-  void RemoveObserver(
-      ash::MediaNotificationProviderObserver* observer) override;
+  // MediaNotificationProvider:
+  void AddObserver(MediaNotificationProviderObserver* observer) override;
+  void RemoveObserver(MediaNotificationProviderObserver* observer) override;
   bool HasActiveNotifications() override;
   bool HasFrozenNotifications() override;
   std::unique_ptr<views::View> GetMediaNotificationListView(
@@ -66,7 +73,7 @@ class MediaNotificationProviderImpl
   }
 
  private:
-  base::ObserverList<ash::MediaNotificationProviderObserver> observers_;
+  base::ObserverList<MediaNotificationProviderObserver> observers_;
 
   global_media_controls::MediaItemUIListView* active_session_view_ = nullptr;
 
@@ -81,4 +88,6 @@ class MediaNotificationProviderImpl
   absl::optional<media_message_center::NotificationTheme> color_theme_;
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_MEDIA_NOTIFICATION_PROVIDER_IMPL_H_
+}  // namespace ash
+
+#endif  // ASH_SYSTEM_MEDIA_MEDIA_NOTIFICATION_PROVIDER_IMPL_H_

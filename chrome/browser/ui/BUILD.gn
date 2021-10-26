@@ -2105,8 +2105,6 @@ static_library("ui") {
       "ash/login_screen_shown_observer.h",
       "ash/media_client_impl.cc",
       "ash/media_client_impl.h",
-      "ash/media_notification_provider_impl.cc",
-      "ash/media_notification_provider_impl.h",
       "ash/microphone_mute_notification_delegate_impl.cc",
       "ash/microphone_mute_notification_delegate_impl.h",
       "ash/multi_user/multi_profile_support.cc",
