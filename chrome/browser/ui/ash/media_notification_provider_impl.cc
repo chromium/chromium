@@ -6,25 +6,43 @@
 
 #include "ash/public/cpp/media_notification_provider_observer.h"
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/ui/global_media_controls/media_notification_service.h"
-#include "chrome/browser/ui/global_media_controls/media_notification_service_factory.h"
 #include "components/global_media_controls/public/media_item_manager.h"
+#include "components/global_media_controls/public/media_session_item_producer.h"
 #include "components/global_media_controls/public/views/media_item_ui_list_view.h"
 #include "components/global_media_controls/public/views/media_item_ui_view.h"
-#include "components/session_manager/core/session_manager.h"
+#include "content/public/browser/media_session_service.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "ui/views/view.h"
 
-MediaNotificationProviderImpl::MediaNotificationProviderImpl() {
-  session_manager::SessionManager::Get()->AddObserver(this);
+MediaNotificationProviderImpl::MediaNotificationProviderImpl()
+    : item_manager_(global_media_controls::MediaItemManager::Create()) {
+  item_manager_->AddObserver(this);
+
+  mojo::Remote<media_session::mojom::AudioFocusManager> audio_focus_remote;
+  mojo::Remote<media_session::mojom::MediaControllerManager>
+      controller_manager_remote;
+
+  auto& service = content::GetMediaSessionService();
+
+  // Connect to receive audio focus events.
+  service.BindAudioFocusManager(
+      audio_focus_remote.BindNewPipeAndPassReceiver());
+
+  // Connect to the controller manager so we can create media controllers for
+  // media sessions.
+  service.BindMediaControllerManager(
+      controller_manager_remote.BindNewPipeAndPassReceiver());
+
+  media_session_item_producer_ =
+      std::make_unique<global_media_controls::MediaSessionItemProducer>(
+          std::move(audio_focus_remote), std::move(controller_manager_remote),
+          item_manager_.get(), /*source_id=*/absl::nullopt);
+
+  item_manager_->AddItemProducer(media_session_item_producer_.get());
 }
 
 MediaNotificationProviderImpl::~MediaNotificationProviderImpl() {
-  if (session_manager::SessionManager::Get())
-    session_manager::SessionManager::Get()->RemoveObserver(this);
-
-  if (item_manager_)
-    item_manager_->RemoveObserver(this);
+  item_manager_->RemoveObserver(this);
 
   for (auto item_ui_pair : observed_item_uis_)
     item_ui_pair.second->RemoveObserver(this);
@@ -130,18 +148,4 @@ void MediaNotificationProviderImpl::OnMediaItemUIDestroyed(
 
   iter->second->RemoveObserver(this);
   observed_item_uis_.erase(iter);
-}
-
-void MediaNotificationProviderImpl::OnUserProfileLoaded(
-    const AccountId& account_id) {
-  auto* profile =
-      chromeos::ProfileHelper::Get()->GetProfileByAccountId(account_id);
-  user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
-
-  if (user_manager::UserManager::Get()->GetPrimaryUser() == user) {
-    service_ = MediaNotificationServiceFactory::GetForProfile(profile);
-    item_manager_ = service_->media_item_manager();
-    item_manager_->AddObserver(this);
-  }
 }

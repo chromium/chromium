@@ -13,22 +13,19 @@
 #include "components/global_media_controls/public/media_item_manager_observer.h"
 #include "components/global_media_controls/public/media_item_ui_observer.h"
 #include "components/media_message_center/media_notification_view_impl.h"
-#include "components/session_manager/core/session_manager_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace global_media_controls {
 class MediaItemManager;
 class MediaItemUIListView;
+class MediaSessionItemProducer;
 }  // namespace global_media_controls
-
-class MediaNotificationService;
 
 class MediaNotificationProviderImpl
     : public ash::MediaNotificationProvider,
       public global_media_controls::MediaDialogDelegate,
       public global_media_controls::MediaItemManagerObserver,
-      public global_media_controls::MediaItemUIObserver,
-      public session_manager::SessionManagerObserver {
+      public global_media_controls::MediaItemUIObserver {
  public:
   MediaNotificationProviderImpl();
   ~MediaNotificationProviderImpl() override;
@@ -63,19 +60,20 @@ class MediaNotificationProviderImpl
   void OnMediaItemUISizeChanged() override;
   void OnMediaItemUIDestroyed(const std::string& id) override;
 
-  // session_manager::SessionManagerObserver:
-  void OnUserProfileLoaded(const AccountId& account_id) override;
-
-  MediaNotificationService* service_for_testing() { return service_; }
+  global_media_controls::MediaSessionItemProducer*
+  media_session_item_producer_for_testing() {
+    return media_session_item_producer_.get();
+  }
 
  private:
   base::ObserverList<ash::MediaNotificationProviderObserver> observers_;
 
   global_media_controls::MediaItemUIListView* active_session_view_ = nullptr;
 
-  MediaNotificationService* service_ = nullptr;
+  std::unique_ptr<global_media_controls::MediaItemManager> item_manager_;
 
-  global_media_controls::MediaItemManager* item_manager_ = nullptr;
+  std::unique_ptr<global_media_controls::MediaSessionItemProducer>
+      media_session_item_producer_;
 
   std::map<const std::string, global_media_controls::MediaItemUI*>
       observed_item_uis_;

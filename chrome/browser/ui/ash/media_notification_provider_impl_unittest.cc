@@ -5,19 +5,10 @@
 #include "chrome/browser/ui/ash/media_notification_provider_impl.h"
 
 #include "ash/public/cpp/media_notification_provider_observer.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/ui/global_media_controls/media_notification_service.h"
-#include "chrome/browser/ui/global_media_controls/media_notification_service_factory.h"
-#include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile_manager.h"
 #include "components/global_media_controls/public/media_session_item_producer.h"
 #include "components/global_media_controls/public/views/media_item_ui_list_view.h"
-#include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_task_environment.h"
-#include "media/base/media_switches.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -39,12 +30,6 @@ class MockMediaNotificationProviderObserver
   MOCK_METHOD0(OnNotificationListViewSizeChanged, void());
 };
 
-std::unique_ptr<KeyedService> CreateMediaNotificationService(
-    content::BrowserContext* context) {
-  return std::make_unique<MediaNotificationService>(
-      Profile::FromBrowserContext(context), true /* show_from_all_profiles */);
-}
-
 }  // namespace
 
 class MediaNotificationProviderImplTest : public testing::Test {
@@ -55,41 +40,14 @@ class MediaNotificationProviderImplTest : public testing::Test {
   void SetUp() override {
     testing::Test::SetUp();
 
-    // Disable a feature unrelated to the unit test. The use of cast features
-    // requires setting up extra dependencies.
-    feature_list_.InitAndDisableFeature(media::kGlobalMediaControlsForCast);
-
-    user_manager_->Initialize();
-    CHECK(testing_profile_manager_.SetUp());
-
-    AccountId account_id(AccountId::FromUserEmail("foo@test.com"));
-    user_manager::User* user = user_manager_->AddPublicAccountUser(account_id);
-
-    Profile* profile =
-        testing_profile_manager_.CreateTestingProfile("test-profile");
-    chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
-                                                                      profile);
-    chromeos::ProfileHelper::Get()->SetProfileToUserMappingForTesting(user);
-
-    user_manager_->LoginUser(account_id);
-    DCHECK(user_manager_->GetPrimaryUser());
-
-    MediaNotificationServiceFactory::GetInstance()->SetTestingFactory(
-        profile, base::BindRepeating(&CreateMediaNotificationService));
-
     provider_ = std::make_unique<MediaNotificationProviderImpl>();
     mock_observer_ = std::make_unique<MockMediaNotificationProviderObserver>();
-
-    session_manager_.NotifyUserProfileLoaded(account_id);
-    DCHECK(provider_->service_for_testing());
-
     provider_->AddObserver(mock_observer_.get());
   }
 
   void TearDown() override {
     mock_observer_.reset();
     provider_.reset();
-    user_manager_->Destroy();
     testing::Test::TearDown();
   }
 
@@ -101,14 +59,14 @@ class MediaNotificationProviderImplTest : public testing::Test {
     focus->request_id = id;
     focus->session_info = std::move(session_info);
 
-    provider_->service_for_testing()
-        ->media_session_item_producer_->OnFocusGained(std::move(focus));
-    provider_->service_for_testing()
-        ->media_session_item_producer_->ActivateItem(id.ToString());
+    provider_->media_session_item_producer_for_testing()->OnFocusGained(
+        std::move(focus));
+    provider_->media_session_item_producer_for_testing()->ActivateItem(
+        id.ToString());
   }
 
   void SimulateHideNotification(base::UnguessableToken id) {
-    provider_->service_for_testing()->media_session_item_producer_->HideItem(
+    provider_->media_session_item_producer_for_testing()->HideItem(
         id.ToString());
   }
 
@@ -118,17 +76,15 @@ class MediaNotificationProviderImplTest : public testing::Test {
 
   MediaNotificationProviderImpl* provider() { return provider_.get(); }
 
-  content::BrowserTaskEnvironment browser_environment_;
-
  private:
-  session_manager::SessionManager session_manager_;
-  ash::FakeChromeUserManager* user_manager_{new ash::FakeChromeUserManager()};
-  TestingProfileManager testing_profile_manager_{
-      TestingBrowserProcess::GetGlobal()};
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::UI,
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
   views::LayoutProvider layout_provider_;
-  base::test::ScopedFeatureList feature_list_;
 
   std::unique_ptr<MockMediaNotificationProviderObserver> mock_observer_;
+
   std::unique_ptr<MediaNotificationProviderImpl> provider_;
 };
 
