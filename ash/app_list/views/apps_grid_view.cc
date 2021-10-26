@@ -2536,17 +2536,11 @@ void AppsGridView::CreateGhostImageView() {
   // GhostImageView that will fade in.
   last_ghost_view_ = current_ghost_view_;
 
-  auto current_ghost_view =
-      std::make_unique<GhostImageView>(drag_item_, folder_delegate_);
+  auto current_ghost_view = std::make_unique<GhostImageView>();
   gfx::Rect ghost_view_bounds = GetExpectedTileBounds(reorder_placeholder_);
   ghost_view_bounds.Offset(
       CalculateTransitionOffset(reorder_placeholder_.page));
-  current_ghost_view->Init(
-      app_list_config_,
-      AppListItemView::GetIconBoundsForTargetViewBounds(
-          app_list_config_, gfx::Rect(ghost_view_bounds.size()),
-          app_list_config_->grid_icon_size(), kCardifiedScale),
-      ghost_view_bounds);
+  current_ghost_view->Init(app_list_config_, ghost_view_bounds);
   current_ghost_view_ =
       items_container_->AddChildView(std::move(current_ghost_view));
   current_ghost_view_->FadeIn();
