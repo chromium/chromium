@@ -273,18 +273,6 @@ WebVector<WebDraggableRegion> WebDocument::DraggableRegions() const {
   return draggable_regions;
 }
 
-WebURL WebDocument::CanonicalUrlForSharing() const {
-  const Document* document = ConstUnwrap<Document>();
-  HTMLLinkElement* link_element = document->LinkCanonical();
-  if (!link_element)
-    return WebURL();
-  KURL canon_url = link_element->Href();
-  KURL doc_url = document->Url();
-  if (doc_url.HasFragmentIdentifier() && !canon_url.HasFragmentIdentifier())
-    canon_url.SetFragmentIdentifier(doc_url.FragmentIdentifier());
-  return canon_url;
-}
-
 WebDistillabilityFeatures WebDocument::DistillabilityFeatures() {
   return DocumentStatisticsCollector::CollectStatistics(*Unwrap<Document>());
 }

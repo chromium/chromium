@@ -1114,7 +1114,6 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
   base::TimeDelta elapsed_time_ms = timer.Elapsed();
   if (elapsed_time_ms > slowest_serialization_time_) {
     last_ukm_source_id_ = document.GetUkmSourceId();
-    last_ukm_url_ = document.CanonicalUrlForSharing().GetString().Utf8();
     slowest_serialization_time_ = elapsed_time_ms;
   }
   // Also log the time taken in this function to track serialization
@@ -1516,7 +1515,6 @@ void RenderAccessibilityImpl::ResetUKMData() {
   slowest_serialization_time_ = base::TimeDelta();
   ukm_timer_ = std::make_unique<base::ElapsedTimer>();
   last_ukm_source_id_ = ukm::kInvalidSourceId;
-  last_ukm_url_ = "";
 }
 
 AXDirtyObject::AXDirtyObject() = default;
