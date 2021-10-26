@@ -82,9 +82,10 @@ TEST_F(IOTaskControllerTest, SimpleQueueing) {
   // Wait for the two callbacks posted to the main sequence to finish.
   {
     base::RunLoop run_loop;
-    EXPECT_CALL(observer, OnIOTaskStatus(AllOf(
-                              Field(&ProgressStatus::state, State::kInProgress),
-                              base_matcher)))
+    EXPECT_CALL(observer,
+                OnIOTaskStatus(AllOf(
+                    Field(&ProgressStatus::state, State::kInProgress),
+                    Field(&ProgressStatus::task_id, task_id), base_matcher)))
         .WillOnce(RunClosure(run_loop.QuitClosure()));
     run_loop.Run();
   }
@@ -137,9 +138,10 @@ TEST_F(IOTaskControllerTest, Cancel) {
       std::make_unique<DummyIOTask>(source_urls, dest, OperationType::kMove));
 
   // Cancel should synchronously send a progress status.
-  EXPECT_CALL(observer, OnIOTaskStatus(AllOf(
-                            Field(&ProgressStatus::state, State::kCancelled),
-                            base_matcher)));
+  EXPECT_CALL(observer,
+              OnIOTaskStatus(AllOf(
+                  Field(&ProgressStatus::state, State::kCancelled),
+                  Field(&ProgressStatus::task_id, task_id), base_matcher)));
 
   io_task_controller_.Cancel(task_id);
 

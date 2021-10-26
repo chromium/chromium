@@ -903,9 +903,11 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("transferInfoIsRemembered"),
         // TestCase("transferInfoIsRemembered").FilesSwa(),
         TestCase("transferToUsbHasDestinationText"),
-        TestCase("transferToUsbHasDestinationText").FilesSwa(),
+        // TODO(lucmult): Re-enable this once SWA uses the feedback panel.
+        // TestCase("transferToUsbHasDestinationText").FilesSwa(),
         TestCase("transferDismissedErrorIsRemembered"),
-        TestCase("transferDismissedErrorIsRemembered").FilesSwa(),
+        // TODO(lucmult): Re-enable this once SWA uses the feedback panel.
+        // TestCase("transferDismissedErrorIsRemembered").FilesSwa(),
         TestCase("transferNotSupportedOperationHasNoRemainingTimeText"),
         TestCase("transferNotSupportedOperationHasNoRemainingTimeText")
             .FilesSwa(),

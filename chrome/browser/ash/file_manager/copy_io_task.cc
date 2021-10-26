@@ -69,14 +69,14 @@ CopyIOTask::CopyIOTask(
     Profile* profile,
     scoped_refptr<storage::FileSystemContext> file_system_context)
     : profile_(profile), file_system_context_(file_system_context) {
-  status_.state = State::kQueued;
-  status_.type = OperationType::kCopy;
-  status_.destination_folder = std::move(destination_folder);
-  status_.bytes_transferred = 0;
-  status_.total_bytes = 0;
+  progress_.state = State::kQueued;
+  progress_.type = OperationType::kCopy;
+  progress_.destination_folder = std::move(destination_folder);
+  progress_.bytes_transferred = 0;
+  progress_.total_bytes = 0;
 
-  for (auto& url : source_urls) {
-    status_.sources.emplace_back(url, absl::nullopt);
+  for (const auto& url : source_urls) {
+    progress_.sources.emplace_back(url, absl::nullopt);
   }
 
   source_sizes_.reserve(source_urls.size());
@@ -101,42 +101,38 @@ void CopyIOTask::Execute(IOTask::ProgressCallback progress_callback,
   progress_callback_ = std::move(progress_callback);
   complete_callback_ = std::move(complete_callback);
 
-  if (status_.sources.size() == 0) {
+  if (progress_.sources.size() == 0) {
     Complete(State::kSuccess);
     return;
   }
-  status_.state = State::kInProgress;
+  progress_.state = State::kInProgress;
 
   GetFileSize(0);
 }
 
 void CopyIOTask::Cancel() {
-  status_.state = State::kCancelled;
+  progress_.state = State::kCancelled;
   // Any inflight operation will be cancelled when the task is destroyed.
 }
 
-const ProgressStatus& CopyIOTask::progress() {
-  return status_;
-}
-
-// Calls the completion callback for the task. |status_| should not be accessed
-// after calling this.
+// Calls the completion callback for the task. |progress_| should not be
+// accessed after calling this.
 void CopyIOTask::Complete(State state) {
-  status_.state = state;
+  progress_.state = state;
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
-      base::BindOnce(std::move(complete_callback_), std::move(status_)));
+      base::BindOnce(std::move(complete_callback_), std::move(progress_)));
 }
 
 // Computes the total size of all source files and stores it in
-// |status_.total_bytes|.
+// |progress_.total_bytes|.
 void CopyIOTask::GetFileSize(size_t idx) {
-  DCHECK(idx < status_.sources.size());
+  DCHECK(idx < progress_.sources.size());
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
           &GetFileMetadataOnIOThread, file_system_context_,
-          status_.sources[idx].url,
+          progress_.sources[idx].url,
           storage::FileSystemOperation::GET_METADATA_FIELD_SIZE |
               storage::FileSystemOperation::GET_METADATA_FIELD_TOTAL_SIZE,
           google_apis::CreateRelayCallback(base::BindOnce(
@@ -148,26 +144,26 @@ void CopyIOTask::GetFileSize(size_t idx) {
 void CopyIOTask::GotFileSize(size_t idx,
                              base::File::Error error,
                              const base::File::Info& file_info) {
-  DCHECK(idx < status_.sources.size());
+  DCHECK(idx < progress_.sources.size());
   if (error != base::File::FILE_OK) {
-    status_.sources[idx].error = error;
+    progress_.sources[idx].error = error;
     Complete(State::kError);
     return;
   }
 
-  status_.total_bytes += file_info.size;
+  progress_.total_bytes += file_info.size;
   source_sizes_.push_back(file_info.size);
-  if (idx < status_.sources.size() - 1) {
+  if (idx < progress_.sources.size() - 1) {
     GetFileSize(idx + 1);
   } else {
-    if (util::IsNonNativeFileSystemType(status_.destination_folder.type())) {
+    if (util::IsNonNativeFileSystemType(progress_.destination_folder.type())) {
       // Destination is a virtual filesystem, so skip checking free space.
       GenerateDestinationURL(0);
     } else {
       base::ThreadPool::PostTaskAndReplyWithResult(
           FROM_HERE, {base::MayBlock()},
           base::BindOnce(&base::SysInfo::AmountOfFreeDiskSpace,
-                         status_.destination_folder.path()),
+                         progress_.destination_folder.path()),
           base::BindOnce(&CopyIOTask::GotFreeDiskSpace,
                          weak_ptr_factory_.GetWeakPtr()));
     }
@@ -178,16 +174,16 @@ void CopyIOTask::GotFileSize(size_t idx,
 void CopyIOTask::GotFreeDiskSpace(int64_t free_space) {
   auto* drive_integration_service =
       drive::util::GetIntegrationServiceByProfile(profile_);
-  if (status_.destination_folder.filesystem_id() ==
+  if (progress_.destination_folder.filesystem_id() ==
           util::GetDownloadsMountPointName(profile_) ||
       (drive_integration_service &&
        drive_integration_service->GetMountPointPath().IsParent(
-           status_.destination_folder.path()))) {
+           progress_.destination_folder.path()))) {
     free_space -= cryptohome::kMinFreeSpaceInBytes;
   }
-  if (status_.total_bytes > free_space) {
-    status_.outputs.emplace_back(status_.destination_folder,
-                                 base::File::FILE_ERROR_NO_SPACE);
+  if (progress_.total_bytes > free_space) {
+    progress_.outputs.emplace_back(progress_.destination_folder,
+                                   base::File::FILE_ERROR_NO_SPACE);
     Complete(State::kError);
     return;
   }
@@ -198,10 +194,10 @@ void CopyIOTask::GotFreeDiskSpace(int64_t free_space) {
 // Tries to find an unused filename in the destination folder for a specific
 // entry being copied.
 void CopyIOTask::GenerateDestinationURL(size_t idx) {
-  DCHECK(idx < status_.sources.size());
+  DCHECK(idx < progress_.sources.size());
   util::GenerateUnusedFilename(
-      status_.destination_folder, status_.sources[idx].url.path().BaseName(),
-      file_system_context_,
+      progress_.destination_folder,
+      progress_.sources[idx].url.path().BaseName(), file_system_context_,
       base::BindOnce(&CopyIOTask::CopyFile, weak_ptr_factory_.GetWeakPtr(),
                      idx));
 }
@@ -210,21 +206,21 @@ void CopyIOTask::GenerateDestinationURL(size_t idx) {
 void CopyIOTask::CopyFile(
     size_t idx,
     base::FileErrorOr<storage::FileSystemURL> destination_result) {
-  DCHECK(idx < status_.sources.size());
+  DCHECK(idx < progress_.sources.size());
   if (destination_result.is_error()) {
-    status_.outputs.emplace_back(status_.destination_folder, absl::nullopt);
+    progress_.outputs.emplace_back(progress_.destination_folder, absl::nullopt);
     OnCopyComplete(idx, destination_result.error());
     return;
   }
-  status_.outputs.emplace_back(destination_result.value(), absl::nullopt);
+  progress_.outputs.emplace_back(destination_result.value(), absl::nullopt);
 
   last_progress_size_ = 0;
 
   content::GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
-          &StartCopyOnIOThread, file_system_context_, status_.sources[idx].url,
-          destination_result.value(),
+          &StartCopyOnIOThread, file_system_context_,
+          progress_.sources[idx].url, destination_result.value(),
           google_apis::CreateRelayCallback(base::BindRepeating(
               &CopyIOTask::OnCopyProgress, weak_ptr_factory_.GetWeakPtr())),
           google_apis::CreateRelayCallback(
@@ -239,23 +235,27 @@ void CopyIOTask::OnCopyProgress(
     const storage::FileSystemURL& source_url,
     const storage::FileSystemURL& destination_url,
     int64_t size) {
-  status_.bytes_transferred += size - last_progress_size_;
+  // The storage layer sometimes sends the progress with size=0.
+  if (size > 0)
+    progress_.bytes_transferred += size - last_progress_size_;
+
   last_progress_size_ = size;
-  progress_callback_.Run(status_);
+  progress_callback_.Run(progress_);
 }
 
 void CopyIOTask::OnCopyComplete(size_t idx, base::File::Error error) {
-  DCHECK(idx < status_.sources.size());
-  DCHECK(idx < status_.outputs.size());
+  DCHECK(idx < progress_.sources.size());
+  DCHECK(idx < progress_.outputs.size());
   operation_id_.reset();
-  status_.sources[idx].error = error;
-  status_.outputs[idx].error = error;
-  status_.bytes_transferred += source_sizes_[idx] - last_progress_size_;
-  if (idx < status_.sources.size() - 1) {
-    progress_callback_.Run(status_);
+  progress_.sources[idx].error = error;
+  progress_.outputs[idx].error = error;
+  progress_.bytes_transferred += source_sizes_[idx] - last_progress_size_;
+
+  if (idx < progress_.sources.size() - 1) {
+    progress_callback_.Run(progress_);
     GenerateDestinationURL(idx + 1);
   } else {
-    for (const auto& source : status_.sources) {
+    for (const auto& source : progress_.sources) {
       if (source.error != base::File::FILE_OK) {
         Complete(State::kError);
         return;

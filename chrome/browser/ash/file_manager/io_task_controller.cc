@@ -47,8 +47,11 @@ void IOTaskController::RemoveObserver(IOTaskController::Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-IOTaskController::IOTaskId IOTaskController::Add(std::unique_ptr<IOTask> task) {
+IOTaskId IOTaskController::Add(std::unique_ptr<IOTask> task) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  IOTaskId task_id = ++last_id_;
+  task->progress_.task_id = task_id;
 
   // Notify observers that the task has been queued.
   NotifyIOTaskObservers(task->progress());
@@ -59,9 +62,9 @@ IOTaskController::IOTaskId IOTaskController::Add(std::unique_ptr<IOTask> task) {
                 base::BindPostTask(
                     base::SequencedTaskRunnerHandle::Get(),
                     base::BindOnce(&IOTaskController::OnIOTaskComplete,
-                                   weak_ptr_factory_.GetWeakPtr(), last_id_)));
-  tasks_[last_id_] = std::move(task);
-  return last_id_++;
+                                   weak_ptr_factory_.GetWeakPtr(), task_id)));
+  tasks_[task_id] = std::move(task);
+  return task_id;
 }
 
 void IOTaskController::Cancel(IOTaskId task_id) {

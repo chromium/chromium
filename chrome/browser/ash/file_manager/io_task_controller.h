@@ -25,8 +25,6 @@ namespace io_task {
 // be used from one sequence.
 class IOTaskController {
  public:
-  using IOTaskId = uint64_t;
-
   IOTaskController();
   IOTaskController(const IOTaskController& other) = delete;
   IOTaskController operator=(const IOTaskController& other) = delete;

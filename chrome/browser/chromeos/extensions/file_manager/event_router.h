@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/file_watcher.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
+#include "chrome/browser/ash/file_manager/io_task_controller.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_observer.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
@@ -57,7 +58,8 @@ class EventRouter
       public arc::ArcIntentHelperObserver,
       public drive::DriveIntegrationServiceObserver,
       public guest_os::GuestOsSharePath::Observer,
-      public ash::TabletModeObserver {
+      public ash::TabletModeObserver,
+      public file_manager::io_task::IOTaskController::Observer {
  public:
   using DispatchDirectoryChangeEventImplCallback =
       base::RepeatingCallback<void(const base::FilePath& virtual_path,
@@ -191,6 +193,9 @@ class EventRouter
 
   // Returns a weak pointer for the event router.
   base::WeakPtr<EventRouter> GetWeakPtr();
+
+  // IOTaskController::Observer:
+  void OnIOTaskStatus(const io_task::ProgressStatus& status) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(EventRouterTest, PopulateCrostiniEvent);
