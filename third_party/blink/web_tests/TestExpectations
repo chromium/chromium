@@ -177,7 +177,6 @@ crbug.com/1254945 external/wpt/html/semantics/embedded-content/media-elements/tr
 crbug.com/1254945 external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-enter-exit.html [ Failure Pass ]
 crbug.com/1254945 external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-remove-insert-ready-state.html [ Failure Pass ]
 
-crbug.com/1262934 fast/forms/form-invalid-url.html [ Failure Pass ]
 crbug.com/1262985 fullscreen/enter-exit-full-screen-hover.html [ Failure Pass ]
 
 # ====== Synchronous, budgeted HTML parser tests to here ========================
