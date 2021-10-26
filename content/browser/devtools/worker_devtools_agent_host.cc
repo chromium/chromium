@@ -75,6 +75,17 @@ void WorkerDevToolsAgentHost::SetRenderer(
                                     std::move(connection_error));
 }
 
+void WorkerDevToolsAgentHost::ChildWorkerCreated(
+    const GURL& url,
+    const std::string& name,
+    base::OnceCallback<void(DevToolsAgentHostImpl*)> callback) {
+  DCHECK(base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker));
+
+  url_ = url;
+  name_ = name;
+  destroyed_callback_ = std::move(callback);
+}
+
 void WorkerDevToolsAgentHost::Disconnected() {
   ForceDetachAllSessions();
   GetRendererChannel()->SetRenderer(mojo::NullRemote(), mojo::NullReceiver(),
