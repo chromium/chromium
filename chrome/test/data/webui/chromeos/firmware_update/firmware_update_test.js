@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {FakeUpdateProvider} from 'chrome://accessory-update/fake_update_provider.js';
 import {FirmwareUpdateAppElement} from 'chrome://accessory-update/firmware_update_app.js';
 import {UpdateProviderInterface} from 'chrome://accessory-update/firmware_update_types.js';
 import {getUpdateProvider, setUpdateProviderForTesting} from 'chrome://accessory-update/mojo_interface_provider.js';
@@ -32,9 +33,8 @@ export function firmwareUpdateAppTest() {
   });
 
   test('SettingGettingTestProvider', () => {
-    // TODO(michaelcheco): Replace with fake when built.
     let fake_provider =
-        /** @type {!UpdateProviderInterface} */ (new Object());
+        /** @type {!UpdateProviderInterface} */ (new FakeUpdateProvider());
     setUpdateProviderForTesting(fake_provider);
     assertEquals(fake_provider, getUpdateProvider());
   });

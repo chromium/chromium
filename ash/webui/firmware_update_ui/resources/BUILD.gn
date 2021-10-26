@@ -16,6 +16,7 @@ polymer_element_files = [ "firmware_update_app.js" ]
 generate_grd("build_grd") {
   input_files = [
     "app_icon_192.png",
+    "fake_update_provider.js",
     "firmware_update_types.js",
     "index.html",
     "mojo_interface_provider.js",
@@ -31,10 +32,14 @@ js_type_check("closure_compile") {
   is_polymer3 = true
   closure_flags = default_closure_args
   deps = [
+    ":fake_update_provider",
     ":firmware_update_app",
     ":firmware_update_types",
     ":mojo_interface_provider",
   ]
+}
+
+js_library("fake_update_provider") {
 }
 
 js_library("firmware_update_app") {

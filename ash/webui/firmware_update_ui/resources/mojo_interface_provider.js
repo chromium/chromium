@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.m.js';
+import {FakeUpdateProvider} from './fake_update_provider.js';
 import {UpdateProviderInterface} from './firmware_update_types.js';
 
 /**
@@ -24,11 +25,22 @@ export function setUpdateProviderForTesting(testProvider) {
 }
 
 /**
+ * Sets up a FakeUpdateProvider to be used at runtime.
+ * TODO(michaelcheco): Remove once mojo bindings are implemented.
+ */
+function setupFakeUpdateProvider() {
+  setUpdateProviderForTesting(new FakeUpdateProvider());
+}
+
+/**
  * @return {!UpdateProviderInterface}
  */
 export function getUpdateProvider() {
-  // TODO(michaelcheco): Instantiate a real mojo interface here.
-  assert(!!updateProvider);
+  if (!updateProvider) {
+    // TODO(michaelcheco): Instantiate a real mojo interface here.
+    setupFakeUpdateProvider();
+  }
 
+  assert(!!updateProvider);
   return updateProvider;
 }

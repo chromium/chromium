@@ -12,14 +12,24 @@ js_type_check("closure_compile") {
                     "js_module_root=./gen/chrome/test/data/webui/",
                   ]
   deps = [
+    ":fake_update_provider_test",
     ":firmware_update_test",
     ":firmware_update_unified_test",
   ]
 }
 
+js_library("fake_update_provider_test") {
+  deps = [
+    "../..:chai_assert",
+    "//ash/webui/firmware_update_ui/resources:fake_update_provider",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
 js_library("firmware_update_test") {
   deps = [
     "../..:chai_assert",
+    "//ash/webui/firmware_update_ui/resources:fake_update_provider",
     "//ash/webui/firmware_update_ui/resources:firmware_update_app",
     "//ash/webui/firmware_update_ui/resources:firmware_update_types",
     "//ash/webui/firmware_update_ui/resources:mojo_interface_provider",
