@@ -165,6 +165,10 @@ void DroppedFrameCounter::ResetPendingFrames(base::TimeTicks timestamp) {
   latest_sliding_window_interval_ = {};
 }
 
+void DroppedFrameCounter::EnableReporForUI() {
+  report_for_ui_ = true;
+}
+
 void DroppedFrameCounter::OnBeginFrame(const viz::BeginFrameArgs& args,
                                        bool is_scroll_active) {
   // Remember when scrolling starts/ends. Do this even if fcp has not happened
@@ -195,7 +199,11 @@ void DroppedFrameCounter::OnEndFrame(const viz::BeginFrameArgs& args,
   if (is_dropped && fcp_received_ && args.frame_time >= time_fcp_received_ &&
       !frame_sorter_.IsFrameDropped(args.frame_id)) {
     ++total_smoothness_dropped_;
-    ReportFrames();
+
+    if (report_for_ui_)
+      ReportFramesForUI();
+    else
+      ReportFrames();
   }
   auto iter = scroll_start_per_frame_.find(args.frame_id);
   if (iter != scroll_start_per_frame_.end()) {
@@ -219,6 +227,8 @@ void DroppedFrameCounter::OnEndFrame(const viz::BeginFrameArgs& args,
 }
 
 void DroppedFrameCounter::ReportFrames() {
+  DCHECK(!report_for_ui_);
+
   const auto total_frames =
       total_counter_->ComputeTotalVisibleFrames(base::TimeTicks::Now());
   TRACE_EVENT2("cc,benchmark", "SmoothnessDroppedFrame", "total", total_frames,
@@ -278,6 +288,18 @@ void DroppedFrameCounter::ReportFrames() {
     smoothness_data.time_max_delta = time_max_delta_;
     ukm_smoothness_data_->Write(smoothness_data);
   }
+}
+
+void DroppedFrameCounter::ReportFramesForUI() {
+  DCHECK(report_for_ui_);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (sliding_window_max_percent_dropped_ !=
+      last_reported_metrics_.max_window) {
+    UMA_HISTOGRAM_PERCENTAGE("Ash.Smoothness.MaxPercentDroppedFrames_1sWindow",
+                             sliding_window_max_percent_dropped_);
+    last_reported_metrics_.max_window = sliding_window_max_percent_dropped_;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 double DroppedFrameCounter::GetMostRecentAverageSmoothness() const {

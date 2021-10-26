@@ -335,9 +335,9 @@ const LayerTreeDebugState& LayerTreeHost::GetDebugState() const {
   return debug_state_;
 }
 
-void LayerTreeHost::RequestMainFrameUpdate(bool report_cc_metrics) {
+void LayerTreeHost::RequestMainFrameUpdate(bool report_metrics) {
   client_->UpdateLayerTreeHost();
-  if (report_cc_metrics)
+  if (report_metrics)
     begin_main_frame_metrics_ = client_->GetBeginMainFrameMetrics();
   else
     begin_main_frame_metrics_.reset();

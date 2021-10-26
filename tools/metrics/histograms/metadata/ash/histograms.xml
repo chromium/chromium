@@ -2800,6 +2800,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="Ash.Smoothness.MaxPercentDroppedFrames_1sWindow" units="%"
+    expires_after="2022-09-30">
+  <owner>xiyuan@chromium.org</owner>
+  <owner>chromeos-perfmetrics-eng@google.com</owner>
+  <summary>
+    Similar to &quot;Graphics.Smoothness.MaxPercentDroppedFrames_1sWindow&quot;
+    but for ui::Compositor. Tracks the max percent of dropped frames for in a 1
+    second sliding window.
+
+    PercentDroppedFrames is measured by tracking the number of frames which were
+    not displayed on screen out of the total number of frames expected to be
+    produced and displayed. In other words, the lower this number is, the
+    smoother experience.
+  </summary>
+</histogram>
+
 <histogram name="Ash.SplitView.DeviceOrientation.{DeviceUIMode}"
     enum="DeviceOrientation" expires_after="2022-08-11">
   <owner>cattalyya@chromium.org</owner>
