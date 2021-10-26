@@ -2,18 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Command} from 'chrome://bookmarks/bookmarks.js';
+import {BookmarksToolbarElement, Command} from 'chrome://bookmarks/bookmarks.js';
 import {isMac} from 'chrome://resources/js/cr.m.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+
 import {TestCommandManager} from './test_command_manager.js';
 import {TestStore} from './test_store.js';
 import {createFolder, createItem, getAllFoldersOpenState, replaceBody, testTree} from './test_util.js';
 
 suite('<bookmarks-toolbar>', function() {
-  let toolbar;
-  let store;
-  let testCommandManager;
+  let toolbar: BookmarksToolbarElement;
+  let store: TestStore;
+  let testCommandManager: TestCommandManager;
 
   suiteSetup(function() {
     chrome.bookmarkManagerPrivate.removeTrees = function() {};
@@ -23,7 +25,9 @@ suite('<bookmarks-toolbar>', function() {
     const nodes = testTree(createFolder('1', [
       createItem('2'),
       createItem('3'),
-      createFolder('4', [], {unmodifiable: 'managed'}),
+      createFolder('4', [], {
+        unmodifiable: chrome.bookmarks.BookmarkTreeNodeUnmodifiable.MANAGED
+      }),
       createFolder('5', []),
       createFolder(
           '6',
@@ -74,8 +78,8 @@ suite('<bookmarks-toolbar>', function() {
 
     flush();
     const button =
-        toolbar.shadowRoot.querySelector('cr-toolbar-selection-overlay')
-            .deleteButton;
+        toolbar.shadowRoot!.querySelector(
+                               'cr-toolbar-selection-overlay')!.deleteButton;
     assertFalse(button.disabled);
     button.click();
 
@@ -86,9 +90,9 @@ suite('<bookmarks-toolbar>', function() {
     store.data.selection.items = new Set(['2']);
     store.notifyObservers();
 
-    const input = toolbar.shadowRoot.querySelector('cr-toolbar')
-                      .getSearchField()
-                      .getSearchInput();
+    const input =
+        toolbar.shadowRoot!.querySelector('cr-toolbar')!.getSearchField()
+            .getSearchInput();
     const modifier = isMac ? 'meta' : 'ctrl';
     pressAndReleaseKeyOn(input, 67, modifier, 'c');
 
@@ -102,7 +106,8 @@ suite('<bookmarks-toolbar>', function() {
     flush();
 
     assertTrue(toolbar.showSelectionOverlay);
-    assertTrue(toolbar.shadowRoot.querySelector('cr-toolbar-selection-overlay')
-                   .deleteButton.disabled);
+    assertTrue(
+        toolbar.shadowRoot!.querySelector('cr-toolbar-selection-overlay')!
+            .deleteButton.disabled);
   });
 });

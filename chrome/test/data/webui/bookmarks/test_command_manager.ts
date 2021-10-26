@@ -2,14 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://bookmarks/bookmarks.js';
+import {BookmarksCommandManagerElement, Command} from 'chrome://bookmarks/bookmarks.js';
+import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
+
 import {normalizeIterable} from './test_util.js';
 
 export class TestCommandManager {
+  private commandManager_: BookmarksCommandManagerElement;
+  private lastCommand_: Command|null = null;
+  private lastCommandIds_: Set<string>|null = null;
+
   constructor() {
     this.commandManager_ = document.createElement('bookmarks-command-manager');
-    this.lastCommand_ = null;
-    this.lastCommandIds_ = null;
     const realHandle = this.commandManager_.handle.bind(this.commandManager_);
     this.commandManager_.handle = (command, itemIds) => {
       this.lastCommand_ = command;
@@ -22,21 +26,17 @@ export class TestCommandManager {
     return this.commandManager_;
   }
 
-  /**
-   * @param {Command} command
-   * @param {!Array<string>} ids
-   */
-  assertLastCommand(command, ids) {
+  assertLastCommand(command: Command|null, ids?: string[]) {
     assertEquals(command, this.lastCommand_);
     if (ids) {
-      assertDeepEquals(ids, normalizeIterable(this.lastCommandIds_));
+      assertDeepEquals(ids, normalizeIterable(this.lastCommandIds_!));
     }
     this.lastCommand_ = null;
     this.lastCommandIds_ = null;
   }
 
-  /** @param {!Array<string>} ids */
-  assertMenuOpenForIds(ids) {
-    assertDeepEquals(ids, normalizeIterable(this.commandManager_.menuIds_));
+  assertMenuOpenForIds(ids: string[]) {
+    assertDeepEquals(
+        ids, normalizeIterable(this.commandManager_.getMenuIdsForTesting()));
   }
 }

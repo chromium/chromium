@@ -32,7 +32,7 @@ import {afterNextRender, flush, html, PolymerElement} from 'chrome://resources/p
 
 import {deselectItems, selectAll, selectFolder} from './actions.js';
 import {highlightUpdatedItems, trackUpdatedItems} from './api_listener.js';
-import {BrowserProxy} from './browser_proxy.js';
+import {BrowserProxy, BrowserProxyImpl} from './browser_proxy.js';
 import {Command, IncognitoAvailability, MenuSource, OPEN_CONFIRMATION_LIMIT, ROOT_NODE_ID} from './constants.js';
 import {DialogFocusManager} from './dialog_focus_manager.js';
 import {BookmarksEditDialogElement} from './edit_dialog.js';
@@ -99,7 +99,7 @@ export class BookmarksCommandManagerElement extends
     assert(instance === null);
     instance = this;
 
-    this.browserProxy_ = BrowserProxy.getInstance();
+    this.browserProxy_ = BrowserProxyImpl.getInstance();
 
     this.watch('globalCanEdit_', state => state.prefs.canEdit);
     this.updateFromStore();
@@ -159,6 +159,10 @@ export class BookmarksCommandManagerElement extends
     super.disconnectedCallback();
     instance = null;
     this.eventTracker_.removeAll();
+  }
+
+  getMenuIdsForTesting(): Set<string> {
+    return this.menuIds_;
   }
 
   /**
@@ -834,6 +838,12 @@ export class BookmarksCommandManagerElement extends
 
   static getInstance(): BookmarksCommandManagerElement {
     return assert(instance)!;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'bookmarks-command-manager': BookmarksCommandManagerElement;
   }
 }
 

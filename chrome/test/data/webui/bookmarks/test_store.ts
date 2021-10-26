@@ -6,11 +6,10 @@ import {createEmptyState, reduceAction, Store} from 'chrome://bookmarks/bookmark
 import {TestStore as CrUiTestStore} from 'chrome://webui-test/test_store.js';
 
 export class TestStore extends CrUiTestStore {
-  constructor(data) {
+  constructor(data: any) {
     super(data, Store, createEmptyState(), reduceAction);
   }
 
-  /** @override */
   replaceSingleton() {
     Store.setInstance(this);
   }

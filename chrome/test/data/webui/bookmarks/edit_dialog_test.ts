@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://bookmarks/bookmarks.js';
-
+import {BookmarksEditDialogElement, normalizeNode} from 'chrome://bookmarks/bookmarks.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {TestStore} from './test_store.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+
 import {createFolder, createItem, replaceBody} from './test_util.js';
 
 suite('<bookmarks-edit-dialog>', function() {
-  let dialog;
-  let lastUpdate;
-  let lastCreation;
+  let dialog: BookmarksEditDialogElement;
+  let lastUpdate: {id: string, edit: {url?: string, title?: string}};
+  let lastCreation: chrome.bookmarks.CreateDetails;
 
   suiteSetup(function() {
     chrome.bookmarks.update = function(id, edit) {
@@ -24,21 +24,21 @@ suite('<bookmarks-edit-dialog>', function() {
   });
 
   setup(function() {
-    lastUpdate = {};
+    lastUpdate = {id: '', edit: {}};
     lastCreation = {};
     dialog = document.createElement('bookmarks-edit-dialog');
     replaceBody(dialog);
   });
 
   test('editing an item shows the url field', function() {
-    const item = createItem('0');
+    const item = normalizeNode(createItem('0'));
     dialog.showEditDialog(item);
 
     assertFalse(dialog.$.url.hidden);
   });
 
   test('editing a folder hides the url field', function() {
-    const folder = createFolder('0', []);
+    const folder = normalizeNode(createFolder('0', []));
     dialog.showEditDialog(folder);
 
     assertTrue(dialog.$.url.hidden);
@@ -51,7 +51,8 @@ suite('<bookmarks-edit-dialog>', function() {
 
   test('editing passes the correct details to the update', function() {
     // Editing an item without changing anything.
-    const item = createItem('1', {url: 'http://website.com', title: 'website'});
+    const item = normalizeNode(
+        createItem('1', {url: 'http://website.com', title: 'website'}));
     dialog.showEditDialog(item);
 
     dialog.$.saveButton.click();
@@ -61,9 +62,9 @@ suite('<bookmarks-edit-dialog>', function() {
     assertEquals(item.title, lastUpdate.edit.title);
 
     // Editing a folder, changing the title.
-    const folder = createFolder('2', [], {title: 'Cool Sites'});
+    const folder = normalizeNode(createFolder('2', [], {title: 'Cool Sites'}));
     dialog.showEditDialog(folder);
-    dialog.titleValue_ = 'Awesome websites';
+    dialog.$.name.value = 'Awesome websites';
 
     dialog.$.saveButton.click();
 
@@ -75,8 +76,8 @@ suite('<bookmarks-edit-dialog>', function() {
   test('add passes the correct details to the backend', function() {
     dialog.showAddDialog(false, '1');
 
-    dialog.titleValue_ = 'Permission Site';
-    dialog.urlValue_ = 'permission.site';
+    dialog.$.name.value = 'Permission Site';
+    dialog.$.url.value = 'permission.site';
     flush();
 
     dialog.$.saveButton.click();
@@ -87,30 +88,30 @@ suite('<bookmarks-edit-dialog>', function() {
   });
 
   test('validates urls correctly', function() {
-    dialog.urlValue_ = 'http://www.example.com';
-    assertTrue(dialog.validateUrl_());
+    dialog.$.url.value = 'http://www.example.com';
+    assertTrue(dialog.validateUrl());
 
-    dialog.urlValue_ = 'https://a@example.com:8080';
-    assertTrue(dialog.validateUrl_());
+    dialog.$.url.value = 'https://a@example.com:8080';
+    assertTrue(dialog.validateUrl());
 
-    dialog.urlValue_ = 'example.com';
+    dialog.$.url.value = 'example.com';
     flush();
-    assertTrue(dialog.validateUrl_());
+    assertTrue(dialog.validateUrl());
     flush();
-    assertEquals('http://example.com', dialog.urlValue_);
+    assertEquals('http://example.com', dialog.$.url.value);
 
-    dialog.urlValue_ = '';
-    assertFalse(dialog.validateUrl_());
+    dialog.$.url.value = '';
+    assertFalse(dialog.validateUrl());
 
-    dialog.urlValue_ = '~~~example.com~~~';
-    assertFalse(dialog.validateUrl_());
+    dialog.$.url.value = '~~~example.com~~~';
+    assertFalse(dialog.validateUrl());
   });
 
   test('doesn\'t save when URL is invalid', function() {
-    const item = createItem('0');
+    const item = normalizeNode(createItem('0'));
     dialog.showEditDialog(item);
 
-    dialog.urlValue_ = '';
+    dialog.$.url.value = '';
 
     flush();
     dialog.$.saveButton.click();

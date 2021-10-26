@@ -135,4 +135,10 @@ export class BookmarksToolbarElement extends BookmarksToolbarElementBase {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'bookmarks-toolbar': BookmarksToolbarElement;
+  }
+}
+
 customElements.define(BookmarksToolbarElement.is, BookmarksToolbarElement);

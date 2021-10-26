@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BookmarksCommandManagerElement, BrowserProxy, Command, IncognitoAvailability} from 'chrome://bookmarks/bookmarks.js';
+import {BookmarksCommandManagerElement, BrowserProxyImpl, Command, IncognitoAvailability} from 'chrome://bookmarks/bookmarks.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {TestBookmarksBrowserProxy} from './test_browser_proxy.js';
 import {TestStore} from './test_store.js';
@@ -29,7 +29,7 @@ suite('Bookmarks policies', function() {
     store.replaceSingleton();
 
     testBrowserProxy = new TestBookmarksBrowserProxy();
-    BrowserProxy.setInstance(testBrowserProxy);
+    BrowserProxyImpl.setInstance(testBrowserProxy);
     app = document.createElement('bookmarks-app');
     replaceBody(app);
   });

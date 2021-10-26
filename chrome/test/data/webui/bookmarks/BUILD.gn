@@ -33,7 +33,7 @@ ts_library("build_ts") {
     "command_manager_test.js",
     "dialog_focus_manager_test.js",
     "dnd_manager_test.js",
-    "edit_dialog_test.js",
+    "edit_dialog_test.ts",
     "extension_api_test.js",
     "extension_api_test_edit_disabled.js",
     "folder_node_focus_test.js",
@@ -45,15 +45,19 @@ ts_library("build_ts") {
     "reducers_test.js",
     "router_test.js",
     "store_test.js",
-    "test_browser_proxy.js",
-    "test_command_manager.js",
-    "test_store.js",
+    "test_browser_proxy.ts",
+    "test_command_manager.ts",
+    "test_store.ts",
     "test_timer_proxy.js",
-    "test_util.js",
-    "toolbar_test.js",
+    "test_util.ts",
+    "toolbar_test.ts",
     "util_test.js",
   ]
   deps = [ "//chrome/browser/resources/bookmarks:build_ts" ]
-  definitions = [ "//tools/typescript/definitions/bookmarks.d.ts" ]
+  definitions = [
+    "//tools/typescript/definitions/bookmarks.d.ts",
+    "//tools/typescript/definitions/bookmark_manager_private.d.ts",
+    "//tools/typescript/definitions/runtime.d.ts",
+  ]
   extra_deps = [ "..:generate_definitions" ]
 }
