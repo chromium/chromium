@@ -1,3 +1,6 @@
+const image_delay = 1000;
+const delay_pipe_value = image_delay / 1000;
+
 // Receives an image LargestContentfulPaint |entry| and checks |entry|'s attribute values.
 // The |timeLowerBound| parameter is a lower bound on the loadTime value of the entry.
 // The |options| parameter may contain some string values specifying the following:
@@ -33,4 +36,33 @@ function checkImage(entry, expectedUrl, expectedID, expectedSize, timeLowerBound
   } else {
     assert_equals(entry.size, expectedSize);
   }
+  if (options.includes('animated')) {
+    assert_greater_than(entry.loadTime, entry.firstAnimatedFrameTime,
+      'firstAnimatedFrameTime should be smaller than loadTime');
+    assert_greater_than(entry.renderTime, entry.firstAnimatedFrameTime,
+      'firstAnimatedFrameTime should be smaller than renderTime');
+    assert_less_than(entry.firstAnimatedFrameTime, image_delay,
+      'firstAnimatedFrameTime should be smaller than the delay applied to the second frame');
+    assert_greater_than(entry.firstAnimatedFrameTime, 0,
+      'firstAnimatedFrameTime should be larger than 0');
+  }
+  if (options.includes('animated-zero')) {
+    assert_equals(entry.firstAnimatedFrameTime, 0, 'firstAnimatedFrameTime should be 0');
+  }
 }
+
+const load_and_observe = url => {
+  return new Promise(resolve => {
+    (new PerformanceObserver(entryList => {
+      for (let entry of entryList.getEntries()) {
+        if (entry.url == url) {
+          resolve(entryList.getEntries()[0]);
+        }
+      }
+    })).observe({type: 'largest-contentful-paint', buffered: true});
+    const img = new Image();
+    img.id = 'image_id';
+    img.src = url;
+    document.body.appendChild(img);
+  });
+};
