@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/shelf/gradient_layer_delegate.h"
+#include "base/bind.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "ui/compositor/layer.h"
@@ -25,20 +26,17 @@ ScrollViewGradientHelper::ScrollViewGradientHelper(
     : scroll_view_(scroll_view) {
   DCHECK(scroll_view_);
   DCHECK(scroll_view_->layer());
-  scroll_view_->AddScrollViewObserver(this);
+  on_contents_scrolled_subscription_ =
+      scroll_view_->AddContentsScrolledCallback(
+          base::BindRepeating(&ScrollViewGradientHelper::UpdateGradientZone,
+                              base::Unretained(this)));
+  on_contents_scroll_ended_subscription_ =
+      scroll_view_->AddContentsScrollEndedCallback(
+          base::BindRepeating(&ScrollViewGradientHelper::UpdateGradientZone,
+                              base::Unretained(this)));
 }
 
-ScrollViewGradientHelper::~ScrollViewGradientHelper() {
-  scroll_view_->RemoveScrollViewObserver(this);
-}
-
-void ScrollViewGradientHelper::OnContentsScrolled() {
-  UpdateGradientZone();
-}
-
-void ScrollViewGradientHelper::OnContentsScrollEnded() {
-  UpdateGradientZone();
-}
+ScrollViewGradientHelper::~ScrollViewGradientHelper() = default;
 
 void ScrollViewGradientHelper::UpdateGradientZone() {
   const gfx::Rect visible_rect = scroll_view_->GetVisibleRect();

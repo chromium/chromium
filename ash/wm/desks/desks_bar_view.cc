@@ -314,14 +314,13 @@ class DesksBarScrollViewLayout : public views::LayoutManager {
 // DesksBarView:
 
 DesksBarView::DesksBarView(OverviewGrid* overview_grid)
-    : background_view_(new views::View), overview_grid_(overview_grid) {
+    : overview_grid_(overview_grid) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
+  background_view_ = AddChildView(std::make_unique<views::View>());
   background_view_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
   background_view_->layer()->SetFillsBoundsOpaquely(false);
-
-  AddChildView(background_view_);
 
   scroll_view_ = AddChildView(std::make_unique<views::ScrollView>());
   scroll_view_->SetPaintToLayer();
@@ -397,14 +396,18 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
   gradient_layer_delegate_ = std::make_unique<GradientLayerDelegate>();
   scroll_view_->layer()->SetMaskLayer(gradient_layer_delegate_->layer());
 
-  scroll_view_->AddScrollViewObserver(this);
+  on_contents_scrolled_subscription_ =
+      scroll_view_->AddContentsScrolledCallback(base::BindRepeating(
+          &DesksBarView::OnContentsScrolled, base::Unretained(this)));
+  on_contents_scroll_ended_subscription_ =
+      scroll_view_->AddContentsScrollEndedCallback(base::BindRepeating(
+          &DesksBarView::OnContentsScrollEnded, base::Unretained(this)));
 
   DesksController::Get()->AddObserver(this);
 }
 
 DesksBarView::~DesksBarView() {
   DesksController::Get()->RemoveObserver(this);
-  scroll_view_->RemoveScrollViewObserver(this);
   if (drag_view_)
     EndDragDesk(drag_view_, /*end_by_user=*/false);
 }
@@ -844,23 +847,6 @@ void DesksBarView::OnDeskSwitchAnimationFinished() {}
 void DesksBarView::OnDeskNameChanged(const Desk* desk,
                                      const std::u16string& new_name) {}
 
-void DesksBarView::OnContentsScrolled() {
-  UpdateScrollButtonsVisibility();
-  UpdateGradientZone();
-}
-
-void DesksBarView::OnContentsScrollEnded() {
-  const gfx::Rect visible_bounds = scroll_view_->GetVisibleRect();
-  const int current_position = visible_bounds.x();
-  const int adjusted_position =
-      GetAdjustedUncroppedScrollPosition(current_position);
-  if (current_position != adjusted_position) {
-    scroll_view_->ScrollToPosition(scroll_view_->horizontal_scroll_bar(),
-                                   adjusted_position);
-  }
-  UpdateGradientZone();
-}
-
 void DesksBarView::UpdateNewMiniViews(bool initializing_bar_view,
                                       bool expanding_bar_view) {
   const auto& desks = DesksController::Get()->desks();
@@ -1169,6 +1155,23 @@ void DesksBarView::OnDesksTemplatesButtonPressed() {
   // TODO(sammiequon): The button might be changed to be a toggle and this
   // callback will need to be updated to reflect that.
   overview_grid_->overview_session()->ShowDesksTemplatesGrids();
+}
+
+void DesksBarView::OnContentsScrolled() {
+  UpdateScrollButtonsVisibility();
+  UpdateGradientZone();
+}
+
+void DesksBarView::OnContentsScrollEnded() {
+  const gfx::Rect visible_bounds = scroll_view_->GetVisibleRect();
+  const int current_position = visible_bounds.x();
+  const int adjusted_position =
+      GetAdjustedUncroppedScrollPosition(current_position);
+  if (current_position != adjusted_position) {
+    scroll_view_->ScrollToPosition(scroll_view_->horizontal_scroll_bar(),
+                                   adjusted_position);
+  }
+  UpdateGradientZone();
 }
 
 }  // namespace ash

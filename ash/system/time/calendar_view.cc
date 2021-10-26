@@ -11,6 +11,7 @@
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tri_view.h"
+#include "base/bind.h"
 #include "base/check.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/string_number_conversions.h"
@@ -255,6 +256,9 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
   scroll_view_->SetDrawOverflowIndicator(false);
   scroll_view_->SetVerticalScrollBarMode(
       views::ScrollView::ScrollBarMode::kHiddenButEnabled);
+  on_contents_scrolled_subscription_ =
+      scroll_view_->AddContentsScrolledCallback(base::BindRepeating(
+          &CalendarView::OnContentsScrolled, base::Unretained(this)));
 
   content_view_ = scroll_view_->SetContents(std::make_unique<views::View>());
   content_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -266,7 +270,6 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
 
   SetMonthViews();
 
-  scoped_scroll_view_observer_.Observe(scroll_view_);
   scoped_calendar_view_controller_observer_.Observe(
       calendar_view_controller_.get());
   scoped_view_observer_.AddObservation(scroll_view_);
@@ -478,25 +481,6 @@ CalendarMonthView* CalendarView::AddMonth(base::Time month_first_date,
   }
 }
 
-void CalendarView::OnContentsScrolled() {
-  // The scroll position is reset because it's adjusting the position when
-  // adding or removing views from the `scroll_view_`. It should scroll to the
-  // position we want, so we don't need to check the visible area position.
-  if (is_resetting_scroll_)
-    return;
-
-  // Scrolls to the previous month if the current label is moving down and
-  // passing the top of the visible area.
-  if (scroll_view_->GetVisibleRect().y() <= current_label_->y()) {
-    ScrollUpOneMonth();
-  } else if (scroll_view_->GetVisibleRect().y() >= next_label_->y() ||
-             scroll_view_->GetVisibleRect().y() +
-                     scroll_view_->GetVisibleRect().height() >
-                 next_month_->y() + next_month_->height() - kPrepareEndOfView) {
-    ScrollDownOneMonth();
-  }
-}
-
 void CalendarView::OnMonthChanged(const base::Time::Exploded current_month) {
   std::u16string year_string =
       base::UTF8ToUTF16(base::NumberToString(current_month.year));
@@ -704,6 +688,25 @@ void CalendarView::OnEvent(ui::Event* event) {
 
 void CalendarView::OnScrollingSettledTimerFired() {
   calendar_view_controller_->FetchEvents();
+}
+
+void CalendarView::OnContentsScrolled() {
+  // The scroll position is reset because it's adjusting the position when
+  // adding or removing views from the `scroll_view_`. It should scroll to the
+  // position we want, so we don't need to check the visible area position.
+  if (is_resetting_scroll_)
+    return;
+
+  // Scrolls to the previous month if the current label is moving down and
+  // passing the top of the visible area.
+  if (scroll_view_->GetVisibleRect().y() <= current_label_->y()) {
+    ScrollUpOneMonth();
+  } else if (scroll_view_->GetVisibleRect().y() >= next_label_->y() ||
+             scroll_view_->GetVisibleRect().y() +
+                     scroll_view_->GetVisibleRect().height() >
+                 next_month_->y() + next_month_->height() - kPrepareEndOfView) {
+    ScrollDownOneMonth();
+  }
 }
 
 BEGIN_METADATA(CalendarView, views::View)

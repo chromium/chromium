@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/desks/desks_controller.h"
+#include "base/callback_list.h"
 #include "base/macros.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/view.h"
@@ -32,8 +33,7 @@ class ZeroStateIconButton;
 // A bar that resides at the top portion of the overview mode's ShieldView,
 // which contains the virtual desks mini_views, as well as the new desk button.
 class ASH_EXPORT DesksBarView : public views::View,
-                                public DesksController::Observer,
-                                public views::ScrollView::Observer {
+                                public DesksController::Observer {
  public:
   explicit DesksBarView(OverviewGrid* overview_grid);
 
@@ -168,10 +168,6 @@ class ASH_EXPORT DesksBarView : public views::View,
   void OnDeskNameChanged(const Desk* desk,
                          const std::u16string& new_name) override;
 
-  // views::ScrollView::Observer:
-  void OnContentsScrolled() override;
-  void OnContentsScrollEnded() override;
-
   // This is called on initialization, creating a new desk through the
   // NewDeskButton or ExpandedDesksBarButton, or expanding from zero state
   // bar to the expanded desks bar. Performs the expanding animation if
@@ -245,6 +241,10 @@ class ASH_EXPORT DesksBarView : public views::View,
 
   void OnDesksTemplatesButtonPressed();
 
+  // Scrollview callbacks.
+  void OnContentsScrolled();
+  void OnContentsScrollEnded();
+
   // A view that shows a dark gary transparent background that can be animated
   // when the very first mini_views are created.
   views::View* background_view_;
@@ -303,6 +303,10 @@ class ASH_EXPORT DesksBarView : public views::View,
   // persistent desks bar. Note that this button will only be created when
   // BentoBar is enabled.
   PersistentDesksBarVerticalDotsButton* vertical_dots_button_ = nullptr;
+
+  // ScrollView callback subscriptions.
+  base::CallbackListSubscription on_contents_scrolled_subscription_;
+  base::CallbackListSubscription on_contents_scroll_ended_subscription_;
 };
 
 }  // namespace ash

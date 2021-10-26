@@ -9,6 +9,7 @@
 #include "ash/system/time/calendar_view_controller.h"
 #include "ash/system/tray/tray_detailed_view.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
+#include "base/callback_list.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/timer/timer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -28,7 +29,6 @@ class CalendarMonthView;
 // This view displays a scrollable calendar.
 class ASH_EXPORT CalendarView : public CalendarViewController::Observer,
                                 public TrayDetailedView,
-                                public views::ScrollView::Observer,
                                 public views::ViewObserver {
  public:
   METADATA_HEADER(CalendarView);
@@ -40,9 +40,6 @@ class ASH_EXPORT CalendarView : public CalendarViewController::Observer,
   ~CalendarView() override;
 
   void Init();
-
-  // views::ScrollView::Observer:
-  void OnContentsScrolled() override;
 
   // CalendarViewController::Observer:
   void OnMonthChanged(const base::Time::Exploded current_month) override;
@@ -124,6 +121,9 @@ class ASH_EXPORT CalendarView : public CalendarViewController::Observer,
   // We only fetch events after we've "settled" on the current on-screen month.
   void OnScrollingSettledTimerFired();
 
+  // ScrollView callback.
+  void OnContentsScrolled();
+
   // Unowned.
   UnifiedSystemTrayController* controller_;
 
@@ -153,12 +153,7 @@ class ASH_EXPORT CalendarView : public CalendarViewController::Observer,
   // Timer that fires when we've "settled" on, i.e. finished scrolling to, a
   // currently-visible month
   base::RetainingOneShotTimer scrolling_settled_timer_;
-
-  base::ScopedObservation<views::ScrollView,
-                          views::ScrollView::Observer,
-                          &views::ScrollView::AddScrollViewObserver,
-                          &views::ScrollView::RemoveScrollViewObserver>
-      scoped_scroll_view_observer_{this};
+  base::CallbackListSubscription on_contents_scrolled_subscription_;
   base::ScopedObservation<CalendarViewController,
                           CalendarViewController::Observer>
       scoped_calendar_view_controller_observer_{this};
