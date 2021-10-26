@@ -974,7 +974,11 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
     _localPrefRegistrar.Add(
         prefs::kAllowFileSelectionDialogs,
         base::BindRepeating(
-            &chrome::BrowserCommandController::UpdateOpenFileState,
+            [](CommandUpdater* commandUpdater) {
+              bool enabled = g_browser_process->local_state()->GetBoolean(
+                  prefs::kAllowFileSelectionDialogs);
+              commandUpdater->UpdateCommandEnabled(IDC_OPEN_FILE, enabled);
+            },
             _menuState.get()));
   }
 

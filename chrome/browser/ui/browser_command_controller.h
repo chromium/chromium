@@ -86,9 +86,6 @@ class BrowserCommandController : public CommandUpdater,
   // Shared state updating: these functions are static and public to share with
   // outside code.
 
-  // Updates the open-file state.
-  static void UpdateOpenFileState(CommandUpdater* command_updater);
-
   // Update commands whose state depends on incognito mode availability and that
   // only depend on the profile.
   static void UpdateSharedCommandsForIncognitoAvailability(

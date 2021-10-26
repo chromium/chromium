@@ -197,4 +197,40 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
   ASSERT_EQ(true, commandController->IsCommandEnabled(IDC_RESTORE_TAB));
 }
 
+IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
+                       OpenDisabledForAppBrowser) {
+  auto params = Browser::CreateParams::CreateForApp(
+      "abcdefghaghpphfffooibmlghaeopach", true /* trusted_source */,
+      gfx::Rect(), /* window_bounts */
+      browser()->profile(), true /* user_gesture */);
+  Browser* browser = Browser::Create(params);
+
+  chrome::BrowserCommandController* commandController =
+      browser->command_controller();
+  ASSERT_EQ(false, commandController->IsCommandEnabled(IDC_OPEN_FILE));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
+                       OpenDisabledForAppPopupBrowser) {
+  auto params = Browser::CreateParams::CreateForAppPopup(
+      "abcdefghaghpphfffooibmlghaeopach", true /* trusted_source */,
+      gfx::Rect(), /* window_bounts */
+      browser()->profile(), true /* user_gesture */);
+  Browser* browser = Browser::Create(params);
+
+  chrome::BrowserCommandController* commandController =
+      browser->command_controller();
+  ASSERT_EQ(false, commandController->IsCommandEnabled(IDC_OPEN_FILE));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
+                       OpenDisabledForDevToolsBrowser) {
+  auto params = Browser::CreateParams::CreateForDevTools(browser()->profile());
+  Browser* browser = Browser::Create(params);
+
+  chrome::BrowserCommandController* commandController =
+      browser->command_controller();
+  ASSERT_EQ(false, commandController->IsCommandEnabled(IDC_OPEN_FILE));
+}
+
 }  // namespace chrome
