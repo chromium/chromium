@@ -50,7 +50,6 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/layout/grid_layout.h"
 #include "ui/views/view.h"
 
 namespace payments {
@@ -304,20 +303,14 @@ CreditCardEditorViewController::CreateCustomFieldView(
     view = std::move(exp_label);
   } else {
     // Two comboboxes, one for month and the other for year.
-    views::GridLayout* combobox_layout =
-        view->SetLayoutManager(std::make_unique<views::GridLayout>());
-    views::ColumnSet* columns = combobox_layout->AddColumnSet(0);
-    columns->AddColumn(views::GridLayout::LEADING, views::GridLayout::CENTER,
-                       1.0, views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
+
     // Space between the two comboboxes.
     constexpr int kHorizontalSpacing = 8;
-    columns->AddPaddingColumn(views::GridLayout::kFixedSize,
-                              kHorizontalSpacing);
-    columns->AddColumn(views::GridLayout::LEADING, views::GridLayout::CENTER,
-                       1.0, views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
+    view->SetLayoutManager(std::make_unique<views::BoxLayout>(
+                               views::BoxLayout::Orientation::kHorizontal,
+                               gfx::Insets(), kHorizontalSpacing))
+        ->SetDefaultFlex(1);
 
-    combobox_layout->StartRow(views::GridLayout::kFixedSize, 0);
-    constexpr int kInputFieldHeight = 28;
     EditorField tmp_month{
         autofill::CREDIT_CARD_EXP_MONTH,
         l10n_util::GetStringUTF16(IDS_SETTINGS_CREDIT_CARD_EXPIRATION_MONTH),
@@ -325,9 +318,7 @@ CreditCardEditorViewController::CreateCustomFieldView(
         /*required=*/true, EditorField::ControlType::COMBOBOX};
     std::unique_ptr<ValidatingCombobox> month_combobox =
         CreateComboboxForField(tmp_month, error_message);
-    *focusable_field = combobox_layout->AddView(
-        std::move(month_combobox), 1, 1, views::GridLayout::FILL,
-        views::GridLayout::FILL, 0, kInputFieldHeight);
+    *focusable_field = view->AddChildView(std::move(month_combobox));
 
     EditorField tmp_year{
         autofill::CREDIT_CARD_EXP_4_DIGIT_YEAR,
@@ -336,9 +327,7 @@ CreditCardEditorViewController::CreateCustomFieldView(
         /*required=*/true, EditorField::ControlType::COMBOBOX};
     std::unique_ptr<ValidatingCombobox> year_combobox =
         CreateComboboxForField(tmp_year, error_message);
-    combobox_layout->AddView(std::move(year_combobox), 1, 1,
-                             views::GridLayout::FILL, views::GridLayout::FILL,
-                             0, kInputFieldHeight);
+    view->AddChildView(std::move(year_combobox));
   }
 
   // Set the initial validity of the custom view.
