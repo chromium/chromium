@@ -18,6 +18,13 @@ const PackagedLicenseScreenBase = Polymer.mixinBehaviors(
     [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
     Polymer.Element);
 
+/**
+ * @typedef {{
+ *   packagedLicenseDialog:  OobeAdaptiveDialogElement,
+ * }}
+ */
+PackagedLicenseScreenBase.$;
+
 class PackagedLicenseScreen extends PackagedLicenseScreenBase {
   static get is() {
     return 'packaged-license-element';
@@ -41,7 +48,6 @@ class PackagedLicenseScreen extends PackagedLicenseScreenBase {
 
   /**
    * Returns the control which should receive initial focus.
-   * @suppress {missingProperties}
    */
   get defaultControl() {
     return this.$.packagedLicenseDialog;
