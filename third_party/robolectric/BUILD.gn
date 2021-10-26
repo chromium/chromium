@@ -16,6 +16,12 @@ java_prebuilt("android-all-5.0.2_r3-robolectric-r0_java") {
   jar_path = "lib/android-all-5.0.2_r3-robolectric-r0.jar"
 }
 
+java_prebuilt("android-all-6.0.1_r3-robolectric-r1_java") {
+  enable_bytecode_checks = false
+  testonly = true
+  jar_path = "lib/android-all-6.0.1_r3-robolectric-r1.jar"
+}
+
 java_prebuilt("android-all-7.1.0_r7-robolectric-r1_java") {
   enable_bytecode_checks = false
   testonly = true

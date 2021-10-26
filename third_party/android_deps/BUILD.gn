@@ -74,6 +74,7 @@ if (!limit_android_deps) {
 
       "//third_party/robolectric:android-all-4.4_r1-robolectric-r2_java",
       "//third_party/robolectric:android-all-5.0.2_r3-robolectric-r0_java",
+      "//third_party/robolectric:android-all-6.0.1_r3-robolectric-r1_java",
       "//third_party/robolectric:android-all-7.1.0_r7-robolectric-r1_java",
       "//third_party/robolectric:android-all-8.0.0_r4-robolectric-r1_java",
       "//third_party/robolectric:android-all-8.1.0-robolectric-4611349_java",
