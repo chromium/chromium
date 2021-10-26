@@ -9214,6 +9214,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
           <message name="IDS_SYNC_RELOGIN_BUTTON" desc="The text to display on the button when the user needs to sign out and sign in again to use sync on Chrome OS.">
             Sign out
           </message>
+          <message name="IDS_SYNC_TOKEN_HANDLE_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sign-in error bubble view when the user's token handle is invalid.">
+            Your account sign-in details are out of date. Please sign out and sign in again.
+          </message>
           <message name="IDS_ACTIVE_DIRECTORY_PASSWORD_EXPIRED" desc="The text to display on the hyperlink when the user needs to sign out and sign in again to change their password.">
             Your password has expired. Please sign out then sign in again to change it.
           </message>
