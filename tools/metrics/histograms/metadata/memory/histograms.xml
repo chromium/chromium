@@ -2056,7 +2056,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.ParkableImage.Write.Latency" units="microseconds"
-    expires_after="2022-05-01">
+    expires_after="2022-04-17">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>
@@ -2079,7 +2079,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.ParkableImage.Write.Throughput" units="MiBps"
-    expires_after="2022-05-01">
+    expires_after="2022-04-17">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>
@@ -2098,8 +2098,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.ParkableString.Compression.Latency"
-    units="microseconds" expires_after="M82">
+    units="microseconds" expires_after="2022-04-17">
   <owner>lizeb@chromium.org</owner>
+  <owner>thiabaud@google.com</owner>
   <summary>
     Time to compress a ParkableString, in us. Note: This metric drops reports on
     clients with low-resolution clocks, which means these reports will be biased
@@ -2109,23 +2110,25 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.ParkableString.Compression.SizeKb" units="KB"
-    expires_after="M82">
+    expires_after="2022-04-17">
   <owner>lizeb@chromium.org</owner>
+  <owner>thiabaud@google.com</owner>
   <summary>
     Size of a compressed ParkableString, recorded at compression time.
   </summary>
 </histogram>
 
 <histogram name="Memory.ParkableString.Compression.ThroughputMBps" units="MBps"
-    expires_after="M87">
+    expires_after="2022-04-17">
   <owner>lizeb@chromium.org</owner>
+  <owner>thiabaud@google.com</owner>
   <summary>
     Size of a compressed ParkableString, recorded at compression time.
   </summary>
 </histogram>
 
 <histogram name="Memory.ParkableString.CompressionRatio.5min" units="%"
-    expires_after="M87">
+    expires_after="2022-04-17">
   <owner>lizeb@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <summary>
@@ -2136,8 +2139,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.ParkableString.Decompression.Latency"
-    units="microseconds" expires_after="M98">
+    units="microseconds" expires_after="2022-04-17">
   <owner>lizeb@chromium.org</owner>
+  <owner>thiabaud@google.com</owner>
   <summary>
     Time to decompress a ParkableString, in us. Note: This metric drops reports
     on clients with low-resolution clocks, which means these reports will be
@@ -2147,8 +2151,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.ParkableString.Decompression.SizeKb" units="KB"
-    expires_after="M98">
+    expires_after="2022-04-17">
   <owner>lizeb@chromium.org</owner>
+  <owner>thiabaud@google.com</owner>
   <summary>
     Original size of a compressed ParkableString, recorded at decompression
     time.
@@ -2156,8 +2161,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.ParkableString.Decompression.ThroughputMBps"
-    units="MBps" expires_after="M98">
+    units="MBps" expires_after="2022-04-17">
   <owner>lizeb@chromium.org</owner>
+  <owner>thiabaud@google.com</owner>
   <summary>
     Original size of a compressed ParkableString, recorded at decompression
     time.
@@ -2165,7 +2171,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.ParkableString.DiskIsUsable.5min" enum="BooleanYesNo"
-    expires_after="M87">
+    expires_after="2022-04-17">
   <owner>lizeb@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <summary>
@@ -2177,7 +2183,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.ParkableString.DiskReadTime.5min" units="ms"
-    expires_after="M87">
+    expires_after="2022-04-17">
   <owner>lizeb@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <summary>
@@ -2188,7 +2194,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.ParkableString.DiskWriteTime.5min" units="ms"
-    expires_after="M87">
+    expires_after="2022-04-17">
   <owner>lizeb@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <summary>
@@ -2199,7 +2205,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.ParkableString.MainThreadTime.5min" units="ms"
-    expires_after="M87">
+    expires_after="2022-04-17">
   <owner>lizeb@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <summary>
@@ -2210,7 +2216,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.ParkableString.MemorySavingsKb.5min" units="KB"
-    expires_after="M87">
+    expires_after="2022-04-17">
   <owner>lizeb@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <summary>
@@ -2221,7 +2227,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.ParkableString.OnDiskFootprintKb.5min" units="KB"
-    expires_after="M87">
+    expires_after="2022-04-17">
   <owner>lizeb@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <summary>
@@ -2233,7 +2239,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.ParkableString.OnDiskSizeKb.5min" units="KB"
-    expires_after="M87">
+    expires_after="2022-04-17">
   <owner>lizeb@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <summary>
@@ -2245,7 +2251,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.ParkableString.ParkingThreadTime.5min" units="ms"
-    expires_after="M87">
+    expires_after="2022-04-17">
   <owner>lizeb@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <summary>
@@ -2256,7 +2262,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.ParkableString.Read.Latency" units="microseconds"
-    expires_after="2022-04-24">
+    expires_after="2022-04-17">
   <owner>lizeb@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <summary>
@@ -2268,7 +2274,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.ParkableString.Read.SinceLastDiskWrite" units="ms"
-    expires_after="2022-04-24">
+    expires_after="2022-04-17">
   <owner>lizeb@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <summary>
@@ -2277,14 +2283,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.ParkableString.Read.SizeKb" units="KB"
-    expires_after="2022-04-24">
+    expires_after="2022-04-17">
   <owner>lizeb@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <summary>Size read from disk for a ParkableString.</summary>
 </histogram>
 
 <histogram name="Memory.ParkableString.Read.ThroughputMBps" units="MBps"
-    expires_after="M98">
+    expires_after="2022-04-17">
   <owner>lizeb@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <summary>Read throughput from disk for a ParkableString.</summary>
@@ -2301,7 +2307,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.ParkableString.SavingsKb.5min" units="KB"
-    expires_after="M87">
+    expires_after="2022-04-17">
   <owner>lizeb@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <summary>
@@ -2311,7 +2317,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.ParkableString.TotalSizeKb.5min" units="KB"
-    expires_after="M87">
+    expires_after="2022-04-17">
   <owner>lizeb@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <summary>
@@ -2322,7 +2328,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.ParkableString.Write.Latency" units="microseconds"
-    expires_after="M87">
+    expires_after="2022-04-17">
   <owner>lizeb@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <summary>
@@ -2334,14 +2340,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.ParkableString.Write.SizeKb" units="KB"
-    expires_after="M87">
+    expires_after="2022-04-17">
   <owner>lizeb@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <summary>Size of an on-disk ParkableString, recorded at write time.</summary>
 </histogram>
 
 <histogram name="Memory.ParkableString.Write.ThroughputMBps" units="MBps"
-    expires_after="M87">
+    expires_after="2022-04-17">
   <owner>lizeb@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <summary>Throughput of a ParkableString disk write.</summary>
