@@ -6,6 +6,7 @@
 
 #include <stdio.h>
 
+#include "base/debug/alias.h"
 #include "content/public/common/result_codes.h"
 #include "headless/app/headless_shell_switches.h"
 #include "headless/lib/browser/headless_browser_context_impl.h"
@@ -139,6 +140,7 @@ void HeadlessBrowserMainParts::CreatePrefService() {
         browser_->options()->user_data_dir.Append(kLocalStateFilename);
     pref_store = base::MakeRefCounted<JsonPrefStore>(local_state_file);
     auto result = pref_store->ReadPrefs();
+    base::debug::Alias(&result);
     if (result != JsonPrefStore::PREF_READ_ERROR_NONE) {
       CHECK_EQ(result, JsonPrefStore::PREF_READ_ERROR_NO_FILE);
     }
