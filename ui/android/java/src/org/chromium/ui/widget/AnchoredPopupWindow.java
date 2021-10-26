@@ -17,6 +17,7 @@ import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.PopupWindow;
 import android.widget.PopupWindow.OnDismissListener;
 
@@ -480,17 +481,23 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
         mWidth = contentView.getMeasuredWidth() + paddingX;
         mHeight = contentView.getMeasuredHeight() + paddingY;
 
-        // Calculate the width of the contentView by adding the width of its children and its own
-        // padding. This is necessary when a TextView overflows to multiple lines because the
-        // contentView(parent) would return the maximum available width, which is larger than the
-        // actual needed width.
+        // Calculate the width of the contentView by adding the width of its children, their margin,
+        // and its own padding. This is necessary when a TextView overflows to multiple lines
+        // because the contentView(parent) would return the maximum available width, which is larger
+        // than the actual needed width.
         ViewGroup parent = (ViewGroup) contentView;
         boolean isHorizontalLinearLayout = parent instanceof LinearLayout
                 && ((LinearLayout) parent).getOrientation() == LinearLayout.HORIZONTAL;
         if (isHorizontalLinearLayout && parent.getChildCount() > 0) {
             int contentMeasuredWidth = contentView.getPaddingStart() + contentView.getPaddingEnd();
             for (int index = 0; index < parent.getChildCount(); index++) {
-                contentMeasuredWidth += parent.getChildAt(index).getMeasuredWidth();
+                View childView = parent.getChildAt(index);
+                int childWidth = childView.getMeasuredWidth();
+                if (childWidth > 0) {
+                    contentMeasuredWidth += childWidth;
+                    LayoutParams lp = (LayoutParams) childView.getLayoutParams();
+                    contentMeasuredWidth += lp.leftMargin + lp.rightMargin;
+                }
             }
             mWidth = contentMeasuredWidth + paddingX;
         }
