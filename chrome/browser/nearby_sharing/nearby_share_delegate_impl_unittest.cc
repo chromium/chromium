@@ -69,6 +69,7 @@ class NearbyShareDelegateImplTest : public ::testing::Test {
   }
 
   void SetUp() override {
+    settings_->SetIsOnboardingComplete(true);
     settings_->SetEnabled(false);
 
     EXPECT_CALL(nearby_share_service_, GetSettings())
@@ -177,24 +178,6 @@ TEST_F(NearbyShareDelegateImplTest, StopHighVisibilityOnScreenLock) {
   // DisableHighVisibility will be called when the screen locks.
   delegate_.OnLockStateChanged(/*locked=*/true);
   SetHighVisibilityOn(false);
-}
-
-TEST_F(NearbyShareDelegateImplTest, AutomaticallyEnableFeature) {
-  settings()->SetEnabled(false);
-
-  // If onboarding is not completed, settings should not be enabled and the user
-  // should go through onboarding process.
-  test_pref_service_.SetBoolean(prefs::kNearbySharingOnboardingCompletePrefName,
-                                false);
-  delegate_.EnableHighVisibility();
-  EXPECT_FALSE(settings()->GetEnabled());
-
-  // If onboarding is completed, the feature should automatically be enabled
-  // when open high visibility
-  test_pref_service_.SetBoolean(prefs::kNearbySharingOnboardingCompletePrefName,
-                                true);
-  delegate_.EnableHighVisibility();
-  EXPECT_TRUE(settings()->GetEnabled());
 }
 
 TEST_F(NearbyShareDelegateImplTest, ShowNearbyShareSettings) {

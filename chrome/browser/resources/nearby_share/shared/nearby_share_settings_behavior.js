@@ -173,6 +173,9 @@ cr.define('nearby_share', function() {
         case 'settings.allowedContacts':
           this.nearbyShareSettings_.setAllowedContacts(change.value);
           break;
+        case 'settings.isOnboardingComplete':
+          this.nearbyShareSettings_.setIsOnboardingComplete(change.value);
+          break;
       }
     },
 

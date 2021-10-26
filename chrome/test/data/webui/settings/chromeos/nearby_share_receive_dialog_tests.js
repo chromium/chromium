@@ -26,23 +26,28 @@ suite('NearbyShare', function() {
    * This allows both sub-suites to share the same setup logic but with a
    * different enabled state which changes the routing of the first view.
    * @param {boolean} enabled The value of the enabled setting.
+   * @param {boolean} isOnboardingComplete The value of the
+   *     isOnboardingComplete setting.
    */
-  function sharedSetup(enabled) {
+  function sharedSetup(enabled, isOnboardingComplete) {
     fakeReceiveManager = new nearby_share.FakeReceiveManager();
     fakeContactManager = new nearby_share.FakeContactManager();
     fakeSettings = new nearby_share.FakeNearbyShareSettings();
-    fakeSettings.setEnabled(true);
 
     nearby_share.setReceiveManagerForTesting(fakeReceiveManager);
     nearby_share.setContactManagerForTesting(fakeContactManager);
     nearby_share.setNearbyShareSettingsForTesting(fakeSettings);
 
     PolymerTest.clearBody();
+    fakeSettings.setEnabled(enabled);
+    fakeSettings.setIsOnboardingComplete(isOnboardingComplete);
 
     dialog = document.createElement('nearby-share-receive-dialog');
     dialog.settings = {
       enabled: enabled,
+      isOnboardingComplete: isOnboardingComplete,
     };
+    dialog.isSettingsRetreived = true;
     document.body.appendChild(dialog);
     Polymer.dom.flush();
   }
@@ -73,7 +78,7 @@ suite('NearbyShare', function() {
 
   suite('EnabledTests', function() {
     setup(function() {
-      sharedSetup(true);
+      sharedSetup(/*enabled=*/ true, /*isOnboardingComplete=*/ true);
       dialog.showHighVisibilityPage(/*shutoffTimeoutInSeconds=*/ 5 * 60);
       Polymer.dom.flush();
     });
@@ -175,7 +180,7 @@ suite('NearbyShare', function() {
 
   suite('DisabledTests', function() {
     setup(function() {
-      sharedSetup(false);
+      sharedSetup(/*enabled=*/ false, /*isOnboardingComplete=*/ false);
     });
 
     teardown(function() {

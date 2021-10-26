@@ -212,7 +212,8 @@
         <template is="dom-if" route-path="/multidevice/nearbyshare" restamp>
           <settings-subpage page-title="$i18n{nearbyShareTitle}">
             <settings-nearby-share-subpage settings="{{settings}}"
-                prefs="{{prefs}}">
+                prefs="{{prefs}}"
+                is-settings-retreived="[[isSettingsRetreived]]">
             </settings-nearby-share-subpage>
           </settings-subpage>
         </template>

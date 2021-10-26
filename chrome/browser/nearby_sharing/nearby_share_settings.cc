@@ -140,18 +140,12 @@ void NearbyShareSettings::GetIsFastInitiationHardwareSupported(
 }
 
 void NearbyShareSettings::SetEnabled(bool enabled) {
+  DCHECK(!enabled || IsOnboardingComplete());
   pref_service_->SetBoolean(prefs::kNearbySharingEnabledPrefName, enabled);
-  if (enabled) {
-    // We rely on the the UI to enforce that if the feature was enabled for the
-    // first time, that onboarding was run.
-    pref_service_->SetBoolean(prefs::kNearbySharingOnboardingCompletePrefName,
-                              true);
-
-    if (GetVisibility() == Visibility::kUnknown) {
-      NS_LOG(ERROR) << "Nearby Share enabled with visibility unset. Setting "
-                       "visibility to kNoOne.";
-      SetVisibility(Visibility::kNoOne);
-    }
+  if (enabled && GetVisibility() == Visibility::kUnknown) {
+    NS_LOG(ERROR) << "Nearby Share enabled with visibility unset. Setting "
+                     "visibility to kNoOne.";
+    SetVisibility(Visibility::kNoOne);
   }
 }
 
@@ -165,6 +159,11 @@ void NearbyShareSettings::SetFastInitiationNotificationState(
 void NearbyShareSettings::IsOnboardingComplete(
     base::OnceCallback<void(bool)> callback) {
   std::move(callback).Run(IsOnboardingComplete());
+}
+
+void NearbyShareSettings::SetIsOnboardingComplete(bool completed) {
+  pref_service_->SetBoolean(prefs::kNearbySharingOnboardingCompletePrefName,
+                            completed);
 }
 
 void NearbyShareSettings::GetDeviceName(

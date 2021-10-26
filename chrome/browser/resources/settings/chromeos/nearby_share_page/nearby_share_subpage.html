@@ -249,7 +249,9 @@
     </template>
     <template is="dom-if" if="[[showReceiveDialog_]]" restamp>
       <nearby-share-receive-dialog id="receiveDialog"
-          on-close="onReceiveDialogClose_" settings="{{settings}}">
+          on-close="onReceiveDialogClose_" settings="{{settings}}"
+          prefs="{{prefs}}"
+          is-settings-retreived="[[isSettingsRetreived]]">
       </nearby-share-receive-dialog>
     </template>
   </template>

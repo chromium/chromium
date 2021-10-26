@@ -52,7 +52,14 @@ Polymer({
     /** @type {nearby_share.NearbySettings} */
     settings: {
       type: Object,
+      notify: true,
       value: {},
+    },
+
+    /** @private */
+    isSettingsRetreived: {
+      type: Boolean,
+      value: false,
     },
 
     /**
@@ -91,7 +98,7 @@ Polymer({
   },
 
   observers: [
-    'onSettingsChanged_(settings.*)',
+    'onSettingsLoaded_(isSettingsRetreived)',
   ],
 
   /** @private {boolean} */
@@ -214,14 +221,9 @@ Polymer({
   },
 
   /**
-   * @param {PolymerDeepPropertyChange} change a change record
    * @private
    */
-  onSettingsChanged_(change) {
-    if (change.path !== 'settings.enabled') {
-      return;
-    }
-
+  onSettingsLoaded_() {
     if (this.postSettingsCallback) {
       this.postSettingsCallback();
       this.postSettingsCallback = null;
@@ -262,21 +264,27 @@ Polymer({
    *     if it did not need to be deferred and can be called now.
    */
   deferCallIfNecessary(callback) {
-    const haveSettings = !this.settings || this.settings.enabled === undefined;
-    if (haveSettings) {
-      // Let onSettingsChanged_ handle the navigation because we don't know yet
+    if (!this.isSettingsRetreived) {
+      // Let onSettingsLoaded_ handle the navigation because we don't know yet
       // if the feature is enabled and we might need to show onboarding.
       this.postSettingsCallback = callback;
       return true;
     }
 
-    if (!this.settings.enabled) {
-      // We need to show onboarding first because nearby is not enabled, but we
-      // need to run the callback post onboarding.
+    if (!this.settings.isOnboardingComplete) {
+      // We need to show onboarding first if onboarding is not yet complete, but
+      // we need to run the callback afterward.
       this.postOnboardingCallback = callback;
       this.getViewManager_().switchView(Page.ONBOARDING);
       return true;
     }
+
+    // If onboarding is already complete but Nearby is disabled we re-enable
+    // Nearby.
+    if (!this.settings.enabled) {
+      this.set('settings.enabled', true);
+    }
+
     // We know the feature is enabled so no need to defer the call.
     return false;
   },

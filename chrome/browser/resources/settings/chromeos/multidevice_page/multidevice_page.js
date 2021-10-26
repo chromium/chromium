@@ -86,6 +86,12 @@ Polymer({
           settings.isFastInitiationHardwareSupported)`,
     },
 
+    /** @private */
+    isSettingsRetreived: {
+      type: Boolean,
+      value: false,
+    },
+
     /**
      * Used by DeepLinkingBehavior to focus this page's deep links.
      * @type {!Set<!chromeos.settings.mojom.Setting>}
@@ -129,6 +135,13 @@ Polymer({
 
     this.browserProxy_.getPageContentData().then(
         (data) => this.onInitialPageContentDataFetched_(data));
+  },
+
+  /**
+   * Overridden from nearby_share.NearbyShareSettingsBehavior.
+   */
+  onSettingsRetrieved() {
+    this.isSettingsRetreived = true;
   },
 
   /**

@@ -41,6 +41,7 @@ Polymer({
     const contactVisibility = /** @type {NearbyContactVisibilityElement} */
         (this.$.contactVisibility);
     contactVisibility.saveVisibilityAndAllowedContacts();
+    this.set('settings.isOnboardingComplete', true);
     this.set('settings.enabled', true);
     processOnboardingCompleteMetrics();
     this.fire('onboarding-complete');

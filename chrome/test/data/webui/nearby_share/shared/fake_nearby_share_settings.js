@@ -86,9 +86,6 @@ cr.define('nearby_share', function() {
      */
     setEnabled(enabled) {
       this.enabled_ = enabled;
-      if (this.enabled_) {
-        this.isOnboardingComplete_ = true;
-      }
       if (this.observer_) {
         this.observer_.onEnabledChanged(enabled);
       }
@@ -210,8 +207,12 @@ cr.define('nearby_share', function() {
     /**
      * @param { !boolean } completed
      */
-    setIsOnboardingCompleteForTest(completed) {
+    setIsOnboardingComplete(completed) {
       this.isOnboardingComplete_ = completed;
+      if (this.observer_) {
+        this.observer_.onIsOnboardingCompleteChanged(
+            this.isOnboardingComplete_);
+      }
     }
 
     getEnabledForTest() {
