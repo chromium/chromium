@@ -279,10 +279,11 @@ class Driver:
         for pid in self.GetAllPids(browser_process):
           if profile_mode == "wakeups":
             probe_def = \
-              f"mach_kernel::wakeup/pid == {pid}/ {{ @[ustack()] = count(); }}"
+              f"mach_kernel::wakeup/pid == {pid}/ " \
+              "{{ @[ustack(32)] = count(); }}"
           else:
             probe_def = \
-              f"profile-1001/pid == {pid}/ {{ @[ustack()] = count(); }}"
+              f"profile-1001/pid == {pid}/ {{ @[ustack(32)] = count(); }}"
 
           dtrace_args = [
               'sudo', 'dtrace', '-p', f"{pid}", "-o",
