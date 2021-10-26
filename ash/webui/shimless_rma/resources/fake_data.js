@@ -68,7 +68,6 @@ export const fakeStates = [
     canGoBack: true,
     error: RmadErrorCode.kOk
   },
-  // TODO(gavindodd): RmaState.kRestock
   {
     state: RmaState.kUpdateDeviceInformation,
     canCancel: true,
@@ -105,7 +104,12 @@ export const fakeStates = [
     canGoBack: true,
     error: RmadErrorCode.kOk
   },
-  // TODO(gavindodd): RmaState.kWaitForManualWPEnable
+  {
+    state: RmaState.kWaitForManualWPEnable,
+    canCancel: true,
+    canGoBack: true,
+    error: RmadErrorCode.kOk
+  },
   {
     state: RmaState.kFinalize,
     canCancel: true,
