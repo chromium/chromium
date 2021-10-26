@@ -16,7 +16,7 @@ TEST(KSTicketsTest, Decode) {
   @autoreleasepool {
     base::FilePath test_data_path;
     ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_path));
-    NSDictionary* store = [KSTicketStore
+    NSDictionary<NSString*, KSTicket*>* store = [KSTicketStore
         readStoreWithPath:base::SysUTF8ToNSString(
                               test_data_path
                                   .Append(FILE_PATH_LITERAL("updater"))

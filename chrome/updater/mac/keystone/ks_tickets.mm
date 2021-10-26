@@ -10,18 +10,10 @@
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 
-@interface KSPathExistenceChecker : NSObject <NSSecureCoding> {
- @private
-  NSString* path_;
-}
-@end
-
-@interface KSTicket : NSObject <NSSecureCoding>
-@end
-
 @implementation KSTicketStore
 
-+ (nullable NSDictionary*)readStoreWithPath:(nonnull NSString*)path {
++ (nullable NSDictionary<NSString*, KSTicket*>*)readStoreWithPath:
+    (nonnull NSString*)path {
   if (![[NSFileManager defaultManager] fileExistsAtPath:path]) {
     VLOG(0) << "Ticket store does not exist at "
             << base::SysNSStringToUTF8(path);
@@ -65,6 +57,8 @@
 
 @implementation KSPathExistenceChecker
 
+@synthesize path = path_;
+
 + (BOOL)supportsSecureCoding {
   return YES;
 }
@@ -105,25 +99,27 @@ NSString* const kKSTicketCohortHintKey = @"CohortHint";
 NSString* const kKSTicketCohortNameKey = @"CohortName";
 
 @implementation KSTicket {
- @private
-  NSString* productID_;
-  NSString* version_;
-  KSPathExistenceChecker* existenceChecker_;
-  NSURL* serverURL_;
-  NSDate* creationDate_;
-  NSString* serverType_;
   NSString* tag_;
-  NSString* tagPath_;
-  NSString* tagKey_;
-  NSString* brandPath_;
-  NSString* brandKey_;
-  NSString* versionPath_;
-  NSString* versionKey_;
-  NSString* cohort_;
-  NSString* cohortHint_;
-  NSString* cohortName_;
-  int32_t ticketVersion_;
+  NSString* version_;
 }
+
+@synthesize productID = productID_;
+@synthesize version = version_;
+@synthesize existenceChecker = existenceChecker_;
+@synthesize serverURL = serverURL_;
+@synthesize serverType = serverType_;
+@synthesize creationDate = creationDate_;
+@synthesize tag = tag_;
+@synthesize tagPath = tagPath_;
+@synthesize tagKey = tagKey_;
+@synthesize brandPath = brandPath_;
+@synthesize brandKey = brandKey_;
+@synthesize versionPath = versionPath_;
+@synthesize versionKey = versionKey_;
+@synthesize cohort = cohort_;
+@synthesize cohortHint = cohortHint_;
+@synthesize cohortName = cohortName_;
+@synthesize ticketVersion = ticketVersion_;
 
 + (BOOL)supportsSecureCoding {
   return YES;
@@ -281,6 +277,52 @@ NSString* const kKSTicketCohortNameKey = @"CohortName";
                        serverTypeString, serverURL_, gmtDate, tagString,
                        tagPathString, brandPathString, versionPathString,
                        cohortString, cohortHintString, ticketVersionString];
+}
+
+- (NSString*)readExternalPropertyAtPath:(NSString*)path withKey:(NSString*)key {
+  // Standardize (expands tilde, symlink resolve, etc.)
+  NSString* fullPath = [path stringByStandardizingPath];
+
+  if (!fullPath.length || !key.length)
+    return nil;
+
+  NSData* plistData = [NSData dataWithContentsOfFile:fullPath];
+  if (!plistData.length) {
+    LOG(ERROR) << "Failed to read external property from file: "
+               << base::SysNSStringToUTF8(path);
+    return nil;
+  }
+
+  id plistContent =
+      [NSPropertyListSerialization propertyListWithData:plistData
+                                                options:NSPropertyListImmutable
+                                                 format:0
+                                                  error:nil];
+  if (!plistContent || ![plistContent isKindOfClass:[NSDictionary class]]) {
+    return nil;
+  }
+
+  id value = [plistContent objectForKey:key];
+  if (![value isKindOfClass:[NSString class]])
+    return nil;
+
+  return (NSString*)value;
+}
+
+- (NSString*)determineTag {
+  NSString* externalTag = [self readExternalPropertyAtPath:tagPath_
+                                                   withKey:tagKey_];
+  return externalTag ? externalTag : tag_;
+}
+
+- (NSString*)determineBrand {
+  return [self readExternalPropertyAtPath:brandPath_ withKey:brandKey_];
+}
+
+- (NSString*)determineVersion {
+  NSString* externalVersion = [self readExternalPropertyAtPath:versionPath_
+                                                       withKey:versionKey_];
+  return externalVersion ? externalVersion : version_;
 }
 
 @end
