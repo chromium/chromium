@@ -16,14 +16,34 @@
   cr-button[aria-pressed=false] {
     color: var(--cros-text-color-secondary);
   }
+
+  #albumsContent,
+  #photosContent {
+    height: 100%;
+    width: 100%;
+  }
+
+  #albumsContent {
+    /** TODO(dmblack): Remove when implementing UI. */
+    background-color: red;
+  }
+
+  #photosContent {
+    /** TODO(dmblack): Remove when implementing UI. */
+    background-color: blue;
+  }
 </style>
 <main id="main" aria-label$="[[i18n('googlePhotosLabel')]]" tabindex="-1">
   <div>
-    <cr-button aria-pressed="true">
+    <cr-button id="photosTab" aria-pressed="[[isPhotosTabSelected_(tab_)]]"
+      on-click="onTabSelected_">
       <div class="text">[[i18n('googlePhotosPhotosTabLabel')]]</div>
     </cr-button>
-    <cr-button aria-pressed="false">
+    <cr-button id="albumsTab" aria-pressed="[[isAlbumsTabSelected_(tab_)]]"
+      on-click="onTabSelected_">
       <div class="text">[[i18n('googlePhotosAlbumsTabLabel')]]</div>
     </cr-button>
   </div>
+  <div id="photosContent" hidden$="[[!isPhotosTabSelected_(tab_)]]"></div>
+  <div id="albumsContent" hidden$="[[!isAlbumsTabSelected_(tab_)]]"></div>
 </main>

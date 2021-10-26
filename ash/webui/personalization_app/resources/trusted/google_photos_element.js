@@ -10,10 +10,20 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import './styles.js';
 import '../common/styles.js';
+import {assertNotReached} from '/assert.m.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getWallpaperProvider} from './mojo_interface_provider.js';
 import {initializeGooglePhotosData} from './personalization_controller.js';
 import {WithPersonalizationStore} from './personalization_store.js';
+
+/**
+ * Enumeration of supported tabs.
+ * @enum {string}
+ */
+const Tab = {
+  Albums: 'albums',
+  Photos: 'photos',
+};
 
 /** @polymer */
 export class GooglePhotos extends WithPersonalizationStore {
@@ -60,6 +70,16 @@ export class GooglePhotos extends WithPersonalizationStore {
        */
       photosLoading_: {
         type: Boolean,
+      },
+
+      /**
+       * The currently selected tab.
+       * @type {!Tab}
+       * @private
+       */
+      tab_: {
+        type: String,
+        value: Tab.Photos,
       },
     };
   }
@@ -109,6 +129,43 @@ export class GooglePhotos extends WithPersonalizationStore {
    */
   onPhotosLoaded_(photos, photosLoading) {
     // TODO(dmblack): Send event to untrusted via iframe API.
+  }
+
+  /**
+   * Invoked on tab selected.
+   * @param {!Event} e
+   * @private
+   */
+  onTabSelected_(e) {
+    switch (e.currentTarget.id) {
+      case 'albumsTab':
+        this.tab_ = Tab.Albums;
+        return;
+      case 'photosTab':
+        this.tab_ = Tab.Photos;
+        return;
+      default:
+        assertNotReached();
+        return;
+    }
+  }
+
+  /**
+   * Whether the albums tab is currently selected.
+   * @return {boolean}
+   * @private
+   */
+  isAlbumsTabSelected_() {
+    return this.tab_ === Tab.Albums;
+  }
+
+  /**
+   * Whether the photos tab is currently selected.
+   * @return {boolean}
+   * @private
+   */
+  isPhotosTabSelected_() {
+    return this.tab_ === Tab.Photos;
   }
 }
 
