@@ -99,6 +99,11 @@ class BorderView : public views::View {
 
     SetBoundsRect(bounds);
   }
+
+  void OnThemeChanged() override {
+    SchedulePaint();
+    View::OnThemeChanged();
+  }
 };
 
 }  // namespace
