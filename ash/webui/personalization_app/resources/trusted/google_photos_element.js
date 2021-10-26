@@ -28,6 +28,23 @@ export class GooglePhotos extends WithPersonalizationStore {
   static get properties() {
     return {
       /**
+       * The list of albums.
+       * @type {?Array<undefined>}
+       * @private
+       */
+      albums_: {
+        type: Array,
+      },
+
+      /**
+       * Whether the list of albums is currently loading.
+       * @type {boolean}
+       * @private
+       */
+      albumsLoading_: {
+        type: Boolean,
+      },
+      /**
        * The list of photos.
        * @type {?Array<undefined>}
        * @private
@@ -43,12 +60,15 @@ export class GooglePhotos extends WithPersonalizationStore {
        */
       photosLoading_: {
         type: Boolean,
-      }
+      },
     };
   }
 
   static get observers() {
-    return ['onPhotosLoaded_(photos_, photosLoading_)'];
+    return [
+      'onAlbumsLoaded_(albums_, albumsLoading_)',
+      'onPhotosLoaded_(photos_, photosLoading_)',
+    ];
   }
 
   /** @override */
@@ -62,11 +82,23 @@ export class GooglePhotos extends WithPersonalizationStore {
   connectedCallback() {
     super.connectedCallback();
 
+    this.watch('albums_', state => state.googlePhotos.albums);
+    this.watch('albumsLoading_', state => state.loading.googlePhotos.albums);
     this.watch('photos_', state => state.googlePhotos.photos);
     this.watch('photosLoading_', state => state.loading.googlePhotos.photos);
     this.updateFromStore();
 
     initializeGooglePhotosData(this.wallpaperProvider_, this.getStore());
+  }
+
+  /**
+   * Invoked on changes to the list of albums and its loading state.
+   * @param {?Array<undefined>} albums
+   * @param {boolean} albumsLoading
+   * @private
+   */
+  onAlbumsLoaded_(albums, albumsLoading) {
+    // TODO(dmblack): Send event to untrusted via iframe API.
   }
 
   /**
