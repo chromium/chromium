@@ -166,7 +166,7 @@ int SuggestionChipContainerView::DoUpdate() {
                                    notifier_results);
   }
 
-  Layout();
+  InvalidateLayout();
   return std::min(SharedAppListConfig::instance().num_start_page_tiles(),
                   display_results.size());
 }

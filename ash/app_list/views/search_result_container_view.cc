@@ -37,7 +37,7 @@ void SearchResultContainerView::SetResults(
 void SearchResultContainerView::Update() {
   update_factory_.InvalidateWeakPtrs();
   num_results_ = DoUpdate();
-  Layout();
+  InvalidateLayout();
   if (delegate_)
     delegate_->OnSearchResultContainerResultsChanged();
 }

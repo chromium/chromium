@@ -325,7 +325,7 @@ void SearchResultPageView::UpdateResultContainersVisibility() {
   if (features::IsProductivityLauncherEnabled())
     SetVisible(should_show_page_view);
 
-  Layout();
+  InvalidateLayout();
   AppListPage::contents_view()
       ->GetSearchBoxView()
       ->OnResultContainerVisibilityChanged(should_show_page_view);
