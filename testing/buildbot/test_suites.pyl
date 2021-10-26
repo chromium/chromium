@@ -4135,6 +4135,10 @@
       'url_unittests': {},
     },
 
+    'ios_crash_xcuitests': {
+      'ios_crash_xcuitests_module': {},
+    },
+
     'ios_cronet_tests': {
       'cronet_test': {},
     },
@@ -7336,6 +7340,13 @@
           'SIM_IPHONE_6S_14_4',
           'SIM_IPHONE_SE_1ST_GEN_14_4',
           'SIM_IPAD_AIR_2_14_4',
+        ]
+      },
+      'ios_crash_xcuitests': {
+        'mixins': ['xcode_parallelization'],
+        'variants': [
+          'SIM_IPHONE_7_15_0',
+          'SIM_IPHONE_7_14_4',
         ]
       },
     },
