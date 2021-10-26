@@ -48,7 +48,7 @@ import java.util.UUID;
 @JNINamespace("device")
 @TargetApi(Build.VERSION_CODES.M)
 class Wrappers {
-    private static final String TAG = "Bluetooth File Transfer";
+    private static final String TAG = "Bluetooth File Sharing";
 
     public static final int DEVICE_CLASS_UNSPECIFIED = 0x1F00;
 
@@ -116,7 +116,7 @@ class Wrappers {
         public static BluetoothAdapterWrapper createWithDefaultAdapter() {
             final boolean hasMinAPI = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
             if (!hasMinAPI) {
-                Log.i(TAG, "Bluetooth Adapter Wrapper create failed: SDK version (%d) too small.",
+                Log.i(TAG, "Bluetooth Adapter creation failed: SDK version (%d) too small.",
                         Build.VERSION.SDK_INT);
                 return null;
             }
@@ -136,7 +136,7 @@ class Wrappers {
 
                 if (!hasPermission) {
                     Log.w(TAG,
-                            "BluetoothAdapterWrapper.create failed: Lacking Bluetooth Transfer rights.");
+                            "BluetoothAdapterWrapper.create failed: Lacking Bluetooth Transfer permissions.");
                     return null;
                 }
             }
@@ -147,13 +147,13 @@ class Wrappers {
                     && ContextUtils.getApplicationContext().getPackageManager().hasSystemFeature(
                                PackageManager.FEATURE_BLUETOOTH_LE);
             if (!hasLowEnergyFeature) {
-                Log.i(TAG, "BluetoothAdapterWrapper.create failed: No Low Energy support.");
+                Log.i(TAG, "BluetoothAdapterWrapper.create failed: No Low Energy support. Install one NOW!");
                 return null;
             }
 
             BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
             if (adapter == null) {
-                Log.i(TAG, "BluetoothAdapterWrapper.create failed: Default adapter not found. Install one quick");
+                Log.i(TAG, "BluetoothAdapterWrapper.create failed: Default adapter not found. Install one quick or else...");
                 return null;
             } else {
                 return new BluetoothAdapterWrapper(adapter, ContextUtils.getApplicationContext());
