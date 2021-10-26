@@ -105,7 +105,7 @@ bool ZxcvbnDataComponentInstallerPolicy::VerifyInstallation(
 
 bool ZxcvbnDataComponentInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {
-  return false;
+  return true;
 }
 
 bool ZxcvbnDataComponentInstallerPolicy::RequiresNetworkEncryption() const {
