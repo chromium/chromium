@@ -1,0 +1,50 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("commands") {
+  public = [
+    "key_rotation_command.h",
+    "key_rotation_command_factory.h",
+  ]
+
+  sources = [ "key_rotation_command_factory.cc" ]
+
+  deps = [
+    "//base",
+    "//third_party/abseil-cpp:absl",
+  ]
+
+  if (is_win) {
+    sources += [
+      "win_key_rotation_command.cc",
+      "win_key_rotation_command.h",
+    ]
+    deps += [
+      "//chrome/install_static:install_static_util",
+      "//chrome/installer/util:with_no_strings",
+      "//google_update",
+    ]
+  }
+}
+
+source_set("test_support") {
+  testonly = true
+  public = [
+    "mock_key_rotation_command.h",
+    "scoped_key_rotation_command_factory.h",
+  ]
+
+  sources = [
+    "mock_key_rotation_command.cc",
+    "scoped_key_rotation_command_factory.cc",
+  ]
+
+  public_deps = [
+    ":commands",
+    "//testing/gmock",
+    "//third_party/abseil-cpp:absl",
+  ]
+
+  deps = [ "//base" ]
+}

@@ -6,10 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 
 source_set("common") {
-  sources = [
-    "attestation_service.cc",
-    "attestation_utils.cc",
-  ]
+  sources = [ "attestation_utils.cc" ]
 
   public = [
     "attestation_service.h",

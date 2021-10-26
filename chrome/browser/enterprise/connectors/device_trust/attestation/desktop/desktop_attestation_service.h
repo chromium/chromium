@@ -14,10 +14,6 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/signing_key_pair.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace policy {
-class DeviceManagementService;
-}
-
 namespace enterprise_connectors {
 
 class DeviceTrustSignals;
@@ -31,7 +27,6 @@ class KeyInfo;
 class DesktopAttestationService : public AttestationService {
  public:
   explicit DesktopAttestationService(
-      policy::DeviceManagementService* device_management_service,
       std::unique_ptr<KeyPersistenceDelegate> key_persistence_delegate);
   ~DesktopAttestationService() override;
 
@@ -49,7 +44,6 @@ class DesktopAttestationService : public AttestationService {
       const std::string& challenge,
       std::unique_ptr<DeviceTrustSignals> signals,
       AttestationCallback callback) override;
-  bool RotateSigningKey(const std::string& nonce) override;
 
  private:
   // Verify challenge comes from Verify Access.
@@ -81,7 +75,6 @@ class DesktopAttestationService : public AttestationService {
       const std::string& challenge_response_proto);
 
   GoogleKeys google_keys_;
-  policy::DeviceManagementService* device_management_service_;
   std::unique_ptr<KeyPersistenceDelegate> key_persistence_delegate_;
   absl::optional<SigningKeyPair> key_pair_;
 
