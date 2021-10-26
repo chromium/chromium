@@ -102,11 +102,8 @@ OptionalNSObject AttributeInvoker::Invoke(const AXPropertyNode& property_node,
     auto storage_iterator = storage_->find(property_node.name_or_value);
     if (storage_iterator != storage_->end()) {
       target = storage_iterator->second;
-      if (!target) {
-        LOG(ERROR) << "Stored " << property_node.name_or_value
-                   << " target is null.";
-        return OptionalNSObject::Error();
-      }
+      if (!target)
+        return OptionalNSObject(target);
     }
   }
   // Case 2: try to get target from the tree indexer. The target may refer to
@@ -157,14 +154,10 @@ OptionalNSObject AttributeInvoker::Invoke(const AXPropertyNode& property_node,
   // Invoke the call chain.
   while (current_node) {
     auto target_optional = InvokeFor(target, *current_node);
-    // Result of the current step is either null or error. Don't go any further.
-    if (!target_optional.IsNotNil()) {
-      if (target_optional.IsError() || target_optional.IsNotApplicable() ||
-          current_node->next.get())
-        return target_optional;
-      target = nil;
-      break;
-    }
+    // Result of the current step is state. Don't go any further.
+    if (!target_optional.HasValue())
+      return target_optional;
+
     target = *target_optional;
     current_node = current_node->next.get();
   }

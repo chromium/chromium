@@ -58,6 +58,7 @@ class CONTENT_EXPORT OptionalNSObject final {
   bool IsNotApplicable() const { return flag == NOT_APPLICABLE; }
   bool IsError() const { return flag == ERROR; }
   bool IsNotNil() const { return value != nil; }
+  bool HasValue() { return flag == ID; }
   constexpr const id& operator*() const& { return value; }
 
   std::string ToString() const;

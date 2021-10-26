@@ -571,6 +571,16 @@ text.AXRole='AXStaticText'
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+                       Script_Variables_Null) {
+  TestScript(R"~~(data:text/html,
+                    <p id='p'>Paragraph</p>)~~",
+             {"var:= p.AXTitleUIElement", "var"},
+             R"~~(var=NULL
+var=NULL
+)~~");
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
                        Script_ActionNames) {
   TestScript(
       R"~~(data:text/html,
