@@ -63,6 +63,27 @@ class VIEWS_EXPORT ElementTrackerViews : private WidgetObserver {
   TrackedElementViews* GetElementForView(View* view);
   const TrackedElementViews* GetElementForView(const View* view) const;
 
+  // Returns either the unique View matching the given `id` in the given
+  // `context`, or null if there is none.
+  //
+  // Use if you are sure there's at most one matching element in the context
+  // and that (if present) the element is a View; will DCHECK/crash otherwise.
+  View* GetUniqueView(ui::ElementIdentifier id, ui::ElementContext context);
+
+  // Returns the first View with the given `id` in the given `context`; null if
+  // none is found. Ignores all other Views and any matching elements that are
+  // not Views.
+  //
+  // Use when you just need *a* View in the given context, and don't care if
+  // there's more than one.
+  View* GetFirstMatchingView(ui::ElementIdentifier id,
+                             ui::ElementContext context);
+
+  // Returns a list of all visible Views with identifier `id` in `context`.
+  // The list may be empty. Ignores any non-Views elements which might match.
+  ViewList GetAllMatchingViews(ui::ElementIdentifier id,
+                               ui::ElementContext context);
+
   // Called by View after the kUniqueElementKey property is set.
   void RegisterView(ui::ElementIdentifier element_id, View* view);
 

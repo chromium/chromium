@@ -135,7 +135,7 @@ class COMPONENT_EXPORT(UI_BASE) ElementTracker
 
   // Returns either the one element matching the given `id` and `context`, or
   // null if there are none. Will generate an error if there is more than one
-  // element with `id|`in `context`. Only visible elements are returned.
+  // element with `id` in `context`. Only visible elements are returned.
   //
   // Use when you want to verify that there's only one matching element in the
   // given context.
