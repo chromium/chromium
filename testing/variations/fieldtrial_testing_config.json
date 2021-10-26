@@ -3405,6 +3405,36 @@
             ]
         }
     ],
+    "ElidePrioritizationOfPreNativeBootstrapTasks": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_on_96+",
+                    "enable_features": [
+                        "ElidePrioritizationOfPreNativeBootstrapTasks"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ElideTabPreloadAtStartup": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_on_96+",
+                    "enable_features": [
+                        "ElideTabPreloadAtStartup"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableDuplicateDownloadDialog": [
         {
             "platforms": [
@@ -7804,6 +7834,21 @@
                     "enable_features": [
                         "TranslateRankerEnforcement",
                         "TranslateRankerQuery"
+                    ]
+                }
+            ]
+        }
+    ],
+    "TreatBootstrapAsDefault": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_on_96+",
+                    "enable_features": [
+                        "TreatBootstrapAsDefault"
                     ]
                 }
             ]

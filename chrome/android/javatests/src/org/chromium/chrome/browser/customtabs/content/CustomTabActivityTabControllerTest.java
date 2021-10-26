@@ -31,10 +31,12 @@ import org.chromium.chrome.browser.customtabs.CustomTabActivityTypeTestUtils;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 
 import java.util.Arrays;
 import java.util.List;
@@ -70,6 +72,7 @@ public class CustomTabActivityTabControllerTest {
     @Test
     @MediumTest
     @Feature({"CustomTabs"})
+    @DisableFeatures(ChromeFeatureList.ELIDE_TAB_PRELOAD_AT_STARTUP)
     public void testUseStartupPreloaderTab() throws TimeoutException {
         CustomTabActivityTypeTestUtils.launchActivity(
                 mActivityType, mActivityTestRule, "about:blank");
@@ -85,6 +88,7 @@ public class CustomTabActivityTabControllerTest {
      */
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.ELIDE_TAB_PRELOAD_AT_STARTUP)
     public void testDontUseStartupPreloaderMediaViewerUrl() throws TimeoutException {
         if (mActivityType != ActivityType.CUSTOM_TAB) return;
 
