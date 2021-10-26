@@ -168,9 +168,6 @@ extern const char kUseCustomMessagesDomainDescription[];
 extern const char kAndroidPictureInPictureAPIName[];
 extern const char kAndroidPictureInPictureAPIDescription[];
 
-extern const char kAppCacheName[];
-extern const char kAppCacheDescription[];
-
 extern const char kAssistantConsentV2Name[];
 extern const char kAssistantConsentV2Description[];
 

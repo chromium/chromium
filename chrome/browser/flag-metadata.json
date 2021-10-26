@@ -154,11 +154,6 @@
     "expiry_milestone": 93
   },
   {
-    "name": "app-cache",
-    "owners": [ "enne" ],
-    "expiry_milestone": 95
-  },
-  {
     "name": "app-discovery-remote-url-search",
     "owners": [ "tby" ],
     "expiry_milestone": 102
