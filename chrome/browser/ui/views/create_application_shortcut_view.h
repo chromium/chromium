@@ -15,6 +15,8 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
+class CreateAppShortcutDialogTest;
+class PrefService;
 class Profile;
 
 namespace extensions {
@@ -53,7 +55,9 @@ class CreateChromeApplicationShortcutView : public views::DialogDelegateView {
   std::u16string GetWindowTitle() const override;
 
  private:
-  CreateChromeApplicationShortcutView(Profile* profile,
+  friend class CreateAppShortcutDialogTest;
+
+  CreateChromeApplicationShortcutView(PrefService* prefs,
                                       base::OnceCallback<void(bool)> cb);
 
   // Creates a new check-box with the given text and checked state.
@@ -67,8 +71,7 @@ class CreateChromeApplicationShortcutView : public views::DialogDelegateView {
 
   void OnDialogAccepted();
 
-  // Profile in which the shortcuts will be created.
-  Profile* profile_;
+  PrefService* prefs_;
 
   base::OnceCallback<void(bool)> close_callback_;
 

@@ -61,7 +61,8 @@ CreateChromeApplicationShortcutView::CreateChromeApplicationShortcutView(
     Profile* profile,
     const extensions::Extension* app,
     base::OnceCallback<void(bool)> close_callback)
-    : CreateChromeApplicationShortcutView(profile, std::move(close_callback)) {
+    : CreateChromeApplicationShortcutView(profile->GetPrefs(),
+                                          std::move(close_callback)) {
   // Get shortcut and icon information; needed for creating the shortcut.
   web_app::GetShortcutInfoForApp(
       app, profile,
@@ -73,7 +74,8 @@ CreateChromeApplicationShortcutView::CreateChromeApplicationShortcutView(
     Profile* profile,
     const std::string& web_app_id,
     base::OnceCallback<void(bool)> close_callback)
-    : CreateChromeApplicationShortcutView(profile, std::move(close_callback)) {
+    : CreateChromeApplicationShortcutView(profile->GetPrefs(),
+                                          std::move(close_callback)) {
   web_app::WebAppProvider* provider =
       web_app::WebAppProvider::GetForWebApps(profile);
   provider->os_integration_manager().GetShortcutInfoForApp(
@@ -83,9 +85,9 @@ CreateChromeApplicationShortcutView::CreateChromeApplicationShortcutView(
 }
 
 CreateChromeApplicationShortcutView::CreateChromeApplicationShortcutView(
-    Profile* profile,
+    PrefService* prefs,
     base::OnceCallback<void(bool)> close_callback)
-    : profile_(profile), close_callback_(std::move(close_callback)) {
+    : prefs_(prefs), close_callback_(std::move(close_callback)) {
   SetModalType(ui::MODAL_TYPE_WINDOW);
   SetButtonLabel(ui::DIALOG_BUTTON_OK,
                  l10n_util::GetStringUTF16(IDS_CREATE_SHORTCUTS_COMMIT));
@@ -255,14 +257,14 @@ CreateChromeApplicationShortcutView::AddCheckbox(const std::u16string& text,
   checkbox->SetCallback(base::BindRepeating(
       &CreateChromeApplicationShortcutView::CheckboxPressed,
       base::Unretained(this), pref_path, base::Unretained(checkbox.get())));
-  checkbox->SetChecked(profile_->GetPrefs()->GetBoolean(pref_path));
+  checkbox->SetChecked(prefs_->GetBoolean(pref_path));
   return checkbox;
 }
 
 void CreateChromeApplicationShortcutView::CheckboxPressed(
     std::string pref_path,
     views::Checkbox* checkbox) {
-  profile_->GetPrefs()->SetBoolean(pref_path, checkbox->GetChecked());
+  prefs_->SetBoolean(pref_path, checkbox->GetChecked());
   DialogModelChanged();
 }
 

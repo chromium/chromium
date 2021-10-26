@@ -2344,8 +2344,10 @@ if (!is_android && !is_fuchsia) {
 
     if (!is_mac) {
       data_deps += [ "//chrome:packed_resources" ]
-      sources +=
-          [ "../browser/policy/test/full_screen_allowed_policy_browsertest.cc" ]
+      sources += [
+        "../browser/policy/test/full_screen_allowed_policy_browsertest.cc",
+        "../browser/ui/views/create_application_shortcut_view_browsertest.cc",
+      ]
     }
 
     if (enable_captive_portal_detection) {
