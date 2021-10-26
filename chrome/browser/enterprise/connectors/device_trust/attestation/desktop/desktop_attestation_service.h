@@ -9,6 +9,8 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/google_keys.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/signing_key_pair.h"
@@ -30,6 +32,13 @@ class DesktopAttestationService : public AttestationService {
       std::unique_ptr<KeyPersistenceDelegate> key_persistence_delegate);
   ~DesktopAttestationService() override;
 
+  // AttestationService:
+  void BuildChallengeResponseForVAChallenge(
+      const std::string& challenge,
+      std::unique_ptr<DeviceTrustSignals> signals,
+      AttestationCallback callback) override;
+
+ private:
   // Export the public key of `key_pair_` in SubjectPublicKeyInfo format.
   std::string ExportPublicKey();
 
@@ -38,18 +47,6 @@ class DesktopAttestationService : public AttestationService {
   void SignEnterpriseChallenge(const SignEnterpriseChallengeRequest& request,
                                std::unique_ptr<DeviceTrustSignals> signals,
                                SignEnterpriseChallengeReply* result);
-
-  // AttestationService:
-  void BuildChallengeResponseForVAChallenge(
-      const std::string& challenge,
-      std::unique_ptr<DeviceTrustSignals> signals,
-      AttestationCallback callback) override;
-
- private:
-  // Verify challenge comes from Verify Access.
-  bool ChallengeComesFromVerifiedAccess(
-      const std::string& serialized_signed_data,
-      const std::string& public_key_modulus_hex);
 
   // Returns the challenge response proto.
   std::string VerifyChallengeAndMaybeCreateChallengeResponse(
@@ -74,9 +71,24 @@ class DesktopAttestationService : public AttestationService {
       AttestationCallback callback,
       const std::string& challenge_response_proto);
 
+  // Called only once from the constructor, this method wraps logic around
+  // attempting to load the signing key pair.
+  void InitialLoadKey();
+
+  // Tries to create a new SigningKeyPair based on the key serialized on the
+  // device.
+  bool TryLoadKeyPair();
+
   GoogleKeys google_keys_;
   std::unique_ptr<KeyPersistenceDelegate> key_persistence_delegate_;
   absl::optional<SigningKeyPair> key_pair_;
+
+  // Runner for tasks needed to be run in the background.
+  scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
+
+  // Checker used to validate that non-background tasks should be
+  // running on the original sequence.
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<DesktopAttestationService> weak_factory_{this};
 };
