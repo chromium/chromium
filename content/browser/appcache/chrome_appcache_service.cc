@@ -62,8 +62,9 @@ bool ChromeAppCacheService::CanLoadAppCache(
     const net::SiteForCookies& site_for_cookies,
     const absl::optional<url::Origin>& top_frame_origin) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return GetContentClient()->browser()->AllowAppCache(
-      manifest_url, site_for_cookies, top_frame_origin, browser_context_);
+  // TODO(https://crbug.com/582750): remove this file along with the rest of
+  // AppCache.
+  return false;
 }
 
 bool ChromeAppCacheService::CanCreateAppCache(
@@ -71,14 +72,16 @@ bool ChromeAppCacheService::CanCreateAppCache(
     const net::SiteForCookies& site_for_cookies,
     const absl::optional<url::Origin>& top_frame_origin) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return GetContentClient()->browser()->AllowAppCache(
-      manifest_url, site_for_cookies, top_frame_origin, browser_context_);
+  // TODO(https://crbug.com/582750): remove this file along with the rest of
+  // AppCache.
+  return false;
 }
 
 bool ChromeAppCacheService::IsOriginTrialRequiredForAppCache() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return GetContentClient()->browser()->IsOriginTrialRequiredForAppCache(
-      browser_context_);
+  // TODO(https://crbug.com/582750): remove this file with the rest of
+  // AppCache.
+  return true;
 }
 
 ChromeAppCacheService::~ChromeAppCacheService() = default;

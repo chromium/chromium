@@ -3341,11 +3341,12 @@
       'owners': ['enne@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['chrome.*:84-', 'chrome_os:84-', 'android:84-', 'webview_android:84-'],
+      'supported_on': ['chrome.*:84-95', 'chrome_os:84-95', 'android:84-95', 'webview_android:84-95'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': False,
       },
+      'deprecated': True,
       'items': [
         {
           'value': True,

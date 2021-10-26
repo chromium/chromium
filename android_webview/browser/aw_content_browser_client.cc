@@ -369,9 +369,6 @@ bool AwContentBrowserClient::ForceSniffingFileUrlsForHtml() {
 void AwContentBrowserClient::AppendExtraCommandLineSwitches(
     base::CommandLine* command_line,
     int child_process_id) {
-  // AppCache should always be enabled for WebView until it is removed.
-  command_line->AppendSwitch(switches::kAppCacheForceEnabled);
-
   if (!command_line->HasSwitch(switches::kSingleProcess)) {
     // The only kind of a child process WebView can have is renderer or utility.
     std::string process_type =
@@ -404,16 +401,6 @@ gfx::ImageSkia AwContentBrowserClient::GetDefaultFavicon() {
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
   // TODO(boliu): Bundle our own default favicon?
   return rb.GetImageNamed(IDR_DEFAULT_FAVICON).AsImageSkia();
-}
-
-bool AwContentBrowserClient::AllowAppCache(
-    const GURL& manifest_url,
-    const net::SiteForCookies& site_for_cookies,
-    const absl::optional<url::Origin>& top_frame_origin,
-    content::BrowserContext* context) {
-  // WebView doesn't have a per-site policy for locally stored data,
-  // instead AppCache can be disabled for individual WebViews.
-  return true;
 }
 
 scoped_refptr<content::QuotaPermissionContext>
@@ -1089,13 +1076,6 @@ void AwContentBrowserClient::LogWebFeatureForCurrentPage(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
       render_frame_host, feature);
-}
-
-bool AwContentBrowserClient::IsOriginTrialRequiredForAppCache(
-    content::BrowserContext* browser_text) {
-  // WebView has no way of specifying an origin trial, and so never
-  // consider it a requirement.
-  return false;
 }
 
 bool AwContentBrowserClient::ShouldAllowInsecurePrivateNetworkRequests(

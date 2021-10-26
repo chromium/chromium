@@ -2348,11 +2348,6 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
         command_line->AppendSwitch(switches::kDisableScrollToTextFragment);
       }
 
-      if (prefs->HasPrefPath(prefs::kAppCacheForceEnabled) &&
-          prefs->GetBoolean(prefs::kAppCacheForceEnabled)) {
-        command_line->AppendSwitch(switches::kAppCacheForceEnabled);
-      }
-
       // The IntensiveWakeUpThrottling feature is typically managed via a
       // base::Feature, but it has a managed policy override. The override is
       // communicated to blink via a custom command-line flag. See
@@ -2554,18 +2549,6 @@ void ChromeContentBrowserClient::UpdateRendererPreferencesForWorker(
   DCHECK(out_prefs);
   renderer_preferences_util::UpdateFromSystemSettings(
       out_prefs, Profile::FromBrowserContext(browser_context));
-}
-
-bool ChromeContentBrowserClient::AllowAppCache(
-    const GURL& manifest_url,
-    const net::SiteForCookies& site_for_cookies,
-    const absl::optional<url::Origin>& top_frame_origin,
-    content::BrowserContext* context) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return embedder_support::AllowAppCache(
-      manifest_url, site_for_cookies, top_frame_origin,
-      CookieSettingsFactory::GetForProfile(Profile::FromBrowserContext(context))
-          .get());
 }
 
 content::AllowServiceWorkerResult
@@ -6110,23 +6093,6 @@ ChromeContentBrowserClient::GetXrIntegrationClient() {
   return xr_integration_client_.get();
 }
 #endif  // BUILDFLAG(ENABLE_VR)
-
-bool ChromeContentBrowserClient::IsOriginTrialRequiredForAppCache(
-    content::BrowserContext* browser_context) {
-  auto* profile = Profile::FromBrowserContext(browser_context);
-  auto* prefs = profile->GetPrefs();
-
-  if (prefs->HasPrefPath(prefs::kAppCacheForceEnabled) &&
-      prefs->GetBoolean(prefs::kAppCacheForceEnabled)) {
-    return false;
-  }
-  if (base::FeatureList::IsEnabled(
-          blink::features::kAppCacheRequireOriginTrial)) {
-    return true;
-  }
-
-  return false;
-}
 
 void ChromeContentBrowserClient::BindBrowserControlInterface(
     mojo::ScopedMessagePipeHandle pipe) {

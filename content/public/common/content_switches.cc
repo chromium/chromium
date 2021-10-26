@@ -31,10 +31,6 @@ const char kAllowSyncXHRInPageDismissal[] = "allow-sync-xhr-in-page-dimissal";
 // This is used in blimp to emulate android fonts on linux.
 const char kAndroidFontsPath[]          = "android-fonts-path";
 
-// Allows app cache to be forced on, even when gated by an origin trial.
-// TODO(enne): remove this once app cache has been removed.
-const char kAppCacheForceEnabled[] = "app-cache-force-enabled";
-
 // Causes the browser process to crash on startup.
 const char kBrowserCrashTest[]              = "crash-test";
 
