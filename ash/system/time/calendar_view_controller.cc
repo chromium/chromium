@@ -184,7 +184,8 @@ void CalendarViewController::MaybeFetchMonth(base::Time start_of_month) {
     MarkMonthAsFetched(start_of_month);
 
     CalendarClient* client = Shell::Get()->calendar_controller()->GetClient();
-    DCHECK(client);
+    if (!client)
+      return;
 
     // TODO https://crbug.com/1258179 the params passed to GetEventList() need
     // to be stored until the fetch request is complete in case of a failure, so
