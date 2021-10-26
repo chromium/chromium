@@ -218,9 +218,7 @@ V4Store::V4Store(const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       store_path_(store_path),
       task_runner_(task_runner) {}
 
-V4Store::~V4Store() {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-}
+V4Store::~V4Store() = default;
 
 std::string V4Store::DebugString() const {
   std::string state_base64;
