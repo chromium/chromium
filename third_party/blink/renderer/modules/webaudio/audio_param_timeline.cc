@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/fdlibm/ieee754.h"
 
 #if defined(ARCH_CPU_X86_FAMILY)
@@ -133,7 +134,12 @@ float AudioParamTimeline::ExponentialRampAtTime(double t,
                                                 double time1,
                                                 float value2,
                                                 double time2) {
-  return value1 * fdlibm::pow(value2 / value1, (t - time1) / (time2 - time1));
+  DCHECK(!std::isnan(value1) && std::isfinite(value1));
+  DCHECK(!std::isnan(value2) && std::isfinite(value2));
+
+  return (value1 == 0.0f || std::signbit(value1) != std::signbit(value2))
+      ? value1
+      : value1 * fdlibm::pow(value2 / value1, (t - time1) / (time2 - time1));
 }
 
 // Compute the value of a set target event at time t with the given event
@@ -993,6 +999,8 @@ float AudioParamTimeline::ValuesForFrameRangeImpl(size_t start_frame,
     std::tie(value2, time2, next_event_type) =
         HandleCancelValues(event, next_event, value2, time2);
 
+    DCHECK(!std::isnan(value1));
+    DCHECK(!std::isnan(value2));
     DCHECK_GE(time2, time1);
 
     // |fillToEndFrame| is the exclusive upper bound of the last frame to be
@@ -1052,7 +1060,6 @@ float AudioParamTimeline::ValuesForFrameRangeImpl(size_t start_frame,
           value = event->Value();
           write_index =
               FillWithDefault(values, value, fill_to_frame, write_index);
-
           break;
         }
 
@@ -1394,6 +1401,7 @@ AudioParamTimeline::HandleCancelValues(const ParamEvent* current_event,
               value2 = ExponentialRampAtTime(next_event->Time(), value1, time1,
                                              saved_event->Value(),
                                              saved_event->Time());
+              DCHECK(!std::isnan(value1));
               break;
             case ParamEvent::kSetValueCurve:
             case ParamEvent::kSetValueCurveEnd:
