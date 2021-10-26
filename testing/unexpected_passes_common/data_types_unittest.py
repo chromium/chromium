@@ -22,6 +22,41 @@ GENERIC_RESULT = data_types.Result('test', ['tag1', 'tag2'], 'Pass',
                                    'pixel_tests', 'build_id')
 
 
+class CustomImplementationUnittest(unittest.TestCase):
+  def testCustomExpectation(self):
+    class CustomExpectation(data_types.BaseExpectation):
+      pass
+
+    data_types.SetExpectationImplementation(CustomExpectation)
+    expectation = data_types.Expectation('test', ['tag1', 'tag2'], 'Pass')
+    self.assertIsInstance(expectation, CustomExpectation)
+
+  def testCustomResult(self):
+    class CustomResult(data_types.BaseResult):
+      pass
+
+    data_types.SetResultImplementation(CustomResult)
+    result = data_types.Result('test', ['tag1', 'tag2'], 'Pass', 'pixel_tests',
+                               'build_id')
+    self.assertIsInstance(result, CustomResult)
+
+  def testCustomBuildStats(self):
+    class CustomBuildStats(data_types.BaseBuildStats):
+      pass
+
+    data_types.SetBuildStatsImplementation(CustomBuildStats)
+    build_stats = data_types.BuildStats()
+    self.assertIsInstance(build_stats, CustomBuildStats)
+
+  def testCustomTestExpectationMap(self):
+    class CustomTestExpectationMap(data_types.BaseTestExpectationMap):
+      pass
+
+    data_types.SetTestExpectationMapImplementation(CustomTestExpectationMap)
+    expectation_map = data_types.TestExpectationMap()
+    self.assertIsInstance(expectation_map, CustomTestExpectationMap)
+
+
 class ExpectationUnittest(unittest.TestCase):
   def testEquality(self):
     e = GENERIC_EXPECTATION
@@ -92,14 +127,6 @@ class ExpectationUnittest(unittest.TestCase):
                                'Pass')
     self.assertFalse(e.AppliesToResult(r))
 
-  def testCustomImplementation(self):
-    class CustomExpectation(data_types.BaseExpectation):
-      pass
-
-    data_types.SetExpectationImplementation(CustomExpectation)
-    expectation = data_types.Expectation('test', ['tag1', 'tag2'], 'Pass')
-    self.assertIsInstance(expectation, CustomExpectation)
-
 
 class ResultUnittest(unittest.TestCase):
   def testEquality(self):
@@ -129,15 +156,6 @@ class ResultUnittest(unittest.TestCase):
     r = GENERIC_RESULT
     _ = {r}
 
-  def testCustomImplementation(self):
-    class CustomResult(data_types.BaseResult):
-      pass
-
-    data_types.SetResultImplementation(CustomResult)
-    result = data_types.Result('test', ['tag1', 'tag2'], 'Pass', 'pixel_tests',
-                               'build_id')
-    self.assertIsInstance(result, CustomResult)
-
 
 class BuildStatsUnittest(unittest.TestCase):
   def CreateGenericBuildStats(self):
@@ -166,6 +184,11 @@ class BuildStatsUnittest(unittest.TestCase):
     self.assertEqual(s.failed_builds, 1)
     self.assertEqual(s.failure_links,
                      frozenset(['http://ci.chromium.org/b/build_id']))
+
+  def testGetStatsAsString(self):
+    s = self.CreateGenericBuildStats()
+    expected_str = '(1/2 passed)'
+    self.assertEqual(s.GetStatsAsString(), expected_str)
 
 
 class MapTypeUnittest(unittest.TestCase):

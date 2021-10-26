@@ -11,8 +11,33 @@ if six.PY3:
     import unittest.mock as mock
 
 from blinkpy.web_tests.stale_expectation_removal import constants
+from blinkpy.web_tests.stale_expectation_removal import data_types
 from blinkpy.web_tests.stale_expectation_removal import queries
 from blinkpy.web_tests.stale_expectation_removal import unittest_utils as wt_uu
+from unexpected_passes_common import data_types as common_data_types
+
+
+class ConvertJsonResultToResultObjectUnittest(unittest.TestCase):
+    def setUp(self):
+        common_data_types.SetResultImplementation(data_types.WebTestResult)
+
+    def tearDown(self):
+        common_data_types.SetResultImplementation(common_data_types.BaseResult)
+
+    def testDurationIsSet(self):
+        """Tests that the duration is set appropriately on the result."""
+        json_result = {
+            'id': 'build-1234',
+            'test_id': 'ninja://:blink_web_tests/test',
+            'status': 'PASS',
+            'typ_tags': ['debug'],
+            'step_name': 'step_name',
+            'duration': '100000',
+        }
+        querier = wt_uu.CreateGenericWebTestQuerier()
+        result = querier._ConvertJsonResultToResultObject(json_result)
+        self.assertTrue(result.is_slow_result)
+        self.assertEqual(result._duration, 100000)
 
 
 class GetRelevantExpectationFilesForQueryResultUnittest(unittest.TestCase):

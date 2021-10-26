@@ -83,12 +83,13 @@ def SetLoggingVerbosity(verbosity_level):
 
 def main():
     args = ParseArgs()
-    raise RuntimeError(
-        'Script is still under active development and not currently functional'
-    )
     # Set any custom data types.
     common_data_types.SetExpectationImplementation(
         data_types.WebTestExpectation)
+    common_data_types.SetResultImplementation(data_types.WebTestResult)
+    common_data_types.SetBuildStatsImplementation(data_types.WebTestBuildStats)
+    common_data_types.SetTestExpectationMapImplementation(
+        data_types.WebTestTestExpectationMap)
 
     builders_instance = builders.WebTestBuilders()
     common_builders.RegisterInstance(builders_instance)

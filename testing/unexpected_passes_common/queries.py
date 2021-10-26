@@ -241,16 +241,27 @@ class BigQueryQuerier(object):
     for r in query_results:
       if self._ShouldSkipOverResult(r):
         continue
-      build_id = _StripPrefixFromBuildId(r['id'])
-      test_name = self._StripPrefixFromTestId(r['test_id'])
-      actual_result = _ConvertActualResultToExpectationFileFormat(r['status'])
-      tags = r['typ_tags']
-      step = r['step_name']
-      results.append(
-          data_types.Result(test_name, tags, actual_result, step, build_id))
+      results.append(self._ConvertJsonResultToResultObject(r))
     logging.debug('Got %d results for %s builder %s', len(results),
                   builder_type, builder)
     return results, expectation_files
+
+  def _ConvertJsonResultToResultObject(self, json_result):
+    """Converts a single BigQuery JSON result to a data_types.Result.
+
+    Args:
+      json_result: A single row/result from BigQuery in JSON format.
+
+    Returns:
+      A data_types.Result object containing the information from |json_result|.
+    """
+    build_id = _StripPrefixFromBuildId(json_result['id'])
+    test_name = self._StripPrefixFromTestId(json_result['test_id'])
+    actual_result = _ConvertActualResultToExpectationFileFormat(
+        json_result['status'])
+    tags = json_result['typ_tags']
+    step = json_result['step_name']
+    return data_types.Result(test_name, tags, actual_result, step, build_id)
 
   def _GetRelevantExpectationFilesForQueryResult(self, query_result):
     """Gets the relevant expectation file names for a given query result.
