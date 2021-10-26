@@ -9,6 +9,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/native_page/FrozenNativePage.java",
     "java/src/org/chromium/chrome/browser/ui/native_page/NativePage.java",
     "java/src/org/chromium/chrome/browser/ui/native_page/NativePageHost.java",
+    "java/src/org/chromium/chrome/browser/ui/native_page/TouchEnabledDelegate.java",
   ]
   deps = [
     "//base:base_java",

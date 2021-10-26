@@ -18,6 +18,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
+import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.ui.base.WindowAndroid.OnCloseContextMenuListener;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
@@ -124,12 +125,6 @@ public class ContextMenuManager implements OnCloseContextMenuListener {
         @Override
         public void onContextMenuCreated() {}
     }
-
-    /**
-     * Delegate used by the {@link ContextMenuManager} to disable touch events on the outer view
-     * while the context menu is open.
-     */
-    public interface TouchEnabledDelegate { void setTouchEnabled(boolean enabled); }
 
     /**
      * @param navigationDelegate The {@link NativePageNavigationDelegate} for handling navigation

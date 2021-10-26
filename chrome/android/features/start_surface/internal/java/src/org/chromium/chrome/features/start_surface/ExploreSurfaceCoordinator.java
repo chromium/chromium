@@ -16,11 +16,12 @@ import org.chromium.chrome.browser.app.feed.FeedActionDelegateImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.feed.FeedLaunchReliabilityLoggingState;
 import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
+import org.chromium.chrome.browser.feed.FeedSurfaceDelegate;
 import org.chromium.chrome.browser.feed.FeedSurfaceLifecycleManager;
 import org.chromium.chrome.browser.feed.FeedSwipeRefreshLayout;
 import org.chromium.chrome.browser.feed.ScrollableContainerDelegate;
+import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator;
 import org.chromium.chrome.browser.feed.hooks.FeedHooksImpl;
-import org.chromium.chrome.browser.feed.shared.FeedSurfaceDelegate;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
@@ -122,9 +123,9 @@ class ExploreSurfaceCoordinator implements FeedSurfaceDelegate {
     // Implements FeedSurfaceDelegate.
     @Override
     public FeedSurfaceLifecycleManager createStreamLifecycleManager(
-            Activity activity, FeedSurfaceCoordinator coordinator) {
-        mExploreSurfaceFeedLifecycleManager =
-                new ExploreSurfaceFeedLifecycleManager(activity, coordinator);
+            Activity activity, SurfaceCoordinator coordinator) {
+        mExploreSurfaceFeedLifecycleManager = new ExploreSurfaceFeedLifecycleManager(
+                activity, (FeedSurfaceCoordinator) coordinator);
         return mExploreSurfaceFeedLifecycleManager;
     }
 

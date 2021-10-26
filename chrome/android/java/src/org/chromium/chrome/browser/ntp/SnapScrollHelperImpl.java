@@ -13,11 +13,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.feed.SnapScrollHelper;
 
 /**
  * This class handles snap scroll for the search box on a {@link NewTabPage}.
  */
-public class SnapScrollHelper {
+public class SnapScrollHelperImpl implements SnapScrollHelper {
     private static final long SNAP_SCROLL_DELAY_MS = 30;
 
     private final NewTabPageManager mManager;
@@ -36,7 +37,7 @@ public class SnapScrollHelper {
      *                the {@link NewTabPage}.
      * @param newTabPageLayout The {@link NewTabPageLayout} associated with the {@link NewTabPage}.
      */
-    public SnapScrollHelper(NewTabPageManager manager, NewTabPageLayout newTabPageLayout) {
+    public SnapScrollHelperImpl(NewTabPageManager manager, NewTabPageLayout newTabPageLayout) {
         mManager = manager;
         mNewTabPageLayout = newTabPageLayout;
         mSnapScrollRunnable = new SnapScrollRunnable();
@@ -50,6 +51,7 @@ public class SnapScrollHelper {
     }
 
     /** @param view The view on which this class needs to handle snap scroll. */
+    @Override
     public void setView(@NonNull View view) {
         if (mView != null) {
             mPendingSnapScroll = false;
@@ -77,6 +79,7 @@ public class SnapScrollHelper {
     }
 
     /** Update scroll offset and perform snap scroll if necessary. */
+    @Override
     public void handleScroll() {
         int scrollY = mNewTabPageLayout.getScrollDelegate().getVerticalScrollOffset();
         if (mLastScrollY == scrollY) return;
@@ -96,6 +99,7 @@ public class SnapScrollHelper {
      * move, and onScrolled() might not be called).
      * @param update Whether a new callback to update search box should be posted to {@link #mView}.
      */
+    @Override
     public void resetSearchBoxOnScroll(boolean update) {
         mView.removeCallbacks(mUpdateSearchBoxOnScrollRunnable);
         if (update) mView.post(mUpdateSearchBoxOnScrollRunnable);
@@ -106,6 +110,7 @@ public class SnapScrollHelper {
      * @return The modified scroll position that accounts for snap scroll.
      */
     @VisibleForTesting
+    @Override
     public int calculateSnapPosition(int scrollPosition) {
         if (mManager.isLocationBarShownInNTP()) {
             // Snap scroll to prevent only part of the toolbar from showing.

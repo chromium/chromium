@@ -24,4 +24,6 @@ public interface SurfaceCoordinator {
         int FOR_YOU = 0;
         int FOLLOWING = 1;
     };
+    void restoreInstanceState(String state);
+    String getSavedInstanceStateString();
 }

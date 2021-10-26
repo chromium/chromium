@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.feed.shared;
+package org.chromium.chrome.browser.feed;
 
 import android.graphics.Canvas;
 import android.view.View;
 
-import org.chromium.chrome.browser.native_page.ContextMenuManager;
-import org.chromium.chrome.browser.ntp.NewTabPageLayout;
+import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 
 /**
@@ -23,12 +22,12 @@ public interface FeedSurfaceProvider {
     /**
      * @return The {@link TouchEnabledDelegate} for handling whether touch events are allowed.
      */
-    ContextMenuManager.TouchEnabledDelegate getTouchEnabledDelegate();
+    TouchEnabledDelegate getTouchEnabledDelegate();
 
     /**
-     * @return The {@link ScrollDelegate} for this surface.
+     * @return The {@link FeedSurfaceScrollDelegate} for this surface.
      */
-    NewTabPageLayout.ScrollDelegate getScrollDelegate();
+    FeedSurfaceScrollDelegate getScrollDelegate();
 
     /**
      * @return The {@link UiConfig} about the view used in this surface.

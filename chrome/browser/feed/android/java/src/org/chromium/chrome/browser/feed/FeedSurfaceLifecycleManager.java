@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -37,7 +38,7 @@ public class FeedSurfaceLifecycleManager implements ApplicationStatus.ActivitySt
     }
 
     /** The {@link FeedSurfaceCoordinator} that this class updates. */
-    protected final FeedSurfaceCoordinator mCoordinator;
+    protected final SurfaceCoordinator mCoordinator;
 
     /** The current state the feed is in its lifecycle. */
     protected @SurfaceState int mSurfaceState = SurfaceState.NOT_SPECIFIED;
@@ -49,7 +50,7 @@ public class FeedSurfaceLifecycleManager implements ApplicationStatus.ActivitySt
      * @param activity The {@link Activity} that the {@link FeedSurfaceCoordinator} is attached to.
      * @param coordinator The coordinator managing the feed surface.
      */
-    public FeedSurfaceLifecycleManager(Activity activity, FeedSurfaceCoordinator coordinator) {
+    public FeedSurfaceLifecycleManager(Activity activity, SurfaceCoordinator coordinator) {
         mActivity = activity;
         mCoordinator = coordinator;
     }

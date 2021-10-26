@@ -11,8 +11,7 @@ import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.chromium.chrome.R;
-import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
 
@@ -72,7 +71,7 @@ public class FeedStreamViewResizer extends ViewResizer {
         int padding = super.computePadding();
         if (mUiConfig.getContext().getResources().getConfiguration().orientation
                         != Configuration.ORIENTATION_LANDSCAPE
-                || MultiWindowUtils.getInstance().isInMultiWindowMode(mActivity)) {
+                || ApiCompatibilityUtils.isInMultiWindowMode(mActivity)) {
             return padding;
         }
 

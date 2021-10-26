@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.feed.shared;
+package org.chromium.chrome.browser.feed;
 
 import android.app.Activity;
 import android.view.MotionEvent;
 
-import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
-import org.chromium.chrome.browser.feed.FeedSurfaceLifecycleManager;
+import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator;
 
 /**
  * The delegate of the {@link FeedSurfaceProvider} creator needs to implement.
@@ -22,7 +21,7 @@ public interface FeedSurfaceDelegate {
      * @return The {@link FeedSurfaceLifecycleManager}.
      */
     FeedSurfaceLifecycleManager createStreamLifecycleManager(
-            Activity activity, FeedSurfaceCoordinator coordinator);
+            Activity activity, SurfaceCoordinator coordinator);
 
     /**
      * Checks whether the delegate want to intercept the given touch event.

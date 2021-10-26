@@ -18,7 +18,6 @@ import android.widget.TextView;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
-import org.chromium.chrome.R;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.RectProvider;
 
@@ -56,8 +55,7 @@ public class BackToTopBubble {
 
         // Find the toolbar and use it to position the bubble below it.
         ViewGroup contentContainer = activity.findViewById(android.R.id.content);
-        View toolbarView =
-                contentContainer.findViewById(org.chromium.chrome.R.id.toolbar_container);
+        View toolbarView = contentContainer.findViewById(R.id.toolbar_container);
         int[] windowCoordinates = new int[2];
         toolbarView.getLocationInWindow(windowCoordinates);
         Rect rect = new Rect();
