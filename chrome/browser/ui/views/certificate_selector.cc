@@ -213,7 +213,7 @@ void CertificateSelector::InitWithText(
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
   const int vertical_spacing =
       provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL);
-  auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       vertical_spacing));
 
@@ -235,10 +235,8 @@ void CertificateSelector::InitWithText(
   table_ = table.get();
   table->set_observer(this);
 
-  auto* scroll_view = AddChildView(
-      views::TableView::CreateScrollViewWithTable(std::move(table)));
-  scroll_view->SetPreferredSize(gfx::Size(kTableViewWidth, kTableViewHeight));
-  layout->SetFlexForView(scroll_view, 1);
+  AddChildView(views::TableView::CreateScrollViewWithTable(std::move(table)))
+      ->SetPreferredSize(gfx::Size(kTableViewWidth, kTableViewHeight));
 }
 
 ui::TableModel* CertificateSelector::table_model_for_testing() const {

@@ -43,7 +43,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/widget/widget.h"
 
 using content::WebContents;
@@ -302,27 +302,16 @@ HungRendererDialogView::HungRendererDialogView(WebContents* web_contents)
 
   DialogModelChanged();
 
-  views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
+      provider->GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_VERTICAL)));
 
-  constexpr int kColumnSetId = 0;
-  views::ColumnSet* column_set = layout->AddColumnSet(kColumnSetId);
-  column_set->AddColumn(views::GridLayout::FILL, views::GridLayout::FILL, 1.0,
-                        views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
+  info_label_ = AddChildView(std::move(info_label));
 
-  layout->StartRow(views::GridLayout::kFixedSize, kColumnSetId);
-  info_label_ = layout->AddView(std::move(info_label));
-
-  layout->AddPaddingRow(
-      views::GridLayout::kFixedSize,
-      provider->GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_VERTICAL));
-
-  layout->StartRow(1.0, kColumnSetId);
-  layout->AddView(
-      views::TableView::CreateScrollViewWithTable(std::move(hung_pages_table)),
-      1, 1, views::GridLayout::FILL, views::GridLayout::FILL, kTableViewWidth,
-      kTableViewHeight);
+  AddChildView(
+      views::TableView::CreateScrollViewWithTable(std::move(hung_pages_table)))
+      ->SetPreferredSize(gfx::Size(kTableViewWidth, kTableViewHeight));
 
   chrome::RecordDialogCreation(chrome::DialogIdentifier::HUNG_RENDERER);
 }
