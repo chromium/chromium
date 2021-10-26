@@ -162,6 +162,7 @@ constexpr base::FeatureParam<bool> ItemSuggestCache::kEnabled;
 constexpr base::FeatureParam<std::string> ItemSuggestCache::kServerUrl;
 constexpr base::FeatureParam<std::string> ItemSuggestCache::kModelName;
 constexpr base::FeatureParam<int> ItemSuggestCache::kMinMinutesBetweenUpdates;
+constexpr base::FeatureParam<bool> ItemSuggestCache::kMultipleQueriesPerSession;
 
 ItemSuggestCache::Result::Result(const std::string& id,
                                  const std::string& title)
@@ -187,6 +188,9 @@ ItemSuggestCache::ItemSuggestCache(
       enabled_(kEnabled.Get()),
       server_url_(kServerUrl.Get()),
       min_time_between_updates_(base::Minutes(kMinMinutesBetweenUpdates.Get())),
+      multiple_queries_per_session_(
+          app_list_features::IsSuggestedFilesEnabled() ||
+          kMultipleQueriesPerSession.Get()),
       profile_(profile),
       url_loader_factory_(std::move(url_loader_factory)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -236,8 +240,8 @@ void ItemSuggestCache::UpdateCache() {
   // - Item suggest has been disabled via experiment.
   // - Item suggest has been disabled by policy.
   // - The server url is not https or not trusted by Google.
-  // - We've already made a request this session and the suggested files flag
-  //   is disabled. This is to prevent too much QPS to the ItemSuggest backend.
+  // - We've already made a request this session and we are not configured to
+  //   query multiple times.
   if (!enabled_) {
     LogStatus(Status::kDisabledByExperiment);
     return;
@@ -248,7 +252,7 @@ void ItemSuggestCache::UpdateCache() {
              !google_util::IsGoogleAssociatedDomainUrl(server_url_)) {
     LogStatus(Status::kInvalidServerUrl);
     return;
-  } else if (made_request_ && !app_list_features::IsSuggestedFilesEnabled()) {
+  } else if (made_request_ && !multiple_queries_per_session_) {
     LogStatus(Status::kPostLaunchUpdateIgnored);
     return;
   }
