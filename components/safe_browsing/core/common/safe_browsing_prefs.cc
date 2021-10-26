@@ -179,11 +179,6 @@ void RecordExtendedReportingMetrics(const PrefService& prefs) {
   // happening for this user.
   UMA_HISTOGRAM_BOOLEAN("SafeBrowsing.Pref.Extended",
                         IsExtendedReportingEnabled(prefs));
-
-  // Track whether this user has ever seen a security interstitial.
-  UMA_HISTOGRAM_BOOLEAN(
-      "SafeBrowsing.Pref.SawInterstitial",
-      prefs.GetBoolean(prefs::kSafeBrowsingSawInterstitialScoutReporting));
 }
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {

@@ -63212,6 +63212,30 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="Base64 decoding error"/>
 </enum>
 
+<enum name="OptimizationType">
+  <int value="0" label="TYPE_UNSPECIFIED"/>
+  <int value="1" label="NOSCRIPT"/>
+  <int value="2" label="RESOURCE_LOADING"/>
+  <int value="3" label="LITE_PAGE_REDIRECT"/>
+  <int value="4" label="METADATA_FETCH_VALIDATION"/>
+  <int value="5" label="DEFER_ALL_SCRIPT"/>
+  <int value="6" label="PERFORMANCE_HINTS"/>
+  <int value="7" label="LITE_PAGE"/>
+  <int value="8" label="COMPRESS_PUBLIC_IMAGES"/>
+  <int value="9" label="LOADING_PREDICTOR"/>
+  <int value="10" label="FAST_HOST_HINTS"/>
+  <int value="11" label="Deprecated"/>
+  <int value="12" label="Deprecated"/>
+  <int value="13" label="LITE_VIDEO"/>
+  <int value="14" label="LINK_PERFORMANCE"/>
+  <int value="15" label="SHOPPING_PAGE_PREDICTOR"/>
+  <int value="16" label="LOGIN_DETECTION"/>
+  <int value="17" label="MERCHANT_TRUST_SIGNALS"/>
+  <int value="18" label="PRICE_TRACKING"/>
+  <int value="19" label="BLOOM_FILTER_VALIDATION"/>
+  <int value="20" label="ABOUT_THIS_SITE"/>
+</enum>
+
 <enum name="OptOutBlacklistReason">
   <int value="0" label="Not loaded">
     The Blacklist was not loaded from disk when the page load committed and
@@ -63396,6 +63420,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="436" label="Pointing Stick: Acceleration"/>
   <int value="437" label="Pointing Stick: Swap Primary Buttons"/>
   <int value="438" label="Touchpad: Haptic Feedback"/>
+  <int value="439" label="Touchpad: Haptic Click Sensitivity"/>
   <int value="500" label="Open Wallpaper"/>
   <int value="501" label="Ambient Mode On/Off"/>
   <int value="502" label="Ambient Mode Source"/>

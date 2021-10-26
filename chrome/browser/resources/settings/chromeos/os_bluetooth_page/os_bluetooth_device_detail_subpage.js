@@ -83,6 +83,13 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
       },
 
       /** @private */
+      isDeviceConnected_: {
+        reflectToAttribute: true,
+        type: Boolean,
+        computed: 'computeIsDeviceConnected_(pageState_)',
+      },
+
+      /** @private */
       shouldShowChangeDeviceNameDialog_: {
         type: Boolean,
         value: false,
@@ -138,6 +145,14 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
       Router.getInstance().navigateToPreviousRoute();
       return;
     }
+  }
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  computeIsDeviceConnected_() {
+    return this.pageState_ === PageState.CONNECTED;
   }
 
   /**
@@ -408,6 +423,11 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
    */
   getDeviceForTest() {
     return this.device_;
+  }
+
+  /** @return {boolean} */
+  getIsDeviceConnectedForTest() {
+    return this.isDeviceConnected_;
   }
 }
 

@@ -829,9 +829,11 @@ bool LocationBarView::ActivateFirstInactiveBubbleForAccessibility() {
 }
 
 PermissionChip* LocationBarView::DisplayChip(
-    permissions::PermissionPrompt::Delegate* delegate) {
+    permissions::PermissionPrompt::Delegate* delegate,
+    bool should_bubble_start_open) {
   DCHECK(delegate);
-  return AddChip(std::make_unique<PermissionRequestChip>(browser(), delegate));
+  return AddChip(std::make_unique<PermissionRequestChip>(
+      browser(), delegate, should_bubble_start_open));
 }
 
 PermissionChip* LocationBarView::DisplayQuietChip(

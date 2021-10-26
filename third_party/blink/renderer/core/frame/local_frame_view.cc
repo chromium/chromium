@@ -123,6 +123,7 @@
 #include "third_party/blink/renderer/core/page/scrolling/scrolling_coordinator.h"
 #include "third_party/blink/renderer/core/page/scrolling/scrolling_coordinator_context.h"
 #include "third_party/blink/renderer/core/page/scrolling/snap_coordinator.h"
+#include "third_party/blink/renderer/core/page/scrolling/text_fragment_handler.h"
 #include "third_party/blink/renderer/core/page/scrolling/top_document_root_scroller_controller.h"
 #include "third_party/blink/renderer/core/page/spatial_navigation_controller.h"
 #include "third_party/blink/renderer/core/page/validation_message_client.h"
@@ -1820,8 +1821,10 @@ void LocalFrameView::DismissFragmentAnchor() {
   if (!fragment_anchor_)
     return;
 
-  if (fragment_anchor_->Dismiss())
+  if (fragment_anchor_->Dismiss()) {
+    TextFragmentHandler::RemoveSelectorsFromUrl(frame_);
     fragment_anchor_ = nullptr;
+  }
 }
 
 bool LocalFrameView::UpdatePlugins() {

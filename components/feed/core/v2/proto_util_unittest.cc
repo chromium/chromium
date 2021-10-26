@@ -71,7 +71,7 @@ TEST(ProtoUtilTest, DefaultCapabilities) {
   ASSERT_THAT(
       request.client_capability(),
       testing::UnorderedElementsAre(
-          feedwire::Capability::BASE_UI, feedwire::Capability::REQUEST_SCHEDULE,
+          feedwire::Capability::REQUEST_SCHEDULE,
           feedwire::Capability::LOTTIE_ANIMATIONS,
           feedwire::Capability::LONG_PRESS_CARD_MENU,
           feedwire::Capability::OPEN_IN_TAB, feedwire::Capability::CARD_MENU,
@@ -100,12 +100,10 @@ TEST(ProtoUtilTest, HeartsEnabled) {
 }
 
 TEST(ProtoUtilTest, DisableCapabilitiesWithFinch) {
-  // Try to disable BASE_UI and _INFINITE_FEED. BASE_UI is not an experimental
-  // capability, and should not be affected.
+  // Try to disable _INFINITE_FEED.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      kInterestFeedV2,
-      {{"enable_BASE_UI", "false"}, {"enable_INFINITE_FEED", "false"}});
+      kInterestFeedV2, {{"enable_INFINITE_FEED", "false"}});
   OverrideConfigWithFinchForTesting();
 
   feedwire::FeedRequest request =
@@ -118,7 +116,7 @@ TEST(ProtoUtilTest, DisableCapabilitiesWithFinch) {
   ASSERT_THAT(
       request.client_capability(),
       testing::UnorderedElementsAre(
-          feedwire::Capability::BASE_UI, feedwire::Capability::REQUEST_SCHEDULE,
+          feedwire::Capability::REQUEST_SCHEDULE,
           feedwire::Capability::LOTTIE_ANIMATIONS,
           feedwire::Capability::LONG_PRESS_CARD_MENU,
           feedwire::Capability::OPEN_IN_TAB, feedwire::Capability::CARD_MENU,

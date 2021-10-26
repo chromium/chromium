@@ -866,6 +866,7 @@ TEST_F(AndroidPushNotificationManagerJavaTest, Pushed_HintKeyRequired) {
 // HintNotificationPayload proto, observer should receive
 // the optimization_guide::proto::Any.
 TEST_F(AndroidPushNotificationManagerJavaTest, PayloadDispatched_WithHintsKey) {
+  base::HistogramTester histogram_tester;
   optimization_guide::proto::Any payload_to_observer;
   EXPECT_CALL(*observer(),
               OnNotificationPayload(proto::OptimizationType::PRICE_TRACKING, _))
@@ -885,6 +886,9 @@ TEST_F(AndroidPushNotificationManagerJavaTest, PayloadDispatched_WithHintsKey) {
 
   EXPECT_EQ(payload_to_observer.type_url(), "type_url");
   EXPECT_EQ(payload_to_observer.value(), "value");
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PushNotifications.ReceivedNotificationType",
+      proto::OptimizationType::PRICE_TRACKING, 1);
 }
 
 // Send non-empty HintNotificationPayload.payload and empty hints key in the
@@ -892,15 +896,22 @@ TEST_F(AndroidPushNotificationManagerJavaTest, PayloadDispatched_WithHintsKey) {
 // optimization_guide::proto::Any.
 TEST_F(AndroidPushNotificationManagerJavaTest,
        PayloadNotDispatched_InvalidPayload) {
+  base::HistogramTester histogram_tester;
   EXPECT_CALL(*observer(), OnNotificationPayload(_, _)).Times(0);
 
+  // No hints key.
   proto::HintNotificationPayload notification;
   optimization_guide::proto::Any* payload = new optimization_guide::proto::Any;
+  notification.set_optimization_type(proto::OptimizationType::PRICE_TRACKING);
   payload->set_type_url("type_url");
   payload->set_value("value");
   notification.set_allocated_payload(payload);
   PushNotificationNative(notification);
   base::RunLoop().RunUntilIdle();
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PushNotifications.ReceivedNotificationType",
+      proto::OptimizationType::PRICE_TRACKING, 0);
 }
 
 }  // namespace android

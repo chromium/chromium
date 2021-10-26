@@ -57,6 +57,16 @@ source_set("constants") {
     "pref_names.cc",
     "pref_names.h",
   ]
+
+  deps = [
+    "//base",
+    "//components/prefs",
+    "//media",
+  ]
+
+  if (!is_android) {
+    deps += [ "//components/soda:constants" ]
+  }
 }
 
 source_set("utils") {

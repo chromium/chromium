@@ -175,6 +175,9 @@ TEST_F(RedactionToolTest, RedactCustomPatterns) {
   EXPECT_EQ(
       "a\nb [SSID=<SSID: 3>] [SSID=<SSID: 1>] [SSID=foo\nbar] b",
       RedactCustomPatterns("a\nb [SSID=foo] [SSID=Joe's] [SSID=foo\nbar] b"));
+  EXPECT_EQ("ssid=\"<SSID: 4>\"",
+            RedactCustomPatterns("ssid=\"LittleTsunami\""));
+  EXPECT_EQ("* SSID=<SSID: 5>", RedactCustomPatterns("* SSID=agnagna"));
 
   EXPECT_EQ("SerialNumber: <Serial: 1>",
             RedactCustomPatterns("SerialNumber: 1217D7EF"));

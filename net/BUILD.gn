@@ -4885,7 +4885,6 @@ if (use_fuzzing_engine) {
       "socket/fuzzed_socket.h",
       "socket/fuzzed_socket_factory.cc",
       "socket/fuzzed_socket_factory.h",
-      "third_party/quiche/src/quic/platform/api/quic_fuzzed_data_provider.h",
     ]
     public_deps = [
       "//base/test:test_support",

@@ -805,8 +805,13 @@ export class FakeShimlessRmaService {
           remote.onHardwareWriteProtectionStateChanged(
               /** @type {boolean} */ (enabled));
         });
-    if (this.automaticallyTriggerDisableWriteProtectionObservation_) {
-      this.triggerHardwareWriteProtectionObserver(false, 3000);
+    if (this.states_ &&
+        this.automaticallyTriggerDisableWriteProtectionObservation_) {
+      assert(this.stateIndex_ < this.states_.length);
+      this.triggerHardwareWriteProtectionObserver(
+          this.states_[this.stateIndex_].state ===
+              RmaState.kWaitForManualWPEnable,
+          3000);
     }
   }
 

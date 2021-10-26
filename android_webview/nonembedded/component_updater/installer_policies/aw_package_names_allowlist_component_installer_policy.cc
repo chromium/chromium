@@ -57,7 +57,7 @@ void RegisterWebViewAppsPackageNamesAllowlistComponent(
 
 bool AwPackageNamesAllowlistComponentInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {
-  return false;
+  return true;
 }
 
 bool AwPackageNamesAllowlistComponentInstallerPolicy::

@@ -130,6 +130,8 @@ class BrowserNonClientFrameViewChromeOS
   // add this many friends
   FRIEND_TEST_ALL_PREFIXES(BrowserNonClientFrameViewChromeOSTestNoWebUiTabStrip,
                            NonImmersiveFullscreen);
+  FRIEND_TEST_ALL_PREFIXES(BrowserNonClientFrameViewChromeOSTestNoWebUiTabStrip,
+                           CaptionButtonsHiddenNonImmersiveFullscreen);
   FRIEND_TEST_ALL_PREFIXES(ImmersiveModeBrowserViewTestNoWebUiTabStrip,
                            ImmersiveFullscreen);
   FRIEND_TEST_ALL_PREFIXES(BrowserNonClientFrameViewChromeOSTest,
@@ -165,7 +167,7 @@ class BrowserNonClientFrameViewChromeOS
   friend class WebAppNonClientFrameViewAshTest;
 
   // Returns true if GetShowCaptionButtonsWhenNotInOverview() returns true
-  // and this browser window is not showing in overview.
+  // and this browser window is not showing in overview or in fullscreen mode.
   bool GetShowCaptionButtons() const;
 
   // In tablet mode, to prevent accidental taps of the window controls, and to
@@ -215,6 +217,11 @@ class BrowserNonClientFrameViewChromeOS
 
   // Returns whether this window is currently in the overview list.
   bool GetOverviewMode() const;
+
+  // Returns whether this window is currently in, or is about to be in, tab
+  // fullscreen (not immersive fullscreen). Returns false for immersive
+  // fullscreen.
+  bool GetHideCaptionButtonsForFullscreen() const;
 
   // Called any time the frame color may have changed.
   void OnUpdateFrameColor();

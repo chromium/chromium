@@ -11,6 +11,7 @@ source_set("color_headers") {
   sources = [
     "color_id.h",
     "color_id_macros.inc",
+    "color_id_map_macros.inc",
     "color_mixer.h",
     "color_provider.h",
     "color_provider_manager.h",

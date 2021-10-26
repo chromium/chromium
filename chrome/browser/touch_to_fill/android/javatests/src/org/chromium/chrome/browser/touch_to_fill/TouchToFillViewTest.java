@@ -74,6 +74,8 @@ public class TouchToFillViewTest {
             new Credential("", "***", "No Username", "m.example.xyz", true, false, 0);
     private static final Credential BOB =
             new Credential("Bob", "***", "Bob", "mobile.example.xyz", true, false, 0);
+    private static final Credential NIK =
+            new Credential("Nik", "***", "Nik", "group.xyz", false, true, 0);
 
     @Mock
     private Callback<Integer> mDismissHandler;
@@ -202,11 +204,11 @@ public class TouchToFillViewTest {
             mTouchToFillView.setVisible(true);
             mModel.get(SHEET_ITEMS)
                     .addAll(asList(buildCredentialItem(ANA), buildCredentialItem(NO_ONE),
-                            buildCredentialItem(BOB)));
+                            buildCredentialItem(BOB), buildCredentialItem(NIK)));
         });
 
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
-        assertThat(getCredentials().getChildCount(), is(3));
+        assertThat(getCredentials().getChildCount(), is(4));
         assertThat(getCredentialOriginAt(0).getVisibility(), is(View.GONE));
         assertThat(getCredentialNameAt(0).getText(), is(ANA.getFormattedUsername()));
         assertThat(getCredentialPasswordAt(0).getText(), is(ANA.getPassword()));
@@ -223,6 +225,12 @@ public class TouchToFillViewTest {
         assertThat(getCredentialNameAt(2).getText(), is(BOB.getFormattedUsername()));
         assertThat(getCredentialPasswordAt(2).getText(), is(BOB.getPassword()));
         assertThat(getCredentialPasswordAt(2).getTransformationMethod(),
+                instanceOf(PasswordTransformationMethod.class));
+        assertThat(getCredentialOriginAt(3).getVisibility(), is(View.VISIBLE));
+        assertThat(getCredentialOriginAt(3).getText(), is("group.xyz"));
+        assertThat(getCredentialNameAt(3).getText(), is(NIK.getFormattedUsername()));
+        assertThat(getCredentialPasswordAt(3).getText(), is(NIK.getPassword()));
+        assertThat(getCredentialPasswordAt(3).getTransformationMethod(),
                 instanceOf(PasswordTransformationMethod.class));
     }
 

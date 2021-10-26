@@ -479,6 +479,9 @@ const char kHasCameraAppMigratedToSWA[] = "camera.has_migrated_to_swa";
 
 // Deprecated 10/2021
 const char kTimesHIDDialogShown[] = "HIDDialog.shown_how_many_times";
+
+// Deprecated 10/2021
+const char kSplitSettingsSyncTrialGroup[] = "split_settings_sync.trial_group";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_SERVICE_DISCOVERY)
@@ -696,6 +699,7 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 
   registry->RegisterInt64Pref(kFeatureUsageDailySampleESim, 0);
   registry->RegisterIntegerPref(kTimesHIDDialogShown, 0);
+  registry->RegisterStringPref(kSplitSettingsSyncTrialGroup, std::string());
   // Deprecated 10/2021.
   registry->RegisterListPref(prefs::kUsedPolicyCertificates);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1478,6 +1482,7 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 
   // Added 10/2021
   local_state->ClearPref(kTimesHIDDialogShown);
+  local_state->ClearPref(kSplitSettingsSyncTrialGroup);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !defined(OS_ANDROID)

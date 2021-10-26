@@ -389,6 +389,7 @@ class HostProcess : public ConfigWatcher::Delegate,
   base::Value config_{base::Value::Type::DICTIONARY};
   std::string host_owner_;
   bool is_googler_ = false;
+  absl::optional<size_t> clipboard_size_;
 
   std::unique_ptr<PolicyWatcher> policy_watcher_;
   PolicyState policy_state_ = POLICY_INITIALIZING;
@@ -1645,6 +1646,11 @@ void HostProcess::StartHost() {
   // Experimental feature.
   desktop_environment_options_.set_enable_remote_webauthn(true);
 #endif
+
+  // TODO(joedow): Init |clipboard_size_| via a Chrome policy.
+  if (clipboard_size_.has_value()) {
+    desktop_environment_options_.set_clipboard_size(clipboard_size_.value());
+  }
 
   host_ = std::make_unique<ChromotingHost>(
       desktop_environment_factory_.get(), std::move(session_manager),

@@ -31,7 +31,6 @@ class FakeInstallFinalizer final : public WebAppInstallFinalizer {
                        const FinalizeOptions& options,
                        InstallFinalizedCallback callback) override;
   void FinalizeUpdate(const WebApplicationInfo& web_app_info,
-                      content::WebContents* web_contents,
                       InstallFinalizedCallback callback) override;
   void UninstallExternalWebApp(
       const AppId& app_id,

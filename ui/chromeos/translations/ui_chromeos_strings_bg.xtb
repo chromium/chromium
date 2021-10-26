@@ -131,6 +131,7 @@
 <translation id="2122305276694332719">Автоматичното свързване със скрита мрежа дава възможност на другите хора да виждат устройството ви и някои мрежови настройки и не се препоръчва.</translation>
 <translation id="2125607626296734455">Кхмерски</translation>
 <translation id="2139545522194199494">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, управлява се от администратора ви, свързване</translation>
+<translation id="2141347188420181405">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, блокирана от администратора ви, подробности</translation>
 <translation id="2142680004883808240">Руски с фонетична клавиатура (ЯЖЕРТЫ)</translation>
 <translation id="2143778271340628265">Ръчна конфигурация на прокси сървър</translation>
 <translation id="2163152940313951844">Невалиден знак: <ph name="CHARACTER_NAME" /></translation>
@@ -185,6 +186,7 @@
 <translation id="2563185590376525700">Жаба</translation>
 <translation id="2578394532502990878">Тамилски (фонетична клавиатура)</translation>
 <translation id="2579959351793446050">Одия</translation>
+<translation id="2602810353103180630">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, блокирана от администратора ви, подробности</translation>
 <translation id="2614589611416690597">Видеоклип във формат <ph name="VIDEO_TYPE" /></translation>
 <translation id="2617342710774726426">SIM картата е заключена</translation>
 <translation id="2620090360073999360">В момента няма връзка с Google Диск.</translation>

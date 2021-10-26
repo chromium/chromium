@@ -11,7 +11,6 @@ import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 
 import org.chromium.base.Callback;
-import org.chromium.base.ContextUtils;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory.Type;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsDelegate;
@@ -80,22 +79,12 @@ public class WebLayerSiteSettingsDelegate
     @Override
     @Nullable
     public String getDelegateAppNameForOrigin(Origin origin, @ContentSettingsType int type) {
-        if (WebLayerImpl.isLocationPermissionManaged(origin)
-                && type == ContentSettingsType.GEOLOCATION) {
-            return WebLayerImpl.getClientApplicationName();
-        }
-
         return null;
     }
 
     @Override
     @Nullable
     public String getDelegatePackageNameForOrigin(Origin origin, @ContentSettingsType int type) {
-        if (WebLayerImpl.isLocationPermissionManaged(origin)
-                && type == ContentSettingsType.GEOLOCATION) {
-            return ContextUtils.getApplicationContext().getPackageName();
-        }
-
         return null;
     }
 

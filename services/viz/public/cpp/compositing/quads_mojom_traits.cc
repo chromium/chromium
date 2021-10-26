@@ -4,6 +4,7 @@
 
 #include "services/viz/public/cpp/compositing/quads_mojom_traits.h"
 
+#include "components/viz/common/quads/shared_element_draw_quad.h"
 #include "services/viz/public/cpp/compositing/compositor_render_pass_id_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/resource_id_mojom_traits.h"
 #include "services/viz/public/cpp/crash_keys.h"
@@ -54,6 +55,10 @@ viz::DrawQuad* AllocateAndConstruct(
     case viz::mojom::DrawQuadStateDataView::Tag::YUV_VIDEO_QUAD_STATE:
       quad = list->AllocateAndConstruct<viz::YUVVideoDrawQuad>();
       quad->material = viz::DrawQuad::Material::kYuvVideoContent;
+      return quad;
+    case viz::mojom::DrawQuadStateDataView::Tag::SHARED_ELEMENT_QUAD_STATE:
+      quad = list->AllocateAndConstruct<viz::SharedElementDrawQuad>();
+      quad->material = viz::DrawQuad::Material::kSharedElement;
       return quad;
   }
   NOTREACHED();
@@ -193,6 +198,14 @@ bool StructTraits<viz::mojom::TileQuadStateDataView, viz::DrawQuad>::Read(
   quad->force_anti_aliasing_off = data.force_anti_aliasing_off();
   quad->resources.count = 1;
   return true;
+}
+
+// static
+bool StructTraits<viz::mojom::SharedElementQuadStateDataView, viz::DrawQuad>::
+    Read(viz::mojom::SharedElementQuadStateDataView data, viz::DrawQuad* out) {
+  viz::SharedElementDrawQuad* shared_element_quad =
+      static_cast<viz::SharedElementDrawQuad*>(out);
+  return data.ReadResourceId(&shared_element_quad->resource_id);
 }
 
 // static

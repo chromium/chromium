@@ -30,6 +30,11 @@ const char kButtonPageHtml[] =
 - (void)printWebState:(web::WebState*)webState {
   self.printInvoked = YES;
 }
+
+- (void)printWebState:(web::WebState*)webState
+    baseViewController:(UIViewController*)baseViewController {
+  self.printInvoked = YES;
+}
 @end
 
 class PrintJavaScriptFeatureTest : public ChromeWebTest {

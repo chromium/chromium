@@ -1312,10 +1312,18 @@ TEST_F(AutocompleteResultTest, DemoteByType) {
   base::FieldTrialList::CreateFieldTrial(
       OmniboxFieldTrial::kBundledExperimentFieldTrialName, "A");
 
+#if !defined(OS_ANDROID)
   // Where Grouping suggestions by Search vs URL kicks in, search gets
   // promoted to the top of the list.
   const std::vector<size_t> expected_natural_order{1, 2, 3, 0};
   const std::vector<size_t> expected_demoted_order{3, 2, 0, 1};
+#else
+  // Note: Android performs grouping by Search vs URL at a later stage, when
+  // views are built. this means the vector below will be demoted by type, but
+  // not rearranged by Search vs URL.
+  const std::vector<size_t> expected_natural_order{1, 0, 2, 3};
+  const std::vector<size_t> expected_demoted_order{3, 0, 2, 1};
+#endif
 
   // Because we want to ensure the highest naturally scoring
   // allowed-to-be default suggestion is the default, make sure history-title
@@ -1800,6 +1808,9 @@ TEST_F(AutocompleteResultTest, SortAndCullMaxURLMatches) {
   EXPECT_EQ(OmniboxFieldTrial::GetMaxURLMatches(), 3u);
 
   // Case 1: Eject URL match for a search.
+  // Does not apply to Android which picks top N matches and performs group by
+  // search vs URL separately (Adaptive Suggestions).
+#if !defined(OS_ANDROID)
   {
     ACMatches matches;
     const AutocompleteMatchTestData data[] = {
@@ -1835,6 +1846,7 @@ TEST_F(AutocompleteResultTest, SortAndCullMaxURLMatches) {
     for (size_t i = 0; i < result.size(); ++i)
       EXPECT_EQ(result.match_at(i)->type, expected_types[i]);
   }
+#endif
 
   // Case 2: Do not eject URL match because there's no replacement.
   {

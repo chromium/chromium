@@ -240,6 +240,28 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTestNoWebUiTabStrip,
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+// Tests that caption buttons are hidden when entering tab fullscreen.
+IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTestNoWebUiTabStrip,
+                       CaptionButtonsHiddenNonImmersiveFullscreen) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  content::WebContents* web_contents = browser_view->GetActiveWebContents();
+  BrowserNonClientFrameViewChromeOS* frame_view =
+      GetFrameViewChromeOS(browser_view);
+
+  EXPECT_TRUE(frame_view->caption_button_container_->GetVisible());
+
+  EnterFullscreenModeForTabAndWait(browser(), web_contents);
+  EXPECT_FALSE(browser_view->immersive_mode_controller()->IsEnabled());
+  // Caption buttons are hidden.
+  EXPECT_FALSE(frame_view->caption_button_container_->GetVisible());
+
+  // The frame should be painted again when fullscreen is exited and the caption
+  // buttons should be visible.
+  ToggleFullscreenModeAndWait(browser());
+  // Caption button container visible again.
+  EXPECT_TRUE(frame_view->caption_button_container_->GetVisible());
+}
+
 // Tests that Avatar icon should show on the top left corner of the teleported
 // browser window on ChromeOS.
 // TODO(http://crbug.com/1059514): This test should be made to work with the

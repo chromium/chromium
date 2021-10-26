@@ -125,6 +125,7 @@ using base::UserMetricsAction;
       break;
 #endif  // !defined(NDEBUG)
     case PopupMenuActionOpenNewWindow:
+      RecordAction(UserMetricsAction("MobileMenuNewWindow"));
       [self.dispatcher openNewWindowWithActivity:ActivityToLoadURL(
                                                      WindowActivityToolsOrigin,
                                                      GURL(kChromeUINewTabURL))];

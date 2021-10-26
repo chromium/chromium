@@ -25,10 +25,19 @@ namespace {
 proximity_auth::ScreenlockBridge::UserPodCustomIcon GetIconForState(
     SmartLockState state) {
   switch (state) {
+    case SmartLockState::kPhoneFoundLockedAndProximate:
+      // The Smart Lock revamp UI needs to be able to distinguish the proximate
+      // case.
+      // TODO(crbug.com/1233614): Remove this special case once SmartLockState
+      // is routed directly to SmartLockAuthFactorModel.
+      if (base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp)) {
+        return proximity_auth::ScreenlockBridge::
+            USER_POD_CUSTOM_ICON_LOCKED_TO_BE_ACTIVATED;
+      }
+      FALLTHROUGH;
     case SmartLockState::kBluetoothDisabled:
     case SmartLockState::kPhoneNotFound:
     case SmartLockState::kPhoneNotAuthenticated:
-    case SmartLockState::kPhoneFoundLockedAndProximate:
     case SmartLockState::kPhoneNotLockable:
       return proximity_auth::ScreenlockBridge::USER_POD_CUSTOM_ICON_LOCKED;
     case SmartLockState::kPhoneFoundUnlockedAndDistant:

@@ -73,7 +73,7 @@ PKIMetadataComponentInstallerPolicy::~PKIMetadataComponentInstallerPolicy() =
 
 bool PKIMetadataComponentInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {
-  return false;
+  return true;
 }
 
 bool PKIMetadataComponentInstallerPolicy::RequiresNetworkEncryption() const {

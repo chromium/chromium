@@ -171,6 +171,10 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
   // document transitions.
   std::vector<CompositorFrameTransitionDirective> transition_directives;
 
+  // Indicates if this frame references shared element resources that need to
+  // be replaced with ResourceIds in the Viz process.
+  bool has_shared_element_resources = false;
+
  private:
   CompositorFrameMetadata(const CompositorFrameMetadata& other);
   CompositorFrameMetadata operator=(const CompositorFrameMetadata&) = delete;

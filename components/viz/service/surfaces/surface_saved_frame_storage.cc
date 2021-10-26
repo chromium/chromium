@@ -61,6 +61,10 @@ std::unique_ptr<SurfaceSavedFrame> SurfaceSavedFrameStorage::TakeSavedFrame() {
   return std::move(saved_frame_);
 }
 
+bool SurfaceSavedFrameStorage::HasValidFrame() const {
+  return saved_frame_ && saved_frame_->IsValid();
+}
+
 void SurfaceSavedFrameStorage::ExpireSavedFrame() {
   saved_frame_.reset();
 }

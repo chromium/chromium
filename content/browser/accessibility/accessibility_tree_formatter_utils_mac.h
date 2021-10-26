@@ -83,14 +83,6 @@ class CONTENT_EXPORT AttributeInvoker final {
   // Invokes an attribute matching to a property filter.
   OptionalNSObject Invoke(const ui::AXPropertyNode& property_node,
                           bool no_object_parse = false) const;
-  // Gets the value of a parameterized attribute by name.
-  OptionalNSObject GetValue(const std::string& property_name,
-                            const OptionalNSObject& param) const;
-  // Gets the value of a non-parameterized attribute by name.
-  OptionalNSObject GetValue(const std::string& property_name) const;
-  // Sets the value of a non-parameterized attribute by name.
-  void SetValue(const std::string& property_name,
-                const OptionalNSObject& value) const;
 
  private:
   // Invokes a property node for a given target.
@@ -157,16 +149,6 @@ class CONTENT_EXPORT AttributeInvoker final {
   // Variables storage. Owned by the caller and outlives this object.
   std::map<std::string, id>* storage_;
 };
-
-// bindings
-CONTENT_EXPORT OptionalNSObject
-TextMarkerRangeGetStartMarker(const OptionalNSObject& obj);
-
-CONTENT_EXPORT OptionalNSObject
-TextMarkerRangeGetEndMarker(const OptionalNSObject& obj);
-
-CONTENT_EXPORT OptionalNSObject MakePairArray(const OptionalNSObject& obj1,
-                                              const OptionalNSObject& obj2);
 
 }  // namespace a11y
 }  // namespace content

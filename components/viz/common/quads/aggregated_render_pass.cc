@@ -144,6 +144,10 @@ DrawQuad* AggregatedRenderPass::CopyFromAndAppendDrawQuad(
     case DrawQuad::Material::kYuvVideoContent:
       CopyFromAndAppendTypedDrawQuad<YUVVideoDrawQuad>(quad);
       break;
+    case DrawQuad::Material::kSharedElement:
+      CHECK(false)
+          << "Shared Element quads should be resolved before aggregation";
+      break;
     // RenderPass quads need to use specific CopyFrom function.
     case DrawQuad::Material::kAggregatedRenderPass:
     case DrawQuad::Material::kCompositorRenderPass:

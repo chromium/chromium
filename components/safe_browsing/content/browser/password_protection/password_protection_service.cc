@@ -73,14 +73,6 @@ void PasswordProtectionService::MaybeStartProtectedPasswordEntryRequest(
       GetPasswordProtectionReusedPasswordAccountType(password_type, username);
 
   if (IsSupportedPasswordTypeForPinging(password_type)) {
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-    // Collect metrics about typical page-zoom on login pages.
-    double zoom_level =
-        zoom::ZoomController::GetZoomLevelForWebContents(web_contents);
-    UMA_HISTOGRAM_COUNTS_1000(
-        "PasswordProtection.PageZoomFactor",
-        static_cast<int>(100 * blink::PageZoomLevelToZoomFactor(zoom_level)));
-#endif  // defined(FULL_SAFE_BROWSING)
     if (CanSendPing(LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
                     main_frame_url, reused_password_account_type)) {
       saved_passwords_matching_reused_credentials_ =

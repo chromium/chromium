@@ -110,6 +110,8 @@ class ASH_EXPORT LoginUserView : public views::View,
   void SetLargeLayout();
   void SetSmallishLayout();
 
+  void DeleteDialog();
+
   // Executed when the user view is pressed.
   OnTap on_tap_;
   // Executed when the user has seen the remove user warning.

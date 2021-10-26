@@ -134,13 +134,6 @@ class WebAppInstallTask : content::WebContentsObserver {
                                webapps::WebappInstallSource install_source,
                                OnceInstallCallback callback);
 
-  void UpdateWebAppFromInfo(
-      content::WebContents* web_contents,
-      const AppId& app_id,
-      std::unique_ptr<WebApplicationInfo> web_application_info,
-      bool update_product_icons,
-      OnceInstallCallback callback);
-
   // Obtains WebApplicationInfo about web app located at |start_url|, fallbacks
   // to title/favicon if manifest is not present.
   void LoadAndRetrieveWebApplicationInfoWithIcons(

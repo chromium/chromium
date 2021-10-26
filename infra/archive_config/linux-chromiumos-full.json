@@ -33,6 +33,9 @@
             "latest_upload": {
                 "gcs_path": "experimental/Linux_ChromiumOS_Full/LAST_CHANGE",
                 "gcs_file_content": "{%position%}"
+            },
+            "revisions_file": {
+                "gcs_path": "experimental/Linux_ChromiumOS_Full/{%position%}/REVISIONS"
             }
         }
     ]

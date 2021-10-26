@@ -10,11 +10,9 @@ option optimize_for = LITE_RUNTIME;
 
 enum Capability {
   UNKNOWN_CAPABILITY = 0;
-  BASE_UI = 1 [deprecated = true];
   INFINITE_FEED = 5;
   DISMISS_COMMAND = 9;
   UNDO_FOR_DISMISS_COMMAND = 10;
-  WEB_FEEDS = 11 [deprecated = true];
   SPORTS_IN_GAME_UPDATE = 35;
   PERSIST_GAME_CONTENT = 46;
   OPEN_VIDEO_COMMAND = 16;
@@ -36,4 +34,5 @@ enum Capability {
   MATERIAL_NEXT_BASELINE = 60;
   MATERIAL_NEXT_GOOGLE_SANS = 61;
   CONTENT_LIFETIME = 64;
+  OPEN_IN_INCOGNITO = 67;
 }

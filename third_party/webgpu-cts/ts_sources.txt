@@ -102,6 +102,7 @@ src/unittests/getStackTrace.spec.ts
 src/unittests/listing.ts
 src/unittests/loaders_and_trees.spec.ts
 src/unittests/logger.spec.ts
+src/unittests/maths.spec.ts
 src/unittests/params_builder_and_utils.spec.ts
 src/unittests/params_builder_toplevel.spec.ts
 src/unittests/preprocessor.spec.ts

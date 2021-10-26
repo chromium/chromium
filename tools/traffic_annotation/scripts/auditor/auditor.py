@@ -1838,6 +1838,11 @@ class Auditor:
     return grouping_xml_ids
 
   def check_grouping_xml(self) -> List[AuditorError]:
+    #TODO(b/203822700): Add grouping.xml for chromeos.
+    if self.exporter._current_platform == "chromeos":
+      logger.info("Skipping grouping.xml check for chromeos")
+      return []
+
     grouping_xml_ids = self._get_grouping_xml_ids()
 
     logger.info("Computing required updates for {}.".format(

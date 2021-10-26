@@ -338,43 +338,6 @@ OptionalNSObject AttributeInvoker::InvokeForDictionary(
   return OptionalNSObject::NotNilOrError(dictionary[key]);
 }
 
-OptionalNSObject AttributeInvoker::GetValue(
-    const std::string& property_name,
-    const OptionalNSObject& param) const {
-  NSString* attribute = base::SysUTF8ToNSString(property_name);
-  NSArray* attributes = ParameterizedAttributeNamesOf(node);
-  if ([attributes containsObject:attribute]) {
-    if (param.IsNotNil()) {
-      return OptionalNSObject(
-          ParameterizedAttributeValueOf(node, attribute, *param));
-    } else {
-      return param;
-    }
-  }
-  return OptionalNSObject::NotApplicable();
-}
-
-OptionalNSObject AttributeInvoker::GetValue(
-    const std::string& property_name) const {
-  NSString* attribute = base::SysUTF8ToNSString(property_name);
-  NSArray* parameterized_attributes = AttributeNamesOf(node);
-  if ([parameterized_attributes containsObject:attribute]) {
-    return OptionalNSObject::NotNullOrNotApplicable(
-        AttributeValueOf(node, attribute));
-  }
-  return OptionalNSObject::NotApplicable();
-}
-
-void AttributeInvoker::SetValue(const std::string& property_name,
-                                const OptionalNSObject& value) const {
-  NSString* attribute = base::SysUTF8ToNSString(property_name);
-  NSArray* attributes = AttributeNamesOf(node);
-  if ([attributes containsObject:attribute] &&
-      IsAttributeSettable(node, attribute)) {
-    SetAttributeValueOf(node, attribute, *value);
-  }
-}
-
 OptionalNSObject AttributeInvoker::ParamByPropertyNode(
     const AXPropertyNode& property_node) const {
   // NSAccessibility attributes always take a single parameter.
@@ -652,53 +615,6 @@ id AttributeInvoker::PropertyNodeToTextMarkerRange(
   }
 
   return content::AXTextMarkerRangeFrom(anchor_textmarker, focus_textmarker);
-}
-
-OptionalNSObject TextMarkerRangeGetStartMarker(const OptionalNSObject& obj) {
-  if (!IsAXTextMarkerRange(*obj))
-    return OptionalNSObject::NotApplicable();
-
-  const BrowserAccessibility::AXRange range = AXTextMarkerRangeToAXRange(*obj);
-  if (range.IsNull())
-    return OptionalNSObject::Error();
-
-  auto* manager =
-      BrowserAccessibilityManager::FromID(range.anchor()->tree_id());
-  DCHECK(manager) << "A non-null range should have an associated AX tree.";
-  const BrowserAccessibility* node =
-      manager->GetFromID(range.anchor()->anchor_id());
-  DCHECK(node) << "A non-null range should have a non-null anchor node.";
-  const BrowserAccessibilityCocoa* cocoa_node =
-      ToBrowserAccessibilityCocoa(node);
-  return OptionalNSObject::NotNilOrError(content::AXTextMarkerFrom(
-      cocoa_node, range.anchor()->text_offset(), range.anchor()->affinity()));
-}
-
-OptionalNSObject TextMarkerRangeGetEndMarker(const OptionalNSObject& obj) {
-  if (!IsAXTextMarkerRange(*obj))
-    return OptionalNSObject::NotApplicable();
-
-  const BrowserAccessibility::AXRange range = AXTextMarkerRangeToAXRange(*obj);
-  if (range.IsNull())
-    return OptionalNSObject::Error();
-
-  auto* manager = BrowserAccessibilityManager::FromID(range.focus()->tree_id());
-  DCHECK(manager) << "A non-null range should have an associated AX tree.";
-  const BrowserAccessibility* node =
-      manager->GetFromID(range.focus()->anchor_id());
-  DCHECK(node) << "A non-null range should have a non-null focus node.";
-  const BrowserAccessibilityCocoa* cocoa_node =
-      ToBrowserAccessibilityCocoa(node);
-  return OptionalNSObject::NotNilOrError(content::AXTextMarkerFrom(
-      cocoa_node, range.focus()->text_offset(), range.focus()->affinity()));
-}
-
-OptionalNSObject MakePairArray(const OptionalNSObject& obj1,
-                               const OptionalNSObject& obj2) {
-  if (!obj1.IsNotNil() || !obj2.IsNotNil())
-    return OptionalNSObject::Error();
-  return OptionalNSObject::NotNilOrError(
-      [NSArray arrayWithObjects:*obj1, *obj2, nil]);
 }
 
 }  // namespace a11y

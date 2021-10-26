@@ -73,6 +73,7 @@
 #include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_constants.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/chrome_version.h"
@@ -124,7 +125,6 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
-#include "chrome/common/chrome_features.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
@@ -656,6 +656,7 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTest,
   // When we start, the browser should already have an open tab.
   TabStripModel* tab_strip = browser()->tab_strip_model();
   EXPECT_EQ(1, tab_strip->count());
+  ui_test_utils::TabAddedWaiter tab_waiter(browser());
 
   // Add --app-id=<extension->id()> to the command line.
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
@@ -668,6 +669,7 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTest,
   if (IsExpectedToAllowLaunch()) {
     // No pref was set, so the app should have opened in a tab in the existing
     // window.
+    tab_waiter.Wait();
     ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
     EXPECT_EQ(2, tab_strip->count());
     EXPECT_EQ(tab_strip->GetActiveWebContents(),
@@ -706,7 +708,7 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTest,
     // Pref was set to open in a window, so the app should have opened in a
     // window.  The launch should have created a new browser. Find the new
     // browser.
-    Browser* new_browser = FindOneOtherBrowser(browser());
+    Browser* new_browser = ui_test_utils::WaitForBrowserToOpen();
     ASSERT_TRUE(new_browser);
 
     // Expect an app window.
@@ -726,6 +728,7 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTest,
   // When we start, the browser should already have an open tab.
   TabStripModel* tab_strip = browser()->tab_strip_model();
   EXPECT_EQ(1, tab_strip->count());
+  ui_test_utils::TabAddedWaiter tab_waiter(browser());
 
   // Load an app with launch.container = 'tab'.
   const Extension* extension_app = nullptr;
@@ -743,6 +746,7 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTest,
   if (IsExpectedToAllowLaunch()) {
     // When an app shortcut is open and the pref indicates a tab should open,
     // the tab is open in the existing browser window.
+    tab_waiter.Wait();
     ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
     EXPECT_EQ(2, tab_strip->count());
     EXPECT_EQ(tab_strip->GetActiveWebContents(),
@@ -781,6 +785,7 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTest,
   // When we start, the browser should already have an open tab.
   TabStripModel* tab_strip = browser()->tab_strip_model();
   EXPECT_EQ(1, tab_strip->count());
+  ui_test_utils::TabAddedWaiter tab_waiter(browser());
 
   // Add --app-id=<extension->id()> to the command line.
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
@@ -789,6 +794,7 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTest,
   ASSERT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
       command_line, base::FilePath(), /*process_startup=*/false,
       browser()->profile(), {}));
+  tab_waiter.Wait();
 
   // Policy force-installed app should be allowed regardless of Chrome App
   // Deprecation status.
@@ -1669,9 +1675,13 @@ class BrowserAddedObserver : public BrowserListObserver {
   base::RunLoop run_loop_;
 };
 
-class StartupBrowserWithWebAppTest : public StartupBrowserCreatorTest {
+class StartupBrowserWithWebAppTest : public StartupBrowserCreatorTest,
+                                     public testing::WithParamInterface<bool> {
  protected:
-  StartupBrowserWithWebAppTest() = default;
+  StartupBrowserWithWebAppTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kDesktopPWAsFileHandlingSettingsGated, GetParam());
+  }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     StartupBrowserCreatorTest::SetUpCommandLine(command_line);
@@ -1682,9 +1692,11 @@ class StartupBrowserWithWebAppTest : public StartupBrowserCreatorTest {
     }
   }
   WebAppProvider& provider() { return *WebAppProvider::GetForTest(profile()); }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(StartupBrowserWithWebAppTest,
+IN_PROC_BROWSER_TEST_P(StartupBrowserWithWebAppTest,
                        PRE_PRE_LastUsedProfilesWithWebApp) {
   // Simulate a browser restart by creating the profiles in the PRE_PRE part.
   ProfileManager* profile_manager = g_browser_process->profile_manager();
@@ -1760,7 +1772,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithWebAppTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(StartupBrowserWithWebAppTest,
+IN_PROC_BROWSER_TEST_P(StartupBrowserWithWebAppTest,
                        PRE_LastUsedProfilesWithWebApp) {
   BrowserAddedObserver added_observer;
   content::RunAllTasksUntilIdle();
@@ -1777,7 +1789,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithWebAppTest,
   CloseBrowserAsynchronously(browser());
 }
 
-IN_PROC_BROWSER_TEST_F(StartupBrowserWithWebAppTest,
+IN_PROC_BROWSER_TEST_P(StartupBrowserWithWebAppTest,
                        LastUsedProfilesWithWebApp) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
 
@@ -1818,6 +1830,10 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithWebAppTest,
   tab_strip = new_browser->tab_strip_model();
   EXPECT_EQ("/title2.html", tab_strip->GetWebContentsAt(0)->GetURL().path());
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         StartupBrowserWithWebAppTest,
+                         ::testing::Values(true, false));
 
 #if BUILDFLAG(ENABLE_APP_SESSION_SERVICE) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 class StartupBrowserWithRealWebAppTest : public StartupBrowserCreatorTest {
@@ -2360,17 +2376,19 @@ class StartupBrowserWebAppProtocolHandlingTest : public InProcessBrowserTest {
     return WebAppProvider::GetForTest(browser()->profile());
   }
 
-  // Install a web app with protocol_handlers then register it with the
-  // ProtocolHandlerRegistry. This is sufficient for testing URL translation and
-  // launch at startup.
+  // Install a web app with `protocol_handlers` (and optionally `file_handlers`)
+  // then register it with the ProtocolHandlerRegistry. This is sufficient for
+  // testing URL translation and launch at startup.
   web_app::AppId InstallWebAppWithProtocolHandlers(
-      const std::vector<apps::ProtocolHandlerInfo>& protocol_handlers) {
+      const std::vector<apps::ProtocolHandlerInfo>& protocol_handlers,
+      const std::vector<apps::FileHandler>& file_handlers = {}) {
     std::unique_ptr<WebApplicationInfo> info =
         std::make_unique<WebApplicationInfo>();
     info->start_url = GURL(kStartUrl);
     info->title = kAppName;
     info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
     info->protocol_handlers = protocol_handlers;
+    info->file_handlers = file_handlers;
     web_app::AppId app_id =
         web_app::test::InstallWebApp(browser()->profile(), std::move(info));
 
@@ -2386,6 +2404,7 @@ class StartupBrowserWebAppProtocolHandlingTest : public InProcessBrowserTest {
           run_loop.Quit();
         }));
     run_loop.Run();
+
     return app_id;
   }
 
@@ -2749,6 +2768,63 @@ IN_PROC_BROWSER_TEST_F(
   }
   // There should be only 1 browser window opened at the moment.
   ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
+}
+
+class StartupBrowserWebAppProtocolAndFileHandlingTest
+    : public StartupBrowserWebAppProtocolHandlingTest {
+  base::test::ScopedFeatureList feature_list_{
+      blink::features::kFileHandlingAPI};
+  base::test::ScopedFeatureList feature_list2_{
+      features::kDesktopPWAsFileHandlingSettingsGated};
+};
+
+// Verifies that a "file://" URL on the command line is treated as a file
+// handling launch, not a protocol handling or URL launch.
+IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppProtocolAndFileHandlingTest,
+                       WebAppLaunch_FileProtocol) {
+  if (!AreProtocolHandlersSupported())
+    return;
+
+  // Install an app with protocol handlers and a handler for plain text files.
+  apps::ProtocolHandlerInfo protocol_handler;
+  const std::string handler_url = std::string(kStartUrl) + "/protocol=%s";
+  protocol_handler.url = GURL(handler_url);
+  protocol_handler.protocol = "web+test";
+  apps::FileHandler file_handler;
+  file_handler.action = GURL(std::string(kStartUrl) + "/file_handler");
+  file_handler.accept.push_back({});
+  file_handler.accept.back().mime_type = "text/plain";
+  file_handler.accept.back().file_extensions = {".txt"};
+  web_app::AppId app_id =
+      InstallWebAppWithProtocolHandlers({protocol_handler}, {file_handler});
+
+  // Skip the file handler dialog by simulating prior user approval of the API.
+  {
+    web_app::ScopedRegistryUpdate update(&provider()->sync_bridge());
+    update->UpdateApp(app_id)->SetFileHandlerApprovalState(
+        web_app::ApiApprovalState::kAllowed);
+  }
+
+  // Pass a file:// url on the command line.
+  SetUpCommandlineAndStart("file:///C:/test.txt", app_id);
+
+  // Wait for app launch task to complete.
+  content::RunAllTasksUntilIdle();
+
+  // Check an app window is launched.
+  ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
+  Browser* app_browser = FindOneOtherBrowser(browser());
+  ASSERT_TRUE(app_browser);
+  EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser, app_id));
+
+  // Check the app is launched to the file handler URL and not the protocol URL.
+  TabStripModel* tab_strip = app_browser->tab_strip_model();
+  ASSERT_EQ(1, tab_strip->count());
+  content::WebContents* web_contents = tab_strip->GetWebContentsAt(0);
+  EXPECT_EQ(file_handler.action, web_contents->GetVisibleURL());
+
+  app_browser->window()->Close();
+  ui_test_utils::WaitForBrowserToClose(app_browser);
 }
 
 #endif  // defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)

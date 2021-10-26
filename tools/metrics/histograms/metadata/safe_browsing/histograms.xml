@@ -1255,6 +1255,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="SafeBrowsing.Pref.SawInterstitial" enum="Boolean"
     expires_after="2021-01-30">
+  <obsolete>
+    Removed 10-2021 due to lack of use
+  </obsolete>
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -1746,16 +1749,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SafeBrowsing.Triggers.AdSampler.Action"
-    enum="AdSamplerTriggerAction" expires_after="2021-07-01">
+    enum="AdSamplerTriggerAction" expires_after="2022-10-25">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Tracks the actions taken by the Ad Sampling trigger whenever it is executed.
+    Warning: this histogram was expired from 2021-07-01 to 2021-10-25; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="SafeBrowsing.Triggers.SuspiciousSite.DelayTimerState"
     enum="SuspiciousSiteTriggerState" expires_after="2021-07-01">
+  <obsolete>
+    Removed 10-2021 due to lack of use
+  </obsolete>
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>

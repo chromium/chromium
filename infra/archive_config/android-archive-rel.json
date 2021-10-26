@@ -15,6 +15,9 @@
             "latest_upload": {
                 "gcs_path": "experimental/Android/LAST_CHANGE",
                 "gcs_file_content": "{%position%}"
+            },
+            "revisions_file": {
+                "gcs_path": "experimental/Android/{%position%}/REVISIONS"
             }
         }
     ]

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ModuleMetricsProxyImpl, NuxGoogleAppsInteractions} from '../shared/module_metrics_proxy.js';
+import {ModuleMetricsProxy, ModuleMetricsProxyImpl, NuxGoogleAppsInteractions} from '../shared/module_metrics_proxy.js';
 
 export class GoogleAppsMetricsProxyImpl extends ModuleMetricsProxyImpl {
   constructor() {
@@ -11,13 +11,13 @@ export class GoogleAppsMetricsProxyImpl extends ModuleMetricsProxyImpl {
         NuxGoogleAppsInteractions);
   }
 
-  static getInstance(): GoogleAppsMetricsProxyImpl {
+  static getInstance(): ModuleMetricsProxy {
     return instance || (instance = new GoogleAppsMetricsProxyImpl());
   }
 
-  static setInstance(obj: GoogleAppsMetricsProxyImpl) {
+  static setInstance(obj: ModuleMetricsProxy) {
     instance = obj;
   }
 }
 
-let instance: GoogleAppsMetricsProxyImpl|null = null;
+let instance: ModuleMetricsProxy|null = null;

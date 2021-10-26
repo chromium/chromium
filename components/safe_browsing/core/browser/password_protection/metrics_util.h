@@ -204,9 +204,6 @@ void LogWarningAction(WarningUIType ui_type,
 // Logs the number of verdict migrated to the new caching structure.
 void LogNumberOfVerdictMigrated(size_t verdicts_migrated);
 
-// Logs how many time user reused their sync password before they change it.
-void LogNumberOfReuseBeforeSyncPasswordChange(size_t reuse_count);
-
 // Logs the size of referrer chain by |verdict_type|.
 void LogReferrerChainSize(
     LoginReputationClientResponse::VerdictType verdict_type,

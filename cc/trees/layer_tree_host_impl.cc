@@ -1328,6 +1328,8 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
     }
     frame->use_default_lower_bound_deadline |=
         append_quads_data.use_default_lower_bound_deadline;
+    frame->has_shared_element_resources |=
+        append_quads_data.has_shared_element_resources;
   }
 
   if (GetActivelyScrollingType() != ActivelyScrollingType::kNone &&
@@ -2535,6 +2537,7 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
   }
 
   PopulateMetadataContentColorUsage(frame, &metadata);
+  metadata.has_shared_element_resources = frame->has_shared_element_resources;
   metadata.may_contain_video = frame->may_contain_video;
   metadata.deadline = viz::FrameDeadline(
       CurrentBeginFrameArgs().frame_time,

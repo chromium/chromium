@@ -140,6 +140,7 @@
 <translation id="1137589305610962734">தற்காலிகத் தரவு</translation>
 <translation id="1137673463384776352"><ph name="APP" /> இல் இணைப்பைத் திற</translation>
 <translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{புதிய அறிவிப்பு}other{# புதிய அறிவிப்புகள்}}</translation>
+<translation id="1139138655591555207">இந்த உதவிக் குமிழை ஃபோகஸ் செய்ய, |<ph name="ACCELERATOR" />| அழுத்தவும்.</translation>
 <translation id="1139343347646843679">Linuxஸை உள்ளமைக்கும்போது பிழை ஏற்பட்டது. உங்கள் நிர்வாகியைத் தொடர்புகொள்ளவும்.</translation>
 <translation id="1139923033416533844">நினைவக உபயோகம்</translation>
 <translation id="1140351953533677694">உங்கள் புளூடூத் மற்றும் தொடர் சாதனங்களை அணுகலாம்</translation>
@@ -534,6 +535,7 @@
 <translation id="1549275686094429035">ARC இயக்கப்பட்டது</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" />க்கு <ph name="VOLUME_NAME" /> இன் அணுகல் தேவை. இது உங்கள் கோப்புகளை மாற்றலாம் அல்லது நீக்கலாம்.</translation>
 <translation id="1552301827267621511"><ph name="SEARCH_PROVIDER_DOMAIN" /> டொமைனைப் பயன்படுத்தும் வகையில் தேடலை "<ph name="EXTENSION_NAME" />" நீட்டிப்பு மாற்றியுள்ளது</translation>
+<translation id="1552522962296937598">ஸ்மார்ட் டிஸ்பிளேயானது திரையைப் பூட்டுவதுடன் உங்களுக்குப் பின்னால் இருந்து யாரேனும் திரையைப் பார்க்கிறார்களா என்பதையும் கண்டறியும்</translation>
 <translation id="1553538517812678578">வரம்பில்லை</translation>
 <translation id="1555130319947370107">நீலம்</translation>
 <translation id="1556537182262721003">சுயவிவரத்தில் நீட்டிப்புக் கோப்பகத்தை நகர்த்த முடியவில்லை.</translation>
@@ -1080,6 +1082,7 @@
 <translation id="2090165459409185032">கணக்கு விவரங்களை மீட்டெடுக்க, இங்குச் செல்லவும்: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">நீங்கள் உள்நுழையும்போது தானாக இணைக்கப்படும்</translation>
 <translation id="2090876986345970080">முறைமை பாதுகாப்பு அமைப்பு</translation>
+<translation id="2092038932007199943">வேறு எவரேனும் உங்களுக்குப் பின்னால் இருந்து திரையைப் பார்த்தால் திரை தற்காலிகமாக மங்கலாக்கப்படும் அல்லது அதுகுறித்து உங்களுக்குத் தெரிவிக்கப்படும்</translation>
 <translation id="2096715839409389970">மூன்றாம் தரப்பினரின் குக்கீகளை அழி</translation>
 <translation id="2098805196501063469">மீதமுள்ள கடவுச்சொற்களைச் சரிபாருங்கள்</translation>
 <translation id="2099172618127234427">sshd daemonனை அமைத்து, USB டிரைவ்களிலிருந்து தொடங்குவதை இயக்கும் Chrome OS பிழைத் திருத்த அம்சங்களை இயக்குகிறீர்கள்.</translation>
@@ -3051,9 +3054,11 @@
 <translation id="4110490973560452005">பதிவிறக்கம் முடிந்தது: <ph name="FILE_NAME" />. பதிவிறக்கங்கள் பட்டிப் பகுதிக்குச் சுழற்ற, Shift+F6 விசைகளை அழுத்தவும்.</translation>
 <translation id="4110686435123617899"><ph name="TITLE" /> <ph name="DESC" /> ஆல்பத்தைத் தேர்வுசெய்யும்</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ஆஃப்லைன்)</translation>
+<translation id="4112809168763360620">ஸ்மார்ட் தனியுரிமைப் பாதுகாப்புகள்</translation>
 <translation id="4115002065223188701">நெட்வொர்க் தொடர்பு எல்லைக்கு வெளியே உள்ளது</translation>
 <translation id="4115378294792113321">மெஜந்தா</translation>
 <translation id="4117637339509843559">டார்க் பயன்முறை</translation>
+<translation id="4117714603282104018">டச்பேட் தொட்டுத் தெரிவிக்கும் கருத்து</translation>
 <translation id="4118579674665737931">சாதனத்தை மீண்டும் தொடங்கி, அமைக்க முயலவும்.</translation>
 <translation id="412022815379960229">எப்போது உள்நுழைந்தாலும் Google Photosஸில் உள்ள உங்கள் நினைவுகளைப் பாருங்கள்.</translation>
 <translation id="4120388883569225797">இந்தப் பாதுகாப்பு விசையை மீட்டமைக்க முடியவில்லை</translation>
@@ -3098,6 +3103,7 @@
 <translation id="4175137578744761569">வெளிர் ஊதா &amp; வெள்ளை</translation>
 <translation id="4175737294868205930">தொடர்நிலை சேமிப்பகம்</translation>
 <translation id="4176463684765177261">முடக்கப்பட்டது</translation>
+<translation id="417971315778328003">தொடர, பின் (PIN) அல்லது கடவுச்சொல்லை அமைத்திடுங்கள்</translation>
 <translation id="4180788401304023883">CA சான்றிதழ் "<ph name="CERTIFICATE_NAME" />" ஐ நீக்கவா?</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">மொழிகள்</translation>
@@ -3132,6 +3138,7 @@
 <translation id="4231095370974836764">Google Playயிலிருந்து உங்கள் <ph name="DEVICE_TYPE" /> சாதனத்தில் ஆப்ஸையும் கேம்களையும் நிறுவலாம். <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberosஸை உள்ளமைத்தல்</translation>
 <translation id="4235965441080806197">உள்நுழைவை ரத்துசெய்</translation>
+<translation id="4238175133949127631">திரையைத் தற்காலிகமாக மங்கலாக்கு</translation>
 <translation id="4241182343707213132">நிறுவன ஆப்ஸைப் புதுப்பிக்க மீண்டும் தொடங்குங்கள்</translation>
 <translation id="4242145785130247982">பல்வேறு கிளையண்ட் சான்றிதழ்களைப் பயன்படுத்த இயலாது</translation>
 <translation id="4242533952199664413">அமைப்புகளைத் திற</translation>
@@ -4651,6 +4658,7 @@
 <translation id="5901494423252125310">பிரிண்டரின் மூடி திறந்திருக்கிறது</translation>
 <translation id="5901630391730855834">மஞ்சள்</translation>
 <translation id="5904614460720589786">உள்ளமைவுச் சிக்கல் காரணமாக <ph name="APP_NAME" /> ஆப்ஸை அமைக்க முடியவில்லை. உங்கள் நிர்வாகியைத் தொடர்புகொள்ளவும். பிழைக் குறியீடு: <ph name="ERROR_CODE" />.</translation>
+<translation id="5906278356170001460">திரைக்கு முன் இருப்பதை அறிந்துகொள்ள, இந்த அம்சம் முன்புறக் கேமராவைப் பயன்படுத்துகிறது. இந்தத் தரவு பாதுகாப்பாகச் செயலாக்கப்பட்டதும் நீக்கப்படும். உங்கள் தரவை வேறு எந்த நோக்கங்களுக்காகவும் Google பயன்படுத்தாது.</translation>
 <translation id="5906655207909574370">கிட்டத்தட்ட புதுப்பிக்கப்பட்டது! புதுப்பிப்பதை முடிக்க, சாதனத்தை மறுதொடக்கம் செய்யவும்.</translation>
 <translation id="5906732635754427568">இந்தப் பயன்பாட்டுடன் தொடர்புடைய தரவு, எல்லாச் சாதனங்களிலிருந்தும் அகற்றப்படும்.</translation>
 <translation id="5908474332780919512">நான் உள்நுழையும்போது ஆப்ஸைத் தொடங்கு</translation>
@@ -4803,6 +4811,7 @@
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />கவனத்திற்கு:<ph name="END_BOLD" /> ஒரே மாதிரியான குரலையோ ரெக்கார்டிங்கையோ கொண்ட எவராலும் <ph name="SUPERVISED_USER_NAME" /> இன் தனிப்பட்ட முடிவுகளை அணுக முடியும். பேட்டரியைச் சேமிக்க, உங்கள் சாதனம் சார்ஜில் இணைக்கப்பட்டிருக்கும்போது மட்டும் "Ok Google" இயங்கும்படி <ph name="SUPERVISED_USER_NAME" /> இன் Assistant அமைப்புகளில் அமைக்கலாம்.</translation>
 <translation id="6064217302520318294">திரைப் பூட்டு</translation>
 <translation id="6065289257230303064">சான்றிதழ் பொருள் கோப்பக பண்புக்கூறுகள்</translation>
+<translation id="6065691521254183160">இந்த உதவிக் குமிழுக்கும் இது சுட்டிக்காட்டும் உறுப்பிற்கும் இடையே ஃபோகஸை மாற்ற, |<ph name="ACCELERATOR" />| அழுத்தவும்.</translation>
 <translation id="6066794465984119824">படத்தின் ஹேஷ் அமைக்கப்படவில்லை</translation>
 <translation id="6069464830445383022">Chromebookகில் உள்நுழைய Google கணக்கைப் பயன்படுத்துங்கள்</translation>
 <translation id="6069671174561668781">வால்பேப்பரை அமை</translation>
@@ -4828,6 +4837,7 @@
 <translation id="6085886413119427067">பாதுகாப்பான இணைப்பின் மூலம் இணையதளங்களில் இணைவது எப்படி என்பதைக் கண்டறியும்</translation>
 <translation id="6086004606538989567">நீங்கள் சரிபார்த்த கணக்கு இந்தச் சாதனத்தை அணுக அங்கீகரிக்கப்படவில்லை.</translation>
 <translation id="6086846494333236931">உங்கள் நிர்வாகி நிறுவினார்</translation>
+<translation id="6086898065659145625">மொபைல் அருகில் இருக்கும்போது தானாகவே உள்நுழைய “Smart Lock” உங்களை அனுமதிக்கும்.</translation>
 <translation id="6087960857463881712">அழகான முகம்</translation>
 <translation id="608912389580139775">இந்தப் பக்கத்தை வாசிப்புப் பட்டியலில் சேர்க்க, புக்மார்க் ஐகானைக் கிளிக் செய்யுங்கள்</translation>
 <translation id="6091761513005122595">பகிர்வு ஏற்றப்பட்டது.</translation>
@@ -5293,6 +5303,7 @@
 <translation id="659005207229852190">பாதுகாப்புச் சரிபார்ப்பு நிறைவடைந்தது.</translation>
 <translation id="6590458744723262880">ஃபோல்டரின் பெயரை மாற்றவும்</translation>
 <translation id="6592267180249644460">WebRTC பதிவு எடுக்கப்பட்ட நேரம் <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
+<translation id="659230975550262204">நிலைப் பகுதியில் ‘கண் ஐகானைக்’ காட்டு</translation>
 <translation id="6592808042417736307">உங்கள் கைரேகை சேர்க்கப்பட்டது</translation>
 <translation id="6593881952206664229">பதிப்புரிமை பெற்ற மீடியா பிளே ஆகாது</translation>
 <translation id="6594011207075825276">தொடர் சாதனங்களைத் தேடுகிறது...</translation>
@@ -5493,6 +5504,7 @@
 <translation id="6810613314571580006">சேமித்த நற்சான்றிதழ்களைப் பயன்படுத்தி இணையதளங்களில் தானாகவே உள்நுழையும். இந்த அம்சம் முடக்கப்பட்டிருக்கும் போது, ஒவ்வொரு முறை இணையதளத்தில் உள்நுழைவதற்கு முன் உறுதிப்படுத்தும்படி கேட்கும்.</translation>
 <translation id="6810768462515084623">அடடா! கடவுச்சொல் காலாவதி ஆகிவிட்டதாகத் தோன்றுகிறது. வேறொரு சாதனத்தில் அதைப் புதுப்பித்து, மீண்டும் முயலவும்.</translation>
 <translation id="6811034713472274749">பக்கத்தைப் பார்க்கலாம்</translation>
+<translation id="6811151703183939603">உறுதி</translation>
 <translation id="6811332638216701903">DHCP ஹோஸ்ட்பெயர்</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> ஐ மூலமாக இயக்க முடியாது.</translation>
 <translation id="6812841287760418429">மாற்றங்களை வைத்திரு</translation>
@@ -5731,6 +5743,7 @@
 <translation id="7053983685419859001">தடு</translation>
 <translation id="7055152154916055070">திசைதிருப்புதல் தடுக்கப்பட்டது:</translation>
 <translation id="7055451306017383754">ஓர் ஆப்ஸ் இந்த ஃபோல்டரைப் பயன்படுத்திக் கொண்டிருப்பதால் பகிர்வை நீக்க முடியவில்லை. அடுத்த முறை Parallels Desktop ஷட் டவுன் செய்யப்படும் போது இந்த ஃபோல்டர் பகிர்வு நீக்கப்படும்.</translation>
+<translation id="7056011684066172642">திரையை விட்டு விலகிச் சென்றால் அது தானாகவே பூட்டிக்கொள்ளும். திரைக்கு முன்னால் இருந்தால் அது திறந்திருக்கும்</translation>
 <translation id="7056418393177503237">{0,plural, =1{மறைநிலைச் சாளரம்}other{திறந்துள்ள மறைநிலைச் சாளரங்கள்: #}}</translation>
 <translation id="7056526158851679338">&amp;சாதனங்களை ஆய்வுசெய்</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{ஒரு நிமிடத்துக்கு முன்பு பாதுகாப்புச் சரிபார்ப்பு மேற்கொள்ளப்பட்டது}other{{NUM_MINS} நிமிடங்களுக்கு முன்பு பாதுகாப்புச் சரிபார்ப்பு மேற்கொள்ளப்பட்டது}}</translation>
@@ -6446,6 +6459,7 @@
 <translation id="7797246427375693110">இயக்கப்பட்டுள்ளது, <ph name="TIME" />க்குத் தானாக முடக்கப்படும்</translation>
 <translation id="7797571222998226653">முடக்கப்பட்டுள்ளது</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> தானாகத் தடுக்கப்பட்டது</translation>
+<translation id="7799220949286681310">ஸ்மார்ட் திரைப் பூட்டு</translation>
 <translation id="7799299114731150374">வால்பேப்பர் அமைக்கப்பட்டது</translation>
 <translation id="7799817062559422778">லைட் பயன்முறை</translation>
 <translation id="7800159967992492578">பக்கவாட்டுத் தேடலுக்கு மாறும். பக்கவாட்டுத் தேடல் இயக்கப்பட்டது.</translation>
@@ -6595,6 +6609,7 @@
 <translation id="7933518760693751884">பக்கத்தைப் பின்னர் பார்ப்பதற்காகச் சேமிக்க புக்மார்க் ஐகானைக் கிளிக் செய்யவும்</translation>
 <translation id="7933634003144813719">பகிர்ந்துள்ள ஃபோல்டர்களை நிர்வகி</translation>
 <translation id="793531125873261495">விர்ச்சுவல் மெஷினைப் பதிவிறக்கும்போது பிழை ஏற்பட்டது. மீண்டும் முயலவும்.</translation>
+<translation id="7935451262452051102"><ph name="PERCENT" />% முடிந்தது</translation>
 <translation id="7938594894617528435">தற்போது ஆஃப்லைனில் உள்ளது</translation>
 <translation id="7939062555109487992">மேம்பட்ட விருப்பங்கள்</translation>
 <translation id="7939412583708276221">எப்படியும் வைத்திரு</translation>
@@ -6727,6 +6742,7 @@
 <translation id="8062844841289846053">{COUNT,plural, =1{தாளின் ஒரு பக்கம்}other{தாளின் {COUNT} பக்கங்கள்}}</translation>
 <translation id="8063235345342641131">இயல்பு பச்சைநிற அவதார்</translation>
 <translation id="8063535366119089408">கோப்பைக் காட்டு</translation>
+<translation id="8064269957688233720">இந்த Chromebook உறக்கப் பயன்முறையில் இருந்து செயல்படத் தொடங்கும்போது உங்கள் மொபைல் தரவினைப் பாதுகாக்கலாம்.</translation>
 <translation id="8064279191081105977">குழு <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">இணைப்பு உரையாடல்</translation>
 <translation id="8068253693380742035">உள்நுழைய, தொடவும்</translation>
@@ -6786,6 +6802,7 @@
 <translation id="811994229154425014">ஸ்பேஸை இருமுறை தட்டினால் முற்றுப்புள்ளியை உள்ளிடு</translation>
 <translation id="8120505434908124087">eSIM சுயவிவரத்தை நிறுவுதல்</translation>
 <translation id="812260729110117038">தளங்களில் உலாவும்போது உங்களைக் கண்காணிக்காத வகையில் விளம்பரங்களின் செயல்திறனை விளம்பரதாரர்களும் வெளியீட்டாளர்களும் அறிந்துகொள்ளலாம்.</translation>
+<translation id="81231173274944570">தொட்டுத் தெரிவிக்கும் கருத்தை இயக்கு. <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
 <translation id="81238879832906896">மஞ்சள் வெள்ளை மலர்</translation>
 <translation id="8124313775439841391">நிர்வகிக்கப்படும் ONC</translation>
 <translation id="813082847718468539">தள விவரங்களைக் காண்க</translation>
@@ -7379,6 +7396,7 @@
 <translation id="8770406935328356739">நீட்டிப்பு மூலக் கோப்பகம்</translation>
 <translation id="8771300903067484968">தொடக்கப் பக்கத்தின் பின்னணித் தோற்றம் இயல்புநிலைக்கு மீட்டமைக்கப்பட்டது.</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> ஐச் சேமி</translation>
+<translation id="8773350724590665675">பிறர் உங்கள் திரையைப் பார்ப்பதைத் தடுத்தல்</translation>
 <translation id="8774379074441005279">மீட்டமைப்பை உறுதிப்படுத்துதல்</translation>
 <translation id="8774934320277480003">மேல் ஓரம்</translation>
 <translation id="8775144690796719618">தவறான URL</translation>
@@ -7860,6 +7878,7 @@
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{இணங்காத பயன்பாடு}other{இணங்காத ஆப்ஸ்}}</translation>
 <translation id="964790508619473209">திரையை ஒழுங்கமைத்தல்</translation>
 <translation id="965211523698323809"><ph name="DEVICE_TYPE" /> சாதனத்திலிருந்து மெசேஜ்களை அனுப்பலாம் / பெறலாம். <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
+<translation id="96535553604365597">Google Cast குறித்த சிக்கலைப் புகாரளி</translation>
 <translation id="967398046773905967">HID சாதனங்களை அணுக எந்தத் தளத்தையும் அனுமதிக்காதே</translation>
 <translation id="967624055006145463">சேமிக்கப்பட்ட தரவின்படி</translation>
 <translation id="96774243435178359">நிர்வகிக்கப்படும் பிரிண்டர்கள்</translation>

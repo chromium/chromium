@@ -493,7 +493,8 @@ void MapPathBuilderErrorsToCertStatus(const CertPathErrors& errors,
   }
 
   if (errors.ContainsError(cert_errors::kDistrustedByTrustStore) ||
-      errors.ContainsError(cert_errors::kVerifySignedDataFailed)) {
+      errors.ContainsError(cert_errors::kVerifySignedDataFailed) ||
+      errors.ContainsError(cert_errors::kNoIssuersFound)) {
     *cert_status |= CERT_STATUS_AUTHORITY_INVALID;
   }
 

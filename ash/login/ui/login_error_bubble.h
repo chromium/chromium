@@ -16,7 +16,7 @@ namespace ash {
 class ASH_EXPORT LoginErrorBubble : public LoginBaseBubbleView {
  public:
   LoginErrorBubble();
-  LoginErrorBubble(views::View* content, views::View* anchor_view);
+  explicit LoginErrorBubble(views::View* anchor_view);
 
   LoginErrorBubble(const LoginErrorBubble&) = delete;
   LoginErrorBubble& operator=(const LoginErrorBubble&) = delete;

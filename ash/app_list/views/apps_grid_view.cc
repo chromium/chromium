@@ -91,6 +91,9 @@ constexpr int kFolderItemReparentDelay = 50;
 // Maximum vertical and horizontal spacing between tiles.
 constexpr int kMaximumTileSpacing = 96;
 
+// Maximum horizontal spacing between tiles for productivity launcher.
+constexpr int kMaximumHorizontalTileSpacingForProductivityLauncher = 128;
+
 // RowMoveAnimationDelegate is used when moving an item into a different row.
 // Before running the animation, the item's layer is re-created and kept in
 // the original position, then the item is moved to just before its target
@@ -350,9 +353,9 @@ void AppsGridView::SetFixedTilePadding(int horizontal_padding,
   vertical_tile_padding_ = vertical_padding;
 }
 
-gfx::Size AppsGridView::GetTotalTileSize() const {
+gfx::Size AppsGridView::GetTotalTileSize(int page) const {
   gfx::Rect rect(GetTileViewSize());
-  rect.Inset(GetTilePadding());
+  rect.Inset(GetTilePadding(page));
   return rect.size();
 }
 
@@ -366,9 +369,15 @@ gfx::Size AppsGridView::GetMinimumTileGridSize(int cols,
 gfx::Size AppsGridView::GetMaximumTileGridSize(int cols,
                                                int rows_per_page) const {
   const gfx::Size tile_size = GetTileViewSize();
-  return gfx::Size(tile_size.width() * cols + kMaximumTileSpacing * (cols - 1),
-                   tile_size.height() * rows_per_page +
-                       kMaximumTileSpacing * (rows_per_page - 1));
+  const int max_horizontal_spacing =
+      features::IsProductivityLauncherEnabled()
+          ? kMaximumHorizontalTileSpacingForProductivityLauncher
+          : kMaximumTileSpacing;
+
+  return gfx::Size(
+      tile_size.width() * cols + max_horizontal_spacing * (cols - 1),
+      tile_size.height() * rows_per_page +
+          kMaximumTileSpacing * (rows_per_page - 1));
 }
 
 void AppsGridView::ResetForShowApps() {
@@ -705,8 +714,6 @@ void AppsGridView::EndDrag(bool cancel) {
   // Hide the |current_ghost_view_| for item drag that started
   // within |apps_grid_view_|.
   BeginHideCurrentGhostImageView();
-  MaybeStopPageFlip();
-  StopAutoScroll();
   if (was_dragging)
     SetFocusAfterEndDrag();  // Maybe focus the search box.
 
@@ -780,6 +787,9 @@ void AppsGridView::ClearDragState() {
 
   if (folder_item_reparent_timer_.IsRunning())
     folder_item_reparent_timer_.Stop();
+
+  MaybeStopPageFlip();
+  StopAutoScroll();
 
   drag_view_ = nullptr;
   drag_item_ = nullptr;
@@ -933,7 +943,8 @@ void AppsGridView::UpdatePulsingBlockViews() {
   }
 
   while (pulsing_blocks_model_.view_size() < desired) {
-    auto view = std::make_unique<PulsingBlockView>(GetTotalTileSize(), true);
+    auto view = std::make_unique<PulsingBlockView>(
+        GetTotalTileSize(GetTotalPages() - 1), true);
     pulsing_blocks_model_.Add(view.get(), 0);
     items_container_->AddChildView(std::move(view));
   }
@@ -1078,7 +1089,10 @@ void AppsGridView::AnimateToIdealBounds() {
         !IsViewHiddenForDrag(view) && (current_visible || target_visible);
 
     const int y_diff = target.y() - current.y();
-    if (visible && y_diff && y_diff % GetTotalTileSize().height() == 0) {
+    const int tile_size_height =
+        GetTotalTileSize(view_structure_.GetIndexFromModelIndex(i).page)
+            .height();
+    if (visible && y_diff && y_diff % tile_size_height == 0) {
       AnimationBetweenRows(view, current_visible, current, target_visible,
                            target);
     } else if (visible || bounds_animator_->IsAnimating(view)) {
@@ -1123,7 +1137,7 @@ void AppsGridView::AnimationBetweenRows(AppListItemView* view,
     view->EnsureLayer();
   }
 
-  const gfx::Size total_tile_size = GetTotalTileSize();
+  const gfx::Size total_tile_size = GetTotalTileSize(current_page);
   gfx::Rect current_out(current);
   current_out.Offset(dir * total_tile_size.width(), 0);
 
@@ -1291,7 +1305,7 @@ bool AppsGridView::DraggedItemCanEnterFolder() {
 
 void AppsGridView::UpdateDropTargetForReorder(const gfx::Point& point) {
   gfx::Rect bounds = GetContentsBounds();
-  bounds.Inset(GetTilePadding());
+  bounds.Inset(GetTilePadding(GetSelectedPage()));
   GridIndex nearest_tile_index = GetNearestTileIndexForPoint(point);
   gfx::Point reorder_placeholder_center =
       GetExpectedTileBounds(reorder_placeholder_).CenterPoint();
@@ -1303,7 +1317,7 @@ void AppsGridView::UpdateDropTargetForReorder(const gfx::Point& point) {
     x_offset_direction = reorder_placeholder_ < nearest_tile_index ? -1 : 1;
   }
 
-  const gfx::Size total_tile_size = GetTotalTileSize();
+  const gfx::Size total_tile_size = GetTotalTileSize(GetSelectedPage());
   int row = nearest_tile_index.slot / cols_;
 
   // Offset the target column based on the direction of the target. This will
@@ -1650,8 +1664,6 @@ void AppsGridView::EndDragFromReparentItemInRootLevel(
   // Hide the |current_ghost_view_| after completed drag from within
   // folder to |apps_grid_view_|.
   BeginHideCurrentGhostImageView();
-  MaybeStopPageFlip();
-  StopAutoScroll();
   SetFocusAfterEndDrag();  // Maybe focus the search box.
 
   AnimateDragIconToTargetPosition(
@@ -2122,8 +2134,8 @@ GridIndex AppsGridView::GetNearestTileIndexForPoint(
     const gfx::Point& point) const {
   gfx::Rect bounds = GetContentsBounds();
   const int current_page = GetSelectedPage();
-  bounds.Inset(GetTilePadding());
-  const gfx::Size total_tile_size = GetTotalTileSize();
+  bounds.Inset(GetTilePadding(current_page));
+  const gfx::Size total_tile_size = GetTotalTileSize(current_page);
   const gfx::Vector2d grid_offset = GetGridCenteringOffset(current_page);
 
   DCHECK_GT(total_tile_size.width(), 0);
@@ -2145,16 +2157,16 @@ gfx::Rect AppsGridView::GetExpectedTileBounds(const GridIndex& index) const {
     return gfx::Rect();
 
   gfx::Rect bounds(GetContentsBounds());
-  bounds.Inset(GetTilePadding());
+  bounds.Inset(GetTilePadding(index.page));
   int row = index.slot / cols_;
   int col = index.slot % cols_;
-  const gfx::Size total_tile_size = GetTotalTileSize();
+  const gfx::Size total_tile_size = GetTotalTileSize(index.page);
   gfx::Rect tile_bounds(gfx::Point(bounds.x() + col * total_tile_size.width(),
                                    bounds.y() + row * total_tile_size.height()),
                         total_tile_size);
 
   tile_bounds.Offset(GetGridCenteringOffset(index.page));
-  tile_bounds.Inset(-GetTilePadding());
+  tile_bounds.Inset(-GetTilePadding(index.page));
   return tile_bounds;
 }
 

@@ -18,6 +18,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/json/json_reader.h"
 #include "base/test/android/url_utils.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -61,6 +62,19 @@ void CreateTestFiles(const base::FilePath& install_dir) {
                              install_dir.AppendASCII("manifest.json")));
 }
 
+void AssertOnDemandRequest(bool on_demand, std::string post_data) {
+  const auto root = base::JSONReader::Read(post_data);
+  ASSERT_TRUE(root);
+  const auto* request = root->FindKey("request");
+  ASSERT_TRUE(request);
+  const auto& app = request->FindKey("app")->GetList()[0];
+  if (on_demand) {
+    EXPECT_EQ("ondemand", app.FindKey("installsource")->GetString());
+  } else {
+    EXPECT_EQ(nullptr, app.FindKey("installsource"));
+  }
+}
+
 class FailingNetworkFetcher : public update_client::NetworkFetcher {
  public:
   FailingNetworkFetcher() = default;
@@ -77,6 +91,46 @@ class FailingNetworkFetcher : public update_client::NetworkFetcher {
       ResponseStartedCallback response_started_callback,
       ProgressCallback progress_callback,
       PostRequestCompleteCallback post_request_complete_callback) override {
+    AssertOnDemandRequest(false, post_data);
+    std::move(post_request_complete_callback)
+        .Run(/* response_body= */ std::make_unique<std::string>(""),
+             /* network_error= */ -2,
+             /* header_etag= */ "",
+             /* header_x_cup_server_proof= */ "",
+             /* x_header_retry_after_sec= */ 0ll);
+  }
+
+  void DownloadToFile(const GURL& url,
+                      const base::FilePath& file_path,
+                      ResponseStartedCallback response_started_callback,
+                      ProgressCallback progress_callback,
+                      DownloadToFileCompleteCallback
+                          download_to_file_complete_callback) override {
+    std::move(download_to_file_complete_callback)
+        .Run(
+            /* network_error= */ -2,
+            /* content_size= */ 0);
+  }
+};
+
+// This inspects that param onDemandUpdate gets passed down the call stack.
+class OnDemandNetworkFetcher : public update_client::NetworkFetcher {
+ public:
+  OnDemandNetworkFetcher() = default;
+  ~OnDemandNetworkFetcher() override = default;
+  OnDemandNetworkFetcher(const OnDemandNetworkFetcher&) = delete;
+  OnDemandNetworkFetcher& operator=(const OnDemandNetworkFetcher&) = delete;
+
+  // NetworkFetcher overrides.
+  void PostRequest(
+      const GURL& url,
+      const std::string& post_data,
+      const std::string& content_type,
+      const base::flat_map<std::string, std::string>& post_additional_headers,
+      ResponseStartedCallback response_started_callback,
+      ProgressCallback progress_callback,
+      PostRequestCompleteCallback post_request_complete_callback) override {
+    AssertOnDemandRequest(true, post_data);
     std::move(post_request_complete_callback)
         .Run(/* response_body= */ std::make_unique<std::string>(""),
              /* network_error= */ -2,
@@ -117,6 +171,7 @@ class FakeCrxNetworkFetcher : public update_client::NetworkFetcher {
       ResponseStartedCallback response_started_callback,
       ProgressCallback progress_callback,
       PostRequestCompleteCallback post_request_complete_callback) override {
+    AssertOnDemandRequest(false, post_data);
     std::move(response_started_callback)
         .Run(/* responseCode= */ 200, /* content_size= */ 0);
     std::string response_body;
@@ -332,9 +387,11 @@ TEST_F(AwComponentUpdateServiceTest, TestComponentReadyWhenOffline) {
           MockNetworkFetcherFactory<FailingNetworkFetcher>>()));
 
   base::OnceClosure closure = run_loop.QuitClosure();
-  service.StartComponentUpdateService(base::BindOnce(
-      [](base::OnceClosure closure, int) { std::move(closure).Run(); },
-      std::move(closure)));
+  service.StartComponentUpdateService(
+      base::BindOnce(
+          [](base::OnceClosure closure, int) { std::move(closure).Run(); },
+          std::move(closure)),
+      false);
   run_loop.Run();
 
   ASSERT_TRUE(service.GetMockPolicy()->IsComponentReadyInvoked());
@@ -351,9 +408,11 @@ TEST_F(AwComponentUpdateServiceTest, TestFreshDownloadingFakeApk) {
           MockNetworkFetcherFactory<FakeCrxNetworkFetcher>>()));
 
   base::OnceClosure closure = run_loop.QuitClosure();
-  service.StartComponentUpdateService(base::BindOnce(
-      [](base::OnceClosure closure, int) { std::move(closure).Run(); },
-      std::move(closure)));
+  service.StartComponentUpdateService(
+      base::BindOnce(
+          [](base::OnceClosure closure, int) { std::move(closure).Run(); },
+          std::move(closure)),
+      false);
   run_loop.Run();
 
   ASSERT_TRUE(service.GetMockPolicy()->IsComponentReadyInvoked());
@@ -368,6 +427,27 @@ TEST_F(AwComponentUpdateServiceTest, TestFreshDownloadingFakeApk) {
           "minimum_chrome_version");
   ASSERT_TRUE(minimum_chrome_version);
   EXPECT_EQ(*minimum_chrome_version, "50");
+}
+
+TEST_F(AwComponentUpdateServiceTest, TestOnDemandUpdateRequest) {
+  CreateTestFiles(component_install_dir_.AppendASCII(kTestVersion));
+  base::RunLoop run_loop;
+  TestAwComponentUpdateService service(base::MakeRefCounted<MockConfigurator>(
+      test_pref_.get(),
+      base::MakeRefCounted<
+          MockNetworkFetcherFactory<OnDemandNetworkFetcher>>()));
+  base::OnceClosure closure = run_loop.QuitClosure();
+  service.StartComponentUpdateService(
+      base::BindOnce(
+          [](base::OnceClosure closure, int) { std::move(closure).Run(); },
+          std::move(closure)),
+      true);
+  run_loop.Run();
+
+  ASSERT_TRUE(service.GetMockPolicy()->IsComponentReadyInvoked());
+  EXPECT_EQ(service.GetMockPolicy()->GetVersion().GetString(), kTestVersion);
+  EXPECT_EQ(service.GetMockPolicy()->GetInstallDir(),
+            component_install_dir_.AppendASCII(kTestVersion));
 }
 
 }  // namespace android_webview

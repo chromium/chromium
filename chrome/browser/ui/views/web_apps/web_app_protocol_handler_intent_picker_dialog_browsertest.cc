@@ -10,16 +10,12 @@
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_keep_alive_types.h"
-#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/web_apps/web_app_protocol_handler_intent_picker_dialog_view.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/keep_alive_registry/keep_alive_types.h"
-#include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
@@ -59,16 +55,10 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_CALL(show_dialog,
               Run(/*allowed=*/false, /*remember_user_choice=*/false));
 
-  auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
-      browser()->profile(),
-      ProfileKeepAliveOrigin::kWebAppPermissionDialogWindow);
-  auto keep_alive = std::make_unique<ScopedKeepAlive>(
-      KeepAliveOrigin::WEB_APP_INTENT_PICKER, KeepAliveRestartOption::DISABLED);
   WebAppProtocolHandlerIntentPickerView::SetDefaultRememberSelectionForTesting(
       true);
   WebAppProtocolHandlerIntentPickerView::Show(
-      protocol_url, browser()->profile(), test_app_id,
-      std::move(profile_keep_alive), std::move(keep_alive), show_dialog.Get());
+      protocol_url, browser()->profile(), test_app_id, show_dialog.Get());
 
   waiter.WaitIfNeededAndGet()->CloseWithReason(
       views::Widget::ClosedReason::kEscKeyPressed);
@@ -89,16 +79,10 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_CALL(show_dialog,
               Run(/*allowed=*/false, /*remember_user_choice=*/true));
 
-  auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
-      browser()->profile(),
-      ProfileKeepAliveOrigin::kWebAppPermissionDialogWindow);
-  auto keep_alive = std::make_unique<ScopedKeepAlive>(
-      KeepAliveOrigin::WEB_APP_INTENT_PICKER, KeepAliveRestartOption::DISABLED);
   WebAppProtocolHandlerIntentPickerView::SetDefaultRememberSelectionForTesting(
       true);
   WebAppProtocolHandlerIntentPickerView::Show(
-      protocol_url, browser()->profile(), test_app_id,
-      std::move(profile_keep_alive), std::move(keep_alive), show_dialog.Get());
+      protocol_url, browser()->profile(), test_app_id, show_dialog.Get());
 
   waiter.WaitIfNeededAndGet()->CloseWithReason(
       views::Widget::ClosedReason::kCancelButtonClicked);
@@ -119,14 +103,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_CALL(show_dialog,
               Run(/*allowed=*/false, /*remember_user_choice=*/false));
 
-  auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
-      browser()->profile(),
-      ProfileKeepAliveOrigin::kWebAppPermissionDialogWindow);
-  auto keep_alive = std::make_unique<ScopedKeepAlive>(
-      KeepAliveOrigin::WEB_APP_INTENT_PICKER, KeepAliveRestartOption::DISABLED);
   WebAppProtocolHandlerIntentPickerView::Show(
-      protocol_url, browser()->profile(), test_app_id,
-      std::move(profile_keep_alive), std::move(keep_alive), show_dialog.Get());
+      protocol_url, browser()->profile(), test_app_id, show_dialog.Get());
 
   waiter.WaitIfNeededAndGet()->CloseWithReason(
       views::Widget::ClosedReason::kCancelButtonClicked);
@@ -145,17 +123,10 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_CALL(show_dialog,
               Run(/*allowed=*/true, /*remember_user_choice=*/true));
 
-  auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
-      browser()->profile(),
-      ProfileKeepAliveOrigin::kWebAppPermissionDialogWindow);
-  auto keep_alive = std::make_unique<ScopedKeepAlive>(
-      KeepAliveOrigin::WEB_APP_INTENT_PICKER, KeepAliveRestartOption::DISABLED);
-
   WebAppProtocolHandlerIntentPickerView::SetDefaultRememberSelectionForTesting(
       true);
   WebAppProtocolHandlerIntentPickerView::Show(
-      protocol_url, browser()->profile(), test_app_id,
-      std::move(profile_keep_alive), std::move(keep_alive), show_dialog.Get());
+      protocol_url, browser()->profile(), test_app_id, show_dialog.Get());
 
   waiter.WaitIfNeededAndGet()->CloseWithReason(
       views::Widget::ClosedReason::kAcceptButtonClicked);
@@ -177,15 +148,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_CALL(show_dialog,
               Run(/*allowed=*/true, /*remember_user_choice=*/false));
 
-  auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
-      browser()->profile(),
-      ProfileKeepAliveOrigin::kWebAppPermissionDialogWindow);
-  auto keep_alive = std::make_unique<ScopedKeepAlive>(
-      KeepAliveOrigin::WEB_APP_INTENT_PICKER, KeepAliveRestartOption::DISABLED);
-
   WebAppProtocolHandlerIntentPickerView::Show(
-      protocol_url, browser()->profile(), test_app_id,
-      std::move(profile_keep_alive), std::move(keep_alive), show_dialog.Get());
+      protocol_url, browser()->profile(), test_app_id, show_dialog.Get());
 
   waiter.WaitIfNeededAndGet()->CloseWithReason(
       views::Widget::ClosedReason::kAcceptButtonClicked);
@@ -201,16 +165,8 @@ class WebAppProtocolHandlerIntentPickerDialogInteractiveBrowserTest
         "WebAppProtocolHandlerIntentPickerView");
     GURL protocol_url("web+test://test");
     web_app::AppId test_app_id = InstallTestWebApp(browser()->profile());
-    auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
-        browser()->profile(),
-        ProfileKeepAliveOrigin::kWebAppPermissionDialogWindow);
-    auto keep_alive = std::make_unique<ScopedKeepAlive>(
-        KeepAliveOrigin::WEB_APP_INTENT_PICKER,
-        KeepAliveRestartOption::DISABLED);
     WebAppProtocolHandlerIntentPickerView::Show(
-        protocol_url, browser()->profile(), test_app_id,
-        std::move(profile_keep_alive), std::move(keep_alive),
-        base::DoNothing());
+        protocol_url, browser()->profile(), test_app_id, base::DoNothing());
     waiter.WaitIfNeededAndGet()->CloseWithReason(
         views::Widget::ClosedReason::kEscKeyPressed);
   }

@@ -74,6 +74,8 @@ class PresentationTimeRecorder::PresentationTimeRecorderInternal
     DCHECK_EQ(compositor_, compositor);
     compositor_->RemoveObserver(this);
     compositor_ = nullptr;
+    if (!recording_)
+      delete this;
   }
 
   // Mark the recorder to be deleted when the last presentation feedback

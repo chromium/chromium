@@ -1290,6 +1290,7 @@ void NativeWidgetNSWindowBridge::SetOpacity(float opacity) {
 
 void NativeWidgetNSWindowBridge::SetWindowLevel(int32_t level) {
   [window_ setLevel:level];
+  [bridged_view_ updateCursorTrackingArea];
 
   // Windows that have a higher window level than NSNormalWindowLevel default to
   // NSWindowCollectionBehaviorTransient. Set the value explicitly here to match

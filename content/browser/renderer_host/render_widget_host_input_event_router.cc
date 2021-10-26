@@ -1962,7 +1962,7 @@ void RenderWidgetHostInputEventRouter::SetCursor(const WebCursor& cursor) {
     return;
 
   last_device_scale_factor_ =
-      last_mouse_move_root_view_->GetCurrentDeviceScaleFactor();
+      last_mouse_move_root_view_->GetDeviceScaleFactor();
   if (touch_emulator_)
     touch_emulator_->SetDeviceScaleFactor(last_device_scale_factor_);
   if (auto* cursor_manager = last_mouse_move_root_view_->GetCursorManager()) {

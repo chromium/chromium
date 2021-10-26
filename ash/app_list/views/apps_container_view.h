@@ -217,20 +217,24 @@ class ASH_EXPORT AppsContainerView
   struct GridLayout {
     int columns;
     int rows;
+    int first_page_rows;
   };
   // Returns the number of columns and rows |apps_grid_view_| should display,
   // depending on the current display work area size.
   GridLayout CalculateGridLayout() const;
 
-  // Depending on the provided grid layout, updates the number of rows and
-  // columns in the top level apps grid.
-  void UpdateTopLevelGridDimensions(const GridLayout& grid_layout);
+  // Calculates the grid layout and updates the number of rows and columns shown
+  // in the top level apps grid.
+  void UpdateTopLevelGridDimensions();
+
+  // Returns the space available to the apps grid for laying out its contents.
+  gfx::Rect CalculateAvailableBoundsForAppsGrid(
+      const gfx::Rect& contents_bounds) const;
 
   // Depending on the provided apps container contents bounds and grid layout,
   // updates `app_list_config_` to be used within the apps container, and passes
   // it on to child views that require it.
-  void UpdateAppListConfig(const gfx::Rect& contents_bounds,
-                           const GridLayout& grid_layout);
+  void UpdateAppListConfig(const gfx::Rect& contents_bounds);
 
   // Callback returned by DisableBlur().
   void OnSuggestionChipsBlurDisablerReleased();

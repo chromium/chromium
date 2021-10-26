@@ -390,7 +390,6 @@ void WebAppInstallFinalizer::ReparentTab(const AppId& app_id,
 
 void WebAppInstallFinalizer::FinalizeUpdate(
     const WebApplicationInfo& web_app_info,
-    content::WebContents* web_contents,
     InstallFinalizedCallback callback) {
   CHECK(started_);
 

@@ -71,7 +71,7 @@ void SpeechRecognitionClientBrowserInterface::
 
   if (enabled) {
     const std::string live_caption_locale =
-        profile_prefs_->GetString(prefs::kLiveCaptionLanguageCode);
+        prefs::GetLiveCaptionLanguageCode(profile_prefs_);
     if (!base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption) ||
         speech::SodaInstaller::GetInstance()->IsSodaInstalled(
             speech::GetLanguageCode(live_caption_locale))) {
@@ -86,7 +86,7 @@ void SpeechRecognitionClientBrowserInterface::
     OnSpeechRecognitionLanguageChanged() {
   for (auto& observer : speech_recognition_availibility_observers_) {
     observer->SpeechRecognitionLanguageChanged(
-        profile_prefs_->GetString(prefs::kLiveCaptionLanguageCode));
+        prefs::GetLiveCaptionLanguageCode(profile_prefs_));
   }
 }
 

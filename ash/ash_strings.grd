@@ -3062,6 +3062,12 @@ This file contains the strings for ash.
       <message name="IDS_ASH_NOTIFICATION_INLINE_REPLY_PLACEHOLDER" desc="The placeholder string for the textfield of an in-line reply notification.">
         Reply
       </message>
+      <message name="IDS_ASH_NOTIFICATION_WARNING_LABEL" desc="The label indicating that this is a warning notification.">
+        Warning
+      </message>
+      <message name="IDS_ASH_NOTIFICATION_CRITICAL_WARNING_LABEL" desc="The label indicating that this is a critical warning notification.">
+        Critical
+      </message>
 
       <message name="IDS_ASH_DIALOG_DONT_SHOW_AGAIN" desc="Label for checkbox dismissing show of a dialog.">
         Don't show again
@@ -3618,6 +3624,9 @@ Here are some things you can try to get started.
       </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_BUTTON_DELETE" desc="The delete button label for the screen capture notification.">
         Delete
+      </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_FOLDER_SELECTION_USER_NUDGE" desc="The message shown in a toast widget to nudge the user and alert them to check out the new settings that allow them to change where captured files are saved.">
+        You can now change where screen captures are saved
       </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_LABEL_FULLSCREEN_IMAGE_CAPTURE_CLAMSHELL" desc="The capture label message which shows in the middle of the screen when in fullscreen image capture mode in clamshell mode.">
         Click anywhere to capture full screen

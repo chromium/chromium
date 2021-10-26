@@ -10,6 +10,7 @@
 
 #include "ash/quick_pair/common/protocol.h"
 #include "base/component_export.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -26,11 +27,11 @@ namespace quick_pair {
 // full metadata object.
 struct COMPONENT_EXPORT(QUICK_PAIR_COMMON) Device
     : public base::RefCounted<Device> {
+  enum class AdditionalDataType {
+    kAccountKey,
+  };
+
   Device(std::string metadata_id, std::string ble_address, Protocol protocol);
-  Device(std::string metadata_id,
-         std::string ble_address,
-         Protocol protocol,
-         const std::vector<uint8_t>& additional_data);
   Device(const Device&) = delete;
   Device& operator=(const Device&) = delete;
   Device& operator=(Device&&) = delete;
@@ -43,13 +44,11 @@ struct COMPONENT_EXPORT(QUICK_PAIR_COMMON) Device
     classic_address_ = address;
   }
 
-  const std::vector<uint8_t>& additional_data() const {
-    return additional_data_;
-  }
+  absl::optional<std::vector<uint8_t>> GetAdditionalData(
+      const AdditionalDataType& type) const;
 
-  void set_additional_data(const std::vector<uint8_t>& data) {
-    additional_data_ = data;
-  }
+  void SetAdditionalData(const AdditionalDataType& type,
+                         const std::vector<uint8_t>& data);
 
   // An identifier which components can use to fetch additional metadata for
   // this device. This ID will correspond to different things depending on
@@ -70,10 +69,8 @@ struct COMPONENT_EXPORT(QUICK_PAIR_COMMON) Device
   // Bluetooth classic address of the device.
   absl::optional<std::string> classic_address_;
 
-  // Additional data, the meaning of which can vary depending on Protocol and
-  // other state.  E.g. for Fast Pair, this is set to the account key during
-  // the subsequent pairing scenario.
-  std::vector<uint8_t> additional_data_;
+  // Additional data that can be set as needed per Protocol.
+  base::flat_map<AdditionalDataType, std::vector<uint8_t>> additional_data_;
 };
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)

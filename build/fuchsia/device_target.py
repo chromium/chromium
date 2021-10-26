@@ -210,7 +210,8 @@ class DeviceTarget(target.Target):
       if self._fuchsia_out_dir:
         # Deploy to an already-booted device running a local Fuchsia build.
         self._pkg_repo = pkg_repo.ExternalPkgRepo(
-            os.path.join(self._fuchsia_out_dir, 'amber-files'))
+            os.path.join(self._fuchsia_out_dir, 'amber-files'),
+            os.path.join(self._fuchsia_out_dir, '.build-id'))
       else:
         # Create an ephemeral package repository, then start both "pm serve" as
         # well as the bootserver.

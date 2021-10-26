@@ -125,17 +125,13 @@ void SurfaceSavedFrame::RequestCopyOfOutput(Surface* surface) {
   PrepareForCopy(active_frame.render_pass_list, max_id,
                  tainted_to_clean_pass_ids);
 
-  DCHECK(tainted_to_clean_pass_ids.contains(
-      (active_frame.render_pass_list.back()->id)))
-      << "The root pass must be tainted";
-
   TransitionUtils::FilterCallback filter_callback = base::BindRepeating(
       &SurfaceSavedFrame::FilterSharedElementAndTaintedQuads,
       base::Unretained(this), base::Unretained(&tainted_to_clean_pass_ids));
 
-  CompositorFrame interpolated_frame;
-  interpolated_frame.metadata = active_frame.metadata.Clone();
-  interpolated_frame.resource_list = active_frame.resource_list;
+  CompositorFrame clean_frame;
+  clean_frame.metadata = active_frame.metadata.Clone();
+  clean_frame.resource_list = active_frame.resource_list;
 
   for (auto& render_pass : active_frame.render_pass_list) {
     const auto original_render_pass_id = render_pass->id;
@@ -143,12 +139,12 @@ void SurfaceSavedFrame::RequestCopyOfOutput(Surface* surface) {
 
     auto it = tainted_to_clean_pass_ids.find(original_render_pass_id);
     if (it != tainted_to_clean_pass_ids.end()) {
-      auto clean_pass = TransitionUtils::CopyPassWithRenderPassFiltering(
+      auto clean_pass = TransitionUtils::CopyPassWithQuadFiltering(
           *render_pass, filter_callback);
       it->second = max_id = clean_pass->id =
           TransitionUtils::NextRenderPassId(max_id);
       pass_for_clean_copy = clean_pass.get();
-      interpolated_frame.render_pass_list.push_back(std::move(clean_pass));
+      clean_frame.render_pass_list.push_back(std::move(clean_pass));
     }
 
     // Deep copy of the original pass propagating copy requests.
@@ -157,7 +153,7 @@ void SurfaceSavedFrame::RequestCopyOfOutput(Surface* surface) {
     duplicate_pass->copy_requests = std::move(copy_requests);
     if (!pass_for_clean_copy)
       pass_for_clean_copy = duplicate_pass.get();
-    interpolated_frame.render_pass_list.push_back(std::move(duplicate_pass));
+    clean_frame.render_pass_list.push_back(std::move(duplicate_pass));
 
     auto shared_pass_index = GetSharedPassIndex(directive_.shared_elements(),
                                                 original_render_pass_id);
@@ -185,13 +181,13 @@ void SurfaceSavedFrame::RequestCopyOfOutput(Surface* surface) {
     }
   }
 
-  surface_.emplace(surface, std::move(interpolated_frame));
+  clean_surface_.emplace(surface, std::move(clean_frame));
 
   DCHECK_EQ(copy_request_count_, ExpectedResultCount());
 }
 
 void SurfaceSavedFrame::ReleaseSurface() {
-  surface_.reset();
+  clean_surface_.reset();
 }
 
 void SurfaceSavedFrame::PrepareForCopy(
@@ -222,8 +218,12 @@ void SurfaceSavedFrame::PrepareForCopy(
 bool SurfaceSavedFrame::FilterSharedElementAndTaintedQuads(
     const base::flat_map<CompositorRenderPassId, CompositorRenderPassId>*
         tainted_to_clean_pass_ids,
-    const CompositorRenderPassDrawQuad& pass_quad,
+    const DrawQuad& quad,
     CompositorRenderPass& copy_pass) const {
+  if (quad.material != DrawQuad::Material::kCompositorRenderPass)
+    return false;
+  const auto& pass_quad = *CompositorRenderPassDrawQuad::MaterialCast(&quad);
+
   // Skip drawing shared elements embedded inside render passes.
   if (IsSharedElementRenderPass(pass_quad.render_pass_id))
     return true;
@@ -263,7 +263,7 @@ void SurfaceSavedFrame::NotifyCopyOfOutputComplete(
   // for this result.
   if (--copy_request_count_ == 0) {
     std::move(directive_finished_callback_).Run(directive_.sequence_id());
-    surface_.reset();
+    clean_surface_.reset();
   }
 
   // Return if the result is empty.
@@ -390,14 +390,14 @@ SurfaceSavedFrame::FrameResult::~FrameResult() = default;
 SurfaceSavedFrame::FrameResult& SurfaceSavedFrame::FrameResult::operator=(
     FrameResult&& other) = default;
 
-SurfaceSavedFrame::ScopedInterpolatedSurface::ScopedInterpolatedSurface(
+SurfaceSavedFrame::ScopedCleanSurface::ScopedCleanSurface(
     Surface* surface,
-    CompositorFrame frame)
+    CompositorFrame clean_frame)
     : surface_(surface) {
-  surface_->SetInterpolatedFrame(std::move(frame));
+  surface_->SetInterpolatedFrame(std::move(clean_frame));
 }
 
-SurfaceSavedFrame::ScopedInterpolatedSurface::~ScopedInterpolatedSurface() {
+SurfaceSavedFrame::ScopedCleanSurface::~ScopedCleanSurface() {
   surface_->ResetInterpolatedFrame();
 }
 

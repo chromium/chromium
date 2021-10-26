@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/resources/transferable_resource.h"
@@ -32,9 +33,8 @@ class VIZ_SERVICE_EXPORT TransferableResourceTracker {
     SurfaceSavedFrame::RenderPassDrawData draw_data;
   };
 
-  // A resource frame consists of a root PositionedResource and a set of
-  // optional shared PositionedResources. A SurfaceSavedFrame can be converted
-  // to a ResourceFrame via ImportResources.
+  // A SurfaceSavedFrame can be converted to a ResourceFrame via
+  // ImportResources.
   struct VIZ_SERVICE_EXPORT ResourceFrame {
     ResourceFrame();
     ResourceFrame(ResourceFrame&& other);
@@ -42,8 +42,19 @@ class VIZ_SERVICE_EXPORT TransferableResourceTracker {
 
     ResourceFrame& operator=(ResourceFrame&& other);
 
+    // The cached resource for the root content.
     PositionedResource root;
+
+    // The cached resource for each shared element. The entries here are
+    // optional since copy request for an element may fail or a
+    // [src_element, dst_element] has a null src_element.
     std::vector<absl::optional<PositionedResource>> shared;
+
+    // A map from renderer generated SharedElementResourceId to the
+    // corresponding cached resource. The resources are the same as |shared|
+    // above.
+    base::flat_map<SharedElementResourceId, TransferableResource>
+        element_id_to_resource;
   };
 
   explicit TransferableResourceTracker(

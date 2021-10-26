@@ -20,6 +20,7 @@
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_observer.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -54,22 +55,29 @@ bool IsMediaButtonType(const char* class_name) {
          class_name == views::ToggleImageButton::kViewClassName;
 }
 
-class AnimationWaiter : public ui::LayerAnimationObserver {
+class AnimationWaiter : public ui::LayerAnimationObserver,
+                        public ui::LayerObserver {
  public:
-  explicit AnimationWaiter(views::View* host)
-      : animator_(host->layer()->GetAnimator()) {
-    animator_->AddObserver(this);
+  explicit AnimationWaiter(views::View* host) : layer_(host->layer()) {
+    layer_->AddObserver(this);
+    layer_->GetAnimator()->AddObserver(this);
   }
 
   AnimationWaiter(const AnimationWaiter&) = delete;
   AnimationWaiter& operator=(const AnimationWaiter&) = delete;
 
-  ~AnimationWaiter() override { animator_->RemoveObserver(this); }
+  ~AnimationWaiter() override {
+    if (layer_) {
+      layer_->RemoveObserver(this);
+      layer_->GetAnimator()->RemoveObserver(this);
+    }
+  }
 
   // ui::LayerAnimationObserver:
   void OnLayerAnimationEnded(ui::LayerAnimationSequence* sequence) override {
-    if (!animator_->is_animating()) {
-      animator_->RemoveObserver(this);
+    if (!layer_->GetAnimator()->is_animating()) {
+      layer_->GetAnimator()->RemoveObserver(this);
+      layer_->RemoveObserver(this);
       run_loop_.Quit();
     }
   }
@@ -77,10 +85,16 @@ class AnimationWaiter : public ui::LayerAnimationObserver {
   void OnLayerAnimationScheduled(
       ui::LayerAnimationSequence* sequence) override {}
 
+  void LayerDestroyed(ui::Layer* layer) override {
+    layer_->RemoveObserver(this);
+    layer_->GetAnimator()->RemoveObserver(this);
+    layer_ = nullptr;
+  }
+
   void Wait() { run_loop_.Run(); }
 
  private:
-  ui::LayerAnimator* animator_;
+  ui::Layer* layer_;
   base::RunLoop run_loop_;
 };
 
@@ -117,7 +131,7 @@ class LockScreenMediaControlsViewTest : public LoginTestBase {
 
     media_controls_view_ = lock_contents.media_controls_view();
 
-    animation_waiter_ = new AnimationWaiter(contents_view());
+    animation_waiter_ = std::make_unique<AnimationWaiter>(contents_view());
 
     // Inject the test media controller into the media controls view.
     media_controller_ = std::make_unique<TestMediaController>();
@@ -126,6 +140,7 @@ class LockScreenMediaControlsViewTest : public LoginTestBase {
   }
 
   void TearDown() override {
+    animation_waiter_.reset();
     actions_.clear();
 
     LoginTestBase::TearDown();
@@ -259,7 +274,7 @@ class LockScreenMediaControlsViewTest : public LoginTestBase {
   }
 
   LockScreenMediaControlsView* media_controls_view_ = nullptr;
-  AnimationWaiter* animation_waiter_ = nullptr;
+  std::unique_ptr<AnimationWaiter> animation_waiter_;
   base::test::ScopedPowerMonitorTestSource test_power_monitor_source_;
 
  private:

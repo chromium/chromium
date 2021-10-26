@@ -66,7 +66,7 @@ namespace component_updater {
 
 bool ClientSidePhishingComponentInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {
-  return false;
+  return true;
 }
 
 bool ClientSidePhishingComponentInstallerPolicy::RequiresNetworkEncryption()

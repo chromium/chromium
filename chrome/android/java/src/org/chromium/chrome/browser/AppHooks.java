@@ -296,8 +296,7 @@ public abstract class AppHooks {
     }
 
     /**
-     * Returns a new {@link SurfaceRenderer} if the xsurface implementation is included in the
-     * apk. Otherwise null is returned.
+     * This is deprecated, and should not be called. Use FeedHooks instead.
      */
     public @Nullable ProcessScope getExternalSurfaceProcessScope(
             ProcessScopeDependencyProvider dependencies) {

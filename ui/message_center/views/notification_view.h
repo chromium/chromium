@@ -29,6 +29,7 @@ class MESSAGE_CENTER_EXPORT NotificationView : public NotificationViewBase {
   friend class NotificationViewTest;
 
   // NotificationViewBase:
+  void CreateOrUpdateHeaderView(const Notification& notification) override;
   void CreateOrUpdateTitleView(const Notification& notification) override;
   void CreateOrUpdateSmallIconView(const Notification& notification) override;
   std::unique_ptr<views::LabelButton> GenerateNotificationLabelButton(

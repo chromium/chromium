@@ -13,7 +13,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_keep_alive_types.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/web_apps/web_app_info_image_source.h"
@@ -22,7 +21,6 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/common/custom_handlers/protocol_handler.h"
@@ -71,13 +69,10 @@ void WebAppProtocolHandlerIntentPickerView::Show(
     const GURL& url,
     Profile* profile,
     const web_app::AppId& app_id,
-    std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
-    std::unique_ptr<ScopedKeepAlive> keep_alive,
     chrome::WebAppProtocolHandlerAcceptanceCallback close_callback) {
   std::unique_ptr<WebAppProtocolHandlerIntentPickerView> view =
       std::make_unique<WebAppProtocolHandlerIntentPickerView>(
-          url, profile, app_id, std::move(profile_keep_alive),
-          std::move(keep_alive), std::move(close_callback));
+          url, profile, app_id, std::move(close_callback));
   views::DialogDelegate::CreateDialogWidget(std::move(view),
                                             /*context=*/nullptr,
                                             /*parent=*/nullptr)
@@ -93,19 +88,10 @@ WebAppProtocolHandlerIntentPickerView::WebAppProtocolHandlerIntentPickerView(
     const GURL& url,
     Profile* profile,
     const web_app::AppId& app_id,
-    std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
-    std::unique_ptr<ScopedKeepAlive> keep_alive,
     chrome::WebAppProtocolHandlerAcceptanceCallback close_callback)
     : url_(std::move(url)),
       profile_(profile),
       app_id_(std::move(app_id)),
-      // Pass the ScopedProfileKeepAlive into here to ensure the profile is
-      // available until the dialog is closed.
-      profile_keep_alive_(std::move(profile_keep_alive)),
-      // Pass the ScopedKeepAlive into here ensures the process is alive until
-      // the dialog is closed, and initiates the shutdown at closure if there
-      // is nothing else keeping the browser alive.
-      keep_alive_(std::move(keep_alive)),
       close_callback_(std::move(close_callback)) {
   SetDefaultButton(ui::DIALOG_BUTTON_CANCEL);
   SetModalType(ui::MODAL_TYPE_NONE);
@@ -273,19 +259,8 @@ void ShowWebAppProtocolHandlerIntentPicker(
     Profile* profile,
     const web_app::AppId& app_id,
     WebAppProtocolHandlerAcceptanceCallback close_callback) {
-  auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
-      profile, ProfileKeepAliveOrigin::kWebAppPermissionDialogWindow);
-  auto keep_alive = std::make_unique<ScopedKeepAlive>(
-      KeepAliveOrigin::WEB_APP_INTENT_PICKER, KeepAliveRestartOption::DISABLED);
-  auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
-  DCHECK(provider);
-  // Sometimes it is too early for registrar to be populated at this time. We
-  // need to wait for it to get the web application info.
-  provider->on_registry_ready().Post(
-      FROM_HERE,
-      base::BindOnce(WebAppProtocolHandlerIntentPickerView::Show, url, profile,
-                     app_id, std::move(profile_keep_alive),
-                     std::move(keep_alive), std::move(close_callback)));
+  WebAppProtocolHandlerIntentPickerView::Show(url, profile, app_id,
+                                              std::move(close_callback));
 }
 
 }  // namespace chrome

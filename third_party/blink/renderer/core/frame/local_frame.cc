@@ -3153,8 +3153,11 @@ void LocalFrame::CreateTextFragmentHandler() {
 
 void LocalFrame::BindTextFragmentReceiver(
     mojo::PendingReceiver<mojom::blink::TextFragmentReceiver> receiver) {
-  if (IsDetached() || !text_fragment_handler_)
+  if (IsDetached())
     return;
+
+  if (!text_fragment_handler_)
+    CreateTextFragmentHandler();
 
   text_fragment_handler_->BindTextFragmentReceiver(std::move(receiver));
 }

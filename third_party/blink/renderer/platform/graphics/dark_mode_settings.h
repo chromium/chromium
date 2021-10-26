@@ -32,8 +32,6 @@ enum class DarkModeImagePolicy {
 struct DarkModeSettings {
   DarkModeInversionAlgorithm mode =
       DarkModeInversionAlgorithm::kInvertLightnessLAB;
-  bool grayscale = false;
-  float image_grayscale_percent = 0.0;  // Valid range from 0.0 to 1.0
   float contrast = 0.0;                 // Valid range from -1.0 to 1.0
   DarkModeImagePolicy image_policy = DarkModeImagePolicy::kFilterNone;
 

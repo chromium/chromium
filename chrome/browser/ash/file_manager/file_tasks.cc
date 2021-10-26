@@ -40,7 +40,6 @@
 #include "chrome/browser/ash/file_manager/open_util.h"
 #include "chrome/browser/ash/file_manager/open_with_browser.h"
 #include "chrome/browser/ash/file_manager/url_util.h"
-#include "chrome/browser/ash/file_manager/web_file_tasks.h"
 #include "chrome/browser/chromeos/fileapi/file_system_backend.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/launch_util.h"
@@ -638,34 +637,6 @@ bool ExecuteFileTask(Profile* profile,
   }
   NOTREACHED();
   return false;
-}
-
-bool IsGoodMatchAppsFileHandler(
-    const apps::FileHandler& file_handler,
-    const std::vector<extensions::EntryInfo>& entries) {
-  std::set<std::string> mime_types =
-      apps::GetMimeTypesFromFileHandler(file_handler);
-  std::set<std::string> file_extensions =
-      apps::GetFileExtensionsFromFileHandler(file_handler);
-  if (mime_types.count("*") || mime_types.count("*/*") ||
-      file_extensions.count("*"))
-    return false;
-
-  // If a "text/*" file handler matches with an unsupported text MIME type, we
-  // don't regard it as a good match.
-  if (mime_types.count("text/*")) {
-    for (const auto& entry : entries) {
-      if (blink::IsUnsupportedTextMimeType(entry.mime_type))
-        return false;
-    }
-  }
-
-  // We consider it a good match if no directories are selected.
-  for (const auto& entry : entries) {
-    if (entry.is_directory)
-      return false;
-  }
-  return true;
 }
 
 void FindFileBrowserHandlerTasks(

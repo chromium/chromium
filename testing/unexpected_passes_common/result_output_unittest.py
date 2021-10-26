@@ -149,13 +149,13 @@ class ConvertTestExpectationMapToStringDictUnittest(unittest.TestCase):
                   '"RetryOnFailure" expectation on "win intel"': {
                       'builder': {
                           'Fully passed in the following': [
-                              'all_pass (2/2)',
+                              'all_pass (2/2 passed)',
                           ],
                           'Never passed in the following': [
-                              'all_fail (0/2)',
+                              'all_fail (0/2 passed)',
                           ],
                           'Partially passed in the following': {
-                              'some_pass (1/2)': [
+                              'some_pass (1/2 passed)': [
                                   data_types.BuildLinkFromBuildId('build_id0'),
                               ],
                           },
@@ -164,14 +164,14 @@ class ConvertTestExpectationMapToStringDictUnittest(unittest.TestCase):
                   '"RetryOnFailure" expectation on "intel linux"': {
                       'builder': {
                           'Fully passed in the following': [
-                              'all_pass (2/2)',
+                              'all_pass (2/2 passed)',
                           ],
                       },
                   },
                   '"RetryOnFailure" expectation on "mac intel"': {
                       'builder': {
                           'Never passed in the following': [
-                              'all_fail (0/2)',
+                              'all_fail (0/2 passed)',
                           ],
                       },
                   },
@@ -191,29 +191,29 @@ class ConvertTestExpectationMapToStringDictUnittest(unittest.TestCase):
                   '"RetryOnFailure" expectation on "%s"' % linux_tags: {
                       'builder': {
                           'Fully passed in the following': [
-                              'all_pass (2/2)',
+                              'all_pass (2/2 passed)',
                           ],
                       },
                   },
                   '"RetryOnFailure" expectation on "%s"' % win_tags: {
                       'builder': {
                           'Fully passed in the following': [
-                              'all_pass (2/2)',
+                              'all_pass (2/2 passed)',
                           ],
                           'Partially passed in the following': {
-                              'some_pass (1/2)': [
+                              'some_pass (1/2 passed)': [
                                   data_types.BuildLinkFromBuildId('build_id0'),
                               ],
                           },
                           'Never passed in the following': [
-                              'all_fail (0/2)',
+                              'all_fail (0/2 passed)',
                           ],
                       },
                   },
                   '"RetryOnFailure" expectation on "%s"' % mac_tags: {
                       'builder': {
                           'Never passed in the following': [
-                              'all_fail (0/2)',
+                              'all_fail (0/2 passed)',
                           ],
                       },
                   },
@@ -802,28 +802,28 @@ class ConvertBuilderMapToPassOrderedStringDictUnittest(unittest.TestCase):
     expected_output = collections.OrderedDict()
     expected_output[result_output.FULL_PASS] = {
         'fully pass': [
-            'step1 (1/1)',
+            'step1 (1/1 passed)',
         ],
         'mixed': [
-            'step7 (1/1)',
+            'step7 (1/1 passed)',
         ],
     }
     expected_output[result_output.NEVER_PASS] = {
         'never pass': [
-            'step3 (0/1)',
+            'step3 (0/1 passed)',
         ],
         'mixed': [
-            'step8 (0/1)',
+            'step8 (0/1 passed)',
         ],
     }
     expected_output[result_output.PARTIAL_PASS] = {
         'partial pass': {
-            'step5 (1/2)': [
+            'step5 (1/2 passed)': [
                 'http://ci.chromium.org/b/build_id0',
             ],
         },
         'mixed': {
-            'step9 (1/2)': [
+            'step9 (1/2 passed)': [
                 'http://ci.chromium.org/b/build_id0',
             ],
         },

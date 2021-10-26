@@ -152,6 +152,7 @@ Polymer({
         chromeos.settings.mojom.Setting.kTouchpadScrollAcceleration,
         chromeos.settings.mojom.Setting.kTouchpadSpeed,
         chromeos.settings.mojom.Setting.kTouchpadHapticFeedback,
+        chromeos.settings.mojom.Setting.kTouchpadHapticClickSensitivity,
         chromeos.settings.mojom.Setting.kPointingStickAcceleration,
         chromeos.settings.mojom.Setting.kPointingStickSpeed,
         chromeos.settings.mojom.Setting.kPointingStickSwapPrimaryButtons,

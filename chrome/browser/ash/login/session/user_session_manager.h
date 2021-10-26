@@ -429,7 +429,6 @@ class UserSessionManager
 
   // Callback for asynchronous profile creation.
   void OnProfileCreated(const UserContext& user_context,
-                        bool is_incognito_profile,
                         Profile* profile,
                         Profile::CreateStatus status);
 
@@ -443,7 +442,6 @@ class UserSessionManager
   // Callback for Profile::CREATE_STATUS_INITIALIZED profile state.
   // Profile is created, extensions and promo resources are initialized.
   void UserProfileInitialized(Profile* profile,
-                              bool is_incognito_profile,
                               const AccountId& account_id);
 
   // Callback to resume profile creation after transferring auth data from

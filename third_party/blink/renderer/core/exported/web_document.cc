@@ -273,14 +273,6 @@ WebVector<WebDraggableRegion> WebDocument::DraggableRegions() const {
   return draggable_regions;
 }
 
-WebURL WebDocument::CanonicalUrlForSharing() const {
-  const Document* document = ConstUnwrap<Document>();
-  HTMLLinkElement* link_element = document->LinkCanonical();
-  if (!link_element)
-    return WebURL();
-  return link_element->Href();
-}
-
 WebDistillabilityFeatures WebDocument::DistillabilityFeatures() {
   return DocumentStatisticsCollector::CollectStatistics(*Unwrap<Document>());
 }

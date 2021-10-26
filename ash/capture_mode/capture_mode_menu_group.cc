@@ -277,8 +277,10 @@ void CaptureModeMenuGroup::AddOrUpdateExistingOption(
 }
 
 void CaptureModeMenuGroup::RefreshOptionsSelections() {
-  for (auto* option : options_)
+  for (auto* option : options_) {
     option->SetOptionChecked(delegate_->IsOptionChecked(option->id()));
+    option->SetEnabled(delegate_->IsOptionEnabled(option->id()));
+  }
 }
 
 void CaptureModeMenuGroup::RemoveOptionIfAny(int option_id) {

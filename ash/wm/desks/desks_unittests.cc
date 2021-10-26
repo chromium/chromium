@@ -58,6 +58,7 @@
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_session.h"
+#include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/overview/overview_window_drag_controller.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_drag_indicators.h"
@@ -214,36 +215,6 @@ void LongGestureTap(const gfx::Point& screen_location,
 void GestureTapOnView(const views::View* view,
                       ui::test::EventGenerator* event_generator) {
   event_generator->GestureTapAt(view->GetBoundsInScreen().CenterPoint());
-}
-
-// If |drop| is false, the dragged |item| won't be dropped; giving the caller
-// a chance to do some validations before the item is dropped.
-void DragItemToPoint(OverviewItem* item,
-                     const gfx::Point& screen_location,
-                     ui::test::EventGenerator* event_generator,
-                     bool by_touch_gestures = false,
-                     bool drop = true) {
-  DCHECK(item);
-
-  const gfx::Point item_center =
-      gfx::ToRoundedPoint(item->target_bounds().CenterPoint());
-  event_generator->set_current_screen_location(item_center);
-  if (by_touch_gestures) {
-    event_generator->PressTouch();
-    // Move the touch by an enough amount in X to engage in the normal drag mode
-    // rather than the drag to close mode.
-    event_generator->MoveTouchBy(50, 0);
-    event_generator->MoveTouch(screen_location);
-    if (drop)
-      event_generator->ReleaseTouch();
-  } else {
-    event_generator->PressLeftButton();
-    Shell::Get()->cursor_manager()->SetDisplay(
-        display::Screen::GetScreen()->GetDisplayNearestPoint(screen_location));
-    event_generator->MoveMouseTo(screen_location);
-    if (drop)
-      event_generator->ReleaseLeftButton();
-  }
 }
 
 BackdropController* GetDeskBackdropController(const Desk* desk,

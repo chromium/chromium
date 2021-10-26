@@ -21,6 +21,12 @@ import {DefaultBrowserInfo, stepIndicatorModel} from '../shared/nux_types.js';
 
 import {NuxSetAsDefaultProxy, NuxSetAsDefaultProxyImpl} from './nux_set_as_default_proxy.js';
 
+export interface NuxSetAsDefaultElement {
+  $: {
+    declineButton: HTMLElement,
+  };
+}
+
 const NuxSetAsDefaultElementBase =
     WebUIListenerMixin(NavigationMixin(PolymerElement));
 
@@ -50,12 +56,12 @@ export class NuxSetAsDefaultElement extends NuxSetAsDefaultElementBase {
 
   private browserProxy_: NuxSetAsDefaultProxy;
   private finalized_: boolean = false;
-  private navigateToNextStep_: Function;
+  navigateToNextStep: Function;
   indicatorModel?: stepIndicatorModel;
 
   constructor() {
     super();
-    this.navigateToNextStep_ = navigateToNextStep;
+    this.navigateToNextStep = navigateToNextStep;
     this.browserProxy_ = NuxSetAsDefaultProxyImpl.getInstance();
   }
 
@@ -131,11 +137,18 @@ export class NuxSetAsDefaultElement extends NuxSetAsDefaultElementBase {
 
   private finished_() {
     this.finalized_ = true;
-    this.navigateToNextStep_();
+    this.navigateToNextStep();
   }
 
   static get template() {
     return html`{__html_template__}`;
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'nux-set-as-default': NuxSetAsDefaultElement;
+  }
+}
+
 customElements.define(NuxSetAsDefaultElement.is, NuxSetAsDefaultElement);

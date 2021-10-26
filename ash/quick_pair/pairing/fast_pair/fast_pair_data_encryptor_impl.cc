@@ -4,6 +4,7 @@
 
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_data_encryptor_impl.h"
 #include <array>
+#include <cstdint>
 
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/common/protocol.h"
@@ -12,6 +13,7 @@
 #include "ash/quick_pair/repository/fast_pair/device_metadata.h"
 #include "ash/quick_pair/repository/fast_pair_repository.h"
 #include "ash/services/quick_pair/quick_pair_process.h"
+#include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 
@@ -90,13 +92,14 @@ void FastPairDataEncryptorImpl::Factory::CreateAsyncWithAccountKey(
     base::OnceCallback<void(std::unique_ptr<FastPairDataEncryptor>)>
         on_get_instance_callback) {
   QP_LOG(VERBOSE) << __func__;
-  DCHECK_EQ(device->additional_data().size(),
-            static_cast<size_t>(kPrivateKeyByteSize))
-      << "Additional data field should be set to the account key, a "
-         "16-byte AES key";
+
+  absl::optional<std::vector<uint8_t>> account_key =
+      device->GetAdditionalData(Device::AdditionalDataType::kAccountKey);
+  DCHECK(account_key);
+  DCHECK_EQ(account_key->size(), static_cast<size_t>(kPrivateKeyByteSize));
+
   std::array<uint8_t, kPrivateKeyByteSize> private_key;
-  std::copy_n(device->additional_data().begin(), kPrivateKeyByteSize,
-              private_key.begin());
+  std::copy_n(account_key->begin(), kPrivateKeyByteSize, private_key.begin());
 
   std::unique_ptr<FastPairDataEncryptorImpl> data_encryptor =
       base::WrapUnique(new FastPairDataEncryptorImpl(std::move(private_key)));

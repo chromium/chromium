@@ -1172,7 +1172,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ChromeOS.Settings.Accessibility.FullscreenMagnifierFocusFollowing"
-    enum="BooleanToggled" expires_after="2021-10-29">
+    enum="BooleanToggled" expires_after="2022-10-29">
   <owner>josiahk@chromium.org</owner>
   <owner>chromium-accessibility@chromium.org</owner>
   <summary>

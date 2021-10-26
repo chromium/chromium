@@ -27,25 +27,31 @@ NSString* const kPrintActivityType = @"com.google.chrome.printActivity";
 @property(nonatomic, strong, readonly) ShareImageData* imageData;
 // The handler to be invoked when the activity is performed.
 @property(nonatomic, weak, readonly) id<BrowserCommands> handler;
+// The base VC to present print preview.
+@property(nonatomic, weak) UIViewController* baseViewController;
 
 @end
 
 @implementation PrintActivity
 
 - (instancetype)initWithData:(ShareToData*)webData
-                     handler:(id<BrowserCommands>)handler {
+                     handler:(id<BrowserCommands>)handler
+          baseViewController:(UIViewController*)baseViewController {
   if (self = [super init]) {
     _webData = webData;
     _handler = handler;
+    _baseViewController = baseViewController;
   }
   return self;
 }
 
 - (instancetype)initWithImageData:(ShareImageData*)imageData
-                          handler:(id<BrowserCommands>)handler {
+                          handler:(id<BrowserCommands>)handler
+               baseViewController:(UIViewController*)baseViewController {
   if (self = [super init]) {
     _imageData = imageData;
     _handler = handler;
+    _baseViewController = baseViewController;
   }
   return self;
 }
@@ -89,9 +95,11 @@ NSString* const kPrintActivityType = @"com.google.chrome.printActivity";
   // To avoid this issue, dismiss first and present print after.
   [self activityDidFinish:YES];
   if (self.webData) {
-    [self.handler printTab];
+    [self.handler printTabWithBaseViewController:self.baseViewController];
   } else {
-    [self.handler printImage:self.imageData.image title:self.imageData.title];
+    [self.handler printImage:self.imageData.image
+                       title:self.imageData.title
+          baseViewController:self.baseViewController];
   }
 }
 

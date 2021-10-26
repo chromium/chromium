@@ -1241,23 +1241,4 @@ TEST_F(NotificationViewBaseTest, ShowTimestamp) {
                    ->GetVisible());
 }
 
-TEST_F(NotificationViewBaseTest, UpdateType) {
-  // Start with a progress notification.
-  std::unique_ptr<Notification> notification = CreateSimpleNotification();
-  notification->set_type(NOTIFICATION_TYPE_PROGRESS);
-  notification->set_progress(50);
-  UpdateNotificationViews(*notification);
-
-  EXPECT_TRUE(notification_view()
-                  ->header_row_->summary_text_for_testing()
-                  ->GetVisible());
-
-  // Update notification to be a simple notification.
-  notification->set_type(NOTIFICATION_TYPE_SIMPLE);
-  UpdateNotificationViews(*notification);
-  EXPECT_FALSE(notification_view()
-                   ->header_row_->summary_text_for_testing()
-                   ->GetVisible());
-}
-
 }  // namespace message_center

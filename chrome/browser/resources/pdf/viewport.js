@@ -466,7 +466,7 @@ export class Viewport {
    * Scroll the viewport to the specified position.
    * @param {!Point} position The position to scroll to.
    */
-  set position(position) {
+  setPosition(position) {
     this.window_.scrollTo(position.x, position.y);
   }
 
@@ -561,10 +561,10 @@ export class Viewport {
     this.contentSizeChanged_();
     // Scroll to the scaled scroll position.
     zoom = this.getZoom();
-    this.position = {
+    this.setPosition({
       x: currentScrollPos.x * zoom,
-      y: currentScrollPos.y * zoom
-    };
+      y: currentScrollPos.y * zoom,
+    });
   }
 
   /**
@@ -595,7 +595,7 @@ export class Viewport {
 
     this.contentSizeChanged_();
     // Scroll to the scaled scroll position.
-    this.position = {x: currentScrollPos.x, y: currentScrollPos.y};
+    this.setPosition(currentScrollPos);
   }
 
   /**
@@ -639,10 +639,10 @@ export class Viewport {
       this.contentSizeChanged_();
       const newZoom = this.getZoom();
       // Scroll to the scaled scroll position.
-      this.position = {
+      this.setPosition({
         x: currentScrollPos.x * newZoom,
-        y: currentScrollPos.y * newZoom
-      };
+        y: currentScrollPos.y * newZoom,
+      });
       this.updateViewport_();
     });
   }
@@ -944,10 +944,10 @@ export class Viewport {
       };
       this.setZoomInternal_(this.computeFittingZoom_(dimensions, false, true));
       if (scrollToTopOfPage) {
-        this.position = {
+        this.setPosition({
           x: 0,
           y: this.pageDimensions_[page].y * this.getZoom(),
-        };
+        });
       }
       this.updateViewport_();
     });
@@ -979,10 +979,10 @@ export class Viewport {
       };
       this.setZoomInternal_(this.computeFittingZoom_(dimensions, true, true));
       if (scrollToTopOfPage) {
-        this.position = {
+        this.setPosition({
           x: 0,
           y: this.pageDimensions_[page].y * this.getZoom(),
-        };
+        });
       }
       this.updateViewport_();
     });
@@ -1056,10 +1056,10 @@ export class Viewport {
     } else if (
         /** @type {!{fromScriptingAPI: (boolean|undefined)}} */ (e)
             .fromScriptingAPI) {
-      this.position = {
+      this.setPosition({
         x: this.position.x,
         y: this.position.y + direction * this.size.height,
-      };
+      });
     }
   }
 
@@ -1082,7 +1082,10 @@ export class Viewport {
     } else if (
         /** @type {!{fromScriptingAPI: (boolean|undefined)}} */ (e)
             .fromScriptingAPI) {
-      this.position.x -= SCROLL_INCREMENT;
+      this.setPosition({
+        x: this.position.x - SCROLL_INCREMENT,
+        y: this.position.y,
+      });
     }
   }
 
@@ -1105,7 +1108,10 @@ export class Viewport {
     } else if (
         /** @type {!{fromScriptingAPI: (boolean|undefined)}} */ (e)
             .fromScriptingAPI) {
-      this.position.x += SCROLL_INCREMENT;
+      this.setPosition({
+        x: this.position.x + SCROLL_INCREMENT,
+        y: this.position.y,
+      });
     }
   }
 
@@ -1128,7 +1134,10 @@ export class Viewport {
         /** @type {!{fromScriptingAPI: (boolean|undefined)}} */ (e)
             .fromScriptingAPI) {
       const direction = e.key === 'ArrowDown' ? 1 : -1;
-      this.position.y += direction * SCROLL_INCREMENT;
+      this.setPosition({
+        x: this.position.x,
+        y: this.position.y + direction * SCROLL_INCREMENT,
+      });
     }
   }
 
@@ -1225,10 +1234,10 @@ export class Viewport {
         y = currentCoords.y;
       }
 
-      this.position = {
+      this.setPosition({
         x: (dimensions.x + x) * this.getZoom(),
-        y: (dimensions.y + y) * this.getZoom()
-      };
+        y: (dimensions.y + y) * this.getZoom(),
+      });
       this.updateViewport_();
     });
   }
@@ -1258,7 +1267,7 @@ export class Viewport {
         this.setZoomInternal_(Math.min(
             this.defaultZoom_,
             this.computeFittingZoom_(this.documentDimensions_, true, false)));
-        this.position = {x: 0, y: 0};
+        this.setPosition({x: 0, y: 0});
       }
       this.contentSizeChanged_();
       this.resize_();
@@ -1377,7 +1386,7 @@ export class Viewport {
     }
 
     if (changed) {
-      this.position = newPosition;
+      this.setPosition(newPosition);
     }
   }
 

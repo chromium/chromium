@@ -539,13 +539,13 @@
           'bullhead',
         ],
         'test_suites': {
-          'gtest_tests': 'android_lollipop_marshmallow_gtests',
+          'gtest_tests': 'android_marshmallow_gtests',
         },
         'os_type': 'android',
       },
       'Marshmallow Tablet Tester': {
         'test_suites': {
-          'gtest_tests': 'android_lollipop_marshmallow_gtests',
+          'gtest_tests': 'android_marshmallow_gtests',
         },
         'mixins': [
           'has_native_resultdb_integration'
@@ -643,7 +643,7 @@
           'bullhead',
         ],
         'test_suites': {
-          'gtest_tests': 'android_lollipop_marshmallow_gtests',
+          'gtest_tests': 'android_marshmallow_gtests',
           'junit_tests': 'chromium_junit_tests',
           'isolated_scripts': 'monochrome_public_apk_checker_isolated_script',
         },
@@ -2755,7 +2755,7 @@
           'marshmallow',
         ],
         'test_suites': {
-          'gtest_tests': 'android_lollipop_marshmallow_coverage_gtests',
+          'gtest_tests': 'android_marshmallow_coverage_gtests',
           'junit_tests': 'chromium_junit_tests',
         },
         'os_type': 'android',

@@ -7,6 +7,12 @@
 
 #include <memory>
 
+#include "base/memory/scoped_refptr.h"
+
+namespace base {
+class SingleThreadTaskRunner;
+}  // namespace base
+
 namespace chromecast {
 
 namespace external_service_support {
@@ -14,7 +20,7 @@ class ExternalConnector;
 }  // namespace external_service_support
 
 namespace media {
-class MediaPipelineBackendManager;
+class CmaBackendFactory;
 
 namespace audio_output_service {
 
@@ -23,7 +29,8 @@ class ReceiverInstance {
   virtual ~ReceiverInstance() = default;
 
   static std::unique_ptr<ReceiverInstance> Create(
-      MediaPipelineBackendManager* backend_manager,
+      CmaBackendFactory* cma_backend_factory,
+      scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
       external_service_support::ExternalConnector* connector);
 };
 

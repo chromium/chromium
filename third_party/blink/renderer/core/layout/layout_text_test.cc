@@ -216,6 +216,20 @@ TEST_F(LayoutTextTest, ContainsOnlyWhitespaceOrNbsp) {
             GetBasicText()->ContainsOnlyWhitespaceOrNbsp());
 }
 
+TEST_F(LayoutTextTest, PrewarmFont) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="container" style="font-family: Arial">
+      text
+    </div>
+  )HTML");
+  LayoutObject* container = GetLayoutObjectByElementId("container");
+  EXPECT_TRUE(container->StyleRef()
+                  .GetFont()
+                  .GetFontDescription()
+                  .Family()
+                  .IsPrewarmed());
+}
+
 struct NGOffsetMappingTestData {
   const char* text;
   unsigned dom_start;

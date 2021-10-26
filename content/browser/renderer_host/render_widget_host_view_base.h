@@ -174,9 +174,6 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   // Called when screen information or native widget bounds change.
   virtual void UpdateScreenInfo();
 
-  // Get the device scale factor of the associated display.
-  float GetCurrentDeviceScaleFactor() const;
-
   // Called by the TextInputManager to notify the view about being removed from
   // the list of registered views, i.e., TextInputManager is no longer tracking
   // TextInputState from this view. The RWHV should reset |text_input_manager_|

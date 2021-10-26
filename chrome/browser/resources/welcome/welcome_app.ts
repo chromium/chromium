@@ -189,4 +189,11 @@ export class WelcomeAppElement extends WelcomeAppElementBase {
     return html`{__html_template__}`;
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'welcome-app': WelcomeAppElement;
+  }
+}
+
 customElements.define(WelcomeAppElement.is, WelcomeAppElement);

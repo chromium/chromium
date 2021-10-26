@@ -37,9 +37,10 @@
 #include "ui/display/test/test_screen.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/test/ash_test_helper.h"
+#include "ash/test/test_window_builder.h"
 #include "chrome/browser/ash/policy/dlp/mock_dlp_content_manager.h"
-#include "chromeos/ui/base/window_pin_type.h"
-#include "chromeos/ui/base/window_properties.h"
+#include "chrome/browser/ui/ash/window_pin_util.h"
 #endif
 
 namespace extensions {
@@ -97,13 +98,20 @@ class TabsApiUnitTest : public ExtensionServiceTestBase {
   TabsApiUnitTest& operator=(const TabsApiUnitTest&) = delete;
 
  protected:
-  TabsApiUnitTest() {}
-  ~TabsApiUnitTest() override {}
+  TabsApiUnitTest()
+      : ExtensionServiceTestBase(
+            std::make_unique<content::BrowserTaskEnvironment>(
+                base::test::TaskEnvironment::MainThreadType::UI)) {}
+  ~TabsApiUnitTest() override = default;
 
   Browser* browser() { return browser_.get(); }
   TestBrowserWindow* browser_window() { return browser_window_.get(); }
 
   TabStripModel* GetTabStripModel() { return browser_->tab_strip_model(); }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  aura::Window* root_window() { return test_helper_.GetContext(); }
+#endif
 
  private:
   // ExtensionServiceTestBase:
@@ -114,9 +122,12 @@ class TabsApiUnitTest : public ExtensionServiceTestBase {
   std::unique_ptr<TestBrowserWindow> browser_window_;
   std::unique_ptr<Browser> browser_;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::AshTestHelper test_helper_;
+#else
   display::test::TestScreen test_screen_;
-
   std::unique_ptr<ScopedScreenOverride> scoped_screen_override_;
+#endif
 };
 
 void TabsApiUnitTest::SetUp() {
@@ -131,14 +142,23 @@ void TabsApiUnitTest::SetUp() {
   params.type = Browser::TYPE_NORMAL;
   params.window = browser_window_.get();
   browser_.reset(Browser::Create(params));
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::AshTestHelper::InitParams ash_params;
+  ash_params.start_session = true;
+  test_helper_.SetUp(std::move(ash_params));
+#else
   scoped_screen_override_ =
       std::make_unique<ScopedScreenOverride>(&test_screen_);
+#endif
 }
 
 void TabsApiUnitTest::TearDown() {
   browser_.reset();
   browser_window_.reset();
   ExtensionServiceTestBase::TearDown();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  test_helper_.TearDown();
+#endif
 }
 
 // Bug fix for crbug.com/1196309. Ensure that an extension can't update the tab
@@ -1150,15 +1170,17 @@ TEST_F(TabsApiUnitTest, DontCreateTabsInLockedFullscreenMode) {
   scoped_refptr<const Extension> extension_with_tabs_permission =
       CreateTabsExtension();
 
-  browser_window()->SetNativeWindow(new aura::Window(nullptr));
+  ash::TestWindowBuilder builder;
+  std::unique_ptr<aura::Window> window =
+      builder.SetTestWindowDelegate().AllowAllWindowStates().Build();
+  browser_window()->SetNativeWindow(window.get());
 
   auto function = base::MakeRefCounted<TabsCreateFunction>();
 
   function->set_extension(extension_with_tabs_permission.get());
 
   // In locked fullscreen mode we should not be able to create any tabs.
-  browser_window()->GetNativeWindow()->SetProperty(
-      chromeos::kWindowPinTypeKey, chromeos::WindowPinType::kTrustedPinned);
+  PinWindow(browser_window()->GetNativeWindow(), /*trusted=*/true);
 
   EXPECT_EQ(tabs_constants::kLockedFullscreenModeNewTabError,
             extension_function_test_utils::RunFunctionAndReturnError(

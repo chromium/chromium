@@ -435,13 +435,6 @@ class TestRunner(object):
     """Performs cleanup actions which must occur after every test launch."""
     raise NotImplementedError
 
-  def screenshot_desktop(self):
-    """Saves a screenshot of the desktop in the output directory."""
-    subprocess.check_call([
-        'screencapture',
-        os.path.join(self.out_dir, 'desktop_%s.png' % time.time()),
-    ])
-
   def retrieve_derived_data(self):
     """Retrieves the contents of DerivedData"""
     # DerivedData contains some logs inside workspace-specific directories.
@@ -807,8 +800,6 @@ class SimulatorTestRunner(TestRunner):
     self.retrieve_derived_data()
     LOGGER.debug('Processing xcresult folder.')
     self.process_xcresult_dir()
-    LOGGER.debug('Making desktop screenshots.')
-    self.screenshot_desktop()
     LOGGER.debug('Killing simulators.')
     self.kill_simulators()
     LOGGER.debug('Wiping simulator.')
@@ -1004,7 +995,6 @@ class DeviceTestRunner(TestRunner):
 
   def tear_down(self):
     """Performs cleanup actions which must occur after every test launch."""
-    self.screenshot_desktop()
     self.retrieve_derived_data()
     self.extract_test_data()
     self.process_xcresult_dir()

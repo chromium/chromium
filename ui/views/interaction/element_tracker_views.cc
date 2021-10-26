@@ -113,6 +113,23 @@ class ElementTrackerViews::ElementDataViews : public ViewObserver,
     }
   }
 
+  View* FindFirstViewInContext(ui::ElementContext context) {
+    for (const ViewData& data : view_data_) {
+      if (data.context == context)
+        return data.view;
+    }
+    return nullptr;
+  }
+
+  ViewList FindAllViewsInContext(ui::ElementContext context) {
+    ViewList result;
+    for (const ViewData& data : view_data_) {
+      if (data.context == context)
+        result.push_back(data.view);
+    }
+    return result;
+  }
+
  private:
   struct ViewData {
     explicit ViewData(View* v, ui::ElementContext initial_context)
@@ -206,6 +223,32 @@ TrackedElementViews* ElementTrackerViews::GetElementForView(View* view) {
   if (it == element_data_.end())
     return nullptr;
   return it->second->GetElementForView(view);
+}
+
+View* ElementTrackerViews::GetUniqueView(ui::ElementIdentifier id,
+                                         ui::ElementContext context) {
+  ui::TrackedElement* const element =
+      ui::ElementTracker::GetElementTracker()->GetUniqueElement(id, context);
+  // Note: this will crash if element is not a TrackedElementViews, but this
+  // method *should* crash if the element is present but of the wrong type.
+  return element ? element->AsA<TrackedElementViews>()->view() : nullptr;
+}
+
+View* ElementTrackerViews::GetFirstMatchingView(ui::ElementIdentifier id,
+                                                ui::ElementContext context) {
+  const auto it = element_data_.find(id);
+  if (it == element_data_.end())
+    return nullptr;
+  return it->second->FindFirstViewInContext(context);
+}
+
+ElementTrackerViews::ViewList ElementTrackerViews::GetAllMatchingViews(
+    ui::ElementIdentifier id,
+    ui::ElementContext context) {
+  const auto it = element_data_.find(id);
+  if (it == element_data_.end())
+    return ViewList();
+  return it->second->FindAllViewsInContext(context);
 }
 
 void ElementTrackerViews::RegisterView(ui::ElementIdentifier element_id,

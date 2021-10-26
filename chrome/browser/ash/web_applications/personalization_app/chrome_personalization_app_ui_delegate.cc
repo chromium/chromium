@@ -116,17 +116,14 @@ void ChromePersonalizationAppUiDelegate::FetchCollections(
 void ChromePersonalizationAppUiDelegate::FetchImagesForCollection(
     const std::string& collection_id,
     FetchImagesForCollectionCallback callback) {
-  DCHECK(!wallpaper_images_info_fetcher_)
-      << "Only one request allowed at a time";
-  wallpaper_images_info_fetcher_ =
+  auto wallpaper_images_info_fetcher =
       std::make_unique<backdrop_wallpaper_handlers::ImageInfoFetcher>(
           collection_id);
 
-  // base::Unretained is safe to use because |this| outlives
-  // |image_info_fetcher_|.
-  wallpaper_images_info_fetcher_->Start(base::BindOnce(
+  wallpaper_images_info_fetcher->Start(base::BindOnce(
       &ChromePersonalizationAppUiDelegate::OnFetchCollectionImages,
-      base::Unretained(this), std::move(callback)));
+      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+      std::move(wallpaper_images_info_fetcher)));
 }
 
 void ChromePersonalizationAppUiDelegate::GetLocalImages(
@@ -356,11 +353,10 @@ void ChromePersonalizationAppUiDelegate::OnFetchCollections(
 
 void ChromePersonalizationAppUiDelegate::OnFetchCollectionImages(
     FetchImagesForCollectionCallback callback,
+    std::unique_ptr<backdrop_wallpaper_handlers::ImageInfoFetcher> fetcher,
     bool success,
     const std::string& collection_id,
     const std::vector<backdrop::Image>& images) {
-  DCHECK(wallpaper_images_info_fetcher_);
-
   absl::optional<std::vector<backdrop::Image>> result;
   if (success && !images.empty()) {
     for (const auto& proto_image : images) {
@@ -375,7 +371,6 @@ void ChromePersonalizationAppUiDelegate::OnFetchCollectionImages(
     result = std::move(images);
   }
   std::move(callback).Run(std::move(result));
-  wallpaper_images_info_fetcher_.reset();
 }
 
 void ChromePersonalizationAppUiDelegate::OnGetLocalImages(

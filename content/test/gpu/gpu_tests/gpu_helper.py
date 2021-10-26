@@ -186,6 +186,14 @@ def GetDisplayServer(browser_type):
     return None
 
 
+def GetOOPCanvasStatus(gpu_feature_status):
+  if gpu_feature_status and gpu_feature_status.get(
+      'canvas_oop_rasterization') == 'enabled_on':
+    return 'oop-c'
+  else:
+    return 'no-oop-c'
+
+
 # TODO(rivr): Use GPU feature status for Dawn instead of command line.
 def HasDawnSkiaRenderer(extra_browser_args):
   if extra_browser_args:

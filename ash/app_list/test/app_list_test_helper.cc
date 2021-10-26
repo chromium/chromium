@@ -10,6 +10,7 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_presenter_impl.h"
 #include "ash/app_list/model/app_list_item.h"
+#include "ash/app_list/model/search/test_search_result.h"
 #include "ash/app_list/views/app_list_bubble_apps_page.h"
 #include "ash/app_list/views/app_list_bubble_view.h"
 #include "ash/app_list/views/app_list_main_view.h"
@@ -103,6 +104,18 @@ void AppListTestHelper::AddPageBreakItem() {
   page_break_item->set_is_page_break(true);
   Shell::Get()->app_list_controller()->GetModel()->AddItem(
       std::move(page_break_item));
+}
+
+void AppListTestHelper::AddRecentApps(int num_apps) {
+  for (int i = 0; i < num_apps; i++) {
+    auto result = std::make_unique<TestSearchResult>();
+    result->set_result_id(base::NumberToString(i));
+    result->set_result_type(AppListSearchResultType::kInstalledApp);
+    // TODO(crbug.com/1216662): Replace with a real display type after the ML
+    // team gives us a way to query directly for recent apps.
+    result->set_display_type(SearchResultDisplayType::kChip);
+    app_list_controller_->GetSearchModel()->results()->Add(std::move(result));
+  }
 }
 
 bool AppListTestHelper::IsInFolderView() {

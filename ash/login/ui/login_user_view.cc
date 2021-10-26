@@ -485,15 +485,14 @@ LoginUserView::LoginUserView(
     display_observation_.Observe(ash::Shell::Get()->display_configurator());
 }
 
-LoginUserView::~LoginUserView() = default;
+LoginUserView::~LoginUserView() {
+  DeleteDialog();
+}
 
 void LoginUserView::UpdateForUser(const LoginUserInfo& user, bool animate) {
   current_user_ = user;
 
-  if (remove_account_dialog_ && remove_account_dialog_->parent()) {
-    remove_account_dialog_->parent()->RemoveChildView(remove_account_dialog_);
-    delete remove_account_dialog_;
-  }
+  DeleteDialog();
 
   remove_account_dialog_ = new LoginRemoveAccountDialog(
       current_user_, dropdown_ /*anchor_view*/, dropdown_ /*bubble_opener*/,
@@ -781,6 +780,15 @@ void LoginUserView::SetSmallishLayout() {
   AddChildView(user_image_);
   AddChildView(user_label_);
   AddChildView(tap_button_);
+}
+
+void LoginUserView::DeleteDialog() {
+  if (remove_account_dialog_) {
+    if (remove_account_dialog_->parent())
+      remove_account_dialog_->parent()->RemoveChildView(remove_account_dialog_);
+    delete remove_account_dialog_;
+    remove_account_dialog_ = nullptr;
+  }
 }
 
 }  // namespace ash

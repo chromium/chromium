@@ -100,10 +100,13 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
  private:
   enum class ResultType { kRoot, kShared };
 
-  class ScopedInterpolatedSurface {
+  // Replaced the CompositorFrame on the |surface| with a copy that places
+  // shared elements in individual render passes. This effectively allows them
+  // to be in independent layers that can be cached as textures.
+  class ScopedCleanSurface {
    public:
-    ScopedInterpolatedSurface(Surface* surface, CompositorFrame frame);
-    ~ScopedInterpolatedSurface();
+    ScopedCleanSurface(Surface* surface, CompositorFrame clean_frame);
+    ~ScopedCleanSurface();
 
    private:
     Surface* surface_;
@@ -137,7 +140,7 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
   bool FilterSharedElementAndTaintedQuads(
       const base::flat_map<CompositorRenderPassId, CompositorRenderPassId>*
           tainted_to_clean_pass_ids,
-      const CompositorRenderPassDrawQuad& pass_quad,
+      const DrawQuad& quad,
       CompositorRenderPass& copy_pass) const;
 
   // Returns true if |pass_id|'s content is 1:1 with a shared element.
@@ -159,7 +162,7 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
   // whether the SurfaceSavedFrame is "valid".
   size_t valid_result_count_ = 0;
 
-  absl::optional<ScopedInterpolatedSurface> surface_;
+  absl::optional<ScopedCleanSurface> clean_surface_;
 
   base::WeakPtrFactory<SurfaceSavedFrame> weak_factory_{this};
 };

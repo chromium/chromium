@@ -2573,6 +2573,10 @@ Output.RULES = {
       startOf: `$nameFromNode $role $state $description`,
       endOf: `@end_of_container($role)`
     },
+    abstractFormFieldContainer: {
+      enter: `$nameFromNode $role $state $description`,
+      leave: `@exited_container($role)`
+    },
     abstractItem: {
       // Note that ChromeVox generally does not output position/count. Only for
       // some roles (see sub-output rules) or when explicitly provided by an
@@ -2691,6 +2695,10 @@ Output.RULES = {
     list: {
       speak: `$nameFromNode $descendants $role
           @@list_with_items($setSize) $description $state`
+    },
+    listBox: {
+      enter: `$nameFromNode $role @@list_with_items($setSize)
+          $restriction $description`
     },
     listBoxOption: {
       speak: `$state $name $role @describe_index($posInSet, $setSize)

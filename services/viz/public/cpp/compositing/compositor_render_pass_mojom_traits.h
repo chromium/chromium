@@ -82,6 +82,11 @@ struct StructTraits<viz::mojom::CompositorRenderPassDataView,
                                  : absl::nullopt;
   }
 
+  static viz::SharedElementResourceId shared_element_resource_id(
+      const std::unique_ptr<viz::CompositorRenderPass>& input) {
+    return input->shared_element_resource_id;
+  }
+
   static bool has_transparent_background(
       const std::unique_ptr<viz::CompositorRenderPass>& input) {
     return input->has_transparent_background;

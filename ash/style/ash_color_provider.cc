@@ -53,7 +53,7 @@ constexpr int kAlpha95 = 242;  // 95%
 // Alpha value that is used to calculate themed color. Please see function
 // GetBackgroundThemedColor() about how the themed color is calculated.
 constexpr int kDarkBackgroundBlendAlpha = 127;   // 50%
-constexpr int kLightBackgroundBlendAlpha = 191;  // 75%
+constexpr int kLightBackgroundBlendAlpha = 127;  // 50%
 
 // The default background color that can be applied on any layer.
 constexpr SkColor kBackgroundColorDefaultLight = SK_ColorWHITE;

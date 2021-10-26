@@ -26,6 +26,10 @@ std::string TypeToString(viz::CompositorFrameTransitionDirective::Type type) {
       return "kSave";
     case viz::CompositorFrameTransitionDirective::Type::kAnimate:
       return "kAnimate";
+    case viz::CompositorFrameTransitionDirective::Type::kAnimateRenderer:
+      return "kAnimateRenderer";
+    case viz::CompositorFrameTransitionDirective::Type::kRelease:
+      return "kRelease";
   }
   return "<unknown>";
 }

@@ -89,13 +89,19 @@ const char kTimeUntilLastClickMillis[] = "TimeUntilLastClick";
 class PlatformNotificationServiceTest : public testing::Test {
  public:
   void SetUp() override {
+    TestingProfile::Builder profile_builder;
+    profile_builder.AddTestingFactory(
+        HistoryServiceFactory::GetInstance(),
+        HistoryServiceFactory::GetDefaultFactory());
+    profile_ = profile_builder.Build();
+
     display_service_tester_ =
-        std::make_unique<NotificationDisplayServiceTester>(&profile_);
+        std::make_unique<NotificationDisplayServiceTester>(profile_.get());
 
     mock_logger_ = static_cast<MockNotificationMetricsLogger*>(
         NotificationMetricsLoggerFactory::GetInstance()
             ->SetTestingFactoryAndUse(
-                &profile_,
+                profile_.get(),
                 base::BindRepeating(
                     &MockNotificationMetricsLogger::FactoryForTests)));
 
@@ -109,7 +115,7 @@ class PlatformNotificationServiceTest : public testing::Test {
  protected:
   // Returns the Platform Notification Service these unit tests are for.
   PlatformNotificationServiceImpl* service() {
-    return PlatformNotificationServiceFactory::GetForProfile(&profile_);
+    return PlatformNotificationServiceFactory::GetForProfile(profile_.get());
   }
 
   size_t GetNotificationCountForType(NotificationHandler::Type type) {
@@ -127,7 +133,7 @@ class PlatformNotificationServiceTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfile profile_;
+  std::unique_ptr<TestingProfile> profile_;
 
   std::unique_ptr<NotificationDisplayServiceTester> display_service_tester_;
 
@@ -138,7 +144,6 @@ class PlatformNotificationServiceTest : public testing::Test {
 };
 
 TEST_F(PlatformNotificationServiceTest, DisplayNonPersistentThenClose) {
-  ASSERT_TRUE(profile_.CreateHistoryService());
   PlatformNotificationData data;
   data.title = u"My Notification";
   data.body = u"Hello, world!";
@@ -157,7 +162,6 @@ TEST_F(PlatformNotificationServiceTest, DisplayNonPersistentThenClose) {
 }
 
 TEST_F(PlatformNotificationServiceTest, DisplayPersistentThenClose) {
-  ASSERT_TRUE(profile_.CreateHistoryService());
   PlatformNotificationData data;
   data.title = u"My notification's title";
   data.body = u"Hello, world!";
@@ -184,7 +188,6 @@ TEST_F(PlatformNotificationServiceTest, DisplayPersistentThenClose) {
 }
 
 TEST_F(PlatformNotificationServiceTest, DisplayNonPersistentPropertiesMatch) {
-  ASSERT_TRUE(profile_.CreateHistoryService());
   std::vector<int> vibration_pattern(
       kNotificationVibrationPattern,
       kNotificationVibrationPattern +
@@ -218,7 +221,6 @@ TEST_F(PlatformNotificationServiceTest, DisplayNonPersistentPropertiesMatch) {
 }
 
 TEST_F(PlatformNotificationServiceTest, DisplayPersistentPropertiesMatch) {
-  ASSERT_TRUE(profile_.CreateHistoryService());
   std::vector<int> vibration_pattern(
       kNotificationVibrationPattern,
       kNotificationVibrationPattern +
@@ -291,9 +293,8 @@ TEST_F(PlatformNotificationServiceTest, RecordNotificationUkmEvent) {
   data.time_until_last_click_millis = base::Milliseconds(3333);
 
   // Set up UKM recording conditions.
-  ASSERT_TRUE(profile_.CreateHistoryService());
   auto* history_service = HistoryServiceFactory::GetForProfile(
-      &profile_, ServiceAccessType::EXPLICIT_ACCESS);
+      profile_.get(), ServiceAccessType::EXPLICIT_ACCESS);
   history_service->AddPage(data.origin, base::Time::Now(),
                            history::SOURCE_BROWSED);
 
@@ -361,7 +362,7 @@ TEST_F(PlatformNotificationServiceTest, DisplayNameForContextMessage) {
           .Build();
 
   extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(&profile_);
+      extensions::ExtensionRegistry::Get(profile_.get());
   EXPECT_TRUE(registry->AddEnabled(extension));
 
   display_name = service()->DisplayNameForContextMessage(
@@ -393,7 +394,7 @@ TEST_F(PlatformNotificationServiceTest, CreateNotificationFromData) {
           .Build();
 
   extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(&profile_);
+      extensions::ExtensionRegistry::Get(profile_.get());
   EXPECT_TRUE(registry->AddEnabled(extension));
 
   notification = service()->CreateNotificationFromData(
@@ -418,7 +419,7 @@ class PlatformNotificationServiceTest_WebAppNotificationIconAndTitle
 TEST_F(PlatformNotificationServiceTest_WebAppNotificationIconAndTitle,
        FindWebAppIconAndTitle_NoApp) {
   web_app::FakeWebAppProvider* provider =
-      web_app::FakeWebAppProvider::Get(&profile_);
+      web_app::FakeWebAppProvider::Get(profile_.get());
   provider->Start();
 
   const GURL web_app_url{"https://example.org/"};
@@ -428,7 +429,7 @@ TEST_F(PlatformNotificationServiceTest_WebAppNotificationIconAndTitle,
 TEST_F(PlatformNotificationServiceTest_WebAppNotificationIconAndTitle,
        FindWebAppIconAndTitle) {
   web_app::FakeWebAppProvider* provider =
-      web_app::FakeWebAppProvider::Get(&profile_);
+      web_app::FakeWebAppProvider::Get(profile_.get());
   web_app::WebAppIconManager& icon_manager = provider->GetIconManager();
 
   std::unique_ptr<web_app::WebApp> web_app = web_app::test::CreateWebApp();

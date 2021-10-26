@@ -43,7 +43,7 @@ export enum NuxGoogleAppsInteractions {
   NavigatedAwayThroughBrowserHistory,
 }
 
-interface ModuleMetricsProxy {
+export interface ModuleMetricsProxy {
   recordPageShown(): void;
   recordDidNothingAndNavigatedAway(): void;
   recordDidNothingAndChoseSkip(): void;

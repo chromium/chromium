@@ -2300,6 +2300,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       Si la estableces, los usuarios no podrán cambiar esta acción. Si no la estableces, se desactivará el inicio mediante CA, y los usuarios no podrán activarlo.</translation>
 <translation id="3660562134618097814">Transferir cookies del IdP de SAML durante el acceso</translation>
 <translation id="3665437376055221832">Solo notificar al usuario cuando ningún certificado coincide con la selección automática</translation>
+<translation id="3674010627788940405">No admitir encabezados de solicitudes sin comodín CORS</translation>
 <translation id="3685979383016152590">Si estableces la política, se designará la política de acceso que se utilizará para la configuración de impresoras en lote, lo que permitirá determinar las impresoras de <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> que estarán disponibles para los usuarios.
 
       * <ph name="PRINTERS_BLOCKLIST" /> (valor 0) utiliza <ph name="PRINTERS_BULK_BLOCKLIST" /> para restringir el acceso a las impresoras especificadas.
@@ -3002,6 +3003,11 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
 
       Esta política solo será válida si la máquina está inscrita en <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> para <ph name="PRODUCT_NAME" />.
       Esta política siempre será válida para <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="4570859815763368584">Dejó de estar disponible en M68. En su lugar, usa DefaultPopupsSetting.
+
+      Para obtener una explicación completa, consulta https://www.chromestatus.com/feature/5675755719622656.
+      Si habilitas esta política, se podrá navegar en los sitios y abrir ventanas o pestañas nuevas al mismo tiempo.
+      Si la inhabilitas o no la estableces, no se podrá navegar en los sitios ni abrir ventanas o pestañas nuevas al mismo tiempo.</translation>
 <translation id="4574215366111396039">Chrome bloqueará la navegación a protocolos externos dentro del
       iframe de la zona de pruebas. Consulta https://chromestatus.com/features/5680742077038592.
 
@@ -3351,6 +3357,7 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
 <translation id="5025239932007658691">Si habilitas la política o no la estableces, <ph name="PRODUCT_NAME" /> enviará consultas ocasionales a un servidor de Google para recuperar una marca de tiempo precisa.
 
       Si la inhabilitas, <ph name="PRODUCT_NAME" /> dejará de enviar estas consultas.</translation>
+<translation id="5039110755072335605">Admisión de encabezados de solicitudes sin comodín CORS</translation>
 <translation id="504116558738617678">Solo mostrar advertencias de poco espacio en el disco si el dispositivo no está administrado o si solo hay 1 solo usuario</translation>
 <translation id="5049105847726444023">Si habilitas la política o no la estableces, los usuarios podrán obtener sus resultados más recientes de <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> en un panel lateral que podrán activar o desactivar mediante un ícono de la barra de herramientas.
 
@@ -5952,6 +5959,15 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       Si esta política se inhabilita o no se establece, el acceso direcciona al usuario a los perfiles normales.</translation>
 <translation id="8151299379693359769">Habilita un control de seguridad adicional en función de la certificación remota (opcional, predeterminado: Verdadero).</translation>
 <translation id="8151490482515839285">Habilitar la generación de informes para la prevención de filtraciones de datos</translation>
+<translation id="8151949408479239790">Determina si se admiten encabezados de solicitudes sin comodín CORS.
+
+      A partir de la versión 97 de <ph name="PRODUCT_NAME" />, se puede determinar si se admiten encabezados de solicitudes sin comodín CORS. Cuando las secuencias de comandos envían una solicitud de red de orígenes cruzados a través de fetch() y XMLHttpRequest con un encabezado de autorización para agregar a la secuencia de comandos, el encabezado debe tener la autorización expresa del encabezado Access-Control-Allow-Headers en la respuesta de la solicitud preliminar de CORS. En este caso, "Expresa" significa que el símbolo comodín "*" no incluye el encabezado de autorización. Para obtener más información, visita <ph name="CORS_NON_WILDCARD_REQUEST_HEADERS_FEATURE_URL" />.
+
+      Si no estableces esta política o la estableces como verdadera, <ph name="PRODUCT_NAME" /> admitirá los encabezados de solicitudes sin comodín CORS y se comportará como se describe anteriormente.
+
+      Si la estableces como falsa, Chrome admitirá el símbolo comodín ("*") del encabezado Access-Control-Allow-Headers en la respuesta de la solicitud preliminar de CORS, a fin de incluir el encabezado de autorización.
+
+      Esta política empresarial es temporal; se planea quitarla después de la versión 103 de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="8158758865057576716">Habilita la creación de las copias de itinerancia para los datos de perfil de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="8158897487095710470">Si estableces la política como verdadera, se mostrará una barra de favoritos en <ph name="PRODUCT_NAME" />. Si la estableces como falsa, los usuarios no podrán ver la barra de favoritos.
 
@@ -6118,6 +6134,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       <ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />,
       <ph name="SAME_ORIGIN_TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />.
       </translation>
+<translation id="8310392396850884147">Admitir encabezados de solicitudes sin comodín CORS</translation>
 <translation id="8312129124898414409">Te permite establecer si los sitios web están autorizados a utilizar la generación de claves. La generación de claves puede permitirse o rechazarse para todos los sitios web. 
 
           Si esta política no se configura, se usará "BlockKeygen" y el usuario podrá cambiarla.</translation>

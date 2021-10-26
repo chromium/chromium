@@ -152,8 +152,10 @@ void PermissionPromptBubbleView::Show() {
   DCHECK(browser_->window());
 
   // Set |parent_window| because some valid anchors can become hidden.
+  DCHECK(browser_->window());
   set_parent_window(
       platform_util::GetViewForWindow(browser_->window()->GetNativeWindow()));
+  UpdateAnchorPosition();
 
   views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(this);
   // If a browser window (or popup) other than the bubble parent has focus,
@@ -165,11 +167,6 @@ void PermissionPromptBubbleView::Show() {
 
   SizeToContents();
 
-  DCHECK(browser_->window());
-  set_parent_window(
-      platform_util::GetViewForWindow(browser_->window()->GetNativeWindow()));
-
-  UpdateAnchorPosition();
   chrome::RecordDialogCreation(chrome::DialogIdentifier::PERMISSIONS);
 }
 
@@ -239,7 +236,7 @@ void PermissionPromptBubbleView::SetPromptStyle(
   // If bubble hanging off the padlock icon, with no chip showing, closing the
   // dialog should dismiss the pending request because there's no way to bring
   // the bubble back.
-  if (prompt_style == PermissionPromptStyle::kBubbleOnly) {
+  if (prompt_style_ == PermissionPromptStyle::kBubbleOnly) {
     DialogDelegate::SetCloseCallback(
         base::BindOnce(&PermissionPromptBubbleView::ClosingPermission,
                        base::Unretained(this)));
@@ -267,6 +264,15 @@ std::u16string PermissionPromptBubbleView::GetWindowTitle() const {
     message_id = IDS_PERMISSIONS_BUBBLE_PROMPT;
   }
   return l10n_util::GetStringFUTF16(message_id, GetDisplayName());
+}
+
+void PermissionPromptBubbleView::OnWidgetDestroying(views::Widget* widget) {
+  if (!on_bubble_closed_by_user_callback_.is_null() &&
+      (widget->closed_reason() == views::Widget::ClosedReason::kEscKeyPressed ||
+       widget->closed_reason() ==
+           views::Widget::ClosedReason::kCloseButtonClicked)) {
+    std::move(on_bubble_closed_by_user_callback_).Run();
+  }
 }
 
 std::u16string PermissionPromptBubbleView::GetAccessibleWindowTitle() const {
@@ -369,7 +375,7 @@ void PermissionPromptBubbleView::DenyPermission() {
 void PermissionPromptBubbleView::ClosingPermission() {
   DCHECK_EQ(prompt_style_, PermissionPromptStyle::kBubbleOnly);
   RecordDecision(permissions::PermissionAction::DISMISSED);
-  delegate_->Closing();
+  delegate_->Dismiss();
 }
 
 void PermissionPromptBubbleView::RecordDecision(

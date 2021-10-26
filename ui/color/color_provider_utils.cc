@@ -48,15 +48,7 @@ base::StringPiece SystemThemeName(
   }
 }
 
-#define E1(enum_name) \
-  { enum_name, #enum_name }
-#define E2(enum_name, old_enum_name) \
-  { enum_name, #enum_name }
-#define E3(enum_name, old_enum_name, enum_value) \
-  { enum_name, #enum_name }
-#define E_CPONLY(...) E(__VA_ARGS__)
-#define GET_E(_1, _2, _3, macro_name, ...) macro_name
-#define E(...) GET_E(__VA_ARGS__, E3, E2, E1)(__VA_ARGS__),
+#include "ui/color/color_id_map_macros.inc"
 
 base::StringPiece ColorIdName(ColorId color_id) {
   static constexpr const auto color_id_map =
@@ -67,12 +59,7 @@ base::StringPiece ColorIdName(ColorId color_id) {
   return "<invalid>";
 }
 
-#undef E1
-#undef E2
-#undef E3
-#undef E_CPONLY
-#undef GET_E
-#undef E
+#include "ui/color/color_id_map_macros.inc"
 
 base::StringPiece ColorSetIdName(ColorSetId color_set_id) {
   // Since we're returning a StringPiece we need a stable location to store the

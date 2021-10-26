@@ -43,6 +43,12 @@ type AppItemModel = {
 
 const KEYBOARD_FOCUSED = 'keyboard-focused';
 
+export interface NuxGoogleAppsElement {
+  $: {
+    noThanksButton: HTMLElement,
+  }
+}
+
 const NuxGoogleAppsElementBase = I18nMixin(NavigationMixin(PolymerElement));
 
 /** @polymer */
@@ -287,4 +293,11 @@ export class NuxGoogleAppsElement extends NuxGoogleAppsElementBase {
     return html`{__html_template__}`;
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'nux-google-apps': NuxGoogleAppsElement;
+  }
+}
+
 customElements.define(NuxGoogleAppsElement.is, NuxGoogleAppsElement);

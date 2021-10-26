@@ -78,6 +78,10 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager {
   // Updates the current frame time, without doing anything else.
   void UpdateFrameTime(base::TimeTicks now);
 
+  // Replaced SharedElementResourceIds with corresponding ResourceIds if
+  // necessary.
+  void ReplaceSharedElementResources(Surface* surface);
+
  private:
   friend class SurfaceAnimationManagerTest;
   FRIEND_TEST_ALL_PREFIXES(SurfaceAnimationManagerTest, CustomRootConfig);
@@ -103,6 +107,12 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager {
                             SurfaceSavedFrameStorage* storage);
   // Returns true if the animation has started.
   bool ProcessAnimateDirective(
+      const CompositorFrameTransitionDirective& directive,
+      SurfaceSavedFrameStorage* storage);
+  bool ProcessAnimateRendererDirective(
+      const CompositorFrameTransitionDirective& directive,
+      SurfaceSavedFrameStorage* storage);
+  bool ProcessReleaseDirective(
       const CompositorFrameTransitionDirective& directive,
       SurfaceSavedFrameStorage* storage);
 
@@ -131,7 +141,14 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager {
   static bool FilterSharedElementQuads(
       base::flat_map<CompositorRenderPassId, RenderPassDrawData>*
           shared_draw_data,
-      const CompositorRenderPassDrawQuad& pass_quad,
+      const DrawQuad& quad,
+      CompositorRenderPass& copy_pass);
+
+  bool FilterSharedElementsWithRenderPassOrResource(
+      std::vector<TransferableResource>* resource_list,
+      const base::flat_map<SharedElementResourceId,
+                           const CompositorRenderPass*>* element_id_to_pass,
+      const DrawQuad& quad,
       CompositorRenderPass& copy_pass);
 
   // Tick both the root and shared animations.
@@ -142,7 +159,10 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager {
 
   base::TimeDelta ApplySlowdownFactor(base::TimeDelta original) const;
 
-  enum class State { kIdle, kAnimating, kLastFrame };
+  // The state machine can take the following paths :
+  // 1) Viz driven animation : kIdle -> kAnimating -> kLastFrame -> kIdle
+  // 2) Renderer driven animation : kIdle -> kAnimatingRenderer -> kIdle
+  enum class State { kIdle, kAnimatingRenderer, kAnimating, kLastFrame };
 
   TransitionDirectiveCompleteCallback sequence_id_finished_callback_;
 

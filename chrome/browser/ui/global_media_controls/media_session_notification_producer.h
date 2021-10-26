@@ -5,27 +5,22 @@
 #ifndef CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_MEDIA_SESSION_NOTIFICATION_PRODUCER_H_
 #define CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_MEDIA_SESSION_NOTIFICATION_PRODUCER_H_
 
-#include "chrome/browser/ui/global_media_controls/media_item_ui_device_selector_delegate.h"
-#include "chrome/browser/ui/global_media_controls/media_notification_device_provider.h"
+#include "base/observer_list.h"
 #include "chrome/browser/ui/global_media_controls/media_session_notification_item.h"
 #include "components/global_media_controls/public/media_item_manager_observer.h"
 #include "components/global_media_controls/public/media_item_producer.h"
 #include "components/global_media_controls/public/media_item_ui_observer.h"
 #include "components/global_media_controls/public/media_item_ui_observer_set.h"
-#include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "services/media_session/public/mojom/media_controller.mojom.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
-
-namespace content {
-class WebContents;
-}  // namespace content
 
 namespace global_media_controls {
 class MediaItemManager;
 class MediaItemUI;
 }  // namespace global_media_controls
+
+class MediaSessionNotificationProducerObserver;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -41,13 +36,15 @@ class MediaSessionNotificationProducer
     : public global_media_controls::MediaItemProducer,
       public MediaSessionNotificationItem::Delegate,
       public media_session::mojom::AudioFocusObserver,
-      public MediaItemUIDeviceSelectorDelegate,
       public global_media_controls::MediaItemUIObserver {
  public:
   // When given a |source_id|, the MediaSessionNotificationProducer will only
   // produce MediaItems for the given source (i.e. profile). When empty, it will
   // produce MediaItems for the Media Sessions on all sources (profiles).
   MediaSessionNotificationProducer(
+      mojo::Remote<media_session::mojom::AudioFocusManager> audio_focus_remote,
+      mojo::Remote<media_session::mojom::MediaControllerManager>
+          controller_manager_remote,
       global_media_controls::MediaItemManager* item_manager,
       absl::optional<base::UnguessableToken> source_id);
   ~MediaSessionNotificationProducer() override;
@@ -80,42 +77,27 @@ class MediaSessionNotificationProducer
   void OnMediaItemUIClicked(const std::string& id) override;
   void OnMediaItemUIDismissed(const std::string& id) override;
 
+  void AddObserver(MediaSessionNotificationProducerObserver* observer);
+  void RemoveObserver(MediaSessionNotificationProducerObserver* observer);
+
   bool HasSession(const std::string& id) const;
 
-  bool HasActiveControllableSessionForWebContents(
-      content::WebContents* web_contents) const;
+  void SetAudioSinkId(const std::string& id, const std::string& sink_id);
 
-  // Returns the notification id of the session associated with |web_contents|.
-  // There is at most one session per WebContents.
-  std::string GetActiveControllableSessionForWebContents(
-      content::WebContents* web_contents) const;
-
-  // MediaItemUIDeviceSelectorDelegate:
-  void OnAudioSinkChosen(const std::string& id,
-                         const std::string& sink_id) override;
-  base::CallbackListSubscription RegisterAudioOutputDeviceDescriptionsCallback(
-      MediaNotificationDeviceProvider::GetOutputDevicesCallback callback)
-      override;
   base::CallbackListSubscription
   RegisterIsAudioOutputDeviceSwitchingSupportedCallback(
       const std::string& id,
-      base::RepeatingCallback<void(bool)> callback) override;
-
-  void set_device_provider_for_testing(
-      std::unique_ptr<MediaNotificationDeviceProvider> device_provider);
+      base::RepeatingCallback<void(bool)> callback);
 
  private:
   friend class MediaNotificationServiceTest;
   friend class MediaSessionNotificationProducerTest;
 
-  class Session
-      : public media_session::mojom::MediaControllerObserver,
-        public media_router::WebContentsPresentationManager::Observer {
+  class Session : public media_session::mojom::MediaControllerObserver {
    public:
     Session(MediaSessionNotificationProducer* owner,
             const std::string& id,
             std::unique_ptr<MediaSessionNotificationItem> item,
-            content::WebContents* web_contents,
             mojo::Remote<media_session::mojom::MediaController> controller);
     Session(const Session&) = delete;
     Session& operator=(const Session&) = delete;
@@ -134,10 +116,6 @@ class MediaSessionNotificationProducer
         const absl::optional<base::UnguessableToken>& request_id) override {}
     void MediaSessionPositionChanged(
         const absl::optional<media_session::MediaPosition>& position) override;
-
-    // media_router::WebContentsPresentationManager::Observer:
-    void OnMediaRoutesChanged(
-        const std::vector<media_router::MediaRoute>& routes) override;
 
     // Called when the request ID associated with this session is released (i.e.
     // when the tab is closed).
@@ -164,12 +142,6 @@ class MediaSessionNotificationProducer
     base::CallbackListSubscription
     RegisterIsAudioDeviceSwitchingSupportedCallback(
         base::RepeatingCallback<void(bool)> callback);
-
-    content::WebContents* web_contents() const { return web_contents_; }
-
-    void SetPresentationManagerForTesting(
-        base::WeakPtr<media_router::WebContentsPresentationManager>
-            presentation_manager);
 
    private:
     static void RecordDismissReason(GlobalMediaControlsDismissReason reason);
@@ -213,11 +185,6 @@ class MediaSessionNotificationProducer
 
     // Used to request audio output be routed to a different device.
     mojo::Remote<media_session::mojom::MediaController> controller_;
-
-    content::WebContents* const web_contents_;
-
-    base::WeakPtr<media_router::WebContentsPresentationManager>
-        presentation_manager_;
   };
 
   // Looks up a Session object by its ID. Returns null if not found.
@@ -261,11 +228,7 @@ class MediaSessionNotificationProducer
   // format.
   std::map<std::string, Session> sessions_;
 
-  // Tracks the number of times we have recorded an action for a specific
-  // source. We use this to cap the number of UKM recordings per site.
-  std::map<ukm::SourceId, int> actions_recorded_to_ukm_;
-
-  std::unique_ptr<MediaNotificationDeviceProvider> device_provider_;
+  base::ObserverList<MediaSessionNotificationProducerObserver> observers_;
 
   base::WeakPtrFactory<MediaSessionNotificationProducer> weak_ptr_factory_{
       this};

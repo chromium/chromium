@@ -49,8 +49,9 @@ class PrintActivityTest : public PlatformTest {
 // page is printable.
 TEST_F(PrintActivityTest, DataTrue_ActivityEnabled) {
   ShareToData* data = CreateData(true);
-  PrintActivity* activity =
-      [[PrintActivity alloc] initWithData:data handler:mocked_handler_];
+  PrintActivity* activity = [[PrintActivity alloc] initWithData:data
+                                                        handler:mocked_handler_
+                                             baseViewController:nil];
 
   EXPECT_TRUE([activity canPerformWithActivityItems:@[]]);
 }
@@ -59,8 +60,9 @@ TEST_F(PrintActivityTest, DataTrue_ActivityEnabled) {
 // the page is not printable.
 TEST_F(PrintActivityTest, DataFalse_ActivityDisabled) {
   ShareToData* data = CreateData(false);
-  PrintActivity* activity =
-      [[PrintActivity alloc] initWithData:data handler:mocked_handler_];
+  PrintActivity* activity = [[PrintActivity alloc] initWithData:data
+                                                        handler:mocked_handler_
+                                             baseViewController:nil];
 
   EXPECT_FALSE([activity canPerformWithActivityItems:@[]]);
 }
@@ -71,7 +73,9 @@ TEST_F(PrintActivityTest, DataTrue_Image) {
   ShareImageData* data = [[ShareImageData alloc] initWithImage:redImage
                                                          title:@"title"];
   PrintActivity* activity =
-      [[PrintActivity alloc] initWithImageData:data handler:mocked_handler_];
+      [[PrintActivity alloc] initWithImageData:data
+                                       handler:mocked_handler_
+                            baseViewController:nil];
 
   EXPECT_TRUE([activity canPerformWithActivityItems:@[]]);
 }
@@ -82,7 +86,9 @@ TEST_F(PrintActivityTest, DataFalse_ImageNil) {
   ShareImageData* data = [[ShareImageData alloc] initWithImage:nil
                                                          title:@"title"];
   PrintActivity* activity =
-      [[PrintActivity alloc] initWithImageData:data handler:mocked_handler_];
+      [[PrintActivity alloc] initWithImageData:data
+                                       handler:mocked_handler_
+                            baseViewController:nil];
 
   EXPECT_FALSE([activity canPerformWithActivityItems:@[]]);
 }
@@ -90,11 +96,12 @@ TEST_F(PrintActivityTest, DataFalse_ImageNil) {
 // Tests that executing the activity triggers the right handler method to print
 // a tab.
 TEST_F(PrintActivityTest, ExecuteActivity_CallsHandler) {
-  [[mocked_handler_ expect] printTab];
+  [[mocked_handler_ expect] printTabWithBaseViewController:nil];
 
   ShareToData* data = CreateData(true);
-  PrintActivity* activity =
-      [[PrintActivity alloc] initWithData:data handler:mocked_handler_];
+  PrintActivity* activity = [[PrintActivity alloc] initWithData:data
+                                                        handler:mocked_handler_
+                                             baseViewController:nil];
 
   id activity_partial_mock = OCMPartialMock(activity);
   [[activity_partial_mock expect] activityDidFinish:YES];
@@ -113,10 +120,14 @@ TEST_F(PrintActivityTest, ExecuteActivity_CallsImageHandler) {
   ShareImageData* data = [[ShareImageData alloc] initWithImage:redImage
                                                          title:title];
 
-  [[mocked_handler_ expect] printImage:redImage title:title];
+  [[mocked_handler_ expect] printImage:redImage
+                                 title:title
+                    baseViewController:nil];
 
   PrintActivity* activity =
-      [[PrintActivity alloc] initWithImageData:data handler:mocked_handler_];
+      [[PrintActivity alloc] initWithImageData:data
+                                       handler:mocked_handler_
+                            baseViewController:nil];
 
   id activity_partial_mock = OCMPartialMock(activity);
   [[activity_partial_mock expect] activityDidFinish:YES];

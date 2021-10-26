@@ -108,6 +108,17 @@ ScopedShortcutOverrideForTesting::~ScopedShortcutOverrideForTesting() {
   directories = {&desktop, &application_menu, &quick_launch, &startup};
 #elif defined(OS_MAC)
   directories = {&chrome_apps_folder};
+  // Checks and cleans up possible hidden files in directories.
+  std::vector<std::string> hidden_files{"Icon\r", ".localized"};
+  for (base::ScopedTempDir* dir : directories) {
+    if (dir->IsValid()) {
+      for (auto& f : hidden_files) {
+        base::FilePath path = dir->GetPath().Append(f);
+        if (base::PathExists(path))
+          base::DeletePathRecursively(path);
+      }
+    }
+  }
 #elif defined(OS_LINUX)
   directories = {&desktop};
 #endif

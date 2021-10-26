@@ -1046,6 +1046,10 @@ void SkiaRenderer::DrawQuadInternal(const DrawQuad* quad,
     case DrawQuad::Material::kTiledContent:
       DrawTileDrawQuad(TileDrawQuad::MaterialCast(quad), rpdq_params, params);
       break;
+    case DrawQuad::Material::kSharedElement:
+      DrawUnsupportedQuad(quad, rpdq_params, params);
+      NOTREACHED();
+      break;
     case DrawQuad::Material::kYuvVideoContent:
       DrawYUVVideoQuad(YUVVideoDrawQuad::MaterialCast(quad), rpdq_params,
                        params);

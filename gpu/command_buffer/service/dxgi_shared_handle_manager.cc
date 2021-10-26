@@ -144,7 +144,9 @@ void DXGISharedHandleState::EndAccessD3D12() {
 
 DXGISharedHandleManager::DXGISharedHandleManager(
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device)
-    : d3d11_device_(std::move(d3d11_device)) {}
+    : d3d11_device_(std::move(d3d11_device)) {
+  DCHECK(d3d11_device_);
+}
 
 DXGISharedHandleManager::~DXGISharedHandleManager() {
 #if DCHECK_IS_ON()

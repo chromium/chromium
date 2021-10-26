@@ -106,6 +106,15 @@ class ASH_EXPORT CaptureModeController
   // update |last_capture_region_update_time_|.
   void SetUserCaptureRegion(const gfx::Rect& region, bool by_user);
 
+  // Returns true if we can show a user nudge animation and a toast message to
+  // alert the user about the new settings to customize the save folder path.
+  bool CanShowFolderSelectionNudge() const;
+
+  // Disables showing the folder selection nudge from now on. Calling the above
+  // CanShowFolderSelectionNudge() will return false for the current active user
+  // going forward.
+  void DisableFolderSelectionNudgeForever();
+
   // Sets whether the currently logged in user selected to use the default
   // "Downloads" folder as the current save location, even while they already
   // have a currently set custom folder. When this setting is true, any
@@ -140,6 +149,13 @@ class ASH_EXPORT CaptureModeController
   void PerformCapture();
 
   void EndVideoRecording(EndRecordingReason reason);
+
+  // Posts a task to the blocking pool to check the availability of the given
+  // `folder` and replies back asynchronously by calling the given `callback`
+  // with `available` set either to true or false.
+  void CheckFolderAvailability(
+      const base::FilePath& folder,
+      base::OnceCallback<void(bool available)> callback);
 
   // Sets the |protection_mask| that is currently set on the given |window|. If
   // the |protection_mask| is |display::CONTENT_PROTECTION_METHOD_NONE|, then
@@ -283,14 +299,19 @@ class ASH_EXPORT CaptureModeController
                        scoped_refptr<base::RefCountedMemory> png_bytes);
 
   // Called back when an attempt to save the image file has been completed, with
-  // |success| indicating whether the attempt succeeded for failed. |png_bytes|
-  // is the buffer containing the captured image in a PNG format, which will be
-  // used to show a preview of the image in a notification, and save it as a
-  // bitmap in the clipboard. If saving was successful, then the image was saved
-  // in |path|.
+  // `file_saved_path` indicating whether the attempt succeeded or failed. If
+  // `file_saved_path` is empty, the attempt failed. `png_bytes` is the buffer
+  // containing the captured image in a PNG format, which will be used to show a
+  // preview of the image in a notification, and save it as a bitmap in the
+  // clipboard. If saving was successful, then the image was saved in
+  // `file_saved_path`.
   void OnImageFileSaved(scoped_refptr<base::RefCountedMemory> png_bytes,
-                        const base::FilePath& path,
-                        bool success);
+                        const base::FilePath& file_saved_path);
+
+  // Called back when the check for custom folder's availability is done in
+  // `CheckCustomAvailability`, with `available` indicating whether the custom
+  // folder is available or not.
+  void OnCustomFolderAvailabilityChecked(bool available);
 
   // Called back when the |video_file_handler_| flushes the remaining cached
   // video chunks in its buffer. Called on the UI thread. |video_thumbnail| is
@@ -322,6 +343,10 @@ class ASH_EXPORT CaptureModeController
   // it.
   base::FilePath BuildPathNoExtension(const char* const format_string,
                                       base::Time timestamp) const;
+
+  // Returns a fallback path concatenating the default `Downloads` folder and
+  // the base name of `path`.
+  base::FilePath GetFallbackFilePathFromFile(const base::FilePath& path);
 
   // Records the number of screenshots taken.
   void RecordAndResetScreenshotsTakenInLastDay();
@@ -405,7 +430,8 @@ class ASH_EXPORT CaptureModeController
       protected_windows_;
 
   // If set, it will be called when either an image or video file is saved.
-  base::OnceCallback<void(const base::FilePath&)> on_file_saved_callback_;
+  base::OnceCallback<void(const base::FilePath&)>
+      on_file_saved_callback_for_test_;
 
   // Timers used to schedule recording of the number of screenshots taken.
   base::RepeatingTimer num_screenshots_taken_in_last_day_scheduler_;

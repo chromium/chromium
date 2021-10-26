@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/network_config_service.h"
 #include "base/system/sys_info.h"
+#include "chromeos/components/eche_app_ui/apps_access_manager_impl.h"
 #include "chromeos/components/eche_app_ui/eche_connector_impl.h"
 #include "chromeos/components/eche_app_ui/eche_message_receiver_impl.h"
 #include "chromeos/components/eche_app_ui/eche_notification_generator.h"
@@ -84,7 +85,12 @@ EcheAppManager::EcheAppManager(
               feature_status_provider_.get(),
               launch_app_helper_.get())),
       notification_generator_(std::make_unique<EcheNotificationGenerator>(
-          launch_app_helper_.get())) {
+          launch_app_helper_.get())),
+      apps_access_manager_(std::make_unique<AppsAccessManagerImpl>(
+          eche_connector_.get(),
+          message_receiver_.get(),
+          feature_status_provider_.get(),
+          pref_service)) {
   ash::GetNetworkConfigService(
       remote_cros_network_config_.BindNewPipeAndPassReceiver());
   system_info_provider_ = std::make_unique<SystemInfoProvider>(
@@ -113,10 +119,15 @@ void EcheAppManager::BindNotificationGeneratorInterface(
   notification_generator_->Bind(std::move(receiver));
 }
 
+AppsAccessManager* EcheAppManager::GetAppsAccessManager() {
+  return apps_access_manager_.get();
+}
+
 // NOTE: These should be destroyed in the opposite order of how these objects
 // are initialized in the constructor.
 void EcheAppManager::Shutdown() {
   system_info_provider_.reset();
+  apps_access_manager_.reset();
   notification_generator_.reset();
   eche_recent_app_click_handler_.reset();
   uid_.reset();

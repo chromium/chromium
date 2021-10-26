@@ -49,6 +49,9 @@ template("fuzzer_test") {
       test_data_deps += invoker.data_deps
     }
 
+    supporting_file_test_deps = []
+    supporting_file_test_data_deps = []
+
     if (defined(invoker.seed_corpus) || defined(invoker.seed_corpuses)) {
       assert(!(defined(invoker.seed_corpus) && defined(invoker.seed_corpuses)),
              "Do not use both seed_corpus and seed_corpuses for $target_name.")
@@ -87,7 +90,7 @@ template("fuzzer_test") {
       }
 
       if (archive_seed_corpus) {
-        test_deps += [ ":" + target_name + "_seed_corpus" ]
+        supporting_file_test_deps += [ ":" + target_name + "_seed_corpus" ]
       }
     }
 
@@ -102,7 +105,7 @@ template("fuzzer_test") {
           sources = [ invoker.dict ]
           outputs = [ "$root_build_dir/" + target_name + ".dict" ]
         }
-        test_deps += [ ":" + target_name + "_dict_copy" ]
+        supporting_file_test_deps += [ ":" + target_name + "_dict_copy" ]
       }
 
       # Generate .options file.
@@ -154,7 +157,7 @@ template("fuzzer_test") {
 
         outputs = [ "$root_build_dir/$config_file_name" ]
       }
-      test_deps += [ ":" + config_file_name ]
+      supporting_file_test_deps += [ ":" + config_file_name ]
     }
 
     if (generate_fuzzer_owners) {
@@ -186,7 +189,66 @@ template("fuzzer_test") {
 
         outputs = [ "$root_build_dir/$owners_file_name" ]
       }
-      test_data_deps += [ ":" + owners_file_name ]
+      supporting_file_test_data_deps += [ ":" + owners_file_name ]
+    }
+
+    # Copy to executable folder and codesign for catalyst
+    if (is_ios) {
+      # iOS only supports fuzzer in catalyst environment.
+      assert(target_environment == "catalyst")
+
+      # Loop over two kinds of deps to codesign these in two |action_foreach|s.
+      # Use the "test_deps", "test_data_deps" as identifiers in for loop.
+      foreach(_deps_type_label,
+              [
+                "test_deps",
+                "test_data_deps",
+              ]) {
+        _dep_list = []
+        if (_deps_type_label == "test_deps") {
+          _dep_list = supporting_file_test_deps
+        } else {
+          _dep_list = supporting_file_test_data_deps
+        }
+        _files_to_sign = []
+        foreach(dep, _dep_list) {
+          _files_to_sign += get_target_outputs(dep)
+        }
+        if (_files_to_sign != []) {
+          _codesign_action_name =
+              target_name + "_codesign_supporting_files_" + _deps_type_label
+          action_foreach(_codesign_action_name) {
+            testonly = true
+            script = "//build/config/ios/codesign.py"
+            sources = _files_to_sign
+            _codesign_output_path =
+                "${root_build_dir}/codesign/{{source_file_part}}"
+            outputs = [ _codesign_output_path ]
+            args = [
+              "code-sign-file",
+              "--identity=" + ios_code_signing_identity,
+              "--output=" + rebase_path(_codesign_output_path, root_build_dir),
+              "{{source}}",
+            ]
+            deps = _dep_list
+          }
+          _bundle_data_name = target_name + "_bundle_data_" + _deps_type_label
+          bundle_data(_bundle_data_name) {
+            testonly = true
+            sources = get_target_outputs(":${_codesign_action_name}")
+            outputs = [ "{{bundle_executable_dir}}/{{source_file_part}}" ]
+            public_deps = [ ":${_codesign_action_name}" ]
+          }
+          if (_deps_type_label == "test_deps") {
+            test_deps += [ ":${_bundle_data_name}" ]
+          } else {
+            test_data_deps += [ ":${_bundle_data_name}" ]
+          }
+        }
+      }
+    } else {
+      test_deps += supporting_file_test_deps
+      test_data_deps += supporting_file_test_data_deps
     }
 
     test(target_name) {

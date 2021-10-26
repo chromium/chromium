@@ -35,12 +35,8 @@ import org.chromium.chrome.browser.feed.sections.SectionHeaderListProperties;
 import org.chromium.chrome.browser.feed.sections.SectionHeaderProperties;
 import org.chromium.chrome.browser.feed.sections.SectionType;
 import org.chromium.chrome.browser.feed.sections.ViewVisibility;
-import org.chromium.chrome.browser.feed.shared.FeedFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
-import org.chromium.chrome.browser.ntp.NewTabPageLayout;
-import org.chromium.chrome.browser.ntp.SnapScrollHelper;
 import org.chromium.chrome.browser.ntp.cards.SignInPromo;
 import org.chromium.chrome.browser.ntp.cards.promo.enhanced_protection.EnhancedProtectionPromoController.EnhancedProtectionPromoStateListener;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -52,6 +48,7 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.ui.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.signin.ui.SigninPromoController;
 import org.chromium.chrome.browser.suggestions.SuggestionsMetrics;
+import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
@@ -81,9 +78,9 @@ import java.util.Locale;
  */
 @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
 public class FeedSurfaceMediator
-        implements NewTabPageLayout.ScrollDelegate, ContextMenuManager.TouchEnabledDelegate,
-                   TemplateUrlServiceObserver, ListMenu.Delegate,
-                   EnhancedProtectionPromoStateListener, IdentityManager.Observer {
+        implements FeedSurfaceScrollDelegate, TouchEnabledDelegate, TemplateUrlServiceObserver,
+                   ListMenu.Delegate, EnhancedProtectionPromoStateListener,
+                   IdentityManager.Observer {
     private static final String TAG = "FeedSurfaceMediator";
     @VisibleForTesting
     public static final String FEED_CONTENT_FIRST_LOADED_TIME_MS_UMA = "FeedContentFirstLoadedTime";
@@ -211,7 +208,6 @@ public class FeedSurfaceMediator
     private @Nullable View mEnhancedProtectionPromo;
 
     private boolean mFeedEnabled;
-    private boolean mHasHeader;
     private boolean mTouchEnabled = true;
     private boolean mStreamContentChanged;
     private int mThumbnailWidth;
@@ -264,17 +260,15 @@ public class FeedSurfaceMediator
         } else {
             mPrefChangeRegistrar = new PrefChangeRegistrar();
         }
-        mHasHeader = headerModel != null;
         mPrefChangeRegistrar.addObserver(Pref.ENABLE_SNIPPETS, this::updateContent);
 
         if (openingTabId == FeedSurfaceCoordinator.StreamTabId.DEFAULT) {
-            mRestoreTabId = getPrefService().getInteger(Pref.LAST_SEEN_FEED_TYPE);
+            mRestoreTabId = FeedSurfaceCoordinator.StreamTabId.FOR_YOU;
         } else {
             mRestoreTabId = openingTabId;
         }
 
         mSectionHeaderModel = headerModel;
-
         // This works around the bug that the out-of-screen toolbar is not brought back together
         // with the new tab page view when it slides down. This is because the RecyclerView
         // animation may not finish when content changed event is triggered and thus the new tab
@@ -321,10 +315,14 @@ public class FeedSurfaceMediator
         if (mFeedEnabled) {
             mIsLoadingFeed = true;
             mCoordinator.createStream();
-            if (mSnapScrollHelper != null) {
-                mSnapScrollHelper.setView(mCoordinator.getRecyclerView());
+            RecyclerView recyclerView = mCoordinator.getRecyclerView();
+            if (mSnapScrollHelper != null && recyclerView != null) {
+                mSnapScrollHelper.setView(recyclerView);
             }
-            initializePropertiesForStream();
+            // Only set up stream if recycler view initiation did not fail.
+            if (recyclerView != null) {
+                initializePropertiesForStream();
+            }
         } else {
             destroyPropertiesForStream();
             mCoordinator.createScrollViewForPolicy();
@@ -340,8 +338,10 @@ public class FeedSurfaceMediator
         FeedScrollState state = new FeedScrollState();
         int tabId = mSectionHeaderModel.get(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY);
         state.tabId = tabId;
-        LinearLayoutManager layoutManager =
-                (LinearLayoutManager) mCoordinator.getRecyclerView().getLayoutManager();
+        LinearLayoutManager layoutManager = null;
+        if (mCoordinator.getRecyclerView() != null) {
+            layoutManager = (LinearLayoutManager) mCoordinator.getRecyclerView().getLayoutManager();
+        }
         if (layoutManager != null) {
             state.position = layoutManager.findFirstVisibleItemPosition();
             state.lastPosition = layoutManager.findLastVisibleItemPosition();
@@ -392,49 +392,35 @@ public class FeedSurfaceMediator
      * TODO(huayinz): Introduce a Model for these properties.
      */
     private void initializePropertiesForStream() {
-        if (mHasHeader) {
-            assert !mSettingUpStreams;
-            mSettingUpStreams = true;
-            mSectionHeaderModel.set(SectionHeaderListProperties.ON_TAB_SELECTED_CALLBACK_KEY,
-                    new FeedSurfaceHeaderSelectedCallback());
+        assert !mSettingUpStreams;
+        mSettingUpStreams = true;
+        mSectionHeaderModel.set(SectionHeaderListProperties.ON_TAB_SELECTED_CALLBACK_KEY,
+                new FeedSurfaceHeaderSelectedCallback());
 
-            mPrefChangeRegistrar.addObserver(Pref.ARTICLES_LIST_VISIBLE, this::updateSectionHeader);
-            TemplateUrlServiceFactory.get().addObserver(this);
+        mPrefChangeRegistrar.addObserver(Pref.ARTICLES_LIST_VISIBLE, this::updateSectionHeader);
+        TemplateUrlServiceFactory.get().addObserver(this);
 
-            boolean suggestionsVisible = isSuggestionsVisible();
+        boolean suggestionsVisible = isSuggestionsVisible();
 
-            addHeaderAndStream(
-                    getInterestFeedHeaderText(suggestionsVisible), mCoordinator.getStream());
-            setHeaderIndicatorState(suggestionsVisible);
+        addHeaderAndStream(getInterestFeedHeaderText(suggestionsVisible), mCoordinator.getStream());
+        setHeaderIndicatorState(suggestionsVisible);
 
-            // Build menu after section enabled key is set.
-            mFeedMenuModel = buildMenuItems();
+        // Build menu after section enabled key is set.
+        mFeedMenuModel = buildMenuItems();
 
-            mCoordinator.initializeBubbleTriggering();
-            mSigninManager.getIdentityManager().addObserver(this);
+        mCoordinator.initializeBubbleTriggering();
+        mSigninManager.getIdentityManager().addObserver(this);
 
-            mSectionHeaderModel.set(
-                    SectionHeaderListProperties.MENU_MODEL_LIST_KEY, mFeedMenuModel);
-            mSectionHeaderModel.set(
-                    SectionHeaderListProperties.MENU_DELEGATE_KEY, this::onItemSelected);
+        mSectionHeaderModel.set(SectionHeaderListProperties.MENU_MODEL_LIST_KEY, mFeedMenuModel);
+        mSectionHeaderModel.set(
+                SectionHeaderListProperties.MENU_DELEGATE_KEY, this::onItemSelected);
 
-            setUpWebFeedTab();
+        setUpWebFeedTab();
 
-            // Set the current tab index to what restoreSavedInstanceState had.
-            if (mTabToStreamMap.size() <= mRestoreTabId) mRestoreTabId = 0;
-            mSectionHeaderModel.set(
-                    SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY, mRestoreTabId);
-            mSettingUpStreams = false;
-        } else {
-            // Show feed if there is no header that would allow user to hide feed.
-            // This is currently only relevant for the two panes start surface.
-            // TODO(chili): verify start surface wants to show feed even if user previously turned
-            // off feed (?).
-            mSectionHeaderModel.set(SectionHeaderListProperties.IS_SECTION_ENABLED_KEY, true);
-            // Add to tab map.
-            mTabToStreamMap.put(0, mCoordinator.getStream());
-            mSectionHeaderModel.set(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY, 0);
-        }
+        // Set the current tab index to what restoreSavedInstanceState had.
+        if (mTabToStreamMap.size() <= mRestoreTabId) mRestoreTabId = 0;
+        mSectionHeaderModel.set(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY, mRestoreTabId);
+        mSettingUpStreams = false;
 
         if (mSectionHeaderModel.get(SectionHeaderListProperties.IS_SECTION_ENABLED_KEY)) {
             bindStream(mTabToStreamMap.get(
@@ -510,7 +496,7 @@ public class FeedSurfaceMediator
         return -1;
     }
 
-    /** Adds or removes the WebFeed tab, depending on whether it should be shown. */
+    /** Adds WebFeed tab if we need it. */
     private void setUpWebFeedTab() {
         // Skip if the for-you tab hasn't been added yet.
         if (getTabIdForSection(SectionType.FOR_YOU_FEED) == -1) {
@@ -518,7 +504,7 @@ public class FeedSurfaceMediator
         }
         int tabId = getTabIdForSection(SectionType.WEB_FEED);
         boolean hasWebFeedTab = tabId != -1;
-        boolean shouldHaveWebFeedTab = mHasHeader && FeedFeatures.isWebFeedUIEnabled();
+        boolean shouldHaveWebFeedTab = FeedFeatures.isWebFeedUIEnabled();
         if (hasWebFeedTab == shouldHaveWebFeedTab) return;
         if (shouldHaveWebFeedTab) {
             addHeaderAndStream(mContext.getResources().getString(R.string.ntp_following),

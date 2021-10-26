@@ -4,6 +4,7 @@
 
 #include "ash/system/message_center/ash_notification_view.h"
 
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/message_center/message_center_style.h"
 #include "ash/test/ash_test_base.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -343,4 +344,30 @@ TEST_F(AshNotificationViewTest, LeftContentNotVisibleInGroupedNotifications) {
   notification_view()->RemoveGroupNotification(group_child->id());
   EXPECT_TRUE(left_content()->GetVisible());
 }
+
+TEST_F(AshNotificationViewTest, WarningLevelInSummaryText) {
+  auto notification = CreateTestNotification();
+  notification_view()->UpdateWithNotification(*notification);
+
+  // Notification with normal system warning level should have empty summary
+  // text.
+  EXPECT_EQ(std::u16string(),
+            header_row()->summary_text_for_testing()->GetText());
+
+  // Notification with warning/critical warning level should display a text in
+  // summary text.
+  notification->set_system_notification_warning_level(
+      message_center::SystemNotificationWarningLevel::WARNING);
+  notification_view()->UpdateWithNotification(*notification);
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_NOTIFICATION_WARNING_LABEL),
+            header_row()->summary_text_for_testing()->GetText());
+
+  notification->set_system_notification_warning_level(
+      message_center::SystemNotificationWarningLevel::CRITICAL_WARNING);
+  notification_view()->UpdateWithNotification(*notification);
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_ASH_NOTIFICATION_CRITICAL_WARNING_LABEL),
+      header_row()->summary_text_for_testing()->GetText());
+}
+
 }  // namespace ash

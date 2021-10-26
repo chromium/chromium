@@ -138,6 +138,7 @@
 <translation id="1137589305610962734">დროებითი მონაცემები</translation>
 <translation id="1137673463384776352">ბმულის <ph name="APP" />-ში გახსნა</translation>
 <translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{ახალი შეტყობინება}other{# ახალი შეტყობინება}}</translation>
+<translation id="1139138655591555207">ამ დამხმარე ბუშტის ფოკუსში მოსაქცევად დააჭირეთ |<ph name="ACCELERATOR" />|-ს.</translation>
 <translation id="1139343347646843679">Linux-ის კონფიგურაციისას შეცდომა მოხდა. გთხოვთ, დაუკავშირდეთ თქვენს ადმინისტრატორს.</translation>
 <translation id="1139923033416533844">მეხსიერების გამოყენება</translation>
 <translation id="1140351953533677694">წვდომა თქვენს Bluetooth და სერიულ მოწყობილობებზე</translation>
@@ -324,6 +325,7 @@
 <translation id="133535873114485416">შეყვანის სასურველი მეთოდი</translation>
 <translation id="1335929031622236846">თქვენი მოწყობილობის რეგისტრაცია</translation>
 <translation id="1336902454946927954">თქვენი უსაფრთხოების გასაღები ჩაკეტილია, რადგან თითის ანაბეჭდის ამოცნობა ვერ მოხერხდა. განსაბლოკად შეიყვანეთ PIN-კოდი.</translation>
+<translation id="1338631221631423366">მიმდინარეობს დაწყვილება...</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> ითხოვს ამ აპლიკაციის გახსნას.</translation>
 <translation id="1338950911836659113">წაშლა…</translation>
 <translation id="1339009753652684748">იქონიეთ წვდომა ასისტენტზე „Ok Google“-ის წარმოთქმით. ბატარეის დაზოგვის მიზნით, აირჩიეთ „ჩართული (რეკომენდებული)”. ასისტენტი რეაგირებას მოახდენს მხოლოდ მაშინ, როცა მოწყობილობა მიერთებულია ელკვების წყაროსთან ან იტენება.</translation>
@@ -531,6 +533,7 @@
 <translation id="1549275686094429035">ARC ჩართულია</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" />-ს <ph name="VOLUME_NAME" />-ზე წვდომა სურს. მას თქვენი ფაილების შეცვლა ან წაშლა შეუძლია.</translation>
 <translation id="1552301827267621511">გაფართოებამ „<ph name="EXTENSION_NAME" />“ შეცვალა ძიების პროვაიდერი <ph name="SEARCH_PROVIDER_DOMAIN" />-ით</translation>
+<translation id="1552522962296937598">Smart display lock and detect if others peeking from behind</translation>
 <translation id="1553538517812678578">შეუზღუდავo</translation>
 <translation id="1555130319947370107">ლურჯი</translation>
 <translation id="1556537182262721003">გაფართოების დირექტორიის გადატანა პროფილში ვერ მოხერხდა.</translation>
@@ -1068,6 +1071,7 @@
 <translation id="2090165459409185032">თქვენი ანგარიშის ინფორმაციის აღსადგენად, ეწვიეთ: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">ავტომატურად უკავშირდება, როცა სისტემაში შედიხართ</translation>
 <translation id="2090876986345970080">სისტემის უსაფრთხოების პარამეტრები</translation>
+<translation id="2092038932007199943">Notify you or temporary dim your screen when someone is snooping from behind</translation>
 <translation id="2096715839409389970">მესამე მხარის ქუქი-ჩანაწერების გასუფთავება</translation>
 <translation id="2098805196501063469">დარჩენილი პაროლების შემოწმება</translation>
 <translation id="2099172618127234427">თქვენ საშუალებას აძლევთ Chrome OS -ს გამართვოს თვისებები, რომელიც შეიქმნა sshd daemon და რთავს ჩატვირთვას USB დრაივიდან.</translation>
@@ -3039,9 +3043,11 @@
 <translation id="4110490973560452005">ჩამოტვირთვა დასრულდა: <ph name="FILE_NAME" />. ჩამოტვირთვების ზოლის არეზე გადასასვლელად დააჭირეთ კლავიშთა კომბინაციას: Shift+F6.</translation>
 <translation id="4110686435123617899">აირჩიეთ ალბომი <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ხაზგარეშე)</translation>
+<translation id="4112809168763360620">Smart privacy protections</translation>
 <translation id="4115002065223188701">ქსელი დიაპაზონს მიღმაა</translation>
 <translation id="4115378294792113321">მაგენტა</translation>
 <translation id="4117637339509843559">მუქი რეჟიმი</translation>
+<translation id="4117714603282104018">სენსორული პანელის შეხებადი რეაქცია</translation>
 <translation id="4118579674665737931">გთხოვთ, გადატვირთოთ მოწყობილობა და ხელახლა ცადოთ.</translation>
 <translation id="412022815379960229">გაიხსენეთ თქვენი მოგონებები Google Photos-იდან, როცა სისტემაში შესული იქნებით.</translation>
 <translation id="4120388883569225797">უსაფრთხოების ამ გასაღების გადაყენება ვერ მოხერხდა</translation>
@@ -3086,6 +3092,7 @@
 <translation id="4175137578744761569">ღია მეწამული და თეთრი</translation>
 <translation id="4175737294868205930">მუდმივი მეხსიერება</translation>
 <translation id="4176463684765177261">გამორთული</translation>
+<translation id="417971315778328003">გასაგრძელებლად დააყენეთ PIN-კოდი ან პაროლი</translation>
 <translation id="4180788401304023883">წავშალოთ CA სერტიფიკატი „<ph name="CERTIFICATE_NAME" />“?</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">ენები</translation>
@@ -3120,6 +3127,7 @@
 <translation id="4231095370974836764">დააინსტალირეთ აპები და თამაშები Google Play-დან თქვენს <ph name="DEVICE_TYPE" />-ზე. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos-ის კონფიგურაცია</translation>
 <translation id="4235965441080806197">შესვლის გაუქმება</translation>
+<translation id="4238175133949127631">Temporary dim screen</translation>
 <translation id="4241182343707213132">ორგანიზაციის აპების განახლებისთვის საჭიროა გადატვირთვა</translation>
 <translation id="4242145785130247982">კლიენტთა რამდენიმე სერტიფიკატის გამოყენება მხარდაუჭერელია</translation>
 <translation id="4242533952199664413">პარამეტრების გახსნა</translation>
@@ -4637,6 +4645,7 @@
 <translation id="5901494423252125310">პრინტერის კარი ღიაა</translation>
 <translation id="5901630391730855834">ყვითელი</translation>
 <translation id="5904614460720589786"><ph name="APP_NAME" />-ის დაყენება ვერ მოხერხდა კონფიგურაციის პრობლემის გამო. გთხოვთ, დაუკავშირდეთ ადმინისტრატორს. შეცდომის კოდი: <ph name="ERROR_CODE" />.</translation>
+<translation id="5906278356170001460">This feature uses the front camera for detection. The data is securely processed and discarded afterwards. Google doesn't use your data for any other purposes.</translation>
 <translation id="5906655207909574370">განახლება თითქმის მზად არის! დასასრულებლად, გადატვირთეთ თქვენი მოწყობილობა.</translation>
 <translation id="5906732635754427568">ამ აპთან დაკავშირებული მონაცემები ამ მოწყობილობიდან ამოიშლება.</translation>
 <translation id="5908474332780919512">აპის გაშვება სისტემაში შესვლისას</translation>
@@ -4789,6 +4798,7 @@
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />შენიშვნა:<ph name="END_BOLD" /> <ph name="SUPERVISED_USER_NAME" />-ის პერსონალურ შედეგებზე წვდომა, შესაძლოა, მოახერხოს ნებისმიერმა, ვისაც მსგავსი ხმა ან მისი ჩანაწერი ექნება. ბატარეის დაზოგვის მიზნით, <ph name="SUPERVISED_USER_NAME" />-ის ასისტენტის პარამეტრებიდან შეგიძლიათ აირჩიოთ, რომ „Ok Google“-მა იმუშაოს მხოლოდ მაშინ, როცა ეს მოწყობილობა მიერთებულია ელკვების წყაროსთან.</translation>
 <translation id="6064217302520318294">ეკრანის დაბლოკვა</translation>
 <translation id="6065289257230303064">სერტიფიკატის სუბიექტის დირექტორიის ატრიბუტები</translation>
+<translation id="6065691521254183160">ამ დამხმარე ბუშტსა და მის სამიზნე ელემენტს შორის ფოკუსირების გადასართველად დააჭირეთ |<ph name="ACCELERATOR" />|-ს.</translation>
 <translation id="6066794465984119824">სურათის ჰეში დაუყენებელია</translation>
 <translation id="6069464830445383022">შედით Chromebook-ში თქვენი Google ანგარიშით</translation>
 <translation id="6069671174561668781">ფონის დაყენება</translation>
@@ -4814,6 +4824,7 @@
 <translation id="6085886413119427067">განსაზღვრავს დაცული კავშირით ვებსაიტებთან დაკავშირების ხერხს</translation>
 <translation id="6086004606538989567">ანგარიშს, რომელიც დაადასტურეთ, არ აქვს ამ მოწყობილობაზე წვდომის უფლება.</translation>
 <translation id="6086846494333236931">დაინსტალირებულია თქვენი ადმინისტრატორის მიერ</translation>
+<translation id="6086898065659145625">Smart Lock ავტომატურად შეგიყვანთ სისტემაში, როცა ტელეფონი ახლოს გექნებათ.</translation>
 <translation id="6087960857463881712">არაჩვეულებრივი სახე</translation>
 <translation id="608912389580139775">ეს გვერდი საკითხავ სიას რომ დაამატოთ, დააწკაპუნეთ სანიშნეს ხატულაზე</translation>
 <translation id="6091761513005122595">გაზიარება მიერთებულია წარმატებით.</translation>
@@ -5279,6 +5290,7 @@
 <translation id="659005207229852190">უსაფრთხოების შემოწმება შესრულდა.</translation>
 <translation id="6590458744723262880">საქაღალდის გადარქმევა</translation>
 <translation id="6592267180249644460">WebRTC ჟურნალი გადაღებულია <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
+<translation id="659230975550262204">Show me an eye icon in the status area</translation>
 <translation id="6592808042417736307">თქვენი თითის ანაბეჭდი აღბეჭდილია</translation>
 <translation id="6593881952206664229">საავტორო უფლებებით დაცული მედიაფაილები, შესაძლოა, არ დაიკრას</translation>
 <translation id="6594011207075825276">მიმდინარეობს სერიული მოწყობილობების პოვნა…</translation>
@@ -5479,6 +5491,7 @@
 <translation id="6810613314571580006">ავტორიზაციის შენახული მონაცემების მეშვეობით, ვებსაიტებში შესვლა ავტომატურად მოხდება. ამ ფუნქციის გათიშვის შემთხვევაში, ვებსაიტში შესვლის ყოველი მცდელობისას დადასტურება მოგიწევთ.</translation>
 <translation id="6810768462515084623">როგორც ჩანს, თქვენი პაროლის მოქმედების ვადა ამოიწურა. გთხოვთ, განაახლოთ ის თქვენს სხვა მოწყობილობაზე, ხოლო შემდეგ ხელახლა ცადოთ.</translation>
 <translation id="6811034713472274749">გვერდი მზად არის სანახავად</translation>
+<translation id="6811151703183939603">მყარი</translation>
 <translation id="6811332638216701903">DHCP ჰოსტის სახელი</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> არ შეიძლება გაიშვას, როგორც ძირეული.</translation>
 <translation id="6812841287760418429">ცვლილებების შენახვა</translation>
@@ -5717,6 +5730,7 @@
 <translation id="7053983685419859001">დაბლოკვა</translation>
 <translation id="7055152154916055070">გადამისამართება დაიბლოკა:</translation>
 <translation id="7055451306017383754">გაზიარების გაუქმება ვერ მოხერხდა, ვინაიდან ამ საქაღალდეს ერთ-ერთი აპლიკაცია იყენებს. ამ საქაღალდის გაზიარება გაუქმდება Parallels Desktop-ის მომდევნო გათიშვისას.</translation>
+<translation id="7056011684066172642">Screen locks automatically if you walk off, and won't turn off if you're in front of it</translation>
 <translation id="7056418393177503237">{0,plural, =1{ინკოგნიტო}other{# გახსნილი ინკოგნიტო ფანჯარა}}</translation>
 <translation id="7056526158851679338">მოწყობილობების შ&amp;ემოწმება</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{უსაფრთხოების შემოწმება შესრულდა 1 წუთის წინ}other{უსაფრთხოების შემოწმება შესრულდა {NUM_MINS} წუთის წინ}}</translation>
@@ -6432,6 +6446,7 @@
 <translation id="7797246427375693110">ჩართული / ავტომატურად გამოირთვება <ph name="TIME" />-ზე</translation>
 <translation id="7797571222998226653">გამორთული</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> დაბლოკილია ავტომატურად</translation>
+<translation id="7799220949286681310">Smart screen lock</translation>
 <translation id="7799299114731150374">ფონი წარმატებით დაყენდა</translation>
 <translation id="7799817062559422778">ღია რეჟიმი</translation>
 <translation id="7800159967992492578">გვერდითი ძიების გადართვა. გვერდითი ძიება გააქტიურებულია.</translation>
@@ -6536,6 +6551,7 @@
 <translation id="7887864092952184874">Bluetooth მაუსი დაწყვილებულია</translation>
 <translation id="7889371445710865055">შეცვალეთ კარნახის ენა</translation>
 <translation id="7890147169288018054">ქსელის ინფორმაციის (მაგ. IP ან MAC მისამართის) ნახვა</translation>
+<translation id="7892384782944609022">დაწყვილება ვერ მოხერხდა. აირჩიეთ მოწყობილობა ხელახლა საცდელად.</translation>
 <translation id="7893008570150657497">წვდომა ფოტოებზე, მუსიკაზე და სხვა მედიაზე თქვენი კომპიუტერიდან</translation>
 <translation id="7893153962594818789">ამ <ph name="DEVICE_TYPE" />-ზე გამორთულია Bluetooth. შეიყვანეთ თქვენი პაროლი და ჩართეთ Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (ნაგულისხმევი)</translation>
@@ -6580,6 +6596,7 @@
 <translation id="7933518760693751884">გვერდი მოგვიანებით წასაკითხად შესანახავად დააწკაპუნეთ სანიშნეს ხატულაზე</translation>
 <translation id="7933634003144813719">გაზიარებული საქაღალდეების მართვა</translation>
 <translation id="793531125873261495">ვირტუალური მოწყობილობის ჩამოტვირთვა ვერ ხერხდება. გთხოვთ, ცადოთ ხელახლა.</translation>
+<translation id="7935451262452051102">შესრულდა <ph name="PERCENT" />%</translation>
 <translation id="7938594894617528435">ამჟამად ოფლაინშია</translation>
 <translation id="7939062555109487992">გაფართოებული ვარიანტები</translation>
 <translation id="7939412583708276221">მაინც შენახვა</translation>
@@ -6711,6 +6728,7 @@
 <translation id="8062844841289846053">{COUNT,plural, =1{ქაღალდის 1 ფურცელი}other{ქაღალდის {COUNT} ფურცელი}}</translation>
 <translation id="8063235345342641131">ნაგულისხმევი მწვანე ავატარი</translation>
 <translation id="8063535366119089408">ფაილის ნახვა</translation>
+<translation id="8064269957688233720">დაიცავით თქვენს ტელეფონზე არსებული მონაცემები ამ Chromebook-ის ძილის რეჟიმიდან გამოსვლის შემდეგ.</translation>
 <translation id="8064279191081105977">ჯგუფი „<ph name="GROUP_NAME" />“ — <ph name="GROUP_CONTENTS" /> — <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">დაკავშირების დიალოგური ფანჯარა</translation>
 <translation id="8068253693380742035">შეეხეთ შესასვლელად</translation>
@@ -6770,6 +6788,7 @@
 <translation id="811994229154425014">წერტილის აკრეფა ორმაგი შორისით</translation>
 <translation id="8120505434908124087">eSIM პროფილის დაინსტალირება</translation>
 <translation id="812260729110117038">რეკლამის განმთავსებლები და გამომცემლები რეკლამის ეფექტურობის განსაზღვრას შეძლებენ იმგვარად, რომ სხვადასხვა საიტზე თვალი არ გადევნონ.</translation>
+<translation id="81231173274944570">შეხებადი რეაქციის ჩართვა. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="81238879832906896">ყვითელი და თეთრი ყვავილი</translation>
 <translation id="8124313775439841391">იმართება ONC</translation>
 <translation id="813082847718468539">საიტის ინფორმაციის ნახვა</translation>
@@ -7363,6 +7382,7 @@
 <translation id="8770406935328356739">გაფართოების ძირეული დირექტორია</translation>
 <translation id="8771300903067484968">საწყისი გვერდის ფონი გადაყენებულია ნაგულისხმევ ფონზე.</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" />-ის შენახვა</translation>
+<translation id="8773350724590665675">Snooping protection</translation>
 <translation id="8774379074441005279">დაადასტურეთ აღდგენა</translation>
 <translation id="8774934320277480003">ზედა მინდორი</translation>
 <translation id="8775144690796719618">URL არასწორია</translation>
@@ -7844,6 +7864,7 @@
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{აპლიკაცია}other{აპლიკაციები}}</translation>
 <translation id="964790508619473209">ეკრანის მოწყობა</translation>
 <translation id="965211523698323809">გაგზავნეთ და მიიღეთ ტექსტური შეტყობინებები თქვენს <ph name="DEVICE_TYPE" />-ზე. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
+<translation id="96535553604365597">Google Cast-ის შესახებ შეტყობინება</translation>
 <translation id="967398046773905967">საიტებისთვის HID მოწყობილობებზე წვდომის აკრძალვა</translation>
 <translation id="967624055006145463">შენახული მონაცემები</translation>
 <translation id="96774243435178359">მართული პრინტერები</translation>

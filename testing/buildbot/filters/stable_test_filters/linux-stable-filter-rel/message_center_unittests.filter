@@ -1,5 +1,4 @@
 -NotificationListTest.GetNotificationsByOriginUrl
--NotificationViewTest.PreferredSize
--NotificationViewTest.ExpandLongMessage
--NotificationViewTest.UpdateType
 -NotificationViewBaseTest.ManuallyExpandedOrCollapsed
+-NotificationViewTest.ExpandLongMessage
+-NotificationViewTest.PreferredSize

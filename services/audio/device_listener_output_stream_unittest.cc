@@ -285,5 +285,38 @@ TEST_F(DeviceListenerOutputStreamTest, ErrorThenDeviceChange) {
   mock_audio_manager.Shutdown();
 }
 
+// Verifies DeviceListenerOutputStream can be stopped after receiving an error.
+TEST_F(DeviceListenerOutputStreamTest, ErrorThenStop) {
+  base::test::SingleThreadTaskEnvironment task_environment(
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+  FakeAudioManagerForDeviceChange mock_audio_manager;
+  MockAudioOutputStream mock_stream;
+  MockAudioSourceCallback mock_callback;
+
+  // |stream_under_test| should not call its error callback after it has been
+  // stopped.
+  EXPECT_CALL(mock_callback, OnError(_)).Times(0);
+
+  DeviceListenerOutputStream* stream_under_test =
+      new DeviceListenerOutputStream(
+          &mock_audio_manager, &mock_stream,
+          base::BindRepeating(
+              &DeviceListenerOutputStreamTest::DeviceChangeCallbackCalled,
+              base::Unretained(this)));
+
+  stream_under_test->Open();
+  stream_under_test->Start(&mock_callback);
+
+  // Call stop() immediately after an error.
+  mock_stream.SimulateError(ErrorType::kUnknown);
+  stream_under_test->Stop();
+
+  // Reporting the error should be delayed by 1s.
+  task_environment.FastForwardUntilNoTasksRemain();
+
+  stream_under_test->Close();
+  mock_audio_manager.Shutdown();
+}
+
 }  // namespace
 }  // namespace audio

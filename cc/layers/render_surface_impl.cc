@@ -402,6 +402,8 @@ RenderSurfaceImpl::CreateRenderPass() {
   pass->cache_render_pass = ShouldCacheRenderSurface();
   pass->has_damage_from_contributing_content =
       HasDamageFromeContributingContent();
+  pass->shared_element_resource_id =
+      OwningEffectNode()->shared_element_resource_id;
   return pass;
 }
 
@@ -411,6 +413,12 @@ void RenderSurfaceImpl::AppendQuads(DrawMode draw_mode,
   gfx::Rect unoccluded_content_rect =
       occlusion_in_content_space().GetUnoccludedContentRect(content_rect());
   if (unoccluded_content_rect.IsEmpty())
+    return;
+
+  // If this render surface has a valid |shared_element_resource_id| then its
+  // being used to produce live content. Its content will be drawn to its
+  // actual position in the Viz process.
+  if (OwningEffectNode()->shared_element_resource_id.IsValid())
     return;
 
   const PropertyTrees* property_trees = layer_tree_impl_->property_trees();

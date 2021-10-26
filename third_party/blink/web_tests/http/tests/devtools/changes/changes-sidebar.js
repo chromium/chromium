@@ -4,7 +4,6 @@
 
 (async function() {
   TestRunner.addResult(`Tests that the changes sidebar contains the changed uisourcecodes.\n`);
-  await TestRunner.loadModule('changes');
   await TestRunner.loadLegacyModule('workspace_diff');
   await TestRunner.loadLegacyModule('changes');
 

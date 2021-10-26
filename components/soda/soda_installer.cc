@@ -94,9 +94,8 @@ void SodaInstaller::Init(PrefService* profile_prefs,
       // Dictation on ChromeOS.
       // TODO(crbug.com/1165437): Register the default language used by
       // Projector on ChromeOS.
-      RegisterLanguage(
-          profile_prefs->GetString(prefs::kLiveCaptionLanguageCode),
-          global_prefs);
+      RegisterLanguage(prefs::GetLiveCaptionLanguageCode(profile_prefs),
+                       global_prefs);
     }
 
     for (const auto& language :

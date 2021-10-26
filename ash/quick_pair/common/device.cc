@@ -35,16 +35,26 @@ Device::Device(std::string metadata_id,
       ble_address(std::move(ble_address)),
       protocol(protocol) {}
 
-Device::Device(std::string metadata_id,
-               std::string ble_address,
-               Protocol protocol,
-               const std::vector<uint8_t>& additional_data)
-    : metadata_id(std::move(metadata_id)),
-      ble_address(std::move(ble_address)),
-      protocol(protocol),
-      additional_data_(additional_data) {}
-
 Device::~Device() = default;
+
+absl::optional<std::vector<uint8_t>> Device::GetAdditionalData(
+    const AdditionalDataType& type) const {
+  auto it = additional_data_.find(type);
+
+  if (it == additional_data_.end())
+    return absl::nullopt;
+
+  return it->second;
+}
+
+void Device::SetAdditionalData(const AdditionalDataType& type,
+                               const std::vector<uint8_t>& data) {
+  auto result = additional_data_.emplace(type, data);
+
+  if (!result.second) {
+    result.first->second = data;
+  }
+}
 
 std::ostream& operator<<(std::ostream& stream, const Device& device) {
   return OutputToStream(stream, device.metadata_id, device.ble_address,

@@ -95,6 +95,9 @@
             "latest_upload": {
                 "gcs_path": "experimental/Win_x64/LAST_CHANGE",
                 "gcs_file_content": "{%position%}"
+            },
+            "revisions_file": {
+                "gcs_path": "experimental/Win_x64/{%position%}/REVISIONS"
             }
         },
         {

@@ -22,6 +22,7 @@
 #include "components/ukm/ios/ukm_reporting_ios_util.h"
 #import "ios/chrome/app/application_delegate/metric_kit_subscriber.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
+#include "ios/chrome/app/startup/ios_enable_sandbox_dump_buildflags.h"
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/browser/crash_report/crash_helper.h"
@@ -91,6 +92,73 @@ base::TimeDelta TimeDeltaSinceAppLaunchFromProcess() {
   NSDate* date = [NSDate dateWithTimeIntervalSince1970:time_since_1970];
   return base::Seconds(-date.timeIntervalSinceNow);
 }
+
+#if BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
+void DumpEnvironment(id<StartupInformation> startup_information) {
+  if (![[NSUserDefaults standardUserDefaults]
+          boolForKey:@"EnableDumpEnvironment"]) {
+    return;
+  }
+  NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
+                                                       NSUserDomainMask, YES);
+  NSError* error = nil;
+  NSString* document_directory = [paths objectAtIndex:0];
+  NSString* environment_directory =
+      [document_directory stringByAppendingPathComponent:@"environment"];
+  if (![[NSFileManager defaultManager]
+          fileExistsAtPath:environment_directory]) {
+    [[NSFileManager defaultManager] createDirectoryAtPath:environment_directory
+                              withIntermediateDirectories:NO
+                                               attributes:nil
+                                                    error:&error];
+    if (error) {
+      return;
+    }
+  }
+  NSDate* now_date = [NSDate date];
+  NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
+  formatter.dateFormat = @"yyyyMMdd-HHmmss";
+  formatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+
+  NSString* file_name = [formatter stringFromDate:now_date];
+
+  NSDictionary* environment = [[NSProcessInfo processInfo] environment];
+  base::TimeTicks now = base::TimeTicks::Now();
+  const base::TimeDelta processStartToNowTime =
+      TimeDeltaSinceAppLaunchFromProcess();
+  const base::TimeDelta loadToNowTime = now - g_load_time;
+  const base::TimeDelta mainToNowTime =
+      now - [startup_information appLaunchTime];
+  const base::TimeDelta didFinishLaunchingToNowTime =
+      now - [startup_information didFinishLaunchingTime];
+  const base::TimeDelta sceneConnectionToNowTime =
+      now - [startup_information firstSceneConnectionTime];
+
+  NSDictionary* dict = @{
+    @"environment" : environment,
+    @"now" : file_name,
+    @"processStartToNowTime" : @(processStartToNowTime.InMilliseconds()),
+    @"loadToNowTime" : @(loadToNowTime.InMilliseconds()),
+    @"mainToNowTime" : @(mainToNowTime.InMilliseconds()),
+    @"didFinishLaunchingToNowTime" :
+        @(didFinishLaunchingToNowTime.InMilliseconds()),
+    @"sceneConnectionToNowTime" : @(sceneConnectionToNowTime.InMilliseconds()),
+  };
+
+  NSData* data =
+      [NSJSONSerialization dataWithJSONObject:dict
+                                      options:NSJSONWritingPrettyPrinted
+
+                                        error:&error];
+  if (error) {
+    return;
+  }
+
+  NSString* file_path =
+      [environment_directory stringByAppendingPathComponent:file_name];
+  [data writeToFile:file_path atomically:YES];
+}
+#endif  // BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
 }  // namespace
 
 // A class to log the "load" time in uma.
@@ -270,6 +338,9 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
     base::UmaHistogramTimes("Startup.ColdStartWithoutExternalURLTime",
                             mainToNowTime);
   }
+#if BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
+  DumpEnvironment(startupInformation);
+#endif  // BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
 }
 
 + (void)logDateInUserDefaults {

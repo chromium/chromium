@@ -25,7 +25,7 @@
 <translation id="1017280919048282932">新增至字典(&amp;A)</translation>
 <translation id="1018656279737460067">已取消</translation>
 <translation id="1022489261739821355">正在顯示您的 <ph name="BEGIN_LINK" />Google 帳戶<ph name="END_LINK" />密碼</translation>
-<translation id="1024304340821219537">你與網站分享的內容</translation>
+<translation id="1024304340821219537">您與網站分享的內容</translation>
 <translation id="1026655690966755180">新增連接埠</translation>
 <translation id="1026822031284433028">載入圖片</translation>
 <translation id="1029317248976101138">放大</translation>
@@ -93,7 +93,7 @@
 <translation id="1088654056000736875">Chrome 正在移除電腦中的有害軟件…</translation>
 <translation id="1088659085457112967">進入閱讀器模式</translation>
 <translation id="1090126737595388931">沒有執行中的背景應用程式</translation>
-<translation id="1090541560108055381">配對前，請確認兩部裝置上均顯示這組代碼</translation>
+<translation id="1090541560108055381">在進行配對前，請先確認兩部裝置所顯示的代碼相同</translation>
 <translation id="1091767800771861448">按下 ESCAPE 鍵可略過 (只限非官方版本)。</translation>
 <translation id="1093457606523402488">可見的網絡：</translation>
 <translation id="1094607894174825014">已在「<ph name="DEVICE_NAME" />」上作出包含無效偏移的讀取或寫入操作請求。</translation>
@@ -373,7 +373,7 @@
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> 將在更新完成時重新啟動。</translation>
 <translation id="139013308650923562">可以使用裝置上安裝的字型</translation>
 <translation id="1390548061267426325">在一般分頁中開啟</translation>
-<translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> 未獲授權，因此無法透過「<ph name="PRINTER_NAME" />」列印。請與管理員聯絡。</translation>
+<translation id="1390907927270446471">「<ph name="PROFILE_USERNAME" />」無權透過「<ph name="PRINTER_NAME" />」列印。請聯絡您的管理員。</translation>
 <translation id="1393283411312835250">太陽和雲</translation>
 <translation id="1395730723686586365">更新程式已啟動</translation>
 <translation id="1396139853388185343">設定打印機時發生錯誤</translation>
@@ -1432,7 +1432,7 @@
 <translation id="244231003699905658">地址無效。請檢查地址，然後再試一次。</translation>
 <translation id="2442916515643169563">文字陰影</translation>
 <translation id="2443487764245141020">網站亦可能需要透過識別碼來辨識您的裝置</translation>
-<translation id="244475495405467108">關閉左側的分頁</translation>
+<translation id="244475495405467108">關閉左側分頁</translation>
 <translation id="2445081178310039857">請指定擴充功能根目錄。</translation>
 <translation id="2445484935443597917">建立新的設定檔</translation>
 <translation id="244641233057214044">與您的搜尋相關</translation>
@@ -2088,6 +2088,7 @@
 <translation id="310671807099593501">網站正在使用藍牙</translation>
 <translation id="3108931485517391283">無法接收</translation>
 <translation id="3109724472072898302">已收合</translation>
+<translation id="311214366526552035">仍要下載</translation>
 <translation id="311394601889664316">不允許網站編輯裝置上的檔案或資料夾</translation>
 <translation id="3115147772012638511">等候快取…</translation>
 <translation id="3115580024857770654">收合全部</translation>
@@ -2133,7 +2134,7 @@
 <translation id="3154351730702813399">裝置管理員可能會監控您的瀏覽活動。</translation>
 <translation id="3154429428035006212">離線超過一個月</translation>
 <translation id="3157387275655328056">新增至閱讀清單</translation>
-<translation id="3157665603750177985">如果你未使用無痕模式，網站就可以透過 Cookie 查看你在各網站上的瀏覽活動，並用於放送個人化廣告等活動</translation>
+<translation id="3157665603750177985">當您不在無痕模式時，網站可使用 Cookie 來查看您在各網站的瀏覽活動，藉此達到例如放送個人化廣告等目的</translation>
 <translation id="3157931365184549694">還原</translation>
 <translation id="3158033540161634471">設定指紋</translation>
 <translation id="3158770568048368350">這可能導致流動網絡暫時中斷連線</translation>
@@ -2302,7 +2303,7 @@
 <translation id="3361421571228286637">{COUNT,plural, =1{「<ph name="DEVICE_NAME" />」現在與您分享 <ph name="ATTACHMENTS" />。}other{「<ph name="DEVICE_NAME" />」現在與您分享 <ph name="ATTACHMENTS" />。}}</translation>
 <translation id="3364986687961713424">來自管理員的訊息：<ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">使用 Ctrl 或 Alt 鍵</translation>
-<translation id="3367057768351048705">網站只能使用 Cookie 查看你在該網站上的瀏覽活動</translation>
+<translation id="3367057768351048705">網站只能使用 Cookie 查看您在該網站的瀏覽活動</translation>
 <translation id="3368922792935385530">已連線</translation>
 <translation id="3369067987974711168">顯示呢個連接埠嘅更多操作</translation>
 <translation id="3369624026883419694">正在解析主機…</translation>
@@ -2357,7 +2358,7 @@
 <translation id="3420501302812554910">必須重設內部安全密鑰</translation>
 <translation id="3421387094817716717">橢圓曲線公開金鑰</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />注意：<ph name="END_BOLD" />如果有人與您的聲音相似或有您的錄音，便可存取您的個人化結果或「Google 助理」。</translation>
-<translation id="3421726884497337397">選擇要在何時封鎖第三方 Cookie</translation>
+<translation id="3421726884497337397">選擇何時封鎖第三方 Cookie</translation>
 <translation id="3422291238483866753">在網站要求建立您身處環境的 3D 地圖或追蹤攝錄機位置時詢問您 (建議)</translation>
 <translation id="3423463006624419153">在您的「<ph name="PHONE_NAME_1" />」和「<ph name="PHONE_NAME_2" />」上：</translation>
 <translation id="3423858849633684918">請重新啟動 <ph name="PRODUCT_NAME" /></translation>
@@ -2369,6 +2370,7 @@
 <translation id="3429160811076349561">試用功能已關閉</translation>
 <translation id="3429271624041785769">網頁內容語言</translation>
 <translation id="3429275422858276529">將此網頁加入書籤，以便日後輕鬆查找</translation>
+<translation id="343115368966109153">要下載「<ph name="FILE_NAME" />」嗎？使用這部裝置的所有人都會看到該檔案。</translation>
 <translation id="3432227430032737297">移除所有顯示項目</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433621910545056227">糟糕！系統無法鎖定裝置安裝時的屬性。</translation>
@@ -2710,6 +2712,7 @@
 <translation id="3777806571986431400">擴充功能已啟用</translation>
 <translation id="3778152852029592020">下載操作已取消。</translation>
 <translation id="3778208826288864398">由於您輸入太多次錯誤的 PIN，因此安全密鑰已被鎖定。您需要重設安全密鑰。</translation>
+<translation id="3778369586810509692">系統會將這個檔案儲存在裝置上，所有人都能查看。</translation>
 <translation id="3778740492972734840">開發人員工具(&amp;D)</translation>
 <translation id="3778868487658107119">度身訂造的「Google 助理」隨時為您提供協助，不但可根據您的問題提供解答，還可以按指令執行各種操作。</translation>
 <translation id="3781742599892759500">Linux 的麥克風存取權</translation>
@@ -2965,7 +2968,7 @@
 <translation id="4021279097213088397">–</translation>
 <translation id="402184264550408568">(TCP)</translation>
 <translation id="4021909830315618592">複製版本詳情</translation>
-<translation id="4021941025609472374">關閉左側的分頁</translation>
+<translation id="4021941025609472374">關閉左側分頁</translation>
 <translation id="4022426551683927403">新增到字典(&amp;A)</translation>
 <translation id="4023146161712577481">正在確定裝置設定。</translation>
 <translation id="4025039777635956441">將已選取的網站設定為靜音</translation>
@@ -3888,7 +3891,7 @@
 <translation id="5053962746715621840">使用「Google 智能鏡頭」搜尋圖片</translation>
 <translation id="5056950756634735043">正在連線至容器</translation>
 <translation id="5057110919553308744">當您點擊擴充程式時</translation>
-<translation id="505776528429481161">輕鬆連線並設定附近的裝置</translation>
+<translation id="505776528429481161">輕鬆連接和設定附近的裝置</translation>
 <translation id="5059241099014281248">限制登入</translation>
 <translation id="5059526285558225588">選擇分享內容</translation>
 <translation id="5060332552815861872">有 1 部可以儲存嘅打印機。</translation>
@@ -5141,7 +5144,7 @@
 <translation id="6418160186546245112">還原至先前安裝的 <ph name="IDS_SHORT_PRODUCT_NAME" /> 版本</translation>
 <translation id="6418481728190846787">永久移除所有應用程式的存取權</translation>
 <translation id="6418511932144861495">安裝重要更新</translation>
-<translation id="641899100123938294">掃描新裝置</translation>
+<translation id="641899100123938294">掃瞄新裝置</translation>
 <translation id="6419524191360800346">可以升級至 Debian 11 (Bullseye)</translation>
 <translation id="6419546358665792306">載入已解除壓縮的擴充程式</translation>
 <translation id="6419843101460769608">不允許任何網站存取藍牙裝置</translation>
@@ -5687,7 +5690,7 @@
 <translation id="7000206553895739324">已連接 <ph name="PRINTER_NAME" />，但需要設定</translation>
 <translation id="7000347579424117903">必須以 Ctrl、Alt 鍵或搜尋鍵開頭</translation>
 <translation id="7001036685275644873">正在備份 Linux 應用程式和檔案</translation>
-<translation id="7001066449188684145">必須驗證身分才能透過「<ph name="PRINTER_NAME" />」列印。請與管理員聯絡。</translation>
+<translation id="7001066449188684145">必須驗證身分，才能透過「<ph name="PRINTER_NAME" />」列印。請聯絡您的管理員。</translation>
 <translation id="7002055706763150362">如要設定 Smart Lock (Chromebook 版)，Google 必須確認您的身分。輸入您的密碼即可開始。</translation>
 <translation id="7003339318920871147">網絡數據庫</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} 個檔案}other{{COUNT} 個檔案}}</translation>

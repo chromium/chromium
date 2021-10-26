@@ -4,13 +4,21 @@
 
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_mediator.h"
 
+#import "base/ios/ios_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/sys_string_conversions.h"
+#include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/common/bookmark_pref_names.h"
+#import "components/prefs/ios/pref_observer_bridge.h"
+#include "components/prefs/pref_change_registrar.h"
+#include "components/prefs/pref_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
+#include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/browser/policy/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/ui/activity_services/canonical_url_retriever.h"
+#include "ios/chrome/browser/ui/bookmarks/bookmark_model_bridge_observer.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/find_in_page_commands.h"
@@ -19,10 +27,15 @@
 #import "ios/chrome/browser/ui/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
+#import "ios/chrome/browser/window_activities/window_activity_helpers.h"
 #include "ios/chrome/grit/ios_strings.h"
+#include "ios/web/common/user_agent.h"
+#import "ios/web/public/navigation/navigation_item.h"
+#import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -61,7 +74,21 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
 
 }  // namespace
 
-@interface OverflowMenuMediator ()
+@interface OverflowMenuMediator () <BookmarkModelBridgeObserver,
+                                    CRWWebStateObserver,
+                                    PrefObserverDelegate,
+                                    WebStateListObserving> {
+  std::unique_ptr<web::WebStateObserverBridge> _webStateObserver;
+  std::unique_ptr<WebStateListObserverBridge> _webStateListObserver;
+
+  // Bridge to register for bookmark changes.
+  std::unique_ptr<bookmarks::BookmarkModelBridge> _bookmarkModelBridge;
+
+  // Pref observer to track changes to prefs.
+  std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
+  // Registrar for pref changes notifications.
+  std::unique_ptr<PrefChangeRegistrar> _prefChangeRegistrar;
+}
 
 // The current web state.
 @property(nonatomic, assign) web::WebState* webState;
@@ -75,13 +102,21 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
 @property(nonatomic, strong) OverflowMenuDestination* settingsDestination;
 @property(nonatomic, strong) OverflowMenuDestination* siteInfoDestination;
 
-@property(nonatomic, strong) OverflowMenuAction* reloadStopAction;
-@property(nonatomic, strong) OverflowMenuAction* openIncognitoTabAction;
+@property(nonatomic, strong) OverflowMenuActionGroup* appActionsGroup;
+@property(nonatomic, strong) OverflowMenuActionGroup* pageActionsGroup;
 
-@property(nonatomic, strong) OverflowMenuAction* bookmarkAction;
+@property(nonatomic, strong) OverflowMenuAction* reloadAction;
+@property(nonatomic, strong) OverflowMenuAction* stopLoadAction;
+@property(nonatomic, strong) OverflowMenuAction* openTabAction;
+@property(nonatomic, strong) OverflowMenuAction* openIncognitoTabAction;
+@property(nonatomic, strong) OverflowMenuAction* openNewWindowAction;
+
+@property(nonatomic, strong) OverflowMenuAction* addBookmarkAction;
+@property(nonatomic, strong) OverflowMenuAction* editBookmarkAction;
 @property(nonatomic, strong) OverflowMenuAction* readLaterAction;
 @property(nonatomic, strong) OverflowMenuAction* translateAction;
-@property(nonatomic, strong) OverflowMenuAction* requestSiteAction;
+@property(nonatomic, strong) OverflowMenuAction* requestDesktopAction;
+@property(nonatomic, strong) OverflowMenuAction* requestMobileAction;
 @property(nonatomic, strong) OverflowMenuAction* findInPageAction;
 @property(nonatomic, strong) OverflowMenuAction* textZoomAction;
 
@@ -90,10 +125,7 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
 
 @end
 
-@implementation OverflowMenuMediator {
-  std::unique_ptr<web::WebStateObserverBridge> _webStateObserver;
-  std::unique_ptr<WebStateListObserverBridge> _webStateListObserver;
-}
+@implementation OverflowMenuMediator
 
 @synthesize overflowMenuModel = _overflowMenuModel;
 
@@ -107,8 +139,15 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
 }
 
 - (void)dealloc {
+  // Remove the model link so the other deallocations don't update the model
+  // and thus the UI as the UI is dismissing.
+  _overflowMenuModel = nil;
+
   self.webState = nullptr;
   self.webStateList = nullptr;
+
+  self.bookmarkModel = nullptr;
+  self.prefService = nullptr;
 }
 
 #pragma mark - Property getters/setters
@@ -145,6 +184,34 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
 
   if (_webStateList) {
     _webStateList->AddObserver(_webStateListObserver.get());
+  }
+}
+
+- (void)setBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel {
+  _bookmarkModelBridge.reset();
+
+  _bookmarkModel = bookmarkModel;
+
+  if (bookmarkModel) {
+    _bookmarkModelBridge =
+        std::make_unique<bookmarks::BookmarkModelBridge>(self, bookmarkModel);
+  }
+
+  [self updateModel];
+}
+
+- (void)setPrefService:(PrefService*)prefService {
+  _prefObserverBridge.reset();
+  _prefChangeRegistrar.reset();
+
+  _prefService = prefService;
+
+  if (_prefService) {
+    _prefChangeRegistrar = std::make_unique<PrefChangeRegistrar>();
+    _prefChangeRegistrar->Init(prefService);
+    _prefObserverBridge.reset(new PrefObserverBridge(self));
+    _prefObserverBridge->ObserveChangesForPreference(
+        bookmarks::prefs::kEditBookmarksEnabled, _prefChangeRegistrar.get());
   }
 }
 
@@ -189,30 +256,45 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
                                       [weakSelf openSiteInformation];
                                     });
 
-  // The reload action's handler depends on the page state, so it's set
-  // elsewhere.
-  self.reloadStopAction = CreateOverflowMenuAction(
-      IDS_IOS_TOOLS_MENU_RELOAD, @"overflow_menu_action_reload",
-      ^{
+  self.reloadAction = CreateOverflowMenuAction(
+      IDS_IOS_TOOLS_MENU_RELOAD, @"overflow_menu_action_reload", ^{
+        [weakSelf reload];
+      });
+  self.stopLoadAction = CreateOverflowMenuAction(
+      IDS_IOS_TOOLS_MENU_STOP, @"overflow_menu_action_stop", ^{
+        [weakSelf stopLoading];
       });
 
+  self.openTabAction = CreateOverflowMenuAction(
+      IDS_IOS_TOOLS_MENU_NEW_TAB, @"overflow_menu_action_new_tab", ^{
+        [weakSelf openTab];
+      });
   self.openIncognitoTabAction =
       CreateOverflowMenuAction(IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB,
                                @"overflow_menu_action_incognito", ^{
                                  [weakSelf openIncognitoTab];
                                });
 
-  OverflowMenuActionGroup* appActionsGroup =
-      [[OverflowMenuActionGroup alloc] initWithGroupName:@"app_actions"
-                                                 actions:@[
-                                                   self.reloadStopAction,
-                                                   self.openIncognitoTabAction,
-                                                 ]];
-
-  self.bookmarkAction = CreateOverflowMenuAction(
-      IDS_IOS_TOOLS_MENU_ADD_TO_BOOKMARKS, @"overflow_menu_action_bookmark",
-      ^{
+  self.openNewWindowAction = CreateOverflowMenuAction(
+      IDS_IOS_TOOLS_MENU_NEW_WINDOW, @"overflow_menu_action_new_window", ^{
+        [weakSelf openNewWindow];
       });
+
+  // The app actions vary based on page state, so they are set in
+  // |-updateModel|.
+  self.appActionsGroup =
+      [[OverflowMenuActionGroup alloc] initWithGroupName:@"app_actions"
+                                                 actions:@[]];
+
+  self.addBookmarkAction = CreateOverflowMenuAction(
+      IDS_IOS_TOOLS_MENU_ADD_TO_BOOKMARKS, @"overflow_menu_action_bookmark", ^{
+        [weakSelf addOrEditBookmark];
+      });
+  self.editBookmarkAction =
+      CreateOverflowMenuAction(IDS_IOS_TOOLS_MENU_EDIT_BOOKMARK,
+                               @"overflow_menu_action_edit_bookmark", ^{
+                                 [weakSelf addOrEditBookmark];
+                               });
   self.readLaterAction =
       CreateOverflowMenuAction(IDS_IOS_CONTENT_CONTEXT_ADDTOREADINGLIST,
                                @"overflow_menu_action_read_later", ^{
@@ -222,10 +304,15 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
       IDS_IOS_TOOLS_MENU_TRANSLATE, @"overflow_menu_action_translate", ^{
         [weakSelf translatePage];
       });
-  self.requestSiteAction =
+  self.requestDesktopAction =
       CreateOverflowMenuAction(IDS_IOS_TOOLS_MENU_REQUEST_DESKTOP_SITE,
-                               @"overflow_menu_action_request_desktop",
-                               ^{
+                               @"overflow_menu_action_request_desktop", ^{
+                                 [weakSelf requestDesktopSite];
+                               });
+  self.requestMobileAction =
+      CreateOverflowMenuAction(IDS_IOS_TOOLS_MENU_REQUEST_MOBILE_SITE,
+                               @"overflow_menu_action_request_mobile", ^{
+                                 [weakSelf requestMobileSite];
                                });
   self.findInPageAction = CreateOverflowMenuAction(
       IDS_IOS_TOOLS_MENU_FIND_IN_PAGE, @"overflow_menu_action_find_in_page", ^{
@@ -236,16 +323,11 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
         [weakSelf openTextZoom];
       });
 
-  OverflowMenuActionGroup* pageActionsGroup =
+  // The page actions vary based on page state, so they are set in
+  // |-updateModel|.
+  self.pageActionsGroup =
       [[OverflowMenuActionGroup alloc] initWithGroupName:@"page_actions"
-                                                 actions:@[
-                                                   self.bookmarkAction,
-                                                   self.readLaterAction,
-                                                   self.translateAction,
-                                                   self.requestSiteAction,
-                                                   self.findInPageAction,
-                                                   self.textZoomAction,
-                                                 ]];
+                                                 actions:@[]];
 
   self.reportIssueAction = CreateOverflowMenuAction(
       IDS_IOS_OPTIONS_REPORT_AN_ISSUE, @"overflow_menu_action_report_issue", ^{
@@ -274,8 +356,8 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
     self.settingsDestination,
   ]
                                             actionGroups:@[
-                                              appActionsGroup,
-                                              pageActionsGroup,
+                                              self.appActionsGroup,
+                                              self.pageActionsGroup,
                                               helpActionsGroup,
                                             ]];
 }
@@ -289,22 +371,38 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
     return;
   }
 
-  __weak __typeof(self) weakSelf = self;
-  if ([self isPageLoading]) {
-    self.reloadStopAction.name =
-        l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_STOP);
-    self.reloadStopAction.imageName = @"overflow_menu_action_stop";
-    self.reloadStopAction.handler = ^{
-      [weakSelf stopLoading];
-    };
-  } else {
-    self.reloadStopAction.name =
-        l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_RELOAD);
-    self.reloadStopAction.imageName = @"overflow_menu_action_reload";
-    self.reloadStopAction.handler = ^{
-      [weakSelf reload];
-    };
+  NSMutableArray<OverflowMenuAction*>* appActions =
+      [[NSMutableArray alloc] init];
+
+  // The reload/stop action is only shown when the reload button is not in the
+  // toolbar. The reload button is shown in the toolbar when the toolbar is not
+  // split.
+  if (IsSplitToolbarMode(self.baseViewController)) {
+    OverflowMenuAction* reloadStopAction =
+        ([self isPageLoading]) ? self.stopLoadAction : self.reloadAction;
+    [appActions addObject:reloadStopAction];
   }
+
+  [appActions
+      addObjectsFromArray:@[ self.openTabAction, self.openIncognitoTabAction ]];
+
+  if (base::ios::IsMultipleScenesSupported()) {
+    [appActions addObject:self.openNewWindowAction];
+  }
+
+  self.appActionsGroup.actions = appActions;
+
+  BOOL pageIsBookmarked =
+      self.webState && self.bookmarkModel &&
+      self.bookmarkModel->IsBookmarked(self.webState->GetVisibleURL());
+  self.pageActionsGroup.actions = @[
+    (pageIsBookmarked) ? self.editBookmarkAction : self.addBookmarkAction,
+    self.readLaterAction, self.translateAction,
+    ([self userAgentType] != web::UserAgentType::DESKTOP)
+        ? self.requestDesktopAction
+        : self.requestMobileAction,
+    self.findInPageAction, self.textZoomAction
+  ];
 }
 
 // Whether the page is currently loading.
@@ -312,6 +410,18 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
   if (!self.webState)
     return NO;
   return self.webState->IsLoading();
+}
+
+// Returns the UserAgentType currently in use.
+- (web::UserAgentType)userAgentType {
+  if (!self.webState)
+    return web::UserAgentType::NONE;
+  web::NavigationItem* visibleItem =
+      self.webState->GetNavigationManager()->GetVisibleItem();
+  if (!visibleItem)
+    return web::UserAgentType::NONE;
+
+  return visibleItem->GetUserAgentType();
 }
 
 #pragma mark - CRWWebStateObserver
@@ -364,6 +474,46 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
   self.webState = nullptr;
 }
 
+#pragma mark - BookmarkModelBridgeObserver
+
+// If an added or removed bookmark is the same as the current url, update the
+// toolbar so the star highlight is kept in sync.
+- (void)bookmarkNodeChildrenChanged:
+    (const bookmarks::BookmarkNode*)bookmarkNode {
+  [self updateModel];
+}
+
+// If all bookmarks are removed, update the toolbar so the star highlight is
+// kept in sync.
+- (void)bookmarkModelRemovedAllNodes {
+  [self updateModel];
+}
+
+// In case we are on a bookmarked page before the model is loaded.
+- (void)bookmarkModelLoaded {
+  [self updateModel];
+}
+
+- (void)bookmarkNodeChanged:(const bookmarks::BookmarkNode*)bookmarkNode {
+  [self updateModel];
+}
+- (void)bookmarkNode:(const bookmarks::BookmarkNode*)bookmarkNode
+     movedFromParent:(const bookmarks::BookmarkNode*)oldParent
+            toParent:(const bookmarks::BookmarkNode*)newParent {
+  // No-op -- required by BookmarkModelBridgeObserver but not used.
+}
+- (void)bookmarkNodeDeleted:(const bookmarks::BookmarkNode*)node
+                 fromFolder:(const bookmarks::BookmarkNode*)folder {
+  [self updateModel];
+}
+
+#pragma mark - PrefObserverDelegate
+
+- (void)onPreferenceChanged:(const std::string&)preferenceName {
+  if (preferenceName == bookmarks::prefs::kEditBookmarksEnabled)
+    [self updateModel];
+}
+
 #pragma mark - Action handlers
 
 // Dismisses the menu and reloads the current page.
@@ -380,12 +530,37 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
   self.navigationAgent->StopLoading();
 }
 
+// Dismisses the menu and opens a new tab.
+- (void)openTab {
+  RecordAction(UserMetricsAction("MobileMenuNewTab"));
+  [self.dispatcher dismissPopupMenuAnimated:YES];
+  [self.dispatcher openURLInNewTab:[OpenNewTabCommand commandWithIncognito:NO]];
+}
+
 // Dismisses the menu and opens a new incognito tab.
 - (void)openIncognitoTab {
   RecordAction(UserMetricsAction("MobileMenuNewIncognitoTab"));
   [self.dispatcher dismissPopupMenuAnimated:YES];
   [self.dispatcher
       openURLInNewTab:[OpenNewTabCommand commandWithIncognito:YES]];
+}
+
+// Dismisses the menu and opens a new window.
+- (void)openNewWindow {
+  RecordAction(UserMetricsAction("MobileMenuNewWindow"));
+  [self.dispatcher dismissPopupMenuAnimated:YES];
+  [self.dispatcher
+      openNewWindowWithActivity:ActivityToLoadURL(WindowActivityToolsOrigin,
+                                                  GURL(kChromeUINewTabURL))];
+}
+
+// Dismisses the menu and adds the current page as a bookmark or opens the
+// bookmark edit screen if the current page is bookmarked.
+- (void)addOrEditBookmark {
+  RecordAction(UserMetricsAction("MobileMenuAddToBookmarks"));
+  [self.dispatcher dismissPopupMenuAnimated:YES];
+  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
+  [self.dispatcher bookmarkCurrentPage];
 }
 
 // Dismisses the menu and adds the current page to the reading list.
@@ -416,6 +591,20 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
   base::RecordAction(UserMetricsAction("MobileMenuTranslate"));
   [self.dispatcher dismissPopupMenuAnimated:YES];
   [self.dispatcher showTranslate];
+}
+
+// Dismisses the menu and requests the desktop version of the current page
+- (void)requestDesktopSite {
+  RecordAction(UserMetricsAction("MobileMenuRequestDesktopSite"));
+  [self.dispatcher dismissPopupMenuAnimated:YES];
+  [self.dispatcher requestDesktopSite];
+}
+
+// Dismisses the menu and requests the mobile version of the current page
+- (void)requestMobileSite {
+  RecordAction(UserMetricsAction("MobileMenuRequestMobileSite"));
+  [self.dispatcher dismissPopupMenuAnimated:YES];
+  [self.dispatcher requestMobileSite];
 }
 
 // Dismisses the menu and opens Find In Page

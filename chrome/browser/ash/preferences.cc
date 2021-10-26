@@ -37,7 +37,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/sync/ash_turn_sync_on_helper.h"
-#include "chrome/browser/ash/sync/split_settings_sync_field_trial.h"
+#include "chrome/browser/ash/sync/sync_consent_optional_field_trial.h"
 #include "chrome/browser/ash/system/input_device_settings.h"
 #include "chrome/browser/ash/system/timezone_resolver_manager.h"
 #include "chrome/browser/ash/system/timezone_util.h"
@@ -144,7 +144,7 @@ void Preferences::RegisterPrefs(PrefRegistrySimple* registry) {
       ash::prefs::kLocalStateDevicePeripheralDataAccessEnabled, false);
 
   ash::RegisterLocalStatePrefs(registry);
-  split_settings_sync_field_trial::RegisterLocalStatePrefs(registry);
+  sync_consent_optional_field_trial::RegisterLocalStatePrefs(registry);
 }
 
 // static

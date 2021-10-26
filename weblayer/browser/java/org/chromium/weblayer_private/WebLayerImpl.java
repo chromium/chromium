@@ -63,7 +63,6 @@ import org.chromium.components.component_updater.ComponentLoaderPolicyBridge;
 import org.chromium.components.component_updater.EmbeddedComponentLoader;
 import org.chromium.components.embedder_support.application.ClassLoaderContextWrapperFactory;
 import org.chromium.components.embedder_support.application.FirebaseConfig;
-import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.payments.PaymentDetailsUpdateService;
 import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.ChildProcessCreationParams;
@@ -639,13 +638,6 @@ public final class WebLayerImpl extends IWebLayer.Stub {
                 .toString();
     }
 
-    public static boolean isLocationPermissionManaged(Origin origin) {
-        if (origin == null) {
-            return false;
-        }
-        return WebLayerImplJni.get().isLocationPermissionManaged(origin.toString());
-    }
-
     /**
      * Converts the given id into a resource ID that can be shown in system UI, such as
      * notifications.
@@ -1003,7 +995,6 @@ public final class WebLayerImpl extends IWebLayer.Stub {
         void setIsWebViewCompatMode(boolean value);
         String getUserAgentString();
         void registerExternalExperimentIDs(int[] experimentIDs);
-        boolean isLocationPermissionManaged(String origin);
         ComponentLoaderPolicyBridge[] getComponentLoaderPolicies();
     }
 }

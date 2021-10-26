@@ -21,6 +21,8 @@ PARTIAL_PASS = 3
 # file.
 Expectation = None
 Result = None
+BuildStats = None
+TestExpectationMap = None
 
 
 def SetExpectationImplementation(impl):
@@ -33,6 +35,18 @@ def SetResultImplementation(impl):
   global Result
   assert issubclass(impl, BaseResult)
   Result = impl
+
+
+def SetBuildStatsImplementation(impl):
+  global BuildStats
+  assert issubclass(impl, BaseBuildStats)
+  BuildStats = impl
+
+
+def SetTestExpectationMapImplementation(impl):
+  global TestExpectationMap
+  assert issubclass(impl, BaseTestExpectationMap)
+  TestExpectationMap = impl
 
 
 class BaseExpectation(object):
@@ -145,7 +159,7 @@ class BaseResult(object):
         (self.test, self.tags, self.actual_result, self.step, self.build_id))
 
 
-class BuildStats(object):
+class BaseBuildStats(object):
   """Container for keeping track of a builder's pass/fail stats."""
 
   def __init__(self):
@@ -173,6 +187,33 @@ class BuildStats(object):
     self.total_builds += 1
     build_link = BuildLinkFromBuildId(build_id)
     self.failure_links = frozenset([build_link]) | self.failure_links
+
+  def GetStatsAsString(self):
+    return '(%d/%d passed)' % (self.passed_builds, self.total_builds)
+
+  def NeverNeededExpectation(self, expectation):  # pylint:disable=unused-argument
+    """Returns whether the results tallied in |self| never needed |expectation|.
+
+    Args:
+      expectation: An Expectation object that |stats| is located under.
+
+    Returns:
+      True if all the results tallied in |self| would have passed without
+      |expectation| being present. Otherwise, False.
+    """
+    return self.did_fully_pass
+
+  def AlwaysNeededExpectation(self, expectation):  # pylint:disable=unused-argument
+    """Returns whether the results tallied in |self| always needed |expectation.
+
+    Args:
+      expectation: An Expectation object that |stats| is located under.
+
+    Returns:
+      True if all the results tallied in |self| would have failed without
+      |expectation| being present. Otherwise, False.
+    """
+    return self.did_never_pass
 
   def __eq__(self, other):
     return (isinstance(other, BuildStats)
@@ -279,7 +320,7 @@ class BaseTypedMap(dict):
           self[key] = value
 
 
-class TestExpectationMap(BaseTypedMap):
+class BaseTestExpectationMap(BaseTypedMap):
   """Typed map for string types -> ExpectationBuilderMap.
 
   This results in a dict in the following format:
@@ -304,7 +345,7 @@ class TestExpectationMap(BaseTypedMap):
   def __setitem__(self, key, value):
     assert IsStringType(key)
     assert isinstance(value, ExpectationBuilderMap)
-    super(TestExpectationMap, self).__setitem__(key, value)
+    super(BaseTestExpectationMap, self).__setitem__(key, value)
 
   def _value_type(self):
     return ExpectationBuilderMap
@@ -396,11 +437,20 @@ class TestExpectationMap(BaseTypedMap):
               matched_results.add(r)
               step_map = builder_map.setdefault(builder, StepBuildStatsMap())
               stats = step_map.setdefault(r.step, BuildStats())
-              if r.actual_result == 'Pass':
-                stats.AddPassedBuild()
-              else:
-                stats.AddFailedBuild(r.build_id)
+              self._AddSingleResult(r, stats)
     return matched_results
+
+  def _AddSingleResult(self, result, stats):
+    """Adds |result| to |self|.
+
+    Args:
+      result: A data_types.Result object to add.
+      stats: A data_types.BuildStats object to add the result to.
+    """
+    if result.actual_result == 'Pass':
+      stats.AddPassedBuild()
+    else:
+      stats.AddFailedBuild(result.build_id)
 
   def SplitByStaleness(self):
     """Separates stored data based on expectation staleness.
@@ -433,7 +483,7 @@ class TestExpectationMap(BaseTypedMap):
             PARTIAL_PASS: BuilderStepMap(),
         }
 
-        split_stats_map = builder_map.SplitBuildStatsByPass()
+        split_stats_map = builder_map.SplitBuildStatsByPass(expectation)
         for builder_name, (fully_passed, never_passed,
                            partially_passed) in split_stats_map.items():
           if fully_passed:
@@ -529,8 +579,11 @@ class BuilderStepMap(BaseTypedMap):
   def _value_type(self):
     return StepBuildStatsMap
 
-  def SplitBuildStatsByPass(self):
+  def SplitBuildStatsByPass(self, expectation):
     """Splits the underlying BuildStats data by passing-ness.
+
+    Args:
+      expectation: The Expectation that this BuilderStepMap is located under.
 
     Returns:
       A dict mapping builder name to a tuple (fully_passed, never_passed,
@@ -545,10 +598,10 @@ class BuilderStepMap(BaseTypedMap):
       partially_passed = StepBuildStatsMap()
 
       for step_name, stats in step_map.items():
-        if stats.did_fully_pass:
+        if stats.NeverNeededExpectation(expectation):
           assert step_name not in fully_passed
           fully_passed[step_name] = stats
-        elif stats.did_never_pass:
+        elif stats.AlwaysNeededExpectation(expectation):
           assert step_name not in never_passed
           never_passed[step_name] = stats
         else:
@@ -562,7 +615,8 @@ class BuilderStepMap(BaseTypedMap):
 
     Returns:
       A generator yielding tuples in the form (builder_name (str), step_name
-      (str), build_stats (BuildStats))"""
+      (str), build_stats (BuildStats)).
+    """
     return self.IterToValueType(BuildStats)
 
 
@@ -584,3 +638,5 @@ def IsStringType(s):
 
 Expectation = BaseExpectation
 Result = BaseResult
+BuildStats = BaseBuildStats
+TestExpectationMap = BaseTestExpectationMap

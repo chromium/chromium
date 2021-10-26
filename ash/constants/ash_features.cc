@@ -1041,11 +1041,6 @@ const base::Feature kSmartDimExperimentalComponent{
 const base::Feature kSmartLockUIRevamp{"SmartLockUIRevamp",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Deprecated. Use kSyncSettingsCategorization and kSyncConsentOptional instead.
-// TODO(https://crbug.com/1227417): Remove this after completing the migration.
-const base::Feature kSplitSettingsSync{"SplitSettingsSync",
-                                       base::FEATURE_DISABLED_BY_DEFAULT};
-
 // This feature:
 // - Creates a new "Sync your settings" section in Chrome OS settings
 // - Moves app, wallpaper and Wi-Fi sync to OS settings
@@ -1060,7 +1055,7 @@ const base::Feature kSyncSettingsCategorization{
 //
 // NOTE: The feature will be rolled out via a client-side Finch trial, so the
 // actual state will vary. TODO(https://crbug.com/1227417): Migrate config in
-// chrome/browser/ash/sync/split_settings_sync_field_trial.cc
+// chrome/browser/ash/sync/sync_consent_optional_field_trial.cc
 const base::Feature kSyncConsentOptional{"SyncConsentOptional",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -1228,6 +1223,10 @@ const base::Feature kWindowsFollowCursor{"WindowsFollowCursor",
 const base::Feature kDeviceActiveClient{"DeviceActiveClient",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables or disables whether to store UMA logs per-user and whether metrics
+// consent is per-user.
+const base::Feature kPerUserMetrics{"PerUserMetricsConsent",
+                                    base::FEATURE_DISABLED_BY_DEFAULT};
 ////////////////////////////////////////////////////////////////////////////////
 
 bool AreContextualNudgesEnabled() {
@@ -1671,10 +1670,6 @@ bool IsShelfLauncherNudgeEnabled() {
 
 bool IsShimlessRMAFlowEnabled() {
   return base::FeatureList::IsEnabled(kShimlessRMAFlow);
-}
-
-bool IsSplitSettingsSyncEnabled() {
-  return base::FeatureList::IsEnabled(kSplitSettingsSync);
 }
 
 bool IsSyncSettingsCategorizationEnabled() {

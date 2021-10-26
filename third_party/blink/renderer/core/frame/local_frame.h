@@ -679,8 +679,8 @@ class CORE_EXPORT LocalFrame final : public Frame,
   LocalFrameToken GetLocalFrameToken() const;
 
   TextFragmentHandler* GetTextFragmentHandler() const {
-    // |text_fragment_handler_| is always set on the main frame, and null
-    // otherwise.
+    // |text_fragment_handler_| is always set on the main frame and created
+    // lazily for child frames.
     return text_fragment_handler_;
   }
 
@@ -917,7 +917,8 @@ class CORE_EXPORT LocalFrame final : public Frame,
   using SavedScrollOffsets = HeapHashMap<Member<Node>, ScrollOffset>;
   Member<SavedScrollOffsets> saved_scroll_offsets_;
 
-  // Always non-null for the main frame; null otherwise.
+  // Always non-null for the main frame and created lazily for child frames;
+  // null otherwise.
   Member<TextFragmentHandler> text_fragment_handler_;
 
   // Manages a transient affordance for this frame to enter fullscreen.

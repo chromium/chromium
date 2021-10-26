@@ -57,7 +57,6 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/graphics/paint/cull_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
-#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
@@ -169,30 +168,11 @@ void PaintLayerCompositor::UpdateInputsIfNeededRecursiveInternal(
 void PaintLayerCompositor::UpdateAssignmentsIfNeededRecursive(
     DocumentLifecycle::LifecycleState target_state) {
   DCHECK_GE(target_state, DocumentLifecycle::kCompositingAssignmentsClean);
-
-  CompositingReasonsStats compositing_reasons_stats;
-  UpdateAssignmentsIfNeededRecursiveInternal(target_state,
-                                             compositing_reasons_stats);
-  UMA_HISTOGRAM_CUSTOM_COUNTS("Blink.Compositing.LayerPromotionCount.Overlap",
-                              compositing_reasons_stats.overlap_layers, 1, 1000,
-                              5);
-  UMA_HISTOGRAM_CUSTOM_COUNTS(
-      "Blink.Compositing.LayerPromotionCount.ActiveAnimation",
-      compositing_reasons_stats.active_animation_layers, 1, 100, 5);
-  UMA_HISTOGRAM_CUSTOM_COUNTS(
-      "Blink.Compositing.LayerPromotionCount.AssumedOverlap",
-      compositing_reasons_stats.assumed_overlap_layers, 1, 1000, 5);
-  UMA_HISTOGRAM_CUSTOM_COUNTS(
-      "Blink.Compositing.LayerPromotionCount.IndirectComposited",
-      compositing_reasons_stats.indirect_composited_layers, 1, 10000, 10);
-  UMA_HISTOGRAM_CUSTOM_COUNTS(
-      "Blink.Compositing.LayerPromotionCount.TotalComposited",
-      compositing_reasons_stats.total_composited_layers, 1, 1000, 10);
+  UpdateAssignmentsIfNeededRecursiveInternal(target_state);
 }
 
 void PaintLayerCompositor::UpdateAssignmentsIfNeededRecursiveInternal(
-    DocumentLifecycle::LifecycleState target_state,
-    CompositingReasonsStats& compositing_reasons_stats) {
+    DocumentLifecycle::LifecycleState target_state) {
   if (target_state == DocumentLifecycle::kCompositingInputsClean)
     return;
 
@@ -218,7 +198,7 @@ void PaintLayerCompositor::UpdateAssignmentsIfNeededRecursiveInternal(
         local_frame->ContentLayoutObject()) {
       auto* child_compositor = local_frame->ContentLayoutObject()->Compositor();
       child_compositor->UpdateAssignmentsIfNeededRecursiveInternal(
-          target_state, compositing_reasons_stats);
+          target_state);
       if (child_compositor->root_layer_attachment_dirty_)
         SetNeedsCompositingUpdate(kCompositingUpdateRebuildTree);
     }
@@ -231,7 +211,7 @@ void PaintLayerCompositor::UpdateAssignmentsIfNeededRecursiveInternal(
 
   ScriptForbiddenScope forbid_script;
 
-  UpdateAssignmentsIfNeeded(target_state, compositing_reasons_stats);
+  UpdateAssignmentsIfNeeded(target_state);
 
   Lifecycle().AdvanceTo(DocumentLifecycle::kCompositingAssignmentsClean);
 
@@ -288,8 +268,7 @@ static void AssertWholeTreeNotComposited(const PaintLayer& paint_layer) {
 #endif
 
 void PaintLayerCompositor::UpdateAssignmentsIfNeeded(
-    DocumentLifecycle::LifecycleState target_state,
-    CompositingReasonsStats& compositing_reasons_stats) {
+    DocumentLifecycle::LifecycleState target_state) {
   DCHECK(target_state >= DocumentLifecycle::kCompositingAssignmentsClean);
 
   CompositingUpdateType update_type = pending_update_type_;
@@ -305,8 +284,7 @@ void PaintLayerCompositor::UpdateAssignmentsIfNeeded(
       &layers_needing_paint_invalidation);
 
   if (update_type >= kCompositingUpdateAfterCompositingInputChange) {
-    CompositingRequirementsUpdater(*layout_view_)
-        .Update(update_root, compositing_reasons_stats);
+    CompositingRequirementsUpdater(*layout_view_).Update(update_root);
 
     CompositingLayerAssigner layer_assigner(this);
     layer_assigner.Assign(update_root, layers_needing_paint_invalidation);

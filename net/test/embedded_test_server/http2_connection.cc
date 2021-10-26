@@ -74,7 +74,7 @@ class Http2Connection::DataFrameSource
     const int64_t result = connection_->OnReadyToSend(concatenated);
     // Write encountered error.
     if (result < 0) {
-      connection_->OnConnectionError();
+      connection_->OnConnectionError(ConnectionError::kSendError);
       return false;
     }
 
@@ -88,7 +88,7 @@ class Http2Connection::DataFrameSource
       // Probably need to handle this better within this test class.
       QUICHE_LOG(DFATAL)
           << "DATA frame not fully flushed. Connection will be corrupt!";
-      connection_->OnConnectionError();
+      connection_->OnConnectionError(ConnectionError::kSendError);
       return false;
     }
 
@@ -148,7 +148,7 @@ class Http2Connection::ResponseDelegate : public HttpResponseDelegate {
     scoped_refptr<HttpResponseHeaders> parsed_headers =
         HttpResponseHeaders::TryToCreate(headers);
     if (parsed_headers->response_code() == 0) {
-      connection_->OnConnectionError();
+      connection_->OnConnectionError(ConnectionError::kParseError);
       LOG(ERROR) << "raw headers could not be parsed";
     }
     base::StringPairs header_pairs;

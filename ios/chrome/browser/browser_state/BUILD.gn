@@ -123,6 +123,7 @@ source_set("browser_state_impl") {
     "//ios/chrome/browser/reading_list",
     "//ios/chrome/browser/safe_browsing",
     "//ios/chrome/browser/screen_time:buildflags",
+    "//ios/chrome/browser/search:search_factory",
     "//ios/chrome/browser/search_engines",
     "//ios/chrome/browser/send_tab_to_self",
     "//ios/chrome/browser/sessions",

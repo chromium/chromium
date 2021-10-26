@@ -8,8 +8,6 @@
 #include "base/files/file_util.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/task/task_runner.h"
 #include "chrome/browser/safe_browsing/download_protection/two_phase_uploader.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -81,9 +79,6 @@ class DownloadFeedbackImpl : public DownloadFeedback {
   std::string ping_response_;
 
   std::unique_ptr<TwoPhaseUploader> uploader_;
-
-  // The time at which we started uploading. Used for metrics.
-  base::Time uploader_start_time_;
 };
 
 DownloadFeedbackImpl::DownloadFeedbackImpl(
@@ -175,7 +170,6 @@ void DownloadFeedbackImpl::Start(base::OnceClosure finish_callback) {
                      base::Unretained(this), std::move(finish_callback)),
       traffic_annotation);
   uploader_->Start();
-  uploader_start_time_ = base::Time::Now();
 }
 
 void DownloadFeedbackImpl::FinishedUpload(base::OnceClosure finish_callback,
@@ -185,9 +179,6 @@ void DownloadFeedbackImpl::FinishedUpload(base::OnceClosure finish_callback,
                                           const std::string& response_data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DVLOG(1) << __func__ << " " << state << " rlen=" << response_data.size();
-
-  UMA_HISTOGRAM_LONG_TIMES("SBDownloadFeedback.UploadDuration",
-                           base::Time::Now() - uploader_start_time_);
 
   uploader_.reset();
 

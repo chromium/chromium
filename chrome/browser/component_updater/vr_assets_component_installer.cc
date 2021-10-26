@@ -113,7 +113,7 @@ void VrAssetsComponentInstallerPolicy::OnRegisteredComponent(
 
 bool VrAssetsComponentInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {
-  return false;
+  return true;
 }
 
 bool VrAssetsComponentInstallerPolicy::RequiresNetworkEncryption() const {

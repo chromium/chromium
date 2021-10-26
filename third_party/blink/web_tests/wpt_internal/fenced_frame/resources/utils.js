@@ -12,35 +12,40 @@ const STORE_URL = '/wpt_internal/fenced_frame/resources/key-value-store.py';
 // otherwise interfere with each other's server state.
 const KEYS = {
   // This key is only used to test that the server-side stash works properly.
-  "dummy"                        : "00000000-0000-0000-0000-000000000000",
+  "dummy"                                       : "00000000-0000-0000-0000-000000000000",
 
-  "document.referrer"            : "00000000-0000-0000-0000-000000000001",
-  "document.referrer ACK"        : "00000000-0000-0000-0000-000000000002",
+  "document.referrer"                           : "00000000-0000-0000-0000-000000000001",
+  "document.referrer ACK"                       : "00000000-0000-0000-0000-000000000002",
 
-  "window.top"                   : "00000000-0000-0000-0000-000000000003",
-  "window.top ACK"               : "00000000-0000-0000-0000-000000000004",
+  "window.top"                                  : "00000000-0000-0000-0000-000000000003",
+  "window.top ACK"                              : "00000000-0000-0000-0000-000000000004",
 
-  "window.parent"                : "00000000-0000-0000-0000-000000000005",
-  "window.parent ACK"            : "00000000-0000-0000-0000-000000000006",
+  "window.parent"                               : "00000000-0000-0000-0000-000000000005",
+  "window.parent ACK"                           : "00000000-0000-0000-0000-000000000006",
 
-  "location.ancestorOrigins"     : "00000000-0000-0000-0000-000000000007",
-  "location.ancestorOrigins ACK" : "00000000-0000-0000-0000-000000000008",
+  "location.ancestorOrigins"                    : "00000000-0000-0000-0000-000000000007",
+  "location.ancestorOrigins ACK"                : "00000000-0000-0000-0000-000000000008",
 
-  "data: URL"                    : "00000000-0000-0000-0000-000000000009",
-  "204 response"                 : "00000000-0000-0000-0000-00000000000A",
+  "data: URL"                                   : "00000000-0000-0000-0000-000000000009",
+  "204 response"                                : "00000000-0000-0000-0000-00000000000A",
 
-  "keyboard.lock"                : "00000000-0000-0000-0000-00000000000B",
+  "keyboard.lock"                               : "00000000-0000-0000-0000-00000000000B",
 
-  "credentials.create"           : "00000000-0000-0000-0000-00000000000C",
-  "credentials.create ACK"       : "00000000-0000-0000-0000-00000000000D",
+  "credentials.create"                          : "00000000-0000-0000-0000-00000000000C",
+  "credentials.create ACK"                      : "00000000-0000-0000-0000-00000000000D",
 
-  "keyboard.lock"                : "00000000-0000-0000-0000-00000000000E",
+  "keyboard.lock"                               : "00000000-0000-0000-0000-00000000000E",
 
-  "navigation_success"           : "00000000-0000-0000-0000-00000000000F",
-  "ready_for_navigation"         : "00000000-0000-0000-0000-000000000010",
-  "outer_page_did_navigate"      : "00000000-0000-0000-0000-000000000011",
-  "secFetchDest.value"           : "00000000-0000-0000-0000-000000000012",
-  "window.prompt"                : "00000000-0000-0000-0000-000000000013",
+  "navigation_success"                          : "00000000-0000-0000-0000-00000000000F",
+  "ready_for_navigation"                        : "00000000-0000-0000-0000-000000000010",
+  "outer_page_did_navigate"                     : "00000000-0000-0000-0000-000000000011",
+
+  "secFetchDest.value"                          : "00000000-0000-0000-0000-000000000012",
+
+  "window.prompt"                               : "00000000-0000-0000-0000-000000000013",
+
+  "fenced_navigation_complete"                  : "00000000-0000-0000-0000-000000000014",
+  "outer_page_ready_for_next_fenced_navigation" : "00000000-0000-0000-0000-000000000015",
   // Add keys above this list, incrementing the key UUID in hexadecimal
 }
 

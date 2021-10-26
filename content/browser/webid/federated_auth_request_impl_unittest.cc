@@ -596,9 +596,10 @@ class FederatedAuthRequestImplTest : public RenderViewHostTestHarness {
     if (test_case.config.client_metadata) {
       EXPECT_CALL(*mock_request_manager_, FetchClientIdMetadata(_, _, _))
           .WillOnce(
-              Invoke([&](const GURL&, const std::string&,
+              Invoke([&](const GURL&, const std::string& client_id,
                          IdpNetworkRequestManager::FetchClientIdMetadataCallback
                              callback) {
+                EXPECT_EQ(test_case.inputs.client_id, client_id);
                 std::move(callback).Run(
                     test_case.config.client_metadata->fetch_status,
                     IdpNetworkRequestManager::ClientIdMetadata{

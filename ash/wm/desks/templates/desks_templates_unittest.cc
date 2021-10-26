@@ -29,6 +29,7 @@
 #include "components/prefs/pref_service.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
+#include "ui/events/test/event_generator.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
 
@@ -229,6 +230,12 @@ class DesksTemplatesTest : public OverviewTestBase {
     DCHECK(overview_session);
 
     return overview_session->grid_list();
+  }
+
+  bool GetCreateDeskTemplateWidgetVisibility(OverviewGrid* grid) {
+    DCHECK(grid);
+    views::Widget* widget = grid->create_desk_template_widget_.get();
+    return widget && widget->IsVisible();
   }
 };
 
@@ -536,6 +543,49 @@ TEST_F(DesksTemplatesTest, DeleteTemplate) {
   EXPECT_EQ(1.0f, test_window->layer()->opacity());
   for (auto& overview_grid : GetOverviewGridList())
     EXPECT_FALSE(overview_grid->IsShowingDesksTemplatesGrid());
+}
+
+// Tests that the save desk template button is not shown on displays with no
+// overview items, or while dragging an overivew item.
+TEST_F(DesksTemplatesTest, SaveDeskTemplateButtonVisibility) {
+  UpdateDisplay("800x600,800+0-800x600");
+
+  // Enter overview and show the Desks Templates Grid.
+  ToggleOverview();
+
+  // There are no windows, so the button doesn't show up on any grid.
+  for (auto& overview_grid : GetOverviewGridList())
+    EXPECT_FALSE(GetCreateDeskTemplateWidgetVisibility(overview_grid.get()));
+
+  // Create a test window on the primary root. This should exit overview.
+  auto test_window = CreateTestWindow();
+  ASSERT_EQ(Shell::GetPrimaryRootWindow(), test_window->GetRootWindow());
+  ASSERT_FALSE(GetOverviewSession());
+
+  // Enter overview. The button should now show up on the first grid.
+  ToggleOverview();
+  ASSERT_EQ(2u, GetOverviewGridList().size());
+  EXPECT_TRUE(
+      GetCreateDeskTemplateWidgetVisibility(GetOverviewGridList()[0].get()));
+  EXPECT_FALSE(
+      GetCreateDeskTemplateWidgetVisibility(GetOverviewGridList()[1].get()));
+
+  // Start a mouse drag to a point on the secondary display. Both buttons are
+  // hidden while dragging.
+  DragItemToPoint(GetOverviewItemForWindow(test_window.get()),
+                  gfx::Point(1200, 300), GetEventGenerator(),
+                  /*by_touch_gestures=*/false,
+                  /*drop=*/false);
+  for (auto& overview_grid : GetOverviewGridList())
+    EXPECT_FALSE(GetCreateDeskTemplateWidgetVisibility(overview_grid.get()));
+
+  // Drop the overview item on the secondary display. The button on the
+  // secondary display is now visible.
+  GetEventGenerator()->ReleaseLeftButton();
+  EXPECT_FALSE(
+      GetCreateDeskTemplateWidgetVisibility(GetOverviewGridList()[0].get()));
+  EXPECT_TRUE(
+      GetCreateDeskTemplateWidgetVisibility(GetOverviewGridList()[1].get()));
 }
 
 }  // namespace ash

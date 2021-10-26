@@ -813,7 +813,7 @@ input[type="color" i] {
 }
 
 input[type="color" i]::-webkit-color-swatch-wrapper {
-    display:flex;
+    display: flex;
     padding: 4px 2px;
     box-sizing: border-box;
     -webkit-user-modify: read-only !important;
@@ -822,6 +822,8 @@ input[type="color" i]::-webkit-color-swatch-wrapper {
 }
 
 input[type="color" i]::-webkit-color-swatch {
+    /* The swatch should not be affected by color scheme. */
+    color-scheme: only light;
     background-color: #000000;
     border: 1px solid #777777;
     flex: 1;

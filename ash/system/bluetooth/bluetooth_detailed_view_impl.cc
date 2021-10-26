@@ -98,6 +98,14 @@ views::View* BluetoothDetailedViewImpl::device_list() {
 }
 
 void BluetoothDetailedViewImpl::HandleViewClicked(views::View* view) {
+  // We only handle clicks on the "pair new device" view and on the individual
+  // device views. When |view| is a child of |pair_new_device_view_| we know the
+  // "pair new device" button was clicked, otherwise it must have been an
+  // individual device view.
+  if (pair_new_device_view_->GetIndexOf(view) != -1) {
+    delegate()->OnPairNewDeviceRequested();
+    return;
+  }
   delegate()->OnDeviceListItemSelected(
       static_cast<BluetoothDeviceListItemView*>(view)->device_properties());
 }
@@ -138,41 +146,40 @@ void BluetoothDetailedViewImpl::CreatePairNewDeviceView() {
   pair_new_device_view_->SetID(
       static_cast<int>(BluetoothDetailedViewChildId::kPairNewDeviceView));
 
-  std::unique_ptr<ash::TriView> row_view =
-      base::WrapUnique(TrayPopupUtils::CreateDefaultRowView());
+  std::unique_ptr<HoverHighlightView> hover_highlight_view =
+      std::make_unique<HoverHighlightView>(/*listener=*/this);
+  hover_highlight_view->SetID(static_cast<int>(
+      BluetoothDetailedViewChildId::kPairNewDeviceClickableView));
 
   std::unique_ptr<ash::TopShortcutButton> button =
       std::make_unique<ash::TopShortcutButton>(
-          base::BindRepeating(
-              &BluetoothDetailedViewImpl::OnPairNewDeviceRequested,
-              weak_factory_.GetWeakPtr()),
-          kSystemMenuBluetoothPlusIcon,
+          views::Button::PressedCallback(), kSystemMenuBluetoothPlusIcon,
           IDS_ASH_STATUS_TRAY_BLUETOOTH_PAIR_NEW_DEVICE);
-  button->SetID(
-      static_cast<int>(BluetoothDetailedViewChildId::kPairNewDeviceButton));
-  row_view->AddView(TriView::Container::START, button.release());
+  button->SetCanProcessEventsWithinSubtree(/*can_process=*/false);
+  button->SetFocusBehavior(
+      /*focus_behavior=*/views::View::FocusBehavior::NEVER);
 
-  std::unique_ptr<views::Label> label =
-      base::WrapUnique(TrayPopupUtils::CreateDefaultLabel());
-  label->SetText(
+  hover_highlight_view->AddViewAndLabel(
+      std::move(button),
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_BLUETOOTH_PAIR_NEW_DEVICE));
-  label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary));
-  TrayPopupUtils::SetLabelFontList(label.get(),
+
+  TrayPopupUtils::SetLabelFontList(hover_highlight_view->text_label(),
                                    TrayPopupUtils::FontStyle::kSubHeader);
-  row_view->AddView(TriView::Container::CENTER, label.release());
 
-  const gfx::Insets padding =
-      pair_new_device_view_
-          ->AddChildView(TrayPopupUtils::CreateListSubHeaderSeparator())
-          ->GetInsets();
+  views::View* separator = pair_new_device_view_->AddChildView(
+      TrayPopupUtils::CreateListSubHeaderSeparator());
+  const gfx::Insets padding = separator->GetInsets();
 
-  // The "pair new device" button does not have top padding by default, so add
-  // top padding equal to the top padding of the following separator so that the
-  // button becomes centered between the preceding and following separators.
-  row_view->SetInsets(gfx::Insets(padding.top(), 0, 0, 0));
+  // The hover highlight view does not have top padding by default, unlike the
+  // following separator. To keep the icon and label centered, and to make the
+  // entirety of the view "highlightable", remove the padding from the separator
+  // and add it to both the top and bottom of the hover highlight view.
+  separator->SetBorder(/*b=*/nullptr);
+  hover_highlight_view->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets(/*top=*/padding.top(), /*left=*/0, /*bottom=*/padding.top(),
+                  /*right=*/0)));
 
-  pair_new_device_view_->AddChildViewAt(row_view.release(), 0);
+  pair_new_device_view_->AddChildViewAt(hover_highlight_view.release(), 0);
 }
 
 void BluetoothDetailedViewImpl::CreateTitleRowButtons() {
@@ -198,10 +205,6 @@ void BluetoothDetailedViewImpl::CreateTitleRowButtons() {
       static_cast<int>(BluetoothDetailedViewChildId::kSettingsButton));
   settings_button_ = settings.get();
   tri_view()->AddView(TriView::Container::END, settings.release());
-}
-
-void BluetoothDetailedViewImpl::OnPairNewDeviceRequested() {
-  delegate()->OnPairNewDeviceRequested();
 }
 
 void BluetoothDetailedViewImpl::OnSettingsClicked() {

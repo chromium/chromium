@@ -9,8 +9,13 @@
 
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "chromecast/media/audio/audio_output_service/audio_output_service.pb.h"
 #include "chromecast/media/audio/audio_output_service/receiver/receiver.h"
+
+namespace base {
+class SingleThreadTaskRunner;
+}  // namespace base
 
 namespace chromecast {
 namespace external_service_support {
@@ -18,7 +23,7 @@ class ExternalConnector;
 }  // namespace external_service_support
 
 namespace media {
-class MediaPipelineBackendManager;
+class CmaBackendFactory;
 
 namespace audio_output_service {
 class OutputSocket;
@@ -26,19 +31,24 @@ class OutputSocket;
 class AudioOutputServiceReceiver : public Receiver {
  public:
   explicit AudioOutputServiceReceiver(
-      MediaPipelineBackendManager* backend_manager,
+      CmaBackendFactory* cma_backend_factory,
+      scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
       std::unique_ptr<external_service_support::ExternalConnector> connector);
   AudioOutputServiceReceiver(const AudioOutputServiceReceiver&) = delete;
   AudioOutputServiceReceiver& operator=(const AudioOutputServiceReceiver&) =
       delete;
   ~AudioOutputServiceReceiver() override;
 
-  MediaPipelineBackendManager* backend_manager() const {
-    return backend_manager_;
+  CmaBackendFactory* cma_backend_factory() const {
+    return cma_backend_factory_;
   }
 
   external_service_support::ExternalConnector* connector() const {
     return connector_.get();
+  }
+
+  scoped_refptr<base::SingleThreadTaskRunner> media_task_runner() const {
+    return media_task_runner_;
   }
 
  private:
@@ -50,7 +60,8 @@ class AudioOutputServiceReceiver : public Receiver {
 
   void RemoveStream(Stream* stream);
 
-  MediaPipelineBackendManager* const backend_manager_;
+  CmaBackendFactory* const cma_backend_factory_;
+  const scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
   const std::unique_ptr<external_service_support::ExternalConnector> connector_;
 
   base::flat_map<Stream*, std::unique_ptr<Stream>> streams_;

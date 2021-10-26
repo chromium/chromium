@@ -31,9 +31,9 @@ extern const char kSuspiciousSiteTriggerEventMetricName[];
 // trigger manager, and for what reason.
 extern const char kSuspiciousSiteTriggerReportRejectionMetricName[];
 
-// Metric for tracking the state of the trigger when the report delay timer
-// fires.
-extern const char kSuspiciousSiteTriggerReportDelayStateMetricName[];
+// Local metric for tracking the state of the trigger when the report delay
+// timer fires.
+extern const char kSuspiciousSiteTriggerReportDelayStateTestMetricName[];
 
 // Tracks events this trigger listens for or actions it performs. These values
 // are written to logs. New enum values can be added, but existing enums must

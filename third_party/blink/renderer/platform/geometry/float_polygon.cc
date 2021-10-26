@@ -46,14 +46,6 @@ static inline bool AreCoincidentPoints(const gfx::PointF& p0,
   return p0.x() == p1.x() && p0.y() == p1.y();
 }
 
-static inline bool IsPointOnLineSegment(const gfx::PointF& vertex1,
-                                        const gfx::PointF& vertex2,
-                                        const gfx::PointF& point) {
-  return point.x() >= std::min(vertex1.x(), vertex2.x()) &&
-         point.x() <= std::max(vertex1.x(), vertex2.x()) &&
-         AreCollinearPoints(vertex1, vertex2, point);
-}
-
 static inline unsigned NextVertexIndex(unsigned vertex_index,
                                        unsigned n_vertices,
                                        bool clockwise) {
@@ -163,52 +155,6 @@ bool FloatPolygon::OverlappingEdges(
     result[i] = edge;
   }
   return overlapping_edge_intervals_size > 0;
-}
-
-static inline float LeftSide(const gfx::PointF& vertex1,
-                             const gfx::PointF& vertex2,
-                             const gfx::PointF& point) {
-  return ((point.x() - vertex1.x()) * (vertex2.y() - vertex1.y())) -
-         ((vertex2.x() - vertex1.x()) * (point.y() - vertex1.y()));
-}
-
-bool FloatPolygon::ContainsEvenOdd(const gfx::PointF& point) const {
-  if (!bounding_box_.Contains(FloatPoint(point)))
-    return false;
-  unsigned crossing_count = 0;
-  for (unsigned i = 0; i < NumberOfEdges(); ++i) {
-    const gfx::PointF& vertex1 = EdgeAt(i).Vertex1();
-    const gfx::PointF& vertex2 = EdgeAt(i).Vertex2();
-    if (IsPointOnLineSegment(vertex1, vertex2, point))
-      return true;
-    if ((vertex1.y() <= point.y() && vertex2.y() > point.y()) ||
-        (vertex1.y() > point.y() && vertex2.y() <= point.y())) {
-      float vt = (point.y() - vertex1.y()) / (vertex2.y() - vertex1.y());
-      if (point.x() < vertex1.x() + vt * (vertex2.x() - vertex1.x()))
-        ++crossing_count;
-    }
-  }
-  return crossing_count & 1;
-}
-
-bool FloatPolygon::ContainsNonZero(const gfx::PointF& point) const {
-  if (!bounding_box_.Contains(FloatPoint(point)))
-    return false;
-  int winding_number = 0;
-  for (unsigned i = 0; i < NumberOfEdges(); ++i) {
-    const gfx::PointF& vertex1 = EdgeAt(i).Vertex1();
-    const gfx::PointF& vertex2 = EdgeAt(i).Vertex2();
-    if (IsPointOnLineSegment(vertex1, vertex2, point))
-      return true;
-    if (vertex2.y() <= point.y()) {
-      if ((vertex1.y() > point.y()) && (LeftSide(vertex1, vertex2, point) > 0))
-        ++winding_number;
-    } else if (vertex2.y() >= point.y()) {
-      if ((vertex1.y() <= point.y()) && (LeftSide(vertex1, vertex2, point) < 0))
-        --winding_number;
-    }
-  }
-  return winding_number;
 }
 
 bool VertexPair::Intersection(const VertexPair& other,

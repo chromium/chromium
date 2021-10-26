@@ -7,6 +7,7 @@
 
 #include <unordered_map>
 
+#include "content/browser/site_instance_group.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/site_instance.h"
 #include "third_party/blink/public/mojom/page/page.mojom.h"
@@ -22,9 +23,9 @@ class RenderViewHostImpl;
 // prerendered pages for activation.
 struct CONTENT_EXPORT StoredPage {
   using RenderFrameProxyHostMap =
-      std::unordered_map<SiteInstanceId,
+      std::unordered_map<SiteInstanceGroupId,
                          std::unique_ptr<RenderFrameProxyHost>,
-                         SiteInstanceId::Hasher>;
+                         SiteInstanceGroupId::Hasher>;
 
   StoredPage(std::unique_ptr<RenderFrameHostImpl> rfh,
              RenderFrameProxyHostMap proxy_hosts,
@@ -35,7 +36,7 @@ struct CONTENT_EXPORT StoredPage {
   std::unique_ptr<RenderFrameHostImpl> render_frame_host;
 
   // Proxies of the main document as seen by other processes.
-  // Currently, we only store proxies for SiteInstances of all subframes on
+  // Currently, we only store proxies for SiteInstanceGroups of all subframes on
   // the page, because pages using window.open and nested WebContents are
   // not cached.
   RenderFrameProxyHostMap proxy_hosts;

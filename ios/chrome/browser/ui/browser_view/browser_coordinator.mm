@@ -428,8 +428,8 @@
       [[PassKitCoordinator alloc] initWithBaseViewController:self.viewController
                                                      browser:self.browser];
 
-  self.printController = [[PrintController alloc] init];
-  self.printController.delegate = self.viewController;
+  self.printController =
+      [[PrintController alloc] initWithBaseViewController:self.viewController];
 
   self.qrScannerCoordinator = [[QRScannerLegacyCoordinator alloc]
       initWithBaseViewController:self.viewController
@@ -608,16 +608,21 @@
 
 #pragma mark - BrowserCoordinatorCommands
 
-- (void)printTab {
+- (void)printTabWithBaseViewController:(UIViewController*)baseViewController {
   DCHECK(self.printController);
   web::WebState* webState =
       self.browser->GetWebStateList()->GetActiveWebState();
-  [self.printController printWebState:webState];
+  [self.printController printWebState:webState
+                   baseViewController:baseViewController];
 }
 
-- (void)printImage:(UIImage*)image title:(NSString*)title {
+- (void)printImage:(UIImage*)image
+                 title:(NSString*)title
+    baseViewController:(UIViewController*)baseViewController {
   DCHECK(self.printController);
-  [self.printController printImage:image title:title];
+  [self.printController printImage:image
+                             title:title
+                baseViewController:baseViewController];
 }
 
 - (void)showReadingList {

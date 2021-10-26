@@ -46,6 +46,7 @@ struct SameSizeAsElementRareData : NodeRareData {
   IntSize scroll_offset;
   void* pointers_or_strings[4];
   Member<void*> members[18];
+  bool flags[1];
 };
 
 ElementRareData::ElementRareData(NodeRenderingData* node_layout_data)

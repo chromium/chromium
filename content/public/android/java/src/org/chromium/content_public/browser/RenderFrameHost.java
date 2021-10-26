@@ -12,6 +12,8 @@ import org.chromium.mojo.bindings.Interface;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
+import java.util.List;
+
 /**
  * The RenderFrameHost Java wrapper to allow communicating with the native RenderFrameHost object.
  */
@@ -59,6 +61,13 @@ public interface RenderFrameHost {
      * @param callback The callback to be notified once the canonical URL has been fetched.
      */
     void getCanonicalUrlForSharing(Callback<GURL> callback);
+
+    /**
+     * Fetch all RenderFramesHosts from the current frame.
+     *
+     * @return A list of RenderFramesHosts including the current frame and all descendents.
+     */
+    public List<RenderFrameHost> getAllRenderFrameHosts();
 
     /**
      * Returns whether the feature policy allows the feature in this frame.

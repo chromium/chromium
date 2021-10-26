@@ -23,7 +23,7 @@
 <translation id="1270369111467284986">可疑的強制網絡入口</translation>
 <translation id="1290331692326790741">訊號微弱</translation>
 <translation id="1301069673413256657">GSM</translation>
-<translation id="1310380015393971138">無法連上<ph name="NETWORK_NAME" /></translation>
+<translation id="1310380015393971138">未連線至 <ph name="NETWORK_NAME" /> 網絡</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">家用網絡，非漫遊狀態</translation>
 <translation id="1327977588028644528">閘道</translation>
@@ -72,7 +72,7 @@
 <translation id="1999615961760456652">強制網絡入口</translation>
 <translation id="2006864819935886708">連線問題</translation>
 <translation id="2008685064673031089">尖峰搜尋</translation>
-<translation id="2016697457005847575">試試疑難排解步驟</translation>
+<translation id="2016697457005847575">請嘗試解決疑難步驟</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">顯示更多設定</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />，版本 <ph name="MILESTONE_VERSION" /></translation>
@@ -105,7 +105,7 @@
 <translation id="2505327257735685095">重新整理目前嘅桌布圖片</translation>
 <translation id="2517472476991765520">掃瞄</translation>
 <translation id="2570743873672969996">正在執行<ph name="TEST_NAME" />測試…</translation>
-<translation id="2584559707064218956">如要設定，請前往「設定」頁面</translation>
+<translation id="2584559707064218956">如要進行設定，請前往「設定」頁面</translation>
 <translation id="2585245331261708204">Chrome 作業系統的新功能</translation>
 <translation id="2619761439309613843">每日重新整理</translation>
 <translation id="2620436844016719705">系統</translation>
@@ -152,10 +152,10 @@
 <translation id="3532980081107202182">大約尚餘 <ph name="MIN_REMAINING" /> 分鐘</translation>
 <translation id="3565064564551103223">已允許的 IP</translation>
 <translation id="357889014807611375">按用量收費的 Wi-Fi</translation>
-<translation id="3583278742022654445">訊號強度偏弱，建議你移動到較靠近 Wi-Fi 訊號來源的位置。</translation>
+<translation id="3583278742022654445">訊號強度較弱，請嘗試移近 Wi-Fi 訊號來源。</translation>
 <translation id="3595596368722241419">電池已滿</translation>
 <translation id="360565022852130722">已使用防護力較弱的通訊協定 WEP 802.1x 保護 Wi-Fi 網絡</translation>
-<translation id="3606583719724308068">連線至 HTTPS 網站時延遲時間過長</translation>
+<translation id="3606583719724308068">連線至 HTTPS 網站延遲時間過長</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" />測試</translation>
 <translation id="3708186454126126312">之前已連接的裝置</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> 個評論)</translation>
@@ -245,7 +245,7 @@
 <translation id="4917385247580444890">強</translation>
 <translation id="4917889632206600977">已停止 - 紙張已用完</translation>
 <translation id="4921665434385737356">已在 <ph name="NUM_SECONDS" /> 秒內充電 <ph name="RATE" />。</translation>
-<translation id="4930320165497208503">如要設定或更新連線，請前往<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />頁面。</translation>
+<translation id="4930320165497208503">如要設定或更新連線，請前往「<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />」頁面。</translation>
 <translation id="4932733599132424254">日期</translation>
 <translation id="498186245079027698">請檢查掃瞄器，然後再試一次。請確保本機有足夠空間儲存已掃瞄的檔案。</translation>
 <translation id="4985509611418653372">執行</translation>
@@ -401,7 +401,7 @@
 <translation id="7271040990581020067">掃瞄器目前正在使用中，請稍後再試。</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">桌布收藏</translation>
-<translation id="7297226631177386107">無法透過防火牆連線到 HTTPS 網站</translation>
+<translation id="7297226631177386107">無法透過防火牆連線至 HTTPS 網站</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -434,7 +434,7 @@
 <translation id="7762130827864645708">已成功變更您的密碼。請從現在開始改用新的密碼。</translation>
 <translation id="7763470514545477072">域名尾碼相符</translation>
 <translation id="7769672763586021400">型號識別碼</translation>
-<translation id="7784116172884276937">尚未設定任何 DNS 伺服器</translation>
+<translation id="7784116172884276937">沒有設定 DNS 伺服器</translation>
 <translation id="7805768142964895445">狀態</translation>
 <translation id="7819857487979277519">PSK (WPA 或 RSN)</translation>
 <translation id="7835501727204647447">安裝 CloudReady</translation>
@@ -449,7 +449,7 @@
 <translation id="7943235353293548836">持續 keepalive 間隔</translation>
 <translation id="7955587717700691983">藍牙鍵盤</translation>
 <translation id="7960831585769876809">溫度</translation>
-<translation id="7977800524392185497">如要加入 <ph name="NETWORK_NAME" /> 網路，請前往「設定」頁面</translation>
+<translation id="7977800524392185497">如要加入 <ph name="NETWORK_NAME" /> 網絡，請前往「設定」頁面</translation>
 <translation id="7978412674231730200">私密金鑰</translation>
 <translation id="7994702968232966508">EAP 方法</translation>
 <translation id="802154636333426148">下載失敗</translation>
@@ -458,7 +458,7 @@
 <translation id="8075838845814659848">剩餘電量</translation>
 <translation id="8082366717211101304">無法從 Android 應用程式解析 DNS</translation>
 <translation id="808894953321890993">變更密碼</translation>
-<translation id="8104083085214006426">你目前使用的是未受保護的開放式網路</translation>
+<translation id="8104083085214006426">您正在使用開放且不安全的網絡</translation>
 <translation id="811820734797650957">(Android) 可連線偵測到閘道</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8132480444149501833">要求流量計數器</translation>
@@ -483,12 +483,12 @@
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">內置鍵盤</translation>
 <translation id="843568408673868420">互聯網連線</translation>
-<translation id="844521431886043384">未設定 DNS</translation>
+<translation id="844521431886043384">DNS 未設定</translation>
 <translation id="8461329675984532579">家庭網絡供應商名稱</translation>
 <translation id="8475690821716466388">已使用防護力較弱的通訊協定 WEP PSK 保護 Wi-Fi 網絡</translation>
 <translation id="8477551185774834963">DNS 延遲時間稍微超過允許的門檻</translation>
 <translation id="8483248364096924578">IP 位址</translation>
-<translation id="8491311378305535241">無法從 Android 應用程式透過防火牆連線到 HTTP 網站</translation>
+<translation id="8491311378305535241">無法從 Android 應用程式透過防火牆連線至 HTTP 網站</translation>
 <translation id="8498220429738806196">流量計數器</translation>
 <translation id="8503813439785031346">用戶名稱</translation>
 <translation id="8503836310948963452">只需多幾分鐘…</translation>
@@ -514,7 +514,7 @@
 <translation id="8818152010000655963">桌布</translation>
 <translation id="8834539327799336565">目前已連接的裝置</translation>
 <translation id="8845001906332463065">取得說明</translation>
-<translation id="8855781559874488009">無法透過防火牆連線到 HTTP 網站</translation>
+<translation id="8855781559874488009">無法透過防火牆連線至 HTTP 網站</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">已通過測試</translation>
 <translation id="8898840733695078011">訊號強度</translation>

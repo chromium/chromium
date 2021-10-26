@@ -63,7 +63,7 @@ void CaptureModeTestApi::StopVideoRecording() {
 
 void CaptureModeTestApi::SetOnCaptureFileSavedCallback(
     OnFileSavedCallback callback) {
-  controller_->on_file_saved_callback_ = std::move(callback);
+  controller_->on_file_saved_callback_for_test_ = std::move(callback);
 }
 
 void CaptureModeTestApi::SetAudioRecordingEnabled(bool enabled) {

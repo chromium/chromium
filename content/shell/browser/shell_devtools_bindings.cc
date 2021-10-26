@@ -340,7 +340,7 @@ void ShellDevToolsBindings::HandleMessageFromDevToolsFrontend(
     resource_request->headers.AddHeadersFromString(*headers);
 
     auto* partition =
-        web_contents()->GetBrowserContext()->GetStoragePartitionForUrl(gurl);
+        inspected_contents()->GetMainFrame()->GetStoragePartition();
     auto factory = partition->GetURLLoaderFactoryForBrowserProcess();
 
     auto simple_url_loader = network::SimpleURLLoader::Create(

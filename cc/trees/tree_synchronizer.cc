@@ -6,7 +6,9 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <set>
+#include <utility>
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
@@ -128,52 +130,6 @@ void TreeSynchronizer::SynchronizeTrees(LayerTreeImpl* pending_tree,
 template <typename Iterator>
 static void PushLayerPropertiesInternal(Iterator source_layers_begin,
                                         Iterator source_layers_end,
-                                        LayerTreeHost* host_tree,
-                                        LayerTreeImpl* target_impl_tree) {
-  for (Iterator it = source_layers_begin; it != source_layers_end; ++it) {
-    auto* source_layer = *it;
-    LayerImpl* target_layer = target_impl_tree->LayerById(source_layer->id());
-    DCHECK(target_layer);
-    // TODO(enne): http://crbug.com/918126 debugging
-    CHECK(source_layer);
-    if (!target_layer) {
-      bool host_set_on_source = source_layer->layer_tree_host() == host_tree;
-
-      bool source_found_by_iterator = false;
-      for (auto host_tree_it = host_tree->begin();
-           host_tree_it != host_tree->end(); ++it) {
-        if (*host_tree_it == source_layer) {
-          source_found_by_iterator = true;
-          break;
-        }
-      }
-
-      bool root_layer_valid = !!host_tree->root_layer();
-      bool found_root = false;
-      Layer* layer = source_layer;
-      while (layer) {
-        if (layer == host_tree->root_layer()) {
-          found_root = true;
-          break;
-        }
-        layer = layer->parent();
-      }
-
-      auto str = base::StringPrintf(
-          "hs: %d, sf: %d, rlv: %d, fr: %d", host_set_on_source,
-          source_found_by_iterator, root_layer_valid, found_root);
-      static auto* crash_key = base::debug::AllocateCrashKeyString(
-          "cc_null_layer_sync", base::debug::CrashKeySize::Size32);
-      base::debug::SetCrashKeyString(crash_key, str);
-      base::debug::DumpWithoutCrashing();
-    }
-    source_layer->PushPropertiesTo(target_layer);
-  }
-}
-
-template <typename Iterator>
-static void PushLayerPropertiesInternal(Iterator source_layers_begin,
-                                        Iterator source_layers_end,
                                         LayerTreeImpl* target_impl_tree) {
   for (Iterator it = source_layers_begin; it != source_layers_end; ++it) {
     auto* source_layer = *it;
@@ -201,8 +157,7 @@ void TreeSynchronizer::PushLayerProperties(LayerTreeHost* host_tree,
   auto layers = host_tree->LayersThatShouldPushProperties();
   TRACE_EVENT1("cc", "TreeSynchronizer::PushLayerPropertiesTo.Main",
                "layer_count", layers.size());
-  PushLayerPropertiesInternal(layers.begin(), layers.end(), host_tree,
-                              impl_tree);
+  PushLayerPropertiesInternal(layers.begin(), layers.end(), impl_tree);
   host_tree->ClearLayersThatShouldPushProperties();
 }
 

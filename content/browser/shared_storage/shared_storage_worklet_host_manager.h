@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_SHARED_STORAGE_SHARED_STORAGE_WORKLET_HOST_MANAGER_H_
 
 #include <map>
+#include <memory>
 
 #include "content/common/content_export.h"
 

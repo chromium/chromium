@@ -340,7 +340,7 @@ void NotificationViewBase::CreateOrUpdateViews(
     const Notification& notification) {
   left_content_count_ = 0;
 
-  CreateOrUpdateContextTitleView(notification);
+  CreateOrUpdateHeaderView(notification);
   CreateOrUpdateTitleView(notification);
   CreateOrUpdateMessageView(notification);
   CreateOrUpdateCompactTitleMessageView(notification);
@@ -679,14 +679,10 @@ std::unique_ptr<NotificationInputContainer>
 NotificationViewBase::GenerateNotificationInputContainer() {
   return std::make_unique<NotificationInputContainer>(this);
 }
-void NotificationViewBase::CreateOrUpdateContextTitleView(
+void NotificationViewBase::CreateOrUpdateHeaderView(
     const Notification& notification) {
-  if (!header_view_in_ash_notification_)
-    header_row_->SetColor(notification.accent_color());
-
   header_row_->SetTimestamp(notification.timestamp());
   header_row_->SetAppNameElideBehavior(gfx::ELIDE_TAIL);
-  header_row_->SetSummaryText(std::u16string());
 
   std::u16string app_name;
   if (notification.notifier_id().title.has_value()) {

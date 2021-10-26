@@ -22,6 +22,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -130,9 +131,7 @@ CartService::CartService(Profile* profile)
       coupon_service_(CouponServiceFactory::GetForProfile(profile)) {
   history_service_observation_.Observe(HistoryServiceFactory::GetForProfile(
       profile_, ServiceAccessType::EXPLICIT_ACCESS));
-  if (base::GetFieldTrialParamValueByFeature(
-          ntp_features::kNtpChromeCartModule,
-          ntp_features::kNtpChromeCartModuleDataParam) == "fake") {
+  if (IsFakeDataEnabled()) {
     AddCartsWithFakeData();
   } else {
     // In case last deconstruction is interrupted and fake data is not deleted.
@@ -461,7 +460,9 @@ void CartService::OnOperationFinishedWithCallback(
 
 void CartService::Shutdown() {
   history_service_observation_.Reset();
-  DeleteCartsWithFakeData();
+  if (IsFakeDataEnabled()) {
+    DeleteCartsWithFakeData();
+  }
   // Delete content of all carts that are removed.
   cart_db_->LoadAllCarts(base::BindOnce(&CartService::DeleteRemovedCartsContent,
                                         weak_ptr_factory_.GetWeakPtr()));
@@ -489,7 +490,7 @@ void CartService::AddCartsWithFakeData() {
   // Polulate and add some carts with fake data.
   double time_now = base::Time::Now().ToDoubleT();
   cart_db::ChromeCartContentProto dummy_proto1;
-  GURL dummy_url1 = GURL("https://shopping.google.com");
+  GURL dummy_url1 = GURL("https://www.example.com");
   dummy_proto1.set_key(std::string(kFakeDataPrefix) + eTLDPlusOne(dummy_url1));
   dummy_proto1.set_merchant("Cart Foo");
   dummy_proto1.set_merchant_cart_url(dummy_url1.spec());
@@ -497,6 +498,7 @@ void CartService::AddCartsWithFakeData() {
   dummy_proto1.mutable_discount_info()->set_discount_text(
       l10n_util::GetStringFUTF8(IDS_NTP_MODULES_CART_DISCOUNT_CHIP_AMOUNT,
                                 u"15%"));
+  dummy_proto1.mutable_discount_info()->set_has_coupons(true);
   dummy_proto1.add_product_image_urls(
       "https://encrypted-tbn3.gstatic.com/"
       "shopping?q=tbn:ANd9GcQpn38jB2_BANnHUFa7kHJsf6SyubcgeU1lNYO_"
@@ -515,6 +517,19 @@ void CartService::AddCartsWithFakeData() {
   cart_db_->AddCart(dummy_proto1.key(), dummy_proto1,
                     base::BindOnce(&CartService::OnOperationFinished,
                                    weak_ptr_factory_.GetWeakPtr()));
+  // Add a fake code coupon associated with this dummy cart. If more fake coupon
+  // data is added, please also delete them in DeleteCartsWithFakeData.
+  base::flat_map<GURL,
+                 std::vector<std::unique_ptr<autofill::AutofillOfferData>>>
+      coupon_map;
+  auto offer = std::make_unique<autofill::AutofillOfferData>();
+  offer->offer_id = 123;
+  offer->display_strings.value_prop_text = "15% off on everything";
+  offer->promo_code = std::move("15PERCENTOFF");
+  offer->merchant_origins.emplace_back(dummy_url1);
+  offer->expiry = base::Time::Now() + base::Days(3);
+  coupon_map[dummy_url1].emplace_back(std::move(offer));
+  coupon_service_->UpdateFreeListingCoupons(coupon_map);
 
   cart_db::ChromeCartContentProto dummy_proto2;
   GURL dummy_url2 = GURL("https://www.amazon.com/");
@@ -629,6 +644,8 @@ void CartService::AddCartsWithFakeData() {
 }
 
 void CartService::DeleteCartsWithFakeData() {
+  coupon_service_->DeleteFreeListingCouponsForUrl(
+      GURL("https://www.example.com"));
   cart_db_->DeleteCartsWithPrefix(
       kFakeDataPrefix, base::BindOnce(&CartService::OnOperationFinished,
                                       weak_ptr_factory_.GetWeakPtr()));
@@ -666,6 +683,8 @@ void CartService::OnLoadCarts(CartDB::LoadCallback callback,
                               bool success,
                               std::vector<CartDB::KeyAndValue> proto_pairs) {
   if (IsFakeDataEnabled()) {
+    std::sort(proto_pairs.begin(), proto_pairs.end(),
+              CompareTimeStampForProtoPair);
     std::move(callback).Run(success, std::move(proto_pairs));
     return;
   }

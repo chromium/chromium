@@ -84,6 +84,9 @@ class AppListTestHelper {
   // Adds a page break item to the app list model.
   void AddPageBreakItem();
 
+  // Adds `num_apps` recent apps to the recent apps view.
+  void AddRecentApps(int num_apps);
+
   // Whether the app list is showing a folder.
   bool IsInFolderView();
 

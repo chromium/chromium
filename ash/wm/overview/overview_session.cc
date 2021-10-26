@@ -210,7 +210,6 @@ void OverviewSession::Init(const WindowList& windows,
       overview_grid->PositionWindows(/*animate=*/true, /*ignored_items=*/{},
                                      OverviewTransition::kEnter);
     }
-    overview_grid->UpdateCreateDesksTemplatesButton();
   }
 
   UpdateNoWindowsWidgetOnEachGrid();
@@ -539,8 +538,10 @@ void OverviewSession::InitiateDrag(OverviewItem* item,
       this, item, is_touch_dragging);
   window_drag_controller_->InitiateDrag(location_in_screen);
 
-  for (std::unique_ptr<OverviewGrid>& grid : grid_list_)
+  for (std::unique_ptr<OverviewGrid>& grid : grid_list_) {
     grid->OnSelectorItemDragStarted(item);
+    grid->UpdateCreateDeskTemplateButton();
+  }
 }
 
 void OverviewSession::Drag(OverviewItem* item,
@@ -560,8 +561,10 @@ void OverviewSession::CompleteDrag(OverviewItem* item,
   highlight_controller_->SetFocusHighlightVisibility(true);
   const bool snap = window_drag_controller_->CompleteDrag(location_in_screen) ==
                     OverviewWindowDragController::DragResult::kSnap;
-  for (std::unique_ptr<OverviewGrid>& grid : grid_list_)
+  for (std::unique_ptr<OverviewGrid>& grid : grid_list_) {
     grid->OnSelectorItemDragEnded(snap);
+    grid->UpdateCreateDeskTemplateButton();
+  }
 }
 
 void OverviewSession::StartNormalDragMode(
@@ -581,8 +584,10 @@ void OverviewSession::Fling(OverviewItem* item,
   const bool snap = window_drag_controller_->Fling(location_in_screen,
                                                    velocity_x, velocity_y) ==
                     OverviewWindowDragController::DragResult::kSnap;
-  for (std::unique_ptr<OverviewGrid>& grid : grid_list_)
+  for (std::unique_ptr<OverviewGrid>& grid : grid_list_) {
     grid->OnSelectorItemDragEnded(snap);
+    grid->UpdateCreateDeskTemplateButton();
+  }
 }
 
 void OverviewSession::ActivateDraggedWindow() {
@@ -591,8 +596,10 @@ void OverviewSession::ActivateDraggedWindow() {
 
 void OverviewSession::ResetDraggedWindowGesture() {
   window_drag_controller_->ResetGesture();
-  for (std::unique_ptr<OverviewGrid>& grid : grid_list_)
+  for (std::unique_ptr<OverviewGrid>& grid : grid_list_) {
     grid->OnSelectorItemDragEnded(/*snap=*/false);
+    grid->UpdateCreateDeskTemplateButton();
+  }
 }
 
 void OverviewSession::OnWindowDragStarted(aura::Window* dragged_window,

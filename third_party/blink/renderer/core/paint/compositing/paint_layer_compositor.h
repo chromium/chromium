@@ -153,13 +153,12 @@ class CORE_EXPORT PaintLayerCompositor final
 #endif
 
   void UpdateAssignmentsIfNeededRecursiveInternal(
-      DocumentLifecycle::LifecycleState target_state,
-      CompositingReasonsStats&);
+      DocumentLifecycle::LifecycleState target_state);
   void UpdateInputsIfNeededRecursiveInternal(
       DocumentLifecycle::LifecycleState target_state);
 
-  void UpdateAssignmentsIfNeeded(DocumentLifecycle::LifecycleState target_state,
-                                 CompositingReasonsStats&);
+  void UpdateAssignmentsIfNeeded(
+      DocumentLifecycle::LifecycleState target_state);
 
   void SetOwnerNeedsCompositingInputsUpdate();
 

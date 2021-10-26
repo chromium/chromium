@@ -137,7 +137,7 @@ class SuspiciousSiteTriggerTest : public content::RenderViewHostTestHarness {
       const SuspiciousSiteTrigger::TriggerState state,
       int count) {
     histograms_.ExpectBucketCount(
-        kSuspiciousSiteTriggerReportDelayStateMetricName,
+        kSuspiciousSiteTriggerReportDelayStateTestMetricName,
         static_cast<int>(state), count);
   }
 

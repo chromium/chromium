@@ -572,22 +572,10 @@ HTMLMediaElement::HTMLMediaElement(const QualifiedName& tag_name,
       remote_playback_client_(nullptr),
       media_controls_(nullptr),
       controls_list_(MakeGarbageCollected<HTMLMediaElementControlsList>(this)),
-      lazy_load_intersection_observer_(nullptr),
-      media_player_host_remote_(
-          MakeGarbageCollected<DisallowNewWrapper<
-              HeapMojoAssociatedRemote<media::mojom::blink::MediaPlayerHost>>>(
-              GetExecutionContext())),
-      media_player_observer_remote_set_(
-          MakeGarbageCollected<DisallowNewWrapper<HeapMojoAssociatedRemoteSet<
-              media::mojom::blink::MediaPlayerObserver>>>(
-              GetExecutionContext())),
-      media_player_receiver_set_(
-          MakeGarbageCollected<DisallowNewWrapper<
-              HeapMojoAssociatedReceiverSet<media::mojom::blink::MediaPlayer,
-                                            HTMLMediaElement>>>(
-              this,
-              GetExecutionContext())) {
+      lazy_load_intersection_observer_(nullptr) {
   DVLOG(1) << "HTMLMediaElement(" << *this << ")";
+
+  ResetMojoState();
 
   LocalFrame* frame = document.GetFrame();
   if (frame) {
@@ -653,35 +641,35 @@ void HTMLMediaElement::DidMoveToNewDocument(Document& old_document) {
   AddElementToDocumentMap(this, &GetDocument());
   SetExecutionContext(GetExecutionContext());
 
-  // Reset mojo state that is coupled to |old_document|'s execution context.
-  // NOTE: |media_player_host_remote_| is also coupled to |old_document|'s frame
-  media_player_host_remote_ = MakeGarbageCollected<DisallowNewWrapper<
-      HeapMojoAssociatedRemote<media::mojom::blink::MediaPlayerHost>>>(
-      GetExecutionContext());
-  media_player_observer_remote_set_->Value().Clear();
-  media_player_observer_remote_set_ = MakeGarbageCollected<DisallowNewWrapper<
-      HeapMojoAssociatedRemoteSet<media::mojom::blink::MediaPlayerObserver>>>(
-      GetExecutionContext());
-  media_player_receiver_set_->Value().Clear();
-  media_player_receiver_set_ =
-      MakeGarbageCollected<DisallowNewWrapper<HeapMojoAssociatedReceiverSet<
-          media::mojom::blink::MediaPlayer, HTMLMediaElement>>>(
-          this, GetExecutionContext());
-
   // FIXME: This is a temporary fix to prevent this object from causing the
   // MediaPlayer to dereference LocalFrame and FrameLoader pointers from the
   // previous document. This restarts the load, as if the src attribute had been
   // set.  A proper fix would provide a mechanism to allow this object to
   // refresh the MediaPlayer's LocalFrame and FrameLoader references on document
   // changes so that playback can be resumed properly.
+  // TODO(liberato): Consider checking that the new document's opener is the old
+  // document: GetDocument().GetFrame()->Opener() == old_document.GetFrame().
   ignore_preload_none_ = false;
   auto new_origin = GetDocument().TopFrameOrigin();
   auto old_origin = old_document.TopFrameOrigin();
   const bool reuse_player =
       base::FeatureList::IsEnabled(media::kReuseMediaPlayer) && new_origin &&
       old_origin && old_origin->IsSameOriginWith(new_origin.get());
-  if (!reuse_player)
-    InvokeLoadAlgorithm();
+  if (!reuse_player) {
+    // Don't worry about notifications from any previous document if we're not
+    // re-using the player.
+    if (opener_context_observer_)
+      opener_context_observer_->SetContextLifecycleNotifier(nullptr);
+    AttachToNewFrame();
+  } else {
+    opener_document_ = old_document;
+    if (!opener_context_observer_) {
+      opener_context_observer_ =
+          MakeGarbageCollected<OpenerContextObserver>(this);
+    }
+    opener_context_observer_->SetContextLifecycleNotifier(
+        opener_document_->GetExecutionContext());
+  }
 
   // Decrement the load event delay count on oldDocument now that
   // web_media_player_ has been destroyed and there is no risk of dispatching a
@@ -689,6 +677,36 @@ void HTMLMediaElement::DidMoveToNewDocument(Document& old_document) {
   old_document.DecrementLoadEventDelayCount();
 
   HTMLElement::DidMoveToNewDocument(old_document);
+}
+
+void HTMLMediaElement::AttachToNewFrame() {
+  opener_document_ = nullptr;
+  // Do not ask it to stop notifying us -- if this is a callback from the
+  // listener, then it's ExecutionContext has been destroyed and it's not
+  // allowed to unregister.
+  opener_context_observer_ = nullptr;
+  // Reset mojo state that is coupled to |old_document|'s execution context.
+  // NOTE: |media_player_host_remote_| is also coupled to |old_document|'s
+  // frame.
+  ResetMojoState();
+  InvokeLoadAlgorithm();
+}
+
+void HTMLMediaElement::ResetMojoState() {
+  media_player_host_remote_ = MakeGarbageCollected<DisallowNewWrapper<
+      HeapMojoAssociatedRemote<media::mojom::blink::MediaPlayerHost>>>(
+      GetExecutionContext());
+  if (media_player_observer_remote_set_)
+    media_player_observer_remote_set_->Value().Clear();
+  media_player_observer_remote_set_ = MakeGarbageCollected<DisallowNewWrapper<
+      HeapMojoAssociatedRemoteSet<media::mojom::blink::MediaPlayerObserver>>>(
+      GetExecutionContext());
+  if (media_player_receiver_set_)
+    media_player_receiver_set_->Value().Clear();
+  media_player_receiver_set_ =
+      MakeGarbageCollected<DisallowNewWrapper<HeapMojoAssociatedReceiverSet<
+          media::mojom::blink::MediaPlayer, HTMLMediaElement>>>(
+          this, GetExecutionContext());
 }
 
 bool HTMLMediaElement::SupportsFocus() const {
@@ -1347,6 +1365,11 @@ void HTMLMediaElement::LoadResource(const WebMediaPlayerSource& source,
   }
 }
 
+LocalFrame* HTMLMediaElement::LocalFrameForPlayer() {
+  return opener_document_ ? opener_document_->GetFrame()
+                          : GetDocument().GetFrame();
+}
+
 void HTMLMediaElement::StartPlayerLoad() {
   DCHECK(!web_media_player_);
 
@@ -1377,7 +1400,7 @@ void HTMLMediaElement::StartPlayerLoad() {
     source = WebMediaPlayerSource(WebURL(kurl));
   }
 
-  LocalFrame* frame = GetDocument().GetFrame();
+  LocalFrame* frame = LocalFrameForPlayer();
   // TODO(srirama.m): Figure out how frame can be null when
   // coming from executeDeferredLoad()
   if (!frame) {
@@ -3792,6 +3815,7 @@ void HTMLMediaElement::
     media_player_receiver_set_->Value().Clear();
     media_player_observer_remote_set_->Value().Clear();
   }
+
   OnWebMediaPlayerCleared();
 }
 
@@ -4269,6 +4293,8 @@ void HTMLMediaElement::Trace(Visitor* visitor) const {
   visitor->Trace(media_player_host_remote_);
   visitor->Trace(media_player_observer_remote_set_);
   visitor->Trace(media_player_receiver_set_);
+  visitor->Trace(opener_document_);
+  visitor->Trace(opener_context_observer_);
   Supplementable<HTMLMediaElement>::Trace(visitor);
   HTMLElement::Trace(visitor);
   ExecutionContextLifecycleStateObserver::Trace(visitor);
@@ -4709,6 +4735,21 @@ WebMediaPlayerClient::Features HTMLMediaElement::GetFeatures() {
   features.url_path = url.GetPath();
 
   return features;
+}
+
+HTMLMediaElement::OpenerContextObserver::OpenerContextObserver(
+    HTMLMediaElement* element)
+    : element_(element) {}
+
+HTMLMediaElement::OpenerContextObserver::~OpenerContextObserver() = default;
+
+void HTMLMediaElement::OpenerContextObserver::Trace(Visitor* visitor) const {
+  ContextLifecycleObserver::Trace(visitor);
+  visitor->Trace(element_);
+}
+
+void HTMLMediaElement::OpenerContextObserver::ContextDestroyed() {
+  element_->AttachToNewFrame();
 }
 
 STATIC_ASSERT_ENUM(WebMediaPlayer::kReadyStateHaveNothing,

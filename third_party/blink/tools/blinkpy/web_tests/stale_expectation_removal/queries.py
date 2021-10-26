@@ -38,6 +38,7 @@ WITH
       exported.id,
       test_id,
       status,
+      duration,
       (
         SELECT value
         FROM tr.tags
@@ -131,6 +132,12 @@ KNOWN_TEST_ID_PREFIXES = [
 
 
 class WebTestBigQueryQuerier(queries_module.BigQueryQuerier):
+    def _ConvertJsonResultToResultObject(self, json_result):
+        result = super(WebTestBigQueryQuerier,
+                       self)._ConvertJsonResultToResultObject(json_result)
+        result.SetDuration(json_result['duration'])
+        return result
+
     def _GetRelevantExpectationFilesForQueryResult(self, query_result):
         # Files in the query are either relative to the web tests directory or
         # are an absolute path. The paths are always POSIX-style. We don't

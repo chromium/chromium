@@ -187,6 +187,8 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
 
   virtual void UpdateViewForExpandedState(bool expanded);
 
+  virtual void CreateOrUpdateHeaderView(const Notification& notification);
+
   virtual void CreateOrUpdateTitleView(const Notification& notification) = 0;
 
   virtual void CreateOrUpdateSmallIconView(
@@ -274,7 +276,6 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, UpdateButtonCountTest);
   FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, UpdateButtonsStateTest);
   FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, UpdateInSettings);
-  FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, UpdateType);
   FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, UseImageAsIcon);
   FRIEND_TEST_ALL_PREFIXES(NotificationViewTest, TestIconSizing);
   FRIEND_TEST_ALL_PREFIXES(NotificationViewTest, LeftContentResizeForIcon);
@@ -287,7 +288,6 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
 
   class NotificationViewPathGenerator;
 
-  void CreateOrUpdateContextTitleView(const Notification& notification);
   void CreateOrUpdateMessageView(const Notification& notification);
   void CreateOrUpdateCompactTitleMessageView(const Notification& notification);
   void CreateOrUpdateProgressBarView(const Notification& notification);

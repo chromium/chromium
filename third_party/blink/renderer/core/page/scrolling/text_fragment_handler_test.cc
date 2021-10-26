@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
+#include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -812,11 +813,9 @@ TEST_P(TextFragmentHandlerTest,
   GetTextFragmentHandler().StartPreemptiveGenerationIfNeeded();
 
   mojo::Remote<mojom::blink::TextFragmentReceiver> remote;
-  EXPECT_FALSE(remote.is_bound());
   child_frame->BindTextFragmentReceiver(remote.BindNewPipeAndPassReceiver());
 
-  EXPECT_TRUE(HasTextFragmentHandler(child_frame));
-  EXPECT_TRUE(remote.is_bound());
+  ASSERT_TRUE(remote.is_bound());
   remote.get()->RemoveFragments();
 
   base::RunLoop().RunUntilIdle();
@@ -923,6 +922,248 @@ TEST_P(TextFragmentHandlerTest,
 
   EXPECT_EQ(selector, "First%20paragraph%20text%20that%20is");
   VerifyPreemptiveGenerationMetrics(true);
+}
+
+// Verifies that removing a text fragments from an iframe updates the URL
+TEST_P(TextFragmentHandlerTest, ShouldUpdateUrlAndRemoveHighlightForIframes) {
+  SimRequest main_request("https://example.com/test.html#:~:text=test",
+                          "text/html");
+  SimRequest child_request("https://example.com/child.html", "text/html");
+  LoadURL(
+      "https://example.com/"
+      "test.html#:~:text=test");
+  main_request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <iframe id="iframe" src="child.html"></iframe>
+  )HTML");
+
+  child_request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      p {
+        margin-top: 1000px;
+      }
+    </style>
+    <p>
+      test
+    </p>
+    <script>
+      window.location.hash = ':~:text=test';
+    </script>
+  )HTML");
+  RunAsyncMatchingTasks();
+
+  // Render two frames to handle the async step added by the beforematch event.
+  Compositor().BeginFrame();
+  BeginEmptyFrame();
+
+  Element* iframe = GetDocument().getElementById("iframe");
+  auto* child_frame =
+      To<LocalFrame>(To<HTMLFrameOwnerElement>(iframe)->ContentFrame());
+
+  EXPECT_EQ(1u, child_frame->GetDocument()->Markers().Markers().size());
+  EXPECT_FALSE(HasTextFragmentHandler(child_frame));
+  EXPECT_EQ("https://example.com/test.html#:~:text=test",
+            GetDocument()
+                .GetFrame()
+                ->Loader()
+                .GetDocumentLoader()
+                ->GetHistoryItem()
+                ->Url());
+  EXPECT_EQ("https://example.com/child.html#:~:text=test",
+            child_frame->Loader().GetDocumentLoader()->GetHistoryItem()->Url());
+
+  mojo::Remote<mojom::blink::TextFragmentReceiver> remote;
+
+  child_frame->BindTextFragmentReceiver(remote.BindNewPipeAndPassReceiver());
+  ASSERT_TRUE(remote.is_bound());
+  remote.get()->RemoveFragments();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ("https://example.com/child.html",
+            child_frame->Loader().GetDocumentLoader()->GetHistoryItem()->Url());
+
+  // Remove the selectors from the main frame and update url
+  remote.reset();
+  ASSERT_TRUE(!remote.is_bound());
+  GetDocument().GetFrame()->BindTextFragmentReceiver(
+      remote.BindNewPipeAndPassReceiver());
+  ASSERT_TRUE(remote.is_bound());
+  remote.get()->RemoveFragments();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(0u, child_frame->GetDocument()->Markers().Markers().size());
+  EXPECT_FALSE(child_frame->GetDocument()->View()->GetFragmentAnchor());
+  EXPECT_EQ("https://example.com/test.html", GetDocument()
+                                                 .GetFrame()
+                                                 ->Loader()
+                                                 .GetDocumentLoader()
+                                                 ->GetHistoryItem()
+                                                 ->Url());
+}
+
+// When the main frame and an iFrame have different selectors, it verifies that
+// removing a text fragments from the iframe updates the URL.
+TEST_P(TextFragmentHandlerTest,
+       ShouldUpdateMainFrameUrlWhenMainFrameAndIframeHaveDifferentSelectors) {
+  SimRequest main_request("https://example.com/test.html#:~:text=test",
+                          "text/html");
+  SimRequest child_request("https://example.com/child.html", "text/html");
+  LoadURL(
+      "https://example.com/"
+      "test.html#:~:text=test");
+  main_request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <iframe id="iframe" src="child.html"></iframe>
+  )HTML");
+
+  child_request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      p {
+        margin-top: 1000px;
+      }
+    </style>
+    <p>
+      iframe
+    </p>
+    <script>
+      window.location.hash = ':~:text=iframe';
+    </script>
+  )HTML");
+  RunAsyncMatchingTasks();
+
+  // Render two frames to handle the async step added by the beforematch event.
+  Compositor().BeginFrame();
+  BeginEmptyFrame();
+
+  Element* iframe = GetDocument().getElementById("iframe");
+  auto* child_frame =
+      To<LocalFrame>(To<HTMLFrameOwnerElement>(iframe)->ContentFrame());
+
+  EXPECT_EQ(1u, child_frame->GetDocument()->Markers().Markers().size());
+  EXPECT_FALSE(HasTextFragmentHandler(child_frame));
+  EXPECT_EQ("https://example.com/test.html#:~:text=test",
+            GetDocument()
+                .GetFrame()
+                ->Loader()
+                .GetDocumentLoader()
+                ->GetHistoryItem()
+                ->Url());
+  EXPECT_EQ("https://example.com/child.html#:~:text=iframe",
+            child_frame->Loader().GetDocumentLoader()->GetHistoryItem()->Url());
+
+  mojo::Remote<mojom::blink::TextFragmentReceiver> remote;
+
+  // Remove the selectors from the iframe
+  child_frame->BindTextFragmentReceiver(remote.BindNewPipeAndPassReceiver());
+  ASSERT_TRUE(remote.is_bound());
+  remote.get()->RemoveFragments();
+  base::RunLoop().RunUntilIdle();
+
+  // Remove the selectors from the main frame
+  remote.reset();
+  ASSERT_TRUE(!remote.is_bound());
+  GetDocument().GetFrame()->BindTextFragmentReceiver(
+      remote.BindNewPipeAndPassReceiver());
+  ASSERT_TRUE(remote.is_bound());
+  remote.get()->RemoveFragments();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(0u, child_frame->GetDocument()->Markers().Markers().size());
+  EXPECT_FALSE(child_frame->GetDocument()->View()->GetFragmentAnchor());
+  EXPECT_EQ("https://example.com/child.html",
+            child_frame->Loader().GetDocumentLoader()->GetHistoryItem()->Url());
+  EXPECT_EQ("https://example.com/test.html", GetDocument()
+                                                 .GetFrame()
+                                                 ->Loader()
+                                                 .GetDocumentLoader()
+                                                 ->GetHistoryItem()
+                                                 ->Url());
+}
+
+// When the main frame and an iFrame both have highlighted text, it verifies
+// that removing a text fragments from the main frame and the iframe, updates
+// there respective URL and remove the highlights.
+TEST_P(TextFragmentHandlerTest,
+       ShouldRemoveFromMainFrameAndIframeWhenBothHaveHighlights) {
+  SimRequest main_request("https://example.com/test.html#:~:text=test",
+                          "text/html");
+  SimRequest child_request("https://example.com/child.html", "text/html");
+  LoadURL(
+      "https://example.com/"
+      "test.html#:~:text=test");
+  main_request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <p id="first">This is a test page</p>
+    <iframe id="iframe" src="child.html"></iframe>
+  )HTML");
+
+  child_request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      p {
+        margin-top: 1000px;
+      }
+    </style>
+    <p>
+      iframe
+    </p>
+    <script>
+      window.location.hash = ':~:text=iframe';
+    </script>
+  )HTML");
+  RunAsyncMatchingTasks();
+
+  // Render two frames to handle the async step added by the beforematch event.
+  Compositor().BeginFrame();
+  BeginEmptyFrame();
+
+  Element* iframe = GetDocument().getElementById("iframe");
+  auto* child_frame =
+      To<LocalFrame>(To<HTMLFrameOwnerElement>(iframe)->ContentFrame());
+
+  EXPECT_EQ(1u, child_frame->GetDocument()->Markers().Markers().size());
+  EXPECT_FALSE(HasTextFragmentHandler(child_frame));
+  EXPECT_EQ("https://example.com/test.html#:~:text=test",
+            GetDocument()
+                .GetFrame()
+                ->Loader()
+                .GetDocumentLoader()
+                ->GetHistoryItem()
+                ->Url());
+  EXPECT_EQ("https://example.com/child.html#:~:text=iframe",
+            child_frame->Loader().GetDocumentLoader()->GetHistoryItem()->Url());
+  EXPECT_EQ(1u, GetDocument().Markers().Markers().size());
+
+  mojo::Remote<mojom::blink::TextFragmentReceiver> remote;
+
+  // Remove the selectors from the iframe
+  child_frame->BindTextFragmentReceiver(remote.BindNewPipeAndPassReceiver());
+  ASSERT_TRUE(remote.is_bound());
+  remote.get()->RemoveFragments();
+  base::RunLoop().RunUntilIdle();
+
+  // Remove the selectors from the main frame
+  remote.reset();
+  ASSERT_TRUE(!remote.is_bound());
+  GetDocument().GetFrame()->BindTextFragmentReceiver(
+      remote.BindNewPipeAndPassReceiver());
+  ASSERT_TRUE(remote.is_bound());
+  remote.get()->RemoveFragments();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(0u, child_frame->GetDocument()->Markers().Markers().size());
+  EXPECT_EQ("https://example.com/child.html",
+            child_frame->Loader().GetDocumentLoader()->GetHistoryItem()->Url());
+
+  EXPECT_EQ(0u, GetDocument().Markers().Markers().size());
+  EXPECT_EQ("https://example.com/test.html", GetDocument()
+                                                 .GetFrame()
+                                                 ->Loader()
+                                                 .GetDocumentLoader()
+                                                 ->GetHistoryItem()
+                                                 ->Url());
 }
 
 struct PreemptiveLinkGenerationTestPassToString {

@@ -104,11 +104,6 @@
 class PrefService;
 class Profile;
 
-namespace apps {
-struct FileHandler;
-struct FileHandlerInfo;
-}
-
 namespace extensions {
 struct EntryInfo;
 }
@@ -260,18 +255,6 @@ bool ExecuteFileTask(Profile* profile,
                      const TaskDescriptor& task,
                      const std::vector<storage::FileSystemURL>& file_urls,
                      FileTaskFinishedCallback done);
-
-// Returns true if an apps::FileHandler matches with all of |entries|; that is,
-// if it doesn't include a blanket wild-card MIME type or file extension, it
-// doesn't include text/* and match on an unsupported text MIME type, and if
-// |entries| doesn't include directories.
-//
-// TODO(crbug.com/1060026): For now, this is called only in web_file_tasks,
-// where the new apps::FileHandler representation is used. Once this replaces
-// apps::FileHandlerInfo, this can be used everywhere.
-bool IsGoodMatchAppsFileHandler(
-    const apps::FileHandler& file_Handler,
-    const std::vector<extensions::EntryInfo>& entries);
 
 // Finds the file browser handler tasks (app/extensions declaring
 // "file_browser_handlers" in manifest.json) that can be used with the

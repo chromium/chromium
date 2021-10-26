@@ -185,10 +185,13 @@ constexpr float kRotationNinetyCW = (90 / 180.0) * M_PI;
 #pragma mark - properties
 
 - (void)setDisabled:(BOOL)disabled {
-  _titleLabel.textColor = disabled ? [UIColor colorNamed:kTextQuaternaryColor]
+  // TODO(crbug.com/1262170): Change back the disabled color to
+  // kTextQuaternaryColor once the color is fixed to get a
+  // contrast ratio > 4.5.
+  _titleLabel.textColor = disabled ? [UIColor colorNamed:kTextSecondaryColor]
                                    : [UIColor colorNamed:kTextPrimaryColor];
   _subtitleLabel.textColor = disabled
-                                 ? [UIColor colorNamed:kTextQuaternaryColor]
+                                 ? [UIColor colorNamed:kTextSecondaryColor]
                                  : [UIColor colorNamed:kTextSecondaryColor];
   _disclosureImageView.image =
       disabled ? nil : [UIImage imageNamed:@"table_view_cell_chevron"];

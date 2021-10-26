@@ -14,6 +14,9 @@ import org.chromium.mojo.bindings.Interface;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Mock class for {@link RenderFrameHost}.
  */
@@ -30,6 +33,11 @@ public class MockRenderFrameHost implements RenderFrameHost {
 
     @Override
     public void getCanonicalUrlForSharing(Callback<GURL> callback) {}
+
+    @Override
+    public List<RenderFrameHost> getAllRenderFrameHosts() {
+        return Collections.emptyList();
+    }
 
     @Override
     public boolean isFeatureEnabled(@PermissionsPolicyFeature int feature) {

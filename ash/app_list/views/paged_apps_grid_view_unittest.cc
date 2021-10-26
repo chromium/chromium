@@ -9,6 +9,7 @@
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_view.h"
+#include "ash/app_list/views/apps_container_view.h"
 #include "ash/app_list/views/apps_grid_view_test_api.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
@@ -68,6 +69,13 @@ class PagedAppsGridViewTestBase : public AshTestBase {
     return GetAppListTestHelper()->GetRootPagedAppsGridView();
   }
 
+  void UpdateLayout() {
+    GetAppListTestHelper()
+        ->GetAppsContainerView()
+        ->GetWidget()
+        ->LayoutRootViewIfNecessary();
+  }
+
   std::unique_ptr<test::AppsGridViewTestApi> grid_test_api_;
 };
 
@@ -107,10 +115,17 @@ TEST_F(PagedAppsGridViewNonBubbleTest, CreatePage) {
   EXPECT_EQ(1, grid_test_api_->AppsOnPage(1));
 }
 
-// Test that the first page of the root level paged apps grid view holds 15 apps
-// while subsequent pages can hold up to 20.
+// Test that the first page of the root level paged apps grid holds less apps to
+// accommodate the recent apps which are show at the top of the first page. Then
+// check that the subsequent page holds more apps.
 TEST_F(PagedAppsGridViewTest, PageMaxAppCounts) {
   GetAppListTestHelper()->AddAppItems(40);
+
+  // Add some recent apps and re-layout so the first page of the apps grid has
+  // less rows to accommodate.
+  GetAppListTestHelper()->AddRecentApps(2);
+  GetAppListTestHelper()->GetAppsContainerView()->UpdateRecentApps();
+  UpdateLayout();
 
   // There should be a total of 40 items in the item list.
   AppListItemList* item_list =
@@ -123,6 +138,50 @@ TEST_F(PagedAppsGridViewTest, PageMaxAppCounts) {
   EXPECT_EQ(15, grid_test_api_->AppsOnPage(0));
   EXPECT_EQ(20, grid_test_api_->AppsOnPage(1));
   EXPECT_EQ(5, grid_test_api_->AppsOnPage(2));
+}
+
+// Test that the grid dimensions change according to differently sized displays.
+// The number of rows should change depending on the display height and the
+// first page should most of the time have less rows to accommodate the recents
+// apps.
+TEST_F(PagedAppsGridViewTest, GridDimensionsChangesWithDisplaySize) {
+  // Add some recent apps to take up space on the first page.
+  GetAppListTestHelper()->AddAppItems(2);
+  GetAppListTestHelper()->AddRecentApps(2);
+  GetAppListTestHelper()->GetAppsContainerView()->UpdateRecentApps();
+
+  // Test with a display in landscape mode.
+  UpdateDisplay("1000x600");
+  EXPECT_EQ(3, GetPagedAppsGridView()->GetFirstPageRowsForTesting());
+  EXPECT_EQ(4, GetPagedAppsGridView()->GetRowsForTesting());
+  EXPECT_EQ(5, GetPagedAppsGridView()->cols());
+
+  // Test with a display in landscape mode with less height. This should have
+  // less rows.
+  UpdateDisplay("1000x500");
+  EXPECT_EQ(2, GetPagedAppsGridView()->GetFirstPageRowsForTesting());
+  EXPECT_EQ(3, GetPagedAppsGridView()->GetRowsForTesting());
+  EXPECT_EQ(5, GetPagedAppsGridView()->cols());
+
+  // Test with a display in landscape mode with more height. This should have
+  // more rows.
+  UpdateDisplay("1400x1100");
+  EXPECT_EQ(4, GetPagedAppsGridView()->GetFirstPageRowsForTesting());
+  EXPECT_EQ(4, GetPagedAppsGridView()->GetRowsForTesting());
+  EXPECT_EQ(5, GetPagedAppsGridView()->cols());
+
+  // Test with a display in portrait mode.
+  UpdateDisplay("700x1100");
+  EXPECT_EQ(5, GetPagedAppsGridView()->GetFirstPageRowsForTesting());
+  EXPECT_EQ(5, GetPagedAppsGridView()->GetRowsForTesting());
+  EXPECT_EQ(5, GetPagedAppsGridView()->cols());
+
+  // Test with a display in portrait mode with more height. This should have
+  // more rows.
+  UpdateDisplay("700x1400");
+  EXPECT_EQ(5, GetPagedAppsGridView()->GetFirstPageRowsForTesting());
+  EXPECT_EQ(6, GetPagedAppsGridView()->GetRowsForTesting());
+  EXPECT_EQ(5, GetPagedAppsGridView()->cols());
 }
 
 // Test that spacing between pages is removed when the remove empty space flag
@@ -154,8 +213,10 @@ TEST_F(PagedAppsGridViewTest, DragItemToNextPage) {
   // Drag the item at page 0 slot 0 to the next page.
   StartDragOnItemViewAtVisualIndex(0, 0);
   auto page_flip_waiter = std::make_unique<PageFlipWaiter>(pagination_model);
+  const gfx::Rect apps_grid_bounds =
+      GetPagedAppsGridView()->GetBoundsInScreen();
   gfx::Point next_page_point =
-      GetPagedAppsGridView()->GetBoundsInScreen().bottom_center();
+      gfx::Point(apps_grid_bounds.width() / 2, apps_grid_bounds.bottom() - 1);
   GetEventGenerator()->MoveMouseTo(next_page_point);
   page_flip_waiter->Wait();
   GetEventGenerator()->ReleaseLeftButton();

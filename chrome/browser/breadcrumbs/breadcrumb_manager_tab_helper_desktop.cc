@@ -18,7 +18,10 @@
 namespace {
 
 bool IsNtpUrl(const GURL& url) {
-  return url.DeprecatedGetOriginAsURL() == chrome::kChromeUINewTabURL;
+  const std::string origin = url.DeprecatedGetOriginAsURL().spec();
+  return origin == chrome::kChromeUINewTabURL ||
+         origin == chrome::kChromeUINewTabPageURL ||
+         origin == chrome::kChromeUINewTabPageThirdPartyURL;
 }
 
 }  // namespace

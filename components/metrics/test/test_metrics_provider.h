@@ -14,14 +14,7 @@ namespace metrics {
 // functions are called, for use in tests.
 class TestMetricsProvider : public MetricsProvider {
  public:
-  TestMetricsProvider()
-      : init_called_(false),
-        on_recording_disabled_called_(false),
-        has_initial_stability_metrics_(false),
-        has_initial_stability_metrics_called_(false),
-        provide_initial_stability_metrics_called_(false),
-        provide_stability_metrics_called_(false),
-        provide_system_profile_metrics_called_(false) {}
+  TestMetricsProvider() = default;
 
   TestMetricsProvider(const TestMetricsProvider&) = delete;
   TestMetricsProvider& operator=(const TestMetricsProvider&) = delete;
@@ -56,13 +49,13 @@ class TestMetricsProvider : public MetricsProvider {
   }
 
  private:
-  bool init_called_;
-  bool on_recording_disabled_called_;
-  bool has_initial_stability_metrics_;
-  bool has_initial_stability_metrics_called_;
-  bool provide_initial_stability_metrics_called_;
-  bool provide_stability_metrics_called_;
-  bool provide_system_profile_metrics_called_;
+  bool init_called_ = false;
+  bool on_recording_disabled_called_ = false;
+  bool has_initial_stability_metrics_ = false;
+  bool has_initial_stability_metrics_called_ = false;
+  bool provide_initial_stability_metrics_called_ = false;
+  bool provide_stability_metrics_called_ = false;
+  bool provide_system_profile_metrics_called_ = false;
 };
 
 }  // namespace metrics

@@ -1271,18 +1271,12 @@ void UserSessionManager::PrepareProfile(const base::FilePath& profile_path) {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(kEventCategoryChromeOS,
                                     kEventPrepareProfile, TRACE_ID_LOCAL(this));
 
-  const bool is_demo_session = false;
-
-  // TODO(nkostylev): Figure out whether demo session is using the right profile
-  // path or not. See https://codereview.chromium.org/171423009
   g_browser_process->profile_manager()->CreateProfileAsync(
-      profile_path,
-      base::BindRepeating(&UserSessionManager::OnProfileCreated, AsWeakPtr(),
-                          user_context_, is_demo_session));
+      profile_path, base::BindRepeating(&UserSessionManager::OnProfileCreated,
+                                        AsWeakPtr(), user_context_));
 }
 
 void UserSessionManager::OnProfileCreated(const UserContext& user_context,
-                                          bool is_incognito_profile,
                                           Profile* profile,
                                           Profile::CreateStatus status) {
   switch (status) {
@@ -1296,8 +1290,7 @@ void UserSessionManager::OnProfileCreated(const UserContext& user_context,
       // Profile is created, extensions and promo resources are initialized.
       // At this point all other Chrome OS services will be notified that it is
       // safe to use this profile.
-      UserProfileInitialized(profile, is_incognito_profile,
-                             user_context.GetAccountId());
+      UserProfileInitialized(profile, user_context.GetAccountId());
       break;
     case Profile::CREATE_STATUS_LOCAL_FAIL:
       NOTREACHED();
@@ -1501,30 +1494,12 @@ void UserSessionManager::InitProfilePreferences(
 }
 
 void UserSessionManager::UserProfileInitialized(Profile* profile,
-                                                bool is_incognito_profile,
                                                 const AccountId& account_id) {
   // Only migrate sync prefs for existing users. New users are given the
   // choice to turn on OS sync in OOBE, so they get the default sync pref
   // values.
   if (!IsNewProfile(profile))
     os_sync_util::MigrateOsSyncPreferences(profile->GetPrefs());
-
-  // Demo user signed in.
-  if (is_incognito_profile) {
-    profile->OnLogin();
-
-    // Send the notification before creating the browser so additional objects
-    // that need the profile (e.g. the launcher) can be created first.
-    session_manager::SessionManager::Get()->NotifyUserProfileLoaded(
-        ProfileHelper::Get()->GetUserByProfile(profile)->GetAccountId());
-
-    if (delegate_)
-      delegate_->OnProfilePrepared(profile, false);
-
-    TRACE_EVENT_NESTABLE_ASYNC_END0(kEventCategoryChromeOS,
-                                    kEventPrepareProfile, TRACE_ID_LOCAL(this));
-    return;
-  }
 
   BootTimesRecorder* btl = BootTimesRecorder::Get();
   btl->AddLoginTimeMarker("UserProfileGotten", false);

@@ -84,7 +84,7 @@ bool OnDeviceHeadSuggestInstallerPolicy::VerifyInstallation(
 
 bool OnDeviceHeadSuggestInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {
-  return false;
+  return true;
 }
 
 bool OnDeviceHeadSuggestInstallerPolicy::RequiresNetworkEncryption() const {

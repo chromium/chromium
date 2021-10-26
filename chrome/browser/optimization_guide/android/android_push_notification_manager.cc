@@ -266,6 +266,12 @@ void AndroidPushNotificationManager::DispatchPayload(
     return;
   }
 
+  base::UmaHistogramEnumeration(
+      "OptimizationGuide.PushNotifications.ReceivedNotificationType",
+      notification.optimization_type(),
+      static_cast<optimization_guide::proto::OptimizationType>(
+          optimization_guide::proto::OptimizationType_ARRAYSIZE));
+
   for (Observer& observer : observers_) {
     observer.OnNotificationPayload(notification.optimization_type(),
                                    notification.payload());

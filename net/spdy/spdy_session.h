@@ -113,19 +113,14 @@ enum SpdyProtocolErrorDetails {
   SPDY_ERROR_INVALID_STREAM_ID = 38,
   SPDY_ERROR_INVALID_CONTROL_FRAME = 1,
   SPDY_ERROR_CONTROL_PAYLOAD_TOO_LARGE = 2,
-  SPDY_ERROR_ZLIB_INIT_FAILURE = 3,
-  SPDY_ERROR_UNSUPPORTED_VERSION = 4,
   SPDY_ERROR_DECOMPRESS_FAILURE = 5,
-  SPDY_ERROR_COMPRESS_FAILURE = 6,
-  SPDY_ERROR_GOAWAY_FRAME_CORRUPT = 29,
-  SPDY_ERROR_RST_STREAM_FRAME_CORRUPT = 30,
   SPDY_ERROR_INVALID_PADDING = 39,
   SPDY_ERROR_INVALID_DATA_FRAME_FLAGS = 8,
-  SPDY_ERROR_INVALID_CONTROL_FRAME_FLAGS = 9,
   SPDY_ERROR_UNEXPECTED_FRAME = 31,
   SPDY_ERROR_INTERNAL_FRAMER_ERROR = 41,
   SPDY_ERROR_INVALID_CONTROL_FRAME_SIZE = 37,
   SPDY_ERROR_OVERSIZED_PAYLOAD = 40,
+
   // HttpDecoder or HttpDecoderAdapter error.
   SPDY_ERROR_HPACK_INDEX_VARINT_ERROR = 43,
   SPDY_ERROR_HPACK_NAME_LENGTH_VARINT_ERROR = 44,
@@ -215,7 +210,7 @@ enum class SpdyPushedStreamFate {
 
 // If these compile asserts fail then SpdyProtocolErrorDetails needs
 // to be updated with new values, as do the mapping functions above.
-static_assert(34 == http2::Http2DecoderAdapter::LAST_ERROR,
+static_assert(28 == http2::Http2DecoderAdapter::LAST_ERROR,
               "SpdyProtocolErrorDetails / Spdy Errors mismatch");
 static_assert(13 == spdy::SpdyErrorCode::ERROR_CODE_MAX,
               "SpdyProtocolErrorDetails / spdy::SpdyErrorCode mismatch");

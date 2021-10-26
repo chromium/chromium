@@ -1177,20 +1177,25 @@ if (enable_java_templates) {
   #    }
   #  }
   template("java_group") {
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
     _build_config_vars = [
       "input_jars_paths",
       "mergeable_android_manifests",
       "proguard_configs",
     ]
-    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+    _invoker_deps = []
+    if (defined(invoker.deps)) {
+      _invoker_deps += invoker.deps
+    }
+    if (defined(invoker.public_deps)) {
+      _invoker_deps += invoker.public_deps
+    }
     write_build_config("$target_name$build_config_target_suffix") {
       forward_variables_from(invoker, _build_config_vars)
       type = "group"
       build_config = "$target_gen_dir/${invoker.target_name}.build_config.json"
       supports_android = true
-      if (defined(invoker.deps)) {
-        possible_config_deps = invoker.deps
-      }
+      possible_config_deps = _invoker_deps
     }
     foreach(_group_name,
             [
@@ -1199,7 +1204,7 @@ if (enable_java_templates) {
               "assetres",
             ]) {
       java_lib_group("${target_name}__${_group_name}") {
-        forward_variables_from(invoker, [ "deps" ])
+        deps = _invoker_deps
         group_name = _group_name
       }
     }

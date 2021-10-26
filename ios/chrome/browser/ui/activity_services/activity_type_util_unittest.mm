@@ -37,7 +37,8 @@ TEST_F(ActivityTypeUtilTest, StringToTypeTest) {
                          activity_type_util::UNKNOWN);
 
   PrintActivity* printActivity = [[PrintActivity alloc] initWithData:nil
-                                                             handler:nil];
+                                                             handler:nil
+                                                  baseViewController:nil];
   StringToTypeTestHelper(printActivity.activityType, activity_type_util::PRINT);
 }
 

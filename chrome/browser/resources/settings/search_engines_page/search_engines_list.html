@@ -76,8 +76,7 @@
       <div id="containerWithCollapsibleSection" class="scroll-container"
           hidden="[[!collapseList]]"
           scrollable$="[[fixedHeight]]">
-        <iron-list items="[[visibleEngines]]" scroll-target="[[scrollTarget]]"
-            scroll-offset="[[scrollOffset]]" preserve-focus risk-selection>
+        <dom-repeat items="[[visibleEngines]]">
           <template>
             <settings-search-engine-entry engine="[[item]]"
                 focus-row-index="[[index]]"
@@ -89,7 +88,7 @@
                 show-query-url="[[showQueryUrl]]">
             </settings-search-engine-entry>
           </template>
-        </iron-list>
+        </dom-repeat>
 
         <cr-expand-button no-hover class="cr-row"
             hidden="[[!collapsedEngines.length]]"
@@ -97,9 +96,7 @@
           <div>[[expandListText]]</div>
         </cr-expand-button>
         <iron-collapse opened="[[enginesListExpanded_]]">
-          <iron-list items="[[collapsedEngines]]"
-              scroll-target="[[scrollTarget]]" scroll-offset="[[scrollOffset]]"
-              preserve-focus risk-selection>
+          <dom-repeat items="[[collapsedEngines]]">
             <template>
               <settings-search-engine-entry engine="[[item]]"
                   focus-row-index="[[index]]"
@@ -112,7 +109,7 @@
                   show-query-url="[[showQueryUrl]]">
               </settings-search-engine-entry>
             </template>
-          </iron-list>
+          </dom-repeat>
         </iron-collapse>
       </div>
     </div>

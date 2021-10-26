@@ -59,6 +59,11 @@ struct StructTraits<viz::mojom::CompositorFrameMetadataDataView,
     return metadata.may_throttle_if_undrawn_frames;
   }
 
+  static bool has_shared_element_resources(
+      const viz::CompositorFrameMetadata& metadata) {
+    return metadata.has_shared_element_resources;
+  }
+
   static bool is_resourceless_software_draw_with_scroll_or_animation(
       const viz::CompositorFrameMetadata& metadata) {
     return metadata.is_resourceless_software_draw_with_scroll_or_animation;

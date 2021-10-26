@@ -73,6 +73,8 @@ void MetricsProvider::ProvideCurrentSessionData(
   ProvideStabilityMetrics(uma_proto->mutable_system_profile());
 }
 
+void MetricsProvider::ProvideCurrentSessionUKMData() {}
+
 void MetricsProvider::ProvideStabilityMetrics(
     SystemProfileProto* system_profile_proto) {
 }

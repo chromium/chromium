@@ -122,11 +122,8 @@ enum class ElementFlags {
   kContainsFullScreenElement = 1 << 3,
   kIsInTopLayer = 1 << 4,
   kContainsPersistentVideo = 1 << 5,
-  kDidAttachInternals = 1 << 6,
-  kShouldForceLegacyLayoutForChild = 1 << 7,
-  kStyleShouldForceLegacyLayout = 1 << 8,
-  kHasUndoStack = 1 << 9,
-  kNumberOfElementFlags = 10,  // Size of bitfield used to store the flags.
+
+  kNumberOfElementFlags = 6,  // Size of bitfield used to store the flags.
 };
 
 enum class ShadowRootType;
@@ -223,7 +220,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   bool FastAttributeLookupAllowed(const QualifiedName&) const;
 #endif
 
-#ifdef DUMP_NODE_STATISTICS
+#if DUMP_NODE_STATISTICS
   bool HasNamedNodeMap() const;
 #endif
   bool hasAttributes() const;

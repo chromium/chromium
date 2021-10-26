@@ -3048,6 +3048,7 @@
 <translation id="4115002065223188701">Դուք ցանցի ծածկույթից դուրս եք</translation>
 <translation id="4115378294792113321">Ծիրանեգույն</translation>
 <translation id="4117637339509843559">Մուգ ռեժիմ</translation>
+<translation id="4117714603282104018">Հպահարթակի զգայական արձագանք</translation>
 <translation id="4118579674665737931">Վերագործարկեք սարքը և փորձեք նորից։</translation>
 <translation id="412022815379960229">Սկսեք դիտել ձեր հիշողությունները Google Լուսանկարներում ցանկացած ժամանակ, երբ մուտք եք գործում հաշիվ։</translation>
 <translation id="4120388883569225797">Չհաջողվեց զրոյացնել անվտանգության բանալու կարգավորումները</translation>
@@ -5494,6 +5495,7 @@
 <translation id="6810613314571580006">Ավտոմատ մուտք գործել կայքեր՝ պահված մուտքային տվյալների օգնությամբ: Եթե այս գործառույթն անջատված է, ապա ամեն անգամ կայք մտնելիս ձեզանից հաստատում կպահանջվի:</translation>
 <translation id="6810768462515084623">Գաղտնաբառի ժամկետը սպառվել է: Նորացրեք այն մեկ այլ սարքում և նորից փորձեք:</translation>
 <translation id="6811034713472274749">Էջը պատրաստ է</translation>
+<translation id="6811151703183939603">Ուժեղ</translation>
 <translation id="6811332638216701903">DHCP-ի խնամորդի անունը</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" />-ը չի կարող գործարկվել արմատային գրացուցակից:</translation>
 <translation id="6812841287760418429">Պահպանել փոփոխությունները</translation>
@@ -6789,6 +6791,7 @@
 <translation id="811994229154425014">Սեղմել կրկնակի բացատ՝ կետ մուտքագրելու համար</translation>
 <translation id="8120505434908124087">Տեղադրել eSIM պրոֆիլը</translation>
 <translation id="812260729110117038">Գովազդատուներն ու հրատարակիչները կարող են գնահատել գովազդի արդյունավետությունը՝ առանց հետագծելու ձեր գործողությունները համացանցում։</translation>
+<translation id="81231173274944570">Միացնել զգայական արձագանքը։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="81238879832906896">Դեղին ու սպիտակ ծաղիկ</translation>
 <translation id="8124313775439841391">Կառավարվող ONC</translation>
 <translation id="813082847718468539">Դիտել կայքի տեղեկությունները</translation>
@@ -7865,6 +7868,7 @@
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Հավելված}one{Հավելված}other{Հավելվածներ}}</translation>
 <translation id="964790508619473209">Էկրանի դիրքը</translation>
 <translation id="965211523698323809">Ուղարկել և ստանալ SMS-ներ <ph name="DEVICE_TYPE" />սարքում <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
+<translation id="96535553604365597">Հաղորդել Google Cast-ի հետ կապված խնդրի մասին</translation>
 <translation id="967398046773905967">Արգելափակել HID սարքերի հասանելիությունը բոլոր կայքերի համար։</translation>
 <translation id="967624055006145463">Պահված տվյալներ</translation>
 <translation id="96774243435178359">Կառավարվող տպիչներ</translation>

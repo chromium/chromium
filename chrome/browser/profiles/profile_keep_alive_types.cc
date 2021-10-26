@@ -41,8 +41,6 @@ std::ostream& operator<<(std::ostream& out,
       return out << "kWebAppPermissionDialogWindow";
     case ProfileKeepAliveOrigin::kSessionDataDeleter:
       return out << "kSessionDataDeleter";
-    case ProfileKeepAliveOrigin::kWebAppProtocolHandlerLaunch:
-      return out << "kWebAppProtocolHandlerLaunch";
     case ProfileKeepAliveOrigin::kExtensionUpdater:
       return out << "kExtensionUpdater";
     case ProfileKeepAliveOrigin::kProfileCreationFlow:

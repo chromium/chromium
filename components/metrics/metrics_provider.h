@@ -111,6 +111,11 @@ class MetricsProvider {
   // can provide data about it.
   virtual void ProvideCurrentSessionData(ChromeUserMetricsExtension* uma_proto);
 
+  // Called when building a UKM log about the current session. UKM-specific data
+  // should generally only be emitted through this method, and UMA data should
+  // be emitted through ProvideCurrentSessionData().
+  virtual void ProvideCurrentSessionUKMData();
+
   // Provides additional stability metrics. Stability metrics can be provided
   // directly into |stability_proto| fields or by logging stability histograms
   // via the UMA_STABILITY_HISTOGRAM_ENUMERATION() macro.

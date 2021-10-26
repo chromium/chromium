@@ -8,6 +8,7 @@ import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.Pair;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -306,8 +307,9 @@ public class BookmarkBridge {
      * @return {@code true} if the current Tab URL has a bookmark associated with it. If the
      *         bookmark backend is not loaded, return {@code false}.
      */
-    public boolean hasBookmarkIdForTab(Tab tab) {
+    public boolean hasBookmarkIdForTab(@NonNull Tab tab) {
         ThreadUtils.assertOnUiThread();
+        assert tab != null;
         if (tab.isFrozen() || mNativeBookmarkBridge == 0) return false;
         return BookmarkBridgeJni.get().getBookmarkIdForWebContents(
                        mNativeBookmarkBridge, this, tab.getWebContents(), false)
@@ -319,8 +321,9 @@ public class BookmarkBridge {
      * @return BookmarkId or {@link null} if bookmark backend is not loaded or the tab is frozen.
      */
     @Nullable
-    public BookmarkId getUserBookmarkIdForTab(Tab tab) {
+    public BookmarkId getUserBookmarkIdForTab(@NonNull Tab tab) {
         ThreadUtils.assertOnUiThread();
+        assert tab != null;
         if (tab.isFrozen()) return null;
         return BookmarkBridgeJni.get().getBookmarkIdForWebContents(
                 mNativeBookmarkBridge, this, tab.getWebContents(), true);

@@ -1082,13 +1082,20 @@ void LocalFrameMojoHandler::HandleRendererDebugURL(const KURL& url) {
 
 void LocalFrameMojoHandler::GetCanonicalUrlForSharing(
     GetCanonicalUrlForSharingCallback callback) {
-  KURL canonical_url;
+  KURL canon_url;
   HTMLLinkElement* link_element = GetDocument()->LinkCanonical();
-  if (link_element)
-    canonical_url = link_element->Href();
-  std::move(callback).Run(canonical_url.IsNull()
-                              ? absl::nullopt
-                              : absl::make_optional(canonical_url));
+  if (link_element) {
+    canon_url = link_element->Href();
+    KURL doc_url = GetDocument()->Url();
+    // When sharing links to pages, the fragment identifier often serves to mark a specific place
+    // within the page that the user wishes to point the recipient to. Canonical URLs generally
+    // don't and can't contain this state, so try to match user expectations a little more closely
+    // here by splicing the fragment identifier (if there is one) into the shared URL.
+    if (doc_url.HasFragmentIdentifier() && !canon_url.HasFragmentIdentifier())
+      canon_url.SetFragmentIdentifier(doc_url.FragmentIdentifier());
+  }
+  std::move(callback).Run(canon_url.IsNull() ? absl::nullopt
+                                             : absl::make_optional(canon_url));
 }
 
 void LocalFrameMojoHandler::AnimateDoubleTapZoom(const gfx::Point& point,

@@ -18,9 +18,10 @@
 #include "components/global_media_controls/public/test/mock_media_item_manager.h"
 #include "components/media_message_center/media_notification_item.h"
 #include "components/media_message_center/media_notification_util.h"
-#include "content/public/browser/media_session.h"
 #include "content/public/test/browser_task_environment.h"
 #include "media/base/media_switches.h"
+#include "services/media_session/public/cpp/test/mock_audio_focus_manager.h"
+#include "services/media_session/public/cpp/test/mock_media_controller_manager.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -42,11 +43,41 @@ class MediaSessionNotificationProducerTest : public testing::Test {
   ~MediaSessionNotificationProducerTest() override = default;
 
   void SetUp() override {
+    audio_focus_manager_ = std::make_unique<
+        NiceMock<media_session::test::MockAudioFocusManager>>();
+    media_controller_manager_ = std::make_unique<
+        NiceMock<media_session::test::MockMediaControllerManager>>();
+
+    testing::Mock::AllowLeak(audio_focus_manager_.get());
+
+    EXPECT_CALL(*audio_focus_manager_, GetFocusRequests(_))
+        .WillOnce(
+            testing::Invoke([](media_session::test::MockAudioFocusManager::
+                                   GetFocusRequestsCallback callback) {
+              std::move(callback).Run(
+                  std::vector<
+                      media_session::mojom::AudioFocusRequestStatePtr>());
+            }));
+
+    mojo::Remote<media_session::mojom::AudioFocusManager> audio_focus_remote(
+        audio_focus_manager_->GetPendingRemote());
+    mojo::Remote<media_session::mojom::MediaControllerManager>
+        controller_manager_remote(
+            media_controller_manager_->GetPendingRemote());
+
     producer_ = std::make_unique<MediaSessionNotificationProducer>(
+        std::move(audio_focus_remote), std::move(controller_manager_remote),
         &item_manager_, absl::nullopt);
+
+    audio_focus_manager_->Flush();
+    testing::Mock::VerifyAndClearExpectations(audio_focus_manager_.get());
   }
 
-  void TearDown() override { producer_.reset(); }
+  void TearDown() override {
+    producer_.reset();
+    media_controller_manager_.reset();
+    audio_focus_manager_.reset();
+  }
 
  protected:
   void AdvanceClockMilliseconds(int milliseconds) {
@@ -217,6 +248,10 @@ class MediaSessionNotificationProducerTest : public testing::Test {
       base::test::TaskEnvironment::MainThreadType::UI,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   global_media_controls::test::MockMediaItemManager item_manager_;
+  std::unique_ptr<media_session::test::MockAudioFocusManager>
+      audio_focus_manager_;
+  std::unique_ptr<media_session::test::MockMediaControllerManager>
+      media_controller_manager_;
   std::unique_ptr<MediaSessionNotificationProducer> producer_;
   base::HistogramTester histogram_tester_;
 };

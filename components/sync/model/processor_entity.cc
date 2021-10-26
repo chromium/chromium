@@ -12,7 +12,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/sync/base/client_tag_hash.h"
-#include "components/sync/base/sync_base_switches.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine/entity_data.h"
@@ -22,10 +21,6 @@
 namespace syncer {
 
 namespace {
-
-// Max number of sever version for which E2E latency is calculated.
-// Used for E2E latency measurements with UMA.
-const size_t kMaxTrackedCommittedServerVersions = 20;
 
 std::string HashSpecifics(const sync_pb::EntitySpecifics& specifics) {
   DCHECK_GT(specifics.ByteSize(), 0);
@@ -156,28 +151,6 @@ bool ProcessorEntity::UpdateIsReflection(int64_t update_version) const {
   return metadata_.server_version() >= update_version;
 }
 
-void ProcessorEntity::RecordEntityUpdateLatency(int64_t update_version,
-                                                ModelType type) {
-  auto first_greater =
-      unsynced_time_per_committed_server_version_.upper_bound(update_version);
-  if (first_greater == unsynced_time_per_committed_server_version_.begin()) {
-    return;
-  }
-
-  DCHECK(base::FeatureList::IsEnabled(switches::kSyncE2ELatencyMeasurement));
-
-  for (auto it = unsynced_time_per_committed_server_version_.begin();
-       it != first_greater; ++it) {
-    const base::TimeDelta latency = base::Time::Now() - it->second;
-    base::UmaHistogramLongTimes(
-        std::string("Sync.E2ELatency.") + ModelTypeToHistogramSuffix(type),
-        latency);
-  }
-
-  unsynced_time_per_committed_server_version_.erase(
-      unsynced_time_per_committed_server_version_.begin(), first_greater);
-}
-
 void ProcessorEntity::RecordIgnoredUpdate(const UpdateResponseData& update) {
   DCHECK(metadata_.server_id().empty() ||
          metadata_.server_id() == update.entity.id);
@@ -290,13 +263,6 @@ void ProcessorEntity::ReceiveCommitResponse(const CommitResponseData& data,
   DCHECK(commit_only || data.response_version > metadata_.server_version())
       << data.response_version << " vs " << metadata_.server_version();
 
-  if (base::FeatureList::IsEnabled(switches::kSyncE2ELatencyMeasurement) &&
-      unsynced_time_per_committed_server_version_.size() <
-          kMaxTrackedCommittedServerVersions) {
-    unsynced_time_per_committed_server_version_[metadata_.server_version()] =
-        data.unsynced_time;
-  }
-
   // The server can assign us a new ID in a commit response.
   metadata_.set_server_id(data.id);
   metadata_.set_acked_sequence_number(data.sequence_number);
@@ -340,8 +306,6 @@ size_t ProcessorEntity::EstimateMemoryUsage() const {
   memory_usage += EstimateMemoryUsage(storage_key_);
   memory_usage += EstimateMemoryUsage(metadata_);
   memory_usage += EstimateMemoryUsage(commit_data_);
-  memory_usage +=
-      EstimateMemoryUsage(unsynced_time_per_committed_server_version_);
   return memory_usage;
 }
 

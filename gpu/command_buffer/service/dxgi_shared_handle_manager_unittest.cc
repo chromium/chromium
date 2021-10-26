@@ -21,14 +21,18 @@ namespace {
 class DXGISharedHandleManagerTest : public testing::Test {
  protected:
   void SetUp() override {
-    // Using DXGI NT handles is not universally supported on Win7 and lower.
-    if (base::win::GetVersion() <= base::win::Version::WIN7)
-      return;
-
+    // Using DXGI NT handles is universally supported only on Win8 and above.
+    // TODO(sunnyps): Unify this with the check in SharedImageBackingFactoryD3D.
+    const bool shared_handles_supported =
+        base::win::GetVersion() >= base::win::Version::WIN8;
     d3d11_device_ = gl::QueryD3D11DeviceObjectFromANGLE();
-    dxgi_shared_handle_manager_ =
-        base::MakeRefCounted<DXGISharedHandleManager>(d3d11_device_);
+    if (shared_handles_supported && d3d11_device_) {
+      dxgi_shared_handle_manager_ =
+          base::MakeRefCounted<DXGISharedHandleManager>(d3d11_device_);
+    }
   }
+
+  bool ShouldSkipTest() const { return !dxgi_shared_handle_manager_; }
 
   Microsoft::WRL::ComPtr<ID3D11Texture2D> CreateTexture() {
     D3D11_TEXTURE2D_DESC desc;
@@ -71,6 +75,9 @@ class DXGISharedHandleManagerTest : public testing::Test {
 };
 
 TEST_F(DXGISharedHandleManagerTest, LookupByToken) {
+  if (ShouldSkipTest())
+    return;
+
   auto d3d11_texture = CreateTexture();
   ASSERT_TRUE(d3d11_texture);
 
@@ -113,6 +120,9 @@ TEST_F(DXGISharedHandleManagerTest, LookupByToken) {
 }
 
 TEST_F(DXGISharedHandleManagerTest, LookupByTokenMultiThread) {
+  if (ShouldSkipTest())
+    return;
+
   auto d3d11_texture = CreateTexture();
   ASSERT_TRUE(d3d11_texture);
 

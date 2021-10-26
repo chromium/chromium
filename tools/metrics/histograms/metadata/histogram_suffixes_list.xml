@@ -17295,7 +17295,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram
       name="Sync.DuplicateClientTagHashWithDifferentServerIdsInApplyPendingUpdates"/>
   <affected-histogram name="Sync.DuplicateServerIdInApplyPendingUpdates"/>
-  <affected-histogram name="Sync.E2ELatency"/>
+  <affected-histogram name="Sync.E2ELatency">
+    <obsolete>
+      Deprecated 10/2021. Replaced by server-side metrics.
+    </obsolete>
+  </affected-histogram>
   <affected-histogram name="Sync.ModelTypeConfigurationTime.Ephemeral"/>
   <affected-histogram name="Sync.ModelTypeConfigurationTime.Persistent"/>
   <affected-histogram name="Sync.ModelTypeCount">

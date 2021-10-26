@@ -14,6 +14,7 @@
 #include "ui/message_center/views/notification_background_painter.h"
 #include "ui/message_center/views/notification_control_buttons_view.h"
 #include "ui/message_center/views/notification_header_view.h"
+#include "ui/message_center/views/notification_view_base.h"
 #include "ui/message_center/views/notification_view_util.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -173,6 +174,13 @@ NotificationView::NotificationView(
 }
 
 NotificationView::~NotificationView() = default;
+
+void NotificationView::CreateOrUpdateHeaderView(
+    const Notification& notification) {
+  header_row()->SetColor(notification.accent_color());
+  header_row()->SetSummaryText(std::u16string());
+  NotificationViewBase::CreateOrUpdateHeaderView(notification);
+}
 
 void NotificationView::CreateOrUpdateTitleView(
     const Notification& notification) {

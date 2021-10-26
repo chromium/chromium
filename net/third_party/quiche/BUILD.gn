@@ -1577,7 +1577,6 @@ fuzzer_test("net_qpack_decoder_fuzzer") {
     "//net:quic_test_tools",
     "//net:test_support",
   ]
-  seed_corpus = "src/quic/core/qpack/fuzzer/qpack_decoder_fuzzer_corpus/"
 }
 
 fuzzer_test("net_qpack_encoder_stream_receiver_fuzzer") {
@@ -1588,8 +1587,6 @@ fuzzer_test("net_qpack_encoder_stream_receiver_fuzzer") {
     "//net",
     "//net:net_fuzzer_test_support",
   ]
-  seed_corpus =
-      "src/quic/core/qpack/fuzzer/qpack_encoder_stream_receiver_fuzzer_corpus/"
 }
 
 fuzzer_test("net_qpack_encoder_stream_sender_fuzzer") {
@@ -1602,8 +1599,6 @@ fuzzer_test("net_qpack_encoder_stream_sender_fuzzer") {
     "//net:quic_test_tools",
     "//net:test_support",
   ]
-  seed_corpus =
-      "src/quic/core/qpack/fuzzer/qpack_encoder_stream_sender_fuzzer_corpus/"
 }
 
 fuzzer_test("net_qpack_round_trip_fuzzer") {
@@ -1615,5 +1610,4 @@ fuzzer_test("net_qpack_round_trip_fuzzer") {
     "//net:quic_test_tools",
     "//net:test_support",
   ]
-  seed_corpus = "src/quic/core/qpack/fuzzer/qpack_round_trip_fuzzer_corpus/"
 }

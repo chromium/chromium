@@ -36,6 +36,7 @@
 #include "components/policy/test_support/local_policy_test_server.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -331,7 +332,8 @@ IN_PROC_BROWSER_TEST_F(ComponentCloudPolicyTest, MAYBE_InstallNewExtension) {
 // get policy for components working again.
 // Signing out on Lacros is not possible.
 #if !defined(OS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(ComponentCloudPolicyTest, SignOutAndBackIn) {
+// Flaky, see https://crbug.com/1205239
+IN_PROC_BROWSER_TEST_F(ComponentCloudPolicyTest, DISABLED_SignOutAndBackIn) {
   // Read the initial policy.
   ExtensionTestMessageListener initial_policy_listener(kTestPolicyJSON, true);
   event_listener_->Reply("get-policy-Name");
@@ -367,6 +369,11 @@ IN_PROC_BROWSER_TEST_F(ComponentCloudPolicyTest, SignOutAndBackIn) {
   ExtensionTestMessageListener signout_policy_listener("{}", false);
   event_listener.Reply("get-policy-Name");
   EXPECT_TRUE(signout_policy_listener.WaitUntilSatisfied());
+
+  // Spin all threads, including the background thread that performs cache
+  // operations, in order to guarantee that the cache file gets deleted before
+  // the test asserts it. There's no easy way to wait for this event otherwise.
+  content::RunAllTasksUntilIdle();
 
   // Verify that the cache is gone.
   EXPECT_FALSE(base::PathExists(cache_path));

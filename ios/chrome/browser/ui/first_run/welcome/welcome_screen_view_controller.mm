@@ -24,6 +24,9 @@
 namespace {
 
 constexpr CGFloat kDefaultMargin = 16;
+constexpr CGFloat kEnterpriseIconBorderWidth = 1;
+constexpr CGFloat kEnterpriseIconCornerRadius = 7.0;
+constexpr CGFloat kEnterpriseIconContainerLength = 30;
 
 // URL for the terms of service text.
 NSString* const kTermsOfServiceUrl = @"internal://terms-of-service";
@@ -92,11 +95,9 @@ NSString* const kMetricsConsentCheckboxAccessibilityIdentifier =
 
   if ([self isBrowserManaged]) {
     UILabel* managedLabel = [self createManagedLabel];
-    UIImage* image = [UIImage imageNamed:kEnterpriseIconImageName];
-    UIImageView* imageView = [[UIImageView alloc] initWithImage:image];
-    imageView.translatesAutoresizingMaskIntoConstraints = NO;
+    UIView* managedIcon = [self createManagedIcon];
     [self.specificContentView addSubview:managedLabel];
-    [self.specificContentView addSubview:imageView];
+    [self.specificContentView addSubview:managedIcon];
 
     [NSLayoutConstraint activateConstraints:@[
       [managedLabel.topAnchor
@@ -107,13 +108,13 @@ NSString* const kMetricsConsentCheckboxAccessibilityIdentifier =
           constraintLessThanOrEqualToAnchor:self.specificContentView
                                                 .widthAnchor],
 
-      [imageView.topAnchor constraintEqualToAnchor:managedLabel.bottomAnchor
-                                          constant:kDefaultMargin],
-      [imageView.centerXAnchor
+      [managedIcon.topAnchor constraintEqualToAnchor:managedLabel.bottomAnchor
+                                            constant:kDefaultMargin],
+      [managedIcon.centerXAnchor
           constraintEqualToAnchor:self.specificContentView.centerXAnchor],
 
       [self.metricsConsentButton.topAnchor
-          constraintGreaterThanOrEqualToAnchor:imageView.bottomAnchor
+          constraintGreaterThanOrEqualToAnchor:managedIcon.bottomAnchor
                                       constant:kDefaultMargin],
     ]];
   } else {
@@ -172,6 +173,36 @@ NSString* const kMetricsConsentCheckboxAccessibilityIdentifier =
   label.translatesAutoresizingMaskIntoConstraints = NO;
   label.adjustsFontForContentSizeCategory = YES;
   return label;
+}
+
+// Creates and configures the icon indicating that the browser is managed.
+- (UIView*)createManagedIcon {
+  UIView* iconContainer = [[UIView alloc] init];
+  iconContainer.translatesAutoresizingMaskIntoConstraints = NO;
+  iconContainer.layer.cornerRadius = kEnterpriseIconCornerRadius;
+  iconContainer.layer.borderWidth = kEnterpriseIconBorderWidth;
+  iconContainer.layer.borderColor = [UIColor colorNamed:kGrey200Color].CGColor;
+
+  UIImage* image = [[UIImage imageNamed:kEnterpriseIconImageName]
+      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  UIImageView* imageView = [[UIImageView alloc] initWithImage:image];
+  imageView.tintColor = [UIColor colorNamed:kGrey500Color];
+  imageView.translatesAutoresizingMaskIntoConstraints = NO;
+
+  [iconContainer addSubview:imageView];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [iconContainer.widthAnchor
+        constraintEqualToConstant:kEnterpriseIconContainerLength],
+    [iconContainer.heightAnchor
+        constraintEqualToAnchor:iconContainer.widthAnchor],
+    [imageView.centerXAnchor
+        constraintEqualToAnchor:iconContainer.centerXAnchor],
+    [imageView.centerYAnchor
+        constraintEqualToAnchor:iconContainer.centerYAnchor],
+  ]];
+
+  return iconContainer;
 }
 
 // Creates and configures the UMA consent checkbox button.

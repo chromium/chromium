@@ -21,6 +21,7 @@
 #include "components/viz/common/quads/largest_draw_quad.h"
 #include "components/viz/common/quads/quad_list.h"
 #include "components/viz/common/quads/render_pass_internal.h"
+#include "components/viz/common/shared_element_resource_id.h"
 #include "components/viz/common/surfaces/region_capture_bounds.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/common/viz_common_export.h"
@@ -77,6 +78,7 @@ class VIZ_COMMON_EXPORT CompositorRenderPass : public RenderPassInternal {
               SubtreeCaptureId subtree_capture_id,
               gfx::Size subtree_capture_size,
               std::unique_ptr<RegionCaptureBounds> capture_bounds,
+              SharedElementResourceId shared_element_resource_id,
               bool has_transparent_background,
               bool cache_render_pass,
               bool has_damage_from_contributing_content,
@@ -111,6 +113,10 @@ class VIZ_COMMON_EXPORT CompositorRenderPass : public RenderPassInternal {
   // simply an empty set.
   // TODO(crbug.com/1254877): merge with |subtree_size|.
   std::unique_ptr<RegionCaptureBounds> capture_bounds;
+
+  // A unique ID that identifies an element that this render pass corresponds
+  // to. This is used to implement a live snapshot of an element's content.
+  SharedElementResourceId shared_element_resource_id;
 
   // Set to true if at least one of the quads in the |quad_list| contains damage
   // that is not contained in |damage_rect|. Only the root render pass in a

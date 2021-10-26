@@ -63,12 +63,12 @@ class LinkToTextMenuObserver : public RenderViewContextMenuObserver {
       const std::vector<std::string>& selectors);
 
   // Removes the highlight from the page and updates the URL.
-  void RemoveHighlight();
+  void RemoveHighlights();
 
   // Cancels link generation if we are still waiting for it.
   void Timeout();
 
-  // Returns |remote_|, binding it if not already bound.
+  // Returns |remote_|, for the frame in which the context menu was opened.
   mojo::Remote<blink::mojom::TextFragmentReceiver>& GetRemote();
 
   mojo::Remote<blink::mojom::TextFragmentReceiver> remote_;

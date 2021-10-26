@@ -95,7 +95,7 @@ class EcheMessageReceiverImplTest : public testing::Test {
   std::unique_ptr<EcheMessageReceiver> message_receiver_;
 };
 
-TEST_F(EcheMessageReceiverImplTest, onGetAppsAccessStateResponseReceived) {
+TEST_F(EcheMessageReceiverImplTest, OnGetAppsAccessStateResponseReceived) {
   proto::GetAppsAccessStateResponse response;
   response.set_result(eche_app::proto::Result::RESULT_ERROR_ACTION_FAILED);
   response.set_apps_access_state(
@@ -116,7 +116,7 @@ TEST_F(EcheMessageReceiverImplTest, onGetAppsAccessStateResponseReceived) {
             actual_apps_state.apps_access_state());
 }
 
-TEST_F(EcheMessageReceiverImplTest, onSendAppsSetupResponseReceived) {
+TEST_F(EcheMessageReceiverImplTest, OnSendAppsSetupResponseReceived) {
   proto::SendAppsSetupResponse response;
   response.set_result(eche_app::proto::Result::RESULT_ERROR_ACTION_FAILED);
   response.set_apps_access_state(

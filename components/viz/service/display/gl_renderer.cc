@@ -651,6 +651,11 @@ void GLRenderer::DoDrawQuad(const DrawQuad* quad,
       // reaching a direct renderer.
       NOTREACHED();
       break;
+    case DrawQuad::Material::kSharedElement:
+      // Shared element should be fully resolved to other quad types before
+      // reaching a direct renderer.
+      NOTREACHED();
+      break;
     case DrawQuad::Material::kTextureContent:
       EnqueueTextureQuad(TextureDrawQuad::MaterialCast(quad), clip_region);
       break;

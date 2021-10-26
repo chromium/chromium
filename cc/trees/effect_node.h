@@ -9,6 +9,7 @@
 #include "cc/document_transition/document_transition_shared_element_id.h"
 #include "cc/paint/element_id.h"
 #include "cc/paint/filter_operations.h"
+#include "components/viz/common/shared_element_resource_id.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBlendMode.h"
@@ -167,6 +168,10 @@ struct CC_EXPORT EffectNode {
 
   // Represents a shared element id for the document transition API.
   DocumentTransitionSharedElementId document_transition_shared_element_id;
+
+  // Represents a resource id for a resource cached or generated in the Viz
+  // process.
+  viz::SharedElementResourceId shared_element_resource_id;
 
   bool HasRenderSurface() const {
     return render_surface_reason != RenderSurfaceReason::kNone;

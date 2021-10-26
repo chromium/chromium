@@ -81,23 +81,10 @@ bool EnumerateAllWindows(ShouldStopIteratingCallback should_stop_iterating,
 
 void EnumerateTopLevelWindows(
     ui::ShouldStopIteratingCallback should_stop_iterating) {
-  std::vector<x11::Window> stack;
-  if (!ui::GetXWindowStack(ui::GetX11RootWindow(), &stack)) {
-    // Window Manager doesn't support _NET_CLIENT_LIST_STACKING, so fall back
-    // to old school enumeration of all X windows.  Some WMs parent 'top-level'
-    // windows in unnamed actual top-level windows (ion WM), so extend the
-    // search depth to all children of top-level windows.
-    const int kMaxSearchDepth = 1;
-    ui::EnumerateAllWindows(should_stop_iterating, kMaxSearchDepth);
-    return;
-  }
-  XMenuList::GetInstance()->InsertMenuWindows(&stack);
-
-  std::vector<x11::Window>::iterator iter;
-  for (iter = stack.begin(); iter != stack.end(); iter++) {
-    if (should_stop_iterating.Run(*iter))
-      return;
-  }
+  // Some WMs parent 'top-level' windows in unnamed actual top-level windows
+  // (ion WM), so extend the search depth to all children of top-level windows.
+  const int kMaxSearchDepth = 1;
+  ui::EnumerateAllWindows(should_stop_iterating, kMaxSearchDepth);
 }
 
 }  // namespace

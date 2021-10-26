@@ -8,7 +8,6 @@ import android.net.Uri;
 
 import androidx.annotation.IntDef;
 
-import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.Referrer;
 import org.chromium.url.GURL;
@@ -225,8 +224,7 @@ public interface ContextMenuItemDelegate {
     void onReadLater(GURL url, String title);
 
     /**
-     * Called when a text fragment should be removed from the page.
-     * @param {@link RenderFrameHost} The RenderFrameHost that triggered the context menu.
+     * Removes all text fragment highlights from all frames on the page.
      */
-    void removeHighlighting(RenderFrameHost renderFrameHost);
+    void removeHighlighting();
 }

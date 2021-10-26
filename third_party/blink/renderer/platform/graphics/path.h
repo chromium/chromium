@@ -178,13 +178,7 @@ class PLATFORM_EXPORT Path {
                   float end_angle);
   void AddEllipse(const gfx::PointF& center, float radius_x, float radius_y);
 
-  void AddRoundedRect(const FloatRect&, const FloatSize& rounding_radii);
-  void AddRoundedRect(const FloatRect&,
-                      const FloatSize& top_left_radius,
-                      const FloatSize& top_right_radius,
-                      const FloatSize& bottom_left_radius,
-                      const FloatSize& bottom_right_radius);
-  void AddRoundedRect(const FloatRoundedRect&);
+  void AddRoundedRect(const FloatRoundedRect&, bool clockwise = true);
 
   void AddPath(const Path&, const AffineTransform&);
 
@@ -195,13 +189,6 @@ class PLATFORM_EXPORT Path {
   void Apply(void* info, PathApplierFunction) const;
   void Transform(const AffineTransform&);
   void Transform(const TransformationMatrix&);
-
-  void AddPathForRoundedRect(const FloatRect&,
-                             const FloatSize& top_left_radius,
-                             const FloatSize& top_right_radius,
-                             const FloatSize& bottom_left_radius,
-                             const FloatSize& bottom_right_radius,
-                             bool clockwise);
 
   bool SubtractPath(const Path&);
 

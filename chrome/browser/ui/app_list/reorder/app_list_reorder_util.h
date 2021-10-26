@@ -57,6 +57,9 @@ bool operator>(const SyncItemWrapper<T>& lhs, const SyncItemWrapper<T>& rhs) {
 std::vector<SyncItemWrapper<std::string>> GenerateStringWrappersFromSyncItems(
     const AppListSyncableService::SyncItemMap& sync_item_map);
 
+SyncItemWrapper<std::string> ConvertAppListItemToStringWrapper(
+    const ChromeAppListItem& app_list_item);
+
 // Gets a list of string wrappers based on the given app list items.
 std::vector<SyncItemWrapper<std::string>>
 GenerateStringWrappersFromAppListItems(

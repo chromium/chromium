@@ -11,6 +11,9 @@
             "latest_upload": {
                 "gcs_path": "experimental/Mac_Arm/LAST_CHANGE",
                 "gcs_file_content": "{%position%}"
+            },
+            "revisions_file": {
+                "gcs_path": "experimental/Mac_Arm/{%position%}/REVISIONS"
             }
         },
         {

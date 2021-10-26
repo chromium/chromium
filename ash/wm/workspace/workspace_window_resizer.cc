@@ -558,10 +558,10 @@ std::unique_ptr<WindowResizer> CreateWindowResizer(
   if (!window_state->IsNormalOrSnapped() && !maximized)
     return nullptr;
 
-  // TODO(https://crbug.com/1084695): Disable dragging maximized and snapped ARC
-  // windows from the caption. This is because ARC does not currently handle
-  // setting bounds on a maximized or snapped window well.
-  if ((maximized || window_state->IsSnapped()) &&
+  // TODO(https://crbug.com/1084695): Disable dragging maximized ARC windows
+  // from the caption. This is because ARC does not currently handle setting
+  // bounds on a maximized window well.
+  if (maximized &&
       window_state->window()->GetProperty(aura::client::kAppType) ==
           static_cast<int>(AppType::ARC_APP) &&
       window_component == HTCAPTION) {

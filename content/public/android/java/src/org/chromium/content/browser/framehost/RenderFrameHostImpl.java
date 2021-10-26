@@ -23,6 +23,10 @@ import org.chromium.mojo.system.impl.CoreImpl;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * The RenderFrameHostImpl Java wrapper to allow communicating with the native RenderFrameHost
  * object.
@@ -101,6 +105,14 @@ public class RenderFrameHostImpl implements RenderFrameHost {
         }
         RenderFrameHostImplJni.get().getCanonicalUrlForSharing(
                 mNativeRenderFrameHostAndroid, RenderFrameHostImpl.this, callback);
+    }
+
+    @Override
+    public List<RenderFrameHost> getAllRenderFrameHosts() {
+        if (mNativeRenderFrameHostAndroid == 0) return null;
+        RenderFrameHost[] frames = RenderFrameHostImplJni.get().getAllRenderFrameHosts(
+                mNativeRenderFrameHostAndroid, RenderFrameHostImpl.this);
+        return Collections.unmodifiableList(Arrays.asList(frames));
     }
 
     @Override
@@ -223,6 +235,8 @@ public class RenderFrameHostImpl implements RenderFrameHost {
                 long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller);
         void getCanonicalUrlForSharing(long nativeRenderFrameHostAndroid,
                 RenderFrameHostImpl caller, Callback<GURL> callback);
+        RenderFrameHost[] getAllRenderFrameHosts(
+                long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller);
         boolean isFeatureEnabled(long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller,
                 @PermissionsPolicyFeature int feature);
         UnguessableToken getAndroidOverlayRoutingToken(

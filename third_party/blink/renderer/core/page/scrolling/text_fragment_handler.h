@@ -31,6 +31,9 @@ class CORE_EXPORT TextFragmentHandler final
   // Determine if |result| represents a click on an existing highlight.
   static bool IsOverTextFragment(HitTestResult result);
 
+  // Updates the URL by removing the text fragment selector.
+  static void RemoveSelectorsFromUrl(LocalFrame* frame);
+
   // mojom::blink::TextFragmentReceiver interface
   void Cancel() override;
   void RequestSelector(RequestSelectorCallback callback) override;

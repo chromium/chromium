@@ -399,7 +399,9 @@ try_.chromium_android_builder(
     name = "android-marshmallow-x86-rel",
     branch_selector = branches.STANDARD_MILESTONE,
     builderless = not settings.is_main,
-    cores = 16,
+    # TODO(crbug.com/1251739): Go back to targeting one core amount after
+    # collecting experiment results.
+    cores = "16|32",
     goma_jobs = goma.jobs.J300,
     ssd = True,
     use_java_coverage = True,

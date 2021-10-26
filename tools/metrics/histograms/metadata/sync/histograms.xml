@@ -510,7 +510,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Sync.E2ELatency" units="ms"
-    expires_after="2022-04-17">
+    expires_after="2021-10-25">
+  <obsolete>
+    Removed as of 10/2021. Replaced by server-side metrics.
+  </obsolete>
   <owner>mastiz@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <component>Services&gt;Sync</component>

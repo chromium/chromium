@@ -73,7 +73,7 @@ public class AwComponentUpdateServiceSafeModeTest {
         when(mMockSafeModeController.queryActions(anyString())).thenReturn(actions);
         when(mMockSafeModeController.isSafeModeEnabled(anyString())).thenReturn(true);
 
-        Assert.assertFalse(mComponentUpdateService.maybeStartUpdates());
+        Assert.assertFalse(mComponentUpdateService.maybeStartUpdates(false));
 
         File[] cusFiles = mDirectory.listFiles();
         Assert.assertNull(cusFiles);

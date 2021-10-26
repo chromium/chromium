@@ -113,15 +113,6 @@ class WebAppInstallManager final : public SyncInstallDelegate {
       webapps::WebappInstallSource install_source,
       OnceInstallCallback callback);
 
-  // Reinstall an existing web app. If |redownload_app_icons| is true, will
-  // redownload app icons and update them on disk. Otherwise, the icons in
-  // |web_application_info.bitmap_icons| will be used and saved to disk.
-  void UpdateWebAppFromInfo(
-      const AppId& app_id,
-      std::unique_ptr<WebApplicationInfo> web_application_info,
-      bool redownload_app_icons,
-      OnceInstallCallback callback);
-
   // For the new USS-based system only. SyncInstallDelegate:
   void InstallWebAppsAfterSync(std::vector<WebApp*> web_apps,
                                RepeatingInstallCallback callback) override;

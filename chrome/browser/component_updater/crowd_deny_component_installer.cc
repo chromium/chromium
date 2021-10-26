@@ -45,7 +45,7 @@ namespace component_updater {
 
 bool CrowdDenyComponentInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {
-  return false;
+  return true;
 }
 
 bool CrowdDenyComponentInstallerPolicy::VerifyInstallation(

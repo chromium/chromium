@@ -55,7 +55,8 @@ void LiveCaptionController::RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 
   // Initially default the language to en-US.
-  registry->RegisterStringPref(prefs::kLiveCaptionLanguageCode, "en-US",
+  registry->RegisterStringPref(prefs::kLiveCaptionLanguageCode,
+                               speech::kUsEnglishLocale,
                                user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }
 
@@ -114,8 +115,7 @@ void LiveCaptionController::OnLiveCaptionEnabledChanged() {
 void LiveCaptionController::OnLiveCaptionLanguageChanged() {
   if (enabled_)
     speech::SodaInstaller::GetInstance()->InstallLanguage(
-        profile_prefs_->GetString(prefs::kLiveCaptionLanguageCode),
-        global_prefs_);
+        prefs::GetLiveCaptionLanguageCode(profile_prefs_), global_prefs_);
 }
 
 bool LiveCaptionController::IsLiveCaptionEnabled() {
@@ -133,10 +133,9 @@ void LiveCaptionController::StartLiveCaption() {
   // whether or not to download. Once SODA is on the device and ready, the
   // SODAInstaller calls OnSodaInstalled on its observers. The UI is created at
   // that time.
-  const std::string locale =
-      profile_prefs_->GetString(prefs::kLiveCaptionLanguageCode);
   if (speech::SodaInstaller::GetInstance()->IsSodaInstalled(
-          speech::GetLanguageCode(locale))) {
+          speech::GetLanguageCode(
+              prefs::GetLiveCaptionLanguageCode(profile_prefs_)))) {
     CreateUI();
   } else {
     speech::SodaInstaller::GetInstance()->AddObserver(this);
