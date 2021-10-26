@@ -66,7 +66,7 @@ CONSOLE MESSAGE: line 31: PASS: error event fired for http://255.255.255.255:655
 CONSOLE MESSAGE: line 31: PASS: error event fired for http://255.255.255.255:65536/test.jpg
 CONSOLE MESSAGE: line 31: PASS: error event fired for http://255.255.255.255:4294967295/test.jpg
 CONSOLE MESSAGE: line 31: PASS: error event fired for http://255.255.255.255:4294967296/test.jpg
-CONSOLE WARNING: Subresource requests using legacy protocols (like `ftp:`) are blocked. Please deliver web-accessible resources over modern protocols like HTTPS. See https://www.chromestatus.com/feature/5709390967472128 for details.
+CONSOLE WARNING: Subresource requests using legacy protocols (like `ftp:`) are blocked. Please deliver web-accessible resources over modern protocols like HTTPS. See https://www.chromestatus.com/feature/5709390967472128 for more details.
 CONSOLE MESSAGE: line 31: PASS: error event fired for ftp://255.255.255.255/test.jpg
 CONSOLE MESSAGE: line 31: PASS: error event fired for ftp://255.255.255.255:21/test.jpg
 CONSOLE MESSAGE: line 31: PASS: error event fired for ftp://255.255.255.255:22/test.jpg
