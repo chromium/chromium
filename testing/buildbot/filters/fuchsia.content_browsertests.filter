@@ -525,5 +525,6 @@
 -InterestGroupPrivateNetworkBrowserTest.SellerOnPrivateNetwork
 -InterestGroupPrivateNetworkBrowserTest.UpdatePublicVsPrivateNetwork
 
-# crbug.com/1260411: CheckFencedFrameNotNavigatedWithoutOptIn/MPArch failure
+# crbug.com/1260411: MPArch failures
 -All/FencedFrameTreeBrowserTest.CheckFencedFrameNotNavigatedWithoutOptIn/MPArch
+-All/FencedFrameTreeBrowserTest.CheckSecFetchDestHeader/MPArch
