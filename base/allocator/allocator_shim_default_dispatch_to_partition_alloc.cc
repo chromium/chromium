@@ -474,11 +474,9 @@ alignas(base::ThreadSafePartitionRoot) uint8_t
     g_allocator_buffer_for_ref_count_config[sizeof(
         base::ThreadSafePartitionRoot)];
 
-#if BUILDFLAG(USE_DEDICATED_PARTITION_FOR_ALIGNED_ALLOC_UPON_ENABLING_BRP)
 alignas(base::ThreadSafePartitionRoot) uint8_t
     g_allocator_buffer_for_aligned_alloc_partition[sizeof(
         base::ThreadSafePartitionRoot)];
-#endif
 
 void ConfigurePartitionBackupRefPtrSupport(bool enable_brp) {
   auto* current_root = g_root.Get();
@@ -500,16 +498,21 @@ void ConfigurePartitionBackupRefPtrSupport(bool enable_brp) {
   current_root->PurgeMemory(PartitionPurgeDecommitEmptySlotSpans |
                             PartitionPurgeDiscardUnusedSystemPages);
 
-  const bool allow_aligned_alloc_in_main_root =
-#if BUILDFLAG(USE_DEDICATED_PARTITION_FOR_ALIGNED_ALLOC_UPON_ENABLING_BRP)
-      // This partition can't support AlignedAlloc. Instead, a new one is
-      // created below.
+  // AlignedAlloc relies on natural alignment offered by the allocator (see the
+  // comment inside PartitionRoot::AlignedAllocFlags). Any extras in front of
+  // the allocation will mess up that alignment. Such extras are used when
+  // BackupRefPtr is on, in which case, we need a separate partition, dedicated
+  // to handle only aligned allocations, where those extras are disabled.
+  // However, if the "previous slot" variant is used, no dedicated partition is
+  // needed, as the extras won't interfere with the alignment requirements.
+  constexpr bool use_dedicated_partition_for_aligned_alloc =
+#if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
       false;
 #else
-      // No separate AlignedAlloc partition is created, so this one must
-      // support it.
       true;
 #endif
+  constexpr bool allow_aligned_alloc_in_main_root =
+      !use_dedicated_partition_for_aligned_alloc;
 
   auto* new_root = new (g_allocator_buffer_for_ref_count_config)
       base::ThreadSafePartitionRoot({
@@ -531,30 +534,27 @@ void ConfigurePartitionBackupRefPtrSupport(bool enable_brp) {
   // TODO(bartekn): Move current_root->PurgeMemory after the replacement.
   g_original_root = current_root;
 
-  base::ThreadSafePartitionRoot* new_aligned_root =
-#if BUILDFLAG(USE_DEDICATED_PARTITION_FOR_ALIGNED_ALLOC_UPON_ENABLING_BRP)
-      // If BRP is getting enabled, we need to create a new AlignedAlloc
-      // partition now.
-      // TODO(bartekn): Use the original root instead of creating a new one.
-      // It'd result in one less partition, but come at a cost of
-      // commingling types.
-      new (g_allocator_buffer_for_aligned_alloc_partition)
-          base::ThreadSafePartitionRoot({
-              base::PartitionOptions::AlignedAlloc::kAllowed,
-              base::PartitionOptions::ThreadCache::kDisabled,
-              base::PartitionOptions::Quarantine::kAllowed,
-              base::PartitionOptions::Cookie::kAllowed,
-              base::PartitionOptions::BackupRefPtr::kDisabled,
-              base::PartitionOptions::UseConfigurablePool::kNo,
-              base::PartitionOptions::LazyCommit::kEnabled,
-          });
-  PA_DCHECK(!allow_aligned_alloc_in_main_root);
+  base::ThreadSafePartitionRoot* new_aligned_root;
+  if (use_dedicated_partition_for_aligned_alloc) {
+    // If BRP is getting enabled, we need to create a new AlignedAlloc
+    // partition now.
+    // TODO(bartekn): Use the original root instead of creating a new one. It'd
+    // result in one less partition, but come at a cost of commingling types.
+    new_aligned_root = new (g_allocator_buffer_for_aligned_alloc_partition)
+        base::ThreadSafePartitionRoot({
+            base::PartitionOptions::AlignedAlloc::kAllowed,
+            base::PartitionOptions::ThreadCache::kDisabled,
+            base::PartitionOptions::Quarantine::kAllowed,
+            base::PartitionOptions::Cookie::kAllowed,
+            base::PartitionOptions::BackupRefPtr::kDisabled,
+            base::PartitionOptions::UseConfigurablePool::kNo,
+            base::PartitionOptions::LazyCommit::kEnabled,
+        });
+  } else {
+    // The new main root can also support AlignedAlloc.
+    new_aligned_root = g_root.Get();
+  }
   PA_CHECK(current_aligned_root == g_original_root);
-#else   // USE_DEDICATED_PARTITION_FOR_ALIGNED_ALLOC_UPON_ENABLING_BRP
-      // The new main root can also support AlignedAlloc.
-      g_root.Get();
-  PA_CHECK(current_aligned_root == g_original_root);
-#endif  // USE_DEDICATED_PARTITION_FOR_ALIGNED_ALLOC_UPON_ENABLING_BRP
   g_aligned_root.Replace(new_aligned_root);
   // No need for g_original_aligned_root, because in cases where g_aligned_root
   // is replaced, it must've been g_original_root.
