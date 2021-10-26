@@ -19,12 +19,19 @@ config("external_config") {
   }
 }
 
-# Config internal to this build file, shared by boringssl and boringssl_fuzzer.
+# The config used by the :boringssl component itself, and the fuzzer copies.
+config("component_config") {
+  visibility = [ ":*" ]  # Only targets in this file can depend on this.
+  configs = [ ":internal_config" ]
+  defines = [ "BORINGSSL_IMPLEMENTATION" ]
+}
+
+# This config is used by anything that consumes internal headers. Tests consume
+# this rather than :component_config.
 config("internal_config") {
   visibility = [ ":*" ]  # Only targets in this file can depend on this.
   defines = [
     "BORINGSSL_ALLOW_CXX_RUNTIME",
-    "BORINGSSL_IMPLEMENTATION",
     "BORINGSSL_NO_STATIC_INITIALIZER",
     "OPENSSL_SMALL",
   ]
@@ -117,7 +124,7 @@ component("boringssl") {
   public_deps = [ ":boringssl_asm" ]
 
   public_configs = [ ":external_config" ]
-  configs += [ ":internal_config" ]
+  configs += [ ":component_config" ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
@@ -211,6 +218,7 @@ if (build_with_chromium) {
   }
 
   # The same as boringssl, but builds with BORINGSSL_UNSAFE_FUZZER_MODE.
+  # TODO(https://crbug.com/boringssl/258): Fold this into the normal target.
   component("boringssl_fuzzer") {
     visibility = [ ":*" ]  # Only targets in this file can depend on this.
 
@@ -226,7 +234,7 @@ if (build_with_chromium) {
       ":external_config",
       ":fuzzer_config",
     ]
-    configs += [ ":internal_config" ]
+    configs += [ ":component_config" ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [ "//build/config/compiler:no_chromium_code" ]
@@ -275,6 +283,7 @@ if (build_with_chromium) {
   }
 
   # The same as boringssl, but builds with BORINGSSL_UNSAFE_DETERMINISTIC_MODE.
+  # TODO(https://crbug.com/boringssl/258): Fold this into the normal target.
   component("boringssl_fuzzer_no_fuzzer_mode") {
     visibility = [ ":*" ]  # Only targets in this file can depend on this.
 
@@ -290,7 +299,7 @@ if (build_with_chromium) {
       ":external_config",
       ":fuzzer_no_fuzzer_mode_config",
     ]
-    configs += [ ":internal_config" ]
+    configs += [ ":component_config" ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [ "//build/config/compiler:no_chromium_code" ]
