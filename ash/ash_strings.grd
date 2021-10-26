@@ -3068,6 +3068,12 @@ This file contains the strings for ash.
       <message name="IDS_ASH_NOTIFICATION_CRITICAL_WARNING_LABEL" desc="The label indicating that this is a critical warning notification.">
         Critical
       </message>
+      <message name="IDS_ASH_NOTIFICATION_INLINE_SETTINGS_TURN_OFF_BUTTON_TEXT" desc="The text for turn off notifications button in settings.">
+        Turn off notifications
+      </message>
+      <message name="IDS_ASH_NOTIFICATION_INLINE_SETTINGS_CANCEL_BUTTON_TEXT" desc="The text for cancel button in settings, return to the main UI.">
+        Cancel
+      </message>
 
       <message name="IDS_ASH_DIALOG_DONT_SHOW_AGAIN" desc="Label for checkbox dismissing show of a dialog.">
         Don't show again

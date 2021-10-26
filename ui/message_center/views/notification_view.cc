@@ -288,12 +288,21 @@ void NotificationView::ToggleInlineSettings(const ui::Event& event) {
   if (!inline_settings_enabled())
     return;
 
+  bool inline_settings_visible = !inline_settings_row()->GetVisible();
+
   // TODO(crbug/1233670): In later refactor, `block_all_button_` and
   // `dont_block_button_` should be moved from NotificationViewBase to this
   // class, since AshNotificationView will use a different UI for inline
   // settings.
   bool disable_notification =
-      inline_settings_row()->GetVisible() && block_all_button()->GetChecked();
+      !inline_settings_visible && block_all_button()->GetChecked();
+
+  content_row()->SetVisible(!inline_settings_visible);
+
+  // Always check "Don't block" when inline settings is shown.
+  // If it's already blocked, users should not see inline settings.
+  // Toggling should reset the state.
+  dont_block_button()->SetChecked(true);
 
   NotificationViewBase::ToggleInlineSettings(event);
 
