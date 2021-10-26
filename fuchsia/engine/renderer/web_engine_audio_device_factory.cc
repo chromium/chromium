@@ -33,7 +33,8 @@ content::RenderFrame* GetRenderFrameForToken(
 
 }  // namespace
 
-WebEngineAudioDeviceFactory::WebEngineAudioDeviceFactory() = default;
+WebEngineAudioDeviceFactory::WebEngineAudioDeviceFactory()
+    : audio_capturer_thread_("AudioCapturerThread") {}
 WebEngineAudioDeviceFactory::~WebEngineAudioDeviceFactory() = default;
 
 scoped_refptr<media::AudioRendererSink>
@@ -128,6 +129,13 @@ WebEngineAudioDeviceFactory::CreateAudioCapturerSource(
   fidl::InterfaceHandle<fuchsia::media::AudioCapturer> capturer;
   media_resource_provider->CreateAudioCapturer(capturer.NewRequest());
 
+  if (!audio_capturer_thread_.IsRunning()) {
+    base::Thread::Options options;
+    options.message_pump_type = base::MessagePumpType::IO;
+    options.priority = base::ThreadPriority::REALTIME_AUDIO;
+    audio_capturer_thread_.StartWithOptions(std::move(options));
+  }
+
   return base::MakeRefCounted<media::FuchsiaAudioCapturerSource>(
-      std::move(capturer));
+      std::move(capturer), audio_capturer_thread_.task_runner());
 }
