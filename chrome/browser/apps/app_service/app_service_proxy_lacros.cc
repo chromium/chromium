@@ -194,7 +194,7 @@ BrowserAppLauncher* AppServiceProxyLacros::BrowserAppLauncher() {
   return browser_app_launcher_.get();
 }
 
-apps::PreferredAppsList& AppServiceProxyLacros::PreferredApps() {
+apps::PreferredAppsListHandle& AppServiceProxyLacros::PreferredApps() {
   return preferred_apps_;
 }
 

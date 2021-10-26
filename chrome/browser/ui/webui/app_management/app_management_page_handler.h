@@ -11,7 +11,7 @@
 #include "chrome/browser/ui/webui/app_management/app_management.mojom-forward.h"
 #include "chrome/browser/ui/webui/app_management/app_management_shelf_delegate_chromeos.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
-#include "components/services/app_service/public/cpp/preferred_apps_list.h"
+#include "components/services/app_service/public/cpp/preferred_apps_list_handle.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -19,9 +19,10 @@
 
 class Profile;
 
-class AppManagementPageHandler : public app_management::mojom::PageHandler,
-                                 public apps::AppRegistryCache::Observer,
-                                 public apps::PreferredAppsList::Observer {
+class AppManagementPageHandler
+    : public app_management::mojom::PageHandler,
+      public apps::AppRegistryCache::Observer,
+      public apps::PreferredAppsListHandle::Observer {
  public:
   AppManagementPageHandler(
       mojo::PendingReceiver<app_management::mojom::PageHandler> receiver,
@@ -61,11 +62,11 @@ class AppManagementPageHandler : public app_management::mojom::PageHandler,
   void OnAppRegistryCacheWillBeDestroyed(
       apps::AppRegistryCache* cache) override;
 
-  // apps::PreferredAppsList::Observer overrides:
+  // apps::PreferredAppsListHandle::Observer overrides:
   void OnPreferredAppChanged(const std::string& app_id,
                              bool is_preferred_app) override;
   void OnPreferredAppsListWillBeDestroyed(
-      apps::PreferredAppsList* list) override;
+      apps::PreferredAppsListHandle* handle) override;
 
   mojo::Receiver<app_management::mojom::PageHandler> receiver_;
 
@@ -77,15 +78,15 @@ class AppManagementPageHandler : public app_management::mojom::PageHandler,
   AppManagementShelfDelegate shelf_delegate_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  apps::PreferredAppsList& preferred_apps_list_;
+  apps::PreferredAppsListHandle& preferred_apps_list_handle_;
 
   base::ScopedObservation<apps::AppRegistryCache,
                           apps::AppRegistryCache::Observer>
       app_registry_cache_observer_{this};
 
-  base::ScopedObservation<apps::PreferredAppsList,
-                          apps::PreferredAppsList::Observer>
-      preferred_apps_list_observer_{this};
+  base::ScopedObservation<apps::PreferredAppsListHandle,
+                          apps::PreferredAppsListHandle::Observer>
+      preferred_apps_list_handle_observer_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_APP_MANAGEMENT_APP_MANAGEMENT_PAGE_HANDLER_H_
