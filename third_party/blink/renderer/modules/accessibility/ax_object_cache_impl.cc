@@ -1008,8 +1008,10 @@ bool AXObjectCacheImpl::IsRelevantPseudoElement(const Node& node) {
     return false;  // Is the clearfix hack: ignore pseudo element.
   }
 
-  DCHECK(node.IsFirstLetterPseudoElement())
-      << "The only remaining type that should reach here.";
+  // The only other pseudo elements that matter are ::first-letter.
+  // E.g. backdrop does not get an accessibility object.
+  if (!node.IsFirstLetterPseudoElement())
+    return false;
 
   if (LayoutObject* layout_parent = node.GetLayoutObject()->Parent()) {
     if (Node* layout_parent_node = layout_parent->GetNode()) {
