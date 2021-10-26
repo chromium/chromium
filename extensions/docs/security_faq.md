@@ -72,10 +72,10 @@ systems.
 ### I've found / written an extension that can access site data without any host patterns specified in the "permissions" or "host\_permissions" manifest keys. Is this a security bug?
 
 In most cases, this is _not_ a security bug. Extensions can also access certain
-sites with content scripts (specified in the `content\_scripts` key) or with the
-`activeTab` permission. Hosts specified in `content\_scripts` (under the
+sites with content scripts (specified in the `content_scripts` key) or with the
+`activeTab` permission. Hosts specified in `content_scripts` (under the
 `matches` key) are displayed to the user in permission requests in the same way
-as host permissions requested under `permissions` or `host\_permissions` - that
+as host permissions requested under `permissions` or `host_permissions` - that
 is, it indicates the extension can "Read and change your data on <site>".
 ActiveTab requires a user to explicitly invoke the extension on a page before
 the extension can access data on the page, which is a form of runtime permission
@@ -203,7 +203,7 @@ the `topSites` API. You can read more
 
 ### Why do optional permissions not display a permission warning at install time?
 
-Permissions listed in the `optional\_permissions` key in the manifest are not
+Permissions listed in the `optional_permissions` key in the manifest are not
 granted to the extension at install-time. Instead, they are granted through the
 use of the
 [Permissions API](https://developer.chrome.com/docs/extensions/reference/permissions/).
@@ -341,7 +341,7 @@ Additionally, extensions are allowed to read any files that were explicitly
 shared with them, such as through the HTML5 Filesystem API. Additionally,
 extensions (with appropriate API permissions) can read the URLs of tabs and
 history entries, including file:-scheme URLs; however, this should not allow
-access to the _contents _of the file.
+access to the _contents_ of the file.
 
 If an extension is able to read file contents from the local machine in another
 way, this may be a security bug; please report any such bugs
