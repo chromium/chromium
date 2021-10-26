@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2012 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -14,24 +14,19 @@ near-tip-of-tree clang version:
 (Note that the output dir may be deleted and re-created if it exists.)
 """
 
-from __future__ import division
-from __future__ import print_function
+import sys
+assert sys.version_info >= (3, 0), 'This script requires Python 3.'
+
 import argparse
 import os
 import platform
 import shutil
 import stat
-import sys
 import tarfile
 import tempfile
 import time
-
-try:
-  from urllib2 import HTTPError, URLError, urlopen
-except ImportError: # For Py3 compatibility
-  from urllib.error import HTTPError, URLError
-  from urllib.request import urlopen
-
+import urllib.request
+import urllib.error
 import zipfile
 
 
@@ -101,7 +96,7 @@ def DownloadUrl(url, output_file):
     try:
       sys.stdout.write('Downloading %s ' % url)
       sys.stdout.flush()
-      response = urlopen(url)
+      response = urllib.request.urlopen(url)
       total_size = int(response.info().get('Content-Length').strip())
       bytes_done = 0
       dots_printed = 0
@@ -116,14 +111,15 @@ def DownloadUrl(url, output_file):
         sys.stdout.flush()
         dots_printed = num_dots
       if bytes_done != total_size:
-        raise URLError("only got %d of %d bytes" %
-                       (bytes_done, total_size))
+        raise urllib.error.URLError("only got %d of %d bytes" %
+                                    (bytes_done, total_size))
       print(' Done.')
       return
-    except URLError as e:
+    except urllib.error.URLError as e:
       sys.stdout.write('\n')
       print(e)
-      if num_retries == 0 or isinstance(e, HTTPError) and e.code == 404:
+      if num_retries == 0 or isinstance(
+          e, urllib.error.HTTPError) and e.code == 404:
         raise e
       num_retries -= 1
       print('Retrying in %d s ...' % retry_wait_s)
@@ -172,7 +168,7 @@ def DownloadAndUnpackPackage(package_file, output_dir, host_os):
   cds_full_url = GetPlatformUrlPrefix(host_os) + cds_file
   try:
     DownloadAndUnpack(cds_full_url, output_dir)
-  except URLError:
+  except urllib.error.URLError:
     print('Failed to download prebuilt clang package %s' % cds_file)
     print('Use build.py if you want to build locally.')
     print('Exiting.')
@@ -190,7 +186,7 @@ def DownloadAndUnpackClangMacRuntime(output_dir):
   ]
   try:
     DownloadAndUnpack(cds_full_url, output_dir, path_prefixes)
-  except URLError:
+  except urllib.error.URLError:
     print('Failed to download prebuilt clang %s' % cds_file)
     print('Use build.py if you want to build locally.')
     print('Exiting.')
@@ -206,7 +202,7 @@ def DownloadAndUnpackClangWinRuntime(output_dir):
   ]
   try:
     DownloadAndUnpack(cds_full_url, output_dir, path_prefixes)
-  except URLError:
+  except urllib.error.URLError:
     print('Failed to download prebuilt clang %s' % cds_file)
     print('Use build.py if you want to build locally.')
     print('Exiting.')
