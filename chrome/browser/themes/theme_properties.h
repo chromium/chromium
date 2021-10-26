@@ -19,8 +19,8 @@
 class ThemeProperties {
  public:
   // ---------------------------------------------------------------------------
-  // The int values of OverwritableByUserThemeProperties, Alignment, and Tiling
-  // are used as a key to store the property in the browser theme pack.
+  // The int values of the enums below are used as keys to store properties in
+  // the browser theme pack.
   //
   // /!\ If you make any changes to these enums, you must also increment
   // kThemePackVersion in browser_theme_pack.cc, or else themes will display
