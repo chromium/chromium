@@ -41,7 +41,7 @@ void Dispatcher::SetExtractingHandlesFromMessage(bool extracting) {
 
 // static
 void Dispatcher::AssertNotExtractingHandlesFromMessage() {
-  CHECK(!IsExtractingHandlesFromMessage().Get());
+  DCHECK(!IsExtractingHandlesFromMessage().Get());
 }
 
 MojoResult Dispatcher::WatchDispatcher(scoped_refptr<Dispatcher> dispatcher,
