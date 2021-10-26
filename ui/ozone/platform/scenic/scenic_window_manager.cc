@@ -34,8 +34,8 @@ fuchsia::ui::scenic::Scenic* ScenicWindowManager::GetScenic() {
     scenic_ = base::ComponentContextForProcess()
                   ->svc()
                   ->Connect<fuchsia::ui::scenic::Scenic>();
-    scenic_.set_error_handler(
-        [](zx_status_t status) { ZX_LOG(FATAL, status) << " Scenic lost."; });
+    scenic_.set_error_handler(base::LogFidlErrorAndExitProcess(
+        FROM_HERE, "fuchsia.ui.scenic.Scenic"));
   }
   return scenic_.get();
 }
