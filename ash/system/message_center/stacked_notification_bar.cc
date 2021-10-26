@@ -348,11 +348,11 @@ bool StackedNotificationBar::Update(
     int pinned_notification_count,
     std::vector<message_center::Notification*> stacked_notifications) {
   int stacked_notification_count = stacked_notifications.size();
-
   if (total_notification_count == total_notification_count_ &&
       pinned_notification_count == pinned_notification_count_ &&
-      stacked_notification_count == stacked_notification_count_)
+      stacked_notification_count == stacked_notification_count_) {
     return false;
+  }
 
   total_notification_count_ = total_notification_count;
   pinned_notification_count_ = pinned_notification_count;
@@ -577,21 +577,24 @@ void StackedNotificationBar::UpdateVisibility() {
   // to change):
   //     1. There are more than one notification.
   //     2. There is at least one unpinned notification
-  bool show_clear_all = total_notification_count_ > 1 && unpinned_count >= 1;
+  const bool show_clear_all =
+      total_notification_count_ > 1 && unpinned_count >= 1;
   if (!expand_all_button_->GetVisible())
     clear_all_button_->SetVisible(show_clear_all);
 
   switch (animation_state_) {
     case UnifiedMessageCenterAnimationState::IDLE:
-      SetVisible(stacked_notification_count_ || show_clear_all ||
-                 expand_all_button_->GetVisible());
+      SetVisible(
+          (stacked_notification_count_ && total_notification_count_ > 1) ||
+          show_clear_all || expand_all_button_->GetVisible());
       break;
     case UnifiedMessageCenterAnimationState::HIDE_STACKING_BAR:
       SetVisible(true);
       break;
     case UnifiedMessageCenterAnimationState::COLLAPSE:
-      SetVisible(stacked_notification_count_ || show_clear_all ||
-                 expand_all_button_->GetVisible());
+      SetVisible(
+          (stacked_notification_count_ && total_notification_count_ > 1) ||
+          show_clear_all || expand_all_button_->GetVisible());
       break;
   }
 }

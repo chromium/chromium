@@ -95,8 +95,15 @@ class ASH_EXPORT UnifiedMessageCenterView
   // UnifiedMessageListView.
   void ConfigureMessageView(message_center::MessageView* message_view);
 
-  // Count number of notifications that are above visible area.
+  // Count number of notifications that are still in the MessageCenter that are
+  // above visible area. NOTE: views may be in the view hierarchy, but no longer
+  // in the message center.
   std::vector<message_center::Notification*> GetStackedNotifications() const;
+
+  // Count the number of notifications that are not visible in the scrollable
+  // window, but still in the view hierarchy, with no checks for whether they
+  // are in the message center.
+  std::vector<std::string> GetNonVisibleNotificationIdsInViewHierarchy() const;
 
   // Relinquish focus and transfer it to the quick settings widget.
   void FocusOut(bool reverse);
@@ -123,7 +130,7 @@ class ASH_EXPORT UnifiedMessageCenterView
   void ExpandMessageCenter();
 
   // Returns true if the notification bar is visible.
-  bool IsNotificationBarVisible();
+  bool IsNotificationBarVisible() const;
 
   // views::View:
   void AddedToWidget() override;

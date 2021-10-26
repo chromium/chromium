@@ -67,10 +67,30 @@ class ASH_EXPORT UnifiedMessageListView
   // |y_offset|.
   gfx::Rect GetNotificationBoundsBelowY(int y_offset) const;
 
-  // Count the number of notifications whose bottom position is above
-  // |y_offset|. O(n) where n is number of notifications.
+  // Returns all notifications in the view hierarchy that are also in the
+  // MessageCenter.
+  std::vector<message_center::Notification*> GetAllNotifications() const;
+
+  // Returns all notification ids in the view hierarchy regardless of whether
+  // they are in also in the MessageCenter.
+  std::vector<std::string> GetAllNotificationIds() const;
+
+  // Returns the notifications in the view hierarchy that are also in the
+  // MessageCenter, whose bottom position is above |y_offset|. O(n) where n is
+  // number of notifications.
   std::vector<message_center::Notification*> GetNotificationsAboveY(
       int y_offset) const;
+
+  // Same as GetNotificationsAboveY, but returns notifications that are not in
+  // the MessageCenter. This is useful for the clear all animation which first
+  // removes all notifications before asking for stacked notifications.
+  std::vector<std::string> GetNotificationIdsAboveY(int y_offset) const;
+
+  // Returns notifications that are in the view hierarchy below `y_offset`
+  // without checking whether they are in the MessageCenter. This is useful for
+  // the clear all animation which first removes all notifications before asking
+  // for stacked notifications.
+  std::vector<std::string> GetNotificationIdsBelowY(int y_offset) const;
 
   // Returns the total number of notifications in the list.
   int GetTotalNotificationCount() const;
@@ -132,6 +152,10 @@ class ASH_EXPORT UnifiedMessageListView
 
   // Virtual for testing.
   virtual std::vector<message_center::Notification*> GetStackedNotifications()
+      const;
+
+  // Virtual for testing.
+  virtual std::vector<std::string> GetNonVisibleNotificationIdsInViewHierarchy()
       const;
 
  private:

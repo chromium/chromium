@@ -67,6 +67,7 @@ class TestUnifiedMessageListView : public UnifiedMessageListView {
 
   void set_stacked_notification_count(int stacked_notification_count) {
     stacked_notifications_.clear();
+    notification_id_list_.clear();
     for (int i = 0; i < stacked_notification_count; i++) {
       std::string id = base::NumberToString(0);
       auto notification = std::make_unique<Notification>(
@@ -77,6 +78,7 @@ class TestUnifiedMessageListView : public UnifiedMessageListView {
           new message_center::NotificationDelegate());
 
       stacked_notifications_.push_back(notification.get());
+      notification_id_list_.push_back(id);
     }
   }
 
@@ -93,8 +95,14 @@ class TestUnifiedMessageListView : public UnifiedMessageListView {
     return stacked_notifications_;
   }
 
+  std::vector<std::string> GetNonVisibleNotificationIdsInViewHierarchy()
+      const override {
+    return notification_id_list_;
+  }
+
  private:
   std::vector<message_center::Notification*> stacked_notifications_;
+  std::vector<std::string> notification_id_list_;
 };
 
 }  // namespace
@@ -468,6 +476,7 @@ TEST_F(UnifiedMessageListViewTest, ClearAllWithStackingNotifications) {
   AddNotification();
   AddNotification();
   CreateMessageListView();
+
   message_list_view()->set_stacked_notification_count(2);
   EXPECT_EQ(3u, message_list_view()->children().size());
 
