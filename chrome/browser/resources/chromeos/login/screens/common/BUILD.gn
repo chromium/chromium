@@ -15,6 +15,7 @@ group("polymer3_elements") {
     ":app_downloading_module",
     ":autolaunch_module",
     ":device_disabled_module",
+    ":family_link_notice_module",
     ":fingerprint_setup_module",
     ":gesture_navigation_module",
     ":marketing_opt_in_module",
@@ -46,6 +47,7 @@ js_type_check("closure_compile_module") {
     ":app_downloading.m",
     ":autolaunch.m",
     ":device_disabled.m",
+    ":family_link_notice.m",
     ":fingerprint_setup.m",
     ":gesture_navigation.m",
     ":marketing_opt_in.m",
@@ -107,6 +109,19 @@ js_library("device_disabled.m") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   extra_deps = [ ":device_disabled_module" ]
+}
+
+js_library("family_link_notice.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/family_link_notice.m.js" ]
+  deps = [
+    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:oobe_dialog_host_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/buttons:oobe_next_button.m",
+    "../../components/dialogs:oobe_adaptive_dialog.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":family_link_notice_module" ]
 }
 
 js_library("fingerprint_setup.m") {
@@ -259,6 +274,14 @@ polymer_modulizer("autolaunch") {
 polymer_modulizer("device_disabled") {
   js_file = "device_disabled.js"
   html_file = "device_disabled.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("family_link_notice") {
+  js_file = "family_link_notice.js"
+  html_file = "family_link_notice.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
   namespace_rewrites = oobe_namespace_rewrites
