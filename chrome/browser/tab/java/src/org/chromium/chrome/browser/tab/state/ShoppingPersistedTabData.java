@@ -302,9 +302,8 @@ public class ShoppingPersistedTabData extends PersistedTabData {
 
     @VisibleForTesting
     protected ShoppingPersistedTabData(
-            Tab tab, ByteBuffer data, PersistedTabDataStorage storage, String persistedTabDataId) {
+            Tab tab, PersistedTabDataStorage storage, String persistedTabDataId) {
         super(tab, storage, persistedTabDataId);
-        deserializeAndLog(data);
         setupPersistence(tab);
         mPriceDropMetricsLogger = new PriceDropMetricsLogger(this);
     }
@@ -413,8 +412,10 @@ public class ShoppingPersistedTabData extends PersistedTabData {
             return;
         }
         PersistedTabData.from(tab,
-                (data, storage, id)
-                        -> { return new ShoppingPersistedTabData(tab, data, storage, id); },
+                (storage, id, factoryCallback)
+                        -> {
+                    factoryCallback.onResult(new ShoppingPersistedTabData(tab, storage, id));
+                },
                 (supplierCallback)
                         -> {
                     if (tab.isDestroyed()

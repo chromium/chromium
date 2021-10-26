@@ -29,10 +29,8 @@ public class MockPersistedTabData extends PersistedTabData {
         mField = field;
     }
 
-    private MockPersistedTabData(
-            Tab tab, ByteBuffer data, PersistedTabDataStorage storage, String id) {
+    protected MockPersistedTabData(Tab tab, PersistedTabDataStorage storage, String id) {
         super(tab, storage, id);
-        deserializeAndLog(data);
     }
 
     /**
@@ -42,8 +40,8 @@ public class MockPersistedTabData extends PersistedTabData {
      * @param callback callback {@link MockPersistedTabData} will be passed back in
      */
     public static void from(Tab tab, Callback<MockPersistedTabData> callback) {
-        PersistedTabData.from(tab, (data, storage, id) -> {
-            return new MockPersistedTabData(tab, data, storage, id);
+        PersistedTabData.from(tab, (storage, id, factoryCallback) -> {
+            factoryCallback.onResult(new MockPersistedTabData(tab, storage, id));
         }, null, MockPersistedTabData.class, callback);
     }
 

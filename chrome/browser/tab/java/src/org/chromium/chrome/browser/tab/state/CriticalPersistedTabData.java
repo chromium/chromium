@@ -118,7 +118,6 @@ public class CriticalPersistedTabData extends PersistedTabData {
 
     /**
      * @param tab {@link Tab} {@link CriticalPersistedTabData} is being stored for
-     * @param data serialized {@link CriticalPersistedTabData}
      * @param storage {@link PersistedTabDataStorage} for {@link PersistedTabData}
      * @param persistedTabDataId unique identifier for {@link PersistedTabData} in
      * storage
@@ -127,9 +126,8 @@ public class CriticalPersistedTabData extends PersistedTabData {
      */
     @VisibleForTesting
     protected CriticalPersistedTabData(
-            Tab tab, ByteBuffer data, PersistedTabDataStorage storage, String persistedTabDataId) {
+            Tab tab, PersistedTabDataStorage storage, String persistedTabDataId) {
         super(tab, storage, persistedTabDataId);
-        deserializeAndLog(data);
     }
 
     /**
@@ -142,8 +140,10 @@ public class CriticalPersistedTabData extends PersistedTabData {
      */
     public static void from(Tab tab, Callback<CriticalPersistedTabData> callback) {
         PersistedTabData.from(tab,
-                (data, storage, id)
-                        -> { return new CriticalPersistedTabData(tab, data, storage, id); },
+                (storage, id, factoryCallback)
+                        -> {
+                    factoryCallback.onResult(new CriticalPersistedTabData(tab, storage, id));
+                },
                 (supplierCallback)
                         -> supplierCallback.onResult(
                                 tab.isInitialized() ? CriticalPersistedTabData.build(tab) : null),
@@ -192,9 +192,9 @@ public class CriticalPersistedTabData extends PersistedTabData {
      * as the storage/retrieval method
      */
     public static void build(Tab tab, ByteBuffer serialized, boolean isStorageRetrievalEnabled) {
-        CriticalPersistedTabData res = PersistedTabData.build(tab, (data, storage, id) -> {
-            return new CriticalPersistedTabData(tab, data, storage, id);
-        }, serialized, CriticalPersistedTabData.class);
+        PersistedTabData.build(tab, (storage, id, callback) -> {
+            callback.onResult(new CriticalPersistedTabData(tab, storage, id));
+        }, serialized, CriticalPersistedTabData.class, (res) -> {});
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
