@@ -12,13 +12,16 @@ import com.google.android.play.core.splitinstall.SplitInstallRequest;
 import com.google.android.play.core.splitinstall.SplitInstallStateUpdatedListener;
 import com.google.android.play.core.splitinstall.model.SplitInstallSessionStatus;
 
+import org.chromium.base.BundleUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.ui.base.ResourceBundle;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
@@ -74,15 +77,22 @@ public class LanguageSplitInstaller {
      * @return Set<String> of installed languages code strings.
      */
     public Set<String> getInstalledLanguages() {
+        // On non-bundle builds return all packaged locales.
+        if (!BundleUtils.isBundle()) {
+            return new HashSet<String>(Arrays.asList(ResourceBundle.getAvailableLocales()));
+        }
         return mSplitInstallManager.getInstalledLanguages();
     }
 
     /**
+     * Return true if the language pack for language name is installed. By definition the value to
+     * follow the system language is always installed.
      * @param languageName BCP-47 language code.
      * @return True if split for |languageName| is installed.
      */
     public boolean isLanguageSplitInstalled(String languageName) {
-        return getInstalledLanguages().contains(languageName);
+        return getInstalledLanguages().contains(languageName)
+                || AppLocaleUtils.isFollowSystemLanguage(languageName);
     }
 
     /**
