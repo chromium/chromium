@@ -26,8 +26,8 @@ MATCHER_P(HasAppId, app_id, "Has the correct app id") {
 
 }  // namespace
 
-class AppRegistryCacheTest : public testing::Test,
-                             public apps::AppRegistryCache::Observer {
+class AppRegistryCacheMojomTest : public testing::Test,
+                                  public apps::AppRegistryCache::Observer {
  protected:
   static apps::mojom::AppPtr MakeApp(
       const char* app_id,
@@ -286,7 +286,7 @@ class InitializedObserver : public apps::AppRegistryCache::Observer {
   int app_count_ = 0;
 };
 
-TEST_F(AppRegistryCacheTest, ForEachApp) {
+TEST_F(AppRegistryCacheMojomTest, ForEachApp) {
   std::vector<apps::mojom::AppPtr> deltas;
   apps::AppRegistryCache cache;
   cache.SetAccountId(account_id());
@@ -343,7 +343,7 @@ TEST_F(AppRegistryCacheTest, ForEachApp) {
   EXPECT_FALSE(found_e);
 }
 
-TEST_F(AppRegistryCacheTest, Removed) {
+TEST_F(AppRegistryCacheMojomTest, Removed) {
   apps::AppRegistryCache cache;
   testing::StrictMock<MockRegistryObserver> observer;
   cache.SetAccountId(account_id());
@@ -388,7 +388,7 @@ TEST_F(AppRegistryCacheTest, Removed) {
   cache.RemoveObserver(&observer);
 }
 
-TEST_F(AppRegistryCacheTest, Observer) {
+TEST_F(AppRegistryCacheMojomTest, Observer) {
   std::vector<apps::mojom::AppPtr> deltas;
   apps::AppRegistryCache cache;
   cache.SetAccountId(account_id());
@@ -442,7 +442,7 @@ TEST_F(AppRegistryCacheTest, Observer) {
   EXPECT_TRUE(cache.IsAppTypeInitialized(apps::mojom::AppType::kArc));
 }
 
-TEST_F(AppRegistryCacheTest, Recursive) {
+TEST_F(AppRegistryCacheMojomTest, Recursive) {
   std::vector<apps::mojom::AppPtr> deltas;
   apps::AppRegistryCache cache;
   cache.SetAccountId(account_id());
@@ -476,7 +476,7 @@ TEST_F(AppRegistryCacheTest, Recursive) {
   EXPECT_TRUE(cache.IsAppTypeInitialized(apps::mojom::AppType::kArc));
 }
 
-TEST_F(AppRegistryCacheTest, SuperRecursive) {
+TEST_F(AppRegistryCacheMojomTest, SuperRecursive) {
   std::vector<apps::mojom::AppPtr> deltas;
   apps::AppRegistryCache cache;
   cache.SetAccountId(account_id());
@@ -524,7 +524,7 @@ TEST_F(AppRegistryCacheTest, SuperRecursive) {
   EXPECT_TRUE(cache.IsAppTypeInitialized(apps::mojom::AppType::kArc));
 }
 
-TEST_F(AppRegistryCacheTest, OnAppTypeInitialized) {
+TEST_F(AppRegistryCacheMojomTest, OnAppTypeInitialized) {
   std::vector<apps::mojom::AppPtr> deltas;
   apps::AppRegistryCache cache;
   InitializedObserver observer1(&cache);
