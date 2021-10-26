@@ -711,9 +711,21 @@ TEST_F(HistoryClustersServiceTest, DoesQueryMatchAnyCluster) {
                        },
                        {u"apples", u"oranges"},
                        /*should_show_on_prominent_ui_surfaces=*/true));
-  clusters.push_back(history::Cluster(
-      0, {test_clustering_backend_->GetVisitById(1)}, {u"sensitive"},
-      /*should_show_on_prominent_ui_surfaces=*/false));
+  clusters.push_back(
+      history::Cluster(0,
+                       {
+                           test_clustering_backend_->GetVisitById(1),
+                           test_clustering_backend_->GetVisitById(2),
+                       },
+                       {u"sensitive"},
+                       /*should_show_on_prominent_ui_surfaces=*/false));
+  clusters.push_back(
+      history::Cluster(0,
+                       {
+                           test_clustering_backend_->GetVisitById(1),
+                       },
+                       {u"singlevisit"},
+                       /*should_show_on_prominent_ui_surfaces=*/true));
   test_clustering_backend_->FulfillCallback(clusters);
 
   // Now the exact query should match the populated cache.
@@ -723,6 +735,10 @@ TEST_F(HistoryClustersServiceTest, DoesQueryMatchAnyCluster) {
   // have their keywords inserted into the keyword bag.
   EXPECT_FALSE(
       history_clusters_service_->DoesQueryMatchAnyCluster("sensitive"));
+
+  // Ignore clusters with fewer than two visits.
+  EXPECT_FALSE(
+      history_clusters_service_->DoesQueryMatchAnyCluster("singlevisit"));
 
   // Too-short queries rejected.
   EXPECT_FALSE(history_clusters_service_->DoesQueryMatchAnyCluster("ap"));

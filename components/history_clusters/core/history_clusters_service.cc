@@ -660,6 +660,11 @@ void HistoryClustersService::PopulateClusterKeywordCache(
     QueryClustersResult result) {
   // Copy keywords from every cluster into a the accumulator set.
   for (auto& cluster : result.clusters) {
+    if (cluster.visits.size() < 2) {
+      // Only accept keywords from clusters with at least two visits. This is a
+      // simple first-pass technique to avoid overtriggering the omnibox action.
+      continue;
+    }
     keyword_accumulator->insert(cluster.keywords.begin(),
                                 cluster.keywords.end());
   }
