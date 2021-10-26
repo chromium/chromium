@@ -3831,16 +3831,6 @@
     "expiry_milestone": 99
   },
   {
-    "name": "mixed-forms-disable-autofill",
-    "owners": [ "carlosil" ],
-    "expiry_milestone": 92
-  },
-  {
-    "name": "mixed-forms-interstitial",
-    "owners": [ "carlosil" ],
-    "expiry_milestone": 92
-  },
-  {
     "name": "mobile-identity-consistency-fre",
     "owners": [ "aliceywang", "msarda", "triploblastic" ],
     "expiry_milestone": 98
