@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 import {FirmwareUpdateAppElement} from 'chrome://accessory-update/firmware_update_app.js';
+import {UpdateProviderInterface} from 'chrome://accessory-update/firmware_update_types.js';
+import {getUpdateProvider, setUpdateProviderForTesting} from 'chrome://accessory-update/mojo_interface_provider.js';
 
 import {assertEquals} from '../../chai_assert.js';
 
@@ -27,5 +29,13 @@ export function firmwareUpdateAppTest() {
     assertEquals(
         'Firmware Update',
         page.shadowRoot.querySelector('#header').textContent);
+  });
+
+  test('SettingGettingTestProvider', () => {
+    // TODO(michaelcheco): Replace with fake when built.
+    let fake_provider =
+        /** @type {!UpdateProviderInterface} */ (new Object());
+    setUpdateProviderForTesting(fake_provider);
+    assertEquals(fake_provider, getUpdateProvider());
   });
 }
