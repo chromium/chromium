@@ -169,8 +169,6 @@ void FileAnalyzer::OnZipAnalysisFinished(
                        &results_.archived_binaries);
 
   // Log metrics for ZIP analysis
-  UMA_HISTOGRAM_BOOLEAN("SBClientDownload.ZipFileSuccess",
-                        archive_results.success);
   UMA_HISTOGRAM_MEDIUM_TIMES("SBClientDownload.ExtractZipFeaturesTimeMedium",
                              base::TimeTicks::Now() - zip_analysis_start_time_);
 
