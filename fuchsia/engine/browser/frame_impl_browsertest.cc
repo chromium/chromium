@@ -48,6 +48,8 @@
 #include "net/url_request/url_request_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom.h"
 #include "url/url_constants.h"
 
 using testing::_;
@@ -1541,5 +1543,71 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, InvalidHeader) {
     ASSERT_TRUE(result.Get().is_err());
     EXPECT_EQ(result.Get().err(),
               fuchsia::web::NavigationControllerError::INVALID_HEADER);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(FrameImplTest, ContentAreaSettings) {
+  auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
+  base::RunLoop().RunUntilIdle();
+  auto* frame_impl = context_impl()->GetFrameImplForTest(&frame.ptr());
+  auto* web_contents = frame_impl->web_contents_for_test();
+
+  // Frame should start with default values in web_contents.
+  {
+    blink::web_pref::WebPreferences web_prefs =
+        web_contents->GetOrCreateWebPreferences();
+    EXPECT_FALSE(web_prefs.hide_scrollbars);
+    EXPECT_EQ(web_prefs.autoplay_policy,
+              blink::mojom::AutoplayPolicy::kDocumentUserActivationRequired);
+    EXPECT_EQ(web_prefs.preferred_color_scheme,
+              blink::mojom::PreferredColorScheme::kLight);
+  }
+
+  // SetContentAreaSettings with empty settings object should not change any
+  // existing settings.
+  {
+    fuchsia::web::ContentAreaSettings settings;
+    frame->SetContentAreaSettings(std::move(settings));
+    base::RunLoop().RunUntilIdle();
+
+    blink::web_pref::WebPreferences web_prefs =
+        web_contents->GetOrCreateWebPreferences();
+    EXPECT_FALSE(web_prefs.hide_scrollbars);
+    EXPECT_EQ(web_prefs.autoplay_policy,
+              blink::mojom::AutoplayPolicy::kDocumentUserActivationRequired);
+    EXPECT_EQ(web_prefs.preferred_color_scheme,
+              blink::mojom::PreferredColorScheme::kLight);
+  }
+
+  // Set hide_scrollbars field and expect that it's reflected in web_contents.
+  // Expect other fields to be unchanged.
+  {
+    fuchsia::web::ContentAreaSettings settings;
+    settings.set_hide_scrollbars(true);
+    frame->SetContentAreaSettings(std::move(settings));
+    base::RunLoop().RunUntilIdle();
+
+    blink::web_pref::WebPreferences web_prefs =
+        web_contents->GetOrCreateWebPreferences();
+    EXPECT_TRUE(web_prefs.hide_scrollbars);
+    EXPECT_EQ(web_prefs.autoplay_policy,
+              blink::mojom::AutoplayPolicy::kDocumentUserActivationRequired);
+    EXPECT_EQ(web_prefs.preferred_color_scheme,
+              blink::mojom::PreferredColorScheme::kLight);
+  }
+
+  // ResetContentAreaSettings should revert preferences to their default values
+  // in web_contents.
+  {
+    frame->ResetContentAreaSettings();
+    base::RunLoop().RunUntilIdle();
+
+    blink::web_pref::WebPreferences web_prefs =
+        web_contents->GetOrCreateWebPreferences();
+    EXPECT_FALSE(web_prefs.hide_scrollbars);
+    EXPECT_EQ(web_prefs.autoplay_policy,
+              blink::mojom::AutoplayPolicy::kDocumentUserActivationRequired);
+    EXPECT_EQ(web_prefs.preferred_color_scheme,
+              blink::mojom::PreferredColorScheme::kLight);
   }
 }

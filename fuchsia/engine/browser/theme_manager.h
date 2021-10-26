@@ -13,25 +13,28 @@
 #include "content/public/browser/web_contents.h"
 #include "fuchsia/engine/web_engine_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
 class WEB_ENGINE_EXPORT ThemeManager {
  public:
-  using OnSetThemeCompleteCallback = base::OnceCallback<void(bool)>;
-
-  explicit ThemeManager(content::WebContents* web_contents);
+  explicit ThemeManager(content::WebContents* web_contents,
+                        base::OnceClosure on_display_error);
   ~ThemeManager();
 
   ThemeManager(const ThemeManager&) = delete;
   ThemeManager& operator=(const ThemeManager&) = delete;
 
-  // Sets the |theme| requested by the FIDL caller.
+  // Sets the |theme| requested by the FIDL caller, but does not apply the
+  // theme. Call |WebContents::OnWebPreferencesChanged| to apply the theme to
+  // web contents.
+  //
   // If the |theme| is DEFAULT, then the theme provided by |display_service_|
-  // will be used.
-  // |on_set_complete| is run with |true| if the theme was set correctly,
-  // or |false| either if |theme| is invalid, or if |display_service_| is
-  // required but unavailable.
-  void SetTheme(fuchsia::settings::ThemeType theme,
-                OnSetThemeCompleteCallback on_set_complete);
+  // will be used. |on_display_error_| is run if |display_service_| is required
+  // but unavailable.
+  void SetTheme(fuchsia::settings::ThemeType theme);
+
+  // Override |blink_prefs| with theme set by |SetTheme|.
+  void ApplyThemeToWebPreferences(blink::web_pref::WebPreferences* web_prefs);
 
  private:
   // Attempts to connect to the fuchsia.settings.Display service.
@@ -39,7 +42,6 @@ class WEB_ENGINE_EXPORT ThemeManager {
   // Return false if the service is unavailable.
   bool EnsureDisplayService();
 
-  void ApplyTheme();
   void WatchForDisplayChanges();
   void OnWatchResultReceived(fuchsia::settings::DisplaySettings settings);
   void OnDisplayServiceMissing();
@@ -50,7 +52,7 @@ class WEB_ENGINE_EXPORT ThemeManager {
   absl::optional<fuchsia::settings::ThemeType> system_theme_;
   content::WebContents* web_contents_;
   fuchsia::settings::DisplayPtr display_service_;
-  OnSetThemeCompleteCallback on_set_complete_;
+  base::OnceClosure on_display_error_;
 };
 
 #endif  // FUCHSIA_ENGINE_BROWSER_THEME_MANAGER_H_

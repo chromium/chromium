@@ -86,14 +86,11 @@ void ContextImpl::CreateFrameWithParams(
                             std::move(frame));
 }
 
-void ContextImpl::CreateFrameForWebContents(
+FrameImpl* ContextImpl::CreateFrameForWebContents(
     std::unique_ptr<content::WebContents> web_contents,
     fuchsia::web::CreateFrameParams params,
     fidl::InterfaceRequest<fuchsia::web::Frame> frame_request) {
   DCHECK(frame_request.is_valid());
-
-  blink::web_pref::WebPreferences web_preferences =
-      web_contents->GetOrCreateWebPreferences();
 
   // Register the new Frame with the DevTools controller. The controller will
   // reject registration if user-debugging is requested, but it is not enabled
@@ -103,29 +100,11 @@ void ContextImpl::CreateFrameForWebContents(
   if (!devtools_controller_->OnFrameCreated(web_contents.get(),
                                             user_debugging_requested)) {
     frame_request.Close(ZX_ERR_INVALID_ARGS);
-    return;
+    return nullptr;
   }
 
   // |params.debug_name| is not currently supported.
   // TODO(crbug.com/1051533): Determine whether it is still needed.
-
-  // REQUIRE_USER_ACTIVATION is the default per the FIDL API.
-  web_preferences.autoplay_policy =
-      blink::mojom::AutoplayPolicy::kDocumentUserActivationRequired;
-
-  if (params.has_autoplay_policy()) {
-    switch (params.autoplay_policy()) {
-      case fuchsia::web::AutoplayPolicy::ALLOW:
-        web_preferences.autoplay_policy =
-            blink::mojom::AutoplayPolicy::kNoUserGestureRequired;
-        break;
-      case fuchsia::web::AutoplayPolicy::REQUIRE_USER_ACTIVATION:
-        web_preferences.autoplay_policy =
-            blink::mojom::AutoplayPolicy::kDocumentUserActivationRequired;
-        break;
-    }
-  }
-  web_contents->SetWebPreferences(web_preferences);
 
   // Verify the explicit sites filter error page content. If the parameter is
   // present, it will be provided to the FrameImpl after it is created below.
@@ -135,7 +114,7 @@ void ContextImpl::CreateFrameForWebContents(
         base::StringFromMemData(params.explicit_sites_filter_error_page());
     if (!explicit_sites_filter_error_page) {
       frame_request.Close(ZX_ERR_INVALID_ARGS);
-      return;
+      return nullptr;
     }
   }
 
@@ -148,7 +127,7 @@ void ContextImpl::CreateFrameForWebContents(
   if (status != ZX_OK) {
     ZX_LOG(ERROR, status) << "CreateFrameParams clone failed";
     frame_request.Close(ZX_ERR_INVALID_ARGS);
-    return;
+    return nullptr;
   }
 
   // Wrap the WebContents into a FrameImpl owned by |this|.
@@ -163,7 +142,9 @@ void ContextImpl::CreateFrameForWebContents(
         std::move(*explicit_sites_filter_error_page));
   }
 
+  FrameImpl* frame_ptr = frame_impl.get();
   frames_.insert(std::move(frame_impl));
+  return frame_ptr;
 }
 
 void ContextImpl::GetCookieManager(

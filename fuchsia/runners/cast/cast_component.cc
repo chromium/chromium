@@ -182,9 +182,6 @@ void CastComponent::StartComponent() {
                      kBindingsFailureExitCode,
                      fuchsia::sys::TerminationReason::INTERNAL_ERROR));
 
-  // Get the theme from the system service.
-  frame()->SetPreferredTheme(fuchsia::settings::ThemeType::DEFAULT);
-
   // Media loading has to be unblocked by the agent via the
   // ApplicationController.
   frame()->SetBlockMediaLoading(true);
@@ -216,6 +213,13 @@ void CastComponent::StartComponent() {
                                   fuchsia::web::PermissionState::GRANTED);
     }
   }
+
+  fuchsia::web::ContentAreaSettings settings;
+  // Disable scrollbars on all Cast applications.
+  settings.set_hide_scrollbars(true);
+  // Get the theme from the system service.
+  settings.set_theme(fuchsia::settings::ThemeType::DEFAULT);
+  frame()->SetContentAreaSettings(std::move(settings));
 }
 
 void CastComponent::DestroyComponent(int64_t exit_code,

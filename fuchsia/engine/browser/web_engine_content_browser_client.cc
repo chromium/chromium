@@ -134,6 +134,12 @@ void WebEngineContentBrowserClient::OverrideWebkitPrefs(
 
   if (allow_insecure_content_)
     web_prefs->allow_running_insecure_content = true;
+
+  FrameImpl* frame = FrameImpl::FromWebContents(web_contents);
+  // This method may be called when a |web_contents| is instantiated but an
+  // associated frame has not been created.
+  if (frame != nullptr)
+    frame->OverrideWebPreferences(web_prefs);
 }
 
 void WebEngineContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
@@ -227,6 +233,7 @@ WebEngineContentBrowserClient::CreateThrottlesForNavigation(
   std::vector<std::unique_ptr<content::NavigationThrottle>> throttles;
   auto* frame_impl =
       FrameImpl::FromWebContents(navigation_handle->GetWebContents());
+  DCHECK(frame_impl);
 
   // Only create throttle if FrameImpl has a NavigationPolicyProvider,
   // indicating an interest in navigations.
@@ -261,10 +268,10 @@ WebEngineContentBrowserClient::CreateURLLoaderThrottles(
   }
 
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
+  auto* frame_impl = FrameImpl::FromWebContents(wc_getter.Run());
+  DCHECK(frame_impl);
   scoped_refptr<WebEngineURLLoaderThrottle::UrlRequestRewriteRules>& rules =
-      FrameImpl::FromWebContents(wc_getter.Run())
-          ->url_request_rewrite_rules_manager()
-          ->GetCachedRules();
+      frame_impl->url_request_rewrite_rules_manager()->GetCachedRules();
   if (rules) {
     throttles.emplace_back(std::make_unique<WebEngineURLLoaderThrottle>(rules));
   }

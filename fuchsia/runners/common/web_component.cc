@@ -72,8 +72,6 @@ void WebComponent::StartComponent() {
   if (!debug_name_.empty())
     create_params.set_debug_name(debug_name_);
   create_params.set_enable_remote_debugging(enable_remote_debugging_);
-  create_params.set_autoplay_policy(
-      fuchsia::web::AutoplayPolicy::REQUIRE_USER_ACTIVATION);
   runner_->CreateFrameWithParams(std::move(create_params), frame_.NewRequest());
 
   // If the Frame unexpectedly disconnects then tear-down this Component.
@@ -87,6 +85,11 @@ void WebComponent::StartComponent() {
     }
     DestroyComponent(status, fuchsia::sys::TerminationReason::EXITED);
   });
+
+  fuchsia::web::ContentAreaSettings settings;
+  settings.set_autoplay_policy(
+      fuchsia::web::AutoplayPolicy::REQUIRE_USER_ACTIVATION);
+  frame_->SetContentAreaSettings(std::move(settings));
 
   // Observe the Frame for failures, via navigation state change events.
   frame_->SetNavigationEventListener(navigation_listener_binding_.NewBinding());
