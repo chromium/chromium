@@ -93,7 +93,7 @@ GPUExternalTexture* GPUExternalTexture::FromVideo(
   // Extract the format. If this format is invalid, Dawn will emit an error upon
   // ExternalTexture creation.
   WGPUTextureFormat format =
-      AsDawnType(resource_provider->ColorParams().GetSkColorType());
+      AsDawnType(resource_provider->GetSkImageInfo().colorType());
 
   scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
       WebGPUMailboxTexture::FromCanvasResource(

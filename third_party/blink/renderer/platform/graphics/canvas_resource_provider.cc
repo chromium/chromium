@@ -20,6 +20,7 @@
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "skia/buildflags.h"
+#include "skia/ext/legacy_display_globals.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
@@ -146,10 +147,8 @@ class CanvasResourceProviderBitmap : public CanvasResourceProvider {
   sk_sp<SkSurface> CreateSkSurface() const override {
     TRACE_EVENT0("blink", "CanvasResourceProviderBitmap::CreateSkSurface");
 
-    SkImageInfo info = SkImageInfo::Make(
-        Size().width(), Size().height(), ColorParams().GetSkColorType(),
-        kPremul_SkAlphaType, ColorParams().GetSkColorSpace());
-    SkSurfaceProps props = ColorParams().GetSkSurfaceProps();
+    const auto info = GetSkImageInfo().makeAlphaType(kPremul_SkAlphaType);
+    const auto props = GetSkSurfaceProps();
     return SkSurface::MakeRaster(info, &props);
   }
 };
@@ -547,12 +546,12 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
     if (IsGpuContextLost() || !resource_)
       return nullptr;
 
-    SkSurfaceProps props = ColorParams().GetSkSurfaceProps();
+    const auto props = GetSkSurfaceProps();
     if (is_accelerated_) {
       return SkSurface::MakeFromBackendTexture(
           GetGrContext(), CreateGrTextureForResource(), GetGrSurfaceOrigin(),
-          0 /* msaa_sample_count */, ColorParams().GetSkColorType(),
-          ColorParams().GetSkColorSpace(), &props);
+          0 /* msaa_sample_count */, GetSkImageInfo().colorType(),
+          GetSkImageInfo().refColorSpace(), &props);
     }
 
     // For software raster path, we render into cpu memory managed internally
@@ -803,16 +802,17 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
     GrGLTextureInfo texture_info = {};
     texture_info.fID = resource_->GetBackBufferTextureId();
     texture_info.fTarget = resource_->TextureTarget();
-    texture_info.fFormat = ColorParams().GLSizedInternalFormat();
+    texture_info.fFormat = viz::TextureStorageFormat(
+        viz::SkColorTypeToResourceFormat(GetSkImageInfo().colorType()));
 
     auto backend_texture = GrBackendTexture(Size().width(), Size().height(),
                                             GrMipMapped::kNo, texture_info);
 
-    SkSurfaceProps props = ColorParams().GetSkSurfaceProps();
+    const auto props = GetSkSurfaceProps();
     return SkSurface::MakeFromBackendTexture(
         GetGrContext(), backend_texture, kTopLeft_GrSurfaceOrigin,
-        0 /* msaa_sample_count */, ColorParams().GetSkColorType(),
-        ColorParams().GetSkColorSpace(), &props);
+        0 /* msaa_sample_count */, GetSkImageInfo().colorType(),
+        GetSkImageInfo().refColorSpace(), &props);
   }
 
   void RasterRecord(sk_sp<cc::PaintRecord> last_recording,
@@ -897,16 +897,6 @@ CanvasResourceProvider::CreateBitmapProvider(
     return provider;
   }
   return nullptr;
-}
-
-std::unique_ptr<CanvasResourceProvider>
-CanvasResourceProvider::CreateBitmapProvider(
-    const IntSize& size,
-    cc::PaintFlags::FilterQuality filter_quality,
-    const CanvasResourceParams& params,
-    ShouldInitialize should_initialize) {
-  return CreateBitmapProvider(params.MakeSkImageInfo(size), filter_quality,
-                              should_initialize);
 }
 
 std::unique_ptr<CanvasResourceProvider>
@@ -1019,40 +1009,11 @@ CanvasResourceProvider::CreateSharedImageProvider(
 }
 
 std::unique_ptr<CanvasResourceProvider>
-CanvasResourceProvider::CreateSharedImageProvider(
-    const IntSize& size,
-    cc::PaintFlags::FilterQuality filter_quality,
-    const CanvasResourceParams& params,
-    ShouldInitialize should_initialize,
-    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
-    RasterMode raster_mode,
-    bool is_origin_top_left,
-    uint32_t shared_image_usage_flags) {
-  return CreateSharedImageProvider(params.MakeSkImageInfo(size), filter_quality,
-                                   should_initialize, context_provider_wrapper,
-                                   raster_mode, is_origin_top_left,
-                                   shared_image_usage_flags);
-}
-
-std::unique_ptr<CanvasResourceProvider>
 CanvasResourceProvider::CreateWebGPUImageProvider(const SkImageInfo& info,
                                                   bool is_origin_top_left) {
   auto context_provider_wrapper = SharedGpuContext::ContextProviderWrapper();
   return CreateSharedImageProvider(
       info, cc::PaintFlags::FilterQuality::kLow,
-      CanvasResourceProvider::ShouldInitialize::kNo,
-      std::move(context_provider_wrapper), RasterMode::kGPU, is_origin_top_left,
-      gpu::SHARED_IMAGE_USAGE_WEBGPU);
-}
-
-std::unique_ptr<CanvasResourceProvider>
-CanvasResourceProvider::CreateWebGPUImageProvider(
-    const IntSize& size,
-    const CanvasResourceParams& params,
-    bool is_origin_top_left) {
-  auto context_provider_wrapper = SharedGpuContext::ContextProviderWrapper();
-  return CreateSharedImageProvider(
-      params.MakeSkImageInfo(size), cc::PaintFlags::FilterQuality::kLow,
       CanvasResourceProvider::ShouldInitialize::kNo,
       std::move(context_provider_wrapper), RasterMode::kGPU, is_origin_top_left,
       gpu::SHARED_IMAGE_USAGE_WEBGPU);
@@ -1289,7 +1250,7 @@ CanvasResourceProvider::GetOrCreateCanvasImageProvider() {
     // Create an ImageDecodeCache for half float images only if the canvas is
     // using half float back storage.
     cc::ImageDecodeCache* cache_f16 = nullptr;
-    if (ColorParams().GetSkColorType() == kRGBA_F16_SkColorType)
+    if (GetSkImageInfo().colorType() == kRGBA_F16_SkColorType)
       cache_f16 = ImageDecodeCacheF16();
 
     auto raster_mode = cc::PlaybackImageProvider::RasterMode::kSoftware;
@@ -1299,8 +1260,7 @@ CanvasResourceProvider::GetOrCreateCanvasImageProvider() {
                         : cc::PlaybackImageProvider::RasterMode::kGpu;
     }
     canvas_image_provider_ = std::make_unique<CanvasImageProvider>(
-        ImageDecodeCacheRGBA8(), cache_f16,
-        ColorParams().GetStorageGfxColorSpace(), info_.colorType(),
+        ImageDecodeCacheRGBA8(), cache_f16, GetColorSpace(), info_.colorType(),
         raster_mode);
   }
   return canvas_image_provider_.get();
@@ -1408,14 +1368,20 @@ CanvasResourceProvider::FlushCanvasAndPreserveRecording() {
   return FlushCanvasInternal(true);
 }
 
-CanvasResourceParams CanvasResourceProvider::ColorParams() const {
-  return CanvasResourceParams(
-      CanvasColorSpaceFromSkColorSpace(info_.colorSpace()), info_.colorType(),
-      info_.alphaType());
-}
-
 IntSize CanvasResourceProvider::Size() const {
   return IntSize(info_.width(), info_.height());
+}
+
+SkSurfaceProps CanvasResourceProvider::GetSkSurfaceProps() const {
+  const bool can_use_lcd_text =
+      GetSkImageInfo().alphaType() == kOpaque_SkAlphaType;
+  return skia::LegacyDisplayGlobals::ComputeSurfaceProps(can_use_lcd_text);
+}
+
+gfx::ColorSpace CanvasResourceProvider::GetColorSpace() const {
+  auto* color_space = GetSkImageInfo().colorSpace();
+  return color_space ? gfx::ColorSpace(*color_space)
+                     : gfx::ColorSpace::CreateSRGB();
 }
 
 sk_sp<cc::PaintRecord> CanvasResourceProvider::FlushCanvasInternal(
@@ -1449,10 +1415,9 @@ void CanvasResourceProvider::RasterRecordOOP(
   if (IsGpuContextLost())
     return;
   gpu::raster::RasterInterface* ri = RasterInterface();
-  SkColor background_color =
-      ColorParams().GetSkAlphaType() == kOpaque_SkAlphaType
-          ? SK_ColorBLACK
-          : SK_ColorTRANSPARENT;
+  SkColor background_color = GetSkImageInfo().alphaType() == kOpaque_SkAlphaType
+                                 ? SK_ColorBLACK
+                                 : SK_ColorTRANSPARENT;
 
   auto list = base::MakeRefCounted<cc::DisplayItemList>(
       cc::DisplayItemList::kTopLevelDisplayItemList);
@@ -1469,10 +1434,12 @@ void CanvasResourceProvider::RasterRecordOOP(
   gfx::Vector2dF post_translate(0.f, 0.f);
   gfx::Vector2dF post_scale(1.f, 1.f);
 
-  ri->BeginRasterCHROMIUM(
-      background_color, needs_clear, /*msaa_sample_count=*/1,
-      gpu::raster::MsaaMode::kDMSAA, ColorParams().CanUseLcdText(),
-      ColorParams().GetStorageGfxColorSpace(), mailbox.name);
+  const bool can_use_lcd_text =
+      GetSkImageInfo().alphaType() == kOpaque_SkAlphaType;
+  ri->BeginRasterCHROMIUM(background_color, needs_clear,
+                          /*msaa_sample_count=*/1,
+                          gpu::raster::MsaaMode::kDMSAA, can_use_lcd_text,
+                          GetColorSpace(), mailbox.name);
 
   ri->RasterCHROMIUM(list.get(), GetOrCreateCanvasImageProvider(), size,
                      full_raster_rect, playback_rect, post_translate,

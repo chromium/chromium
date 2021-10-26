@@ -188,7 +188,7 @@ GPUTexture* GPUTexture::FromCanvas(GPUDevice* device,
   // right now. We may want to reflect it from this function or validate it
   // against some input parameters.
   WGPUTextureFormat format =
-      AsDawnType(resource_provider->ColorParams().GetSkColorType());
+      AsDawnType(resource_provider->GetSkImageInfo().colorType());
   if (format == WGPUTextureFormat_Undefined) {
     exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
                                       "Unsupported format for import texture");
