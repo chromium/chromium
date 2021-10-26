@@ -1621,7 +1621,14 @@ IN_PROC_BROWSER_TEST_F(
 // Tests that |RenderFrameHost::ForEachRenderFrameHost| and
 // |WebContents::ForEachRenderFrameHost| behave correctly with bfcached
 // RenderFrameHosts.
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, ForEachRenderFrameHost) {
+#if defined(OS_MAC)
+// Flaky: https://crbug.com/1263536
+#define MAYBE_ForEachRenderFrameHost DISABLED_ForEachRenderFrameHost
+#else
+#define MAYBE_ForEachRenderFrameHost ForEachRenderFrameHost
+#endif
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       MAYBE_ForEachRenderFrameHost) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b(c),d)"));
