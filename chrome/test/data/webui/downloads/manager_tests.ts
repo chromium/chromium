@@ -4,27 +4,19 @@
 
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {BrowserProxy, DangerType, States} from 'chrome://downloads/downloads.js';
+import {BrowserProxy, CrToastManagerElement, DangerType, DownloadsManagerElement, loadTimeData, PageRemote, States} from 'chrome://downloads/downloads.js';
 import {isMac} from 'chrome://resources/js/cr.m.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals, assertFalse, assertLT, assertTrue} from 'chrome://webui-test/chai_assert.js';
+
 import {createDownload, TestDownloadsProxy} from './test_support.js';
 
 suite('manager tests', function() {
-  /** @type {!downloads.Manager} */
-  let manager;
-
-  /** @type {!downloads.mojom.PageHandlerCallbackRouter} */
-  let pageRouterProxy;
-
-  /** @type {TestDownloadsProxy} */
-  let testBrowserProxy;
-
-  /** @type {!downloads.mojom.PageRemote} */
-  let callbackRouterRemote;
-
-  /** @type {CrToastManagerElement} */
-  let toastManager;
+  let manager: DownloadsManagerElement;
+  let testBrowserProxy: TestDownloadsProxy;
+  let callbackRouterRemote: PageRemote;
+  let toastManager: CrToastManagerElement;
 
   setup(function() {
     document.body.innerHTML = '';
@@ -36,7 +28,7 @@ suite('manager tests', function() {
     manager = document.createElement('downloads-manager');
     document.body.appendChild(manager);
 
-    toastManager = manager.shadowRoot.querySelector('cr-toast-manager');
+    toastManager = manager.shadowRoot!.querySelector('cr-toast-manager')!;
     assertTrue(!!toastManager);
   });
 
@@ -50,17 +42,16 @@ suite('manager tests', function() {
     await callbackRouterRemote.$.flushForTesting();
     flush();
 
-    const item = manager.shadowRoot.querySelector('downloads-item');
-    assertLT(
-        item.shadowRoot.querySelector('#url').offsetWidth, item.offsetWidth);
-    assertEquals(300, item.shadowRoot.querySelector('#url').textContent.length);
+    const item = manager.shadowRoot!.querySelector('downloads-item')!;
+    assertLT(item.$.url.offsetWidth, item.offsetWidth);
+    assertEquals(300, item.$.url.textContent!.length);
   });
 
   test('inserting items at beginning render dates correctly', async () => {
     const countDates = () => {
-      const items = manager.shadowRoot.querySelectorAll('downloads-item');
+      const items = manager.shadowRoot!.querySelectorAll('downloads-item');
       return Array.from(items).reduce((soFar, item) => {
-        return item.shadowRoot.querySelector('div[id=date]:not(:empty)') ?
+        return item.shadowRoot!.querySelector('div[id=date]:not(:empty)') ?
             soFar + 1 :
             soFar;
       }, 0);
@@ -93,8 +84,8 @@ suite('manager tests', function() {
     callbackRouterRemote.insertItems(0, [dangerousDownload]);
     await callbackRouterRemote.$.flushForTesting();
     flush();
-    assertTrue(!!manager.shadowRoot.querySelector('downloads-item')
-                     .shadowRoot.querySelector('.dangerous'));
+    assertTrue(!!manager.shadowRoot!.querySelector('downloads-item')!
+                     .shadowRoot!.querySelector('.dangerous'));
 
     const safeDownload = Object.assign({}, dangerousDownload, {
       dangerType: DangerType.NOT_DANGEROUS,
@@ -103,8 +94,8 @@ suite('manager tests', function() {
     callbackRouterRemote.updateItem(0, safeDownload);
     await callbackRouterRemote.$.flushForTesting();
     flush();
-    assertFalse(!!manager.shadowRoot.querySelector('downloads-item')
-                      .shadowRoot.querySelector('.dangerous'));
+    assertFalse(!!manager.shadowRoot!.querySelector('downloads-item')!
+                      .shadowRoot!.querySelector('.dangerous'));
   });
 
   test('remove', async () => {
@@ -116,12 +107,12 @@ suite('manager tests', function() {
                                      })]);
     await callbackRouterRemote.$.flushForTesting();
     flush();
-    const item = manager.shadowRoot.querySelector('downloads-item');
+    const item = manager.shadowRoot!.querySelector('downloads-item')!;
 
     item.$.remove.click();
     await testBrowserProxy.handler.whenCalled('remove');
     flush();
-    const list = manager.shadowRoot.querySelector('iron-list');
+    const list = manager.shadowRoot!.querySelector('iron-list')!;
     assertTrue(list.hidden);
     assertTrue(toastManager.isToastOpen);
   });
@@ -129,7 +120,7 @@ suite('manager tests', function() {
   test('toolbar hasClearableDownloads set correctly', async () => {
     const clearable = createDownload();
     callbackRouterRemote.insertItems(0, [clearable]);
-    const checkNotClearable = async state => {
+    const checkNotClearable = async (state: States) => {
       const download = createDownload({state: state});
       callbackRouterRemote.updateItem(0, clearable);
       await callbackRouterRemote.$.flushForTesting();
@@ -171,7 +162,7 @@ suite('manager tests', function() {
     assertFalse(toastManager.isToastOpen);
 
     // Simulate 'alt+c' key combo.
-    keyDownOn(document, null, 'alt', isMac ? 'ç' : 'c');
+    keyDownOn(document.documentElement, 0, 'alt', isMac ? 'ç' : 'c');
     assertTrue(toastManager.isToastOpen);
   });
 
@@ -180,21 +171,22 @@ suite('manager tests', function() {
     assertTrue(toastManager.isToastOpen);
 
     // Simulate 'ctrl+z' key combo (or meta+z for Mac).
-    keyDownOn(document, null, isMac ? 'meta' : 'ctrl', 'z');
+    keyDownOn(document.documentElement, 0, isMac ? 'meta' : 'ctrl', 'z');
     assertFalse(toastManager.isToastOpen);
   });
 
   test('toast is hidden when undo is clicked', () => {
     toastManager.show('');
     assertTrue(toastManager.isToastOpen);
-    manager.shadowRoot.querySelector('cr-toast-manager cr-button').click();
+    manager.shadowRoot!
+        .querySelector<HTMLElement>('cr-toast-manager cr-button')!.click();
     assertFalse(toastManager.isToastOpen);
   });
 
   test('toast is not hidden when itself is clicked', () => {
     toastManager.show('');
     assertTrue(toastManager.isToastOpen);
-    toastManager.shadowRoot.querySelector('#toast').click();
+    toastManager.shadowRoot!.querySelector<HTMLElement>('#toast')!.click();
     assertTrue(toastManager.isToastOpen);
   });
 
@@ -214,7 +206,7 @@ suite('manager tests', function() {
     await callbackRouterRemote.$.flushForTesting();
     toastManager.show('', /* hideSlotted= */ false);
     assertFalse(toastManager.slottedHidden);
-    keyDownOn(document, null, 'alt', isMac ? 'ç' : 'c');
+    keyDownOn(document.documentElement, 0, 'alt', isMac ? 'ç' : 'c');
     assertTrue(toastManager.slottedHidden);
   });
 
@@ -226,7 +218,7 @@ suite('manager tests', function() {
     await callbackRouterRemote.$.flushForTesting();
     toastManager.show('', /* hideSlotted= */ true);
     assertTrue(toastManager.slottedHidden);
-    keyDownOn(document, null, 'alt', isMac ? 'ç' : 'c');
+    keyDownOn(document.documentElement, 0, 'alt', isMac ? 'ç' : 'c');
     assertFalse(toastManager.slottedHidden);
   });
 });

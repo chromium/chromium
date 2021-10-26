@@ -27,11 +27,11 @@ ts_library("build_ts") {
                     target_gen_dir),
   ]
   in_files = [
-    "item_tests.js",
-    "manager_tests.js",
-    "search_service_test.js",
-    "test_support.js",
-    "toolbar_tests.js",
+    "item_tests.ts",
+    "manager_tests.ts",
+    "search_service_test.ts",
+    "test_support.ts",
+    "toolbar_tests.ts",
   ]
   deps = [ "//chrome/browser/resources/downloads:build_ts" ]
   extra_deps = [ "..:generate_definitions" ]

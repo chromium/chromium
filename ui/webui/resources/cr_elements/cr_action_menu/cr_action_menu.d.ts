@@ -39,7 +39,7 @@ export enum AnchorAlignment {
 
 interface CrActionMenuElement extends HTMLElement {
   autoReposition: boolean|null|undefined;
-  open: boolean|null|undefined;
+  open: boolean;
   roleDescription: string|null|undefined;
   getDialog(): HTMLDialogElement;
   close(): void;

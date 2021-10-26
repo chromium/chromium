@@ -129,4 +129,10 @@ export class DownloadsToolbarElement extends PolymerElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'downloads-toolbar': DownloadsToolbarElement;
+  }
+}
+
 customElements.define(DownloadsToolbarElement.is, DownloadsToolbarElement);

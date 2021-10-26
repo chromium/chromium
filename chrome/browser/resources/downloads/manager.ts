@@ -375,4 +375,10 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'downloads-manager': DownloadsManagerElement;
+  }
+}
+
 customElements.define(DownloadsManagerElement.is, DownloadsManagerElement);

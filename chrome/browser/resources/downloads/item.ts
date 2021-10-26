@@ -28,14 +28,15 @@ import {BrowserProxy} from './browser_proxy.js';
 import {DangerType, States} from './constants.js';
 import {MojomData} from './data.js';
 import {PageHandlerInterface} from './downloads.mojom-webui.js';
-import {IconLoader} from './icon_loader.js';
+import {IconLoaderImpl} from './icon_loader.js';
 
 export interface DownloadsItemElement {
   $: {
     'controlled-by': HTMLElement,
     'file-icon': HTMLImageElement,
-    'url': HTMLAnchorElement,
+    'file-link': HTMLAnchorElement,
     'remove': HTMLElement,
+    'url': HTMLAnchorElement,
   };
 }
 
@@ -522,7 +523,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     } else {
       this.$.url.href = assert(this.data.url);
       const path = this.data.filePath;
-      IconLoader.getInstance()
+      IconLoaderImpl.getInstance()
           .loadIcon(this.$['file-icon'], path)
           .then(success => {
             if (path === this.data.filePath &&
@@ -629,6 +630,12 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
 
   static get template() {
     return html`{__html_template__}`;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'downloads-item': DownloadsItemElement;
   }
 }
 
