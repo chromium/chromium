@@ -15042,6 +15042,9 @@ Safe Browsing lookups, which is critical for security. -->
 
 <histogram name="SBDownloadFeedback.UploadDuration" units="ms"
     expires_after="2020-03-29">
+  <obsolete>
+    Removed 10-2021 due to lack of use.
+  </obsolete>
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
