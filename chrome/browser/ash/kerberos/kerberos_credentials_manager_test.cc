@@ -1350,7 +1350,7 @@ TEST_F(KerberosCredentialsManagerTest,
 //   KerberosCredentialsManager, UpdateAccountsFromPref is called.
 //
 // See also
-//   https://analysis.chromium.org/p/chromium/coverage/dir?host=chromium.googlesource.com&project=chromium/src&ref=refs/heads/master&revision=8e25360b5986bc807eb05927b59cb698b120140c&path=//chrome/browser/ash/kerberos/&platform=linux-chromeos
+//   https://analysis.chromium.org/p/chromium/coverage/dir?host=chromium.googlesource.com&project=chromium/src&ref=refs/heads/main&path=//chrome/browser/ash/kerberos/&platform=linux-chromeos
 // for code coverage (try to get as high as possible!).
 
 }  // namespace ash

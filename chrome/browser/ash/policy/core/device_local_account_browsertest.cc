@@ -1074,7 +1074,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, ExtensionsUncached) {
   ASSERT_NO_FATAL_FAILURE(StartLogin(std::string(), std::string()));
 
   // Wait for the hosted app installation to succeed and the extension
-  // installation to fail (because hosted apps are whitelisted for use in
+  // installation to fail (because hosted apps are allowlisted for use in
   // device-local accounts and extensions are not).
   install_observer.Wait();
   extension_observer.Wait();
@@ -1304,7 +1304,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, ExtensionCacheImplTest) {
   ASSERT_NO_FATAL_FAILURE(StartLogin(std::string(), std::string()));
 
   // Wait for the hosted app installation to succeed and the extension
-  // installation to fail (because hosted apps are whitelisted for use in
+  // installation to fail (because hosted apps are allowlisted for use in
   // device-local accounts and extensions are not).
   install_observer.Wait();
   extension_observer.Wait();
@@ -1520,7 +1520,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LastWindowClosedLogoutReminder) {
   // Verify that the logout confirmation dialog is not showing.
   EXPECT_FALSE(IsLogoutConfirmationDialogShowing());
 
-  // Remove policy that allows only explicitly whitelisted apps to be installed
+  // Remove policy that allows only explicitly allowlisted apps to be installed
   // in a public session.
   extensions::ExtensionSystem* extension_system =
       extensions::ExtensionSystem::Get(profile);
@@ -2116,7 +2116,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, PolicyForExtensions) {
   embedded_test_server()->StartAcceptingConnections();
 
   // Force-install the Show Managed Storage app. This app can be installed in
-  // public sessions because it's whitelisted for testing purposes.
+  // public sessions because it's allowlisted for testing purposes.
   em::StringList* forcelist = device_local_account_policy_.payload()
                                   .mutable_extensioninstallforcelist()
                                   ->mutable_value();
@@ -2312,7 +2312,7 @@ class ManagedSessionsTest : public DeviceLocalAccountTest {
     AddExtension(kGoodExtensionID);
   }
 
-  void AddForceInstalledWhitelistedExtension() {
+  void AddForceInstalledAllowlistedExtension() {
     AddExtension(kShowManagedStorageID);
   }
 
@@ -2478,10 +2478,10 @@ IN_PROC_BROWSER_TEST_F(ManagedSessionsTest, ForceInstalledUnsafeExtension) {
       ash::ChromeUserManager::Get()->IsFullManagementDisclosureNeeded(broker));
 }
 
-IN_PROC_BROWSER_TEST_F(ManagedSessionsTest, WhitelistedExtension) {
+IN_PROC_BROWSER_TEST_F(ManagedSessionsTest, AllowlistedExtension) {
   SetManagedSessionsEnabled(/* managed_sessions_enabled */ true);
   StartTestExtensionsServer();
-  AddForceInstalledWhitelistedExtension();
+  AddForceInstalledAllowlistedExtension();
 
   // Install and refresh the device policy now. This will also fetch the initial
   // user policy for the device-local account now.

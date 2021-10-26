@@ -343,7 +343,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
   base::ListValue blocklist;
   blocklist.Append(extensions::kWebStoreAppId);
   PolicyMap policies;
-  policies.Set(key::kExtensionInstallBlacklist, POLICY_LEVEL_MANDATORY,
+  policies.Set(key::kExtensionInstallBlocklist, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, blocklist.Clone(),
                nullptr);
   UpdateProviderPolicy(policies);
@@ -363,7 +363,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
   base::ListValue blocklist;
   blocklist.Append(kGoodCrxId);
   PolicyMap policies;
-  policies.Set(key::kExtensionInstallBlacklist, POLICY_LEVEL_MANDATORY,
+  policies.Set(key::kExtensionInstallBlocklist, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, blocklist.Clone(),
                nullptr);
   UpdateProviderPolicy(policies);
@@ -450,7 +450,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
   base::ListValue blocklist;
   blocklist.Append("*");
   PolicyMap policies;
-  policies.Set(key::kExtensionInstallBlacklist, POLICY_LEVEL_MANDATORY,
+  policies.Set(key::kExtensionInstallBlocklist, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, blocklist.Clone(),
                nullptr);
   UpdateProviderPolicy(policies);
@@ -515,7 +515,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
   blocklist.Append("*");
   PolicyMap policies;
   AddExtensionToForceList(&policies, kImporterId, update_xml_url);
-  policies.Set(key::kExtensionInstallBlacklist, POLICY_LEVEL_MANDATORY,
+  policies.Set(key::kExtensionInstallBlocklist, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, blocklist.Clone(),
                nullptr);
 
@@ -563,7 +563,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionInstallAllowlist) {
   base::ListValue allowlist;
   allowlist.Append(kGoodCrxId);
   PolicyMap policies;
-  policies.Set(key::kExtensionInstallBlacklist, POLICY_LEVEL_MANDATORY,
+  policies.Set(key::kExtensionInstallBlocklist, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, blocklist.Clone(),
                nullptr);
   policies.Set(key::kExtensionInstallAllowlist, POLICY_LEVEL_MANDATORY,

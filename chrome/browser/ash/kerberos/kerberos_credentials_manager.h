@@ -141,7 +141,7 @@ class KerberosCredentialsManager : public KeyedService,
                  const std::string& krb5_conf,
                  ResultCallback callback);
 
-  // Verifies that only whitelisted configuration options are used in the
+  // Verifies that only allowlisted configuration options are used in the
   // Kerberos configuration |krb5_conf|. The Kerberos daemon does not allow all
   // options for security reasons. Also performs basic syntax checks. Returns
   // useful error information.

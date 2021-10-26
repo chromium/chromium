@@ -108,7 +108,7 @@ class PolicyTest : public PlatformBrowserTest {
       content::WebContents* tab,
       security_interstitials::SecurityInterstitialCommand command);
 
-  void FlushBlacklistPolicy();
+  void FlushBlocklistPolicy();
 
   testing::NiceMock<MockConfigurationPolicyProvider> provider_;
 };

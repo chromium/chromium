@@ -1753,7 +1753,7 @@ if (!is_android && !is_fuchsia) {
       "../browser/policy/test/safe_browsing_policy_browsertest.cc",
       "../browser/policy/test/shared_clipboard_enabled_browsertest.cc",
       "../browser/policy/test/ssl_error_overriding_allowed_policy_browsertest.cc",
-      "../browser/policy/test/url_blacklist_policy_browsertest.cc",
+      "../browser/policy/test/url_blocklist_policy_browsertest.cc",
       "../browser/policy/test/url_keyed_anonymized_data_collection_enabled_browsertest.cc",
       "../browser/policy/test/web_rtc_udp_port_range_policy_browsertest.cc",
       "../browser/policy/test/window_opener_policy_browsertest.cc",

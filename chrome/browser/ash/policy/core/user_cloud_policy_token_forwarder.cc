@@ -99,7 +99,7 @@ void UserCloudPolicyTokenForwarder::OverrideTimeForTesting(
 void UserCloudPolicyTokenForwarder::StartRequest() {
   refresh_oauth_token_timer_->Stop();
   // TODO(mnissler): Once a better way to reconfirm whether a user is on the
-  // login whitelist is available there is no reason to fetch the OAuth2 token
+  // login allowlist is available there is no reason to fetch the OAuth2 token
   // for regular user here if the client is already registered. If it is not
   // recurring token fetch for child user check and bail out here.
   signin::ScopeSet scopes;

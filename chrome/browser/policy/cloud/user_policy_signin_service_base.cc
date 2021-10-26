@@ -192,7 +192,7 @@ UserPolicySigninServiceBase::CreateClientForRegistrationOnly(
 
   // If the user should not get policy, just bail out.
   if (!policy_manager() || !ShouldLoadPolicyForUser(username)) {
-    DVLOG(1) << "Signed in user is not in the whitelist";
+    DVLOG(1) << "Signed in user is not in the allowlist";
     return nullptr;
   }
 
