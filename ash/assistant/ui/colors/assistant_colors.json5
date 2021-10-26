@@ -20,6 +20,9 @@
       // Those colors are customized colors, i.e. not in cros_palette.json5.
       light: "#ecefee",
       dark: "#1c2b3b",
+      blue: "#00deff"
+      yellow: "#FFFF00"
+      UltraDark: "#0000"
     },
   },
   opacities: {
