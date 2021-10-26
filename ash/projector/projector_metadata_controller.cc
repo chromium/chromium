@@ -20,6 +20,8 @@
 namespace ash {
 namespace {
 
+constexpr char kEnglishLanguage[] = "en";
+
 // Writes the given |data| in a file with |path|. Returns true if saving
 // succeeded, or false otherwise.
 bool SaveFile(const std::string& content, const base::FilePath& path) {
@@ -46,6 +48,10 @@ ProjectorMetadataController::~ProjectorMetadataController() = default;
 
 void ProjectorMetadataController::OnRecordingStarted() {
   metadata_ = std::make_unique<ProjectorMetadata>();
+
+  // TODO(b/200960615) When multi-language support is available for speech
+  // recognition, get the language from the speech recognition service.
+  metadata_->SetCaptionLanguage(kEnglishLanguage);
 }
 
 void ProjectorMetadataController::RecordTranscription(
@@ -69,9 +75,6 @@ void ProjectorMetadataController::SaveMetadata(
   // TODO(b/200330118): Finalize on the metadata file naming convention.
   const base::FilePath path =
       video_file_path.AddExtension(kProjectorMetadataFileExtension);
-
-  metadata_->SetName(
-      video_file_path.RemoveExtension().BaseName().AsUTF8Unsafe());
 
   // Save metadata.
   auto metadata_str = metadata_->Serialize();

@@ -86,14 +86,15 @@ class ASH_EXPORT ProjectorMetadata {
   ProjectorMetadata& operator=(const ProjectorMetadata&) = delete;
   ~ProjectorMetadata();
 
-  // Adds the transcript to the metadata. Virtual for testing.
+  // Sets the language of the transcript.
+  void SetCaptionLanguage(const std::string& language);
+
+  // Adds the transcript to the metadata.
   void AddTranscript(std::unique_ptr<ProjectorTranscript> transcript);
   // Marks a beginning of a key idea. The timing info of the next transcript
-  // will be used as the timing of the key idea. Virtual for testing.
+  // will be used as the timing of the key idea.
   void MarkKeyIdea();
-  // Sets the name of the screencast. Virtual for testing.
-  void SetName(const std::string& name);
-  // Serializes the metadata for storage. Virtual for testing.
+  // Serializes the metadata for storage.
   std::string Serialize();
 
  private:
@@ -101,7 +102,7 @@ class ASH_EXPORT ProjectorMetadata {
 
   std::vector<std::unique_ptr<ProjectorTranscript>> transcripts_;
   std::vector<std::unique_ptr<ProjectorKeyIdea>> key_ideas_;
-  std::string name_;
+  std::string caption_language_;
 
   // True if user mark the transcript as a key idea. It will be reset to false
   // when the final recognition result is received and recorded as a key idea.
