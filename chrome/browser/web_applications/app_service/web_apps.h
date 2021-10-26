@@ -136,9 +136,6 @@ class WebApps : public apps::PublisherBase,
                     apps::mojom::MenuType menu_type,
                     int64_t display_id,
                     GetMenuModelCallback callback) override;
-  void GetMenuModelFromWebAppProvider(const std::string& app_id,
-                                      apps::mojom::MenuItemsPtr menu_items,
-                                      GetMenuModelCallback callback);
   // menu_type is stored as |shortcut_id|.
   void ExecuteContextMenuCommand(const std::string& app_id,
                                  int command_id,
@@ -146,6 +143,10 @@ class WebApps : public apps::PublisherBase,
                                  int64_t display_id) override;
   void SetWindowMode(const std::string& app_id,
                      apps::mojom::WindowMode window_mode) override;
+
+  void GetAppShortcutMenuModel(const std::string& app_id,
+                               apps::mojom::MenuItemsPtr menu_items,
+                               GetMenuModelCallback callback);
 
   void OnShortcutsMenuIconsRead(
       const std::string& app_id,
