@@ -2990,6 +2990,8 @@ crbug.com/626703 fast/animation/scroll-animations/scrolltimeline-root-scroller-q
 crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/navigation-timing-extended.https.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac11.0 ] external/wpt/css/css-color-adjust/rendering/dark-color-scheme/color-scheme-iframe-background-mismatch-opaque-cross-origin.sub.html [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/resource-timing/object-not-found-adds-entry.html [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/webrtc/RTCIceConnectionState-candidate-pair.https.html [ Skip Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/webrtc/RTCPeerConnection-helper-test.html [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/webrtc/RTCPeerConnection-ondatachannel.html [ Skip Timeout ]

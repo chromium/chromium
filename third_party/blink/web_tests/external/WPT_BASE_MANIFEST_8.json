@@ -417,6 +417,20 @@
         {}
        ]
       ],
+      "slot-content-visibility-16-crash.html": [
+       "80e5d06e11f5e27f7902bf91611c16719be68957",
+       [
+        null,
+        {}
+       ]
+      ],
+      "slot-content-visibility-17-crash.html": [
+       "64e9550e11964f2d98fb3355c3b3053445eba0d7",
+       [
+        null,
+        {}
+       ]
+      ],
       "slot-content-visibility-2-crash.html": [
        "47b7962ae0ba76f4387a1d8c35b782b64dc86a6b",
        [
@@ -143220,6 +143234,32 @@
       ],
       "flex-aspect-ratio-031.html": [
        "5bd4a9d58c2ca57b3f4ad701a4e8ddbc0ce49665",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "flex-aspect-ratio-032.html": [
+       "7dee0dd3f2226665fbac34a60d065c61d12dc14f",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "flex-aspect-ratio-033.html": [
+       "36acf08444d0fa174f4dfdb96ac259dae98ae684",
        [
         null,
         [
@@ -301961,6 +302001,10 @@
        "b41f8bb2a7baac19d907c378a0e269b9a8e914fb",
        []
       ],
+      "transform-origin-not-explicit-style-visual-ref.svg": [
+       "7cb98da727dff6c03b45baadbe9932307f1969ec",
+       []
+      ],
       "transform-origin-ref.svg": [
        "b0e3b47e0d411f2be2f91c28ef3982180279da7a",
        []
@@ -344378,6 +344422,13 @@
       ],
       "content-visibility-svg.html": [
        "568149ba7fb637082dd45523e9d20d322813b0e3",
+       [
+        null,
+        {}
+       ]
+      ],
+      "document-element-computed-style.html": [
+       "22d00d05841de15ed9af9e0cdac4b733053e1831",
        [
         null,
         {}
@@ -545493,6 +545544,17 @@
     }
    },
    "svg": {
+    "styling": {
+     "render": {
+      "transform-origin-not-explicit-style-visual.svg": [
+       "e05c2f01c1dc48d9334573cdd9eba426b7961bd5",
+       [
+        null,
+        {}
+       ]
+      ]
+     }
+    },
     "text": {
      "visualtests": {
       "text-inline-size-001-visual.svg": [
