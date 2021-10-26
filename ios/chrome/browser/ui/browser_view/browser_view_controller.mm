@@ -997,9 +997,17 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   return [results copy];
 }
 
+// Returns the safeAreaInsets of the root view for self.view. In some cases,
+// the self.view.safeAreaInsets are cleared when the view is moved, like with
+// thumbstrip,  causing unwanted offsets (starting iOS 15). The root
+// safeAreaInsets remain intact.
+- (UIEdgeInsets)rootSafeAreaInsets {
+  return ViewHierarchyRootForView(self.view).safeAreaInsets;
+}
+
 - (CGFloat)headerOffset {
   CGFloat headerOffset = 0;
-  headerOffset = self.view.safeAreaInsets.top;
+  headerOffset = self.rootSafeAreaInsets.top;
   return [self canShowTabStrip] ? headerOffset : 0.0;
 }
 
@@ -2029,7 +2037,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     return intrinsicHeight;
   // If the primary toolbar is topmost, subtract the height of the portion of
   // the unsafe area.
-  CGFloat unsafeHeight = self.view.safeAreaInsets.top;
+  CGFloat unsafeHeight = self.rootSafeAreaInsets.top;
 
   // The topmost header is laid out |headerOffset| from the top of |view|, so
   // subtract that from the unsafe height.
@@ -2046,7 +2054,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   UIView* secondaryToolbar =
       self.secondaryToolbarCoordinator.viewController.view;
   // Add the safe area inset to the toolbar height.
-  CGFloat unsafeHeight = self.view.safeAreaInsets.bottom;
+  CGFloat unsafeHeight = self.rootSafeAreaInsets.bottom;
   return secondaryToolbar.intrinsicContentSize.height + unsafeHeight;
 }
 
@@ -2234,7 +2242,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 // Sets up the frame for the fake status bar. View must be loaded.
 - (void)setupStatusBarLayout {
-  CGFloat topInset = self.view.safeAreaInsets.top;
+  CGFloat topInset = self.rootSafeAreaInsets.top;
 
   // Update the fake toolbar background height.
   CGRect fakeStatusBarFrame = _fakeStatusBarView.frame;
@@ -3718,7 +3726,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 // The minimum amount by which the top toolbar overlaps the browser content
 // area.
 - (CGFloat)collapsedTopToolbarHeight {
-  return self.view.safeAreaInsets.top +
+  return self.rootSafeAreaInsets.top +
          ToolbarCollapsedHeight(
              self.traitCollection.preferredContentSizeCategory);
 }
@@ -3823,7 +3831,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   UIViewController* containerViewController =
       self.browserContainerViewController;
   containerViewController.additionalSafeAreaInsets = UIEdgeInsetsMake(
-      topToolbarHeight - self.view.safeAreaInsets.top -
+      topToolbarHeight - self.rootSafeAreaInsets.top -
           self.currentWebState->GetWebViewProxy().contentOffset.y,
       0, 0, 0);
 }
@@ -4627,7 +4635,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // |safeAreaInsets.top|.  Otherwise insetting by |self.headerHeight| would
   // show a grey strip where the toolbar would normally be.
   if (self.primaryToolbarCoordinator.viewController.view.hidden)
-    return self.view.safeAreaInsets.top;
+    return self.rootSafeAreaInsets.top;
   return self.headerHeight;
 }
 
