@@ -234,7 +234,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': '52aee23ded9105ed42b5c148ebbc297e93dcc96a',
+  'skia_revision': '8744f3b84ddcf9fc7b817e2893463ecb74e4c2a1',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
@@ -1029,7 +1029,7 @@ deps = {
   },
 
   'src/third_party/depot_tools':
-    Var('chromium_git') + '/chromium/tools/depot_tools.git' + '@' + '2db5da23f654aba9416bd051081c5bdb3787f733',
+    Var('chromium_git') + '/chromium/tools/depot_tools.git' + '@' + '7bd4c881889e2306865a23d0f07fd7872240a2fb',
 
   'src/third_party/devtools-frontend/src':
     Var('chromium_git') + '/devtools/devtools-frontend' + '@' + Var('devtools_frontend_revision'),

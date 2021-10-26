@@ -28,7 +28,7 @@ struct CONTENT_EXPORT AttributionReport {
 
   // The conversion_id may not be set for a conversion report.
   AttributionReport(StorableSource impression,
-                    uint64_t conversion_data,
+                    uint64_t trigger_data,
                     base::Time conversion_time,
                     base::Time report_time,
                     int64_t priority,
@@ -48,9 +48,9 @@ struct CONTENT_EXPORT AttributionReport {
   // Impression associated with this conversion report.
   StorableSource impression;
 
-  // Data provided at reporting time by the reporting origin. Depending on the
-  // source type, this contains the associated data in the trigger redirect.
-  uint64_t conversion_data;
+  // Data provided at trigger time by the attribution destination. Depending on
+  // the source type, this contains the associated data in the trigger redirect.
+  uint64_t trigger_data;
 
   // The time the conversion occurred.
   base::Time conversion_time;

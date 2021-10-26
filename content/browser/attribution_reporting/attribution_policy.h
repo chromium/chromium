@@ -32,17 +32,15 @@ class CONTENT_EXPORT AttributionPolicy {
   AttributionPolicy& operator=(AttributionPolicy&& other) = delete;
   virtual ~AttributionPolicy();
 
-  // Gets the sanitized conversion data for a conversion.
-  uint64_t GetSanitizedConversionData(
-      uint64_t conversion_data,
-      StorableSource::SourceType source_type) const WARN_UNUSED_RESULT;
-
-  bool IsConversionDataInRange(uint64_t conversion_data,
+  uint64_t SanitizeTriggerData(uint64_t trigger_data,
                                StorableSource::SourceType source_type) const
       WARN_UNUSED_RESULT;
 
-  // Gets the sanitized impression data for an impression.
-  virtual uint64_t GetSanitizedImpressionData(uint64_t impression_data) const
+  bool IsTriggerDataInRange(uint64_t trigger_data,
+                            StorableSource::SourceType source_type) const
+      WARN_UNUSED_RESULT;
+
+  virtual uint64_t SanitizeSourceEventId(uint64_t source_event_id) const
       WARN_UNUSED_RESULT;
 
   // Returns the expiry time for an impression that is clamped to a maximum
@@ -72,10 +70,9 @@ class CONTENT_EXPORT AttributionPolicy {
       StorableSource::SourceType source_type) const WARN_UNUSED_RESULT;
 
  protected:
-  virtual bool ShouldNoiseConversionData() const WARN_UNUSED_RESULT;
+  virtual bool ShouldNoiseTriggerData() const WARN_UNUSED_RESULT;
 
-  virtual uint64_t MakeNoisedConversionData(uint64_t max) const
-      WARN_UNUSED_RESULT;
+  virtual uint64_t MakeNoisedTriggerData(uint64_t max) const WARN_UNUSED_RESULT;
 
  private:
   // Whether the API is running in debug mode. No noise or delay should be used.

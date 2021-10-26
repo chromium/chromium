@@ -2474,7 +2474,7 @@ void RenderFrameHostImpl::OnAssociatedInterfaceRequest(
     mojo::ScopedInterfaceEndpointHandle handle) {
   // TODO(https://crbug.com/1123438) It is not understood why
   // OnAssociatedInterfaceRequest can be received after resetting
-  // `associated_registry_`. This is reset in InvalidateMojoConnection(), which
+  // `associated_registry_`. This is reset in TearDownMojoConnection(), which
   // means we want to stop receiving messages on behalf of the frame. Ignoring
   // this request sounded like the right way to handle this.
   if (!associated_registry_)
@@ -3108,7 +3108,7 @@ void RenderFrameHostImpl::RenderFrameCreated() {
 
   // Set up mojo connections to the renderer from the `frame_` connection before
   // notifying the delegate.
-  SetUpMojoIfNeeded();
+  SetUpMojoConnection();
 
   delegate_->RenderFrameCreated(this);
 
@@ -3116,7 +3116,7 @@ void RenderFrameHostImpl::RenderFrameCreated() {
     GetFrameBindingsControl()->AllowBindings(enabled_bindings_);
 
   if (web_ui_ && enabled_bindings_ & BINDINGS_POLICY_WEB_UI)
-    web_ui_->SetupMojoConnection();
+    web_ui_->SetUpMojoConnection();
 }
 
 void RenderFrameHostImpl::RenderFrameDeleted() {
@@ -3134,11 +3134,11 @@ void RenderFrameHostImpl::RenderFrameDeleted() {
   if (was_created) {
     delegate_->RenderFrameDeleted(this);
   }
-  InvalidateMojoConnection();
+  TearDownMojoConnection();
 
   if (web_ui_) {
     web_ui_->RenderFrameDeleted();
-    web_ui_->InvalidateMojoConnection();
+    web_ui_->TearDownMojoConnection();
   }
   render_frame_state_ = RenderFrameState::kDeleted;
 }
@@ -4343,7 +4343,7 @@ void RenderFrameHostImpl::UndoCommitNavigation(RenderFrameProxyHost& proxy,
     // bound. Resetting now means any queued IPCs that are still in-flight will
     // be dropped. This is a bit problematic, but it is still less problematic
     // than just crashing the renderer for being in an inconsistent state.
-    proxy.InvalidateMojoConnection();
+    proxy.TearDownMojoConnection();
 
     GetMojomFrameInRenderer()->UndoCommitNavigation(
         proxy.GetRoutingID(), is_loading,
@@ -5074,7 +5074,7 @@ void RenderFrameHostImpl::AllowBindings(int bindings_flags) {
   if (is_render_frame_created()) {
     GetFrameBindingsControl()->AllowBindings(enabled_bindings_);
     if (web_ui_ && enabled_bindings_ & BINDINGS_POLICY_WEB_UI)
-      web_ui_->SetupMojoConnection();
+      web_ui_->SetUpMojoConnection();
   }
 }
 
@@ -8206,9 +8206,8 @@ void RenderFrameHostImpl::HandleRendererDebugURL(const GURL& url) {
   GetProcess()->SetIsUsed();
 }
 
-void RenderFrameHostImpl::SetUpMojoIfNeeded() {
-  if (associated_registry_.get())
-    return;
+void RenderFrameHostImpl::SetUpMojoConnection() {
+  CHECK(!associated_registry_);
 
   associated_registry_ = std::make_unique<blink::AssociatedInterfaceRegistry>();
 
@@ -8374,7 +8373,7 @@ void RenderFrameHostImpl::SetUpMojoIfNeeded() {
   GetHighPriorityLocalFrame();
 }
 
-void RenderFrameHostImpl::InvalidateMojoConnection() {
+void RenderFrameHostImpl::TearDownMojoConnection() {
   // While not directly Mojo endpoints, both `geolocation_service_` and
   // `sensor_provider_proxy_` may attempt to cancel permission requests.
   geolocation_service_.reset();

@@ -640,7 +640,7 @@ bool MigrateToVersion8(sql::Database* db, sql::MetaTable* meta_table) {
 
       update_impression_data_statement.Reset(/*clear_bound_vars=*/true);
       update_impression_data_statement.BindInt64(
-          0, SerializeImpressionOrConversionData(impression_data));
+          0, SerializeUint64(impression_data));
       update_impression_data_statement.BindInt64(1, *impression.impression_id);
       update_impression_data_statement.Run();
     }

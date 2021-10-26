@@ -217,12 +217,11 @@ WARN_UNUSED_RESULT absl::optional<SourceToAttribute> ReadSourceToAttribute(
   if (num_conversions < 0)
     return absl::nullopt;
 
-  uint64_t impression_data =
-      DeserializeImpressionOrConversionData(statement.ColumnInt64(7));
+  uint64_t source_event_id = DeserializeUint64(statement.ColumnInt64(7));
   base::Time expiry_time = statement.ColumnTime(8);
 
   return SourceToAttribute{
-      .source = StorableSource(impression_data, std::move(impression_origin),
+      .source = StorableSource(source_event_id, std::move(impression_origin),
                                std::move(conversion_origin), reporting_origin,
                                impression_time, expiry_time, *source_type,
                                priority, *attribution_logic, source_id),
@@ -326,8 +325,7 @@ void AttributionStorageSql::StoreSource(const StorableSource& source) {
       "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)";
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kInsertImpressionSql));
-  statement.BindInt64(
-      0, SerializeImpressionOrConversionData(source.impression_data()));
+  statement.BindInt64(0, SerializeUint64(source.source_event_id()));
   statement.BindString(1, serialized_impression_origin);
   statement.BindString(2, SerializeOrigin(source.conversion_origin()));
   statement.BindString(3, serialized_conversion_destination);
@@ -559,16 +557,15 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
                               absl::nullopt);
   }
 
-  const uint64_t conversion_data = source_to_attribute->source.source_type() ==
-                                           StorableSource::SourceType::kEvent
-                                       ? trigger.event_source_trigger_data()
-                                       : trigger.conversion_data();
+  const uint64_t trigger_data = source_to_attribute->source.source_type() ==
+                                        StorableSource::SourceType::kEvent
+                                    ? trigger.event_source_trigger_data()
+                                    : trigger.trigger_data();
 
   const base::Time report_time =
       delegate_->GetReportTime(source_to_attribute->source,
                                /*trigger_time=*/current_time);
-  AttributionReport report(std::move(source_to_attribute->source),
-                           conversion_data,
+  AttributionReport report(std::move(source_to_attribute->source), trigger_data,
                            /*conversion_time=*/current_time,
                            /*report_time=*/report_time, trigger.priority(),
                            /*conversion_id=*/absl::nullopt);
@@ -707,8 +704,7 @@ bool AttributionStorageSql::StoreReport(const AttributionReport& report,
   sql::Statement store_report_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kStoreReportSql));
   store_report_statement.BindInt64(0, *source_id);
-  store_report_statement.BindInt64(
-      1, SerializeImpressionOrConversionData(report.conversion_data));
+  store_report_statement.BindInt64(1, SerializeUint64(report.trigger_data));
   store_report_statement.BindTime(2, report.conversion_time);
   store_report_statement.BindTime(3, report.report_time);
   store_report_statement.BindInt64(4, report.priority);
@@ -721,8 +717,7 @@ namespace {
 // ordering of columns used for the input to this function.
 absl::optional<AttributionReport> ReadReportFromStatement(
     sql::Statement& statement) {
-  uint64_t conversion_data =
-      DeserializeImpressionOrConversionData(statement.ColumnInt64(0));
+  uint64_t trigger_data = DeserializeUint64(statement.ColumnInt64(0));
   base::Time conversion_time = statement.ColumnTime(1);
   base::Time report_time = statement.ColumnTime(2);
   AttributionReport::Id conversion_id(statement.ColumnInt64(3));
@@ -731,8 +726,7 @@ absl::optional<AttributionReport> ReadReportFromStatement(
   url::Origin impression_origin = DeserializeOrigin(statement.ColumnString(6));
   url::Origin conversion_origin = DeserializeOrigin(statement.ColumnString(7));
   url::Origin reporting_origin = DeserializeOrigin(statement.ColumnString(8));
-  uint64_t impression_data =
-      DeserializeImpressionOrConversionData(statement.ColumnInt64(9));
+  uint64_t source_event_id = DeserializeUint64(statement.ColumnInt64(9));
   base::Time impression_time = statement.ColumnTime(10);
   base::Time expiry_time = statement.ColumnTime(11);
   StorableSource::Id source_id(statement.ColumnInt64(12));
@@ -756,13 +750,13 @@ absl::optional<AttributionReport> ReadReportFromStatement(
 
   // Create the source and AttributionReport objects from the retrieved
   // columns.
-  StorableSource source(impression_data, std::move(impression_origin),
+  StorableSource source(source_event_id, std::move(impression_origin),
                         std::move(conversion_origin),
                         std::move(reporting_origin), impression_time,
                         expiry_time, *source_type, attribution_source_priority,
                         *attribution_logic, source_id);
 
-  AttributionReport report(std::move(source), conversion_data, conversion_time,
+  AttributionReport report(std::move(source), trigger_data, conversion_time,
                            report_time, conversion_priority, conversion_id);
   report.failed_send_attempts = failed_send_attempts;
   return report;
@@ -1228,8 +1222,7 @@ std::vector<StorableSource> AttributionStorageSql::GetActiveSources(int limit) {
 
   std::vector<StorableSource> sources;
   while (statement.Step()) {
-    uint64_t impression_data =
-        DeserializeImpressionOrConversionData(statement.ColumnInt64(0));
+    uint64_t source_event_id = DeserializeUint64(statement.ColumnInt64(0));
     url::Origin impression_origin =
         DeserializeOrigin(statement.ColumnString(1));
     url::Origin conversion_origin =
@@ -1250,7 +1243,7 @@ std::vector<StorableSource> AttributionStorageSql::GetActiveSources(int limit) {
     if (!source_type.has_value() || !attribution_logic.has_value())
       continue;
 
-    sources.emplace_back(impression_data, std::move(impression_origin),
+    sources.emplace_back(source_event_id, std::move(impression_origin),
                          std::move(conversion_origin),
                          std::move(reporting_origin), impression_time,
                          expiry_time, *source_type, attribution_source_priority,

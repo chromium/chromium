@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/quick_pair/common/account_key_failure.h"
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/common/logging.h"
@@ -20,6 +21,7 @@
 #include "ash/services/quick_pair/public/cpp/decrypted_passkey.h"
 #include "ash/services/quick_pair/public/cpp/decrypted_response.h"
 #include "ash/services/quick_pair/public/cpp/fast_pair_message_type.h"
+#include "ash/test/ash_test_base.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -278,12 +280,18 @@ class FakeFastPairGattServiceClientImplFactory
   FakeFastPairGattServiceClient* fake_fast_pair_gatt_service_client_ = nullptr;
 };
 
-class FastPairPairerTest : public testing::Test {
+class FastPairPairerTest : public AshTestBase {
  public:
-  void SuccessfulDataEncryptorSetUp() {
+  void SuccessfulDataEncryptorSetUp(bool fast_pair_v1 = false) {
     device_ = base::MakeRefCounted<Device>(kMetadataId,
                                            kBluetoothCanonicalizedAddress,
                                            Protocol::kFastPairInitial);
+
+    if (fast_pair_v1) {
+      device_->SetAdditionalData(Device::AdditionalDataType::kFastPairVersion,
+                                 {1});
+    }
+
     adapter_ = base::MakeRefCounted<FakeBluetoothAdapter>();
 
     // Need to add a matching mock device to the bluetooth adapter with the
@@ -440,8 +448,6 @@ class FastPairPairerTest : public testing::Test {
   FastPairFakeDataEncryptorImplFactory fast_pair_data_encryptor_factory;
   FakeFastPairRepository fast_pair_repository_;
   std::unique_ptr<FastPairPairer> pairer_;
-  base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::WeakPtrFactory<FastPairPairerTest> weak_ptr_factory_{this};
 };
 
@@ -659,6 +665,12 @@ TEST_F(FastPairPairerTest, WriteAccountKeyFailure) {
   RunWriteAccountKeyCallback(
       device::BluetoothGattService::GattErrorCode::GATT_ERROR_FAILED);
   EXPECT_FALSE(IsAccountKeySavedToFootprints());
+}
+
+TEST_F(FastPairPairerTest, FastPairVersionOne) {
+  SuccessfulDataEncryptorSetUp(/*fast_pair_v1=*/true);
+  CreatePairer();
+  EXPECT_EQ(GetSystemTrayClient()->show_bluetooth_pairing_dialog_count(), 1);
 }
 
 }  // namespace quick_pair

@@ -20,10 +20,10 @@ namespace content {
 class CONTENT_EXPORT StorableTrigger {
  public:
   // Should only be created with values that the browser process has already
-  // validated. At creation time, |conversion_data_| should already be stripped
+  // validated. At creation time, |trigger_data_| should already be stripped
   // to a lower entropy. |conversion_destination| should be filled by a
   // navigation origin known by the browser process.
-  StorableTrigger(uint64_t conversion_data,
+  StorableTrigger(uint64_t trigger_data,
                   net::SchemefulSite conversion_destination,
                   url::Origin reporting_origin,
                   uint64_t event_source_trigger_data,
@@ -35,9 +35,7 @@ class CONTENT_EXPORT StorableTrigger {
   StorableTrigger& operator=(StorableTrigger&& other);
   ~StorableTrigger();
 
-  uint64_t conversion_data() const WARN_UNUSED_RESULT {
-    return conversion_data_;
-  }
+  uint64_t trigger_data() const WARN_UNUSED_RESULT { return trigger_data_; }
 
   const net::SchemefulSite& conversion_destination() const WARN_UNUSED_RESULT {
     return conversion_destination_;
@@ -58,8 +56,8 @@ class CONTENT_EXPORT StorableTrigger {
   }
 
  private:
-  // Conversion data associated with conversion registration event.
-  uint64_t conversion_data_;
+  // Data associated with trigger.
+  uint64_t trigger_data_;
 
   // Schemeful site that this conversion event occurred on.
   net::SchemefulSite conversion_destination_;

@@ -53,7 +53,7 @@ void ForwardImpressionsToWebUI(
 
   for (const StorableSource& impression : stored_impressions) {
     web_ui_impressions.push_back(mojom::WebUIImpression::New(
-        impression.impression_data(), impression.impression_origin(),
+        impression.source_event_id(), impression.impression_origin(),
         impression.conversion_origin(), impression.reporting_origin(),
         impression.impression_time().ToJsTime(),
         impression.expiry_time().ToJsTime(),

@@ -72,7 +72,7 @@ AttributionStorageDelegateImpl::GetRateLimits(
 
 uint64_t AttributionStorageDelegateImpl::GetFakeEventSourceTriggerData() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return AttributionPolicy().GetSanitizedConversionData(
+  return AttributionPolicy().SanitizeTriggerData(
       base::RandUint64(), StorableSource::SourceType::kEvent);
 }
 

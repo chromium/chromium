@@ -9,7 +9,7 @@
 
 namespace content {
 
-StorableSource::StorableSource(uint64_t impression_data,
+StorableSource::StorableSource(uint64_t source_event_id,
                                url::Origin impression_origin,
                                url::Origin conversion_origin,
                                url::Origin reporting_origin,
@@ -19,7 +19,7 @@ StorableSource::StorableSource(uint64_t impression_data,
                                int64_t priority,
                                AttributionLogic attribution_logic,
                                absl::optional<Id> impression_id)
-    : impression_data_(impression_data),
+    : source_event_id_(source_event_id),
       impression_origin_(std::move(impression_origin)),
       conversion_origin_(std::move(conversion_origin)),
       reporting_origin_(std::move(reporting_origin)),

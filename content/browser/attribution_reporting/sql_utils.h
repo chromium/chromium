@@ -37,13 +37,13 @@ std::string SerializeOrigin(const url::Origin& origin) WARN_UNUSED_RESULT;
 
 url::Origin DeserializeOrigin(const std::string& origin) WARN_UNUSED_RESULT;
 
-int64_t SerializeImpressionOrConversionData(uint64_t data) WARN_UNUSED_RESULT;
+int64_t SerializeUint64(uint64_t data) WARN_UNUSED_RESULT;
 
-uint64_t DeserializeImpressionOrConversionData(int64_t data) WARN_UNUSED_RESULT;
+uint64_t DeserializeUint64(int64_t data) WARN_UNUSED_RESULT;
 
 // Prevent these functions from being called in the wrong direction.
-int64_t SerializeImpressionOrConversionData(int64_t data) = delete;
-uint64_t DeserializeImpressionOrConversionData(uint64_t data) = delete;
+int64_t SerializeUint64(int64_t data) = delete;
+uint64_t DeserializeUint64(uint64_t data) = delete;
 
 }  // namespace content
 

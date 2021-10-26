@@ -131,7 +131,7 @@ void WebUIImpl::RenderFrameDeleted() {
   DisallowJavascriptOnAllHandlers();
 }
 
-void WebUIImpl::SetupMojoConnection() {
+void WebUIImpl::SetUpMojoConnection() {
   // TODO(nasko): WebUI mojo might be useful to be registered for
   // subframes as well, though at this time there is no such usage.
   if (frame_host_->GetParent())
@@ -142,7 +142,7 @@ void WebUIImpl::SetupMojoConnection() {
       receiver_.BindNewEndpointAndPassRemote());
 }
 
-void WebUIImpl::InvalidateMojoConnection() {
+void WebUIImpl::TearDownMojoConnection() {
   if (frame_host_->GetParent())
     return;
 

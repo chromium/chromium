@@ -301,7 +301,7 @@ class Source {
    * @param {!WebUIImpression} mojo
    */
   constructor(mojo) {
-    this.impressionData = mojo.impressionData;
+    this.sourceEventId = mojo.sourceEventId;
     this.impressionOrigin = UrlToText(mojo.impressionOrigin);
     this.conversionDestination = UrlToText(mojo.conversionDestination);
     this.reportingOrigin = UrlToText(mojo.reportingOrigin);
@@ -320,7 +320,7 @@ class SourceTableModel extends TableModel {
     super();
 
     this.cols = [
-      new Column('Source Event ID', (e) => e.impressionData),
+      new Column('Source Event ID', (e) => e.sourceEventId),
       new Column('Source Origin', (e) => e.impressionOrigin),
       new Column('Destination', (e) => e.conversionDestination),
       new Column('Report To', (e) => e.reportingOrigin),

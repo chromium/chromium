@@ -10,13 +10,13 @@
 
 namespace content {
 
-StorableTrigger::StorableTrigger(uint64_t conversion_data,
+StorableTrigger::StorableTrigger(uint64_t trigger_data,
                                  net::SchemefulSite conversion_destination,
                                  url::Origin reporting_origin,
                                  uint64_t event_source_trigger_data,
                                  int64_t priority,
                                  absl::optional<int64_t> dedup_key)
-    : conversion_data_(conversion_data),
+    : trigger_data_(trigger_data),
       conversion_destination_(std::move(conversion_destination)),
       reporting_origin_(std::move(reporting_origin)),
       event_source_trigger_data_(event_source_trigger_data),

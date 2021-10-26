@@ -234,7 +234,7 @@ class SourceBuilder {
 
   SourceBuilder& SetExpiry(base::TimeDelta delta) WARN_UNUSED_RESULT;
 
-  SourceBuilder& SetData(uint64_t data) WARN_UNUSED_RESULT;
+  SourceBuilder& SetSourceEventId(uint64_t source_event_id) WARN_UNUSED_RESULT;
 
   SourceBuilder& SetImpressionOrigin(url::Origin origin) WARN_UNUSED_RESULT;
 
@@ -259,7 +259,7 @@ class SourceBuilder {
   StorableSource Build() const WARN_UNUSED_RESULT;
 
  private:
-  uint64_t impression_data_;
+  uint64_t source_event_id_;
   base::Time impression_time_;
   base::TimeDelta expiry_;
   url::Origin impression_origin_;
@@ -284,8 +284,7 @@ class TriggerBuilder {
   TriggerBuilder();
   ~TriggerBuilder();
 
-  TriggerBuilder& SetConversionData(uint64_t conversion_data)
-      WARN_UNUSED_RESULT;
+  TriggerBuilder& SetTriggerData(uint64_t trigger_data) WARN_UNUSED_RESULT;
 
   TriggerBuilder& SetEventSourceTriggerData(uint64_t event_source_trigger_data)
       WARN_UNUSED_RESULT;
@@ -304,7 +303,7 @@ class TriggerBuilder {
   StorableTrigger Build() const WARN_UNUSED_RESULT;
 
  private:
-  uint64_t conversion_data_ = 111;
+  uint64_t trigger_data_ = 111;
   uint64_t event_source_trigger_data_ = 0;
   net::SchemefulSite conversion_destination_;
   url::Origin reporting_origin_;

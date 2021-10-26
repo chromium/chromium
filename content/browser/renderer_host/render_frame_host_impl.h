@@ -1198,12 +1198,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void HandleRendererDebugURL(const GURL& url);
 
   // Sets up the Mojo connection between this instance and its associated render
-  // frame if it has not yet been set up.
-  void SetUpMojoIfNeeded();
+  // frame.
+  void SetUpMojoConnection();
 
   // Tears down the browser-side state relating to the Mojo connection between
   // this instance and its associated render frame.
-  void InvalidateMojoConnection();
+  void TearDownMojoConnection();
 
   // Returns whether the frame is focused. A frame is considered focused when it
   // is the parent chain of the focused frame within the frame tree. In
@@ -3492,7 +3492,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // already exists it will still be used.
   bool no_create_browser_accessibility_manager_for_testing_ = false;
 
-  // Remotes must be reset in InvalidateMojoConnection().
+  // Remotes must be reset in TearDownMojoConnection().
   // Holder of Mojo connection with ImageDownloader service in Blink.
   mojo::Remote<blink::mojom::ImageDownloader> mojo_image_downloader_;
 
@@ -3577,7 +3577,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // collected.
   int renderer_exit_count_ = 0;
 
-  // Receivers must be reset in InvalidateMojoConnection().
+  // Receivers must be reset in TearDownMojoConnection().
   mojo::AssociatedReceiver<mojom::FrameHost> frame_host_associated_receiver_{
       this};
   mojo::AssociatedReceiver<blink::mojom::BackForwardCacheControllerHost>

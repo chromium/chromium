@@ -215,7 +215,7 @@ void TestAttributionManager::Reset() {
 // Builds an impression with default values. This is done as a builder because
 // all values needed to be provided at construction time.
 SourceBuilder::SourceBuilder(base::Time time)
-    : impression_data_(123),
+    : source_event_id_(123),
       impression_time_(time),
       expiry_(base::Milliseconds(kExpiryTime)),
       impression_origin_(url::Origin::Create(GURL(kDefaultImpressionOrigin))),
@@ -232,8 +232,8 @@ SourceBuilder& SourceBuilder::SetExpiry(base::TimeDelta delta) {
   return *this;
 }
 
-SourceBuilder& SourceBuilder::SetData(uint64_t data) {
-  impression_data_ = data;
+SourceBuilder& SourceBuilder::SetSourceEventId(uint64_t source_event_id) {
+  source_event_id_ = source_event_id;
   return *this;
 }
 
@@ -282,7 +282,7 @@ SourceBuilder& SourceBuilder::SetDedupKeys(std::vector<int64_t> dedup_keys) {
 
 StorableSource SourceBuilder::Build() const {
   StorableSource impression(
-      impression_data_, impression_origin_, conversion_origin_,
+      source_event_id_, impression_origin_, conversion_origin_,
       reporting_origin_, impression_time_,
       /*expiry_time=*/impression_time_ + expiry_, source_type_, priority_,
       attribution_logic_, impression_id_);
@@ -301,8 +301,8 @@ TriggerBuilder::TriggerBuilder()
 
 TriggerBuilder::~TriggerBuilder() = default;
 
-TriggerBuilder& TriggerBuilder::SetConversionData(uint64_t conversion_data) {
-  conversion_data_ = conversion_data;
+TriggerBuilder& TriggerBuilder::SetTriggerData(uint64_t trigger_data) {
+  trigger_data_ = trigger_data;
   return *this;
 }
 
@@ -335,7 +335,7 @@ TriggerBuilder& TriggerBuilder::SetDedupKey(absl::optional<int64_t> dedup_key) {
 }
 
 StorableTrigger TriggerBuilder::Build() const {
-  return StorableTrigger(conversion_data_, conversion_destination_,
+  return StorableTrigger(trigger_data_, conversion_destination_,
                          reporting_origin_, event_source_trigger_data_,
                          priority_, dedup_key_);
 }
@@ -345,7 +345,7 @@ StorableTrigger TriggerBuilder::Build() const {
 bool operator==(const StorableSource& a, const StorableSource& b) {
   const auto tie = [](const StorableSource& impression) {
     return std::make_tuple(
-        impression.impression_data(), impression.impression_origin(),
+        impression.source_event_id(), impression.impression_origin(),
         impression.conversion_origin(), impression.reporting_origin(),
         impression.impression_time(), impression.expiry_time(),
         impression.source_type(), impression.priority(),
@@ -359,7 +359,7 @@ bool operator==(const StorableSource& a, const StorableSource& b) {
 // sqlite db and should not be tested.
 bool operator==(const AttributionReport& a, const AttributionReport& b) {
   const auto tie = [](const AttributionReport& conversion) {
-    return std::make_tuple(conversion.impression, conversion.conversion_data,
+    return std::make_tuple(conversion.impression, conversion.trigger_data,
                            conversion.conversion_time, conversion.report_time,
                            conversion.priority,
                            conversion.failed_send_attempts);
@@ -452,7 +452,7 @@ std::ostream& operator<<(std::ostream& out,
 }
 
 std::ostream& operator<<(std::ostream& out, const StorableTrigger& conversion) {
-  return out << "{conversion_data=" << conversion.conversion_data()
+  return out << "{trigger_data=" << conversion.trigger_data()
              << ",conversion_destination="
              << conversion.conversion_destination().Serialize()
              << ",reporting_origin=" << conversion.reporting_origin()
@@ -466,7 +466,7 @@ std::ostream& operator<<(std::ostream& out, const StorableTrigger& conversion) {
 }
 
 std::ostream& operator<<(std::ostream& out, const StorableSource& impression) {
-  out << "{impression_data=" << impression.impression_data()
+  out << "{source_event_id=" << impression.source_event_id()
       << ",impression_origin=" << impression.impression_origin()
       << ",conversion_origin=" << impression.conversion_origin()
       << ",reporting_origin=" << impression.reporting_origin()
@@ -490,7 +490,7 @@ std::ostream& operator<<(std::ostream& out, const StorableSource& impression) {
 
 std::ostream& operator<<(std::ostream& out, const AttributionReport& report) {
   return out << "{impression=" << report.impression
-             << ",conversion_data=" << report.conversion_data
+             << ",trigger_data=" << report.trigger_data
              << ",conversion_time=" << report.conversion_time
              << ",report_time=" << report.report_time
              << ",priority=" << report.priority << ",conversion_id="

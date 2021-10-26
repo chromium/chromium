@@ -58,7 +58,7 @@ VerifyResult VerifyAndStoreImpression(StorableSource::SourceType source_type,
 
   const AttributionPolicy& policy = attribution_manager.GetAttributionPolicy();
   StorableSource storable_impression(
-      policy.GetSanitizedImpressionData(impression.impression_data),
+      policy.SanitizeSourceEventId(impression.impression_data),
       impression_origin, impression.conversion_destination, reporting_origin,
       impression_time,
       policy.GetExpiryTimeForImpression(impression.expiry, impression_time,

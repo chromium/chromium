@@ -38,7 +38,7 @@ AttributionReport GetReport(base::Time conversion_time,
   // Construct impressions with a null impression time as it is not used for
   // reporting.
   return AttributionReport(SourceBuilder(base::Time()).Build(),
-                           /*conversion_data=*/0, conversion_time, report_time,
+                           /*trigger_data=*/0, conversion_time, report_time,
                            /*priority=*/0, conversion_id);
 }
 
@@ -301,7 +301,7 @@ TEST_F(AttributionReporterImplTest, EmbedderDisallowedContext_ReportNotSent) {
             .Build();
     std::vector<AttributionReport> reports{
         AttributionReport(std::move(impression),
-                          /*conversion_data=*/0, clock().Now(), clock().Now(),
+                          /*trigger_data=*/0, clock().Now(), clock().Now(),
                           /*priority=*/0, AttributionReport::Id(1))};
     reporter_->AddReportsToQueue(std::move(reports));
 

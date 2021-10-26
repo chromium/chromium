@@ -29,6 +29,7 @@ struct COMPONENT_EXPORT(QUICK_PAIR_COMMON) Device
     : public base::RefCounted<Device> {
   enum class AdditionalDataType {
     kAccountKey,
+    kFastPairVersion,
   };
 
   Device(std::string metadata_id, std::string ble_address, Protocol protocol);

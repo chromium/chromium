@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -31,7 +32,8 @@ class FastPairDataEncryptor;
 
 // A FastPairPairer instance is responsible for the pairing procedure to a
 // single device.  Pairing begins on instantiation.
-class FastPairPairer : public device::BluetoothDevice::PairingDelegate {
+class FastPairPairer : public device::BluetoothDevice::PairingDelegate,
+                       public device::BluetoothAdapter::Observer {
  public:
   FastPairPairer(
       scoped_refptr<device::BluetoothAdapter> adapter,
@@ -61,6 +63,11 @@ class FastPairPairer : public device::BluetoothDevice::PairingDelegate {
                       uint32_t passkey) override;
   void KeysEntered(device::BluetoothDevice* device, uint32_t entered) override;
   void AuthorizePairing(device::BluetoothDevice* device) override;
+
+  // device::BluetoothAdapter::Obserer
+  void DevicePairedChanged(device::BluetoothAdapter* adapter,
+                           device::BluetoothDevice* device,
+                           bool new_paired_status) override;
 
   // FastPairGattServiceClientImpl::Factory::Create callback
   void OnGattClientInitializedCallback(absl::optional<PairFailure> failure);
@@ -115,6 +122,9 @@ class FastPairPairer : public device::BluetoothDevice::PairingDelegate {
   base::OnceCallback<void(scoped_refptr<Device>)> pairing_procedure_complete_;
   std::unique_ptr<FastPairDataEncryptor> fast_pair_data_encryptor_;
   std::unique_ptr<FastPairGattServiceClient> fast_pair_gatt_service_client_;
+  base::ScopedObservation<device::BluetoothAdapter,
+                          device::BluetoothAdapter::Observer>
+      adapter_observation_{this};
   base::WeakPtrFactory<FastPairPairer> weak_ptr_factory_{this};
 };
 

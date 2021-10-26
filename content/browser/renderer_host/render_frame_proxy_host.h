@@ -261,7 +261,7 @@ class CONTENT_EXPORT RenderFrameProxyHost
   //   (i.e. crashing)
   // - undoing a `CommitNavigation()` that has already been sent to a
   //   speculative RenderFrameHost by swapping it back to a RenderFrameProxy.
-  void InvalidateMojoConnection();
+  void TearDownMojoConnection();
 
   // Write a representation of this object into a trace.
   void WriteIntoTrace(

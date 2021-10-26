@@ -39,7 +39,7 @@ struct WebUIConversionReport {
 
 // Struct representing a stored impression that will be displayed by WebUI.
 struct WebUIImpression {
-  uint64 impression_data;
+  uint64 source_event_id;
   url.mojom.Origin impression_origin;
   url.mojom.Origin conversion_destination;
   url.mojom.Origin reporting_origin;

@@ -221,7 +221,7 @@ class AttributionManagerImplTest : public testing::Test {
 TEST_F(AttributionManagerImplTest, ImpressionRegistered_ReturnedToWebUI) {
   auto impression = SourceBuilder(clock().Now())
                         .SetExpiry(kImpressionExpiry)
-                        .SetData(100)
+                        .SetSourceEventId(100)
                         .Build();
   attribution_manager_->HandleSource(impression);
 
@@ -239,7 +239,7 @@ TEST_F(AttributionManagerImplTest, ImpressionRegistered_ReturnedToWebUI) {
 TEST_F(AttributionManagerImplTest, ExpiredImpression_NotReturnedToWebUI) {
   attribution_manager_->HandleSource(SourceBuilder(clock().Now())
                                          .SetExpiry(kImpressionExpiry)
-                                         .SetData(100)
+                                         .SetSourceEventId(100)
                                          .Build());
   task_environment_.FastForwardBy(2 * kImpressionExpiry);
 
@@ -257,7 +257,7 @@ TEST_F(AttributionManagerImplTest, ExpiredImpression_NotReturnedToWebUI) {
 TEST_F(AttributionManagerImplTest, ImpressionConverted_ReportReturnedToWebUI) {
   auto impression = SourceBuilder(clock().Now())
                         .SetExpiry(kImpressionExpiry)
-                        .SetData(100)
+                        .SetSourceEventId(100)
                         .Build();
   attribution_manager_->HandleSource(impression);
 
@@ -265,7 +265,7 @@ TEST_F(AttributionManagerImplTest, ImpressionConverted_ReportReturnedToWebUI) {
   attribution_manager_->HandleTrigger(conversion);
 
   AttributionReport expected_report(
-      impression, conversion.conversion_data(),
+      impression, conversion.trigger_data(),
       /*conversion_time=*/clock().Now(),
       /*report_time=*/clock().Now() + kFirstReportingWindow,
       /*priority=*/0,
@@ -479,7 +479,7 @@ TEST_F(AttributionManagerImplTest, QueuedReportSent_SentReportInfoUpdated) {
 
   test_reporter_->SetSentReportInfoStatus(SentReportInfo::Status::kSent);
   attribution_manager_->HandleSource(SourceBuilder(clock().Now())
-                                         .SetData(1)
+                                         .SetSourceEventId(1)
                                          .SetExpiry(kImpressionExpiry)
                                          .Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
@@ -489,7 +489,7 @@ TEST_F(AttributionManagerImplTest, QueuedReportSent_SentReportInfoUpdated) {
   // This one shouldn't be stored, as its status is `kDropped`.
   test_reporter_->SetSentReportInfoStatus(SentReportInfo::Status::kDropped);
   attribution_manager_->HandleSource(SourceBuilder(clock().Now())
-                                         .SetData(2)
+                                         .SetSourceEventId(2)
                                          .SetExpiry(kImpressionExpiry)
                                          .Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
@@ -498,7 +498,7 @@ TEST_F(AttributionManagerImplTest, QueuedReportSent_SentReportInfoUpdated) {
 
   test_reporter_->SetSentReportInfoStatus(SentReportInfo::Status::kSent);
   attribution_manager_->HandleSource(SourceBuilder(clock().Now())
-                                         .SetData(3)
+                                         .SetSourceEventId(3)
                                          .SetExpiry(kImpressionExpiry)
                                          .Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
@@ -509,7 +509,7 @@ TEST_F(AttributionManagerImplTest, QueuedReportSent_SentReportInfoUpdated) {
   test_reporter_->SetSentReportInfoStatus(
       SentReportInfo::Status::kTransientFailure);
   attribution_manager_->HandleSource(SourceBuilder(clock().Now())
-                                         .SetData(4)
+                                         .SetSourceEventId(4)
                                          .SetExpiry(kImpressionExpiry)
                                          .Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
@@ -519,8 +519,8 @@ TEST_F(AttributionManagerImplTest, QueuedReportSent_SentReportInfoUpdated) {
   const auto& sent_reports =
       attribution_manager_->GetSessionStorage().GetSentReports();
   EXPECT_EQ(2u, sent_reports.size());
-  EXPECT_EQ(1u, sent_reports[0].report.impression.impression_data());
-  EXPECT_EQ(3u, sent_reports[1].report.impression.impression_data());
+  EXPECT_EQ(1u, sent_reports[0].report.impression.source_event_id());
+  EXPECT_EQ(3u, sent_reports[1].report.impression.source_event_id());
 
   // kSent = 0.
   histograms.ExpectBucketCount("Conversion.ReportSendOutcome", 0, 2);
@@ -536,7 +536,7 @@ TEST_F(AttributionManagerImplTest, QueuedReportSent_StoresLastN) {
   // Process |kMaxSentReportsToStore + 1| reports.
   for (uint64_t i = 1; i <= 4; i++) {
     attribution_manager_->HandleSource(SourceBuilder(clock().Now())
-                                           .SetData(i)
+                                           .SetSourceEventId(i)
                                            .SetExpiry(kImpressionExpiry)
                                            .Build());
     attribution_manager_->HandleTrigger(DefaultTrigger());
@@ -548,9 +548,9 @@ TEST_F(AttributionManagerImplTest, QueuedReportSent_StoresLastN) {
   const auto& sent_reports =
       attribution_manager_->GetSessionStorage().GetSentReports();
   EXPECT_EQ(3u, sent_reports.size());
-  EXPECT_EQ(2u, sent_reports[0].report.impression.impression_data());
-  EXPECT_EQ(3u, sent_reports[1].report.impression.impression_data());
-  EXPECT_EQ(4u, sent_reports[2].report.impression.impression_data());
+  EXPECT_EQ(2u, sent_reports[0].report.impression.source_event_id());
+  EXPECT_EQ(3u, sent_reports[1].report.impression.source_event_id());
+  EXPECT_EQ(4u, sent_reports[2].report.impression.source_event_id());
 }
 
 TEST_F(AttributionManagerImplTest, DroppedReport_StoresLastN) {

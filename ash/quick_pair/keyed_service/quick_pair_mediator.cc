@@ -4,6 +4,7 @@
 
 #include "ash/quick_pair/keyed_service/quick_pair_mediator.h"
 
+#include <cstdint>
 #include <memory>
 
 #include "ash/quick_pair/common/device.h"
@@ -130,10 +131,20 @@ void Mediator::OnDiscoveryAction(scoped_refptr<Device> device,
   QP_LOG(INFO) << __func__ << ": Device=" << device << ", Action=" << action;
 
   switch (action) {
-    case DiscoveryAction::kPairToDevice:
-      ui_broker_->ShowPairing(device);
+    case DiscoveryAction::kPairToDevice: {
+      absl::optional<std::vector<uint8_t>> additional_data =
+          device->GetAdditionalData(
+              Device::AdditionalDataType::kFastPairVersion);
+
+      // Skip showing the in-progress UI for Fast Pair v1 because that pairing
+      // is not handled by us E2E.
+      if (!additional_data.has_value() || additional_data->size() != 1 ||
+          (*additional_data)[0] != 1) {
+        ui_broker_->ShowPairing(device);
+      }
+
       pairer_broker_->PairDevice(device);
-      break;
+    } break;
     case DiscoveryAction::kDismissedByUser:
     case DiscoveryAction::kDismissed:
       break;
