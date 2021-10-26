@@ -364,7 +364,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InputMethod.Commit.Index" units="units"
-    expires_after="2021-12-12">
+    expires_after="2022-04-24">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>

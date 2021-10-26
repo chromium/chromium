@@ -788,7 +788,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="MobileFre.FragmentInflationSpeed" units="ms"
-    expires_after="2022-02-06">
+    expires_after="2022-04-24">
   <owner>skym@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
   <summary>

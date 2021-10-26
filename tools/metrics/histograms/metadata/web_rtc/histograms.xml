@@ -1010,7 +1010,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.BWE.Probing.TimePerProbeCluster" units="ms"
-    expires_after="2022-01-16">
+    expires_after="2022-04-24">
   <owner>jonasolsson@chromium.org</owner>
   <owner>crodbro@chromium.org</owner>
   <summary>
@@ -1363,7 +1363,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.BundlePolicy"
-    enum="PeerConnectionBundlePolicy" expires_after="2022-01-01">
+    enum="PeerConnectionBundlePolicy" expires_after="2022-04-24">
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
@@ -1374,7 +1374,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.BundleUsage"
-    enum="PeerConnectionBundleUsage" expires_after="2022-01-01">
+    enum="PeerConnectionBundleUsage" expires_after="2022-04-24">
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>

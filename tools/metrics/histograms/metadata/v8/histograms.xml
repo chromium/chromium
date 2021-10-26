@@ -472,7 +472,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.GC.Cycle.MainThread.Full.Atomic.Compact.Cpp" units="ms"
-    expires_after="M100">
+    expires_after="2022-04-24">
   <owner>omerkatz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
@@ -543,7 +543,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.GC.Cycle.MainThread.Full.Cpp" units="ms"
-    expires_after="M100">
+    expires_after="2022-04-24">
   <owner>omerkatz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>

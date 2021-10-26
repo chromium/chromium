@@ -1288,7 +1288,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Shill.Ethernet.DevicePresenceStatus"
-    enum="BooleanPresent" expires_after="2022-01-30">
+    enum="BooleanPresent" expires_after="2022-04-24">
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>

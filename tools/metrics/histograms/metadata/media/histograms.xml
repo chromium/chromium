@@ -1608,7 +1608,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.D3D11.NotifyErrorStatus" enum="MediaStatusCode"
-    expires_after="2021-12-19">
+    expires_after="2022-04-24">
   <owner>liberato@chromium.org</owner>
   <owner>tmathmeyer@chromium.org</owner>
   <summary>
@@ -4540,7 +4540,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.VideoCapture.Mac.Device.CapturedWithRequestedResolution"
-    enum="ResolutionComparison" expires_after="2021-12-12">
+    enum="ResolutionComparison" expires_after="2022-04-24">
   <owner>eshr@google.com</owner>
   <owner>handellm@google.com</owner>
   <summary>
@@ -5715,7 +5715,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.Sink.SelectedType" enum="MediaSinkType"
-    expires_after="2022-04-03">
+    expires_after="2022-04-24">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -5833,7 +5833,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.Ui.Device.Count" units="units"
-    expires_after="2022-04-03">
+    expires_after="2022-04-24">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>

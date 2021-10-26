@@ -116,7 +116,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.Binding.CreateV8ContextForMainFrame"
-    units="microseconds" expires_after="2022-02-01">
+    units="microseconds" expires_after="2022-04-24">
   <owner>sky@chromium.org</owner>
   <owner>yukishiino@chromium.org</owner>
   <summary>
@@ -134,7 +134,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.Binding.CreateV8ContextForNonMainFrame"
-    units="microseconds" expires_after="2022-02-01">
+    units="microseconds" expires_after="2022-04-24">
   <owner>sky@chromium.org</owner>
   <owner>yukishiino@chromium.org</owner>
   <summary>
@@ -344,7 +344,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.Canvas.MaximumInflightResources"
-    units="canvas resources" expires_after="2022-01-31">
+    units="canvas resources" expires_after="2022-04-24">
   <owner>aaronhk@chromium.org</owner>
   <owner>fserb@chromium.org</owner>
   <summary>

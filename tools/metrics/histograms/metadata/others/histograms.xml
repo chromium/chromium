@@ -3734,7 +3734,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContextMenu.iOS.GetImageDataByJsResult"
-    enum="ContextMenuIOSGetImageDataByJsResult" expires_after="2022-01-23">
+    enum="ContextMenuIOSGetImageDataByJsResult" expires_after="2022-04-24">
   <owner>mrsuyi@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
@@ -9147,7 +9147,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="LanguageUsage.UI.Android.IsLocaleUpdated"
     enum="LanguageUsage.UI.Android.LocaleUpdateStatus"
-    expires_after="2022-01-30">
+    expires_after="2022-04-24">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -10232,7 +10232,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MachineLearningService.WorkerProcessExitStatus"
-    units="exit status" expires_after="2022-01-15">
+    units="exit status" expires_after="2022-04-24">
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>honglinyu@chromium.org</owner>

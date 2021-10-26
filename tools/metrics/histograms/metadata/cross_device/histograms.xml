@@ -1575,7 +1575,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="MultiDevice.BetterTogetherSuite.DoesMultiDeviceSetupClientExist"
-    enum="BooleanSuccess" expires_after="2022-02-13">
+    enum="BooleanSuccess" expires_after="2022-04-24">
   <owner>julietlevesque@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
