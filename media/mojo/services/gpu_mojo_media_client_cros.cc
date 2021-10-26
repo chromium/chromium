@@ -5,7 +5,6 @@
 #include "media/mojo/services/gpu_mojo_media_client.h"
 
 #include "media/base/audio_decoder.h"
-#include "media/base/cdm_factory.h"
 #include "media/gpu/chromeos/mailbox_video_frame_converter.h"
 #include "media/gpu/chromeos/platform_video_frame_pool.h"
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
@@ -27,70 +26,64 @@ bool ShouldUseChromeOSDirectVideoDecoder(
 #endif
 }
 
-class CrosPlatformDelegate : public GpuMojoMediaClient::PlatformDelegate {
- public:
-  explicit CrosPlatformDelegate(GpuMojoMediaClient* client) : client_(client) {}
-  ~CrosPlatformDelegate() override = default;
-
-  CrosPlatformDelegate(const CrosPlatformDelegate&) = delete;
-  void operator=(const CrosPlatformDelegate&) = delete;
-
-  // GpuMojoMediaClient::PlatformDelegate implementation.
-  std::unique_ptr<VideoDecoder> CreateVideoDecoder(
-      const VideoDecoderTraits& traits) override {
-    if (ShouldUseChromeOSDirectVideoDecoder(client_->gpu_preferences())) {
-      auto frame_pool = std::make_unique<PlatformVideoFramePool>(
-          traits.gpu_memory_buffer_factory);
-      auto frame_converter = MailboxVideoFrameConverter::Create(
-          base::BindRepeating(&PlatformVideoFramePool::UnwrapFrame,
-                              base::Unretained(frame_pool.get())),
-          traits.gpu_task_runner, traits.get_command_buffer_stub_cb);
-      return VideoDecoderPipeline::Create(
-          traits.task_runner, std::move(frame_pool), std::move(frame_converter),
-          traits.media_log->Clone());
-    }
-    return VdaVideoDecoder::Create(
-        traits.task_runner, traits.gpu_task_runner, traits.media_log->Clone(),
-        *traits.target_color_space, client_->gpu_preferences(),
-        client_->gpu_workarounds(), traits.get_command_buffer_stub_cb);
-  }
-
-  void GetSupportedVideoDecoderConfigs(
-      MojoMediaClient::SupportedVideoDecoderConfigsCallback callback) override {
-    SupportedVideoDecoderConfigs supported_configs;
-    if (ShouldUseChromeOSDirectVideoDecoder(client_->gpu_preferences())) {
-      std::move(callback).Run(*VideoDecoderPipeline::GetSupportedConfigs(
-          client_->gpu_workarounds()));
-      return;
-    }
-    std::move(callback).Run(client_->GetVDAVideoDecoderConfigs());
-  }
-
-  std::unique_ptr<CdmFactory> CreateCdmFactory(
-      mojom::FrameInterfaceFactory* frame_interfaces) override {
-#if defined(OS_CHROMEOS)
-    return std::make_unique<chromeos::ChromeOsCdmFactory>(frame_interfaces);
-#else   // defined(OS_CHROMEOS)
-    return nullptr;
-#endif  // else defined(OS_CHROMEOS)
-  }
-
-  VideoDecoderType GetDecoderImplementationType() override {
-    if (ShouldUseChromeOSDirectVideoDecoder(client_->gpu_preferences())) {
-      return VideoDecoderType::kVaapi;
-    }
-    return VideoDecoderType::kVda;
-  }
-
- private:
-  GpuMojoMediaClient* client_;
-};
-
 }  // namespace
 
-std::unique_ptr<GpuMojoMediaClient::PlatformDelegate>
-GpuMojoMediaClient::PlatformDelegate::Create(GpuMojoMediaClient* client) {
-  return std::make_unique<CrosPlatformDelegate>(client);
+std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
+    const VideoDecoderTraits& traits) {
+  if (ShouldUseChromeOSDirectVideoDecoder(traits.gpu_preferences)) {
+    auto frame_pool = std::make_unique<PlatformVideoFramePool>(
+        traits.gpu_memory_buffer_factory);
+    auto frame_converter = MailboxVideoFrameConverter::Create(
+        base::BindRepeating(&PlatformVideoFramePool::UnwrapFrame,
+                            base::Unretained(frame_pool.get())),
+        traits.gpu_task_runner, traits.get_command_buffer_stub_cb);
+    return VideoDecoderPipeline::Create(
+        traits.task_runner, std::move(frame_pool), std::move(frame_converter),
+        traits.media_log->Clone());
+  }
+  return VdaVideoDecoder::Create(
+      traits.task_runner, traits.gpu_task_runner, traits.media_log->Clone(),
+      *traits.target_color_space, traits.gpu_preferences,
+      *traits.gpu_workarounds, traits.get_command_buffer_stub_cb);
+}
+
+absl::optional<SupportedVideoDecoderConfigs>
+GetPlatformSupportedVideoDecoderConfigs(
+    gpu::GpuDriverBugWorkarounds gpu_workarounds,
+    gpu::GpuPreferences gpu_preferences,
+    base::OnceCallback<SupportedVideoDecoderConfigs()> get_vda_configs) {
+  SupportedVideoDecoderConfigs supported_configs;
+  if (ShouldUseChromeOSDirectVideoDecoder(gpu_preferences)) {
+    return VideoDecoderPipeline::GetSupportedConfigs(gpu_workarounds);
+  }
+  return std::move(get_vda_configs).Run();
+}
+
+VideoDecoderType GetPlatformDecoderImplementationType(
+    gpu::GpuDriverBugWorkarounds gpu_workarounds,
+    gpu::GpuPreferences gpu_preferences) {
+  if (ShouldUseChromeOSDirectVideoDecoder(gpu_preferences)) {
+    return VideoDecoderType::kVaapi;
+  }
+  return VideoDecoderType::kVda;
+}
+
+std::unique_ptr<AudioDecoder> CreatePlatformAudioDecoder(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+  return nullptr;
+}
+
+#if !defined(OS_CHROMEOS)
+class CdmFactory {};
+#endif  // !defined(OS_CHROMEOS)
+
+std::unique_ptr<CdmFactory> CreatePlatformCdmFactory(
+    mojom::FrameInterfaceFactory* frame_interfaces) {
+#if defined(OS_CHROMEOS)
+  return std::make_unique<chromeos::ChromeOsCdmFactory>(frame_interfaces);
+#else   // defined(OS_CHROMEOS)
+  return nullptr;
+#endif  // else defined(OS_CHROMEOS)
 }
 
 }  // namespace media

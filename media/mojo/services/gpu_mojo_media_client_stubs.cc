@@ -3,17 +3,14 @@
 // found in the LICENSE file.
 
 #include "media/base/audio_decoder.h"
-#include "media/gpu/ipc/service/vda_video_decoder.h"
+#include "media/base/video_decoder.h"
 #include "media/mojo/services/gpu_mojo_media_client.h"
 
 namespace media {
 
 std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
     const VideoDecoderTraits& traits) {
-  return VdaVideoDecoder::Create(
-      traits.task_runner, traits.gpu_task_runner, traits.media_log->Clone(),
-      *traits.target_color_space, traits.gpu_preferences,
-      *traits.gpu_workarounds, traits.get_command_buffer_stub_cb);
+  return nullptr;
 }
 
 absl::optional<SupportedVideoDecoderConfigs>
@@ -21,7 +18,7 @@ GetPlatformSupportedVideoDecoderConfigs(
     gpu::GpuDriverBugWorkarounds gpu_workarounds,
     gpu::GpuPreferences gpu_preferences,
     base::OnceCallback<SupportedVideoDecoderConfigs()> get_vda_configs) {
-  return std::move(get_vda_configs).Run();
+  return {};
 }
 
 std::unique_ptr<AudioDecoder> CreatePlatformAudioDecoder(
@@ -29,7 +26,7 @@ std::unique_ptr<AudioDecoder> CreatePlatformAudioDecoder(
   return nullptr;
 }
 
-// This class doesn't exist on mac, so we need a stub for unique_ptr.
+// This class doesn't exist on any of the platforms that use the stubs.
 class CdmFactory {};
 
 std::unique_ptr<CdmFactory> CreatePlatformCdmFactory(
@@ -40,7 +37,7 @@ std::unique_ptr<CdmFactory> CreatePlatformCdmFactory(
 VideoDecoderType GetPlatformDecoderImplementationType(
     gpu::GpuDriverBugWorkarounds gpu_workarounds,
     gpu::GpuPreferences gpu_preferences) {
-  return VideoDecoderType::kVda;
+  return VideoDecoderType::kUnknown;
 }
 
 }  // namespace media

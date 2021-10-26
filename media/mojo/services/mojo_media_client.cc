@@ -24,9 +24,9 @@ std::unique_ptr<AudioDecoder> MojoMediaClient::CreateAudioDecoder(
   return nullptr;
 }
 
-void MojoMediaClient::GetSupportedVideoDecoderConfigs(
-    MojoMediaClient::SupportedVideoDecoderConfigsCallback callback) {
-  std::move(callback).Run({});
+SupportedVideoDecoderConfigs
+MojoMediaClient::GetSupportedVideoDecoderConfigs() {
+  return {};
 }
 
 VideoDecoderType MojoMediaClient::GetDecoderImplementationType() {
