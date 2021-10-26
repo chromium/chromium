@@ -260,7 +260,14 @@ IN_PROC_BROWSER_TEST_P(DeviceManagementServiceIntegrationTest,
   run_loop.Run();
 }
 
-IN_PROC_BROWSER_TEST_P(DeviceManagementServiceIntegrationTest, Unregistration) {
+#if defined(OS_MAC)
+// Flaky on Mac: https://crbug.com/1254962
+#define MAYBE_Unregistration DISABLED_Unregistration
+#else
+#define MAYBE_Unregistration Unregistration
+#endif
+IN_PROC_BROWSER_TEST_P(DeviceManagementServiceIntegrationTest,
+                       MAYBE_Unregistration) {
   PerformRegistration();
 
   base::RunLoop run_loop;
@@ -277,7 +284,14 @@ IN_PROC_BROWSER_TEST_P(DeviceManagementServiceIntegrationTest, Unregistration) {
   run_loop.Run();
 }
 
-IN_PROC_BROWSER_TEST_P(DeviceManagementServiceIntegrationTest, AutoEnrollment) {
+#if defined(OS_MAC)
+// Flaky on Mac: https://crbug.com/1254962
+#define MAYBE_AutoEnrollment DISABLED_AutoEnrollment
+#else
+#define MAYBE_AutoEnrollment AutoEnrollment
+#endif
+IN_PROC_BROWSER_TEST_P(DeviceManagementServiceIntegrationTest,
+                       MAYBE_AutoEnrollment) {
   base::RunLoop run_loop;
   EXPECT_CALL(*this, OnJobDone(_, DM_STATUS_SUCCESS, _, _))
       .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
