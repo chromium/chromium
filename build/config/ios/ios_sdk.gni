@@ -65,6 +65,16 @@ declare_args() {
 
   # Set to true if all test apps should use the same bundle id.
   ios_use_shared_bundle_id_for_test_apps = false
+
+  # Enabling this option makes clang compile to an intermediate
+  # representation ("bitcode"), and not to native code. This is preferred
+  # when including WebRTC in the apps that will be sent to Apple's App Store
+  # and mandatory for the apps that run on watchOS or tvOS.
+  # The option only works when building with Xcode (use_xcode_clang = true).
+  # Mimicking how Xcode handles it, the production builds (is_debug = false)
+  # get real bitcode sections added, while the debug builds (is_debug = true)
+  # only get bitcode-section "markers" added in them.
+  enable_ios_bitcode = false
 }
 
 declare_args() {

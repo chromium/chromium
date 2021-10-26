@@ -12,18 +12,6 @@ import("//build/toolchain/rbe.gni")
 import("//build/toolchain/toolchain.gni")
 import("//build_overrides/build.gni")
 
-declare_args() {
-  # Enabling this option makes clang compile to an intermediate
-  # representation ("bitcode"), and not to native code. This is preferred
-  # when including WebRTC in the apps that will be sent to Apple's App Store
-  # and mandatory for the apps that run on watchOS or tvOS.
-  # The option only works when building with Xcode (use_xcode_clang = true).
-  # Mimicking how Xcode handles it, the production builds (is_debug = false)
-  # get real bitcode sections added, while the debug builds (is_debug = true)
-  # only get bitcode-section "markers" added in them.
-  enable_ios_bitcode = false
-}
-
 # This is included by reference in the //build/config/compiler config that
 # is applied to all targets. It is here to separate out the logic.
 config("compiler") {
