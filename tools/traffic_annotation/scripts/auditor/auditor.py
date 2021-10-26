@@ -1595,8 +1595,10 @@ class Auditor:
         Auditor.SAFE_LIST_PATH.relative_to(SRC_DIR)))
 
     lines = Auditor.SAFE_LIST_PATH.read_text(encoding="utf-8").splitlines()
-    lines += Auditor.CHROME_OS_SAFE_LIST_PATH.read_text(
-        encoding="utf-8").splitlines()
+    if self.exporter._current_platform == "chromeos":
+      lines += Auditor.CHROME_OS_SAFE_LIST_PATH.read_text(
+          encoding="utf-8").splitlines()
+
     for line in lines:
       # Ignore comments and empty lines.
       line = line.rstrip()
