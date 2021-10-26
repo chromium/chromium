@@ -60,6 +60,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy {
       'removeExceptions',
       'changeSavedPassword',
       'getUrlCollection',
+      'addPassword',
     ]);
 
     /** @private {!PasswordManagerExpectations} */
@@ -335,6 +336,12 @@ export class TestPasswordManagerProxy extends TestBrowserProxy {
   getUrlCollection(url) {
     this.methodCalled('getUrlCollection', url);
     return Promise.resolve(this.getUrlCollectionResponse_);
+  }
+
+  /** override */
+  addPassword(options) {
+    this.methodCalled('addPassword', options);
+    return Promise.resolve();
   }
 
   /** override */

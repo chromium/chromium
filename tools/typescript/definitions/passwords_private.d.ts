@@ -93,6 +93,13 @@ declare global {
         elapsedTimeSinceLastCheck?: string;
       }
 
+      export interface AddPasswordOptions {
+        url: string;
+        username: string;
+        password: string;
+        useAccountStore: boolean;
+      }
+
       export function recordPasswordsPageAccessInSettings(): void;
       export function changeSavedPassword(
           ids: Array<number>, newUsername: string, newPassword: string,
@@ -136,6 +143,8 @@ declare global {
           callback: (status: PasswordCheckStatus) => void): void;
       export function getUrlCollection(
         url: string, callback: (urlCollection: UrlCollection) => void): void;
+      export function addPassword(
+          options: AddPasswordOptions, callback?: () => void): void;
 
       export const onSavedPasswordsListChanged:
           ChromeEvent<(entries: Array<PasswordUiEntry>) => void>;

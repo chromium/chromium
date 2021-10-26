@@ -31,6 +31,7 @@ interface PasswordEditDialogElement {
   $: {
     dialog: CrDialogElement,
     passwordInput: CrInputElement,
+    storePicker: HTMLSelectElement,
     usernameInput: CrInputElement,
     websiteInput: CrInputElement,
   };
@@ -69,7 +70,11 @@ class PasswordEditDialogElement extends PasswordEditDialogElementBase {
 
       isAccountStoreUser: {type: Boolean, value: false},
 
-      accountEmail: {stype: String, value: null},
+      accountEmail: {type: String, value: null},
+
+      storeOptionAccountValue: {type: String, value: 'account', readonly: true},
+
+      storeOptionDeviceValue: {type: String, value: 'device', readonly: true},
 
       /**
        * Saved passwords after deduplicating versions that are repeated in the
@@ -150,6 +155,8 @@ class PasswordEditDialogElement extends PasswordEditDialogElementBase {
   existingEntry: MultiStorePasswordUiEntry|null;
   isAccountStoreUser: boolean;
   accountEmail: string|null;
+  readonly storeOptionAccountValue: string;
+  readonly storeOptionDeviceValue: string;
   savedPasswords: Array<MultiStorePasswordUiEntry>;
   private usernamesForSameOrigin_: Set<string>|null;
   private dialogMode_: PasswordDialogMode;
@@ -294,28 +301,54 @@ class PasswordEditDialogElement extends PasswordEditDialogElementBase {
    * the edit dialog should be closed.
    */
   private onActionButtonTap_() {
-    // TODO(crbug.com/1236053): handle PasswordDialogMode.ADD.
-    if (this.dialogMode_ === PasswordDialogMode.EDIT) {
-      const idsToChange = [];
-      const accountId = this.existingEntry!.accountId;
-      const deviceId = this.existingEntry!.deviceId;
-      if (accountId !== null) {
-        idsToChange.push(accountId);
-      }
-      if (deviceId !== null) {
-        idsToChange.push(deviceId);
-      }
-
-      PasswordManagerImpl.getInstance()
-          .changeSavedPassword(
-              idsToChange, this.$.usernameInput.value,
-              this.$.passwordInput.value)
-          .finally(() => {
-            this.close();
-          });
-    } else {
-      this.close();
+    switch (this.dialogMode_) {
+      case PasswordDialogMode.VIEW:
+        this.close();
+        return;
+      case PasswordDialogMode.EDIT:
+        this.changePassword_();
+        return;
+      case PasswordDialogMode.ADD:
+        this.addPassword_();
+        return;
+      default:
+        assertNotReached();
     }
+  }
+
+  private addPassword_() {
+    const useAccountStore = !this.$.storePicker.hidden ?
+        (this.$.storePicker.value === this.storeOptionAccountValue) :
+        false;
+    PasswordManagerImpl.getInstance()
+        .addPassword({
+          url: this.$.websiteInput.value,
+          username: this.$.usernameInput.value,
+          password: this.password_,
+          useAccountStore: useAccountStore
+        })
+        .finally(() => {
+          this.close();
+        });
+  }
+
+  private changePassword_() {
+    const idsToChange = [];
+    const accountId = this.existingEntry!.accountId;
+    const deviceId = this.existingEntry!.deviceId;
+    if (accountId !== null) {
+      idsToChange.push(accountId);
+    }
+    if (deviceId !== null) {
+      idsToChange.push(deviceId);
+    }
+
+    PasswordManagerImpl.getInstance()
+        .changeSavedPassword(
+            idsToChange, this.$.usernameInput.value, this.$.passwordInput.value)
+        .finally(() => {
+          this.close();
+        });
   }
 
   private getActionButtonName_(): string {

@@ -11,6 +11,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {PasswordManagerImpl} from 'chrome://settings/settings.js';
 import {createMultiStorePasswordEntry, PasswordSectionElementFactory} from 'chrome://test/settings/passwords_and_autofill_fake_data.js';
 import {TestPasswordManagerProxy} from 'chrome://test/settings/test_password_manager_proxy.js';
+import {eventToPromise} from 'chrome://test/test_util.js';
 
 // clang-format on
 
@@ -113,7 +114,7 @@ async function updateWebsiteInput(
 
 /**
  * Helper function to test change saved password behavior.
- * @param {!Object} editDialog
+ * @param {!PasswordEditDialogElement} editDialog
  * @param {!Array<number>} entryIds Ids to be called as a changeSavedPassword
  *     parameter.
  * @param {TestPasswordManagerProxy} passwordManager
@@ -143,6 +144,35 @@ async function changeSavedPasswordTestHelper(
 
   assertEquals(entryIds.length, ids.length);
   entryIds.forEach(entryId => assertTrue(ids.includes(entryId)));
+}
+
+/**
+ * Helper function to test add password behavior.
+ * @param {!PasswordEditDialogElement} addDialog
+ * @param {!TestPasswordManagerProxy} passwordManager
+ * @param {boolean} expectedUseAccountStore True for account store, false for
+ *     device store.
+ */
+async function addPasswordTestHelper(
+    addDialog, passwordManager, expectedUseAccountStore) {
+  const WEBSITE = 'example.com';
+  const USERNAME = 'username';
+  const PASSWORD = 'password';
+
+  await updateWebsiteInput(addDialog, passwordManager, WEBSITE);
+  addDialog.$.usernameInput.value = USERNAME;
+  addDialog.$.passwordInput.value = PASSWORD;
+
+  addDialog.$.actionButton.click();
+
+  const {url, username, password, useAccountStore} =
+      await passwordManager.whenCalled('addPassword');
+  assertEquals(WEBSITE, url);
+  assertEquals(USERNAME, username);
+  assertEquals(PASSWORD, password);
+  assertEquals(expectedUseAccountStore, useAccountStore);
+
+  await eventToPromise('close', addDialog);
 }
 
 suite('PasswordEditDialog', function() {
@@ -192,35 +222,35 @@ suite('PasswordEditDialog', function() {
         passwordDialog.$.footnote.innerText.trim());
   });
 
-  test('changesPasswordForAccountId', async function() {
+  test('changesPasswordForAccountId', function() {
     const accountEntry = createMultiStorePasswordEntry(
         {url: 'goo.gl', username: 'bart', accountId: 42});
     const editDialog = elementFactory.createPasswordEditDialog(accountEntry);
 
-    changeSavedPasswordTestHelper(
+    return changeSavedPasswordTestHelper(
         editDialog, [accountEntry.accountId], passwordManager);
   });
 
-  test('changesPasswordForDeviceId', async function() {
+  test('changesPasswordForDeviceId', function() {
     const deviceEntry = createMultiStorePasswordEntry(
         {url: 'goo.gl', username: 'bart', deviceId: 42});
     const editDialog = elementFactory.createPasswordEditDialog(deviceEntry);
 
-    changeSavedPasswordTestHelper(
+    return changeSavedPasswordTestHelper(
         editDialog, [deviceEntry.deviceId], passwordManager);
   });
 
-  test('changesPasswordForBothId', async function() {
+  test('changesPasswordForBothId', function() {
     const multiEntry = createMultiStorePasswordEntry(
         {url: 'goo.gl', username: 'bart', accountId: 41, deviceId: 42});
     const editDialog = elementFactory.createPasswordEditDialog(multiEntry);
 
-    changeSavedPasswordTestHelper(
+    return changeSavedPasswordTestHelper(
         editDialog, [multiEntry.accountId, multiEntry.deviceId],
         passwordManager);
   });
 
-  test('changeUsernameFailsWhenReused', async function() {
+  test('changeUsernameFailsWhenReused', function() {
     const accountPasswords = [
       createMultiStorePasswordEntry(
           {url: 'goo.gl', username: 'bart', accountId: 0}),
@@ -238,7 +268,7 @@ suite('PasswordEditDialog', function() {
     assertFalse(editDialog.$.usernameInput.invalid);
     assertFalse(editDialog.$.actionButton.disabled);
 
-    changeSavedPasswordTestHelper(
+    return changeSavedPasswordTestHelper(
         editDialog, [accountPasswords[0].accountId], passwordManager);
   });
 
@@ -382,5 +412,27 @@ suite('PasswordEditDialog', function() {
     await updateWebsiteInput(addDialog, passwordManager, 'invalid url', false);
     assertTrue(addDialog.$.websiteInput.invalid);
     assertTrue(addDialog.$.actionButton.disabled);
+  });
+
+  test('addsPasswordWhenNotAccountStoreUser', function() {
+    const addDialog = elementFactory.createPasswordEditDialog();
+    return addPasswordTestHelper(
+        addDialog, passwordManager, /*expectedUseAccountStore=*/ false);
+  });
+
+  test('addsPasswordWhenAccountStoreUserAndAccountSelected', function() {
+    const addDialog = elementFactory.createPasswordEditDialog();
+    addDialog.isAccountStoreUser = true;
+    addDialog.$.storePicker.value = addDialog.storeOptionAccountValue;
+    return addPasswordTestHelper(
+        addDialog, passwordManager, /*expectedUseAccountStore=*/ true);
+  });
+
+  test('addsPasswordWhenAccountStoreUserAndDeviceSelected', function() {
+    const addDialog = elementFactory.createPasswordEditDialog();
+    addDialog.isAccountStoreUser = true;
+    addDialog.$.storePicker.value = addDialog.storeOptionDeviceValue;
+    return addPasswordTestHelper(
+        addDialog, passwordManager, /*expectedUseAccountStore=*/ false);
   });
 });
