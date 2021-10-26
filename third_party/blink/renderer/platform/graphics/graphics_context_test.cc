@@ -206,7 +206,6 @@ TEST_F(GraphicsContextDarkModeTest, DarkModeOff) {
 TEST_F(GraphicsContextDarkModeTest, SimpleInvertForTesting) {
   DarkModeSettings settings;
   settings.mode = DarkModeInversionAlgorithm::kSimpleInvertForTesting;
-  settings.grayscale = false;
   settings.contrast = 0;
 
   DrawColorsToContext(true, settings);
@@ -221,7 +220,6 @@ TEST_F(GraphicsContextDarkModeTest, SimpleInvertForTesting) {
 TEST_F(GraphicsContextDarkModeTest, InvertBrightness) {
   DarkModeSettings settings;
   settings.mode = DarkModeInversionAlgorithm::kInvertBrightness;
-  settings.grayscale = false;
   settings.contrast = 0;
 
   DrawColorsToContext(true, settings);
@@ -236,7 +234,6 @@ TEST_F(GraphicsContextDarkModeTest, InvertBrightness) {
 TEST_F(GraphicsContextDarkModeTest, InvertLightness) {
   DarkModeSettings settings;
   settings.mode = DarkModeInversionAlgorithm::kInvertLightness;
-  settings.grayscale = false;
   settings.contrast = 0;
 
   DrawColorsToContext(true, settings);
@@ -247,25 +244,9 @@ TEST_F(GraphicsContextDarkModeTest, InvertLightness) {
   EXPECT_EQ(0xffe1e1e1, bitmap_.getColor(3, 0));
 }
 
-// Invert lightness plus grayscale.
-TEST_F(GraphicsContextDarkModeTest, InvertLightnessPlusGrayscale) {
-  DarkModeSettings settings;
-  settings.mode = DarkModeInversionAlgorithm::kInvertLightness;
-  settings.grayscale = true;
-  settings.contrast = 0;
-
-  DrawColorsToContext(true, settings);
-
-  EXPECT_EQ(SK_ColorWHITE, bitmap_.getColor(0, 0));
-  EXPECT_EQ(SK_ColorBLACK, bitmap_.getColor(1, 0));
-  EXPECT_EQ(0xffe6e6e6, bitmap_.getColor(2, 0));
-  EXPECT_EQ(0xffe1e1e1, bitmap_.getColor(3, 0));
-}
-
 TEST_F(GraphicsContextDarkModeTest, InvertLightnessPlusContrast) {
   DarkModeSettings settings;
   settings.mode = DarkModeInversionAlgorithm::kInvertLightness;
-  settings.grayscale = false;
   settings.contrast = 0.2;
 
   DrawColorsToContext(true, settings);
