@@ -116,8 +116,7 @@ bool LayoutSVGRect::ShapeDependentFillContains(const HitTestLocation& location,
   NOT_DESTROYED();
   if (use_path_fallback_)
     return LayoutSVGShape::ShapeDependentFillContains(location, fill_rule);
-  const FloatPoint& point = location.TransformedPoint();
-  return fill_bounding_box_.Contains(point.x(), point.y());
+  return fill_bounding_box_.InclusiveContains(location.TransformedPoint());
 }
 
 // Returns true if the stroke is continuous and definitely uses miter joins.

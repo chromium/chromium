@@ -268,10 +268,7 @@ PositionWithAffinity LayoutSVGInlineText::PositionForPoint(
     for (const SVGTextFragment& fragment : text_box->TextFragments()) {
       FloatRect fragment_rect = fragment.BoundingBox(baseline);
 
-      float distance = 0;
-      if (!fragment_rect.Contains(absolute_point))
-        distance = fragment_rect.SquaredDistanceTo(absolute_point);
-
+      float distance = fragment_rect.SquaredDistanceTo(absolute_point);
       if (distance <= closest_distance) {
         closest_distance = distance;
         closest_distance_box = text_box;

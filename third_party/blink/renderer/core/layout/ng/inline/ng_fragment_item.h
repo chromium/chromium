@@ -202,9 +202,9 @@ class CORE_EXPORT NGFragmentItem {
   float ScaleInlineOffset(LayoutUnit inline_offset) const;
 
   // Returns true if |position|, which is a point in the IFC's coordinate
-  // system, is in the transformed rectangle of this item.
+  // system, is in the transformed rectangle (including the edges) of this item.
   // This works only for kSvgText type.
-  bool Contains(const FloatPoint& position) const;
+  bool InclusiveContains(const FloatPoint& position) const;
 
   const PhysicalOffset& OffsetInContainerFragment() const {
     return rect_.offset;
