@@ -77,9 +77,6 @@ class ProfileDestroyer : public content::RenderProcessHostObserver {
                                      content::RenderProcessHostObserver>
       observations_{this};
 
-  // Used to count down the number of render process host left.
-  uint32_t num_hosts_;
-
   // The profile being destroyed. If it is set to NULL, it is a signal from
   // another instance of ProfileDestroyer that this instance is canceled.
   Profile* profile_;
