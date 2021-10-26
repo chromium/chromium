@@ -139,7 +139,7 @@
     "structures": [1420],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/login/oobe_unconditional_resources.grd": {
-    "META": {"sizes": {"includes": [150]}},
+    "META": {"sizes": {"includes": [350]}},
     "includes": [1440],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/multidevice_internals/resources.grd": {
