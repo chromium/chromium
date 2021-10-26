@@ -150,6 +150,16 @@ class TestLockHandler : public proximity_auth::ScreenlockBridge::LockHandler {
     }
   }
 
+  void SetSmartLockState(const AccountId& account_id,
+                         ash::SmartLockState state) override {
+    GTEST_FAIL();
+  }
+
+  void NotifySmartLockAuthResult(const AccountId& account_id,
+                                 bool successful) override {
+    GTEST_FAIL();
+  }
+
  private:
   AuthState state_;
   proximity_auth::mojom::AuthType auth_type_;

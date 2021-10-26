@@ -37,6 +37,10 @@ class UserBoardViewMojo : public UserBoardView {
       const proximity_auth::ScreenlockBridge::UserPodCustomIconInfo& icon_info)
       override;
   void HideUserPodCustomIcon(const AccountId& account_id) override;
+  void SetSmartLockState(const AccountId& account_id,
+                         SmartLockState state) override;
+  void NotifySmartLockAuthResult(const AccountId& account_id,
+                                 bool success) override;
   void SetAuthType(const AccountId& account_id,
                    proximity_auth::mojom::AuthType auth_type,
                    const std::u16string& initial_value) override;

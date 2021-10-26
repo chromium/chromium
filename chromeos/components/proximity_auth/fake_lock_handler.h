@@ -26,6 +26,10 @@ class FakeLockHandler : public ScreenlockBridge::LockHandler {
       const AccountId& account_id,
       const ScreenlockBridge::UserPodCustomIconInfo& icon_info) override;
   void HideUserPodCustomIcon(const AccountId& account_id) override;
+  void SetSmartLockState(const AccountId& account_id,
+                         ash::SmartLockState state) override;
+  void NotifySmartLockAuthResult(const AccountId& account_id,
+                                 bool successful) override;
   void EnableInput() override;
   void SetAuthType(const AccountId& account_id,
                    mojom::AuthType auth_type,

@@ -166,6 +166,20 @@ class TestLockHandler : public proximity_auth::ScreenlockBridge::LockHandler {
     ASSERT_FALSE(true) << "Should not be reached.";
   }
 
+  // These Smart Lock methods were added as part of the new state management
+  // plumbing for the UI revamp. These methods must be implemented but should
+  // not be called when the revamp is flagged off and the SmartLockStateHandler
+  // is being used, since the SmartLockStateHandler is deprecated with this new
+  // state management system.
+  void SetSmartLockState(const AccountId& account_id,
+                         ash::SmartLockState state) override {
+    GTEST_FAIL();
+  }
+
+  void NotifySmartLockAuthResult(const AccountId& account_id,
+                                 bool successful) override {
+    GTEST_FAIL();
+  }
   // Utility methods used by tests:
 
   // Gets last set auth value.
