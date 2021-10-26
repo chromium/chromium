@@ -1440,15 +1440,7 @@ try_.chromium_linux_builder(
 try_.chromium_linux_builder(
     name = "linux_chromium_asan_rel_ng",
     branch_selector = branches.STANDARD_MILESTONE,
-    goma_jobs = goma.jobs.J150,
-    ssd = True,
-    main_list_view = "try",
-    tryjob = try_.job(),
-)
-
-try_.chromium_linux_builder(
-    name = "linux_chromium_asan_rel_ng-orchestrator",
-    builderless = False,
+    builderless = not settings.is_main,
     cores = 2,
     executable = "recipe:chromium/orchestrator",
     main_list_view = "try",
@@ -1459,6 +1451,7 @@ try_.chromium_linux_builder(
         },
     },
     service_account = "chromium-orchestrator@chops-service-accounts.iam.gserviceaccount.com",
+    tryjob = try_.job(),
 )
 
 try_.chromium_linux_builder(
@@ -1471,7 +1464,7 @@ try_.chromium_linux_builder(
     ssd = True,
     properties = {
         "orchestrator": {
-            "builder_name": "linux_chromium_asan_rel_ng-orchestrator",
+            "builder_name": "linux_chromium_asan_rel_ng",
             "builder_group": "tryserver.chromium.linux",
         },
     },
@@ -1566,14 +1559,6 @@ try_.chromium_linux_builder(
     name = "linux_chromium_tsan_rel_ng",
     branch_selector = branches.STANDARD_MILESTONE,
     builderless = not settings.is_main,
-    goma_jobs = goma.jobs.J150,
-    main_list_view = "try",
-    tryjob = try_.job(),
-)
-
-try_.chromium_linux_builder(
-    name = "linux_chromium_tsan_rel_ng-orchestrator",
-    builderless = False,
     cores = 2,
     executable = "recipe:chromium/orchestrator",
     main_list_view = "try",
@@ -1584,6 +1569,7 @@ try_.chromium_linux_builder(
         },
     },
     service_account = "chromium-orchestrator@chops-service-accounts.iam.gserviceaccount.com",
+    tryjob = try_.job(),
 )
 
 try_.chromium_linux_builder(
@@ -1596,7 +1582,7 @@ try_.chromium_linux_builder(
     ssd = True,
     properties = {
         "orchestrator": {
-            "builder_name": "linux_chromium_tsan_rel_ng-orchestrator",
+            "builder_name": "linux_chromium_tsan_rel_ng",
             "builder_group": "tryserver.chromium.linux",
         },
     },
