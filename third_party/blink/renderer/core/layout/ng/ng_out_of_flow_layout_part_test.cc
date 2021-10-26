@@ -1533,6 +1533,24 @@ TEST_F(NGOutOfFlowLayoutPartTest, AbsposFragWithInlineCBAndSpanner) {
   EXPECT_EQ(expectation, dump);
 }
 
+static void CheckMulticolumnPositionedObjects(const LayoutBox* multicol,
+                                              const LayoutBox* abspos) {
+  for (const NGPhysicalBoxFragment& fragmentation_root :
+       multicol->PhysicalFragments()) {
+    EXPECT_TRUE(fragmentation_root.IsFragmentationContextRoot());
+    EXPECT_FALSE(fragmentation_root.HasOutOfFlowFragmentChild());
+    for (const NGLink& fragmentainer : fragmentation_root.Children()) {
+      EXPECT_TRUE(fragmentainer->IsFragmentainerBox());
+      EXPECT_TRUE(fragmentainer->HasOutOfFlowFragmentChild());
+      for (const NGLink& child : fragmentainer->Children()) {
+        if (child->GetLayoutObject() == abspos)
+          return;
+      }
+    }
+  }
+  EXPECT_TRUE(false);
+}
+
 TEST_F(NGOutOfFlowLayoutPartTest, PositionedObjectsInMulticol) {
   SetBodyInnerHTML(
       R"HTML(
@@ -1550,21 +1568,10 @@ TEST_F(NGOutOfFlowLayoutPartTest, PositionedObjectsInMulticol) {
         </div>
       </div>
       )HTML");
-  Element* outer_multicol = GetDocument().getElementById("outer");
-  auto* multicol = To<LayoutBlockFlow>(outer_multicol->GetLayoutObject());
-  EXPECT_FALSE(multicol->PositionedObjects());
-
-  Element* inner_multicol = GetDocument().getElementById("inner");
-  multicol = To<LayoutBlockFlow>(inner_multicol->GetLayoutObject());
-  auto* abs = GetLayoutBoxByElementId("abs1");
-  EXPECT_TRUE(multicol->PositionedObjects()->Contains(abs));
-  EXPECT_EQ(multicol->PositionedObjects()->size(), 1u);
-
-  Element* rel_element = GetDocument().getElementById("rel");
-  auto* rel = To<LayoutBlockFlow>(rel_element->GetLayoutObject());
-  abs = GetLayoutBoxByElementId("abs2");
-  EXPECT_TRUE(rel->PositionedObjects()->Contains(abs));
-  EXPECT_EQ(rel->PositionedObjects()->size(), 1u);
+  CheckMulticolumnPositionedObjects(GetLayoutBoxByElementId("outer"),
+                                    GetLayoutBoxByElementId("abs1"));
+  CheckMulticolumnPositionedObjects(GetLayoutBoxByElementId("inner"),
+                                    GetLayoutBoxByElementId("abs2"));
 }
 
 TEST_F(NGOutOfFlowLayoutPartTest, PositionedObjectsInMulticolWithInline) {
@@ -1584,17 +1591,9 @@ TEST_F(NGOutOfFlowLayoutPartTest, PositionedObjectsInMulticolWithInline) {
         </div>
       </div>
       )HTML");
-  Element* multicol_element = GetDocument().getElementById("multicol");
-  auto* multicol = To<LayoutBlockFlow>(multicol_element->GetLayoutObject());
-  EXPECT_FALSE(multicol->PositionedObjects());
-
-  Element* target_element = GetDocument().getElementById("target");
-  auto* target = To<LayoutBlockFlow>(target_element->GetLayoutObject());
-  auto* abs1 = GetLayoutBoxByElementId("abs1");
-  auto* abs2 = GetLayoutBoxByElementId("abs2");
-  EXPECT_TRUE(target->PositionedObjects()->Contains(abs1));
-  EXPECT_TRUE(target->PositionedObjects()->Contains(abs2));
-  EXPECT_EQ(target->PositionedObjects()->size(), 2u);
+  const LayoutBox* multicol = GetLayoutBoxByElementId("multicol");
+  CheckMulticolumnPositionedObjects(multicol, GetLayoutBoxByElementId("abs1"));
+  CheckMulticolumnPositionedObjects(multicol, GetLayoutBoxByElementId("abs2"));
 }
 
 // Make sure the fragmentainer break tokens are correct when OOFs are added to
