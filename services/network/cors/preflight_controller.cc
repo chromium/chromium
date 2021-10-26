@@ -387,10 +387,14 @@ class PreflightController::PreflightLoader final {
           ExtractDevToolsInfo(head);
       devtools_observer_->OnCorsPreflightResponse(
           *devtools_request_id_, original_request_.url, std::move(head_info));
+      devtools_observer_->OnCorsPreflightRequestCompleted(
+          *devtools_request_id_, network::URLLoaderCompletionStatus(net::OK));
     }
 
+    absl::optional<CorsErrorStatus> detected_error_status;
+    bool has_authorization_covered_by_wildcard = false;
     std::unique_ptr<PreflightResult> result = CreatePreflightResult(
-        final_url, head, original_request_, tainted_, &detected_error_status_);
+        final_url, head, original_request_, tainted_, &detected_error_status);
 
     if (result) {
       // Only log if there is a result to log.
@@ -398,42 +402,39 @@ class PreflightController::PreflightLoader final {
                         [&result] { return result->NetLogParams(); });
 
       // Preflight succeeded. Check |original_request_| with |result|.
-      DCHECK(!detected_error_status_);
-      detected_error_status_ =
+      DCHECK(!detected_error_status);
+      detected_error_status =
           CheckPreflightResult(result.get(), original_request_,
                                non_wildcard_request_headers_support_);
-      has_authorization_covered_by_wildcard_ =
+      has_authorization_covered_by_wildcard =
           result->HasAuthorizationCoveredByWildcard(original_request_.headers);
     }
 
     if (!(original_request_.load_flags & net::LOAD_DISABLE_CACHE) &&
-        !detected_error_status_) {
+        !detected_error_status) {
       controller_->AppendToCache(*original_request_.request_initiator,
                                  original_request_.url, network_isolation_key_,
                                  std::move(result));
     }
-    response_head_received_ = true;
+
+    std::move(completion_callback_)
+        .Run(detected_error_status ? net::ERR_FAILED : net::OK,
+             detected_error_status, has_authorization_covered_by_wildcard);
   }
 
   void HandleResponseBody(std::unique_ptr<std::string> response_body) {
-    int error = loader_->NetError();
-    // TODO(https://crbug.com/1260817) It's better to respect the NetError()
-    // even if `response_head_received_` is true.
-    if (response_head_received_) {
-      error = detected_error_status_ ? net::ERR_FAILED : net::OK;
+    const int error = loader_->NetError();
+    if (!completion_callback_.is_null()) {
+      // As HandleResponseHeader() isn't called due to a request failure, such
+      // as unknown hosts. unreachable remote, reset by peer, and so on, we
+      // still hold `completion_callback_` to invoke.
+      if (devtools_observer_) {
+        DCHECK(devtools_request_id_);
+        devtools_observer_->OnCorsPreflightRequestCompleted(
+            *devtools_request_id_, network::URLLoaderCompletionStatus(error));
+      }
+      std::move(completion_callback_).Run(error, absl::nullopt, false);
     }
-
-    if (devtools_observer_) {
-      DCHECK(devtools_request_id_);
-      devtools_observer_->OnCorsPreflightRequestCompleted(
-          *devtools_request_id_,
-          response_head_received_ ? network::URLLoaderCompletionStatus(net::OK)
-                                  : network::URLLoaderCompletionStatus(error));
-    }
-
-    std::move(completion_callback_)
-        .Run(error, detected_error_status_,
-             has_authorization_covered_by_wildcard_);
 
     RemoveFromController();
     // |this| is deleted here.
@@ -458,14 +459,6 @@ class PreflightController::PreflightLoader final {
   absl::optional<base::UnguessableToken> devtools_request_id_;
   const net::NetworkIsolationKey network_isolation_key_;
   mojo::Remote<mojom::DevToolsObserver> devtools_observer_;
-  absl::optional<CorsErrorStatus> detected_error_status_;
-  bool has_authorization_covered_by_wildcard_ = false;
-  // There is a case when HandleResponseHeader() isn't called due to a request
-  // failure, such as unknown hosts. unreachable remote, reset by peer, and so
-  // on.
-  // TODO(https://crbug.com/1260817): Add testcase when HandleResponseHeader is
-  // not called.
-  bool response_head_received_ = false;
   const net::NetLogWithSource net_log_;
 
   DISALLOW_COPY_AND_ASSIGN(PreflightLoader);
