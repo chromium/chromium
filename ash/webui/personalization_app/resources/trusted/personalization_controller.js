@@ -43,15 +43,23 @@ async function fetchAllImagesForCollections(provider, store) {
         'Cannot fetch data for collections when it is not initialized');
     return;
   }
+
   store.dispatch(action.beginLoadImagesForCollectionsAction(collections));
-  for (const {id} of /** @type {!Array<{id: string}>} */ (collections)) {
-    let {images} = await provider.fetchImagesForCollection(id);
+
+  const allCollectionsImages =
+      await Promise.all(collections.reduce((previousResult, collection) => {
+        previousResult.push(provider.fetchImagesForCollection(collection.id));
+        return previousResult;
+      }, []));
+
+  collections.forEach((collection, index) => {
+    let {images} = allCollectionsImages[index];
     if (!isNonEmptyArray(images)) {
-      console.warn('Failed to fetch images for collection id', id);
+      console.warn('Failed to fetch images for collection id', collection.id);
       images = null;
     }
-    store.dispatch(action.setImagesForCollectionAction(id, images));
-  }
+    store.dispatch(action.setImagesForCollectionAction(collection.id, images));
+  });
 }
 
 /**

@@ -125,10 +125,12 @@ class ChromePersonalizationAppUiDelegate
   void OnFetchCollections(bool success,
                           const std::vector<backdrop::Collection>& collections);
 
-  void OnFetchCollectionImages(FetchImagesForCollectionCallback callback,
-                               bool success,
-                               const std::string& collection_id,
-                               const std::vector<backdrop::Image>& images);
+  void OnFetchCollectionImages(
+      FetchImagesForCollectionCallback callback,
+      std::unique_ptr<backdrop_wallpaper_handlers::ImageInfoFetcher> fetcher,
+      bool success,
+      const std::string& collection_id,
+      const std::vector<backdrop::Image>& images);
 
   void OnGetLocalImages(GetLocalImagesCallback callback,
                         const std::vector<base::FilePath>& images);
@@ -171,9 +173,6 @@ class ChromePersonalizationAppUiDelegate
   std::unique_ptr<backdrop_wallpaper_handlers::CollectionInfoFetcher>
       wallpaper_collection_info_fetcher_;
   std::vector<FetchCollectionsCallback> pending_collections_callbacks_;
-
-  std::unique_ptr<backdrop_wallpaper_handlers::ImageInfoFetcher>
-      wallpaper_images_info_fetcher_;
 
   std::unique_ptr<backdrop_wallpaper_handlers::ImageInfoFetcher>
       wallpaper_attribution_info_fetcher_;
@@ -223,6 +222,10 @@ class ChromePersonalizationAppUiDelegate
   // Used for fetching online image attribution.
   base::WeakPtrFactory<ChromePersonalizationAppUiDelegate>
       attribution_weak_ptr_factory_{this};
+
+  // General use other than the specific cases above.
+  base::WeakPtrFactory<ChromePersonalizationAppUiDelegate> weak_ptr_factory_{
+      this};
 };
 
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_CHROME_PERSONALIZATION_APP_UI_DELEGATE_H_
