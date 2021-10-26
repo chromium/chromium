@@ -19,7 +19,6 @@
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
-#include "net/base/schemeful_site.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
@@ -87,8 +86,6 @@ void AttributionNetworkSenderImpl::SendReport(
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = report.ReportURL();
-  resource_request->referrer =
-      GURL(report.impression.ConversionDestination().Serialize());
   resource_request->method = net::HttpRequestHeaders::kPostMethod;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->load_flags =
