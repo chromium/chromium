@@ -288,54 +288,6 @@ TEST_P(AppListMainViewTest, ModelChanged) {
   EXPECT_EQ(kReplacementItems, GetRootViewModel()->view_size());
 }
 
-// Tests dragging an item out of a single item folder and drop it at the last
-// slot.
-TEST_P(AppListMainViewTest, DragLastItemFromFolderAndDropAtLastSlot) {
-  AppListItemView* folder_item_view = CreateAndOpenSingleItemFolder();
-  const gfx::Rect first_slot_tile = folder_item_view->bounds();
-
-  EXPECT_EQ(1, GetFolderViewModel()->view_size());
-
-  AppListItemView* dragged = StartDragForReparent(0);
-
-  // Drop it to the slot on the right of first slot.
-  AppsGridViewTestApi root_grid_view_test_api(GetRootGridView());
-  gfx::Point point =
-      root_grid_view_test_api.GetItemTileRectAtVisualIndex(0, 1).CenterPoint();
-  // Convert `point` to the folder's grid coordinates.
-  views::View::ConvertPointToTarget(GetRootGridView(), GetFolderGridView(),
-                                    &point);
-
-  SimulateUpdateDrag(GetFolderGridView(), AppsGridView::MOUSE, dragged, point);
-
-  // Drop it.
-  GetFolderGridView()->EndDrag(false);
-
-  // Folder icon view should be gone and there is only one item view.
-  EXPECT_EQ(1, GetRootViewModel()->view_size());
-  EXPECT_EQ(AppListItemView::kViewClassName,
-            static_cast<views::View*>(GetRootViewModel()->view_at(0))
-                ->GetClassName());
-
-  // The item view should be in slot 1 instead of slot 2 where it is dropped.
-  root_grid_view_test_api.LayoutToIdealBounds();
-  EXPECT_EQ(first_slot_tile, GetRootViewModel()->view_at(0)->bounds());
-
-  // Single item folder should be auto removed.
-  EXPECT_FALSE(delegate_->GetTestModel()->FindFolderItem("single_item_folder"));
-
-  // Ensure keyboard selection works on the root grid view after a reparent.
-  // This is a regression test for https://crbug.com/466058.
-  SimulateKeyPress(ui::VKEY_RIGHT);
-
-  // Focus moves to the item that was just dropped. This is consistent with
-  // focus behavior for dragging and dropping items in the main grid (not
-  // involving folders).
-  EXPECT_TRUE(GetRootViewModel()->view_at(0)->HasFocus());
-  EXPECT_TRUE(GetRootGridView()->has_selected_view());
-  EXPECT_FALSE(GetFolderGridView()->has_selected_view());
-}
-
 // Tests dragging an item out of a single item folder and dropping it onto the
 // page switcher. Regression test for http://crbug.com/415530/.
 TEST_P(AppListMainViewTest, DragReparentItemOntoPageSwitcher) {
