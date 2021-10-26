@@ -21,6 +21,38 @@ TEST(RectFTest, FromRect) {
   EXPECT_EQ(b, c);
 }
 
+TEST(RectFTest, Contains) {
+  EXPECT_FALSE(RectF().Contains(0, 0));
+  RectF r(10, 20, 30, 40);
+  EXPECT_FALSE(r.Contains(0, 0));
+  EXPECT_FALSE(r.Contains(9.9999f, 20));
+  EXPECT_FALSE(r.Contains(10, 19.9999f));
+  EXPECT_TRUE(r.Contains(10, 20));
+  EXPECT_TRUE(r.Contains(39.9999f, 20));
+  EXPECT_FALSE(r.Contains(40, 20));
+  EXPECT_TRUE(r.Contains(10, 59.9999f));
+  EXPECT_FALSE(r.Contains(10, 60));
+  EXPECT_TRUE(r.Contains(39.9999f, 59.9999f));
+  EXPECT_FALSE(r.Contains(40, 60));
+  EXPECT_FALSE(r.Contains(100, 100));
+}
+
+TEST(RectFTest, InclusiveContains) {
+  EXPECT_TRUE(RectF().InclusiveContains(0, 0));
+  EXPECT_FALSE(RectF().InclusiveContains(0.0001f, 0));
+  RectF r(10, 20, 30, 40);
+  EXPECT_FALSE(r.InclusiveContains(0, 0));
+  EXPECT_FALSE(r.InclusiveContains(9.9999f, 20));
+  EXPECT_FALSE(r.InclusiveContains(10, 19.9999f));
+  EXPECT_TRUE(r.InclusiveContains(10, 20));
+  EXPECT_TRUE(r.InclusiveContains(40, 20));
+  EXPECT_FALSE(r.InclusiveContains(40.0001f, 20));
+  EXPECT_TRUE(r.InclusiveContains(10, 60));
+  EXPECT_FALSE(r.InclusiveContains(10, 60.0001f));
+  EXPECT_TRUE(r.InclusiveContains(40, 60));
+  EXPECT_FALSE(r.InclusiveContains(100, 100));
+}
+
 TEST(RectFTest, BoundingRect) {
   // If point B dominates A, then A should be the origin.
   EXPECT_RECTF_EQ(RectF(4.2f, 6.8f, 0, 0),
