@@ -188,8 +188,8 @@ struct StringPair {
 };
 
 enum AnEnum {
-  YES,
-  NO
+  kYes,
+  kNo
 };
 
 interface SampleInterface {
@@ -209,7 +209,7 @@ struct AllTheThings {
   uint64 unsigned_64bit_value;
   float float_value_32bit;
   double float_value_64bit;
-  AnEnum enum_value = AnEnum.YES;
+  AnEnum enum_value = AnEnum.kYes;
 
   // Strings may be nullable.
   string? maybe_a_string_maybe_not;
@@ -300,20 +300,23 @@ within a module or nested within the namespace of some struct or interface:
 module business.mojom;
 
 enum Department {
-  SALES = 0,
-  DEV,
+  kSales = 0,
+  kDev,
 };
 
 struct Employee {
   enum Type {
-    FULL_TIME,
-    PART_TIME,
+    kFullTime,
+    kPartTime,
   };
 
   Type type;
   // ...
 };
 ```
+
+C++ constant-style enum value names are preferred as specified in the
+[Google C++ Style Guide](https://google.github.io/styleguide/cppguide.html#Enumerator_Names).
 
 Similar to C-style enums, individual values may be explicitly assigned within an
 enum definition. By default, values are based at zero and increment by
@@ -336,8 +339,8 @@ struct Employee {
   const uint64 kInvalidId = 0;
 
   enum Type {
-    FULL_TIME,
-    PART_TIME,
+    kFullTime,
+    kPartTime,
   };
 
   uint64 id = kInvalidId;
@@ -514,9 +517,9 @@ values. For example if a Mojom declares the enum:
 
 ``` cpp
 enum AdvancedBoolean {
-  TRUE = 0,
-  FALSE = 1,
-  FILE_NOT_FOUND = 2,
+  kTrue = 0,
+  kFalse = 1,
+  kFileNotFound = 2,
 };
 ```
 
@@ -737,8 +740,8 @@ If you want an enum to be extensible in the future, you can apply the
 ``` cpp
 [Extensible]
 enum Department {
-  SALES,
-  DEV,
+  kSales,
+  kDev,
 };
 ```
 
@@ -747,9 +750,9 @@ And later you can extend this enum without breaking backwards compatibility:
 ``` cpp
 [Extensible]
 enum Department {
-  SALES,
-  DEV,
-  [MinVersion=1] RESEARCH,
+  kSales,
+  kDev,
+  [MinVersion=1] kResearch,
 };
 ```
 
