@@ -1,7 +1,6 @@
 #include "rar.hpp"
 
-File::File()
-{
+File::File() {
   hFile=FILE_BAD_HANDLE;
   *FileName=0;
   NewFile=false;
@@ -26,8 +25,7 @@ File::File()
 }
 
 
-File::~File()
-{
+File::~File() {
   if (hFile!=FILE_BAD_HANDLE && !SkipClose)
     if (NewFile)
       Delete();

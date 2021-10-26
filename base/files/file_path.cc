@@ -98,12 +98,12 @@ bool IsPathAbsolute(StringPieceType path) {
   StringType::size_type letter = FindDriveLetter(path);
   if (letter != StringType::npos) {
     // Look for a separator right after the drive specification.
-    return path.length() > letter + 1 &&
-        FilePath::IsSeparator(path[letter + 1]);
+    return path.length() > letter + 1 && FilePath::IsSeparator(path[letter + 1]);
   }
   // Look for a pair of leading separators.
   return path.length() > 1 &&
-      FilePath::IsSeparator(path[0]) && FilePath::IsSeparator(path[1]);
+      FilePath::IsSeparator(path[0]) &&
+      FilePath::IsSeparator(path[1]); 
 #else  // FILE_PATH_USES_DRIVE_LETTERS
   // Look for a separator in the first position.
   return path.length() > 0 && FilePath::IsSeparator(path[0]);
@@ -112,10 +112,10 @@ bool IsPathAbsolute(StringPieceType path) {
 
 bool AreAllSeparators(const StringType& input) {
   for (auto it : input) {
-    if (!FilePath::IsSeparator(it))
-      return false;
+    if (!FilePath::IsSeparator(it)) {
+       return false;
+    }
   }
-
   return true;
 }
 
@@ -200,7 +200,6 @@ FilePath::FilePath(StringPieceType path) : path_(path) {
 FilePath::~FilePath() = default;
 
 FilePath& FilePath::operator=(const FilePath& that) = default;
-
 FilePath& FilePath::operator=(FilePath&& that) noexcept = default;
 
 bool FilePath::operator==(const FilePath& that) const {
@@ -272,9 +271,7 @@ bool FilePath::IsParent(const FilePath& child) const {
   return AppendRelativePath(child, nullptr);
 }
 
-bool FilePath::AppendRelativePath(const FilePath& child,
-                                  FilePath* path) const {
-                                          
+bool FilePath::AppendRelativePath(const FilePath& child, FilePath* path) const {
   std::vector<StringType> parent_components;
   std::vector<StringType> child_components;
   GetComponents(&parent_components);
@@ -282,14 +279,11 @@ bool FilePath::AppendRelativePath(const FilePath& child,
 
   if (parent_components.empty() ||
       parent_components.size() >= child_components.size()) {
-
     return false;
   }
 
-  std::vector<StringType>::const_iterator parent_comp =
-      parent_components.begin();
-  std::vector<StringType>::const_iterator child_comp =
-      child_components.begin();
+  std::vector<StringType>::const_iterator parent_comp = parent_components.begin();
+  std::vector<StringType>::const_iterator child_comp = child_components.begin();
 
 #if defined(FILE_PATH_USES_DRIVE_LETTERS)
   // Windows can access case sensitive filesystems, so component
@@ -570,8 +564,9 @@ bool FilePath::IsAbsolute() const {
 }
 
 bool FilePath::IsNetwork() const {
-  return path_.length() > 1 && FilePath::IsSeparator(path_[0]) &&
-         FilePath::IsSeparator(path_[1]);
+  return path_.length() > 1 && 
+        FilePath::IsSeparator(path_[0]) &&
+        FilePath::IsSeparator(path_[1]);
 }
 
 bool FilePath::EndsWithSeparator() const {

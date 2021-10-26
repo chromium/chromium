@@ -223,11 +223,17 @@ class BASE_EXPORT FilePath {
     return path_ < that.path_;
   }
 
-  const StringType& value() const { return path_; }
+  const StringType& value() const {
+    return path_;
+  }
 
-  bool empty() const { return path_.empty(); }
+  bool empty() const {
+    return path_.empty();
+  }
 
-  void clear() { path_.clear(); }
+  void clear() {
+    path_.clear();
+  }
 
   // Returns true if |character| is in kSeparators.
   // 判断参数字符是否是分隔符
