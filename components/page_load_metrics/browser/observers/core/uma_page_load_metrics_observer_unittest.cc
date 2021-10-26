@@ -27,6 +27,12 @@ using content::RenderFrameHost;
 using content::RenderFrameHostTester;
 using LargestContentType =
     page_load_metrics::ContentfulPaintTimingInfo::LargestContentType;
+using UserInteractionLatenciesPtr =
+    page_load_metrics::mojom::UserInteractionLatenciesPtr;
+using UserInteractionLatencies =
+    page_load_metrics::mojom::UserInteractionLatencies;
+using UserInteractionLatency = page_load_metrics::mojom::UserInteractionLatency;
+using UserInteractionType = page_load_metrics::mojom::UserInteractionType;
 
 namespace {
 
@@ -1238,6 +1244,120 @@ TEST_F(UmaPageLoadMetricsObserverTest,
   NavigateAndCommit(GURL(kDefaultTestUrl2));
 
   TestAllFramesLCP(990, LargestContentType::kText);
+}
+
+TEST_F(UmaPageLoadMetricsObserverTest,
+       NormalizedResponsivenessMetricsWithoutSendingAllLatencies) {
+  page_load_metrics::mojom::InputTiming input_timing;
+  input_timing.num_interactions = 3;
+  input_timing.max_event_durations =
+      UserInteractionLatencies::NewWorstInteractionLatency(
+          base::Milliseconds(21));
+  input_timing.total_event_durations =
+      UserInteractionLatencies::NewWorstInteractionLatency(
+          base::Milliseconds(56));
+  NavigateAndCommit(GURL(kDefaultTestUrl));
+  tester()->SimulateInputTimingUpdate(input_timing);
+  // Navigate again to force histogram recording.
+  NavigateAndCommit(GURL(kDefaultTestUrl2));
+  EXPECT_THAT(
+      tester()->histogram_tester().GetAllSamples(
+          internal::kHistogramWorstUserInteractionLatencyMaxEventDuration),
+      testing::ElementsAre(base::Bucket(21, 1)));
+  EXPECT_THAT(
+      tester()->histogram_tester().GetAllSamples(
+          internal::kHistogramWorstUserInteractionLatencyTotalEventDuration),
+      testing::ElementsAre(base::Bucket(50, 1)));
+}
+
+TEST_F(UmaPageLoadMetricsObserverTest,
+       NormalizedResponsivenessMetricsWithSendingAllLatencies) {
+  // Flip the flag.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      blink::features::kSendAllUserInteractionLatencies);
+  page_load_metrics::mojom::InputTiming input_timing;
+  input_timing.num_interactions = 3;
+  input_timing.max_event_durations =
+      UserInteractionLatencies::NewUserInteractionLatencies({});
+  auto& max_event_durations =
+      input_timing.max_event_durations->get_user_interaction_latencies();
+  max_event_durations.emplace_back(UserInteractionLatency::New(
+      base::Milliseconds(50), UserInteractionType::kKeyboard));
+  max_event_durations.emplace_back(UserInteractionLatency::New(
+      base::Milliseconds(100), UserInteractionType::kTapOrClick));
+  max_event_durations.emplace_back(UserInteractionLatency::New(
+      base::Milliseconds(150), UserInteractionType::kDrag));
+  input_timing.total_event_durations =
+      UserInteractionLatencies::NewUserInteractionLatencies({});
+
+  auto& total_event_durations =
+      input_timing.total_event_durations->get_user_interaction_latencies();
+  total_event_durations.emplace_back(UserInteractionLatency::New(
+      base::Milliseconds(55), UserInteractionType::kKeyboard));
+  total_event_durations.emplace_back(UserInteractionLatency::New(
+      base::Milliseconds(105), UserInteractionType::kTapOrClick));
+  total_event_durations.emplace_back(UserInteractionLatency::New(
+      base::Milliseconds(155), UserInteractionType::kDrag));
+  NavigateAndCommit(GURL(kDefaultTestUrl));
+  tester()->SimulateInputTimingUpdate(input_timing);
+  // Navigate again to force histogram recording.
+  NavigateAndCommit(GURL(kDefaultTestUrl2));
+
+  std::vector<std::pair<std::string, int>> uma_list = {
+      std::make_pair(
+          internal::kHistogramWorstUserInteractionLatencyMaxEventDuration, 146),
+      std::make_pair(
+          internal::kHistogramWorstUserInteractionLatencyTotalEventDuration,
+          146),
+      std::make_pair(
+          internal::
+              kHistogramWorstUserInteractionLatencyOverBudgetMaxEventDuration,
+          50),
+      std::make_pair(
+          internal::
+              kHistogramWorstUserInteractionLatencyOverBudgetTotalEventDuration,
+          50),
+      std::make_pair(
+          internal::
+              kHistogramSumOfUserInteractionLatencyOverBudgetMaxEventDuration,
+          50),
+      std::make_pair(
+          internal::
+              kHistogramSumOfUserInteractionLatencyOverBudgetTotalEventDuration,
+          62),
+      std::make_pair(
+          internal::
+              kHistogramAverageUserInteractionLatencyOverBudgetMaxEventDuration,
+          14),
+      std::make_pair(
+          internal::
+              kHistogramAverageUserInteractionLatencyOverBudgetTotalEventDuration,
+          21),
+      std::make_pair(
+          internal::
+              kHistogramSlowUserInteractionLatencyOverBudgetHighPercentileMaxEventDuration,
+          50),
+      std::make_pair(
+          internal::
+              kHistogramSlowUserInteractionLatencyOverBudgetHighPercentileTotalEventDuration,
+          50),
+      std::make_pair(
+          internal::
+              kHistogramSlowUserInteractionLatencyOverBudgetHighPercentile2MaxEventDuration,
+          50),
+      std::make_pair(
+          internal::
+              kHistogramSlowUserInteractionLatencyOverBudgetHighPercentile2TotalEventDuration,
+          50)};
+
+  for (auto& metric : uma_list) {
+    EXPECT_THAT(
+        tester()->histogram_tester().GetAllSamples(metric.first.c_str()),
+        // metric.second is the minimum value of the bucket, not the actual
+        // value.
+        testing::ElementsAre(base::Bucket(metric.second, 1)));
+  }
 }
 
 TEST_F(UmaPageLoadMetricsObserverTest, FirstInputDelayAndTimestamp) {
