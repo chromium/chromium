@@ -366,6 +366,26 @@ class CORE_EXPORT HTMLMediaElement
 
   bool IsShowPosterFlagSet() const { return show_poster_flag_; }
 
+  // What LocalFrame should own our player?  Normally, players are tied to their
+  // HTMLMediaElement's LocalFrame for metrics, network fetch, etc.  This has
+  // the side-effect of requiring that a player is destroyed when the element's
+  // frame changes.  That causes playback to be user-visibly interrupted,
+  // potentially for multiple seconds.
+  //
+  // In some very restricted cases, related to picture-in-picture playback, it
+  // is okay to keep the player even when the element is moved to a new
+  // document.  It requires that everything is same-origin, and that lifetimes
+  // are looked after carefully so that the player does not outlive the frame
+  // that owns it.  However, it permits seamless playback when transitioning to
+  // picture in picture.  In this case, this function will return a different
+  // frame than our own.
+  //
+  // Note that new players can be created in this frame as well, so that a
+  // transfer back to the original opener frame when picture in picture is
+  // closed can be seamless too, even if the player was recreated for some
+  // reason while in picture in picture mode.
+  LocalFrame* LocalFrameForPlayer();
+
  protected:
   // Assert the correct order of the children in shadow dom when DCHECK is on.
   static void AssertShadowRootChildren(ShadowRoot&);
@@ -639,6 +659,8 @@ class CORE_EXPORT HTMLMediaElement
 
   Features GetFeatures() override;
 
+  void ResetMojoState();
+
   // Adds a new MediaPlayerObserver remote that will be notified about media
   // player events and returns a receiver that an observer implementation can
   // bind to.
@@ -828,6 +850,32 @@ class CORE_EXPORT HTMLMediaElement
   };
 
   AudioSourceProviderImpl audio_source_provider_;
+
+  // Notify HTMLMediaElement when a document's ExecutionContext is destroyed.
+  // It allows us to disconnect from a previous document's frame if we were
+  // using it to support our WebMediaPlayer rather than our current frame.
+  class OpenerContextObserver final
+      : public GarbageCollected<OpenerContextObserver>,
+        public ContextLifecycleObserver {
+   public:
+    // Notify `element` when our context is destroyed.
+    explicit OpenerContextObserver(HTMLMediaElement* element);
+    ~OpenerContextObserver() final;
+
+    void Trace(Visitor* visitor) const final;
+
+   protected:
+    void ContextDestroyed() final;
+
+    Member<HTMLMediaElement> element_;
+  };
+
+  // Clean up things that are tied to any previous frame, including the player
+  // and mojo interfaces, when we switch to a new frame.
+  void AttachToNewFrame();
+
+  Member<Document> opener_document_;
+  Member<OpenerContextObserver> opener_context_observer_;
 
   friend class AutoplayPolicy;
   friend class AutoplayUmaHelperTest;

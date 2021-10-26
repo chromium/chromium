@@ -350,6 +350,10 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
     return dummy_page_holder_->GetFrame().DomWindow();
   }
 
+  LocalDOMWindow* GetDomWindow() const {
+    return dummy_page_holder_->GetFrame().DomWindow();
+  }
+
  protected:
   // Helpers to call MediaPlayerObserver mojo methods and check their results.
   void NotifyMediaPlaying() {
@@ -427,30 +431,44 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
 
   bool WasPlayerDestroyed() const { return !media_player_weak_; }
 
+  // Create a dummy page holder with the given security origin.
+  std::unique_ptr<DummyPageHolder> CreatePageWithSecurityOrigin(
+      const char* origin) {
+    // Make another document with the same security origin.
+
+    auto dummy_page_holder = std::make_unique<DummyPageHolder>(
+        IntSize(), nullptr,
+        MakeGarbageCollected<WebMediaStubLocalFrameClient>(
+            /*player=*/nullptr));
+    Document& document = dummy_page_holder->GetDocument();
+    document.domWindow()->GetSecurityContext().SetSecurityOriginForTesting(
+        SecurityOrigin::CreateFromString(origin));
+
+    return dummy_page_holder;
+  }
+
+  // Set the security origin of our window.
+  void SetSecurityOrigin(const char* origin) {
+    Media()
+        ->GetDocument()
+        .domWindow()
+        ->GetSecurityContext()
+        .SetSecurityOriginForTesting(SecurityOrigin::CreateFromString(origin));
+  }
+
   // Move Media() from a document in `old_origin` to  one in `new_origin`, and
   // expect that `should_destroy` matches whether the player is destroyed.
   void MoveElementAndTestPlayerDestruction(const char* old_origin,
                                            const char* new_origin,
                                            bool should_destroy) {
-    Media()
-        ->GetDocument()
-        .domWindow()
-        ->GetSecurityContext()
-        .SetSecurityOriginForTesting(
-            SecurityOrigin::CreateFromString(old_origin));
-
+    SetSecurityOrigin(old_origin);
     WaitForPlayer();
     // Player should not be destroyed yet.
     EXPECT_FALSE(WasPlayerDestroyed());
 
-    // Make another document with the same security origin.
-    auto new_dummy_page_holder = std::make_unique<DummyPageHolder>(
-        IntSize(), nullptr,
-        MakeGarbageCollected<WebMediaStubLocalFrameClient>(
-            /*player=*/nullptr));
+    // Make another document with the correct security origin.
+    auto new_dummy_page_holder = CreatePageWithSecurityOrigin(new_origin);
     Document& new_document = new_dummy_page_holder->GetDocument();
-    new_document.domWindow()->GetSecurityContext().SetSecurityOriginForTesting(
-        SecurityOrigin::CreateFromString(new_origin));
 
     // Move the element.
     new_document.adoptNode(Media(), ASSERT_NO_EXCEPTION);
@@ -1267,6 +1285,54 @@ TEST_P(
   base::test::ScopedFeatureList scoped_feature_list(media::kReuseMediaPlayer);
   MoveElementAndTestPlayerDestruction("https://a.com", "https://b.com",
                                       /*should_destroy=*/true);
+}
+
+TEST_P(HTMLMediaElementTest,
+       DestroyMediaPlayerWhenUnloadingOpenerIfReuseIsEnabled) {
+  // Ensure that the WebMediaPlayer is re-used, that navigating the opener away
+  // causes the player to be destroyed.
+  base::test::ScopedFeatureList scoped_feature_list(media::kReuseMediaPlayer);
+
+  const char* origin = "https://a.com";
+  SetSecurityOrigin(origin);
+  WaitForPlayer();
+  auto new_dummy_page_holder = CreatePageWithSecurityOrigin(origin);
+  new_dummy_page_holder->GetDocument().adoptNode(Media(), ASSERT_NO_EXCEPTION);
+
+  EXPECT_FALSE(WasPlayerDestroyed());
+  GetDomWindow()->FrameDestroyed();
+  EXPECT_TRUE(WasPlayerDestroyed());
+}
+
+TEST_P(HTMLMediaElementTest,
+       CreateMediaPlayerAfterMovingElementUsesOpenerFrameIfReuseIsEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list(media::kReuseMediaPlayer);
+  // Move the element before creating the player.
+  const char* origin = "https://a.com";
+  SetSecurityOrigin(origin);
+  auto new_dummy_page_holder = CreatePageWithSecurityOrigin(origin);
+  Document& new_document = new_dummy_page_holder->GetDocument();
+  LocalFrame* old_frame = Media()->GetDocument().GetFrame();
+  EXPECT_EQ(old_frame, Media()->LocalFrameForPlayer());
+  new_document.adoptNode(Media(), ASSERT_NO_EXCEPTION);
+  // The element should still use the original frame.
+  EXPECT_EQ(old_frame, Media()->LocalFrameForPlayer());
+}
+
+TEST_P(HTMLMediaElementTest,
+       CreateMediaPlayerAfterMovingElementUsesNewFrameIfReuseIsNotEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(media::kReuseMediaPlayer);
+  // Move the element before creating the player.
+  const char* origin = "https://a.com";
+  SetSecurityOrigin(origin);
+  auto new_dummy_page_holder = CreatePageWithSecurityOrigin(origin);
+  Document& new_document = new_dummy_page_holder->GetDocument();
+  LocalFrame* old_frame = Media()->GetDocument().GetFrame();
+  EXPECT_EQ(old_frame, Media()->LocalFrameForPlayer());
+  new_document.adoptNode(Media(), ASSERT_NO_EXCEPTION);
+  // The element should no longer use the original frame.
+  EXPECT_NE(old_frame, Media()->LocalFrameForPlayer());
 }
 
 }  // namespace blink

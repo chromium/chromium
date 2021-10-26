@@ -909,8 +909,8 @@ std::unique_ptr<WebMediaPlayer> LocalFrameClientImpl::CreateWebMediaPlayer(
     HTMLMediaElement& html_media_element,
     const WebMediaPlayerSource& source,
     WebMediaPlayerClient* client) {
-  WebLocalFrameImpl* web_frame =
-      WebLocalFrameImpl::FromFrame(html_media_element.GetDocument().GetFrame());
+  LocalFrame* local_frame = html_media_element.LocalFrameForPlayer();
+  WebLocalFrameImpl* web_frame = WebLocalFrameImpl::FromFrame(local_frame);
 
   if (!web_frame || !web_frame->Client())
     return nullptr;
