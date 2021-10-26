@@ -566,12 +566,6 @@ void RenderWidgetHostViewBase::UpdateScreenInfo() {
   }
 }
 
-float RenderWidgetHostViewBase::GetCurrentDeviceScaleFactor() const {
-  // TODO(enne): consolidate this GetCurrentDeviceScaleFactor() function with
-  // GetDeviceScaleFactor().
-  return screen_infos_.current().device_scale_factor;
-}
-
 void RenderWidgetHostViewBase::DidUnregisterFromTextInputManager(
     TextInputManager* text_input_manager) {
   DCHECK(text_input_manager && text_input_manager_ == text_input_manager);
@@ -618,9 +612,7 @@ void RenderWidgetHostViewBase::GetScreenInfo(display::ScreenInfo* screen_info) {
 }
 
 float RenderWidgetHostViewBase::GetDeviceScaleFactor() {
-  display::ScreenInfo screen_info;
-  GetScreenInfo(&screen_info);
-  return screen_info.device_scale_factor;
+  return screen_infos_.current().device_scale_factor;
 }
 
 void RenderWidgetHostViewBase::OnAutoscrollStart() {

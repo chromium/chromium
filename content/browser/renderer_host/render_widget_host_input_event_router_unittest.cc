@@ -1250,6 +1250,12 @@ class DelegatedInkPointTest
 
   void SetDeviceScaleFactor(float dsf) {
     aura_test_helper_->GetTestScreen()->SetDeviceScaleFactor(dsf);
+
+    // Normally, WebContentsImpl owns a ScreenChangeMonitor that observes
+    // display::DisplayList changes like this and indirectly calls
+    // UpdateScreenInfo via a callback.  Since there's no WebContentsImpl
+    // in this unittest, make this call directly.
+    view_root_->UpdateScreenInfo();
   }
 
   MockCompositor* compositor() { return compositor_.get(); }

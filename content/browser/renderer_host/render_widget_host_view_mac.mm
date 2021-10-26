@@ -923,7 +923,7 @@ void RenderWidgetHostViewMac::CopyFromSurface(
   RenderWidgetHostViewBase::CopyMainAndPopupFromSurface(
       host()->GetWeakPtr(),
       browser_compositor_->GetDelegatedFrameHost()->GetWeakPtr(), popup_host,
-      popup_frame_host, src_subrect, dst_size, GetCurrentDeviceScaleFactor(),
+      popup_frame_host, src_subrect, dst_size, GetDeviceScaleFactor(),
       std::move(callback));
 }
 

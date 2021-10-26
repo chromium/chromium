@@ -2197,6 +2197,11 @@ void RenderWidgetHostViewAndroid::UpdateNativeViewTree(
   // ensure SynchronousCompositor is recreated in this case.
   MaybeCreateSynchronousCompositor();
 
+  // Force an initial update of screen infos so the default RWHVBase value
+  // is not used.
+  // TODO(enne): figure out a more straightforward init path for screen infos.
+  UpdateScreenInfo();
+
   if (is_showing_ && view_.GetWindowAndroid())
     StartObservingRootWindow();
 
