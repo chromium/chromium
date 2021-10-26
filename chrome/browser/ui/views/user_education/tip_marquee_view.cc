@@ -300,7 +300,7 @@ void TipMarqueeView::OnPaint(gfx::Canvas* canvas) {
 }
 
 std::u16string TipMarqueeView::GetTooltipText(const gfx::Point& p) const {
-  if (!IsPointInIcon(p))
+  if (!GetVisible() || !IsPointInIcon(p))
     return View::GetTooltipText(p);
 
   // TODO(pkasting): Localize
