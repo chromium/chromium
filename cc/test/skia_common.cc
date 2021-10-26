@@ -5,8 +5,11 @@
 #include "cc/test/skia_common.h"
 
 #include <stddef.h>
+
+#include <cstdint>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/containers/span.h"
 #include "base/strings/string_number_conversions.h"
@@ -239,8 +242,9 @@ scoped_refptr<SkottieWrapper> CreateSkottie(const gfx::Size& size,
                  base::NumberToString(duration_secs * kFps));
   }
 
-  return SkottieWrapper::CreateNonSerializable(
-      base::as_bytes(base::make_span(json)));
+  base::span<const uint8_t> json_span = base::as_bytes(base::make_span(json));
+  return SkottieWrapper::CreateSerializable(
+      std::vector<uint8_t>(json_span.begin(), json_span.end()));
 }
 
 PaintImage CreateNonDiscardablePaintImage(const gfx::Size& size) {
