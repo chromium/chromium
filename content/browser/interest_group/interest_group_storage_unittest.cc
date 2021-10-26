@@ -21,6 +21,7 @@
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "net/base/escape.h"
 #include "sql/database.h"
+#include "sql/meta_table.h"
 #include "sql/test/scoped_error_expecter.h"
 #include "sql/test/test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -98,8 +99,79 @@ TEST_F(InterestGroupStorageTest, DatabaseInitialized_CreateDatabase) {
     sql::Database raw_db;
     EXPECT_TRUE(raw_db.Open(db_path()));
 
-    // [interest_groups], [join_history], [bid_history], [win_history], [meta].
-    EXPECT_EQ(5u, sql::test::CountSQLTables(&raw_db));
+    // [interest_groups], [join_history], [bid_history], [win_history], [kanon],
+    // [meta].
+    EXPECT_EQ(6u, sql::test::CountSQLTables(&raw_db)) << raw_db.GetSchema();
+  }
+}
+
+TEST_F(InterestGroupStorageTest, DatabaseRazesOldVersion) {
+  ASSERT_FALSE(base::PathExists(db_path()));
+
+  // Create an empty database with old schema version (version=1).
+  {
+    sql::Database raw_db;
+    EXPECT_TRUE(raw_db.Open(db_path()));
+
+    sql::MetaTable meta_table;
+    EXPECT_TRUE(
+        meta_table.Init(&raw_db, /*version=*/1, /*compatible_version=*/1));
+
+    EXPECT_EQ(1u, sql::test::CountSQLTables(&raw_db)) << raw_db.GetSchema();
+  }
+
+  EXPECT_TRUE(base::PathExists(db_path()));
+  {
+    std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+    // We need to perform an interest group operation to trigger DB
+    // initialization.
+    const url::Origin test_origin =
+        url::Origin::Create(GURL("https://owner.example.com"));
+    storage->LeaveInterestGroup(test_origin, "example");
+  }
+
+  {
+    sql::Database raw_db;
+    EXPECT_TRUE(raw_db.Open(db_path()));
+
+    // [interest_groups], [join_history], [bid_history], [win_history], [kanon],
+    // [meta].
+    EXPECT_EQ(6u, sql::test::CountSQLTables(&raw_db)) << raw_db.GetSchema();
+  }
+}
+
+TEST_F(InterestGroupStorageTest, DatabaseRazesNewVersion) {
+  ASSERT_FALSE(base::PathExists(db_path()));
+
+  // Create an empty database with a newer schema version (version=1000000).
+  {
+    sql::Database raw_db;
+    EXPECT_TRUE(raw_db.Open(db_path()));
+
+    sql::MetaTable meta_table;
+    EXPECT_TRUE(meta_table.Init(&raw_db, /*version=*/1000000,
+                                /*compatible_version=*/1000000));
+
+    EXPECT_EQ(1u, sql::test::CountSQLTables(&raw_db)) << raw_db.GetSchema();
+  }
+
+  EXPECT_TRUE(base::PathExists(db_path()));
+  {
+    std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+    // We need to perform an interest group operation to trigger DB
+    // initialization.
+    const url::Origin test_origin =
+        url::Origin::Create(GURL("https://owner.example.com"));
+    storage->LeaveInterestGroup(test_origin, "example");
+  }
+
+  {
+    sql::Database raw_db;
+    EXPECT_TRUE(raw_db.Open(db_path()));
+
+    // [interest_groups], [join_history], [bid_history], [win_history], [kanon],
+    // [meta].
+    EXPECT_EQ(6u, sql::test::CountSQLTables(&raw_db)) << raw_db.GetSchema();
   }
 }
 
