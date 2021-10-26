@@ -207,9 +207,7 @@ source_set("browser") {
     "//skia/public/mojom",
     "//storage/browser",
     "//storage/common",
-
-    # TODO(jmadill): Isolate ANGLE version header. http://anglebug.com/2551
-    "//third_party/angle:angle_version",
+    "//third_party/angle:angle_version_info",
     "//third_party/blink/public:blink_headers",
     "//third_party/blink/public:buildflags",
     "//third_party/blink/public:resources",

@@ -326,9 +326,7 @@ target(link_target_type, "gles2_sources") {
     "//gpu/vulkan:buildflags",
     "//skia:buildflags",
     "//third_party/angle:angle_image_util",
-
-    # TODO(jmadill): Isolate ANGLE version header. http://anglebug.com/2551
-    "//third_party/angle:angle_version",
+    "//third_party/angle:angle_version_info",
     "//third_party/libyuv",
     "//third_party/protobuf:protobuf_lite",
     "//third_party/re2",
