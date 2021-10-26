@@ -1,4 +1,4 @@
-CONSOLE WARNING: The rtcpMuxPolicy option is deprecated and will be removed in M62, around October 2017. See https://www.chromestatus.com/features/5654810086866944 for more details.
+CONSOLE WARNING: The rtcpMuxPolicy option is deprecated and will be removed in M62, around October 2017. See https://www.chromestatus.com/feature/5654810086866944 for more details.
 CONSOLE WARNING: Unknown constraint named invalid rejected
 CONSOLE WARNING: Unknown constraint named valid_but_unsupported_1 rejected
 CONSOLE WARNING: Unknown constraint named valid_but_unsupported_1 rejected

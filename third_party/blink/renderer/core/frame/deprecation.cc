@@ -206,7 +206,7 @@ class DeprecationInfo final {
         id, milestone, feature, String(), String(), chrome_status_id,
         String::Format(
             "%s is deprecated and will be removed in %s. See "
-            "https://www.chromestatus.com/features/%s for more details.",
+            "https://www.chromestatus.com/feature/%s for more details.",
             feature.Ascii().c_str(), MilestoneString(milestone).Ascii().c_str(),
             chrome_status_id.Ascii().c_str()));
   }
@@ -223,7 +223,7 @@ class DeprecationInfo final {
         id, milestone, feature, replacement, String(), chrome_status_id,
         String::Format(
             "%s is deprecated and will be removed in %s. Please use %s "
-            "instead. See https://www.chromestatus.com/features/%s for more "
+            "instead. See https://www.chromestatus.com/feature/%s for more "
             "details.",
             feature.Ascii().c_str(), MilestoneString(milestone).Ascii().c_str(),
             replacement.Ascii().c_str(), chrome_status_id.Ascii().c_str()));
