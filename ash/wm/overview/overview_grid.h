@@ -85,7 +85,7 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // fit that height. Optionally animates the windows to their targets when
   // |animate| is true. Items in |ignored_items| are not positioned. This is for
   // dragging. |transition| specifies the overview state when this function is
-  // called.
+  // called. Updates the save desk template button if necessary.
   void PositionWindows(
       bool animate,
       const base::flat_set<OverviewItem*>& ignored_items = {},
@@ -359,7 +359,7 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
 
   // Updates the button that saves the active desk as a template. Creates the
   // button if it hasn't been created already, else it just sets its bounds.
-  void UpdateCreateDesksTemplatesButton();
+  void UpdateCreateDeskTemplateButton();
 
   // Returns true if the grid has no more windows.
   bool empty() const { return window_list_.empty(); }
@@ -408,6 +408,7 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
 
  private:
   class TargetWindowObserver;
+  friend class DesksTemplatesTest;
   friend class OverviewTestBase;
 
   // Struct which holds data required to perform nudges.
@@ -480,7 +481,7 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   void UpdateFrameThrottling();
 
   // Called back when the button to save a desk template is pressed.
-  void OnCreateDesksTemplatesButtonPressed();
+  void OnCreateDeskTemplateButtonPressed();
 
   // Root window the grid is in.
   aura::Window* root_window_;
@@ -563,7 +564,7 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
 
   // A widget that contains a button which creates a new desk template when
   // pressed.
-  std::unique_ptr<views::Widget> create_desks_templates_widget_;
+  std::unique_ptr<views::Widget> create_desk_template_widget_;
 };
 
 }  // namespace ash

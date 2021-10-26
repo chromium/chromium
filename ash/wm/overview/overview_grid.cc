@@ -276,15 +276,15 @@ std::unique_ptr<views::Widget> CreateDropTargetWidget(
   return widget;
 }
 
-// Creates `create_desk_templates_widget_`. It contains a button that saves the
+// Creates `create_desk_template_widget_`. It contains a button that saves the
 // active desk as a template.
-std::unique_ptr<views::Widget> CreateDesksTemplatesWidget(
+std::unique_ptr<views::Widget> CreateDeskTemplateWidget(
     aura::Window* root_window) {
   views::Widget::InitParams params;
   params.type = views::Widget::InitParams::TYPE_POPUP;
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-  params.name = "CreateDesksTemplatesWidget";
+  params.name = "CreateDeskTemplateWidget";
   params.accept_events = true;
   params.parent = desks_util::GetActiveDeskContainerForRoot(root_window);
   params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);
@@ -611,6 +611,8 @@ void OverviewGrid::PositionWindows(
     OverviewItem* window_item = window_list_[i].get();
     window_item->SetBounds(rects[i], animation_types[i]);
   }
+
+  UpdateCreateDeskTemplateButton();
 }
 
 OverviewItem* OverviewGrid::GetOverviewItemContaining(
@@ -657,10 +659,8 @@ void OverviewGrid::AddItem(aura::Window* window,
     else
       item->Restack();
   }
-  if (reposition) {
+  if (reposition)
     PositionWindows(animate, ignored_items);
-    UpdateCreateDesksTemplatesButton();
-  }
 }
 
 void OverviewGrid::AppendItem(aura::Window* window,
@@ -781,7 +781,6 @@ void OverviewGrid::SetBoundsAndUpdatePositions(
   bounds_ = bounds_in_screen;
   MaybeUpdateDesksWidgetBounds();
   PositionWindows(animate, ignored_items);
-  UpdateCreateDesksTemplatesButton();
 }
 
 void OverviewGrid::RearrangeDuringDrag(
@@ -964,34 +963,39 @@ void OverviewGrid::RefreshNoWindowsWidgetBounds(bool animate) {
   no_windows_widget_->SetBoundsCenteredIn(GetGridEffectiveBounds(), animate);
 }
 
-void OverviewGrid::UpdateCreateDesksTemplatesButton() {
+void OverviewGrid::UpdateCreateDeskTemplateButton() {
   if (!desks_templates_util::AreDesksTemplatesEnabled())
     return;
 
-  // Do not create the desks templates button if there are no windows in
-  // overview.
-  // TODO(https://crbug.com/1261565): Make this work for multidisplay.
-  if (window_list_.empty())
-    return;
+  // Do not create or show the create desk template button if there are no
+  // windows in this grid, or during a window drag.
+  const bool visible = !window_list_.empty() &&
+                       !overview_session_->GetCurrentDraggedOverviewItem();
 
-  if (!create_desks_templates_widget_) {
-    create_desks_templates_widget_ = CreateDesksTemplatesWidget(root_window_);
+  if (!visible) {
+    if (create_desk_template_widget_)
+      create_desk_template_widget_->Hide();
+    return;
+  }
+
+  if (!create_desk_template_widget_) {
+    create_desk_template_widget_ = CreateDeskTemplateWidget(root_window_);
     // TODO(sophiewen): Replace button label with localized text string.
-    create_desks_templates_widget_->SetContentsView(new PillButton(
-        base::BindRepeating(&OverviewGrid::OnCreateDesksTemplatesButtonPressed,
+    create_desk_template_widget_->SetContentsView(new PillButton(
+        base::BindRepeating(&OverviewGrid::OnCreateDeskTemplateButtonPressed,
                             base::Unretained(this)),
         u"Save desk as a template", PillButton::Type::kIcon,
         &kSaveDeskAsTemplateIcon));
-    create_desks_templates_widget_->Show();
   }
+  create_desk_template_widget_->Show();
 
   // Set the widget position above the overview item window and default width
   // and height.
   // TODO: Reposition Desks Templates bounds for tablet mode.
   const gfx::RectF overview_item_bounds = window_list_.front()->target_bounds();
   const gfx::Size preferred_size =
-      create_desks_templates_widget_->GetContentsView()->GetPreferredSize();
-  create_desks_templates_widget_->SetBounds(gfx::Rect(
+      create_desk_template_widget_->GetContentsView()->GetPreferredSize();
+  create_desk_template_widget_->SetBounds(gfx::Rect(
       overview_item_bounds.x(),
       overview_item_bounds.y() - kCreateDesksTemplatesOverviewItemSpacingDp,
       preferred_size.width(), preferred_size.height()));
@@ -1722,10 +1726,8 @@ void OverviewGrid::EndScroll() {
     item->set_scrolling_bounds(absl::nullopt);
   presentation_time_recorder_.reset();
 
-  if (!overview_session_->is_shutting_down()) {
+  if (!overview_session_->is_shutting_down())
     PositionWindows(/*animate=*/false);
-    UpdateCreateDesksTemplatesButton();
-  }
 }
 
 int OverviewGrid::CalculateWidthAndMaybeSetUnclippedBounds(OverviewItem* item,
@@ -2212,7 +2214,7 @@ void OverviewGrid::UpdateFrameThrottling() {
       windows_to_throttle);
 }
 
-void OverviewGrid::OnCreateDesksTemplatesButtonPressed() {
+void OverviewGrid::OnCreateDeskTemplateButtonPressed() {
   // TODO(sophiewen): This logic will be implemented.
 }
 
