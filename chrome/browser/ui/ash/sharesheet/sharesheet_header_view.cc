@@ -12,6 +12,8 @@
 #include "ash/public/cpp/file_icon_util.h"
 #include "ash/public/cpp/image_util.h"
 #include "ash/public/cpp/style/color_provider.h"
+#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
+#include "ash/style/ash_color_provider.h"
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/strings/strcat.h"
@@ -125,6 +127,7 @@ class SharesheetHeaderView::SharesheetImagePreview : public views::View {
     AddRowToImageContainerView();
     AddRowToImageContainerView();
 
+    ScopedLightModeAsDefault scoped_light_mode_as_default;
     for (size_t index = 0; index < grid_icon_count; ++index) {
       // If we have |enumeration|, add it as a label at the bottom right of
       // SharesheetImagePreview.
@@ -134,7 +137,8 @@ class SharesheetHeaderView::SharesheetImagePreview : public views::View {
                 base::StrCat({u"+", base::NumberToString16(enumeration)}),
                 CONTEXT_SHARESHEET_BUBBLE_SMALL, STYLE_SHARESHEET));
         label->SetLineHeight(kImagePreviewFileEnumerationLineHeight);
-        label->SetEnabledColor(kButtonTextColor);
+        label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+            AshColorProvider::ContentLayerType::kButtonLabelColorBlue));
         label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
         label->SetBackground(views::CreateRoundedRectBackground(
             kImagePreviewPlaceholderBackgroundColor,
@@ -185,6 +189,7 @@ class SharesheetHeaderView::SharesheetImagePreview : public views::View {
 
   void OnThemeChanged() override {
     View::OnThemeChanged();
+    ScopedLightModeAsDefault scoped_light_mode_as_default;
     SetBorder(views::CreateRoundedRectBorder(
         /*thickness=*/1,
         views::LayoutProvider::Get()->GetCornerRadiusMetric(
@@ -280,6 +285,7 @@ SharesheetHeaderView::SharesheetHeaderView(apps::mojom::IntentPtr intent,
       ResolveImages();
     } else {
       DCHECK_GT(image_preview_->GetImageViewCount(), 0);
+      ScopedLightModeAsDefault scoped_light_mode_as_default;
       const auto icon_color = ColorProvider::Get()->GetContentLayerColor(
           ColorProvider::ContentLayerType::kIconColorProminent);
       gfx::ImageSkia file_type_icon = gfx::CreateVectorIcon(
