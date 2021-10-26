@@ -34,6 +34,7 @@ source_set("pairing") {
   ]
 
   deps = [
+    "//ash/public/cpp",
     "//ash/quick_pair/common",
     "//ash/quick_pair/proto:fastpair_proto",
     "//ash/quick_pair/repository",
@@ -78,6 +79,8 @@ source_set("unit_tests") {
   deps = [
     ":pairing",
     ":test_support",
+    "//ash:test_support",
+    "//ash/public/cpp:test_support",
     "//ash/quick_pair/common",
     "//ash/quick_pair/proto:fastpair_proto",
     "//ash/quick_pair/repository:repository",

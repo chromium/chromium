@@ -48,6 +48,16 @@ void FastPairPresenter::OnDiscoveryMetadataRetrieved(
     return;
   }
 
+  // Anti-spoofing keys were introduced in Fast Pair v2, so if this isn't
+  // available then the device is v1.
+  if (device_metadata->GetDetails()
+          .anti_spoofing_key_pair()
+          .public_key()
+          .empty()) {
+    device->SetAdditionalData(Device::AdditionalDataType::kFastPairVersion,
+                              {1});
+  }
+
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   notification_controller_->ShowDiscoveryNotification(
       base::ASCIIToUTF16(device_metadata->GetDetails().name()),
