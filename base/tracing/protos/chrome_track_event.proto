@@ -388,9 +388,41 @@ message SendBeginMainFrameToCommitBreakdown {
   optional uint64 begin_main_sent_to_started_us = 11;
 }
 
+message GlobalRenderFrameHostId {
+  optional int32 routing_id = 1;
+  optional int32 process_id = 2;
+}
+
+message RenderFrameHost {
+  optional RenderProcessHost process = 1;
+  optional GlobalRenderFrameHostId render_frame_host_id = 2;
+
+  // NOTE: this proto must be kept consistent with
+  // RenderFrameHostImpl::LifecycleStateImpl.
+  enum LifecycleState {
+    UNSPECIFIED = 0;
+    SPECULATIVE = 1;
+    PENDING_COMMIT = 2;
+    PRERENDERING = 3;
+    ACTIVE = 4;
+    IN_BACK_FORWARD_CACHE = 5;
+    RUNNING_UNLOAD_HANDLERS = 6;
+    READY_TO_BE_DELETED = 7;
+  }
+
+  optional LifecycleState lifecycle_state = 3;
+  optional string origin = 4;
+  optional string url = 5;
+  optional uint64 frame_tree_node_id = 6;
+  optional SiteInstance site_instance = 7;
+  optional RenderFrameHost parent = 8;
+  optional RenderFrameHost outer_document = 9;
+  optional RenderFrameHost embedder = 10;
+}
+
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1026
+  // Next ID: 1029
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -448,5 +480,9 @@ message ChromeTrackEvent {
         chrome_sampling_profiler_sample_completed = 1025;
     optional SendBeginMainFrameToCommitBreakdown
         send_begin_mainframe_to_commit_breakdown = 1026;
+
+    optional GlobalRenderFrameHostId global_render_frame_host_id = 1027;
+
+    optional RenderFrameHost render_frame_host = 1028;
   }
 }

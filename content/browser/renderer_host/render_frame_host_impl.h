@@ -450,6 +450,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Additional non-override const version of GetParent.
   const RenderFrameHostImpl* GetParent() const;
 
+  // Write a representation of this object into a trace.
+  void WriteIntoTrace(
+      perfetto::TracedProto<perfetto::protos::pbzero::RenderFrameHost> proto);
+
   // Determines if a clipboard paste using |data| of type |data_type| is allowed
   // in this renderer frame.  The implementation delegates to
   // RenderFrameHostDelegate::IsClipboardPasteContentAllowed().  See the
@@ -892,6 +896,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Defines different states the RenderFrameHost can be in during its lifetime
   // i.e., from point of creation to deletion. See |SetLifecycleState|.
+  // NOTE: this must be kept consistent with the
+  // RenderFrameHostImpl.LifecycleState enum in chrome_track_event.proto for
+  // tracing.
   enum class LifecycleStateImpl {
     // This state corresponds to when a speculative RenderFrameHost is created
     // for an ongoing navigation (to new URL) but the navigation hasn't reached
@@ -3218,6 +3225,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // |BackForwardCacheDisablingFeatureHandle|.
   void OnBackForwardCacheDisablingFeatureRemoved(
       BackForwardCacheDisablingFeature feature);
+
+  perfetto::protos::pbzero::RenderFrameHost::LifecycleState
+  LifecycleStateToProto();
 
   // The RenderViewHost that this RenderFrameHost is associated with.
   //
