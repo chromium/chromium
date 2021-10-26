@@ -7,7 +7,6 @@
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/signin/ios/browser/features.h"
-#include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/metrics/metrics_app_interface.h"

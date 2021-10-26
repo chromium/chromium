@@ -21,7 +21,6 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/test_signin_client.h"
 #include "components/signin/public/identity_manager/device_accounts_synchronizer.h"

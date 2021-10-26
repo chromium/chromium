@@ -8,7 +8,6 @@
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #import "ios/chrome/browser/policy/policy_util.h"

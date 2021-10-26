@@ -6,7 +6,6 @@
 
 #import "base/mac/foundation_util.h"
 #import "components/prefs/pref_service.h"
-#import "components/signin/public/base/account_consistency_method.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
