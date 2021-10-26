@@ -421,6 +421,8 @@ const struct QuicErrorMapping {
     {quic::QUIC_MISSING_WRITE_KEYS, "quic.missing_write_keys"},
     {quic::QUIC_HTTP_RECEIVE_SPDY_FRAME, "quic.http_receive_spdy_frame"},
     {quic::QUIC_HTTP_RECEIVE_SERVER_PUSH, "quic.http_receive_server_push"},
+    {quic::QUIC_HTTP_INVALID_SETTING_VALUE,
+     "quic::quic_http_invalid_setting_value"},
 
     {quic::QUIC_KEY_UPDATE_ERROR, "quic.quic_key_update_error"},
     {quic::QUIC_AEAD_LIMIT_REACHED, "quic.quic_aead_limit_reached"},
@@ -454,6 +456,13 @@ const struct QuicErrorMapping {
      "quic::quic_too_many_connection_id_waiting_to_retire"},
     {quic::QUIC_INVALID_CHARACTER_IN_FIELD_VALUE,
      "quic::quic_invalid_character_in_field_value"},
+
+    {quic::QUIC_TLS_UNEXPECTED_KEYING_MATERIAL_EXPORT_LABEL,
+     "quic::quic_tls_unexpected_keying_material_export_label"},
+    {quic::QUIC_TLS_KEYING_MATERIAL_EXPORTS_MISMATCH,
+     "quic::quic_tls_keying_material_exports_mismatch"},
+    {quic::QUIC_TLS_KEYING_MATERIAL_EXPORT_NOT_AVAILABLE,
+     "quic::quic_tls_keying_material_export_not_available"},
 
     // No error. Used as bound while iterating.
     {quic::QUIC_LAST_ERROR, "quic.last_error"}};
