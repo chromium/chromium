@@ -87,6 +87,8 @@ class BorderView : public views::View {
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
     SetBorder(std::make_unique<SidePanelBorder>());
+    // Don't allow the view to process events.
+    SetCanProcessEventsWithinSubtree(false);
   }
 
   void Layout() override {
