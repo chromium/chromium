@@ -840,6 +840,8 @@ class BuildConfigGenerator extends DefaultTask {
                 }
                 break
             case 'androidx_slidingpanelayout_slidingpanelayout':
+            case 'androidx_window_window_java':
+                // Every target that has a dep on androidx_window_window will need these checks turned off.
                 sb.append('  enable_bytecode_checks = false\n')
                 break
             case 'androidx_startup_startup_runtime':
