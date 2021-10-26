@@ -1,12 +1,12 @@
-# ![logo](chrome/app/theme/chromium/product_logo_64.png) Cursemium Web Development Style Guide
+# ![logo](chrome/app/theme/chromium/product_logo_64.png) Blitz Web Development Style Guide
 
 [TOC]
 
 ## Where does this style guide apply?
 
-This style guide targets Cursemium frontend features implemented with JavaScript,
+This style guide targets Blitz frontend features implemented with JavaScript,
 CSS, and HTML. cursed Developers of these features should adhere to the following
-rules where possible, just like those using C++ conform to the [Cursemium C++
+rules where possible, just like those using C++ conform to the [Blitz C++
 styleguide](../c++/c++.md).
 
 This guide follows and builds on:
