@@ -577,8 +577,7 @@ void LogCredentialManagerGetResult(CredentialManagerGetResult result,
                                    CredentialMediationRequirement mediation);
 
 // Log the password reuse.
-void LogPasswordReuse(int password_length,
-                      int saved_passwords,
+void LogPasswordReuse(int saved_passwords,
                       int number_matches,
                       bool password_field_detected,
                       PasswordType reused_password_type);
@@ -648,7 +647,6 @@ void LogIsSyncPasswordHashSaved(IsSyncPasswordHashSaved state,
 // Log the number of Gaia password hashes saved, and the number of enterprise
 // password hashes saved. Currently only called on profile start up.
 void LogProtectedPasswordHashCounts(size_t gaia_hash_count,
-                                    size_t enterprise_hash_count,
                                     bool does_primary_account_exists,
                                     bool is_signed_in);
 

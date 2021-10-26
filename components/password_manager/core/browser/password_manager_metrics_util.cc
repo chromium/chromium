@@ -184,13 +184,10 @@ void LogCredentialManagerGetResult(CredentialManagerGetResult result,
   }
 }
 
-void LogPasswordReuse(int password_length,
-                      int saved_passwords,
+void LogPasswordReuse(int saved_passwords,
                       int number_matches,
                       bool password_field_detected,
                       PasswordType reused_password_type) {
-  base::UmaHistogramCounts100("PasswordManager.PasswordReuse.PasswordLength",
-                              password_length);
   base::UmaHistogramCounts1000("PasswordManager.PasswordReuse.TotalPasswords",
                                saved_passwords);
   base::UmaHistogramCounts1000("PasswordManager.PasswordReuse.NumberOfMatches",
@@ -317,14 +314,10 @@ void LogIsSyncPasswordHashSaved(IsSyncPasswordHashSaved state,
 }
 
 void LogProtectedPasswordHashCounts(size_t gaia_hash_count,
-                                    size_t enterprise_hash_count,
                                     bool does_primary_account_exists,
                                     bool is_signed_in) {
   base::UmaHistogramCounts100("PasswordManager.SavedGaiaPasswordHashCount",
                               static_cast<int>(gaia_hash_count));
-  base::UmaHistogramCounts100(
-      "PasswordManager.SavedEnterprisePasswordHashCount",
-      static_cast<int>(enterprise_hash_count));
 
   // Log parallel metrics for sync and signed-in non-sync accounts in addition
   // to above to be able to tell what fraction of signed-in non-sync users we
