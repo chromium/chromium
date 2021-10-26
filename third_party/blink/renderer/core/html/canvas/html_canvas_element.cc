@@ -912,13 +912,17 @@ scoped_refptr<StaticBitmapImage> HTMLCanvasElement::Snapshot(
         // path that scales down the drawing buffer to the maximum supported
         // size. Hence, we need to query the adjusted size of DrawingBuffer.
         IntSize adjusted_size = context_->DrawingBufferSize();
-        SkImageInfo info =
-            SkImageInfo::Make(adjusted_size.width(), adjusted_size.height(),
-                              kRGBA_8888_SkColorType, kUnpremul_SkAlphaType);
-        info = info.makeColorSpace(ColorParams().GetSkColorSpace());
-        if (ColorParams().GetSkColorType() != kN32_SkColorType)
-          info = info.makeColorType(kRGBA_F16_SkColorType);
-        image_bitmap = StaticBitmapImage::Create(std::move(pixel_data), info);
+        SkColorInfo color_info = GetRenderingContextSkColorInfo().makeAlphaType(
+            kUnpremul_SkAlphaType);
+        if (color_info.colorType() == kN32_SkColorType)
+          color_info = color_info.makeColorType(kRGBA_8888_SkColorType);
+        else
+          color_info = color_info.makeColorType(kRGBA_F16_SkColorType);
+        image_bitmap = StaticBitmapImage::Create(
+            std::move(pixel_data),
+            SkImageInfo::Make(
+                SkISize::Make(adjusted_size.width(), adjusted_size.height()),
+                color_info));
       }
     }
   } else if (context_) {
@@ -1162,8 +1166,9 @@ bool HTMLCanvasElement::ShouldAccelerate() const {
 
 std::unique_ptr<Canvas2DLayerBridge> HTMLCanvasElement::Create2DLayerBridge(
     RasterMode raster_mode) {
-  auto surface =
-      std::make_unique<Canvas2DLayerBridge>(Size(), raster_mode, ColorParams());
+  auto surface = std::make_unique<Canvas2DLayerBridge>(
+      Size(), raster_mode,
+      GetRenderingContextSkColorInfo().isOpaque() ? kOpaque : kNonOpaque);
   if (!surface->IsValid())
     return nullptr;
 
@@ -1499,7 +1504,7 @@ void HTMLCanvasElement::UpdateMemoryUsage() {
   if (IsWebGL())
     non_gpu_buffer_count += context_->ExternallyAllocatedBufferCountPerPixel();
 
-  const int bytes_per_pixel = ColorParams().BytesPerPixel();
+  const int bytes_per_pixel = GetRenderingContextSkColorInfo().bytesPerPixel();
 
   intptr_t gpu_memory_usage = 0;
   uint32_t canvas_width = std::min(kMaximumCanvasSize, width());

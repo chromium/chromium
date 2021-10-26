@@ -46,12 +46,9 @@ scoped_refptr<StaticBitmapImage>
 CanvasRenderingContextHost::CreateTransparentImage(const IntSize& size) const {
   if (!IsValidImageSize(size))
     return nullptr;
-  CanvasColorParams color_params = CanvasColorParams();
-  if (RenderingContext())
-    color_params = RenderingContext()->CanvasRenderingContextColorParams();
   SkImageInfo info = SkImageInfo::Make(
-      size.width(), size.height(), color_params.GetSkColorType(),
-      kPremul_SkAlphaType, color_params.GetSkColorSpace());
+      SkISize::Make(size.width(), size.height()),
+      GetRenderingContextSkColorInfo().makeAlphaType(kPremul_SkAlphaType));
   sk_sp<SkSurface> surface =
       SkSurface::MakeRaster(info, info.minRowBytes(), nullptr);
   if (!surface)
@@ -120,7 +117,8 @@ CanvasRenderingContextHost::GetOrCreateCanvasResourceProviderImpl(
 
 void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGPU() {
   const SkImageInfo resource_info =
-      ColorParams().GetAsResourceParams().MakeSkImageInfo(Size());
+      SkImageInfo::Make(SkISize::Make(Size().width(), Size().height()),
+                        GetRenderingContextSkColorInfo());
   std::unique_ptr<CanvasResourceProvider> provider;
   if (SharedGpuContext::IsGpuCompositingEnabled()) {
     provider = CanvasResourceProvider::CreateWebGPUImageProvider(
@@ -145,7 +143,8 @@ void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
 
   std::unique_ptr<CanvasResourceProvider> provider;
   const SkImageInfo resource_info =
-      ColorParams().GetAsResourceParams().MakeSkImageInfo(Size());
+      SkImageInfo::Make(SkISize::Make(Size().width(), Size().height()),
+                        GetRenderingContextSkColorInfo());
   if (SharedGpuContext::IsGpuCompositingEnabled() && LowLatencyEnabled()) {
     // If LowLatency is enabled, we need a resource that is able to perform well
     // in such mode. It will first try a PassThrough provider and, if that is
@@ -224,7 +223,8 @@ void CanvasRenderingContextHost::CreateCanvasResourceProvider2D(
 
   std::unique_ptr<CanvasResourceProvider> provider;
   const SkImageInfo resource_info =
-      ColorParams().GetAsResourceParams().MakeSkImageInfo(Size());
+      SkImageInfo::Make(SkISize::Make(Size().width(), Size().height()),
+                        GetRenderingContextSkColorInfo());
   const bool use_gpu =
       hint == RasterModeHint::kPreferGPU && ShouldAccelerate2dContext();
   // It is important to not use the context's IsOriginTopLeft() here
@@ -310,10 +310,10 @@ void CanvasRenderingContextHost::CreateCanvasResourceProvider2D(
   }
 }
 
-CanvasColorParams CanvasRenderingContextHost::ColorParams() const {
+SkColorInfo CanvasRenderingContextHost::GetRenderingContextSkColorInfo() const {
   if (RenderingContext())
-    return RenderingContext()->CanvasRenderingContextColorParams();
-  return CanvasColorParams();
+    return RenderingContext()->CanvasRenderingContextSkColorInfo();
+  return SkColorInfo(kN32_SkColorType, kPremul_SkAlphaType, nullptr);
 }
 
 ScriptPromise CanvasRenderingContextHost::convertToBlob(

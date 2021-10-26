@@ -414,10 +414,9 @@ CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
   if (composited_mode && HasPlaceholderCanvas())
     shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
-  const SkImageInfo resource_info =
-      context_->CanvasRenderingContextColorParams()
-          .GetAsResourceParams()
-          .MakeSkImageInfo(surface_size);
+  const SkImageInfo resource_info = SkImageInfo::Make(
+      SkISize::Make(surface_size.width(), surface_size.height()),
+      GetRenderingContextSkColorInfo());
   const cc::PaintFlags::FilterQuality filter_quality = FilterQuality();
   if (can_use_gpu) {
     provider = CanvasResourceProvider::CreateSharedImageProvider(
@@ -551,7 +550,7 @@ FontSelector* OffscreenCanvas::GetFontSelector() {
 }
 
 void OffscreenCanvas::UpdateMemoryUsage() {
-  int bytes_per_pixel = ColorParams().BytesPerPixel();
+  int bytes_per_pixel = GetRenderingContextSkColorInfo().bytesPerPixel();
 
   base::CheckedNumeric<int32_t> memory_usage_checked = bytes_per_pixel;
   memory_usage_checked *= Size().width();
