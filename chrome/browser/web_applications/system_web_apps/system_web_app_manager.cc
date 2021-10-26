@@ -61,6 +61,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "ash/webui/camera_app_ui/url_constants.h"
+#include "ash/webui/firmware_update_ui/url_constants.h"
 #include "ash/webui/help_app_ui/url_constants.h"
 #include "ash/webui/media_app_ui/url_constants.h"
 #include "ash/webui/os_feedback_ui/url_constants.h"
@@ -73,6 +74,7 @@
 #include "chrome/browser/ash/web_applications/diagnostics_system_web_app_info.h"
 #include "chrome/browser/ash/web_applications/eche_app_info.h"
 #include "chrome/browser/ash/web_applications/file_manager_web_app_info.h"
+#include "chrome/browser/ash/web_applications/firmware_update_system_web_app_info.h"
 #include "chrome/browser/ash/web_applications/help_app/help_app_web_app_info.h"
 #include "chrome/browser/ash/web_applications/media_app/media_web_app_info.h"
 #include "chrome/browser/ash/web_applications/os_feedback_system_web_app_info.h"
@@ -142,6 +144,8 @@ SystemAppDelegateMap CreateSystemWebApps(Profile* profile) {
       std::make_unique<ProjectorSystemWebAppDelegate>(profile));
   info_vec.emplace_back(
       std::make_unique<OsUrlHandlerSystemWebAppDelegate>(profile));
+  info_vec.emplace_back(
+      std::make_unique<FirmwareUpdateSystemAppDelegate>(profile));
 
 #if !defined(OFFICIAL_BUILD)
   info_vec.emplace_back(std::make_unique<TelemetrySystemAppDelegate>(profile));

@@ -30,7 +30,7 @@ function FirmwareUpdateAppBrowserTest() {}
 FirmwareUpdateAppBrowserTest.prototype = {
   __proto__: PolymerTest.prototype,
 
-  browsePreload: 'chrome://firmware-update/test_loader.html' +
+  browsePreload: 'chrome://accessory-update/test_loader.html' +
       '?module=chromeos/firmware_update/' +
       'firmware_update_unified_test.js',
 

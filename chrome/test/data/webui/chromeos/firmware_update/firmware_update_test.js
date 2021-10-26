@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FirmwareUpdateAppElement} from 'chrome://firmware-update/firmware_update_app.js';
+import {FirmwareUpdateAppElement} from 'chrome://accessory-update/firmware_update_app.js';
 
 import {assertEquals} from '../../chai_assert.js';
 

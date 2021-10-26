@@ -18401,6 +18401,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     </obsolete>
   </suffix>
   <suffix name="Eche" label="Eche"/>
+  <suffix name="FirmwareUpdate" label="FirmwareUpdate"/>
   <suffix name="Help" label="Help"/>
   <suffix name="Media" label="Media"/>
   <suffix name="MediaAudio" label="MediaAudio">

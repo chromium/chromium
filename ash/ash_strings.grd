@@ -3925,6 +3925,11 @@ Here are some things you can try to get started.
         Shimless RMA
       </message>
 
+      <!-- Firmware Update App -->
+      <message name="IDS_ASH_FIRMWARE_UPDATE_APP_TITLE" translateable="false" desc="The title of the firmware update system web app. Firmware update lets users update all their peripheral firmwares in one place.">
+        Firmware Updates
+      </message>
+
       <!-- Strings for Projector-->
 
       <message name="IDS_ASH_STATUS_TRAY_PROJECTOR_BUTTON_LABEL" desc="The label text for the button in the status tray to Projector.">

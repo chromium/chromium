@@ -19577,6 +19577,7 @@ Called by update_debug_scenarios.py.-->
   <int value="48" label="Media App Audio"/>
   <int value="49" label="Projector"/>
   <int value="50" label="Calculator"/>
+  <int value="51" label="FirmwareUpdateApp"/>
 </enum>
 
 <enum name="DefaultBrowserAsyncAttemptResult">

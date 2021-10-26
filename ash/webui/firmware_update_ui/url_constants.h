@@ -8,6 +8,7 @@
 namespace ash {
 
 extern const char kChromeUIFirmwareUpdateAppHost[];
+extern const char kChromeUIFirmwareUpdateAppURL[];
 
 }  // namespace ash
 

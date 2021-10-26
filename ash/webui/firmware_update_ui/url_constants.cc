@@ -6,6 +6,6 @@
 
 namespace ash {
 
-const char kChromeUIFirmwareUpdateAppHost[] = "firmware-update";
-
+const char kChromeUIFirmwareUpdateAppHost[] = "accessory-update";
+const char kChromeUIFirmwareUpdateAppURL[] = "chrome://accessory-update";
 }  // namespace ash

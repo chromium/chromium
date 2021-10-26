@@ -32,6 +32,7 @@ message SystemWebAppDataProto {
     OS_FEEDBACK = 19;
     PROJECTOR = 20;
     OS_URL_HANDLER = 21;
+    FIRMWARE_UPDATE = 22;
   };
 
   optional SystemAppType system_app_type = 1;
