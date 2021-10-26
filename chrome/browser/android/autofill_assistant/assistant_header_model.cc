@@ -57,11 +57,6 @@ void AssistantHeaderModel::SetProfileIconMenuSendFeedbackMessage(
           env, profile_icon_menu_send_feedback_message));
 }
 
-void AssistantHeaderModel::SetProgress(int progress) {
-  Java_AssistantHeaderModel_setProgress(AttachCurrentThread(), jmodel_,
-                                        progress);
-}
-
 void AssistantHeaderModel::SetProgressActiveStep(int active_step) {
   Java_AssistantHeaderModel_setProgressActiveStep(AttachCurrentThread(),
                                                   jmodel_, active_step);
@@ -81,8 +76,6 @@ void AssistantHeaderModel::SetStepProgressBarConfiguration(
     const ShowProgressBarProto::StepProgressBarConfiguration& configuration,
     const base::android::ScopedJavaLocalRef<jobject>& jcontext) {
   JNIEnv* env = AttachCurrentThread();
-  Java_AssistantHeaderModel_setUseStepProgressBar(
-      env, jmodel_, configuration.use_step_progress_bar());
   if (!configuration.annotated_step_icons().empty()) {
     auto jlist = Java_AssistantHeaderModel_createIconList(env);
     for (const auto& icon : configuration.annotated_step_icons()) {

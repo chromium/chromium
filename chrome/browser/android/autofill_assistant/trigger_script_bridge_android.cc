@@ -99,7 +99,6 @@ void TriggerScriptBridgeAndroid::ShowTriggerScript(
   header_model.SetProgressVisible(proto.has_progress_bar());
   if (proto.has_progress_bar()) {
     ShowProgressBarProto::StepProgressBarConfiguration configuration;
-    configuration.set_use_step_progress_bar(true);
     for (const auto& icon : proto.progress_bar().step_icons()) {
       *configuration.add_annotated_step_icons()->mutable_icon() = icon;
     }

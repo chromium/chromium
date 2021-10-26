@@ -50,7 +50,6 @@ class AssistantHeaderViewBinder
         final AnimatedPoodle mPoodle;
         final ViewGroup mHeader;
         final TextView mStatusMessage;
-        final AnimatedProgressBar mProgressBar;
         final AssistantStepProgressBar mStepProgressBar;
         final ImageView mTtsButton;
         final View mProfileIconView;
@@ -67,7 +66,6 @@ class AssistantHeaderViewBinder
             mPoodle = poodle;
             mHeader = headerView;
             mStatusMessage = headerView.findViewById(R.id.status_message);
-            mProgressBar = new AnimatedProgressBar(headerView.findViewById(R.id.progress_bar));
             mStepProgressBar =
                     new AssistantStepProgressBar(headerView.findViewById(R.id.step_progress_bar));
             mTtsButton = (ImageView) headerView.findViewById(R.id.tts_button);
@@ -82,7 +80,6 @@ class AssistantHeaderViewBinder
         }
 
         void disableAnimations(boolean disable) {
-            mProgressBar.disableAnimations(disable);
             mStepProgressBar.disableAnimations(disable);
             // Hiding the animated poodle seems to be the easiest way to disable its animation since
             // {@link LogoView#setAnimationEnabled(boolean)} is private.
@@ -91,14 +88,8 @@ class AssistantHeaderViewBinder
                     .setSupportsChangeAnimations(!disable);
         }
 
-        void updateProgressBarVisibility(boolean visible, boolean useStepProgressBar) {
-            if (visible && !useStepProgressBar) {
-                mProgressBar.show();
-            } else {
-                mProgressBar.hide();
-            }
-
-            mStepProgressBar.setVisible(visible && useStepProgressBar);
+        void updateProgressBarVisibility(boolean visible) {
+            mStepProgressBar.setVisible(visible);
         }
     }
 
@@ -114,8 +105,6 @@ class AssistantHeaderViewBinder
         } else if (AssistantHeaderModel.PROFILE_ICON_MENU_SEND_FEEDBACK_MESSAGE == propertyKey) {
             view.mProfileIconMenuSendFeedbackMessage.setTitle(
                     model.get(AssistantHeaderModel.PROFILE_ICON_MENU_SEND_FEEDBACK_MESSAGE));
-        } else if (AssistantHeaderModel.PROGRESS == propertyKey) {
-            view.mProgressBar.setProgress(model.get(AssistantHeaderModel.PROGRESS));
         } else if (AssistantHeaderModel.PROGRESS_ACTIVE_STEP == propertyKey) {
             int activeStep = model.get(AssistantHeaderModel.PROGRESS_ACTIVE_STEP);
             if (activeStep >= 0) {
@@ -123,10 +112,8 @@ class AssistantHeaderViewBinder
             }
         } else if (AssistantHeaderModel.PROGRESS_BAR_ERROR == propertyKey) {
             view.mStepProgressBar.setError(model.get(AssistantHeaderModel.PROGRESS_BAR_ERROR));
-        } else if (AssistantHeaderModel.PROGRESS_VISIBLE == propertyKey
-                || AssistantHeaderModel.USE_STEP_PROGRESS_BAR == propertyKey) {
-            view.updateProgressBarVisibility(model.get(AssistantHeaderModel.PROGRESS_VISIBLE),
-                    model.get(AssistantHeaderModel.USE_STEP_PROGRESS_BAR));
+        } else if (AssistantHeaderModel.PROGRESS_VISIBLE == propertyKey) {
+            view.updateProgressBarVisibility(model.get(AssistantHeaderModel.PROGRESS_VISIBLE));
         } else if (AssistantHeaderModel.STEP_PROGRESS_BAR_ICONS == propertyKey) {
             view.mStepProgressBar.setSteps(model.get(AssistantHeaderModel.STEP_PROGRESS_BAR_ICONS));
             view.mStepProgressBar.disableAnimations(

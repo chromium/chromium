@@ -476,10 +476,6 @@ void UiControllerAndroid::OnBubbleMessageChanged(const std::string& message) {
   }
 }
 
-void UiControllerAndroid::OnProgressChanged(int progress) {
-  header_model_->SetProgress(progress);
-}
-
 void UiControllerAndroid::OnProgressActiveStepChanged(int active_step) {
   header_model_->SetProgressActiveStep(active_step);
 }
@@ -654,22 +650,10 @@ void UiControllerAndroid::RestoreUi() {
   OnStatusMessageChanged(ui_delegate_->GetStatusMessage());
   OnBubbleMessageChanged(ui_delegate_->GetBubbleMessage());
   OnClientSettingsDisplayStringsChanged(ui_delegate_->GetClientSettings());
-  auto step_progress_bar_configuration =
-      ui_delegate_->GetStepProgressBarConfiguration();
-  if (step_progress_bar_configuration.has_value()) {
-    OnStepProgressBarConfigurationChanged(*step_progress_bar_configuration);
-    if (step_progress_bar_configuration->use_step_progress_bar()) {
-      auto active_step = ui_delegate_->GetProgressActiveStep();
-      if (active_step.has_value()) {
-        OnProgressActiveStepChanged(*active_step);
-      }
-      OnProgressBarErrorStateChanged(ui_delegate_->GetProgressBarErrorState());
-    }
-  } else {
-    OnStepProgressBarConfigurationChanged(
-        ShowProgressBarProto::StepProgressBarConfiguration());
-    OnProgressChanged(ui_delegate_->GetProgress());
-  }
+  OnStepProgressBarConfigurationChanged(
+      ui_delegate_->GetStepProgressBarConfiguration());
+  OnProgressActiveStepChanged(ui_delegate_->GetProgressActiveStep());
+  OnProgressBarErrorStateChanged(ui_delegate_->GetProgressBarErrorState());
   OnProgressVisibilityChanged(ui_delegate_->GetProgressVisible());
   OnInfoBoxChanged(ui_delegate_->GetInfoBox());
   OnDetailsChanged(ui_delegate_->GetDetails());

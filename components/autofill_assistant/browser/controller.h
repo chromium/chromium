@@ -137,7 +137,6 @@ class Controller : public ScriptExecutorDelegate,
                      base::TimeDelta delay) override;
   void SetInfoBox(const InfoBox& info_box) override;
   void ClearInfoBox() override;
-  void SetProgress(int progress) override;
   bool SetProgressActiveStepIdentifier(
       const std::string& active_step_identifier) override;
   void SetProgressActiveStep(int active_step) override;
@@ -209,13 +208,12 @@ class Controller : public ScriptExecutorDelegate,
   AutofillAssistantState GetState() const override;
   std::vector<Details> GetDetails() const override;
   const InfoBox* GetInfoBox() const override;
-  int GetProgress() const override;
-  absl::optional<int> GetProgressActiveStep() const override;
+  int GetProgressActiveStep() const override;
   bool GetProgressVisible() const override;
   bool GetTtsButtonVisible() const override;
   TtsButtonState GetTtsButtonState() const override;
   bool GetProgressBarErrorState() const override;
-  absl::optional<ShowProgressBarProto::StepProgressBarConfiguration>
+  ShowProgressBarProto::StepProgressBarConfiguration
   GetStepProgressBarConfiguration() const override;
   const std::vector<UserAction>& GetUserActions() const override;
   bool PerformUserActionWithContext(
@@ -504,15 +502,12 @@ class Controller : public ScriptExecutorDelegate,
   // Current info box, may be null.
   std::unique_ptr<InfoBox> info_box_;
 
-  // Current progress.
-  int progress_ = 0;
-  absl::optional<int> progress_active_step_;
-
-  // Current visibility of the progress bar. It is initially visible.
+  // Current state of the progress bar.
   bool progress_visible_ = true;
   bool progress_bar_error_state_ = false;
-  absl::optional<ShowProgressBarProto::StepProgressBarConfiguration>
+  ShowProgressBarProto::StepProgressBarConfiguration
       step_progress_bar_configuration_;
+  int progress_active_step_ = 0;
 
   // Current set of user actions. May be null, but never empty.
   std::unique_ptr<std::vector<UserAction>> user_actions_;

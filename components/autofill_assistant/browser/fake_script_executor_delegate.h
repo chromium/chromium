@@ -56,7 +56,6 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
                      base::TimeDelta delay) override;
   void SetInfoBox(const InfoBox& info_box) override;
   void ClearInfoBox() override;
-  void SetProgress(int progress) override;
   bool SetProgressActiveStepIdentifier(
       const std::string& active_step_identifier) override;
   void SetProgressActiveStep(int active_step) override;

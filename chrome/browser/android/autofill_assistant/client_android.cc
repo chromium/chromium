@@ -617,7 +617,6 @@ void ClientAndroid::CreateController(
     if (trigger_script->user_interface().has_progress_bar()) {
       progress_bar_config =
           ShowProgressBarProto::StepProgressBarConfiguration();
-      progress_bar_config->set_use_step_progress_bar(true);
       for (const auto& step_icon :
            trigger_script->user_interface().progress_bar().step_icons()) {
         *progress_bar_config->add_annotated_step_icons()->mutable_icon() =

@@ -10,6 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/json/json_writer.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/tick_clock.h"
@@ -39,15 +40,7 @@
 #include "url/gurl.h"
 
 namespace autofill_assistant {
-
 namespace {
-
-// The initial progress to set when autostarting and showing the "Loading..."
-// message.
-static constexpr int kAutostartInitialProgress = 5;
-
-// Experiment for toggling the new progress bar.
-const char kProgressBarExperiment[] = "4400697";
 
 // Experiment for non-sticky TTSButtonState. The TTSButtonState is reset to
 // DEFAULT whenever tts/status message changes even when the button was
@@ -308,15 +301,11 @@ std::vector<Details> Controller::GetDetails() const {
   return details;
 }
 
-int Controller::GetProgress() const {
-  return progress_;
-}
-
-absl::optional<int> Controller::GetProgressActiveStep() const {
+int Controller::GetProgressActiveStep() const {
   return progress_active_step_;
 }
 
-absl::optional<ShowProgressBarProto::StepProgressBarConfiguration>
+ShowProgressBarProto::StepProgressBarConfiguration
 Controller::GetStepProgressBarConfiguration() const {
   return step_progress_bar_configuration_;
 }
@@ -342,46 +331,26 @@ const InfoBox* Controller::GetInfoBox() const {
   return info_box_.get();
 }
 
-void Controller::SetProgress(int progress) {
-  // Progress can only increase.
-  if (progress_ >= progress)
-    return;
-
-  progress_ = progress;
-  for (ControllerObserver& observer : observers_) {
-    observer.OnProgressChanged(progress);
-  }
-}
-
 bool Controller::SetProgressActiveStepIdentifier(
     const std::string& active_step_identifier) {
-  if (!step_progress_bar_configuration_.has_value()) {
-    return false;
-  }
-
-  auto it = std::find_if(
-      step_progress_bar_configuration_->annotated_step_icons().cbegin(),
-      step_progress_bar_configuration_->annotated_step_icons().cend(),
+  const auto it = base::ranges::find_if(
+      step_progress_bar_configuration_.annotated_step_icons(),
       [&](const ShowProgressBarProto::StepProgressBarIcon& icon) {
         return icon.identifier() == active_step_identifier;
       });
-  if (it == step_progress_bar_configuration_->annotated_step_icons().cend()) {
+  if (it == step_progress_bar_configuration_.annotated_step_icons().cend()) {
     return false;
   }
 
   SetProgressActiveStep(std::distance(
-      step_progress_bar_configuration_->annotated_step_icons().cbegin(), it));
+      step_progress_bar_configuration_.annotated_step_icons().cbegin(), it));
   return true;
 }
 
 void Controller::SetProgressActiveStep(int active_step) {
-  if (!step_progress_bar_configuration_.has_value()) {
-    return;
-  }
-
   // Default step progress bar has 2 steps.
   int max_step = std::max(
-      2, step_progress_bar_configuration_->annotated_step_icons().size());
+      2, step_progress_bar_configuration_.annotated_step_icons().size());
 
   int new_active_step = active_step;
   if (active_step < 0 || active_step > max_step) {
@@ -389,8 +358,7 @@ void Controller::SetProgressActiveStep(int active_step) {
   }
 
   // Step can only increase.
-  if (progress_active_step_.has_value() &&
-      *progress_active_step_ >= new_active_step) {
+  if (progress_active_step_ >= new_active_step) {
     return;
   }
 
@@ -426,15 +394,12 @@ void Controller::SetStepProgressBarConfiguration(
     const ShowProgressBarProto::StepProgressBarConfiguration& configuration) {
   step_progress_bar_configuration_ = configuration;
   if (!configuration.annotated_step_icons().empty() &&
-      progress_active_step_.has_value() &&
-      configuration.annotated_step_icons().size() < *progress_active_step_) {
+      configuration.annotated_step_icons().size() < progress_active_step_) {
     progress_active_step_ = configuration.annotated_step_icons().size();
   }
   for (ControllerObserver& observer : observers_) {
     observer.OnStepProgressBarConfigurationChanged(configuration);
-    if (progress_active_step_.has_value()) {
-      observer.OnProgressActiveStepChanged(*progress_active_step_);
-    }
+    observer.OnProgressActiveStepChanged(progress_active_step_);
     observer.OnProgressBarErrorStateChanged(progress_bar_error_state_);
   }
 }
@@ -1309,12 +1274,6 @@ void Controller::InitFromParameters() {
         GetDeeplinkURL().DeprecatedGetOriginAsURL(), *password_change_username);
   }
 
-  if (trigger_context_->HasExperimentId(kProgressBarExperiment)) {
-    ShowProgressBarProto::StepProgressBarConfiguration mock_configuration;
-    mock_configuration.set_use_step_progress_bar(true);
-    SetStepProgressBarConfiguration(mock_configuration);
-  }
-
   const absl::optional<bool> enable_tts =
       trigger_context_->GetScriptParameters().GetEnableTts();
   if (enable_tts && enable_tts.value() &&
@@ -1382,18 +1341,8 @@ void Controller::ShowFirstMessageAndStart() {
           ? l10n_util::GetStringFUTF8(IDS_AUTOFILL_ASSISTANT_LOADING,
                                       base::UTF8ToUTF16(GetCurrentURL().host()))
           : status_message_);
-  if (step_progress_bar_configuration_.has_value() &&
-      step_progress_bar_configuration_->use_step_progress_bar()) {
-    if (!progress_active_step_.has_value()) {
-      // Set default progress unless already specified in
-      // |progress_active_step_|.
-      progress_active_step_ = 0;
-    }
-    SetStepProgressBarConfiguration(*step_progress_bar_configuration_);
-    SetProgressActiveStep(*progress_active_step_);
-  } else {
-    SetProgress(kAutostartInitialProgress);
-  }
+  SetStepProgressBarConfiguration(step_progress_bar_configuration_);
+  SetProgressActiveStep(progress_active_step_);
   EnterState(AutofillAssistantState::STARTING);
 }
 

@@ -110,7 +110,6 @@ class UiControllerAndroid : public ControllerObserver {
                          UserData::FieldChange field_change) override;
   void OnDetailsChanged(const std::vector<Details>& details) override;
   void OnInfoBoxChanged(const InfoBox* info_box) override;
-  void OnProgressChanged(int progress) override;
   void OnProgressActiveStepChanged(int active_step) override;
   void OnProgressVisibilityChanged(bool visible) override;
   void OnProgressBarErrorStateChanged(bool error) override;

@@ -302,9 +302,6 @@ class ActionDelegate {
   // Sets or updates info box.
   virtual void SetInfoBox(const InfoBox& infoBox) = 0;
 
-  // Set the progress bar at |progress|%.
-  virtual void SetProgress(int progress) = 0;
-
   // Set the progress bar at the |active_step| linked to the given
   // |active_step_identifier|.
   virtual bool SetProgressActiveStepIdentifier(
