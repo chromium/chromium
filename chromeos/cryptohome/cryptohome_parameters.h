@@ -82,6 +82,10 @@ struct COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) KeyDefinition {
     // cryptohome needs to query fingerprint scan results from biod and
     // compare with the identity passed along with the key.
     TYPE_FINGERPRINT = 2,
+    // Public mount is used by Kiosk sessions. This type of key does not have
+    // any secret, instead crypotohomed would generate a key based on user
+    // identity.
+    TYPE_PUBLIC_MOUNT = 3,
   };
 
   // This struct holds metadata that will be stored alongside the key. Each
