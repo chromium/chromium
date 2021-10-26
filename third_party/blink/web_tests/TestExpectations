@@ -179,7 +179,6 @@ crbug.com/1254945 external/wpt/html/semantics/embedded-content/media-elements/tr
 
 crbug.com/1262934 fast/forms/form-invalid-url.html [ Failure Pass ]
 crbug.com/1262985 fullscreen/enter-exit-full-screen-hover.html [ Failure Pass ]
-crbug.com/1262966 http/tests/security/script-onerror-crossorigin-no-cors.html [ Failure Pass ]
 
 # ====== Synchronous, budgeted HTML parser tests to here ========================
 
@@ -190,6 +189,7 @@ crbug.com/896194 http/tests/security/video-poster-cross-origin-crash2.html [ Fai
 crbug.com/896194 plugins/focus-change-2-change-focus.html [ Failure Pass ]
 crbug.com/896194 webaudio/IIRFilter/unstable-filter-warning.html [ Failure Pass ]
 crbug.com/896194 http/tests/security/referrer-policy-conflicting-policies-image-set.html [ Failure Pass ]
+crbug.com/896194 http/tests/security/script-onerror-crossorigin-no-cors.html [ Failure Pass ]
 
 crbug.com/1197502 [ Win ] http/tests/intersection-observer/cross-origin-iframe-with-nesting.html [ Failure Pass ]
 
