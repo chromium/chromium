@@ -23,6 +23,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/signin/core/browser/account_reconcilor_delegate.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_client.h"
@@ -303,9 +304,9 @@ void AccountReconcilor::RemoveObserver(Observer* observer) {
 void AccountReconcilor::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type) {
+    ContentSettingsTypeSet content_type_set) {
   // If this is not a change to cookie settings, just ignore.
-  if (content_type != ContentSettingsType::COOKIES)
+  if (!content_type_set.Contains(ContentSettingsType::COOKIES))
     return;
 
   // If this does not affect GAIA, just ignore. The secondary pattern is not

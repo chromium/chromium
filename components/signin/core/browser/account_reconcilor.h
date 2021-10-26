@@ -73,7 +73,7 @@ class AccountReconcilor : public KeyedService,
 
   class Observer {
    public:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
 
     // The typical order of events is:
     // - When reconcile is blocked:
@@ -305,9 +305,10 @@ class AccountReconcilor : public KeyedService,
   bool IsIdentityManagerReady();
 
   // Overridden from content_settings::Observer.
-  void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
-                               const ContentSettingsPattern& secondary_pattern,
-                               ContentSettingsType content_type) override;
+  void OnContentSettingChanged(
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern,
+      ContentSettingsTypeSet content_type_set) override;
 
   // Overridden from signin::IdentityManager::Observer.
   void OnEndBatchOfRefreshTokenStateChanges() override;

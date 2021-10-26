@@ -223,9 +223,10 @@ class AboutSigninInternals : public KeyedService,
   void OnErrorChanged() override;
 
   // content_settings::Observer implementation.
-  void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
-                               const ContentSettingsPattern& secondary_pattern,
-                               ContentSettingsType content_type) override;
+  void OnContentSettingChanged(
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern,
+      ContentSettingsTypeSet content_type_set) override;
 
   // AccountReconcilor::Observer implementation.
   void OnBlockReconcile() override;
