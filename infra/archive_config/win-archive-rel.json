@@ -223,7 +223,6 @@
         },
         {
             "files": [
-                "updater.exe",
                 "UpdaterSetup.exe"
             ],
             "dirs": ["UpdaterSigning"],

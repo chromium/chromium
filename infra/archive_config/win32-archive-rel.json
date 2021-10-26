@@ -234,7 +234,6 @@
         },
         {
             "files": [
-                "updater.exe",
                 "UpdaterSetup.exe"
             ],
             "rename_dirs": [
