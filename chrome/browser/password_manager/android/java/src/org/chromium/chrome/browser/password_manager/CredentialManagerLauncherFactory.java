@@ -21,8 +21,8 @@ public abstract class CredentialManagerLauncherFactory {
      */
     public static CredentialManagerLauncherFactory getInstance() {
         assertOnUiThread();
-        // TODO(crbug.com/1255038): Create an instance if it doesn't exist and return it.
-        return null;
+        if (sInstance == null) sInstance = new CredentialManagerLauncherFactoryImpl();
+        return sInstance;
     }
 
     /**

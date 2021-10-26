@@ -28,6 +28,7 @@ public class PasswordManagerLauncher {
 
     /**
      * Launches the password settings.
+     *
      * @param activity used to show the UI to manage passwords.
      */
     public static void showPasswordSettings(
@@ -36,7 +37,6 @@ public class PasswordManagerLauncher {
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.PASSWORD_SCRIPTS_FETCHING)) {
             PasswordScriptsFetcherBridge.prewarmCache();
         }
-
         PasswordManagerHelper.showPasswordSettings(activity, referrer, new SettingsLauncherImpl());
     }
 
