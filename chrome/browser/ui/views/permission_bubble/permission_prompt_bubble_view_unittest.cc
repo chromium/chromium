@@ -48,8 +48,7 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
   void Accept() override {}
   void AcceptThisTime() override {}
   void Deny() override {}
-  void Dismiss() override {}
-  void Ignore() override {}
+  void Closing() override {}
 
   bool WasCurrentRequestAlreadyDisplayed() override { return false; }
   bool ShouldDropCurrentRequestIfCannotShowQuietly() const override {
@@ -60,9 +59,6 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
   ReasonForUsingQuietUi() const override {
     return absl::nullopt;
   }
-  void SetDismissOnTabClose() override {}
-  void SetBubbleShown() override {}
-  void SetDecisionTime() override {}
 
  private:
   std::vector<std::unique_ptr<permissions::PermissionRequest>> requests_;

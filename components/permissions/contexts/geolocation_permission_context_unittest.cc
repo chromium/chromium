@@ -458,7 +458,7 @@ void GeolocationPermissionContextTests::DenyPrompt() {
 void GeolocationPermissionContextTests::ClosePrompt() {
   PermissionRequestManager* manager =
       PermissionRequestManager::FromWebContents(web_contents());
-  manager->Dismiss();
+  manager->Closing();
   base::RunLoop().RunUntilIdle();
 }
 

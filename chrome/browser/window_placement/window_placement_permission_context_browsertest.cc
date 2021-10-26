@@ -169,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementPermissionContextTest, DismissAndDeny) {
   ExecuteScriptAsync(tab, "getScreens()");
   WaitForUserActivationExpiry();
   ASSERT_TRUE(permission_request_manager->IsRequestInProgress());
-  permission_request_manager->Dismiss();
+  permission_request_manager->Closing();
   EXPECT_EQ("prompt", EvalJs(tab, kCheckPermission,
                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
   EXPECT_FALSE(tab->GetMainFrame()->HasTransientUserActivation());

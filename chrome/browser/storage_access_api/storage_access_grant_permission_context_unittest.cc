@@ -154,7 +154,7 @@ TEST_F(StorageAccessGrantPermissionContextTest,
   EXPECT_EQ(GetRequesterURL(), manager->GetRequestingOrigin());
   EXPECT_EQ(GetTopLevelURL(), manager->GetEmbeddingOrigin());
 
-  manager->Dismiss();
+  manager->Closing();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(CONTENT_SETTING_ASK, result);
 }
@@ -234,7 +234,7 @@ TEST_F(StorageAccessGrantPermissionContextTest,
 
   // Close the prompt and validate we get the expected setting back in our
   // callback.
-  manager->Dismiss();
+  manager->Closing();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(CONTENT_SETTING_ASK, result);
 

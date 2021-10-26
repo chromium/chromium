@@ -73,7 +73,7 @@ PermissionPromptAndroid::GetPromptDisposition() const {
 }
 
 void PermissionPromptAndroid::Closing() {
-  delegate_->Dismiss();
+  delegate_->Closing();
 }
 
 void PermissionPromptAndroid::Accept() {
