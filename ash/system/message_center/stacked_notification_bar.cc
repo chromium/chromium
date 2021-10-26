@@ -141,8 +141,9 @@ class StackedNotificationBar::StackedNotificationBarIcon
     : public views::ImageView,
       public ui::LayerAnimationObserver {
  public:
-  explicit StackedNotificationBarIcon(const std::string& id)
-      : views::ImageView(), id_(id) {
+  StackedNotificationBarIcon(StackedNotificationBar* notification_bar,
+                             const std::string& id)
+      : views::ImageView(), notification_bar_(notification_bar), id_(id) {
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
   }
@@ -219,13 +220,7 @@ class StackedNotificationBar::StackedNotificationBarIcon
     layer()->GetAnimator()->StartAnimation(sequence.release());
   }
 
-  using AnimationCompleteCallback = base::OnceCallback<void(views::View*)>;
-
-  void AnimateOut(AnimationCompleteCallback animation_complete_callback) {
-    DCHECK(animation_complete_callback_.is_null());
-
-    animation_complete_callback_ = std::move(animation_complete_callback);
-
+  void AnimateOut() {
     layer()->GetAnimator()->StopAnimating();
 
     std::unique_ptr<ui::InterpolatedTransform> scale =
@@ -261,7 +256,7 @@ class StackedNotificationBar::StackedNotificationBarIcon
   // ui::LayerAnimationObserver:
   void OnLayerAnimationEnded(ui::LayerAnimationSequence* sequence) override {
     set_animating_out(false);
-    std::move(animation_complete_callback_).Run(this);
+    notification_bar_->OnIconAnimatedOut(this);
     // Note |this| is deleted after this point.
   }
 
@@ -275,13 +270,9 @@ class StackedNotificationBar::StackedNotificationBarIcon
   void set_animating_out(bool animating_out) { animating_out_ = animating_out; }
 
  private:
+  StackedNotificationBar* notification_bar_;
   std::string id_;
   bool animating_out_ = false;
-
-  // Used to notify the parent of animation completion. This is deleted after
-  // the callback is run.
-  // Registered in `AnimateOut()`.
-  AnimationCompleteCallback animation_complete_callback_;
 };
 
 StackedNotificationBar::StackedNotificationBar(
@@ -318,7 +309,6 @@ StackedNotificationBar::StackedNotificationBar(
           views::BoxLayout::Orientation::kHorizontal,
           kStackedNotificationIconsContainerPadding,
           kStackedNotificationBarIconSpacing));
-
   message_center::MessageCenter::Get()->AddObserver(this);
 
   count_label_->SetEnabledColor(message_center_style::kCountLabelColor);
@@ -391,35 +381,26 @@ void StackedNotificationBar::SetExpanded() {
 void StackedNotificationBar::AddNotificationIcon(
     message_center::Notification* notification,
     bool at_front) {
+  views::ImageView* icon_view =
+      new StackedNotificationBarIcon(this, notification->id());
   if (at_front)
-    notification_icons_container_->AddChildViewAt(
-        std::make_unique<StackedNotificationBarIcon>(notification->id()), 0);
+    notification_icons_container_->AddChildViewAt(icon_view, 0);
   else
-    notification_icons_container_->AddChildView(
-        std::make_unique<StackedNotificationBarIcon>(notification->id()));
+    notification_icons_container_->AddChildView(icon_view);
 }
 
-void StackedNotificationBar::OnIconAnimatedOut(
-    message_center::Notification* notification,
-    views::View* icon) {
+void StackedNotificationBar::OnIconAnimatedOut(views::View* icon) {
   delete icon;
-
-  // This is only called when icons animate out, so never add icons to the
-  // front.
-  if (notification)
-    AddNotificationIcon(notification, /*at_front=*/false);
-
   Layout();
 }
 
 StackedNotificationBar::StackedNotificationBarIcon*
-StackedNotificationBar::GetFrontIcon(bool animating_out) {
+StackedNotificationBar::GetFrontIcon() {
   const auto i = std::find_if(
       notification_icons_container_->children().cbegin(),
-      notification_icons_container_->children().cend(), [&](const auto* v) {
-        return animating_out ==
-               static_cast<const StackedNotificationBarIcon*>(v)
-                   ->is_animating_out();
+      notification_icons_container_->children().cend(), [](const auto* v) {
+        return !static_cast<const StackedNotificationBarIcon*>(v)
+                    ->is_animating_out();
       });
 
   return (i == notification_icons_container_->children().cend()
@@ -440,57 +421,35 @@ StackedNotificationBar::GetIconFromId(const std::string& id) const {
 
 void StackedNotificationBar::ShiftIconsLeft(
     std::vector<message_center::Notification*> stacked_notifications) {
-  auto* front_animating_out_icon = GetFrontIcon(/*animating_out=*/true);
-  bool is_already_animating_a_left_shift = front_animating_out_icon != nullptr;
-  // If we need to animate a second icon, the scroll is faster than the icon can
-  // animate out (this is possible with a very fast scroll), so immediately
-  // finish that animation before starting a new one.
-  if (is_already_animating_a_left_shift) {
-    front_animating_out_icon->layer()->GetAnimator()->StopAnimating();
-    // `front_animating_out_icon` is now deleted, and StackedNotificationBar has
-    // been reloaded with another icon in the back.
-  }
-
   int stacked_notification_count = stacked_notifications.size();
   int removed_icons_count =
       std::min(stacked_notification_count_ - stacked_notification_count,
                kStackedNotificationBarMaxIcons);
 
-  stacked_notification_count_ = stacked_notification_count;
-
   // Remove required number of icons from the front.
   // Only animate if we're removing one icon.
+  if (removed_icons_count == 1) {
+    StackedNotificationBarIcon* icon = GetFrontIcon();
+    if (icon) {
+      icon->AnimateOut();
+    }
+  } else {
+    for (int i = 0; i < removed_icons_count; i++) {
+      StackedNotificationBarIcon* icon = GetFrontIcon();
+      if (icon) {
+        delete icon;
+      }
+    }
+  }
+  // Add icons to the back if there was a backfill.
   int backfill_start = kStackedNotificationBarMaxIcons - removed_icons_count;
   int backfill_end =
       std::min(kStackedNotificationBarMaxIcons, stacked_notification_count);
-  const bool will_animate = removed_icons_count == 1;
-  if (will_animate) {
-    auto* icon = GetFrontIcon(/*animating_out=*/false);
-    if (icon) {
-      // If there are notifications to backfill, do not add the
-      // icon until the animation completes, this avoids a jumping overflow
-      // label/icons and having more than 3 icons in the stack.
-      message_center::Notification* notification_icon_to_show_on_completion =
-          backfill_start < backfill_end ? stacked_notifications[backfill_start]
-                                        : nullptr;
-      icon->AnimateOut(
-          base::BindOnce(&StackedNotificationBar::OnIconAnimatedOut,
-                         weak_ptr_factory_.GetWeakPtr(),
-                         notification_icon_to_show_on_completion));
-    }
-    return;
-  }
-
-  // No animation.
-  for (int i = 0; i < removed_icons_count; i++) {
-    auto* icon = GetFrontIcon(/*animating_out=*/false);
-    if (icon) {
-      delete icon;
-    }
-  }
-
-  for (int i = backfill_start; i < backfill_end; i++)
+  for (int i = backfill_start; i < backfill_end; i++) {
     AddNotificationIcon(stacked_notifications[i], false /*at_front*/);
+  }
+
+  stacked_notification_count_ = stacked_notification_count;
 }
 
 void StackedNotificationBar::ShiftIconsRight(
@@ -509,9 +468,9 @@ void StackedNotificationBar::ShiftIconsRight(
     ++stacked_notification_count_;
   }
   // Animate in the first stacked notification icon.
-  auto* icon = GetFrontIcon(/*animating_out=*/false);
+  StackedNotificationBarIcon* icon = GetFrontIcon();
   if (icon)
-    icon->AnimateIn();
+    GetFrontIcon()->AnimateIn();
 }
 
 void StackedNotificationBar::UpdateStackedNotifications(
