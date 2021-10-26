@@ -7273,3 +7273,6 @@ crbug.com/1259277 [ Mac ] fast/events/message-port-multi.html [ Failure Pass ]
 # Sheriff 2021-10-20
 crbug.com/1261770 crbug.com/1245166 [ Linux ] external/wpt/web-bundle/subresource-loading/script-relative-url-in-web-bundle-cors.https.tentative.sub.html [ Failure Pass ]
 crbug.com/1261770 crbug.com/1245166 [ Linux ] virtual/wbn-from-network/external/wpt/web-bundle/subresource-loading/script-relative-url-in-web-bundle-cors.https.tentative.sub.html [ Failure Pass ]
+
+# Sheriff 2021-10-26
+crbug.com/1263349 [ Linux ] external/wpt/resource-timing/object-not-found-after-cross-origin-redirect.html [ Failure Pass ]
