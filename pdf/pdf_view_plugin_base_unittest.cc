@@ -24,6 +24,7 @@
 #include "pdf/document_layout.h"
 #include "pdf/document_metadata.h"
 #include "pdf/pdf_engine.h"
+#include "pdf/pdfium/pdfium_form_filler.h"
 #include "pdf/ppapi_migration/callback.h"
 #include "pdf/ppapi_migration/graphics.h"
 #include "pdf/ppapi_migration/url_loader.h"
@@ -38,6 +39,7 @@ namespace chrome_pdf {
 
 namespace {
 
+using ::testing::ByMove;
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
 using ::testing::Return;
@@ -179,6 +181,11 @@ class FakePdfViewPluginBase : public PdfViewPluginBase {
   MOCK_METHOD(void,
               ScheduleTaskOnMainThread,
               (const base::Location&, ResultCallback, int32_t, base::TimeDelta),
+              (override));
+
+  MOCK_METHOD(std::unique_ptr<PDFiumEngine>,
+              CreateEngine,
+              (PDFEngine::Client*, PDFiumFormFiller::ScriptOption),
               (override));
 
   base::WeakPtr<PdfViewPluginBase> GetWeakPtr() override {
@@ -1141,6 +1148,56 @@ TEST_F(PdfViewPluginBaseWithEngineTest, UpdateScrollScaled) {
   EXPECT_CALL(*engine, ScrolledToYPosition(2));
 
   fake_plugin_.UpdateScroll({2, 1});
+}
+
+TEST_F(PdfViewPluginBaseTest, HandleResetPrintPreviewModeMessage) {
+  EXPECT_CALL(fake_plugin_, IsPrintPreview).WillRepeatedly(Return(true));
+  EXPECT_CALL(fake_plugin_, CreateUrlLoaderInternal).WillRepeatedly([]() {
+    return std::make_unique<testing::NiceMock<MockUrlLoader>>();
+  });
+
+  auto engine =
+      std::make_unique<testing::NiceMock<TestPDFiumEngine>>(&fake_plugin_);
+  EXPECT_CALL(*engine, ZoomUpdated);
+  EXPECT_CALL(*engine, PageOffsetUpdated);
+  EXPECT_CALL(*engine, PluginSizeUpdated);
+  EXPECT_CALL(*engine, SetGrayscale(false));
+  EXPECT_CALL(fake_plugin_,
+              CreateEngine(&fake_plugin_,
+                           PDFiumFormFiller::ScriptOption::kNoJavaScript))
+      .WillOnce(Return(ByMove(std::move(engine))));
+
+  fake_plugin_.HandleMessage(base::test::ParseJson(R"({
+    "type": "resetPrintPreviewMode",
+    "url": "chrome-untrusted://print/0/0/print.pdf",
+    "grayscale": false,
+    "pageCount": 1,
+  })"));
+}
+
+TEST_F(PdfViewPluginBaseTest, HandleResetPrintPreviewModeMessageSetGrayscale) {
+  EXPECT_CALL(fake_plugin_, IsPrintPreview).WillRepeatedly(Return(true));
+  EXPECT_CALL(fake_plugin_, CreateUrlLoaderInternal).WillRepeatedly([]() {
+    return std::make_unique<testing::NiceMock<MockUrlLoader>>();
+  });
+
+  auto engine =
+      std::make_unique<testing::NiceMock<TestPDFiumEngine>>(&fake_plugin_);
+  EXPECT_CALL(*engine, ZoomUpdated);
+  EXPECT_CALL(*engine, PageOffsetUpdated);
+  EXPECT_CALL(*engine, PluginSizeUpdated);
+  EXPECT_CALL(*engine, SetGrayscale(true));
+  EXPECT_CALL(fake_plugin_,
+              CreateEngine(&fake_plugin_,
+                           PDFiumFormFiller::ScriptOption::kNoJavaScript))
+      .WillOnce(Return(ByMove(std::move(engine))));
+
+  fake_plugin_.HandleMessage(base::test::ParseJson(R"({
+    "type": "resetPrintPreviewMode",
+    "url": "chrome-untrusted://print/0/0/print.pdf",
+    "grayscale": true,
+    "pageCount": 1,
+  })"));
 }
 
 TEST_F(PdfViewPluginBaseWithEngineTest, GetContentRestrictions) {

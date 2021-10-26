@@ -46,8 +46,10 @@
 #include "pdf/document_layout.h"
 #include "pdf/document_metadata.h"
 #include "pdf/paint_ready_rect.h"
+#include "pdf/pdf_engine.h"
 #include "pdf/pdf_features.h"
 #include "pdf/pdfium/pdfium_engine.h"
+#include "pdf/pdfium/pdfium_form_filler.h"
 #include "pdf/ppapi_migration/image.h"
 #include "pdf/ppapi_migration/result_codes.h"
 #include "pdf/ppapi_migration/url_loader.h"
@@ -770,6 +772,12 @@ void PdfViewPluginBase::InitializeEngineForTesting(
   engine_ = std::move(engine);
 }
 
+std::unique_ptr<PDFiumEngine> PdfViewPluginBase::CreateEngine(
+    PDFEngine::Client* client,
+    PDFiumFormFiller::ScriptOption script_option) {
+  return std::make_unique<PDFiumEngine>(client, script_option);
+}
+
 void PdfViewPluginBase::DestroyEngine() {
   engine_.reset();
 }
@@ -1177,8 +1185,13 @@ void PdfViewPluginBase::HandleResetPrintPreviewModeMessage(
   document_load_state_ = DocumentLoadState::kLoading;
   LoadUrl(GetURL(), /*is_print_preview=*/false);
   preview_engine_.reset();
-  engine_ = std::make_unique<PDFiumEngine>(
-      this, PDFiumFormFiller::ScriptOption::kNoJavaScript);
+
+  // TODO(crbug.com/1237952): Figure out a more consistent way to preserve
+  // engine settings across a Print Preview reset.
+  engine_ = CreateEngine(this, PDFiumFormFiller::ScriptOption::kNoJavaScript);
+  engine()->ZoomUpdated(zoom_ * device_scale_);
+  engine()->PageOffsetUpdated(available_area_.OffsetFromOrigin());
+  engine()->PluginSizeUpdated(available_area_.size());
   engine()->SetGrayscale(is_grayscale);
 
   paint_manager_.InvalidateRect(gfx::Rect(plugin_rect().size()));
@@ -1703,8 +1716,8 @@ void PdfViewPluginBase::DidOpenPreview(std::unique_ptr<UrlLoader> loader,
                                        int32_t result) {
   DCHECK_EQ(result, kSuccess);
   preview_client_ = std::make_unique<PreviewModeClient>(this);
-  preview_engine_ = std::make_unique<PDFiumEngine>(
-      preview_client_.get(), PDFiumFormFiller::ScriptOption::kNoJavaScript);
+  preview_engine_ = CreateEngine(preview_client_.get(),
+                                 PDFiumFormFiller::ScriptOption::kNoJavaScript);
   preview_engine_->PluginSizeUpdated({});
   preview_engine_->HandleDocumentLoad(std::move(loader), GetURL());
 }
