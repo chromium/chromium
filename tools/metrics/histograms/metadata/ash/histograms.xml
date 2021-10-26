@@ -3157,6 +3157,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Ash.UserDataStatsRecorder.DataSize.TotalSize" units="MB"
+    expires_after="M101">
+  <owner>ythjkt@chromium.org</owner>
+  <owner>hidehiko@chromium.org</owner>
+  <summary>
+    Records the size of the entire profile data directory. Collected upon
+    launching ash chrome.
+  </summary>
+</histogram>
+
 <histogram name="Ash.UserDataStatsRecorder.DataSize.{ItemName}" units="MB"
     expires_after="M101">
   <owner>ythjkt@chromium.org</owner>

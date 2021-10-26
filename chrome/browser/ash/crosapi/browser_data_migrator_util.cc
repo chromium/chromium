@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ash/crosapi/browser_data_migrator_util.h"
 
-#include <string.h>
-
 #include <algorithm>
 
 #include "base/files/file_enumerator.h"
@@ -133,6 +131,7 @@ static_assert(base::ranges::is_sorted(kPathNamePairs, PathNameComparator()),
 }  // namespace
 
 void RecordUserDataSizes(const base::FilePath& profile_data_dir) {
+  int64_t total_profile_dir_size = 0;
   base::FileEnumerator enumerator(profile_data_dir, false /* recursive */,
                                   base::FileEnumerator::FILES |
                                       base::FileEnumerator::DIRECTORIES |
@@ -150,9 +149,13 @@ void RecordUserDataSizes(const base::FilePath& profile_data_dir) {
       // Skip links.
       continue;
     }
-
+    total_profile_dir_size += size;
     RecordUserDataSize(entry, size);
   }
+
+  // Record the total size of the user's profile data directory in MB.
+  base::UmaHistogramCustomCounts(
+      kTotalSize, total_profile_dir_size / 1024 / 1024, 1, 10000, 100);
 }
 
 int64_t ComputeDirectorySizeWithoutLinks(const base::FilePath& dir_path) {

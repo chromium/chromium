@@ -98,18 +98,20 @@ TEST(BrowserDataMigratorUtilTest, RecordUserDataSizes) {
       kTextFileContent, kTextFileSize));
   std::string uma_name_1 =
       std::string(kUserDataStatsRecorderDataSize) + kCodeCacheUMAName;
-  std::string uma_name_3 =
+  std::string uma_name_2 =
       std::string(kUserDataStatsRecorderDataSize) + kUnknownUMAName;
 
   RecordUserDataSizes(profile_data_dir.GetPath());
 
   histogram_tester.ExpectTotalCount(uma_name_1, 1);
-  histogram_tester.ExpectTotalCount(uma_name_3, 1);
+  histogram_tester.ExpectTotalCount(uma_name_2, 1);
 
   histogram_tester.ExpectBucketCount(uma_name_1, kTextFileSize / 1024 / 1024,
                                      1);
-  histogram_tester.ExpectBucketCount(uma_name_3, kTextFileSize / 1024 / 1024,
+  histogram_tester.ExpectBucketCount(uma_name_2, kTextFileSize / 1024 / 1024,
                                      1);
+  histogram_tester.ExpectBucketCount(kTotalSize,
+                                     kTextFileSize * 2 / 1024 / 1024, 1);
 }
 
 }  // namespace browser_data_migrator_util
