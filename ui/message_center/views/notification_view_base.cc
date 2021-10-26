@@ -619,8 +619,6 @@ std::unique_ptr<views::View> NotificationViewBase::CreateContentRow() {
 std::unique_ptr<views::View> NotificationViewBase::CreateInlineSettingsView() {
   DCHECK(!settings_row_);
   auto settings_row = std::make_unique<views::View>();
-  settings_row->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, kSettingsRowPadding, 0));
   settings_row->SetVisible(false);
   settings_row_ = settings_row.get();
   return settings_row;
@@ -976,6 +974,9 @@ void NotificationViewBase::CreateOrUpdateInlineSettingsViews(
   }
   DCHECK_NE(block_notifications_message_id, 0);
 
+  settings_row_->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical, kSettingsRowPadding, 0));
+
   auto block_all_button = std::make_unique<InlineSettingsRadioButton>(
       l10n_util::GetStringUTF16(block_notifications_message_id));
   block_all_button->SetBorder(
@@ -1095,13 +1096,7 @@ void NotificationViewBase::ToggleInlineSettings(const ui::Event& event) {
   bool inline_settings_visible = !settings_row_->GetVisible();
 
   settings_row_->SetVisible(inline_settings_visible);
-  content_row_->SetVisible(!inline_settings_visible);
   header_row_->SetDetailViewsVisible(!inline_settings_visible);
-
-  // Always check "Don't block" when inline settings is shown.
-  // If it's already blocked, users should not see inline settings.
-  // Toggling should reset the state.
-  dont_block_button_->SetChecked(true);
 
   SetSettingMode(inline_settings_visible);
 

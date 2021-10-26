@@ -129,6 +129,7 @@ class NearbyShareSettingsTest : public ::testing::Test {
 
 TEST_F(NearbyShareSettingsTest, GetAndSetEnabled) {
   EXPECT_EQ(false, observer_.enabled);
+  settings()->SetIsOnboardingComplete(true);
   settings()->SetEnabled(true);
   EXPECT_EQ(true, settings()->GetEnabled());
   FlushMojoMessages();
@@ -183,6 +184,7 @@ TEST_F(NearbyShareSettingsTest,
   // Fast init notifications are enabled by default.
   EXPECT_EQ(nearby_share::mojom::FastInitiationNotificationState::kEnabled,
             observer_.fast_initiation_notification_state);
+  settings()->SetIsOnboardingComplete(true);
   settings()->SetEnabled(true);
   FlushMojoMessages();
 
@@ -217,6 +219,7 @@ TEST_F(NearbyShareSettingsTest,
       observer_.fast_initiation_notification_state);
 
   // Simulate toggling parent feature on.
+  settings()->SetIsOnboardingComplete(true);
   settings()->SetEnabled(true);
   FlushMojoMessages();
 

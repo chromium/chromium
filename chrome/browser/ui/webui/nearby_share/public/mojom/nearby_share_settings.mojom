@@ -93,6 +93,8 @@ interface NearbyShareSettings {
   SetEnabled(bool enabled);
   // Get the onboarding completion state for the Nearby Share feature.
   IsOnboardingComplete() => (bool completed);
+  // Set the onboarding completion state for the Nearby Share feature.
+  SetIsOnboardingComplete(bool completed);
 
   // Get the feature state for Fast Initiation notification.
   GetFastInitiationNotificationState() => (FastInitiationNotificationState state);

@@ -9,11 +9,13 @@
 #include <cstring>
 
 #include "base/cxx17_backports.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/threading/thread_restrictions.h"
 #include "ui/events/devices/device_util_linux.h"
+#include "ui/events/ozone/features.h"
 
 #if !defined(EVIOCGMTSLOTS)
 #define EVIOCGMTSLOTS(len) _IOC(_IOC_READ, 'E', 0x0a, len)
@@ -89,6 +91,29 @@ constexpr struct {
 } kStylusButtonDevices[] = {
     {0x413c, 0x81d5},  // Dell Active Pen PN579X
 };
+
+#if defined(USE_LIBINPUT)
+// Certain devices need to be forced to use libinput in place of
+// evdev/libgestures
+constexpr struct {
+  uint16_t vendor;
+  uint16_t product_id;
+} kForceLibinputlist[] = {
+    {0x0002, 0x000e},  // HP Stream 14 touchpad
+    {0x044e, 0x120a},  // Dell Latitude 3480 touchpad
+};
+
+bool IsForceLibinput(const EventDeviceInfo& devinfo) {
+  for (auto entry : kForceLibinputlist) {
+    if (devinfo.vendor_id() == entry.vendor &&
+        devinfo.product_id() == entry.product_id) {
+      return true;
+    }
+  }
+
+  return false;
+}
+#endif
 
 // Note: this is not SteelSeries's actual VID; the Stratus Duo just reports it
 // incorrectly over Bluetooth.
@@ -535,6 +560,24 @@ bool EventDeviceInfo::IsStylusButtonDevice() const {
 
 bool EventDeviceInfo::IsMicrophoneMuteSwitchDevice() const {
   return HasSwEvent(SW_MUTE_DEVICE) && device_type_ == INPUT_DEVICE_INTERNAL;
+}
+
+bool EventDeviceInfo::UseLibinput() const {
+  bool useLibinput = false;
+#if defined(USE_LIBINPUT)
+  if (HasTouchpad()) {
+    auto overridden_state =
+        base::FeatureList::GetStateIfOverridden(ui::kLibinputHandleTouchpad);
+    if (overridden_state.has_value()) {
+      useLibinput = overridden_state.value();
+    } else {
+      useLibinput = !HasMultitouch() || !HasValidMTAbsXY() ||
+                    !IsSemiMultitouch() || IsForceLibinput(*this);
+    }
+  }
+#endif
+
+  return useLibinput;
 }
 
 bool IsInKeyboardBlockList(input_id input_id_) {

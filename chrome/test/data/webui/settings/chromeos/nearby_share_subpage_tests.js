@@ -58,6 +58,7 @@ suite('NearbyShare', function() {
   setup(function() {
     setupFakes();
     fakeSettings.setEnabled(true);
+    fakeSettings.setIsOnboardingComplete(true);
 
 
     createSubpage(/*is_enabled=*/ true, /*is_onboarding_complete=*/ true);
@@ -101,6 +102,8 @@ suite('NearbyShare', function() {
     subpage.set('settings.visibility', fakeSettings.getVisibilityForTest());
     subpage.set(
         'settings.allowedContacts', fakeSettings.getAllowedContactsForTest());
+    subpage.set(
+        'settings.isOnboardingComplete', fakeSettings.isOnboardingComplete());
   }
 
   function createSubpage(is_enabled, is_onboarding_complete) {
@@ -123,6 +126,7 @@ suite('NearbyShare', function() {
         },
       }
     };
+    subpage.isSettingsRetreived = true;
 
     document.body.appendChild(subpage);
     Polymer.dom.flush();
@@ -454,6 +458,7 @@ suite('NearbyShare', function() {
 
     setupFakes();
     fakeSettings.setEnabled(false);
+    fakeSettings.setIsOnboardingComplete(false);
     syncFakeSettings();
     createSubpage(/*is_enabled=*/ false, /*is_onboarding_complete=*/ false);
 

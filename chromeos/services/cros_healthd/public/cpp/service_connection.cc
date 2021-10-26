@@ -4,8 +4,12 @@
 
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 
+#include <fcntl.h>
+
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/files/file_enumerator.h"
+#include "base/files/scoped_file.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
@@ -13,6 +17,7 @@
 #include "chromeos/dbus/cros_healthd/cros_healthd_client.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "ui/events/ozone/evdev/event_device_info.h"  // nogncheck
 
 namespace chromeos {
 namespace cros_healthd {
@@ -172,6 +177,8 @@ class ServiceConnectionImpl : public ServiceConnection {
       BindNetworkHealthServiceCallback callback) override;
   void SetBindNetworkDiagnosticsRoutinesCallback(
       BindNetworkDiagnosticsRoutinesCallback callback) override;
+  void FetchTouchpadLibraryName(
+      base::OnceCallback<void(const std::string&)> callback) override;
   void FlushForTesting() override;
 
   // Uses |bind_network_health_callback_| if set to bind a remote to the
@@ -624,6 +631,45 @@ void ServiceConnectionImpl::SetBindNetworkDiagnosticsRoutinesCallback(
     BindNetworkDiagnosticsRoutinesCallback callback) {
   bind_network_diagnostics_callback_ = std::move(callback);
   BindAndSendNetworkDiagnosticsRoutines();
+}
+
+// This is a short-term solution for CloudReady. We should remove this work
+// around after cros_healthd team develop a healthier input telemetry approach.
+void ServiceConnectionImpl::FetchTouchpadLibraryName(
+    base::OnceCallback<void(const std::string&)> callback) {
+#if defined(USE_LIBINPUT)
+  base::FileEnumerator file_enum(base::FilePath("/dev/input/"), false,
+                                 base::FileEnumerator::FileType::FILES);
+  for (auto path = file_enum.Next(); !path.empty(); path = file_enum.Next()) {
+    base::ScopedFD fd(open(path.value().c_str(), O_RDWR | O_NONBLOCK));
+    if (fd.get() < 0) {
+      LOG(ERROR) << "Couldn't open device path " << path;
+      continue;
+    }
+
+    auto devinfo = std::make_unique<ui::EventDeviceInfo>();
+    if (!devinfo->Initialize(fd.get(), path)) {
+      LOG(ERROR) << "Failed to get device info for " << path;
+      continue;
+    }
+
+    if (!devinfo->HasTouchpad() ||
+        devinfo->device_type() != ui::InputDeviceType::INPUT_DEVICE_INTERNAL) {
+      continue;
+    }
+
+    if (devinfo->UseLibinput()) {
+      std::move(callback).Run("libinput");
+      return;
+    }
+  }
+#endif
+
+#if defined(USE_EVDEV_GESTURES)
+  std::move(callback).Run("gestures");
+#else
+  std::move(callback).Run("Default EventConverterEvdev");
+#endif
 }
 
 void ServiceConnectionImpl::FlushForTesting() {

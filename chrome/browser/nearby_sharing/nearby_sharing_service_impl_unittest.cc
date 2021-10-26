@@ -601,6 +601,9 @@ class NearbySharingServiceImplTest : public testing::Test {
 
   void SetIsEnabled(bool is_enabled) {
     NearbyShareSettings settings(&prefs_, local_device_data_manager());
+    if (is_enabled) {
+      settings.SetIsOnboardingComplete(is_enabled);
+    }
     settings.SetEnabled(is_enabled);
 
     // This ensures that the change propagates through mojo and the observers

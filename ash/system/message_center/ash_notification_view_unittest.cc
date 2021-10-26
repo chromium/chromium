@@ -8,12 +8,15 @@
 #include "ash/system/message_center/message_center_style.h"
 #include "ash/test/ash_test_base.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/views/message_view.h"
 #include "ui/message_center/views/notification_header_view.h"
 #include "ui/message_center/views/notification_view.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/test/button_test_api.h"
 
 using message_center::Notification;
 using message_center::NotificationHeaderView;
@@ -32,30 +35,28 @@ const gfx::Image CreateTestImage(int width, int height) {
   return gfx::Image::CreateFrom1xBitmap(bitmap);
 }
 
-// Create a test notification that is used in the view.
-std::unique_ptr<Notification> CreateTestNotification(bool has_image = false) {
-  message_center::RichNotificationData data;
-  data.settings_button_handler = message_center::SettingsButtonHandler::INLINE;
-
-  std::unique_ptr<Notification> notification = std::make_unique<Notification>(
-      message_center::NOTIFICATION_TYPE_BASE_FORMAT,
-      std::string(kDefaultNotificationId), u"title", u"message",
-      CreateTestImage(80, 80), u"display source", GURL(),
-      message_center::NotifierId(message_center::NotifierType::APPLICATION,
-                                 "extension_id"),
-      data, nullptr /* delegate */);
-  notification->set_small_image(CreateTestImage(16, 16));
-
-  if (has_image)
-    notification->set_image(CreateTestImage(320, 240));
-
-  return notification;
-}
-
 class DummyEvent : public ui::Event {
  public:
   DummyEvent() : Event(ui::ET_UNKNOWN, base::TimeTicks(), 0) {}
   ~DummyEvent() override = default;
+};
+
+class NotificationTestDelegate : public message_center::NotificationDelegate {
+ public:
+  NotificationTestDelegate() = default;
+  NotificationTestDelegate(const NotificationTestDelegate&) = delete;
+  NotificationTestDelegate& operator=(const NotificationTestDelegate&) = delete;
+
+  void DisableNotification() override { disable_notification_called_ = true; }
+
+  bool disable_notification_called() const {
+    return disable_notification_called_;
+  }
+
+ private:
+  ~NotificationTestDelegate() override = default;
+
+  bool disable_notification_called_ = false;
 };
 
 }  // namespace
@@ -71,6 +72,7 @@ class AshNotificationViewTest : public AshTestBase, public views::ViewObserver {
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
+    delegate_ = new NotificationTestDelegate();
     auto notification = CreateTestNotification();
     notification_view_ = std::make_unique<AshNotificationView>(
         *notification, /*is_popup=*/false);
@@ -79,6 +81,30 @@ class AshNotificationViewTest : public AshTestBase, public views::ViewObserver {
   void TearDown() override {
     notification_view_.reset();
     AshTestBase::TearDown();
+  }
+
+  // Create a test notification that is used in the view.
+  std::unique_ptr<Notification> CreateTestNotification(bool has_image = false) {
+    message_center::RichNotificationData data;
+    data.settings_button_handler =
+        message_center::SettingsButtonHandler::INLINE;
+
+    std::unique_ptr<Notification> notification = std::make_unique<Notification>(
+        message_center::NOTIFICATION_TYPE_BASE_FORMAT,
+        std::string(kDefaultNotificationId), u"title", u"message",
+        CreateTestImage(80, 80), u"display source", GURL(),
+        message_center::NotifierId(message_center::NotifierType::APPLICATION,
+                                   "extension_id"),
+        data, delegate_);
+    notification->set_small_image(CreateTestImage(16, 16));
+
+    if (has_image)
+      notification->set_image(CreateTestImage(320, 240));
+
+    message_center::MessageCenter::Get()->AddNotification(
+        std::make_unique<message_center::Notification>(*notification));
+
+    return notification;
   }
 
   void UpdateTimestamp(base::Time timestamp) {
@@ -138,9 +164,21 @@ class AshNotificationViewTest : public AshTestBase, public views::ViewObserver {
   AshNotificationView::ExpandButton* expand_button() {
     return notification_view_->expand_button_;
   }
+  views::View* inline_settings_row() {
+    return notification_view()->inline_settings_row();
+  }
+  views::LabelButton* turn_off_notifications_button() {
+    return notification_view_->turn_off_notifications_button_;
+  }
+  views::LabelButton* inline_settings_cancel_button() {
+    return notification_view_->inline_settings_cancel_button_;
+  }
+
+  scoped_refptr<NotificationTestDelegate> delegate() { return delegate_; }
 
  private:
   std::unique_ptr<AshNotificationView> notification_view_;
+  scoped_refptr<NotificationTestDelegate> delegate_;
 };
 
 TEST_F(AshNotificationViewTest, UpdateViewsOrderingTest) {
@@ -324,7 +362,7 @@ TEST_F(AshNotificationViewTest, ExpandButtonVisibility) {
   ToggleInlineSettings();
   // `content_row()` should be hidden, which also means expand button should be
   // hidden here.
-  EXPECT_FALSE(content_row()->GetVisible());
+  EXPECT_FALSE(expand_button()->GetVisible());
 
   // Toggle back.
   ToggleInlineSettings();
@@ -368,6 +406,34 @@ TEST_F(AshNotificationViewTest, WarningLevelInSummaryText) {
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_ASH_NOTIFICATION_CRITICAL_WARNING_LABEL),
       header_row()->summary_text_for_testing()->GetText());
+}
+
+TEST_F(AshNotificationViewTest, InlineSettingsBlockAll) {
+  auto notification = CreateTestNotification();
+  notification_view()->UpdateWithNotification(*notification);
+
+  ToggleInlineSettings();
+  EXPECT_TRUE(inline_settings_row()->GetVisible());
+
+  // Clicking the turn off button should disable notifications.
+  views::test::ButtonTestApi test_api(turn_off_notifications_button());
+  test_api.NotifyClick(DummyEvent());
+  EXPECT_TRUE(delegate()->disable_notification_called());
+}
+
+TEST_F(AshNotificationViewTest, InlineSettingsCancel) {
+  auto notification = CreateTestNotification();
+  notification_view()->UpdateWithNotification(*notification);
+
+  ToggleInlineSettings();
+  EXPECT_TRUE(inline_settings_row()->GetVisible());
+
+  // Clicking the cancel button should not disable notifications.
+  views::test::ButtonTestApi test_api(inline_settings_cancel_button());
+  test_api.NotifyClick(DummyEvent());
+
+  EXPECT_FALSE(inline_settings_row()->GetVisible());
+  EXPECT_FALSE(delegate()->disable_notification_called());
 }
 
 }  // namespace ash

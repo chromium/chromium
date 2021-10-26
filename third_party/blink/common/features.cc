@@ -1099,5 +1099,12 @@ const base::Feature kSetTimeoutWithoutClamp{"SetTimeoutWithoutClamp",
 bool IsSetTimeoutWithoutClampEnabled() {
   return base::FeatureList::IsEnabled(blink::features::kSetTimeoutWithoutClamp);
 }
+
+// Controls where third_party/blink/renderer/core/frame/deprecation.cc logs to.
+const base::Feature kDeprecationWillLogToConsole{
+    "DeprecationWillLogToConsole", base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kDeprecationWillLogToDevToolsIssue{
+    "DeprecationWillLogToDevToolsIssue", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink

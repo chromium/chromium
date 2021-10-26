@@ -194,6 +194,9 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   virtual void CreateOrUpdateSmallIconView(
       const Notification& notification) = 0;
 
+  virtual void CreateOrUpdateInlineSettingsViews(
+      const Notification& notification);
+
   // Add view to `left_content_` in its appropriate position according to
   // `left_content_count_`. Return a pointer to added view.
   template <typename T>
@@ -218,6 +221,7 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   const views::View* content_row() const { return content_row_; }
 
   views::View* left_content() { return left_content_; }
+  views::View* right_content() { return right_content_; }
 
   views::Label* message_view() { return message_view_; }
   const views::Label* message_view() const { return message_view_; }
@@ -236,7 +240,12 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   const views::Label* status_view() const { return status_view_; }
   const std::vector<views::View*> item_views() const { return item_views_; }
   views::RadioButton* block_all_button() { return block_all_button_; }
+  views::RadioButton* dont_block_button() { return dont_block_button_; }
+
   bool inline_settings_enabled() const { return inline_settings_enabled_; }
+  void set_inline_settings_enabled(bool inline_settings_enabled) {
+    inline_settings_enabled_ = inline_settings_enabled;
+  }
 
   virtual bool IsExpandable() const = 0;
 
@@ -296,7 +305,6 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   void CreateOrUpdateIconView(const Notification& notification);
   void CreateOrUpdateImageView(const Notification& notification);
   void CreateOrUpdateActionButtonViews(const Notification& notification);
-  void CreateOrUpdateInlineSettingsViews(const Notification& notification);
 
   void HeaderRowPressed();
   void ActionButtonPressed(size_t index, const ui::Event& event);

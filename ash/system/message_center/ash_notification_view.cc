@@ -17,6 +17,7 @@
 #include "ash/system/message_center/message_center_style.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
+#include "base/bind.h"
 #include "base/check.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -30,6 +31,7 @@
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/text_elider.h"
+#include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/vector_icons.h"
@@ -51,7 +53,7 @@
 
 namespace {
 
-constexpr gfx::Insets kNotificationViewPadding(6, 16, 0, 6);
+constexpr gfx::Insets kNotificationViewPadding(6, 16, 22, 6);
 constexpr gfx::Insets kMainRightViewPadding(0, 0, 0, 10);
 constexpr int kMainRightViewVerticalSpacing = 4;
 
@@ -696,6 +698,43 @@ void AshNotificationView::CreateOrUpdateSmallIconView(
   }
 }
 
+void AshNotificationView::CreateOrUpdateInlineSettingsViews(
+    const message_center::Notification& notification) {
+  if (inline_settings_enabled()) {
+    DCHECK_EQ(message_center::SettingsButtonHandler::INLINE,
+              notification.rich_notification_data().settings_button_handler);
+    return;
+  }
+
+  set_inline_settings_enabled(
+      notification.rich_notification_data().settings_button_handler ==
+      message_center::SettingsButtonHandler::INLINE);
+
+  if (!inline_settings_enabled()) {
+    return;
+  }
+
+  // This string can be very long. Do we put this inside a button (any text
+  // length limit)
+  // Q2: What is the big settings button on the right side?
+  inline_settings_row()->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal, gfx::Insets(), 0));
+  auto turn_off_notifications_button = GenerateNotificationLabelButton(
+      base::BindRepeating(&AshNotificationView::DisableNotification,
+                          base::Unretained(this)),
+      l10n_util::GetStringUTF16(
+          IDS_ASH_NOTIFICATION_INLINE_SETTINGS_TURN_OFF_BUTTON_TEXT));
+  turn_off_notifications_button_ = inline_settings_row()->AddChildView(
+      std::move(turn_off_notifications_button));
+  auto inline_settings_cancel_button = GenerateNotificationLabelButton(
+      base::BindRepeating(&AshNotificationView::ToggleInlineSettings,
+                          base::Unretained(this)),
+      l10n_util::GetStringUTF16(
+          IDS_ASH_NOTIFICATION_INLINE_SETTINGS_CANCEL_BUTTON_TEXT));
+  inline_settings_cancel_button_ = inline_settings_row()->AddChildView(
+      std::move(inline_settings_cancel_button));
+}
+
 bool AshNotificationView::IsIconViewShown() const {
   return NotificationViewBase::IsIconViewShown() && !is_grouped_child_view_;
 }
@@ -755,8 +794,17 @@ gfx::Size AshNotificationView::GetIconViewSize() const {
 void AshNotificationView::ToggleInlineSettings(const ui::Event& event) {
   if (!inline_settings_enabled())
     return;
-  // TODO(crbug/1233670): Finish the inline settings/blocking UI here.
+
   NotificationViewBase::ToggleInlineSettings(event);
+
+  bool inline_settings_visible = inline_settings_row()->GetVisible();
+
+  // In settings UI, we only show the app icon and header row along with the
+  // inline settings UI.
+  header_row()->SetVisible(true);
+  left_content()->SetVisible(!inline_settings_visible);
+  right_content()->SetVisible(!inline_settings_visible);
+  expand_button_->SetVisible(!inline_settings_visible);
 }
 
 void AshNotificationView::UpdateMessageViewInExpandedState(
@@ -821,6 +869,10 @@ int AshNotificationView::GetLeftContentWidth() {
     left_content_width -= kIconViewSize + kContentRowHorizontalSpacing;
 
   return left_content_width;
+}
+
+void AshNotificationView::DisableNotification() {
+  message_center::MessageCenter::Get()->DisableNotification(notification_id());
 }
 
 }  // namespace ash

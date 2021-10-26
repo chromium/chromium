@@ -48,6 +48,12 @@ Polymer({
     },
 
     /** @private {boolean} */
+    isSettingsRetreived: {
+      type: Boolean,
+      value: false,
+    },
+
+    /** @private {boolean} */
     showDeviceNameDialog_: {
       type: Boolean,
       value: false,

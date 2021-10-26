@@ -79,6 +79,7 @@ class NearbyShareSettings : public nearby_share::mojom::NearbyShareSettings,
   void SetFastInitiationNotificationState(
       nearby_share::mojom::FastInitiationNotificationState state) override;
   void IsOnboardingComplete(base::OnceCallback<void(bool)> callback) override;
+  void SetIsOnboardingComplete(bool completed) override;
   void GetDeviceName(
       base::OnceCallback<void(const std::string&)> callback) override;
   void ValidateDeviceName(

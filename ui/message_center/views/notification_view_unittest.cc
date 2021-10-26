@@ -389,7 +389,6 @@ TEST_F(NotificationViewTest, InlineSettingsBlockAll) {
   generator.ClickLeftButton();
   generator.MoveMouseTo(done_cursor_location);
   generator.ClickLeftButton();
-  MessageCenter::Get()->DisableNotification(notification->id());
 
   EXPECT_FALSE(notification_view()->settings_row_->GetVisible());
   EXPECT_TRUE(delegate_->disable_notification_called());

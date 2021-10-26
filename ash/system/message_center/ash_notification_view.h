@@ -68,6 +68,8 @@ class ASH_EXPORT AshNotificationView
       const message_center::Notification& notification) override;
   void CreateOrUpdateSmallIconView(
       const message_center::Notification& notification) override;
+  void CreateOrUpdateInlineSettingsViews(
+      const message_center::Notification& notification) override;
   bool IsIconViewShown() const override;
   void SetExpandButtonEnabled(bool enabled) override;
   bool IsExpandable() const override;
@@ -180,6 +182,10 @@ class ASH_EXPORT AshNotificationView
   int GetContentRowWidth();
   int GetLeftContentWidth();
 
+  // Disable the notification of this view. Called after the turn of
+  // notifications button is clicked.
+  void DisableNotification();
+
   // Owned by views hierarchy.
   RoundedImageView* app_icon_view_ = nullptr;
   ExpandButton* expand_button_ = nullptr;
@@ -189,6 +195,8 @@ class ASH_EXPORT AshNotificationView
   views::View* collapsed_summary_view_ = nullptr;
   views::View* control_buttons_view_ = nullptr;
   views::View* main_view_ = nullptr;
+  views::LabelButton* turn_off_notifications_button_ = nullptr;
+  views::LabelButton* inline_settings_cancel_button_ = nullptr;
   views::BoxLayout* const layout_manager_ = nullptr;
 
   // These views below are dynamically created inside view hierarchy.
