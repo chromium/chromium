@@ -28,7 +28,7 @@ public class JUnitTestGURLs {
     public static final String URL_1 = "https://www.one.com/";
     public static final String URL_1_NUMERAL = "https://www.1.com/";
     public static final String URL_1_WITH_PATH = "https://www.one.com/some_path.html";
-    public static final String URL_2 = "https://www.two.com/";
+    public static final String URL_2 = "https://www.1.net";
     public static final String URL_3 = "https://www.three.com/";
     public static final String MAPS_URL = "https://maps.google.com/";
     public static final String SEARCH_URL = "https://www.google.com/search?q=test";
