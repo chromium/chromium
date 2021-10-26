@@ -23,6 +23,7 @@ class AppListReorderDelegate;
 }  // namespace app_list
 
 class ChromeAppListItem;
+class ChromeAppListItemManager;
 
 class ChromeAppListModelUpdater : public AppListModelUpdater {
  public:
@@ -74,10 +75,6 @@ class ChromeAppListModelUpdater : public AppListModelUpdater {
   void ActivateChromeItem(const std::string& id, int event_flags) override;
   void LoadAppIcon(const std::string& id) override;
 
-  // Methods only for visiting Chrome items that never talk to ash.
-  ChromeAppListItem* AddChromeItem(std::unique_ptr<ChromeAppListItem> app_item);
-  void RemoveChromeItem(const std::string& id);
-
   // Methods for item querying.
   ChromeAppListItem* FindItem(const std::string& id) override;
   std::vector<const ChromeAppListItem*> GetItems() const override;
@@ -123,9 +120,9 @@ class ChromeAppListModelUpdater : public AppListModelUpdater {
   // Provides the access to the methods for ordering app list items.
   app_list::AppListReorderDelegate* const order_delegate_;
 
-  // A map from a ChromeAppListItem's id to its unique pointer. This item set
-  // matches the one in AppListModel.
-  std::map<std::string, std::unique_ptr<ChromeAppListItem>> items_;
+  // A helper class to manage app list items. It never talks to ash.
+  std::unique_ptr<ChromeAppListItemManager> item_manager_;
+
   // The most recently list of search results.
   std::vector<ChromeSearchResult*> published_results_;
   base::ObserverList<AppListModelUpdaterObserver> observers_;
