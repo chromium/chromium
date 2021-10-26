@@ -337,7 +337,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       let table = document.querySelector("#report-table-wrapper tbody");
       let obs = new MutationObserver(() => {
         if (table.children.length === 4 &&
-            table.children[0].children[1].innerText === "https://sub.conversion.test" &&
+            table.children[0].children[1].innerText === "https://conversion.test" &&
             table.children[0].children[2].innerText ===
               "https://report.test/.well-known/attribution-reporting/report-attribution" &&
             table.children[0].children[5].innerText === "13" &&
@@ -366,7 +366,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       let table = document.querySelector("#report-table-wrapper tbody");
       let obs = new MutationObserver(() => {
         if (table.children.length === 4 &&
-            table.children[3].children[1].innerText === "https://sub.conversion.test" &&
+            table.children[3].children[1].innerText === "https://conversion.test" &&
             table.children[3].children[2].innerText ===
               "https://report.test/.well-known/attribution-reporting/report-attribution" &&
             table.children[3].children[5].innerText === "13" &&
@@ -397,7 +397,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       let table = document.querySelector("#report-table-wrapper tbody");
       let obs = new MutationObserver(() => {
         if (table.children.length === 4 &&
-            table.children[0].children[1].innerText === "https://sub.conversion.test" &&
+            table.children[0].children[1].innerText === "https://conversion.test" &&
             table.children[0].children[2].innerText ===
               "https://report.test/.well-known/attribution-reporting/report-attribution" &&
             table.children[0].children[5].innerText === "13" &&

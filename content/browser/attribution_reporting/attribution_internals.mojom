@@ -16,7 +16,7 @@ enum SourceType {
 // Struct containing stored data that will be sent in a future conversion
 // report.
 struct WebUIConversionReport {
-  url.mojom.Origin conversion_origin;
+  string attribution_destination;
   url.mojom.Url report_url;
   double trigger_time;
   double report_time;
@@ -41,7 +41,8 @@ struct WebUIConversionReport {
 struct WebUIImpression {
   uint64 source_event_id;
   url.mojom.Origin impression_origin;
-  url.mojom.Origin conversion_destination;
+  // Replace SchemefulSite with string if this struct is ever reused elsewhere.
+  string attribution_destination;
   url.mojom.Origin reporting_origin;
   double impression_time;
   double expiry_time;
