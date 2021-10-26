@@ -1330,6 +1330,9 @@
     'midi': {
       'filepath': 'midi',
     },
+    'minidump_tests': {
+      'filepath': 'tools/perf/core/minidump_unittest.py',
+    },
     'multidevice': {
       'filepath': 'ash/multi_device_setup/'\
                   '|chrome/browser/ash/cryptauth/'\
@@ -2625,6 +2628,7 @@
                                'chromium-metrics-reviews@google.com'],
     'metrics_perf': ['cwp-reviews+chromium@google.com'],
     'midi': ['toyoshim+midi@chromium.org'],
+    'minidump_tests': ['bsheedy@chromium.org'],
     'multidevice': ['danlee+watch-multidevice@google.com',
                     'hansberry+watch-multidevice@chromium.org',
                     'nohle+watch-multidevice@chromium.org',
