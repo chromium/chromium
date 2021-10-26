@@ -4,29 +4,28 @@
 
 (async function() {
   TestRunner.addResult(`Tests DataGrid column auto size calculation.\n`);
+  await TestRunner.loadLegacyModule('data_grid')
 
-  runtime.loadModulePromise('data_grid').then(function() {
-    function testAutoSize(widths, minPercent, maxPercent) {
-      TestRunner.addResult(
-          'Auto sizing ' + JSON.stringify(widths) + ', minPercent=' + minPercent + ', maxPercent=' + maxPercent);
-      var result = DataGrid.DataGrid.prototype.autoSizeWidths(widths, minPercent, maxPercent);
-      TestRunner.addResult('    ' + JSON.stringify(result));
-    }
+  function testAutoSize(widths, minPercent, maxPercent) {
+    TestRunner.addResult(
+        'Auto sizing ' + JSON.stringify(widths) + ', minPercent=' + minPercent + ', maxPercent=' + maxPercent);
+    var result = DataGrid.DataGrid.prototype.autoSizeWidths(widths, minPercent, maxPercent);
+    TestRunner.addResult('    ' + JSON.stringify(result));
+  }
 
-    testAutoSize([198, 2, 400], 90);
-    testAutoSize([1000], 5);
-    testAutoSize([10], 5);
-    testAutoSize([1000, 1000], 5);
-    testAutoSize([30, 30, 30, 30], 5);
-    testAutoSize([1, 100, 100, 100], 25);
-    testAutoSize([100, 100, 100, 100], 25);
-    testAutoSize([1, 1, 1, 100], 25);
-    testAutoSize([1, 100, 100], 25, 40);
-    testAutoSize([100, 100, 100], 25, 40);
-    testAutoSize([1, 1, 100], 25, 40);
+  testAutoSize([198, 2, 400], 90);
+  testAutoSize([1000], 5);
+  testAutoSize([10], 5);
+  testAutoSize([1000, 1000], 5);
+  testAutoSize([30, 30, 30, 30], 5);
+  testAutoSize([1, 100, 100, 100], 25);
+  testAutoSize([100, 100, 100, 100], 25);
+  testAutoSize([1, 1, 1, 100], 25);
+  testAutoSize([1, 100, 100], 25, 40);
+  testAutoSize([100, 100, 100], 25, 40);
+  testAutoSize([1, 1, 100], 25, 40);
 
-    // https://bugs.webkit.org/show_bug.cgi?id=101363
-    testAutoSize([3, 10, 7, 7, 13, 13, 9, 10, 15, 15, 20, 20, 14, 14, 12, 12, 12, 10, 9, 14, 10, 6, 7, 10, 18], 5);
-    TestRunner.completeTest();
-  });
+  // https://bugs.webkit.org/show_bug.cgi?id=101363
+  testAutoSize([3, 10, 7, 7, 13, 13, 9, 10, 15, 15, 20, 20, 14, 14, 12, 12, 12, 10, 9, 14, 10, 6, 7, 10, 18], 5);
+  TestRunner.completeTest();
 })();

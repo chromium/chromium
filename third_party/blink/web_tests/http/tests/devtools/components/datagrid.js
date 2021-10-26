@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests ViewportDataGrid.\n`);
-  await TestRunner.loadModule('data_grid'); await TestRunner.loadTestModule('data_grid_test_runner');
+  await TestRunner.loadLegacyModule('data_grid'); await TestRunner.loadTestModule('data_grid_test_runner');
 
   function attach(parent, child, index) {
     var parentName = parent === root ? 'root' : parent.data.id;

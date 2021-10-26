@@ -7205,6 +7205,14 @@ crbug.com/1222126 http/tests/devtools/network/network-choose-preview-view.js [ S
 crbug.com/1222126 http/tests/devtools/network/json-preview.js [ Skip ]
 crbug.com/1215072 http/tests/devtools/elements/copy-styles.js [ Skip ]
 
+# DevTools roll
+crbug.com/1127902 http/tests/devtools/components/datagrid.js [ Skip ]
+crbug.com/1127902 http/tests/devtools/components/viewport-datagrid.js [ Skip ]
+crbug.com/1127902 http/tests/devtools/unit/datagrid-editable-longtext.js [ Skip ]
+crbug.com/1127902 http/tests/devtools/unit/datagrid-items-attached-to-dom.js [ Skip ]
+crbug.com/1127902 http/tests/devtools/unit/viewport-datagrid-items-attached-to-dom.js [ Skip ]
+crbug.com/1127902 http/tests/devtools/unit/viewport-datagrid-items-expandable-attached-to-dom.js [ Skip ]
+
 # Skip devtools test hitting an unexpected tracing infrastructure exception 2021-10-04
 crbug.com/1255679 http/tests/devtools/service-workers/service-workers-wasm-test.js [ Skip ]
 
