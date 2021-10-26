@@ -255,5 +255,10 @@ constexpr base::FeatureParam<base::TimeDelta>
 const base::Feature kCorsNonWildcardRequestHeadersSupport{
     "CorsNonWildcardRequestHeadersSupport", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Whether the sync client optimization is used for communication between the
+// CorsURLLoader and URLLoader.
+const base::Feature kURLLoaderSyncClient{"URLLoaderSyncClient",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace network

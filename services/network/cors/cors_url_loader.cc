@@ -209,12 +209,6 @@ absl::optional<CorsErrorStatus> CheckRedirectLocation(
 }
 
 constexpr const char kTimingAllowOrigin[] = "Timing-Allow-Origin";
-
-// Whether the sync client optimization is used for communication between the
-// CorsURLLoader and URLLoader.
-constexpr base::Feature kURLLoaderSyncClient{"URLLoaderSyncClient",
-                                             base::FEATURE_ENABLED_BY_DEFAULT};
-
 }  // namespace
 
 CorsURLLoader::CorsURLLoader(
@@ -720,7 +714,7 @@ void CorsURLLoader::StartNetworkRequest(
   // |network_client_receiver_| shares this object's lifetime.
   network_loader_.reset();
   if (sync_network_loader_factory_ &&
-      base::FeatureList::IsEnabled(kURLLoaderSyncClient)) {
+      base::FeatureList::IsEnabled(features::kURLLoaderSyncClient)) {
     sync_network_loader_factory_->CreateLoaderAndStartWithSyncClient(
         network_loader_.BindNewPipeAndPassReceiver(), request_id_, options_,
         request_, network_client_receiver_.BindNewPipeAndPassRemote(),
