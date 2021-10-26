@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import {canEditNode, canReorderChildren, getDescendants, removeIdsFromObject, removeIdsFromSet} from 'chrome://bookmarks/bookmarks.js';
-import {TestStore} from 'chrome://test/bookmarks/test_store.js';
-import {createFolder, createItem, normalizeIterable, testTree} from 'chrome://test/bookmarks/test_util.js';
+import {TestStore} from './test_store.js';
+import {createFolder, createItem, normalizeIterable, testTree} from './test_util.js';
 
 suite('util', function() {
   test('getDescendants collects all children', function() {

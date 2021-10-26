@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {changeFolderOpen, clearSearch, Command, createBookmark, createEmptyState, deselectItems, editBookmark, getDisplayedList, isShowingSearch, MenuSource, moveBookmark, reduceAction, removeBookmark, reorderChildren, selectFolder, setSearchResults, setSearchTerm, updateAnchor, updateFolderOpenState, updateNodes, updateSelectedFolder, updateSelection} from 'chrome://bookmarks/bookmarks.js';
-import {createFolder, createItem, normalizeIterable, replaceBody, testTree} from 'chrome://test/bookmarks/test_util.js';
+import {createFolder, createItem, normalizeIterable, replaceBody, testTree} from './test_util.js';
 
 suite('selection state', function() {
   let selection;

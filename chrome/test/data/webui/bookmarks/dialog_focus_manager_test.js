@@ -5,10 +5,11 @@
 import {DialogFocusManager, MenuSource} from 'chrome://bookmarks/bookmarks.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {TestCommandManager} from 'chrome://test/bookmarks/test_command_manager.js';
-import {TestStore} from 'chrome://test/bookmarks/test_store.js';
-import {createFolder, createItem, getAllFoldersOpenState, replaceBody, testTree} from 'chrome://test/bookmarks/test_util.js';
-import {eventToPromise} from 'chrome://test/test_util.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
+
+import {TestCommandManager} from './test_command_manager.js';
+import {TestStore} from './test_store.js';
+import {createFolder, createItem, getAllFoldersOpenState, replaceBody, testTree} from './test_util.js';
 
 suite('DialogFocusManager', function() {
   let list;

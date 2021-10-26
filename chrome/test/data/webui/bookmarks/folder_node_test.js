@@ -4,9 +4,9 @@
 
 import {selectFolder} from 'chrome://bookmarks/bookmarks.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {TestCommandManager} from 'chrome://test/bookmarks/test_command_manager.js';
-import {TestStore} from 'chrome://test/bookmarks/test_store.js';
-import {createFolder, createItem, findFolderNode, getAllFoldersOpenState, replaceBody, testTree} from 'chrome://test/bookmarks/test_util.js';
+import {TestCommandManager} from './test_command_manager.js';
+import {TestStore} from './test_store.js';
+import {createFolder, createItem, findFolderNode, getAllFoldersOpenState, replaceBody, testTree} from './test_util.js';
 
 suite('<bookmarks-folder-node>', function() {
   let rootNode;

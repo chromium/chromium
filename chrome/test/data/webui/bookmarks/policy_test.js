@@ -4,9 +4,9 @@
 
 import {BookmarksCommandManagerElement, BrowserProxy, Command, IncognitoAvailability} from 'chrome://bookmarks/bookmarks.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
-import {TestBookmarksBrowserProxy} from 'chrome://test/bookmarks/test_browser_proxy.js';
-import {TestStore} from 'chrome://test/bookmarks/test_store.js';
-import {createFolder, createItem, getAllFoldersOpenState, replaceBody, testTree} from 'chrome://test/bookmarks/test_util.js';
+import {TestBookmarksBrowserProxy} from './test_browser_proxy.js';
+import {TestStore} from './test_store.js';
+import {createFolder, createItem, getAllFoldersOpenState, replaceBody, testTree} from './test_util.js';
 
 suite('Bookmarks policies', function() {
   let store;
