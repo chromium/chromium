@@ -316,6 +316,17 @@ class PDFExtensionTestWithoutUnseasonedOverride
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
+  // Sets the keyboard focus on the plugin frame by clicking on the top left
+  // corner of a PDF document.
+  void SetKeyboardFocusOnPlugin(WebContents* guest_contents) {
+    content::FocusChangedObserver focus_observer(guest_contents);
+    content::SimulateMouseClickAt(
+        guest_contents, blink::WebInputEvent::kNoModifiers,
+        blink::WebMouseEvent::Button::kLeft,
+        ConvertPageCoordToScreenCoord(guest_contents, {1, 1}));
+    focus_observer.Wait();
+  }
+
  protected:
   WebContents* GetOnlyGuestContents(WebContents* embedder_contents) const {
     content::BrowserPluginGuestManager* guest_manager =
@@ -1559,18 +1570,77 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, MAYBE_PdfZoomWithoutBubble) {
 #endif
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionTest, SelectAllShortcut) {
-  // Load without the UI (i.e. with #toolbar=0) to guarantee that any mouse
-  // click will hit the plugin frame.
-  content::WebContents* guest_contents = LoadPdfGetGuestContents(
-      embedded_test_server()->GetURL("/pdf/test.pdf#toolbar=0"));
+using PDFExtensionKeyEventTest = PDFExtensionTest;
 
-  // Set the keyboard focus on the plugin frame.
-  content::FocusChangedObserver focus_observer(guest_contents);
-  content::SimulateMouseClickAt(guest_contents, /*modifiers=*/0,
-                                blink::WebMouseEvent::Button::kLeft,
-                                gfx::Point(1, 1));
-  focus_observer.Wait();
+namespace {
+
+int GetViewportHeight(content::WebContents* guest_contents) {
+  int viewport_height = 0;
+  EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
+      guest_contents,
+      "window.domAutomationController.send(viewer.viewport.size.height);",
+      &viewport_height));
+  return viewport_height;
+}
+
+int GetViewportScrollPositionY(content::WebContents* guest_contents) {
+  int position_y = 0;
+  EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
+      guest_contents,
+      "window.domAutomationController.send(viewer.viewport.position.y);",
+      &position_y));
+  return position_y;
+}
+
+int GetViewportScrollPositionYAfterScrollEvent(
+    content::WebContents* guest_contents) {
+  int position_y = 0;
+  EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
+      guest_contents,
+      "viewer.shadowRoot.querySelector('#scroller').onscroll = () => {"
+      "  window.domAutomationController.send(viewer.viewport.position.y);"
+      "};",
+      &position_y));
+  return position_y;
+}
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionKeyEventTest, ScrollWithSpaceShortcut) {
+  content::WebContents* guest_contents = LoadPdfGetGuestContents(
+      embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
+  SetKeyboardFocusOnPlugin(guest_contents);
+
+  // Get the viewport size first since the scroll distance is based on the
+  // viewport height.
+  int viewport_height = GetViewportHeight(guest_contents);
+  ASSERT_GT(viewport_height, 0);
+
+  // The vertical scroll position is at 0 before scrolling.
+  EXPECT_EQ(0, GetViewportScrollPositionY(guest_contents));
+
+  // Press space key to scroll down.
+  content::SimulateKeyPress(guest_contents, ui::DomKey::FromCharacter(' '),
+                            ui::DomCode::SPACE, ui::VKEY_SPACE,
+                            /*control=*/false, /*shift=*/false, /*alt=*/false,
+                            /*command=*/false);
+  EXPECT_EQ(viewport_height,
+            GetViewportScrollPositionYAfterScrollEvent(guest_contents));
+
+  // Press shift + space key to scroll back up to top.
+  content::SimulateKeyPress(guest_contents, ui::DomKey::FromCharacter(' '),
+                            ui::DomCode::SPACE, ui::VKEY_SPACE,
+                            /*control=*/false, /*shift=*/true, /*alt=*/false,
+                            /*command=*/false);
+  EXPECT_EQ(0, GetViewportScrollPositionYAfterScrollEvent(guest_contents));
+}
+
+INSTANTIATE_TEST_SUITE_P(All, PDFExtensionKeyEventTest, testing::Values(true));
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionTest, SelectAllShortcut) {
+  content::WebContents* guest_contents =
+      LoadPdfGetGuestContents(embedded_test_server()->GetURL("/pdf/test.pdf"));
+  SetKeyboardFocusOnPlugin(guest_contents);
 
   content::RenderFrameHost* frame = GetPluginFrame(guest_contents);
   ASSERT_TRUE(frame);
