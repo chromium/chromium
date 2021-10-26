@@ -812,11 +812,31 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
         Base histogram. Use suffixes of this histogram instead.
       </obsolete>
     </variant>
-    <variant name=".ActiveAnimation" summary=""/>
-    <variant name=".AssumedOverlap" summary=""/>
-    <variant name=".IndirectComposited" summary=""/>
-    <variant name=".Overlap" summary=""/>
-    <variant name=".TotalComposited" summary=""/>
+    <variant name=".ActiveAnimation" summary="">
+      <obsolete>
+        Deprecated as of 2021-10.
+      </obsolete>
+    </variant>
+    <variant name=".AssumedOverlap" summary="">
+      <obsolete>
+        Deprecated as of 2021-10.
+      </obsolete>
+    </variant>
+    <variant name=".IndirectComposited" summary="">
+      <obsolete>
+        Deprecated as of 2021-10.
+      </obsolete>
+    </variant>
+    <variant name=".Overlap" summary="">
+      <obsolete>
+        Deprecated as of 2021-10.
+      </obsolete>
+    </variant>
+    <variant name=".TotalComposited" summary="">
+      <obsolete>
+        Deprecated as of 2021-10.
+      </obsolete>
+    </variant>
   </token>
 </histogram>
 
