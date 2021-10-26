@@ -9,17 +9,24 @@ import shutil
 import tempfile
 import unittest
 
+import six
+
 from core import path_util
 path_util.AddTelemetryToPath()
 
 from telemetry import decorators
 
-import mock
+if six.PY2:
+  import mock
+else:
+  import unittest.mock as mock  # pylint: disable=no-name-in-module,import-error,wrong-import-order
 
 import process_perf_results as ppr_module
 
 
 UUID_SIZE = 36
+
+BUILTIN_MODULE = '__builtin__' if six.PY2 else 'builtins'
 
 
 class _FakeLogdogStream(object):
@@ -40,22 +47,22 @@ class DataFormatParsingUnitTest(unittest.TestCase):
     ppr_module._data_format_cache = {}
 
   def testGtest(self):
-    with mock.patch('__builtin__.open', mock.mock_open(read_data='{}')):
+    with mock.patch(BUILTIN_MODULE + '.open', mock.mock_open(read_data='{}')):
       self.assertTrue(ppr_module._is_gtest('test.json'))
       self.assertFalse(ppr_module._is_histogram('test.json'))
     self.assertTrue(ppr_module._is_gtest('test.json'))
     self.assertFalse(ppr_module._is_histogram('test.json'))
 
   def testChartJSON(self):
-    with mock.patch('__builtin__.open',
-        mock.mock_open(read_data='{"charts": 1}')):
+    with mock.patch(BUILTIN_MODULE + '.open',
+                    mock.mock_open(read_data='{"charts": 1}')):
       self.assertFalse(ppr_module._is_gtest('test.json'))
       self.assertFalse(ppr_module._is_histogram('test.json'))
     self.assertFalse(ppr_module._is_gtest('test.json'))
     self.assertFalse(ppr_module._is_histogram('test.json'))
 
   def testHistogram(self):
-    with mock.patch('__builtin__.open', mock.mock_open(read_data='[]')):
+    with mock.patch(BUILTIN_MODULE + '.open', mock.mock_open(read_data='[]')):
       self.assertTrue(ppr_module._is_histogram('test.json'))
       self.assertFalse(ppr_module._is_gtest('test.json'))
     self.assertTrue(ppr_module._is_histogram('test.json'))
@@ -90,7 +97,7 @@ class ProcessPerfResultsIntegrationTest(unittest.TestCase):
 
   @decorators.Disabled('chromeos')  # crbug.com/865800
   @decorators.Disabled('win')  # crbug.com/860677, mock doesn't integrate well
-                               # with multiprocessing on Windows.
+  # with multiprocessing on Windows.
   @decorators.Disabled('all')  # crbug.com/967125
   def testIntegration(self):
     build_properties = json.dumps({

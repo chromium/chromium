@@ -34,7 +34,7 @@ def CheckLoggedIn():
   try:
     GetAccessToken()
   except AuthorizationError as exc:
-    sys.exit(exc.message)
+    sys.exit(str(exc))
 
 
 def GetAccessToken():

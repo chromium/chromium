@@ -1,0 +1,56 @@
+[==========] Running 4 tests from 1 test case.
+[----------] Global test environment set-up.
+[----------] 4 tests from MemoryTest
+[ RUN      ] MemoryTest.SingleTabTest
+
+RESULT vm_final_browser: 1t_vm_b= 8712 kb
+RESULT ws_final_browser: 1t_ws_b= 16892 kb
+RESULT vm_final_total: 1t_vm= 29696 kb
+*RESULT ws_final_total: 1t_ws= 41960 kb
+RESULT processes: 1t_proc= 2
+*RESULT commit_charge: 1t_cc= 22536 kb
+[       OK ] MemoryTest.SingleTabTest
+[ RUN      ] MemoryTest.SingleTabTestRef
+
+RESULT vm_final_browser: 1t_vm_b_ref= 5712 kb
+RESULT ws_final_browser: 1t_ws_b_ref= 26892 kb
+RESULT vm_final_total: 1t_vm_ref= 9696 kb
+*RESULT ws_final_total: 1t_ws_ref= 41960 kb
+RESULT processes: 1t_proc_ref= 1
+*RESULT commit_charge: 1t_cc_ref= 22536 kb
+[       OK ] MemoryTest.SingleTabTestRef
+[ RUN      ] MemoryTest.FiveTabTest
+
+RESULT vm_final_browser: 5t_vm_b= 10404 kb
+RESULT ws_final_browser: 5t_ws_b= 18504 kb
+RESULT vm_final_total: 5t_vm= 54936 kb
+*RESULT ws_final_total: 5t_ws= 63276 kb
+RESULT processes: 5t_proc= 3
+*RESULT commit_charge: 5t_cc= 49412 kb
+[       OK ] MemoryTest.FiveTabTest
+[ RUN      ] MemoryTest.TwelveTabTest
+
+RESULT vm_final_browser: 12t_vm_b= 10556 kb
+RESULT ws_final_browser: 12t_ws_b= 18612 kb
+RESULT vm_final_total: 12t_vm= 55740 kb
+*RESULT ws_final_total: 12t_ws= 63984 kb
+RESULT processes: 12t_proc= 3
+*RESULT commit_charge: 12t_cc= 50200 kb
+[       OK ] MemoryTest.TwelveTabTest
+[----------] Global test environment tear-down
+[==========] 4 tests from 1 test case ran.
+[  PASSED  ] 4 tests.
+
+# Artificial log output to test the [] syntax.
+
+RESULT artificial_graph: trace_with_one_sample= [177.0] you-nits
+RESULT artificial_graph: trace_with_one_sample_comma= [177.0,] you-nits
+RESULT artificial_graph: trace_with_three_samples= [100.0,120.0,200.0] you-nits
+RESULT artificial_graph: trace_with_three_samples_comma= [100.0,120.0,200.0,] you-nits
+
+# Artificial log output to test multiple results with the same name
+
+RESULT artificial_graph: trace_with_multiple_samples= 100 you-nits
+RESULT artificial_graph: trace_with_multiple_samples= 200 you-nits
+RESULT artificial_graph: trace_with_multiple_samples= 300 you-nits
+RESULT artificial_graph: trace_with_multiple_samples= 400 you-nits

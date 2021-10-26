@@ -382,7 +382,7 @@ wheel: <
 #   tools/perf/flakiness_cli
 wheel: <
   name: "infra/python/wheels/pandas/${vpython_platform}"
-  version: "version:1.3.2"
+  version: "version:1.3.2.chromium.1"
   match_tag: <
     platform: "win32"
   >

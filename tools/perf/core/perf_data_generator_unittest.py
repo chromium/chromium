@@ -2,11 +2,20 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 import copy
-from io import BytesIO
 import unittest
 import tempfile
 import json
 import os
+
+import six
+
+# This is necessary because io.StringIO in Python 2 does not accept str, only
+# unicode. BytesIO works in Python 2, but then complains when given a str
+# instead of bytes in Python 3.
+if six.PY2:
+  from cStringIO import StringIO  # pylint: disable=wrong-import-order
+else:
+  from io import StringIO  # pylint: disable=wrong-import-order
 
 import mock
 
@@ -62,7 +71,7 @@ class TestIsPerfBenchmarksSchedulingValid(unittest.TestCase):
         perf_data_generator.GTEST_BENCHMARKS)
     self.original_OTHER_BENCHMARKS = copy.deepcopy(
         perf_data_generator.OTHER_BENCHMARKS)
-    self.test_stream = BytesIO()
+    self.test_stream = StringIO()
     self.mock_get_non_telemetry_benchmarks = mock.patch(
         'core.perf_data_generator.get_scheduled_non_telemetry_benchmarks')
     self.get_non_telemetry_benchmarks = (

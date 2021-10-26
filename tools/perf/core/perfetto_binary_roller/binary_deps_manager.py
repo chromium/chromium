@@ -78,7 +78,7 @@ def _CalculateHash(remote_path):
 
 
 def _SetLatestPathForBinary(binary_name, platform, latest_path):
-  with tempfile_ext.NamedTemporaryFile() as latest_file:
+  with tempfile_ext.NamedTemporaryFile(mode='w') as latest_file:
     latest_file.write(latest_path)
     latest_file.close()
     remote_latest_file = posixpath.join(BINARY_CS_FOLDER, binary_name, platform,

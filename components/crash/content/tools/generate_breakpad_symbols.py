@@ -89,7 +89,7 @@ def _GetSharedLibraryDependenciesAndroidOrChromeOS(binary):
   readelf plays nice with mixed host/device architectures (e.g. x86-64 host,
   arm64 device), so use that.
   """
-  readelf = subprocess.check_output(['readelf', '-d', binary])
+  readelf = subprocess.check_output(['readelf', '-d', binary]).decode('utf-8')
   lib_re = re.compile('Shared library: \[(.+)\]$')
   result = []
   binary_path = os.path.dirname(os.path.abspath(binary))
@@ -124,7 +124,7 @@ def GetDeveloperDirMac():
   if 'DEVELOPER_DIR' in os.environ:
     candidate_paths.append(os.environ['DEVELOPER_DIR'])
   candidate_paths.extend([
-    subprocess.check_output(['xcode-select', '-p']).strip(),
+    subprocess.check_output(['xcode-select', '-p']).decode('utf-8').strip(),
     # Most Mac 10.1[0-2] bots have at least one Xcode installed.
     '/Applications/Xcode.app',
     '/Applications/Xcode9.0.app',
@@ -168,7 +168,7 @@ def GetSharedLibraryDependenciesMac(binary, exe_path):
     otool_path = 'otool'
 
   otool = subprocess.check_output(
-      [otool_path, '-lm', binary], env=env).splitlines()
+      [otool_path, '-lm', binary], env=env).decode('utf-8').splitlines()
   rpaths = []
   dylib_id = None
   for idx, line in enumerate(otool):
@@ -188,7 +188,7 @@ def GetSharedLibraryDependenciesMac(binary, exe_path):
   # the loading executables.
 
   otool = subprocess.check_output(
-      [otool_path, '-Lm', binary], env=env).splitlines()
+      [otool_path, '-Lm', binary], env=env).decode('utf-8').splitlines()
   lib_re = re.compile('\t(.*) \(compatibility .*\)$')
   deps = []
   for line in otool:

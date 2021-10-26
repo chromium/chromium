@@ -12,6 +12,8 @@ stories as memory ones, only with fewer actions (no memory dumping).
 import collections
 import unittest
 
+import six
+
 from chrome_telemetry_build import chromium_config
 
 from core import perf_benchmark
@@ -136,9 +138,15 @@ def _GenerateSmokeTestCase(benchmark_class, story_to_smoke_test):
       options = GenerateBenchmarkOptions(
           output_dir=temp_dir,
           benchmark_cls=SinglePageBenchmark)
-      simplified_test_name = self.id().replace(
-          'benchmarks.system_health_smoke_test.SystemHealthBenchmarkSmokeTest.',
-          '')
+      # The ID signature changes based on Python version.
+      if six.PY2:
+        replacement_string = ('benchmarks.system_health_smoke_test.'
+                              'SystemHealthBenchmarkSmokeTest.')
+      else:
+        replacement_string = ('benchmarks.system_health_smoke_test.'
+                              '_GenerateSmokeTestCase.<locals>.'
+                              'SystemHealthBenchmarkSmokeTest.')
+      simplified_test_name = self.id().replace(replacement_string, '')
       # Sanity check to ensure that that substring removal was effective.
       assert len(simplified_test_name) < len(self.id())
 

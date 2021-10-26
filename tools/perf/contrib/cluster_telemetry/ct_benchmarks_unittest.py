@@ -5,6 +5,8 @@
 from optparse import OptionParser
 import unittest
 
+import six
+
 from telemetry.page import shared_page_state
 
 from contrib.cluster_telemetry import rasterize_and_record_micro_ct
@@ -70,7 +72,7 @@ class CTBenchmarks(unittest.TestCase):
         benchmark.CreateStorySet(parser)
         self.fail('Expected ValueError')
       except ValueError as e:
-        self.assertEquals('user_agent mobileeeeee is unrecognized', e.message)
+        self.assertEquals('user_agent mobileeeeee is unrecognized', str(e))
 
   def testCTBenchmarks_missingDataFile(self):
     for benchmark in self.ct_benchmarks:
@@ -85,9 +87,15 @@ class CTBenchmarks(unittest.TestCase):
         benchmark.ProcessCommandLineArgs(None, parser)
         self.fail('Expected AttributeError')
       except AttributeError as e:
-        self.assertEquals(
-            'OptionParser instance has no attribute \'archive_data_file\'',
-            e.message)
+        if six.PY2:
+          expected_error = (
+              "OptionParser instance has no attribute 'archive_data_file'")
+          actual_error = e.message
+        else:
+          expected_error = (
+              "'OptionParser' object has no attribute 'archive_data_file'")
+          actual_error = str(e)
+        self.assertEquals(actual_error, expected_error)
 
       # Now add an empty archive_data_file.
       parser.archive_data_file = ''
@@ -120,9 +128,12 @@ class CTBenchmarks(unittest.TestCase):
         benchmark.ProcessCommandLineArgs(None, parser)
         self.fail('Expected AttributeError')
       except AttributeError as e:
-        self.assertEquals(
-            'OptionParser instance has no attribute \'urls_list\'',
-            e.message)
+        if six.PY2:
+          self.assertEquals(
+              "OptionParser instance has no attribute 'urls_list'", str(e))
+        else:
+          self.assertEquals(
+              "'OptionParser' object has no attribute 'urls_list'", str(e))
 
       # Now add an empty urls_list.
       parser.urls_list = ''
