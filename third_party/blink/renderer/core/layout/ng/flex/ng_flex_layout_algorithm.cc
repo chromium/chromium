@@ -890,16 +890,17 @@ scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::LayoutInternal() {
   LayoutUnit total_intrinsic_block_size = BorderScrollbarPadding().block_start;
   intrinsic_block_size_ = total_intrinsic_block_size;
 
-  if (algorithm_.FlexLines().IsEmpty() && Node().HasLineIfEmpty()) {
+  bool use_empty_line_block_size =
+      algorithm_.FlexLines().IsEmpty() && Node().HasLineIfEmpty();
+  if (use_empty_line_block_size) {
     total_intrinsic_block_size += Node().EmptyLineBlockSize();
-    intrinsic_block_size_ =
-        (total_intrinsic_block_size - previously_consumed_block_size)
-            .ClampNegativeToZero();
+    if (ConstraintSpace().HasBlockFragmentation()) {
+      intrinsic_block_size_ =
+          (total_intrinsic_block_size - previously_consumed_block_size)
+              .ClampNegativeToZero();
+    }
   } else {
-    LayoutUnit content_block_size = algorithm_.IntrinsicContentBlockSize();
-    total_intrinsic_block_size += content_block_size;
-    if (!has_block_fragmentation_)
-      intrinsic_block_size_ += content_block_size;
+    total_intrinsic_block_size += algorithm_.IntrinsicContentBlockSize();
   }
 
   total_intrinsic_block_size = ClampIntrinsicBlockSize(
@@ -914,14 +915,21 @@ scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::LayoutInternal() {
   if (!success)
     return nullptr;
 
-  intrinsic_block_size_ = ClampIntrinsicBlockSize(
-      ConstraintSpace(), Node(), BorderScrollbarPadding(),
-      intrinsic_block_size_ + BorderScrollbarPadding().block_end);
+  LayoutUnit block_size;
+  if (has_block_fragmentation_ || (use_empty_line_block_size &&
+                                   ConstraintSpace().HasBlockFragmentation())) {
+    intrinsic_block_size_ = ClampIntrinsicBlockSize(
+        ConstraintSpace(), Node(), BorderScrollbarPadding(),
+        intrinsic_block_size_ + BorderScrollbarPadding().block_end);
 
-  LayoutUnit block_size = ComputeBlockSizeForFragment(
-      ConstraintSpace(), Style(), BorderPadding(),
-      previously_consumed_block_size + intrinsic_block_size_,
-      container_builder_.InlineSize());
+    block_size = ComputeBlockSizeForFragment(
+        ConstraintSpace(), Style(), BorderPadding(),
+        previously_consumed_block_size + intrinsic_block_size_,
+        container_builder_.InlineSize());
+  } else {
+    intrinsic_block_size_ = total_intrinsic_block_size;
+    block_size = total_block_size_;
+  }
 
   container_builder_.SetIntrinsicBlockSize(intrinsic_block_size_);
   container_builder_.SetFragmentsTotalBlockSize(block_size);
