@@ -109,6 +109,14 @@
         display: none;
       }
 
+      :host-context([enable-branding-update]) #menuButton {
+        margin-inline-end: 9px;
+      }
+
+      :host-context([enable-branding-update]) #menuButton ~ h1 {
+        margin-inline-start: 0;
+      }
+
       :host-context([enable-branding-update]):host([always-show-logo]) picture,
       :host-context([enable-branding-update]):host(:not([narrow])) picture {
         display: initial;
