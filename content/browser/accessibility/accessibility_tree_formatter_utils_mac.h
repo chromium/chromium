@@ -85,6 +85,10 @@ class CONTENT_EXPORT AttributeInvoker final {
                           bool no_object_parse = false) const;
 
  private:
+  // Returns true if the invoker is instantiated to invoke an ax_script
+  // instruction, as opposite to processing ax_dump_tree filters.
+  bool IsDumpingTree() const { return !!node; }
+
   // Invokes a property node for a given target.
   OptionalNSObject InvokeFor(const id target,
                              const ui::AXPropertyNode& property_node) const;

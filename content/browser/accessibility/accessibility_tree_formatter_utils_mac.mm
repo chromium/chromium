@@ -125,7 +125,7 @@ OptionalNSObject AttributeInvoker::Invoke(const AXPropertyNode& property_node,
     // where a scripting instruction with no target are used. For example,
     // `AXRole` property filter means it is applied to all nodes and `AXRole`
     // attribute should be called for all nodes in the tree.
-    if (node) {
+    if (IsDumpingTree()) {
       if (property_node.IsTarget()) {
         LOG(ERROR) << "Failed to parse '" << property_node.name_or_value
                    << "' target in '" << property_node.ToFlatString() << "'";
@@ -224,13 +224,10 @@ OptionalNSObject AttributeInvoker::InvokeForAXElement(
         }
         return rvalue;
       }
-      // Getter
+      // Getter. Make sure to expose null values in ax scripts.
       id value = AttributeValueOf(target, attribute);
-      // Handle the case of AXMath attributes that may return null values.
-      if (!value && base::StartsWith(property_node.name_or_value, "AXMath"))
-        return OptionalNSObject(value);
-      return OptionalNSObject::NotNullOrNotApplicable(
-          AttributeValueOf(target, attribute));
+      return IsDumpingTree() ? OptionalNSObject::NotNullOrNotApplicable(value)
+                             : OptionalNSObject(value);
     }
   }
 
@@ -259,7 +256,7 @@ OptionalNSObject AttributeInvoker::InvokeForAXElement(
   // Unmatched attribute. No error for a tree dump calls because the tree dump
   // sets generic property filters not depending on a node, so we can be called
   // for an attribute not supported by the node.
-  if (node)
+  if (IsDumpingTree())
     return OptionalNSObject::NotApplicable();
 
   LOG(ERROR) << "Unrecognized '" << property_node.name_or_value
@@ -282,7 +279,7 @@ OptionalNSObject AttributeInvoker::InvokeForAXTextMarkerRange(
   // Unmatched attribute. No error for a tree dump calls because the tree dump
   // sets generic property filters not depending on a node, so we can be called
   // for an attribute not supported by the node.
-  if (node)
+  if (IsDumpingTree())
     return OptionalNSObject::NotApplicable();
 
   LOG(ERROR) << "Unrecognized '" << property_node.name_or_value
