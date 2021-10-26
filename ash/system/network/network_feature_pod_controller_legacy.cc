@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/network/network_feature_pod_controller.h"
+#include "ash/system/network/network_feature_pod_controller_legacy.h"
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/system_tray_model.h"
-#include "ash/system/network/network_feature_pod_button.h"
+#include "ash/system/network/network_feature_pod_button_legacy.h"
 #include "ash/system/network/tray_network_state_model.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
@@ -46,20 +46,21 @@ bool SetNetworkEnabled(bool enabled) {
 
 }  // namespace
 
-NetworkFeaturePodController::NetworkFeaturePodController(
+NetworkFeaturePodControllerLegacy::NetworkFeaturePodControllerLegacy(
     UnifiedSystemTrayController* tray_controller)
     : tray_controller_(tray_controller) {}
 
-NetworkFeaturePodController::~NetworkFeaturePodController() = default;
+NetworkFeaturePodControllerLegacy::~NetworkFeaturePodControllerLegacy() =
+    default;
 
-FeaturePodButton* NetworkFeaturePodController::CreateButton() {
+FeaturePodButton* NetworkFeaturePodControllerLegacy::CreateButton() {
   DCHECK(!button_);
-  button_ = new NetworkFeaturePodButton(this);
+  button_ = new NetworkFeaturePodButtonLegacy(this);
   UpdateButton();
   return button_;
 }
 
-void NetworkFeaturePodController::OnIconPressed() {
+void NetworkFeaturePodControllerLegacy::OnIconPressed() {
   bool was_enabled = button_->IsToggled();
   bool can_toggle = SetNetworkEnabled(!was_enabled);
 
@@ -69,16 +70,16 @@ void NetworkFeaturePodController::OnIconPressed() {
     tray_controller_->ShowNetworkDetailedView(!can_toggle /* force */);
 }
 
-void NetworkFeaturePodController::OnLabelPressed() {
+void NetworkFeaturePodControllerLegacy::OnLabelPressed() {
   SetNetworkEnabled(true);
   tray_controller_->ShowNetworkDetailedView(true /* force */);
 }
 
-SystemTrayItemUmaType NetworkFeaturePodController::GetUmaType() const {
+SystemTrayItemUmaType NetworkFeaturePodControllerLegacy::GetUmaType() const {
   return SystemTrayItemUmaType::UMA_NETWORK;
 }
 
-void NetworkFeaturePodController::UpdateButton() {
+void NetworkFeaturePodControllerLegacy::UpdateButton() {
   // Network setting is always immutable in lock screen.
   SessionControllerImpl* session_controller =
       Shell::Get()->session_controller();
