@@ -15,6 +15,7 @@
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/with_feature_override.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -59,35 +60,30 @@ void PluginsLoadedCallback(
   std::move(quit_closure).Run();
 }
 
-bool GetPdfPluginInfo(content::WebPluginInfo* info) {
-  static const base::FilePath pdf_plugin_path(
-      ChromeContentClient::kPDFPluginPath);
-  return content::PluginService::GetInstance()->GetPluginInfoByPath(
-      pdf_plugin_path, info);
-}
-
 const char kDummyPrintUrl[] = "chrome-untrusted://print/dummy.pdf";
 
-void CountFrames(int* frame_count,
-                 content::RenderFrameHost* frame) {
-  ++(*frame_count);
-}
-
 void CheckPdfPluginForRenderFrame(content::RenderFrameHost* frame) {
-  content::WebPluginInfo pdf_plugin_info;
-  ASSERT_TRUE(GetPdfPluginInfo(&pdf_plugin_info));
+  static const base::FilePath kPdfInternalPluginPath(
+      ChromeContentClient::kPDFPluginPath);
+
+  content::WebPluginInfo pdf_internal_plugin_info;
+  ASSERT_TRUE(content::PluginService::GetInstance()->GetPluginInfoByPath(
+      kPdfInternalPluginPath, &pdf_internal_plugin_info));
 
   ChromePluginServiceFilter* filter = ChromePluginServiceFilter::GetInstance();
   EXPECT_TRUE(filter->IsPluginAvailable(
       frame->GetProcess()->GetID(), frame->GetRoutingID(), GURL(kDummyPrintUrl),
-      url::Origin(), &pdf_plugin_info));
+      url::Origin(), &pdf_internal_plugin_info));
 }
 
 }  // namespace
 
-class PrintPreviewDialogControllerBrowserTest : public InProcessBrowserTest {
+class PrintPreviewDialogControllerBrowserTest
+    : public base::test::WithFeatureOverride,
+      public InProcessBrowserTest {
  public:
-  PrintPreviewDialogControllerBrowserTest() = default;
+  PrintPreviewDialogControllerBrowserTest()
+      : base::test::WithFeatureOverride(chrome_pdf::features::kPdfUnseasoned) {}
   PrintPreviewDialogControllerBrowserTest(
       const PrintPreviewDialogControllerBrowserTest&) = delete;
   PrintPreviewDialogControllerBrowserTest& operator=(
@@ -162,17 +158,9 @@ class PrintPreviewDialogControllerBrowserTest : public InProcessBrowserTest {
   WebContents* initiator_ = nullptr;
 };
 
-class PrintPreviewDialogControllerBrowserTestWithUnseasonedOverride
-    : public base::test::WithFeatureOverride,
-      public PrintPreviewDialogControllerBrowserTest {
- public:
-  PrintPreviewDialogControllerBrowserTestWithUnseasonedOverride()
-      : base::test::WithFeatureOverride(chrome_pdf::features::kPdfUnseasoned) {}
-};
-
 // Test to verify that when a initiator navigates, we can create a new preview
 // dialog for the new tab contents.
-IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
+IN_PROC_BROWSER_TEST_P(PrintPreviewDialogControllerBrowserTest,
                        NavigateFromInitiatorTab) {
   // Print for the first time.
   PrintPreview();
@@ -207,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
 
 // Test to verify that after reloading the initiator, it creates a new print
 // preview dialog.
-IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
+IN_PROC_BROWSER_TEST_P(PrintPreviewDialogControllerBrowserTest,
                        ReloadInitiatorTab) {
   // Print for the first time.
   PrintPreview();
@@ -245,7 +233,7 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
 
 // Test to verify that after print preview works even when the PDF plugin is
 // disabled for webpages.
-IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
+IN_PROC_BROWSER_TEST_P(PrintPreviewDialogControllerBrowserTest,
                        PdfPluginDisabled) {
   // Make sure plugins are loaded.
   {
@@ -255,19 +243,22 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
     run_loop.Run();
   }
   // Get the PDF plugin info.
-  content::WebPluginInfo pdf_plugin_info;
-  ASSERT_TRUE(GetPdfPluginInfo(&pdf_plugin_info));
+  content::WebPluginInfo pdf_external_plugin_info;
+  ASSERT_TRUE(content::PluginService::GetInstance()->GetPluginInfoByPath(
+      base::FilePath(FILE_PATH_LITERAL(
+          "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/")),
+      &pdf_external_plugin_info));
 
   // Disable the PDF plugin.
   SetAlwaysOpenPdfExternallyForTests();
 
   // Make sure it is actually disabled for webpages.
   ChromePluginServiceFilter* filter = ChromePluginServiceFilter::GetInstance();
-  content::WebPluginInfo dummy_pdf_plugin_info = pdf_plugin_info;
   EXPECT_FALSE(filter->IsPluginAvailable(
       initiator()->GetMainFrame()->GetProcess()->GetID(),
       initiator()->GetMainFrame()->GetRoutingID(), GURL(),
-      url::Origin::Create(GURL("http://google.com")), &dummy_pdf_plugin_info));
+      url::Origin::Create(GURL("http://google.com")),
+      &pdf_external_plugin_info));
 
   PrintPreview();
 
@@ -276,9 +267,10 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
   ASSERT_TRUE(preview_dialog);
   ASSERT_NE(initiator(), preview_dialog);
 
-  // Wait until the <iframe> in the print preview renderer has loaded.
-  // |frame_count| should be 2. The other frame is the main frame.
-  const int kExpectedFrameCount = 2;
+  // Wait until all the frames in the Print Preview renderer have loaded.
+  // `frame_count` should be 2 (or 3, if in unseasoned mode): the main frame,
+  // the viewer's <iframe>, and the plugin frame (in unseasoned mode).
+  const int kExpectedFrameCount = IsParamFeatureEnabled() ? 3 : 2;
   int frame_count;
   do {
     base::RunLoop run_loop;
@@ -288,7 +280,10 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
 
     frame_count = 0;
     preview_dialog->GetMainFrame()->ForEachRenderFrameHost(
-        base::BindRepeating(&CountFrames, base::Unretained(&frame_count)));
+        base::BindLambdaForTesting(
+            [&frame_count](content::RenderFrameHost* /*frame*/) {
+              ++frame_count;
+            }));
   } while (frame_count < kExpectedFrameCount);
   ASSERT_EQ(kExpectedFrameCount, frame_count);
 
@@ -312,7 +307,7 @@ const std::vector<task_manager::WebContentsTag*>& GetTrackedTags() {
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
+IN_PROC_BROWSER_TEST_P(PrintPreviewDialogControllerBrowserTest,
                        TaskManagementTest) {
   // This test starts with two tabs open.
   EXPECT_EQ(2U, GetTrackedTags().size());
@@ -357,9 +352,8 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
   PrintPreviewDone();
 }
 
-IN_PROC_BROWSER_TEST_P(
-    PrintPreviewDialogControllerBrowserTestWithUnseasonedOverride,
-    PrintPreviewPdfAccessibility) {
+IN_PROC_BROWSER_TEST_P(PrintPreviewDialogControllerBrowserTest,
+                       PrintPreviewPdfAccessibility) {
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            GURL("data:text/html,HelloWorld")));
@@ -371,4 +365,4 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    PrintPreviewDialogControllerBrowserTestWithUnseasonedOverride);
+    PrintPreviewDialogControllerBrowserTest);

@@ -36,10 +36,11 @@ using content::BrowserThread;
 namespace {
 
 bool IsPDFViewerPlugin(const std::u16string& plugin_name) {
-  return (plugin_name ==
-          base::ASCIIToUTF16(ChromeContentClient::kPDFExtensionPluginName)) ||
-         (plugin_name ==
-          base::ASCIIToUTF16(ChromeContentClient::kPDFInternalPluginName));
+  // This should only match the external PDF plugin, not the internal PDF
+  // plugin, which is also used for Print Preview. Note that only the PDF viewer
+  // and Print Preview can create the internal PDF plugin in the first place.
+  return plugin_name ==
+         base::ASCIIToUTF16(ChromeContentClient::kPDFExtensionPluginName);
 }
 
 }  // namespace
