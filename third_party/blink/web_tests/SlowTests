@@ -794,3 +794,5 @@ crbug.com/1195814 [ Mac11.0 ] external/wpt/IndexedDB/keypath-special-identifiers
 crbug.com/1195814 [ Mac11.0 ] storage/indexeddb/dispatch-events.html [ Slow ]
 crbug.com/1195814 [ Mac11.0 ] storage/indexeddb/key-generator.html [ Slow ]
 crbug.com/1195814 [ Mac11.0 ] storage/indexeddb/odd-strings.html [ Slow ]
+
+crbug.com/1263580 editing/deleting/delete-many-lines-of-text.html [ Slow ]
