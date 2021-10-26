@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.xsurface.ImageFetchClient;
 import org.chromium.chrome.browser.xsurface.PersistentKeyValueCache;
 import org.chromium.chrome.browser.xsurface.ProcessScopeDependencyProvider;
+import org.chromium.chrome.browser.xsurface.ProcessScopeDependencyProvider.VisibilityLogType;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.version_info.VersionConstants;
@@ -200,9 +201,29 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
     }
 
     @Override
-    public void reportOnUploadVisibilityLog(boolean success) {
+    public void reportOnUploadVisibilityLog(@VisibilityLogType int logType, boolean success) {
+        switch (logType) {
+            case VisibilityLogType.VIEW:
+                RecordHistogram.recordBooleanHistogram(
+                        "ContentSuggestions.Feed.UploadVisibilityLog.View", success);
+                break;
+            case VisibilityLogType.CLICK:
+                RecordHistogram.recordBooleanHistogram(
+                        "ContentSuggestions.Feed.UploadVisibilityLog.Click", success);
+                break;
+            case VisibilityLogType.UNSPECIFIED:
+                // UNSPECIFIED deliberately not reported independently, but will be
+                // included in the base UploadVisibilityLog histogram below.
+                break;
+        }
         RecordHistogram.recordBooleanHistogram(
                 "ContentSuggestions.Feed.UploadVisibilityLog", success);
+    }
+
+    @Override
+    public void reportVisibilityLoggingEnabled(boolean enabled) {
+        RecordHistogram.recordBooleanHistogram(
+                "ContentSuggestions.Feed.VisibilityLoggingEnabled", enabled);
     }
 
     @VisibleForTesting
