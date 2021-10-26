@@ -43,7 +43,7 @@ void GetFontFamilyString(CC::ClosedCaptionStyle closed_caption_style,
   *css_font_variant = "normal";
   switch (closed_caption_style) {
     case CC::ClosedCaptionStyle_MonospacedWithSerifs:
-      *css_font_family = "Courier New";
+      *css_font_family = "Source Code";
       break;
     case CC::ClosedCaptionStyle_ProportionalWithSerifs:
       *css_font_family = "Times New Roman";
