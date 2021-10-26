@@ -33,6 +33,7 @@ class IOSSystemDataCollector {
   int ProcessorCount() const { return processor_count_; }
   const std::string& Build() const { return build_; }
   const std::string& BundleIdentifier() const { return bundle_identifier_; }
+  bool IsExtension() const { return is_extension_; }
   const std::string& CPUVendor() const { return cpu_vendor_; }
   bool HasDaylightSavingTime() const { return has_next_daylight_saving_time_; }
   bool IsDaylightSavingTime() const { return is_daylight_saving_time_; }
@@ -68,6 +69,7 @@ class IOSSystemDataCollector {
   int patch_version_;
   std::string build_;
   std::string bundle_identifier_;
+  bool is_extension_;
   std::string machine_description_;
   int orientation_;
   int processor_count_;

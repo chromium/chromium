@@ -15,6 +15,7 @@
 import("../../build/crashpad_buildconfig.gni")
 
 if (crashpad_is_in_chromium) {
+  import("//build/config/ios/ios_test_runner_xcuitest.gni")
   import("//build/config/ios/rules.gni")
 } else if (crashpad_is_standalone) {
   import("//third_party/mini_chromium/mini_chromium/build/ios/rules.gni")
@@ -38,10 +39,10 @@ source_set("google_test_runner") {
   sources = [ "cptest_google_test_runner.mm" ]
   configs += [ "../..:crashpad_config" ]
   deps = [
+    "../$mini_chromium_source_parent:base",
     "../../build:ios_enable_arc",
     "../../build:ios_xctest",
     "../../test/ios:google_test_runner_shared_headers",
-    "../$mini_chromium_source_parent:base",
   ]
   frameworks = [ "UIKit.framework" ]
 }
@@ -55,9 +56,9 @@ source_set("google_test_setup") {
   configs += [ "../..:crashpad_config" ]
   deps = [
     ":google_test_runner_shared_headers",
+    "../$mini_chromium_source_parent:base",
     "../../build:ios_enable_arc",
     "../../third_party/googletest:googletest",
-    "../$mini_chromium_source_parent:base",
   ]
   frameworks = [ "UIKit.framework" ]
 }
@@ -74,7 +75,8 @@ source_set("xcuitests") {
   ]
 }
 
-ios_xcuitest_test("ios_crash_xcuitests_module") {
+ios_test_runner_xcuitest("ios_crash_xcuitests_module") {
   xcode_test_application_name = "ios_crash_xcuitests"
   deps = [ ":xcuitests" ]
+  data_deps = [ "host:ios_crash_xcuitests" ]
 }

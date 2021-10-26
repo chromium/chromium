@@ -555,13 +555,12 @@ class TestExceptionPorts : public MachMultiprocess,
       UniversalMachExcServer universal_mach_exc_server(this);
 
       constexpr mach_msg_timeout_t kTimeoutMs = 50;
-      kern_return_t kr =
-          MachMessageServer::Run(&universal_mach_exc_server,
-                                 local_port,
-                                 kMachMessageReceiveAuditTrailer,
-                                 MachMessageServer::kOneShot,
-                                 MachMessageServer::kReceiveLargeError,
-                                 kTimeoutMs);
+      kr = MachMessageServer::Run(&universal_mach_exc_server,
+                                  local_port,
+                                  kMachMessageReceiveAuditTrailer,
+                                  MachMessageServer::kOneShot,
+                                  MachMessageServer::kReceiveLargeError,
+                                  kTimeoutMs);
       EXPECT_EQ(kr, KERN_SUCCESS)
           << MachErrorMessage(kr, "MachMessageServer::Run");
 

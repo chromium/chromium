@@ -19,6 +19,7 @@
 
 #include "base/logging.h"
 #include "client/ios_handler/in_process_intermediate_dump_handler.h"
+#include "client/prune_crash_reports.h"
 #include "client/settings.h"
 #include "minidump/minidump_file_writer.h"
 #include "util/file/directory_reader.h"
@@ -84,6 +85,14 @@ bool InProcessHandler::Initialize(
       "pending-serialized-ios-dump";
   base_dir_ = database.Append(kPendingSerializediOSDump);
   CreateDirectory(base_dir_);
+
+  prune_thread_.reset(new PruneIntermediateDumpsAndCrashReportsThread(
+      database_.get(),
+      PruneCondition::GetDefault(),
+      base_dir_,
+      bundle_identifier_and_seperator_,
+      system_data.IsExtension()));
+  prune_thread_->Start();
 
   if (!OpenNewFile())
     return false;
