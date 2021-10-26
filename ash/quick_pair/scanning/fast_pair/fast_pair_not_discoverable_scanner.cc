@@ -163,9 +163,10 @@ void FastPairNotDiscoverableScanner::NotifyDeviceFound(
     std::vector<uint8_t> account_key,
     device::BluetoothDevice* bluetooth_device) {
   QP_LOG(VERBOSE) << __func__ << ": Id: " << model_id;
-  auto device =
-      base::MakeRefCounted<Device>(model_id, bluetooth_device->GetAddress(),
-                                   Protocol::kFastPairSubsequent, account_key);
+  auto device = base::MakeRefCounted<Device>(
+      model_id, bluetooth_device->GetAddress(), Protocol::kFastPairSubsequent);
+  device->SetAdditionalData(Device::AdditionalDataType::kAccountKey,
+                            account_key);
 
   notified_devices_[bluetooth_device->GetAddress()] = device;
 
