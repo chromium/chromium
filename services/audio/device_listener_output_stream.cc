@@ -107,7 +107,8 @@ void DeviceListenerOutputStream::OnError(ErrorType type) {
 void DeviceListenerOutputStream::ReportError(ErrorType type) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK_NE(type, ErrorType::kDeviceChange);
-  source_callback_->OnError(type);
+  if (source_callback_)
+    source_callback_->OnError(type);
 }
 
 }  // namespace audio
