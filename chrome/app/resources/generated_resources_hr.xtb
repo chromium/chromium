@@ -7004,7 +7004,7 @@ Pritisnite dodijeljeni prekidač da biste uklonili dodjelu</translation>
 <translation id="8512396579636492893">{COUNT,plural, =0{Nije pronađena nijedna slaba zaporka}=1{Pronađena je {COUNT} slaba zaporka}one{Pronađena je {COUNT} slaba zaporka}few{Pronađene su {COUNT} slabe zaporke}other{Pronađeno je {COUNT} slabih zaporki}}</translation>
 <translation id="8512476990829870887">Završi proces</translation>
 <translation id="851263357009351303">Uvijek dopusti da web-lokacija <ph name="HOST" /> prikazuje slike</translation>
-<translation id="8513108775083588393">Aut. zakret.</translation>
+<translation id="8513108775083588393">Autom. zakret.</translation>
 <translation id="8514746246728959655">Pokušajte s nekim drugim sigurnosnim ključem</translation>
 <translation id="8523493869875972733">Zadrži promjene</translation>
 <translation id="8523849605371521713">Dodala pravila</translation>
