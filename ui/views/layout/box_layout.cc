@@ -54,13 +54,8 @@ int BoxLayout::ViewWrapper::GetHeightForWidth(int width) const {
   // the "virtual" size of the view. The view itself is unaware of this, so this
   // information has to be excluded before the call to View::GetHeightForWidth()
   // and added back in to the result.
-  // If the orientation_ is kVertical, the cross-axis is the actual view width.
-  // This is because the cross-axis margins are always handled by the layout.
-  if (layout_->orientation_ == Orientation::kHorizontal) {
-    return view_->GetHeightForWidth(std::max(0, width - margins_.width())) +
-           margins_.height();
-  }
-  return view_->GetHeightForWidth(width) + margins_.height();
+  return view_->GetHeightForWidth(std::max(0, width - margins_.width())) +
+         margins_.height();
 }
 
 gfx::Size BoxLayout::ViewWrapper::GetPreferredSize() const {
