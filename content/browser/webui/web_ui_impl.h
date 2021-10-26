@@ -53,10 +53,10 @@ class CONTENT_EXPORT WebUIImpl : public WebUI,
   void RenderFrameDeleted();
 
   // Called right after AllowBindings is notified to a RenderFrame.
-  void SetupMojoConnection();
+  void SetUpMojoConnection();
 
   // Called when a RenderFrame is deleted for a WebUI (i.e. a renderer crash).
-  void InvalidateMojoConnection();
+  void TearDownMojoConnection();
 
   // Add a property to the WebUI binding object.
   void SetProperty(const std::string& name, const std::string& value);
