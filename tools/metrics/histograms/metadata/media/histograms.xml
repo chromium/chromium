@@ -5029,7 +5029,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.VTVDA.HardwareAccelerated"
-    enum="BooleanHardwareAccelerated" expires_after="2021-12-05">
+    enum="BooleanHardwareAccelerated" expires_after="2022-12-01">
   <owner>sandersd@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -5053,7 +5053,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.VTVDA.SessionFailureReason"
-    enum="VTVDASessionFailureType" expires_after="2022-04-17">
+    enum="VTVDASessionFailureType" expires_after="2022-12-01">
   <owner>sandersd@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
