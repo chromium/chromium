@@ -544,9 +544,29 @@ void BrowserViewLayout::LayoutContentsContainerView(int top, int bottom) {
                                     -webui_tab_strip_->size().height());
   }
 
+  // TODO(pbos): Note that this code implicitly relies on at most one of
+  // `right_aligned_side_panel_` and `lens_side_panel_` being visible at once.
+  // Consider moving them into a shared container.
   LayoutSidePanelView(right_aligned_side_panel_, contents_container_bounds);
   LayoutSidePanelView(left_aligned_side_panel_, contents_container_bounds);
   LayoutSidePanelView(lens_side_panel_, contents_container_bounds);
+
+  // TODO(pbos): If right-aligned side panels get merged into one View, move
+  // separator visibility back into LayoutSidePanelView().
+  if (left_aligned_side_panel_separator_) {
+    SetViewVisibility(
+        left_aligned_side_panel_separator_,
+        left_aligned_side_panel_ && left_aligned_side_panel_->GetVisible());
+  }
+
+  if (right_aligned_side_panel_separator_) {
+    const bool any_right_side_panel_visible =
+        (right_aligned_side_panel_ &&
+         right_aligned_side_panel_->GetVisible()) ||
+        (lens_side_panel_ && lens_side_panel_->GetVisible());
+    SetViewVisibility(right_aligned_side_panel_separator_,
+                      any_right_side_panel_visible);
+  }
 
   contents_container_->SetBoundsRect(contents_container_bounds);
 }
@@ -554,8 +574,14 @@ void BrowserViewLayout::LayoutContentsContainerView(int top, int bottom) {
 void BrowserViewLayout::LayoutSidePanelView(
     views::View* side_panel,
     gfx::Rect& contents_container_bounds) {
-  if (!side_panel)
+  if (!side_panel || !side_panel->GetVisible())
     return;
+
+  // Side panel occupies some of the container's space. The side panel should
+  // never occupy more space than is available in the content window.
+  gfx::Rect side_panel_bounds = contents_container_bounds;
+  side_panel_bounds.set_width(std::min(side_panel->GetPreferredSize().width(),
+                                       contents_container_bounds.width()));
 
   DCHECK(side_panel == right_aligned_side_panel_ ||
          side_panel == left_aligned_side_panel_ ||
@@ -565,17 +591,8 @@ void BrowserViewLayout::LayoutSidePanelView(
   views::View* side_panel_separator = is_right_aligned
                                           ? right_aligned_side_panel_separator_
                                           : left_aligned_side_panel_separator_;
+
   DCHECK(side_panel_separator);
-  SetViewVisibility(side_panel_separator, side_panel->GetVisible());
-  if (!side_panel->GetVisible())
-    return;
-
-  // Side panel occupies some of the container's space. The side panel should
-  // never occupy more space than is available in the content window.
-  gfx::Rect side_panel_bounds = contents_container_bounds;
-  side_panel_bounds.set_width(std::min(side_panel->GetPreferredSize().width(),
-                                       contents_container_bounds.width()));
-
   // Shrink container bounds to fit the side panel.
   contents_container_bounds.set_width(
       contents_container_bounds.width() - side_panel_bounds.width() -
