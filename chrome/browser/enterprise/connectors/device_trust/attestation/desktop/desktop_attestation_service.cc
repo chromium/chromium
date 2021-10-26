@@ -10,7 +10,6 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
@@ -28,8 +27,18 @@ namespace {
 // Size of nonce for challenge response.
 const size_t kChallengResponseNonceBytesSize = 32;
 
-// Verify challenge comes from Verify Access.
-bool ChallengeComesFromVerifiedAccess(
+}  // namespace
+
+DesktopAttestationService::DesktopAttestationService(
+    std::unique_ptr<KeyPersistenceDelegate> key_persistence_delegate)
+    : key_persistence_delegate_(std::move(key_persistence_delegate)) {
+  DCHECK(key_persistence_delegate_);
+  key_pair_ = SigningKeyPair::Create(key_persistence_delegate_.get());
+}
+
+DesktopAttestationService::~DesktopAttestationService() = default;
+
+bool DesktopAttestationService::ChallengeComesFromVerifiedAccess(
     const std::string& serialized_signed_data,
     const std::string& public_key_modulus_hex) {
   SignedData signed_challenge;
@@ -40,29 +49,19 @@ bool ChallengeComesFromVerifiedAccess(
       signed_challenge.signature());
 }
 
-}  // namespace
-
-DesktopAttestationService::DesktopAttestationService(
-    std::unique_ptr<KeyPersistenceDelegate> key_persistence_delegate)
-    : key_persistence_delegate_(std::move(key_persistence_delegate)),
-      background_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
-           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
-  DCHECK(key_persistence_delegate_);
-
-  // Try to pre-load the key pair.
-  background_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&DesktopAttestationService::InitialLoadKey,
-                                weak_factory_.GetWeakPtr()));
+std::string DesktopAttestationService::ExportPublicKey() {
+  if (!key_pair_ || !key_pair_->key()) {
+    return std::string();
+  }
+  auto public_key_info = key_pair_->key()->GetSubjectPublicKeyInfo();
+  return std::string(public_key_info.begin(), public_key_info.end());
 }
-
-DesktopAttestationService::~DesktopAttestationService() = default;
 
 void DesktopAttestationService::BuildChallengeResponseForVAChallenge(
     const std::string& challenge,
     std::unique_ptr<DeviceTrustSignals> signals,
     AttestationCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!ExportPublicKey().empty());
   DCHECK(signals);
   DCHECK(signals->has_device_id() && !signals->device_id().empty());
   DCHECK(signals->has_obfuscated_customer_id() &&
@@ -71,9 +70,8 @@ void DesktopAttestationService::BuildChallengeResponseForVAChallenge(
   AttestationCallback reply = base::BindOnce(
       &DesktopAttestationService::ParseChallengeResponseAndRunCallback,
       weak_factory_.GetWeakPtr(), challenge, std::move(callback));
-
-  background_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
       base::BindOnce(
           &DesktopAttestationService::
               VerifyChallengeAndMaybeCreateChallengeResponse,
@@ -83,27 +81,11 @@ void DesktopAttestationService::BuildChallengeResponseForVAChallenge(
       std::move(reply));
 }
 
-std::string DesktopAttestationService::ExportPublicKey() {
-  if (!key_pair_ || !key_pair_->key()) {
-    return std::string();
-  }
-  auto public_key_info = key_pair_->key()->GetSubjectPublicKeyInfo();
-  return std::string(public_key_info.begin(), public_key_info.end());
-}
-
 std::string
 DesktopAttestationService::VerifyChallengeAndMaybeCreateChallengeResponse(
     const std::string& serialized_signed_data,
     const std::string& public_key_modulus_hex,
     std::unique_ptr<DeviceTrustSignals> signals) {
-  // Ensure that a signing key pair was loaded (else retry loading it), as
-  // otherwise the attestation flow cannot be completed.
-  if (!key_pair_ && !TryLoadKeyPair()) {
-    LOG(ERROR)
-        << "No signing key available to do the device trust attestation flow.";
-    return std::string();
-  }
-
   if (!ChallengeComesFromVerifiedAccess(serialized_signed_data,
                                         public_key_modulus_hex)) {
     LOG(ERROR) << "Challenge signature verification did not succeed.";
@@ -123,7 +105,6 @@ void DesktopAttestationService::ParseChallengeResponseAndRunCallback(
     const std::string& challenge,
     AttestationCallback callback,
     const std::string& challenge_response_proto) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (challenge_response_proto != std::string()) {
     // Return to callback (throttle with the challenge response) with empty
     // challenge response.
@@ -148,6 +129,7 @@ void DesktopAttestationService::SignEnterpriseChallenge(
   }
   KeyInfo key_info;
   // Fill `key_info` out for Chrome Browser.
+  // TODO(crbug.com/1241870): Remove public key from signals.
   key_info.set_key_type(CBCM);
   key_info.set_browser_instance_public_key(ExportPublicKey());
   key_info.set_device_id(signals->device_id());
@@ -212,10 +194,6 @@ bool DesktopAttestationService::EncryptEnterpriseKeyInfo(
 
 bool DesktopAttestationService::SignChallengeData(const std::string& data,
                                                   std::string* response) {
-  // Signing is an expensive operation that needs to be performed in a
-  // background thread.
-  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
-
   SignedData signed_data;
   signed_data.set_data(data);
 
@@ -240,19 +218,6 @@ bool DesktopAttestationService::SignChallengeData(const std::string& data,
     return false;
   }
   return true;
-}
-
-void DesktopAttestationService::InitialLoadKey() {
-  // TODO(seblalancette): Add success/failure metrics.
-  TryLoadKeyPair();
-}
-
-bool DesktopAttestationService::TryLoadKeyPair() {
-  // Signing Key Pair creation involves IO, and therefore should always be done
-  // using the thread pool task runner.
-  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
-  key_pair_ = SigningKeyPair::Create(key_persistence_delegate_.get());
-  return !ExportPublicKey().empty();
 }
 
 }  // namespace enterprise_connectors
