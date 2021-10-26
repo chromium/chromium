@@ -155,8 +155,6 @@ void OverlayProcessorUsingStrategy::ProcessForOverlays(
   DBG_DRAW_RECT("overlay.incoming.damage", (*damage_rect));
   for (auto&& each : surface_damage_rect_list) {
     DBG_DRAW_RECT("overlay.surface.damage", each);
-    // TODO(petermcneeley) : Check is temporary to isolate b/191414141.
-    CHECK(each.size().GetCheckedArea().IsValid());
   }
 
   // If we have any copy requests, we can't remove any quads for overlays or
