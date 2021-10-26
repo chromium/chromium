@@ -33,6 +33,8 @@ class LensSidePanelControllerTest : public TestWithBrowserView {
          reading_list::switches::kReadLater},
         {});
     TestWithBrowserView::SetUp();
+    // Create the lens side panel controller in BrowserView.
+    browser_view()->CreateLensSidePanelController();
 
     // Create an active web contents.
     AddTab(browser_view()->browser(), GURL("about:blank"));
@@ -98,6 +100,7 @@ TEST_F(LensSidePanelControllerTest, CloseAfterOpenHidesLensSidePanel) {
                              ui::PAGE_TRANSITION_LINK, false));
   controller_->Close();
 
+  EXPECT_FALSE(browser_view()->lens_side_panel_controller());
   EXPECT_FALSE(browser_view()->lens_side_panel()->GetVisible());
   EXPECT_EQ(1, user_action_tester.GetActionCount(kHideAction));
   EXPECT_EQ(0, user_action_tester.GetActionCount(kCloseButtonClickAction));
@@ -111,6 +114,10 @@ TEST_F(LensSidePanelControllerTest, ReOpensAndCloses) {
                              WindowOpenDisposition::NEW_FOREGROUND_TAB,
                              ui::PAGE_TRANSITION_LINK, false));
   controller_->Close();
+  // Verify pointer was reset.
+  EXPECT_FALSE(browser_view()->lens_side_panel_controller());
+  // Lens side panel controller needs to be recreated before reopen.
+  browser_view()->CreateLensSidePanelController();
   controller_->OpenWithURL(
       content::OpenURLParams(GURL("http://bar.com"), content::Referrer(),
                              WindowOpenDisposition::NEW_FOREGROUND_TAB,
@@ -118,6 +125,7 @@ TEST_F(LensSidePanelControllerTest, ReOpensAndCloses) {
   EXPECT_TRUE(browser_view()->lens_side_panel()->GetVisible());
   controller_->Close();
 
+  EXPECT_FALSE(browser_view()->lens_side_panel_controller());
   EXPECT_FALSE(browser_view()->lens_side_panel()->GetVisible());
   EXPECT_EQ(2, user_action_tester.GetActionCount(kShowAction));
   EXPECT_EQ(2, user_action_tester.GetActionCount(kHideAction));
@@ -139,6 +147,41 @@ TEST_F(LensSidePanelControllerTest,
 
   EXPECT_TRUE(browser_view()->lens_side_panel()->GetVisible());
   EXPECT_EQ(0, user_action_tester.GetActionCount(kHideAction));
+}
+
+TEST_F(LensSidePanelControllerTest,
+       OpenAndCloseLensSidePanelDeletesController) {
+  base::UserActionTester user_action_tester;
+
+  controller_->OpenWithURL(
+      content::OpenURLParams(GURL("http://foo.com"), content::Referrer(),
+                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                             ui::PAGE_TRANSITION_LINK, false));
+  EXPECT_TRUE(browser_view()->lens_side_panel_controller());
+  EXPECT_TRUE(browser_view()->lens_side_panel()->GetVisible());
+
+  // Closing the controller should hide side panel and delete controller
+  // pointer.
+  controller_->Close();
+  EXPECT_FALSE(browser_view()->lens_side_panel_controller());
+  EXPECT_FALSE(browser_view()->lens_side_panel()->GetVisible());
+
+  // Creating a new controller in browser view should fix pointer, but side
+  // panel is still not visible.
+  browser_view()->CreateLensSidePanelController();
+  EXPECT_TRUE(browser_view()->lens_side_panel_controller());
+  EXPECT_FALSE(browser_view()->lens_side_panel()->GetVisible());
+
+  // Reopening the side panel with URL should now make the side panel visible
+  // again.
+  controller_->OpenWithURL(
+      content::OpenURLParams(GURL("http://foo.com"), content::Referrer(),
+                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                             ui::PAGE_TRANSITION_LINK, false));
+  EXPECT_TRUE(browser_view()->lens_side_panel_controller());
+  EXPECT_TRUE(browser_view()->lens_side_panel()->GetVisible());
+  EXPECT_EQ(2, user_action_tester.GetActionCount(kShowAction));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(kHideAction));
 }
 
 }  // namespace

@@ -203,6 +203,10 @@ class BrowserView : public BrowserWindow,
   lens::LensSidePanelController* lens_side_panel_controller() {
     return lens_side_panel_controller_.get();
   }
+  // Creates the Lens side panel controller.
+  void CreateLensSidePanelController();
+  // Deletes the Lens side panel controller.
+  void DeleteLensSidePanelController();
 #endif
 
 #if BUILDFLAG(ENABLE_SIDE_SEARCH)
