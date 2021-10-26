@@ -482,7 +482,7 @@ template <bool thread_safe>
   // stacks, and other allocators will also consume address space).
   const size_t kReasonableVirtualSize = (is_wow_64 ? 2800 : 1024) * 1024 * 1024;
   // Make it obvious whether we are running on 64-bit Windows.
-  base::debug::Alias(&is_wow_64);
+  PA_DEBUG_DATA_ON_STACK(1, "is_wow_64", static_cast<size_t>(is_wow_64));
 #else
   constexpr size_t kReasonableVirtualSize =
       // 1.5GiB elsewhere, since address space is typically 3GiB.
@@ -494,7 +494,7 @@ template <bool thread_safe>
   }
 
   // Make the virtual size visible to crash reports all the time.
-  base::debug::Alias(&virtual_address_space_size);
+  PA_DEBUG_DATA_ON_STACK(2, "va_size", virtual_address_space_size);
 
 #endif
   if (internal::g_oom_handling_function)
