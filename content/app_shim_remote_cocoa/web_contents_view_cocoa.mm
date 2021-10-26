@@ -25,6 +25,14 @@ using remote_cocoa::mojom::SelectionDirection;
 using remote_cocoa::mojom::Visibility;
 using content::DropData;
 
+namespace {
+// Time to delay clearing the pasteboard for after a drag ends. This is
+// required because Safari requests data from multiple processes, and clearing
+// the pasteboard after the first access results in unreliable drag operations
+// (http://crbug.com/1227001).
+const int64_t kPasteboardClearDelay = 0.5 * NSEC_PER_SEC;
+}
+
 namespace remote_cocoa {
 
 // DroppedScreenShotCopierMac is a utility to copy screenshots to a usable
@@ -194,24 +202,23 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
   return _mouseDownCanMoveWindow;
 }
 
-- (void)pasteboard:(NSPasteboard*)sender provideDataForType:(NSString*)type {
-  [_dragSource lazyWriteToPasteboard:sender forType:type];
-}
-
 - (void)startDragWithDropData:(const DropData&)dropData
             dragOperationMask:(NSDragOperation)operationMask
                         image:(NSImage*)image
                        offset:(NSPoint)offset {
   if (!_host)
     return;
-  _dragSource.reset([[WebDragSource alloc]
-           initWithHost:_host
-                   view:self
-               dropData:&dropData
-                  image:image
-                 offset:offset
-             pasteboard:[NSPasteboard pasteboardWithName:NSDragPboard]
-      dragOperationMask:operationMask]);
+
+  NSPasteboard* pasteboard = [NSPasteboard pasteboardWithName:NSDragPboard];
+  [pasteboard clearContents];
+
+  _dragSource.reset([[WebDragSource alloc] initWithHost:_host
+                                                   view:self
+                                               dropData:&dropData
+                                                  image:image
+                                                 offset:offset
+                                             pasteboard:pasteboard
+                                      dragOperationMask:operationMask]);
   [_dragSource startDrag];
 }
 
@@ -235,8 +242,19 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
       endDragAt:screenPoint
       operation:ui::DragDropTypes::NSDragOperationToDragOperation(operation)];
 
-  // Might as well throw out this object now.
-  _dragSource.reset();
+  WebDragSource* currentDragSource = _dragSource.get();
+
+  dispatch_after(
+      dispatch_time(DISPATCH_TIME_NOW, (int64_t)kPasteboardClearDelay),
+      dispatch_get_main_queue(), ^{
+        if (_dragSource.get() == currentDragSource) {
+          // Clear the drag pasteboard. Even though this is called in dealloc,
+          // we need an explicit call because NSPasteboard can retain the drag
+          // source.
+          [_dragSource clearPasteboard];
+          _dragSource.reset();
+        }
+      });
 }
 
 // Called when a drag initiated in our view moves.
