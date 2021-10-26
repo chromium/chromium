@@ -1,0 +1,25 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+interface CrosWindow {
+  readonly attribute unsigned long hash;
+
+  readonly attribute DOMString title;
+  readonly attribute DOMString appId;
+  readonly attribute boolean isFullscreen;
+  readonly attribute boolean isMinimised;
+  readonly attribute boolean isVisible;
+
+  readonly attribute DOMPoint origin;
+  readonly attribute DOMRect bounds;
+
+  boolean setOrigin(double x, double y);
+  boolean setBounds(double x, double y, double width, double height);
+  boolean setFullscreen(boolean value);
+  boolean maximize();
+  boolean minimize();
+  boolean raise();
+  boolean focus();
+  boolean close();
+};
