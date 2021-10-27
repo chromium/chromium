@@ -119,11 +119,9 @@ bool CheckCppEvents(const v8::metrics::GarbageCollectionFullCycle& event) {
     DCHECK_EQ(-1, event.objects_cpp.bytes_after);
     DCHECK_EQ(-1, event.objects_cpp.bytes_freed);
     DCHECK_EQ(-1, event.memory_cpp.bytes_freed);
-    // TODO(chromium:1056170): Enable the following checks after adding default
-    // values to the below fields.
-    // DCHECK_EQ(-1.0, event.efficiency_cpp_in_bytes_per_us);
-    // DCHECK_EQ(-1.0, event.main_thread_efficiency_cpp_in_bytes_per_us);
-    // DCHECK_EQ(-1.0, event.collection_rate_cpp_in_percent);
+    DCHECK_EQ(-1.0, event.efficiency_cpp_in_bytes_per_us);
+    DCHECK_EQ(-1.0, event.main_thread_efficiency_cpp_in_bytes_per_us);
+    DCHECK_EQ(-1.0, event.collection_rate_cpp_in_percent);
     return false;
   }
   // Check that all used values have been initialized.
