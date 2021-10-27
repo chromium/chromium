@@ -40,7 +40,7 @@ unfortunate, but a known tradeoff we make.
 
 Every try builder should mirror a CI builder, to help identify when failures
 are specific to a given patch, or happening more generally, and, if the latter,
-that some sheriff is looking at the failures.e
+that some sheriff is looking at the failures.
 
 [ Sometimes it's okay to have an "optional" try builder that doesn't have a
 matching CI builder, but make sure to discuss that on the bug you're using
@@ -128,8 +128,8 @@ suffice:
   },
   simulation_platform='$PLATFORM',  # one of 'mac', 'win', or 'linux'
 
-  # There are a variety of other options; most of them are either unnecessary in
-  # most cases. If you think one may be applicable, please reach out or ask your
+  # There are a variety of other options; most of them are unnecessary in most
+  # cases. If you think one may be applicable, please reach out or ask your
   # reviewer.
 )
 ```
@@ -217,7 +217,7 @@ apply values that are widely used for the bucket (e.g. bucket and executable).
 
 Each builder group has a function (sometimes multiple) defined that can be used
 to define a builder that sets the `builder_group` property to the group and sets
-group-specific defaults defaults. Find the block of builders defined using the
+group-specific defaults. Find the block of builders defined using the
 appropriate function and add a new definition, which may be as simple as:
 
 ```starlark
@@ -241,8 +241,6 @@ Chromium's milo Starlark configuration is intermixed with the
 Chromium's generated milo configuration is [here][10].
 Milo's configuration schema is [here][9].
 
-Each console has a corresponding `.star` file that defines the console.
-
 A typical chromium builder should be added to one or two consoles
 at most: one corresponding to its builder group, and possibly the main
 console.
@@ -255,26 +253,26 @@ you to compare what revisions are in what builds for different builders in the
 console.
 
 ```starlark
-luci.console_view(
+consoles.console_view(
     name = '$BUILDER_GROUP_NAME',
+    ...  # There is often an ordering argument that controls what order the
+         # entries in the console are displayed
+)
+
+ci.linux_builder(
+    name = '$BUILDER_NAME',
     ...
-    entries = [
-        ...
-        luci.console_view(
-            builder = '$BUCKET_NAME/$BUILDER_NAME',
+    console_view = consoles.console_view_entry(
+        # A builder's category is a pipe-delimited list of strings
+        # that determines how a builder is grouped on a console page.
+        # N>=0
+        category = '$CATEGORY1|$CATEGORY2|...|$CATEGORYN',
 
-            # A builder's category is a pipe-delimited list of strings
-            # that determines how a builder is grouped on a console page.
-            # N>=0
-            category = '$CATEGORY1|$CATEGORY2|...|$CATEGORYN',
-
-            # A builder's short name is the name that shows up in the column for
-            # the builder in the consolew view.
-            short_name = '$SHORT_NAME',
-       ),
-   ...
-   ],
-),
+        # A builder's short name is the name that shows up in the column for
+        # the builder in the console view.
+        short_name = '$SHORT_NAME',
+    ),
+)
 ```
 
 Both category and short_name can be omitted, but is strongly recommended that
@@ -284,17 +282,15 @@ all entries include short name.
 
 The sequence of try builders for a builder does not correspond to a linear
 history of revisions. Consequently, the interface for the consoles is different,
-as is the method of defining the console.
+as is the method of defining the console. Try builders will by default be added
+to a list view with the same name as its builder group and also to a console
+that includes all try builders, so nothing usually needs to be done to update a
+console when adding a builder to an existing builder group.
 
 ```starlark
-luci.list_view(
+consoles.list_view(
     name = '$BUILDER_GROUP_NAME',
-    entries = [
-        ...
-        '$BUCKET_NAME/$BUILDER_NAME',
-        ...
-    ],
-),
+)
 ```
 
 #### Scheduler (CI / waterfall builders only)
@@ -313,17 +309,17 @@ defined. The poller defines the repo and refs to watch and triggers builders
 when changes land on one of the watched refs.
 
 Pollers are already defined for all of the active refs within chromium/src. The
-modules for the `ci` bucket and its release branch counterparts are written such
-that builders will be triggered by the appropriate poller by default. Setting
-the `triggered_by` field on a builder will disable this default behavior.
+modules for the `ci` bucket are written such that builders will be triggered by
+the appropriate poller by default. Setting the `triggered_by` field on a builder
+will disable this default behavior.
 
 ##### Triggered by another builder
 
 Builders that will be triggered by other builders (e.g. a builder compiles tests
 and then triggers another builder to actually run the tests) call this out in
 their own definition by setting the `triggered_by` field. For builders in the
-`ci` bucket and its release branch counterparts, this will disable the default
-behavior of being triggered by the poller.
+`ci` bucket, this will disable the default behavior of being triggered by the
+poller.
 
 ```starlark
 ci.linux_builder(
@@ -336,10 +332,9 @@ ci.linux_builder(
 
 Builders that need to run regularly but not in response to landed code can be
 scheduled using the `schedule` field in their definition. For builders in the
-`ci` bucket and its release branch counterparts, the `triggered_by` field should
-be set to an empty list to disable the default behavior of being triggered by
-the poller. See the documentation of the `schedule` field in the `Job` message
-in the [scheduler schema][11].
+`ci` bucket, the `triggered_by` field should be set to an empty list to disable
+the default behavior of being triggered by the poller. See the documentation of
+the `schedule` field in the `Job` message in the [scheduler schema][11].
 
 ```starlark
 ci.builder(
