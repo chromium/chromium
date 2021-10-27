@@ -893,7 +893,7 @@ scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::LayoutInternal() {
   bool use_empty_line_block_size =
       algorithm_.FlexLines().IsEmpty() && Node().HasLineIfEmpty();
   if (use_empty_line_block_size) {
-    total_intrinsic_block_size += Node().EmptyLineBlockSize();
+    total_intrinsic_block_size += Node().EmptyLineBlockSize(BreakToken());
     if (ConstraintSpace().HasBlockFragmentation()) {
       intrinsic_block_size_ =
           (total_intrinsic_block_size - previously_consumed_block_size)

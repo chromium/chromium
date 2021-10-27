@@ -924,9 +924,9 @@ NGGridGeometry NGGridLayoutAlgorithm::ComputeGridGeometry(
     // TODO(layout-dev): This isn't great but matches legacy. Ideally this
     // would only apply when we have only flexible track(s).
     if (grid_items->IsEmpty() && Node().HasLineIfEmpty()) {
-      *intrinsic_block_size =
-          std::max(*intrinsic_block_size, BorderScrollbarPadding().BlockSum() +
-                                              Node().EmptyLineBlockSize());
+      *intrinsic_block_size = std::max(
+          *intrinsic_block_size, BorderScrollbarPadding().BlockSum() +
+                                     Node().EmptyLineBlockSize(BreakToken()));
     }
 
     *intrinsic_block_size = ClampIntrinsicBlockSize(ConstraintSpace(), Node(),
