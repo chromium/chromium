@@ -1385,11 +1385,6 @@
     "expiry_milestone": 100
   },
   {
-    "name": "enable-arc-unified-audio-focus",
-    "owners": [ "beccahughes", "media-dev" ],
-    "expiry_milestone": 82
-  },
-  {
     "name": "enable-aria-element-reflection",
     "owners": [ "aboxhall", "chrishall", "meredithl" ],
     "expiry_milestone": 98
@@ -1428,11 +1423,6 @@
     "name": "enable-async-dns",
     "owners": [ "ericorth", "net-dev" ],
     "expiry_milestone": 81
-  },
-  {
-    "name": "enable-audio-focus-enforcement",
-    "owners": [ "beccahughes", "media-dev" ],
-    "expiry_milestone": 82
   },
   {
     "name": "enable-aura-window-subtree-capture",
@@ -2067,11 +2057,6 @@
     "expiry_milestone": 90
   },
   {
-    "name": "enable-hide-arc-media-notifications",
-    "owners": [ "beccahughes", "media-dev" ],
-    "expiry_milestone": 80
-  },
-  {
     "name": "enable-holding-space-in-progress-downloads-integration",
     "owners": [ "//ash/public/cpp/holding_space/OWNERS" ],
     "expiry_milestone": 97
@@ -2228,11 +2213,6 @@
     "name": "enable-media-internals",
     "owners": [ "tmathmeyer", "media-dev@chromium.org" ],
     "expiry_milestone": 92
-  },
-  {
-    "name": "enable-media-session-service",
-    "owners": [ "beccahughes", "media-dev" ],
-    "expiry_milestone": 82
   },
   {
     "name": "enable-migrate-default-chrome-app-to-web-apps-gsuite",
@@ -3266,34 +3246,14 @@
     "expiry_milestone": -1
   },
   {
-    "name": "global-media-controls",
-    "owners": [ "steimel", "media-dev" ],
-    "expiry_milestone": 84
-  },
-  {
     "name": "global-media-controls-cast-start-stop",
     "owners": [ "jrw", "takumif", "muyaoxu@google.com", "openscreen-eng@google.com" ],
     "expiry_milestone": 99
   },
   {
-    "name": "global-media-controls-for-chromeos",
-    "owners": [ "jazzhsu", "steimel", "media-dev" ],
-    "expiry_milestone": 96
-  },
-  {
     "name": "global-media-controls-modern-ui",
     "owners": [ "steimel", "media-dev" ],
     "expiry_milestone": 100
-  },
-  {
-    "name": "global-media-controls-picture-in-picture",
-    "owners": [ "jazzhsu", "steimel", "media-dev" ],
-    "expiry_milestone": 90
-  },
-  {
-    "name": "global-media-controls-seamless-transfer",
-    "owners": [ "steimel", "media-dev" ],
-    "expiry_milestone": 93
   },
   {
     "name": "google-lens-sdk-intent",
@@ -3648,11 +3608,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "lock-screen-media-controls",
-    "owners": [ "beccahughes", "media-dev" ],
-    "expiry_milestone": 82
-  },
-  {
     "name": "mac-syscall-sandbox",
     "owners": [ "kerrnel@google.com" ],
     "expiry_milestone": 88
@@ -3676,11 +3631,6 @@
     "name": "media-app-multi-window",
     "owners": [ "//ash/webui/media_app_ui/OWNERS" ],
     "expiry_milestone": 98
-  },
-  {
-    "name": "media-history",
-    "owners": [ "beccahughes", "media-dev" ],
-    "expiry_milestone": 88
   },
   {
     "name": "media-router-cast-allow-all-ips",

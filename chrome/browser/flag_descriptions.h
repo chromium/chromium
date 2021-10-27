@@ -406,9 +406,6 @@ extern const char kDocumentTransitionDescription[];
 extern const char kDocumentTransitionSlowdownFactorName[];
 extern const char kDocumentTransitionSlowdownFactorDescription[];
 
-extern const char kEnableAudioFocusEnforcementName[];
-extern const char kEnableAudioFocusEnforcementDescription[];
-
 extern const char kEnableAutofillAccountWalletStorageName[];
 extern const char kEnableAutofillAccountWalletStorageDescription[];
 
@@ -562,9 +559,6 @@ extern const char kEnableLazyFrameLoadingDescription[];
 
 extern const char kEnableLazyImageLoadingName[];
 extern const char kEnableLazyImageLoadingDescription[];
-
-extern const char kEnableMediaSessionServiceName[];
-extern const char kEnableMediaSessionServiceDescription[];
 
 extern const char kEnableNetworkLoggingToFileName[];
 extern const char kEnableNetworkLoggingToFileDescription[];
@@ -786,18 +780,6 @@ extern const char kForceDirectionRtl[];
 extern const char kForceUiDirectionName[];
 extern const char kForceUiDirectionDescription[];
 
-extern const char kGlobalMediaControlsName[];
-extern const char kGlobalMediaControlsDescription[];
-
-extern const char kGlobalMediaControlsForChromeOSName[];
-extern const char kGlobalMediaControlsForChromeOSDescription[];
-
-extern const char kGlobalMediaControlsPictureInPictureName[];
-extern const char kGlobalMediaControlsPictureInPictureDescription[];
-
-extern const char kGlobalMediaControlsSeamlessTransferName[];
-extern const char kGlobalMediaControlsSeamlessTransferDescription[];
-
 extern const char kGlobalMediaControlsModernUIName[];
 extern const char kGlobalMediaControlsModernUIDescription[];
 
@@ -923,9 +905,6 @@ extern const char kLiteVideoForceOverrideDecisionDescription[];
 
 extern const char kLogJsConsoleMessagesName[];
 extern const char kLogJsConsoleMessagesDescription[];
-
-extern const char kMediaHistoryName[];
-extern const char kMediaHistoryDescription[];
 
 extern const char kMediaRouterCastAllowAllIPsName[];
 extern const char kMediaRouterCastAllowAllIPsDescription[];
@@ -2508,9 +2487,6 @@ extern const char kCrOSEnforceSystemAecNsAgcDescription[];
 extern const char kEnableAppReinstallZeroStateName[];
 extern const char kEnableAppReinstallZeroStateDescription[];
 
-extern const char kEnableArcUnifiedAudioFocusName[];
-extern const char kEnableArcUnifiedAudioFocusDescription[];
-
 extern const char kEnableAssistantAppSupportName[];
 extern const char kEnableAssistantAppSupportDescription[];
 
@@ -2724,9 +2700,6 @@ extern const char kHelpAppLauncherSearchDescription[];
 extern const char kHelpAppSearchServiceIntegrationName[];
 extern const char kHelpAppSearchServiceIntegrationDescription[];
 
-extern const char kHideArcMediaNotificationsName[];
-extern const char kHideArcMediaNotificationsDescription[];
-
 extern const char kHoldingSpaceInProgressDownloadsIntegrationName[];
 extern const char kHoldingSpaceInProgressDownloadsIntegrationDescription[];
 
@@ -2800,9 +2773,6 @@ extern const char kLocalWebApprovalsDescription[];
 
 extern const char kEnableHardwareMirrorModeName[];
 extern const char kEnableHardwareMirrorModeDescription[];
-
-extern const char kLockScreenMediaControlsName[];
-extern const char kLockScreenMediaControlsDescription[];
 
 extern const char kLockScreenNotificationName[];
 extern const char kLockScreenNotificationDescription[];

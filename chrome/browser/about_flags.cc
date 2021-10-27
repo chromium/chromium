@@ -5482,13 +5482,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsMac | kOsWin | kOsLinux,
      FEATURE_VALUE_TYPE(features::kDestroyProfileOnBrowserClose)},
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"enable-arc-unified-audio-focus",
-     flag_descriptions::kEnableArcUnifiedAudioFocusName,
-     flag_descriptions::kEnableArcUnifiedAudioFocusDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(arc::kEnableUnifiedAudioFocusFeature)},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if defined(OS_WIN)
     {"use-angle", flag_descriptions::kUseAngleName,
      flag_descriptions::kUseAngleDescriptionWindows, kOsWin,
@@ -5582,14 +5575,6 @@ const FeatureEntry kFeatureEntries[] = {
          chromeos::assistant::features::kEnableStereoAudioInput)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-    {"enable-audio-focus-enforcement",
-     flag_descriptions::kEnableAudioFocusEnforcementName,
-     flag_descriptions::kEnableAudioFocusEnforcementDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(media_session::features::kAudioFocusEnforcement)},
-    {"enable-media-session-service",
-     flag_descriptions::kEnableMediaSessionServiceName,
-     flag_descriptions::kEnableMediaSessionServiceDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(media_session::features::kMediaSessionService)},
     {"enable-gpu-service-logging",
      flag_descriptions::kEnableGpuServiceLoggingName,
      flag_descriptions::kEnableGpuServiceLoggingDescription, kOsAll,
@@ -5769,11 +5754,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableHeuristicStylusPalmRejectionName,
      flag_descriptions::kEnableHeuristicStylusPalmRejectionDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ui::kEnableHeuristicPalmDetectionFilter)},
-
-    {"enable-hide-arc-media-notifications",
-     flag_descriptions::kHideArcMediaNotificationsName,
-     flag_descriptions::kHideArcMediaNotificationsDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kHideArcMediaNotifications)},
 
     {"fast-pair", flag_descriptions::kFastPairName,
      flag_descriptions::kFastPairDescription, kOsCrOS,
@@ -6012,33 +5992,11 @@ const FeatureEntry kFeatureEntries[] = {
 
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
     defined(OS_CHROMEOS)
-    {"global-media-controls", flag_descriptions::kGlobalMediaControlsName,
-     flag_descriptions::kGlobalMediaControlsDescription,
-     kOsWin | kOsMac | kOsLinux,
-     FEATURE_VALUE_TYPE(media::kGlobalMediaControls)},
-
-    {"global-media-controls-for-chromeos",
-     flag_descriptions::kGlobalMediaControlsForChromeOSName,
-     flag_descriptions::kGlobalMediaControlsForChromeOSDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(media::kGlobalMediaControlsForChromeOS)},
-
     {"global-media-controls-modern-ui",
      flag_descriptions::kGlobalMediaControlsModernUIName,
      flag_descriptions::kGlobalMediaControlsModernUIDescription,
      kOsWin | kOsMac | kOsLinux | kOsCrOS,
      FEATURE_VALUE_TYPE(media::kGlobalMediaControlsModernUI)},
-
-    {"global-media-controls-picture-in-picture",
-     flag_descriptions::kGlobalMediaControlsPictureInPictureName,
-     flag_descriptions::kGlobalMediaControlsPictureInPictureDescription,
-     kOsWin | kOsMac | kOsLinux | kOsCrOS,
-     FEATURE_VALUE_TYPE(media::kGlobalMediaControlsPictureInPicture)},
-
-    {"global-media-controls-seamless-transfer",
-     flag_descriptions::kGlobalMediaControlsSeamlessTransferName,
-     flag_descriptions::kGlobalMediaControlsSeamlessTransferDescription,
-     kOsWin | kOsMac | kOsLinux,
-     FEATURE_VALUE_TYPE(media::kGlobalMediaControlsSeamlessTransfer)},
 #endif  // defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) ||
         // defined(OS_CHROMEOS)
 
@@ -6104,13 +6062,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(notifications::features::kUseChimeAndroidSdk)},
 
 #endif  // defined(OS_ANDROID)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"lock-screen-media-controls",
-     flag_descriptions::kLockScreenMediaControlsName,
-     flag_descriptions::kLockScreenMediaControlsDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kLockScreenMediaControls)},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"contextual-nudges", flag_descriptions::kContextualNudgesName,
@@ -6582,10 +6533,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(network::features::kTrustTokens,
                                     kPlatformProvidedTrustTokensVariations,
                                     "TrustTokenOriginTrial")},
-
-    {"media-history", flag_descriptions::kMediaHistoryName,
-     flag_descriptions::kMediaHistoryDescription, kOsAll,
-     FEATURE_VALUE_TYPE(media::kUseMediaHistoryStore)},
 
 #if !defined(OS_ANDROID)
     {"copy-link-to-text", flag_descriptions::kCopyLinkToTextName,
