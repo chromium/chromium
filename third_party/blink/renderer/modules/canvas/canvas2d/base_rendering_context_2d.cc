@@ -1378,7 +1378,7 @@ void BaseRenderingContext2D::fillRect(double x,
   }
 
   SkRect rect = SkRect::MakeXYWH(fx, fy, fwidth, fheight);
-  Draw<OverdrawOp::kFillRect>(
+  Draw<OverdrawOp::kNone>(
       [rect](cc::PaintCanvas* c, const PaintFlags* flags)  // draw lambda
       { c->drawRect(rect, *flags); },
       [rect, this](const SkIRect& clip_bounds)  // overdraw test lambda
@@ -1593,10 +1593,10 @@ void BaseRenderingContext2D::clearRect(double x,
       // In the reset case, we can use kUntransformedUnclippedFill because we
       // know the state state was reset.
       CheckOverdraw(rect, &clear_flags, CanvasRenderingContext2DState::kNoImage,
-                    OverdrawOp::kContextReset, kUntransformedUnclippedFill);
+                    OverdrawOp::kContextReset);
     } else {
       CheckOverdraw(rect, &clear_flags, CanvasRenderingContext2DState::kNoImage,
-                    OverdrawOp::kClearRect, kClipFill);
+                    OverdrawOp::kClearRect);
     }
     GetPaintCanvasForDraw(clip_bounds,
                           CanvasPerformanceMonitor::DrawType::kOther)
@@ -1975,8 +1975,6 @@ void BaseRenderingContext2D::drawImage(ScriptState* script_state,
 
 void BaseRenderingContext2D::ClearCanvasForSrcCompositeOp() {
   FloatRect canvas_rect(0, 0, Width(), Height());
-  CheckOverdraw(canvas_rect, nullptr, CanvasRenderingContext2DState::kNoImage,
-                OverdrawOp::kClearForSrcBlendMode, kClipFill);
   cc::PaintCanvas* c = GetOrCreatePaintCanvas();
   if (c)
     c->clear(HasAlpha() ? SK_ColorTRANSPARENT : SK_ColorBLACK);
@@ -2407,9 +2405,6 @@ void BaseRenderingContext2D::putImageData(ImageData* data,
   IntRect source_rect(dest_rect);
   source_rect.Offset(-dest_offset);
 
-  CheckOverdraw(dest_rect, nullptr, CanvasRenderingContext2DState::kNoImage,
-                OverdrawOp::kPutImageData, kUntransformedUnclippedFill);
-
   // Color / format convert ImageData to context 2D settings if needed. Color /
   // format conversion is not needed only if context 2D and ImageData are both
   // in sRGB color space and use uint8 pixel storage format. We use RGBA pixel
@@ -2636,37 +2631,28 @@ void CanvasOverdrawHistogram(BaseRenderingContext2D::OverdrawOp op) {
 }  // unnamed namespace
 
 void BaseRenderingContext2D::WillOverwriteCanvas(
-    BaseRenderingContext2D::OverdrawOp op,
-    SkBlendMode blend_mode,
-    bool has_opaque_shader) {
+    BaseRenderingContext2D::OverdrawOp op) {
   auto* host = GetCanvasRenderingContextHost();
   if (host) {  // CSS paint use cases not counted.
     UseCounter::Count(GetCanvasRenderingContextHost()->GetTopExecutionContext(),
                       WebFeature::kCanvasRenderingContext2DHasOverdraw);
-  }
-  CanvasOverdrawHistogram(op);
-  CanvasOverdrawHistogram(OverdrawOp::kTotal);
-
-  // We only hit the blend mode buckets if the op is affected by blend modes.
-  if (op == OverdrawOp::kDrawImage || op == OverdrawOp::kFillRect) {
-    if (blend_mode == SkBlendMode::kSrcOver) {
-      CanvasOverdrawHistogram(OverdrawOp::kSourceOverBlendMode);
-    } else if (blend_mode == SkBlendMode::kClear) {
-      CanvasOverdrawHistogram(OverdrawOp::kClearBlendMode);
-    }
+    CanvasOverdrawHistogram(op);
+    CanvasOverdrawHistogram(OverdrawOp::kTotal);
   }
 
   // We only hit the kHasTransform bucket if the op is affected by transforms.
-  if (op == OverdrawOp::kClearRect || op == OverdrawOp::kDrawImage ||
-      op == OverdrawOp::kFillRect) {
-    if (!GetState().GetTransform().IsIdentity()) {
+  if (op == OverdrawOp::kClearRect || op == OverdrawOp::kDrawImage) {
+    bool has_clip = GetState().HasClip();
+    bool has_transform = !GetState().GetTransform().IsIdentity();
+    if (has_clip && has_transform) {
+      CanvasOverdrawHistogram(OverdrawOp::kHasClipAndTransform);
+    }
+    if (has_clip) {
+      CanvasOverdrawHistogram(OverdrawOp::kHasClip);
+    }
+    if (has_transform) {
       CanvasOverdrawHistogram(OverdrawOp::kHasTransform);
     }
-  }
-
-  if (has_opaque_shader) {
-    DCHECK(op == OverdrawOp::kFillRect);
-    CanvasOverdrawHistogram(OverdrawOp::kHasOpaqueShader);
   }
 
   WillOverwriteCanvas();

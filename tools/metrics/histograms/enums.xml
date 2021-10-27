@@ -10950,15 +10950,41 @@ Called by update_bad_message_reasons.py.-->
   <int value="0" label="None (should have 0 counts)"/>
   <int value="1" label="Total ops"/>
   <int value="2" label="ClearRect op"/>
-  <int value="3" label="FillRect op"/>
-  <int value="4" label="PutImageData op"/>
+  <int value="3" label="FillRect op (Obsolete)">
+    <obsolete>
+      Deprecated as of 2021-10.
+    </obsolete>
+  </int>
+  <int value="4" label="PutImageData op (Obsolete)">
+    <obsolete>
+      Deprecated as of 2021-10.
+    </obsolete>
+  </int>
   <int value="5" label="DrawImage op"/>
   <int value="6" label="ContextReset op"/>
-  <int value="7" label="ClearForSrcBlendMode op"/>
-  <int value="8" label="Has opaque shader"/>
+  <int value="7" label="ClearForSrcBlendMode op (Obsolete)">
+    <obsolete>
+      Deprecated as of 2021-10.
+    </obsolete>
+  </int>
+  <int value="8" label="Has opaque shader (Obsolete)">
+    <obsolete>
+      Deprecated as of 2021-10.
+    </obsolete>
+  </int>
   <int value="9" label="Has transform"/>
-  <int value="10" label="Has source-over blend mode"/>
-  <int value="11" label="Has clear blend mode"/>
+  <int value="10" label="Has source-over blend mode (Obsolete)">
+    <obsolete>
+      Deprecated as of 2021-10.
+    </obsolete>
+  </int>
+  <int value="11" label="Has clear blend mode (Obsolete)">
+    <obsolete>
+      Deprecated as of 2021-10.
+    </obsolete>
+  </int>
+  <int value="13" label="Has clip"/>
+  <int value="14" label="Has transform and clip"/>
 </enum>
 
 <enum name="CanvasRenderingAPI">
