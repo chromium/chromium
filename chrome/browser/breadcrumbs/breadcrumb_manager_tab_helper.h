@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_BREADCRUMBS_BREADCRUMB_MANAGER_TAB_HELPER_DESKTOP_H_
-#define CHROME_BROWSER_BREADCRUMBS_BREADCRUMB_MANAGER_TAB_HELPER_DESKTOP_H_
+#ifndef CHROME_BROWSER_BREADCRUMBS_BREADCRUMB_MANAGER_TAB_HELPER_H_
+#define CHROME_BROWSER_BREADCRUMBS_BREADCRUMB_MANAGER_TAB_HELPER_H_
 
 #include "components/breadcrumbs/core/breadcrumb_manager_tab_helper.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -15,22 +15,20 @@ class WebContents;
 }  // namespace content
 
 // Handles logging of Breadcrumb events associated with |web_contents_|.
-class BreadcrumbManagerTabHelperDesktop
+class BreadcrumbManagerTabHelper
     : public breadcrumbs::BreadcrumbManagerTabHelper,
       public content::WebContentsObserver,
-      public content::WebContentsUserData<BreadcrumbManagerTabHelperDesktop> {
+      public content::WebContentsUserData<BreadcrumbManagerTabHelper> {
  public:
-  ~BreadcrumbManagerTabHelperDesktop() override;
-  BreadcrumbManagerTabHelperDesktop(const BreadcrumbManagerTabHelperDesktop&) =
+  ~BreadcrumbManagerTabHelper() override;
+  BreadcrumbManagerTabHelper(const BreadcrumbManagerTabHelper&) = delete;
+  BreadcrumbManagerTabHelper& operator=(const BreadcrumbManagerTabHelper&) =
       delete;
-  BreadcrumbManagerTabHelperDesktop& operator=(
-      const BreadcrumbManagerTabHelperDesktop&) = delete;
 
  private:
-  friend class content::WebContentsUserData<BreadcrumbManagerTabHelperDesktop>;
+  friend class content::WebContentsUserData<BreadcrumbManagerTabHelper>;
 
-  explicit BreadcrumbManagerTabHelperDesktop(
-      content::WebContents* web_contents);
+  explicit BreadcrumbManagerTabHelper(content::WebContents* web_contents);
 
   // breadcrumbs::BreadcrumbManagerTabHelper:
   void PlatformLogEvent(const std::string& event) override;
@@ -56,4 +54,4 @@ class BreadcrumbManagerTabHelperDesktop
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
-#endif  // CHROME_BROWSER_BREADCRUMBS_BREADCRUMB_MANAGER_TAB_HELPER_DESKTOP_H_
+#endif  // CHROME_BROWSER_BREADCRUMBS_BREADCRUMB_MANAGER_TAB_HELPER_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/breadcrumbs/breadcrumb_manager_tab_helper_desktop.h"
+#include "chrome/browser/breadcrumbs/breadcrumb_manager_tab_helper.h"
 
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
@@ -26,23 +26,21 @@ bool IsNtpUrl(const GURL& url) {
 
 }  // namespace
 
-BreadcrumbManagerTabHelperDesktop::BreadcrumbManagerTabHelperDesktop(
+BreadcrumbManagerTabHelper::BreadcrumbManagerTabHelper(
     content::WebContents* web_contents)
     : breadcrumbs::BreadcrumbManagerTabHelper(
           infobars::ContentInfoBarManager::FromWebContents(web_contents)),
       content::WebContentsObserver(web_contents),
       web_contents_(web_contents) {}
 
-BreadcrumbManagerTabHelperDesktop::~BreadcrumbManagerTabHelperDesktop() =
-    default;
+BreadcrumbManagerTabHelper::~BreadcrumbManagerTabHelper() = default;
 
-void BreadcrumbManagerTabHelperDesktop::PlatformLogEvent(
-    const std::string& event) {
+void BreadcrumbManagerTabHelper::PlatformLogEvent(const std::string& event) {
   LogEvent(event, BreadcrumbManagerKeyedServiceFactory::GetForBrowserContext(
                       web_contents_->GetBrowserContext()));
 }
 
-void BreadcrumbManagerTabHelperDesktop::DidStartNavigation(
+void BreadcrumbManagerTabHelper::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
   LogDidStartNavigation(navigation_handle->GetNavigationId(),
                         navigation_handle->GetURL(),
@@ -52,14 +50,14 @@ void BreadcrumbManagerTabHelperDesktop::DidStartNavigation(
                         navigation_handle->GetPageTransition());
 }
 
-void BreadcrumbManagerTabHelperDesktop::DidFinishNavigation(
+void BreadcrumbManagerTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   LogDidFinishNavigation(navigation_handle->GetNavigationId(),
                          navigation_handle->IsDownload(),
                          navigation_handle->GetNetErrorCode());
 }
 
-void BreadcrumbManagerTabHelperDesktop::DidFinishLoad(
+void BreadcrumbManagerTabHelper::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url) {
   LogPageLoaded(IsNtpUrl(validated_url), validated_url,
@@ -67,7 +65,7 @@ void BreadcrumbManagerTabHelperDesktop::DidFinishLoad(
                 web_contents_->GetContentsMimeType());
 }
 
-void BreadcrumbManagerTabHelperDesktop::DidFailLoad(
+void BreadcrumbManagerTabHelper::DidFailLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url,
     int error_code) {
@@ -76,7 +74,7 @@ void BreadcrumbManagerTabHelperDesktop::DidFailLoad(
                 web_contents_->GetContentsMimeType());
 }
 
-void BreadcrumbManagerTabHelperDesktop::DidChangeVisibleSecurityState() {
+void BreadcrumbManagerTabHelper::DidChangeVisibleSecurityState() {
   const auto visible_security_state =
       security_state::GetVisibleSecurityState(web_contents_);
   DCHECK(visible_security_state);
@@ -96,13 +94,13 @@ void BreadcrumbManagerTabHelperDesktop::DidChangeVisibleSecurityState() {
                                    security_style_authentication_broken);
 }
 
-void BreadcrumbManagerTabHelperDesktop::PrimaryMainFrameRenderProcessGone(
+void BreadcrumbManagerTabHelper::PrimaryMainFrameRenderProcessGone(
     base::TerminationStatus status) {
   LogRenderProcessGone();
 }
 
-void BreadcrumbManagerTabHelperDesktop::WebContentsDestroyed() {
+void BreadcrumbManagerTabHelper::WebContentsDestroyed() {
   web_contents_ = nullptr;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(BreadcrumbManagerTabHelperDesktop);
+WEB_CONTENTS_USER_DATA_KEY_IMPL(BreadcrumbManagerTabHelper);

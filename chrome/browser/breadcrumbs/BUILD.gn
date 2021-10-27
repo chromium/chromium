@@ -17,8 +17,8 @@ source_set("breadcrumbs") {
   sources = [
     "breadcrumb_manager_keyed_service_factory.cc",
     "breadcrumb_manager_keyed_service_factory.h",
-    "breadcrumb_manager_tab_helper_desktop.cc",
-    "breadcrumb_manager_tab_helper_desktop.h",
+    "breadcrumb_manager_tab_helper.cc",
+    "breadcrumb_manager_tab_helper.h",
   ]
 }
 
