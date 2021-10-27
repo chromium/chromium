@@ -46,6 +46,9 @@ const KEYS = {
 
   "fenced_navigation_complete"                  : "00000000-0000-0000-0000-000000000014",
   "outer_page_ready_for_next_fenced_navigation" : "00000000-0000-0000-0000-000000000015",
+
+  "focus-changed"                               : "00000000-0000-0000-0000-000000000016",
+  "focus-ready"                                 : "00000000-0000-0000-0000-000000000017",
   // Add keys above this list, incrementing the key UUID in hexadecimal
 }
 

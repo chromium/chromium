@@ -888,4 +888,31 @@ base::SafeRef<FrameTree> FrameTree::GetSafeRef() {
   return weak_ptr_factory_.GetSafeRef();
 }
 
+void FrameTree::FocusOuterFrameTrees() {
+  OPTIONAL_TRACE_EVENT0("content", "FrameTree::FocusOuterFrameTrees");
+
+  FrameTree* frame_tree_to_focus = this;
+  while (true) {
+    FrameTreeNode* outer_node = FrameTreeNode::GloballyFindByID(
+        frame_tree_to_focus->delegate()->GetOuterDelegateFrameTreeNodeId());
+    if (!outer_node || !outer_node->current_frame_host()->IsActive()) {
+      // Don't set focus on an inactive FrameTreeNode.
+      return;
+    }
+    outer_node->frame_tree()->SetFocusedFrame(outer_node, nullptr);
+
+    // For a browser initiated focus change, let embedding renderer know of the
+    // change. Otherwise, if the currently focused element is just across a
+    // process boundary in focus order, it will not be possible to move across
+    // that boundary. This is because the target element will already be focused
+    // (that renderer was not notified) and drop the event.
+    if (auto* proxy_to_outer_delegate = frame_tree_to_focus->root()
+                                            ->render_manager()
+                                            ->GetProxyToOuterDelegate()) {
+      proxy_to_outer_delegate->SetFocusedFrame();
+    }
+    frame_tree_to_focus = outer_node->frame_tree();
+  }
+}
+
 }  // namespace content

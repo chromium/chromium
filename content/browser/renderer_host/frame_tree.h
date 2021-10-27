@@ -435,6 +435,10 @@ class CONTENT_EXPORT FrameTree {
 
   base::SafeRef<FrameTree> GetSafeRef();
 
+  // Walks up the FrameTree chain and focuses the FrameTreeNode where
+  // each inner FrameTree is attached.
+  void FocusOuterFrameTrees();
+
  private:
   friend class FrameTreeTest;
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplBrowserTest, RemoveFocusedFrame);

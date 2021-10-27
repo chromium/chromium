@@ -987,14 +987,15 @@ bool FocusController::AdvanceFocusAcrossFrames(
     RemoteFrame* from,
     LocalFrame* to,
     InputDeviceCapabilities* source_capabilities) {
+  Element* start = nullptr;
+
   // If we are shifting focus from a child frame to its parent, the
   // child frame has no more focusable elements, and we should continue
-  // looking for focusable elements in the parent, starting from the <iframe>
-  // element of the child frame.
-  Element* start = nullptr;
-  if (from->Tree().Parent() == to) {
-    DCHECK(from->Owner()->IsLocal());
-    start = To<HTMLFrameOwnerElement>(from->Owner());
+  // looking for focusable elements in the parent, starting from the element
+  // of the child frame. This applies both to fencedframes and iframes.
+  Element* start_candidate = DynamicTo<HTMLFrameOwnerElement>(from->Owner());
+  if (start_candidate && start_candidate->GetDocument().GetFrame() == to) {
+    start = start_candidate;
   }
 
   // If we're coming from a parent frame, we need to restart from the first or

@@ -128,4 +128,8 @@ LayoutObject* HTMLFencedFrameElement::CreateLayoutObject(
   return HTMLFrameOwnerElement::CreateLayoutObject(style, legacy_layout);
 }
 
+bool HTMLFencedFrameElement::SupportsFocus() const {
+  return features::IsFencedFramesMPArchBased();
+}
+
 }  // namespace blink

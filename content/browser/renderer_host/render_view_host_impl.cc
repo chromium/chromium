@@ -479,14 +479,13 @@ bool RenderViewHostImpl::CreateRenderView(
   // GuestViews in the same StoragePartition need to find each other's frames.
   params->renderer_wide_named_frame_lookup = is_guest_view;
 
-  if (is_portal) {
-    DCHECK(!is_guest_view && !is_fenced_frame);
+  if (is_fenced_frame) {
+    params->type = mojom::ViewWidgetType::kFencedFrame;
+  } else if (is_portal) {
+    DCHECK(!is_guest_view);
     params->type = mojom::ViewWidgetType::kPortal;
   } else if (is_guest_view) {
-    DCHECK(!is_fenced_frame);
     params->type = mojom::ViewWidgetType::kGuestView;
-  } else if (is_fenced_frame) {
-    params->type = mojom::ViewWidgetType::kFencedFrame;
   } else {
     params->type = mojom::ViewWidgetType::kTopLevel;
   }
