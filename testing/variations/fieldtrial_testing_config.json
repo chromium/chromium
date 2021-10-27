@@ -2815,7 +2815,7 @@
             ],
             "experiments": [
                 {
-                    "name": "RecipeTasksRuleBasedDiscountDrive_Enabled",
+                    "name": "RecipeTasksRuleBasedDiscountDrivePhotos_Enabled",
                     "params": {
                         "NtpChromeCartModuleAbandonedCartDiscountParam": "true",
                         "NtpChromeCartModuleAbandonedCartDiscountUseUtmParam": "true",
@@ -2826,6 +2826,7 @@
                         "NtpChromeCartModule",
                         "NtpDriveModule",
                         "NtpModules",
+                        "NtpPhotosModule",
                         "NtpRecipeTasksModule"
                     ],
                     "disable_features": [
