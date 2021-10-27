@@ -67,16 +67,19 @@
   var b = new DataGrid.ViewportDataGridNode({id: 'b'});
 
   var root = dataGrid.rootNode();
+  var widget = dataGrid.asWidget();
+  widget.markAsRoot();
 
   var containerElement = document.body.createChild('div');
   containerElement.style.position = 'absolute';
   containerElement.style.width = '300px';
   containerElement.style.height = '300px';
   containerElement.style.overflow = 'hidden';
-  containerElement.appendChild(dataGrid.element);
-  dataGrid.wasShown();
+  widget.show(containerElement);
   dataGrid.element.style.width = '100%';
   dataGrid.element.style.height = '100%';
+  widget.element.style.width = '100%';
+  widget.element.style.height = '100%';
 
   TestRunner.addResult('Building tree.');
 

@@ -8,8 +8,12 @@
 
   var columns = [{id: "id", title: "ID column", width: "250px"}];
   var dataGrid = new DataGrid.ViewportDataGrid({displayName: 'Test', columns});
-  div.appendChild(dataGrid.element);
+  var widget = dataGrid.asWidget();
+  widget.show(div);
+  dataGrid.element.style.width = '100%';
   dataGrid.element.style.height = '150px';
+  widget.element.style.width = '100%';
+  widget.element.style.height = '100%';
 
   var rootNode = dataGrid.rootNode();
   var nodes = [];
