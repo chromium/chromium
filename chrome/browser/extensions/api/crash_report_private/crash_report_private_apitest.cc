@@ -15,6 +15,7 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "components/crash/content/browser/error_reporting/mock_crash_endpoint.h"
 #include "content/public/test/browser_task_environment.h"
@@ -313,7 +314,7 @@ using CrashReportPrivateCalledFromSwaTest = SystemWebAppIntegrationTest;
 // window.
 IN_PROC_BROWSER_TEST_P(CrashReportPrivateCalledFromSwaTest,
                        CalledFromWebContentsInWebAppWindow) {
-  if (base::FeatureList::IsEnabled(features::kWebAppsCrosapi)) {
+  if (web_app::IsWebAppsCrosapiEnabled()) {
     // TODO(crbug.com/1234938): Support Crosapi (web apps running in Lacros).
     return;
   }

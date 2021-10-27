@@ -72,7 +72,7 @@ WebAppProvider* WebAppProvider::GetForWebApps(Profile* profile) {
   // If features::kWebAppsCrosapi is enabled, Ash browser only manages system
   // web apps (return nullptr here). Otherwise, Ash browser manages all web apps
   // (return WebAppProvider).
-  return base::FeatureList::IsEnabled(features::kWebAppsCrosapi)
+  return IsWebAppsCrosapiEnabled()
              ? nullptr
              : WebAppProviderFactory::GetForProfile(profile);
 #else

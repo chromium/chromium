@@ -131,6 +131,13 @@ void PersistFileHandlersUserChoice(Profile* profile,
                                    bool allowed,
                                    base::OnceClosure update_finished_callback);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// The kLacrosPrimary and kWebAppsCrosapi features are each independently
+// sufficient to enable the web apps Crosapi (used for Lacros web app
+// management).
+bool IsWebAppsCrosapiEnabled();
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 // Enables System Web Apps so we can test SWA features in Lacros, even we don't
 // have actual SWAs in Lacros.

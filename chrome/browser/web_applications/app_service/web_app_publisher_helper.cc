@@ -756,7 +756,7 @@ void WebAppPublisherHelper::SetPermission(
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 void WebAppPublisherHelper::StopApp(const std::string& app_id) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!base::FeatureList::IsEnabled(features::kWebAppsCrosapi)) {
+  if (!IsWebAppsCrosapiEnabled()) {
     return;
   }
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)

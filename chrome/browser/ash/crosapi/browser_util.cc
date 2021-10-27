@@ -41,6 +41,7 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
@@ -771,8 +772,7 @@ mojom::BrowserInitParamsPtr GetBrowserInitParams(
     params->startup_urls = std::move(initial_browser_action.urls);
   }
 
-  params->web_apps_enabled =
-      base::FeatureList::IsEnabled(features::kWebAppsCrosapi);
+  params->web_apps_enabled = web_app::IsWebAppsCrosapiEnabled();
   params->standalone_browser_is_primary = IsLacrosPrimaryBrowser();
   params->device_properties = GetDeviceProperties();
   params->device_settings = GetDeviceSettings();

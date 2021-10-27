@@ -44,6 +44,7 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -419,7 +420,7 @@ void PreinstalledWebAppManager::Load(ConsumeInstallOptions callback) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // With Lacros, web apps are not installed using the Ash browser.
-  if (base::FeatureList::IsEnabled(features::kWebAppsCrosapi))
+  if (IsWebAppsCrosapiEnabled())
     preinstalling_enabled = false;
 #endif
 

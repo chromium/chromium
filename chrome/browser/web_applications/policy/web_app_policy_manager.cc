@@ -38,6 +38,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/policy/handlers/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -78,7 +79,7 @@ void WebAppPolicyManager::Start() {
   // to construct a WebAppPolicyManager.
   bool enable_pwa_support = true;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  enable_pwa_support = !base::FeatureList::IsEnabled(features::kWebAppsCrosapi);
+  enable_pwa_support = !IsWebAppsCrosapiEnabled();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
       ->PostTask(FROM_HERE,

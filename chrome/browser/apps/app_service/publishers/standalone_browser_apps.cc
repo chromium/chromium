@@ -14,6 +14,7 @@
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
@@ -131,7 +132,7 @@ void StandaloneBrowserApps::GetMenuModel(const std::string& app_id,
 
 void StandaloneBrowserApps::StopApp(const std::string& app_id) {
   DCHECK_EQ(extension_misc::kLacrosAppId, app_id);
-  if (!base::FeatureList::IsEnabled(features::kWebAppsCrosapi)) {
+  if (!web_app::IsWebAppsCrosapiEnabled()) {
     return;
   }
   DCHECK(browser_app_instance_registry_);

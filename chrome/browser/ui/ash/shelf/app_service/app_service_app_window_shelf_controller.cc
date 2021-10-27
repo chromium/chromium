@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -168,7 +169,7 @@ void AppServiceAppWindowShelfController::OnWindowInitialized(
   if (!widget || !widget->is_top_level())
     return;
 
-  if (base::FeatureList::IsEnabled(features::kWebAppsCrosapi) &&
+  if (web_app::IsWebAppsCrosapiEnabled() &&
       crosapi::browser_util::IsLacrosWindow(window)) {
     // Ignore all Lacros windows, handled by BrowserAppShelfController.
     return;
