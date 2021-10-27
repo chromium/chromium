@@ -727,7 +727,8 @@ Status LaunchAndroidChrome(network::mojom::URLLoaderFactory* factory,
       capabilities.android_package, capabilities.android_activity,
       capabilities.android_process, capabilities.android_device_socket,
       capabilities.android_exec_name, switches.ToString(),
-      capabilities.android_use_running_app, &devtools_port);
+      capabilities.android_use_running_app,
+      capabilities.android_keep_app_data_dir, &devtools_port);
   if (status.IsError()) {
     device->TearDown();
     return status;

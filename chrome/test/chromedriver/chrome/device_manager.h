@@ -33,6 +33,7 @@ class Device {
                const std::string& exec_name,
                const std::string& args,
                bool use_running_app,
+               bool keep_app_data_dir,
                int* port);
 
   Status TearDown();
