@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/containers/queue.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "content/browser/find_in_page_client.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -231,7 +230,7 @@ class FindRequestManager::FrameObserver : public WebContentsObserver {
 
  private:
   // The FindRequestManager that owns this FrameObserver.
-  const raw_ptr<FindRequestManager> manager_;
+  FindRequestManager* const manager_;
 };
 
 FindRequestManager::FindRequest::FindRequest() = default;

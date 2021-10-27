@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "url/gurl.h"
 
@@ -99,8 +98,8 @@ class BackgroundLoaderContents : public content::WebContentsDelegate {
   BackgroundLoaderContents();
 
   std::unique_ptr<content::WebContents> web_contents_;
-  raw_ptr<content::BrowserContext> browser_context_;
-  raw_ptr<Delegate> delegate_ = nullptr;
+  content::BrowserContext* browser_context_;
+  Delegate* delegate_ = nullptr;
 };
 
 }  // namespace background_loader

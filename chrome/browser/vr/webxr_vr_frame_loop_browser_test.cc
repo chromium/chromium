@@ -5,7 +5,6 @@
 #include <memory>
 
 #include "base/environment.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/vr/test/mock_xr_device_hook_base.h"
 #include "chrome/browser/vr/test/multi_class_browser_test.h"
@@ -39,7 +38,7 @@ class MyXRMock : public MockXRDeviceHookBase {
  private:
   // Set to null on background thread after calling Quit(), so we can ensure we
   // only call Quit once.
-  raw_ptr<base::RunLoop> wait_loop_ = nullptr;
+  base::RunLoop* wait_loop_ = nullptr;
 
   int wait_frame_count_ = 0;
   int num_frames_submitted_ = 0;

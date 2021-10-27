@@ -11,7 +11,6 @@
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
@@ -64,13 +63,13 @@ class AddInObserve : public Foo {
 
   void Observe(int x) override {
     if (to_add_) {
-      observer_list->AddObserver(to_add_.get());
+      observer_list->AddObserver(to_add_);
       to_add_ = nullptr;
     }
   }
 
-  raw_ptr<ObserverListThreadSafe<Foo>> observer_list;
-  raw_ptr<Foo> to_add_;
+  ObserverListThreadSafe<Foo>* observer_list;
+  Foo* to_add_;
 };
 
 // A task for use in the ThreadSafeObserver test which will add and remove
@@ -127,7 +126,7 @@ class AddRemoveThread : public Foo {
   }
 
  private:
-  raw_ptr<ObserverListThreadSafe<Foo>> list_;
+  ObserverListThreadSafe<Foo>* list_;
   scoped_refptr<SingleThreadTaskRunner> task_runner_;
   bool in_list_;  // Are we currently registered for notifications.
                   // in_list_ is only used on |this| thread.

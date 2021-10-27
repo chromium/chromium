@@ -8,7 +8,6 @@
 
 #include "android_webview/browser/gfx/root_frame_sink.h"
 #include "android_webview/browser/gfx/viz_compositor_thread_runner_webview.h"
-#include "base/memory/raw_ptr.h"
 
 namespace android_webview {
 
@@ -30,7 +29,7 @@ class RootFrameSinkProxy::RootFrameSinkClientImpl : public RootFrameSinkClient {
   }
 
  private:
-  const raw_ptr<RootFrameSinkProxy> owner_;
+  RootFrameSinkProxy* const owner_;
 };
 
 // static

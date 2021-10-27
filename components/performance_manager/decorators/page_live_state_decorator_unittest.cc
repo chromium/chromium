@@ -5,7 +5,6 @@
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 
 #include "base/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "components/performance_manager/test_support/decorators_utils.h"
 #include "components/performance_manager/test_support/performance_manager_test_harness.h"
@@ -82,7 +81,7 @@ class TestPageLiveStateObserver : public PageLiveStateObserver {
   }
 
   ObserverFunction latest_function_called_ = ObserverFunction::kNone;
-  raw_ptr<const PageNode> page_node_passed_ = nullptr;
+  const PageNode* page_node_passed_ = nullptr;
 };
 
 }  // namespace

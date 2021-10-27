@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/extension_keybinding_registry.h"
 #include "chrome/browser/extensions/global_shortcut_listener.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
@@ -87,14 +86,14 @@ class ExtensionCommandsGlobalRegistry
   void OnKeyPressed(const ui::Accelerator& accelerator) override;
 
   // Weak pointer to our browser context. Not owned by us.
-  raw_ptr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
 
   // The global commands registry not only keeps track of global commands
   // registered, but also of which non-global command registry is active
   // (belonging to the currently active window). Only valid for TOOLKIT_VIEWS
   // and
   // NULL otherwise.
-  raw_ptr<ExtensionKeybindingRegistry> registry_for_active_window_;
+  ExtensionKeybindingRegistry* registry_for_active_window_;
 };
 
 }  // namespace extensions

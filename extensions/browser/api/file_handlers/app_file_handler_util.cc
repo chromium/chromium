@@ -11,7 +11,6 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
@@ -170,7 +169,7 @@ class WritableFileChecker
   void OnPrepareFileDone(const base::FilePath& path, bool success);
 
   const std::vector<base::FilePath> paths_;
-  raw_ptr<content::BrowserContext> context_;
+  content::BrowserContext* context_;
   const std::set<base::FilePath> directory_paths_;
   size_t outstanding_tasks_;
   base::FilePath error_path_;

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/payments/card_unmask_authentication_selection_dialog_controller.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "content/public/browser/web_contents.h"
@@ -72,7 +71,7 @@ class CardUnmaskAuthenticationSelectionDialogControllerImpl
   // Contains all of the challenge options an issuer has for the user.
   std::vector<CardUnmaskChallengeOption> challenge_options_;
 
-  raw_ptr<CardUnmaskAuthenticationSelectionDialogView> dialog_view_ = nullptr;
+  CardUnmaskAuthenticationSelectionDialogView* dialog_view_ = nullptr;
 
   // Callback invoked when the user confirmed an authentication method to use.
   base::OnceCallback<void(const std::string&)>

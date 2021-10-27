@@ -15,7 +15,6 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -104,7 +103,7 @@ class MockGalleryChangeObserver
     ++notifications_;
   }
 
-  raw_ptr<MediaGalleriesPreferences> pref_;
+  MediaGalleriesPreferences* pref_;
   int notifications_;
 };
 

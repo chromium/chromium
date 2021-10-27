@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TOOLBAR_TOOLBAR_ACCOUNT_ICON_CONTAINER_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_TOOLBAR_TOOLBAR_ACCOUNT_ICON_CONTAINER_VIEW_H_
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_container.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
@@ -60,9 +59,9 @@ class ToolbarAccountIconContainerView : public ToolbarIconContainerView,
 
   std::unique_ptr<PageActionIconController> page_action_icon_controller_;
 
-  const raw_ptr<AvatarToolbarButton> avatar_ = nullptr;
+  AvatarToolbarButton* const avatar_ = nullptr;
 
-  const raw_ptr<Browser> browser_;
+  Browser* const browser_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_TOOLBAR_ACCOUNT_ICON_CONTAINER_VIEW_H_

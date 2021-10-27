@@ -15,7 +15,6 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/json/json_writer.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/tick_clock.h"
 #include "base/timer/timer.h"
@@ -396,7 +395,7 @@ class ReportingDeliveryAgentImpl : public ReportingDeliveryAgent,
   ReportingCache* cache() { return context_->cache(); }
   ReportingUploader* uploader() { return context_->uploader(); }
 
-  raw_ptr<ReportingContext> context_;
+  ReportingContext* context_;
 
   std::unique_ptr<base::OneShotTimer> timer_;
 

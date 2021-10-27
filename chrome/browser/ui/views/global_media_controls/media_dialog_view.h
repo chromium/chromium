@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "components/global_media_controls/public/constants.h"
 #include "components/global_media_controls/public/media_dialog_delegate.h"
@@ -129,12 +128,11 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
       const std::string& id,
       base::WeakPtr<media_message_center::MediaNotificationItem> item);
 
-  const raw_ptr<MediaNotificationService> service_;
+  MediaNotificationService* const service_;
 
-  const raw_ptr<Profile> profile_;
+  Profile* const profile_;
 
-  const raw_ptr<global_media_controls::MediaItemUIListView>
-      active_sessions_view_;
+  global_media_controls::MediaItemUIListView* const active_sessions_view_;
 
   base::ObserverList<MediaDialogViewObserver> observers_;
 
@@ -142,17 +140,16 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
   std::map<const std::string, global_media_controls::MediaItemUIView*>
       observed_items_;
 
-  raw_ptr<views::View> live_caption_container_ = nullptr;
+  views::View* live_caption_container_ = nullptr;
   // TODO(crbug.com/1055150): Remove live_caption_title_new_badge_ by M93.
-  raw_ptr<NewBadgeLabel> live_caption_title_new_badge_ = nullptr;
-  raw_ptr<views::Label> live_caption_title_ = nullptr;
-  raw_ptr<views::ToggleButton> live_caption_button_ = nullptr;
+  NewBadgeLabel* live_caption_title_new_badge_ = nullptr;
+  views::Label* live_caption_title_ = nullptr;
+  views::ToggleButton* live_caption_button_ = nullptr;
 
   // It stores the WebContents* from which a MediaRouterDialogControllerViews
   // opened the dialog for a presentation request. It is nullptr if the dialog
   // is opened from the toolbar.
-  const raw_ptr<content::WebContents> web_contents_for_presentation_request_ =
-      nullptr;
+  content::WebContents* const web_contents_for_presentation_request_ = nullptr;
   const global_media_controls::GlobalMediaControlsEntryPoint entry_point_;
 };
 

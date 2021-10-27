@@ -12,7 +12,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -184,7 +183,7 @@ class SyncTest : public IdentityPlatformBrowserTest {
     bool ExistsInstanceID(const std::string& app_id) const override;
 
    private:
-    raw_ptr<gcm::GCMDriver> gcm_driver_;
+    gcm::GCMDriver* gcm_driver_;
     std::map<std::string, std::unique_ptr<FakeInstanceID>> fake_instance_ids_;
   };
 
@@ -477,7 +476,7 @@ class SyncTest : public IdentityPlatformBrowserTest {
   // The default profile, created before our actual testing |profiles_|. This is
   // needed in a workaround for https://crbug.com/801569, see comments in the
   // .cc file.
-  raw_ptr<Profile> previous_profile_;
+  Profile* previous_profile_;
 
   // Number of sync clients that will be created by a test.
   int num_clients_;
@@ -535,7 +534,7 @@ class SyncTest : public IdentityPlatformBrowserTest {
   // We don't need a corresponding verifier sync client because the contents
   // of the verifier profile are strictly local, and are not meant to be
   // synced.
-  raw_ptr<Profile> verifier_;
+  Profile* verifier_;
 
   // Indicates whether to use a new user data dir.
   // Only used for external server tests with two clients.

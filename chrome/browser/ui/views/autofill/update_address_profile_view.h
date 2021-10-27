@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_UPDATE_ADDRESS_PROFILE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_UPDATE_ADDRESS_PROFILE_VIEW_H_
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 
@@ -44,7 +43,7 @@ class UpdateAddressProfileView : public AutofillBubbleBase,
   void Hide() override;
 
  private:
-  raw_ptr<SaveUpdateAddressProfileBubbleController> controller_;
+  SaveUpdateAddressProfileBubbleController* controller_;
 };
 
 }  // namespace autofill

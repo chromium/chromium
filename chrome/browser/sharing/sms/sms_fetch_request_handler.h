@@ -13,7 +13,6 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/sharing/proto/sharing_message.pb.h"
 #include "chrome/browser/sharing/sharing_message_handler.h"
 #include "content/public/browser/sms_fetcher.h"
@@ -85,8 +84,8 @@ class SmsFetchRequestHandler : public SharingMessageHandler {
     void SendFailureMessage(FailureType);
 
    private:
-    raw_ptr<SmsFetchRequestHandler> handler_;
-    raw_ptr<content::SmsFetcher> fetcher_;
+    SmsFetchRequestHandler* handler_;
+    content::SmsFetcher* fetcher_;
     const content::OriginList origin_list_;
     std::string one_time_code_;
     std::string client_name_;
@@ -100,10 +99,10 @@ class SmsFetchRequestHandler : public SharingMessageHandler {
 
   // |device_source_| is owned by |SharingService| which also transitively owns
   // this class via |SharingHandlerRegistry|.
-  raw_ptr<SharingDeviceSource> device_source_;
+  SharingDeviceSource* device_source_;
   // |fetcher_| is safe because it is owned by BrowserContext, which also
   // owns (transitively, via SharingService) this class.
-  raw_ptr<content::SmsFetcher> fetcher_;
+  content::SmsFetcher* fetcher_;
   base::flat_set<std::unique_ptr<Request>, base::UniquePtrComparator> requests_;
 
   base::WeakPtrFactory<SmsFetchRequestHandler> weak_ptr_factory_{this};

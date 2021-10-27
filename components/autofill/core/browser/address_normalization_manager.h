@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 
 namespace autofill {
@@ -65,7 +64,7 @@ class AddressNormalizationManager {
   std::vector<std::unique_ptr<NormalizerDelegate>> delegates_;
 
   // An unowned raw pointer to the AddressNormalizer to use.
-  raw_ptr<AddressNormalizer> address_normalizer_;
+  AddressNormalizer* address_normalizer_;
 
   THREAD_CHECKER(thread_checker_);
 };

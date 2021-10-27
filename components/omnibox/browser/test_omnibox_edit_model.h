@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/prefs/testing_pref_service.h"
 
@@ -50,7 +49,7 @@ class TestOmniboxEditModel : public OmniboxEditModel {
   // Contains the most recent text passed by the popup model to the edit model.
   std::u16string text_;
   bool is_temporary_text_ = false;
-  raw_ptr<PrefService> pref_service_;
+  PrefService* pref_service_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_TEST_OMNIBOX_EDIT_MODEL_H_

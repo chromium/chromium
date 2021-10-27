@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/metrics/user_metrics.h"
 #include "base/run_loop.h"
@@ -173,9 +172,9 @@ class SegmentationPlatformServiceImplTest : public testing::Test {
   std::map<std::string, proto::SignalData> signal_db_entries_;
   std::map<std::string, proto::SignalStorageConfigs>
       segment_storage_config_db_entries_;
-  raw_ptr<leveldb_proto::test::FakeDB<proto::SegmentInfo>> segment_db_;
-  raw_ptr<leveldb_proto::test::FakeDB<proto::SignalData>> signal_db_;
-  raw_ptr<leveldb_proto::test::FakeDB<proto::SignalStorageConfigs>>
+  leveldb_proto::test::FakeDB<proto::SegmentInfo>* segment_db_;
+  leveldb_proto::test::FakeDB<proto::SignalData>* signal_db_;
+  leveldb_proto::test::FakeDB<proto::SignalStorageConfigs>*
       segment_storage_config_db_;
   optimization_guide::TestOptimizationGuideModelProvider model_provider_;
   TestingPrefServiceSimple pref_service_;

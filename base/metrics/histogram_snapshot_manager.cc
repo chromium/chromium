@@ -8,7 +8,6 @@
 
 #include "base/debug/alias.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_flattener.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/statistics_recorder.h"
@@ -30,7 +29,7 @@ class MakeActive {
   ~MakeActive() { is_active_->store(false, std::memory_order_relaxed); }
 
  private:
-  raw_ptr<std::atomic<bool>> is_active_;
+  std::atomic<bool>* is_active_;
 };
 
 }  // namespace

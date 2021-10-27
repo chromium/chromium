@@ -11,7 +11,6 @@
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -45,7 +44,7 @@ class AppCacheDiskCache::CreateBackendCallbackShim
 
   ~CreateBackendCallbackShim() = default;
 
-  raw_ptr<AppCacheDiskCache> appcache_diskcache_;  // Unowned pointer.
+  AppCacheDiskCache* appcache_diskcache_;  // Unowned pointer.
 };
 
 AppCacheDiskCacheEntry::AppCacheDiskCacheEntry(
@@ -183,7 +182,7 @@ class ActiveCall : public base::RefCounted<ActiveCall> {
   }
 
   base::WeakPtr<AppCacheDiskCache> owner_;
-  raw_ptr<AppCacheDiskCacheEntry*> entry_;
+  AppCacheDiskCacheEntry** entry_;
   net::CompletionOnceCallback callback_;
 };
 

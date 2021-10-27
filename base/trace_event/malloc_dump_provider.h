@@ -6,7 +6,6 @@
 #define BASE_TRACE_EVENT_MALLOC_DUMP_PROVIDER_H_
 
 #include "base/allocator/buildflags.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/synchronization/lock.h"
 #include "base/trace_event/memory_dump_provider.h"
@@ -85,7 +84,7 @@ class BASE_EXPORT MemoryDumpPartitionStatsDumper final
 
  private:
   const char* root_name_;
-  raw_ptr<base::trace_event::ProcessMemoryDump> memory_dump_;
+  base::trace_event::ProcessMemoryDump* memory_dump_;
   uint64_t uid_ = 0;
   size_t total_mmapped_bytes_ = 0;
   size_t total_resident_bytes_ = 0;

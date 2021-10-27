@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "remoting/protocol/authenticator.h"
@@ -69,7 +68,7 @@ class ValidatingAuthenticatorTest : public testing::Test {
   // to |validating_authenticator_|.  Lifetime of the object is controlled by
   // |validating_authenticator_| so this pointer is no longer valid once
   // the owner is destroyed.
-  raw_ptr<testing::NiceMock<MockAuthenticator>> mock_authenticator_ = nullptr;
+  testing::NiceMock<MockAuthenticator>* mock_authenticator_ = nullptr;
 
   // This member is used to drive behavior in |validating_authenticator_| when
   // its validation complete callback is run.

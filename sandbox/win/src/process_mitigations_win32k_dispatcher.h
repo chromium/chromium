@@ -6,7 +6,6 @@
 #define SANDBOX_WIN_SRC_PROCESS_MITIGATIONS_WIN32K_DISPATCHER_H_
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "sandbox/win/src/crosscall_server.h"
@@ -32,7 +31,7 @@ class ProcessMitigationsWin32KDispatcher : public Dispatcher {
   bool SetupService(InterceptionManager* manager, IpcTag service) override;
 
  private:
-  raw_ptr<PolicyBase> policy_base_;
+  PolicyBase* policy_base_;
 };
 
 }  // namespace sandbox

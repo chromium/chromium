@@ -14,7 +14,6 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "storage/browser/blob/shareable_file_reference.h"
@@ -125,7 +124,7 @@ class CopyOrMoveOperationDelegate::CopyOrMoveImpl {
     std::move(callback).Run(error);
   }
 
-  const raw_ptr<FileSystemOperationRunner> operation_runner_;
+  FileSystemOperationRunner* const operation_runner_;
   const CopyOrMoveOperationDelegate::OperationType operation_type_;
   const FileSystemURL src_url_;
   const FileSystemURL dest_url_;
@@ -434,7 +433,7 @@ class SnapshotCopyOrMoveImpl
     std::move(callback).Run(error);
   }
 
-  raw_ptr<CopyOrMoveFileValidatorFactory> validator_factory_;
+  CopyOrMoveFileValidatorFactory* validator_factory_;
   std::unique_ptr<CopyOrMoveFileValidator> validator_;
   bool cancel_requested_;
   base::WeakPtrFactory<SnapshotCopyOrMoveImpl> weak_factory_{this};

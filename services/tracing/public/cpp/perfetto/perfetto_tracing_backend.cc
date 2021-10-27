@@ -6,7 +6,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/post_task.h"
 #include "base/tracing/tracing_tls.h"
@@ -322,7 +321,7 @@ class ProducerEndpoint : public perfetto::ProducerEndpoint,
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  const raw_ptr<perfetto::Producer> producer_;
+  perfetto::Producer* const producer_;
 
   base::flat_map<perfetto::DataSourceInstanceID, StartDataSourceCallback>
       ds_start_callbacks_;
@@ -640,7 +639,7 @@ class ConsumerEndpoint : public perfetto::ConsumerEndpoint,
   }
 
   SEQUENCE_CHECKER(sequence_checker_);
-  const raw_ptr<perfetto::Consumer> consumer_;
+  perfetto::Consumer* const consumer_;
   mojo::Remote<tracing::mojom::ConsumerHost> consumer_host_;
   mojo::Remote<tracing::mojom::TracingSessionHost> tracing_session_host_;
   mojo::Receiver<tracing::mojom::TracingSessionClient> tracing_session_client_{

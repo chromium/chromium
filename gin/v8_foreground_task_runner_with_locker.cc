@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "v8/include/v8-locker.h"
@@ -44,7 +43,7 @@ class IdleTaskWithLocker : public v8::IdleTask {
   }
 
  private:
-  raw_ptr<v8::Isolate> isolate_;
+  v8::Isolate* isolate_;
   std::unique_ptr<v8::IdleTask> task_;
 };
 
@@ -53,14 +52,14 @@ class IdleTaskWithLocker : public v8::IdleTask {
 void V8ForegroundTaskRunnerWithLocker::PostTask(
     std::unique_ptr<v8::Task> task) {
   task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(RunWithLocker, base::Unretained(isolate_.get()),
+      FROM_HERE, base::BindOnce(RunWithLocker, base::Unretained(isolate_),
                                 std::move(task)));
 }
 
 void V8ForegroundTaskRunnerWithLocker::PostNonNestableTask(
     std::unique_ptr<v8::Task> task) {
   task_runner_->PostNonNestableTask(
-      FROM_HERE, base::BindOnce(RunWithLocker, base::Unretained(isolate_.get()),
+      FROM_HERE, base::BindOnce(RunWithLocker, base::Unretained(isolate_),
                                 std::move(task)));
 }
 
@@ -69,7 +68,7 @@ void V8ForegroundTaskRunnerWithLocker::PostDelayedTask(
     double delay_in_seconds) {
   task_runner_->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(RunWithLocker, base::Unretained(isolate_.get()),
+      base::BindOnce(RunWithLocker, base::Unretained(isolate_),
                      std::move(task)),
       base::Seconds(delay_in_seconds));
 }

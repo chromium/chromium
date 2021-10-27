@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "components/component_updater/component_installer.h"
 #include "components/prefs/pref_service.h"
@@ -64,7 +63,7 @@ class AutofillStatesComponentInstallerPolicy : public ComponentInstallerPolicy {
   std::string GetName() const override;
   update_client::InstallerAttributes GetInstallerAttributes() const override;
 
-  raw_ptr<PrefService> pref_service_;
+  PrefService* pref_service_;
 };
 
 // Call once during startup to make the component update service aware of

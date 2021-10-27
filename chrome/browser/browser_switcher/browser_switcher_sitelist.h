@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_BROWSER_SWITCHER_BROWSER_SWITCHER_SITELIST_H_
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/browser_switcher/browser_switcher_prefs.h"
 #include "components/prefs/pref_change_registrar.h"
 
@@ -55,7 +54,7 @@ struct Decision {
   Reason reason;
   // If reason is kSitelist or kGreylist, this is the rule that caused the
   // decision.
-  raw_ptr<const Rule> matching_rule;
+  const Rule* matching_rule;
 };
 
 // Interface that decides whether a navigation should trigger a browser
@@ -136,7 +135,7 @@ class BrowserSwitcherSitelistImpl : public BrowserSwitcherSitelist {
 
   base::CallbackListSubscription prefs_changed_subscription_;
 
-  const raw_ptr<BrowserSwitcherPrefs> prefs_;
+  BrowserSwitcherPrefs* const prefs_;
 };
 
 }  // namespace browser_switcher

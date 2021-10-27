@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "ui/aura/env.h"
 #include "ui/aura/env_input_state_controller.h"
 #include "ui/aura/input_state_lookup.h"
@@ -49,7 +48,7 @@ class EnvTestHelper {
   }
 
  private:
-  raw_ptr<Env> env_;
+  Env* env_;
 };
 
 }  // namespace test

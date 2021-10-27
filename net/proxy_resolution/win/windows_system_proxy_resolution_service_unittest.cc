@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
@@ -145,7 +144,7 @@ class WindowsSystemProxyResolutionServiceTest : public TestWithTaskEnvironment {
  private:
   std::unique_ptr<WindowsSystemProxyResolutionService>
       proxy_resolution_service_;
-  raw_ptr<MockWindowsSystemProxyResolver> proxy_resolver_;
+  MockWindowsSystemProxyResolver* proxy_resolver_;
 };
 
 TEST_F(WindowsSystemProxyResolutionServiceTest, CreateWithNullResolver) {

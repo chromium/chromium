@@ -8,7 +8,6 @@
 #include <map>
 
 #include "base/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "extensions/browser/extension_host_registry.h"
 #include "extensions/common/extension_id.h"
@@ -115,7 +114,7 @@ class ExtensionHostTestHelper : public ExtensionHostRegistry::Observer {
   base::OnceClosure quit_loop_;
 
   // The associated browser context.
-  const raw_ptr<content::BrowserContext> browser_context_;
+  content::BrowserContext* const browser_context_;
 
   // The ID of the extension whose hosts this helper is watching, if it is
   // restricted to a given ID.
@@ -127,7 +126,7 @@ class ExtensionHostTestHelper : public ExtensionHostRegistry::Observer {
 
   // The specific host this helper is waiting on, if any (null implies
   // waiting on any host).
-  raw_ptr<const ExtensionHost> restrict_to_host_ = nullptr;
+  const ExtensionHost* restrict_to_host_ = nullptr;
 
   // The set of all events this helper has seen and their corresponding
   // ExtensionHosts. ExtensionHosts are nulled out when they are destroyed, but

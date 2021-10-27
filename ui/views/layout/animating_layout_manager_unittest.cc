@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -251,9 +250,9 @@ class AnimatingLayoutManagerTest : public testing::Test {
   const bool enable_animations_;
   ProposedLayout layout1_;
   ProposedLayout layout2_;
-  raw_ptr<View> view_;
+  View* view_;
   std::vector<TestView*> children_;
-  raw_ptr<AnimatingLayoutManager> animating_layout_manager_ = nullptr;
+  AnimatingLayoutManager* animating_layout_manager_ = nullptr;
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<gfx::AnimationContainerTestApi> container_test_api_;
   RenderModeLock render_mode_lock_;
@@ -3133,7 +3132,7 @@ class AnimationWatcher : public AnimatingLayoutManager::Observer {
   }
 
  private:
-  const raw_ptr<AnimatingLayoutManager> layout_manager_;
+  AnimatingLayoutManager* const layout_manager_;
   base::ScopedObservation<AnimatingLayoutManager,
                           AnimatingLayoutManager::Observer>
       observation_{this};
@@ -3177,7 +3176,7 @@ class AnimatingLayoutManagerAvailableSizeTest
   ImmediateLayoutManager* root_layout() { return root_layout_; }
 
  private:
-  raw_ptr<ImmediateLayoutManager> root_layout_;
+  ImmediateLayoutManager* root_layout_;
 };
 
 TEST_F(AnimatingLayoutManagerAvailableSizeTest, AvailableSize_LimitsExpansion) {
@@ -4192,7 +4191,7 @@ class AnimatingLayoutManagerFlexRuleTest : public AnimatingLayoutManagerTest {
   static const FlexSpecification kScaleToMinimumSnapToZero;
 
  private:
-  raw_ptr<FlexLayout> flex_layout_;
+  FlexLayout* flex_layout_;
   FlexRule flex_rule_;
 };
 
@@ -4370,9 +4369,9 @@ class AnimatingLayoutManagerInFlexLayoutTest
   TestView* other_view() { return other_view_; }
 
  private:
-  raw_ptr<FlexLayout> root_layout_;
-  raw_ptr<FlexLayout> target_layout_;
-  raw_ptr<TestView> other_view_;
+  FlexLayout* root_layout_;
+  FlexLayout* target_layout_;
+  TestView* other_view_;
 };
 
 TEST_F(AnimatingLayoutManagerInFlexLayoutTest, NoAnimation) {
@@ -5110,10 +5109,10 @@ class AnimatingLayoutManagerSequenceTest : public ViewsTestBase {
 
   using WidgetAutoclosePtr = std::unique_ptr<Widget, WidgetCloser>;
 
-  raw_ptr<AnimatingLayoutManager> layout_manager_ = nullptr;
-  raw_ptr<View> child_view_ = nullptr;
-  raw_ptr<View> parent_view_ = nullptr;
-  raw_ptr<View> layout_view_ = nullptr;
+  AnimatingLayoutManager* layout_manager_ = nullptr;
+  View* child_view_ = nullptr;
+  View* parent_view_ = nullptr;
+  View* layout_view_ = nullptr;
   std::unique_ptr<View> parent_view_ptr_;
   std::unique_ptr<View> layout_view_ptr_;
   WidgetAutoclosePtr widget_;

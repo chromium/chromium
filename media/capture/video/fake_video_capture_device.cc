@@ -12,7 +12,6 @@
 #include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -201,7 +200,7 @@ class FrameDeliverer {
 
  private:
   const std::unique_ptr<PacmanFramePainter> frame_painter_;
-  raw_ptr<const FakeDeviceState> device_state_ = nullptr;
+  const FakeDeviceState* device_state_ = nullptr;
   std::unique_ptr<VideoCaptureDevice::Client> client_;
   base::TimeTicks first_ref_time_;
 };
@@ -259,7 +258,7 @@ class GpuMemoryBufferFrameDeliverer : public FrameDeliverer {
   void PaintAndDeliverNextFrame(base::TimeDelta timestamp_to_paint) override;
 
  private:
-  raw_ptr<gpu::GpuMemoryBufferSupport> gmb_support_;
+  gpu::GpuMemoryBufferSupport* gmb_support_;
 };
 
 FrameDelivererFactory::FrameDelivererFactory(

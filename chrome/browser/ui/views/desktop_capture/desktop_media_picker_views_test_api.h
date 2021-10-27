@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_DESKTOP_MEDIA_PICKER_VIEWS_TEST_API_H_
 #define CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_DESKTOP_MEDIA_PICKER_VIEWS_TEST_API_H_
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -53,7 +52,7 @@ class DesktopMediaPickerViewsTestApi {
   const views::TableView* GetTableView() const;
   views::TableView* GetTableView();
 
-  raw_ptr<DesktopMediaPickerViews> picker_;
+  DesktopMediaPickerViews* picker_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_DESKTOP_MEDIA_PICKER_VIEWS_TEST_API_H_

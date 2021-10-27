@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/test/view_event_test_base.h"
-#include "base/memory/raw_ptr.h"
 
 #include "base/bind.h"
 #include "base/location.h"
@@ -47,7 +46,7 @@ class TestView : public views::View {
   }
 
  private:
-  raw_ptr<ViewEventTestBase> harness_;
+  ViewEventTestBase* harness_;
 };
 
 }  // namespace
@@ -80,8 +79,8 @@ class TestBaseWidgetDelegate : public views::WidgetDelegate {
   }
 
  private:
-  raw_ptr<ViewEventTestBase> harness_;
-  raw_ptr<views::View> contents_ = nullptr;
+  ViewEventTestBase* harness_;
+  views::View* contents_ = nullptr;
 };
 
 ViewEventTestBase::ViewEventTestBase() {

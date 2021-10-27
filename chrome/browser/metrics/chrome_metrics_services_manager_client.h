@@ -9,7 +9,6 @@
 
 #include "base/feature_list.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -111,7 +110,7 @@ class ChromeMetricsServicesManagerClient
   THREAD_CHECKER(thread_checker_);
 
   // Weak pointer to the local state prefs store.
-  const raw_ptr<PrefService> local_state_;
+  PrefService* const local_state_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   base::CallbackListSubscription reporting_setting_subscription_;

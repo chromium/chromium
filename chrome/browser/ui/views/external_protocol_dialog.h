@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_EXTERNAL_PROTOCOL_DIALOG_H_
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -59,7 +58,7 @@ class ExternalProtocolDialog : public views::DialogDelegateView {
   const absl::optional<url::Origin> initiating_origin_;
 
   // The message box whose commands we handle.
-  raw_ptr<views::MessageBoxView> message_box_view_ = nullptr;
+  views::MessageBoxView* message_box_view_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTERNAL_PROTOCOL_DIALOG_H_

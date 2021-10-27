@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/accessibility/platform/ax_unique_id.h"
 #include "ui/display/display_observer.h"
@@ -46,7 +45,7 @@ class VIEWS_EXPORT AXRootObjWrapper : public views::AXAuraObjWrapper,
   display::ScopedOptionalDisplayObserver display_observer_{this};
   ui::AXUniqueId unique_id_;
 
-  raw_ptr<views::AXAuraObjCache::Delegate> delegate_;
+  views::AXAuraObjCache::Delegate* delegate_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   views::AXAuraObjWrapper* lacros_host_;

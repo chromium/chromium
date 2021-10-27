@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
 #include "extensions/browser/content_script_tracker.h"
 
 #include "base/macros.h"
@@ -251,7 +250,7 @@ class ContentScriptMatchingBrowserTest : public ShellApiTest,
 
   // Populated by InstallContentScriptsExtension (called by individual tests).
   TestExtensionDir dir_;
-  raw_ptr<const Extension> extension_ = nullptr;
+  const Extension* extension_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(ContentScriptMatchingBrowserTest,

@@ -10,7 +10,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "cc/raster/raster_buffer_provider.h"
 
 namespace base {
@@ -56,7 +55,7 @@ class CC_EXPORT BitmapRasterBufferProvider : public RasterBufferProvider {
   std::unique_ptr<base::trace_event::ConvertableToTraceFormat> StateAsValue()
       const;
 
-  const raw_ptr<LayerTreeFrameSink> frame_sink_;
+  LayerTreeFrameSink* const frame_sink_;
 };
 
 }  // namespace cc

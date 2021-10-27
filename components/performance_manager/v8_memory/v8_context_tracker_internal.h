@@ -15,7 +15,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/linked_list.h"
-#include "base/memory/raw_ptr.h"
 #include "base/types/pass_key.h"
 #include "components/performance_manager/graph/node_attached_data_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
@@ -117,9 +116,9 @@ class ExecutionContextData : public base::LinkNode<ExecutionContextData>,
   void MarkMainV8ContextDetached(base::PassKey<V8ContextData>);
 
  private:
-  const raw_ptr<ProcessData> process_data_;
+  ProcessData* const process_data_;
 
-  raw_ptr<RemoteFrameData> remote_frame_data_ = nullptr;
+  RemoteFrameData* remote_frame_data_ = nullptr;
 
   // The count of V8ContextDatas keeping this object alive.
   size_t v8_context_count_ = 0;
@@ -165,9 +164,9 @@ class RemoteFrameData : public base::LinkNode<RemoteFrameData> {
   WARN_UNUSED_RESULT bool IsTracked() const;
 
  private:
-  const raw_ptr<ProcessData> process_data_;
+  ProcessData* const process_data_;
   const blink::RemoteFrameToken token_;
-  const raw_ptr<ExecutionContextData> execution_context_data_;
+  ExecutionContextData* const execution_context_data_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -219,7 +218,7 @@ class V8ContextData : public base::LinkNode<V8ContextData>,
  private:
   bool MarkDetachedImpl();
 
-  const raw_ptr<ProcessData> process_data_;
+  ProcessData* const process_data_;
   bool was_tracked_ = false;
 };
 
@@ -287,7 +286,7 @@ class ProcessData : public NodeAttachedDataImpl<ProcessData> {
   }
 
   // Pointer to the DataStore that implicitly owns us.
-  const raw_ptr<V8ContextTrackerDataStore> data_store_;
+  V8ContextTrackerDataStore* const data_store_;
 
   // Counts the number of ExecutionContexts and V8Contexts.
   ContextCounts counts_;

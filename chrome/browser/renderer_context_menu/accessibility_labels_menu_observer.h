@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "components/prefs/pref_member.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
 
@@ -46,7 +45,7 @@ class AccessibilityLabelsMenuObserver : public RenderViewContextMenuObserver {
 
   // The interface to add a context-menu item and update it. This class uses
   // this interface to avoid accessing context-menu items directly.
-  raw_ptr<RenderViewContextMenuProxy> proxy_;
+  RenderViewContextMenuProxy* proxy_;
 };
 
 #endif  // CHROME_BROWSER_RENDERER_CONTEXT_MENU_ACCESSIBILITY_LABELS_MENU_OBSERVER_H_

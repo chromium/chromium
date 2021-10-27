@@ -7,7 +7,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 
 class Profile;
@@ -27,7 +26,7 @@ class BookmarkModelLoadedObserver
                            bool ids_reassigned) override;
   void BookmarkModelBeingDeleted(bookmarks::BookmarkModel* model) override;
 
-  raw_ptr<Profile> profile_;
+  Profile* profile_;
 };
 
 #endif  // CHROME_BROWSER_PROFILES_BOOKMARK_MODEL_LOADED_OBSERVER_H_

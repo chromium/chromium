@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
 #include "url/gurl.h"
 
@@ -35,7 +34,7 @@ class CredentialManagerLogger {
 
  private:
   // The LogManager to which logs can be sent for display.
-  const raw_ptr<const autofill::LogManager> log_manager_;
+  const autofill::LogManager* const log_manager_;
 };
 
 }  // namespace password_manager

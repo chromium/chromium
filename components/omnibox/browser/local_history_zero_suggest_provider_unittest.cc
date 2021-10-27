@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/i18n/case_conversion.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -41,7 +40,7 @@ namespace {
 
 // Used to populate the URLDatabase.
 struct TestURLData {
-  raw_ptr<const TemplateURL> search_provider;
+  const TemplateURL* search_provider;
   std::string search_terms;
   std::string additional_query_params;
   int age_in_seconds;

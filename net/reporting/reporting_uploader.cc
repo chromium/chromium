@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "net/base/elements_upload_data_stream.h"
@@ -319,7 +318,7 @@ class ReportingUploaderImpl : public ReportingUploader, URLRequest::Delegate {
   }
 
  private:
-  raw_ptr<const URLRequestContext> context_;
+  const URLRequestContext* context_;
   std::map<const URLRequest*, std::unique_ptr<PendingUpload>> uploads_;
 };
 

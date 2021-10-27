@@ -6,7 +6,6 @@
 
 #include "base/hash/hash.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -402,7 +401,7 @@ class WrappedSkImage::RepresentationSkia
     return static_cast<WrappedSkImage*>(backing());
   }
 
-  raw_ptr<SkSurface> write_surface_ = nullptr;
+  SkSurface* write_surface_ = nullptr;
 };
 
 class WrappedSkImage::RepresentationMemory

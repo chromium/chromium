@@ -7,7 +7,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -113,8 +112,8 @@ class ViewTextInputTypeObserver : public content::TextInputManagerObserverBase {
       OnSuccess();
   }
 
-  raw_ptr<content::WebContents> web_contents_;
-  raw_ptr<content::RenderWidgetHostView> view_;
+  content::WebContents* web_contents_;
+  content::RenderWidgetHostView* view_;
   const ui::TextInputType expected_type_;
 };
 
@@ -144,7 +143,7 @@ class ViewSelectionBoundsChangedObserver
       OnSuccess();
   }
 
-  const raw_ptr<const content::RenderWidgetHostView> expected_view_;
+  const content::RenderWidgetHostView* const expected_view_;
 };
 
 // This class observes the |expected_view| for the first change in its
@@ -173,7 +172,7 @@ class ViewCompositionRangeChangedObserver
       OnSuccess();
   }
 
-  const raw_ptr<const content::RenderWidgetHostView> expected_view_;
+  const content::RenderWidgetHostView* const expected_view_;
 };
 
 // This class observes the |expected_view| for a change in the text selection.
@@ -203,7 +202,7 @@ class ViewTextSelectionObserver : public content::TextInputManagerObserverBase {
     }
   }
 
-  const raw_ptr<const content::RenderWidgetHostView> expected_view_;
+  const content::RenderWidgetHostView* const expected_view_;
   const size_t expected_length_;
 };
 

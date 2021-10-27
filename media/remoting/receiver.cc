@@ -113,9 +113,8 @@ void Receiver::SendRpcMessageOnMainThread(
   // |rpc_messenger_| is owned by |receiver_controller_| which is a singleton
   // per process, so it's safe to use Unretained() here.
   main_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&RpcMessenger::SendMessageToRemote,
-                     base::Unretained(rpc_messenger_.get()), *message));
+      FROM_HERE, base::BindOnce(&RpcMessenger::SendMessageToRemote,
+                                base::Unretained(rpc_messenger_), *message));
 }
 
 void Receiver::OnReceivedRpc(

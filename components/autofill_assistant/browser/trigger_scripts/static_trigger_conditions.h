@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
@@ -53,8 +52,8 @@ class StaticTriggerConditions {
   // Note: this is cached to ensure that the flag value is consistent until the
   // next call to |Update|. See b/192220992.
   bool is_first_time_user_ = false;
-  raw_ptr<StarterPlatformDelegate> delegate_ = nullptr;
-  raw_ptr<TriggerContext> trigger_context_ = nullptr;
+  StarterPlatformDelegate* delegate_ = nullptr;
+  TriggerContext* trigger_context_ = nullptr;
   GURL deeplink_url_;
   base::WeakPtrFactory<StaticTriggerConditions> weak_ptr_factory_{this};
 };

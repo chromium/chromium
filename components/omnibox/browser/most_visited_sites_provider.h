@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/ntp_tiles/most_visited_sites.h"
 #include "components/omnibox/browser/autocomplete_input.h"
@@ -58,10 +57,10 @@ class MostVisitedSitesProvider : public AutocompleteProvider,
           sections) override;
   void OnIconMadeAvailable(const GURL& site_url) override;
 
-  raw_ptr<ntp_tiles::MostVisitedSites> most_visited_sites_{};
+  ntp_tiles::MostVisitedSites* most_visited_sites_{};
 
-  const raw_ptr<AutocompleteProviderClient> client_;
-  const raw_ptr<AutocompleteProviderListener> listener_;
+  AutocompleteProviderClient* const client_;
+  AutocompleteProviderListener* const listener_;
   // Note: used to cancel requests - not a general purpose WeakPtr factory.
   base::WeakPtrFactory<MostVisitedSitesProvider> request_weak_ptr_factory_{
       this};

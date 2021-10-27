@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "ui/views/controls/native/native_view_host_test_base.h"
-#include "base/memory/raw_ptr.h"
 
 #include <utility>
 
@@ -26,7 +25,7 @@ class NativeViewHostTestBase::NativeViewHostTesting : public NativeViewHost {
   ~NativeViewHostTesting() override { owner_->host_destroyed_count_++; }
 
  private:
-  raw_ptr<NativeViewHostTestBase> owner_;
+  NativeViewHostTestBase* owner_;
 };
 
 NativeViewHostTestBase::NativeViewHostTestBase() = default;

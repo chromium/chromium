@@ -462,7 +462,7 @@ void CategorizedWorkerPool::RunTaskInCategoryWithLockAcquired(
     }
   }
 
-  auto* task_namespace = prioritized_task.task_namespace.get();
+  auto* task_namespace = prioritized_task.task_namespace;
   work_queue_.CompleteTask(std::move(prioritized_task));
 
   // If namespace has finished running all tasks, wake up origin threads.

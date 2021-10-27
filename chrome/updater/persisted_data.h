@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 
@@ -89,7 +88,7 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData> {
                  const std::string& value);
   SEQUENCE_CHECKER(sequence_checker_);
 
-  raw_ptr<PrefService> pref_service_ = nullptr;  // Not owned by this class.
+  PrefService* pref_service_ = nullptr;  // Not owned by this class.
 };
 
 }  // namespace updater

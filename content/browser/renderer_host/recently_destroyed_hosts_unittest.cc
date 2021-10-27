@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "content/browser/browsing_instance.h"
@@ -46,7 +45,7 @@ class RecentlyDestroyedHostsTest : public testing::Test {
 
   BrowserTaskEnvironment task_environment_;
   TestBrowserContext browser_context_;
-  raw_ptr<RecentlyDestroyedHosts> instance_;
+  RecentlyDestroyedHosts* instance_;
 };
 
 TEST_F(RecentlyDestroyedHostsTest,

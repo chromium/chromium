@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_TAB_CONTENTS_NAVIGATION_METRICS_RECORDER_H_
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -53,7 +52,7 @@ class NavigationMetricsRecorder
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
-  raw_ptr<site_engagement::SiteEngagementService> site_engagement_service_;
+  site_engagement::SiteEngagementService* site_engagement_service_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
   bool is_synthetic_isolation_trial_enabled_;
 

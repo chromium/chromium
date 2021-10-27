@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "base/guid.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -345,11 +344,11 @@ class CreditCardSaveManagerTest : public testing::Test {
   MockPersonalDataManager personal_data_;
   syncer::TestSyncService sync_service_;
   // Ends up getting owned (and destroyed) by TestFormDataImporter:
-  raw_ptr<TestCreditCardSaveManager> credit_card_save_manager_;
+  TestCreditCardSaveManager* credit_card_save_manager_;
   // Ends up getting owned (and destroyed) by TestAutofillClient:
-  raw_ptr<payments::TestPaymentsClient> payments_client_;
+  payments::TestPaymentsClient* payments_client_;
   // Ends up getting owned (and destroyed) by TestAutofillClient:
-  raw_ptr<TestStrikeDatabase> strike_database_;
+  TestStrikeDatabase* strike_database_;
 
  private:
   int ToHistogramSample(AutofillMetrics::CardUploadDecisionMetric metric) {

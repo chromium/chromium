@@ -5,7 +5,6 @@
 #ifndef DEVICE_GAMEPAD_GAMEPAD_DATA_FETCHER_H_
 #define DEVICE_GAMEPAD_GAMEPAD_DATA_FETCHER_H_
 
-#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "device/gamepad/gamepad_data_fetcher_manager.h"
 #include "device/gamepad/gamepad_export.h"
@@ -99,7 +98,7 @@ class DEVICE_GAMEPAD_EXPORT GamepadDataFetcher {
  private:
   // GamepadPadStateProvider is the base class of GamepadProvider, which owns
   // this data fetcher.
-  raw_ptr<GamepadPadStateProvider> provider_ = nullptr;
+  GamepadPadStateProvider* provider_ = nullptr;
 };
 
 // Factory class for creating a GamepadDataFetcher. Used by the

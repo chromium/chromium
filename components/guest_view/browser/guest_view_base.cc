@@ -11,7 +11,6 @@
 #include "base/lazy_instance.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/guest_view/browser/guest_view_event.h"
 #include "components/guest_view/browser/guest_view_manager.h"
@@ -133,7 +132,7 @@ class GuestViewBase::OwnerContentsObserver : public WebContentsObserver {
  private:
   bool is_fullscreen_;
   bool destroyed_;
-  raw_ptr<GuestViewBase> guest_;
+  GuestViewBase* guest_;
 
   void Destroy() {
     if (destroyed_)
@@ -170,7 +169,7 @@ class GuestViewBase::OpenerLifetimeObserver : public WebContentsObserver {
   }
 
  private:
-  raw_ptr<GuestViewBase> guest_;
+  GuestViewBase* guest_;
 };
 
 GuestViewBase::GuestViewBase(WebContents* owner_web_contents)

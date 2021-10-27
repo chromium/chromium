@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/policy/enterprise_startup_dialog_view.h"
 
 #include "base/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -55,7 +54,7 @@ class EnterpriseStartupDialogViewBrowserTest : public DialogBrowserTest {
 #endif
 
  private:
-  raw_ptr<EnterpriseStartupDialogView> dialog;
+  EnterpriseStartupDialogView* dialog;
 };
 
 IN_PROC_BROWSER_TEST_F(EnterpriseStartupDialogViewBrowserTest,

@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/breadcrumbs/core/breadcrumb_manager.h"
@@ -38,11 +37,10 @@ class FakeBreadcrumbManagerObserver : public BreadcrumbManagerObserver {
     old_events_removed_last_received_manager_ = manager;
   }
 
-  raw_ptr<BreadcrumbManager> event_added_last_received_manager_ = nullptr;
+  BreadcrumbManager* event_added_last_received_manager_ = nullptr;
   std::string event_added_last_received_event_;
 
-  raw_ptr<BreadcrumbManager> old_events_removed_last_received_manager_ =
-      nullptr;
+  BreadcrumbManager* old_events_removed_last_received_manager_ = nullptr;
 };
 
 }  // namespace

@@ -130,7 +130,7 @@ void WebIdDialogViews::ShowDialog() {
 void WebIdDialogViews::SetContent(std::unique_ptr<views::View> content) {
   // TODO(majidvp): Animate the switch between old and new content views.
   if (content_)
-    RemoveChildViewT(content_.get());
+    RemoveChildViewT(content_);
 
   content_ = AddChildView(std::move(content));
 }

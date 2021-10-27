@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/auto_reset.h"
-#include "base/memory/raw_ptr.h"
 #include "cc/base/math_util.h"
 #include "cc/layers/layer.h"
 #include "cc/layers/layer_impl.h"
@@ -92,8 +91,8 @@ class PropertyTreeBuilderContext {
                                    bool subtree_has_rounded_corner,
                                    bool created_transform_node) const;
 
-  raw_ptr<LayerTreeHost> layer_tree_host_;
-  raw_ptr<Layer> root_layer_;
+  LayerTreeHost* layer_tree_host_;
+  Layer* root_layer_;
   MutatorHost& mutator_host_;
   PropertyTrees& property_trees_;
   TransformTree& transform_tree_;

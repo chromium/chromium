@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/instant_service_factory.h"
@@ -82,8 +81,7 @@ class EmbeddedSearchClientFactoryImpl
 
   // Used to bind incoming pending receivers to the implementation, which lives
   // in SearchIPCRouter.
-  raw_ptr<mojo::AssociatedReceiver<search::mojom::EmbeddedSearch>>
-      client_receiver_;
+  mojo::AssociatedReceiver<search::mojom::EmbeddedSearch>* client_receiver_;
 
   // Receivers used to listen to connection requests.
   content::RenderFrameHostReceiverSet<search::mojom::EmbeddedSearchConnector>

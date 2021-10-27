@@ -177,7 +177,7 @@ void PasswordStoreProxyBackend::GetAllLoginsAsync(LoginsReply callback) {
 
   auto sync_status_callback = base::BindOnce(
       &PasswordStoreBackend::GetAllLoginsAsync,
-      base::Unretained(shadow_backend_.get()),
+      base::Unretained(shadow_backend_),
       base::BindOnce(&GetAllLoginsAsyncMetricsRecorder::RecordShadowResult,
                      handler));
 

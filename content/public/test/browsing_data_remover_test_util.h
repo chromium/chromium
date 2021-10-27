@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
@@ -98,7 +97,7 @@ class BrowsingDataRemoverCompletionInhibitor {
 
   // Not owned by this class. If the pointer becomes invalid, the owner of
   // this class is responsible for calling Reset().
-  raw_ptr<BrowsingDataRemover> remover_;
+  BrowsingDataRemover* remover_;
 
   std::unique_ptr<base::RunLoop> run_loop_;
   base::OnceClosure continue_to_completion_callback_;

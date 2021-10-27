@@ -12,7 +12,6 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
 
 namespace content {
@@ -69,8 +68,8 @@ class CardUnmaskPromptViewAndroid : public CardUnmaskPromptView {
   // The corresponding java object.
   base::android::ScopedJavaGlobalRef<jobject> java_object_internal_;
 
-  raw_ptr<CardUnmaskPromptController> controller_;
-  raw_ptr<content::WebContents> web_contents_;
+  CardUnmaskPromptController* controller_;
+  content::WebContents* web_contents_;
 };
 
 }  // namespace autofill

@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -315,7 +314,7 @@ class RenderViewContextMenu : public RenderViewContextMenuBase,
   // - The submenu containing the installed protocol handlers.
   ui::SimpleMenuModel protocol_handler_submenu_model_;
   // - The registry with the protocols.
-  raw_ptr<ProtocolHandlerRegistry> protocol_handler_registry_;
+  ProtocolHandlerRegistry* protocol_handler_registry_;
   // - The observation of the registry.
   base::ScopedObservation<ProtocolHandlerRegistry,
                           ProtocolHandlerRegistry::Observer>
@@ -359,7 +358,7 @@ class RenderViewContextMenu : public RenderViewContextMenuBase,
   // In the case of a MimeHandlerView this will point to the WebContents that
   // embeds the MimeHandlerViewGuest. Otherwise this will be the same as
   // |source_web_contents_|.
-  const raw_ptr<content::WebContents> embedder_web_contents_;
+  content::WebContents* const embedder_web_contents_;
 
   // Send tab to self submenu.
   std::unique_ptr<send_tab_to_self::SendTabToSelfSubMenuModel>
@@ -377,7 +376,7 @@ class RenderViewContextMenu : public RenderViewContextMenuBase,
       shared_clipboard_context_menu_observer_;
 
   // The system app (if any) associated with the WebContents we're in.
-  raw_ptr<const web_app::SystemWebAppDelegate> system_app_ = nullptr;
+  const web_app::SystemWebAppDelegate* system_app_ = nullptr;
 
   // A one-time callback that will be called the next time a plugin action is
   // executed from a given render frame.

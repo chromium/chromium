@@ -12,7 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/string_tokenizer.h"
@@ -248,7 +247,7 @@ class TestClient : public SafeBrowsingDatabaseManager::Client {
   bool on_check_browse_url_result_called_ = false;
   bool on_check_download_urls_result_called_ = false;
   bool on_check_resource_url_result_called_ = false;
-  raw_ptr<V4LocalDatabaseManager> manager_to_cancel_;
+  V4LocalDatabaseManager* manager_to_cancel_;
 };
 
 class TestAllowlistClient : public SafeBrowsingDatabaseManager::Client {

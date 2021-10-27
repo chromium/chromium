@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -98,7 +97,7 @@ class ResetSettingsHandler : public SettingsPageUIHandler {
   void OnShowPowerwashDialog(const base::ListValue* args);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  const raw_ptr<Profile> profile_;
+  Profile* const profile_;
 
   std::unique_ptr<ProfileResetter> resetter_;
 

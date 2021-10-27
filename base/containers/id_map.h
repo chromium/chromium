@@ -16,7 +16,6 @@
 
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
-#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
 
@@ -206,7 +205,7 @@ class IDMap final {
         ++iter_;
     }
 
-    raw_ptr<IDMap<V, K>> map_;
+    IDMap<V, K>* map_;
     typename HashTable::const_iterator iter_;
   };
 

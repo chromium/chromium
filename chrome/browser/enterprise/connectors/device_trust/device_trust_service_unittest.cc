@@ -7,7 +7,6 @@
 #include <tuple>
 
 #include "base/barrier_closure.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -99,8 +98,8 @@ class DeviceTrustServiceTest
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
   TestingPrefServiceSimple prefs_;
-  raw_ptr<MockAttestationService> mock_attestation_service_;
-  raw_ptr<MockSignalsService> mock_signals_service_;
+  MockAttestationService* mock_attestation_service_;
+  MockSignalsService* mock_signals_service_;
 };
 
 // Tests that IsEnabled returns true only when the feature flag is enabled and

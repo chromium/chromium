@@ -11,7 +11,6 @@
 #include "base/check.h"
 #include "base/cxx17_backports.h"
 #include "base/lazy_instance.h"
-#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -120,7 +119,7 @@ class FormDataParserUrlEncoded : public FormDataParser {
   const RE2::Arg* args_[args_size_];
 
   // Caching the pointer to g_patterns.Get().
-  raw_ptr<const Patterns> patterns_;
+  const Patterns* patterns_;
 };
 
 // The following class, FormDataParserMultipart, parses forms encoded as
@@ -301,7 +300,7 @@ class FormDataParserMultipart : public FormDataParser {
   re2::StringPiece source_;
 
   // Caching the pointer to g_patterns.Get().
-  raw_ptr<const Patterns> patterns_;
+  const Patterns* patterns_;
 };
 
 FormDataParser::Result::Result() {}

@@ -7,7 +7,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "content/public/browser/permission_controller_delegate.h"
 
 namespace content {
@@ -63,7 +62,7 @@ class HeadlessPermissionManager : public content::PermissionControllerDelegate {
       SubscriptionId subscription_id) override;
 
  private:
-  raw_ptr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
 };
 
 }  // namespace content

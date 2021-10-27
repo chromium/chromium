@@ -5,7 +5,6 @@
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/chrome_component_updater_configurator.h"
@@ -89,7 +88,7 @@ class ComponentUpdaterPolicyTest : public PolicyTest {
   std::unique_ptr<update_client::URLLoaderPostInterceptor> post_interceptor_;
 
   // This member is owned by g_browser_process;
-  raw_ptr<component_updater::ComponentUpdateService> cus_ = nullptr;
+  component_updater::ComponentUpdateService* cus_ = nullptr;
 
   net::EmbeddedTestServer https_server_;
 };

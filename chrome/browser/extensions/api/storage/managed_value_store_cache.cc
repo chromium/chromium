@@ -13,7 +13,6 @@
 #include "base/check_op.h"
 #include "base/files/file_util.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/one_shot_event.h"
 #include "base/scoped_observation.h"
@@ -103,11 +102,11 @@ class ManagedValueStoreCache::ExtensionTracker
       base::WeakPtr<ExtensionTracker> self);
   void Register(const policy::ComponentMap* components);
 
-  raw_ptr<Profile> profile_;
+  Profile* profile_;
   policy::PolicyDomain policy_domain_;
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
-  raw_ptr<policy::SchemaRegistry> schema_registry_;
+  policy::SchemaRegistry* schema_registry_;
   base::WeakPtrFactory<ExtensionTracker> weak_factory_{this};
 };
 

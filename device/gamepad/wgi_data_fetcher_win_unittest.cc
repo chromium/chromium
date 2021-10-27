@@ -4,7 +4,6 @@
 
 #include "device/gamepad/wgi_data_fetcher_win.h"
 
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/threading/thread.h"
 #include "base/win/scoped_hstring.h"
@@ -55,8 +54,8 @@ class WgiDataFetcherWinTest : public DeviceServiceTestBase {
   WgiDataFetcherWin& fetcher() const { return *fetcher_; }
 
  private:
-  raw_ptr<WgiDataFetcherWin> fetcher_;
-  raw_ptr<base::Thread> polling_thread_;
+  WgiDataFetcherWin* fetcher_;
+  base::Thread* polling_thread_;
   std::unique_ptr<GamepadProvider> provider_;
 };
 

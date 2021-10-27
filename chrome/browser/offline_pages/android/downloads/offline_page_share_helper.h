@@ -10,7 +10,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_items_collection/core/offline_item.h"
 #include "components/offline_pages/core/offline_page_types.h"
@@ -53,7 +52,7 @@ class OfflinePageShareHelper {
                         std::unique_ptr<OfflineItemShareInfo> share_info);
 
   // A keyed service, always valid.
-  raw_ptr<OfflinePageModel> model_;
+  OfflinePageModel* model_;
 
   ResultCallback result_cb_;
   ContentId content_id_;

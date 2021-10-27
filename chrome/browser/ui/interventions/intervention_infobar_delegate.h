@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_INTERVENTIONS_INTERVENTION_INFOBAR_DELEGATE_H_
 
 #include "base/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "components/infobars/core/infobar_delegate.h"
 
 class InterventionDelegate;
@@ -38,7 +37,7 @@ class InterventionInfoBarDelegate : public infobars::InfoBarDelegate {
   const infobars::InfoBarDelegate::InfoBarIdentifier identifier_;
 
   // Weak pointer, the delegate is guaranteed to outlive this object.
-  raw_ptr<InterventionDelegate> intervention_delegate_;
+  InterventionDelegate* intervention_delegate_;
 };
 
 #endif  // CHROME_BROWSER_UI_INTERVENTIONS_INTERVENTION_INFOBAR_DELEGATE_H_

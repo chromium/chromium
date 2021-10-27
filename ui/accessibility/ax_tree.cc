@@ -15,7 +15,6 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -246,7 +245,7 @@ struct PendingStructureChanges {
   // when the node is new and has not been initialized with node data yet.
   // This is needed to determine what children have changed between pending
   // updates.
-  raw_ptr<const AXNodeData> last_known_data;
+  const AXNodeData* last_known_data;
 };
 
 // Represents the different states when computing PendingStructureChanges
@@ -614,7 +613,7 @@ struct AXTree::OrderedSetContent {
   std::vector<const AXNode*> set_items_;
 
   // Some ordered set items may not be associated with an ordered set.
-  raw_ptr<const AXNode> ordered_set_;
+  const AXNode* ordered_set_;
 };
 
 struct AXTree::OrderedSetItemsMap {

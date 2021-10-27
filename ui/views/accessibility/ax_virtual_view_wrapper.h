@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "ui/views/accessibility/ax_aura_obj_cache.h"
 #include "ui/views/accessibility/ax_aura_obj_wrapper.h"
 #include "ui/views/views_export.h"
@@ -36,7 +35,7 @@ class AXVirtualViewWrapper : public AXAuraObjWrapper {
 
  private:
   // Weak.
-  raw_ptr<AXVirtualView> virtual_view_;
+  AXVirtualView* virtual_view_;
 };
 
 }  // namespace views

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/theme_profile_key.h"
 
-#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
@@ -19,7 +18,7 @@ class ProfileTracker : public ProfileObserver {
  public:
   explicit ProfileTracker(Profile* profile) : profile_(profile) {
     if (profile_)
-      observation_.Observe(profile_.get());
+      observation_.Observe(profile_);
   }
   ~ProfileTracker() override = default;
 
@@ -31,7 +30,7 @@ class ProfileTracker : public ProfileObserver {
   Profile* profile() { return profile_; }
 
  private:
-  raw_ptr<Profile> profile_;
+  Profile* profile_;
   base::ScopedObservation<Profile, ProfileObserver> observation_{this};
 };
 

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/extensions/extension_view_host.h"
 
-#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
@@ -50,7 +49,7 @@ class ExtensionViewHost::AssociatedWebContentsObserver
   }
 
  private:
-  raw_ptr<ExtensionViewHost> host_;
+  ExtensionViewHost* host_;
 };
 
 ExtensionViewHost::ExtensionViewHost(const Extension* extension,

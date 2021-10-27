@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "cc/resources/ui_resource_client.h"
 #include "ui/gfx/geometry/size.h"
@@ -87,7 +86,7 @@ class DecorationTitle {
   bool is_loading_;
   std::unique_ptr<gfx::Transform> transform_;
 
-  raw_ptr<ui::ResourceManager> resource_manager_;
+  ui::ResourceManager* resource_manager_;
 };
 
 }  // namespace android

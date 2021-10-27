@@ -9,7 +9,6 @@
 #include "base/check_op.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -246,13 +245,13 @@ class Callback : public cronet::test::TestUrlRequestCallback {
   int iterations_;
   int concurrency_;
   size_t length_;
-  raw_ptr<const std::string> url_;
-  raw_ptr<base::AtomicSequenceNumber> iterations_completed_;
+  const std::string* url_;
+  base::AtomicSequenceNumber* iterations_completed_;
   Cronet_EnginePtr engine_;
   Cronet_UrlRequestCallbackPtr callback_;
   Cronet_UploadDataProviderPtr cronet_upload_data_provider_ = nullptr;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  raw_ptr<base::RunLoop> run_loop_;
+  base::RunLoop* run_loop_;
   size_t buffer_size_;
   std::unique_ptr<UploadDataProvider> upload_data_provider_;
 };
@@ -398,7 +397,7 @@ class Benchmark {
   Cronet_EnginePtr engine_;
   const ExecutorType executor_;
   const Direction direction_;
-  const raw_ptr<base::DictionaryValue> results_;
+  base::DictionaryValue* const results_;
 };
 
 }  // namespace

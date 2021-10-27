@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/location.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
@@ -45,7 +44,7 @@ class SerialWorkerTest : public TestWithTaskEnvironment {
       }
 
      private:
-      raw_ptr<SerialWorkerTest> test_;
+      SerialWorkerTest* test_;
     };
 
     explicit TestSerialWorker(SerialWorkerTest* t) : test_(t) {}
@@ -62,7 +61,7 @@ class SerialWorkerTest : public TestWithTaskEnvironment {
     }
 
    private:
-    raw_ptr<SerialWorkerTest> test_;
+    SerialWorkerTest* test_;
   };
 
   SerialWorkerTest(const SerialWorkerTest&) = delete;
@@ -195,7 +194,7 @@ class SerialWorkerTest : public TestWithTaskEnvironment {
       std::make_unique<TestSerialWorker>(this);
 
   std::string breakpoint_;
-  raw_ptr<base::RunLoop> run_loop_ = nullptr;
+  base::RunLoop* run_loop_ = nullptr;
 
   bool followup_immediately_ = true;
   base::OnceClosure followup_closure_;

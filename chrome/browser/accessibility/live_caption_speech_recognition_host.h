@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
@@ -75,7 +74,7 @@ class LiveCaptionSpeechRecognitionHost
   // does not exist.
   LiveCaptionController* GetLiveCaptionController();
 
-  raw_ptr<content::RenderFrameHost> frame_host_;
+  content::RenderFrameHost* frame_host_;
 
   std::unique_ptr<CaptionBubbleContextBrowser> context_;
 };

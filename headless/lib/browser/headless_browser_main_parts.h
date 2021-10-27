@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_main_parts.h"
 #include "content/public/common/main_function_params.h"
@@ -77,7 +76,7 @@ class HEADLESS_EXPORT HeadlessBrowserMainParts
 #endif
 
   const content::MainFunctionParams parameters_;  // For running browser tests.
-  raw_ptr<HeadlessBrowserImpl> browser_;          // Not owned.
+  HeadlessBrowserImpl* browser_;  // Not owned.
 
 #if defined(HEADLESS_USE_POLICY)
   std::unique_ptr<policy::HeadlessBrowserPolicyConnector> policy_connector_;

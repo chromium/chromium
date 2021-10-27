@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -121,9 +120,9 @@ class VIEWS_EXPORT PrefixSelector : public ui::TextInputClient {
   // Clears |current_text_| and resets |time_of_last_key_|.
   void ClearText();
 
-  raw_ptr<PrefixDelegate> prefix_delegate_;
+  PrefixDelegate* prefix_delegate_;
 
-  raw_ptr<View> host_view_;
+  View* host_view_;
 
   // Time OnTextInput() was last invoked.
   base::TimeTicks time_of_last_key_;
@@ -132,7 +131,7 @@ class VIEWS_EXPORT PrefixSelector : public ui::TextInputClient {
 
   // TickClock used for getting the time of the current keystroke, used for
   // continuing or restarting selections.
-  raw_ptr<const base::TickClock> tick_clock_;
+  const base::TickClock* tick_clock_;
 };
 
 }  // namespace views

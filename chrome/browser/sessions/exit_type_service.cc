@@ -6,7 +6,6 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/exit_type_service_factory.h"
@@ -105,7 +104,7 @@ class ExitTypeService::BrowserTabObserverImpl : public BrowserListObserver,
   }
 
  private:
-  raw_ptr<ExitTypeService> service_;
+  ExitTypeService* service_;
 
   // Browsers whose TabStripModel this is observing.
   base::flat_set<Browser*> browsers_;

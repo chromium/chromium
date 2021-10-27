@@ -11,7 +11,6 @@
 
 #include "base/containers/flat_set.h"
 #include "base/location.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_observation.h"
 #include "base/task/single_thread_task_runner.h"
@@ -145,7 +144,7 @@ class BrowsingDataRemoverObserver
   const base::TimeTicks start_time_;
   const bool filterable_deletion_;
 
-  const raw_ptr<Profile> profile_;
+  Profile* const profile_;
   bool keep_browser_alive_;
 #if !defined(OS_ANDROID)
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
@@ -352,7 +351,7 @@ void ChromeBrowsingDataLifetimeManager::StartScheduledBrowsingDataRemoval() {
           base::Time::Min(), deletion_end_time, filterable_remove_mask,
           removal_settings.origin_type_mask, std::move(filter_builder),
           testing_data_remover_observer_
-              ? testing_data_remover_observer_.get()
+              ? testing_data_remover_observer_
               : BrowsingDataRemoverObserver::Create(
                     remover, /*filterable_deletion=*/true, profile_));
     }
@@ -365,7 +364,7 @@ void ChromeBrowsingDataLifetimeManager::StartScheduledBrowsingDataRemoval() {
           base::Time::Min(), deletion_end_time, unfilterable_remove_mask,
           removal_settings.origin_type_mask,
           testing_data_remover_observer_
-              ? testing_data_remover_observer_.get()
+              ? testing_data_remover_observer_
               : BrowsingDataRemoverObserver::Create(
                     remover, /*filterable_deletion=*/false, profile_));
     }

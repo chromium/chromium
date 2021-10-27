@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -78,7 +77,7 @@ class IconLabelBubbleView : public views::InkDropObserver,
 
    private:
     // Weak.
-    raw_ptr<IconLabelBubbleView> owner_;
+    IconLabelBubbleView* owner_;
   };
 
   IconLabelBubbleView(const gfx::FontList& font_list, Delegate* delegate);
@@ -235,10 +234,10 @@ class IconLabelBubbleView : public views::InkDropObserver,
   // Sets the border padding around this view.
   void UpdateBorder();
 
-  raw_ptr<Delegate> delegate_;
+  Delegate* delegate_;
 
   // The contents of the bubble.
-  raw_ptr<SeparatorView> separator_view_;
+  SeparatorView* separator_view_;
 
   // The padding of the element that will be displayed after |this|. This value
   // is relevant for calculating the amount of space to reserve after the
@@ -261,7 +260,7 @@ class IconLabelBubbleView : public views::InkDropObserver,
 
   // Virtual view, used for announcing changes to the state of this view. A
   // virtual child of this view.
-  raw_ptr<views::AXVirtualView> alert_virtual_view_;
+  views::AXVirtualView* alert_virtual_view_;
 
   base::CallbackListSubscription subscription_ =
       ui::TouchUiController::Get()->RegisterCallback(

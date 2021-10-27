@@ -18,7 +18,6 @@
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
-#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "media/base/byte_queue.h"
@@ -514,13 +513,13 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
   State state_;
   bool cancel_next_seek_;
 
-  raw_ptr<DemuxerHost> host_;
+  DemuxerHost* host_;
   base::OnceClosure open_cb_;
   const base::RepeatingClosure progress_cb_;
   EncryptedMediaInitDataCB encrypted_media_init_data_cb_;
 
   // MediaLog for reporting messages and properties to debug content and engine.
-  raw_ptr<MediaLog> media_log_;
+  MediaLog* media_log_;
 
   PipelineStatusCallback init_cb_;
   // Callback to execute upon seek completion.

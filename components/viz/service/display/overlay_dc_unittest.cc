@@ -661,7 +661,7 @@ TEST_F(DCLayerOverlayTest, RoundedCorners) {
 
     auto* root_pass = pass_list.back().get();
     auto* replaced_quad = root_pass->quad_list.back();
-    auto* replaced_sqs = replaced_quad->shared_quad_state.get();
+    auto* replaced_sqs = replaced_quad->shared_quad_state;
 
     // The video should be forced to an underlay mode, even there is nothing on
     // top.
@@ -719,7 +719,7 @@ TEST_F(DCLayerOverlayTest, RoundedCorners) {
 
     auto* root_pass = pass_list.back().get();
     auto* replaced_quad = root_pass->quad_list.back();
-    auto* replaced_sqs = replaced_quad->shared_quad_state.get();
+    auto* replaced_sqs = replaced_quad->shared_quad_state;
 
     // still in an underlay mode.
     EXPECT_EQ(1U, dc_layer_list.size());
@@ -777,7 +777,7 @@ TEST_F(DCLayerOverlayTest, RoundedCorners) {
 
     auto* root_pass = pass_list.back().get();
     auto* replaced_quad = root_pass->quad_list.back();
-    auto* replaced_sqs = replaced_quad->shared_quad_state.get();
+    auto* replaced_sqs = replaced_quad->shared_quad_state;
 
     // still in an underlay mode.
     EXPECT_EQ(1U, dc_layer_list.size());

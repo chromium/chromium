@@ -8,7 +8,6 @@
 
 #include "base/guid.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/sharing/fake_device_info.h"
@@ -67,7 +66,7 @@ class ClickToCallUiControllerTest : public testing::Test {
   content::RenderViewHostTestEnabler test_render_host_factories_;
   TestingProfile profile_;
   std::unique_ptr<content::WebContents> web_contents_;
-  raw_ptr<ClickToCallUiController> controller_ = nullptr;
+  ClickToCallUiController* controller_ = nullptr;
 };
 }  // namespace
 

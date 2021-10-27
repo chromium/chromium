@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/time/default_tick_clock.h"
 #include "base/unguessable_token.h"
 #include "media/base/demuxer_stream.h"
@@ -121,14 +120,14 @@ class MojoRenderer : public Renderer, public mojom::RendererClient {
 
   // Video frame overlays are rendered onto this sink.
   // Rendering of a new overlay is only needed when video natural size changes.
-  raw_ptr<VideoRendererSink> video_renderer_sink_ = nullptr;
+  VideoRendererSink* video_renderer_sink_ = nullptr;
 
   // Provider of audio/video DemuxerStreams. Must be valid throughout the
   // lifetime of |this|.
-  raw_ptr<MediaResource> media_resource_ = nullptr;
+  MediaResource* media_resource_ = nullptr;
 
   // Client of |this| renderer passed in Initialize.
-  raw_ptr<media::RendererClient> client_ = nullptr;
+  media::RendererClient* client_ = nullptr;
 
   // Mojo demuxer streams.
   // Owned by MojoRenderer instead of remote mojom::Renderer

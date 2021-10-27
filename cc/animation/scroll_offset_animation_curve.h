@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "cc/animation/animation_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -164,7 +163,7 @@ class CC_ANIMATION_EXPORT ScrollOffsetAnimationCurve
 
   static absl::optional<double> animation_duration_for_testing_;
 
-  raw_ptr<Target> target_ = nullptr;
+  Target* target_ = nullptr;
 };
 
 }  // namespace cc

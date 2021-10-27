@@ -4,7 +4,6 @@
 
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/supports_user_data.h"
@@ -53,8 +52,8 @@ class BrowserTabRestorer : public sessions::TabRestoreServiceObserver,
   // BrowserListObserver:
   void OnBrowserRemoved(Browser* browser) override;
 
-  raw_ptr<Browser> browser_;
-  raw_ptr<sessions::TabRestoreService> tab_restore_service_;
+  Browser* browser_;
+  sessions::TabRestoreService* tab_restore_service_;
 };
 
 BrowserTabRestorer::~BrowserTabRestorer() {

@@ -16,7 +16,6 @@
 #include "base/base_export.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/process/process.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -119,10 +118,10 @@ class BASE_EXPORT ProcessIterator {
   std::vector<kinfo_proc> kinfo_procs_;
   size_t index_of_kinfo_proc_;
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
-  raw_ptr<DIR> procfs_dir_;
+  DIR* procfs_dir_;
 #endif
   ProcessEntry entry_;
-  raw_ptr<const ProcessFilter> filter_;
+  const ProcessFilter* filter_;
 };
 
 // This class provides a way to iterate through the list of processes

@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -35,7 +34,7 @@ class PostTaskAndReplyTaskRunner : public internal::PostTaskAndReplyImpl {
   }
 
   // Non-owning.
-  const raw_ptr<TaskRunner> destination_;
+  TaskRunner* const destination_;
 };
 
 class ObjectToDelete : public RefCounted<ObjectToDelete> {
@@ -52,7 +51,7 @@ class ObjectToDelete : public RefCounted<ObjectToDelete> {
   friend class RefCounted<ObjectToDelete>;
   ~ObjectToDelete() { *delete_flag_ = true; }
 
-  const raw_ptr<bool> delete_flag_;
+  bool* const delete_flag_;
 };
 
 class MockObject {

@@ -9,7 +9,6 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/proxy_delegate.h"
@@ -86,7 +85,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyDelegate
   mojo::Receiver<mojom::CustomProxyConfigClient> receiver_;
   mojo::Remote<mojom::CustomProxyConnectionObserver> observer_;
 
-  raw_ptr<net::ProxyResolutionService> proxy_resolution_service_ = nullptr;
+  net::ProxyResolutionService* proxy_resolution_service_ = nullptr;
 };
 
 }  // namespace network

@@ -15,7 +15,6 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -136,7 +135,7 @@ class WtsSessionProcessDelegate::Core
   // Security descriptor (as SDDL) to be applied to |channel_|.
   const std::string channel_security_;
 
-  raw_ptr<WorkerProcessLauncher> event_handler_ = nullptr;
+  WorkerProcessLauncher* event_handler_ = nullptr;
 
   // The job object used to control the lifetime of child processes.
   base::win::ScopedHandle job_;

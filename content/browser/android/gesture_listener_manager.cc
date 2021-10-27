@@ -4,7 +4,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "content/browser/android/gesture_listener_manager.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_contents/web_contents_view_android.h"
@@ -81,7 +80,7 @@ class GestureListenerManager::ResetScrollObserver : public WebContentsObserver {
       base::TerminationStatus status) override;
 
  private:
-  const raw_ptr<GestureListenerManager> manager_;
+  GestureListenerManager* const manager_;
   DISALLOW_COPY_AND_ASSIGN(ResetScrollObserver);
 };
 

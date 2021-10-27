@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "remoting/protocol/clipboard_stub.h"
 
 namespace remoting {
@@ -48,7 +47,7 @@ class ClipboardEchoFilter {
     void InjectClipboardEvent(const ClipboardEvent& event) override;
 
    private:
-    raw_ptr<ClipboardEchoFilter> filter_;
+    ClipboardEchoFilter* filter_;
   };
 
   class HostFilter : public ClipboardStub {
@@ -57,14 +56,14 @@ class ClipboardEchoFilter {
     void InjectClipboardEvent(const ClipboardEvent& event) override;
 
    private:
-    raw_ptr<ClipboardEchoFilter> filter_;
+    ClipboardEchoFilter* filter_;
   };
 
   void InjectClipboardEventToHost(const ClipboardEvent& event);
   void InjectClipboardEventToClient(const ClipboardEvent& event);
 
-  raw_ptr<ClipboardStub> host_stub_;
-  raw_ptr<ClipboardStub> client_stub_;
+  ClipboardStub* host_stub_;
+  ClipboardStub* client_stub_;
   ClientFilter client_filter_;
   HostFilter host_filter_;
 

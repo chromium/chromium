@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -859,7 +858,7 @@ TEST_F(BidderWorkletTest, GenerateBidBasicInputParameters) {
     const char* name;
     bool is_json;
     // Pointer to location at which the string can be modified.
-    raw_ptr<std::string> value_ptr;
+    std::string* value_ptr;
   } kStringTestCases[] = {
       {
           "interestGroup.name",
@@ -982,7 +981,7 @@ TEST_F(BidderWorkletTest, GenerateBidBasicInputParameters) {
     // String used in JS to access the parameter.
     const char* name;
     // Pointer to location at which the integer can be modified.
-    raw_ptr<int> value_ptr;
+    int* value_ptr;
   } kIntegerTestCases[] = {
       {"browserSignals.joinCount", &browser_signal_join_count_},
       {"browserSignals.bidCount", &browser_signal_bid_count_}};
@@ -1364,7 +1363,7 @@ TEST_F(BidderWorkletTest, ReportWinParameters) {
     bool passed_to_generate_bid;
 
     // Pointer to location at which the string can be modified.
-    raw_ptr<std::string> value_ptr;
+    std::string* value_ptr;
 
     // What error(s) to expect, if any. This can be empty when call fails in
     // case it's due to something like passing non-JSON to JSON parameter which

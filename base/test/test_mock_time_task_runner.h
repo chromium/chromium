@@ -15,7 +15,6 @@
 #include "base/callback_helpers.h"
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
@@ -246,7 +245,7 @@ class TestMockTimeTaskRunner : public SingleThreadTaskRunner,
     Time Now() const override;
 
    private:
-    raw_ptr<TestMockTimeTaskRunner> task_runner_;
+    TestMockTimeTaskRunner* task_runner_;
   };
 
   struct TestOrderedPendingTask;

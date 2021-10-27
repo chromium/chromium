@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SCHEDULER_MODEL_EXECUTION_SCHEDULER_IMPL_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SCHEDULER_MODEL_EXECUTION_SCHEDULER_IMPL_H_
 
-#include "base/memory/raw_ptr.h"
 #include "components/segmentation_platform/internal/scheduler/model_execution_scheduler.h"
 
 #include "base/cancelable_callback.h"
@@ -67,16 +66,16 @@ class ModelExecutionSchedulerImpl : public ModelExecutionScheduler {
   std::vector<Observer*> observers_;
 
   // The database storing metadata and results.
-  raw_ptr<SegmentInfoDatabase> segment_database_;
+  SegmentInfoDatabase* segment_database_;
 
   // Used for confirming if the signals have been collected long enough.
-  raw_ptr<SignalStorageConfig> signal_storage_config_;
+  SignalStorageConfig* signal_storage_config_;
 
   // The class that executes the models.
-  raw_ptr<ModelExecutionManager> model_execution_manager_;
+  ModelExecutionManager* model_execution_manager_;
 
   // The time provider.
-  raw_ptr<base::Clock> clock_;
+  base::Clock* clock_;
 
   const PlatformOptions platform_options_;
 

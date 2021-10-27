@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -183,7 +182,7 @@ class NET_EXPORT_PRIVATE DhcpPacFileFetcherWin
 
   // Pointer to string we will write results to. Not valid in states
   // START and DONE.
-  raw_ptr<std::u16string> destination_string_;
+  std::u16string* destination_string_;
 
   // PAC URL retrieved from DHCP, if any. Valid only in state STATE_DONE.
   GURL pac_url_;
@@ -191,7 +190,7 @@ class NET_EXPORT_PRIVATE DhcpPacFileFetcherWin
   base::OneShotTimer wait_timer_;
 
   // Set to nullptr on cancellation.
-  raw_ptr<URLRequestContext> url_request_context_;
+  URLRequestContext* url_request_context_;
 
   // NULL or the AdapterQuery currently in flight.
   scoped_refptr<AdapterQuery> last_query_;

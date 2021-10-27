@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/win/iat_patch_function.h"
 #include "base/win/pe_image.h"
 #include "base/win/scoped_handle.h"
@@ -87,7 +86,7 @@ class AutoProtectMemory {
 
  private:
   bool changed_;
-  raw_ptr<void> address_;
+  void* address_;
   size_t bytes_;
   DWORD old_protect_;
 };

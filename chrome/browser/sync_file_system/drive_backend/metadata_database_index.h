@@ -18,7 +18,6 @@
 
 #include "base/hash/hash.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/sync_file_system/drive_backend/metadata_database_index_interface.h"
 #include "chrome/browser/sync_file_system/drive_backend/tracker_id_set.h"
 
@@ -150,7 +149,7 @@ class MetadataDatabaseIndex : public MetadataDatabaseIndexInterface {
   void RemoveFromDirtyTrackerIndexes(const FileTracker& tracker);
 
   std::unique_ptr<ServiceMetadata> service_metadata_;
-  raw_ptr<LevelDBWrapper> db_;  // Not owned
+  LevelDBWrapper* db_;  // Not owned
 
   MetadataByID metadata_by_id_;
   TrackerByID tracker_by_id_;

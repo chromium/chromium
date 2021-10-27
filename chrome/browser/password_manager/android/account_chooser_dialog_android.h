@@ -11,7 +11,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/passwords/manage_passwords_state.h"
 #include "components/device_reauth/biometric_authenticator.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -84,10 +83,10 @@ class AccountChooserDialogAndroid : public content::WebContentsObserver {
   void LogAction(
       password_manager::metrics_util::AccountChooserUserAction action);
 
-  raw_ptr<content::WebContents> web_contents_ = nullptr;
+  content::WebContents* web_contents_ = nullptr;
 
   // Client used to retrieve the biometric authenticator.
-  raw_ptr<password_manager::PasswordManagerClient> client_ = nullptr;
+  password_manager::PasswordManagerClient* client_ = nullptr;
 
   // Authenticator used to trigger a biometric re-auth before passing the
   // credential to the site.

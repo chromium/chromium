@@ -20,7 +20,6 @@
 #include "base/cancelable_callback.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -112,15 +111,15 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
     InitParams(InitParams&&);
     InitParams& operator=(InitParams&&);
 
-    raw_ptr<LayerTreeHostClient> client = nullptr;
-    raw_ptr<LayerTreeHostSchedulingClient> scheduling_client = nullptr;
-    raw_ptr<TaskGraphRunner> task_graph_runner = nullptr;
-    raw_ptr<const LayerTreeSettings> settings = nullptr;
+    LayerTreeHostClient* client = nullptr;
+    LayerTreeHostSchedulingClient* scheduling_client = nullptr;
+    TaskGraphRunner* task_graph_runner = nullptr;
+    LayerTreeSettings const* settings = nullptr;
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner;
-    raw_ptr<MutatorHost> mutator_host = nullptr;
-    raw_ptr<RasterDarkModeFilter> dark_mode_filter = nullptr;
-    raw_ptr<gfx::RenderingPipeline> main_thread_pipeline = nullptr;
-    raw_ptr<gfx::RenderingPipeline> compositor_thread_pipeline = nullptr;
+    MutatorHost* mutator_host = nullptr;
+    RasterDarkModeFilter* dark_mode_filter = nullptr;
+    gfx::RenderingPipeline* main_thread_pipeline = nullptr;
+    gfx::RenderingPipeline* compositor_thread_pipeline = nullptr;
 
     // The image worker task runner is used to schedule image decodes. The
     // compositor thread may make sync calls to this thread, analogous to the
@@ -847,8 +846,8 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   std::unique_ptr<UIResourceManager> ui_resource_manager_;
 
-  raw_ptr<LayerTreeHostClient> client_;
-  raw_ptr<LayerTreeHostSchedulingClient> scheduling_client_;
+  LayerTreeHostClient* client_;
+  LayerTreeHostSchedulingClient* scheduling_client_;
   std::unique_ptr<Proxy> proxy_;
   std::unique_ptr<TaskRunnerProvider> task_runner_provider_;
 
@@ -885,9 +884,9 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   bool inside_main_frame_ = false;
 
   // State cached until impl side is initialized.
-  raw_ptr<TaskGraphRunner> task_graph_runner_;
-  raw_ptr<gfx::RenderingPipeline> main_thread_pipeline_;
-  raw_ptr<gfx::RenderingPipeline> compositor_thread_pipeline_;
+  TaskGraphRunner* task_graph_runner_;
+  gfx::RenderingPipeline* main_thread_pipeline_;
+  gfx::RenderingPipeline* compositor_thread_pipeline_;
 
   uint32_t num_consecutive_frames_without_slow_paths_ = 0;
 
@@ -979,9 +978,9 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // for every layer during property tree building.
   bool has_copy_request_ = false;
 
-  raw_ptr<MutatorHost> mutator_host_;
+  MutatorHost* mutator_host_;
 
-  raw_ptr<RasterDarkModeFilter> dark_mode_filter_;
+  RasterDarkModeFilter* dark_mode_filter_;
 
   std::vector<std::pair<PaintImage, base::OnceCallback<void(bool)>>>
       queued_image_decodes_;

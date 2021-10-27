@@ -11,7 +11,6 @@
 
 #include "base/barrier_closure.h"
 #include "base/containers/flat_set.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 
@@ -75,7 +74,7 @@ class GetLoginsWithAffiliationsRequestHandler
 
   base::WeakPtr<PasswordStoreConsumer> consumer_;
 
-  raw_ptr<PasswordStoreInterface> store_;
+  PasswordStoreInterface* store_;
 
   // Closure which is released after being called 2 times.
   base::RepeatingClosure forms_received_;

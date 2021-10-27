@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/cxx17_backports.h"
-#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/test/test_layout_manager.h"
 #include "ui/views/test/test_views.h"
@@ -347,7 +346,7 @@ class LayoutManagerBaseManagerTest : public testing::Test {
 
  private:
   std::unique_ptr<View> host_view_;
-  raw_ptr<MockLayoutManagerBase> layout_manager_;
+  MockLayoutManagerBase* layout_manager_;
 };
 
 }  // namespace
@@ -662,7 +661,7 @@ class LayoutManagerBaseAvailableSizeTest : public testing::Test {
 
  private:
   std::unique_ptr<View> view_;
-  raw_ptr<TestLayoutManagerBase> layout_;
+  TestLayoutManagerBase* layout_;
 };
 
 TEST_F(LayoutManagerBaseAvailableSizeTest, ReturnsCorrectValues) {

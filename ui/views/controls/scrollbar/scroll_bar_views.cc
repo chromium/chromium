@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -43,7 +42,7 @@ class ScrollBarThumb : public BaseScrollBarThumb {
   ui::NativeTheme::Part GetNativeThemePart() const;
   ui::NativeTheme::State GetNativeThemeState() const;
 
-  raw_ptr<ScrollBar> scroll_bar_;
+  ScrollBar* scroll_bar_;
 };
 
 ScrollBarThumb::ScrollBarThumb(ScrollBar* scroll_bar)

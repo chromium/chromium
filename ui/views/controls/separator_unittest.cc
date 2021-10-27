@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/border.h"
@@ -33,7 +32,7 @@ class SeparatorTest : public ViewsTestBase {
   void ExpectDrawAtLeastOnePixel(float image_scale);
 
   std::unique_ptr<Widget> widget_;
-  raw_ptr<Separator> separator_;
+  Separator* separator_;
 
   static const SkColor kBackgroundColor;
   static const SkColor kForegroundColor;

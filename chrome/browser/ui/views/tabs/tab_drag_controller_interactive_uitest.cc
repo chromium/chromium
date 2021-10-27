@@ -20,7 +20,6 @@
 #include "base/dcheck_is_on.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -1508,7 +1507,7 @@ class CaptureLoseWindowFinder : public WindowFinder {
   }
 
  private:
-  raw_ptr<TabStrip> tab_strip_;
+  TabStrip* tab_strip_;
 };
 
 }  // namespace
@@ -1590,7 +1589,7 @@ class MaximizedBrowserWindowWaiter {
   }
 
   // The browser window observed by this waiter.
-  raw_ptr<BrowserWindow> window_;
+  BrowserWindow* window_;
 
   // The waiter's RunLoop quit closure.
   base::RepeatingClosure quit_;

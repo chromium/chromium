@@ -14,7 +14,6 @@
 #include "base/cancelable_callback.h"
 #include "base/command_line.h"
 #include "base/location.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
@@ -327,7 +326,7 @@ class FullStreamUIPolicyTest : public testing::Test {
   }
 
  protected:
-  raw_ptr<ExtensionService> extension_service_;
+  ExtensionService* extension_service_;
   std::unique_ptr<TestingProfile> profile_;
   content::BrowserTaskEnvironment task_environment_;
 

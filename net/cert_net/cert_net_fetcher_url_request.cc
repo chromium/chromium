@@ -67,7 +67,6 @@
 #include "base/check_op.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_math.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
@@ -164,7 +163,7 @@ class CertNetFetcherURLRequest::AsyncCertNetFetcherURLRequest {
   JobSet jobs_;
 
   // Not owned. |context_| must outlive the AsyncCertNetFetcherURLRequest.
-  raw_ptr<URLRequestContext> context_ = nullptr;
+  URLRequestContext* context_ = nullptr;
 
   THREAD_CHECKER(thread_checker_);
 };
@@ -271,7 +270,7 @@ class CertNetFetcherURLRequest::RequestCore
   }
 
   // A non-owned pointer to the job that is executing the request.
-  raw_ptr<Job> job_ = nullptr;
+  Job* job_ = nullptr;
 
   // May be written to from network thread, or from the caller thread only when
   // there is no work that will be done on the network thread (e.g. when the
@@ -404,7 +403,7 @@ class Job : public URLRequest::Delegate {
 
   // Non-owned pointer to the AsyncCertNetFetcherURLRequest that created this
   // job.
-  raw_ptr<CertNetFetcherURLRequest::AsyncCertNetFetcherURLRequest> parent_;
+  CertNetFetcherURLRequest::AsyncCertNetFetcherURLRequest* parent_;
 };
 
 }  // namespace
@@ -417,7 +416,7 @@ void CertNetFetcherURLRequest::RequestCore::CancelJob() {
   }
 
   if (job_) {
-    auto* job = job_.get();
+    auto* job = job_;
     job_ = nullptr;
     job->DetachRequest(this);
   }

@@ -15,7 +15,6 @@
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -187,9 +186,9 @@ class DownloadRequestLimiter
     // state.
     bool shouldClearDownloadState(content::NavigationHandle* navigation_handle);
 
-    raw_ptr<content::WebContents> web_contents_;
+    content::WebContents* web_contents_;
 
-    raw_ptr<DownloadRequestLimiter> host_;
+    DownloadRequestLimiter* host_;
 
     // Current tab status and UI status. Renderer initiated navigations will
     // not change these values if the current tab state is restricted.

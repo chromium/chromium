@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/ui/payments/payments_bubble_closed_reasons.h"
 #include "content/public/browser/web_contents.h"
@@ -83,8 +82,8 @@ class ProgressBarWithTextView : public views::View {
   void OnThemeChanged() override;
   void AddedToWidget() override;
 
-  raw_ptr<views::Label> progress_label_ = nullptr;
-  raw_ptr<views::Throbber> progress_throbber_ = nullptr;
+  views::Label* progress_label_ = nullptr;
+  views::Throbber* progress_throbber_ = nullptr;
 };
 
 }  // namespace autofill

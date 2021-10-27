@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
@@ -202,9 +201,9 @@ class PacedSender final : public PacedPacketSender {
   bool IsHighPriority(const PacketKey& packet_key) const;
 
   // These are externally-owned objects injected via the constructor.
-  const raw_ptr<const base::TickClock> clock_;
-  const raw_ptr<std::vector<PacketEvent>> recent_packet_events_;
-  const raw_ptr<PacketTransport> transport_;
+  const base::TickClock* const clock_;
+  std::vector<PacketEvent>* const recent_packet_events_;
+  PacketTransport* const transport_;
 
   scoped_refptr<base::SingleThreadTaskRunner> transport_task_runner_;
 

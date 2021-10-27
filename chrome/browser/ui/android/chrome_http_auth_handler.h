@@ -11,7 +11,6 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/login/login_handler.h"
 #include "components/password_manager/core/browser/http_auth_observer.h"
 
@@ -73,14 +72,14 @@ class ChromeHttpAuthHandler : public password_manager::HttpAuthObserver {
       const base::android::JavaParamRef<jobject>&);
 
  private:
-  raw_ptr<LoginHandler> observer_;
+  LoginHandler* observer_;
   base::android::ScopedJavaGlobalRef<jobject> java_chrome_http_auth_handler_;
   std::u16string authority_;
   std::u16string explanation_;
 
   // If not null, points to a model we need to notify of our own destruction
   // so it doesn't try and access this when its too late.
-  raw_ptr<password_manager::HttpAuthManager> auth_manager_;
+  password_manager::HttpAuthManager* auth_manager_;
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_CHROME_HTTP_AUTH_HANDLER_H_

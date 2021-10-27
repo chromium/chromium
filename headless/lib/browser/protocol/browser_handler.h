@@ -5,7 +5,6 @@
 #ifndef HEADLESS_LIB_BROWSER_PROTOCOL_BROWSER_HANDLER_H_
 #define HEADLESS_LIB_BROWSER_PROTOCOL_BROWSER_HANDLER_H_
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "headless/lib/browser/protocol/domain_handler.h"
 #include "headless/lib/browser/protocol/dp_browser.h"
@@ -42,7 +41,7 @@ class BrowserHandler : public DomainHandler, public Browser::Backend {
   Response SetDockTile(Maybe<std::string> label, Maybe<Binary> image) override;
 
  private:
-  raw_ptr<HeadlessBrowserImpl> browser_;
+  HeadlessBrowserImpl* browser_;
   std::string target_id_;
 };
 

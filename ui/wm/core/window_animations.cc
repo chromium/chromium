@@ -15,7 +15,6 @@
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
@@ -138,7 +137,7 @@ class HidingWindowAnimationObserverBase : public aura::WindowObserver {
     window_ = nullptr;
   }
 
-  raw_ptr<aura::Window> window_;
+  aura::Window* window_;
 
   // The owner of detached layers.
   std::unique_ptr<ui::LayerTreeOwner> layer_owner_;

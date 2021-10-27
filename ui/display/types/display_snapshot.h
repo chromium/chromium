@@ -13,7 +13,6 @@
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/types/display_mode.h"
@@ -225,10 +224,10 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
   std::vector<uint8_t> edid_;
 
   // Mode currently being used by the output.
-  raw_ptr<const DisplayMode> current_mode_;
+  const DisplayMode* current_mode_;
 
   // "Best" mode supported by the output.
-  const raw_ptr<const DisplayMode> native_mode_;
+  const DisplayMode* const native_mode_;
 
   // Combination of manufacturer id and product id.
   const int64_t product_code_;

@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "build/build_config.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
@@ -406,12 +405,12 @@ class ContentAutofillDriver : public AutofillDriver,
 
   // Weak ref to the RenderFrameHost the driver is associated with. Should
   // always be non-NULL and valid for lifetime of |this|.
-  const raw_ptr<content::RenderFrameHost> render_frame_host_ = nullptr;
+  content::RenderFrameHost* const render_frame_host_ = nullptr;
 
   // Weak ref to the AutofillRouter associated with the WebContents. Please
   // access this via GetAutofillRouter() above as it also confirms that the
   // router may be accessed.
-  raw_ptr<ContentAutofillRouter> autofill_router_ = nullptr;
+  ContentAutofillRouter* autofill_router_ = nullptr;
 
   // The form pushed from the AutofillAgent to the AutofillDriver. When the
   // ProbablyFormSubmitted() event is fired, this form is considered the
@@ -429,14 +428,14 @@ class ContentAutofillDriver : public AutofillDriver,
   // The pointer to autofill_manager_ if it is BrowserAutofillManager instance.
   // TODO: unify autofill_manager_ and browser_autofill_manager_ to a single
   // pointer to a common root.
-  raw_ptr<BrowserAutofillManager> browser_autofill_manager_;
+  BrowserAutofillManager* browser_autofill_manager_;
 
   // Pointer to an implementation of InternalAuthenticator.
   std::unique_ptr<webauthn::InternalAuthenticator> authenticator_impl_;
 
   content::RenderWidgetHost::KeyPressEventCallback key_press_handler_;
 
-  const raw_ptr<LogManager> log_manager_;
+  LogManager* const log_manager_;
 
   mojo::AssociatedReceiver<mojom::AutofillDriver> receiver_{this};
 

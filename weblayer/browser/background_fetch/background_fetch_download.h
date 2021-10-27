@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "weblayer/browser/download_impl.h"
 
 namespace background_fetch {
@@ -49,10 +48,10 @@ class BackgroundFetchDownload : public DownloadImpl {
   void OnFinished(bool activated) override;
 
  private:
-  raw_ptr<BackgroundFetchDelegateImpl> controller_;
+  BackgroundFetchDelegateImpl* controller_;
   std::string job_id_;
   int notification_id_ = 0;
-  raw_ptr<const background_fetch::JobDetails> job_;
+  const background_fetch::JobDetails* job_;
 };
 
 }  // namespace weblayer

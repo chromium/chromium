@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "content/public/browser/service_worker_context.h"
 #include "url/gurl.h"
@@ -53,7 +52,7 @@ class ServiceWorkerHelper
   virtual ~ServiceWorkerHelper();
 
   // Owned by the profile.
-  raw_ptr<content::ServiceWorkerContext> service_worker_context_;
+  content::ServiceWorkerContext* service_worker_context_;
 
  private:
   friend class base::RefCountedThreadSafe<ServiceWorkerHelper>;

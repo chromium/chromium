@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/memory/raw_ptr.h"
 #include "gpu/gpu_export.h"
 
 namespace gpu {
@@ -48,7 +47,7 @@ class GPU_EXPORT TextureBase {
   void DeleteFromMailboxManager();
 
  private:
-  raw_ptr<MailboxManager> mailbox_manager_;
+  MailboxManager* mailbox_manager_;
 };
 
 }  // namespace gpu

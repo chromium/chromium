@@ -280,7 +280,7 @@ void ProfilePickerDiceSignInProvider::OnProfileCreated(
       base::BindOnce(&ProfilePickerDiceSignInToolbar::SetVisible,
                      // Unretained is enough as the callback is
                      // called by the owner of the toolbar.
-                     base::Unretained(toolbar_.get()), /*visible=*/true));
+                     base::Unretained(toolbar_), /*visible=*/true));
 }
 
 bool ProfilePickerDiceSignInProvider::IsInitialized() const {
@@ -293,5 +293,5 @@ void ProfilePickerDiceSignInProvider::FinishFlow(bool is_saml) {
   // Stop the sign-in: hide and clear the toolbar.
   toolbar_->ClearToolbar();
   toolbar_->SetVisible(false);
-  std::move(callback_).Run(profile_.get(), std::move(contents_), is_saml);
+  std::move(callback_).Run(profile_, std::move(contents_), is_saml);
 }

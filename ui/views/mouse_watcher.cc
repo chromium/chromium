@@ -10,7 +10,6 @@
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -94,7 +93,7 @@ class MouseWatcher::Observer : public ui::EventObserver {
   }
 
  private:
-  raw_ptr<MouseWatcher> mouse_watcher_;
+  MouseWatcher* mouse_watcher_;
   std::unique_ptr<views::EventMonitor> event_monitor_;
 
   // A factory that is used to construct a delayed callback to the listener.

@@ -6,7 +6,6 @@
 #define UI_VIEWS_EXAMPLES_AX_EXAMPLE_H_
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "ui/views/examples/example_base.h"
 
 namespace views {
@@ -29,7 +28,7 @@ class VIEWS_EXAMPLES_EXPORT AxExample : public ExampleBase {
   void CreateExampleView(View* container) override;
 
  private:
-  raw_ptr<Button> announce_button_ = nullptr;
+  Button* announce_button_ = nullptr;
 };
 
 }  // namespace examples

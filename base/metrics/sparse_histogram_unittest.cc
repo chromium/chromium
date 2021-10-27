@@ -10,7 +10,6 @@
 
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_samples.h"
@@ -94,7 +93,7 @@ class SparseHistogramTest : public testing::TestWithParam<bool> {
   const bool use_persistent_histogram_allocator_;
 
   std::unique_ptr<StatisticsRecorder> statistics_recorder_;
-  raw_ptr<PersistentMemoryAllocator> allocator_ = nullptr;
+  PersistentMemoryAllocator* allocator_ = nullptr;
 };
 
 // Run all HistogramTest cases with both heap and persistent memory.

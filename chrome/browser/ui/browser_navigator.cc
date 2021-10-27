@@ -11,7 +11,6 @@
 
 #include "base/command_line.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -408,8 +407,8 @@ class ScopedBrowserShower {
   }
 
  private:
-  raw_ptr<NavigateParams> params_;
-  raw_ptr<content::WebContents*> contents_;
+  NavigateParams* params_;
+  content::WebContents** contents_;
 };
 
 std::unique_ptr<content::WebContents> CreateTargetContents(

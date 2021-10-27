@@ -5,7 +5,6 @@
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 
 #include "base/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -493,7 +492,7 @@ class RenderViewContextMenuPrefsTest : public ChromeRenderViewHostTestHarness {
 
  private:
   std::unique_ptr<ProtocolHandlerRegistry> registry_;
-  raw_ptr<TemplateURLService> template_url_service_;
+  TemplateURLService* template_url_service_;
 };
 
 // Verifies when Incognito Mode is not available (disabled by policy),

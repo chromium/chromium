@@ -13,7 +13,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -146,7 +145,7 @@ class LayerTranslationAnimationNotifier : public ui::CompositorObserver {
 
  private:
   // The layer to be animated.
-  const raw_ptr<ui::Layer> animation_layer_;
+  ui::Layer* const animation_layer_;
 
   // The initial transform.
   gfx::Transform initial_transform_;
@@ -176,7 +175,7 @@ class DeletionTestProperty {
   ~DeletionTestProperty() { tracker_->PropertyDeleted(); }
 
  private:
-  raw_ptr<DeletionTracker> tracker_;
+  DeletionTracker* tracker_;
 };
 
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(DeletionTestProperty,
@@ -274,7 +273,7 @@ class ChildWindowDelegateImpl : public DestroyTrackingDelegateImpl {
   }
 
  private:
-  raw_ptr<DestroyTrackingDelegateImpl> parent_delegate_;
+  DestroyTrackingDelegateImpl* parent_delegate_;
 };
 
 // Used to verify that a Window is removed from its parent when
@@ -293,7 +292,7 @@ class DestroyOrphanDelegate : public TestWindowDelegate {
   }
 
  private:
-  raw_ptr<Window> window_;
+  Window* window_;
 };
 
 // Used in verifying mouse capture.
@@ -1904,7 +1903,7 @@ class DeletionTestLayoutManager : public LayoutManager {
   void SetChildBounds(Window* child,
                       const gfx::Rect& requested_bounds) override {}
 
-  raw_ptr<DeletionTracker> tracker_;
+  DeletionTracker* tracker_;
 };
 
 TEST_F(WindowTest, DeleteLayoutManagerBeforeOwnedProps) {
@@ -2149,7 +2148,7 @@ class WindowObserverTest : public WindowTest,
   int removed_count_ = 0;
   int destroyed_count_ = 0;
   std::unique_ptr<VisibilityInfo> visibility_info_;
-  raw_ptr<const void> property_key_ = nullptr;
+  const void* property_key_ = nullptr;
   intptr_t old_property_value_ = -3;
   std::vector<std::pair<int, int> > transform_notifications_;
   WindowBoundsInfo window_bounds_info_;
@@ -3006,8 +3005,8 @@ class DeleteOnVisibilityChangedObserver : public WindowObserver {
   }
 
  private:
-  raw_ptr<Window> to_observe_;
-  raw_ptr<Window> to_delete_;
+  Window* to_observe_;
+  Window* to_delete_;
 };
 
 TEST_F(WindowTest, DeleteParentWindowFromOnWindowVisibiltyChanged) {
@@ -3222,7 +3221,7 @@ class HierarchyObserver : public WindowObserver {
     EXPECT_EQ(p1.receiver, p2.receiver);
   }
 
-  raw_ptr<Window> target_;
+  Window* target_;
   std::vector<WindowObserver::HierarchyChangeParams> params_;
 };
 

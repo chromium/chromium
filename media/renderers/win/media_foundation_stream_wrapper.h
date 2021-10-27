@@ -12,7 +12,6 @@
 #include <memory>
 #include <queue>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
@@ -131,7 +130,7 @@ class MediaFoundationStreamWrapper
     kStopped,
     kPaused
   } state_ = State::kInitialized;
-  raw_ptr<DemuxerStream> demuxer_stream_ = nullptr;
+  DemuxerStream* demuxer_stream_ = nullptr;
   DemuxerStream::Type stream_type_ = DemuxerStream::Type::UNKNOWN;
 
   std::unique_ptr<MediaLog> media_log_;

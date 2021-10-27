@@ -13,7 +13,6 @@
 #include "base/json/values_util.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -498,7 +497,7 @@ class InitializationSerializer {
              std::tie(other.pref_service, other.origin);
     }
 
-    raw_ptr<PrefService> pref_service;
+    PrefService* pref_service;
     const url::Origin origin;
   };
 

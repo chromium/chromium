@@ -12,7 +12,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "content/browser/renderer_host/input/synthetic_gesture.h"
@@ -147,7 +146,7 @@ class MockSyntheticGesture : public SyntheticGesture {
   }
 
  protected:
-  raw_ptr<bool> finished_;
+  bool* finished_;
   int num_steps_;
   int step_count_;
 };
@@ -813,7 +812,7 @@ class SyntheticGestureControllerTestBase {
   base::TimeDelta GetTotalTime() const { return time_ - start_time_; }
 
   content::BrowserTaskEnvironment env_;
-  raw_ptr<MockSyntheticGestureTarget> target_;
+  MockSyntheticGestureTarget* target_;
   DummySyntheticGestureControllerDelegate delegate_;
   std::unique_ptr<SyntheticGestureController> controller_;
   base::TimeTicks start_time_;

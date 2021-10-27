@@ -17,7 +17,6 @@
 #include "base/containers/contains.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/guid.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -140,9 +139,9 @@ class ScopedBookmarkUndoDelegate : public BookmarkUndoDelegate {
   }
 
  private:
-  raw_ptr<BookmarkModel> model_ = nullptr;
-  raw_ptr<BookmarkUndoProvider> undo_provider_ = nullptr;
-  raw_ptr<const BookmarkNode> parent_ = nullptr;
+  BookmarkModel* model_ = nullptr;
+  BookmarkUndoProvider* undo_provider_ = nullptr;
+  const BookmarkNode* parent_ = nullptr;
   size_t index_ = 0;
   std::unique_ptr<BookmarkNode> last_removed_node_;
 };
@@ -292,8 +291,8 @@ class BookmarkModelTest : public testing::Test,
     }
 
    private:
-    raw_ptr<const BookmarkNode> node1_;
-    raw_ptr<const BookmarkNode> node2_;
+    const BookmarkNode* node1_;
+    const BookmarkNode* node2_;
     size_t index1_;
     size_t index2_;
   };

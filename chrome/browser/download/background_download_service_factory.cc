@@ -9,7 +9,6 @@
 
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -107,7 +106,7 @@ class DownloadBlobContextGetterFactory
         key_, base::BindOnce(&DownloadOnProfileCreated, std::move(callback)));
   }
 
-  raw_ptr<SimpleFactoryKey> key_;
+  SimpleFactoryKey* key_;
 };
 
 }  // namespace

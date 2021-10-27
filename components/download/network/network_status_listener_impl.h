@@ -6,7 +6,6 @@
 #define COMPONENTS_DOWNLOAD_NETWORK_NETWORK_STATUS_LISTENER_IMPL_H_
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/download/network/network_status_listener.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
@@ -39,7 +38,7 @@ class NetworkStatusListenerImpl
 
   void OnNetworkStatusReady(network::mojom::ConnectionType type);
 
-  raw_ptr<network::NetworkConnectionTracker> network_connection_tracker_;
+  network::NetworkConnectionTracker* network_connection_tracker_;
 
   base::WeakPtrFactory<NetworkStatusListenerImpl> weak_ptr_factory_{this};
 };

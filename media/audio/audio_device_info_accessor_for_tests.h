@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "media/audio/audio_device_description.h"
 #include "media/base/audio_parameters.h"
 
@@ -53,7 +52,7 @@ class AudioDeviceInfoAccessorForTests {
   std::string GetCommunicationsOutputDeviceID();
 
  private:
-  const raw_ptr<AudioManager> audio_manager_;
+  AudioManager* const audio_manager_;
 };
 
 }  // namespace media

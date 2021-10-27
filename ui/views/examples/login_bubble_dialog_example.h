@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -41,8 +40,8 @@ class LoginBubbleDialogView : public BubbleDialogDelegateView,
                         BubbleBorder::Arrow anchor_position,
                         OnSubmitCallback accept_callback);
 
-  raw_ptr<Textfield> username_ = nullptr;
-  raw_ptr<Textfield> password_ = nullptr;
+  Textfield* username_ = nullptr;
+  Textfield* password_ = nullptr;
 };
 
 // Instantiates the login dialog example.
@@ -58,11 +57,11 @@ class LoginBubbleDialogExample : public ExampleBase {
   void OnSubmit(std::u16string username, std::u16string password);
 
  private:
-  raw_ptr<LabelButton> button_ = nullptr;
-  raw_ptr<Label> username_label_ = nullptr;
-  raw_ptr<Label> username_input_ = nullptr;
-  raw_ptr<Label> password_label_ = nullptr;
-  raw_ptr<Label> password_input_ = nullptr;
+  LabelButton* button_ = nullptr;
+  Label* username_label_ = nullptr;
+  Label* username_input_ = nullptr;
+  Label* password_label_ = nullptr;
+  Label* password_input_ = nullptr;
 };
 
 }  // namespace examples

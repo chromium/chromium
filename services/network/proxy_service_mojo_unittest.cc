@@ -11,7 +11,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -127,7 +126,7 @@ class ProxyServiceMojoTest : public testing::Test {
                 net::ProxyConfigWithAnnotation(
                     net::ProxyConfig::CreateFromCustomPacURL(GURL(kPacUrl)),
                     TRAFFIC_ANNOTATION_FOR_TESTS)),
-            base::WrapUnique(fetcher_.get()),
+            base::WrapUnique(fetcher_),
             std::make_unique<net::DoNothingDhcpPacFileFetcher>(),
             &mock_host_resolver_, net::NetLog::Get(),
             true /* pac_quick_check_enabled */, &network_delegate_);
@@ -138,7 +137,7 @@ class ProxyServiceMojoTest : public testing::Test {
   TestNetworkDelegate network_delegate_;
   net::MockHostResolver mock_host_resolver_;
   // Owned by |proxy_resolution_service_|.
-  raw_ptr<net::MockPacFileFetcher> fetcher_;
+  net::MockPacFileFetcher* fetcher_;
   net::RecordingNetLogObserver net_log_observer_;
   std::unique_ptr<net::ConfiguredProxyResolutionService>
       proxy_resolution_service_;

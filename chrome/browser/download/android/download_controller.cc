@@ -14,7 +14,6 @@
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/lazy_instance.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -114,7 +113,7 @@ class DownloadManagerGetter : public DownloadManager::Observer {
   DownloadManager* manager() { return manager_; }
 
  private:
-  raw_ptr<DownloadManager> manager_;
+  DownloadManager* manager_;
 };
 
 void RemoveDownloadItem(std::unique_ptr<DownloadManagerGetter> getter,

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_VR_TEST_BROWSER_TEST_BROWSER_RENDERER_BROWSER_INTERFACE_H_
 #define CHROME_BROWSER_VR_TEST_BROWSER_TEST_BROWSER_RENDERER_BROWSER_INTERFACE_H_
 
-#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/vr/browser_renderer_browser_interface.h"
 #include "chrome/browser/vr/ui_test_input.h"
@@ -31,7 +30,7 @@ class BrowserTestBrowserRendererBrowserInterface
   // reference to the UiUtils that created this
   // BrowserTestBrowserRendererBrowserInterface, and the interface should always
   // be destroyed before the utils.
-  raw_ptr<UiUtils> utils_;
+  UiUtils* utils_;
 };
 
 }  // namespace vr

@@ -11,7 +11,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/importer/importer_progress_observer.h"
@@ -126,13 +125,13 @@ class ExternalProcessImporterHost
   gfx::NativeWindow parent_window_;
 
   // The observer that we need to notify about changes in the import process.
-  raw_ptr<importer::ImporterProgressObserver> observer_;
+  importer::ImporterProgressObserver* observer_;
 
   // Firefox profile lock.
   std::unique_ptr<FirefoxProfileLock> firefox_lock_;
 
   // Profile we're importing from.
-  raw_ptr<Profile> profile_;
+  Profile* profile_;
 
   // True if we're waiting for the model to finish loading.
   bool waiting_for_bookmarkbar_model_;
@@ -150,7 +149,7 @@ class ExternalProcessImporterHost
   scoped_refptr<ProfileWriter> writer_;
 
   // Used to pass notifications from the browser side to the external process.
-  raw_ptr<ExternalProcessImporterClient> client_;
+  ExternalProcessImporterClient* client_;
 
   // Information about a profile needed for importing.
   importer::SourceProfile source_profile_;

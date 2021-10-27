@@ -4,7 +4,6 @@
 
 #include "components/segmentation_platform/internal/database/signal_database_impl.h"
 
-#include "base/memory/raw_ptr.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "components/leveldb_proto/testing/fake_db.h"
@@ -69,7 +68,7 @@ class SignalDatabaseImplTest : public testing::Test {
   base::SimpleTestClock test_clock_;
   std::vector<SignalDatabase::Sample> get_samples_result_;
   std::map<std::string, proto::SignalData> db_entries_;
-  raw_ptr<leveldb_proto::test::FakeDB<proto::SignalData>> db_{nullptr};
+  leveldb_proto::test::FakeDB<proto::SignalData>* db_{nullptr};
   std::unique_ptr<SignalDatabaseImpl> signal_db_;
 };
 

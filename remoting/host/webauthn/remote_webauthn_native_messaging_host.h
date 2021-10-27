@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -50,7 +49,7 @@ class RemoteWebAuthnNativeMessagingHost final
   void SendMessageToClient(base::Value message);
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  raw_ptr<extensions::NativeMessageHost::Client> client_ = nullptr;
+  extensions::NativeMessageHost::Client* client_ = nullptr;
   std::unique_ptr<mojo::IsolatedConnection> connection_;
   mojo::Remote<mojom::WebAuthnProxy> remote_;
 };

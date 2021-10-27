@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SSL_HTTPS_FIRST_MODE_SETTINGS_TRACKER_H_
 #define CHROME_BROWSER_SSL_HTTPS_FIRST_MODE_SETTINGS_TRACKER_H_
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -28,7 +27,7 @@ class HttpsFirstModeService : public KeyedService {
  private:
   void OnHttpsFirstModePrefChanged();
 
-  raw_ptr<PrefService> pref_service_;
+  PrefService* pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
 };
 

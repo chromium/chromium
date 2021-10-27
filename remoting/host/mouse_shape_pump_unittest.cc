@@ -9,7 +9,6 @@
 
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
@@ -62,7 +61,7 @@ class TestMouseCursorMonitor : public webrtc::MouseCursorMonitor  {
   }
 
  private:
-  raw_ptr<Callback> callback_;
+  Callback* callback_;
 };
 
 class MouseShapePumpTest : public testing::Test {

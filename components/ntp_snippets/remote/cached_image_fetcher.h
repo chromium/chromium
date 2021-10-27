@@ -11,7 +11,6 @@
 
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/ntp_snippets/callbacks.h"
 #include "components/ntp_snippets/content_suggestion.h"
@@ -91,7 +90,7 @@ class CachedImageFetcher {
       const image_fetcher::RequestMetadata& request_metadata);
 
   std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher_;
-  raw_ptr<RemoteSuggestionsDatabase> database_;
+  RemoteSuggestionsDatabase* database_;
   // Request throttler for limiting requests to thumbnail images.
   RequestThrottler thumbnail_requests_throttler_;
 

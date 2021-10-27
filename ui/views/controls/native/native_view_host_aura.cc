@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
@@ -72,7 +71,7 @@ class NativeViewHostAura::ClippingWindowDelegate : public aura::WindowDelegate {
   void GetHitTestMask(SkPath* mask) const override {}
 
  private:
-  raw_ptr<aura::Window> native_view_ = nullptr;
+  aura::Window* native_view_ = nullptr;
 };
 
 NativeViewHostAura::NativeViewHostAura(NativeViewHost* host) : host_(host) {}

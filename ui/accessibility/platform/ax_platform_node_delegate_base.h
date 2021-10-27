@@ -13,7 +13,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/strings/string_split.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
@@ -161,7 +160,7 @@ class AX_EXPORT AXPlatformNodeDelegateBase : public AXPlatformNodeDelegate {
 
    private:
     int index_;
-    raw_ptr<AXPlatformNodeDelegateBase> parent_;
+    AXPlatformNodeDelegateBase* parent_;
   };
   std::unique_ptr<AXPlatformNodeDelegate::ChildIterator> ChildrenBegin()
       override;

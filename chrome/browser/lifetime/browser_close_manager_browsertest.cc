@@ -14,7 +14,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
@@ -153,7 +152,7 @@ class TabRestoreServiceChangesObserver
     service_ = nullptr;
   }
 
-  raw_ptr<sessions::TabRestoreService> service_ = nullptr;
+  sessions::TabRestoreService* service_ = nullptr;
   size_t changes_count_ = 0;
 };
 

@@ -8,7 +8,6 @@
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
 #include "base/lazy_instance.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "gin/array_buffer.h"
@@ -76,7 +75,7 @@ class Request {
     bitmap_ = result_image;
   }
 
-  raw_ptr<ImageDecoderImpl> decoder_;
+  ImageDecoderImpl* decoder_;
   SkBitmap bitmap_;
 };
 

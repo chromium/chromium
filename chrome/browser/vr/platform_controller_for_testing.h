@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_VR_PLATFORM_CONTROLLER_FOR_TESTING_H_
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/vr/model/controller_model.h"
 #include "chrome/browser/vr/platform_controller.h"
@@ -39,8 +38,8 @@ class PlatformControllerForTesting : public PlatformController {
   int GetBatteryLevel() const override;
 
  private:
-  raw_ptr<ControllerModel> prev_model_;
-  raw_ptr<ControllerModel> cur_model_;
+  ControllerModel* prev_model_;
+  ControllerModel* cur_model_;
   base::TimeTicks last_touchpad_timestamp_;
 };
 

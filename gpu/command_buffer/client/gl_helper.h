@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/gpu_export.h"
 #include "ui/gfx/geometry/size.h"
@@ -52,7 +51,7 @@ class ScopedGLuint {
   }
 
  private:
-  raw_ptr<gles2::GLES2Interface> gl_;
+  gles2::GLES2Interface* gl_;
   GLuint id_;
   DeleteFunc delete_func_;
 };
@@ -96,7 +95,7 @@ class ScopedBinder {
   virtual ~ScopedBinder() { (gl_->*bind_func_)(Target, 0); }
 
  private:
-  raw_ptr<gles2::GLES2Interface> gl_;
+  gles2::GLES2Interface* gl_;
   BindFunc bind_func_;
 };
 
@@ -350,8 +349,8 @@ class GPU_EXPORT GLHelper {
 
   enum ReadbackSwizzle { kSwizzleNone = 0, kSwizzleBGRA };
 
-  raw_ptr<gles2::GLES2Interface> gl_;
-  raw_ptr<ContextSupport> context_support_;
+  gles2::GLES2Interface* gl_;
+  ContextSupport* context_support_;
   std::unique_ptr<CopyTextureToImpl> copy_texture_to_impl_;
   std::unique_ptr<GLHelperScaling> scaler_impl_;
   std::unique_ptr<ReadbackYUVInterface> shared_readback_yuv_flip_;

@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/payments/editor_view_controller.h"
 #include "chrome/browser/ui/views/payments/validating_textfield.h"
@@ -106,7 +105,7 @@ class ShippingAddressEditorViewController : public EditorViewController {
     EditorField field_;
 
     // Raw pointer back to the owner of this class, therefore will not be null.
-    raw_ptr<ShippingAddressEditorViewController> controller_;
+    ShippingAddressEditorViewController* controller_;
   };
 
   std::u16string GetValueForType(const autofill::AutofillProfile& profile,
@@ -142,7 +141,7 @@ class ShippingAddressEditorViewController : public EditorViewController {
 
   // If non-nullptr, a point to an object to be edited, which should outlive
   // this controller.
-  raw_ptr<autofill::AutofillProfile> profile_to_edit_;
+  autofill::AutofillProfile* profile_to_edit_;
 
   // A temporary profile to keep unsaved data in between relayout (e.g., when
   // the country is changed and fields set may be different).
@@ -172,7 +171,7 @@ class ShippingAddressEditorViewController : public EditorViewController {
   bool failed_to_load_region_data_;
 
   // Owned by the state combobox, which is owned by this object's base class.
-  raw_ptr<autofill::RegionComboboxModel> region_model_;
+  autofill::RegionComboboxModel* region_model_;
 
   base::WeakPtrFactory<ShippingAddressEditorViewController> weak_ptr_factory_{
       this};

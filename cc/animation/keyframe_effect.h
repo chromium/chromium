@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "cc/animation/animation_events.h"
@@ -180,7 +179,7 @@ class CC_ANIMATION_EXPORT KeyframeEffect : public gfx::KeyframeEffect {
       const KeyframeModel& keyframe_model,
       base::TimeTicks monotonic_time);
 
-  raw_ptr<Animation> animation_;
+  Animation* animation_;
 
   ElementId element_id_;
 

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/extensions/settings_overridden_dialog_view.h"
 
-#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/extensions/settings_overridden_dialog_controller.h"
 #include "chrome/browser/ui/views/chrome_constrained_window_views_client.h"
@@ -41,7 +40,7 @@ class TestDialogController : public SettingsOverriddenDialogController {
     state_->result = result;
   }
 
-  const raw_ptr<DialogState> state_;
+  DialogState* const state_;
   const ShowParams show_params_;
 };
 

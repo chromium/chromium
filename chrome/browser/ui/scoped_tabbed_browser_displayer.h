@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_SCOPED_TABBED_BROWSER_DISPLAYER_H_
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 
 class Browser;
 class Profile;
@@ -31,7 +30,7 @@ class ScopedTabbedBrowserDisplayer {
   Browser* browser() { return browser_; }
 
  private:
-  raw_ptr<Browser> browser_;
+  Browser* browser_;
 };
 
 }  // namespace chrome

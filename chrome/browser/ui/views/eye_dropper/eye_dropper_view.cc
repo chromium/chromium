@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/eye_dropper/eye_dropper_view.h"
 
-#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/eye_dropper/eye_dropper.h"
@@ -33,7 +32,7 @@ class EyeDropperView::ViewPositionHandler {
   // Timer used for updating the window location.
   base::RepeatingTimer timer_;
 
-  raw_ptr<EyeDropperView> owner_;
+  EyeDropperView* owner_;
 };
 
 EyeDropperView::ViewPositionHandler::ViewPositionHandler(EyeDropperView* owner)

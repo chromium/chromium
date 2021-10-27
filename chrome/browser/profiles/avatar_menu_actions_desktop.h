@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/avatar_menu_actions.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 
@@ -34,7 +33,7 @@ class AvatarMenuActionsDesktop : public AvatarMenuActions {
 
  private:
   // Browser in which this avatar menu resides. Weak.
-  raw_ptr<Browser> browser_;
+  Browser* browser_;
 
   // Special "override" logout URL used to let tests work.
   std::string logout_override_;

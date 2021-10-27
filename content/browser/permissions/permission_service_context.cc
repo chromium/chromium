@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/permissions/permission_service_impl.h"
 #include "content/browser/permissions/permission_util.h"
@@ -73,7 +72,7 @@ class PermissionServiceContext::PermissionSubscription {
   void set_id(PermissionController::SubscriptionId id) { id_ = id; }
 
  private:
-  const raw_ptr<PermissionServiceContext> context_;
+  PermissionServiceContext* const context_;
   mojo::Remote<blink::mojom::PermissionObserver> observer_;
   PermissionController::SubscriptionId id_;
 };

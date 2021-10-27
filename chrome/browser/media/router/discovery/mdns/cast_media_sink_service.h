@@ -10,7 +10,6 @@
 
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -101,7 +100,7 @@ class CastMediaSinkService : public DnsSdRegistry::DnsSdObserver {
 
   // Raw pointer to DnsSdRegistry instance, which is a global leaky singleton
   // and lives as long as the browser process.
-  raw_ptr<DnsSdRegistry> dns_sd_registry_ = nullptr;
+  DnsSdRegistry* dns_sd_registry_ = nullptr;
 
   // Created on the UI thread, used and destroyed on its SequencedTaskRunner.
   std::unique_ptr<CastMediaSinkServiceImpl, base::OnTaskRunnerDeleter> impl_;
@@ -114,7 +113,7 @@ class CastMediaSinkService : public DnsSdRegistry::DnsSdObserver {
 
   // Pointer to the LoggerImpl object owned by MediaRouterDesktop. It should
   // only be used after BindLogger() is called.
-  raw_ptr<LoggerImpl> logger_impl_ = nullptr;
+  LoggerImpl* logger_impl_ = nullptr;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<CastMediaSinkService> weak_ptr_factory_{this};

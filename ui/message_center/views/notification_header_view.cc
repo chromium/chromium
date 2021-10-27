@@ -170,7 +170,7 @@ NotificationHeaderView::NotificationHeaderView(PressedCallback callback,
     app_icon_view_->SetHorizontalAlignment(
         views::ImageView::Alignment::kLeading);
     DCHECK_EQ(kInnerHeaderHeight, app_icon_view_->GetPreferredSize().height());
-    AddChildView(app_icon_view_.get());
+    AddChildView(app_icon_view_);
   }
 
   // App name view
@@ -188,7 +188,7 @@ NotificationHeaderView::NotificationHeaderView(PressedCallback callback,
   detail_layout->SetCollapseMargins(true);
   detail_layout->SetDefault(views::kMarginsKey, kHeaderSpacing);
   detail_views_->SetID(NotificationView::kHeaderDetailViews);
-  AddChildView(detail_views_.get());
+  AddChildView(detail_views_);
 
   // Summary text divider
   auto summary_text_divider = std::make_unique<views::Label>();
@@ -224,7 +224,7 @@ NotificationHeaderView::NotificationHeaderView(PressedCallback callback,
         views::ImageView::Alignment::kLeading);
     expand_button_->SetImageSize(gfx::Size(kExpandIconSize, kExpandIconSize));
     DCHECK_EQ(kInnerHeaderHeight, expand_button_->GetPreferredSize().height());
-    detail_views_->AddChildView(expand_button_.get());
+    detail_views_->AddChildView(expand_button_);
 
     // Spacer between left-aligned views and right-aligned views
     auto spacer = std::make_unique<views::View>();

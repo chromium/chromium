@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback_helpers.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/insets.h"
@@ -45,7 +44,7 @@ class MessageBoxViewTest : public ViewsTestBase {
   }
 
   std::unique_ptr<MessageBoxView> message_box_;
-  raw_ptr<const LayoutProvider> provider_;
+  const LayoutProvider* provider_;
 };
 
 TEST_F(MessageBoxViewTest, CheckMessageOnlySize) {

@@ -12,7 +12,6 @@
 #include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
 #include "base/test/scoped_feature_list.h"
@@ -77,7 +76,7 @@ class DiceTestSigninClient : public TestSigninClient, public GaiaAuthConsumer {
   }
 
  private:
-  raw_ptr<GaiaAuthConsumer> consumer_;
+  GaiaAuthConsumer* consumer_;
 };
 
 class DiceResponseHandlerTest : public testing::Test,
@@ -224,7 +223,7 @@ class TestProcessDiceHeaderDelegate : public ProcessDiceHeaderDelegate {
   }
 
  private:
-  raw_ptr<DiceResponseHandlerTest> owner_;
+  DiceResponseHandlerTest* owner_;
 };
 
 // Checks that a SIGNIN action triggers a token exchange request.

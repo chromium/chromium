@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -190,16 +189,16 @@ class SyncEngine
   scoped_refptr<base::SequencedTaskRunner> drive_task_runner_;
 
   const base::FilePath sync_file_system_dir_;
-  raw_ptr<TaskLogger> task_logger_;
+  TaskLogger* task_logger_;
 
   // These external services are not owned by SyncEngine.
   // The owner of the SyncEngine is responsible for their lifetime.
   // I.e. the owner should declare the dependency explicitly by calling
   // KeyedService::DependsOn().
-  raw_ptr<drive::DriveNotificationManager> notification_manager_;
-  raw_ptr<extensions::ExtensionServiceInterface> extension_service_;
-  raw_ptr<extensions::ExtensionRegistry> extension_registry_;
-  raw_ptr<signin::IdentityManager> identity_manager_;
+  drive::DriveNotificationManager* notification_manager_;
+  extensions::ExtensionServiceInterface* extension_service_;
+  extensions::ExtensionRegistry* extension_registry_;
+  signin::IdentityManager* identity_manager_;
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
@@ -210,7 +209,7 @@ class SyncEngine
   std::unique_ptr<drive::DriveUploaderInterface> drive_uploader_;
   std::unique_ptr<DriveUploaderWrapper> drive_uploader_wrapper_;
 
-  raw_ptr<RemoteChangeProcessor> remote_change_processor_;  // Not owned.
+  RemoteChangeProcessor* remote_change_processor_;  // Not owned.
   std::unique_ptr<RemoteChangeProcessorWrapper>
       remote_change_processor_wrapper_;
   // Delete this on worker.
@@ -228,7 +227,7 @@ class SyncEngine
 
   base::ObserverList<SyncServiceObserver>::Unchecked service_observers_;
   base::ObserverList<FileStatusObserver>::Unchecked file_status_observers_;
-  raw_ptr<leveldb::Env> env_override_;
+  leveldb::Env* env_override_;
 
   CallbackTracker callback_tracker_;
 

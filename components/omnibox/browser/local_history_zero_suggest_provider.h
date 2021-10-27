@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
@@ -62,10 +61,10 @@ class LocalHistoryZeroSuggestProvider : public AutocompleteProvider {
   const size_t max_matches_;
 
   // Client for accessing TemplateUrlService, prefs, etc.
-  const raw_ptr<AutocompleteProviderClient> client_;
+  AutocompleteProviderClient* const client_;
 
   // Listener to notify when matches are available.
-  const raw_ptr<AutocompleteProviderListener> listener_;
+  AutocompleteProviderListener* const listener_;
 
   // Used for the async tasks querying the HistoryService.
   base::CancelableTaskTracker history_task_tracker_;

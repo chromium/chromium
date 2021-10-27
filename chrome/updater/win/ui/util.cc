@@ -6,7 +6,6 @@
 
 #include "base/i18n/message_formatter.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/win/atl.h"
 #include "chrome/updater/win/ui/resources/resources.grh"
@@ -20,7 +19,7 @@ namespace {
 struct FindProcessWindowsRecord {
   uint32_t process_id = 0;
   uint32_t window_flags = 0;
-  raw_ptr<std::vector<HWND>> windows = nullptr;
+  std::vector<HWND>* windows = nullptr;
 };
 
 BOOL CALLBACK FindProcessWindowsEnumProc(HWND hwnd, LPARAM lparam) {

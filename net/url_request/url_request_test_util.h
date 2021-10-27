@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
@@ -110,7 +109,7 @@ class TestURLRequestContext : public URLRequestContext {
   std::unique_ptr<HttpNetworkSessionContext> http_network_session_context_;
 
   // Not owned:
-  raw_ptr<ClientSocketFactory> client_socket_factory_ = nullptr;
+  ClientSocketFactory* client_socket_factory_ = nullptr;
 
   bool create_default_http_user_agent_settings_ = true;
 
@@ -533,7 +532,7 @@ class TestScopedURLInterceptor {
   GURL url_;
 
   // This is owned by the URLFilter.
-  raw_ptr<TestRequestInterceptor> interceptor_ = nullptr;
+  TestRequestInterceptor* interceptor_ = nullptr;
 };
 
 }  // namespace net

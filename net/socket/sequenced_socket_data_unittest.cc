@@ -8,7 +8,6 @@
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "net/base/completion_once_callback.h"
@@ -135,7 +134,7 @@ class ReentrantHelper {
     }
   }
 
-  raw_ptr<StreamSocket> socket_;
+  StreamSocket* socket_;
 
   bool verify_read_;
   scoped_refptr<IOBuffer> first_read_buf_;

@@ -5,7 +5,6 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -89,7 +88,7 @@ class PolicyServiceInitializedWaiter : PolicyService::Observer {
   }
 
  private:
-  raw_ptr<PolicyService> policy_service_;
+  PolicyService* policy_service_;
   PolicyDomain policy_domain_;
   base::RunLoop run_loop_;
 };

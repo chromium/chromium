@@ -9,7 +9,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_checker.h"
@@ -94,7 +93,7 @@ class AutoThread : base::PlatformThread::Delegate {
 
   // Used to pass data to ThreadMain.
   struct StartupData;
-  raw_ptr<StartupData> startup_data_;
+  StartupData* startup_data_;
 
 #if defined(OS_WIN)
   // Specifies which kind of COM apartment to initialize, if any.

@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/sharing/sharing_dialog.h"
 #include "chrome/browser/sharing/sharing_dialog_data.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
@@ -70,7 +69,7 @@ class SharingDialogView : public SharingDialog,
   SharingDialogData data_;
 
   // References to device and app buttons views.
-  raw_ptr<View> button_list_ = nullptr;
+  View* button_list_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SHARING_SHARING_DIALOG_VIEW_H_

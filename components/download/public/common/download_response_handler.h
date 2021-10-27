@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "components/download/public/common/download_create_info.h"
 #include "components/download/public/common/download_export.h"
 #include "components/download/public/common/download_source.h"
@@ -84,7 +83,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadResponseHandler
   // Helper method that is called when response is received.
   void OnResponseStarted(mojom::DownloadStreamHandlePtr stream_handle);
 
-  const raw_ptr<Delegate> delegate_;
+  Delegate* const delegate_;
 
   std::unique_ptr<DownloadCreateInfo> create_info_;
 

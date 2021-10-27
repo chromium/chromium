@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "media/base/media_export.h"
 
 namespace media {
@@ -152,7 +151,7 @@ class MEDIA_EXPORT WebMListParser {
   const int root_level_;
 
   // WebMParserClient to handle the root list.
-  const raw_ptr<WebMParserClient> root_client_;
+  WebMParserClient* const root_client_;
 
   // Stack of state for all the lists currently being parsed. Lists are
   // added and removed from this stack as they are parsed.

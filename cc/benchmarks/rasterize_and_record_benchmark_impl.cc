@@ -11,7 +11,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/memory/raw_ptr.h"
 #include "base/timer/lap_timer.h"
 #include "base/values.h"
 #include "cc/layers/layer_impl.h"
@@ -135,7 +134,7 @@ class FixedInvalidationPictureLayerTilingClient
   }
 
  private:
-  raw_ptr<PictureLayerTilingClient> base_client_;
+  PictureLayerTilingClient* base_client_;
   Region invalidation_;
 };
 

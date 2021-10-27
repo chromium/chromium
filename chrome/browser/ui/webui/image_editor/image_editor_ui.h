@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_IMAGE_EDITOR_IMAGE_EDITOR_UI_H_
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "content/public/browser/web_ui_controller.h"
 
 class Profile;
@@ -24,7 +23,7 @@ class ImageEditorUI : public content::WebUIController {
   ~ImageEditorUI() override = default;
 
  private:
-  raw_ptr<Profile> profile_;
+  Profile* profile_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_IMAGE_EDITOR_IMAGE_EDITOR_UI_H_

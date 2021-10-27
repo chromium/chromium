@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -149,7 +148,7 @@ class SubresourceFilterContentSettingsManager {
   bool ShouldDeleteDataWithNoActivation(base::DictionaryValue* dict,
                                         ActivationSource activation_source);
 
-  raw_ptr<HostContentSettingsMap> settings_map_;
+  HostContentSettingsMap* settings_map_;
 
   // A clock is injected into this class so tests can set arbitrary timestamps
   // in website settings.

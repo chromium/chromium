@@ -10,7 +10,6 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/embedded_test_server_connection_listener.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -89,7 +88,7 @@ class EmbeddedTestServerAndroid {
         std::unique_ptr<StreamSocket> socket) override;
 
    private:
-    raw_ptr<EmbeddedTestServerAndroid> test_server_android_;
+    EmbeddedTestServerAndroid* test_server_android_;
   };
 
   // Forwards notifications to Java. See EmbeddedTestServerConnectionListener.

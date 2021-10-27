@@ -5,8 +5,6 @@
 #ifndef UI_GL_PROGRESS_REPORTER_H_
 #define UI_GL_PROGRESS_REPORTER_H_
 
-#include "base/memory/raw_ptr.h"
-
 namespace gl {
 
 // ProgressReporter is used by ContextGroup and GrGLInterface to report when it
@@ -32,7 +30,7 @@ class ScopedProgressReporter {
   }
 
  private:
-  raw_ptr<ProgressReporter> progress_reporter_;
+  ProgressReporter* progress_reporter_;
 };
 
 }  // namespace gl

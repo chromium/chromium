@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -121,7 +120,7 @@ class DistillerPageWebContentsTest : public ContentBrowserTest {
                                     bool expect_new_web_contents,
                                     bool wait_for_document_loaded);
 
-  raw_ptr<DistillerPageWebContents> distiller_page_;
+  DistillerPageWebContents* distiller_page_;
   std::unique_ptr<proto::DomDistillerResult> distiller_result_;
 };
 

@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
 #include "base/json/json_reader.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/simple_test_clock.h"
 #include "base/values.h"
@@ -110,8 +109,8 @@ class ExtensionAlarmsTest : public ApiUnitTest {
   }
 
   base::SimpleTestClock test_clock_;
-  raw_ptr<AlarmManager> alarm_manager_;
-  raw_ptr<AlarmDelegate> alarm_delegate_;
+  AlarmManager* alarm_manager_;
+  AlarmDelegate* alarm_delegate_;
 };
 
 void ExtensionAlarmsTestGetAllAlarmsCallback(

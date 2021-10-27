@@ -5,8 +5,6 @@
 #ifndef UI_VIEWS_CONTROLS_BUTTON_BUTTON_CONTROLLER_DELEGATE_H_
 #define UI_VIEWS_CONTROLS_BUTTON_BUTTON_CONTROLLER_DELEGATE_H_
 
-#include "base/memory/raw_ptr.h"
-
 namespace views {
 
 class Button;
@@ -41,7 +39,7 @@ class VIEWS_EXPORT ButtonControllerDelegate {
   Button* button() { return button_; }
 
  private:
-  raw_ptr<Button> button_;
+  Button* button_;
 };
 
 }  // namespace views

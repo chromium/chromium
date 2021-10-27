@@ -6,7 +6,6 @@
 #define UI_VIEWS_EXAMPLES_MULTILINE_EXAMPLE_H_
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/examples/example_base.h"
 
@@ -38,15 +37,15 @@ class VIEWS_EXAMPLES_EXPORT MultilineExample : public ExampleBase,
   void ContentsChanged(Textfield* sender,
                        const std::u16string& new_contents) override;
 
-  raw_ptr<RenderTextView> render_text_view_ = nullptr;
-  raw_ptr<Label> label_ = nullptr;
-  raw_ptr<Textfield> textfield_ = nullptr;
+  RenderTextView* render_text_view_ = nullptr;
+  Label* label_ = nullptr;
+  Textfield* textfield_ = nullptr;
 
   // Checkbox to enable and disable text rendering in |label_|.
-  raw_ptr<Checkbox> label_checkbox_ = nullptr;
+  Checkbox* label_checkbox_ = nullptr;
 
   // Checkbox to toggle text elision in |render_text_view_|.
-  raw_ptr<Checkbox> elision_checkbox_ = nullptr;
+  Checkbox* elision_checkbox_ = nullptr;
 };
 
 }  // namespace examples

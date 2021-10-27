@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
@@ -75,7 +74,7 @@ class ImageDecoder {
     const scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
     // If null, will use a new decoder via DecodeImageIsolated() instead.
-    const raw_ptr<data_decoder::DataDecoder> data_decoder_ = nullptr;
+    data_decoder::DataDecoder* const data_decoder_ = nullptr;
 
     SEQUENCE_CHECKER(sequence_checker_);
   };

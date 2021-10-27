@@ -83,8 +83,7 @@ WebRequestProxyingWebSocket::WebRequestProxyingWebSocket(
       ShutdownNotifierFactory::GetInstance()
           ->Get(browser_context)
           ->Subscribe(base::BindRepeating(&WebRequestAPI::ProxySet::RemoveProxy,
-                                          base::Unretained(proxies_.get()),
-                                          this));
+                                          base::Unretained(proxies_), this));
 }
 
 WebRequestProxyingWebSocket::~WebRequestProxyingWebSocket() {

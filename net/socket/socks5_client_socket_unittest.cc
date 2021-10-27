@@ -14,7 +14,6 @@
 #include "base/cxx17_backports.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/sys_byteorder.h"
 #include "build/build_config.h"
 #include "net/base/address_list.h"
@@ -69,7 +68,7 @@ class SOCKS5ClientSocketTest : public PlatformTest, public WithTaskEnvironment {
   AddressList address_list_;
   // Filled in by BuildMockSocket() and owned by its return value
   // (which |user_sock| is set to).
-  raw_ptr<StreamSocket> tcp_sock_;
+  StreamSocket* tcp_sock_;
   TestCompletionCallback callback_;
   std::unique_ptr<SocketDataProvider> data_;
 };
@@ -104,7 +103,7 @@ std::unique_ptr<SOCKS5ClientSocket> SOCKS5ClientSocketTest::BuildMockSocket(
 
   // The SOCKS5ClientSocket takes ownership of |tcp_sock_|, but keep a
   // non-owning pointer to it.
-  return std::make_unique<SOCKS5ClientSocket>(base::WrapUnique(tcp_sock_.get()),
+  return std::make_unique<SOCKS5ClientSocket>(base::WrapUnique(tcp_sock_),
                                               HostPortPair(hostname, port),
                                               TRAFFIC_ANNOTATION_FOR_TESTS);
 }

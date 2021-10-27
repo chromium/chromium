@@ -17,7 +17,6 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/memory/memory_pressure_monitor.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/process/process.h"
@@ -113,7 +112,7 @@ class TabManager::TabManagerSessionRestoreObserver final
   }
 
  private:
-  raw_ptr<TabManager> tab_manager_;
+  TabManager* tab_manager_;
 };
 
 TabManager::TabManager(TabLoadTracker* tab_load_tracker)

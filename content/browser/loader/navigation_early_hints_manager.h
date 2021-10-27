@@ -8,7 +8,6 @@
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/isolation_info.h"
@@ -190,8 +189,7 @@ class CONTENT_EXPORT NavigationEarlyHintsManager {
   base::OnceCallback<void(PreloadedResources)>
       preloads_completion_callback_for_testing_;
 
-  raw_ptr<network::mojom::NetworkContext> network_context_for_testing_ =
-      nullptr;
+  network::mojom::NetworkContext* network_context_for_testing_ = nullptr;
 };
 
 }  // namespace content

@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/drive/service/drive_service_interface.h"
@@ -81,7 +80,7 @@ class DriveServiceWrapper : public base::SupportsWeakPtr<DriveServiceWrapper> {
                      google_apis::FileListCallback callback);
 
  private:
-  raw_ptr<drive::DriveServiceInterface> drive_service_;
+  drive::DriveServiceInterface* drive_service_;
   SEQUENCE_CHECKER(sequence_checker_);
 };
 

@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner_helpers.h"
@@ -216,7 +215,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
   //    constructed. This is because the easiest way to ensure that
   //    QuotaManagerImpl exposes its QuotaManagerProxy in a thread-safe manner
   //    is to have the QuotaManagerImpl's QuotaManagerProxy reference be const.
-  raw_ptr<QuotaManagerImpl> quota_manager_impl_
+  QuotaManagerImpl* quota_manager_impl_
       GUARDED_BY_CONTEXT(quota_manager_impl_sequence_checker_);
 
   // TaskRunner that accesses QuotaManagerImpl's sequence.

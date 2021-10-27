@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/download/content/public/all_download_item_notifier.h"
@@ -53,7 +52,7 @@ class DownloadHistory : public download::AllDownloadItemNotifier::Observer {
     virtual void RemoveDownloads(const std::set<uint32_t>& ids);
 
    private:
-    raw_ptr<history::HistoryService> history_;
+    history::HistoryService* history_;
   };
 
   class Observer {

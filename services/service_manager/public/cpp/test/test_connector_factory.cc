@@ -10,7 +10,6 @@
 #include "base/callback_helpers.h"
 #include "base/guid.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -95,8 +94,8 @@ class ProxiedServiceConnector : public mojom::Connector {
   }
 
   const base::Token fake_guid_;
-  const raw_ptr<TestConnectorFactory> factory_;
-  const raw_ptr<TestConnectorFactory::NameToServiceProxyMap> proxies_;
+  TestConnectorFactory* const factory_;
+  TestConnectorFactory::NameToServiceProxyMap* const proxies_;
   const base::Token test_instance_group_;
   mojo::ReceiverSet<mojom::Connector> receivers_;
 };

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/profiles/profile_picker_test_base.h"
-#include "base/memory/raw_ptr.h"
 
 #include "base/callback.h"
 #include "base/run_loop.h"
@@ -29,7 +28,7 @@ class WidgetAttachedWaiter : public views::ViewObserver {
   void Wait() {
     if (view_->GetWidget())
       return;
-    observation_.Observe(view_.get());
+    observation_.Observe(view_);
     run_loop_.Run();
   }
 
@@ -41,7 +40,7 @@ class WidgetAttachedWaiter : public views::ViewObserver {
   }
 
   base::RunLoop run_loop_;
-  const raw_ptr<views::View> view_;
+  views::View* const view_;
   base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
 };
 

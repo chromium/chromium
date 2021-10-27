@@ -11,7 +11,6 @@
 #include "base/base_export.h"
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
@@ -198,7 +197,7 @@ class BASE_EXPORT ImportantFileWriter {
   OneShotTimer timer_;
 
   // An override for |timer_| used for testing.
-  raw_ptr<OneShotTimer> timer_override_ = nullptr;
+  OneShotTimer* timer_override_ = nullptr;
 
   // Serializer which will provide the data to be saved.
   absl::variant<absl::monostate, DataSerializer*, BackgroundDataSerializer*>

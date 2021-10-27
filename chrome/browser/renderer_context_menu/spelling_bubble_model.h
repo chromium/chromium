@@ -7,7 +7,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/confirm_bubble_model.h"
 
@@ -41,7 +40,7 @@ class SpellingBubbleModel : public ConfirmBubbleModel {
   void SetPref(bool enabled);
 
   // Unowned.
-  raw_ptr<Profile> profile_;
+  Profile* profile_;
 
   base::WeakPtr<content::WebContents> web_contents_;
 };

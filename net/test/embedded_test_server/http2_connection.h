@@ -11,7 +11,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/io_buffer.h"
@@ -123,8 +122,8 @@ class Http2Connection : public HttpConnection,
   std::queue<StreamId> ready_streams_;
   std::unique_ptr<http2::adapter::OgHttp2Adapter> adapter_;
   std::unique_ptr<StreamSocket> socket_;
-  const raw_ptr<EmbeddedTestServerConnectionListener> connection_listener_;
-  const raw_ptr<EmbeddedTestServer> embedded_test_server_;
+  EmbeddedTestServerConnectionListener* const connection_listener_;
+  EmbeddedTestServer* const embedded_test_server_;
   scoped_refptr<IOBufferWithSize> read_buf_;
   // Frames can be submitted asynchronusly, so frames will be pulled one at a
   // time by the data frame through ReadyToSend. If the buffer is not null, it

@@ -14,7 +14,6 @@
 
 #include "base/base_export.h"
 #include "base/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/task/common/checked_lock.h"
 #include "base/task/post_job.h"
@@ -216,7 +215,7 @@ class BASE_EXPORT JobTaskSource : public TaskSource {
   RepeatingClosure primary_task_;
 
   const TimeTicks ready_time_;
-  raw_ptr<PooledTaskRunnerDelegate> delegate_;
+  PooledTaskRunnerDelegate* delegate_;
 };
 
 }  // namespace internal

@@ -11,7 +11,6 @@
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/simple_test_clock.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -58,7 +57,7 @@ class DeadlockCheckerThread : public base::PlatformThread::Delegate {
   void ThreadMain() override { EXPECT_TRUE(pref_->TryLockForTesting()); }
 
  private:
-  raw_ptr<const ContentSettingsPref> pref_;
+  const ContentSettingsPref* pref_;
 };
 
 // A helper for observing an preference changes and testing whether
@@ -99,7 +98,7 @@ class DeadlockCheckerObserver {
     notification_received_ = true;
   }
 
-  raw_ptr<PrefProvider> provider_;
+  PrefProvider* provider_;
   PrefChangeRegistrar pref_change_registrar_;
   bool notification_received_;
 };

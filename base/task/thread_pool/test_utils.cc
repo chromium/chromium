@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/task/thread_pool/pooled_parallel_task_runner.h"
 #include "base/task/thread_pool/pooled_sequenced_task_runner.h"
@@ -44,7 +43,7 @@ class MockJobTaskRunner : public TaskRunner {
   ~MockJobTaskRunner() override = default;
 
   const TaskTraits traits_;
-  const raw_ptr<PooledTaskRunnerDelegate> pooled_task_runner_delegate_;
+  PooledTaskRunnerDelegate* const pooled_task_runner_delegate_;
 };
 
 bool MockJobTaskRunner::PostDelayedTask(const Location& from_here,

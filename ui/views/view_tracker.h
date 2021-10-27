@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_VIEW_TRACKER_H_
 #define UI_VIEWS_VIEW_TRACKER_H_
 
-#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
@@ -28,7 +27,7 @@ class VIEWS_EXPORT ViewTracker : public ViewObserver {
   void OnViewIsDeleting(View* observed_view) override;
 
  private:
-  raw_ptr<View> view_ = nullptr;
+  View* view_ = nullptr;
 
   base::ScopedObservation<View, ViewObserver> observation_{this};
 };

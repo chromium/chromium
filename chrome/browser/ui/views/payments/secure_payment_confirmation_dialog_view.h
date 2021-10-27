@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAYMENTS_SECURE_PAYMENT_CONFIRMATION_DIALOG_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PAYMENTS_SECURE_PAYMENT_CONFIRMATION_DIALOG_VIEW_H_
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/payments/content/secure_payment_confirmation_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -95,7 +94,7 @@ class SecurePaymentConfirmationDialogView
 
   // Cache the instrument icon pointer so we don't needlessly update it in
   // OnModelUpdated().
-  raw_ptr<const SkBitmap> instrument_icon_ = nullptr;
+  const SkBitmap* instrument_icon_ = nullptr;
   // Cache the instrument icon generation ID to check if the instrument_icon_
   // has changed pixels.
   uint32_t instrument_icon_generation_id_ = 0;

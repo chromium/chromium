@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "components/autofill_assistant/browser/client_settings.h"
@@ -131,7 +130,7 @@ class ElementArea {
   void OnGetVisualViewport(const ClientStatus& status, const RectF& rect);
   void ReportUpdate();
 
-  const raw_ptr<ScriptExecutorDelegate> delegate_;
+  ScriptExecutorDelegate* const delegate_;
   std::vector<Rectangle> rectangles_;
 
   // If true, u pdate for the visual viewport position is currently scheduled.

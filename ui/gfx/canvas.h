@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/skia_paint_canvas.h"
@@ -463,7 +462,7 @@ class GFX_EXPORT Canvas {
   // there but bitmap_ and owned_canvas_ will not exist.
   absl::optional<SkBitmap> bitmap_;
   absl::optional<cc::SkiaPaintCanvas> owned_canvas_;
-  raw_ptr<cc::PaintCanvas> canvas_;
+  cc::PaintCanvas* canvas_;
 };
 
 }  // namespace gfx

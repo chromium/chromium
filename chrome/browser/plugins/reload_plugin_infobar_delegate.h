@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
 namespace content {
@@ -37,7 +36,7 @@ class ReloadPluginInfoBarDelegate : public ConfirmInfoBarDelegate {
   std::u16string GetButtonLabel(InfoBarButton button) const override;
   bool Accept() override;
 
-  raw_ptr<content::NavigationController> controller_;
+  content::NavigationController* controller_;
   std::u16string message_;
 };
 

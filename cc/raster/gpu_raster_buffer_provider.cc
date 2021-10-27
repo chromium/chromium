@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/trace_event/process_memory_dump.h"
@@ -213,7 +212,7 @@ class GpuRasterBufferProvider::GpuRasterBacking
   }
 
   // The ContextProvider used to clean up the mailbox
-  raw_ptr<viz::RasterContextProvider> worker_context_provider = nullptr;
+  viz::RasterContextProvider* worker_context_provider = nullptr;
 };
 
 GpuRasterBufferProvider::RasterBufferImpl::RasterBufferImpl(

@@ -14,7 +14,6 @@
 
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -173,7 +172,7 @@ class InMemoryURLIndex : public KeyedService,
    private:
     ~RebuildPrivateDataFromHistoryDBTask() override;
 
-    raw_ptr<InMemoryURLIndex> index_;  // Call back to this index at completion.
+    InMemoryURLIndex* index_;  // Call back to this index at completion.
     SchemeSet scheme_allowlist_;  // Schemes to be indexed.
     bool succeeded_;  // Indicates if the rebuild was successful.
     scoped_refptr<URLIndexPrivateData> data_;  // The rebuilt private data.
@@ -279,14 +278,14 @@ class InMemoryURLIndex : public KeyedService,
   const SchemeSet& scheme_allowlist() { return scheme_allowlist_; }
 
   // The BookmarkModel; may be null when testing.
-  raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
+  bookmarks::BookmarkModel* bookmark_model_;
 
   // The HistoryService; may be null when testing.
-  raw_ptr<history::HistoryService> history_service_;
+  history::HistoryService* history_service_;
 
   // The TemplateURLService; may be null when testing.  Used to identify URLs
   // that are from the default search provider.
-  raw_ptr<TemplateURLService> template_url_service_;
+  TemplateURLService* template_url_service_;
 
   // Directory where cache file resides. This is, except when unit testing,
   // the same directory in which the history database is found. It should never
@@ -300,8 +299,8 @@ class InMemoryURLIndex : public KeyedService,
   scoped_refptr<URLIndexPrivateData> private_data_;
 
   // Observers to notify upon restoral or save of the private data cache.
-  raw_ptr<RestoreCacheObserver> restore_cache_observer_;
-  raw_ptr<SaveCacheObserver> save_cache_observer_;
+  RestoreCacheObserver* restore_cache_observer_;
+  SaveCacheObserver* save_cache_observer_;
 
   // Task runner used for operations which require disk access.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;

@@ -55,7 +55,6 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -135,7 +134,7 @@ struct PacketProxy {
     if (receiver)
       receiver->ReceivePacket(std::move(packet));
   }
-  raw_ptr<CastReceiver> receiver;
+  CastReceiver* receiver;
 };
 
 class TransportClient : public CastTransport::Client {
@@ -164,9 +163,8 @@ class TransportClient : public CastTransport::Client {
   }
 
  private:
-  const raw_ptr<LogEventDispatcher>
-      log_event_dispatcher_;                 // Not owned by this class.
-  const raw_ptr<PacketProxy> packet_proxy_;  // Not owned by this class.
+  LogEventDispatcher* const log_event_dispatcher_;  // Not owned by this class.
+  PacketProxy* const packet_proxy_;                 // Not owned by this class.
 };
 
 // Maintains a queue of encoded video frames.
@@ -220,7 +218,7 @@ class EncodedVideoFrameTracker final : public RawEventSubscriber {
   }
 
  private:
-  raw_ptr<FakeMediaSource> media_source_;
+  FakeMediaSource* media_source_;
   CastLoggingEvent last_frame_event_type_;
   base::queue<scoped_refptr<media::VideoFrame>> video_frames_;
 };

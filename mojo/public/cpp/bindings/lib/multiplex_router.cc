@@ -14,7 +14,6 @@
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/waitable_event.h"
@@ -187,7 +186,7 @@ class MultiplexRouter::InterfaceEndpoint
 
   void OnSyncEventSignaled() {
     DCHECK(task_runner_->RunsTasksInCurrentSequence());
-    scoped_refptr<MultiplexRouter> router_protector(router_.get());
+    scoped_refptr<MultiplexRouter> router_protector(router_);
 
     MayAutoLock locker(&router_->lock_);
     scoped_refptr<InterfaceEndpoint> self_protector(this);
@@ -223,7 +222,7 @@ class MultiplexRouter::InterfaceEndpoint
   // ---------------------------------------------------------------------------
   // The following members are safe to access from any sequence.
 
-  const raw_ptr<MultiplexRouter> router_;
+  MultiplexRouter* const router_;
   const InterfaceId id_;
 
   // ---------------------------------------------------------------------------
@@ -243,7 +242,7 @@ class MultiplexRouter::InterfaceEndpoint
   // The task runner on which |client_|'s methods can be called.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   // Not owned. It is null if no client is attached to this endpoint.
-  raw_ptr<InterfaceEndpointClient> client_;
+  InterfaceEndpointClient* client_;
 
   // Indicates whether the sync watcher should be signaled for this endpoint.
   bool sync_message_event_signaled_ = false;

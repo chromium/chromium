@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "extensions/browser/api/idle/idle_api_constants.h"
 #include "extensions/browser/api/idle/idle_manager.h"
@@ -48,7 +47,7 @@ class ScopedListen {
   ~ScopedListen();
 
  private:
-  raw_ptr<IdleManager> idle_manager_;
+  IdleManager* idle_manager_;
   const std::string extension_id_;
 };
 
@@ -78,9 +77,9 @@ class IdleTest : public ApiUnitTest {
   void SetUp() override;
 
  protected:
-  raw_ptr<IdleManager> idle_manager_;
-  raw_ptr<TestIdleProvider> idle_provider_;
-  raw_ptr<testing::StrictMock<MockEventDelegate>> event_delegate_;
+  IdleManager* idle_manager_;
+  TestIdleProvider* idle_provider_;
+  testing::StrictMock<MockEventDelegate>* event_delegate_;
 };
 
 void IdleTest::SetUp() {

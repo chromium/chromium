@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/files/file.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "ui/gfx/geometry/size.h"
@@ -85,7 +84,7 @@ class ThumbnailLoader {
                         const SkBitmap* bitmap,
                         base::File::Error error);
 
-  const raw_ptr<Profile> profile_;
+  Profile* const profile_;
 
   // Maps pending thumbnail requests to their registered callbacks.
   std::map<base::UnguessableToken, ImageCallback> requests_;

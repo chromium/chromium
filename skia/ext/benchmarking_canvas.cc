@@ -10,7 +10,6 @@
 
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
@@ -371,12 +370,12 @@ public:
   const SkPaint* paint() const { return &filtered_paint_; }
 
 private:
- raw_ptr<BenchmarkingCanvas> canvas_;
- std::unique_ptr<base::DictionaryValue> op_record_;
- raw_ptr<base::ListValue> op_params_;
- base::TimeTicks start_ticks_;
+  BenchmarkingCanvas* canvas_;
+  std::unique_ptr<base::DictionaryValue> op_record_;
+  base::ListValue* op_params_;
+  base::TimeTicks start_ticks_;
 
- SkPaint filtered_paint_;
+  SkPaint filtered_paint_;
 };
 
 BenchmarkingCanvas::BenchmarkingCanvas(SkCanvas* canvas)

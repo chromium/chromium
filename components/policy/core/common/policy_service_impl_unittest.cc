@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/containers/flat_set.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -99,7 +98,7 @@ class ChangePolicyObserver : public PolicyService::Observer {
   bool observer_invoked() const { return observer_invoked_; }
 
  private:
-  raw_ptr<MockConfigurationPolicyProvider> provider_;
+  MockConfigurationPolicyProvider* provider_;
   bool observer_invoked_;
 };
 

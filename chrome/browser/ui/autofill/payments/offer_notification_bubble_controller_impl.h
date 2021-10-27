@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_OFFER_NOTIFICATION_BUBBLE_CONTROLLER_IMPL_H_
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_bubble_controller.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -86,7 +85,7 @@ class OfferNotificationBubbleControllerImpl
 
   // The Autofill offer being displayed as a bubble. Set when the bubble is
   // requested to be shown via ShowOfferNotificationIfApplicable(~).
-  raw_ptr<const AutofillOfferData> offer_;
+  const AutofillOfferData* offer_;
 
   // Denotes whether the bubble is shown due to user gesture. If this is true,
   // it means the bubble is a reshown bubble.
@@ -106,9 +105,9 @@ class OfferNotificationBubbleControllerImpl
   std::vector<GURL> origins_to_display_bubble_;
 
   // Used to update coupon last display timestamp.
-  raw_ptr<CouponService> coupon_service_;
+  CouponService* coupon_service_;
 
-  raw_ptr<ObserverForTest> observer_for_testing_ = nullptr;
+  ObserverForTest* observer_for_testing_ = nullptr;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

@@ -12,7 +12,6 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browsing_data/browsing_data_media_license_helper.h"
@@ -271,7 +270,7 @@ class BrowsingDataMediaLicenseHelperTest : public testing::Test {
   base::Time now_;
 
   // We don't own this pointer.
-  raw_ptr<storage::FileSystemContext> filesystem_context_;
+  storage::FileSystemContext* filesystem_context_;
 
   // Storage to pass information back from callbacks.
   std::unique_ptr<std::list<BrowsingDataMediaLicenseHelper::MediaLicenseInfo>>

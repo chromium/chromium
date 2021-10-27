@@ -18,7 +18,6 @@
 #include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"
@@ -352,7 +351,7 @@ class ProfileManager : public Profile::Delegate {
     ProfileInfo();
 
     // The Profile pointed to by this ProfileInfo.
-    raw_ptr<Profile> unowned_profile_ = nullptr;
+    Profile* unowned_profile_ = nullptr;
 
     // For when the Profile is owned, via FromOwnedProfile() or
     // TakeOwnershipOfProfile().
@@ -489,7 +488,7 @@ class ProfileManager : public Profile::Delegate {
     void OnBrowserSetLastActive(Browser* browser) override;
 
    private:
-    raw_ptr<ProfileManager> profile_manager_;
+    ProfileManager* profile_manager_;
   };
 
   // If the |loaded_profile| has been loaded successfully (according to

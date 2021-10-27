@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/feature_list.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
@@ -77,7 +76,7 @@ class ReportQueueProvider::InitializingContext {
   void OnStorageModuleConfigured(
       StatusOr<scoped_refptr<StorageModuleInterface>> storage_result);
 
-  const raw_ptr<ReportQueueProvider> provider_;
+  ReportQueueProvider* const provider_;
 
   InitializationStateTracker::ReleaseLeaderCallback release_leader_cb_;
   scoped_refptr<InitializationStateTracker> init_state_tracker_;

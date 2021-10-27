@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -154,7 +153,7 @@ class FindRequestManagerTest : public ContentBrowserTest,
   }
 
   FindTestWebContentsDelegate test_delegate_;
-  raw_ptr<WebContentsDelegate> normal_delegate_;
+  WebContentsDelegate* normal_delegate_;
 
   // The ID of the last find request requested.
   int last_request_id_;
@@ -946,7 +945,7 @@ class ZoomToFindInPageRectMessageFilter
       std::move(quit_closure_).Run();
   }
 
-  raw_ptr<blink::mojom::FrameWidgetHost> impl_;
+  blink::mojom::FrameWidgetHost* impl_;
   gfx::Rect widget_rect_seen_;
   bool widget_message_seen_;
   base::OnceClosure quit_closure_;
@@ -1409,8 +1408,8 @@ class NeverFinishSubframeFindInPageClient : public FindInPageClient {
   }
 
  private:
-  raw_ptr<RenderFrameHostImpl> rfh_;
-  raw_ptr<WaitForFindTestWebContentsDelegate> delegate_;
+  RenderFrameHostImpl* rfh_;
+  WaitForFindTestWebContentsDelegate* delegate_;
 };
 
 class FindRequestManagerTestObserver : public WebContentsObserver {

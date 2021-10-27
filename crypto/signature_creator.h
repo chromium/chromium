@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "crypto/crypto_export.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
@@ -59,7 +58,7 @@ class CRYPTO_EXPORT SignatureCreator {
   // Private constructor. Use the Create() method instead.
   SignatureCreator();
 
-  raw_ptr<EVP_MD_CTX> sign_context_;
+  EVP_MD_CTX* sign_context_;
 };
 
 }  // namespace crypto

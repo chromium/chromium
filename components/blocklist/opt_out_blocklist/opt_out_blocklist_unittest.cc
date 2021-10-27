@@ -16,7 +16,6 @@
 #include "base/callback_helpers.h"
 #include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -288,7 +287,7 @@ class OptOutBlocklistTest : public testing::Test {
   TestOptOutBlocklistDelegate blocklist_delegate_;
 
   base::SimpleTestClock test_clock_;
-  raw_ptr<TestOptOutStore> opt_out_store_;
+  TestOptOutStore* opt_out_store_;
   base::Time start_;
 
   std::unique_ptr<TestOptOutBlocklist> block_list_;

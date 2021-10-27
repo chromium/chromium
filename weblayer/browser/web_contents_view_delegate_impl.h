@@ -6,7 +6,6 @@
 #define WEBLAYER_BROWSER_WEB_CONTENTS_VIEW_DELEGATE_IMPL_H_
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "content/public/browser/web_contents_view_delegate.h"
 
 namespace content {
@@ -30,7 +29,7 @@ class WebContentsViewDelegateImpl : public content::WebContentsViewDelegate {
                        const content::ContextMenuParams& params) override;
 
  private:
-  raw_ptr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
 };
 
 }  // namespace weblayer

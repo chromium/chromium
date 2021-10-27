@@ -9,7 +9,6 @@
 
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 
@@ -139,7 +138,7 @@ class TaskManagerObserver {
   friend class TaskManagerInterface;
 
   // The currently observed task Manager.
-  raw_ptr<TaskManagerInterface> observed_task_manager_;
+  TaskManagerInterface* observed_task_manager_;
 
   // The minimum update time of the task manager that this observer needs to
   // do its job.

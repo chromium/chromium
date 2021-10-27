@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/command_line.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ssl/tls_deprecation_test_utils.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -80,7 +79,7 @@ class SecurityStateTabHelperHistogramTest
   void NavigateToHTTPS() { NavigateAndCommit(GURL("https://example.test")); }
 
  private:
-  raw_ptr<SecurityStateTabHelper> helper_;
+  SecurityStateTabHelper* helper_;
 };
 
 TEST_F(SecurityStateTabHelperHistogramTest, FormSubmissionHistogram) {

@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "crypto/ec_private_key.h"
@@ -121,7 +120,7 @@ class CancelStreamCallback : public TestCompletionCallbackBase {
     SetResult(result);
   }
 
-  raw_ptr<SpdyHttpStream> stream_;
+  SpdyHttpStream* stream_;
 };
 
 }  // namespace

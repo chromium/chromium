@@ -10,7 +10,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "device/bluetooth/bluetooth_local_gatt_characteristic.h"
 #include "device/bluetooth/bluetooth_local_gatt_descriptor.h"
 #include "device/bluetooth/bluetooth_local_gatt_service.h"
@@ -91,9 +90,9 @@ class TestBluetoothLocalGattServiceDelegate
   std::string last_seen_device_;
 
  private:
-  raw_ptr<BluetoothLocalGattService> expected_service_;
-  raw_ptr<BluetoothLocalGattCharacteristic> expected_characteristic_;
-  raw_ptr<BluetoothLocalGattDescriptor> expected_descriptor_;
+  BluetoothLocalGattService* expected_service_;
+  BluetoothLocalGattCharacteristic* expected_characteristic_;
+  BluetoothLocalGattDescriptor* expected_descriptor_;
 
   std::map<std::string, bool> notifications_started_for_characteristic_;
 };

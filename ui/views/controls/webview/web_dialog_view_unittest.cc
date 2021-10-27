@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_client.h"
@@ -105,11 +104,11 @@ class WebDialogViewUnitTest : public views::test::WidgetTest {
   WebDialogView* web_dialog_view() { return web_dialog_view_; }
 
   views::WebView* web_view() {
-    return web_dialog_view_ ? web_dialog_view_->web_view_.get() : nullptr;
+    return web_dialog_view_ ? web_dialog_view_->web_view_ : nullptr;
   }
 
   ui::WebDialogDelegate* web_view_delegate() {
-    return web_dialog_view_ ? web_dialog_view_->delegate_.get() : nullptr;
+    return web_dialog_view_ ? web_dialog_view_->delegate_ : nullptr;
   }
 
   TestWebDialogViewWebDialogDelegate* web_dialog_delegate() {
@@ -139,8 +138,8 @@ class WebDialogViewUnitTest : public views::test::WidgetTest {
   std::unique_ptr<content::TestBrowserContext> browser_context_;
   // These are raw pointers (vs unique pointers) because the views
   // system does its own internal memory management.
-  raw_ptr<views::Widget> widget_ = nullptr;
-  raw_ptr<WebDialogView> web_dialog_view_ = nullptr;
+  views::Widget* widget_ = nullptr;
+  WebDialogView* web_dialog_view_ = nullptr;
   base::RepeatingClosure quit_closure_;
 
   std::unique_ptr<TestWebDialogViewWebDialogDelegate> web_dialog_delegate_;

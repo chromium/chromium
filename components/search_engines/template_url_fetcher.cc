@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -90,7 +89,7 @@ class TemplateURLFetcher::RequestDelegate {
   void AddSearchProvider();
 
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
-  raw_ptr<TemplateURLFetcher> fetcher_;
+  TemplateURLFetcher* fetcher_;
   std::unique_ptr<TemplateURL> template_url_;
   std::u16string keyword_;
   const GURL osdd_url_;

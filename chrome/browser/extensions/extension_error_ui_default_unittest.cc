@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/extension_error_ui_default.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/extension_error_ui.h"
 #include "chrome/grit/chromium_strings.h"
@@ -61,7 +60,7 @@ class ManagementPolicyMock : public extensions::ManagementPolicy::Provider {
   }
 
  private:
-  raw_ptr<const extensions::Extension> extension_;
+  const extensions::Extension* extension_;
   bool may_load_;
 };
 

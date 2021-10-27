@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #if defined(OS_ANDROID)
 #include "base/android/jni_android.h"
@@ -64,7 +63,7 @@ class JniIdentityMutator {
 
   JniIdentityMutator(IdentityMutator* identity_mutator);
 
-  raw_ptr<IdentityMutator> identity_mutator_;
+  IdentityMutator* identity_mutator_;
 };
 #endif
 

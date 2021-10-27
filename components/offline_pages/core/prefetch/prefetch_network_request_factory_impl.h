@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "components/offline_pages/core/prefetch/prefetch_dispatcher.h"
 #include "components/offline_pages/core/prefetch/prefetch_network_request_factory.h"
 #include "components/prefs/pref_service.h"
@@ -97,7 +96,7 @@ class PrefetchNetworkRequestFactoryImpl : public PrefetchNetworkRequestFactory {
   // Used to id GeneratePageBundle requests so they can be removed from the map.
   uint64_t request_id_ = 0;
 
-  raw_ptr<PrefService> prefs_;
+  PrefService* prefs_;
 
   base::WeakPtrFactory<PrefetchNetworkRequestFactoryImpl> weak_factory_{this};
 };

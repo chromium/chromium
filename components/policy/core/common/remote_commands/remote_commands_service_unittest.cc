@@ -13,7 +13,6 @@
 #include "base/callback_helpers.h"
 #include "base/containers/queue.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -194,7 +193,7 @@ class TestingCloudPolicyClientForRemoteCommands : public CloudPolicyClient {
   }
 
   base::queue<FetchCallExpectation> expected_fetch_commands_calls_;
-  raw_ptr<TestingRemoteCommandsServer> server_;
+  TestingRemoteCommandsServer* server_;
 };
 
 // Base class for unit tests regarding remote commands service.
@@ -573,7 +572,7 @@ class RemoteCommandsServiceHistogramTest : public RemoteCommandsServiceTest {
                                        metrics.size());
   }
 
-  raw_ptr<MockTestRemoteCommandFactory> factory_ptr;
+  MockTestRemoteCommandFactory* factory_ptr;
   base::HistogramTester histogram_tester_;
 };
 

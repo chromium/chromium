@@ -4,7 +4,6 @@
 
 #include "media/mojo/services/gpu_mojo_media_client.h"
 
-#include "base/memory/raw_ptr.h"
 #include "base/win/windows_version.h"
 #include "media/base/audio_decoder.h"
 #include "media/base/media_switches.h"
@@ -87,7 +86,7 @@ class WinPlatformDelegate : public GpuMojoMediaClient::PlatformDelegate {
   }
 
  private:
-  raw_ptr<GpuMojoMediaClient> client_;
+  GpuMojoMediaClient* client_;
 };
 
 }  // namespace

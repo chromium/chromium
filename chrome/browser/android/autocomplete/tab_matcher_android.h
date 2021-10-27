@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
@@ -38,7 +37,7 @@ class TabMatcherAndroid : public TabMatcher {
       const std::vector<TabModel*>& tab_models) const;
 
   const AutocompleteProviderClient& client_;
-  raw_ptr<Profile> profile_;
+  Profile* profile_;
 };
 
 #endif  // CHROME_BROWSER_ANDROID_AUTOCOMPLETE_TAB_MATCHER_ANDROID_H_

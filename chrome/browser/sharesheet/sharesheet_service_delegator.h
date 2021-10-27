@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chrome/browser/sharesheet/sharesheet_ui_delegate.h"
@@ -97,7 +96,7 @@ class SharesheetServiceDelegator {
   // SharesheetServiceDelegator.
   gfx::NativeWindow native_window_;
 
-  raw_ptr<SharesheetService> sharesheet_service_;
+  SharesheetService* sharesheet_service_;
 
   std::unique_ptr<SharesheetUiDelegate> sharesheet_controller_;
 };

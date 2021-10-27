@@ -11,7 +11,6 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/hash/hash.h"
-#include "base/memory/raw_ptr.h"
 #include "base/process/process_metrics.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
@@ -172,8 +171,8 @@ class WriteHandler {
  private:
   bool CheckForErrorAndCancel(int result);
 
-  raw_ptr<const DiskCachePerfTest> test_;
-  raw_ptr<disk_cache::Backend> cache_;
+  const DiskCachePerfTest* test_;
+  disk_cache::Backend* cache_;
   net::CompletionOnceCallback final_callback_;
 
   size_t next_entry_index_ = 0;
@@ -299,10 +298,10 @@ class ReadHandler {
  private:
   bool CheckForErrorAndCancel(int result);
 
-  raw_ptr<const DiskCachePerfTest> test_;
+  const DiskCachePerfTest* test_;
   const WhatToRead what_to_read_;
 
-  raw_ptr<disk_cache::Backend> cache_;
+  disk_cache::Backend* cache_;
   net::CompletionOnceCallback final_callback_;
 
   size_t next_entry_index_ = 0;

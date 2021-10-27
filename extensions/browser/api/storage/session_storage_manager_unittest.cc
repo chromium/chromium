@@ -5,7 +5,6 @@
 #include <memory>
 
 #include "base/containers/contains.h"
-#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "extensions/browser/api/storage/session_storage_manager.h"
 #include "extensions/browser/extensions_test.h"
@@ -61,7 +60,7 @@ class SessionStorageManagerUnittest : public ExtensionsTest {
   base::Value value_dict_;
 
   // Session storage manager being tested.
-  raw_ptr<SessionStorageManager> manager_;
+  SessionStorageManager* manager_;
 };
 
 void SessionStorageManagerUnittest::SetUp() {

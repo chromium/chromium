@@ -14,7 +14,6 @@
 #ifndef COMPONENTS_SUBRESOURCE_FILTER_CORE_COMMON_TIME_MEASUREMENTS_H_
 #define COMPONENTS_SUBRESOURCE_FILTER_CORE_COMMON_TIME_MEASUREMENTS_H_
 
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram.h"
 #include "base/time/time.h"
 #include "components/subresource_filter/core/common/scoped_timers.h"
@@ -137,7 +136,7 @@ class ExportTimeDeltaToHistogram {
   }
 
  private:
-  raw_ptr<base::HistogramBase> histogram_;
+  base::HistogramBase* histogram_;
 };
 
 using ExportMillisecondsToHistogram = ExportTimeDeltaToHistogram<false>;

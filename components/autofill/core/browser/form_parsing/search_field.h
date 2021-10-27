@@ -10,7 +10,6 @@
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/form_parsing/form_field.h"
 #include "components/autofill/core/browser/pattern_provider/pattern_provider.h"
 #include "components/autofill/core/common/language_code.h"
@@ -40,7 +39,7 @@ class SearchField : public FormField {
   FRIEND_TEST_ALL_PREFIXES(SearchFieldTest, ParseSearchTerm);
   FRIEND_TEST_ALL_PREFIXES(SearchFieldTest, ParseNonSearchTerm);
 
-  raw_ptr<const AutofillField> field_;
+  const AutofillField* field_;
 };
 
 }  // namespace autofill

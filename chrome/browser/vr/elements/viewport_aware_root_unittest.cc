@@ -7,7 +7,6 @@
 #include <cmath>
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "base/numerics/ranges.h"
 #include "chrome/browser/vr/elements/draw_phase.h"
 #include "chrome/browser/vr/test/animation_utils.h"
@@ -150,8 +149,8 @@ class ViewportAwareRootTest : public testing::Test {
     return changed;
   }
 
-  raw_ptr<ViewportAwareRootForTesting> viewport_root;
-  raw_ptr<UiElement> viewport_element;
+  ViewportAwareRootForTesting* viewport_root;
+  UiElement* viewport_element;
 
  private:
   std::unique_ptr<UiScene> scene_;

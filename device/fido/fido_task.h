@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "device/fido/fido_device.h"
 
@@ -47,7 +46,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTask {
   }
 
  private:
-  const raw_ptr<FidoDevice> device_;
+  FidoDevice* const device_;
   base::WeakPtrFactory<FidoTask> weak_factory_{this};
 };
 

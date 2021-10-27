@@ -12,7 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/task_environment.h"
 #include "components/history/core/test/history_unittest_base.h"
@@ -68,7 +67,7 @@ class HistoryBackendDBBaseTest : public HistoryUnitTestBase {
   // Created via CreateBackendAndDatabase.
   scoped_refptr<HistoryBackend> backend_;
   std::unique_ptr<InMemoryHistoryBackend> in_mem_backend_;
-  raw_ptr<HistoryDatabase> db_;  // Cached reference to the backend's database.
+  HistoryDatabase* db_;  // Cached reference to the backend's database.
   sql::InitStatus last_profile_error_;
 };
 

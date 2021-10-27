@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/autofill/core/browser/sync_utils.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
@@ -78,7 +77,7 @@ class TestLocalCardMigrationManager : public LocalCardMigrationManager {
 
   bool main_prompt_was_shown_ = false;
 
-  raw_ptr<TestPersonalDataManager> personal_data_manager_;
+  TestPersonalDataManager* personal_data_manager_;
 };
 
 }  // namespace autofill

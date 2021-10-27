@@ -13,7 +13,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_path_override.h"
 #include "build/build_config.h"
@@ -213,13 +212,13 @@ class GalleryWatchManagerTest : public GalleryWatchManagerObserver,
   std::unique_ptr<ash::ScopedTestUserManager> test_user_manager_;
 #endif
 
-  raw_ptr<storage_monitor::TestStorageMonitor> monitor_;
+  storage_monitor::TestStorageMonitor* monitor_;
   std::unique_ptr<TestingProfile> profile_;
-  raw_ptr<MediaGalleriesPreferences> gallery_prefs_;
+  MediaGalleriesPreferences* gallery_prefs_;
 
   bool expect_gallery_changed_;
   bool expect_gallery_watch_dropped_;
-  raw_ptr<base::RunLoop> pending_loop_;
+  base::RunLoop* pending_loop_;
 };
 
 // TODO(crbug.com/936065): Flaky on ChromeOS.

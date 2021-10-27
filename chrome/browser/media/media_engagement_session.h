@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_MEDIA_MEDIA_ENGAGEMENT_SESSION_H_
 #define CHROME_BROWSER_MEDIA_MEDIA_ENGAGEMENT_SESSION_H_
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -88,7 +87,7 @@ class MediaEngagementSession : public base::RefCounted<MediaEngagementSession> {
   void CommitPendingData();
 
   // Weak pointer because |this| has a lifetime shorter than it.
-  raw_ptr<MediaEngagementService> service_;
+  MediaEngagementService* service_;
 
   // Origin associated with the session.
   url::Origin origin_;

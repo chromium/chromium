@@ -12,7 +12,6 @@
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "ipc/ipc_channel.h"
 
 namespace IPC {
@@ -148,7 +147,7 @@ class COMPONENT_EXPORT(IPC) ChannelReader {
   // Checks that |size| is a valid message size. Has side effects if it's not.
   bool CheckMessageSize(size_t size);
 
-  raw_ptr<Listener> listener_;
+  Listener* listener_;
 
   // We read from the pipe into this buffer. Managed by DispatchInputData, do
   // not access directly outside that function.

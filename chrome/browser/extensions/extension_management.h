@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
 #include "base/observer_list.h"
@@ -320,8 +319,8 @@ class ExtensionManagement : public KeyedService {
   // Extension settings applicable to all extensions.
   std::unique_ptr<internal::GlobalSettings> global_settings_;
 
-  const raw_ptr<Profile> profile_ = nullptr;
-  raw_ptr<PrefService> pref_service_ = nullptr;
+  Profile* const profile_ = nullptr;
+  PrefService* pref_service_ = nullptr;
   bool is_signin_profile_ = false;
   bool is_child_ = false;
 

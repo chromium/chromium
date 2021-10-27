@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
@@ -69,7 +68,7 @@ class SharedWorkerHelper
  private:
   friend class base::RefCountedThreadSafe<SharedWorkerHelper>;
 
-  raw_ptr<content::StoragePartition> storage_partition_;
+  content::StoragePartition* storage_partition_;
 };
 
 // This class is an implementation of SharedWorkerHelper that does

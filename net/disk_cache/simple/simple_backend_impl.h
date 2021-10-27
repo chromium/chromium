@@ -16,7 +16,6 @@
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_split.h"
@@ -252,7 +251,7 @@ class NET_EXPORT_PRIVATE SimpleBackendImpl : public Backend,
   // We want this destroyed after every other field.
   scoped_refptr<BackendCleanupTracker> cleanup_tracker_;
 
-  const raw_ptr<SimpleFileTracker> file_tracker_;
+  SimpleFileTracker* const file_tracker_;
 
   const base::FilePath path_;
   std::unique_ptr<SimpleIndex> index_;
@@ -276,13 +275,12 @@ class NET_EXPORT_PRIVATE SimpleBackendImpl : public Backend,
   // the Doom.
   scoped_refptr<SimplePostDoomWaiterTable> post_doom_waiting_;
 
-  const raw_ptr<net::NetLog> net_log_;
+  net::NetLog* const net_log_;
 
   uint32_t entry_count_ = 0;
 
 #if defined(OS_ANDROID)
-  raw_ptr<base::android::ApplicationStatusListener> app_status_listener_ =
-      nullptr;
+  base::android::ApplicationStatusListener* app_status_listener_ = nullptr;
 #endif
 };
 

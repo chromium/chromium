@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -218,7 +217,7 @@ class ButtonTest : public ViewsTestBase {
 
  private:
   std::unique_ptr<Widget> widget_;
-  raw_ptr<TestButton> button_;
+  TestButton* button_;
   std::unique_ptr<TestButtonObserver> button_observer_;
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
 };

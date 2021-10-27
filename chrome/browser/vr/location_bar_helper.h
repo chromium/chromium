@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_VR_LOCATION_BAR_HELPER_H_
 #define CHROME_BROWSER_VR_LOCATION_BAR_HELPER_H_
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/vr/browser_ui_interface.h"
 #include "chrome/browser/vr/model/location_bar_state.h"
 #include "chrome/browser/vr/vr_export.h"
@@ -28,7 +27,7 @@ class VR_EXPORT LocationBarHelper {
   void Update();
 
  private:
-  raw_ptr<BrowserUiInterface> ui_;
+  BrowserUiInterface* ui_;
   std::unique_ptr<LocationBarModel> location_bar_model_;
   LocationBarState current_state_;
 };

@@ -10,7 +10,6 @@
 
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
@@ -93,7 +92,7 @@ class DebugScopedSetMainThreadBlocked {
       const DebugScopedSetMainThreadBlocked&) = delete;
 
  private:
-  raw_ptr<TaskRunnerProvider> task_runner_provider_;
+  TaskRunnerProvider* task_runner_provider_;
 };
 #else
 class DebugScopedSetMainThreadBlocked {

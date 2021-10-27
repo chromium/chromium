@@ -8,7 +8,6 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "media/learning/mojo/mojo_learning_task_controller_service.h"
@@ -114,7 +113,7 @@ class MojoLearningTaskControllerServiceTest : public ::testing::Test {
   // Mojo stuff.
   base::test::TaskEnvironment task_environment_;
 
-  raw_ptr<FakeLearningTaskController> controller_raw_ = nullptr;
+  FakeLearningTaskController* controller_raw_ = nullptr;
 
   // The learner under test.
   std::unique_ptr<MojoLearningTaskControllerService> service_;

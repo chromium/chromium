@@ -5,7 +5,6 @@
 #include <string>
 
 #include "base/command_line.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -162,8 +161,8 @@ class ConditionalFocusBrowserTest : public WebRtcTestBase {
   }
 
  protected:
-  raw_ptr<WebContents> captured_tab_ = nullptr;
-  raw_ptr<WebContents> capturing_tab_ = nullptr;
+  WebContents* captured_tab_ = nullptr;
+  WebContents* capturing_tab_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest,

@@ -12,7 +12,6 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/flat_set.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/database/database_maintenance.h"
@@ -89,12 +88,12 @@ class DatabaseMaintenanceImpl : public DatabaseMaintenance {
 
   // Input.
   base::flat_set<OptimizationTarget> segment_ids_;
-  raw_ptr<base::Clock> clock_;
+  base::Clock* clock_;
 
   // Databases.
-  raw_ptr<SegmentInfoDatabase> segment_info_database_;
-  raw_ptr<SignalDatabase> signal_database_;
-  raw_ptr<SignalStorageConfig> signal_storage_config_;
+  SegmentInfoDatabase* segment_info_database_;
+  SignalDatabase* signal_database_;
+  SignalStorageConfig* signal_storage_config_;
 
   base::WeakPtrFactory<DatabaseMaintenanceImpl> weak_ptr_factory_{this};
 };

@@ -10,7 +10,6 @@
 #include "base/base_export.h"
 #include "base/callback.h"
 #include "base/check_op.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/message_loop/message_pump_for_io.h"
@@ -76,7 +75,7 @@ class BASE_EXPORT FileDescriptorWatcher {
     // Controller is deleted, ownership of |watcher_| is transfered to a delete
     // task posted to the MessageLoopForIO. This ensures that |watcher_| isn't
     // deleted while it is being used by the MessageLoopForIO.
-    raw_ptr<Watcher> watcher_;
+    Watcher* watcher_;
 
     // An event for the watcher to notify controller that it's destroyed.
     // As the |watcher_| is owned by Controller, always outlives the Watcher.

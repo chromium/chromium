@@ -12,7 +12,6 @@
 #include "base/containers/circular_deque.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/sequenced_task_runner.h"
 
@@ -102,7 +101,7 @@ class ByteStreamWriterImpl : public ByteStreamWriter {
 
   // Only valid to access on peer_task_runner_ if
   // |*peer_lifetime_flag_ == true|
-  raw_ptr<ByteStreamReaderImpl> peer_;
+  ByteStreamReaderImpl* peer_;
 };
 
 class ByteStreamReaderImpl : public ByteStreamReader {
@@ -175,7 +174,7 @@ class ByteStreamReaderImpl : public ByteStreamReader {
 
   // Only valid to access on peer_task_runner_ if
   // |*peer_lifetime_flag_ == true|
-  raw_ptr<ByteStreamWriterImpl> peer_;
+  ByteStreamWriterImpl* peer_;
 };
 
 ByteStreamWriterImpl::ByteStreamWriterImpl(

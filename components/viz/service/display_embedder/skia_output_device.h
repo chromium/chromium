@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "components/viz/service/display/output_surface.h"
@@ -84,9 +83,9 @@ class SkiaOutputDevice {
 
    private:
     std::vector<GrBackendSemaphore> end_semaphores_;
-    const raw_ptr<SkiaOutputDevice> device_;
+    SkiaOutputDevice* const device_;
     // Null when using vulkan secondary command buffer.
-    const raw_ptr<SkSurface> sk_surface_;
+    SkSurface* const sk_surface_;
   };
 
   using BufferPresentedCallback =
@@ -246,7 +245,7 @@ class SkiaOutputDevice {
       std::vector<gpu::Mailbox> released_overlays = {},
       const gpu::Mailbox& primary_plane_mailbox = gpu::Mailbox());
 
-  const raw_ptr<GrDirectContext> gr_context_;
+  GrDirectContext* const gr_context_;
 
   OutputSurface::Capabilities capabilities_;
 

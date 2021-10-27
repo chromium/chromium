@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_READ_LATER_SIDE_PANEL_BOOKMARKS_PAGE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_READ_LATER_SIDE_PANEL_BOOKMARKS_PAGE_HANDLER_H_
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/read_later/side_panel/bookmarks.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -30,7 +29,7 @@ class BookmarksPageHandler : public side_panel::mojom::BookmarksPageHandler {
 
  private:
   mojo::Receiver<side_panel::mojom::BookmarksPageHandler> receiver_;
-  const raw_ptr<ReadLaterUI> read_later_ui_;
+  ReadLaterUI* const read_later_ui_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_READ_LATER_SIDE_PANEL_BOOKMARKS_PAGE_HANDLER_H_

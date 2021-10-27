@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "net/base/ip_endpoint.h"
@@ -232,8 +231,8 @@ class NET_EXPORT ClientSocketHandle {
   void ResetErrorState();
 
   bool is_initialized_;
-  raw_ptr<ClientSocketPool> pool_;
-  raw_ptr<HigherLayeredPool> higher_pool_;
+  ClientSocketPool* pool_;
+  HigherLayeredPool* higher_pool_;
   std::unique_ptr<StreamSocket> socket_;
   ClientSocketPool::GroupId group_id_;
   SocketReuseType reuse_type_;

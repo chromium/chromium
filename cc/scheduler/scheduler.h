@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/cancelable_callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/event_metrics.h"
@@ -279,11 +278,11 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
   virtual base::TimeTicks Now() const;
 
   const SchedulerSettings settings_;
-  const raw_ptr<SchedulerClient> client_;
+  SchedulerClient* const client_;
   const int layer_tree_host_id_;
-  raw_ptr<base::SingleThreadTaskRunner> task_runner_;
+  base::SingleThreadTaskRunner* task_runner_;
 
-  raw_ptr<viz::BeginFrameSource> begin_frame_source_ = nullptr;
+  viz::BeginFrameSource* begin_frame_source_ = nullptr;
   bool observing_begin_frame_source_ = false;
 
   bool skipped_last_frame_missed_exceeded_deadline_ = false;
@@ -292,8 +291,7 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
 
   // Owned by LayerTreeHostImpl and is destroyed when LayerTreeHostImpl is
   // destroyed.
-  raw_ptr<CompositorFrameReportingController>
-      compositor_frame_reporting_controller_;
+  CompositorFrameReportingController* compositor_frame_reporting_controller_;
 
   // What the latest deadline was, and when it was scheduled.
   base::TimeTicks deadline_;
@@ -344,11 +342,11 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
   // arrive so that |client_| can be informed about changes.
   base::TimeDelta last_frame_interval_;
 
-  const raw_ptr<gfx::RenderingPipeline> main_thread_pipeline_;
+  gfx::RenderingPipeline* const main_thread_pipeline_;
   absl::optional<gfx::RenderingPipeline::ScopedPipelineActive>
       main_thread_pipeline_active_;
 
-  const raw_ptr<gfx::RenderingPipeline> compositor_thread_pipeline_;
+  gfx::RenderingPipeline* const compositor_thread_pipeline_;
   absl::optional<gfx::RenderingPipeline::ScopedPipelineActive>
       compositor_thread_pipeline_active_;
 

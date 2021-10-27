@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/print_preview/printer_handler.h"
 #include "extensions/browser/api/printer_provider/printer_provider_api.h"
@@ -99,7 +98,7 @@ class ExtensionPrinterHandler : public PrinterHandler {
       AddedPrintersCallback callback,
       std::vector<device::mojom::UsbDeviceInfoPtr> devices);
 
-  const raw_ptr<Profile> profile_;
+  Profile* const profile_;
   GetPrintersDoneCallback done_callback_;
   PrintJobCallback print_job_callback_;
   std::unique_ptr<PwgRasterConverter> pwg_raster_converter_;

@@ -15,7 +15,6 @@
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 
 namespace ui {
 namespace metadata {
@@ -145,7 +144,7 @@ class COMPONENT_EXPORT(UI_BASE_METADATA) ClassMetaData {
     explicit ClassMemberIterator(ClassMetaData* starting_container);
     void IncrementHelper();
 
-    raw_ptr<ClassMetaData> current_collection_;
+    ClassMetaData* current_collection_;
     size_t current_vector_index_;
   };
 
@@ -158,7 +157,7 @@ class COMPONENT_EXPORT(UI_BASE_METADATA) ClassMetaData {
  private:
   std::string type_name_;
   std::vector<MemberMetaDataBase*> members_;
-  raw_ptr<ClassMetaData> parent_class_meta_data_ = nullptr;
+  ClassMetaData* parent_class_meta_data_ = nullptr;
   std::string file_;
   const int line_ = 0;
 };

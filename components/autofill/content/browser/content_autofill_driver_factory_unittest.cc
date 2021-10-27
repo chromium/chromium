@@ -7,7 +7,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
@@ -105,7 +104,7 @@ class ContentAutofillDriverFactoryTest_WithTwoFrames
   content::RenderFrameHost* child_rfh() { return child_rfh_; }
 
  private:
-  raw_ptr<content::RenderFrameHost> child_rfh_ = nullptr;
+  content::RenderFrameHost* child_rfh_ = nullptr;
 };
 
 TEST_F(ContentAutofillDriverFactoryTest_WithTwoFrames, TwoDrivers) {

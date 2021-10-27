@@ -16,7 +16,6 @@
 #include "base/containers/lru_cache.h"
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_debouncer.h"
@@ -189,10 +188,10 @@ class DocumentProvider : public AutocompleteProvider {
   bool backoff_for_session_;
 
   // Client for accessing TemplateUrlService, prefs, etc.
-  raw_ptr<AutocompleteProviderClient> client_;
+  AutocompleteProviderClient* client_;
 
   // Listener to notify when results are available.
-  raw_ptr<AutocompleteProviderListener> listener_;
+  AutocompleteProviderListener* listener_;
 
   // Saved when starting a new autocomplete request so that it can be retrieved
   // when responses return asynchronously.

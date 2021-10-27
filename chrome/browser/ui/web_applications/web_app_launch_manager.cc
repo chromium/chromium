@@ -9,7 +9,6 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
@@ -198,7 +197,7 @@ class LaunchProcess {
   Profile& profile_;
   WebAppProvider& provider_;
   const apps::AppLaunchParams& params_;
-  raw_ptr<const WebApp> web_app_ = nullptr;
+  const WebApp* web_app_ = nullptr;
 };
 
 LaunchProcess::LaunchProcess(Profile& profile,

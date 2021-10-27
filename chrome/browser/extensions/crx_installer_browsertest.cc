@@ -16,7 +16,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -112,7 +111,7 @@ class MockPromptProxy {
 
  private:
   // Data used to create a prompt.
-  raw_ptr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
 
   // Data reported back to us by the prompt we created.
   bool confirmation_requested_;
@@ -144,7 +143,7 @@ class MockInstallPrompt : public ExtensionInstallPrompt {
   }
 
  private:
-  raw_ptr<MockPromptProxy> proxy_;
+  MockPromptProxy* proxy_;
 };
 
 MockPromptProxy::MockPromptProxy(

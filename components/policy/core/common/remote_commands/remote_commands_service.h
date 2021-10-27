@@ -11,7 +11,6 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/circular_deque.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/policy_invalidation_scope.h"
@@ -166,8 +165,8 @@ class POLICY_EXPORT RemoteCommandsService
 
   RemoteCommandsQueue queue_;
   std::unique_ptr<RemoteCommandsFactory> factory_;
-  const raw_ptr<CloudPolicyClient> client_;
-  const raw_ptr<CloudPolicyStore> store_;
+  CloudPolicyClient* const client_;
+  CloudPolicyStore* const store_;
 
   // Callback which gets called after the last command got ACK'd to the server
   // as executed.

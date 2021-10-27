@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/browser_switcher/browser_switcher_prefs.h"
 #include "chrome/browser/browser_switcher/browser_switcher_service.h"
 #include "chrome/browser/browser_switcher/browser_switcher_service_factory.h"
@@ -86,7 +85,7 @@ class BrowserSwitcherNavigationThrottleTest
   Decision go() { return {kGo, kSitelist, bogus_rule_.get()}; }
 
  private:
-  raw_ptr<MockBrowserSwitcherSitelist> sitelist_;
+  MockBrowserSwitcherSitelist* sitelist_;
 
   std::unique_ptr<Rule> bogus_rule_ =
       CanonicalizeRule("//example.com/", ParsingMode::kDefault);

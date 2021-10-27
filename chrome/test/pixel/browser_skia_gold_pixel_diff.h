@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "ui/base/test/skia_gold_pixel_diff.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -74,7 +73,7 @@ class BrowserSkiaGoldPixelDiff : public ui::test::SkiaGoldPixelDiff {
                                           gfx::Image* image) const;
 
  private:
-  raw_ptr<views::Widget> widget_ = nullptr;
+  views::Widget* widget_ = nullptr;
 };
 
 #endif  // CHROME_TEST_PIXEL_BROWSER_SKIA_GOLD_PIXEL_DIFF_H_

@@ -16,7 +16,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
@@ -195,17 +194,17 @@ class AutofillDownloadManager {
 
   // The AutofillDriver that this instance will use. Must not be null, and must
   // outlive this instance.
-  const raw_ptr<AutofillDriver> driver_;  // WEAK
+  AutofillDriver* const driver_;  // WEAK
 
   // The observer to notify when server predictions are successfully received.
   // Must not be null.
-  const raw_ptr<AutofillDownloadManager::Observer> observer_;  // WEAK
+  AutofillDownloadManager::Observer* const observer_;  // WEAK
 
   // Callback function to retrieve API key.
   const std::string api_key_;
 
   // Access to leave log messages for chrome://autofill-internals, may be null.
-  const raw_ptr<LogManager> log_manager_;  // WEAK
+  LogManager* const log_manager_;  // WEAK
 
   // The autofill server URL root: scheme://host[:port]/path excluding the
   // final path component for the request and the query params.

@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "cc/paint/paint_op_buffer.h"
 
 #include "third_party/skia/src/core/SkRemoteGlyphCache.h"
@@ -137,7 +136,7 @@ class CC_PAINT_EXPORT SimpleBufferSerializer : public PaintOpBufferSerializer {
                            const SkM44& current_ctm,
                            const SkM44& original_ctm);
 
-  raw_ptr<void> memory_;
+  void* memory_;
   const size_t total_;
   size_t written_ = 0u;
 };

@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
@@ -59,7 +58,7 @@ class VoiceSuggestProvider : public BaseSearchProvider {
   // A pointer to the current AutocompleteInput, retained during the active
   // stage of operation only. Used by the BaseSearchProvider to construct the
   // final AutocompleteMatch objects.
-  raw_ptr<const AutocompleteInput> autocomplete_input_{};
+  const AutocompleteInput* autocomplete_input_{};
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_VOICE_SUGGEST_PROVIDER_H_

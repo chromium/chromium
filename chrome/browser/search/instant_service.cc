@@ -98,7 +98,7 @@ InstantService::InstantService(Profile* profile)
   content::URLDataSource::Add(profile_,
                               std::make_unique<MostVisitedIframeSource>());
 
-  theme_observation_.Observe(native_theme_.get());
+  theme_observation_.Observe(native_theme_);
 }
 
 InstantService::~InstantService() = default;
@@ -167,7 +167,7 @@ NtpTheme* InstantService::GetInitializedNtpTheme() {
 void InstantService::SetNativeThemeForTesting(ui::NativeTheme* theme) {
   theme_observation_.Reset();
   native_theme_ = theme;
-  theme_observation_.Observe(native_theme_.get());
+  theme_observation_.Observe(native_theme_);
 }
 
 void InstantService::Shutdown() {

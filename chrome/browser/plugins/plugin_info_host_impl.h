@@ -11,7 +11,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner_helpers.h"
@@ -84,9 +83,9 @@ class PluginInfoHostImpl : public chrome::mojom::PluginInfoHost {
    private:
     int render_process_id_;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-    raw_ptr<extensions::ExtensionRegistry> extension_registry_;
+    extensions::ExtensionRegistry* extension_registry_;
 #endif
-    raw_ptr<const HostContentSettingsMap> host_content_settings_map_;
+    const HostContentSettingsMap* host_content_settings_map_;
     scoped_refptr<PluginPrefs> plugin_prefs_;
 
     BooleanPrefMember allow_outdated_plugins_;

@@ -10,7 +10,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/memory/raw_ptr.h"
 #include "gpu/ipc/single_task_sequence.h"
 
 namespace gpu {
@@ -64,8 +63,8 @@ class TaskForwardingSequence : public gpu::SingleTaskSequence {
       scoped_refptr<gpu::SyncPointOrderData> sync_point_order_data);
 
   // Raw pointer refer to the global instance.
-  const raw_ptr<TaskQueueWebView> task_queue_;
-  const raw_ptr<gpu::SyncPointManager> sync_point_manager_;
+  TaskQueueWebView* const task_queue_;
+  gpu::SyncPointManager* const sync_point_manager_;
   scoped_refptr<gpu::SyncPointOrderData> sync_point_order_data_;
 };
 

@@ -10,7 +10,6 @@
 
 #include "base/base_export.h"
 #include "base/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/task/sequence_manager/associated_thread_id.h"
 
 namespace base {
@@ -66,8 +65,8 @@ class BASE_EXPORT AtomicFlagSet {
 
     AtomicFlag(AtomicFlagSet* outer, Group* element, size_t flag_bit);
 
-    raw_ptr<AtomicFlagSet> outer_ = nullptr;
-    raw_ptr<Group> group_ = nullptr;  // Null when AtomicFlag is invalid.
+    AtomicFlagSet* outer_ = nullptr;
+    Group* group_ = nullptr;  // Null when AtomicFlag is invalid.
     size_t flag_bit_ = 0;  // This is 1 << index of this flag within the group.
   };
 
@@ -100,10 +99,10 @@ class BASE_EXPORT AtomicFlagSet {
     std::atomic<size_t> flags = {0};
     size_t allocated_flags = 0;
     RepeatingClosure flag_callbacks[kNumFlags];
-    raw_ptr<Group> prev = nullptr;
+    Group* prev = nullptr;
     std::unique_ptr<Group> next;
-    raw_ptr<Group> partially_free_list_prev = nullptr;
-    raw_ptr<Group> partially_free_list_next = nullptr;
+    Group* partially_free_list_prev = nullptr;
+    Group* partially_free_list_next = nullptr;
 
     bool IsFull() const;
 
@@ -131,7 +130,7 @@ class BASE_EXPORT AtomicFlagSet {
 
   scoped_refptr<AssociatedThreadId> associated_thread_;
   std::unique_ptr<Group> alloc_list_head_;
-  raw_ptr<Group> partially_free_list_head_ = nullptr;
+  Group* partially_free_list_head_ = nullptr;
 };
 
 }  // namespace internal

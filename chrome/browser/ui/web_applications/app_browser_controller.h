@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -224,7 +223,7 @@ class AppBrowserController : public TabStripModelObserver,
 
   void UpdateThemePack();
 
-  const raw_ptr<Browser> browser_;
+  Browser* const browser_;
   const AppId app_id_;
   const bool has_tab_strip_;
   GURL initial_url_;

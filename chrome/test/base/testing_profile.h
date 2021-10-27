@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
@@ -190,7 +189,7 @@ class TestingProfile : public Profile {
     scoped_refptr<ExtensionSpecialStoragePolicy> extension_policy_;
 #endif
     base::FilePath path_;
-    raw_ptr<Delegate> delegate_ = nullptr;
+    Delegate* delegate_ = nullptr;
     bool guest_session_ = false;
     bool allows_browser_windows_ = true;
     bool is_new_profile_ = false;
@@ -401,8 +400,7 @@ class TestingProfile : public Profile {
 
   std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs_;
   // ref only for right type, lifecycle is managed by prefs_
-  raw_ptr<sync_preferences::TestingPrefServiceSyncable> testing_prefs_ =
-      nullptr;
+  sync_preferences::TestingPrefServiceSyncable* testing_prefs_ = nullptr;
 
   // Profile implementation.
   bool IsSignedIn() override;
@@ -436,7 +434,7 @@ class TestingProfile : public Profile {
       extensions_cookie_store_;
 
   std::map<OTRProfileID, std::unique_ptr<Profile>> otr_profiles_;
-  raw_ptr<TestingProfile> original_profile_ = nullptr;
+  TestingProfile* original_profile_ = nullptr;
 
   bool guest_session_ = false;
 
@@ -464,14 +462,14 @@ class TestingProfile : public Profile {
   // We keep a weak pointer to the dependency manager we want to notify on our
   // death. Defaults to the Singleton implementation but overridable for
   // testing.
-  raw_ptr<SimpleDependencyManager> simple_dependency_manager_{
+  SimpleDependencyManager* simple_dependency_manager_{
       SimpleDependencyManager::GetInstance()};
-  raw_ptr<BrowserContextDependencyManager> browser_context_dependency_manager_{
+  BrowserContextDependencyManager* browser_context_dependency_manager_{
       BrowserContextDependencyManager::GetInstance()};
 
   // Owned, but must be deleted on the IO thread so not placing in a
   // std::unique_ptr<>.
-  raw_ptr<content::MockResourceContext> resource_context_ = nullptr;
+  content::MockResourceContext* resource_context_ = nullptr;
 
   std::unique_ptr<policy::SchemaRegistryService> schema_registry_service_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -482,7 +480,7 @@ class TestingProfile : public Profile {
   std::unique_ptr<policy::ProfilePolicyConnector> profile_policy_connector_;
 
   // Weak pointer to a delegate for indicating that a profile was created.
-  raw_ptr<Delegate> delegate_ = nullptr;
+  Delegate* delegate_ = nullptr;
 
   std::string profile_name_{kDefaultProfileUserName};
 
@@ -504,7 +502,7 @@ class TestingProfile : public Profile {
   std::unique_ptr<policy::PolicyService> policy_service_;
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  raw_ptr<TestingPrefStore> supervised_user_pref_store_ = nullptr;
+  TestingPrefStore* supervised_user_pref_store_ = nullptr;
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 };
 

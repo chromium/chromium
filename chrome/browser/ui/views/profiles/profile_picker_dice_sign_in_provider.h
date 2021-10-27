@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_DICE_SIGN_IN_PROVIDER_H_
 
 #include "base/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/scoped_profile_keep_alive.h"
@@ -125,12 +124,12 @@ class ProfilePickerDiceSignInProvider
   content::WebContents* contents() const { return contents_.get(); }
 
   // The host and toolbar objects, must outlive this object.
-  const raw_ptr<ProfilePickerWebContentsHost> host_;
-  const raw_ptr<ProfilePickerDiceSignInToolbar> toolbar_;
+  ProfilePickerWebContentsHost* const host_;
+  ProfilePickerDiceSignInToolbar* const toolbar_;
   // Sign-in callback, valid until it's called.
   SignedInCallback callback_;
 
-  raw_ptr<Profile> profile_ = nullptr;
+  Profile* profile_ = nullptr;
 
   // Prevent |profile_| from being destroyed first.
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;

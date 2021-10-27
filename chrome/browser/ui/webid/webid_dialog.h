@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "url/gurl.h"
 
@@ -63,7 +62,7 @@ class WebIdDialog {
   virtual ~WebIdDialog() = default;
 
  private:
-  raw_ptr<content::WebContents> rp_web_contents_;
+  content::WebContents* rp_web_contents_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBID_WEBID_DIALOG_H_

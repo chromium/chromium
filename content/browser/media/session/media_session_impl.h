@@ -15,7 +15,6 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/id_map.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "content/browser/media/session/audio_focus_delegate.h"
@@ -548,7 +547,7 @@ class MediaSessionImpl : public MediaSession,
   // unregistered on destroy.
   ServicesMap services_;
   // The currently routed service (non-owned pointer).
-  raw_ptr<MediaSessionServiceImpl> routed_service_;
+  MediaSessionServiceImpl* routed_service_;
 
   // Bindings for Mojo pointers to |this| held by media route providers.
   mojo::ReceiverSet<media_session::mojom::MediaSession> receivers_;

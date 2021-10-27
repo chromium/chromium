@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -156,13 +155,13 @@ class BackendIO : public BackgroundIO {
   void ExecuteBackendOperation();
   void ExecuteEntryOperation();
 
-  raw_ptr<BackendImpl> backend_;
+  BackendImpl* backend_;
   net::CompletionOnceCallback callback_;
   Operation operation_;
 
   // Used for ops that open or create entries.
   EntryResultCallback entry_result_callback_;
-  raw_ptr<Entry> out_entry_;  // if set, already has the user's ref added.
+  Entry* out_entry_;  // if set, already has the user's ref added.
   bool out_entry_opened_;
 
   // For GetAvailableRange
@@ -173,9 +172,9 @@ class BackendIO : public BackgroundIO {
   std::string key_;
   base::Time initial_time_;
   base::Time end_time_;
-  raw_ptr<Rankings::Iterator> iterator_;
+  Rankings::Iterator* iterator_;
   std::unique_ptr<Rankings::Iterator> scoped_iterator_;
-  raw_ptr<EntryImpl> entry_;
+  EntryImpl* entry_;
   int index_;
   int offset_;
   scoped_refptr<net::IOBuffer> buf_;
@@ -268,7 +267,7 @@ class InFlightBackendIO : public InFlightIO {
 
  private:
   void PostOperation(const base::Location& from_here, BackendIO* operation);
-  raw_ptr<BackendImpl> backend_;
+  BackendImpl* backend_;
   scoped_refptr<base::SingleThreadTaskRunner> background_thread_;
   base::WeakPtrFactory<InFlightBackendIO> ptr_factory_{this};
 };

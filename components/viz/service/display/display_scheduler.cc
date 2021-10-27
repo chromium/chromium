@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/auto_reset.h"
-#include "base/memory/raw_ptr.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/features.h"
 
@@ -38,7 +37,7 @@ class DisplayScheduler::BeginFrameObserver : public BeginFrameObserverBase {
   }
 
  private:
-  const raw_ptr<DisplayScheduler> scheduler_;
+  DisplayScheduler* const scheduler_;
 };
 
 DisplayScheduler::DisplayScheduler(BeginFrameSource* begin_frame_source,

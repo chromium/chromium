@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "components/sync/engine/model_type_processor.h"
 
 namespace syncer {
@@ -41,7 +40,7 @@ class ForwardingModelTypeProcessor : public ModelTypeProcessor {
                         UpdateResponseDataList updates) override;
 
  private:
-  const raw_ptr<ModelTypeProcessor> processor_;
+  ModelTypeProcessor* const processor_;
 };
 
 }  // namespace syncer

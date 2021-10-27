@@ -8,7 +8,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -49,7 +48,7 @@ class PlatformNotificationContextTest : public ::testing::Test {
     // Provide a mock permission manager to the |browser_context_|.
     permission_manager_ = new ::testing::NiceMock<MockPermissionManager>();
     browser_context_.SetPermissionControllerDelegate(
-        base::WrapUnique(permission_manager_.get()));
+        base::WrapUnique(permission_manager_));
     browser_context_.SetPlatformNotificationService(
         std::make_unique<MockPlatformNotificationService>(&browser_context_));
   }
@@ -246,7 +245,7 @@ class PlatformNotificationContextTest : public ::testing::Test {
 
  private:
   TestBrowserContext browser_context_;
-  raw_ptr<MockPermissionManager> permission_manager_ = nullptr;
+  MockPermissionManager* permission_manager_ = nullptr;
 
   bool success_ = false;
   size_t deleted_count_ = 0;

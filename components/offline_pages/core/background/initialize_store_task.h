@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/background/request_queue_store.h"
 #include "components/offline_pages/task/task.h"
@@ -47,7 +46,7 @@ class InitializeStoreTask : public Task {
   void OnStoreResetDone(bool success);
 
   // Store that this task initializes.
-  raw_ptr<RequestQueueStore> store_;
+  RequestQueueStore* store_;
   // Number of attempts left to reset and reinitialize the store.
   int reset_attempts_left_;
   // Callback to complete the task.

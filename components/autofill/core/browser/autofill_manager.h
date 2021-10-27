@@ -12,7 +12,6 @@
 
 #include "base/cancelable_callback.h"
 #include "base/compiler_specific.h"
-#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -363,14 +362,14 @@ class AutofillManager
 
   // Provides driver-level context to the shared code of the component. Must
   // outlive this object.
-  const raw_ptr<AutofillDriver> driver_;
+  AutofillDriver* const driver_;
 
   // Do not access this directly. Instead, please use client() or
   // unsafe_client(). These functions check (or explicitly don't check) that the
   // client isn't accessed incorrectly.
-  const raw_ptr<AutofillClient> client_;
+  AutofillClient* const client_;
 
-  const raw_ptr<LogManager> log_manager_;
+  LogManager* const log_manager_;
 
   // Observer needed to re-run heuristics when the language has been detected.
   base::ScopedObservation<
@@ -396,7 +395,7 @@ class AutofillManager
       query_result_delay_task_;
 
   // Will be not null only for |SaveCardBubbleViewsFullFormBrowserTest|.
-  raw_ptr<ObserverForTest> observer_for_testing_ = nullptr;
+  ObserverForTest* observer_for_testing_ = nullptr;
 };
 
 }  // namespace autofill

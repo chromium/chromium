@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ANDROID_COMPOSITOR_LAYER_TOOLBAR_LAYER_H_
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "cc/layers/nine_patch_layer.h"
 #include "chrome/browser/android/compositor/layer/layer.h"
@@ -61,7 +60,7 @@ class ToolbarLayer : public Layer {
  private:
   int GetIndexOfLayer(scoped_refptr<cc::Layer> layer);
 
-  raw_ptr<ui::ResourceManager> resource_manager_;
+  ui::ResourceManager* resource_manager_;
 
   scoped_refptr<cc::Layer> layer_;
   scoped_refptr<cc::SolidColorLayer> toolbar_background_layer_;

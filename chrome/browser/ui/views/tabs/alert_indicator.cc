@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
@@ -165,7 +164,7 @@ class AlertIndicator::FadeAnimationDelegate
     indicator_->parent_tab_->AlertStateChanged();
   }
 
-  const raw_ptr<AlertIndicator> indicator_;
+  AlertIndicator* const indicator_;
 };
 
 AlertIndicator::AlertIndicator(Tab* parent_tab)

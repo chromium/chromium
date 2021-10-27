@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_HIGHLIGHT_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_HIGHLIGHT_H_
 
-#include "base/memory/raw_ptr.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
@@ -31,7 +30,7 @@ class TabGroupHighlight : public views::View {
   // Returns the highlight shape, which immitates the tab highlight shape.
   SkPath GetPath() const;
 
-  const raw_ptr<TabGroupViews> tab_group_views_;
+  TabGroupViews* const tab_group_views_;
   const tab_groups::TabGroupId group_;
 };
 

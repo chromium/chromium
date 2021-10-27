@@ -13,7 +13,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/contains.h"
-#include "base/memory/raw_ptr.h"
 #include "base/one_shot_event.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -336,8 +335,7 @@ class FakeExternallyManagedAppManager : public ExternallyManagedAppManagerImpl {
     }
 
    private:
-    raw_ptr<FakeExternallyManagedAppManager>
-        externally_managed_app_manager_impl_;
+    FakeExternallyManagedAppManager* externally_managed_app_manager_impl_;
     ExternallyInstalledWebAppPrefs externally_installed_app_prefs_;
     TestExternallyManagedAppInstallTaskManager& test_install_task_manager_;
   };
@@ -370,8 +368,7 @@ class FakeExternallyManagedAppManager : public ExternallyManagedAppManagerImpl {
           install_url, RegistrationResultCode::kSuccess);
     }
 
-    const raw_ptr<FakeExternallyManagedAppManager>
-        externally_managed_app_manager_impl_;
+    FakeExternallyManagedAppManager* const externally_managed_app_manager_impl_;
 
     base::WeakPtrFactory<TestExternallyManagedAppRegistrationTask>
         weak_ptr_factory_{this};

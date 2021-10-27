@@ -8,7 +8,6 @@
 #include <unordered_map>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/safe_browsing/content/browser/triggers/trigger_throttler.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
@@ -182,7 +181,7 @@ class TriggerManager {
 
   // The UI manager is used to send reports to Google. Not owned.
   // TODO(lpz): we may only need a the PingManager here.
-  raw_ptr<BaseUIManager> ui_manager_;
+  BaseUIManager* ui_manager_;
 
   // Map of the data collectors running on each tabs. New keys are added the
   // first time any trigger tries to collect data on a tab and are removed when
@@ -215,7 +214,7 @@ class TriggerManagerWebContentsHelper
                                   TriggerManager* trigger_manager);
 
   // Trigger Manager will be notified of any relevant WebContents events.
-  raw_ptr<TriggerManager> trigger_manager_;
+  TriggerManager* trigger_manager_;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 

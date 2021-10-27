@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/profiler/unwinder.h"
 #include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Maps.h"
 #include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Memory.h"
@@ -68,8 +67,8 @@ class NativeUnwinderAndroid : public Unwinder,
   void EmitDexFrame(uintptr_t dex_pc,
                     std::vector<Frame>* stack) const;
 
-  const raw_ptr<unwindstack::Maps> memory_regions_map_;
-  const raw_ptr<unwindstack::Memory> process_memory_;
+  unwindstack::Maps* const memory_regions_map_;
+  unwindstack::Memory* const process_memory_;
   const uintptr_t exclude_module_with_base_address_;
 };
 

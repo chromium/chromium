@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "components/viz/common/resources/resource_id.h"
@@ -266,9 +265,9 @@ class WebXrPresentationState {
 
   StateMachineType state_machine_type_ = StateMachineType::kBrowserComposited;
 
-  raw_ptr<WebXrFrame> animating_frame_ = nullptr;
-  raw_ptr<WebXrFrame> processing_frame_ = nullptr;
-  raw_ptr<WebXrFrame> rendering_frame_ = nullptr;
+  WebXrFrame* animating_frame_ = nullptr;
+  WebXrFrame* processing_frame_ = nullptr;
+  WebXrFrame* rendering_frame_ = nullptr;
   std::vector<WebXrFrame*> rendering_frames_;
   base::queue<WebXrFrame*> idle_frames_;
 

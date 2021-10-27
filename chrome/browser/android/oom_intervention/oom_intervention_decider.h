@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ANDROID_OOM_INTERVENTION_OOM_INTERVENTION_DECIDER_H_
 
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 
 namespace content {
@@ -82,7 +81,7 @@ class OomInterventionDecider : public base::SupportsUserData::Data {
   void AddToList(const char* list_name, const std::string& host);
 
   std::unique_ptr<Delegate> delegate_;
-  raw_ptr<PrefService> prefs_;
+  PrefService* prefs_;
 };
 
 #endif  // CHROME_BROWSER_ANDROID_OOM_INTERVENTION_OOM_INTERVENTION_DECIDER_H_

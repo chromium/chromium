@@ -10,7 +10,6 @@
 #include <bitset>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"
@@ -151,7 +150,7 @@ class NET_EXPORT_PRIVATE QuicConnectionLogger
   // the overall packet loss rate, and record it into a histogram.
   void RecordAggregatePacketLossRate() const;
 
-  raw_ptr<quic::QuicSession> session_;  // Unowned.
+  quic::QuicSession* session_;  // Unowned.
   // The last packet number received.
   quic::QuicPacketNumber last_received_packet_number_;
   // The size of the most recently received packet.

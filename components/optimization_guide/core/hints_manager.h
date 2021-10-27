@@ -13,7 +13,6 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/lru_cache.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -382,7 +381,7 @@ class HintsManager : public OptimizationHintsComponentObserver,
   const std::string application_locale_;
 
   // A reference to the PrefService for this profile. Not owned.
-  raw_ptr<PrefService> pref_service_ = nullptr;
+  PrefService* pref_service_ = nullptr;
 
   // The hint cache that holds both hints received from the component and
   // fetched from the remote Optimization Guide Service.
@@ -405,10 +404,10 @@ class HintsManager : public OptimizationHintsComponentObserver,
       hints_fetcher_factory_;
 
   // The top host provider that can be queried. Not owned.
-  raw_ptr<optimization_guide::TopHostProvider> top_host_provider_ = nullptr;
+  optimization_guide::TopHostProvider* top_host_provider_ = nullptr;
 
   // The tab URL provider that can be queried. Not owned.
-  raw_ptr<optimization_guide::TabUrlProvider> tab_url_provider_ = nullptr;
+  optimization_guide::TabUrlProvider* tab_url_provider_ = nullptr;
 
   // The timer used to schedule fetching hints from the remote Optimization
   // Guide Service.
@@ -421,7 +420,7 @@ class HintsManager : public OptimizationHintsComponentObserver,
 
   // The clock used to schedule fetching from the remote Optimization Guide
   // Service.
-  raw_ptr<const base::Clock> clock_;
+  const base::Clock* clock_;
 
   // Whether fetched hints should be cleared when the store is initialized
   // because a new optimization type was registered.

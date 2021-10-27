@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -80,7 +79,7 @@ class TtsEventSink
  private:
   // |worker_| is leaky and must never deleted because TtsEventSink posts
   // asynchronous tasks to it.
-  raw_ptr<TtsPlatformImplBackgroundWorker> worker_;
+  TtsPlatformImplBackgroundWorker* worker_;
   scoped_refptr<base::TaskRunner> worker_task_runner_;
 
   base::Lock lock_;
@@ -212,9 +211,8 @@ class TtsPlatformImplWin : public TtsPlatformImpl {
 
 HRESULT TtsEventSink::Notify() {
   worker_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&TtsPlatformImplBackgroundWorker::OnSpeechEvent,
-                     base::Unretained(worker_.get()), GetUtteranceId()));
+      FROM_HERE, base::BindOnce(&TtsPlatformImplBackgroundWorker::OnSpeechEvent,
+                                base::Unretained(worker_), GetUtteranceId()));
   return S_OK;
 }
 

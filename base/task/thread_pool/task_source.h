@@ -10,7 +10,6 @@
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/containers/intrusive_heap.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_token.h"
 #include "base/task/common/checked_lock.h"
@@ -217,7 +216,7 @@ class BASE_EXPORT TaskSource : public RefCountedThreadSafe<TaskSource> {
   // derived class is responsible for calling AddRef() when a TaskSource from
   // which no Task is executing becomes non-empty and Release() when
   // it becomes empty again (e.g. when DidProcessTask() returns false).
-  raw_ptr<TaskRunner> task_runner_;
+  TaskRunner* task_runner_;
 
   TaskSourceExecutionMode execution_mode_;
 };

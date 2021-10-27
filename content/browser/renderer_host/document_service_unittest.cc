@@ -5,7 +5,6 @@
 #include "content/public/browser/document_service.h"
 
 #include "base/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "content/browser/renderer_host/document_service_echo_impl.h"
 #include "content/public/browser/back_forward_cache.h"
@@ -81,7 +80,7 @@ class DocumentServiceTest : public RenderViewHostTestHarness {
     base::RunLoop().RunUntilIdle();
   }
 
-  raw_ptr<RenderFrameHost> main_rfh_ = nullptr;
+  RenderFrameHost* main_rfh_ = nullptr;
   mojo::Remote<mojom::Echo> echo_remote_;
   bool is_echo_impl_alive_ = false;
 };

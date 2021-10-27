@@ -7,7 +7,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -76,8 +75,8 @@ class MediaRouterContextualMenu : public ui::SimpleMenuModel::Delegate {
   void ReportIssue();
 #endif
 
-  const raw_ptr<Browser> browser_;
-  const raw_ptr<Observer> observer_;
+  Browser* const browser_;
+  Observer* const observer_;
 
   // Whether the Cast toolbar icon this context menu is shown for is shown by
   // the administrator policy.

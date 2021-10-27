@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "components/page_load_metrics/browser/observers/page_load_metrics_observer_tester.h"
-#include "base/memory/raw_ptr.h"
 
 #include <memory>
 #include <string>
@@ -76,7 +75,7 @@ class TestPageLoadMetricsEmbedderInterface
   }
 
  private:
-  raw_ptr<PageLoadMetricsObserverTester> test_;
+  PageLoadMetricsObserverTester* test_;
 };
 
 }  // namespace

@@ -7,7 +7,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "ui/aura/client/cursor_client.h"
 
@@ -65,7 +64,7 @@ class TestCursorClient : public aura::client::CursorClient {
   int cursor_lock_count_;
   int calls_to_set_cursor_;
   base::ObserverList<aura::client::CursorClientObserver>::Unchecked observers_;
-  raw_ptr<aura::Window> root_window_;
+  aura::Window* root_window_;
 };
 
 }  // namespace test

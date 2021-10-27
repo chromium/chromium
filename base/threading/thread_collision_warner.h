@@ -9,7 +9,6 @@
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 
 // A helper class alongside macros to be used to verify assumptions about thread
 // safety of a class.
@@ -180,7 +179,7 @@ class BASE_EXPORT ThreadCollisionWarner {
     ~Check() = default;
 
    private:
-    raw_ptr<ThreadCollisionWarner> warner_;
+    ThreadCollisionWarner* warner_;
   };
 
   // This class is meant to be used through the macro
@@ -200,7 +199,7 @@ class BASE_EXPORT ThreadCollisionWarner {
     }
 
    private:
-    raw_ptr<ThreadCollisionWarner> warner_;
+    ThreadCollisionWarner* warner_;
   };
 
   // This class is meant to be used through the macro
@@ -220,7 +219,7 @@ class BASE_EXPORT ThreadCollisionWarner {
     }
 
    private:
-    raw_ptr<ThreadCollisionWarner> warner_;
+    ThreadCollisionWarner* warner_;
   };
 
  private:
@@ -246,7 +245,7 @@ class BASE_EXPORT ThreadCollisionWarner {
 
   // Here only for class unit tests purpose, during the test I need to not
   // DCHECK but notify the collision with something else.
-  raw_ptr<AsserterBase> asserter_;
+  AsserterBase* asserter_;
 };
 
 }  // namespace base

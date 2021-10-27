@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "sandbox/win/src/crosscall_server.h"
 #include "sandbox/win/src/ipc_tags.h"
 #include "sandbox/win/src/sandbox_policy_base.h"
@@ -47,7 +46,7 @@ class RegistryDispatcher : public Dispatcher {
                  HANDLE root,
                  uint32_t desired_access);
 
-  raw_ptr<PolicyBase> policy_base_;
+  PolicyBase* policy_base_;
 };
 
 }  // namespace sandbox

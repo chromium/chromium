@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SHARING_SHARING_ICON_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_SHARING_SHARING_ICON_VIEW_H_
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/sharing/sharing_ui_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -58,7 +57,7 @@ class SharingIconView : public PageActionIconView {
   void UpdateOpacity();
 
  private:
-  raw_ptr<SharingUiController> last_controller_ = nullptr;
+  SharingUiController* last_controller_ = nullptr;
   bool loading_animation_ = false;
   bool should_show_error_ = false;
   GetControllerCallback get_controller_callback_;

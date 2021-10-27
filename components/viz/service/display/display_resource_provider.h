@@ -15,7 +15,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/small_map.h"
-#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "build/build_config.h"
@@ -140,9 +139,9 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
    private:
     void Reset();
 
-    raw_ptr<DisplayResourceProvider> resource_provider_ = nullptr;
+    DisplayResourceProvider* resource_provider_ = nullptr;
     ResourceId resource_id_ = kInvalidResourceId;
-    raw_ptr<ChildResource> resource_ = nullptr;
+    ChildResource* resource_ = nullptr;
   };
 
   // All resources that are returned to children while an instance of this
@@ -155,7 +154,7 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
     ~ScopedBatchReturnResources();
 
    private:
-    const raw_ptr<DisplayResourceProvider> resource_provider_;
+    DisplayResourceProvider* const resource_provider_;
     const bool was_access_to_gpu_thread_allowed_;
   };
 

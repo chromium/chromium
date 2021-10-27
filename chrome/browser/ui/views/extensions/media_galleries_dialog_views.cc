@@ -97,7 +97,7 @@ MediaGalleriesDialogViews::MediaGalleriesDialogViews(
             &MediaGalleriesDialogViews::ButtonPressed, base::Unretained(this),
             base::BindRepeating(
                 &MediaGalleriesDialogController::DidClickAuxiliaryButton,
-                base::Unretained(controller_.get()))),
+                base::Unretained(controller_))),
         label));
   }
 

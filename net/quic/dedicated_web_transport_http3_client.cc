@@ -6,7 +6,6 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/abseil_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -108,7 +107,7 @@ class ConnectStream : public quic::QuicSpdyClientStream {
   }
 
  private:
-  raw_ptr<DedicatedWebTransportHttp3Client> client_;
+  DedicatedWebTransportHttp3Client* client_;
 };
 
 class DedicatedWebTransportHttp3ClientSession
@@ -170,7 +169,7 @@ class DedicatedWebTransportHttp3ClientSession
   }
 
  private:
-  raw_ptr<DedicatedWebTransportHttp3Client> client_;
+  DedicatedWebTransportHttp3Client* client_;
 };
 
 class WebTransportVisitorProxy : public quic::WebTransportVisitor {
@@ -202,7 +201,7 @@ class WebTransportVisitorProxy : public quic::WebTransportVisitor {
   }
 
  private:
-  raw_ptr<quic::WebTransportVisitor> visitor_;
+  quic::WebTransportVisitor* visitor_;
 };
 
 bool IsTerminalState(WebTransportState state) {

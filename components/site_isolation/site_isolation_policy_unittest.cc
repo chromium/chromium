@@ -6,7 +6,6 @@
 
 #include "base/base_switches.h"
 #include "base/json/values_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/system/sys_info.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -101,7 +100,7 @@ class BaseSiteIsolationTest : public testing::Test {
   };
 
   SiteIsolationContentBrowserClient browser_client_;
-  raw_ptr<content::ContentBrowserClient> original_client_ = nullptr;
+  content::ContentBrowserClient* original_client_ = nullptr;
 };
 
 class SiteIsolationPolicyTest : public BaseSiteIsolationTest {

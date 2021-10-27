@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image_skia.h"
@@ -102,7 +101,7 @@ class VIEWS_EXPORT ImageView : public ImageViewBase {
 
   // Address of bytes we last painted. This is used only for comparison, so its
   // safe to cache.
-  raw_ptr<void> last_painted_bitmap_pixels_ = nullptr;
+  void* last_painted_bitmap_pixels_ = nullptr;
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, ImageView, ImageViewBase)

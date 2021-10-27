@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/native_widget_types.h"
@@ -56,7 +55,7 @@ class COMPONENT_EXPORT(UI_BASE) ScopedSetSupportedResourceScaleFactors {
   ~ScopedSetSupportedResourceScaleFactors();
 
  private:
-  raw_ptr<std::vector<ResourceScaleFactor>> original_scale_factors_;
+  std::vector<ResourceScaleFactor>* original_scale_factors_;
 };
 
 }  // namespace test

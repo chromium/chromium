@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "content/public/browser/presentation_request.h"
 #include "content/public/browser/presentation_service_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -104,7 +103,7 @@ class MediaRouterDialogController {
   // An observer for the |initiator_| that closes the dialog when |initiator_|
   // is destroyed or navigated.
   std::unique_ptr<InitiatorWebContentsObserver> initiator_observer_;
-  const raw_ptr<content::WebContents> initiator_;
+  content::WebContents* const initiator_;
 };
 
 }  // namespace media_router

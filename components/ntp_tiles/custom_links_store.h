@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "components/ntp_tiles/custom_links_manager.h"
 
 class PrefService;
@@ -50,7 +49,7 @@ class CustomLinksStore {
 
  private:
   // The pref service used to persist the custom link data.
-  raw_ptr<PrefService> prefs_;
+  PrefService* prefs_;
 };
 
 }  // namespace ntp_tiles

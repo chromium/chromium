@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_SHARING_HUB_SHARING_HUB_SUB_MENU_MODEL_H_
 
 #include <map>
-#include "base/memory/raw_ptr.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/models/simple_menu_model.h"
 
@@ -35,8 +34,8 @@ class SharingHubSubMenuModel : public ui::SimpleMenuModel,
   void Build(content::WebContents* web_contents);
   bool IsThirdPartyAction(int id);
 
-  raw_ptr<Browser> browser_;
-  raw_ptr<content::WebContents> web_contents_;
+  Browser* browser_;
+  content::WebContents* web_contents_;
   std::vector<int> third_party_action_ids_;
 
   // A list of user action names mapped to action id.

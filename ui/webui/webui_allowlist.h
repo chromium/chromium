@@ -8,7 +8,6 @@
 #include <initializer_list>
 #include <map>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread_checker.h"
@@ -73,8 +72,8 @@ class WebUIAllowlist : public base::RefCountedThreadSafe<WebUIAllowlist> {
   std::map<ContentSettingsType, std::map<url::Origin, ContentSetting>>
       permissions_ GUARDED_BY(lock_);
 
-  raw_ptr<WebUIAllowlistProvider> provider_
-      GUARDED_BY_CONTEXT(thread_checker_) = nullptr;
+  WebUIAllowlistProvider* provider_ GUARDED_BY_CONTEXT(thread_checker_) =
+      nullptr;
 };
 
 #endif  // UI_WEBUI_WEBUI_ALLOWLIST_H_

@@ -4,7 +4,6 @@
 
 #include "extensions/browser/api/web_request/web_request_proxying_webtransport.h"
 
-#include "base/memory/raw_ptr.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -236,7 +235,7 @@ class WebTransportHandshakeProxy : public WebRequestAPI::Proxy,
   // Weak reference to the ProxySet. This is safe as `proxies_` owns this
   // object.
   WebRequestAPI::ProxySet& proxies_;
-  raw_ptr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
   WebRequestInfo info_;
   net::HttpRequestHeaders request_headers_;
   GURL redirect_url_;

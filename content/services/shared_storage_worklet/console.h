@@ -6,7 +6,6 @@
 #define CONTENT_SERVICES_SHARED_STORAGE_WORKLET_CONSOLE_H_
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "content/services/shared_storage_worklet/public/mojom/shared_storage_worklet_service.mojom.h"
 #include "gin/object_template_builder.h"
 #include "gin/wrappable.h"
@@ -32,7 +31,7 @@ class Console final : public gin::Wrappable<Console> {
  private:
   void Log(gin::Arguments* args);
 
-  raw_ptr<mojom::SharedStorageWorkletServiceClient> client_;
+  mojom::SharedStorageWorkletServiceClient* client_;
 
   base::WeakPtrFactory<Console> weak_ptr_factory_{this};
 };

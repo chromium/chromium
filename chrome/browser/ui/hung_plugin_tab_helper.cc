@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/process/process.h"
 #include "build/build_config.h"
 #include "chrome/browser/hang_monitor/hang_crash_dump.h"
@@ -46,7 +45,7 @@ struct HungPluginTabHelper::PluginState {
   std::u16string name;
 
   // Possibly-null if we're not showing an infobar right now.
-  raw_ptr<infobars::InfoBar> infobar = nullptr;
+  infobars::InfoBar* infobar = nullptr;
 
   // Time to delay before re-showing the infobar for a hung plugin. This is
   // increased each time the user cancels it.

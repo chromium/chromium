@@ -11,7 +11,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/scoped_multi_source_observation.h"
 #include "ui/aura/client/aura_constants.h"
@@ -131,7 +130,7 @@ class ShadowController::Impl :
   // The shadow's bounds are initialized and it is added to the window's layer.
   void CreateShadowForWindow(aura::Window* window);
 
-  const raw_ptr<aura::Env> env_;
+  aura::Env* const env_;
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       observation_manager_{this};
 

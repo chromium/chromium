@@ -7,7 +7,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "content/browser/renderer_host/input/synthetic_gesture_target.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -72,7 +71,7 @@ class SyntheticGestureTargetBase : public SyntheticGestureTarget {
  private:
   bool PointIsWithinContents(gfx::PointF point) const;
 
-  raw_ptr<RenderWidgetHostImpl> host_;
+  RenderWidgetHostImpl* host_;
 };
 
 }  // namespace content

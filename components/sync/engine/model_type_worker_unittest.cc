@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/guid.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -442,7 +441,7 @@ class ModelTypeWorkerTest : public ::testing::Test {
 
   // Non-owned, possibly null pointer. This object belongs to the
   // ModelTypeWorker under test.
-  raw_ptr<MockModelTypeProcessor> mock_type_processor_ = nullptr;
+  MockModelTypeProcessor* mock_type_processor_ = nullptr;
 
   // A mock that emulates enough of the sync server that it can be used
   // a single UpdateHandler and CommitContributor pair. In this test

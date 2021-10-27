@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/i18n/rtl.h"
-#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
@@ -61,7 +60,7 @@ class TestInterstitialPage : public SecurityInterstitialPage {
   void PopulateInterstitialStrings(base::Value* load_time_data) override {}
 
  private:
-  raw_ptr<bool> destroyed_tracker_;
+  bool* destroyed_tracker_;
 };
 
 class SecurityInterstitialTabHelperTest

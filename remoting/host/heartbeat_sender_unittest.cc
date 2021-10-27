@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
@@ -157,7 +156,7 @@ class HeartbeatSenderTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  raw_ptr<MockHeartbeatClient> mock_client_;
+  MockHeartbeatClient* mock_client_;
   std::unique_ptr<MockObserver> mock_observer_;
 
   std::unique_ptr<FakeSignalStrategy> signal_strategy_;

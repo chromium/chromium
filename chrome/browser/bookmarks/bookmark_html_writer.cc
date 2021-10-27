@@ -20,7 +20,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/supports_user_data.h"
@@ -135,7 +134,7 @@ class BookmarkFaviconFetcher : public base::SupportsUserData::Data {
       const favicon_base::FaviconRawBitmapResult& bitmap_result);
 
   // The Profile object used for accessing FaviconService, bookmarks model.
-  raw_ptr<Profile> profile_;
+  Profile* profile_;
 
   // All URLs that are extracted from bookmarks. Used to fetch favicons
   // for each of them. After favicon is fetched top url is removed from list.
@@ -150,7 +149,7 @@ class BookmarkFaviconFetcher : public base::SupportsUserData::Data {
   // Path where html output is stored.
   base::FilePath path_;
 
-  raw_ptr<BookmarksExportObserver> observer_;
+  BookmarksExportObserver* observer_;
 };
 
 // Class responsible for the actual writing. Takes ownership of favicons_map.
@@ -432,7 +431,7 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
   std::unique_ptr<BookmarkFaviconFetcher::URLFaviconMap> favicons_map_;
 
   // Observer to be notified on finish.
-  raw_ptr<BookmarksExportObserver> observer_;
+  BookmarksExportObserver* observer_;
 
   // File we're writing to.
   std::unique_ptr<base::File> file_;

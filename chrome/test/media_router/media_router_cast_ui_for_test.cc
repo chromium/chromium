@@ -4,7 +4,6 @@
 
 #include "chrome/test/media_router/media_router_cast_ui_for_test.h"
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/media_router/media_router_file_dialog.h"
 #include "chrome/browser/ui/media_router/media_router_ui.h"
@@ -41,7 +40,7 @@ class TestMediaRouterFileDialog : public MediaRouterFileDialog {
   }
 
  private:
-  raw_ptr<MediaRouterFileDialogDelegate> delegate_;
+  MediaRouterFileDialogDelegate* delegate_;
   GURL file_url_;
 };
 
@@ -58,7 +57,7 @@ class TestFailMediaRouterFileDialog : public MediaRouterFileDialog {
   }
 
  private:
-  raw_ptr<MediaRouterFileDialogDelegate> delegate_;
+  MediaRouterFileDialogDelegate* delegate_;
   const IssueInfo issue_;
 };
 

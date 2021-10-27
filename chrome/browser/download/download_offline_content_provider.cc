@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -98,7 +97,7 @@ class AllDownloadObserver
   void DeleteDownloadItem(SimpleDownloadManagerCoordinator* manager,
                           const std::string& guid);
 
-  raw_ptr<DownloadOfflineContentProvider> provider_;
+  DownloadOfflineContentProvider* provider_;
   base::WeakPtrFactory<AllDownloadObserver> weak_ptr_factory_{this};
 };
 

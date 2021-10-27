@@ -12,7 +12,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner_helpers.h"
 #include "content/public/browser/host_zoom_map.h"
 
@@ -139,7 +138,7 @@ class CONTENT_EXPORT HostZoomMapImpl : public HostZoomMap {
 
   TemporaryZoomLevels temporary_zoom_levels_;
 
-  raw_ptr<base::Clock> clock_;
+  base::Clock* clock_;
 };
 
 }  // namespace content

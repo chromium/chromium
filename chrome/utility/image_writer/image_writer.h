@@ -14,7 +14,6 @@
 #include "base/callback.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 
@@ -92,7 +91,7 @@ class ImageWriter : public base::SupportsWeakPtr<ImageWriter> {
   std::unique_ptr<DiskUnmounterMac> unmounter_;
 #endif
 
-  raw_ptr<ImageWriterHandler> handler_;
+  ImageWriterHandler* handler_;
 };
 
 }  // namespace image_writer

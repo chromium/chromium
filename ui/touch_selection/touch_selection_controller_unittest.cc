@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/test/motion_event_test_utils.h"
@@ -46,7 +45,7 @@ class MockTouchHandleDrawable : public TouchHandleDrawable {
   float GetDrawableHorizontalPaddingRatio() const override { return 0; }
 
  private:
-  raw_ptr<bool> intersects_rect_;
+  bool* intersects_rect_;
 };
 
 }  // namespace

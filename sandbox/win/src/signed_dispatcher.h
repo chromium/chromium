@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "sandbox/win/src/crosscall_server.h"
 #include "sandbox/win/src/interception.h"
 #include "sandbox/win/src/ipc_tags.h"
@@ -33,7 +32,7 @@ class SignedDispatcher : public Dispatcher {
   // Processes IPC requests coming from calls to CreateSection in the target.
   bool CreateSection(IPCInfo* ipc, HANDLE file_handle);
 
-  raw_ptr<PolicyBase> policy_base_;
+  PolicyBase* policy_base_;
 };
 
 }  // namespace sandbox

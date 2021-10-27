@@ -6,7 +6,6 @@
 #define NET_NQE_SOCKET_WATCHER_H_
 
 #include "base/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -100,7 +99,7 @@ class NET_EXPORT_PRIVATE SocketWatcher : public SocketPerformanceWatcher {
   // Time when this was last notified of updated RTT.
   base::TimeTicks last_rtt_notification_;
 
-  raw_ptr<const base::TickClock> tick_clock_;
+  const base::TickClock* tick_clock_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

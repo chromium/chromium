@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/memory/raw_ptr.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/draw_quad.h"
@@ -41,7 +40,7 @@ struct VIZ_SERVICE_EXPORT FixedPassData {
   FixedPassData& operator=(FixedPassData&& other);
   ~FixedPassData();
 
-  raw_ptr<CompositorRenderPass> render_pass = nullptr;
+  CompositorRenderPass* render_pass = nullptr;
   AggregatedRenderPassId remapped_id;
   bool is_root = false;
   std::vector<ResolvedQuadData> draw_quads;
@@ -186,7 +185,7 @@ class VIZ_SERVICE_EXPORT ResolvedFrameData {
 
  private:
   const SurfaceId surface_id_;
-  const raw_ptr<Surface> surface_;
+  Surface* const surface_;
 
   // Data associated with CompositorFrame with |frame_index_|.
   bool valid_ = false;

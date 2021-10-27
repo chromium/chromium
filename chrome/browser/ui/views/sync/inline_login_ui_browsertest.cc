@@ -6,7 +6,6 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -504,7 +503,7 @@ class InlineLoginHelperBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_profile_adaptor_;
   base::CallbackListSubscription create_services_subscription_;
-  raw_ptr<Profile> profile_ = nullptr;
+  Profile* profile_ = nullptr;
   signin_util::ScopedForceSigninSetterForTesting forced_signin_setter_;
 };
 

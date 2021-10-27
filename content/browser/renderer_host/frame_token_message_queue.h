@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 
@@ -68,7 +67,7 @@ class CONTENT_EXPORT FrameTokenMessageQueue {
 
  private:
   // Not owned.
-  raw_ptr<Client> client_ = nullptr;
+  Client* client_ = nullptr;
 
   // Last non-zero frame token received from the renderer. Any swap messsages
   // having a token less than or equal to this value will be processed.

@@ -16,7 +16,6 @@
 #include "base/callback_forward.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner_util.h"
 #include "base/time/time.h"
@@ -1306,7 +1305,7 @@ class BatchUploadRequest : public DriveUrlFetchRequestBase {
   // Process result for each child.
   void ProcessURLFetchResultsForChild(RequestID id, const std::string& body);
 
-  const raw_ptr<RequestSender> sender_;
+  RequestSender* const sender_;
   const DriveApiUrlGenerator url_generator_;
   std::vector<std::unique_ptr<BatchUploadChildEntry>> child_requests_;
 

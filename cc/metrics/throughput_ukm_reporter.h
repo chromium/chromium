@@ -5,7 +5,6 @@
 #ifndef CC_METRICS_THROUGHPUT_UKM_REPORTER_H_
 #define CC_METRICS_THROUGHPUT_UKM_REPORTER_H_
 
-#include "base/memory/raw_ptr.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/frame_sequence_metrics.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -50,7 +49,7 @@ class CC_EXPORT ThroughputUkmReporter {
   // This is pointing to the LayerTreeHostImpl::ukm_manager_, which is
   // initialized right after the LayerTreeHostImpl is created. So when this
   // pointer is initialized, there should be no trackers yet.
-  const raw_ptr<UkmManager> ukm_manager_;
+  UkmManager* const ukm_manager_;
 };
 
 }  // namespace cc

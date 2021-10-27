@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/content_creation/notes/core/server/save_note_response.h"
 #include "components/version_info/channel.h"
@@ -56,7 +55,7 @@ class NotesRepository {
                                SaveNoteResponse save_response);
 
  private:
-  raw_ptr<signin::IdentityManager> identity_manager_;
+  signin::IdentityManager* identity_manager_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<NotesServerSaver> notes_saver_;
   const version_info::Channel channel_;

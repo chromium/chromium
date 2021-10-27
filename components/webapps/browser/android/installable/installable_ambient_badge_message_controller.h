@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "components/messages/android/message_enums.h"
 #include "components/messages/android/message_wrapper.h"
 
@@ -47,7 +46,7 @@ class InstallableAmbientBadgeMessageController {
   void HandleInstallButtonClicked();
   void HandleMessageDismissed(messages::DismissReason dismiss_reason);
 
-  raw_ptr<InstallableAmbientBadgeClient> client_;
+  InstallableAmbientBadgeClient* client_;
   std::unique_ptr<messages::MessageWrapper> message_;
 };
 

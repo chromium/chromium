@@ -14,7 +14,6 @@
 #include "base/files/memory_mapped_file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/pending_task.h"
 #include "base/rand_util.h"
 #include "base/synchronization/condition_variable.h"
@@ -285,7 +284,7 @@ class SimpleLockThread : public SimpleThread {
   bool WasDataChanged() { return data_changed_; }
 
  private:
-  raw_ptr<Lock> lock_;
+  Lock* lock_;
   bool data_changed_;
   std::atomic<bool> is_running_;
 };
@@ -438,7 +437,7 @@ class SimpleActivityThread : public SimpleThread {
   }
 
  private:
-  raw_ptr<const void> origin_;
+  const void* origin_;
   Activity::Type activity_;
   ActivityData data_;
 

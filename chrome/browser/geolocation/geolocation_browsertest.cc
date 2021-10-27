@@ -10,7 +10,6 @@
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -245,7 +244,7 @@ class GeolocationBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<device::ScopedGeolocationOverrider> geolocation_overrider_;
 
   // The current Browser as set in Initialize. May be for an incognito profile.
-  raw_ptr<Browser> current_browser_ = nullptr;
+  Browser* current_browser_ = nullptr;
 
  private:
   // Calls watchPosition() in JavaScript and accepts or denies the resulting
@@ -257,7 +256,7 @@ class GeolocationBrowserTest : public InProcessBrowserTest {
   std::string html_for_tests_ = "/geolocation/simple.html";
 
   // The frame where the JavaScript calls will run.
-  raw_ptr<content::RenderFrameHost> render_frame_host_ = nullptr;
+  content::RenderFrameHost* render_frame_host_ = nullptr;
 
   // The urls for the iframes loaded by LoadIFrames.
   std::vector<GURL> iframe_urls_;

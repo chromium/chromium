@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "gin/converter.h"
 #include "gin/gin_export.h"
@@ -69,7 +68,7 @@ class GIN_EXPORT DataObjectBuilder {
   }
 
  private:
-  raw_ptr<v8::Isolate> isolate_;
+  v8::Isolate* isolate_;
   v8::Local<v8::Context> context_;
   v8::Local<v8::Object> object_;
 };

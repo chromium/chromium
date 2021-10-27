@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "content/browser/file_system_access/file_system_access_capacity_allocation_host_impl.h"
 #include "content/browser/file_system_access/file_system_access_file_delegate_host_impl.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
@@ -66,7 +65,7 @@ class CONTENT_EXPORT FileSystemAccessAccessHandleHostImpl
   void OnDisconnect();
 
   // The FileSystemAccessManagerImpl that owns this instance.
-  const raw_ptr<FileSystemAccessManagerImpl> manager_;
+  FileSystemAccessManagerImpl* const manager_;
 
   // Exclusive write lock on the file. It is released on destruction.
   scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock_;

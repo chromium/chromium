@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 
 namespace network {
@@ -50,7 +49,7 @@ class CBCMInvalidationsInitializer {
   // ready.
   void AccountInitCallback(const std::string& account_email, bool success);
 
-  raw_ptr<Delegate> delegate_;
+  Delegate* delegate_;
   std::unique_ptr<MachineLevelDeviceAccountInitializerHelper>
       account_initializer_helper_;
 };

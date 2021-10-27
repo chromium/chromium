@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/cxx17_backports.h"
-#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cc {
@@ -1169,7 +1168,7 @@ class InstanceCounter {
   }
 
  private:
-  raw_ptr<int> counter_;
+  int* counter_;
 };
 
 TEST(ListContainerTest, RemoveLastDestruction) {

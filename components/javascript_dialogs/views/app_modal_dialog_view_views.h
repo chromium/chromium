@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "components/javascript_dialogs/app_modal_dialog_view.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -61,7 +60,7 @@ class AppModalDialogViewViews : public AppModalDialogView,
 #endif  // IS_CHROMEOS_LACROS
 
   // The message box view whose commands we handle.
-  raw_ptr<views::MessageBoxView> message_box_view_;
+  views::MessageBoxView* message_box_view_;
 };
 
 }  // namespace javascript_dialogs

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/explore_sites_internals/explore_sites_internals.mojom-forward.h"
 #include "chrome/browser/ui/webui/explore_sites_internals/explore_sites_internals_page_handler.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -36,7 +35,7 @@ class ExploreSitesInternalsUI : public ui::MojoWebUIController {
 
  private:
   std::unique_ptr<ExploreSitesInternalsPageHandler> page_handler_;
-  raw_ptr<ExploreSitesService> explore_sites_service_;
+  ExploreSitesService* explore_sites_service_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

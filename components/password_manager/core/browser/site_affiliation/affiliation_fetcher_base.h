@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_fetcher_interface.h"
 
 #include "base/memory/ref_counted.h"
@@ -75,7 +74,7 @@ class AffiliationFetcherBase : public virtual AffiliationFetcherInterface {
   void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  const raw_ptr<AffiliationFetcherDelegate> delegate_;
+  AffiliationFetcherDelegate* const delegate_;
   base::ElapsedTimer fetch_timer_;
 
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;

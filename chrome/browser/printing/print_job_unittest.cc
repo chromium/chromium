@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -75,7 +74,7 @@ class TestPrintJob : public PrintJob {
   }
  private:
   ~TestPrintJob() override { *check_ = true; }
-  raw_ptr<volatile bool> check_;
+  volatile bool* check_;
 };
 
 class TestPrintNotificationObserver : public content::NotificationObserver {

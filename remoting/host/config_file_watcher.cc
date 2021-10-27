@@ -13,7 +13,6 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"
@@ -82,7 +81,7 @@ class ConfigFileWatcherImpl
   // Monitors the host configuration file.
   std::unique_ptr<base::FilePathWatcher> config_watcher_;
 
-  raw_ptr<ConfigWatcher::Delegate> delegate_;
+  ConfigWatcher::Delegate* delegate_;
 
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;

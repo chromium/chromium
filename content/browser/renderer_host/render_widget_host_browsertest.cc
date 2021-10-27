@@ -6,7 +6,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
@@ -70,7 +69,7 @@ class TestRenderWidgetHostObserver : public RenderWidgetHostObserver {
   void Wait() { run_loop_.Run(); }
 
  private:
-  raw_ptr<RenderWidgetHost> widget_host_;
+  RenderWidgetHost* widget_host_;
   base::RunLoop run_loop_;
 };
 
@@ -214,9 +213,9 @@ class RenderWidgetHostTouchEmulatorBrowserTest : public ContentBrowserTest {
   RenderWidgetHostViewBase* view() { return view_; }
 
  private:
-  raw_ptr<RenderWidgetHostViewBase> view_;
-  raw_ptr<RenderWidgetHostImpl> host_;
-  raw_ptr<RenderWidgetHostInputEventRouter> router_;
+  RenderWidgetHostViewBase* view_;
+  RenderWidgetHostImpl* host_;
+  RenderWidgetHostInputEventRouter* router_;
 
   base::TimeTicks last_simulated_event_time_;
   const base::TimeDelta simulated_event_time_delta_;

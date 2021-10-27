@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/one_shot_event.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
@@ -177,7 +176,7 @@ class WebAppProvider : public KeyedService {
 
   base::OneShotEvent on_registry_ready_;
 
-  const raw_ptr<Profile> profile_;
+  Profile* const profile_;
 
   // Ensures that ConnectSubsystems() is not called after Start().
   bool started_ = false;

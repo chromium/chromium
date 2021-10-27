@@ -18,7 +18,6 @@
 
 #include "base/cxx17_backports.h"
 #include "base/memory/page_size.h"
-#include "base/memory/raw_ptr.h"
 #include "base/posix/eintr_wrapper.h"
 #include "build/build_config.h"
 #include "sandbox/linux/bpf_dsl/bpf_dsl.h"
@@ -121,7 +120,7 @@ class CopyAllArgsOnUnamePolicy : public bpf_dsl::Policy {
   }
 
  private:
-  raw_ptr<std::vector<uint64_t>> aux_;
+  std::vector<uint64_t>* aux_;
 };
 
 // We are testing Syscall::Call() by making use of a BPF filter that

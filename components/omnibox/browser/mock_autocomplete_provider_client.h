@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_scheme_classifier.h"
@@ -156,7 +155,7 @@ class MockAutocompleteProviderClient
   std::unique_ptr<OmniboxTriggeredFeatureService>
       omnibox_triggered_feature_service_;
   MockTabMatcher tab_matcher_;
-  raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;  // Not owned.
+  signin::IdentityManager* identity_manager_ = nullptr;  // Not owned.
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_MOCK_AUTOCOMPLETE_PROVIDER_CLIENT_H_

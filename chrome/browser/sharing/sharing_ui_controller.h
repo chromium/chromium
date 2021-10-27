@@ -10,7 +10,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/sharing/proto/sharing_message.pb.h"
@@ -135,9 +134,9 @@ class SharingUiController {
                       const absl::optional<url::Origin>& initiating_origin,
                       std::vector<SharingApp> apps);
 
-  raw_ptr<SharingDialog> dialog_ = nullptr;
-  raw_ptr<content::WebContents> web_contents_ = nullptr;
-  raw_ptr<SharingService> sharing_service_ = nullptr;
+  SharingDialog* dialog_ = nullptr;
+  content::WebContents* web_contents_ = nullptr;
+  SharingService* sharing_service_ = nullptr;
 
   bool is_loading_ = false;
   SharingSendMessageResult send_result_ = SharingSendMessageResult::kSuccessful;

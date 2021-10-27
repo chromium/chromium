@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "device/gamepad/gamepad_consumer.h"
@@ -64,7 +63,7 @@ class CONTENT_EXPORT PepperGamepadHost :
 
   void GotUserGesture(const ppapi::host::ReplyMessageContext& in_context);
 
-  raw_ptr<device::GamepadService> gamepad_service_;
+  device::GamepadService* gamepad_service_;
 
   bool is_started_;
 

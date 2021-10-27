@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
@@ -105,7 +104,7 @@ class PlatformStateStoreWinTest : public ::testing::Test {
 
   static const char kProfileName_[];
   static const wchar_t kStoreKeyName_[];
-  raw_ptr<TestingProfile> profile_;
+  TestingProfile* profile_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "mojo/public/cpp/bindings/tests/validation_test_input_parser.h"
-#include "base/memory/raw_ptr.h"
 
 #include <assert.h>
 #include <stddef.h>
@@ -112,9 +111,9 @@ class ValidationTestInputParser {
   const std::string& input_;
   size_t input_cursor_;
 
-  raw_ptr<std::vector<uint8_t>> data_;
-  raw_ptr<size_t> num_handles_;
-  raw_ptr<std::string> error_message_;
+  std::vector<uint8_t>* data_;
+  size_t* num_handles_;
+  std::string* error_message_;
 
   std::map<std::string, PendingDistanceItem> pending_distance_items_;
   std::set<std::string> anchors_;

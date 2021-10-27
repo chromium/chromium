@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include "base/memory/raw_ptr.h"
-
 namespace captions {
 
 class CaptionBubble;
@@ -84,9 +82,9 @@ class CaptionBubbleModel {
   bool has_error_ = false;
 
   // The CaptionBubble observing changes to this model.
-  raw_ptr<CaptionBubble> observer_ = nullptr;
+  CaptionBubble* observer_ = nullptr;
 
-  const raw_ptr<CaptionBubbleContext> context_;
+  CaptionBubbleContext* const context_;
 };
 
 }  // namespace captions

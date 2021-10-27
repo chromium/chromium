@@ -11,7 +11,6 @@
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_startup_tracker.h"
@@ -261,8 +260,8 @@ class DiceTurnSyncOnHelper
   void AbortAndDelete();
 
   std::unique_ptr<Delegate> delegate_;
-  raw_ptr<Profile> profile_;
-  raw_ptr<signin::IdentityManager> identity_manager_;
+  Profile* profile_;
+  signin::IdentityManager* identity_manager_;
   const signin_metrics::AccessPoint signin_access_point_;
   const signin_metrics::PromoAction signin_promo_action_;
   const signin_metrics::Reason signin_reason_;

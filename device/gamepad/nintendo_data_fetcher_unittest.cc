@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -90,10 +89,10 @@ class NintendoDataFetcherTest : public DeviceServiceTestBase {
     polling_thread_->FlushForTesting();
   }
 
-  raw_ptr<MockHidService> mock_hid_service_;
+  MockHidService* mock_hid_service_;
   std::unique_ptr<GamepadProvider> provider_;
-  raw_ptr<NintendoDataFetcher> fetcher_;
-  raw_ptr<base::Thread> polling_thread_;
+  NintendoDataFetcher* fetcher_;
+  base::Thread* polling_thread_;
 };
 
 TEST_F(NintendoDataFetcherTest, UnsupportedDeviceIsIgnored) {

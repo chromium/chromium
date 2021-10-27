@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
 #include "content/browser/renderer_host/render_widget_host_input_event_router.h"
 #include "content/browser/renderer_host/text_input_manager.h"
@@ -69,11 +68,11 @@ class MockRenderWidgetHostDelegate : public RenderWidgetHostDelegate {
 
  private:
   std::unique_ptr<NativeWebKeyboardEvent> last_event_;
-  raw_ptr<RenderWidgetHostImpl> rwh_ = nullptr;
+  RenderWidgetHostImpl* rwh_ = nullptr;
   std::unique_ptr<RenderWidgetHostInputEventRouter> rwh_input_event_router_;
   bool is_fullscreen_ = false;
   TextInputManager text_input_manager_;
-  raw_ptr<RenderWidgetHostImpl> focused_widget_ = nullptr;
+  RenderWidgetHostImpl* focused_widget_ = nullptr;
   KeyboardEventProcessingResult pre_handle_keyboard_event_result_ =
       KeyboardEventProcessingResult::NOT_HANDLED;
   StubRenderViewHostDelegateView rvh_delegate_view_;

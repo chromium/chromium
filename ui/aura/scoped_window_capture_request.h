@@ -5,7 +5,6 @@
 #ifndef UI_AURA_SCOPED_WINDOW_CAPTURE_REQUEST_H_
 #define UI_AURA_SCOPED_WINDOW_CAPTURE_REQUEST_H_
 
-#include "base/memory/raw_ptr.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "ui/aura/aura_export.h"
 #include "ui/aura/window_observer.h"
@@ -60,7 +59,7 @@ class AURA_EXPORT ScopedWindowCaptureRequest : public WindowObserver {
   // The window on which this request has been made. Can be |nullptr| if this is
   // an empty request (created by the default ctor), or if this object was
   // std::move()'d from.
-  raw_ptr<Window> window_ = nullptr;
+  Window* window_ = nullptr;
 };
 
 }  // namespace aura

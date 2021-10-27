@@ -15,7 +15,6 @@
 #include "base/macros.h"
 #include "base/memory/nonscannable_memory.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_math.h"
 #include "base/process/process_handle.h"
 #include "base/trace_event/typed_macros.h"
@@ -120,7 +119,7 @@ struct ComplexMessage : public Channel::Message {
 
 #if defined(OS_WIN)
   // On Windows, handles are serialised into the extra header section.
-  raw_ptr<HandleEntry> handles_ = nullptr;
+  HandleEntry* handles_ = nullptr;
 #elif defined(OS_MAC)
   // On OSX, handles are serialised into the extra header section.
   MachPortsExtraHeader* mach_ports_header_ = nullptr;

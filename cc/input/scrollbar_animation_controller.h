@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/cancelable_callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "cc/cc_export.h"
@@ -135,7 +134,7 @@ class CC_EXPORT ScrollbarAnimationController {
 
   void ApplyOpacityToScrollbars(float opacity);
 
-  raw_ptr<ScrollbarAnimationControllerClient> client_;
+  ScrollbarAnimationControllerClient* client_;
 
   base::TimeTicks last_awaken_time_;
 

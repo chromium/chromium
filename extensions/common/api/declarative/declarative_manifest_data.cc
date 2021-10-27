@@ -7,7 +7,6 @@
 #include <stddef.h>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -38,7 +37,7 @@ class ErrorBuilder {
   }
 
  private:
-  const raw_ptr<std::u16string> error_;
+  std::u16string* const error_;
 };
 
 // Converts a rule defined in the manifest into a JSON internal format. The

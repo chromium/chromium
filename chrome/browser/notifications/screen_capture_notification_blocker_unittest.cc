@@ -4,7 +4,6 @@
 
 #include "chrome/browser/notifications/screen_capture_notification_blocker.h"
 
-#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -136,7 +135,7 @@ class ScreenCaptureNotificationBlockerTest
   TestingProfile profile_;
   content::TestWebContentsFactory web_contents_factory_;
   std::unique_ptr<StubNotificationDisplayService> notification_service_;
-  raw_ptr<ScreenCaptureNotificationBlocker> blocker_;
+  ScreenCaptureNotificationBlocker* blocker_;
 };
 
 TEST_P(ScreenCaptureNotificationBlockerTest, ShouldNotBlockWhenNotCapturing) {

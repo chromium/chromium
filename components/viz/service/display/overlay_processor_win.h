@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/service/display/dc_layer_overlay.h"
@@ -76,7 +75,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
   }
 
  private:
-  const raw_ptr<OutputSurface> output_surface_;
+  OutputSurface* const output_surface_;
   // Whether direct composition layers are being used with SetEnableDCLayers().
   bool using_dc_layers_ = false;
   // Number of frames since the last time direct composition layers were used.

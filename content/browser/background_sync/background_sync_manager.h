@@ -17,7 +17,6 @@
 #include "base/callback_forward.h"
 #include "base/cancelable_callback.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/clock.h"
@@ -508,7 +507,7 @@ class CONTENT_EXPORT BackgroundSyncManager
 
   std::unique_ptr<BackgroundSyncNetworkObserver> network_observer_;
 
-  raw_ptr<base::Clock> clock_;
+  base::Clock* clock_;
 
   std::map<int64_t, int> emulated_offline_sw_;
 

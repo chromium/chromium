@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "content/browser/scheduler/responsiveness/metric_source.h"
 
@@ -129,7 +128,7 @@ class CONTENT_EXPORT Watcher : public base::RefCounted<Watcher>,
   // thread sets |calculator_io_|. On destruction, this class first tears down
   // all consumers of |calculator_io_|, and then clears the member and destroys
   // Calculator.
-  raw_ptr<Calculator> calculator_io_ = nullptr;
+  Calculator* calculator_io_ = nullptr;
 };
 
 }  // namespace responsiveness

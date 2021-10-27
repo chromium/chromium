@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
@@ -91,13 +90,13 @@ class ExternalInstallManager : public ExtensionRegistryObserver {
   bool IsUnacknowledgedExternalExtension(const Extension& extension) const;
 
   // The associated BrowserContext.
-  raw_ptr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
 
   // Whether or not this is the first run for the profile.
   bool is_first_run_;
 
   // The associated ExtensionPrefs.
-  raw_ptr<ExtensionPrefs> extension_prefs_;
+  ExtensionPrefs* extension_prefs_;
 
   // The collection of ExternalInstallErrors.
   std::map<std::string, std::unique_ptr<ExternalInstallError>> errors_;
@@ -111,7 +110,7 @@ class ExternalInstallManager : public ExtensionRegistryObserver {
   std::set<ExtensionId> shown_ids_;
 
   // The error that is currently showing an alert dialog/bubble.
-  raw_ptr<ExternalInstallError> currently_visible_install_alert_;
+  ExternalInstallError* currently_visible_install_alert_;
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};

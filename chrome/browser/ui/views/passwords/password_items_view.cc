@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/strong_alias.h"
 #include "build/branding_buildflags.h"
@@ -157,8 +156,8 @@ class PasswordItemsView::PasswordRow {
   void DeleteButtonPressed();
   void UndoButtonPressed();
 
-  const raw_ptr<PasswordItemsView> parent_;
-  const raw_ptr<const password_manager::PasswordForm> password_form_;
+  PasswordItemsView* const parent_;
+  const password_manager::PasswordForm* const password_form_;
   bool deleted_ = false;
 };
 

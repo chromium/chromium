@@ -19,7 +19,6 @@
 #include "base/cxx17_backports.h"
 #include "base/debug/crash_logging.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/numerics/checked_math.h"
@@ -135,7 +134,7 @@ class ScopedGLErrorSuppressor {
 
  private:
   const char* function_name_;
-  raw_ptr<gles2::ErrorState> error_state_;
+  gles2::ErrorState* error_state_;
 };
 
 // Temporarily changes a decoder's bound texture and restore it when this
@@ -161,7 +160,7 @@ class ScopedTextureBinder {
   ~ScopedTextureBinder() { state_->api()->glBindTextureFn(target_, 0); }
 
  private:
-  raw_ptr<gles2::ContextState> state_;
+  gles2::ContextState* state_;
   GLenum target_;
 };
 
@@ -303,11 +302,11 @@ class SharedImageProviderImpl final : public cc::SharedImageProvider {
   }
 
  private:
-  raw_ptr<SharedImageRepresentationFactory> shared_image_factory_;
+  SharedImageRepresentationFactory* shared_image_factory_;
   scoped_refptr<SharedContextState> shared_context_state_;
-  raw_ptr<SkSurface> output_surface_;
-  raw_ptr<std::vector<GrBackendSemaphore>> end_semaphores_;
-  raw_ptr<gles2::ErrorState> error_state_;
+  SkSurface* output_surface_;
+  std::vector<GrBackendSemaphore>* end_semaphores_;
+  gles2::ErrorState* error_state_;
 
   struct SharedImageReadAccess {
     std::unique_ptr<SharedImageRepresentationSkia> shared_image_skia;
@@ -957,7 +956,7 @@ class RasterDecoderImpl final : public RasterDecoder,
   std::unique_ptr<SharedImageRepresentationRaster::ScopedWriteAccess>
       scoped_shared_image_raster_write_;
 
-  raw_ptr<SkSurface> sk_surface_ = nullptr;
+  SkSurface* sk_surface_ = nullptr;
   std::unique_ptr<SharedImageProviderImpl> paint_op_shared_image_provider_;
 
   sk_sp<SkSurface> sk_surface_for_testing_;
@@ -967,8 +966,7 @@ class RasterDecoderImpl final : public RasterDecoder,
   std::unique_ptr<SkDeferredDisplayListRecorder> recorder_;
   sk_sp<SkDeferredDisplayList> ddl_;
   absl::optional<SkDeferredDisplayList::ProgramIterator> program_iterator_;
-  raw_ptr<SkCanvas> raster_canvas_ =
-      nullptr;  // ptr into recorder_ or sk_surface_
+  SkCanvas* raster_canvas_ = nullptr;  // ptr into recorder_ or sk_surface_
   std::vector<SkDiscardableHandleId> locked_handles_;
 
   // Tracing helpers.
@@ -984,7 +982,7 @@ class RasterDecoderImpl final : public RasterDecoder,
 
   const bool is_raw_draw_enabled_;
 
-  raw_ptr<gl::GLApi> api_ = nullptr;
+  gl::GLApi* api_ = nullptr;
 
   base::WeakPtrFactory<DecoderContext> weak_ptr_factory_{this};
 };
@@ -3441,7 +3439,7 @@ class TransferCacheDeserializeHelperImpl final
   }
 
   const int raster_decoder_id_;
-  const raw_ptr<ServiceTransferCache> transfer_cache_;
+  ServiceTransferCache* const transfer_cache_;
 };
 
 }  // namespace

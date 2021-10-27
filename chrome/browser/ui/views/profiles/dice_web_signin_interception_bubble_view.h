@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_DICE_WEB_SIGNIN_INTERCEPTION_BUBBLE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_DICE_WEB_SIGNIN_INTERCEPTION_BUBBLE_VIEW_H_
 
-#include "base/memory/raw_ptr.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 #include "base/callback.h"
@@ -98,7 +97,7 @@ class DiceWebSigninInterceptionBubbleView
   // Guest profile through this method, which is called by the inner web UI.
   void OnWebUIUserChoice(SigninInterceptionUserChoice user_choice);
 
-  raw_ptr<Profile> profile_;
+  Profile* profile_;
   bool accepted_ = false;
   DiceWebSigninInterceptor::Delegate::BubbleParameters bubble_parameters_;
   base::OnceCallback<void(SigninInterceptionResult)> callback_;

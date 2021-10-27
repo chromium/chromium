@@ -18,7 +18,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
@@ -204,7 +203,7 @@ class VisitedLinkWriter::TableBuilder
   void OnCompleteMainThread();
 
   // Owner of this object. MAY ONLY BE ACCESSED ON THE MAIN THREAD!
-  raw_ptr<VisitedLinkWriter> writer_;
+  VisitedLinkWriter* writer_;
 
   // Indicates whether the operation has failed or not.
   bool success_;

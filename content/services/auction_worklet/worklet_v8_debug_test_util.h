@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
@@ -39,7 +38,7 @@ class TestInspectorClient : public v8_inspector::V8InspectorClient {
   void runIfWaitingForDebugger(int context_group_id) override;
 
  private:
-  raw_ptr<AuctionV8Helper> v8_helper_;
+  AuctionV8Helper* v8_helper_;
 };
 
 // A thread-safe output channel that records everything that V8 tells it,
@@ -118,7 +117,7 @@ class TestChannel : public v8_inspector::V8Inspector::Channel {
                             std::string payload);
 
   scoped_refptr<AuctionV8Helper> v8_helper_;
-  raw_ptr<v8_inspector::V8InspectorSession> v8_inspector_session_;
+  v8_inspector::V8InspectorSession* v8_inspector_session_;
   base::Lock lock_;
   base::ConditionVariable wake_up_ GUARDED_BY(lock_);
   std::list<Event> seen_events_ GUARDED_BY(lock_);

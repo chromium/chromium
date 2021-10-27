@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -115,7 +114,7 @@ class TestExtensionEnvironment {
 #endif
 
   std::unique_ptr<TestingProfile> profile_;
-  raw_ptr<ExtensionService> extension_service_ = nullptr;
+  ExtensionService* extension_service_ = nullptr;
 };
 
 }  // namespace extensions

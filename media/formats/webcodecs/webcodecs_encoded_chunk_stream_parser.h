@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/media_export.h"
@@ -75,7 +74,7 @@ class MEDIA_EXPORT WebCodecsEncodedChunkStreamParser : public StreamParser {
 
   NewMediaSegmentCB new_segment_cb_;
   EndMediaSegmentCB end_of_segment_cb_;
-  raw_ptr<MediaLog> media_log_;
+  MediaLog* media_log_;
 };
 
 }  // namespace media

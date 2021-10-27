@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/memory/raw_ptr.h"
 #include "headless/public/headless_browser.h"
 #include "headless/public/headless_browser_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -63,7 +62,7 @@ class HeadlessBrowserContextOptions {
 
   explicit HeadlessBrowserContextOptions(HeadlessBrowser::Options*);
 
-  raw_ptr<HeadlessBrowser::Options> browser_options_;
+  HeadlessBrowser::Options* browser_options_;
 
   absl::optional<std::string> product_name_and_version_;
   absl::optional<std::string> accept_language_;

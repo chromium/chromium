@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/task/task.h"
 
@@ -48,9 +47,9 @@ class AddUniqueUrlsTask : public Task {
   void OnUrlsAdded(Result result);
 
   // Dispatcher to call back to with results. Not owned.
-  raw_ptr<PrefetchDispatcher> prefetch_dispatcher_;
+  PrefetchDispatcher* prefetch_dispatcher_;
   // Prefetch store to execute against. Not owned.
-  raw_ptr<PrefetchStore> prefetch_store_;
+  PrefetchStore* prefetch_store_;
   std::string name_space_;
   std::vector<PrefetchURL> prefetch_urls_;
 

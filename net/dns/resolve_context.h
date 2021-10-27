@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/sample_vector.h"
@@ -249,7 +248,7 @@ class NET_EXPORT_PRIVATE ResolveContext : public base::CheckedObserver {
 
   static bool ServerStatsToDohAvailability(const ServerStats& stats);
 
-  raw_ptr<URLRequestContext> url_request_context_;
+  URLRequestContext* url_request_context_;
 
   std::unique_ptr<HostCache> host_cache_;
 

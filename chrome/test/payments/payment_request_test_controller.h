@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 
@@ -126,7 +125,7 @@ class PaymentRequestTestController {
   void OnCompleteCalled();
   void OnUIDisplayed();
 
-  raw_ptr<PaymentRequestTestObserver> observer_ = nullptr;
+  PaymentRequestTestObserver* observer_ = nullptr;
 
   bool is_off_the_record_ = false;
   bool valid_ssl_ = true;

@@ -11,7 +11,6 @@
 #include "base/cancelable_callback.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "cc/cc_export.h"
@@ -279,8 +278,8 @@ class CC_EXPORT ImageAnimationController {
     void RequestBeginFrame();
     void RequestInvalidation();
 
-    raw_ptr<base::SingleThreadTaskRunner> task_runner_;
-    const raw_ptr<Client> client_;
+    base::SingleThreadTaskRunner* task_runner_;
+    Client* const client_;
     NowCallback now_callback_for_testing_;
 
     InvalidationState state_ = InvalidationState::kIdle;

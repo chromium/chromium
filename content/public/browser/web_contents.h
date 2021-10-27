@@ -16,7 +16,6 @@
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
 #include "base/location.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/kill.h"
@@ -132,7 +131,7 @@ class WebContents : public PageNavigator,
                  scoped_refptr<SiteInstance> site,
                  base::Location creator_location = base::Location::Current());
 
-    raw_ptr<BrowserContext> browser_context;
+    BrowserContext* browser_context;
 
     // Specifying a SiteInstance here is optional.  It can be set to avoid an
     // extra process swap if the first navigation is expected to require a
@@ -170,7 +169,7 @@ class WebContents : public PageNavigator,
     bool initially_hidden;
 
     // If non-null then this WebContents will be hosted by a BrowserPlugin.
-    raw_ptr<BrowserPluginGuestDelegate> guest_delegate;
+    BrowserPluginGuestDelegate* guest_delegate;
 
     // Used to specify the location context which display the new view should
     // belong. This can be nullptr if not needed.

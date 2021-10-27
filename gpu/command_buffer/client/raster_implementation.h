@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "cc/paint/paint_cache.h"
 #include "gpu/command_buffer/client/client_font_manager.h"
@@ -296,7 +295,7 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
     ~SingleThreadChecker();
 
    private:
-    raw_ptr<RasterImplementation> raster_implementation_;
+    RasterImplementation* raster_implementation_;
   };
 
   // ImplementationBase implementation.
@@ -397,7 +396,7 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
   void FailGLError(GLenum /* error */) {}
 #endif
 
-  raw_ptr<RasterCmdHelper> helper_;
+  RasterCmdHelper* helper_;
   std::string last_error_;
   gles2::DebugMarkerManager debug_marker_manager_;
   std::string this_in_hex_;
@@ -454,7 +453,7 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
   cc::ClientPaintCache::PurgedData temp_paint_cache_purged_data_;
   std::unique_ptr<cc::ClientPaintCache> paint_cache_;
 
-  raw_ptr<ImageDecodeAcceleratorInterface> image_decode_accelerator_;
+  ImageDecodeAcceleratorInterface* image_decode_accelerator_;
 
   // Tracing helpers.
   int raster_chromium_id_ = 0;

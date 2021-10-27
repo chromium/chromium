@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/service/cloud_print/cloud_print_url_fetcher.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
@@ -53,7 +52,7 @@ class CloudPrintWipeout : public CloudPrintURLFetcher::Delegate {
   void UnregisterNextPrinter();
 
   // CloudPrintWipeout client.
-  raw_ptr<Client> client_;
+  Client* client_;
   // Cloud Print server url.
   GURL cloud_print_server_url_;
   // The CloudPrintURLFetcher instance for the current request.

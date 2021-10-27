@@ -4,7 +4,6 @@
 
 #include "components/page_load_metrics/browser/observers/back_forward_cache_page_load_metrics_observer.h"
 
-#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_mock_clock_override.h"
 #include "components/page_load_metrics/browser/fake_page_load_metrics_observer_delegate.h"
 #include "components/page_load_metrics/browser/observers/page_load_metrics_observer_content_test_harness.h"
@@ -99,7 +98,7 @@ class BackForwardCachePageLoadMetricsObserverTest
   void SetObserverHidden() { observer_with_fake_delegate_->was_hidden_ = true; }
 
   page_load_metrics::mojom::PageLoadTiming timing_;
-  raw_ptr<BackForwardCachePageLoadMetricsObserver> observer_;
+  BackForwardCachePageLoadMetricsObserver* observer_;
 
   // |observer_with_fake_delegate_| is an observer set up with |fake_delegate_|
   // as its PageLoadMetricsObserverDelegate. This is for unit tests where it's

@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -47,7 +46,7 @@ class PDFiumTestBase : public testing::Test {
     std::unique_ptr<PDFiumEngine> engine;
 
     // Corresponding test document loader.
-    raw_ptr<TestDocumentLoader> document_loader;
+    TestDocumentLoader* document_loader;
   };
 
   // testing::Test:

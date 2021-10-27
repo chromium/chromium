@@ -109,7 +109,7 @@ void ClearBrowsingDataHandler::RegisterMessages() {
 
 void ClearBrowsingDataHandler::OnJavascriptAllowed() {
   if (sync_service_)
-    sync_service_observation_.Observe(sync_service_.get());
+    sync_service_observation_.Observe(sync_service_);
 
   dse_service_observation_.Observe(
       TemplateURLServiceFactory::GetForProfile(profile_));

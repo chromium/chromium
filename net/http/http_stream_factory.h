@@ -16,7 +16,6 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/load_states.h"
@@ -158,7 +157,7 @@ class NET_EXPORT HttpStreamFactory {
   // from |job_controller_set_|.
   void OnJobControllerComplete(JobController* controller);
 
-  const raw_ptr<HttpNetworkSession> session_;
+  HttpNetworkSession* const session_;
 
   // All Requests/Preconnects are assigned with a JobController to manage
   // serving Job(s). JobController might outlive Request when Request

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "content/browser/web_package/signed_exchange_consts.h"
 #include "content/browser/web_package/signed_exchange_envelope.h"
@@ -186,7 +185,7 @@ class CONTENT_EXPORT SignedExchangeHandler {
   std::unique_ptr<SignedExchangeDevToolsProxy> devtools_proxy_;
 
   // This is owned by SignedExchangeLoader which is the owner of |this|.
-  raw_ptr<SignedExchangeReporter> reporter_;
+  SignedExchangeReporter* reporter_;
 
   const int frame_tree_node_id_;
 

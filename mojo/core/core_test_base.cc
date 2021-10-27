@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "mojo/core/core_test_base.h"
-#include "base/memory/raw_ptr.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -100,7 +99,7 @@ class MockDispatcher : public Dispatcher {
 
   ~MockDispatcher() override { info_->IncrementDtorCallCount(); }
 
-  const raw_ptr<CoreTestBase::MockHandleInfo> info_;
+  CoreTestBase::MockHandleInfo* const info_;
 };
 
 }  // namespace

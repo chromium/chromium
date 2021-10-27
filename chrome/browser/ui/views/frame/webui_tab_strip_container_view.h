@@ -8,7 +8,6 @@
 #include <memory>
 #include <set>
 
-#include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -155,12 +154,12 @@ class WebUITabStripContainerView : public TabStripUIEmbedder,
   // views::AccessiblePaneView
   bool SetPaneFocusAndFocusDefault() override;
 
-  const raw_ptr<BrowserView> browser_view_;
-  const raw_ptr<views::WebView> web_view_;
-  const raw_ptr<views::View> top_container_;
-  raw_ptr<views::View> tab_contents_container_;
+  BrowserView* const browser_view_;
+  views::WebView* const web_view_;
+  views::View* const top_container_;
+  views::View* tab_contents_container_;
   views::View* tab_counter_ = nullptr;
-  raw_ptr<views::View> new_tab_button_ = nullptr;
+  views::View* new_tab_button_ = nullptr;
 
 #if defined(OS_WIN)
   // If the user interacts with Windows in a way that changes the width of the
@@ -195,7 +194,7 @@ class WebUITabStripContainerView : public TabStripUIEmbedder,
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       scoped_widget_observation_{this};
 
-  raw_ptr<views::Widget> editor_bubble_widget_;
+  views::Widget* editor_bubble_widget_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_WEBUI_TAB_STRIP_CONTAINER_VIEW_H_

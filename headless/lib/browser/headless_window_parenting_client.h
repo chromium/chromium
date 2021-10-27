@@ -6,7 +6,6 @@
 #define HEADLESS_LIB_BROWSER_HEADLESS_WINDOW_PARENTING_CLIENT_H_
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "ui/aura/client/window_parenting_client.h"
 
 namespace headless {
@@ -26,7 +25,7 @@ class HeadlessWindowParentingClient
                                  const gfx::Rect& bounds) override;
 
  private:
-  raw_ptr<aura::Window> root_window_;  // Not owned.
+  aura::Window* root_window_;  // Not owned.
 };
 
 }  // namespace headless

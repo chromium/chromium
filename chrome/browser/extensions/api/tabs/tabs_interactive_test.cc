@@ -5,7 +5,6 @@
 #include <stddef.h>
 
 #include "apps/test/app_window_waiter.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/pattern.h"
 #include "base/values.h"
@@ -237,7 +236,7 @@ class ExtensionWindowLastFocusedTest : public PlatformAppBrowserTest {
     }
 
    private:
-    raw_ptr<views::Widget> widget_;
+    views::Widget* widget_;
     bool waiting_;
     base::RepeatingClosure quit_closure_;
   };

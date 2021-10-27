@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/check.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "gin/arguments.h"
 #include "gin/converter.h"
@@ -188,7 +187,7 @@ class Invoker<std::index_sequence<indices...>, ArgTypes...>
     return arg1 && And(args...);
   }
 
-  raw_ptr<Arguments> args_;
+  Arguments* args_;
 };
 
 // DispatchToCallback converts all the JavaScript arguments to C++ types and

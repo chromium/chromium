@@ -14,7 +14,6 @@
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
@@ -602,9 +601,9 @@ class ConfiguredProxyResolutionService::InitProxyResolver {
   PacFileDataWithSource script_data_;
   base::TimeDelta wait_delay_;
   std::unique_ptr<PacFileDecider> decider_;
-  raw_ptr<ProxyResolverFactory> proxy_resolver_factory_;
+  ProxyResolverFactory* proxy_resolver_factory_;
   std::unique_ptr<ProxyResolverFactory::Request> create_resolver_request_;
-  raw_ptr<std::unique_ptr<ProxyResolver>> proxy_resolver_;
+  std::unique_ptr<ProxyResolver>* proxy_resolver_;
   CompletionOnceCallback callback_;
   State next_state_;
   bool quick_check_enabled_;
@@ -796,8 +795,8 @@ class ConfiguredProxyResolutionService::PacFileDeciderPoller {
   ChangeCallback change_callback_;
   ProxyConfigWithAnnotation config_;
   bool proxy_resolver_expects_pac_bytes_;
-  raw_ptr<PacFileFetcher> pac_file_fetcher_;
-  raw_ptr<DhcpPacFileFetcher> dhcp_pac_file_fetcher_;
+  PacFileFetcher* pac_file_fetcher_;
+  DhcpPacFileFetcher* dhcp_pac_file_fetcher_;
 
   int last_error_;
   PacFileDataWithSource last_script_data_;
@@ -808,7 +807,7 @@ class ConfiguredProxyResolutionService::PacFileDeciderPoller {
 
   TimeTicks last_poll_time_;
 
-  const raw_ptr<NetLog> net_log_;
+  NetLog* const net_log_;
 
   // Polling policy injected by unit-tests. Otherwise this is nullptr and the
   // default policy will be used.

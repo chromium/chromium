@@ -14,7 +14,6 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/user_metrics.h"
 #include "base/one_shot_event.h"
@@ -198,7 +197,7 @@ class ThemeService::ThemeObserver
     }
   }
 
-  raw_ptr<ThemeService> theme_service_;
+  ThemeService* theme_service_;
 
   base::ScopedObservation<extensions::ExtensionRegistry,
                           extensions::ExtensionRegistryObserver>

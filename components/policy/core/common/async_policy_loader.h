@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -115,7 +114,7 @@ class POLICY_EXPORT AsyncPolicyLoader {
   // Task runner for running background jobs.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  raw_ptr<ManagementService> management_service_;
+  ManagementService* management_service_;
 
   // Whether the loader will schedule periodic updates for policy data.
   const bool periodic_updates_;

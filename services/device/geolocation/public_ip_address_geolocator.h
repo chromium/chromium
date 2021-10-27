@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/device/geolocation/public_ip_address_location_notifier.h"
@@ -56,7 +55,7 @@ class PublicIpAddressGeolocator : public mojom::Geolocation {
   base::Time last_updated_timestamp_;
 
   // Notifier to ask for IP-geolocation updates.
-  const raw_ptr<PublicIpAddressLocationNotifier> notifier_;
+  PublicIpAddressLocationNotifier* const notifier_;
 
   // The most recent PartialNetworkTrafficAnnotationTag provided by a client.
   std::unique_ptr<const net::PartialNetworkTrafficAnnotationTag>

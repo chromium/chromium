@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -158,7 +157,7 @@ class RuntimeAPI : public BrowserContextKeyedAPI,
 
   std::unique_ptr<RuntimeAPIDelegate> delegate_;
 
-  raw_ptr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
 
   content::NotificationRegistrar registrar_;
 

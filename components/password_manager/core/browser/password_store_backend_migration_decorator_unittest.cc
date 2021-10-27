@@ -4,7 +4,6 @@
 
 #include "components/password_manager/core/browser/password_store_backend_migration_decorator.h"
 
-#include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/password_manager/core/browser/fake_password_store_backend.h"
@@ -78,8 +77,8 @@ class PasswordStoreBackendMigrationDecoratorTest : public testing::Test {
   }
 
   base::test::SingleThreadTaskEnvironment task_env_;
-  raw_ptr<FakePasswordStoreBackend> built_in_backend_;
-  raw_ptr<FakePasswordStoreBackend> android_backend_;
+  FakePasswordStoreBackend* built_in_backend_;
+  FakePasswordStoreBackend* android_backend_;
 
   std::unique_ptr<PasswordStoreBackendMigrationDecorator>
       backend_migration_decorator_;
