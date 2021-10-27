@@ -19,8 +19,9 @@ This tutorial does not assume you have read any of the above,
 though you should feel free to peruse them when necessary.
 This tutorial will cover information across all of those guides.
 
-Exercise solutions are available in the `codelabs/cpp101/` directory of the
-Chromium source code. Build all of the example solutions with
+Exercise solutions are available in the [codelabs/cpp101/](
+https://source.chromium.org/chromium/chromium/src/+/main:codelabs/cpp101/)
+directory of the Chromium source code. Build all of the example solutions with
 `autoninja -C out/Default codelabs`. You are encouraged to create a new
 `base/cpp101/` directory locally if you want to try implementing these
 exercises yourself.
