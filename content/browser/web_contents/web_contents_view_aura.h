@@ -161,7 +161,7 @@ class CONTENT_EXPORT WebContentsViewAura
   void SetOverscrollControllerEnabled(bool enabled) override;
 
   // Overridden from RenderViewHostDelegateView:
-  void ShowContextMenu(RenderFrameHost& render_frame_host,
+  void ShowContextMenu(RenderFrameHost* render_frame_host,
                        const ContextMenuParams& params) override;
   void StartDragging(const DropData& drop_data,
                      blink::DragOperationsMask operations,

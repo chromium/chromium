@@ -1629,7 +1629,7 @@ class SystemWebAppManagerContextMenuBrowserTest
     params.page_url = web_contents->GetVisibleURL();
     params.source_type = ui::MENU_SOURCE_NONE;
     auto menu = std::make_unique<TestRenderViewContextMenu>(
-        *web_contents->GetMainFrame(), params);
+        web_contents->GetMainFrame(), params);
     menu->Init();
     return menu;
   }

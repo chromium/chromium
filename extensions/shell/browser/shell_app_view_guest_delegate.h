@@ -22,7 +22,7 @@ class ShellAppViewGuestDelegate : public AppViewGuestDelegate {
   ~ShellAppViewGuestDelegate() override;
 
   // AppViewGuestDelegate:
-  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
+  bool HandleContextMenu(content::WebContents* web_contents,
                          const content::ContextMenuParams& params) override;
   AppDelegate* CreateAppDelegate(content::WebContents* web_contents) override;
 };

@@ -19,14 +19,14 @@ ChromeAppViewGuestDelegate::~ChromeAppViewGuestDelegate() {
 }
 
 bool ChromeAppViewGuestDelegate::HandleContextMenu(
-    content::RenderFrameHost& render_frame_host,
+    content::WebContents* web_contents,
     const content::ContextMenuParams& params) {
-  ContextMenuDelegate* menu_delegate = ContextMenuDelegate::FromWebContents(
-      content::WebContents::FromRenderFrameHost(&render_frame_host));
+  ContextMenuDelegate* menu_delegate =
+      ContextMenuDelegate::FromWebContents(web_contents);
   DCHECK(menu_delegate);
 
   std::unique_ptr<RenderViewContextMenuBase> menu =
-      menu_delegate->BuildMenu(render_frame_host, params);
+      menu_delegate->BuildMenu(web_contents, params);
   menu_delegate->ShowMenu(std::move(menu));
   return true;
 }

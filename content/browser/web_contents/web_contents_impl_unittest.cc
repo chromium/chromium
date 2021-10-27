@@ -240,7 +240,7 @@ class MockWebContentsDelegate : public WebContentsDelegate {
           blink::ProtocolHandlerSecurityLevel::kStrict)
       : security_level_(security_level) {}
   MOCK_METHOD2(HandleContextMenu,
-               bool(RenderFrameHost&, const ContextMenuParams&));
+               bool(RenderFrameHost*, const ContextMenuParams&));
   MOCK_METHOD4(RegisterProtocolHandler,
                void(RenderFrameHost*, const std::string&, const GURL&, bool));
   MOCK_METHOD(void, NavigationStateChanged, (WebContents*, InvalidateTypes));
@@ -2796,12 +2796,12 @@ TEST_F(WebContentsImplTest, HandleContextMenuDelegate) {
   MockWebContentsDelegate delegate;
   contents()->SetDelegate(&delegate);
 
-  TestRenderFrameHost& main_rfh = *main_test_rfh();
-  EXPECT_CALL(delegate, HandleContextMenu(::testing::_, ::testing::_))
+  TestRenderFrameHost* rfh = main_test_rfh();
+  EXPECT_CALL(delegate, HandleContextMenu(rfh, ::testing::_))
       .WillOnce(::testing::Return(true));
 
   ContextMenuParams params;
-  contents()->ShowContextMenu(main_rfh, mojo::NullAssociatedRemote(), params);
+  contents()->ShowContextMenu(rfh, mojo::NullAssociatedRemote(), params);
 
   contents()->SetDelegate(nullptr);
 }

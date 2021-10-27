@@ -5770,7 +5770,7 @@ class ContextMenuObserverDelegate : public WebContentsDelegate {
 
   ~ContextMenuObserverDelegate() override {}
 
-  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
+  bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
                          const content::ContextMenuParams& params) override {
     context_menu_created_ = true;
     menu_params_ = params;

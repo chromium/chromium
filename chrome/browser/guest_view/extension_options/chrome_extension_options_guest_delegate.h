@@ -25,8 +25,7 @@ class ChromeExtensionOptionsGuestDelegate
 
   ~ChromeExtensionOptionsGuestDelegate() override;
 
-  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
-                         const content::ContextMenuParams& params) override;
+  bool HandleContextMenu(const content::ContextMenuParams& params) override;
 
   content::WebContents* OpenURLInNewTab(
       const content::OpenURLParams& params) override;

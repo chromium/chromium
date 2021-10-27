@@ -72,11 +72,18 @@ void ChromeWebContentsViewDelegateViews::ResetStoredFocus() {
 
 std::unique_ptr<RenderViewContextMenuBase>
 ChromeWebContentsViewDelegateViews::BuildMenu(
-    content::RenderFrameHost& render_frame_host,
+    content::WebContents* web_contents,
     const content::ContextMenuParams& params) {
-  std::unique_ptr<RenderViewContextMenuBase> menu(
-      RenderViewContextMenuViews::Create(render_frame_host, params));
-  menu->Init();
+  std::unique_ptr<RenderViewContextMenuBase> menu;
+  content::RenderFrameHost* focused_frame = web_contents->GetFocusedFrame();
+  // If the frame tree does not have a focused frame at this point, do not
+  // bother creating RenderViewContextMenuViews.
+  // This happens if the frame has navigated to a different page before
+  // ContextMenu message was received by the current RenderFrameHost.
+  if (focused_frame) {
+    menu.reset(RenderViewContextMenuViews::Create(focused_frame, params));
+    menu->Init();
+  }
   return menu;
 }
 
@@ -90,19 +97,11 @@ void ChromeWebContentsViewDelegateViews::ShowMenu(
 }
 
 void ChromeWebContentsViewDelegateViews::ShowContextMenu(
-    content::RenderFrameHost& render_frame_host,
+    content::RenderFrameHost* render_frame_host,
     const content::ContextMenuParams& params) {
   ShowMenu(BuildMenu(
-      render_frame_host,
+      content::WebContents::FromRenderFrameHost(render_frame_host),
       AddContextMenuParamsPropertiesFromPreferences(web_contents_, params)));
-}
-
-void ChromeWebContentsViewDelegateViews::ExecuteCommandForTesting(
-    int command_id,
-    int event_flags) {
-  DCHECK(context_menu_);
-  context_menu_->ExecuteCommand(command_id, event_flags);
-  context_menu_.reset();
 }
 
 void ChromeWebContentsViewDelegateViews::OnPerformDrop(

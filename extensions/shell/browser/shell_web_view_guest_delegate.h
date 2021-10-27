@@ -21,8 +21,7 @@ class ShellWebViewGuestDelegate : public WebViewGuestDelegate {
   ~ShellWebViewGuestDelegate() override;
 
   // WebViewGuestDelegate:
-  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
-                         const content::ContextMenuParams& params) override;
+  bool HandleContextMenu(const content::ContextMenuParams& params) override;
   void OnShowContextMenu(int request_id) override;
 };
 

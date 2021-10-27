@@ -1015,7 +1015,7 @@ void WebContentsViewAura::SetOverscrollControllerEnabled(bool enabled) {
 ////////////////////////////////////////////////////////////////////////////////
 // WebContentsViewAura, RenderViewHostDelegateView implementation:
 
-void WebContentsViewAura::ShowContextMenu(RenderFrameHost& render_frame_host,
+void WebContentsViewAura::ShowContextMenu(RenderFrameHost* render_frame_host,
                                           const ContextMenuParams& params) {
   TouchSelectionControllerClientAura* selection_controller_client =
       GetSelectionControllerClient();

@@ -248,8 +248,9 @@ void WebContentsViewMac::TakeFocus(bool reverse) {
     remote_ns_view_->TakeFocus(reverse);
 }
 
-void WebContentsViewMac::ShowContextMenu(RenderFrameHost& render_frame_host,
-                                         const ContextMenuParams& params) {
+void WebContentsViewMac::ShowContextMenu(
+    RenderFrameHost* render_frame_host,
+    const ContextMenuParams& params) {
   if (delegate())
     delegate()->ShowContextMenu(render_frame_host, params);
   else

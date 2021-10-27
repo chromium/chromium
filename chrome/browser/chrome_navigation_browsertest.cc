@@ -152,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest, TestViewFrameSource) {
   content::ContextMenuParams params;
   params.page_url = local_page_with_iframe_url;
   params.frame_url = frame->GetLastCommittedURL();
-  TestRenderViewContextMenu menu(*frame, params);
+  TestRenderViewContextMenu menu(frame, params);
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_VIEWFRAMESOURCE, 0);
   ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
@@ -369,7 +369,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
 
   ui_test_utils::TabAddedWaiter tab_add(browser());
 
-  TestRenderViewContextMenu menu(*web_contents->GetMainFrame(), params);
+  TestRenderViewContextMenu menu(web_contents->GetMainFrame(), params);
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB, 0);
 
