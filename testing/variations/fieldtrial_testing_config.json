@@ -5370,17 +5370,12 @@
                 {
                     "name": "AndroidExperiments",
                     "params": {
-                        "OmniboxMaxURLMatches": "3",
-                        "OmniboxMaxZeroSuggestMatches": "15",
-                        "UIMaxAutocompleteMatches": "8"
+                        "OmniboxMaxZeroSuggestMatches": "15"
                     },
                     "enable_features": [
-                        "OmniboxAdaptiveSuggestionsCount",
                         "OmniboxDynamicMaxAutocomplete",
-                        "OmniboxMaxURLMatches",
                         "OmniboxMaxZeroSuggestMatches",
                         "OmniboxOnFocusSuggestionsContextualWebAllowSRP",
-                        "OmniboxUIExperimentMaxAutocompleteMatches",
                         "QuickActionSearchWidgetAndroid",
                         "QuickActionSearchWidgetAndroidDinoVariant"
                     ]
