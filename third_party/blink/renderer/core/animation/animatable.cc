@@ -89,15 +89,15 @@ Animation* Animatable::animate(
   ReportPermissionsPolicyViolationsIfNecessary(*element->GetExecutionContext(),
                                                *effect->Model());
   if (!options->IsKeyframeAnimationOptions())
-    return element->GetDocument().Timeline().Play(effect);
+    return element->GetDocument().Timeline().Play(effect, exception_state);
 
   Animation* animation;
   const KeyframeAnimationOptions* options_dict =
       options->GetAsKeyframeAnimationOptions();
   if (!options_dict->hasTimeline()) {
-    animation = element->GetDocument().Timeline().Play(effect);
+    animation = element->GetDocument().Timeline().Play(effect, exception_state);
   } else if (AnimationTimeline* timeline = options_dict->timeline()) {
-    animation = timeline->Play(effect);
+    animation = timeline->Play(effect, exception_state);
   } else {
     animation = Animation::Create(element->GetExecutionContext(), effect,
                                   nullptr, exception_state);
@@ -130,7 +130,7 @@ Animation* Animatable::animate(ScriptState* script_state,
 
   ReportPermissionsPolicyViolationsIfNecessary(*element->GetExecutionContext(),
                                                *effect->Model());
-  return element->GetDocument().Timeline().Play(effect);
+  return element->GetDocument().Timeline().Play(effect, exception_state);
 }
 
 HeapVector<Member<Animation>> Animatable::getAnimations(
