@@ -64,6 +64,7 @@ class EyeDropperView::ScreenCapturer
                        std::unique_ptr<webrtc::DesktopFrame> frame) override;
 
   SkBitmap GetBitmap() const;
+  SkColor GetColor(int x, int y) const;
 
  private:
   std::unique_ptr<webrtc::DesktopCapturer> capturer_;
@@ -92,6 +93,13 @@ void EyeDropperView::ScreenCapturer::OnCaptureResult(
 
 SkBitmap EyeDropperView::ScreenCapturer::GetBitmap() const {
   return frame_;
+}
+
+SkColor EyeDropperView::ScreenCapturer::GetColor(int x, int y) const {
+  DCHECK(x < frame_.width());
+  DCHECK(y < frame_.height());
+  return x < frame_.width() && y < frame_.height() ? frame_.getColor(x, y)
+                                                   : SK_ColorBLACK;
 }
 
 EyeDropperView::EyeDropperView(content::RenderFrameHost* frame,
@@ -170,7 +178,8 @@ void EyeDropperView::OnPaint(gfx::Canvas* view_canvas) {
 
   // Store the pixel color under the cursor as it is the last color seen
   // by the user before selection.
-  selected_color_ = frame.getColor(center_position.x(), center_position.y());
+  selected_color_ =
+      screen_capturer_->GetColor(center_position.x(), center_position.y());
 
   // Paint grid.
   cc::PaintFlags flags;
