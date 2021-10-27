@@ -5242,12 +5242,12 @@
   {
     "name": "turn-off-streaming-media-caching-always",
     "owners": [ "wicarr@microsoft.com", "cassew@google.com" ],
-    "expiry_milestone": 91
+    "expiry_milestone": 99
   },
   {
     "name": "turn-off-streaming-media-caching-on-battery",
     "owners": [ "wicarr@microsoft.com", "cassew@google.com" ],
-    "expiry_milestone": 91
+    "expiry_milestone": 99
   },
   {
     "name": "u2f-permission-prompt",
