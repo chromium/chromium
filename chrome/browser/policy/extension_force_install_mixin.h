@@ -12,6 +12,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "extensions/common/extension_id.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -35,6 +36,7 @@ class MockConfigurationPolicyProvider;
 
 namespace ash {
 class DeviceStateMixin;
+class LocalPolicyTestServerMixin;
 }
 
 namespace policy {
@@ -106,6 +108,12 @@ class ExtensionForceInstallMixin final : public InProcessBrowserTestMixin {
   void InitWithDevicePolicyCrosTestHelper(
       Profile* profile,
       policy::DevicePolicyCrosTestHelper* device_policy_cros_test_helper);
+  void InitWithLocalPolicyMixin(
+      Profile* profile,
+      ash::LocalPolicyTestServerMixin* local_policy_mixin,
+      policy::UserPolicyBuilder* user_policy_builder,
+      const std::string& account_id,
+      const std::string& policy_type);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Force-installs the CRX file |crx_path|; under the hood, generates an update
@@ -187,6 +195,11 @@ class ExtensionForceInstallMixin final : public InProcessBrowserTestMixin {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::DeviceStateMixin* device_state_mixin_ = nullptr;
   policy::DevicePolicyCrosTestHelper* device_policy_cros_test_helper_ = nullptr;
+  ash::LocalPolicyTestServerMixin* local_policy_mixin_ = nullptr;
+  policy::UserPolicyBuilder* user_policy_builder_ = nullptr;
+  // |account_id_| and |policy_type_| are only used with |local_policy_mixin_|.
+  std::string account_id_;
+  std::string policy_type_;
 #endif
 };
 

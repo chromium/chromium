@@ -3319,6 +3319,7 @@ if (!is_android && !is_fuchsia) {
         "../browser/chromeos/extensions/incoming_native_messaging_apitest.cc",
         "../browser/chromeos/extensions/info_private_apitest.cc",
         "../browser/chromeos/extensions/input_method_apitest_chromeos.cc",
+        "../browser/chromeos/extensions/login_screen/login/cleanup/extension_cleanup_handler_browsertest.cc",
         "../browser/chromeos/extensions/login_screen/login/login_apitest.cc",
         "../browser/chromeos/extensions/login_screen/login_screen_ui/login_screen_ui_apitest.cc",
         "../browser/chromeos/extensions/speech/speech_recognition_private_apitest.cc",
