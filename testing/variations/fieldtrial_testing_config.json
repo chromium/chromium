@@ -6761,6 +6761,23 @@
             ]
         }
     ],
+    "RetailCoupons": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Experiment_20211021",
+                    "enable_features": [
+                        "RetailCoupons"
+                    ]
+                }
+            ]
+        }
+    ],
     "RevertDSEAutomaticPermissions": [
         {
             "platforms": [
