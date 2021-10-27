@@ -38,8 +38,8 @@
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:scaleType="centerInside"
+        android:clickable="false"
         android:adjustViewBounds="true"
-        app:srcCompat="@drawable/google_logo"
         android:visibility="gone"
         android:contentDescription="@null"/>
 

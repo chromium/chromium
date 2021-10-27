@@ -208,6 +208,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/tasks/EngagementTimeUtilTest.java",
   "junit/src/org/chromium/chrome/browser/tasks/JourneyManagerTest.java",
   "junit/src/org/chromium/chrome/browser/toolbar/LocationBarModelUnitTest.java",
+  "junit/src/org/chromium/chrome/browser/toolbar/LogoLoadHelperUnitTest.java",
   "junit/src/org/chromium/chrome/browser/toolbar/ToolbarTabControllerImplTest.java",
   "junit/src/org/chromium/chrome/browser/toolbar/adaptive/OptionalNewTabButtonControllerActivityTest.java",
   "junit/src/org/chromium/chrome/browser/toolbar/top/StartSurfaceToolbarMediatorUnitTest.java",

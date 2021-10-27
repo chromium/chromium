@@ -21,6 +21,7 @@ import android.view.ViewStub;
 import android.view.animation.BaseInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
@@ -64,7 +65,7 @@ class StartSurfaceToolbarView extends RelativeLayout {
     private boolean mIsNewTabButtonAtStart;
     private boolean mShouldShowNewTabViewText;
     private HomeButton mHomeButton;
-    private View mLogo;
+    private ImageView mLogo;
     private View mTabSwitcherButtonView;
 
     @Nullable
@@ -169,6 +170,22 @@ class StartSurfaceToolbarView extends RelativeLayout {
     void setLogoVisibility(boolean isVisible) {
         mIsLogoVisible = isVisible;
         if (!mShowTransitionAnimations) mLogo.setVisibility(getVisibility(isVisible));
+    }
+
+    /**
+     * Set the logo image.
+     * @param logoImageDrawable The logo image in drawable format.
+     */
+    void setLogoImage(Drawable logoImageDrawable) {
+        mLogo.setImageDrawable(logoImageDrawable);
+    }
+
+    /**
+     * @param logoContentDescription The content description of the logo.
+     */
+    void setLogoContentDescription(String logoContentDescription) {
+        mLogo.setFocusable(logoContentDescription != null);
+        mLogo.setContentDescription(logoContentDescription);
     }
 
     /**
