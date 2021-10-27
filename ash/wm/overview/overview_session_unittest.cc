@@ -2182,7 +2182,7 @@ TEST_F(OverviewSessionTest, HandleAlwaysOnTopWindow) {
 
   ClickWindow(window6.get());
   EXPECT_FALSE(is_visibly_animating(window1.get()));
-  EXPECT_TRUE(is_visibly_animating(window2.get()));
+  EXPECT_FALSE(is_visibly_animating(window2.get()));
   EXPECT_TRUE(is_visibly_animating(window3.get()));
   EXPECT_FALSE(is_visibly_animating(window4.get()));
   EXPECT_TRUE(is_visibly_animating(window5.get()));

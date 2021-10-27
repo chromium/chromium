@@ -1319,7 +1319,8 @@ void OverviewGrid::CalculateWindowListAnimationStates(
     }
   }
 
-  gfx::Rect screen_bounds = GetGridEffectiveBounds();
+  // TODO(sammiequon): Investigate the bounds used here.
+  gfx::Rect grid_bounds = GetGridEffectiveBounds();
   for (size_t i = 0; i < items.size(); ++i) {
     const bool minimized =
         WindowState::Get(items[i]->GetWindow())->IsMinimized();
@@ -1347,6 +1348,7 @@ void OverviewGrid::CalculateWindowListAnimationStates(
         src_bounds_temp = items[i]->GetWindow()->bounds();
         ::wm::ConvertRectToScreen(items[i]->root_window(), &src_bounds_temp);
       }
+      src_bounds_temp.Intersect(grid_bounds);
     }
 
     // The bounds of of the destination may be partially or fully offscreen.
@@ -1356,7 +1358,7 @@ void OverviewGrid::CalculateWindowListAnimationStates(
     gfx::Rect dst_bounds_temp = gfx::ToEnclosedRect(
         transition == OverviewTransition::kEnter ? target_bounds[i]
                                                  : items[i]->target_bounds());
-    dst_bounds_temp.Intersect(screen_bounds);
+    dst_bounds_temp.Intersect(grid_bounds);
     if (dst_bounds_temp.IsEmpty()) {
       items[i]->set_should_animate_when_entering(false);
       items[i]->set_should_animate_when_exiting(false);
