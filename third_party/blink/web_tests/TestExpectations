@@ -118,9 +118,6 @@ crbug.com/1254937 http/tests/inspector-protocol/runtime/eval-await-navigation-pa
 crbug.com/1256612 plugins/focus-change-3-change-blur.html [ Failure Pass ]
 crbug.com/1235685 plugins/focus-change-4-change-focus-and-blur.html [ Failure Pass ]
 
-# Timeouts
-crbug.com/1254938 http/tests/doc-write-intervention/doc-write-sync-third-party-script-block.html [ Timeout ]
-
 # Script preloaded: No
 crbug.com/1254940 http/tests/security/contentSecurityPolicy/nonces/scriptnonce-redirect.html [ Failure ]
 
