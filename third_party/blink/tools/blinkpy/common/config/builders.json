@@ -41,8 +41,8 @@
     },
     "Mac11.0 Tests": {
         "master": "chromium.fyi",
-        "port_name": "mac-mac11.0",
-        "specifiers": ["Mac11.0", "Release"]
+        "port_name": "mac-mac11",
+        "specifiers": ["Mac11", "Release"]
     },
     "mac-arm64-rel-tests": {
         "master": "chromium.fyi",
@@ -115,8 +115,8 @@
     },
     "mac11.0-blink-rel": {
         "master": "tryserver.blink",
-        "port_name": "mac-mac11.0",
-        "specifiers": ["Mac11.0", "Release"],
+        "port_name": "mac-mac11",
+        "specifiers": ["Mac11", "Release"],
         "is_try_builder": true
     },
     "mac11.0.arm64-blink-rel": {

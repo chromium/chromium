@@ -1227,7 +1227,7 @@
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu",
-          "--platform=mac-mac11.5"
+          "--platform=mac-mac11"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -1262,7 +1262,7 @@
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-backend-validation",
           "--time-out-ms=30000",
-          "--platform=mac-mac11.5"
+          "--platform=mac-mac11"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -1484,7 +1484,7 @@
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu",
-          "--platform=mac-mac11.5"
+          "--platform=mac-mac11"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -1517,7 +1517,7 @@
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-backend-validation",
           "--time-out-ms=30000",
-          "--platform=mac-mac11.5"
+          "--platform=mac-mac11"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -1782,7 +1782,7 @@
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu",
-          "--platform=mac-mac11.5"
+          "--platform=mac-mac11"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -1816,7 +1816,7 @@
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-backend-validation",
           "--time-out-ms=30000",
-          "--platform=mac-mac11.5"
+          "--platform=mac-mac11"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -2053,7 +2053,7 @@
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu",
-          "--platform=mac-mac11.5"
+          "--platform=mac-mac11"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -2088,7 +2088,7 @@
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-backend-validation",
           "--time-out-ms=30000",
-          "--platform=mac-mac11.5"
+          "--platform=mac-mac11"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -2310,7 +2310,7 @@
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu",
-          "--platform=mac-mac11.5"
+          "--platform=mac-mac11"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -2343,7 +2343,7 @@
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-backend-validation",
           "--time-out-ms=30000",
-          "--platform=mac-mac11.5"
+          "--platform=mac-mac11"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {

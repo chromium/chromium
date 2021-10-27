@@ -3221,7 +3221,7 @@
     'replacements': {
       'Dawn Mac x64 Experimental Release (Intel)': {
         'args': {
-          '--platform': 'mac-mac11.5',
+          '--platform': 'mac-mac11',
         },
       }
     },
@@ -3230,7 +3230,7 @@
     'replacements': {
       'Dawn Mac x64 Experimental Release (Intel)': {
         'args': {
-          '--platform': 'mac-mac11.5',
+          '--platform': 'mac-mac11',
         },
       },
     },

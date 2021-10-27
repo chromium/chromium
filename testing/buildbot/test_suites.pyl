@@ -3995,7 +3995,7 @@
         ],
         'win64_args': [ '--target=Release_x64' ],
         'mac_args': [
-          '--platform=mac-mac11.5'
+          '--platform=mac-mac11'
         ],
         'linux_args': [
           '--no-xvfb',
@@ -4027,7 +4027,7 @@
         ],
         'win64_args': [ '--target=Release_x64' ],
         'mac_args': [
-          '--platform=mac-mac11.5'
+          '--platform=mac-mac11'
         ],
         'linux_args': [
           '--no-xvfb',
@@ -4063,7 +4063,7 @@
         ],
         'win64_args': [ '--target=Release_x64' ],
         'mac_args': [
-          '--platform=mac-mac11.5'
+          '--platform=mac-mac11'
         ],
         'linux_args': [
           '--no-xvfb',
