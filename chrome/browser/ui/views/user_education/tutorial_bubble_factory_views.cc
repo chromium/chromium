@@ -15,15 +15,6 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/views/interaction/element_tracker_views.h"
 
-namespace {
-
-// The amount of time the tutorial should stay onscreen depending on if the
-// bubble is interacted with it. similar to FeaturePromoBubbleView's timeouts
-constexpr base::TimeDelta kDelayNoInteraction = base::Seconds(10);
-constexpr base::TimeDelta kDelayWithInteraction = base::Seconds(3);
-constexpr base::TimeDelta kDelayZero = base::Seconds(0);
-}  // namespace
-
 TutorialBubbleViews::TutorialBubbleViews(absl::optional<base::Token> bubble_id)
     : bubble_id_(bubble_id) {}
 
@@ -92,10 +83,10 @@ std::unique_ptr<TutorialBubble> TutorialBubbleFactoryViews::CreateBubble(
       break;
   }
 
-  params.timeout_no_interaction =
-      is_last_step ? kDelayNoInteraction : kDelayZero;
-  params.timeout_after_interaction =
-      is_last_step ? kDelayWithInteraction : kDelayZero;
+  // Set bubbles other than the final one to not time out; final bubble uses
+  // default timeout.
+  if (!is_last_step)
+    params.timeout = base::TimeDelta();
 
   if (abort_callback) {
     params.has_close_button = true;

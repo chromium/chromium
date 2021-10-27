@@ -95,13 +95,9 @@ struct FeaturePromoBubbleParams {
   // If true, |allow_focus| must be true for keyboard accessibility.
   bool allow_snooze = false;
 
-  // Changes the bubble timeout before and after hovering the bubble,
-  // respectively. If a timeout is not provided a default will be used. If
-  // |timeout_after_interaction| is 0, |timeout_no_interaction| is used in
-  // both cases. If both are 0, the bubble never times out. A bubble with
-  // buttons never times out regardless of the values.
-  absl::optional<base::TimeDelta> timeout_no_interaction;
-  absl::optional<base::TimeDelta> timeout_after_interaction;
+  // Changes the bubble timeout. If a timeout is not provided a default will
+  // be used. If the timeout is 0, the bubble never times out.
+  absl::optional<base::TimeDelta> timeout;
 };
 
 #endif  // CHROME_BROWSER_UI_USER_EDUCATION_FEATURE_PROMO_BUBBLE_PARAMS_H_

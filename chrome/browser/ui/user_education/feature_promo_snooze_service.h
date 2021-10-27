@@ -34,14 +34,6 @@ class FeaturePromoSnoozeService {
   // Snooze counts that are equal or larger than this value will be conflated.
   static constexpr int kUmaMaxSnoozeCount = 10;
 
-  // The amount of time the promo should stay onscreen if the user
-  // never hovers over it.
-  static constexpr base::TimeDelta kTimeoutNoInteraction = base::Seconds(300);
-
-  // The amount of time the promo should stay onscreen after the
-  // user stops hovering over it.
-  static constexpr base::TimeDelta kTimeoutAfterInteraction = base::Seconds(3);
-
   explicit FeaturePromoSnoozeService(Profile* profile);
 
   // Disallow copy and assign.

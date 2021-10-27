@@ -27,6 +27,7 @@
 #include "components/feature_engagement/test/mock_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_class_properties.h"
@@ -498,7 +499,7 @@ TEST_F(FeaturePromoControllerViewsTest, ShowNewCriticalPromoAfterClose) {
 TEST_F(FeaturePromoControllerViewsTest, FailsIfBubbleIsShowing) {
   FeaturePromoBubbleView::CreateParams bubble_params;
   bubble_params.anchor_view = GetAnchorView();
-  bubble_params.body_text = IDS_REOPEN_TAB_PROMO;
+  bubble_params.body_text = l10n_util::GetStringUTF16(IDS_REOPEN_TAB_PROMO);
 
   EXPECT_TRUE(FeaturePromoBubbleOwnerImpl::GetInstance()->ShowBubble(
       std::move(bubble_params), base::DoNothing()));
@@ -509,15 +510,4 @@ TEST_F(FeaturePromoControllerViewsTest, FailsIfBubbleIsShowing) {
 
   EXPECT_FALSE(controller_->MaybeShowPromoWithParams(
       kTestIPHFeature, DefaultBubbleParams(), GetAnchorView()));
-}
-
-// Test that IPH defaults are respected in the Snooze case.
-TEST_F(FeaturePromoControllerViewsTest, IPHSnoozeUniqueTimeout) {
-  FeaturePromoBubbleView::CreateParams bubble_params =
-      controller_->GetBaseCreateParams(IPHSnoozeBubbleParams(),
-                                       GetAnchorView());
-  EXPECT_EQ(FeaturePromoSnoozeService::kTimeoutNoInteraction,
-            bubble_params.timeout_no_interaction);
-  EXPECT_EQ(FeaturePromoSnoozeService::kTimeoutAfterInteraction,
-            bubble_params.timeout_after_interaction);
 }

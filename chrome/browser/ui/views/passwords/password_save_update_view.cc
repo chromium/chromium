@@ -275,16 +275,10 @@ std::unique_ptr<views::Combobox> CreateDestinationCombobox(
   return combobox;
 }
 
-base::TimeDelta GetRegularIPHTimeout() {
+base::TimeDelta GetIPHTimeout() {
   return base::Seconds(base::GetFieldTrialParamByFeatureAsInt(
       feature_engagement::kIPHPasswordsAccountStorageFeature,
       "account_storage_iph_timeout_seconds_regular", 30));
-}
-
-base::TimeDelta GetShortIPHTimeout() {
-  return base::Seconds(base::GetFieldTrialParamByFeatureAsInt(
-      feature_engagement::kIPHPasswordsAccountStorageFeature,
-      "account_storage_iph_timeout_seconds_short", 10));
 }
 
 }  // namespace
@@ -660,8 +654,7 @@ void PasswordSaveUpdateView::MaybeShowIPH(IPHType type) {
   bubble_params.focus_on_create = true;
   bubble_params.persist_on_blur = false;
   bubble_params.preferred_width = kAccountStoragePromoWidth;
-  bubble_params.timeout_no_interaction = GetRegularIPHTimeout();
-  bubble_params.timeout_after_interaction = GetShortIPHTimeout();
+  bubble_params.timeout = GetIPHTimeout();
 
   if (type == IPHType::kRegular) {
     bubble_params.body_string_specifier =
