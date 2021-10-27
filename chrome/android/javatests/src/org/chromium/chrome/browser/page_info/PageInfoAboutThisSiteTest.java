@@ -32,6 +32,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
@@ -41,6 +42,9 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
@@ -52,18 +56,24 @@ import org.chromium.components.page_info.proto.AboutThisSiteMetadataProto.SiteDe
 import org.chromium.components.page_info.proto.AboutThisSiteMetadataProto.SiteInfo;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.url.GURL;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Tests for PageInfoAboutThisSite.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Features.EnableFeatures(ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@CommandLineFlags.
+Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, ChromeSwitches.DISABLE_STARTUP_PROMOS,
+        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
+
 @Batch(Batch.PER_CLASS)
 public class PageInfoAboutThisSiteTest {
     private static final String sSimpleHtml = "/chrome/test/data/android/simple.html";
@@ -97,8 +107,8 @@ public class PageInfoAboutThisSiteTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mMocker.mock(PageInfoAboutThisSiteControllerJni.TEST_HOOKS, mMockAboutThisSiteJni);
-
-        sActivityTestRule.loadUrl(mTestServerRule.getServer().getURL(sSimpleHtml));
+        sActivityTestRule.loadUrl(
+                mTestServerRule.getServer().getURLWithHostName("www.example.com", sSimpleHtml));
     }
 
     private void openPageInfo() {
@@ -131,18 +141,17 @@ public class PageInfoAboutThisSiteTest {
     }
 
     private byte[] createDescription() {
+        String url = mTestServerRule.getServer().getURLWithHostName("www.example.com", sSimpleHtml);
         SiteDescription.Builder description =
                 SiteDescription.newBuilder()
                         .setDescription("Some description about example.com for testing purposes")
-                        .setSource(Hyperlink.newBuilder()
-                                           .setUrl("https://example.com")
-                                           .setLabel("Example.com"));
+                        .setSource(Hyperlink.newBuilder().setUrl(url).setLabel("Example Source"));
         return SiteInfo.newBuilder().setDescription(description).build().toByteArray();
     }
 
     @Test
     @MediumTest
-    public void testStoreInfoRowWithData() {
+    public void testAboutThisSiteRowWithData() {
         mockResponse(createDescription());
         openPageInfo();
         onView(withId(PageInfoAboutThisSiteController.ROW_ID)).check(matches(isDisplayed()));
@@ -151,7 +160,7 @@ public class PageInfoAboutThisSiteTest {
 
     @Test
     @MediumTest
-    public void testStoreInfoRowWithoutData() {
+    public void testAboutThisSiteRowWithoutData() {
         mockResponse(null);
         openPageInfo();
         onView(withId(PageInfoAboutThisSiteController.ROW_ID)).check(matches(not(isDisplayed())));
@@ -161,21 +170,46 @@ public class PageInfoAboutThisSiteTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    public void testStoreInfoRowRendering() {
+    public void testAboutThisSiteRowRendering() {
         mockResponse(createDescription());
         openPageInfo();
         onView(withId(PageInfoAboutThisSiteController.ROW_ID))
                 .check(renderView("page_info_about_this_site_row"));
     }
+
     @DisabledTest(message = "crbug.com/1263195")
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    public void testStoreInfoSubPageRendering() {
+    public void testAboutThisSiteSubPageRendering() {
         mockResponse(createDescription());
         openPageInfo();
         onView(withId(PageInfoAboutThisSiteController.ROW_ID)).perform(click());
         onView(withId(R.id.page_info_wrapper))
                 .check(renderView("page_info_about_this_site_subpage"));
+    }
+
+    @Test
+    @MediumTest
+    public void testAboutThisSiteSubPageSourceClicked()
+            throws ExecutionException, TimeoutException {
+        mockResponse(createDescription());
+        openPageInfo();
+        onView(withId(PageInfoAboutThisSiteController.ROW_ID)).perform(click());
+
+        final CallbackHelper onTabAdded = new CallbackHelper();
+        final TabModelObserver observer = new TabModelObserver() {
+            @Override
+            public void willAddTab(Tab tab, @TabLaunchType int type) {
+                onTabAdded.notifyCalled();
+            }
+        };
+        final TabModel tabModel = sActivityTestRule.getActivity().getCurrentTabModel();
+        TestThreadUtils.runOnUiThreadBlocking(() -> tabModel.addObserver(observer));
+
+        final int callCount = onTabAdded.getCallCount();
+        onView(withText(containsString("Example Source"))).perform(click());
+        onTabAdded.waitForCallback(callCount);
+        TestThreadUtils.runOnUiThreadBlocking(() -> tabModel.removeObserver(observer));
     }
 }
