@@ -197,10 +197,9 @@ shape_detection::mojom::ShapeDetectionService* GetShapeDetectionService() {
       remote;
   if (!*remote) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS_ASH)
-    content::ServiceProcessHost::Launch<
-        shape_detection::mojom::ShapeDetectionService>(
+    ServiceProcessHost::Launch<shape_detection::mojom::ShapeDetectionService>(
         remote->BindNewPipeAndPassReceiver(),
-        content::ServiceProcessHost::Options()
+        ServiceProcessHost::Options()
             .WithDisplayName("Shape Detection Service")
             .Pass());
 #else
@@ -255,9 +254,9 @@ void BindColorChooserFactoryForFrame(
 }
 
 void BindAttributionInternalsHandler(
-    content::RenderFrameHost* host,
+    RenderFrameHost* host,
     mojo::PendingReceiver<mojom::AttributionInternalsHandler> receiver) {
-  content::WebUI* web_ui = host->GetWebUI();
+  WebUI* web_ui = host->GetWebUI();
 
   // Performs a safe downcast to the concrete AttributionInternalsUI subclass.
   AttributionInternalsUI* attribution_internals_ui =
@@ -281,9 +280,9 @@ void BindAttributionInternalsHandler(
 }
 
 void BindPrerenderInternalsHandler(
-    content::RenderFrameHost* host,
+    RenderFrameHost* host,
     mojo::PendingReceiver<mojom::PrerenderInternalsHandler> receiver) {
-  content::WebUI* web_ui = host->GetWebUI();
+  WebUI* web_ui = host->GetWebUI();
 
   PrerenderInternalsUI* prerender_internals_ui =
       web_ui ? web_ui->GetController()->GetAs<PrerenderInternalsUI>() : nullptr;
@@ -305,9 +304,9 @@ void BindPrerenderInternalsHandler(
 }
 
 void BindProcessInternalsHandler(
-    content::RenderFrameHost* host,
+    RenderFrameHost* host,
     mojo::PendingReceiver<::mojom::ProcessInternalsHandler> receiver) {
-  content::WebUI* web_ui = host->GetWebUI();
+  WebUI* web_ui = host->GetWebUI();
 
   // Performs a safe downcast to the concrete ProcessInternalsUI subclass.
   ProcessInternalsUI* process_internals_ui =
@@ -330,7 +329,7 @@ void BindProcessInternalsHandler(
 }
 
 void BindQuotaManagerHost(
-    content::RenderFrameHost* host,
+    RenderFrameHost* host,
     mojo::PendingReceiver<blink::mojom::QuotaManagerHost> receiver) {
   host->GetProcess()->BindQuotaManagerHost(host->GetRoutingID(),
                                            host->GetLastCommittedOrigin(),
@@ -338,7 +337,7 @@ void BindQuotaManagerHost(
 }
 
 void BindNativeIOHost(
-    content::RenderFrameHost* host,
+    RenderFrameHost* host,
     mojo::PendingReceiver<blink::mojom::NativeIOHost> receiver) {
   static_cast<RenderProcessHostImpl*>(host->GetProcess())
       ->BindNativeIOHost(static_cast<RenderFrameHostImpl*>(host)->storage_key(),
@@ -353,7 +352,7 @@ void BindSharedWorkerConnector(
 
 #if defined(OS_ANDROID)
 void BindDateTimeChooserForFrame(
-    content::RenderFrameHost* host,
+    RenderFrameHost* host,
     mojo::PendingReceiver<blink::mojom::DateTimeChooser> receiver) {
   auto* date_time_chooser = DateTimeChooserAndroid::FromWebContents(
       WebContents::FromRenderFrameHost(host));
@@ -361,7 +360,7 @@ void BindDateTimeChooserForFrame(
 }
 
 void BindTextSuggestionHostForFrame(
-    content::RenderFrameHost* host,
+    RenderFrameHost* host,
     mojo::PendingReceiver<blink::mojom::TextSuggestionHost> receiver) {
   auto* view = static_cast<RenderWidgetHostViewAndroid*>(host->GetView());
   if (!view || !view->text_suggestion_host())
@@ -616,11 +615,10 @@ void BindVibrationManager(
 }
 
 void BindMediaPlayerObserverClientHandler(
-    content::RenderFrameHost* frame_host,
+    RenderFrameHost* frame_host,
     mojo::PendingReceiver<media::mojom::MediaPlayerObserverClient> receiver) {
-  content::WebContentsImpl* web_contents =
-      static_cast<content::WebContentsImpl*>(
-          content::WebContents::FromRenderFrameHost(frame_host));
+  WebContentsImpl* web_contents = static_cast<WebContentsImpl*>(
+      WebContents::FromRenderFrameHost(frame_host));
   web_contents->media_web_contents_observer()->BindMediaPlayerObserverClient(
       std::move(receiver));
 }
