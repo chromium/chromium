@@ -348,8 +348,11 @@ void WebAppPublisherHelper::PopulateWebAppPermissions(
 apps::mojom::AppPtr WebAppPublisherHelper::ConvertWebApp(
     const WebApp* web_app) {
   apps::mojom::Readiness readiness =
-      web_app->is_locally_installed() ? apps::mojom::Readiness::kReady
-                                      : apps::mojom::Readiness::kDisabledByUser;
+      web_app->is_locally_installed()
+          ? (web_app->is_uninstalling()
+                 ? apps::mojom::Readiness::kUninstalledByUser
+                 : apps::mojom::Readiness::kReady)
+          : apps::mojom::Readiness::kDisabledByUser;
 #if defined(OS_CHROMEOS)
   DCHECK(web_app->chromeos_data().has_value());
   if (web_app->chromeos_data()->is_disabled)

@@ -1079,6 +1079,22 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerUninstallBrowserTest, PRE_Uninstall) {
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerUninstallBrowserTest, Uninstall) {
   WaitForTestSystemAppInstall();
   EXPECT_TRUE(GetManager().GetAppIds().empty());
+
+  auto* app_service_proxy =
+      apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
+  app_service_proxy->FlushMojoCallsForTesting();
+
+  bool swa_found = false;
+  app_service_proxy->AppRegistryCache().ForEachApp(
+      [&](const apps::AppUpdate& app) {
+        if (app.AppType() == apps::mojom::AppType::kSystemWeb ||
+            app.AppType() == apps::mojom::AppType::kWeb) {
+          swa_found = true;
+          EXPECT_EQ(apps::mojom::Readiness::kUninstalledByUser,
+                    app.Readiness());
+        }
+      });
+  EXPECT_TRUE(swa_found);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
