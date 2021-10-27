@@ -40,6 +40,7 @@ namespace {
 constexpr char kFakeDataPrefix[] = "Fake:";
 constexpr char kNoRbdUtmTag[] = "chrome_cart_no_rbd";
 constexpr char kRbdUtmTag[] = "chrome_cart_rbd";
+constexpr char kCartPrefsKey[] = "chrome_cart";
 
 constexpr base::FeatureParam<std::string> kSkipCartExtractionPattern{
     &ntp_features::kNtpChromeCartModule, "skip-cart-extraction-pattern",
@@ -120,9 +121,6 @@ bool ProductsRemoved(cart_db::ChromeCartContentProto existing_proto,
 CartService::CartService(Profile* profile)
     : profile_(profile),
       cart_db_(std::make_unique<CartDB>(profile_)),
-      history_service_(HistoryServiceFactory::GetForProfile(
-          profile_,
-          ServiceAccessType::EXPLICIT_ACCESS)),
       domain_name_mapping_(JSONToDictionary(IDR_CART_DOMAIN_NAME_MAPPING_JSON)),
       domain_cart_url_mapping_(
           JSONToDictionary(IDR_CART_DOMAIN_CART_URL_MAPPING_JSON)),
@@ -130,9 +128,8 @@ CartService::CartService(Profile* profile)
       metrics_tracker_(std::make_unique<CartMetricsTracker>(
           chrome::FindTabbedBrowser(profile, false))),
       coupon_service_(CouponServiceFactory::GetForProfile(profile)) {
-  if (history_service_) {
-    history_service_observation_.Observe(history_service_);
-  }
+  history_service_observation_.Observe(HistoryServiceFactory::GetForProfile(
+      profile_, ServiceAccessType::EXPLICIT_ACCESS));
   if (base::GetFieldTrialParamValueByFeature(
           ntp_features::kNtpChromeCartModule,
           ntp_features::kNtpChromeCartModuleDataParam) == "fake") {
@@ -151,6 +148,13 @@ CartService::CartService(Profile* profile)
     optimization_guide_decider_->RegisterOptimizationTypes(
         {optimization_guide::proto::SHOPPING_PAGE_PREDICTOR});
   }
+
+  pref_change_registrar_.Init(profile->GetPrefs());
+  auto callback = base::BindRepeating(&CartService::OnCartFeaturesChanged,
+                                      weak_ptr_factory_.GetWeakPtr());
+  pref_change_registrar_.Add(prefs::kNtpDisabledModules, callback);
+  pref_change_registrar_.Add(prefs::kCartDiscountEnabled, callback);
+  coupon_service_->MaybeFeatureStatusChanged(IsCartAndDiscountEnabled());
 }
 
 CartService::~CartService() = default;
@@ -456,9 +460,7 @@ void CartService::OnOperationFinishedWithCallback(
 }
 
 void CartService::Shutdown() {
-  if (history_service_) {
-    history_service_observation_.Reset();
-  }
+  history_service_observation_.Reset();
   DeleteCartsWithFakeData();
   // Delete content of all carts that are removed.
   cart_db_->LoadAllCarts(base::BindOnce(&CartService::DeleteRemovedCartsContent,
@@ -954,6 +956,18 @@ void CartService::OnDeleteCart(bool success,
   cart_db_->DeleteCart(proto_pairs[0].first,
                        base::BindOnce(&CartService::OnOperationFinished,
                                       weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CartService::OnCartFeaturesChanged(const std::string& pref_name) {
+  coupon_service_->MaybeFeatureStatusChanged(IsCartAndDiscountEnabled());
+}
+
+bool CartService::IsCartAndDiscountEnabled() {
+  auto* list = profile_->GetPrefs()->GetList(prefs::kNtpDisabledModules);
+  if (list && base::Contains(list->GetList(), base::Value(kCartPrefsKey))) {
+    return false;
+  }
+  return profile_->GetPrefs()->GetBoolean(prefs::kCartDiscountEnabled);
 }
 
 void CartService::SetCartDiscountLinkFetcherForTesting(

@@ -51,6 +51,9 @@ class CouponService : public KeyedService,
   virtual void RecordCouponDisplayTimestamp(
       const autofill::AutofillOfferData& offer);
 
+  // Get called when cart or discount feature status might have changed.
+  virtual void MaybeFeatureStatusChanged(bool enabled);
+
   // autofill::CouponServiceDelegate:
   // Get FreeListing coupons for the given URL. Will return an empty
   // list if there is no coupon data associated with this URL.
@@ -89,6 +92,9 @@ class CouponService : public KeyedService,
   std::unique_ptr<CouponDB> coupon_db_;
   CouponsMap coupon_map_;
   CouponDisplayTimeMap coupon_time_map_;
+  // Indicates whether features required for CouponService to expose coupon data
+  // are all enabled.
+  bool features_enabled_{false};
   base::WeakPtrFactory<CouponService> weak_ptr_factory_{this};
 };
 

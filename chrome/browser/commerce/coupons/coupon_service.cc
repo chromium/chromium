@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/commerce/coupons/coupon_service.h"
+#include "chrome/browser/commerce/commerce_feature_list.h"
 #include "chrome/browser/commerce/coupons/coupon_db_content.pb.h"
 
 namespace {
@@ -42,8 +43,9 @@ CouponService::CouponService(std::unique_ptr<CouponDB> coupon_db)
 CouponService::~CouponService() = default;
 
 void CouponService::UpdateFreeListingCoupons(const CouponsMap& coupon_map) {
-  coupon_db_->DeleteAllCoupons();
-  coupon_map_.clear();
+  if (!features_enabled_)
+    return;
+  DeleteAllFreeListingCoupons();
   CouponDisplayTimeMap new_time_map;
   for (const auto& entry : coupon_map) {
     const GURL& origin(entry.first.GetOrigin());
@@ -100,6 +102,15 @@ void CouponService::RecordCouponDisplayTimestamp(
                                  timestamp));
     }
   }
+}
+
+void CouponService::MaybeFeatureStatusChanged(bool enabled) {
+  enabled &= commerce::IsCouponWithCodeEnabled();
+  if (enabled == features_enabled_)
+    return;
+  features_enabled_ = enabled;
+  if (!enabled)
+    DeleteAllFreeListingCoupons();
 }
 
 CouponService::Coupons CouponService::GetFreeListingCouponsForUrl(

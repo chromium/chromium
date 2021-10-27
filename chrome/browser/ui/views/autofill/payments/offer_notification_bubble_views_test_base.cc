@@ -6,6 +6,7 @@
 
 #include "chrome/browser/autofill/autofill_uitest_util.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
+#include "chrome/browser/commerce/commerce_feature_list.h"
 #include "chrome/browser/commerce/coupons/coupon_service.h"
 #include "chrome/browser/commerce/coupons/coupon_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -25,16 +26,19 @@ const char kDefaultTestPromoCode[] = "5PCTOFFSHOES";
 OfferNotificationBubbleViewsTestBase::OfferNotificationBubbleViewsTestBase(
     bool promo_code_flag_enabled) {
   if (promo_code_flag_enabled) {
-    scoped_feature_list_.InitWithFeatures(
+    scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {features::kAutofillEnableOfferNotification,
-         features::kAutofillEnableOfferNotificationForPromoCodes},
+        {{features::kAutofillEnableOfferNotification, {}},
+         {features::kAutofillEnableOfferNotificationForPromoCodes, {}},
+         {commerce::kRetailCoupons,
+          {{commerce::kRetailCouponsWithCodeParam, "true"}}}},
         /*disabled_features=*/{});
   } else {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kAutofillEnableOfferNotification},
         /*disabled_features=*/{
-            features::kAutofillEnableOfferNotificationForPromoCodes});
+            features::kAutofillEnableOfferNotificationForPromoCodes,
+            commerce::kRetailCoupons});
   }
 }
 
@@ -143,6 +147,8 @@ void OfferNotificationBubbleViewsTestBase::
     SetUpFreeListingCouponOfferDataForCouponService(
         std::unique_ptr<AutofillOfferData> offer) {
   coupon_service_->DeleteAllFreeListingCoupons();
+  // Simulate that user has given the consent to opt in the feature.
+  coupon_service_->MaybeFeatureStatusChanged(true);
   base::flat_map<GURL,
                  std::vector<std::unique_ptr<autofill::AutofillOfferData>>>
       coupon_map;
