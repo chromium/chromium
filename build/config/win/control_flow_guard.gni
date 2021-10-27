@@ -7,7 +7,7 @@ import("//build/config/sanitizers/sanitizers.gni")
 declare_args() {
   # Set this to true to enable generation of CFG indirect call dispatch
   # guards.
-  win_enable_cfg_guards = false
+  win_enable_cfg_guards = !is_debug && !is_asan
 }
 
 if (win_enable_cfg_guards) {
