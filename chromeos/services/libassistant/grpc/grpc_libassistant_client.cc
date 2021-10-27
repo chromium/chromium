@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "chromeos/assistant/internal/libassistant_util.h"
+#include "chromeos/assistant/internal/proto/shared/proto/v2/bootup_settings_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/customer_registration_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/action_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/event_notification_interface.pb.h"
@@ -48,6 +49,23 @@ GetLibassistGrpcMethodName<::assistant::api::RegisterActionModuleRequest>() {
   // libassistant customers to register themselves to handle actions.
   return chromeos::assistant::GetLibassistGrpcMethodName(
       "QueryService", "RegisterActionModule");
+}
+
+template <>
+std::string GetLibassistGrpcMethodName<::assistant::api::SetAuthInfoRequest>() {
+  // Returns method used for sending authentication information to Libassistant.
+  // Can be called during or after bootup is completed.
+  return chromeos::assistant::GetLibassistGrpcMethodName(
+      "BootupSettingsService", "SetAuthInfo");
+}
+
+template <>
+std::string
+GetLibassistGrpcMethodName<::assistant::api::SetInternalOptionsRequest>() {
+  // Return method used for sending internal options to Libassistant. Can be
+  // called during or after bootup is completed.
+  return chromeos::assistant::GetLibassistGrpcMethodName(
+      "BootupSettingsService", "SetInternalOptions");
 }
 
 GrpcLibassistantClient::GrpcLibassistantClient(
