@@ -62,6 +62,10 @@ DEFINE_TEXT_PROTO_FUZZER(const wc_fuzzer::VideoFrameCopyToCase& proto) {
   video_frame->copyTo(script_state, destination, options,
                       IGNORE_EXCEPTION_FOR_TESTING);
 
+  // Unfortunately necessary to ensure that memory is released quickly enough.
+  // TODO(sandersd): Figure out why GC alone is insufficient.
+  video_frame->close();
+
   // Request a V8 GC. Oilpan will be invoked by the GC epilogue.
   //
   // Multiple GCs may be required to ensure everything is collected (due to
