@@ -98,6 +98,9 @@ class CONTENT_EXPORT BlinkNotificationServiceImpl
       bool success,
       const std::vector<NotificationDatabaseData>& notifications);
 
+  bool ValidateServiceWorkerRegistrationID(
+      int64_t service_worker_registration_id);
+
   // The notification context that owns this service instance.
   PlatformNotificationContextImpl* notification_context_;
 
