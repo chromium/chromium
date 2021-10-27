@@ -93,6 +93,7 @@ class MockUpdateClient : public UpdateClient {
   void SendUninstallPing(const std::string& id,
                          const base::Version& version,
                          int reason,
+                         bool requires_network_encryption,
                          Callback callback) override {
     DoSendUninstallPing(id, version, reason);
     std::move(callback).Run(update_client::Error::NONE);
@@ -100,6 +101,7 @@ class MockUpdateClient : public UpdateClient {
 
   void SendRegistrationPing(const std::string& id,
                             const base::Version& version,
+                            bool requires_network_encryption,
                             Callback callback) override {
     DoSendRegistrationPing(id, version);
     std::move(callback).Run(update_client::Error::NONE);

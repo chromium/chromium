@@ -19,10 +19,12 @@ TaskSendRegistrationPing::TaskSendRegistrationPing(
     scoped_refptr<UpdateEngine> update_engine,
     const std::string& id,
     const base::Version& version,
+    bool requires_network_encryption,
     Callback callback)
     : update_engine_(update_engine),
       id_(id),
       version_(version),
+      requires_network_encryption_(requires_network_encryption),
       callback_(std::move(callback)) {}
 
 TaskSendRegistrationPing::~TaskSendRegistrationPing() {
@@ -38,7 +40,7 @@ void TaskSendRegistrationPing::Run() {
   }
 
   update_engine_->SendRegistrationPing(
-      id_, version_,
+      id_, version_, requires_network_encryption_,
       base::BindOnce(&TaskSendRegistrationPing::TaskComplete, this));
 }
 

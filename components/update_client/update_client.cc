@@ -225,22 +225,24 @@ void UpdateClientImpl::Stop() {
 void UpdateClientImpl::SendUninstallPing(const std::string& id,
                                          const base::Version& version,
                                          int reason,
+                                         bool requires_network_encryption,
                                          Callback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   RunTask(base::MakeRefCounted<TaskSendUninstallPing>(
-      update_engine_.get(), id, version, reason,
+      update_engine_.get(), id, version, reason, requires_network_encryption,
       base::BindOnce(&UpdateClientImpl::OnTaskComplete, this,
                      std::move(callback))));
 }
 
 void UpdateClientImpl::SendRegistrationPing(const std::string& id,
                                             const base::Version& version,
+                                            bool requires_network_encryption,
                                             Callback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   RunTask(base::MakeRefCounted<TaskSendRegistrationPing>(
-      update_engine_.get(), id, version,
+      update_engine_.get(), id, version, requires_network_encryption,
       base::BindOnce(&UpdateClientImpl::OnTaskComplete, this,
                      std::move(callback))));
 }

@@ -55,9 +55,11 @@ class UpdateClientImpl : public UpdateClient {
   void SendUninstallPing(const std::string& id,
                          const base::Version& version,
                          int reason,
+                         bool requires_network_encryption,
                          Callback callback) override;
   void SendRegistrationPing(const std::string& id,
                             const base::Version& version,
+                            bool requires_network_encryption,
                             Callback callback) override;
 
  private:

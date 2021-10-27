@@ -53,8 +53,6 @@ class UpdateServiceImpl : public UpdateService {
  private:
   ~UpdateServiceImpl() override;
 
-  int DoRegistration(const RegistrationRequest& request);
-
   // Runs the task at the head of `tasks_`, if any.
   void TaskStart();
 

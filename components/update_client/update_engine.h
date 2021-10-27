@@ -66,10 +66,12 @@ class UpdateEngine : public base::RefCountedThreadSafe<UpdateEngine> {
   void SendUninstallPing(const std::string& id,
                          const base::Version& version,
                          int reason,
+                         bool requires_network_encryption,
                          Callback update_callback);
 
   void SendRegistrationPing(const std::string& id,
                             const base::Version& version,
+                            bool requires_network_encryption,
                             Callback update_callback);
 
  private:

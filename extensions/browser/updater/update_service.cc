@@ -82,7 +82,8 @@ void UpdateService::SendUninstallPing(const std::string& id,
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(update_client_);
   update_client_->SendUninstallPing(
-      id, version, reason, base::BindOnce(&SendUninstallPingCompleteCallback));
+      id, version, reason, true,
+      base::BindOnce(&SendUninstallPingCompleteCallback));
 }
 
 void UpdateService::OnEvent(Events event, const std::string& extension_id) {

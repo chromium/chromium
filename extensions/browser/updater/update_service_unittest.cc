@@ -116,11 +116,13 @@ class FakeUpdateClient : public update_client::UpdateClient {
   void SendUninstallPing(const std::string& id,
                          const base::Version& version,
                          int reason,
+                         bool requires_network_encryption,
                          update_client::Callback callback) override {
     uninstall_pings_.emplace_back(id, version, reason);
   }
   void SendRegistrationPing(const std::string& id,
                             const base::Version& version,
+                            bool requires_network_encryption,
                             update_client::Callback Callback) override {}
   void FireEvent(Observer::Events event, const std::string& extension_id) {
     for (Observer* observer : observers_)

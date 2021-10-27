@@ -204,7 +204,7 @@ void CheckForUpdatesTask::RemoveAppIDsAndSendUninstallPings(
               << ". Ping reason: " << ping_reason;
       ++number_of_pings_remaining_;
       update_client_->SendUninstallPing(
-          app_id, app_version, ping_reason,
+          app_id, app_version, ping_reason, false,
           base::BindOnce(&CheckForUpdatesTask::UninstallPingSent, this));
     } else {
       VLOG(0) << "Could not remove registration of app " << app_id;
