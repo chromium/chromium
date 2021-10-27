@@ -66,10 +66,11 @@ class MediaEngagementChangeWaiter : public content_settings::Observer {
   }
 
   // Overridden from content_settings::Observer:
-  void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
-                               const ContentSettingsPattern& secondary_pattern,
-                               ContentSettingsType content_type) override {
-    if (content_type == ContentSettingsType::MEDIA_ENGAGEMENT)
+  void OnContentSettingChanged(
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern,
+      ContentSettingsTypeSet content_type_set) override {
+    if (content_type_set.Contains(ContentSettingsType::MEDIA_ENGAGEMENT))
       Proceed();
   }
 

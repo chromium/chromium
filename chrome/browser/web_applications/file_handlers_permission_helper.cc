@@ -118,8 +118,8 @@ bool FileHandlersPermissionHelper::IsPermissionBlocked(const GURL& scope) {
 void FileHandlersPermissionHelper::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type) {
-  if (content_type != ContentSettingsType::FILE_HANDLING)
+    ContentSettingsTypeSet content_type_set) {
+  if (!content_type_set.Contains(ContentSettingsType::FILE_HANDLING))
     return;
 
   UpdateAppsMatchingPattern(primary_pattern);

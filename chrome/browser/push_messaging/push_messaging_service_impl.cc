@@ -1289,9 +1289,9 @@ void PushMessagingServiceImpl::SetServiceWorkerDatabaseWipedCallbackForTesting(
 void PushMessagingServiceImpl::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type) {
+    ContentSettingsTypeSet content_type_set) {
   DCHECK(primary_pattern.IsValid());
-  if (content_type != ContentSettingsType::NOTIFICATIONS)
+  if (!content_type_set.Contains(ContentSettingsType::NOTIFICATIONS))
     return;
 
   std::vector<PushMessagingAppIdentifier> all_app_identifiers =
