@@ -443,12 +443,6 @@ Polymer({
         messageId = 'startLxdMessage';
         break;
       case InstallerState.kCreateContainer:
-        // TODO(crbug.com/1015722): we are using the same message as for
-        // |START_CONTAINER|, which is weird because user is going to see
-        // message "start container" then "setup container" and then "start
-        // container" again.
-        messageId = 'startContainerMessage';
-        break;
       case InstallerState.kSetupContainer:
         messageId = 'setupContainerMessage';
         break;
