@@ -27,31 +27,8 @@
 #include "net/nqe/network_quality_estimator.h"
 
 #if defined(OS_ANDROID)
-#include "base/metrics/histogram_functions.h"
-#include "net/android/network_library.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 #endif
-
-namespace {
-
-#if defined(OS_ANDROID)
-// Log the |NCN.NetworkOperatorMCCMNC| histogram.
-void LogOperatorCodeHistogram(network::mojom::ConnectionType type) {
-  // On a connection type change to cellular, log the network operator MCC/MNC.
-  // Log zero in other cases.
-  unsigned mcc_mnc = 0;
-  if (network::NetworkConnectionTracker::IsConnectionCellular(type)) {
-    // Log zero if not perfectly converted.
-    if (!base::StringToUint(net::android::GetTelephonyNetworkOperator(),
-                            &mcc_mnc)) {
-      mcc_mnc = 0;
-    }
-  }
-  base::UmaHistogramSparse("NCN.NetworkOperatorMCCMNC", mcc_mnc);
-}
-#endif
-
-}  // namespace
 
 namespace metrics {
 
@@ -137,7 +114,6 @@ void NetworkMetricsProvider::FinalizingMetricsLogRecord() {
   // yet clear if these metrics are generally useful enough to warrant being
   // added to the SystemProfile proto, so they are logged here as histograms for
   // now.
-  LogOperatorCodeHistogram(connection_type_);
   if (network::NetworkConnectionTracker::IsConnectionCellular(
           connection_type_)) {
     UMA_HISTOGRAM_ENUMERATION(
