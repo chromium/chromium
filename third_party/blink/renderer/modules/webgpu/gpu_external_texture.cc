@@ -47,6 +47,12 @@ GPUExternalTexture* GPUExternalTexture::FromVideo(
   if (!media_video_frame || !video_renderer) {
     exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
                                       "Failed to import texture from video");
+    if (!media_video_frame) {
+      device->AddConsoleWarning(
+          "Cannot get valid video frame, maybe the"
+          "HTMLVideoElement is not loaded");
+    }
+
     return nullptr;
   }
 
