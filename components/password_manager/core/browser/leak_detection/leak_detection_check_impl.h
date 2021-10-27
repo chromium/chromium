@@ -44,7 +44,7 @@ class LeakDetectionCheckImpl : public LeakDetectionCheck {
   ~LeakDetectionCheckImpl() override;
 
   // Returns true if there is a Google account to use for the leak detection
-  // check. Otherwise, instantiating the class is pointless.
+  // check.
   static bool HasAccountForRequest(
       const signin::IdentityManager* identity_manager);
 
@@ -73,7 +73,7 @@ class LeakDetectionCheckImpl : public LeakDetectionCheck {
   // Does the network request to check the credentials.
   void DoLeakRequest(
       LookupSingleLeakData data,
-      std::string access_token,
+      absl::optional<std::string> access_token,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   // Called when the single leak lookup request is done. |response| is null in

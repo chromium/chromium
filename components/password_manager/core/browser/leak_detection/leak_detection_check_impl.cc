@@ -59,13 +59,16 @@ class LeakDetectionCheckImpl::RequestPayloadHelper {
   RequestPayloadHelper(RequestPayloadHelper&&) = delete;
   RequestPayloadHelper& operator=(RequestPayloadHelper&&) = delete;
 
+  // Returns |identity_manager_| for the profile.
+  signin::IdentityManager* GetIdentityManager();
+
   void RequestAccessToken(AccessTokenFetcher::TokenCallback callback);
   void PreparePayload(const std::string& username,
                       const std::string& password,
                       SingleLeakRequestDataCallback callback);
 
   // Notifies that the access token was obtained.
-  void OnGotAccessToken(std::string access_token);
+  void OnGotAccessToken(absl::optional<std::string> access_token);
 
   // Notifies that the payload was obtained.
   void OnGotPayload(LookupSingleLeakData data);
@@ -92,8 +95,9 @@ class LeakDetectionCheckImpl::RequestPayloadHelper {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   // Actual request for the needed token.
   std::unique_ptr<signin::AccessTokenFetcher> token_fetcher_;
-  // The token to be used for request.
-  std::string access_token_;
+  // The token to be used for request. It should be |absl::nullopt| for
+  // signed-out users.
+  absl::optional<std::string> access_token_;
   // Payload for the actual request.
   LookupSingleLeakData payload_;
 };
@@ -107,6 +111,11 @@ LeakDetectionCheckImpl::RequestPayloadHelper::RequestPayloadHelper(
       url_loader_factory_(std::move(url_loader_factory)) {
   DCHECK(identity_manager_);
   DCHECK(url_loader_factory_);
+}
+
+signin::IdentityManager*
+LeakDetectionCheckImpl::RequestPayloadHelper::GetIdentityManager() {
+  return identity_manager_;
 }
 
 void LeakDetectionCheckImpl::RequestPayloadHelper::RequestAccessToken(
@@ -123,7 +132,7 @@ void LeakDetectionCheckImpl::RequestPayloadHelper::PreparePayload(
 }
 
 void LeakDetectionCheckImpl::RequestPayloadHelper::OnGotAccessToken(
-    std::string access_token) {
+    absl::optional<std::string> access_token) {
   access_token_ = std::move(access_token);
   steps_ |= kAccessToken;
   token_fetcher_.reset();
@@ -182,10 +191,14 @@ void LeakDetectionCheckImpl::Start(const GURL& url,
   url_ = url;
   username_ = std::move(username);
   password_ = std::move(password);
-  payload_helper_->RequestAccessToken(TimeCallback(
-      base::BindOnce(&LeakDetectionCheckImpl::OnAccessTokenRequestCompleted,
-                     weak_ptr_factory_.GetWeakPtr()),
-      "PasswordManager.LeakDetection.ObtainAccessTokenTime"));
+  if (HasAccountForRequest(payload_helper_->GetIdentityManager())) {
+    payload_helper_->RequestAccessToken(TimeCallback(
+        base::BindOnce(&LeakDetectionCheckImpl::OnAccessTokenRequestCompleted,
+                       weak_ptr_factory_.GetWeakPtr()),
+        "PasswordManager.LeakDetection.ObtainAccessTokenTime"));
+  } else {
+    payload_helper_->OnGotAccessToken(/*access_token=*/absl::nullopt);
+  }
   payload_helper_->PreparePayload(
       base::UTF16ToUTF8(username_), base::UTF16ToUTF8(password_),
       TimeCallback(
@@ -220,7 +233,7 @@ void LeakDetectionCheckImpl::OnRequestDataReady(LookupSingleLeakData data) {
 
 void LeakDetectionCheckImpl::DoLeakRequest(
     LookupSingleLeakData data,
-    std::string access_token,
+    absl::optional<std::string> access_token,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   payload_helper_.reset();
   encryption_key_ = std::move(data.encryption_key);
