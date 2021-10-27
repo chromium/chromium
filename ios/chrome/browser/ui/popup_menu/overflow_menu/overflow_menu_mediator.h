@@ -7,12 +7,15 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/ui/browser_container/browser_container_consumer.h"
+
 namespace bookmarks {
 class BookmarkModel;
 }
 @protocol ApplicationCommands;
 @protocol BrowserCommands;
 @class OverflowMenuModel;
+class OverlayPresenter;
 class PrefService;
 @protocol FindInPageCommands;
 @protocol TextZoomCommands;
@@ -21,7 +24,7 @@ class WebStateList;
 
 // Mediator for the overflow menu. This object is in charge of creating and
 // updating the items of the overflow menu.
-@interface OverflowMenuMediator : NSObject
+@interface OverflowMenuMediator : NSObject <BrowserContainerConsumer>
 
 // The data model for the overflow menu.
 @property(nonatomic, readonly) OverflowMenuModel* overflowMenuModel;
@@ -51,6 +54,11 @@ class WebStateList;
 
 // Pref service to retrieve preference values.
 @property(nonatomic, assign) PrefService* prefService;
+
+// The overlay presenter for OverlayModality::kWebContentArea.  This mediator
+// listens for overlay presentation events to determine whether the "Add to
+// Reading List" button should be enabled.
+@property(nonatomic, assign) OverlayPresenter* webContentAreaOverlayPresenter;
 
 @end
 

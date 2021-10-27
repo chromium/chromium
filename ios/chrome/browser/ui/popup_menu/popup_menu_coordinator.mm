@@ -316,6 +316,11 @@ PopupMenuCommandType CommandTypeFromPopupType(PopupMenuType type) {
               self.browser->GetBrowserState());
       self.overflowMenuMediator.prefService =
           self.browser->GetBrowserState()->GetPrefs();
+      self.overflowMenuMediator.webContentAreaOverlayPresenter =
+          overlayPresenter;
+
+      // Replace the content blocker's consumer with the overflow menu mediator.
+      self.contentBlockerMediator.consumer = self.overflowMenuMediator;
 
       UIViewController* menu = [OverflowMenuViewProvider
           makeViewControllerWithModel:self.overflowMenuMediator
