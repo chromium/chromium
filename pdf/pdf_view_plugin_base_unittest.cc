@@ -42,6 +42,7 @@ namespace {
 using ::testing::ByMove;
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
+using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::SaveArg;
 using ::testing::StrEq;
@@ -134,11 +135,28 @@ class TestPDFiumEngineWithDocInfo : public TestPDFiumEngine {
   }
 };
 
+class MockUrlLoader : public UrlLoader {
+ public:
+  MOCK_METHOD(void, GrantUniversalAccess, (), (override));
+  MOCK_METHOD(void, Open, (const UrlRequest&, ResultCallback), (override));
+  MOCK_METHOD(void,
+              ReadResponseBody,
+              (base::span<char>, ResultCallback),
+              (override));
+  MOCK_METHOD(void, Close, (), (override));
+};
+
 // This test approach relies on PdfViewPluginBase continuing to exist.
 // PdfViewPluginBase and PdfViewWebPlugin are going to merge once
 // OutOfProcessInstance is deprecated.
 class FakePdfViewPluginBase : public PdfViewPluginBase {
  public:
+  FakePdfViewPluginBase() {
+    ON_CALL(*this, CreateUrlLoaderInternal).WillByDefault([]() {
+      return std::make_unique<NiceMock<MockUrlLoader>>();
+    });
+  }
+
   // Public for testing.
   using PdfViewPluginBase::accessibility_state;
   using PdfViewPluginBase::engine;
@@ -205,7 +223,7 @@ class FakePdfViewPluginBase : public PdfViewPluginBase {
 
   MOCK_METHOD(void, InitImageData, (const gfx::Size&), (override));
 
-  MOCK_METHOD(void, SetFormFieldInFocus, (bool in_focus), (override));
+  MOCK_METHOD(void, SetFormFieldInFocus, (bool), (override));
 
   MOCK_METHOD(void,
               SetAccessibilityDocInfo,
@@ -261,17 +279,6 @@ class FakePdfViewPluginBase : public PdfViewPluginBase {
   std::vector<base::Value> sent_messages_;
 
   base::WeakPtrFactory<FakePdfViewPluginBase> weak_factory_{this};
-};
-
-class MockUrlLoader : public UrlLoader {
- public:
-  MOCK_METHOD(void, GrantUniversalAccess, (), (override));
-  MOCK_METHOD(void, Open, (const UrlRequest&, ResultCallback), (override));
-  MOCK_METHOD(void,
-              ReadResponseBody,
-              (base::span<char>, ResultCallback),
-              (override));
-  MOCK_METHOD(void, Close, (), (override));
 };
 
 base::Value CreateExpectedFormTextFieldFocusChangeResponse() {
@@ -386,14 +393,13 @@ base::Value CreateExpectedSaveToFileResponse(const std::string& token) {
 
 class PdfViewPluginBaseTest : public testing::Test {
  protected:
-  testing::NiceMock<FakePdfViewPluginBase> fake_plugin_;
+  NiceMock<FakePdfViewPluginBase> fake_plugin_;
 };
 
 class PdfViewPluginBaseWithEngineTest : public PdfViewPluginBaseTest {
  public:
   void SetUp() override {
-    auto engine =
-        std::make_unique<testing::NiceMock<TestPDFiumEngine>>(&fake_plugin_);
+    auto engine = std::make_unique<NiceMock<TestPDFiumEngine>>(&fake_plugin_);
     fake_plugin_.InitializeEngineForTesting(std::move(engine));
   }
 
@@ -443,7 +449,7 @@ TEST_F(PdfViewPluginBaseTest, LoadUrl) {
   UrlRequest saved_request;
   EXPECT_CALL(fake_plugin_, CreateUrlLoaderInternal)
       .WillOnce([&saved_request]() {
-        auto mock_loader = std::make_unique<testing::NiceMock<MockUrlLoader>>();
+        auto mock_loader = std::make_unique<NiceMock<MockUrlLoader>>();
         EXPECT_CALL(*mock_loader, Open)
             .WillOnce(testing::SaveArg<0>(&saved_request));
         return mock_loader;
@@ -496,9 +502,6 @@ TEST_F(PdfViewPluginBaseTest, DocumentLoadProgressMultipleSmall) {
 TEST_F(PdfViewPluginBaseTest, DocumentLoadProgressResetByLoadUrl) {
   fake_plugin_.DocumentLoadProgress(2, 100);
   fake_plugin_.clear_sent_messages();
-  EXPECT_CALL(fake_plugin_, CreateUrlLoaderInternal).WillOnce([]() {
-    return std::make_unique<testing::NiceMock<MockUrlLoader>>();
-  });
 
   fake_plugin_.LoadUrl("fake-url", /*is_print_preview=*/false);
   fake_plugin_.DocumentLoadProgress(3, 100);
@@ -513,9 +516,6 @@ TEST_F(PdfViewPluginBaseTest,
        DocumentLoadProgressNotResetByLoadUrlWithPrintPreview) {
   fake_plugin_.DocumentLoadProgress(2, 100);
   fake_plugin_.clear_sent_messages();
-  EXPECT_CALL(fake_plugin_, CreateUrlLoaderInternal).WillOnce([]() {
-    return std::make_unique<testing::NiceMock<MockUrlLoader>>();
-  });
 
   fake_plugin_.LoadUrl("fake-url", /*is_print_preview=*/true);
   fake_plugin_.DocumentLoadProgress(3, 100);
@@ -530,8 +530,8 @@ TEST_F(PdfViewPluginBaseTest, CreateUrlLoaderInFullFrame) {
   EXPECT_FALSE(fake_plugin_.GetDidCallStartLoadingForTesting());
   EXPECT_CALL(fake_plugin_, SetContentRestrictions(kContentRestrictionSave |
                                                    kContentRestrictionPrint));
-  EXPECT_CALL(fake_plugin_, PluginDidStartLoading());
-  EXPECT_CALL(fake_plugin_, CreateUrlLoaderInternal());
+  EXPECT_CALL(fake_plugin_, PluginDidStartLoading);
+  EXPECT_CALL(fake_plugin_, CreateUrlLoaderInternal);
   fake_plugin_.CreateUrlLoader();
   EXPECT_TRUE(fake_plugin_.GetDidCallStartLoadingForTesting());
 }
@@ -543,8 +543,8 @@ TEST_F(PdfViewPluginBaseTest, CreateUrlLoaderWithoutFullFrame) {
   EXPECT_CALL(fake_plugin_, SetContentRestrictions(kContentRestrictionSave |
                                                    kContentRestrictionPrint))
       .Times(0);
-  EXPECT_CALL(fake_plugin_, PluginDidStartLoading()).Times(0);
-  EXPECT_CALL(fake_plugin_, CreateUrlLoaderInternal());
+  EXPECT_CALL(fake_plugin_, PluginDidStartLoading).Times(0);
+  EXPECT_CALL(fake_plugin_, CreateUrlLoaderInternal);
   fake_plugin_.CreateUrlLoader();
   EXPECT_FALSE(fake_plugin_.GetDidCallStartLoadingForTesting());
 }
@@ -1158,12 +1158,8 @@ TEST_F(PdfViewPluginBaseWithEngineTest, UpdateScrollScaled) {
 
 TEST_F(PdfViewPluginBaseTest, HandleResetPrintPreviewModeMessage) {
   EXPECT_CALL(fake_plugin_, IsPrintPreview).WillRepeatedly(Return(true));
-  EXPECT_CALL(fake_plugin_, CreateUrlLoaderInternal).WillRepeatedly([]() {
-    return std::make_unique<testing::NiceMock<MockUrlLoader>>();
-  });
 
-  auto engine =
-      std::make_unique<testing::NiceMock<TestPDFiumEngine>>(&fake_plugin_);
+  auto engine = std::make_unique<NiceMock<TestPDFiumEngine>>(&fake_plugin_);
   EXPECT_CALL(*engine, ZoomUpdated);
   EXPECT_CALL(*engine, PageOffsetUpdated);
   EXPECT_CALL(*engine, PluginSizeUpdated);
@@ -1183,15 +1179,8 @@ TEST_F(PdfViewPluginBaseTest, HandleResetPrintPreviewModeMessage) {
 
 TEST_F(PdfViewPluginBaseTest, HandleResetPrintPreviewModeMessageSetGrayscale) {
   EXPECT_CALL(fake_plugin_, IsPrintPreview).WillRepeatedly(Return(true));
-  EXPECT_CALL(fake_plugin_, CreateUrlLoaderInternal).WillRepeatedly([]() {
-    return std::make_unique<testing::NiceMock<MockUrlLoader>>();
-  });
 
-  auto engine =
-      std::make_unique<testing::NiceMock<TestPDFiumEngine>>(&fake_plugin_);
-  EXPECT_CALL(*engine, ZoomUpdated);
-  EXPECT_CALL(*engine, PageOffsetUpdated);
-  EXPECT_CALL(*engine, PluginSizeUpdated);
+  auto engine = std::make_unique<NiceMock<TestPDFiumEngine>>(&fake_plugin_);
   EXPECT_CALL(*engine, SetGrayscale(true));
   EXPECT_CALL(fake_plugin_,
               CreateEngine(&fake_plugin_,
@@ -1299,7 +1288,7 @@ class PdfViewPluginBaseSubmitFormTest : public PdfViewPluginBaseTest {
   void SubmitForm(const std::string& url,
                   base::StringPiece form_data = "data") {
     EXPECT_CALL(fake_plugin_, CreateUrlLoaderInternal).WillOnce([this]() {
-      auto mock_loader = std::make_unique<testing::NiceMock<MockUrlLoader>>();
+      auto mock_loader = std::make_unique<NiceMock<MockUrlLoader>>();
       EXPECT_CALL(*mock_loader, Open).WillOnce(testing::SaveArg<0>(&request_));
       return mock_loader;
     });
