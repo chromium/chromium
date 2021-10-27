@@ -1011,11 +1011,6 @@ const base::Feature kThirdPartyStoragePartitioning{
 const base::Feature kDesktopPWAsSubApps{"DesktopPWAsSubApps",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables reporting all JavaScript frameworks via a manual traversal to detect
-// the properties and attributes required.
-const base::Feature kReportAllJavaScriptFrameworks{
-    "ReportAllJavaScriptFrameworks", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Suppresses console errors for CORS problems which report an associated
 // inspector issue anyway.
 const base::Feature kCORSErrorsIssueOnly{"CORSErrorsIssueOnly",
