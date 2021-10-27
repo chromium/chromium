@@ -157,6 +157,12 @@ class AccountProfileMapperTest : public testing::Test {
             });
   }
 
+  ~AccountProfileMapperTest() override {
+    EXPECT_TRUE(facade_get_accounts_completion_callbacks_.empty())
+        << "The test has " << facade_get_accounts_completion_callbacks_.size()
+        << " unsatisfied GetAccounts() callbacks";
+  }
+
   ProfileAttributesStorage* attributes_storage() {
     return &testing_profile_manager_.profile_manager()
                 ->GetProfileAttributesStorage();
@@ -298,14 +304,17 @@ class AccountProfileMapperTest : public testing::Test {
     EXPECT_TRUE(main_profile_found) << "No main profile";
   }
 
-  // Sets an expectation that `GetAccounts()` is called on the facade, and
-  // stores the callback for later use in `CompleteFacadeGetAccounts()`.
+  // Sets an expectation that `GetAccounts()` is called on the facade at least
+  // once, and stores the callbacks for later use in
+  // `CompleteFacadeGetAccounts()`.
+  // `CompleteFacadeGetAccounts()` must be called the exact same number of times
+  // as `GetAccounts()`.
   void ExpectFacadeGetAccountsCalled() {
     EXPECT_CALL(mock_facade_, GetAccounts(testing::_))
-        .WillOnce([this](base::OnceCallback<void(const std::vector<Account>&)>
-                             callback) {
-          DCHECK(!facade_get_accounts_completion_);
-          facade_get_accounts_completion_ = std::move(callback);
+        .Times(testing::AtLeast(1))
+        .WillRepeatedly([this](base::OnceCallback<void(
+                                   const std::vector<Account>&)> callback) {
+          facade_get_accounts_completion_callbacks_.push(std::move(callback));
         });
   }
 
@@ -332,7 +341,11 @@ class AccountProfileMapperTest : public testing::Test {
   }
 
   void CompleteFacadeGetAccounts(const std::vector<Account>& accounts) {
-    std::move(facade_get_accounts_completion_).Run(accounts);
+    ASSERT_FALSE(facade_get_accounts_completion_callbacks_.empty());
+    auto callback =
+        std::move(facade_get_accounts_completion_callbacks_.front());
+    facade_get_accounts_completion_callbacks_.pop();
+    std::move(callback).Run(accounts);
   }
 
   // Sets the accounts in `ProfileAttributesStorage`. `accounts_map` is a map
@@ -374,8 +387,8 @@ class AccountProfileMapperTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   account_manager::MockAccountManagerFacade mock_facade_;
-  base::OnceCallback<void(const std::vector<Account>&)>
-      facade_get_accounts_completion_;
+  std::queue<base::OnceCallback<void(const std::vector<Account>&)>>
+      facade_get_accounts_completion_callbacks_;
   TestingProfileManager testing_profile_manager_;
   base::FilePath main_path_;
 };
@@ -523,6 +536,113 @@ TEST_F(AccountProfileMapperTest, NonGaia) {
                    /*expected_accounts_removed=*/{},
                    /*expected_accounts_in_storage=*/
                    {{main_path(), {"A"}}});
+}
+
+// Tests that observers are notified when an existing account receives an
+// update.
+TEST_F(AccountProfileMapperTest, ObserveAccountUpdate) {
+  base::FilePath second_path = GetProfilePath("Second");
+  base::FilePath third_path = GetProfilePath("Third");
+  AccountProfileMapper* mapper = CreateMapper(
+      {{main_path(), {"A"}}, {second_path, {"B"}}, {third_path, {"A", "B"}}});
+  MockAccountProfileMapperObserver mock_observer;
+  base::ScopedObservation<AccountProfileMapper, AccountProfileMapper::Observer>
+      observation{&mock_observer};
+  observation.Observe(mapper);
+
+  ExpectOnAccountUpserted(&mock_observer,
+                          {{main_path(), {"A"}}, {third_path, {"A"}}});
+  mapper->OnAccountUpserted(AccountFromGaiaID("A"));
+}
+
+// Tests that observers are not notified when a non-Gaia account receives an
+// update.
+TEST_F(AccountProfileMapperTest, ObserveAccountUpdate_NonGaia) {
+  base::FilePath second_path = GetProfilePath("Second");
+  base::FilePath third_path = GetProfilePath("Third");
+  AccountProfileMapper* mapper = CreateMapper(
+      {{main_path(), {"A"}}, {second_path, {"B"}}, {third_path, {"A", "B"}}});
+  MockAccountProfileMapperObserver mock_observer;
+  base::ScopedObservation<AccountProfileMapper, AccountProfileMapper::Observer>
+      observation{&mock_observer};
+  observation.Observe(mapper);
+
+  ExpectOnAccountUpserted(&mock_observer, {});
+  mapper->OnAccountUpserted(NonGaiaAccountFromID("A"));
+}
+
+// Tests that observers are notified when an existing unassigned Gaia account
+// receives an update.
+TEST_F(AccountProfileMapperTest, ObserveAccountUpdate_Unassigned) {
+  base::FilePath other_path = GetProfilePath("Other");
+  AccountProfileMapper* mapper = CreateMapper({{main_path(), {"A", "B"}},
+                                               {other_path, {"B"}},
+                                               {base::FilePath(), {"C"}}});
+  MockAccountProfileMapperObserver mock_observer;
+  base::ScopedObservation<AccountProfileMapper, AccountProfileMapper::Observer>
+      observation{&mock_observer};
+  observation.Observe(mapper);
+
+  ExpectOnAccountUpserted(&mock_observer, {{base::FilePath(), {"C"}}});
+  mapper->OnAccountUpserted(AccountFromGaiaID("C"));
+}
+
+// Tests that observers are notified when an existing account receives an
+// update before the AccountProfileMapper was initialized.
+TEST_F(AccountProfileMapperTest, ObserveAccountUpdate_AtInitialization) {
+  base::FilePath second_path = GetProfilePath("Second");
+  base::FilePath third_path = GetProfilePath("Third");
+  AccountProfileMapper* mapper = CreateMapperNonInitialized(
+      {{main_path(), {"A"}}, {second_path, {"B"}}, {third_path, {"A", "B"}}});
+  MockAccountProfileMapperObserver mock_observer;
+  base::ScopedObservation<AccountProfileMapper, AccountProfileMapper::Observer>
+      observation{&mock_observer};
+  observation.Observe(mapper);
+
+  EXPECT_CALL(*mock_facade(), GetAccounts(testing::_)).Times(0);
+  EXPECT_CALL(mock_observer, OnAccountUpserted(testing::_, testing::_))
+      .Times(0);
+  mapper->OnAccountUpserted(AccountFromGaiaID("A"));
+  testing::Mock::VerifyAndClearExpectations(mock_facade());
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  ExpectOnAccountUpserted(&mock_observer,
+                          {{main_path(), {"A"}}, {third_path, {"A"}}});
+  CompleteFacadeGetAccountsGaia({"A", "B"});
+}
+
+// Tests that observers are notified in the edge-case scenario when an account
+// is removed and instantly re-added to the system.
+TEST_F(AccountProfileMapperTest, ObserveAccountReadded) {
+  base::FilePath second_path = GetProfilePath("Second");
+  base::FilePath third_path = GetProfilePath("Third");
+  AccountProfileMapper* mapper = CreateMapper({{main_path(), {"A", "B"}},
+                                               {second_path, {"A"}},
+                                               {third_path, {"A", "B"}}});
+  MockAccountProfileMapperObserver mock_observer;
+  base::ScopedObservation<AccountProfileMapper, AccountProfileMapper::Observer>
+      observation{&mock_observer};
+  observation.Observe(mapper);
+
+  ExpectFacadeGetAccountsCalled();
+  mapper->OnAccountRemoved(AccountFromGaiaID("B"));
+
+  // Account B gets re-added before `mapper` receives GetAccounts() callback.
+  ExpectOnAccountUpserted(&mock_observer,
+                          {{main_path(), {"B"}}, {third_path, {"B"}}});
+  mapper->OnAccountUpserted(AccountFromGaiaID("B"));
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  // The callback triggered by `OnAccountRemoved()` returns stale data that
+  // contains only one account.
+  ExpectOnAccountRemoved(&mock_observer,
+                         {{main_path(), {"B"}}, {third_path, {"B"}}});
+  CompleteFacadeGetAccountsGaia({"A"});
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  // Account B gets re-added as an unassigned account.
+  ExpectOnAccountUpserted(&mock_observer, {{base::FilePath(), {"B"}}});
+  CompleteFacadeGetAccountsGaia({"A", "B"});
 }
 
 // Tests that a secondary profile gets deleted after its primary account is

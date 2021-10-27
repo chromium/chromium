@@ -159,6 +159,44 @@ void AccountProfileMapper::CreateNewProfileWithAccount(
 
 void AccountProfileMapper::OnAccountUpserted(
     const account_manager::Account& account) {
+  if (account.key.account_type() != account_manager::AccountType::kGaia)
+    return;
+
+  if (!initialized_) {
+    initialization_callbacks_.push_back(
+        base::BindOnce(&AccountProfileMapper::OnAccountUpserted,
+                       weak_factory_.GetWeakPtr(), account));
+    return;
+  }
+
+  if (account_cache_.contains(account.key.id())) {
+    // The account is already known. This is an account update. Propagate the
+    // update to all profiles that have this account.
+    std::vector<ProfileAttributesEntry*> entries =
+        profile_attributes_storage_->GetAllProfilesAttributes();
+    std::vector<base::FilePath> profiles_with_updated_account;
+    for (const ProfileAttributesEntry* entry : entries) {
+      if (entry->GetGaiaIds().contains(account.key.id()))
+        profiles_with_updated_account.push_back(entry->GetPath());
+    }
+
+    // Send a notification with empty path if `account` is unassigned.
+    if (profiles_with_updated_account.empty())
+      profiles_with_updated_account.push_back(base::FilePath());
+
+    // TODO(https://crbug.com/1262946): Update this code when
+    // OnAccountUpserted() takes multiple paths.
+    for (const base::FilePath& profile_path : profiles_with_updated_account) {
+      for (auto& obs : observers_)
+        obs.OnAccountUpserted(profile_path, account);
+    }
+
+    // Do not return early to update the list of accounts below.
+    // `account_cache_` might be stale here. There is a small chance that
+    // `account` has been already removed and re-added and that we took re-add
+    // operation for an update.
+  }
+
   account_manager_facade_->GetAccounts(
       base::BindOnce(&AccountProfileMapper::OnGetAccountsCompleted,
                      weak_factory_.GetWeakPtr()));
@@ -166,6 +204,9 @@ void AccountProfileMapper::OnAccountUpserted(
 
 void AccountProfileMapper::OnAccountRemoved(
     const account_manager::Account& account) {
+  if (account.key.account_type() != account_manager::AccountType::kGaia)
+    return;
+
   account_manager_facade_->GetAccounts(
       base::BindOnce(&AccountProfileMapper::OnGetAccountsCompleted,
                      weak_factory_.GetWeakPtr()));
