@@ -613,7 +613,7 @@ TEST_F(AccountProfileMapperTest, ShowAddAccountDialogBeforeInit) {
   AccountProfileMapper* mapper =
       CreateMapperNonInitialized({{main_path(), {"A"}}});
   AccountManagerFacade::AccountAdditionSource source =
-      AccountManagerFacade::AccountAdditionSource::kContentArea;
+      AccountManagerFacade::AccountAdditionSource::kOgbAddAccount;
   // The facade is not called before initialization.
   EXPECT_CALL(*mock_facade(), ShowAddAccountDialog(testing::_, testing::_))
       .Times(0);
@@ -642,7 +642,7 @@ TEST_F(AccountProfileMapperTest, ShowAddAccountDialog) {
   absl::optional<AccountProfileMapper::AddAccountResult> result =
       AccountProfileMapper::AddAccountResult{other_path, account_c};
   AccountManagerFacade::AccountAdditionSource source =
-      AccountManagerFacade::AccountAdditionSource::kContentArea;
+      AccountManagerFacade::AccountAdditionSource::kOgbAddAccount;
 
   // Success: Add account to existing profile.
   ExpectFacadeShowAddAccountDialogCalled(source, account_c);
@@ -800,7 +800,7 @@ TEST_F(AccountProfileMapperTest, AddUnknownAccount) {
       .Times(0);
   EXPECT_CALL(*mock_facade(),
               ShowAddAccountDialog(
-                  AccountManagerFacade::AccountAdditionSource::kContentArea,
+                  AccountManagerFacade::AccountAdditionSource::kOgbAddAccount,
                   testing::_))
       .Times(0);
 

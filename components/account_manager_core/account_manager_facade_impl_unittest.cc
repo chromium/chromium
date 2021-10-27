@@ -473,7 +473,7 @@ TEST_F(AccountManagerFacadeImplTest, ShowReauthAccountDialogUMA) {
   base::HistogramTester tester;
   std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
       CreateFacade();
-  auto source = AccountManagerFacade::AccountAdditionSource::kContentArea;
+  auto source = AccountManagerFacade::AccountAdditionSource::kContentAreaReauth;
 
   account_manager_facade->ShowReauthAccountDialog(source, kTestAccountEmail);
   account_manager_facade->FlushMojoForTesting();

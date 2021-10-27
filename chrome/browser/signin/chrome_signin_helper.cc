@@ -302,7 +302,7 @@ void ProcessMirrorHeader(
     // Display a re-authentication dialog.
     ::GetAccountManagerFacade(profile->GetPath().value())
         ->ShowReauthAccountDialog(account_manager::AccountManagerFacade::
-                                      AccountAdditionSource::kContentArea,
+                                      AccountAdditionSource::kContentAreaReauth,
                                   manage_accounts_params.email);
     return;
   }
@@ -311,7 +311,7 @@ void ProcessMirrorHeader(
   if (service_type == GAIA_SERVICE_TYPE_ADDSESSION) {
     ::GetAccountManagerFacade(profile->GetPath().value())
         ->ShowAddAccountDialog(account_manager::AccountManagerFacade::
-                                   AccountAdditionSource::kContentArea);
+                                   AccountAdditionSource::kOgbAddAccount);
     return;
   }
 
