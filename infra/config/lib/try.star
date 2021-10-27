@@ -19,7 +19,7 @@ to set the default value. Can also be accessed through `try_.defaults`.
 
 load("./args.star", "args")
 load("./branches.star", "branches")
-load("./builders.star", "builders", "os", "os_category")
+load("./builders.star", "builders", "compilator_watcher_git_revision", "os", "os_category")
 
 DEFAULT_EXCLUDE_REGEXPS = [
     # Contains documentation that doesn't affect the outputs
@@ -540,6 +540,72 @@ def infra_builder(
         **kwargs
     )
 
+def orchestrator_pair_builders(
+        *,
+        name,
+        builder_group_func,
+        orchestrator_builder_group,
+        orchestrator_builderless,
+        orchestrator_cores,
+        orchestrator_tryjob,
+        compilator_builderless,
+        compilator_cores,
+        compilator_goma_jobs,
+        compilator_name,
+        compilator_os,
+        **common_kwargs):
+    orchestrator_builder = builder_group_func(
+        name = name,
+        executable = "recipe:chromium/orchestrator",
+        cores = orchestrator_cores,
+        builderless = orchestrator_builderless,
+        properties = {
+            "$build/chromium_orchestrator": {
+                "compilator": compilator_name,
+                "compilator_watcher_git_revision": compilator_watcher_git_revision,
+            },
+        },
+        tryjob = orchestrator_tryjob,
+        service_account = "chromium-orchestrator@chops-service-accounts.iam.gserviceaccount.com",
+        os = os.LINUX_BIONIC,
+        **common_kwargs
+    )
+    compilator_builder = builder_group_func(
+        name = compilator_name,
+        executable = "recipe:chromium/compilator",
+        cores = compilator_cores,
+        builderless = compilator_builderless,
+        goma_jobs = compilator_goma_jobs,
+        ssd = True,
+        properties = {
+            "orchestrator": {
+                "builder_name": name,
+                "builder_group": orchestrator_builder_group,
+            },
+        },
+        os = compilator_os,
+        **common_kwargs
+    )
+    return orchestrator_builder, compilator_builder
+
+def chromium_linux_orchestrator_pair(
+        **kwargs):
+    return orchestrator_pair_builders(
+        builder_group_func = chromium_linux_builder,
+        orchestrator_builder_group = "tryserver.chromium.linux",
+        compilator_os = os.LINUX_BIONIC,
+        **kwargs
+    )
+
+def chromium_win_orchestrator_pair(
+        **kwargs):
+    return orchestrator_pair_builders(
+        builder_group_func = chromium_win_builder,
+        orchestrator_builder_group = "tryserver.chromium.win",
+        compilator_os = os.WINDOWS_10,
+        **kwargs
+    )
+
 def presubmit_builder(*, name, tryjob, os = builders.os.LINUX_BIONIC_SWITCH_TO_DEFAULT, **kwargs):
     """Define a presubmit builder.
 
@@ -588,6 +654,7 @@ try_ = struct(
     chromium_dawn_builder = chromium_dawn_builder,
     chromium_dawn_builderless_builder = chromium_dawn_builderless_builder,
     chromium_linux_builder = chromium_linux_builder,
+    chromium_linux_orchestrator_pair = chromium_linux_orchestrator_pair,
     chromium_mac_builder = chromium_mac_builder,
     chromium_mac_ios_builder = chromium_mac_ios_builder,
     chromium_rust_builder = chromium_rust_builder,
@@ -597,6 +664,7 @@ try_ = struct(
     chromium_updater_mac_builder = chromium_updater_mac_builder,
     chromium_updater_win_builder = chromium_updater_win_builder,
     chromium_win_builder = chromium_win_builder,
+    chromium_win_orchestrator_pair = chromium_win_orchestrator_pair,
     cipd_3pp_builder = cipd_3pp_builder,
     cipd_builder = cipd_builder,
     gpu_chromium_android_builder = gpu_chromium_android_builder,

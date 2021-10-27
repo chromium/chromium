@@ -52,6 +52,8 @@ namespace {
 std::string OptionalNSObject::ToString() const {
   if (IsNotApplicable()) {
     return "<n/a>";
+  } else if (IsUnsupported()) {
+    return "<unsupported>";
   } else if (IsError()) {
     return "<error>";
   } else if (value == nil) {
@@ -200,7 +202,7 @@ OptionalNSObject AttributeInvoker::InvokeForAXElement(
     OptionalNSObject param = ParamByPropertyNode(property_node);
     if (param.IsNotNil()) {
       PerformAction(target, *param);
-      return OptionalNSObject::NotApplicable();
+      return OptionalNSObject::Unsupported();
     }
     return OptionalNSObject::Error();
   }
@@ -246,11 +248,17 @@ OptionalNSObject AttributeInvoker::InvokeForAXElement(
     }
   }
 
-  // Unmatched attribute. No error for a tree dump calls because the tree dump
-  // sets generic property filters not depending on a node, so we can be called
-  // for an attribute not supported by the node.
-  if (IsDumpingTree())
+  // Unmatched attribute.
+  // * We choose not to return an error when dumping the accessibility tree,
+  // because during this process the same set of NSAccessibility attributes
+  // listed in property filters are queried on all nodes and, naturally, not all
+  // nodes support all attributes.
+  // * We also explicitly choose not to return an error if the NSAccessibility
+  // attribute is valid and is in the list of attributes that our tree formatter
+  // supports, but is not exposed on a given node.
+  if (IsDumpingTree() || IsValidAttribute(property_node.name_or_value)) {
     return OptionalNSObject::NotApplicable();
+  }
 
   LOG(ERROR) << "Unrecognized '" << property_node.name_or_value
              << "' attribute called on AXElement in '"
@@ -269,11 +277,12 @@ OptionalNSObject AttributeInvoker::InvokeForAXTextMarkerRange(
     return OptionalNSObject(static_cast<id>(
         AXTextMarkerRangeCopyEndMarker(static_cast<CFTypeRef>(target))));
 
-  // Unmatched attribute. No error for a tree dump calls because the tree dump
-  // sets generic property filters not depending on a node, so we can be called
-  // for an attribute not supported by the node.
+  // Unmatched attribute. We choose not to return an error when dumping the
+  // accessibility tree, because during this process the same set of
+  // NSAccessibility attributes listed in property filters are queried on all
+  // nodes and, naturally, not all nodes support all attributes.
   if (IsDumpingTree())
-    return OptionalNSObject::NotApplicable();
+    return OptionalNSObject::Unsupported();
 
   LOG(ERROR) << "Unrecognized '" << property_node.name_or_value
              << "' attribute called on AXTextMarkerRange in '"

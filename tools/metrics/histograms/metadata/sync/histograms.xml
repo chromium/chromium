@@ -949,7 +949,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Sync.ModelTypeUndecryptablePendingUpdatesDropped"
-    units="SyncEntity" expires_after="2022-02-06">
+    units="SyncEntity" expires_after="2022-04-24">
   <owner>victorvianna@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <component>Services&gt;Sync</component>

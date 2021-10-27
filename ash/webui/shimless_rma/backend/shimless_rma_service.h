@@ -154,6 +154,9 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   void OsUpdateProgress(update_engine::Operation operation, double progress);
 
  private:
+  using TransitionStateCallback = base::OnceCallback<
+      void(mojom::RmaState, bool, bool, rmad::RmadErrorCode)>;
+
   template <class Callback>
   void TransitionNextStateGeneric(Callback callback);
   template <class Callback>
@@ -173,9 +176,14 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
                                 const std::string& version,
                                 int64_t update_size);
 
+  void OsUpdateOrNextRmadStateCallback(TransitionStateCallback callback,
+                                       const std::string& version);
+
   rmad::RmadState state_proto_;
   bool can_abort_ = false;
   bool can_go_back_ = false;
+  // Used to validate mojo only states such as kConfigureNetwork
+  mojom::RmaState mojo_state_;
 
   absl::optional<rmad::CalibrationComponentStatus> last_calibration_progress_;
   absl::optional<rmad::CalibrationOverallStatus>
@@ -202,6 +210,7 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
       remote_cros_network_config_;
 
   VersionUpdater version_updater_;
+  base::OnceCallback<void(const std::string& version)> check_os_callback_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

@@ -153,7 +153,7 @@ void DesktopSessionDurationTracker::EndSession(
   // Trim any timeouts from the session length and lower bound to a session of
   // length 0.
   delta -= time_to_discount;
-  if (delta < base::TimeDelta())
+  if (delta.is_negative())
     delta = base::TimeDelta();
 
   for (Observer& observer : observer_list_)

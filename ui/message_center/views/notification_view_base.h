@@ -20,8 +20,10 @@
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_observer.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/layout/box_layout_view.h"
 
 namespace views {
+class BoxLayoutView;
 class Label;
 class LabelButton;
 class ProgressBar;
@@ -142,7 +144,7 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   explicit NotificationViewBase(const Notification& notification);
 
   // Control buttons view contains settings button, close button, etc.
-  std::unique_ptr<NotificationControlButtonsView> CreateControlButtonsView();
+  views::Builder<NotificationControlButtonsView> CreateControlButtonsBuilder();
 
   // Header row contains app_icon, app_name, control buttons, etc.
   std::unique_ptr<NotificationHeaderView> CreateHeaderRow();
@@ -150,10 +152,10 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   // Left content view contains most of the contents, including title, message,
   // compacted title and message, progress bar and status for progress
   // notification, etc.
-  std::unique_ptr<views::View> CreateLeftContentView();
+  views::Builder<views::BoxLayoutView> CreateLeftContentBuilder();
 
   // Right content contains notification icon and small image.
-  std::unique_ptr<views::View> CreateRightContentView();
+  views::Builder<views::View> CreateRightContentBuilder();
 
   // Content row contains all the main content in a notification. This view will
   // be hidden when settings are shown.

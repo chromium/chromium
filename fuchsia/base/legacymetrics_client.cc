@@ -60,7 +60,7 @@ void LegacyMetricsClient::SetMetricsRecorder(
 
   SetMetricsRecorderInternal(std::move(metrics_recorder));
 
-  if (report_interval_ > base::TimeDelta())
+  if (report_interval_.is_positive())
     ScheduleNextReport();
 }
 

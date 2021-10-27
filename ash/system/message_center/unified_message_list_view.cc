@@ -331,18 +331,68 @@ void UnifiedMessageListView::ClearAllWithAnimation() {
     StartAnimation();
 }
 
-std::vector<Notification*> UnifiedMessageListView::GetNotificationsAboveY(
-    int y_offset) const {
-  std::vector<Notification*> notifications;
+std::vector<message_center::Notification*>
+UnifiedMessageListView::GetAllNotifications() const {
+  std::vector<message_center::Notification*> notifications;
   for (views::View* view : children()) {
-    int bottom_limit = view->bounds().y() + kNotificationIconStackThreshold;
+    // The view may be present in the view hierarchy, but deleted in the message
+    // center.
+    auto* notification = MessageCenter::Get()->FindVisibleNotificationById(
+        AsMVC(view)->GetNotificationId());
+    if (notification)
+      notifications.insert(notifications.begin(), notification);
+  }
+  return notifications;
+}
+
+std::vector<std::string> UnifiedMessageListView::GetAllNotificationIds() const {
+  std::vector<std::string> notifications;
+  for (views::View* view : children()) {
+    notifications.insert(notifications.begin(),
+                         AsMVC(view)->GetNotificationId());
+  }
+  return notifications;
+}
+
+std::vector<message_center::Notification*>
+UnifiedMessageListView::GetNotificationsAboveY(int y_offset) const {
+  std::vector<message_center::Notification*> notifications;
+  for (views::View* view : children()) {
+    const int bottom_limit =
+        view->bounds().y() + kNotificationIconStackThreshold;
     if (bottom_limit <= y_offset) {
-      Notification* notification =
-          MessageCenter::Get()->FindVisibleNotificationById(
-              AsMVC(view)->GetNotificationId());
+      auto* notification = MessageCenter::Get()->FindVisibleNotificationById(
+          AsMVC(view)->GetNotificationId());
       if (notification)
         notifications.insert(notifications.begin(), notification);
     }
+  }
+  return notifications;
+}
+
+std::vector<std::string> UnifiedMessageListView::GetNotificationIdsAboveY(
+    int y_offset) const {
+  std::vector<std::string> notifications;
+  for (views::View* view : children()) {
+    const int bottom_limit =
+        view->bounds().y() + kNotificationIconStackThreshold;
+    if (bottom_limit > y_offset)
+      continue;
+    notifications.insert(notifications.begin(),
+                         AsMVC(view)->GetNotificationId());
+  }
+  return notifications;
+}
+
+std::vector<std::string> UnifiedMessageListView::GetNotificationIdsBelowY(
+    int y_offset) const {
+  std::vector<std::string> notifications;
+  for (views::View* view : children()) {
+    const int top_of_notification = view->bounds().y();
+    if (top_of_notification < y_offset)
+      continue;
+    notifications.insert(notifications.begin(),
+                         AsMVC(view)->GetNotificationId());
   }
   return notifications;
 }
@@ -616,6 +666,11 @@ UnifiedMessageListView::GetStackedNotifications() const {
   return message_center_view_->GetStackedNotifications();
 }
 
+std::vector<std::string>
+UnifiedMessageListView::GetNonVisibleNotificationIdsInViewHierarchy() const {
+  return message_center_view_->GetNonVisibleNotificationIdsInViewHierarchy();
+}
+
 // static
 const UnifiedMessageListView::MessageViewContainer*
 UnifiedMessageListView::AsMVC(const views::View* v) {
@@ -776,7 +831,17 @@ void UnifiedMessageListView::UpdateClearAllAnimation() {
     view->set_is_removed();
 
   if (state_ == State::CLEAR_ALL_STACKED) {
-    if (view && GetStackedNotifications().size() > 0) {
+    const auto non_visible_notification_ids =
+        GetNonVisibleNotificationIdsInViewHierarchy();
+    if (view && non_visible_notification_ids.size() > 0) {
+      // Immediately remove all notifications that are outside of the scrollable
+      // window.
+      for (const auto& id : non_visible_notification_ids) {
+        auto* message_view_container = GetNotificationById(id);
+        if (message_view_container)
+          message_view_container->set_is_removed();
+      }
+
       DeleteRemovedNotifications();
       UpdateBounds();
       start_height_ = ideal_height_;
@@ -784,7 +849,6 @@ void UnifiedMessageListView::UpdateClearAllAnimation() {
         auto* view = AsMVC(child);
         view->set_start_bounds(view->ideal_bounds());
       }
-
       PreferredSizeChanged();
     } else {
       state_ = State::CLEAR_ALL_VISIBLE;

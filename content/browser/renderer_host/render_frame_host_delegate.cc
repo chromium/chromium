@@ -81,10 +81,6 @@ bool RenderFrameHostDelegate::CanEnterFullscreenMode() {
   return true;
 }
 
-bool RenderFrameHostDelegate::HasEnteredFullscreenMode() {
-  return false;
-}
-
 void RenderFrameHostDelegate::FullscreenStateChanged(
     RenderFrameHostImpl* rfh,
     bool is_fullscreen,

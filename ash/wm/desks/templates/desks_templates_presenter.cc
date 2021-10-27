@@ -30,6 +30,17 @@ desks_storage::DeskModel* GetDeskModel() {
   return desk_model;
 }
 
+// Callback ran after creating and activating a new desk for launching a
+// template. Launches apps into the active desk.
+void OnNewDeskCreatedForTemplate(std::unique_ptr<DeskTemplate> desk_template,
+                                 bool on_create_activate_success) {
+  if (!on_create_activate_success)
+    return;
+
+  Shell::Get()->shell_delegate()->LaunchAppsFromTemplate(
+      std::move(desk_template));
+}
+
 }  // namespace
 
 DesksTemplatesPresenter::DesksTemplatesPresenter(
@@ -68,6 +79,21 @@ void DesksTemplatesPresenter::DeleteEntry(const std::string& template_uuid) {
   GetDeskModel()->DeleteEntry(
       template_uuid, base::BindOnce(&DesksTemplatesPresenter::OnDeleteEntry,
                                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void DesksTemplatesPresenter::LaunchDeskTemplate(
+    const std::string& template_uuid) {
+  // TODO(richui): If we are at the max desk limit (currently is 8), a new desk
+  // cannot be created, so we need to display a toast to the user.
+  if (!DesksController::Get()->CanCreateDesks())
+    return;
+
+  weak_ptr_factory_.InvalidateWeakPtrs();
+
+  GetDeskModel()->GetEntryByUUID(
+      template_uuid,
+      base::BindOnce(&DesksTemplatesPresenter::OnGetTemplateForDeskLaunch,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void DesksTemplatesPresenter::DeskModelLoaded() {}
@@ -121,6 +147,26 @@ void DesksTemplatesPresenter::OnDeleteEntry(
     return;
 
   GetAllEntries();
+}
+
+void DesksTemplatesPresenter::OnGetTemplateForDeskLaunch(
+    desks_storage::DeskModel::GetEntryByUuidStatus status,
+    std::unique_ptr<DeskTemplate> entry) {
+  if (status != desks_storage::DeskModel::GetEntryByUuidStatus::kOk)
+    return;
+
+  // Launch the windows as specified in the template to a new desk.
+  // Calling `CreateAndActivateNewDeskForTemplate` results in exiting overview
+  // mode, which means the presenter doesn't exist anymore on callback (since it
+  // is owned by `OverviewSession`). Because of this, we bind a non-member
+  // function in the anonymous namespace.
+  const auto template_name = entry->template_name();
+  DesksController::Get()->CreateAndActivateNewDeskForTemplate(
+      template_name,
+      base::BindOnce(&OnNewDeskCreatedForTemplate, std::move(entry)));
+
+  if (on_update_ui_closure_for_testing_)
+    std::move(on_update_ui_closure_for_testing_).Run();
 }
 
 }  // namespace ash

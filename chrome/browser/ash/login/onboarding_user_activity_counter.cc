@@ -76,10 +76,10 @@ void OnboardingUserActivityCounter::SetActiveState(bool active) {
   if (timer_.IsRunning()) {
     const base::TimeDelta activity_time_left =
         timer_.desired_run_time() - tick_clock_->NowTicks();
-    DCHECK(activity_time_left > base::TimeDelta());
+    DCHECK(activity_time_left.is_positive());
     const base::TimeDelta current_activity_time =
         required_activity_time_ - activity_time_left;
-    DCHECK(current_activity_time > base::TimeDelta());
+    DCHECK(current_activity_time.is_positive());
     prefs_->SetTimeDelta(prefs::kActivityTimeAfterOnboarding,
                          current_activity_time);
     timer_.Stop();
@@ -97,7 +97,7 @@ void OnboardingUserActivityCounter::SetActiveState(bool active) {
       prefs_->GetTimeDelta(prefs::kActivityTimeAfterOnboarding);
   const base::TimeDelta activity_time_left =
       required_activity_time_ - current_activity_time;
-  if (activity_time_left < base::TimeDelta()) {
+  if (activity_time_left.is_negative()) {
     ReportResult();
     return;
   }

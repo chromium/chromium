@@ -36,7 +36,12 @@ export let BackdropState;
 
 /**
  * Stores Google Photos state.
+ * |albums| is the list of Google Photos albums. It is undefined only until it
+ * has been initialized, then either null (in error state) or a valid Array.
+ * |photos| is the list of Google Photos photos. It is undefined only until it
+ * has been initialized, then either null (in error state) or a valid Array.
  * @typedef {{
+ *  albums: (?Array<undefined>|undefined),
  *  photos: (?Array<undefined>|undefined),
  * }}
  */
@@ -71,6 +76,7 @@ export let GooglePhotosState;
  *   selected: boolean,
  *   setImage: number,
  *   googlePhotos: {
+ *    albums: boolean,
  *    photos: boolean,
  *   },
  * }}
@@ -126,7 +132,7 @@ export function emptyState() {
       refreshWallpaper: false,
       selected: false,
       setImage: 0,
-      googlePhotos: {photos: false},
+      googlePhotos: {albums: false, photos: false},
     },
     local: {images: null, data: {}},
     currentSelected: null,
@@ -134,7 +140,7 @@ export function emptyState() {
     dailyRefresh: {collectionId: null},
     error: null,
     fullscreen: false,
-    googlePhotos: {photos: undefined},
+    googlePhotos: {albums: undefined, photos: undefined},
   };
 }
 
@@ -274,6 +280,22 @@ function loadingReducer(state, action) {
       return /** @type {!LoadingState} */ ({...state, refreshWallpaper: true});
     case ActionName.SET_UPDATED_DAILY_REFRESH_IMAGE:
       return /** @type {!LoadingState} */ ({...state, refreshWallpaper: false});
+    case ActionName.BEGIN_LOAD_GOOGLE_PHOTOS_ALBUMS:
+      return /** @type {!LoadingState} */ ({
+        ...state,
+        googlePhotos: {
+          ...state.googlePhotos,
+          albums: true,
+        },
+      });
+    case ActionName.SET_GOOGLE_PHOTOS_ALBUMS:
+      return /** @type {!LoadingState} */ ({
+        ...state,
+        googlePhotos: {
+          ...state.googlePhotos,
+          albums: false,
+        },
+      });
     case ActionName.BEGIN_LOAD_GOOGLE_PHOTOS_PHOTOS:
       return /** @type {!LoadingState} */ ({
         ...state,
@@ -449,6 +471,11 @@ function errorReducer(state, action) {
  */
 function googlePhotosReducer(state, action) {
   switch (action.name) {
+    case ActionName.SET_GOOGLE_PHOTOS_ALBUMS:
+      return /** @type {!GooglePhotosState} */ ({
+        ...state,
+        albums: (/** @type {{albums: ?Array<undefined>}} */ (action)).albums,
+      });
     case ActionName.SET_GOOGLE_PHOTOS_PHOTOS:
       return /** @type {!GooglePhotosState} */ ({
         ...state,

@@ -453,7 +453,7 @@
         id="UseSwitchCompatOrMaterialCode"
         message="Use `SwitchCompat` from AppCompat or `SwitchMaterial` from Material library">
         <location
-            file="../../chrome/browser/signin/ui/android/java/src/org/chromium/chrome/browser/signin/ui/fre/FreUMADialogCoordinator.java"
+            file="../../chrome/browser/ui/android/signin/java/src/org/chromium/chrome/browser/ui/signin/fre/FreUMADialogCoordinator.java"
             line="71"/>
     </issue>
 
@@ -461,7 +461,7 @@
         id="UseSwitchCompatOrMaterialXml"
         message="Use `SwitchCompat` from AppCompat or `SwitchMaterial` from Material library">
         <location
-            file="../../chrome/browser/signin/ui/android/java/res/layout/fre_uma_dialog.xml"
+            file="../../chrome/browser/ui/android/signin/java/res/layout/fre_uma_dialog.xml"
             line="25"/>
     </issue>
 
@@ -1813,7 +1813,7 @@
         id="VectorRaster"
         message="">
         <location
-            file="../../chrome/browser/signin/ui/android/java/res/drawable/ic_expand_more_in_circle_24dp.xml"
+            file="../../chrome/browser/ui/android/signin/java/res/drawable/ic_expand_more_in_circle_24dp.xml"
             line="14"/>
     </issue>
 
@@ -1821,7 +1821,7 @@
         id="VectorRaster"
         message="">
         <location
-            file="../../chrome/browser/signin/ui/android/java/res/drawable/ic_expand_more_in_circle_24dp.xml"
+            file="../../chrome/browser/ui/android/signin/java/res/drawable/ic_expand_more_in_circle_24dp.xml"
             line="17"/>
     </issue>
 

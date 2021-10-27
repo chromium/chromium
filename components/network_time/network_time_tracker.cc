@@ -414,7 +414,7 @@ void NetworkTimeTracker::CheckTime() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   base::TimeDelta interval = kCheckTimeInterval.Get();
-  if (interval < base::TimeDelta()) {
+  if (interval.is_negative()) {
     interval = kCheckTimeInterval.default_value;
   }
 
@@ -582,7 +582,7 @@ void NetworkTimeTracker::RecordClockSkewHistograms(
                           system_clock_skew);
     LOCAL_HISTOGRAM_ENUMERATION("NetworkTimeTracker.ClockSkew.Range.Positive",
                                 DetermineClockSkewRange(system_clock_skew));
-  } else if (system_clock_skew < base::TimeDelta()) {
+  } else if (system_clock_skew.is_negative()) {
     base::TimeDelta magnitude = system_clock_skew.magnitude();
     LOCAL_HISTOGRAM_TIMES("NetworkTimeTracker.ClockSkew.Magnitude.Negative",
                           magnitude);

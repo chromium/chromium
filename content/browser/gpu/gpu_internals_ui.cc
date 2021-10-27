@@ -49,7 +49,7 @@
 #include "gpu/ipc/host/gpu_memory_buffer_support.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "skia/ext/skia_commit_hash.h"
-#include "third_party/angle/src/common/angle_version.h"
+#include "third_party/angle/src/common/angle_version_info.h"
 #include "third_party/skia/include/core/SkMilestone.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -823,7 +823,7 @@ std::unique_ptr<base::DictionaryValue> GpuMessageHandler::OnRequestClientInfo(
   dict->SetString("operating_system",
                   base::SysInfo::OperatingSystemName() + " " +
                   base::SysInfo::OperatingSystemVersion());
-  dict->SetString("angle_commit_id", ANGLE_COMMIT_HASH);
+  dict->SetString("angle_commit_id", angle::GetANGLECommitHash());
   dict->SetString("graphics_backend",
                   std::string("Skia/" STRINGIZE(SK_MILESTONE)
                               " " SKIA_COMMIT_HASH));

@@ -589,7 +589,7 @@ static bool CharacterNumberAtPositionCallback(QueryData* query_data,
       font_data->GetFontMetrics().FloatAscent() / scaling_factor;
 
   // Test the query point against the bounds of the entire fragment first.
-  if (!fragment.BoundingBox(baseline).Contains(data->position))
+  if (!fragment.BoundingBox(baseline).InclusiveContains(data->position))
     return false;
 
   AffineTransform fragment_transform = fragment.BuildFragmentTransform(
@@ -609,7 +609,7 @@ static bool CharacterNumberAtPositionCallback(QueryData* query_data,
 
     FloatRect extent = fragment_transform.MapRect(
         PhysicalGlyphExtents(data, *metrics, glyph_position));
-    if (extent.Contains(data->position)) {
+    if (extent.InclusiveContains(data->position)) {
       // Compute the character offset of the glyph within the text node.
       unsigned offset_in_box = fragment.character_offset -
                                query_data->text_box->Start() + fragment_offset;

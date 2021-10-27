@@ -73,7 +73,7 @@ const blink::InterestGroup::Ad* ValidateBidAndGetAd(
     return nullptr;
   }
 
-  if (bid.bid_duration < base::TimeDelta()) {
+  if (bid.bid_duration.is_negative()) {
     mojo::ReportBadMessage("Invalid bid duration");
     return nullptr;
   }

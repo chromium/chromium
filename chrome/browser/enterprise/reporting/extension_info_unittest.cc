@@ -176,7 +176,7 @@ TEST_F(ExtensionInfoTest, ExtensionBlocked) {
   EXPECT_EQ(0, info.extensions_size());
 }
 
-TEST_F(ExtensionInfoTest, ExtensionBlacklisted) {
+TEST_F(ExtensionInfoTest, ExtensionBlocklisted) {
   auto extension = BuildExtension();
   service()->BlocklistExtensionForTest(kId);
 

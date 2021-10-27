@@ -42,9 +42,12 @@ GURL CreateURLForNewTab(const GURL& original_url) {
 
 namespace lens {
 
-LensSidePanelController::LensSidePanelController(SidePanel* side_panel,
-                                                 BrowserView* browser_view)
-    : side_panel_(side_panel),
+LensSidePanelController::LensSidePanelController(
+    base::OnceClosure close_callback,
+    SidePanel* side_panel,
+    BrowserView* browser_view)
+    : close_callback_(std::move(close_callback)),
+      side_panel_(side_panel),
       browser_view_(browser_view),
       side_panel_view_(
           side_panel_->AddChildView(std::make_unique<lens::LensSidePanelView>(
@@ -91,6 +94,7 @@ void LensSidePanelController::Close() {
     side_panel_->SetVisible(false);
     base::RecordAction(base::UserMetricsAction("LensSidePanel.Hide"));
   }
+  std::move(close_callback_).Run();
 }
 
 void LensSidePanelController::LoadResultsInNewTab() {

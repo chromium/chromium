@@ -570,6 +570,10 @@ void AppListItemView::SilentlyRequestFocus() {
   RequestFocus();
 }
 
+void AppListItemView::EnsureSelected() {
+  grid_delegate_->SetSelectedView(/*view=*/this);
+}
+
 void AppListItemView::SetItemName(const std::u16string& display_name,
                                   const std::u16string& full_name) {
   const std::u16string folder_name_placeholder =

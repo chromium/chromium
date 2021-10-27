@@ -58,8 +58,8 @@ const base::FilePath::CharType kDatabasePath[] =
 // Version 5 adds k-anonymity tables and fields.
 const int kCurrentVersionNumber = 4;
 
-// Earliest version which can use a |kCurrentVersionNumber| database
-// without failing.
+// Earliest version of the code which can use a |kCurrentVersionNumber|
+// database without failing.
 const int kCompatibleVersionNumber = 4;
 
 // Latest version of the database that cannot be upgraded to
@@ -1487,6 +1487,12 @@ bool InterestGroupStorage::InitializeDB() {
     return false;
   }
 
+  DCHECK(sql::MetaTable::DoesTableExist(db_.get()));
+  DCHECK(db_->DoesTableExist("interest_groups"));
+  DCHECK(db_->DoesTableExist("join_history"));
+  DCHECK(db_->DoesTableExist("bid_history"));
+  DCHECK(db_->DoesTableExist("win_history"));
+  DCHECK(db_->DoesTableExist("kanon"));
   return true;
 }
 
@@ -1495,50 +1501,41 @@ bool InterestGroupStorage::InitializeSchema() {
   if (!db_)
     return false;
 
-  if (!db_->DoesTableExist("interest_groups")) {
-    return CreateV4Schema(*db_);
-  }
+  sql::MetaTable::RazeIfIncompatible(
+      db_.get(), /*lowest_supported_version=*/kDeprecatedVersionNumber + 1,
+      kCurrentVersionNumber);
 
   sql::MetaTable meta_table;
-
+  bool has_metatable = meta_table.DoesTableExist(db_.get());
+  if (!has_metatable && db_->DoesTableExist("interest_groups")) {
+    // Existing DB with no meta table. We have no idea what version the schema
+    // is so we should remove it and start fresh.
+    db_->Raze();
+  }
+  const bool new_db = !has_metatable;
   if (!meta_table.Init(db_.get(), kCurrentVersionNumber,
                        kCompatibleVersionNumber))
     return false;
-  int current_version = meta_table.GetVersionNumber();
 
-  if (current_version == kCurrentVersionNumber)
+  if (new_db)
+    return CreateV4Schema(*db_);
+
+  const int db_version = meta_table.GetVersionNumber();
+
+  if (db_version >= kCurrentVersionNumber) {
+    // Getting past RazeIfIncompatible implies that
+    // kCurrentVersionNumber >= meta_table.GetCompatibleVersionNumber
+    // So DB is either the current database version or a future version that is
+    // back-compatible with this version of Chrome.
     return true;
-
-  if (current_version <= kDeprecatedVersionNumber) {
-    // Note that this also razes the meta table, so it will need to be
-    // initialized again.
-    meta_table.Reset();
-    db_->Raze();
-    return meta_table.Init(db_.get(), kCurrentVersionNumber,
-                           kCompatibleVersionNumber) &&
-           CreateV4Schema(*db_);
   }
 
-  if (meta_table.GetCompatibleVersionNumber() > kCurrentVersionNumber) {
-    // In this case the database version is too new to be used. The DB will
-    // never work until Chrome is re-upgraded. Assume the user will continue
-    // using this Chrome version and raze the DB to get interest group storage
-    // working.
-    meta_table.Reset();
-    db_->Raze();
-    return meta_table.Init(db_.get(), kCurrentVersionNumber,
-                           kCompatibleVersionNumber) &&
-           CreateV4Schema(*db_);
-  }
-
-  DCHECK(sql::MetaTable::DoesTableExist(db_.get()));
-  DCHECK(db_->DoesTableExist("interest_groups"));
-  DCHECK(db_->DoesTableExist("join_history"));
-  DCHECK(db_->DoesTableExist("bid_history"));
-  DCHECK(db_->DoesTableExist("win_history"));
-
+  // Older version - should be migrated.
+  // db_version < kCurrentVersionNumber
+  // db_version > kDeprecatedVersionNumber
   // TODO(behamilton): handle migration.
-  return true;
+  NOTREACHED();  // There are currently no DB versions that can be migrated.
+  return false;
 }
 
 void InterestGroupStorage::JoinInterestGroup(

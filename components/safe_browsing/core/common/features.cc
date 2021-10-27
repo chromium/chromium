@@ -64,9 +64,6 @@ const base::Feature kFileAnalysisMimeTypeSniff{
 const base::Feature kFileTypePoliciesTag{"FileTypePoliciesTag",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kClientSideDetectionWithToken{
-    "SafeBrowsingCSDRequestWithToken", base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kDelayedWarnings{"SafeBrowsingDelayedWarnings",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -95,10 +92,6 @@ const base::Feature kPasswordProtectionForSignedInUsers {
       base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 };
-
-const base::Feature kPasswordProtectionWithToken{
-    "SafeBrowsingPasswordProtectionRequestWithToken",
-    base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kPromptEsbForDeepScanning{
     "SafeBrowsingPromptEsbForDeepScanning", base::FEATURE_ENABLED_BY_DEFAULT};
@@ -171,12 +164,10 @@ constexpr struct {
     {&kClientSideDetectionModelIsFlatBuffer, true},
     {&kClientSideDetectionModelVersion, true},
     {&kClientSideDetectionReferrerChain, true},
-    {&kClientSideDetectionWithToken, true},
     {&kDelayedWarnings, true},
     {&kFileTypePoliciesTag, true},
     {&kOmitNonUserGesturesFromReferrerChain, true},
     {&kPasswordProtectionForSignedInUsers, true},
-    {&kPasswordProtectionWithToken, true},
     {&kRealTimeUrlLookupReferrerChain, true},
     {&kRealTimeUrlLookupReferrerChainForEnterprise, true},
     {&kSafeBrowsingPageLoadToken, true},

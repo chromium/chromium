@@ -142,27 +142,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
       base::WeakPtr<CanvasResourceDispatcher>,
       bool is_origin_top_left);
 
-  // TODO(https://crbug.com/1260558): Remove these functions once all callers
-  // are gone.
-  static std::unique_ptr<CanvasResourceProvider> CreateBitmapProvider(
-      const IntSize& size,
-      cc::PaintFlags::FilterQuality filter_quality,
-      const CanvasResourceParams& params,
-      ShouldInitialize initialize_provider);
-  static std::unique_ptr<CanvasResourceProvider> CreateSharedImageProvider(
-      const IntSize& size,
-      cc::PaintFlags::FilterQuality filter_quality,
-      const CanvasResourceParams& params,
-      ShouldInitialize initialize_provider,
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
-      RasterMode raster_mode,
-      bool is_origin_top_left,
-      uint32_t shared_image_usage_flags);
-  static std::unique_ptr<CanvasResourceProvider> CreateWebGPUImageProvider(
-      const IntSize& size,
-      const CanvasResourceParams& params,
-      bool is_origin_top_left);
-
   // Use Snapshot() for capturing a frame that is intended to be displayed via
   // the compositor. Cases that are destined to be transferred via a
   // TransferableResource should call ProduceCanvasResource() instead.
@@ -182,7 +161,8 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // FlushCanvas and preserve recordings.
   sk_sp<cc::PaintRecord> FlushCanvasAndPreserveRecording();
   const SkImageInfo& GetSkImageInfo() const { return info_; }
-  CanvasResourceParams ColorParams() const;
+  SkSurfaceProps GetSkSurfaceProps() const;
+  gfx::ColorSpace GetColorSpace() const;
   void SetFilterQuality(cc::PaintFlags::FilterQuality quality) {
     filter_quality_ = quality;
   }
@@ -300,6 +280,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   cc::PaintFlags::FilterQuality FilterQuality() const {
     return filter_quality_;
   }
+
   scoped_refptr<StaticBitmapImage> SnapshotInternal(const ImageOrientation&);
   scoped_refptr<CanvasResource> GetImportedResource() const;
   sk_sp<cc::PaintRecord> FlushCanvasInternal(bool preserve_recording);

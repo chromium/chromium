@@ -431,11 +431,14 @@ bool FeaturePromoControllerViews::ShowPromoBubbleImpl(
       std::swap(create_params.buttons[0], create_params.buttons[1]);
   }
 
-  if (params.show_close_button) {
+  if (!params.allow_snooze) {
     create_params.has_close_button = true;
-    create_params.dismiss_callback = base::BindRepeating(
-        &FeaturePromoControllerViews::OnUserDismiss,
-        weak_ptr_factory_.GetWeakPtr(), *current_iph_feature_);
+    // Feature isn't present for some critical promos.
+    if (current_iph_feature_) {
+      create_params.dismiss_callback = base::BindRepeating(
+          &FeaturePromoControllerViews::OnUserDismiss,
+          weak_ptr_factory_.GetWeakPtr(), *current_iph_feature_);
+    }
   }
 
   if (CheckScreenReaderPromptAvailable()) {
@@ -464,9 +467,7 @@ bool FeaturePromoControllerViews::ShowPromoBubbleImpl(
     } else {
       // No prompt for a bubble that starts focused and where the anchor view
       // cannot receive focus, since neither the help bubble accelerator nor F6
-      // would do anything. However, in this case we require a close button of
-      // some variety.
-      DCHECK(params.allow_snooze || params.show_close_button);
+      // would do anything.
     }
   }
   const bool had_screen_reader_promo =

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -47,7 +47,8 @@ class OptimizeWebUiTest(unittest.TestCase):
 
   def _read_out_file(self, file_name):
     assert self._out_folder
-    return open(os.path.join(self._out_folder, file_name), 'r').read()
+    with open(os.path.join(self._out_folder, file_name), 'r') as f:
+      return f.read()
 
   def _run_optimize(self, input_args):
     # TODO(dbeam): make it possible to _run_optimize twice? Is that useful?
@@ -220,12 +221,12 @@ import './element_in_dir/element_in_dir.js';
     self.assertIn('lazy_element.js', depfile_d)
 
     manifest = json.loads(self._read_out_file('out_manifest.json'))
-    self.assertEquals(3, len(manifest['files']))
+    self.assertEqual(3, len(manifest['files']))
     self.assertTrue('lazy.rollup.js' in manifest['files'])
     self.assertTrue('ui.rollup.js' in manifest['files'])
     self.assertTrue('shared.rollup.js' in manifest['files'])
 
-    self.assertEquals(
+    self.assertEqual(
         os.path.relpath(self._out_folder, _CWD).replace('\\', '/'),
         os.path.relpath(manifest['base_dir'], _CWD).replace('\\', '/'))
 

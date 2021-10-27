@@ -8,6 +8,7 @@
 #include "ash/public/cpp/notification_utils.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
@@ -170,6 +171,12 @@ class SystemNotificationManager {
    */
   void HandleCopyEvent(int copy_id,
                        file_manager_private::CopyOrMoveProgressStatus& status);
+
+  /**
+   * Processes progress event from IOTaskController.
+   */
+  void HandleIOTaskProgress(
+      const file_manager::io_task::ProgressStatus& status);
 
   /**
    * Stores and updates the state of a device based on mount events for the top

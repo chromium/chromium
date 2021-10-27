@@ -466,12 +466,14 @@ void ScrollView::SetHasFocusIndicator(bool has_focus_indicator) {
   OnPropertyChanged(&draw_focus_indicator_, kPropertyEffectsPaint);
 }
 
-void ScrollView::AddScrollViewObserver(Observer* observer) {
-  observers_.AddObserver(observer);
+base::CallbackListSubscription ScrollView::AddContentsScrolledCallback(
+    ScrollViewCallback callback) {
+  return on_contents_scrolled_.Add(std::move(callback));
 }
 
-void ScrollView::RemoveScrollViewObserver(Observer* observer) {
-  observers_.RemoveObserver(observer);
+base::CallbackListSubscription ScrollView::AddContentsScrollEndedCallback(
+    ScrollViewCallback callback) {
+  return on_contents_scroll_ended_.Add(std::move(callback));
 }
 
 gfx::Size ScrollView::CalculatePreferredSize() const {
@@ -880,8 +882,7 @@ int ScrollView::GetScrollIncrement(ScrollBar* source,
 }
 
 void ScrollView::OnScrollEnded() {
-  for (auto& observer : observers_)
-    observer.OnContentsScrollEnded();
+  on_contents_scroll_ended_.Notify();
 }
 
 bool ScrollView::DoesViewportOrScrollViewHaveLayer() const {
@@ -1089,8 +1090,7 @@ void ScrollView::OnScrolled(const gfx::Vector2dF& offset) {
   UpdateScrollBarPositions();
   ScrollHeader();
 
-  for (auto& observer : observers_)
-    observer.OnContentsScrolled();
+  on_contents_scrolled_.Notify();
 
   NotifyAccessibilityEvent(ax::mojom::Event::kScrollPositionChanged,
                            /*send_native_event=*/true);

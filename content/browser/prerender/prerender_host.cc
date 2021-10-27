@@ -20,6 +20,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
+#include "content/browser/site_info.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/back_forward_cache.h"
@@ -35,29 +36,6 @@
 namespace content {
 
 namespace {
-void CollectAllChildren(RenderFrameHostImpl& rfh,
-                        std::vector<RenderFrameHostImpl*>* result) {
-  result->push_back(&rfh);
-  for (size_t i = 0; i < rfh.child_count(); ++i) {
-    if (RenderFrameHostImpl* speculative_frame_host =
-            rfh.child_at(i)->render_manager()->speculative_frame_host()) {
-      result->push_back(speculative_frame_host);
-    }
-    CollectAllChildren(*(rfh.child_at(i)->current_frame_host()), result);
-  }
-}
-
-// Iterate over RenderFrameHostImpl::children_ rather than FrameTree::Nodes()
-// because the |rfh| root node will not have a current_frame_host value. The
-// root node is set to null in MPArch prerender activation when generating a
-// StoredPage.
-// TODO(mcnee): Implement in terms of RenderFrameHost::ForEachRenderFrameHost.
-std::vector<RenderFrameHostImpl*> AllDescendantActiveRenderFrameHosts(
-    RenderFrameHostImpl& rfh) {
-  std::vector<RenderFrameHostImpl*> result;
-  CollectAllChildren(rfh, &result);
-  return result;
-}
 
 struct ActivateResult {
   ActivateResult(PrerenderHost::FinalStatus status,
@@ -197,6 +175,12 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
     // fine.
     DCHECK(!frame_tree_->root()->HasNavigation());
 
+    // Before the root's current_frame_host is cleared, collect the subframes of
+    // `frame_tree_` whose FrameTree will need to be updated.
+    FrameTree::NodeRange node_range = frame_tree_->Nodes();
+    std::vector<FrameTreeNode*> subframe_nodes(std::next(node_range.begin()),
+                                               node_range.end());
+
     // NOTE: TakePrerenderedPage() clears the current_frame_host value of
     // frame_tree_->root(). Do not add any code between here and
     // frame_tree_.reset() that calls into observer functions to minimize the
@@ -236,9 +220,9 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
       it.second->set_frame_tree_node(*(target_frame_tree->root()));
     }
 
-    // Iterate over root RenderFrameHost and all of its descendant frames and
-    // updates the associated frame tree. Note that subframe proxies don't need
-    // their FrameTrees independently updated, since their FrameTreeNodes don't
+    // Iterate over the root RenderFrameHost's subframes and update the
+    // associated frame tree. Note that subframe proxies don't need their
+    // FrameTrees independently updated, since their FrameTreeNodes don't
     // change, and FrameTree references in those FrameTreeNodes will be updated
     // through RenderFrameHosts.
     //
@@ -248,20 +232,22 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
     // This is because pending delete RenderFrameHosts can still receive and
     // process some messages while the RenderFrameHost FrameTree and
     // FrameTreeNode are stale.
-    for (auto* rfh : AllDescendantActiveRenderFrameHosts(
-             *(page->render_frame_host.get()))) {
-      rfh->frame_tree_node()->SetFrameTree(*target_frame_tree);
-      rfh->SetFrameTree(*target_frame_tree);
-      rfh->render_view_host()->SetFrameTree(*target_frame_tree);
-      // The visibility state of the prerendering page has not been updated by
-      // WebContentsImpl::UpdateVisibilityAndNotifyPageAndView(). So updates
-      // the visibility state using the PageVisibilityState of |web_contents_|.
-      rfh->render_view_host()->SetFrameTreeVisibility(
-          web_contents_.GetPageVisibilityState());
-      if (rfh->GetRenderWidgetHost()) {
-        rfh->GetRenderWidgetHost()->SetFrameTree(*target_frame_tree);
-      }
+    for (FrameTreeNode* subframe_node : subframe_nodes) {
+      subframe_node->SetFrameTree(*target_frame_tree);
     }
+
+    page->render_frame_host->ForEachRenderFrameHostIncludingSpeculative(
+        base::BindRepeating(
+            [](const WebContentsImpl& web_contents, RenderFrameHostImpl* rfh) {
+              // The visibility state of the prerendering page has not been
+              // updated by
+              // WebContentsImpl::UpdateVisibilityAndNotifyPageAndView(). So
+              // updates the visibility state using the PageVisibilityState of
+              // |web_contents|.
+              rfh->render_view_host()->SetFrameTreeVisibility(
+                  web_contents.GetPageVisibilityState());
+            },
+            std::cref(web_contents_)));
 
     frame_tree_->Shutdown();
     frame_tree_.reset();

@@ -452,7 +452,7 @@ bool VideoTrackAdapter::VideoFrameResolutionAdapter::MaybeDropFrame(
   const base::TimeDelta delta_ms = (frame.timestamp() - last_time_stamp_);
 
   // Check if the time since the last frame is completely off.
-  if (delta_ms < base::TimeDelta() || delta_ms > kMaxTimeInMsBetweenFrames) {
+  if (delta_ms.is_negative() || delta_ms > kMaxTimeInMsBetweenFrames) {
     // Reset |last_time_stamp_| and fps calculation.
     last_time_stamp_ = frame.timestamp();
     frame_rate_ = MediaStreamVideoSource::kDefaultFrameRate;

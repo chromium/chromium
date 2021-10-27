@@ -72,6 +72,7 @@ class CameraRollManagerImpl
 
   void OnPayloadFilesCreated(
       const proto::FetchCameraRollItemDataResponse& response,
+      CameraRollDownloadManager::CreatePayloadFilesResult result,
       absl::optional<secure_channel::mojom::PayloadFilesPtr> payload_files);
   void OnPayloadFileRegistered(const proto::CameraRollItemMetadata& metadata,
                                int64_t payload_id,

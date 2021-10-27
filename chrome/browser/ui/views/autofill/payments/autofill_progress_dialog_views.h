@@ -27,7 +27,8 @@ class AutofillProgressDialogViews : public AutofillProgressDialogView,
   ~AutofillProgressDialogViews() override;
 
   // AutofillProgressDialogView:
-  void Dismiss(bool show_confirmation_before_closing) override;
+  void Dismiss(bool show_confirmation_before_closing,
+               bool is_canceled_by_user) override;
 
   // DialogDelegate:
   void AddedToWidget() override;

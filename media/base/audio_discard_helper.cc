@@ -127,7 +127,7 @@ bool AudioDiscardHelper::ProcessBuffers(const DecoderBuffer& encoded_buffer,
   }
 
   // Handle front discard padding.
-  if (current_discard_padding.first > base::TimeDelta()) {
+  if (current_discard_padding.first.is_positive()) {
     const size_t decoded_frames = decoded_buffer->frame_count();
 
     // If a complete buffer discard is requested and there's no decoder delay,
@@ -191,7 +191,7 @@ bool AudioDiscardHelper::ProcessBuffers(const DecoderBuffer& encoded_buffer,
   }
 
   // Handle end discard padding.
-  if (current_discard_padding.second > base::TimeDelta()) {
+  if (current_discard_padding.second.is_positive()) {
     const size_t decoded_frames = decoded_buffer->frame_count();
     size_t end_frames_to_discard =
         TimeDeltaToFrames(current_discard_padding.second);

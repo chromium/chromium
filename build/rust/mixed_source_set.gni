@@ -1,0 +1,101 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/rust.gni")
+import("//build/rust/rust_source_set.gni")
+
+# Defines a source set containing both Rust and C++ code, with
+# bidirectional calls.
+#
+# Important: downstream Rust targets should NOT depend upon this
+# type of target. Instead they should append the suffix "_rs"
+# when adding this to their deps:
+#
+#   deps += [ "//example:foo_bar_rs" ]
+#
+# Downstream C++ targets should depend on this mixed_source_set directly.
+#
+# Parameters
+#
+#   sources
+#   configs
+#   deps
+#     Parameters for C++ source set. Same as in 'source_set' gn primitive
+#
+#   rs_sources
+#   rs_epoch
+#   rs_edition
+#   rs_configs
+#   rs_test_deps
+#   rs_skip_unit_tests
+#   rs_unit_test_target
+#   rs_crate_root
+#   rs_features
+#     Rust parameters. Same meaning as in 'rust_source_set' without the
+#     'rs_' prefix, i.e. rs_configs here means the same as 'configs' in
+#     rust_source_set.
+#
+# In the event that Rust is not enabled in the build, this will produce a
+# plain C/C++ source set.
+#
+# If Rust is enabled, a #define ENABLE_RUST will be applied to the C/C++
+# code.
+
+template("mixed_source_set") {
+  _target_name = target_name
+  if (enable_rust) {
+    rust_source_set("${_target_name}_rs") {
+      mutually_dependent_target = ":${_target_name}"
+      if (defined(invoker.rs_epoch)) {
+        epoch = invoker.rs_epoch
+      }
+      if (defined(invoker.rs_edition)) {
+        edition = invoker.rs_edition
+      }
+      if (defined(invoker.rs_configs)) {
+        configs = invoker.rs_configs
+      }
+      if (defined(invoker.rs_test_deps)) {
+        test_deps = invoker.rs_test_deps
+      }
+      if (defined(invoker.rs_sources)) {
+        sources = invoker.rs_sources
+      }
+      if (defined(invoker.rs_features)) {
+        features = invoker.rs_features
+      }
+      if (defined(invoker.deps)) {
+        deps = invoker.deps
+      }
+      if (defined(invoker.rs_crate_root)) {
+        crate_root = invoker.rs_crate_root
+      }
+      if (defined(invoker.rs_skip_unit_tests)) {
+        skip_unit_tests = invoker.rs_skip_unit_tests
+      }
+      if (defined(invoker.rs_unit_test_target)) {
+        unit_test_target = invoker.rs_unit_test_target
+      }
+    }
+  }
+
+  source_set(_target_name) {
+    forward_variables_from(invoker,
+                           [
+                             "sources",
+                             "configs",
+                             "deps",
+                           ])
+    if (!defined(deps)) {
+      deps = []
+    }
+    if (!defined(configs)) {
+      configs = []
+    }
+    if (enable_rust) {
+      configs += [ "//build/rust:rust_enabled" ]
+      deps += [ ":${_target_name}_rs_cpp_bindings" ]
+    }
+  }
+}

@@ -69,7 +69,7 @@ class SimpleSingleThreadTaskRunner : public SingleThreadTaskRunner {
   bool PostDelayedTask(const Location& from_here,
                        OnceClosure task,
                        base::TimeDelta delay) override {
-    if (delay > base::TimeDelta())
+    if (delay.is_positive())
       return false;
     AutoLock auto_lock(tasks_lock_);
     pending_tasks_.push(std::move(task));

@@ -5,9 +5,11 @@
 #include "content/browser/accessibility/accessibility_tools_utils_mac.h"
 
 #include "base/callback.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/strings/pattern.h"
 #include "base/strings/sys_string_conversions.h"
 #include "content/browser/accessibility/browser_accessibility_cocoa.h"
+#include "ui/accessibility/platform/ax_private_attributes_mac.h"
 
 // error: 'accessibilityAttributeNames' is deprecated: first deprecated in
 // macOS 10.10 - Use the NSAccessibility protocol methods instead (see
@@ -24,6 +26,23 @@ const char kChromeTitle[] = "Google Chrome";
 const char kChromiumTitle[] = "Chromium";
 const char kFirefoxTitle[] = "Firefox";
 const char kSafariTitle[] = "Safari";
+
+struct NSStringComparator {
+  bool operator()(NSString* lhs, NSString* rhs) const {
+    return [lhs compare:rhs] == NSOrderedAscending;
+  }
+};
+
+const auto kValidAttributes = base::MakeFixedFlatSet<NSString*>(
+    {NSAccessibilityAccessKeyAttribute, NSAccessibilityARIAAtomicAttribute,
+     NSAccessibilityARIABusyAttribute, NSAccessibilityARIACurrentAttribute,
+     NSAccessibilityARIALiveAttribute, NSAccessibilityARIARelevantAttribute,
+     NSAccessibilityAutocompleteValueAttribute},
+    NSStringComparator());
+
+bool IsValidAttribute(const std::string& attribute) {
+  return kValidAttributes.contains(base::SysUTF8ToNSString(attribute));
+}
 
 bool IsBrowserAccessibilityCocoa(const id node) {
   return [node isKindOfClass:[BrowserAccessibilityCocoa class]];

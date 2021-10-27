@@ -9,16 +9,10 @@
 
 #include <memory>
 
-#include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task/sequenced_task_runner.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "remoting/base/session_options.h"
-#include "remoting/codec/webrtc_video_encoder.h"
-#include "remoting/codec/webrtc_video_encoder_selector.h"
 #include "remoting/protocol/host_video_stats_dispatcher.h"
 #include "remoting/protocol/video_channel_state_observer.h"
 #include "remoting/protocol/video_stream.h"
@@ -53,8 +47,7 @@ class WebrtcVideoStream : public VideoStream,
 
   void Start(std::unique_ptr<webrtc::DesktopCapturer> desktop_capturer,
              WebrtcTransport* webrtc_transport,
-             WebrtcVideoEncoderFactory* video_encoder_factory,
-             scoped_refptr<base::SequencedTaskRunner> encode_task_runner);
+             WebrtcVideoEncoderFactory* video_encoder_factory);
 
   // VideoStream interface.
   void SetEventTimestampsSource(scoped_refptr<InputEventTimestampsSource>
@@ -91,28 +84,9 @@ class WebrtcVideoStream : public VideoStream,
   // Called by the |scheduler_|.
   void CaptureNextFrame();
 
-  // Callback passed to encoder_->Encode(). This just passes the parameters to
-  // OnFrameEncoded().
-  // TODO(crbug.com/1192865): Remove this (and OnEncoderCreated() below) when
-  // standard encoding pipeline is implemented - this object will no longer
-  // drive the encoder.
-  void EncodeCallback(WebrtcVideoEncoder::EncodeResult encode_result,
-                      std::unique_ptr<WebrtcVideoEncoder::EncodedFrame> frame);
-
-  void OnEncoderCreated(webrtc::VideoCodecType codec_type,
-                        const webrtc::SdpVideoFormat::Parameters& parameters);
-
-  // Helper functions to create software encoders that run on the encode thread.
-  std::unique_ptr<WebrtcVideoEncoder> CreateVP8Encoder();
-  std::unique_ptr<WebrtcVideoEncoder> CreateVP9Encoder(bool lossless_color);
-
   // Capturer used to capture the screen.
   std::unique_ptr<webrtc::DesktopCapturer> capturer_;
 
-  // Task runner used by software encoders.
-  scoped_refptr<base::SequencedTaskRunner> encode_task_runner_;
-  // Used to encode captured frames.
-  std::unique_ptr<WebrtcVideoEncoder> encoder_;
   // Used to send captured frames to the encoder.
   rtc::scoped_refptr<WebrtcVideoTrackSource> video_track_source_;
 
@@ -131,22 +105,9 @@ class WebrtcVideoStream : public VideoStream,
   webrtc::DesktopVector frame_dpi_;
   Observer* observer_ = nullptr;
 
-  WebrtcVideoEncoderSelector encoder_selector_;
-
   base::ThreadChecker thread_checker_;
 
   const SessionOptions session_options_;
-
-  // Settings that are received from video-control messages. These are stored
-  // here in case a message is received before the encoder is created.
-  // Lossless-color is not stored here because, for VP9 encoder, WebRTC handles
-  // it via an SDP codec parameter, "profile-id=1". Changing it requires a
-  // new SDP offer/answer exchange, and therefore it cannot be changed directly
-  // via video-control message.
-  bool lossless_encode_ = false;
-
-  // Flag set when SDP is renegotiated and a new codec needs to be used.
-  bool recreate_encoder_ = false;
 
   base::WeakPtrFactory<WebrtcVideoStream> weak_factory_{this};
 };

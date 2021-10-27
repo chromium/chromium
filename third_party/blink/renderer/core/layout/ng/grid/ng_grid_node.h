@@ -27,7 +27,7 @@ class CORE_EXPORT NGGridNode final : public NGBlockNode {
       const NGGridPlacement& grid_placement,
       const GridItems& grid_items,
       wtf_size_t column_auto_repetitions,
-      wtf_size_t row_auto_repititions) const;
+      wtf_size_t row_auto_repetitions) const;
 };
 
 template <>

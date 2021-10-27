@@ -138,6 +138,8 @@ class KSAdminApp : public App {
   bool HasSwitch(const std::string& arg) const;
   std::string SwitchValue(const std::string& arg) const;
 
+  NSDictionary<NSString*, KSTicket*>* LoadTicketStore();
+
   const std::map<std::string, std::string> switches_;
   scoped_refptr<UpdateServiceProxy> service_proxy_;
 };
@@ -261,9 +263,38 @@ void KSAdminApp::Delete() {
   Shutdown(1);
 }
 
+NSDictionary<NSString*, KSTicket*>* KSAdminApp::LoadTicketStore() {
+  return [KSTicketStore
+      readStoreWithPath:base::SysUTF8ToNSString(
+                            GetKeystoneFolderPath(Scope())
+                                ->Append(FILE_PATH_LITERAL("TicketStore"))
+                                .Append(
+                                    FILE_PATH_LITERAL("Keystone.ticketstore"))
+                                .AsUTF8Unsafe())];
+}
+
 void KSAdminApp::PrintTag() {
-  // TODO(crbug.com/1250524): Implement.
-  Shutdown(1);
+  // TODO(crbug.com/1250524): Print tag pointed by matching ticket in Chromium
+  // Updater if such ticket exists, and suppress printing the legacy tag.
+  std::string app_id = SwitchValue(kCommandProductId);
+  if (app_id.empty()) {
+    PrintUsage("productid missing");
+    return;
+  }
+
+  int exit_code = 0;
+  @autoreleasepool {
+    NSDictionary<NSString*, KSTicket*>* store = LoadTicketStore();
+    KSTicket* ticket =
+        [store objectForKey:[base::SysUTF8ToNSString(app_id) lowercaseString]];
+    if (ticket) {
+      printf("%s\n", base::SysNSStringToUTF8([ticket determineTag]).c_str());
+    } else {
+      printf("No ticket for %s\n", app_id.c_str());
+      exit_code = 1;
+    }
+  }
+  Shutdown(exit_code);
 }
 
 void KSAdminApp::PrintVersion() {
@@ -275,15 +306,9 @@ void KSAdminApp::PrintTickets() {
   // TODO(crbug.com/1250524): Print tickets owned by Chromium Updater. If there
   // are any, suppress printing any legacy tickets.
   @autoreleasepool {
-    const NSDictionary* store = [KSTicketStore
-        readStoreWithPath:base::SysUTF8ToNSString(
-                              GetKeystoneFolderPath(Scope())
-                                  ->Append(FILE_PATH_LITERAL("TicketStore"))
-                                  .Append(
-                                      FILE_PATH_LITERAL("Keystone.ticketstore"))
-                                  .AsUTF8Unsafe())];
+    NSDictionary<NSString*, KSTicket*>* store = LoadTicketStore();
     if (store.count > 0) {
-      for (const id key in store) {
+      for (NSString* key in store) {
         printf("%s\n",
                base::SysNSStringToUTF8([store[key] description]).c_str());
       }

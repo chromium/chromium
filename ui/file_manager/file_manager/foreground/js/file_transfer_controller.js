@@ -605,6 +605,14 @@ export class FileTransferController {
                 if (entries.length === 0) {
                   return Promise.reject('ABORT');
                 }
+                // Send only the copy operation to IO Queue in the C++.
+                if (window.isSWA && !toMove) {
+                  chrome.fileManagerPrivate.startIOTask(
+                      toMove ? chrome.fileManagerPrivate.IOTaskType.MOVE :
+                               chrome.fileManagerPrivate.IOTaskType.COPY,
+                      entries, {destinationFolder: destinationEntry});
+                  return;
+                }
 
                 this.pendingTaskIds.push(taskId);
                 const item = new ProgressCenterItem();

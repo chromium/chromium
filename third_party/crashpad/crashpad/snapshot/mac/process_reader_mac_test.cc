@@ -504,8 +504,7 @@ class ProcessReaderThreadedChild final : public MachMultiprocess {
     // Write an entry for everything in the thread pool.
     for (size_t thread_index = 0; thread_index < thread_count_;
          ++thread_index) {
-      uint64_t thread_id =
-          thread_pool.GetThreadInfo(thread_index, &expectation);
+      thread_id = thread_pool.GetThreadInfo(thread_index, &expectation);
 
       CheckedWriteFile(write_handle, &thread_id, sizeof(thread_id));
       CheckedWriteFile(write_handle,

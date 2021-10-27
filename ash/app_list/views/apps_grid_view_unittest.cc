@@ -2742,6 +2742,63 @@ TEST_P(AppsGridViewDragTest, FocusOfDraggedViewAfterDrag) {
   }
 }
 
+// Verify the dragged item's focus after the item is dragged from a folder with
+// two items.
+TEST_P(AppsGridViewDragTest, FocusOfReparentedDragViewWithFolderDeleted) {
+  // Creates a folder item with two items.
+  model_->CreateAndPopulateFolderWithApps(2);
+  test_api_->Update();
+  EXPECT_EQ(1, apps_grid_view_->view_model()->view_size());
+
+  // Open the folder.
+  test_api_->PressItemAt(0);
+
+  // Drag the first folder child out of the folder.
+  InitiateDragForItemAtCurrentPageAt(AppsGridView::MOUSE, 0, 0,
+                                     folder_apps_grid_view());
+  gfx::Point point_outside_folder =
+      app_list_folder_view()->GetLocalBounds().bottom_center() +
+      gfx::Vector2d(10, 10);
+  UpdateDrag(AppsGridView::MOUSE, point_outside_folder, folder_apps_grid_view(),
+             /*steps=*/10);
+
+  // Fire the reparent timer that should be started when an item is dragged out
+  // of folder bounds.
+  ASSERT_TRUE(folder_apps_grid_view()->FireFolderItemReparentTimerForTest());
+
+  // Drop the item in (0,1) spot is the root apps grid. The spot is expected to
+  // be empty.
+  gfx::Point drop_point = GetItemRectOnCurrentPageAt(0, 1).CenterPoint();
+  views::View::ConvertPointToTarget(apps_grid_view_, folder_apps_grid_view(),
+                                    &drop_point);
+  UpdateDrag(AppsGridView::MOUSE, drop_point, folder_apps_grid_view(),
+             /*steps=*/5);
+  EndDrag(folder_apps_grid_view(), /*cancel=*/false);
+
+  // The folder should be deleted. The first item should be Item 1 while the
+  // second item should be Item 2.
+  EXPECT_EQ(2, apps_grid_view_->view_model()->view_size());
+  AppListItemView* const dragged_view = GetItemViewInTopLevelGrid(1);
+  EXPECT_EQ("Item 0", dragged_view->item()->id());
+  EXPECT_EQ("Item 1", GetItemViewInTopLevelGrid(0)->item()->id());
+
+  if (features::IsProductivityLauncherEnabled()) {
+    // ProductivityLauncher keeps focus on the search box after drags.
+    EXPECT_TRUE(search_box_view_->search_box()->HasFocus());
+    EXPECT_FALSE(dragged_view->HasFocus());
+  } else {
+    // The dragged item is focused but is not selected.
+    EXPECT_TRUE(dragged_view->HasFocus());
+    EXPECT_FALSE(apps_grid_view_->has_selected_view());
+
+    // Press the arrow key. The dragged item is selected now.
+    PressAndReleaseKey(ui::VKEY_RIGHT);
+    EXPECT_TRUE(dragged_view->HasFocus());
+    EXPECT_TRUE(apps_grid_view_->has_selected_view());
+    EXPECT_EQ(dragged_view, apps_grid_view_->selected_view());
+  }
+}
+
 TEST_P(AppsGridViewDragTest, FocusOfReparentedDragViewAfterDrag) {
   // Creates a folder item - the folder size was chosen arbitrarily.
   model_->CreateAndPopulateFolderWithApps(5);

@@ -123,7 +123,7 @@ TEST_F(TotalAnimationThroughputReporterTest, DISABLED_MultipleAnimations) {
   // runs slwer.
 #if !defined(SANITIZER_ENABLED)
   auto sixty_four_ms_from_start = DeltaFromNowToTarget(start, 64);
-  ASSERT_TRUE(sixty_four_ms_from_start > base::TimeDelta());
+  ASSERT_TRUE(sixty_four_ms_from_start.is_positive());
   Advance(sixty_four_ms_from_start);
   EXPECT_FALSE(checker.reported());
 #endif
@@ -202,7 +202,7 @@ TEST_F(TotalAnimationThroughputReporterTest,
 #if !defined(SANITIZER_ENABLED)
   // The animation time is extended by 32ms.
   auto sixty_four_ms_from_start = DeltaFromNowToTarget(start, 64);
-  ASSERT_TRUE(sixty_four_ms_from_start > base::TimeDelta());
+  ASSERT_TRUE(sixty_four_ms_from_start.is_positive());
   Advance(sixty_four_ms_from_start);
   EXPECT_FALSE(checker.reported());
 #endif

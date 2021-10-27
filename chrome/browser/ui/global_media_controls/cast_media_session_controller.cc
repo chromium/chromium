@@ -110,7 +110,7 @@ void CastMediaSessionController::FlushForTesting() {
 
 base::TimeDelta CastMediaSessionController::PutWithinBounds(
     const base::TimeDelta& time) {
-  if (time < base::TimeDelta() || !media_status_)
+  if (time.is_negative() || !media_status_)
     return base::TimeDelta();
   if (time > media_status_->duration)
     return media_status_->duration;

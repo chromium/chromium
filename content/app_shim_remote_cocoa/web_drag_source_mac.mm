@@ -89,7 +89,7 @@ using content::DropData;
   return _dragOperationMask;
 }
 
-- (void)lazyWriteToPasteboard:(NSPasteboard*)pboard forType:(NSString*)type {
+- (void)pasteboard:(NSPasteboard*)pboard provideDataForType:(NSString*)type {
   // NSHTMLPboardType requires the character set to be declared. Otherwise, it
   // assumes US-ASCII. Awesome.
   static constexpr char16_t kHtmlHeader[] =
@@ -234,9 +234,15 @@ using content::DropData;
       operation,
       gfx::PointF(localPoint.x, viewFrame.size.height - localPoint.y),
       gfx::PointF(screenPoint.x, screenFrame.size.height - screenPoint.y));
+}
 
-  // Make sure the pasteboard owner isn't us.
-  [_pasteboard declareTypes:@[] owner:nil];
+- (void)clearPasteboard {
+  // Since all drag operations share the same pasteboard, we only want to
+  // reset the pasteboard if we were the last to use it
+  if ([_pasteboard changeCount] == _changeCount) {
+    // Make sure the pasteboard owner isn't us.
+    [_pasteboard declareTypes:@[] owner:nil];
+  }
 }
 
 - (NSString*)dragPromisedFileTo:(NSString*)path {
@@ -263,15 +269,15 @@ using content::DropData;
 
   DCHECK(_pasteboard.get());
 
-  [_pasteboard declareTypes:@[ ui::kChromeDragDummyPboardType ]
-                      owner:_contentsView];
+  _changeCount = [_pasteboard declareTypes:@[ ui::kChromeDragDummyPboardType ]
+                                     owner:self];
 
   // URL (and title).
   if (_dropData->url.is_valid()) {
     [_pasteboard addTypes:@[
       NSURLPboardType, ui::kUTTypeURLName, base::mac::CFToNSCast(kUTTypeURL)
     ]
-                    owner:_contentsView];
+                    owner:self];
   }
 
   // MIME type.
@@ -342,12 +348,12 @@ using content::DropData;
       //   dropped. <http://crbug.com/284942> <rdar://14943881>
       //   <http://openradar.me/14943881>
       NSArray* fileUTIList = @[ base::mac::CFToNSCast(_fileUTI.get()) ];
-      [_pasteboard addTypes:@[ NSFilesPromisePboardType ] owner:_contentsView];
+      [_pasteboard addTypes:@[ NSFilesPromisePboardType ] owner:self];
       [_pasteboard setPropertyList:fileUTIList
                            forType:NSFilesPromisePboardType];
 
       if (!_dropData->file_contents.empty())
-        [_pasteboard addTypes:fileUTIList owner:_contentsView];
+        [_pasteboard addTypes:fileUTIList owner:self];
     }
   }
 
@@ -365,22 +371,19 @@ using content::DropData;
                       UTTypeConformsTo(_fileUTI.get(), kUTTypeImage);
   if (hasHTMLData) {
     if (hasImageData) {
-      [_pasteboard addTypes:@[ ui::kChromeDragImageHTMLPboardType ]
-                      owner:_contentsView];
+      [_pasteboard addTypes:@[ ui::kChromeDragImageHTMLPboardType ] owner:self];
     } else {
-      [_pasteboard addTypes:@[ NSHTMLPboardType ] owner:_contentsView];
+      [_pasteboard addTypes:@[ NSHTMLPboardType ] owner:self];
     }
   }
 
   // Plain text.
   if (_dropData->text && !_dropData->text->empty()) {
-    [_pasteboard addTypes:@[ NSStringPboardType ]
-                    owner:_contentsView];
+    [_pasteboard addTypes:@[ NSStringPboardType ] owner:self];
   }
 
   if (!_dropData->custom_data.empty()) {
-    [_pasteboard addTypes:@[ ui::kWebCustomDataPboardType ]
-                    owner:_contentsView];
+    [_pasteboard addTypes:@[ ui::kWebCustomDataPboardType ] owner:self];
   }
 }
 
@@ -391,6 +394,11 @@ using content::DropData;
   // Default to returning a generic image.
   return content::GetContentClient()->GetNativeImageNamed(
       IDR_DEFAULT_FAVICON).ToNSImage();
+}
+
+- (void)dealloc {
+  [self clearPasteboard];
+  [super dealloc];
 }
 
 @end  // @implementation WebDragSource (Private)

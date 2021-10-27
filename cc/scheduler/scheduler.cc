@@ -380,8 +380,7 @@ bool Scheduler::OnBeginFrameDerivedImpl(const viz::BeginFrameArgs& args) {
   // zero then let |client_| know about the new interval for animations. In
   // theory the interval should always be bigger than zero but the value is
   // provided by APIs outside our control.
-  if (args.interval != last_frame_interval_ &&
-      args.interval > base::TimeDelta()) {
+  if (args.interval != last_frame_interval_ && args.interval.is_positive()) {
     last_frame_interval_ = args.interval;
     client_->FrameIntervalUpdated(last_frame_interval_);
   }

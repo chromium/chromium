@@ -530,12 +530,12 @@ HostCache::GetLessStaleMoreSecureResult(
     DCHECK(result1->first.secure != result2->first.secure);
     // If the results have the same number of network changes, prefer a
     // non-expired result.
-    if (staleness1.expired_by < base::TimeDelta() &&
+    if (staleness1.expired_by.is_negative() &&
         staleness2.expired_by >= base::TimeDelta()) {
       return result1;
     }
     if (staleness1.expired_by >= base::TimeDelta() &&
-        staleness2.expired_by < base::TimeDelta()) {
+        staleness2.expired_by.is_negative()) {
       return result2;
     }
     // Both results are equally stale, so prefer a secure result.

@@ -88,6 +88,12 @@ enum class SystemAppType {
   // contact: skuhne@google.com
   OS_URL_HANDLER = 21,
 
+  // FIRMWARE UPDATE App is SWA that lets users update all their peripheral
+  // firmwares in one place.
+  // You can find information about this SWA at: http://go/fwupd-app.
+  // Source: //ash/webui/firmware_update/
+  // Contact: cros-peripherals@google.com
+  FIRMWARE_UPDATE = 22,
   // When adding a new System App, remember to:
   //
   // 1. Add a corresponding histogram suffix in WebAppSystemAppInternalName
@@ -123,7 +129,7 @@ enum class SystemAppType {
   //
   // 7. Have one of System Web App Platform owners review the CL.
   //    See: //chromeos/components/system_apps/PLATFORM_OWNERS
-  kMaxValue = OS_URL_HANDLER,
+  kMaxValue = FIRMWARE_UPDATE,
 };
 
 }  // namespace web_app

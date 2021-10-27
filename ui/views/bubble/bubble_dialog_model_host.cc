@@ -15,6 +15,7 @@
 #include "ui/base/models/dialog_model.h"
 #include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/border.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/label_button_border.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -31,21 +32,62 @@
 namespace views {
 namespace {
 
-DialogContentType FieldTypeToContentType(ui::DialogModelField::Type type) {
-  switch (type) {
+BubbleDialogModelHost::FieldType GetFieldTypeForField(
+    ui::DialogModelField* field,
+    base::PassKey<ui::DialogModelHost> pass_key) {
+  DCHECK(field);
+  switch (field->type(pass_key)) {
     case ui::DialogModelField::kButton:
-      return DialogContentType::kControl;
+      return BubbleDialogModelHost::FieldType::kControl;
     case ui::DialogModelField::kBodyText:
-      return DialogContentType::kText;
+      return BubbleDialogModelHost::FieldType::kText;
     case ui::DialogModelField::kCheckbox:
-      return DialogContentType::kControl;
+      return BubbleDialogModelHost::FieldType::kControl;
     case ui::DialogModelField::kTextfield:
-      return DialogContentType::kControl;
+      return BubbleDialogModelHost::FieldType::kControl;
     case ui::DialogModelField::kCombobox:
-      return DialogContentType::kControl;
+      return BubbleDialogModelHost::FieldType::kControl;
+    case ui::DialogModelField::kCustom:
+      return static_cast<BubbleDialogModelHost::CustomViewFactory*>(
+                 field->AsCustomField(pass_key)->factory(pass_key))
+          ->GetFieldType();
   }
-  NOTREACHED();
-  return DialogContentType::kControl;
+}
+
+int GetDialogTopMargins(LayoutProvider* layout_provider,
+                        ui::DialogModelField* first_field,
+                        base::PassKey<ui::DialogModelHost> pass_key) {
+  const BubbleDialogModelHost::FieldType field_type =
+      first_field ? GetFieldTypeForField(first_field, pass_key)
+                  : BubbleDialogModelHost::FieldType::kControl;
+  switch (field_type) {
+    case BubbleDialogModelHost::FieldType::kMenuItem:
+      return 0;
+    case BubbleDialogModelHost::FieldType::kControl:
+      return layout_provider->GetDistanceMetric(
+          DISTANCE_DIALOG_CONTENT_MARGIN_TOP_CONTROL);
+    case BubbleDialogModelHost::FieldType::kText:
+      return layout_provider->GetDistanceMetric(
+          DISTANCE_DIALOG_CONTENT_MARGIN_TOP_TEXT);
+  }
+}
+
+int GetDialogBottomMargins(LayoutProvider* layout_provider,
+                           ui::DialogModelField* last_field,
+                           base::PassKey<ui::DialogModelHost> pass_key) {
+  const BubbleDialogModelHost::FieldType field_type =
+      last_field ? GetFieldTypeForField(last_field, pass_key)
+                 : BubbleDialogModelHost::FieldType::kControl;
+  switch (field_type) {
+    case BubbleDialogModelHost::FieldType::kMenuItem:
+      return 0;
+    case BubbleDialogModelHost::FieldType::kControl:
+      return layout_provider->GetDistanceMetric(
+          DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_CONTROL);
+    case BubbleDialogModelHost::FieldType::kText:
+      return layout_provider->GetDistanceMetric(
+          DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_TEXT);
+  }
 }
 
 // A subclass of Checkbox that allows using an external Label/StyledLabel view
@@ -267,6 +309,9 @@ BubbleDialogModelHost::BubbleDialogModelHost(
 
   set_close_on_deactivate(model_->close_on_deactivate(GetPassKey()));
 
+  // TODO(pbos): Reconsider this for dialogs which have no actions (look like
+  // menus). This is probably too wide for the TabGroupEditorBubbleView which is
+  // currently being converted.
   set_fixed_width(LayoutProvider::Get()->GetDistanceMetric(
       anchor_view ? DISTANCE_BUBBLE_PREFERRED_WIDTH
                   : DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
@@ -364,6 +409,15 @@ void BubbleDialogModelHost::OnFieldAdded(ui::DialogModelField* field) {
     case ui::DialogModelField::kTextfield:
       AddOrUpdateTextfield(field->AsTextfield(GetPassKey()));
       break;
+    case ui::DialogModelField::kCustom:
+      std::unique_ptr<View> view =
+          static_cast<CustomViewFactory*>(
+              field->AsCustomField(GetPassKey())->factory(GetPassKey()))
+              ->CreateView();
+      view->SetID(field->unique_id(GetPassKey()));
+      DialogModelHostField info{field, view.get(), nullptr};
+      AddDialogModelHostField(std::move(view), info);
+      break;
   }
   UpdateSpacingAndMargins();
 }
@@ -378,38 +432,12 @@ void BubbleDialogModelHost::AddInitialFields() {
 }
 
 void BubbleDialogModelHost::UpdateSpacingAndMargins() {
-  const DialogContentType first_field_content_type =
-      contents_view_->children().empty()
-          ? DialogContentType::kControl
-          : FieldTypeToContentType(
-                FindDialogModelHostField(contents_view_->children().front())
-                    .dialog_model_field->type(GetPassKey()));
-  DialogContentType last_field_content_type = first_field_content_type;
-  bool first_row = true;
-  for (View* const view : contents_view_->children()) {
-    const DialogContentType field_content_type = FieldTypeToContentType(
-        FindDialogModelHostField(view).dialog_model_field->type(GetPassKey()));
+  LayoutProvider* const layout_provider = LayoutProvider::Get();
+  gfx::Insets dialog_side_insets =
+      layout_provider->GetInsetsMetric(InsetsMetric::INSETS_DIALOG);
+  dialog_side_insets.set_top(0);
+  dialog_side_insets.set_bottom(0);
 
-    if (first_row) {
-      first_row = false;
-      view->SetProperty(kMarginsKey, gfx::Insets());
-    } else {
-      int padding_margin = LayoutProvider::Get()->GetDistanceMetric(
-          DISTANCE_UNRELATED_CONTROL_VERTICAL);
-      if (last_field_content_type == DialogContentType::kControl &&
-          field_content_type == DialogContentType::kControl) {
-        // TODO(pbos): Move DISTANCE_CONTROL_LIST_VERTICAL to
-        // views::LayoutProvider and replace "12" here.
-        padding_margin = 12;
-      }
-      view->SetProperty(kMarginsKey, gfx::Insets(padding_margin, 0, 0, 0));
-    }
-    last_field_content_type = field_content_type;
-  }
-  contents_view_->InvalidateLayout();
-
-  gfx::Insets margins = LayoutProvider::Get()->GetDialogInsetsForContentType(
-      first_field_content_type, last_field_content_type);
   if (!model_->icon(GetPassKey()).IsEmpty()) {
     // If we have a window icon, inset margins additionally to align with
     // title label.
@@ -417,11 +445,48 @@ void BubbleDialogModelHost::UpdateSpacingAndMargins() {
     // the left side of the dialog. This style is from
     // ExtensionUninstallDialogView as part of refactoring it to use
     // DialogModel.
-    margins.set_left(
-        margins.left() + model_->icon(GetPassKey()).Size().width() +
-        LayoutProvider::Get()->GetInsetsMetric(INSETS_DIALOG_TITLE).left());
+    dialog_side_insets.set_left(
+        dialog_side_insets.left() + model_->icon(GetPassKey()).Size().width() +
+        layout_provider->GetInsetsMetric(INSETS_DIALOG_TITLE).left());
   }
-  set_margins(margins);
+
+  ui::DialogModelField* first_field = nullptr;
+  ui::DialogModelField* last_field = nullptr;
+  for (View* const view : contents_view_->children()) {
+    ui::DialogModelField* const field =
+        FindDialogModelHostField(view).dialog_model_field;
+
+    FieldType field_type = GetFieldTypeForField(field, GetPassKey());
+
+    gfx::Insets side_insets =
+        field_type == FieldType::kMenuItem ? gfx::Insets() : dialog_side_insets;
+
+    if (!first_field) {
+      first_field = field;
+      view->SetProperty(kMarginsKey, side_insets);
+    } else {
+      int padding_margin = field_type == FieldType::kMenuItem
+                               ? 0
+                               : layout_provider->GetDistanceMetric(
+                                     DISTANCE_UNRELATED_CONTROL_VERTICAL);
+      if (last_field &&
+          GetFieldTypeForField(last_field, GetPassKey()) ==
+              FieldType::kControl &&
+          field_type == FieldType::kControl) {
+        // TODO(pbos): Move DISTANCE_CONTROL_LIST_VERTICAL to
+        // views::LayoutProvider and replace "12" here.
+        padding_margin = 12;
+      }
+      side_insets.set_top(padding_margin);
+      view->SetProperty(kMarginsKey, side_insets);
+    }
+    last_field = field;
+  }
+  contents_view_->InvalidateLayout();
+
+  set_margins(gfx::Insets(
+      GetDialogTopMargins(layout_provider, first_field, GetPassKey()), 0,
+      GetDialogBottomMargins(layout_provider, last_field, GetPassKey()), 0));
 }
 
 void BubbleDialogModelHost::OnWindowClosing() {
@@ -511,7 +576,7 @@ void BubbleDialogModelHost::AddOrUpdateTextfield(
   // add a name so that the screen reader knows what to announce. The
   // placeholder name may need to be pushed into DialogModel, unless we can tie
   // this to the label. Maybe SetAssociatedField on Textfield is sufficient?
-  textfield->SetProperty(views::kSkipAccessibilityPaintChecks, true);
+  textfield->SetProperty(kSkipAccessibilityPaintChecks, true);
   textfield->SetAccessibleName(
       model_field->accessible_name(GetPassKey()).empty()
           ? model_field->label(GetPassKey())

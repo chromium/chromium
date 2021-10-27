@@ -1279,7 +1279,7 @@ bool GvrSchedulerDelegate::SubmitFrameCommon(int16_t frame_index,
 
   // The JavaScript wait time is supplied externally and not trustworthy. Clamp
   // to a reasonable range to avoid math errors.
-  if (time_waited < base::TimeDelta())
+  if (time_waited.is_negative())
     time_waited = base::TimeDelta();
   if (time_waited > base::Seconds(1))
     time_waited = base::Seconds(1);

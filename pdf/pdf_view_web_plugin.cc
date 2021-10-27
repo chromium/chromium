@@ -847,6 +847,9 @@ void PdfViewWebPlugin::NotifyFindTickmarks(
   if (!find_remote_) {
     mojo::PendingRemote<pdf::mojom::PdfFindInPage> pending_find_remote;
     service->GetPdfFindInPage(&pending_find_remote);
+    if (!pending_find_remote)
+      return;
+
     find_remote_.Bind(std::move(pending_find_remote));
   }
   find_remote_->SetTickmarks(tickmarks);

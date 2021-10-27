@@ -549,7 +549,7 @@ bool GpuWatchdogThread::WatchedThreadNeedsMoreThreadTime(
   if (no_gpu_hang_detected ||
       count_of_more_gpu_thread_time_allowed_ >=
           kMaxCountOfMoreGpuThreadTimeAllowed ||
-      thread_time_elapsed < base::TimeDelta() /* bogus data */ ||
+      thread_time_elapsed.is_negative() /* bogus data */ ||
       remaining_watched_thread_ticks_ <= base::TimeDelta()) {
     // Reset the remaining thread ticks.
     remaining_watched_thread_ticks_ = watchdog_timeout_;

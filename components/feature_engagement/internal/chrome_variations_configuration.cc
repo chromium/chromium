@@ -346,7 +346,13 @@ void ChromeVariationsConfiguration::ParseFeatureConfig(
   DVLOG(3) << "Parsing feature config for " << feature->name;
 
   std::map<std::string, std::string> params;
-  bool result = base::GetFieldTrialParamsByFeature(*feature, &params);
+
+  // Check the use client configuration flag; if enabled, client configuration
+  // will be used and server configuration will be ignored.
+  bool use_client_config = base::FeatureList::IsEnabled(kUseClientConfigIPH);
+  bool result = !use_client_config &&
+                base::GetFieldTrialParamsByFeature(*feature, &params);
+
   // No |result| means that there was no server side configuration, or the
   // feature was disabled. The feature could be disabled either because it
   // is not configured to be base::FEATURE_ENABLED_BY_DEFAULT, or it has been

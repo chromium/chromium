@@ -372,7 +372,7 @@ void ClientSession::OnConnectionAuthenticated() {
 
   desktop_display_info_.Reset();
 
-  if (max_duration_ > base::TimeDelta()) {
+  if (max_duration_.is_positive()) {
     max_duration_timer_.Start(
         FROM_HERE, max_duration_,
         base::BindOnce(&ClientSession::DisconnectSession,

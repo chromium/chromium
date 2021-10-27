@@ -1,0 +1,37 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("browser") {
+  public = [ "key_rotation_launcher.h" ]
+
+  sources = [ "key_rotation_launcher.cc" ]
+
+  public_deps = [ "//base" ]
+
+  deps = [
+    "//chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands",
+    "//components/enterprise",
+    "//components/policy/core/common",
+    "//services/network/public/cpp",
+    "//services/network/public/cpp:cpp_base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "key_rotation_launcher_unittest.cc" ]
+
+  public_deps = [
+    ":browser",
+    "//base/test:test_support",
+    "//chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands",
+    "//chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands:test_support",
+    "//components/enterprise",
+    "//components/enterprise:test_support",
+    "//components/policy/core/common",
+    "//components/policy/core/common:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

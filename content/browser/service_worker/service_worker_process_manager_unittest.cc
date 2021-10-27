@@ -9,6 +9,7 @@
 
 #include "base/macros.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
+#include "content/browser/site_info.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/common/child_process_host.h"
@@ -64,7 +65,12 @@ class SiteInstanceRenderProcessHostFactory : public RenderProcessHostFactory {
 
 class ServiceWorkerProcessManagerTest : public testing::Test {
  public:
-  ServiceWorkerProcessManagerTest() {}
+  ServiceWorkerProcessManagerTest() = default;
+
+  ServiceWorkerProcessManagerTest(const ServiceWorkerProcessManagerTest&) =
+      delete;
+  ServiceWorkerProcessManagerTest& operator=(
+      const ServiceWorkerProcessManagerTest&) = delete;
 
   void SetUp() override {
     browser_context_ = std::make_unique<TestBrowserContext>();
@@ -101,9 +107,6 @@ class ServiceWorkerProcessManagerTest : public testing::Test {
   GURL script_url_;
   std::unique_ptr<SiteInstanceRenderProcessHostFactory>
       render_process_host_factory_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerProcessManagerTest);
 };
 
 TEST_F(ServiceWorkerProcessManagerTest,

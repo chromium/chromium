@@ -41,6 +41,9 @@ class ASH_EXPORT DesksTemplatesPresenter : desks_storage::DeskModelObserver {
   // Calls the DeskModel to delete the template with the provided uuid.
   void DeleteEntry(const std::string& template_uuid);
 
+  // Launches the desk template with 'template_uuid' as a new desk.
+  void LaunchDeskTemplate(const std::string& template_uuid);
+
   // desks_storage::DeskModelObserver:
   // TODO(sammiequon): Implement these once the model starts sending these
   // messages.
@@ -64,6 +67,11 @@ class ASH_EXPORT DesksTemplatesPresenter : desks_storage::DeskModelObserver {
   // Callback after deleting an entry. Will then call `GetAllEntries` to update
   // the UI with the most up to date list of templates.
   void OnDeleteEntry(desks_storage::DeskModel::DeleteEntryStatus status);
+
+  // Launches DeskTemplate after retrieval from storage.
+  void OnGetTemplateForDeskLaunch(
+      desks_storage::DeskModel::GetEntryByUuidStatus status,
+      std::unique_ptr<DeskTemplate> entry);
 
   // Pointer to the session which owns `this`.
   OverviewSession* const overview_session_;

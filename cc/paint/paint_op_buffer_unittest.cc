@@ -38,7 +38,6 @@
 #include "ui/gfx/geometry/test/geometry_util.h"
 
 using testing::_;
-using testing::Property;
 using testing::Mock;
 
 namespace cc {
@@ -47,40 +46,6 @@ namespace {
 // unit test.  This can also be used for deserialized op size safely in this
 // unit test suite as generally deserialized ops are smaller.
 static constexpr size_t kBufferBytesPerOp = 1000 + sizeof(LargestPaintOp);
-
-#if !defined(OS_ANDROID)
-// A skottie animation with solid green color for the first 2.5 seconds and then
-// a solid blue color for the next 2.5 seconds.
-constexpr char kSkottieData[] =
-    "{"
-    "  \"v\" : \"4.12.0\","
-    "  \"fr\": 30,"
-    "  \"w\" : 400,"
-    "  \"h\" : 200,"
-    "  \"ip\": 0,"
-    "  \"op\": 150,"
-    "  \"assets\": [],"
-
-    "  \"layers\": ["
-    "    {"
-    "      \"ty\": 1,"
-    "      \"sw\": 400,"
-    "      \"sh\": 200,"
-    "      \"sc\": \"#00ff00\","
-    "      \"ip\": 0,"
-    "      \"op\": 75"
-    "    },"
-    "    {"
-    "      \"ty\": 1,"
-    "      \"sw\": 400,"
-    "      \"sh\": 200,"
-    "      \"sc\": \"#0000ff\","
-    "      \"ip\": 76,"
-    "      \"op\": 150"
-    "    }"
-    "  ]"
-    "}";
-#endif  // !defined(OS_ANDROID)
 
 template <typename T>
 void ValidateOps(PaintOpBuffer* buffer) {
@@ -1258,6 +1223,12 @@ std::vector<PaintImage> test_images = {
     CreateDiscardablePaintImage(gfx::Size(50, 50)),
 };
 
+#if defined(OS_ANDROID)
+bool kIsSkottieSupported = false;
+#else
+bool kIsSkottieSupported = true;
+#endif
+
 std::vector<scoped_refptr<SkottieWrapper>> test_skotties = {
     CreateSkottie(gfx::Size(10, 20), 4), CreateSkottie(gfx::Size(100, 40), 5),
     CreateSkottie(gfx::Size(80, 70), 6)};
@@ -1759,8 +1730,7 @@ class PaintOpSerializationTest : public ::testing::TestWithParam<uint8_t> {
         PushDrawRRectOps(&buffer_);
         break;
       case PaintOpType::DrawSkottie:
-        // Not supported
-        // TODO(malaykeshav): Add test when Drawable supports serialization.
+        PushDrawSkottieOps(&buffer_);
         break;
       case PaintOpType::DrawTextBlob:
         PushDrawTextBlobOps(&buffer_);
@@ -1807,11 +1777,10 @@ class PaintOpSerializationTest : public ::testing::TestWithParam<uint8_t> {
   }
 
   bool IsTypeSupported() {
-    // DrawRecordOps and DrawSkottieOps must be flattened and are not currently
-    // serialized. All other types must push non-zero amounts of ops in
-    // PushTestOps.
+    // DrawRecordOps must be flattened and are not currently serialized. All
+    // other types must push non-zero amounts of ops in PushTestOps.
     return GetParamType() != PaintOpType::DrawRecord &&
-           GetParamType() != PaintOpType::DrawSkottie;
+           (GetParamType() != PaintOpType::DrawSkottie || kIsSkottieSupported);
   }
 
  protected:
@@ -3454,66 +3423,15 @@ TEST(PaintOpBufferTest, PaintRecordShaderSerialization) {
 }
 
 #if !defined(OS_ANDROID)
-TEST(PaintOpBufferTest, DrawSkottieOpSerialization) {
-  std::unique_ptr<char, base::AlignedFreeDeleter> memory(
-      static_cast<char*>(base::AlignedAlloc(PaintOpBuffer::kInitialBufferSize,
-                                            PaintOpBuffer::PaintOpAlign)));
-  std::vector<uint8_t> data(std::strlen(kSkottieData));
-  data.assign(reinterpret_cast<const uint8_t*>(kSkottieData),
-              reinterpret_cast<const uint8_t*>(kSkottieData) +
-                  std::strlen(kSkottieData));
-
-  scoped_refptr<SkottieWrapper> skottie =
-      SkottieWrapper::CreateSerializable(std::move(data));
-
-  ASSERT_TRUE(skottie->is_valid());
-  const SkRect input_rect = SkRect::MakeIWH(400, 300);
-  const float input_t = 0.4f;
-
-  PaintOpBuffer buffer;
-  buffer.push<DrawSkottieOp>(skottie, input_rect, input_t);
-
-  // Serialize
-  TestOptionsProvider options_provider;
-  SimpleBufferSerializer serializer(memory.get(),
-                                    PaintOpBuffer::kInitialBufferSize,
-                                    options_provider.serialize_options());
-  serializer.Serialize(&buffer);
-  ASSERT_TRUE(serializer.valid());
-  ASSERT_GT(serializer.written(), 0u);
-
-  // De-Serialize
-  auto deserialized_buffer =
-      PaintOpBuffer::MakeFromMemory(memory.get(), serializer.written(),
-                                    options_provider.deserialize_options());
-  ASSERT_TRUE(deserialized_buffer);
-  PaintOpBuffer::Iterator it(deserialized_buffer.get());
-  ASSERT_TRUE(it);
-  auto* op = *it;
-  ASSERT_TRUE(op->GetType() == PaintOpType::DrawSkottie);
-  auto* skottie_op = static_cast<DrawSkottieOp*>(op);
-  EXPECT_SKRECT_EQ(skottie_op->dst, input_rect);
-  EXPECT_FLOAT_EQ(skottie_op->t, input_t);
-  EXPECT_EQ(skottie_op->skottie->id(), skottie->id());
-  EXPECT_TRUE(skottie_op->skottie->is_valid());
-
-  // Check that an entry in transfer cache is present for the skottie data.
-  EXPECT_TRUE(options_provider.transfer_cache_helper()->GetEntryInternal(
-      TransferCacheEntryType::kSkottie, skottie->id()));
-}
-
-TEST(PaintOpBufferTest, DrawSkottieOpSerializationFailure) {
+// Skottie-specific deserialization failure case.
+TEST(PaintOpBufferTest,
+     DrawSkottieOpSerializationFailureFromUnPrivilegedProcess) {
   std::unique_ptr<char, base::AlignedFreeDeleter> memory(
       static_cast<char*>(base::AlignedAlloc(PaintOpBuffer::kInitialBufferSize,
                                             PaintOpBuffer::PaintOpAlign)));
 
-  std::vector<uint8_t> data(std::strlen(kSkottieData));
-  data.assign(reinterpret_cast<const uint8_t*>(kSkottieData),
-              reinterpret_cast<const uint8_t*>(kSkottieData) +
-                  std::strlen(kSkottieData));
-
   scoped_refptr<SkottieWrapper> skottie =
-      SkottieWrapper::CreateSerializable(std::move(data));
+      CreateSkottie(gfx::Size(100, 100), /*duration_secs=*/1);
   ASSERT_TRUE(skottie->is_valid());
   const SkRect input_rect = SkRect::MakeIWH(400, 300);
   const float input_t = 0.4f;

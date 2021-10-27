@@ -162,10 +162,6 @@ void PepperFileSystemBrowserHost::IOThreadState::OpenIsolatedFileSystem(
       opened_ = true;
       SendReplyForIsolatedFileSystem(reply_context, fsid, PP_OK);
       return;
-    case PP_ISOLATEDFILESYSTEMTYPE_PRIVATE_PLUGINPRIVATE:
-      OpenPluginPrivateFileSystem(origin, plugin_id, reply_context, fsid,
-                                  file_system_context_);
-      return;
     default:
       NOTREACHED();
       SendReplyForIsolatedFileSystem(reply_context, fsid, PP_ERROR_BADARGUMENT);

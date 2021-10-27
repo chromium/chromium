@@ -109,7 +109,9 @@ class ThemeManagerTest : public cr_fuchsia::WebEngineBrowserTest,
   }
 
   bool SetTheme(fuchsia::settings::ThemeType theme) {
-    frame_->SetPreferredTheme(theme);
+    fuchsia::web::ContentAreaSettings settings;
+    settings.set_theme(theme);
+    frame_->SetContentAreaSettings(std::move(settings));
     base::RunLoop().RunUntilIdle();
     return frame_.ptr().is_bound();
   }

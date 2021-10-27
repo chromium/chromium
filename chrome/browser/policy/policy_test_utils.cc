@@ -276,8 +276,8 @@ void PolicyTest::SendInterstitialCommand(
   return;
 }
 
-void PolicyTest::FlushBlacklistPolicy() {
-  // Updates of the URLBlacklist are done on IO, after building the blacklist
+void PolicyTest::FlushBlocklistPolicy() {
+  // Updates of the URLBlocklist are done on IO, after building the blocklist
   // on the blocking pool, which is initiated from IO.
   content::RunAllPendingInMessageLoop(BrowserThread::IO);
   content::RunAllTasksUntilIdle();

@@ -3288,10 +3288,6 @@ bool WebContentsImpl::CanEnterFullscreenMode() {
   });
 }
 
-bool WebContentsImpl::HasEnteredFullscreenMode() {
-  return IsFullscreen();
-}
-
 void WebContentsImpl::EnterFullscreenMode(
     RenderFrameHostImpl* requesting_frame,
     const blink::mojom::FullscreenOptions& options) {

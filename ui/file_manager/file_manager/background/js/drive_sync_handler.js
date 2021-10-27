@@ -278,8 +278,6 @@ export class DriveSyncHandlerImpl extends EventTarget {
       const speedometer = this.speedometers_[item.id];
       speedometer.setTotalBytes(item.progressMax);
       speedometer.update(item.progressValue);
-      item.currentSpeed = speedometer.getCurrentSpeed();
-      item.averageSpeed = speedometer.getAverageSpeed();
       item.remainingTime = speedometer.getRemainingTime();
 
       this.progressRateLimiter_.run();

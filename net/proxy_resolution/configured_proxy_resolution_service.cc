@@ -176,7 +176,7 @@ class DefaultPollPolicy
       const int kDelay4Seconds = 4 * 60 * 60;  // 4 Hours
 
       // Initial poll.
-      if (current_delay < base::TimeDelta()) {
+      if (current_delay.is_negative()) {
         *next_delay = base::Seconds(kDelay1Seconds);
         return MODE_USE_TIMER;
       }

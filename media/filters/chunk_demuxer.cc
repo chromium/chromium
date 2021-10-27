@@ -1168,7 +1168,7 @@ void ChunkDemuxer::SetDuration(double duration) {
         base::Microseconds(duration * base::Time::kMicrosecondsPerSecond);
   }
 
-  DCHECK(duration_td > base::TimeDelta());
+  DCHECK(duration_td.is_positive());
 
   user_specified_duration_ = duration;
   duration_ = duration_td;

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2016 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -181,7 +181,7 @@ def _bundle_v3(tmp_out_dir, in_path, out_path, manifest_out_path, args,
          (len(generated_paths))
 
   for bundled_file in bundled_paths:
-    with open(bundled_file, 'r') as f:
+    with open(bundled_file, 'r', encoding='utf-8') as f:
       output = f.read()
       assert "<if expr" not in output, \
           'Unexpected <if expr> found in bundled output. Check that all ' + \
@@ -256,19 +256,21 @@ def main(argv):
 
   # Prior call to _optimize() generated an output manifest file, containing
   # information about all files that were bundled. Grab it from there.
-  manifest = json.loads(open(manifest_out_path, 'r').read())
+  with open(manifest_out_path, 'r') as f:
+    manifest = json.loads(f.read())
 
-  # Output a manifest file that will be used to auto-generate a grd file later.
-  if args.out_manifest:
-    manifest_data = {
-      'base_dir': args.out_folder,
-      'files': list(manifest.keys()),
-    }
-    with open(os.path.normpath(os.path.join(_CWD, args.out_manifest)), 'w') \
-        as manifest_file:
-      json.dump(manifest_data, manifest_file)
+    # Output a manifest file that will be used to auto-generate a grd file
+    # later.
+    if args.out_manifest:
+      manifest_data = {
+        'base_dir': args.out_folder,
+        'files': list(manifest.keys()),
+      }
+      with open(os.path.normpath(os.path.join(_CWD, args.out_manifest)), 'w') \
+          as manifest_file:
+        json.dump(manifest_data, manifest_file)
 
-  _update_dep_file(args.input, args, manifest)
+    _update_dep_file(args.input, args, manifest)
 
 
 if __name__ == '__main__':

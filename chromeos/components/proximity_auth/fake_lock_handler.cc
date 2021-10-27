@@ -19,6 +19,12 @@ void FakeLockHandler::ShowUserPodCustomIcon(
 
 void FakeLockHandler::HideUserPodCustomIcon(const AccountId& account_id) {}
 
+void FakeLockHandler::SetSmartLockState(const AccountId& account_id,
+                                        ash::SmartLockState state) {}
+
+void FakeLockHandler::NotifySmartLockAuthResult(const AccountId& account_id,
+                                                bool successful) {}
+
 void FakeLockHandler::EnableInput() {}
 
 void FakeLockHandler::SetAuthType(const AccountId& account_id,

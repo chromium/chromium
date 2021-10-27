@@ -26,6 +26,10 @@
 #include "gpu/ipc/service/image_transport_surface.h"  // nogncheck
 #endif
 
+#if defined(OS_FUCHSIA)
+#include "ui/platform_window/fuchsia/initialize_presenter_api_view.h"
+#endif
+
 namespace ui {
 namespace test {
 
@@ -49,6 +53,10 @@ void CompositorTestSuite::Initialize() {
 #if defined(OS_WIN)
   display::win::SetDefaultDeviceScaleFactor(1.0f);
 #endif
+
+#if defined(OS_FUCHSIA)
+  ui::fuchsia::IgnorePresentCallsForTest();
+#endif  // defined(OS_FUCHSIA)
 }
 
 }  // namespace test

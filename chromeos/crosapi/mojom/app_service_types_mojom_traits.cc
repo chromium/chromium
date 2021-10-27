@@ -1015,4 +1015,44 @@ bool UnionTraits<crosapi::mojom::PermissionValueDataView,
   return false;
 }
 
+bool StructTraits<crosapi::mojom::PreferredAppDataView,
+                  apps::mojom::PreferredAppPtr>::
+    Read(crosapi::mojom::PreferredAppDataView data,
+         apps::mojom::PreferredAppPtr* out) {
+  apps::mojom::IntentFilterPtr intent_filter;
+  if (!data.ReadIntentFilter(&intent_filter))
+    return false;
+
+  std::string app_id;
+  if (!data.ReadAppId(&app_id))
+    return false;
+
+  auto preferred_app = apps::mojom::PreferredApp::New();
+  preferred_app->intent_filter = std::move(intent_filter);
+  preferred_app->app_id = app_id;
+  *out = std::move(preferred_app);
+  return true;
+}
+
+bool StructTraits<crosapi::mojom::PreferredAppChangesDataView,
+                  apps::mojom::PreferredAppChangesPtr>::
+    Read(crosapi::mojom::PreferredAppChangesDataView data,
+         apps::mojom::PreferredAppChangesPtr* out) {
+  base::flat_map<std::string, std::vector<apps::mojom::IntentFilterPtr>>
+      added_filters;
+  if (!data.ReadAddedFilters(&added_filters))
+    return false;
+
+  base::flat_map<std::string, std::vector<apps::mojom::IntentFilterPtr>>
+      removed_filters;
+  if (!data.ReadRemovedFilters(&removed_filters))
+    return false;
+
+  auto preferred_app_changes = apps::mojom::PreferredAppChanges::New();
+  preferred_app_changes->added_filters = std::move(added_filters);
+  preferred_app_changes->removed_filters = std::move(removed_filters);
+  *out = std::move(preferred_app_changes);
+  return true;
+}
+
 }  // namespace mojo

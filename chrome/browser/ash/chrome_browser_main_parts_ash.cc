@@ -744,6 +744,11 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
 
   g_browser_process->platform_part()->InitializeChromeUserManager();
 
+  if (base::FeatureList::IsEnabled(ash::features::kPerUserMetrics)) {
+    // Enable per-user metrics support as soon as user_manager is created.
+    g_browser_process->metrics_service()->InitPerUserMetrics();
+  }
+
   arc_data_snapshotd_manager_ =
       std::make_unique<arc::data_snapshotd::ArcDataSnapshotdManager>(
           g_browser_process->local_state(),

@@ -4,8 +4,7 @@
 
 #include "remoting/protocol/webrtc_video_encoder_factory.h"
 
-#include "base/bind.h"
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "remoting/protocol/video_channel_state_observer.h"
 #include "remoting/protocol/webrtc_video_encoder_wrapper.h"
@@ -31,16 +30,8 @@ WebrtcVideoEncoderFactory::~WebrtcVideoEncoderFactory() = default;
 std::unique_ptr<webrtc::VideoEncoder>
 WebrtcVideoEncoderFactory::CreateVideoEncoder(
     const webrtc::SdpVideoFormat& format) {
-  webrtc::VideoCodecType type = webrtc::PayloadStringToCodecType(format.name);
-  auto encoder = std::make_unique<WebrtcVideoEncoderWrapper>(
+  return std::make_unique<WebrtcVideoEncoderWrapper>(
       format, main_task_runner_, video_channel_state_observer_);
-  base::AutoLock lock(lock_);
-  if (encoder_created_callback_) {
-    main_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(encoder_created_callback_, type, format.parameters));
-  }
-  return encoder;
 }
 
 std::vector<webrtc::SdpVideoFormat>
@@ -48,17 +39,9 @@ WebrtcVideoEncoderFactory::GetSupportedFormats() const {
   return formats_;
 }
 
-void WebrtcVideoEncoderFactory::RegisterEncoderSelectedCallback(
-    const base::RepeatingCallback<
-        void(webrtc::VideoCodecType,
-             const webrtc::SdpVideoFormat::Parameters&)>& callback) {
-  encoder_created_callback_ = callback;
-}
-
 void WebrtcVideoEncoderFactory::SetVideoChannelStateObserver(
     base::WeakPtr<VideoChannelStateObserver> video_channel_state_observer) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-  base::AutoLock lock(lock_);
   video_channel_state_observer_ = video_channel_state_observer;
 }
 

@@ -212,7 +212,7 @@ TEST_F(ProjectorMetadataTest, Serialize) {
         "text": "transcript text 2"
       }
     ],
-    "name": "Screen Recording 1",
+    "captionLanguage": "en",
     "tableOfContent": [
       {
         "endOffset": 5000,
@@ -223,8 +223,7 @@ TEST_F(ProjectorMetadataTest, Serialize) {
   })";
 
   ProjectorMetadata metadata;
-
-  metadata.SetName("Screen Recording 1");
+  metadata.SetCaptionLanguage("en");
 
   std::vector<media::HypothesisParts> first_transcript;
   first_transcript.emplace_back(std::vector<std::string>({"transcript"}),

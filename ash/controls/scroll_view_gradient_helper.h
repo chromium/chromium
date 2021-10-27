@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "base/callback_list.h"
 #include "ui/views/controls/scroll_view.h"
 
 namespace ash {
@@ -22,18 +23,14 @@ class GradientLayerDelegate;
 //
 // Views using this helper should call UpdateGradientZone() whenever the scroll
 // view bounds or contents bounds change (e.g. from Layout()).
-class ASH_EXPORT ScrollViewGradientHelper : public views::ScrollView::Observer {
+class ASH_EXPORT ScrollViewGradientHelper {
  public:
   // `scroll_view` must have a layer.
   explicit ScrollViewGradientHelper(views::ScrollView* scroll_view);
-  ~ScrollViewGradientHelper() override;
+  ~ScrollViewGradientHelper();
 
   // Updates the gradients based on `scroll_view_` bounds and scroll position.
   void UpdateGradientZone();
-
-  // views::ScrollView::Observer:
-  void OnContentsScrolled() override;
-  void OnContentsScrollEnded() override;
 
   GradientLayerDelegate* gradient_layer_for_test() {
     return gradient_layer_.get();
@@ -45,6 +42,10 @@ class ASH_EXPORT ScrollViewGradientHelper : public views::ScrollView::Observer {
 
   // Draws the fade in/out gradients via a `scroll_view_` mask layer.
   std::unique_ptr<GradientLayerDelegate> gradient_layer_;
+
+  // Callback subscriptions.
+  base::CallbackListSubscription on_contents_scrolled_subscription_;
+  base::CallbackListSubscription on_contents_scroll_ended_subscription_;
 };
 
 }  // namespace ash

@@ -35,6 +35,7 @@ class VersionUpdater : public chromeos::UpdateEngineClient::Observer {
   ~VersionUpdater() override;
 
   void SetStatusCallback(StatusCallback status_callback);
+  bool CheckOsUpdateAvailable();
   bool UpdateOs();
   bool IsIdle();
 
@@ -46,6 +47,14 @@ class VersionUpdater : public chromeos::UpdateEngineClient::Observer {
   void UpdateStatusChanged(const update_engine::StatusResult& status) override;
 
   StatusCallback status_callback_;
+  enum CheckUpdateState {
+    IDLE,
+    CHECKING,
+    UPDATE_AVAILABLE,
+    NO_UPDATE_AVAILABLE
+  };
+  CheckUpdateState check_update_available_ = IDLE;
+  std::string new_version_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

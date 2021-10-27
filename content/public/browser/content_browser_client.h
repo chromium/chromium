@@ -671,14 +671,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual base::FilePath GetLoggingFileName(
       const base::CommandLine& command_line);
 
-  // Allow the embedder to control if an AppCache can be used for the given url.
-  // This is called on the UI thread.
-  virtual bool AllowAppCache(
-      const GURL& manifest_url,
-      const net::SiteForCookies& site_for_cookies,
-      const absl::optional<url::Origin>& top_frame_origin,
-      BrowserContext* context);
-
   // Allows the embedder to control if a service worker is allowed at the given
   // `scope` and can be accessed from `site_for_cookies` and `top_frame_origin`.
   // `site_for_cookies` is used to determine whether the request is done in a
@@ -2052,9 +2044,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   // functionality.
   virtual XrIntegrationClient* GetXrIntegrationClient();
 #endif
-
-  virtual bool IsOriginTrialRequiredForAppCache(
-      content::BrowserContext* browser_text);
 
   // External applications and services may launch the browser in a mode which
   // exposes browser control interfaces via Mojo. Any such interface binding

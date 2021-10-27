@@ -1106,6 +1106,33 @@ void LayoutBlock::ImageChanged(WrappedImagePtr image,
   }
 }
 
+static void ProcessPositionedObjectRemoval(
+    ContainingBlockState containing_block_state,
+    LayoutObject* positioned_object) {
+  if (containing_block_state == kNewContainingBlock) {
+    positioned_object->SetChildNeedsLayout(kMarkOnlyThis);
+
+    // The positioned object changing containing block may change paint
+    // invalidation container.
+    // Invalidate it (including non-compositing descendants) on its original
+    // paint invalidation container.
+    if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+      // This valid because we need to invalidate based on the current
+      // status.
+      DisableCompositingQueryAsserts compositing_disabler;
+      if (!positioned_object->IsPaintInvalidationContainer()) {
+        ObjectPaintInvalidator(*positioned_object)
+            .InvalidatePaintIncludingNonCompositingDescendants();
+      }
+    }
+  }
+
+  // It is parent blocks job to add positioned child to positioned objects
+  // list of its containing block.
+  // Parent layout needs to be invalidated to ensure this happens.
+  positioned_object->MarkParentForOutOfFlowPositionedChange();
+}
+
 void LayoutBlock::RemovePositionedObjects(
     LayoutObject* o,
     ContainingBlockState containing_block_state) {
@@ -1118,28 +1145,7 @@ void LayoutBlock::RemovePositionedObjects(
   for (LayoutBox* positioned_object : *positioned_descendants) {
     if (!o ||
         (positioned_object->IsDescendantOf(o) && o != positioned_object)) {
-      if (containing_block_state == kNewContainingBlock) {
-        positioned_object->SetChildNeedsLayout(kMarkOnlyThis);
-
-        // The positioned object changing containing block may change paint
-        // invalidation container.
-        // Invalidate it (including non-compositing descendants) on its original
-        // paint invalidation container.
-        if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-          // This valid because we need to invalidate based on the current
-          // status.
-          DisableCompositingQueryAsserts compositing_disabler;
-          if (!positioned_object->IsPaintInvalidationContainer())
-            ObjectPaintInvalidator(*positioned_object)
-                .InvalidatePaintIncludingNonCompositingDescendants();
-        }
-      }
-
-      // It is parent blocks job to add positioned child to positioned objects
-      // list of its containing block.
-      // Parent layout needs to be invalidated to ensure this happens.
-      positioned_object->MarkParentForOutOfFlowPositionedChange();
-
+      ProcessPositionedObjectRemoval(containing_block_state, positioned_object);
       dead_objects.push_back(positioned_object);
     }
   }

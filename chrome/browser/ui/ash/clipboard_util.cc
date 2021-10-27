@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 #include <memory>
+#include <vector>
 
 #include "ash/public/cpp/clipboard_history_controller.h"
 #include "base/base64.h"
@@ -32,12 +33,13 @@ namespace {
 void CopyAndMaintainClipboard(
     std::unique_ptr<ui::ClipboardData> data_with_image,
     const std::string& markup_content,
-    scoped_refptr<base::RefCountedString> png_data,
-    const SkBitmap& decoded_image) {
+    scoped_refptr<base::RefCountedString> png_data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  std::vector<uint8_t> data(png_data->data().begin(), png_data->data().end());
+
   data_with_image->set_markup_data(markup_content);
-  data_with_image->SetBitmapData(decoded_image);
+  data_with_image->SetPngData(std::move(data));
   ui::ClipboardNonBacked::GetForCurrentThread()->WriteClipboardData(
       std::move(data_with_image));
 }
@@ -101,8 +103,7 @@ void CopyImageToClipboard(bool maintain_clipboard,
   if (clipboard_history) {
     clipboard_history->DeleteClipboardItemByClipboardData(current_data.get());
   }
-  CopyAndMaintainClipboard(std::move(current_data), html, png_data,
-                           decoded_image);
+  CopyAndMaintainClipboard(std::move(current_data), html, png_data);
   std::move(callback).Run(true);
 }
 

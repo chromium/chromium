@@ -6,8 +6,8 @@
 #define ASH_SYSTEM_MEDIA_MEDIA_TRAY_H_
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/media_notification_provider_observer.h"
 #include "ash/public/cpp/session/session_observer.h"
+#include "ash/system/media/media_notification_provider_observer.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/unified/top_shortcut_button.h"
 

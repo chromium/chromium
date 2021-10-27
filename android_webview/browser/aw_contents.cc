@@ -956,6 +956,11 @@ void AwContents::OnSizeChanged(JNIEnv* env,
       ->ClientVisibilityChanged(this);
 }
 
+void AwContents::OnConfigurationChanged(JNIEnv* env) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  web_contents()->OnWebPreferencesChanged();
+}
+
 void AwContents::SetViewVisibility(JNIEnv* env,
                                    const JavaParamRef<jobject>& obj,
                                    bool visible) {

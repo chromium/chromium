@@ -158,6 +158,8 @@ DeviceTrustNavigationThrottle::AddHeadersIfNeeded() {
       device_trust_service_->BuildChallengeResponse(
           challenge, std::move(resume_navigation_callback));
 
+      CHECK(!deferring_);
+      deferring_ = true;
       return DEFER;
     }
   } else {
@@ -171,6 +173,11 @@ void DeviceTrustNavigationThrottle::ReplyChallengeResponseAndResume(
   DVLOG(1) << "DeviceTrustNavigationThrottle::ReplyChallengeResponseAndResume "
               "challenge_response="
            << challenge_response;
+  if (!deferring_) {
+    DVLOG(1) << "No navigation was deferred.";
+    return;
+  }
+  deferring_ = false;
   if (challenge_response == std::string()) {
     // Cancel the navigation if challenge signature is invalid.
     CancelDeferredNavigation(content::NavigationThrottle::CANCEL_AND_IGNORE);

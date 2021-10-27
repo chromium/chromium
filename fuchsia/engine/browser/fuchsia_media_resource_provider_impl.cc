@@ -45,9 +45,10 @@ void FuchsiaMediaResourceProviderImpl::CreateAudioConsumer(
   auto factory = base::ComponentContextForProcess()
                      ->svc()
                      ->Connect<fuchsia::media::SessionAudioConsumerFactory>();
-  factory->CreateAudioConsumer(
-      FrameImpl::FromRenderFrameHost(render_frame_host())->media_session_id(),
-      std::move(request));
+  auto* frame_impl = FrameImpl::FromRenderFrameHost(render_frame_host());
+  DCHECK(frame_impl);
+  factory->CreateAudioConsumer(frame_impl->media_session_id(),
+                               std::move(request));
 }
 
 void FuchsiaMediaResourceProviderImpl::CreateAudioCapturer(

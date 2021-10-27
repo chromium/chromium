@@ -384,5 +384,11 @@ export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'bookmarks-folder-node': BookmarksFolderNodeElement;
+  }
+}
+
 customElements.define(
     BookmarksFolderNodeElement.is, BookmarksFolderNodeElement);

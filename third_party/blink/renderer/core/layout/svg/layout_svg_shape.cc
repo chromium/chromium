@@ -254,7 +254,7 @@ bool LayoutSVGShape::FillContains(const HitTestLocation& location,
                                   bool requires_fill,
                                   const WindRule fill_rule) {
   NOT_DESTROYED();
-  if (!fill_bounding_box_.Contains(location.TransformedPoint()))
+  if (!fill_bounding_box_.InclusiveContains(location.TransformedPoint()))
     return false;
 
   if (requires_fill && !HasPaintServer(*this, StyleRef().FillPaint()))
@@ -271,14 +271,14 @@ bool LayoutSVGShape::StrokeContains(const HitTestLocation& location,
     return false;
 
   if (requires_stroke) {
-    if (!StrokeBoundingBox().Contains(location.TransformedPoint()))
+    if (!StrokeBoundingBox().InclusiveContains(location.TransformedPoint()))
       return false;
 
     if (!HasPaintServer(*this, StyleRef().StrokePaint()))
       return false;
-  } else {
-    if (!HitTestStrokeBoundingBox().Contains(location.TransformedPoint()))
-      return false;
+  } else if (!HitTestStrokeBoundingBox().InclusiveContains(
+                 location.TransformedPoint())) {
+    return false;
   }
 
   return ShapeDependentStrokeContains(location);

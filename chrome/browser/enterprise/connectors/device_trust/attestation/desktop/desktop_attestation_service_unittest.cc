@@ -12,9 +12,8 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/mock_key_persistence_delegate.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/scoped_key_persistence_delegate_factory.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/signing_key_pair.h"
-#include "components/enterprise/common/proto/device_trust_report_event.pb.h"
-#include "components/policy/core/common/cloud/mock_device_management_service.h"
 #include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -55,7 +54,7 @@ class DesktopAttestationServiceTest : public testing::Test {
     EXPECT_CALL(*mock_persistence_delegate_, GetTpmBackedKeyProvider());
 
     attestation_service_ = std::make_unique<DesktopAttestationService>(
-        &dm_service_, std::move(mock_persistence_delegate));
+        std::move(mock_persistence_delegate));
   }
 
   DesktopAttestationService* attestation_service() {
@@ -64,8 +63,6 @@ class DesktopAttestationServiceTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  testing::StrictMock<policy::MockJobCreationHandler> job_creation_handler_;
-  policy::FakeDeviceManagementService dm_service_{&job_creation_handler_};
   std::unique_ptr<DesktopAttestationService> attestation_service_;
   test::ScopedKeyPersistenceDelegateFactory persistence_delegate_factory_;
   test::MockKeyPersistenceDelegate* mock_persistence_delegate_;

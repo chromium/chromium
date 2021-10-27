@@ -17,6 +17,22 @@ using BPKUP = enterprise_management::BrowserPublicKeyUploadResponse;
 
 namespace enterprise_connectors {
 
+namespace {
+
+BPKUR::KeyType AlgorithmToType(
+    crypto::SignatureVerifier::SignatureAlgorithm algorithm) {
+  switch (algorithm) {
+    case crypto::SignatureVerifier::RSA_PKCS1_SHA1:
+    case crypto::SignatureVerifier::RSA_PKCS1_SHA256:
+    case crypto::SignatureVerifier::RSA_PSS_SHA256:
+      return BPKUR::RSA_KEY;
+    case crypto::SignatureVerifier::ECDSA_SHA256:
+      return BPKUR::EC_KEY;
+  }
+}
+
+}  // namespace
+
 KeyRotationManagerImpl::KeyRotationManagerImpl(
     std::unique_ptr<KeyNetworkDelegate> network_delegate,
     std::unique_ptr<KeyPersistenceDelegate> persistence_delegate)
@@ -147,6 +163,7 @@ bool KeyRotationManagerImpl::BuildUploadPublicKeyRequest(
   request->set_public_key(pubkey.data(), pubkey.size());
   request->set_signature(signature->data(), signature->size());
   request->set_key_trust_level(new_trust_level);
+  request->set_key_type(AlgorithmToType(new_key_pair->Algorithm()));
 
   return true;
 }

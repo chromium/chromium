@@ -56,6 +56,7 @@
 #include "third_party/blink/public/common/logging/logging_utils.h"
 #include "third_party/blink/public/common/messaging/web_message_port.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 #include "third_party/blink/public/mojom/navigation/was_activated_option.mojom.h"
 #include "ui/aura/window.h"
@@ -251,6 +252,16 @@ absl::optional<url::Origin> ParseAndValidateWebOrigin(
 
 }  // namespace
 
+FrameImpl::PendingPopup::PendingPopup(
+    FrameImpl* frame_ptr,
+    fidl::InterfaceHandle<fuchsia::web::Frame> handle,
+    fuchsia::web::PopupFrameCreationInfo creation_info)
+    : frame_ptr(std::move(frame_ptr)),
+      handle(std::move(handle)),
+      creation_info(std::move(creation_info)) {}
+FrameImpl::PendingPopup::PendingPopup(PendingPopup&& other) = default;
+FrameImpl::PendingPopup::~PendingPopup() = default;
+
 // static
 FrameImpl* FrameImpl::FromWebContents(content::WebContents* web_contents) {
   if (!web_contents)
@@ -258,7 +269,8 @@ FrameImpl* FrameImpl::FromWebContents(content::WebContents* web_contents) {
 
   auto& map = WebContentsToFrameImplMap();
   auto it = map.find(web_contents);
-  DCHECK(it != map.end()) << "WebContents not owned by a FrameImpl.";
+  if (it == map.end())
+    return nullptr;
   return it->second;
 }
 
@@ -284,7 +296,9 @@ FrameImpl::FrameImpl(std::unique_ptr<content::WebContents> web_contents,
       permission_controller_(web_contents_.get()),
       binding_(this, std::move(frame_request)),
       media_blocker_(web_contents_.get()),
-      theme_manager_(web_contents_.get()),
+      theme_manager_(web_contents_.get(),
+                     base::BindOnce(&FrameImpl::OnThemeManagerError,
+                                    base::Unretained(this))),
       inspect_node_(std::move(inspect_node)),
       inspect_name_property_(
           params_for_popups_.has_debug_name()
@@ -306,6 +320,11 @@ FrameImpl::FrameImpl(std::unique_ptr<content::WebContents> web_contents,
 
   content::UpdateFontRendererPreferencesFromSystemSettings(
       web_contents_->GetMutableRendererPrefs());
+
+  // TODO(http://crbug.com/1254073): Deprecate autoplay_policy in
+  // CreateFrameParams.
+  if (params.has_autoplay_policy())
+    content_area_settings_.set_autoplay_policy(params.autoplay_policy());
 }
 
 FrameImpl::~FrameImpl() {
@@ -422,11 +441,32 @@ void FrameImpl::AddNewContents(
         return;
       }
 
-      PopupFrameCreationInfoUserData* popup_creation_info =
+      auto* popup_creation_info =
           reinterpret_cast<PopupFrameCreationInfoUserData*>(
               new_contents->GetUserData(kPopupCreationInfo));
-      popup_creation_info->info.set_initiated_by_user(user_gesture);
-      pending_popups_.emplace_back(std::move(new_contents));
+      fuchsia::web::PopupFrameCreationInfo popup_frame_creation_info =
+          std::move(popup_creation_info->info);
+      popup_frame_creation_info.set_initiated_by_user(user_gesture);
+      // The PopupFrameCreationInfo won't be needed anymore, so clear it out.
+      new_contents->SetUserData(kPopupCreationInfo, nullptr);
+
+      // ContextImpl::CreateFrameInternal() verified that |params_for_popups_|
+      // can be cloned, so it cannot fail here.
+      fuchsia::web::CreateFrameParams params;
+      zx_status_t status = params_for_popups_.Clone(&params);
+      ZX_DCHECK(status == ZX_OK, status);
+      fidl::InterfaceHandle<fuchsia::web::Frame> frame_handle;
+      auto* popup_frame = context_->CreateFrameForWebContents(
+          std::move(new_contents), std::move(params),
+          frame_handle.NewRequest());
+
+      fuchsia::web::ContentAreaSettings settings;
+      status = content_area_settings_.Clone(&settings);
+      ZX_DCHECK(status == ZX_OK, status);
+      popup_frame->SetContentAreaSettings(std::move(settings));
+
+      pending_popups_.emplace_back(popup_frame, std::move(frame_handle),
+                                   std::move(popup_frame_creation_info));
       MaybeSendPopup();
       return;
     }
@@ -463,28 +503,11 @@ void FrameImpl::MaybeSendPopup() {
   if (popup_ack_outstanding_ || pending_popups_.empty())
     return;
 
-  std::unique_ptr<content::WebContents> popup =
-      std::move(pending_popups_.front());
+  auto popup = std::move(pending_popups_.front());
   pending_popups_.pop_front();
 
-  fuchsia::web::PopupFrameCreationInfo creation_info =
-      std::move(reinterpret_cast<PopupFrameCreationInfoUserData*>(
-                    popup->GetUserData(kPopupCreationInfo))
-                    ->info);
-
-  // The PopupFrameCreationInfo won't be needed anymore, so clear it out.
-  popup->SetUserData(kPopupCreationInfo, nullptr);
-
-  // ContextImpl::CreateFrameInternal() verified that |params_for_popups_| can
-  // be cloned, so it cannot fail here.
-  fuchsia::web::CreateFrameParams params;
-  CHECK_EQ(ZX_OK, params_for_popups_.Clone(&params));
-
-  fidl::InterfaceHandle<fuchsia::web::Frame> frame_handle;
-  context_->CreateFrameForWebContents(std::move(popup), std::move(params),
-                                      frame_handle.NewRequest());
-  popup_listener_->OnPopupFrameCreated(std::move(frame_handle),
-                                       std::move(creation_info), [this] {
+  popup_listener_->OnPopupFrameCreated(std::move(popup.handle),
+                                       std::move(popup.creation_info), [this] {
                                          popup_ack_outstanding_ = false;
                                          MaybeSendPopup();
                                        });
@@ -576,11 +599,14 @@ void FrameImpl::MaybeStartCastStreaming(
 
 void FrameImpl::UpdateRenderViewZoomLevel(
     content::RenderViewHost* render_view_host) {
+  float page_scale = content_area_settings_.has_page_scale()
+                         ? content_area_settings_.page_scale()
+                         : 1.0;
   content::HostZoomMap* host_zoom_map =
       content::HostZoomMap::GetForWebContents(web_contents_.get());
   host_zoom_map->SetTemporaryZoomLevel(
       render_view_host->GetProcess()->GetID(), render_view_host->GetRoutingID(),
-      blink::PageZoomFactorToZoomLevel(page_scale_));
+      blink::PageZoomFactorToZoomLevel(page_scale));
 }
 
 void FrameImpl::ConnectToAccessibilityBridge() {
@@ -979,31 +1005,83 @@ void FrameImpl::SetNavigationPolicyProvider(
       std::move(params), std::move(provider));
 }
 
-void FrameImpl::SetPreferredTheme(fuchsia::settings::ThemeType theme) {
-  theme_manager_.SetTheme(theme, base::BindOnce(
-                                     [](FrameImpl* frame_impl, bool result) {
-                                       // TODO(crbug.com/1148454): Destroy the
-                                       // frame once a fake Display service is
-                                       // implemented.
+void FrameImpl::OnThemeManagerError() {
+  // TODO(crbug.com/1148454): Destroy the frame once a fake Display service is
+  // implemented.
+  // this->CloseAndDestroyFrame(ZX_ERR_INVALID_ARGS);
+}
 
-                                       // if (!result)
-                                       //   frame_impl->CloseAndDestroyFrame
-                                       //       ZX_ERR_INVALID_ARGS);
-                                     },
-                                     base::Unretained(this)));
+void FrameImpl::SetPreferredTheme(fuchsia::settings::ThemeType theme) {
+  fuchsia::web::ContentAreaSettings settings;
+  settings.set_theme(theme);
+  SetContentAreaSettings(std::move(settings));
 }
 
 void FrameImpl::SetPageScale(float scale) {
-  if (scale <= 0.0) {
-    LOG(ERROR) << "SetPageScale() called with nonpositive scale.";
-    CloseAndDestroyFrame(ZX_ERR_INVALID_ARGS);
-    return;
+  fuchsia::web::ContentAreaSettings settings;
+  settings.set_page_scale(scale);
+  SetContentAreaSettings(std::move(settings));
+}
+
+void FrameImpl::SetContentAreaSettings(
+    fuchsia::web::ContentAreaSettings settings) {
+  if (settings.has_hide_scrollbars())
+    content_area_settings_.set_hide_scrollbars(settings.hide_scrollbars());
+  if (settings.has_autoplay_policy())
+    content_area_settings_.set_autoplay_policy(settings.autoplay_policy());
+  if (settings.has_theme()) {
+    content_area_settings_.set_theme(settings.theme());
+    theme_manager_.SetTheme(settings.theme());
+  }
+  if (settings.has_page_scale()) {
+    if (settings.page_scale() <= 0.0) {
+      LOG(ERROR) << "SetPageScale() called with nonpositive scale.";
+      CloseAndDestroyFrame(ZX_ERR_INVALID_ARGS);
+      return;
+    }
+    if (!(content_area_settings_.has_page_scale() &&
+          (settings.page_scale() == content_area_settings_.page_scale()))) {
+      content_area_settings_.set_page_scale(settings.page_scale());
+      UpdateRenderViewZoomLevel(web_contents_->GetRenderViewHost());
+    }
   }
 
-  if (scale == page_scale_)
-    return;
-  page_scale_ = scale;
+  web_contents_->OnWebPreferencesChanged();
+}
+
+void FrameImpl::ResetContentAreaSettings() {
+  content_area_settings_ = fuchsia::web::ContentAreaSettings();
+  web_contents_->OnWebPreferencesChanged();
   UpdateRenderViewZoomLevel(web_contents_->GetRenderViewHost());
+}
+
+void FrameImpl::OverrideWebPreferences(
+    blink::web_pref::WebPreferences* web_prefs) {
+  if (content_area_settings_.has_hide_scrollbars()) {
+    web_prefs->hide_scrollbars = content_area_settings_.hide_scrollbars();
+  } else {
+    // Verify that hide_scrollbars defaults to false, per FIDL API.
+    DCHECK(!web_prefs->hide_scrollbars);
+  }
+
+  if (content_area_settings_.has_autoplay_policy()) {
+    switch (content_area_settings_.autoplay_policy()) {
+      case fuchsia::web::AutoplayPolicy::ALLOW:
+        web_prefs->autoplay_policy =
+            blink::mojom::AutoplayPolicy::kNoUserGestureRequired;
+        break;
+      case fuchsia::web::AutoplayPolicy::REQUIRE_USER_ACTIVATION:
+        web_prefs->autoplay_policy =
+            blink::mojom::AutoplayPolicy::kDocumentUserActivationRequired;
+        break;
+    }
+  } else {
+    // REQUIRE_USER_ACTIVATION is the default per the FIDL API.
+    web_prefs->autoplay_policy =
+        blink::mojom::AutoplayPolicy::kDocumentUserActivationRequired;
+  }
+
+  theme_manager_.ApplyThemeToWebPreferences(web_prefs);
 }
 
 void FrameImpl::ForceContentDimensions(

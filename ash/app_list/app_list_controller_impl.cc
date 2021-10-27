@@ -1288,6 +1288,14 @@ void AppListControllerImpl::SetKeyboardTraversalMode(bool engaged) {
       fullscreen_presenter_->GetView()->search_box_view()->search_box()) {
     fullscreen_presenter_->GetView()->search_box_view()->SchedulePaint();
   } else {
+    // Ensure that when an app list item's focus ring is triggered by key
+    // events, the item is selected.
+    // TODO(https://crbug.com/1262236): class name comparision and static cast
+    // should be avoided in the production code. Find a better way to guarantee
+    // the item's selection status.
+    if (focused_view->GetClassName() == AppListItemView::kViewClassName)
+      static_cast<AppListItemView*>(focused_view)->EnsureSelected();
+
     focused_view->SchedulePaint();
   }
 }

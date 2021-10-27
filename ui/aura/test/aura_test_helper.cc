@@ -48,7 +48,7 @@
 #endif
 
 #if defined(OS_FUCHSIA)
-#include "ui/platform_window/platform_window_init_properties.h"
+#include "ui/platform_window/fuchsia/initialize_presenter_api_view.h"
 #endif
 
 namespace aura {
@@ -72,7 +72,7 @@ AuraTestHelper::AuraTestHelper(ui::ContextFactory* context_factory) {
 #endif
 
 #if defined(OS_FUCHSIA)
-  ui::PlatformWindowInitProperties::allow_null_view_token_for_test = true;
+  ui::fuchsia::IgnorePresentCallsForTest();
 #endif
 
   ui::InitializeInputMethodForTesting();

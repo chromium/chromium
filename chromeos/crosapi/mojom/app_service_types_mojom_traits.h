@@ -397,6 +397,41 @@ struct UnionTraits<crosapi::mojom::PermissionValueDataView,
                    apps::mojom::PermissionValuePtr* out);
 };
 
+template <>
+struct StructTraits<crosapi::mojom::PreferredAppDataView,
+                    apps::mojom::PreferredAppPtr> {
+  static const apps::mojom::IntentFilterPtr& intent_filter(
+      const apps::mojom::PreferredAppPtr& r) {
+    return r->intent_filter;
+  }
+
+  static const std::string& app_id(const apps::mojom::PreferredAppPtr& r) {
+    return r->app_id;
+  }
+
+  static bool Read(crosapi::mojom::PreferredAppDataView,
+                   apps::mojom::PreferredAppPtr* out);
+};
+
+template <>
+struct StructTraits<crosapi::mojom::PreferredAppChangesDataView,
+                    apps::mojom::PreferredAppChangesPtr> {
+  static const base::flat_map<std::string,
+                              std::vector<apps::mojom::IntentFilterPtr>>&
+  added_filters(const apps::mojom::PreferredAppChangesPtr& r) {
+    return r->added_filters;
+  }
+
+  static const base::flat_map<std::string,
+                              std::vector<apps::mojom::IntentFilterPtr>>&
+  removed_filters(const apps::mojom::PreferredAppChangesPtr& r) {
+    return r->removed_filters;
+  }
+
+  static bool Read(crosapi::mojom::PreferredAppChangesDataView,
+                   apps::mojom::PreferredAppChangesPtr* out);
+};
+
 }  // namespace mojo
 
 #endif  // CHROMEOS_CROSAPI_MOJOM_APP_SERVICE_TYPES_MOJOM_TRAITS_H_

@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "chromeos/components/phonehub/camera_roll_download_manager.h"
 #include "chromeos/components/phonehub/proto/phonehub_api.pb.h"
 #include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -28,10 +29,12 @@ void FakeCameraRollDownloadManager::CreatePayloadFiles(
         payload_id,
         std::vector<chromeos::secure_channel::mojom::FileTransferUpdatePtr>());
     std::move(payload_files_callback)
-        .Run(absl::make_optional(
-            chromeos::secure_channel::mojom::PayloadFiles::New()));
+        .Run(CreatePayloadFilesResult::kSuccess,
+             absl::make_optional(
+                 chromeos::secure_channel::mojom::PayloadFiles::New()));
   } else {
-    std::move(payload_files_callback).Run(absl::nullopt);
+    std::move(payload_files_callback)
+        .Run(CreatePayloadFilesResult::kInvalidFileName, absl::nullopt);
   }
 }
 

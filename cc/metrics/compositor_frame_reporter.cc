@@ -1058,7 +1058,8 @@ void CompositorFrameReporter::ReportCompositorLatencyTraceEvents() const {
 
   if (IsDroppedFrameAffectingSmoothness()) {
     devtools_instrumentation::DidDropSmoothnessFrame(
-        layer_tree_host_id_, args_.frame_time, args_.frame_id.sequence_number);
+        layer_tree_host_id_, args_.frame_time, args_.frame_id.sequence_number,
+        has_partial_update_);
   }
 
   const auto trace_track =

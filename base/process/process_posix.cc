@@ -157,7 +157,7 @@ bool WaitForSingleNonChildProcess(base::ProcessHandle handle,
     } else {
       break;
     }
-  } while (wait_forever || remaining_delta > base::TimeDelta());
+  } while (wait_forever || remaining_delta.is_positive());
 
   if (result < 0) {
     DPLOG(ERROR) << "kevent (wait " << handle << ")";

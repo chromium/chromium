@@ -8,6 +8,7 @@
 
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -16,11 +17,13 @@
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chromeos/components/multidevice/logging/logging.h"
+#include "chromeos/components/phonehub/camera_roll_download_manager.h"
 #include "chromeos/components/phonehub/proto/phonehub_api.pb.h"
 #include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -33,6 +36,14 @@ namespace {
 scoped_refptr<base::SequencedTaskRunner> CreateTaskRunner() {
   return base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
+}
+
+bool HasEnoughDiskSpace(
+    const base::FilePath& root_path,
+    const chromeos::phonehub::proto::CameraRollItemMetadata& item_metadata) {
+  DCHECK(item_metadata.file_size_bytes() >= 0);
+  return base::SysInfo::AmountOfFreeDiskSpace(root_path) >=
+         item_metadata.file_size_bytes();
 }
 
 chromeos::secure_channel::mojom::PayloadFilesPtr DoCreatePayloadFiles(
@@ -80,19 +91,40 @@ void CameraRollDownloadManagerImpl::CreatePayloadFiles(
   if (!base_name || base_name->path().value() != item_metadata.file_name()) {
     PA_LOG(WARNING) << "Camera roll item file name "
                     << item_metadata.file_name() << " is not a valid base name";
-    return std::move(payload_files_callback).Run(absl::nullopt);
+    return std::move(payload_files_callback)
+        .Run(CreatePayloadFilesResult::kInvalidFileName, absl::nullopt);
   }
 
   if (pending_downloads_.contains(payload_id)) {
     PA_LOG(WARNING) << "Payload " << payload_id
                     << " is already being downloaded";
-    return std::move(payload_files_callback).Run(absl::nullopt);
+    return std::move(payload_files_callback)
+        .Run(CreatePayloadFilesResult::kPayloadAlreadyExists, absl::nullopt);
+  }
+
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&HasEnoughDiskSpace, download_path_, item_metadata),
+      base::BindOnce(&CameraRollDownloadManagerImpl::OnDiskSpaceCheckComplete,
+                     weak_ptr_factory_.GetWeakPtr(), base_name.value(),
+                     payload_id, std::move(payload_files_callback)));
+}
+
+void CameraRollDownloadManagerImpl::OnDiskSpaceCheckComplete(
+    const base::SafeBaseName& base_name,
+    int64_t payload_id,
+    CreatePayloadFilesCallback payload_files_callback,
+    bool has_enough_disk_space) {
+  if (!has_enough_disk_space) {
+    std::move(payload_files_callback)
+        .Run(CreatePayloadFilesResult::kInsufficientDiskSpace, absl::nullopt);
+    return;
   }
 
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&base::GetUniquePath,
-                     download_path_.Append(base_name->path())),
+                     download_path_.Append(base_name.path())),
       base::BindOnce(&CameraRollDownloadManagerImpl::OnUniquePathFetched,
                      weak_ptr_factory_.GetWeakPtr(), payload_id,
                      std::move(payload_files_callback)));
@@ -106,7 +138,16 @@ void CameraRollDownloadManagerImpl::OnUniquePathFetched(
 
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&DoCreatePayloadFiles, unique_path),
-      std::move(payload_files_callback));
+      base::BindOnce(&CameraRollDownloadManagerImpl::OnPayloadFilesCreated,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(payload_files_callback)));
+}
+
+void CameraRollDownloadManagerImpl::OnPayloadFilesCreated(
+    CreatePayloadFilesCallback payload_files_callback,
+    chromeos::secure_channel::mojom::PayloadFilesPtr payload_files) {
+  std::move(payload_files_callback)
+      .Run(CreatePayloadFilesResult::kSuccess, std::move(payload_files));
 }
 
 void CameraRollDownloadManagerImpl::UpdateDownloadProgress(

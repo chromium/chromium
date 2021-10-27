@@ -768,7 +768,7 @@ void URLFetcherCore::RetryOrCompleteUrlFetch() {
     // have a throttler manager.
     base::TimeTicks backoff_release_time = GetBackoffReleaseTime();
     backoff_delay = backoff_release_time - base::TimeTicks::Now();
-    if (backoff_delay < base::TimeDelta())
+    if (backoff_delay.is_negative())
       backoff_delay = base::TimeDelta();
 
     if (automatically_retry_on_5xx_ &&

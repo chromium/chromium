@@ -70,6 +70,8 @@ GenerateDefaultFeatureStatesMap() {
        multidevice_setup::mojom::FeatureState::kUnavailableNoVerifiedHost},
       {multidevice_setup::mojom::Feature::kPhoneHubNotifications,
        multidevice_setup::mojom::FeatureState::kUnavailableNoVerifiedHost},
+      {multidevice_setup::mojom::Feature::kPhoneHubCameraRoll,
+       multidevice_setup::mojom::FeatureState::kUnavailableNoVerifiedHost},
       {multidevice_setup::mojom::Feature::kPhoneHubTaskContinuation,
        multidevice_setup::mojom::FeatureState::kUnavailableNoVerifiedHost},
       {multidevice_setup::mojom::Feature::kWifiSync,
@@ -130,6 +132,13 @@ void VerifyPageContentDict(
   it = feature_states_map.find(
       multidevice_setup::mojom::Feature::kPhoneHubNotifications);
   EXPECT_EQ(static_cast<int>(it->second), *phone_hub_notifications_state);
+
+  absl::optional<int> phone_hub_camera_roll_state =
+      page_content_dict->FindIntKey("phoneHubCameraRollState");
+  ASSERT_TRUE(phone_hub_camera_roll_state);
+  it = feature_states_map.find(
+      multidevice_setup::mojom::Feature::kPhoneHubCameraRoll);
+  EXPECT_EQ(static_cast<int>(it->second), *phone_hub_camera_roll_state);
 
   absl::optional<int> phone_hub_task_continuation_state =
       page_content_dict->FindIntKey("phoneHubTaskContinuationState");

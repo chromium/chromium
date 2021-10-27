@@ -76,12 +76,18 @@ void SubscriberCrosapi::Clone(
 
 void SubscriberCrosapi::OnPreferredAppsChanged(
     apps::mojom::PreferredAppChangesPtr changes) {
-  NOTIMPLEMENTED();
+  if (!subscriber_.is_bound()) {
+    return;
+  }
+  subscriber_->OnPreferredAppsChanged(std::move(changes));
 }
 
 void SubscriberCrosapi::InitializePreferredApps(
     PreferredAppsList::PreferredApps preferred_apps) {
-  NOTIMPLEMENTED();
+  if (!subscriber_.is_bound()) {
+    return;
+  }
+  subscriber_->InitializePreferredApps(std::move(preferred_apps));
 }
 
 void SubscriberCrosapi::OnCrosapiDisconnected() {
@@ -133,6 +139,13 @@ void SubscriberCrosapi::LoadIcon(const std::string& app_id,
                              app_id, std::move(icon_key), icon_type,
                              size_hint_in_dip, /*allow_placeholder_icon=*/false,
                              std::move(callback));
+}
+
+void SubscriberCrosapi::AddPreferredApp(const std::string& app_id,
+                                        crosapi::mojom::IntentPtr intent) {
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
+  proxy->AddPreferredApp(
+      app_id, apps_util::ConvertCrosapiToAppServiceIntent(intent, profile_));
 }
 
 void SubscriberCrosapi::OnSubscriberDisconnected() {

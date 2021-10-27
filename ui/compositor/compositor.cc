@@ -229,6 +229,8 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
   settings.enable_compositing_based_throttling =
       enable_compositing_based_throttling;
 
+  settings.is_layer_tree_for_ui = true;
+
 #if DCHECK_IS_ON()
   if (command_line->HasSwitch(cc::switches::kLogOnUIDoubleBackgroundBlur))
     settings.log_on_ui_double_background_blur = true;
@@ -712,7 +714,13 @@ void Compositor::DidCommit(base::TimeTicks, base::TimeTicks) {
 
 std::unique_ptr<cc::BeginMainFrameMetrics>
 Compositor::GetBeginMainFrameMetrics() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  auto metrics_data = std::make_unique<cc::BeginMainFrameMetrics>();
+  metrics_data->should_measure_smoothness = true;
+  return metrics_data;
+#else
   return nullptr;
+#endif
 }
 
 std::unique_ptr<cc::WebVitalMetrics> Compositor::GetWebVitalMetrics() {

@@ -760,39 +760,6 @@ void WebAppInstallTask::OnIconsRetrievedShowDialog(
   }
 }
 
-void WebAppInstallTask::OnIconsRetrievedFinalizeUpdate(
-    std::unique_ptr<WebApplicationInfo> web_app_info,
-    bool update_product_icons,
-    IconsDownloadedResult result,
-    IconsMap icons_map,
-    DownloadedIconsHttpResults icons_http_results) {
-  if (ShouldStopInstall())
-    return;
-
-  DCHECK(web_app_info);
-
-  // TODO(crbug.com/926083): Abort update if icons fail to download.
-  if (update_product_icons)
-    PopulateProductIcons(web_app_info.get(), &icons_map);
-
-  PopulateOtherIcons(web_app_info.get(), icons_map);
-
-  // TODO(crbug.com/1238622): Report `IconsDownloadedResult`and
-  // `DownloadedIconsHttpResults` in UMAs.
-  //
-  // TODO(crbug.com/1240660): ManifestUpdateTask should download icons and pass
-  // to WebAppInstallManager. See the duplicate histogram in
-  // `ManifestUpdateTask::OnIconsDownloaded()`.
-  RecordDownloadedIconsHttpResultsCodeClass(
-      "WebApp.Icon.HttpStatusCodeClassOnUpdate", result, icons_http_results);
-  LogDownloadedIconsErrors(*web_app_info, result, icons_map,
-                           icons_http_results);
-
-  install_finalizer_->FinalizeUpdate(
-      *web_app_info,
-      base::BindOnce(&WebAppInstallTask::CallInstallCallback, GetWeakPtr()));
-}
-
 void WebAppInstallTask::OnDialogCompleted(
     ForInstallableSite for_installable_site,
     bool user_accepted,

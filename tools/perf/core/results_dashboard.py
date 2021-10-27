@@ -463,7 +463,7 @@ def _SendHistogramJson(url, histogramset_json, token_generator_callback):
   try:
     oauth_token = token_generator_callback()
 
-    data = zlib.compress(histogramset_json)
+    data = zlib.compress(histogramset_json.encode('utf-8'))
     headers = {
         'Authorization': 'Bearer %s' % oauth_token,
         'User-Agent': 'perf-uploader/1.0'
@@ -497,4 +497,4 @@ def _SendHistogramJson(url, histogramset_json, token_generator_callback):
     else:
       logging.info('Upload completion token created. Token id: %s' % token)
   except Exception as e:  # pylint: disable=broad-except
-    logging.warn('Error fetching upload completion token: %r' % e.message)
+    logging.warn('Error fetching upload completion token: %s' % e)

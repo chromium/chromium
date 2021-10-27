@@ -106,6 +106,9 @@ extern const base::FeatureParam<base::TimeDelta>
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kCorsNonWildcardRequestHeadersSupport;
 
+COMPONENT_EXPORT(NETWORK_CPP)
+extern const base::Feature kURLLoaderSyncClient;
+
 }  // namespace features
 }  // namespace network
 

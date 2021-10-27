@@ -407,15 +407,14 @@ float NGFragmentItem::ScaleInlineOffset(LayoutUnit inline_offset) const {
          SvgFragmentData()->length_adjust_scale;
 }
 
-bool NGFragmentItem::Contains(const FloatPoint& position) const {
-  if (Type() != kSvgText)
-    return FloatRect(rect_).Contains(position);
+bool NGFragmentItem::InclusiveContains(const FloatPoint& position) const {
+  DCHECK_EQ(Type(), kSvgText);
   const float scaling_factor = SvgScalingFactor();
   FloatPoint scaled_position = position;
   scaled_position.Scale(scaling_factor, scaling_factor);
   FloatRect item_rect = SvgFragmentData()->rect;
   if (!HasSvgTransformForBoundingBox())
-    return item_rect.Contains(scaled_position);
+    return item_rect.InclusiveContains(scaled_position);
   return BuildSvgTransformForBoundingBox()
       .MapQuad(FloatQuad(item_rect))
       .ContainsPoint(scaled_position);

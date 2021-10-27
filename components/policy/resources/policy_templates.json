@@ -3341,11 +3341,12 @@
       'owners': ['enne@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['chrome.*:84-', 'chrome_os:84-', 'android:84-', 'webview_android:84-'],
+      'supported_on': ['chrome.*:84-95', 'chrome_os:84-95', 'android:84-95', 'webview_android:84-95'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': False,
       },
+      'deprecated': True,
       'items': [
         {
           'value': True,
@@ -9514,7 +9515,7 @@
       'owners': ['igorruvinov@google.com', 'pastarmovj@google.com'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['chrome.*:92-'],
+      'supported_on': ['chrome.*:92-', 'android:97-'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -18984,7 +18985,7 @@
       'owners': ['igorruvinov@chromium.org', 'zmin@chromium.org', 'pastarmovj@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['chrome.*:96-'],
+      'supported_on': ['chrome.*:96-', 'android:97-'],
       'items': [
         {
           'value': True,

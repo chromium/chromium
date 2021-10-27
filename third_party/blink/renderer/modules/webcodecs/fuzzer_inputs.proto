@@ -6,6 +6,72 @@ syntax = "proto2";
 
 package wc_fuzzer;
 
+message AllowSharedBufferSource {
+  // Note: length is capped in the fuzzer to avoid OOM.
+  optional uint32 length = 1;
+  optional bool shared = 2;
+
+  enum ViewType {
+    NONE = 0;
+    INT8 = 1;
+    UINT32 = 2;
+    DATA = 3;
+  }
+  optional ViewType view_type = 3;
+  optional uint32 view_offset = 4;
+  optional uint32 view_length = 5;
+}
+
+message DOMRectInit {
+  optional double x = 1;
+  optional double y = 2;
+  optional double width = 3;
+  optional double height = 4;
+}
+
+message PlaneLayout {
+  optional uint32 offset = 1;
+  optional uint32 stride = 2;
+}
+
+message VideoFrameCopyToOptions {
+  optional DOMRectInit rect = 1;
+  repeated PlaneLayout layout = 2;
+}
+
+message VideoFrameBufferInit {
+  enum VideoPixelFormat {
+    I420 = 0;
+    I420A = 1;
+    I444 = 2;
+    NV12 = 3;
+    RGBA = 4;
+    RGBX = 5;
+    BGRA = 6;
+    BGRX = 7;
+  }
+  optional VideoPixelFormat format = 1;
+  repeated PlaneLayout layout = 2;
+
+  optional int64 timestamp = 3;
+  optional uint64 duration = 4;
+
+  optional uint32 coded_width = 5;
+  optional uint32 coded_height = 6;
+
+  optional DOMRectInit visible_rect = 7;
+
+  optional uint32 display_width = 8;
+  optional uint32 display_height = 9;
+
+  // TODO(sandersd): Support color_space.
+}
+
+message VideoFrameBufferInitInvocation {
+  required AllowSharedBufferSource data = 1;
+  required VideoFrameBufferInit init = 2;
+}
+
 message ConfigureVideoDecoder {
   // String describing codec (e.g. "vp09.00.10.08")
   optional string codec = 1;
@@ -81,7 +147,6 @@ message EncodedAudioChunk {
 }
 
 // Mix of args to VideoFrame constructor.
-// TODO(sandersd): Define a new Init type  when PlanesInit constructor lands.
 message VideoFrameBitmapInit {
   optional uint64 timestamp = 1;
 
@@ -256,4 +321,17 @@ message ConfigureImageDecoder {
 message ImageDecoderApiInvocationSequence {
   required ConfigureImageDecoder config = 1;
   repeated ImageDecoderApiInvocation invocations = 2;
+}
+
+message VideoFrameCopyToInvocation {
+  required AllowSharedBufferSource destination = 1;
+  optional VideoFrameCopyToOptions options = 2;
+}
+
+message VideoFrameCopyToCase {
+  // TODO(sandersd): Support other kinds of frames.
+  required VideoFrameBufferInitInvocation video_frame = 1;
+  // TODO(sandersd): Support multiple concurrent operations, optional waiting,
+  // close(), etc.
+  required VideoFrameCopyToInvocation copy_to = 2;
 }

@@ -87,6 +87,8 @@ class BorderView : public views::View {
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
     SetBorder(std::make_unique<SidePanelBorder>());
+    // Don't allow the view to process events.
+    SetCanProcessEventsWithinSubtree(false);
   }
 
   void Layout() override {
@@ -96,6 +98,11 @@ class BorderView : public views::View {
     bounds.Inset(gfx::Insets(-views::Separator::kThickness, 0, 0, 0));
 
     SetBoundsRect(bounds);
+  }
+
+  void OnThemeChanged() override {
+    SchedulePaint();
+    View::OnThemeChanged();
   }
 };
 

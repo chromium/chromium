@@ -15,6 +15,9 @@ namespace lens {
 void OpenLensSidePanel(Browser* browser,
                        const content::OpenURLParams& url_params) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+
+  if (!browser_view->lens_side_panel_controller())
+    browser_view->CreateLensSidePanelController();
   browser_view->lens_side_panel_controller()->OpenWithURL(url_params);
 }
 

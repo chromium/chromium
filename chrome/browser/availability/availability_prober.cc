@@ -632,7 +632,7 @@ absl::optional<bool> AvailabilityProber::LastProbeWasSuccessful() {
   // Check if the cache entry should be revalidated because it has expired or
   // cache_entry_age is negative because the clock was moved back.
   if (cache_entry_age >= revalidate_cache_after_ ||
-      cache_entry_age < base::TimeDelta()) {
+      cache_entry_age.is_negative()) {
     SendNowIfInactive(false);
   }
 

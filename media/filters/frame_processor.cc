@@ -901,7 +901,7 @@ bool FrameProcessor::ProcessFrame(scoped_refptr<StreamParserBuffer> frame,
     if (track_last_decode_timestamp != kNoDecodeTimestamp()) {
       base::TimeDelta track_dts_delta =
           decode_timestamp - track_last_decode_timestamp;
-      if (track_dts_delta < base::TimeDelta() ||
+      if (track_dts_delta.is_negative() ||
           track_dts_delta > 2 * track_buffer->last_frame_duration()) {
         // 6.1. If mode equals "segments": Set group end timestamp to
         //      presentation timestamp.

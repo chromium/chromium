@@ -186,8 +186,10 @@ class BASE_EXPORT TimeDelta {
     return TimeDelta((delta_ + mask) ^ mask);
   }
 
-  // Returns true if the time delta is zero.
+  // Returns true if the time delta is a zero, positive or negative time delta.
   constexpr bool is_zero() const { return delta_ == 0; }
+  constexpr bool is_positive() const { return delta_ > 0; }
+  constexpr bool is_negative() const { return delta_ < 0; }
 
   // Returns true if the time delta is the maximum/minimum time delta.
   constexpr bool is_max() const { return *this == Max(); }

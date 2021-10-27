@@ -402,3 +402,20 @@ union PermissionValue {
   bool bool_value;
   TriState tristate_value;
 };
+
+// Represents changes which have been made to the preferred apps list, both
+// adding new filters and removing existing filters. The map is keyed by
+// |app_id|, and the value is the list of the filters that is added/removed
+// for that |app_id|.
+[Stable]
+struct PreferredAppChanges {
+  map<string, array<IntentFilter>> added_filters;
+  map<string, array<IntentFilter>> removed_filters;
+};
+
+// Represents the entry of the preferred apps list.
+[Stable]
+struct PreferredApp {
+  IntentFilter intent_filter;
+  string app_id;
+};

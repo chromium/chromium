@@ -39,11 +39,11 @@
   #topRow keyboard-key {
     flex-basis: 0;
     flex-grow: 1;
-    margin-right: var(--grid-gap);
+    margin-right: var(--grid-gap);  /* csschecker-disable-line left-right */
   }
 
   #topRow keyboard-key:last-child {
-    margin-right: 0;
+    margin-right: 0;  /* csschecker-disable-line left-right */
   }
 
   #arrowKeyCluster {
@@ -92,8 +92,8 @@
    * separate elements are placed on the grid, with their corners and
    * positioning tweaked to make them look like one key.
    */
-  [data-mech-layout="iso"] #enterKey,
-  [data-mech-layout="jis"] #enterKey {
+  [data-mech-layout='iso'] #enterKey,
+  [data-mech-layout='jis'] #enterKey {
     --keyboard-key-bottom-right-radius: 0;
     grid-column: 28 / -1;
     grid-row: 3;
@@ -103,8 +103,8 @@
     display: none;
   }
 
-  [data-mech-layout="iso"] #enterKeyLowerPart,
-  [data-mech-layout="jis"] #enterKeyLowerPart {
+  [data-mech-layout='iso'] #enterKeyLowerPart,
+  [data-mech-layout='jis'] #enterKeyLowerPart {
     --keyboard-key-border-top-width: 0;
     --keyboard-key-top-radii: 0;
     display: block;
@@ -116,15 +116,15 @@
     margin-top: calc(-1 * var(--grid-gap) - var(--key-travel) - 1px);
   }
 
-  [data-mech-layout="iso"] #backslashKey,
-  [data-mech-layout="jis"] #backslashKey {
+  [data-mech-layout='iso'] #backslashKey,
+  [data-mech-layout='jis'] #backslashKey {
     grid-column: 27 / span 2;
     grid-row: 4;
   }
 
   /* Modifications for ISO */
 
-  [data-mech-layout="iso"] #leftShiftKey {
+  [data-mech-layout='iso'] #leftShiftKey {
     grid-column: span 3;
   }
 
@@ -134,23 +134,23 @@
    * JIS crams in a few more keys, most notably an additional one on the number
    * row, so a 30-column grid makes more sense for it.
    */
-  .main-cluster[data-mech-layout="jis"] {
+  .main-cluster[data-mech-layout='jis'] {
     grid-template-columns: repeat(30, 1fr);
   }
 
-  [data-mech-layout="jis"] #backspaceKey {
+  [data-mech-layout='jis'] #backspaceKey {
     grid-column: span 2;
   }
 
-  [data-mech-layout="jis"] #spacebar {
+  [data-mech-layout='jis'] #spacebar {
     grid-column: span 6;
   }
 
-  [data-mech-layout="jis"] #rightShiftKey {
+  [data-mech-layout='jis'] #rightShiftKey {
     grid-column: span 3;
   }
 
-  [data-mech-layout="jis"] #arrowKeyCluster {
+  [data-mech-layout='jis'] #arrowKeyCluster {
     grid-column: span 7;
   }
 </style>

@@ -630,7 +630,7 @@ bool CPU::GetCumulativeCoreIdleTimes(CoreIdleTimes& idle_times) {
 
     // At least one of the cores should have some idle time, otherwise we report
     // a failure.
-    success |= idle_time > base::TimeDelta();
+    success |= idle_time.is_positive();
   }
 
   return success;

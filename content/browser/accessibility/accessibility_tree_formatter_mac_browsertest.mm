@@ -440,6 +440,15 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+                       Script_NotApplicableAttribute) {
+  TestScript(R"~~(data:text/html,
+                    <input id='textbox'>)~~",
+             {"textbox.AXARIABusy"},
+             R"~~(textbox.AXARIABusy=n/a
+)~~");
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
                        Script_NullValue) {
   TestScript(R"~~(data:text/html,
                     <input id='input'>)~~",

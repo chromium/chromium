@@ -1140,8 +1140,6 @@ extern const char kMediaFeedsBackgroundFetching[];
 extern const char kMediaFeedsSafeSearchEnabled[];
 extern const char kMediaFeedsAutoSelectEnabled[];
 
-extern const char kAppCacheForceEnabled[];
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kAdbSideloadingDisallowedNotificationShown[];
 extern const char kAdbSideloadingPowerwashPlannedNotificationShownTime[];

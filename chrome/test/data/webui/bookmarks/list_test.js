@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BrowserProxy, Command, MenuSource} from 'chrome://bookmarks/bookmarks.js';
+import {BrowserProxyImpl, Command, MenuSource} from 'chrome://bookmarks/bookmarks.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flushTasks} from 'chrome://webui-test/test_util.js';
 
@@ -186,7 +186,7 @@ suite('<bookmarks-list> command manager integration test', function() {
     store.setReducersEnabled(true);
 
     proxy = new TestBookmarksBrowserProxy();
-    BrowserProxy.setInstance(proxy);
+    BrowserProxyImpl.setInstance(proxy);
 
     app = document.createElement('bookmarks-app');
     app.style.height = '100%';
@@ -201,11 +201,6 @@ suite('<bookmarks-list> command manager integration test', function() {
   test('show context menu', async () => {
     const commandManager =
         app.shadowRoot.querySelector('bookmarks-command-manager');
-    commandManager.updateForPaste_ = function() {
-      this.canPaste_ = true;
-      return Promise.resolve();
-    };
-
     proxy.resetResolver('recordInHistogram');
     const list = app.shadowRoot.querySelector('bookmarks-list');
     list.dispatchEvent(new CustomEvent(

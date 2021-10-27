@@ -550,7 +550,7 @@ void MediaPlayerBridge::SeekInternal(base::TimeDelta time) {
 
   // Seeking to an invalid position may cause media player to stuck in an
   // error state.
-  if (time < base::TimeDelta()) {
+  if (time.is_negative()) {
     DCHECK_EQ(-1.0, time.InMillisecondsF());
     return;
   }

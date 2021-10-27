@@ -56,6 +56,23 @@ InterceptOMADownloadNavigationThrottle::WillProcessResponse() {
     return content::NavigationThrottle::PROCEED;
   }
 
+  // Make the throttle prerender-aware. Prerender must not have any observable
+  // side effects so avoid calling InterceptDownload. The prerender should also
+  // be cancelled in this case but that requires a reference to the
+  // RenderFrameHost which isn't easily available for a download. Instead,
+  // proceed in this throttle; it will be cancelled from
+  // PrerenderNavigationThrottle eventually.
+  // TODO(robertlin): Find a way to port PrerenderHost status checks to Java,
+  // and add a test on Android to verify the cancellation of an OMA download.
+  content::RenderFrameHost* parent_render_frame_host =
+      navigation_handle()->GetParentFrame();
+  if ((parent_render_frame_host &&
+       content::RenderFrameHost::LifecycleState::kPrerendering ==
+           parent_render_frame_host->GetLifecycleState()) ||
+      navigation_handle()->IsInPrerenderedMainFrame()) {
+    return content::NavigationThrottle::PROCEED;
+  }
+
   InterceptDownload();
   return content::NavigationThrottle::CANCEL;
 }

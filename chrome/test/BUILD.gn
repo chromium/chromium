@@ -1753,7 +1753,7 @@ if (!is_android && !is_fuchsia) {
       "../browser/policy/test/safe_browsing_policy_browsertest.cc",
       "../browser/policy/test/shared_clipboard_enabled_browsertest.cc",
       "../browser/policy/test/ssl_error_overriding_allowed_policy_browsertest.cc",
-      "../browser/policy/test/url_blacklist_policy_browsertest.cc",
+      "../browser/policy/test/url_blocklist_policy_browsertest.cc",
       "../browser/policy/test/url_keyed_anonymized_data_collection_enabled_browsertest.cc",
       "../browser/policy/test/web_rtc_udp_port_range_policy_browsertest.cc",
       "../browser/policy/test/window_opener_policy_browsertest.cc",
@@ -1967,6 +1967,7 @@ if (!is_android && !is_fuchsia) {
       "../browser/ui/views/bluetooth_device_credentials_view_browsertest.cc",
       "../browser/ui/views/bookmarks/bookmark_bar_view_browsertest.cc",
       "../browser/ui/views/bookmarks/bookmark_bar_view_test_helper.h",
+      "../browser/ui/views/confirm_bubble_views_browsertest.cc",
       "../browser/ui/views/content_setting_bubble_contents_browsertest.cc",
       "../browser/ui/views/content_test_utils.cc",
       "../browser/ui/views/content_test_utils.h",
@@ -3293,6 +3294,7 @@ if (!is_android && !is_fuchsia) {
         "../browser/ash/web_applications/camera_app/camera_app_integration_browsertest.cc",
         "../browser/ash/web_applications/diagnostics_app_integration_browsertest.cc",
         "../browser/ash/web_applications/eche_app_integration_browsertest.cc",
+        "../browser/ash/web_applications/firmware_update_app_integration_browsertest.cc",
         "../browser/ash/web_applications/help_app/help_app_integration_browsertest.cc",
         "../browser/ash/web_applications/media_app/media_app_integration_browsertest.cc",
         "../browser/ash/web_applications/os_feedback_app_integration_browsertest.cc",
@@ -3582,6 +3584,7 @@ if (!is_android && !is_fuchsia) {
         "//ash/public/cpp/external_arc",
         "//ash/webui/diagnostics_ui",
         "//ash/webui/file_manager:constants",
+        "//ash/webui/firmware_update_ui",
         "//ash/webui/help_app_ui",
         "//ash/webui/help_app_ui:buildflags",
         "//ash/webui/help_app_ui/search:mojo_bindings",
@@ -3831,6 +3834,9 @@ if (!is_android && !is_fuchsia) {
         # ChromeOS, and Linux.
         "../browser/renderer_context_menu/spelling_options_submenu_observer_browsertest.cc",
       ]
+    }
+    if (is_linux || is_chromeos_lacros || is_mac) {
+      sources += [ "../browser/ui/views/first_run_dialog_browsertest.cc" ]
     }
     if (!is_posix || is_chromeos_ash) {
       sources -= [ "../common/time_format_browsertest.cc" ]
@@ -6503,7 +6509,6 @@ test("unit_tests") {
       "../browser/ui/ash/keyboard/chrome_keyboard_web_contents_unittest.cc",
       "../browser/ui/ash/keyboard_shortcut_viewer_metadata_unittest.cc",
       "../browser/ui/ash/media_client_impl_unittest.cc",
-      "../browser/ui/ash/media_notification_provider_impl_unittest.cc",
       "../browser/ui/ash/microphone_mute_notification_delegate_impl_unittest.cc",
       "../browser/ui/ash/multi_user/multi_profile_support_unittest.cc",
       "../browser/ui/ash/multi_user/multi_user_context_menu_chromeos_unittest.cc",
@@ -7291,10 +7296,13 @@ test("unit_tests") {
     sources += [ "../browser/enterprise/connectors/device_trust/attestation/desktop/desktop_attestation_service_unittest.cc" ]
 
     deps += [
+      "../browser/enterprise/connectors/device_trust/key_management/browser",
+      "../browser/enterprise/connectors/device_trust/key_management/browser:unit_tests",
       "../browser/enterprise/connectors/device_trust/key_management/core",
       "../browser/enterprise/connectors/device_trust/key_management/core:unit_tests",
       "../browser/enterprise/connectors/device_trust/key_management/core/persistence",
       "../browser/enterprise/connectors/device_trust/key_management/core/persistence:test_support",
+      "../browser/enterprise/connectors/device_trust/key_management/installer:unit_tests",
       "../browser/enterprise/connectors/device_trust/signals/decorators/browser:unit_tests",
     ]
   }

@@ -40,10 +40,8 @@ namespace protocol {
 WebrtcConnectionToClient::WebrtcConnectionToClient(
     std::unique_ptr<protocol::Session> session,
     scoped_refptr<protocol::TransportContext> transport_context,
-    scoped_refptr<base::SingleThreadTaskRunner> video_encode_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner)
     : session_(std::move(session)),
-      video_encode_task_runner_(video_encode_task_runner),
       audio_task_runner_(audio_task_runner),
       control_dispatcher_(new HostControlDispatcher()),
       event_dispatcher_(new HostEventDispatcher()) {
@@ -87,7 +85,7 @@ std::unique_ptr<VideoStream> WebrtcConnectionToClient::StartVideoStream(
   std::unique_ptr<WebrtcVideoStream> stream(
       new WebrtcVideoStream(session_options_));
   stream->Start(std::move(desktop_capturer), transport_.get(),
-                video_encoder_factory_, video_encode_task_runner_);
+                video_encoder_factory_);
   stream->SetEventTimestampsSource(
       event_dispatcher_->event_timestamps_source());
   return std::move(stream);

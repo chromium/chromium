@@ -55,8 +55,6 @@ class PLATFORM_EXPORT FloatRect {
   DISALLOW_NEW();
 
  public:
-  enum ContainsMode { kInsideOrOnStroke, kInsideButNotOnStroke };
-
   constexpr FloatRect() = default;
   constexpr FloatRect(const FloatPoint& location, const FloatSize& size)
       : location_(location), size_(size) {}
@@ -139,7 +137,6 @@ class PLATFORM_EXPORT FloatRect {
   WARN_UNUSED_RESULT bool Intersects(const FloatRect&) const;
   bool Contains(const IntRect&) const;
   bool Contains(const FloatRect&) const;
-  bool Contains(const FloatPoint&, ContainsMode = kInsideOrOnStroke) const;
 
   void Intersect(const IntRect&);
   void Intersect(const FloatRect&);
@@ -156,11 +153,10 @@ class PLATFORM_EXPORT FloatRect {
   void UnionIfNonZero(const FloatRect&);
   void Extend(const FloatPoint&);
 
-  // Note, this doesn't match what IntRect::contains(IntPoint&) does; the int
-  // version is really checking for containment of 1x1 rect, but that doesn't
-  // make sense with floats.
-  bool Contains(float px, float py) const {
-    return px >= x() && px <= right() && py >= y() && py <= bottom();
+  // Returns true if |p| is in the rect or is on any of the edges of the rect.
+  bool InclusiveContains(const FloatPoint& p) const {
+    return p.x() >= x() && p.x() <= right() && p.y() >= y() &&
+           p.y() <= bottom();
   }
 
   void OutsetX(float dx) {

@@ -372,8 +372,7 @@ base::CpuAffinityMode PowerScheduler::GetTargetCpuAffinity() {
   // If we are in a throttleable mode, check if we've been in a throttleable
   // mode for long enough and consumed enough CPU. Otherwise, don't change
   // anything (yet) and schedule a follow-up check if needed.
-  if (is_throttleable_mode &&
-      current_policy_.min_time_in_mode > base::TimeDelta()) {
+  if (is_throttleable_mode && current_policy_.min_time_in_mode.is_positive()) {
     base::TimeTicks now = base::TimeTicks::Now();
     base::TimeDelta cumulative_cpu = GetProcessCpuTime();
 

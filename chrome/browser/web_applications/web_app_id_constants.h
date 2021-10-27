@@ -14,6 +14,7 @@ extern const char kCameraAppId[];
 extern const char kCanvasAppId[];
 extern const char kCursiveAppId[];
 extern const char kDiagnosticsAppId[];
+extern const char kFirmwareUpdateAppId[];
 extern const char kGmailAppId[];
 extern const char kGoogleCalendarAppId[];
 extern const char kGoogleChatAppId[];

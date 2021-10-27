@@ -290,6 +290,8 @@ void RecordAppLaunch(const std::string& app_id,
     RecordDefaultAppLaunch(DefaultAppName::kShimlessRMAApp, launch_source);
   } else if (app_id == chromeos::kChromeUITrustedProjectorSwaAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kProjector, launch_source);
+  } else if (app_id == web_app::kFirmwareUpdateAppId) {
+    RecordDefaultAppLaunch(DefaultAppName::kFirmwareUpdateApp, launch_source);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 

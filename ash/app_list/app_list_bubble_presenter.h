@@ -11,6 +11,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/shelf_types.h"
+#include "ui/display/display_observer.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace ash {
@@ -22,7 +23,8 @@ class AppListControllerImpl;
 // Manages the UI for the bubble launcher used in clamshell mode. Handles
 // showing and hiding the UI, as well as bounds computations. Only one bubble
 // can be visible at a time, across all displays.
-class ASH_EXPORT AppListBubblePresenter : public views::WidgetObserver {
+class ASH_EXPORT AppListBubblePresenter : public views::WidgetObserver,
+                                          public display::DisplayObserver {
  public:
   explicit AppListBubblePresenter(AppListControllerImpl* controller);
   AppListBubblePresenter(const AppListBubblePresenter&) = delete;
@@ -51,6 +53,10 @@ class ASH_EXPORT AppListBubblePresenter : public views::WidgetObserver {
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
 
+  // DisplayObserver:
+  void OnDisplayMetricsChanged(const display::Display& display,
+                               uint32_t changed_metrics) override;
+
   views::Widget* bubble_widget_for_test() { return bubble_widget_; }
   AppListBubbleView* bubble_view_for_test() { return bubble_view_; }
 
@@ -73,6 +79,9 @@ class ASH_EXPORT AppListBubblePresenter : public views::WidgetObserver {
 
   // Closes the widget when the user clicks outside of it.
   std::unique_ptr<AppListBubbleEventFilter> bubble_event_filter_;
+
+  // Observes display configuration changes.
+  display::ScopedDisplayObserver display_observer_{this};
 };
 
 }  // namespace ash

@@ -51,6 +51,7 @@ source_set("audio") {
     "output_stream.h",
     "owning_audio_manager_accessor.cc",
     "owning_audio_manager_accessor.h",
+    "reference_output.h",
     "service.cc",
     "service.h",
     "service_factory.cc",

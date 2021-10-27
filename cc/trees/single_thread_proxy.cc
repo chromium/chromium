@@ -203,7 +203,6 @@ void SingleThreadProxy::DoCommit(const viz::BeginFrameArgs& commit_args) {
     DebugScopedSetMainThreadBlocked main_thread_blocked(task_runner_provider_);
     DebugScopedSetImplThread impl(task_runner_provider_);
 
-    host_impl_->ReadyToCommit(commit_args, nullptr);
     host_impl_->BeginCommit(source_frame_number);
 
     if (host_impl_->EvictedUIResourcesExist())
@@ -649,7 +648,7 @@ void SingleThreadProxy::CompositeImmediatelyForTest(
     StopDeferringCommits(PaintHoldingCommitTrigger::kFeatureDisabled);
     DoBeginMainFrame(begin_frame_args);
     commit_requested_ = false;
-    DoPainting();
+    DoPainting(begin_frame_args);
     DoCommit(begin_frame_args);
 
     DCHECK_EQ(
@@ -889,7 +888,7 @@ void SingleThreadProxy::BeginMainFrame(
     return;
   }
 
-  DoPainting();
+  DoPainting(begin_frame_args);
 }
 
 void SingleThreadProxy::DoBeginMainFrame(
@@ -909,21 +908,32 @@ void SingleThreadProxy::DoBeginMainFrame(
   layer_tree_host_->WillBeginMainFrame();
   layer_tree_host_->BeginMainFrame(begin_frame_args);
   layer_tree_host_->AnimateLayers(begin_frame_args.frame_time);
-  layer_tree_host_->RequestMainFrameUpdate(false /* record_cc_metrics */);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  const bool record_metrics =
+      layer_tree_host_->GetSettings().is_layer_tree_for_ui;
+#else
+  constexpr bool record_metrics = false;
+#endif
+  layer_tree_host_->RequestMainFrameUpdate(record_metrics);
+
   // Reset the flag for the next time around. It has been used for this frame.
   did_apply_compositor_deltas_ = false;
 }
 
-void SingleThreadProxy::DoPainting() {
+void SingleThreadProxy::DoPainting(const viz::BeginFrameArgs& commit_args) {
   layer_tree_host_->UpdateLayers();
   update_layers_requested_ = false;
+
+  auto begin_main_frame_metrics = layer_tree_host_->begin_main_frame_metrics();
+  host_impl_->ReadyToCommit(commit_args, begin_main_frame_metrics.get());
 
   // TODO(enne): SingleThreadProxy does not support cancelling commits yet,
   // search for CommitEarlyOutReason::FINISHED_NO_UPDATES inside
   // thread_proxy.cc
   if (scheduler_on_impl_thread_) {
     scheduler_on_impl_thread_->NotifyReadyToCommit(
-        layer_tree_host_->begin_main_frame_metrics());
+        std::move(begin_main_frame_metrics));
   }
 }
 

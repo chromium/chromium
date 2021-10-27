@@ -19,7 +19,6 @@
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/grit/chromium_strings.h"
@@ -273,6 +272,14 @@ void FullRestoreService::Observe(int type,
   DCHECK_EQ(chrome::NOTIFICATION_APP_TERMINATING, type);
   app_launch_handler_.reset();
   ::full_restore::FullRestoreSaveHandler::GetInstance()->SetShutDown();
+
+  // The crash notification creates an crash lock for the browser session
+  // restore. So if the notification has been closed and the system is no longer
+  // crash, clear `crashed_lock_`. Otherwise, the crash flag might not be
+  // cleared, and the crash notification might be shown again after the normal
+  // shutdown process.
+  if (!notification_)
+    crashed_lock_.reset();
 }
 
 void FullRestoreService::OnActionPerformed(AcceleratorAction action) {
@@ -347,6 +354,13 @@ bool FullRestoreService::CanBeInited() {
 void FullRestoreService::MaybeShowRestoreNotification(const std::string& id) {
   if (!ShouldShowNotification())
     return;
+
+  // If the system is restored from crash, create the crash lock for the browser
+  // session restore to help set the browser saving flag.
+  ExitTypeService* exit_type_service =
+      ExitTypeService::GetInstanceForProfile(profile_);
+  if (id == kRestoreForCrashNotificationId && exit_type_service)
+    crashed_lock_ = exit_type_service->CreateCrashedLock();
 
   auto* accelerator_controller = ash::AcceleratorController::Get();
   if (accelerator_controller) {

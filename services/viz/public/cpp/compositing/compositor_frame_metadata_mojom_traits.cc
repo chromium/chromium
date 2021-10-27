@@ -58,7 +58,7 @@ bool StructTraits<viz::mojom::CompositorFrameMetadataDataView,
 
   // Preferred_frame_interval must be nullopt or non-negative.
   if (out->preferred_frame_interval &&
-      *out->preferred_frame_interval < base::TimeDelta()) {
+      out->preferred_frame_interval->is_negative()) {
     return false;
   }
 

@@ -719,6 +719,25 @@ if (use_libfuzzer) {
     ]
   }
 
+  fuzzer_test("webcodecs_video_frame_copy_to_fuzzer") {
+    sources = [
+      "webcodecs/fuzzer_utils.cc",
+      "webcodecs/fuzzer_utils.h",
+      "webcodecs/video_frame_copy_to_fuzzer.cc",
+    ]
+
+    seed_corpus = "webcodecs/fuzzer_seed_corpus/video_frame_copy_to"
+
+    deps = [
+      ":modules",
+      "//third_party/blink/renderer/core:testing",
+      "//third_party/blink/renderer/modules/webcodecs:fuzzer_protos",
+      "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
+      "//third_party/libprotobuf-mutator",
+      "//third_party/protobuf:protobuf_lite",
+    ]
+  }
+
   fuzzer_test("webcodecs_video_decoder_fuzzer") {
     sources = [
       "webcodecs/fuzzer_utils.cc",

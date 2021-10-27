@@ -67,12 +67,6 @@ export class OnboardingUpdatePageElement extends PolymerElement {
       },
 
       /** @protected */
-      checkInProgress_: {
-        type: Boolean,
-        value: false,
-      },
-
-      /** @protected */
       updateInProgress_: {
         type: Boolean,
         value: false,
@@ -82,6 +76,12 @@ export class OnboardingUpdatePageElement extends PolymerElement {
       updateAvailable_: {
         type: Boolean,
         value: false,
+      },
+
+      /** @protected */
+      updateVersion_: {
+        type: String,
+        value: '',
       }
     };
   }
@@ -107,6 +107,7 @@ export class OnboardingUpdatePageElement extends PolymerElement {
   ready() {
     super.ready();
     this.getCurrentVersionText_();
+    this.checkForUdpates_();
     this.dispatchEvent(new CustomEvent(
         'disable-next-button',
         {bubbles: true, composed: true, detail: false},
@@ -124,12 +125,12 @@ export class OnboardingUpdatePageElement extends PolymerElement {
     // TODO(joonbug): i18n string
   }
 
-  /** @protected */
-  onUpdateCheckButtonClicked_() {
-    this.checkInProgress_ = true;
+  /** @private */
+  checkForUdpates_() {
     this.shimlessRmaService_.checkForOsUpdates().then((res) => {
-      if (res.updateAvailable) {
+      if (res && res.updateAvailable) {
         this.updateAvailable_ = true;
+        this.updateVersion_ = res.version;
         // TODO(joonbug): i18n string
         this.currentVersionText_ =
             `Current version ${this.currentVersion_} is out of date`;
@@ -138,18 +139,25 @@ export class OnboardingUpdatePageElement extends PolymerElement {
         this.currentVersionText_ =
             `Current version ${this.currentVersion_} is up to date`;
       }
-      this.checkInProgress_ = false;
     });
   }
 
   /** @protected */
   onUpdateButtonClicked_() {
     this.updateInProgress_ = true;
+    this.dispatchEvent(new CustomEvent(
+        'disable-next-button',
+        {bubbles: true, composed: true, detail: false},
+        ));
     this.shimlessRmaService_.updateOs().then((res) => {
       if (!res.updateStarted) {
         // TODO(gavindodd): i18n string
         this.updateProgressMessage_ = 'OS update failed';
         this.updateInProgress_ = false;
+        this.dispatchEvent(new CustomEvent(
+            'disable-next-button',
+            {bubbles: true, composed: true, detail: false},
+            ));
       }
     });
   }
@@ -172,8 +180,19 @@ export class OnboardingUpdatePageElement extends PolymerElement {
    * @param {number} progress
    */
   onOsUpdateProgressUpdated(operation, progress) {
-    if (operation === OsUpdateOperation.kIdle) {
+    // Ignore progress when not updating, it is just the update available check.
+    if (!this.updateInProgress_) {
+      return;
+    }
+    if (operation === OsUpdateOperation.kIdle ||
+        operation === OsUpdateOperation.kReportingErrorEvent ||
+        operation === OsUpdateOperation.kNeedPermissionToUpdate ||
+        operation === OsUpdateOperation.kDisabled) {
       this.updateInProgress_ = false;
+      this.dispatchEvent(new CustomEvent(
+          'disable-next-button',
+          {bubbles: true, composed: true, detail: false},
+          ));
     }
     // TODO(gavindodd): i18n string
     this.updateProgressMessage_ = 'OS update progress received ' +

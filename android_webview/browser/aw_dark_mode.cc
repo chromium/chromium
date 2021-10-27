@@ -52,8 +52,6 @@ AwDarkMode::~AwDarkMode() {
     Java_AwDarkMode_onNativeObjectDestroyed(env, scoped_obj);
 }
 
-// TODO(crbug.com/1253990): Probably need to PopulateWebPreferences() after
-// the app's theme changed and the configuration change is handled by app.
 void AwDarkMode::PopulateWebPreferences(
     blink::web_pref::WebPreferences* web_prefs,
     int force_dark_mode,

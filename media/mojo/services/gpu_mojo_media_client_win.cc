@@ -32,68 +32,59 @@ bool ShouldUseD3D11VideoDecoder(
   return true;
 }
 
-class WinPlatformDelegate : public GpuMojoMediaClient::PlatformDelegate {
- public:
-  explicit WinPlatformDelegate(GpuMojoMediaClient* client) : client_(client) {}
-  ~WinPlatformDelegate() override = default;
-
-  WinPlatformDelegate(const WinPlatformDelegate&) = delete;
-  void operator=(const WinPlatformDelegate&) = delete;
-
-  // GpuMojoMediaClient::PlatformDelegate implementation.
-  SupportedVideoDecoderConfigs GetSupportedVideoDecoderConfigsSync() {
-    SupportedVideoDecoderConfigs supported_configs;
-    if (ShouldUseD3D11VideoDecoder(client_->gpu_workarounds())) {
-      return D3D11VideoDecoder::GetSupportedVideoDecoderConfigs(
-          client_->gpu_preferences(), client_->gpu_workarounds(),
-          GetD3D11DeviceCallback());
-    } else if (!client_->gpu_workarounds().disable_dxva_video_decoder) {
-      return client_->GetVDAVideoDecoderConfigs();
-    } else {
-      return {};
-    }
-  }
-
-  // GpuMojoMediaClient::PlatformDelegate implementation.
-  std::unique_ptr<VideoDecoder> CreateVideoDecoder(
-      const VideoDecoderTraits& traits) override {
-    if (!ShouldUseD3D11VideoDecoder(client_->gpu_workarounds())) {
-      if (client_->gpu_workarounds().disable_dxva_video_decoder)
-        return nullptr;
-      return VdaVideoDecoder::Create(
-          traits.task_runner, traits.gpu_task_runner, traits.media_log->Clone(),
-          *traits.target_color_space, client_->gpu_preferences(),
-          client_->gpu_workarounds(), traits.get_command_buffer_stub_cb);
-    }
-    DCHECK(base::FeatureList::IsEnabled(kD3D11VideoDecoder));
-    return D3D11VideoDecoder::Create(
-        traits.gpu_task_runner, traits.media_log->Clone(),
-        client_->gpu_preferences(), client_->gpu_workarounds(),
-        traits.get_command_buffer_stub_cb, GetD3D11DeviceCallback(),
-        GetSupportedVideoDecoderConfigsSync(),
-        gl::DirectCompositionSurfaceWin::IsHDRSupported());
-  }
-
-  void GetSupportedVideoDecoderConfigs(
-      MojoMediaClient::SupportedVideoDecoderConfigsCallback callback) override {
-    std::move(callback).Run(GetSupportedVideoDecoderConfigsSync());
-  }
-
-  VideoDecoderType GetDecoderImplementationType() override {
-    if (!ShouldUseD3D11VideoDecoder(client_->gpu_workarounds()))
-      return VideoDecoderType::kVda;
-    return VideoDecoderType::kD3D11;
-  }
-
- private:
-  GpuMojoMediaClient* client_;
-};
-
 }  // namespace
 
-std::unique_ptr<GpuMojoMediaClient::PlatformDelegate>
-GpuMojoMediaClient::PlatformDelegate::Create(GpuMojoMediaClient* client) {
-  return std::make_unique<WinPlatformDelegate>(client);
+std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
+    const VideoDecoderTraits& traits) {
+  if (!ShouldUseD3D11VideoDecoder(*traits.gpu_workarounds)) {
+    if (traits.gpu_workarounds->disable_dxva_video_decoder)
+      return nullptr;
+    return VdaVideoDecoder::Create(
+        traits.task_runner, traits.gpu_task_runner, traits.media_log->Clone(),
+        *traits.target_color_space, traits.gpu_preferences,
+        *traits.gpu_workarounds, traits.get_command_buffer_stub_cb);
+  }
+  DCHECK(base::FeatureList::IsEnabled(kD3D11VideoDecoder));
+  return D3D11VideoDecoder::Create(
+      traits.gpu_task_runner, traits.media_log->Clone(), traits.gpu_preferences,
+      *traits.gpu_workarounds, traits.get_command_buffer_stub_cb,
+      GetD3D11DeviceCallback(), traits.get_cached_configs_cb.Run(),
+      gl::DirectCompositionSurfaceWin::IsHDRSupported());
+}
+
+absl::optional<SupportedVideoDecoderConfigs>
+GetPlatformSupportedVideoDecoderConfigs(
+    gpu::GpuDriverBugWorkarounds gpu_workarounds,
+    gpu::GpuPreferences gpu_preferences,
+    base::OnceCallback<SupportedVideoDecoderConfigs()> get_vda_configs) {
+  SupportedVideoDecoderConfigs supported_configs;
+  if (ShouldUseD3D11VideoDecoder(gpu_workarounds)) {
+    supported_configs = D3D11VideoDecoder::GetSupportedVideoDecoderConfigs(
+        gpu_preferences, gpu_workarounds, GetD3D11DeviceCallback());
+  } else if (!gpu_workarounds.disable_dxva_video_decoder) {
+    supported_configs = std::move(get_vda_configs).Run();
+  }
+  return supported_configs;
+}
+
+std::unique_ptr<AudioDecoder> CreatePlatformAudioDecoder(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+  return nullptr;
+}
+
+VideoDecoderType GetPlatformDecoderImplementationType(
+    gpu::GpuDriverBugWorkarounds gpu_workarounds,
+    gpu::GpuPreferences gpu_preferences) {
+  if (!ShouldUseD3D11VideoDecoder(gpu_workarounds))
+    return VideoDecoderType::kVda;
+  return VideoDecoderType::kD3D11;
+}
+
+// There is no CdmFactory on windows, so just stub it out.
+class CdmFactory {};
+std::unique_ptr<CdmFactory> CreatePlatformCdmFactory(
+    mojom::FrameInterfaceFactory* frame_interfaces) {
+  return nullptr;
 }
 
 }  // namespace media

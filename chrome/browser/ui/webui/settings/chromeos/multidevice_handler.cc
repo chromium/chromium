@@ -67,19 +67,6 @@ void OnRetrySetHostNowResult(bool success) {
                   << "host device failed.";
 }
 
-void RecordDoesMultideviceSetupClientExist(
-    PrefService* prefs,
-    multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client) {
-  // Only log if MultiDeviceFeatures are allowed because if the MultiDevice
-  // suite is prohibited, we expect the client to be null. We expect this metric
-  // to always emit true.
-  if (multidevice_setup::AreAnyMultiDeviceFeaturesAllowed(prefs)) {
-    base::UmaHistogramBoolean(
-        "MultiDevice.BetterTogetherSuite.DoesMultiDeviceSetupClientExist",
-        multidevice_setup_client != nullptr);
-  }
-}
-
 }  // namespace
 
 MultideviceHandler::MultideviceHandler(
@@ -94,8 +81,9 @@ MultideviceHandler::MultideviceHandler(
       notification_access_manager_(notification_access_manager),
       android_sms_pairing_state_tracker_(android_sms_pairing_state_tracker),
       android_sms_app_manager_(android_sms_app_manager) {
+  CHECK((multidevice_setup_client_ != nullptr) ==
+        multidevice_setup::AreAnyMultiDeviceFeaturesAllowed(prefs_));
   pref_change_registrar_.Init(prefs_);
-  RecordDoesMultideviceSetupClientExist(prefs_, multidevice_setup_client_);
 }
 
 MultideviceHandler::~MultideviceHandler() {}

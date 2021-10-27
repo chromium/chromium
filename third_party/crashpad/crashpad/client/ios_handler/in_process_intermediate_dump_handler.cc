@@ -778,7 +778,7 @@ void InProcessIntermediateDumpHandler::WriteThreadInfo(
     thread_t thread = threads[thread_index];
 
     thread_basic_info basic_info;
-    mach_msg_type_number_t count = THREAD_BASIC_INFO_COUNT;
+    count = THREAD_BASIC_INFO_COUNT;
     kr = thread_info(thread,
                      THREAD_BASIC_INFO,
                      reinterpret_cast<thread_info_t>(&basic_info),
@@ -810,7 +810,6 @@ void InProcessIntermediateDumpHandler::WriteThreadInfo(
 #if defined(ARCH_CPU_ARM64)
     uint64_t thread_id;
 #endif
-    thread_identifier_info identifier_info;
     count = THREAD_IDENTIFIER_INFO_COUNT;
     kr = thread_info(thread,
                      THREAD_IDENTIFIER_INFO,
@@ -859,11 +858,10 @@ void InProcessIntermediateDumpHandler::WriteThreadInfo(
     mach_msg_type_number_t debug_state_count = ARM_DEBUG_STATE64_COUNT;
 #endif
 
-    kern_return_t kr =
-        thread_get_state(thread,
-                         kThreadStateFlavor,
-                         reinterpret_cast<thread_state_t>(&thread_state),
-                         &thread_state_count);
+    kr = thread_get_state(thread,
+                          kThreadStateFlavor,
+                          reinterpret_cast<thread_state_t>(&thread_state),
+                          &thread_state_count);
     if (kr != KERN_SUCCESS) {
       CRASHPAD_RAW_LOG_ERROR(kr, "thread_get_state::kThreadStateFlavor");
     }

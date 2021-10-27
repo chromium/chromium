@@ -68,6 +68,41 @@ void VersionUpdater::SetStatusCallback(StatusCallback status_callback) {
   status_callback_ = std::move(status_callback);
 }
 
+bool VersionUpdater::CheckOsUpdateAvailable() {
+  // TODO(gavindodd): Does this need thread guarding.
+  if (check_update_available_ == UPDATE_AVAILABLE ||
+      check_update_available_ == NO_UPDATE_AVAILABLE) {
+    update_engine::Operation operation =
+        (check_update_available_ == UPDATE_AVAILABLE)
+            ? update_engine::Operation::UPDATE_AVAILABLE
+            : update_engine::Operation::IDLE;
+    status_callback_.Run(operation,
+                         /*progress=*/0, /*rollback=*/false,
+                         /*powerwash=*/false, new_version_, /*update_size=*/0);
+    return true;
+  }
+
+  if (check_update_available_ == CHECKING) {
+    return true;
+  }
+
+  if (!EnsureCanUpdate(status_callback_)) {
+    return false;
+  }
+
+  check_update_available_ = CHECKING;
+  if (!IsIdle()) {
+    LOG(ERROR) << "Tried to start update when UpdateEngine not IDLE.";
+    return false;
+  }
+  // RequestUpdateCheck will check if an update is available and install it.
+  DBusThreadManager::Get()
+      ->GetUpdateEngineClient()
+      ->RequestUpdateCheckWithoutApplying(base::BindOnce(
+          &VersionUpdater::OnUpdateProgress, weak_ptr_factory_.GetWeakPtr()));
+  return true;
+}
+
 bool VersionUpdater::UpdateOs() {
   if (!EnsureCanUpdate(status_callback_)) {
     return false;
@@ -99,6 +134,45 @@ void VersionUpdater::UpdateStatusChanged(
     // automatically reboot.
     DBusThreadManager::Get()->GetUpdateEngineClient()->RebootAfterUpdate();
   }
+  switch (status.current_operation()) {
+    // If IDLE is received when there is a callback it means no update is
+    // available.
+    case update_engine::Operation::IDLE:
+      // If we reach idle when explicitly checking for update then none is
+      // available.
+      if (check_update_available_ == CHECKING) {
+        check_update_available_ = NO_UPDATE_AVAILABLE;
+      }
+      break;
+    case update_engine::Operation::DISABLED:
+    case update_engine::Operation::ERROR:
+    case update_engine::Operation::REPORTING_ERROR_EVENT:
+      // If get an error when explicitly checking for update then allow
+      // another check to be requested later.
+      if (check_update_available_ == CHECKING) {
+        check_update_available_ = IDLE;
+      }
+      break;
+    case update_engine::Operation::UPDATE_AVAILABLE:
+      // If we ever see update available then update the next version.
+      new_version_ = status.new_version();
+      check_update_available_ = UPDATE_AVAILABLE;
+      break;
+    case update_engine::Operation::ATTEMPTING_ROLLBACK:
+    case update_engine::Operation::CHECKING_FOR_UPDATE:
+    case update_engine::Operation::DOWNLOADING:
+    case update_engine::Operation::FINALIZING:
+    case update_engine::Operation::NEED_PERMISSION_TO_UPDATE:
+    case update_engine::Operation::UPDATED_NEED_REBOOT:
+    case update_engine::Operation::VERIFYING:
+      break;
+    // Added to avoid lint error
+    case update_engine::Operation::Operation_INT_MIN_SENTINEL_DO_NOT_USE_:
+    case update_engine::Operation::Operation_INT_MAX_SENTINEL_DO_NOT_USE_:
+      NOTREACHED();
+      break;
+  }
+
   // TODO(gavindodd): Work out how errors are passed from UpdateEngine when
   // operation == REPORTING_ERROR_EVENT and handle them appropriately.
   status_callback_.Run(status.current_operation(), status.progress(), false,
@@ -113,6 +187,7 @@ void VersionUpdater::OnUpdateProgress(
       // Nothing to do if the update check started successfully.
       break;
     case chromeos::UpdateEngineClient::UPDATE_RESULT_FAILED:
+      LOG(ERROR) << "Update failed.";
       // TODO(gavindodd): Pass a specific error to UI.
       ReportUpdateFailure(status_callback_,
                           update_engine::REPORTING_ERROR_EVENT);

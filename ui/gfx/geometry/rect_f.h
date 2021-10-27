@@ -130,12 +130,22 @@ class GEOMETRY_EXPORT RectF {
   bool operator<(const RectF& other) const;
 
   // Returns true if the point identified by point_x and point_y falls inside
-  // this rectangle.  The point (x, y) is inside the rectangle, but the
-  // point (x + width, y + height) is not.
+  // this rectangle (including the left and the top edges, excluding the right
+  // and the bottom edges). If this rectangle is empty, this method returns
+  // false regardless of the point.
   bool Contains(float point_x, float point_y) const;
 
   // Returns true if the specified point is contained by this rectangle.
   bool Contains(const PointF& point) const {
+    return Contains(point.x(), point.y());
+  }
+
+  // Similar to Contains(), but uses edge-inclusive geometry, i.e. also returns
+  // true if the point is on the right or the bottom edge. If this rectangle
+  // is empty, this method returns true only if the point is at the origin of
+  // this rectangle.
+  bool InclusiveContains(float point_x, float point_y) const;
+  bool InclusiveContains(const Point& point) const {
     return Contains(point.x(), point.y());
   }
 

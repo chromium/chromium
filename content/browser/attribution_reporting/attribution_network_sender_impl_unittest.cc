@@ -140,9 +140,9 @@ TEST_F(AttributionNetworkSenderTest, ReportSent_ReportBodySetCorrectly) {
     const char* expected_report;
   } kTestCases[] = {
       {StorableSource::SourceType::kNavigation,
-       R"({"source_event_id":"100","source_type":"navigation","trigger_data":"5"})"},
+       R"({"attribution_destination":"https://conversion.test","source_event_id":"100","source_type":"navigation","trigger_data":"5"})"},
       {StorableSource::SourceType::kEvent,
-       R"({"source_event_id":"100","source_type":"event","trigger_data":"5"})"},
+       R"({"attribution_destination":"https://conversion.test","source_event_id":"100","source_type":"event","trigger_data":"5"})"},
   };
 
   for (const auto& test_case : kTestCases) {
@@ -192,8 +192,7 @@ TEST_F(AttributionNetworkSenderTest, ReportSent_RequestAttributesSet) {
             pending_request->credentials_mode);
   EXPECT_EQ("POST", pending_request->method);
 
-  // Make sure the domain is used as the referrer.
-  EXPECT_EQ(GURL("https://b.com"), pending_request->referrer);
+  EXPECT_EQ(GURL(), pending_request->referrer);
 }
 
 TEST_F(AttributionNetworkSenderTest, ReportSent_CallbackFired) {

@@ -716,8 +716,6 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
       (base::FeatureList::IsEnabled(lens::features::kLensRegionSearch) &&
        lens::features::kEnableSidePanelForLensRegionSearch.Get())) {
     lens_side_panel_ = AddChildView(std::make_unique<SidePanel>());
-    lens_side_panel_controller_ =
-        std::make_unique<lens::LensSidePanelController>(lens_side_panel_, this);
     // If the separator was not already created, create one.
     if (!right_aligned_side_panel_separator_)
       right_aligned_side_panel_separator_ =
@@ -1486,6 +1484,21 @@ void BrowserView::ExitFullscreen() {
   ProcessFullscreen(false, GURL(), EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE,
                     display::kInvalidDisplayId);
 }
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+void BrowserView::CreateLensSidePanelController() {
+  DCHECK(!lens_side_panel_controller_);
+  lens_side_panel_controller_ = std::make_unique<lens::LensSidePanelController>(
+      base::BindOnce(&BrowserView::DeleteLensSidePanelController,
+                     weak_ptr_factory_.GetWeakPtr()),
+      lens_side_panel_, this);
+}
+
+void BrowserView::DeleteLensSidePanelController() {
+  DCHECK(lens_side_panel_controller_);
+  lens_side_panel_controller_.reset();
+}
+#endif
 
 void BrowserView::UpdateExclusiveAccessExitBubbleContent(
     const GURL& url,

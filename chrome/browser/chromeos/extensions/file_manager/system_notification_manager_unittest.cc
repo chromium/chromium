@@ -8,6 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/chromeos/extensions/file_manager/device_event_router.h"
 #include "chrome/browser/chromeos/extensions/file_manager/event_router.h"
@@ -21,7 +22,9 @@
 #include "chromeos/disks/disk.h"
 #include "components/arc/arc_prefs.h"
 #include "content/public/test/browser_task_environment.h"
+#include "storage/browser/file_system/file_system_url.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace file_manager {
 
@@ -168,6 +171,14 @@ class SystemNotificationManagerTest : public ::testing::Test {
   NotificationDisplayService* GetNotificationDisplayService() {
     return static_cast<NotificationDisplayService*>(
         notification_display_service_);
+  }
+
+  size_t GetNotificationCount() {
+    auto* notification_display_service = GetNotificationDisplayService();
+    notification_display_service->GetDisplayed(
+        base::BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
+                       weak_ptr_factory_.GetWeakPtr()));
+    return notification_count;
   }
 
   void GetNotificationsCallback(std::set<std::string> displayed_notifications,
@@ -1073,6 +1084,62 @@ TEST_F(SystemNotificationManagerTest, CopyProgress) {
                      weak_ptr_factory_.GetWeakPtr()));
   // Check: We have zero notifications (copy progress has been closed).
   ASSERT_EQ(0, notification_count);
+}
+
+storage::FileSystemURL CreateFileSystemURL(std::string url) {
+  return storage::FileSystemURL::CreateForTest(GURL(url));
+}
+
+TEST_F(SystemNotificationManagerTest, HandleIOTaskProgressCopy) {
+  // The system notification only sees the IOTask ProgressStatus.
+  file_manager::io_task::ProgressStatus status;
+  status.task_id = 1;
+  status.state = file_manager::io_task::State::kQueued;
+  status.type = file_manager::io_task::OperationType::kCopy;
+  status.total_bytes = 100;
+  status.bytes_transferred = 0;
+  status.sources.emplace_back(
+      CreateFileSystemURL(
+          "filesystem:chrome-extension://abc/external/foo/src/file.txt"),
+      absl::nullopt);
+  status.destination_folder = CreateFileSystemURL(
+      "filesystem:chrome-extension://abc/external/foo/dest");
+
+  // Send the copy begin/queued progress.
+  auto* notification_manager = GetSystemNotificationManager();
+  notification_manager->HandleIOTaskProgress(status);
+
+  // Check: We have the 1 notification.
+  ASSERT_EQ(1, GetNotificationCount());
+
+  TestNotificationStrings notification_strings =
+      notification_platform_bridge->GetNotificationStringsById(
+          "swa-file-operation-1");
+
+  // Check: the expected strings match.
+  EXPECT_EQ(notification_strings.title, u"Files");
+  EXPECT_EQ(notification_strings.message, u"Copying file.txt\x2026");
+
+  // Send the copy progress.
+  status.bytes_transferred = 30;
+  status.state = file_manager::io_task::State::kInProgress;
+  notification_manager->HandleIOTaskProgress(status);
+
+  // Check: We have the same notification.
+  ASSERT_EQ(1, GetNotificationCount());
+  notification_strings =
+      notification_platform_bridge->GetNotificationStringsById(
+          "swa-file-operation-1");
+  EXPECT_EQ(notification_strings.title, u"Files");
+  EXPECT_EQ(notification_strings.message, u"Copying file.txt\x2026");
+
+  // Send the success progress status.
+  status.bytes_transferred = 100;
+  status.state = file_manager::io_task::State::kSuccess;
+  notification_manager->HandleIOTaskProgress(status);
+
+  // Notification should disappear.
+  ASSERT_EQ(0, GetNotificationCount());
 }
 
 std::u16string kGoogleDrive = u"Google Drive";

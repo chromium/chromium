@@ -22,12 +22,29 @@ class CameraRollDownloadManager {
       delete;
   virtual ~CameraRollDownloadManager() = default;
 
+  enum class CreatePayloadFilesResult {
+    // The payload files are created successfully.
+    kSuccess,
+    // The payload files cannot be created because the file name provided was
+    // invalid.
+    kInvalidFileName,
+    // The payload files cannot be created because they have already been
+    // created for the provided payload ID.
+    kPayloadAlreadyExists,
+    // The payload files cannot be created because there is not enough free disk
+    // space for the item requested.
+    kInsufficientDiskSpace
+  };
+
   // Creates payload files that can be used to receive an incoming file transfer
   // for the given |payload_id|. The file will be created under the Downloads
   // folder with the file name provided in the |item_metadata|. If the file
   // creation succeeds, the file will be passed back via
-  // |payload_files_callback|. Otherwise an empty optional will be passed back.
+  // |payload_files_callback| with the result code |kSuccess|. Otherwise an
+  // empty optional will be passed back along with a result code indicating the
+  // error.
   using CreatePayloadFilesCallback = base::OnceCallback<void(
+      CreatePayloadFilesResult,
       absl::optional<chromeos::secure_channel::mojom::PayloadFilesPtr>)>;
   virtual void CreatePayloadFiles(
       int64_t payload_id,

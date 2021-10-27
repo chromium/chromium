@@ -77,6 +77,8 @@ class TestShellDelegate : public ShellDelegate {
       int desired_icon_size,
       base::OnceCallback<void(apps::mojom::IconValuePtr icon_value)> callback)
       const override;
+  void LaunchAppsFromTemplate(
+      std::unique_ptr<DeskTemplate> desk_template) override;
 
  private:
   // True if the current top window can go back.

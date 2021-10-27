@@ -30,7 +30,7 @@ function FirmwareUpdateAppBrowserTest() {}
 FirmwareUpdateAppBrowserTest.prototype = {
   __proto__: PolymerTest.prototype,
 
-  browsePreload: 'chrome://firmware-update/test_loader.html' +
+  browsePreload: 'chrome://accessory-update/test_loader.html' +
       '?module=chromeos/firmware_update/' +
       'firmware_update_unified_test.js',
 
@@ -41,6 +41,7 @@ FirmwareUpdateAppBrowserTest.prototype = {
 // You must register all suites in unified test here as well for consistency,
 // although technically is not necessary.
 const debug_suites_list = [
+  'FakeUpdateProviderTest',
   'FirmwareUpdateApp',
 ];
 

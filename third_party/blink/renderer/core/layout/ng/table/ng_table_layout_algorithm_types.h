@@ -118,28 +118,22 @@ class CORE_EXPORT NGTableTypes {
   struct CellBlockConstraint {
     DISALLOW_NEW();
     LayoutUnit min_block_size;
-    LayoutUnit baseline;
     NGBoxStrut border_box_borders;
     wtf_size_t row_index;
     wtf_size_t column_index;
     wtf_size_t rowspan;
-    EVerticalAlign vertical_align;
     bool is_constrained;  // True if this cell has a specified block-size.
     CellBlockConstraint(LayoutUnit min_block_size,
-                        LayoutUnit baseline,
                         NGBoxStrut border_box_borders,
                         wtf_size_t row_index,
                         wtf_size_t column_index,
                         wtf_size_t rowspan,
-                        EVerticalAlign vertical_align,
                         bool is_constrained)
         : min_block_size(min_block_size),
-          baseline(baseline),
           border_box_borders(border_box_borders),
           row_index(row_index),
           column_index(column_index),
           rowspan(rowspan),
-          vertical_align(vertical_align),
           is_constrained(is_constrained) {}
   };
 
@@ -233,7 +227,6 @@ class CORE_EXPORT NGTableTypes {
   static CellBlockConstraint CreateCellBlockConstraint(
       const NGLayoutInputNode&,
       LayoutUnit computed_block_size,
-      LayoutUnit baseline,
       const NGBoxStrut& border_box_borders,
       wtf_size_t row_index,
       wtf_size_t column_index,

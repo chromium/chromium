@@ -35,6 +35,7 @@ CC_BASE_EXPORT extern const char kLayerId[];
 CC_BASE_EXPORT extern const char kLayerTreeId[];
 CC_BASE_EXPORT extern const char kPixelRefId[];
 CC_BASE_EXPORT extern const char kFrameSequenceNumber[];
+CC_BASE_EXPORT extern const char kHasPartialUpdate[];
 
 CC_BASE_EXPORT extern const char kImageDecodeTask[];
 CC_BASE_EXPORT extern const char kBeginFrame[];
@@ -206,12 +207,14 @@ inline void CC_BASE_EXPORT DidRequestMainThreadFrame(int layer_tree_host_id) {
 inline void CC_BASE_EXPORT
 DidDropSmoothnessFrame(int layer_tree_host_id,
                        base::TimeTicks dropped_frame_timestamp,
-                       uint64_t sequence_number) {
+                       uint64_t sequence_number,
+                       bool has_partial_update) {
   TRACE_EVENT_INSTANT(internal::CategoryName::kTimelineFrame,
                       perfetto::StaticString(internal::kDroppedFrame),
                       dropped_frame_timestamp, internal::kLayerTreeId,
                       layer_tree_host_id, internal::kFrameSequenceNumber,
-                      sequence_number);
+                      sequence_number, internal::kHasPartialUpdate,
+                      has_partial_update);
 }
 
 inline std::unique_ptr<base::trace_event::ConvertableToTraceFormat>

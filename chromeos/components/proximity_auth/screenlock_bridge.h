@@ -15,6 +15,10 @@
 #include "chromeos/components/proximity_auth/public/mojom/auth_type.mojom.h"
 #include "components/account_id/account_id.h"
 
+namespace ash {
+enum class SmartLockState;
+}  // namespace ash
+
 namespace proximity_auth {
 
 // TODO(tbarzic): Rename ScreenlockBridge to SignInScreenBridge, as this is not
@@ -105,6 +109,17 @@ class ScreenlockBridge {
 
     // Hides the custom icon in user pod for a user.
     virtual void HideUserPodCustomIcon(const AccountId& account_id) = 0;
+
+    // Update the status of Smart Lock for |account_id|.
+    virtual void SetSmartLockState(const AccountId& account_id,
+                                   ash::SmartLockState state) = 0;
+
+    // Called after a Smart Lock authentication attempt has been made. If
+    // |successful| is true, then the Smart Lock authentication attempt was
+    // successful and the device should be unlocked. If false, an error message
+    // should be shown to the user.
+    virtual void NotifySmartLockAuthResult(const AccountId& account_id,
+                                           bool successful) = 0;
 
     // (Re)enable lock screen UI.
     virtual void EnableInput() = 0;

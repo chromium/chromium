@@ -302,7 +302,7 @@ int NGSvgTextQuery::CharacterNumberAtPosition(
 
   const NGFragmentItem* hit_item = nullptr;
   for (const auto* item : item_list) {
-    if (!item->IsHiddenForPaint() && item->Contains(position)) {
+    if (!item->IsHiddenForPaint() && item->InclusiveContains(position)) {
       hit_item = item;
       break;
     }

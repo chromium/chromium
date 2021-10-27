@@ -8,6 +8,7 @@
 #include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
+#include "net/base/schemeful_site.h"
 #include "url/gurl.h"
 #include "url/url_canon.h"
 
@@ -48,6 +49,9 @@ GURL AttributionReport::ReportURL() const {
 
 std::string AttributionReport::ReportBody(bool pretty_print) const {
   base::Value dict(base::Value::Type::DICTIONARY);
+
+  dict.SetStringKey("attribution_destination",
+                    impression.ConversionDestination().Serialize());
 
   // The API denotes these values as strings; a `uint64_t` cannot be put in
   // a dict as an integer in order to be opaque to various API configurations.

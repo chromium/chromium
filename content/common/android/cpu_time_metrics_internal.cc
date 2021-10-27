@@ -407,7 +407,7 @@ class ProcessCpuTimeMetrics::DetailedCpuTimeMetrics {
         process_metrics_->GetCumulativeCPUUsage();
     base::TimeDelta process_cpu_time_delta =
         cumulative_cpu_time - reported_cpu_time_;
-    if (process_cpu_time_delta > base::TimeDelta()) {
+    if (process_cpu_time_delta.is_positive()) {
       reported_cpu_time_ = cumulative_cpu_time;
     }
 
@@ -506,7 +506,7 @@ class ProcessCpuTimeMetrics::DetailedCpuTimeMetrics {
 
     // Report the difference of the process's total CPU time and all thread's
     // CPU time as unattributed time (e.g. time consumed by threads that died).
-    if (unattributed_delta > base::TimeDelta()) {
+    if (unattributed_delta.is_positive()) {
       ReportThreadCpuTimeDelta(CpuTimeMetricsThreadType::kUnattributedThread,
                                unattributed_delta);
     }
@@ -574,7 +574,7 @@ class ProcessCpuTimeMetrics::DetailedCpuTimeMetrics {
     base::TimeDelta total_active_time;
     for (base::TimeDelta core_idle_time : core_idle_times_) {
       base::TimeDelta active_time = wall_time_delta - core_idle_time;
-      if (active_time > base::TimeDelta())
+      if (active_time.is_positive())
         total_active_time += active_time;
     }
 
@@ -657,7 +657,7 @@ class ProcessCpuTimeMetrics::DetailedCpuTimeMetrics {
 
         // (1) Proportion of execution on this cluster's cores vs others.
         current_cluster_proportion = 0;
-        if (total_active_time > base::TimeDelta())
+        if (total_active_time.is_positive())
           current_cluster_proportion = cluster_active_time / total_active_time;
 
         last_core_index = entry.cluster_core_index;
@@ -678,7 +678,7 @@ class ProcessCpuTimeMetrics::DetailedCpuTimeMetrics {
       // (3) Proportion of active wall time that this cluster spent in the
       // frequency state.
       double frequency_proportion = 0;
-      if (current_cluster_active_wall_time > base::TimeDelta())
+      if (current_cluster_active_wall_time.is_positive())
         frequency_proportion = time_delta / current_cluster_active_wall_time;
 
       // (4) Scale the process's cpu time by the cluster/frequency pair's
@@ -866,7 +866,7 @@ void ProcessCpuTimeMetrics::CollectHighLevelMetricsOnThreadPool() {
       process_metrics_->GetCumulativeCPUUsage();
   base::TimeDelta process_cpu_time_delta =
       cumulative_cpu_time - reported_cpu_time_;
-  if (process_cpu_time_delta > base::TimeDelta()) {
+  if (process_cpu_time_delta.is_positive()) {
     UMA_HISTOGRAM_SCALED_ENUMERATION("Power.CpuTimeSecondsPerProcessType",
                                      process_type_,
                                      process_cpu_time_delta.InMicroseconds(),

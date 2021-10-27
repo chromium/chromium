@@ -765,7 +765,7 @@ class End2EndTest : public ::testing::Test {
     // this, the receiver will produce smoothly-progressing playout times.
     // Both first-order and second-order effects are tested.
     if (!last_video_playout_time_.is_null() &&
-        min_video_playout_delta_ > base::TimeDelta()) {
+        min_video_playout_delta_.is_positive()) {
       const base::TimeDelta delta = playout_time - last_video_playout_time_;
       VLOG(1) << "Video frame playout time delta (compared to last frame) is "
               << delta.InMicroseconds() << " usec.";
@@ -773,9 +773,9 @@ class End2EndTest : public ::testing::Test {
                 delta.InMicroseconds());
       EXPECT_GE(max_video_playout_delta_.InMicroseconds(),
                 delta.InMicroseconds());
-      if (last_video_playout_delta_ > base::TimeDelta()) {
+      if (last_video_playout_delta_.is_positive()) {
         base::TimeDelta abs_curvature = delta - last_video_playout_delta_;
-        if (abs_curvature < base::TimeDelta())
+        if (abs_curvature.is_negative())
           abs_curvature = -abs_curvature;
         EXPECT_GE(max_video_playout_curvature_.InMicroseconds(),
                   abs_curvature.InMicroseconds());

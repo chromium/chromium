@@ -193,7 +193,7 @@ export class FakeShimlessRmaService {
   }
 
   /**
-   * @return {!Promise<!{updateAvailable: boolean}>}
+   * @return {!Promise<!{updateAvailable: boolean, version: string}>}
    */
   checkForOsUpdates() {
     return this.methods_.resolveMethod('checkForOsUpdates');
@@ -201,9 +201,11 @@ export class FakeShimlessRmaService {
 
   /**
    * @param {boolean} available
+   * @param {string} version
    */
-  setCheckForOsUpdatesResult(available) {
-    this.methods_.setResult('checkForOsUpdates', {updateAvailable: available});
+  setCheckForOsUpdatesResult(available, version) {
+    this.methods_.setResult(
+        'checkForOsUpdates', {updateAvailable: available, version: version});
   }
 
   /**

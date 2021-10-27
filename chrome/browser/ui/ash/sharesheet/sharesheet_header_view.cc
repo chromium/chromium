@@ -438,10 +438,10 @@ void SharesheetHeaderView::ResolveImage(size_t index) {
           /*use_light_mode_as_default=*/true));
   DCHECK_GT(image_preview_->GetImageViewCount(), index);
   image_preview_->GetImageViewAt(index)->SetImage(image->GetImageSkia(size));
-  // TODO(crbug.com/2896003) Here and above, update this to check whether we're
-  // in dark mode or not.
-  const auto icon_color =
-      GetIconColorForPath(file_path, /* dark_background= */ false);
+
+  ScopedLightModeAsDefault scoped_light_mode_as_default;
+  const auto icon_color = GetIconColorForPath(
+      file_path, AshColorProvider::Get()->IsDarkModeEnabled());
   image_preview_->SetBackgroundColorForIndex(index, icon_color);
   image_subscription_.push_back(image->AddImageSkiaChangedCallback(
       base::BindRepeating(&SharesheetHeaderView::OnImageLoaded,

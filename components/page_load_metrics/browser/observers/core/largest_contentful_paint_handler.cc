@@ -341,7 +341,7 @@ void LargestContentfulPaintHandler::MergeForSubframes(
     // If |candidate_new_time| is TimeDelta(), this means that the candidate is
     // an image that has not finished loading. Preserve its meaning by not
     // adding the |navigation_start_offset|.
-    new_time = *candidate_new_time > base::TimeDelta()
+    new_time = candidate_new_time->is_positive()
                    ? navigation_start_offset + candidate_new_time.value()
                    : base::TimeDelta();
   }

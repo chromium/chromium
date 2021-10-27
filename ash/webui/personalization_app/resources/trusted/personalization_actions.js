@@ -12,6 +12,7 @@ import {DisplayableImage} from './personalization_reducers.js';
 
 /** @enum {string} */
 export const ActionName = {
+  BEGIN_LOAD_GOOGLE_PHOTOS_ALBUMS: 'begin_load_google_photos_albums',
   BEGIN_LOAD_GOOGLE_PHOTOS_PHOTOS: 'begin_load_google_photos_photos',
   BEGIN_LOAD_IMAGES_FOR_COLLECTIONS: 'begin_load_images_for_collections',
   BEGIN_LOAD_LOCAL_IMAGES: 'begin_load_local_images',
@@ -22,6 +23,7 @@ export const ActionName = {
   END_SELECT_IMAGE: 'end_select_image',
   SET_COLLECTIONS: 'set_collections',
   SET_DAILY_REFRESH_COLLECTION_ID: 'set_daily_refresh_collection_id',
+  SET_GOOGLE_PHOTOS_ALBUMS: 'set_google_photos_albums',
   SET_GOOGLE_PHOTOS_PHOTOS: 'set_google_photos_photos',
   SET_IMAGES_FOR_COLLECTION: 'set_images_for_collection',
   SET_LOCAL_IMAGES: 'set_local_images',
@@ -31,6 +33,14 @@ export const ActionName = {
   DISMISS_ERROR: 'dismiss_error',
   SET_FULLSCREEN_ENABLED: 'set_fullscreen_enabled',
 };
+
+/**
+ * Notify that the app is loading the list of Google Photos albums.
+ * @return {!Action}
+ */
+export function beginLoadGooglePhotosAlbumsAction() {
+  return {name: ActionName.BEGIN_LOAD_GOOGLE_PHOTOS_ALBUMS};
+}
 
 /**
  * Notify that the app is loading the list of Google Photos photos.
@@ -133,6 +143,15 @@ export function setDailyRefreshCollectionIdAction(collectionId) {
     collectionId,
     name: ActionName.SET_DAILY_REFRESH_COLLECTION_ID,
   };
+}
+
+/**
+ * Sets the list of Google Photos albums. May be called with null on error.
+ * @param {?Array<undefined>} albums
+ * @return {!Action}
+ */
+export function setGooglePhotosAlbumsAction(albums) {
+  return {albums, name: ActionName.SET_GOOGLE_PHOTOS_ALBUMS};
 }
 
 /**

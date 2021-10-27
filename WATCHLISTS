@@ -1330,6 +1330,9 @@
     'midi': {
       'filepath': 'midi',
     },
+    'minidump_tests': {
+      'filepath': 'tools/perf/core/minidump_unittest.py',
+    },
     'multidevice': {
       'filepath': 'ash/multi_device_setup/'\
                   '|chrome/browser/ash/cryptauth/'\
@@ -1746,10 +1749,6 @@
     },
     'startup': {
       'filepath': 'chrome/browser/ui/startup/',
-    },
-    'status_area': {
-      'filepath': 'ash/system/'\
-                  '|google_apis/calendar/',
     },
     'storage_service' : {
       'filepath': 'components/services/storage/',
@@ -2625,6 +2624,7 @@
                                'chromium-metrics-reviews@google.com'],
     'metrics_perf': ['cwp-reviews+chromium@google.com'],
     'midi': ['toyoshim+midi@chromium.org'],
+    'minidump_tests': ['bsheedy@chromium.org'],
     'multidevice': ['danlee+watch-multidevice@google.com',
                     'hansberry+watch-multidevice@chromium.org',
                     'nohle+watch-multidevice@chromium.org',
@@ -2782,7 +2782,6 @@
     'startup': ['nicolaso+watch@chromium.org',
                 'pastarmovj+watch@chromium.org',
                 'ydago+watch@chromium.org'],
-    'status_area': ['cros-status-area-eng+watchlist@google.com'],
     'storage_service': ['dmurph+watching-storageservice@chromium.org'],
     'structured_headers': ['iclelland+watch@chromium.org'],
     'styleguide': ['danakj+watch@chromium.org',

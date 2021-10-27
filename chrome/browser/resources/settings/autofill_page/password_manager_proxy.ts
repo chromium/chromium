@@ -59,6 +59,14 @@ export interface PasswordManagerProxy {
       Promise<chrome.passwordsPrivate.UrlCollection|null>;
 
   /**
+   * Saves a new password entry described by the given |options|.
+   * @param options Details about a new password and storage to be used.
+   * @return A promise that resolves when the new entry is added.
+   */
+  addPassword(options: chrome.passwordsPrivate.AddPasswordOptions):
+      Promise<void>;
+
+  /**
    * Changes the saved password corresponding to |ids|.
    * @param ids The ids for the password entry being updated.
    * @return A promise that resolves when the password is updated for all ids.
@@ -358,6 +366,12 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
       chrome.passwordsPrivate.getUrlCollection(url, urlCollection => {
         resolve(chrome.runtime.lastError ? null : urlCollection);
       });
+    });
+  }
+
+  addPassword(options: chrome.passwordsPrivate.AddPasswordOptions) {
+    return new Promise<void>(resolve => {
+      chrome.passwordsPrivate.addPassword(options, resolve);
     });
   }
 

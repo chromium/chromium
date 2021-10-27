@@ -233,12 +233,6 @@ class WebAppInstallTask : content::WebContentsObserver {
       IconsDownloadedResult result,
       IconsMap icons_map,
       DownloadedIconsHttpResults icons_http_results);
-  void OnIconsRetrievedFinalizeUpdate(
-      std::unique_ptr<WebApplicationInfo> web_app_info,
-      bool update_product_icons,
-      IconsDownloadedResult result,
-      IconsMap icons_map,
-      DownloadedIconsHttpResults icons_http_results);
   void OnDialogCompleted(ForInstallableSite for_installable_site,
                          bool user_accepted,
                          std::unique_ptr<WebApplicationInfo> web_app_info);

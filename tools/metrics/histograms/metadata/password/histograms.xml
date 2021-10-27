@@ -1081,6 +1081,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PasswordManager.ChromeSignInPageHashSaved"
     enum="ChromeSignInPageHashSaved" expires_after="2021-02-01">
+  <obsolete>
+    Removed in 10-2021, since it expired long ago.
+  </obsolete>
   <owner>vakh@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
@@ -1375,7 +1378,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.FirstRendererFillingResult"
-    enum="PasswordManagerFirstRendererFillingResult" expires_after="2022-02-09">
+    enum="PasswordManagerFirstRendererFillingResult" expires_after="2022-04-24">
   <owner>kazinova@google.com</owner>
   <owner>battre@chromium.org</owner>
   <summary>
@@ -1518,7 +1521,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.ImportedPasswordsPerUserInCSV" units="units"
-    expires_after="M100">
+    expires_after="2022-04-24">
   <owner>vasilii@chromium.org</owner>
   <owner>src/components/password_manager/OWNERS</owner>
   <summary>
@@ -1528,7 +1531,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.ImportPasswordFromCSVResult"
-    enum="PasswordImportFromCSVResult" expires_after="M100">
+    enum="PasswordImportFromCSVResult" expires_after="2022-04-24">
   <owner>vasilii@chromium.org</owner>
   <owner>src/components/password_manager/OWNERS</owner>
   <summary>
@@ -1840,7 +1843,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.MatchedFormType"
-    enum="PasswordManagerMatchedFormType" expires_after="M100">
+    enum="PasswordManagerMatchedFormType" expires_after="2022-04-24">
   <owner>vsemeniuk@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -2517,7 +2520,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.SubmittedFormFrame"
-    enum="SubmittedPasswordFormFrame" expires_after="2021-12-26">
+    enum="SubmittedPasswordFormFrame" expires_after="2022-04-24">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>

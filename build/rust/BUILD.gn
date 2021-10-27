@@ -9,3 +9,7 @@ config("edition_2018") {
 config("edition_2015") {
   rustflags = [ "--edition=2015" ]
 }
+
+config("rust_enabled") {
+  defines = [ "RUST_ENABLED" ]
+}

@@ -10,6 +10,7 @@
 #include "ash/public/cpp/accelerators.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/sessions/exit_type_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/notification_observer.h"
@@ -162,6 +163,10 @@ class FullRestoreService : public KeyedService,
   std::unique_ptr<message_center::Notification> notification_;
 
   content::NotificationRegistrar notification_registrar_;
+
+  // Browser session restore exit type service lock. This is created when the
+  // system is restored from crash to help set the browser saving flag.
+  std::unique_ptr<ExitTypeService::CrashedLock> crashed_lock_;
 
   base::ScopedObservation<ash::AcceleratorController,
                           ash::AcceleratorController::Observer>

@@ -204,7 +204,7 @@
   },
   "ash_webui_unittests": {
     "label": "//ash/webui:ash_webui_unittests",
-    "type": "console_test_launcher",
+    "type": "windowed_test_launcher",
   },
   "ash_unittests": {
     "label": "//ash:ash_unittests",

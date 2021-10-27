@@ -2260,14 +2260,19 @@ config("symbols") {
       cflags += [ "-g2" ]
     }
 
-    if (!is_nacl && is_clang && !is_tsan && !is_asan) {
-      # gcc generates dwarf-aranges by default on -g1 and -g2. On clang it has
-      # to be manually enabled.
-      #
-      # It is skipped in tsan and asan because enabling it causes some
-      # formatting changes in the output which would require fixing bunches
-      # of expectation regexps.
-      cflags += [ "-gdwarf-aranges" ]
+    # Since only one of the build options -gdwarf-aranges and -fembed-bitcode
+    # can be specified, -gdwarf-aranges is not given under the condition that
+    # -fembed-bitcode is specified.
+    if (!(is_ios && use_xcode_clang && enable_ios_bitcode)) {
+      if (!is_nacl && is_clang && !is_tsan && !is_asan) {
+        # gcc generates dwarf-aranges by default on -g1 and -g2. On clang it has
+        # to be manually enabled.
+        #
+        # It is skipped in tsan and asan because enabling it causes some
+        # formatting changes in the output which would require fixing bunches
+        # of expectation regexps.
+        cflags += [ "-gdwarf-aranges" ]
+      }
     }
 
     if (is_apple) {
@@ -2371,9 +2376,11 @@ config("minimal_symbols") {
       cflags += [ "-g1" ]
     }
 
-    if (!is_nacl && is_clang && !is_tsan && !is_asan) {
-      # See comment for -gdwarf-aranges in config("symbols").
-      cflags += [ "-gdwarf-aranges" ]
+    if (!(is_ios && use_xcode_clang && enable_ios_bitcode)) {
+      if (!is_nacl && is_clang && !is_tsan && !is_asan) {
+        # See comment for -gdwarf-aranges in config("symbols").
+        cflags += [ "-gdwarf-aranges" ]
+      }
     }
 
     ldflags = []

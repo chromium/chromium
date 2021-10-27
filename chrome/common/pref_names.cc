@@ -3259,11 +3259,6 @@ const char kMediaFeedsSafeSearchEnabled[] = "media_feeds_safe_search_enabled";
 // This pref enables automated selection of Media Feeds to fetch.
 const char kMediaFeedsAutoSelectEnabled[] = "media_feeds_auto_select_enabled";
 
-// This pref reenables AppCache temporarily during its deprecation process.
-// In particular, this sets the AppcacheRequireOriginTrial feature to false.
-// TODO(enne): Remove this once AppCache has been removed.
-const char kAppCacheForceEnabled[] = "app_cache_force_enabled";
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Boolean pref indicating whether the notification informing the user that
 // adb sideloading had been disabled by their admin was shown.

@@ -18,12 +18,9 @@
 namespace ui {
 namespace fuchsia {
 namespace {
-base::RepeatingCallback<void(::fuchsia::ui::views::ViewHolderToken,
-                             ::fuchsia::ui::views::ViewRef)>&
-GetScenicViewPresenterInternal() {
-  static base::NoDestructor<base::RepeatingCallback<void(
-      ::fuchsia::ui::views::ViewHolderToken, ::fuchsia::ui::views::ViewRef)>>
-      view_presenter;
+
+PresentViewCallback& GetScenicViewPresenterInternal() {
+  static base::NoDestructor<PresentViewCallback> view_presenter;
   return *view_presenter;
 }
 
@@ -49,17 +46,22 @@ void InitializeViewTokenAndPresentView(
                                   nullptr);
 }
 
-void SetScenicViewPresenter(
-    base::RepeatingCallback<void(::fuchsia::ui::views::ViewHolderToken,
-                                 ::fuchsia::ui::views::ViewRef)>
-        view_presenter) {
+void SetScenicViewPresenter(PresentViewCallback view_presenter) {
   GetScenicViewPresenterInternal() = std::move(view_presenter);
 }
 
-const base::RepeatingCallback<void(::fuchsia::ui::views::ViewHolderToken,
-                                   ::fuchsia::ui::views::ViewRef)>&
-GetScenicViewPresenter() {
+const PresentViewCallback& GetScenicViewPresenter() {
   return GetScenicViewPresenterInternal();
+}
+
+void IgnorePresentCallsForTest() {
+  SetScenicViewPresenter(
+      base::BindRepeating([](::fuchsia::ui::views::ViewHolderToken view_holder,
+                             ::fuchsia::ui::views::ViewRef view_ref) {
+        DCHECK(view_holder.value);
+        DCHECK(view_ref.reference);
+        DVLOG(1) << "Present call ignored for test.";
+      }));
 }
 
 }  // namespace fuchsia

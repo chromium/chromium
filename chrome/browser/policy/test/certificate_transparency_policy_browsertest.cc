@@ -69,7 +69,7 @@ IN_PROC_BROWSER_TEST_F(CertificateTransparencyPolicyTest,
                POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
                std::move(disabled_urls), nullptr);
   UpdateProviderPolicy(policies);
-  FlushBlacklistPolicy();
+  FlushBlocklistPolicy();
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_ok.GetURL("/simple.html")));
@@ -142,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(CertificateTransparencyPolicyTest,
                POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
                std::move(disabled_spkis), nullptr);
   UpdateProviderPolicy(policies);
-  FlushBlacklistPolicy();
+  FlushBlocklistPolicy();
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_ok.GetURL("/simple.html")));

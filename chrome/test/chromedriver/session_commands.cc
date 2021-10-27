@@ -886,8 +886,7 @@ Status ExecuteSetTimeoutLegacy(Session* session,
     session->script_timeout = timeout;
   } else if (*type == "page load") {
     session->page_load_timeout =
-        ((timeout < base::TimeDelta()) ? Session::kDefaultPageLoadTimeout
-                                       : timeout);
+        ((timeout.is_negative()) ? Session::kDefaultPageLoadTimeout : timeout);
   } else {
     return Status(kInvalidArgument, "unknown type of timeout:" + *type);
   }

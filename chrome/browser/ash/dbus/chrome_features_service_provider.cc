@@ -14,6 +14,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/metrics/field_trial.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
@@ -31,6 +32,15 @@
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace {
+
+// A prefix to apply to all features which Chrome OS platform-side code wishes
+// to check.
+// This prefix must *only* be applied to features on the platform side, and no
+// |base::Feature|s should be defined with this prefix.
+// A presubmit will enforce that no |base::Feature|s will be defined with this
+// prefix.
+// TODO(https://crbug.com/1263068): Add the aforementioned presubmit.
+constexpr char kLatePlatformFeaturePrefix[] = "LatePlatform";
 
 void SendResponse(dbus::MethodCall* method_call,
                   dbus::ExportedObject::ResponseSender response_sender,
@@ -185,16 +195,35 @@ void ChromeFeaturesServiceProvider::IsFeatureEnabled(
                    [&feature_name](const base::Feature* feature) -> bool {
                      return feature_name == feature->name;
                    });
-  if (it == std::end(kFeatureLookup)) {
-    LOG(ERROR) << "Unexpected feature name.";
+  if (it != std::end(kFeatureLookup)) {
+    SendResponse(method_call, std::move(response_sender),
+                 base::FeatureList::IsEnabled(**it));
+    return;
+  }
+  // Not on our list. Potentially look up by name instead.
+  base::FeatureList* features = base::FeatureList::GetInstance();
+  base::FieldTrial* trial = nullptr;
+  // Only search for arbitrary trial names that begin with the appropriate
+  // prefix, since looking up a feature by name will not be able to get the
+  // default value associated with any `base::Feature` defined in the code
+  // base.
+  // Separately, a presubmit will enforce that no `base::Feature` definition
+  // has a name starting with this prefix.
+  // TODO(https://crbug.com/1263068): Add the aforementioned presubmit.
+  if (feature_name.find(kLatePlatformFeaturePrefix) == 0) {
+    trial = features->GetAssociatedFieldTrialByFeatureName(feature_name);
+  }
+  if (!trial) {
+    LOG(ERROR) << "Unexpected feature name '" << feature_name << "'";
     std::move(response_sender)
         .Run(dbus::ErrorResponse::FromMethodCall(
             method_call, DBUS_ERROR_INVALID_ARGS, "Unexpected feature name."));
     return;
   }
-
-  SendResponse(method_call, std::move(response_sender),
-               base::FeatureList::IsEnabled(**it));
+  bool enabled = features->GetEnabledFieldTrialByFeatureName(feature_name);
+  // Call group() so that the field trial will be reported as active.
+  trial->group();
+  SendResponse(method_call, std::move(response_sender), enabled);
 }
 
 void ChromeFeaturesServiceProvider::IsCrostiniEnabled(

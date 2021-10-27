@@ -89,6 +89,11 @@ DialogModelTextfield* DialogModelField::AsTextfield(
   return AsTextfield();
 }
 
+DialogModelCustomField* DialogModelField::AsCustomField(
+    base::PassKey<DialogModelHost>) {
+  return AsCustomField();
+}
+
 DialogModelButton* DialogModelField::AsButton() {
   DCHECK_EQ(type_, kButton);
   return static_cast<DialogModelButton*>(this);
@@ -112,6 +117,11 @@ DialogModelCombobox* DialogModelField::AsCombobox() {
 DialogModelTextfield* DialogModelField::AsTextfield() {
   DCHECK_EQ(type_, kTextfield);
   return static_cast<DialogModelTextfield*>(this);
+}
+
+DialogModelCustomField* DialogModelField::AsCustomField() {
+  DCHECK_EQ(type_, kCustom);
+  return static_cast<DialogModelCustomField*>(this);
 }
 
 DialogModelButton::Params::Params() = default;
@@ -274,5 +284,21 @@ void DialogModelTextfield::OnTextChanged(base::PassKey<DialogModelHost>,
                                          std::u16string text) {
   text_ = std::move(text);
 }
+
+DialogModelCustomField::Factory::~Factory() = default;
+
+DialogModelCustomField::DialogModelCustomField(
+    base::PassKey<DialogModel> pass_key,
+    DialogModel* model,
+    int unique_id,
+    std::unique_ptr<DialogModelCustomField::Factory> factory)
+    : DialogModelField(pass_key,
+                       model,
+                       kCustom,
+                       unique_id,
+                       base::flat_set<Accelerator>()),
+      factory_(std::move(factory)) {}
+
+DialogModelCustomField::~DialogModelCustomField() = default;
 
 }  // namespace ui

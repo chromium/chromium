@@ -134,11 +134,6 @@ bool AwMainDelegate::BasicStartupComplete(int* exit_code) {
   // metadata and controls.
   cl->AppendSwitch(switches::kDisableMediaSessionAPI);
 
-  // WebView does not support origin trials and so needs to force appcache
-  // to be enabled during the removal origin trial, until it is finally
-  // removed entirely.  See: http://crbug.com/582750
-  cl->AppendSwitch(switches::kAppCacheForceEnabled);
-
   // We have crash dumps to diagnose regressions in remote font analysis or cc
   // serialization errors but most of their utility is in identifying URLs where
   // the regression occurs. This info is not available for webview so there

@@ -73,7 +73,6 @@
 #include "chrome/browser/sharing/sharing_sync_preference.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/ssl/ssl_config_service_manager.h"
-#include "chrome/browser/storage/appcache_feature_prefs.h"
 #include "chrome/browser/subresource_redirect/https_image_compression_infobar_decider.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
 #include "chrome/browser/tracing/chrome_tracing_delegate.h"
@@ -685,6 +684,9 @@ const char kNearbySharingFastInitiationNotificationEnabledPrefName[] =
     "nearby_sharing.fast_initiation_notification_enabled";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Deprecated 10/2021.
+const char kAppCacheForceEnabled[] = "app_cache_force_enabled";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -891,6 +893,8 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterIntegerPref(
       kNearbySharingFastInitiationNotificationEnabledPrefName, 0);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  registry->RegisterBooleanPref(kAppCacheForceEnabled, false);
 }
 
 }  // namespace
@@ -1128,7 +1132,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   AccessibilityLabelsService::RegisterProfilePrefs(registry);
   AccessibilityUIMessageHandler::RegisterProfilePrefs(registry);
   AnnouncementNotificationService::RegisterProfilePrefs(registry);
-  appcache_feature_prefs::RegisterProfilePrefs(registry);
   AvailabilityProber::RegisterProfilePrefs(registry);
   autofill::prefs::RegisterProfilePrefs(registry);
   browsing_data::prefs::RegisterBrowserUserPrefs(registry);
@@ -1754,6 +1757,9 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // Added 10/2021.
   translate::TranslatePrefs::MigrateObsoleteProfilePrefs(profile_prefs);
   translate::TranslatePrefs::ClearObsoleteProfilePrefs(profile_prefs);
+
+  // Added 10/2021.
+  profile_prefs->ClearPref(kAppCacheForceEnabled);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

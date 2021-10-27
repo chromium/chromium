@@ -121,7 +121,7 @@ class AudioShifterTest :
     CHECK(marker_outputs_.empty());
     base::TimeTicks expected_mark_time = time_to_push_ + end2end_latency_;
     Run(100);
-    if (end2end_latency_ > base::TimeDelta()) {
+    if (end2end_latency_.is_positive()) {
       CHECK(!marker_outputs_.empty());
       base::TimeDelta actual_offset = marker_outputs_[0] - expected_mark_time;
       EXPECT_LT(actual_offset, base::Microseconds(100));

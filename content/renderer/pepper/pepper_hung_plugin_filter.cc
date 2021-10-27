@@ -144,7 +144,7 @@ void PepperHungPluginFilter::OnHangTimer() {
     return;  // Not blocked any longer.
 
   base::TimeDelta delay = GetHungTime() - base::TimeTicks::Now();
-  if (delay > base::TimeDelta()) {
+  if (delay.is_positive()) {
     // Got a timer message while we're waiting on a sync message. We need
     // to schedule another timer message because the latest sync message
     // would not have scheduled one (we only have one out-standing timer at

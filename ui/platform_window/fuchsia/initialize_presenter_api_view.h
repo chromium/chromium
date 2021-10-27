@@ -14,6 +14,10 @@
 namespace ui {
 namespace fuchsia {
 
+using PresentViewCallback =
+    base::RepeatingCallback<void(::fuchsia::ui::views::ViewHolderToken,
+                                 ::fuchsia::ui::views::ViewRef)>;
+
 // Generates and sets the view tokens that are required to utilize the
 // Presenter API. |window_properties_out| must be a valid value.
 COMPONENT_EXPORT(PLATFORM_WINDOW)
@@ -24,14 +28,14 @@ void InitializeViewTokenAndPresentView(
 // TODO(1241868): Once workstation offers the right FIDL API to open new
 // windows, this can be removed.
 COMPONENT_EXPORT(PLATFORM_WINDOW)
-void SetScenicViewPresenter(
-    base::RepeatingCallback<void(::fuchsia::ui::views::ViewHolderToken,
-                                 ::fuchsia::ui::views::ViewRef)>
-        view_presenter);
+void SetScenicViewPresenter(PresentViewCallback view_presenter);
+
 COMPONENT_EXPORT(PLATFORM_WINDOW)
-const base::RepeatingCallback<void(::fuchsia::ui::views::ViewHolderToken,
-                                   ::fuchsia::ui::views::ViewRef)>&
-GetScenicViewPresenter();
+const PresentViewCallback& GetScenicViewPresenter();
+
+// Ignores presentation requests, for tests which don't rely on a functioning
+// Presenter service.
+COMPONENT_EXPORT(PLATFORM_WINDOW) void IgnorePresentCallsForTest();
 
 }  // namespace fuchsia
 }  // namespace ui

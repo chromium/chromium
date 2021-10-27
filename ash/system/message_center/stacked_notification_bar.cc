@@ -348,11 +348,11 @@ bool StackedNotificationBar::Update(
     int pinned_notification_count,
     std::vector<message_center::Notification*> stacked_notifications) {
   int stacked_notification_count = stacked_notifications.size();
-
   if (total_notification_count == total_notification_count_ &&
       pinned_notification_count == pinned_notification_count_ &&
-      stacked_notification_count == stacked_notification_count_)
+      stacked_notification_count == stacked_notification_count_) {
     return false;
+  }
 
   total_notification_count_ = total_notification_count;
   pinned_notification_count_ = pinned_notification_count;
@@ -399,11 +399,13 @@ void StackedNotificationBar::AddNotificationIcon(
         std::make_unique<StackedNotificationBarIcon>(notification->id()));
 }
 
-void StackedNotificationBar::OnIconAnimatedOut(
-    message_center::Notification* notification,
-    views::View* icon) {
+void StackedNotificationBar::OnIconAnimatedOut(std::string notification_id,
+                                               views::View* icon) {
   delete icon;
 
+  auto* notification =
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          notification_id);
   // This is only called when icons animate out, so never add icons to the
   // front.
   if (notification)
@@ -470,13 +472,13 @@ void StackedNotificationBar::ShiftIconsLeft(
       // If there are notifications to backfill, do not add the
       // icon until the animation completes, this avoids a jumping overflow
       // label/icons and having more than 3 icons in the stack.
-      message_center::Notification* notification_icon_to_show_on_completion =
+      message_center::Notification* next_notification =
           backfill_start < backfill_end ? stacked_notifications[backfill_start]
                                         : nullptr;
-      icon->AnimateOut(
-          base::BindOnce(&StackedNotificationBar::OnIconAnimatedOut,
-                         weak_ptr_factory_.GetWeakPtr(),
-                         notification_icon_to_show_on_completion));
+      icon->AnimateOut(base::BindOnce(
+          &StackedNotificationBar::OnIconAnimatedOut,
+          weak_ptr_factory_.GetWeakPtr(),
+          next_notification ? next_notification->id() : std::string()));
     }
     return;
   }
@@ -577,21 +579,24 @@ void StackedNotificationBar::UpdateVisibility() {
   // to change):
   //     1. There are more than one notification.
   //     2. There is at least one unpinned notification
-  bool show_clear_all = total_notification_count_ > 1 && unpinned_count >= 1;
+  const bool show_clear_all =
+      total_notification_count_ > 1 && unpinned_count >= 1;
   if (!expand_all_button_->GetVisible())
     clear_all_button_->SetVisible(show_clear_all);
 
   switch (animation_state_) {
     case UnifiedMessageCenterAnimationState::IDLE:
-      SetVisible(stacked_notification_count_ || show_clear_all ||
-                 expand_all_button_->GetVisible());
+      SetVisible(
+          (stacked_notification_count_ && total_notification_count_ > 1) ||
+          show_clear_all || expand_all_button_->GetVisible());
       break;
     case UnifiedMessageCenterAnimationState::HIDE_STACKING_BAR:
       SetVisible(true);
       break;
     case UnifiedMessageCenterAnimationState::COLLAPSE:
-      SetVisible(stacked_notification_count_ || show_clear_all ||
-                 expand_all_button_->GetVisible());
+      SetVisible(
+          (stacked_notification_count_ && total_notification_count_ > 1) ||
+          show_clear_all || expand_all_button_->GetVisible());
       break;
   }
 }

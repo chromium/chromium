@@ -191,7 +191,7 @@ void CastMetricsHelper::LogTimeToFirstAudio() {
 void CastMetricsHelper::LogTimeToBufferAv(BufferingType buffering_type,
                                           base::TimeDelta time) {
   MAKE_SURE_SEQUENCE(LogTimeToBufferAv, buffering_type, time);
-  if (time < base::TimeDelta()) {
+  if (time.is_negative()) {
     LOG(WARNING) << "Negative time";
     return;
   }

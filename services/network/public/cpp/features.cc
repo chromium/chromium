@@ -216,12 +216,15 @@ constexpr base::FeatureParam<int> kLoaderChunkSize{
 
 // static
 uint32_t GetDataPipeDefaultAllocationSize(DataPipeAllocationSize option) {
-  if (option == DataPipeAllocationSize::kDefaultSizeOnly)
-    return kDataPipeDefaultAllocationSize;
   // For low-memory devices, always use the (smaller) default buffer size.
   if (base::SysInfo::AmountOfPhysicalMemoryMB() <= 512)
     return kDataPipeDefaultAllocationSize;
-  return base::saturated_cast<uint32_t>(kDataPipeAllocationSize.Get());
+  switch (option) {
+    case DataPipeAllocationSize::kDefaultSizeOnly:
+      return kDataPipeDefaultAllocationSize;
+    case DataPipeAllocationSize::kLargerSizeIfPossible:
+      return base::saturated_cast<uint32_t>(kDataPipeAllocationSize.Get());
+  }
 }
 
 // static
@@ -254,6 +257,11 @@ constexpr base::FeatureParam<base::TimeDelta>
 // https://fetch.spec.whatwg.org/#cors-non-wildcard-request-header-name
 const base::Feature kCorsNonWildcardRequestHeadersSupport{
     "CorsNonWildcardRequestHeadersSupport", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Whether the sync client optimization is used for communication between the
+// CorsURLLoader and URLLoader.
+const base::Feature kURLLoaderSyncClient{"URLLoaderSyncClient",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace features
 }  // namespace network

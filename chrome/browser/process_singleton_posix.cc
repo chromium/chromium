@@ -193,7 +193,7 @@ ssize_t ReadFromSocket(int fd,
                        char* buf,
                        size_t bufsize,
                        const base::TimeDelta& timeout) {
-  if (timeout > base::TimeDelta()) {
+  if (timeout.is_positive()) {
     int rv = WaitSocketForRead(fd, timeout);
     if (rv <= 0)
       return rv;

@@ -420,14 +420,6 @@ class PasswordFormMetricsRecorder
   // JavaScript. The result is stored in |js_only_input_|.
   void CalculateJsOnlyInput(const autofill::FormData& submitted_form);
 
-  void set_user_typed_password_on_chrome_sign_in_page() {
-    user_typed_password_on_chrome_sign_in_page_ = true;
-  }
-
-  void set_password_hash_saved_on_chrome_sing_in_page() {
-    password_hash_saved_on_chrome_sing_in_page_ = true;
-  }
-
   void set_possible_username_used(bool value) {
     possible_username_used_ = value;
   }
@@ -521,9 +513,6 @@ class PasswordFormMetricsRecorder
   bool recorded_wait_for_username_reason_ = false;
 
   bool recorded_preferred_matched_password_type = false;
-
-  bool user_typed_password_on_chrome_sign_in_page_ = false;
-  bool password_hash_saved_on_chrome_sing_in_page_ = false;
 
   absl::optional<FillingAssistance> filling_assistance_;
   absl::optional<FillingSource> filling_source_;

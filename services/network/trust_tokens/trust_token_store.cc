@@ -82,7 +82,7 @@ absl::optional<base::TimeDelta> TrustTokenStore::TimeSinceLastIssuance(
     return absl::nullopt;
 
   base::TimeDelta ret = base::Time::Now() - *maybe_last_issuance;
-  if (ret < base::TimeDelta())
+  if (ret.is_negative())
     return absl::nullopt;
 
   return ret;
@@ -115,7 +115,7 @@ absl::optional<base::TimeDelta> TrustTokenStore::TimeSinceLastRedemption(
     return absl::nullopt;
 
   base::TimeDelta ret = base::Time::Now() - *maybe_last_redemption;
-  if (ret < base::TimeDelta())
+  if (ret.is_negative())
     return absl::nullopt;
   return ret;
 }

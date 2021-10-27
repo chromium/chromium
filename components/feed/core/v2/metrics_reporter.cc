@@ -675,7 +675,7 @@ void MetricsReporter::OnLoadStream(
   // from the store. A negative value means there was content loaded, but it had
   // a timestamp from the future. In either case, we'll avoid recording the
   // content age.
-  if (stored_content_age > base::TimeDelta()) {
+  if (stored_content_age.is_positive()) {
     if (loaded_new_content_from_network) {
       base::UmaHistogramCustomTimes(
           "ContentSuggestions.Feed.ContentAgeOnLoad.BlockingRefresh",
@@ -799,7 +799,7 @@ void MetricsReporter::ReportPersistentDataIfDayIsDone() {
     if (since_day_start > base::Days(1)
         // Allow up to 1 hour of negative delta, for expected clock changes.
         || since_day_start < -base::Hours(1)) {
-      if (persistent_data_.accumulated_time_spent_in_feed > base::TimeDelta()) {
+      if (persistent_data_.accumulated_time_spent_in_feed.is_positive()) {
         base::UmaHistogramLongTimes(
             "ContentSuggestions.Feed.TimeSpentInFeed",
             persistent_data_.accumulated_time_spent_in_feed);

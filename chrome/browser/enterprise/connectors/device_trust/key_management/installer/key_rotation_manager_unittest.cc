@@ -74,14 +74,30 @@ TEST(KeyRotationManagerTest, RotateWithAdminRights_Tpm_WithKey) {
 
   GURL dm_server_url(kDmServerUrl);
   auto mock_network_delegate = std::make_unique<MockKeyNetworkDelegate>();
+  std::string captured_body;
   EXPECT_CALL(*mock_network_delegate,
               SendPublicKeyToDmServerSync(dm_server_url, kDmToken, _))
-      .WillOnce(Return(CreateResponse()));
+      .WillOnce(
+          Invoke([&captured_body](const GURL& url, const std::string& dm_token,
+                                  const std::string& body) {
+            captured_body = body;
+            return CreateResponse();
+          }));
 
   auto manager = KeyRotationManager::CreateForTesting(
       std::move(mock_network_delegate), std::move(mock_persistence_delegate));
 
   EXPECT_TRUE(manager->RotateWithAdminRights(dm_server_url, kDmToken, kNonce));
+
+  // Validate body.
+  enterprise_management::DeviceManagementRequest request;
+  ASSERT_TRUE(request.ParseFromString(captured_body));
+  auto upload_key_request = request.browser_public_key_upload_request();
+  EXPECT_EQ(BPKUR::EC_KEY, upload_key_request.key_type());
+  EXPECT_EQ(BPKUR::CHROME_BROWSER_TPM_KEY,
+            upload_key_request.key_trust_level());
+  EXPECT_FALSE(upload_key_request.public_key().empty());
+  EXPECT_FALSE(upload_key_request.signature().empty());
 }
 
 // Tests a success key rotation flow when TPM key provider is available, but no

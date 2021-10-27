@@ -87,7 +87,7 @@ void CriticalNotificationBubbleView::OnCountdown() {
 
 std::u16string CriticalNotificationBubbleView::GetWindowTitle() const {
   const auto remaining_time = GetRemainingTime();
-  return remaining_time > base::TimeDelta()
+  return remaining_time.is_positive()
              ? l10n_util::GetPluralStringFUTF16(IDS_CRITICAL_NOTIFICATION_TITLE,
                                                 remaining_time.InSeconds())
              : l10n_util::GetStringUTF16(

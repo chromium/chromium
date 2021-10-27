@@ -69,6 +69,20 @@ class COMPONENT_EXPORT(APP_RESTORE) DeskTemplateReadHandler
                      int32_t session_id) override;
   void OnTaskDestroyed(int32_t task_id) override;
 
+  // Generates the ARC session id (1,000,000,001 - INT_MAX) for restored ARC
+  // apps.
+  int32_t GetArcSessionId();
+
+  // Sets `arc_session_id` for `window_id`. `arc session id` is assigned when
+  // ARC apps are restored.
+  void SetArcSessionIdForWindowId(int32_t arc_session_id, int32_t window_id);
+
+  // Returns the restore window id for the ARC app's `task_id`.
+  int32_t GetArcRestoreWindowIdForTaskId(int32_t task_id);
+
+  // Returns the restore window id for the ARC app's `session_id`.
+  int32_t GetArcRestoreWindowIdForSessionId(int32_t session_id);
+
  private:
   // The restore data read from desk storage. Empty when no launch is underway.
   std::unique_ptr<RestoreData> restore_data_;

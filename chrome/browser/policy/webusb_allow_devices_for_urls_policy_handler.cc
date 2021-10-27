@@ -89,7 +89,7 @@ bool WebUsbAllowDevicesForUrlsPolicyHandler::CheckPolicySettings(
       ++device_index;
     }
 
-    // The whitelisted URLs should be valid.
+    // The allowlisted URLs should be valid.
     int url_index = 0;
     auto* urls_list = item.FindKeyOfType(kUrlsKey, base::Value::Type::LIST);
     DCHECK(urls_list);

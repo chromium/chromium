@@ -84,6 +84,7 @@ class CORE_EXPORT HitTestLocation {
   }
 
   bool Intersects(const PhysicalRect&) const;
+
   // Uses floating-point intersection, which uses inclusive intersection
   // (see LayoutRect::InclusiveIntersect for a definition)
   bool Intersects(const FloatRect&) const;
@@ -95,8 +96,6 @@ class CORE_EXPORT HitTestLocation {
   const FloatQuad& TransformedRect() const { return transformed_rect_; }
 
  private:
-  template <typename RectType>
-  bool IntersectsRect(const RectType&, const RectType& bounding_box) const;
   void Move(const PhysicalOffset& offset);
 
   // These are cached forms of the more accurate |transformed_point_| and

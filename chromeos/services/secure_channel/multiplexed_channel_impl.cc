@@ -11,7 +11,7 @@
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/services/secure_channel/file_transfer_update_callback.h"
 #include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
-#include "chromeos/services/secure_channel/single_client_message_proxy_impl.h"
+#include "chromeos/services/secure_channel/single_client_proxy_impl.h"
 
 namespace chromeos {
 
@@ -87,7 +87,7 @@ void MultiplexedChannelImpl::PerformAddClientToChannel(
     std::unique_ptr<ClientConnectionParameters> client_connection_parameters) {
   DCHECK(client_connection_parameters->IsClientWaitingForResponse());
 
-  auto proxy = SingleClientMessageProxyImpl::Factory::Create(
+  auto proxy = SingleClientProxyImpl::Factory::Create(
       this /* delegate */, std::move(client_connection_parameters));
   DCHECK(!base::Contains(id_to_proxy_map_, proxy->GetProxyId()));
   id_to_proxy_map_[proxy->GetProxyId()] = std::move(proxy);

@@ -6,11 +6,11 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_CONTENT_ANNOTATIONS_MODEL_MANAGER_H_
 
 #include "components/history/core/browser/url_row.h"
-#include "components/optimization_guide/content/browser/page_content_annotation_job.h"
-#include "components/optimization_guide/content/browser/page_content_annotations_common.h"
 #include "components/optimization_guide/content/browser/page_content_annotator.h"
 #include "components/optimization_guide/core/bert_model_executor.h"
 #include "components/optimization_guide/core/entity_metadata.h"
+#include "components/optimization_guide/core/page_content_annotation_job.h"
+#include "components/optimization_guide/core/page_content_annotations_common.h"
 #include "components/optimization_guide/proto/page_topics_model_metadata.pb.h"
 #include "net/base/priority_queue.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

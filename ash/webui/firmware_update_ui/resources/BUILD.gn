@@ -14,7 +14,14 @@ preprocessed_gen_manifest = "preprocessed_gen_manifest.json"
 polymer_element_files = [ "firmware_update_app.js" ]
 
 generate_grd("build_grd") {
-  input_files = [ "index.html" ]
+  input_files = [
+    "app_icon_192.png",
+    "fake_data.js",
+    "fake_update_provider.js",
+    "firmware_update_types.js",
+    "index.html",
+    "mojo_interface_provider.js",
+  ]
   input_files_base_dir = rebase_path(".", "//")
   deps = [ ":preprocess_generated" ]
   manifest_files = [ "$target_gen_dir/$preprocessed_gen_manifest" ]
@@ -25,13 +32,37 @@ generate_grd("build_grd") {
 js_type_check("closure_compile") {
   is_polymer3 = true
   closure_flags = default_closure_args
-  deps = [ ":firmware_update_app" ]
+  deps = [
+    ":fake_data",
+    ":fake_update_provider",
+    ":firmware_update_app",
+    ":firmware_update_types",
+    ":mojo_interface_provider",
+  ]
+}
+
+js_library("fake_data") {
+  deps = [ ":firmware_update_types" ]
+}
+
+js_library("fake_update_provider") {
+  deps = [
+    "//ash/webui/common/resources:fake_observables",
+    "//ui/webui/resources/js:cr.m",
+  ]
 }
 
 js_library("firmware_update_app") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
+}
+
+js_library("firmware_update_types") {
+}
+
+js_library("mojo_interface_provider") {
+  deps = [ "//ui/webui/resources/js:cr.m" ]
 }
 
 preprocess_if_expr("preprocess_generated") {

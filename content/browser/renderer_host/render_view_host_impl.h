@@ -56,6 +56,7 @@ namespace content {
 
 class AgentSchedulingGroupHost;
 class RenderProcessHost;
+class SiteInfo;
 class TimeoutMonitor;
 
 // A callback which will be called immediately before EnterBackForwardCache

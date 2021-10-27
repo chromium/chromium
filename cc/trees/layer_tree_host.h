@@ -630,7 +630,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   void BeginMainFrameNotExpectedSoon();
   void BeginMainFrameNotExpectedUntil(base::TimeTicks time);
   void AnimateLayers(base::TimeTicks monotonic_frame_begin_time);
-  void RequestMainFrameUpdate(bool report_cc_metrics);
+  void RequestMainFrameUpdate(bool report_metrics);
   void FinishCommitOnImplThread(
       LayerTreeHostImpl* host_impl,
       std::vector<std::unique_ptr<SwapPromise>> swap_promises);

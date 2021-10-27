@@ -6,8 +6,6 @@ package org.chromium.android_webview;
 
 import android.content.Context;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -20,7 +18,6 @@ import org.chromium.content_public.browser.WebContents;
 public class AwDarkMode {
     private Context mContext;
     private long mNativeAwDarkMode;
-    private static Integer sLightThemeForTesting;
 
     public AwDarkMode(Context context) {
         mContext = context;
@@ -36,17 +33,8 @@ public class AwDarkMode {
         }
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    public static void setsLightThemeForTesting(
-            @DarkModeHelper.LightTheme int lightThemeForTesting) {
-        sLightThemeForTesting = Integer.valueOf(lightThemeForTesting);
-    }
-
     @CalledByNative
     private boolean isAppUsingDarkTheme() {
-        if (sLightThemeForTesting != null) {
-            return sLightThemeForTesting == DarkModeHelper.LightTheme.LIGHT_THEME_FALSE;
-        }
         return DarkModeHelper.LightTheme.LIGHT_THEME_FALSE
                 == DarkModeHelper.getLightTheme(mContext);
     }

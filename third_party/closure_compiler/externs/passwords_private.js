@@ -131,6 +131,16 @@ chrome.passwordsPrivate.InsecureCredential;
 chrome.passwordsPrivate.PasswordCheckStatus;
 
 /**
+ * @typedef {{
+ *   url: string,
+ *   username: string,
+ *   password: string,
+ *   useAccountStore: boolean
+ * }}
+ */
+chrome.passwordsPrivate.AddPasswordOptions;
+
+/**
  * Function that logs that the Passwords page was accessed from the Chrome
  * Settings WebUI.
  */
@@ -337,6 +347,16 @@ chrome.passwordsPrivate.getPasswordCheckStatus = function(callback) {};
  * @param {function(!chrome.passwordsPrivate.UrlCollection): void} callback
  */
 chrome.passwordsPrivate.getUrlCollection = function(url, callback) {};
+
+/**
+ * Saves a new password entry described by the given |options|. Invokes
+ * |callback| or raises an error depending on whether the operation succeeded.
+ * @param {!chrome.passwordsPrivate.AddPasswordOptions} options Details about a
+ *     new password and storage to be used.
+ * @param {function(): void=} callback The callback that gets invoked on
+ *     success.
+ */
+chrome.passwordsPrivate.addPassword = function(options, callback) {};
 
 /**
  * Fired when the saved passwords list has changed, meaning that an entry has

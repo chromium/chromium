@@ -8,6 +8,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import android.annotation.SuppressLint;
+import android.content.res.Configuration;
 import android.os.Build;
 
 import androidx.test.filters.SmallTest;
@@ -19,7 +20,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.AwContents;
-import org.chromium.android_webview.AwDarkMode;
 import org.chromium.android_webview.DarkModeHelper;
 import org.chromium.android_webview.test.AwActivityTestRule.TestDependencyFactory;
 import org.chromium.base.test.util.CallbackHelper;
@@ -54,7 +54,7 @@ public class AwDarkModeTest {
 
     @Before
     public void setUp() throws Exception {
-        AwDarkMode.setsLightThemeForTesting(DarkModeHelper.LightTheme.LIGHT_THEME_FALSE);
+        DarkModeHelper.setsLightThemeForTesting(DarkModeHelper.LightTheme.LIGHT_THEME_FALSE);
         mWebServer = TestWebServer.start();
         mContentsClient = new TestAwContentsClient();
         mTestContainerView = mRule.createAwTestContainerViewOnMainSync(
@@ -72,7 +72,7 @@ public class AwDarkModeTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testLightThemeUndefined() throws Throwable {
-        AwDarkMode.setsLightThemeForTesting(DarkModeHelper.LightTheme.LIGHT_THEME_UNDEFINED);
+        DarkModeHelper.setsLightThemeForTesting(DarkModeHelper.LightTheme.LIGHT_THEME_UNDEFINED);
         final String url = mWebServer.setResponse(FILE, DATA, null);
         loadUrlSync(url);
         assertEquals("false", getPrefersColorSchemeDark());
@@ -82,7 +82,7 @@ public class AwDarkModeTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testLightThemeTrue() throws Throwable {
-        AwDarkMode.setsLightThemeForTesting(DarkModeHelper.LightTheme.LIGHT_THEME_TRUE);
+        DarkModeHelper.setsLightThemeForTesting(DarkModeHelper.LightTheme.LIGHT_THEME_TRUE);
         final String url = mWebServer.setResponse(FILE, DATA, null);
         loadUrlSync(url);
         assertEquals("false", getPrefersColorSchemeDark());
@@ -95,7 +95,7 @@ public class AwDarkModeTest {
             "enable-features=WebViewDarkModeMatchTheme"})
     public void
     testLightThemeFalseWithMatchThemeDisabled() throws Throwable {
-        AwDarkMode.setsLightThemeForTesting(DarkModeHelper.LightTheme.LIGHT_THEME_FALSE);
+        DarkModeHelper.setsLightThemeForTesting(DarkModeHelper.LightTheme.LIGHT_THEME_FALSE);
         final String url = mWebServer.setResponse(FILE, DATA, null);
         loadUrlSync(url);
         assertEquals("true", getPrefersColorSchemeDark());
@@ -108,11 +108,28 @@ public class AwDarkModeTest {
     @CommandLineFlags.
     Add({"enable-features=WebViewForceDarkModeMatchTheme,WebViewDarkModeMatchTheme"})
     public void testLightThemeFalse() throws Throwable {
-        AwDarkMode.setsLightThemeForTesting(DarkModeHelper.LightTheme.LIGHT_THEME_FALSE);
+        DarkModeHelper.setsLightThemeForTesting(DarkModeHelper.LightTheme.LIGHT_THEME_FALSE);
         final String url = mWebServer.setResponse(FILE, DATA, null);
         loadUrlSync(url);
         assertEquals("true", getPrefersColorSchemeDark());
         assertTrue(isForceDarkening());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=WebViewDarkModeMatchTheme"})
+    public void testConfigurationChanged() throws Throwable {
+        DarkModeHelper.setsLightThemeForTesting(DarkModeHelper.LightTheme.LIGHT_THEME_TRUE);
+        final String url = mWebServer.setResponse(FILE, DATA, null);
+        loadUrlSync(url);
+        assertEquals("false", getPrefersColorSchemeDark());
+        DarkModeHelper.setsLightThemeForTesting(DarkModeHelper.LightTheme.LIGHT_THEME_FALSE);
+        Configuration newConfig = new Configuration();
+        newConfig.uiMode = Configuration.UI_MODE_NIGHT_YES;
+        TestThreadUtils.runOnUiThreadBlocking(() -> mAwContents.onConfigurationChanged(newConfig));
+        loadUrlSync(url);
+        assertEquals("true", getPrefersColorSchemeDark());
     }
 
     private void loadUrlSync(String url) throws Exception {

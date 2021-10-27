@@ -8,6 +8,7 @@
 
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "cc/animation/animation_host.h"
 #include "cc/test/fake_content_layer_client.h"
@@ -839,6 +840,26 @@ TEST_F(DroppedFrameCounterTest, WorstSmoothnessTiming) {
   EXPECT_FLOAT_EQ(MaxPercentDroppedFrameAfter2Sec(), 100);
   EXPECT_FLOAT_EQ(MaxPercentDroppedFrameAfter5Sec(), 100);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(DroppedFrameCounterTest, ReportForUI) {
+  constexpr auto kInterval = base::Milliseconds(10);
+  constexpr size_t kFps = base::Seconds(1) / kInterval;
+  static_assert(
+      kFps % 5 == 0,
+      "kFps must be a multiple of 5 because this test depends on it.");
+  SetInterval(kInterval);
+
+  dropped_frame_counter_.EnableReporForUI();
+  base::HistogramTester histogram_tester;
+
+  // 4 seconds with 20% dropped frames.
+  SimulateFrameSequence({false, false, false, false, true}, (kFps / 5) * 4);
+
+  histogram_tester.ExpectUniqueSample(
+      "Ash.Smoothness.MaxPercentDroppedFrames_1sWindow", 20, 1);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 }  // namespace cc

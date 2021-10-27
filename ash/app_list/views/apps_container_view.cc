@@ -50,9 +50,8 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/flex_layout.h"
 #include "ui/views/view_utils.h"
-
-using views::BoxLayout;
 
 namespace ash {
 
@@ -263,9 +262,8 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view,
         scrollable_container_->AddChildView(std::make_unique<views::View>());
     continue_container_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
 
-    auto* layout = continue_container_->SetLayoutManager(
-        std::make_unique<BoxLayout>(BoxLayout::Orientation::kVertical));
-    layout->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kStretch);
+    continue_container_->SetLayoutManager(std::make_unique<views::FlexLayout>())
+        ->SetOrientation(views::LayoutOrientation::kVertical);
 
     auto* continue_section =
         continue_container_->AddChildView(std::make_unique<ContinueSectionView>(
@@ -290,6 +288,8 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view,
                   kSeparatorVerticalInset * 2 + views::Separator::kThickness));
     separator_->SetPaintToLayer();
     separator_->layer()->SetFillsBoundsOpaquely(false);
+    separator_->SetProperty(views::kCrossAxisAlignmentKey,
+                            views::LayoutAlignment::kCenter);
   } else {
     // Add child view at index 0 so focus traversal goes to suggestion chips
     // before the views in the scrollable_container.

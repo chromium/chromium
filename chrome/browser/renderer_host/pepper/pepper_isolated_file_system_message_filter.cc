@@ -66,8 +66,7 @@ PepperIsolatedFileSystemMessageFilter::PepperIsolatedFileSystemMessageFilter(
     ppapi::host::PpapiHost* ppapi_host)
     : render_process_id_(render_process_id),
       profile_directory_(profile_directory),
-      document_url_(document_url),
-      ppapi_host_(ppapi_host) {
+      document_url_(document_url) {
   for (size_t i = 0; i < base::size(kPredefinedAllowedCrxFsOrigins); ++i)
     allowed_crxfs_origins_.insert(kPredefinedAllowedCrxFsOrigins[i]);
 }
@@ -127,8 +126,6 @@ int32_t PepperIsolatedFileSystemMessageFilter::OnOpenFileSystem(
       break;
     case PP_ISOLATEDFILESYSTEMTYPE_PRIVATE_CRX:
       return OpenCrxFileSystem(context);
-    case PP_ISOLATEDFILESYSTEMTYPE_PRIVATE_PLUGINPRIVATE:
-      return OpenPluginPrivateFileSystem(context);
   }
   NOTREACHED();
   context->reply_msg =
@@ -175,26 +172,4 @@ int32_t PepperIsolatedFileSystemMessageFilter::OpenCrxFileSystem(
 #else
   return PP_ERROR_NOTSUPPORTED;
 #endif
-}
-
-int32_t PepperIsolatedFileSystemMessageFilter::OpenPluginPrivateFileSystem(
-    ppapi::host::HostMessageContext* context) {
-  DCHECK(ppapi_host_);
-  // Only plugins with private permission can open the filesystem.
-  if (!ppapi_host_->permissions().HasPermission(ppapi::PERMISSION_PRIVATE))
-    return PP_ERROR_NOACCESS;
-
-  const std::string& root_name = ppapi::IsolatedFileSystemTypeToRootName(
-      PP_ISOLATEDFILESYSTEMTYPE_PRIVATE_PLUGINPRIVATE);
-  const std::string& fsid =
-      storage::IsolatedContext::GetInstance()->RegisterFileSystemForVirtualPath(
-          storage::kFileSystemTypePluginPrivate, root_name, base::FilePath());
-
-  // Grant full access of isolated filesystem to renderer process.
-  content::ChildProcessSecurityPolicy* policy =
-      content::ChildProcessSecurityPolicy::GetInstance();
-  policy->GrantCreateReadWriteFileSystem(render_process_id_, fsid);
-
-  context->reply_msg = PpapiPluginMsg_IsolatedFileSystem_BrowserOpenReply(fsid);
-  return PP_OK;
 }

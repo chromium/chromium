@@ -19,7 +19,7 @@ class AttestationService {
  public:
   using AttestationCallback = base::OnceCallback<void(const std::string&)>;
 
-  virtual ~AttestationService();
+  virtual ~AttestationService() = default;
 
   // If the `challenge` comes from Verified Access, builds a proper response
   // including the `signals` and returns it via the given `callback`. If
@@ -28,9 +28,6 @@ class AttestationService {
       const std::string& challenge,
       std::unique_ptr<SignalsType> signals,
       AttestationCallback callback) = 0;
-
-  // Rotate the key used to sign in challenge response.
-  virtual bool RotateSigningKey(const std::string& nonce);
 };
 
 }  // namespace enterprise_connectors

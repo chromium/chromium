@@ -276,7 +276,8 @@ GREYLayoutConstraint* BelowConstraint() {
 
 // Tests that the forced sign-in screen replaces the regular sign-in screen
 // in the FRE when the policy is enabled.
-- (void)testSignInScreenUIWhenForcedByPolicy {
+// Flaky under simulator: https://crbug.com/1263623
+- (void)DISABLED_testSignInScreenUIWhenForcedByPolicy {
   AppLaunchConfiguration config = self.appConfigurationForTestCase;
 
   // Configure the policy to force sign-in.

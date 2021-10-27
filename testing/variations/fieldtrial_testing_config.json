@@ -511,6 +511,21 @@
             ]
         }
     ],
+    "AndroidMessagesNearOomReduction": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_2021-10-06",
+                    "enable_features": [
+                        "MessagesForAndroidNearOomReduction"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidMessagesPopupBlocked": [
         {
             "platforms": [
@@ -3400,6 +3415,54 @@
                     "name": "Enabled",
                     "enable_features": [
                         "EarlyLibraryLoad"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ElidePrioritizationOfPreNativeBootstrapTasks": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_on_96+",
+                    "enable_features": [
+                        "ElidePrioritizationOfPreNativeBootstrapTasks"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ElideTabPreloadAtStartup": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_on_96+",
+                    "enable_features": [
+                        "ElideTabPreloadAtStartup"
+                    ]
+                }
+            ]
+        }
+    ],
+    "EnableDangerousDownloadDialog": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledFilledNegativeButton",
+                    "params": {
+                        "filled_negative_button": "true"
+                    },
+                    "enable_features": [
+                        "EnableDangerousDownloadDialog"
                     ]
                 }
             ]
@@ -6887,26 +6950,6 @@
             ]
         }
     ],
-    "SafeBrowsingPasswordProtectionRequestWithToken": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SafeBrowsingPasswordProtectionRequestWithToken"
-                    ]
-                }
-            ]
-        }
-    ],
     "SafeBrowsingRealTimeUrlLookupReferrerChainForEnterprise": [
         {
             "platforms": [
@@ -7804,6 +7847,21 @@
                     "enable_features": [
                         "TranslateRankerEnforcement",
                         "TranslateRankerQuery"
+                    ]
+                }
+            ]
+        }
+    ],
+    "TreatBootstrapAsDefault": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_on_96+",
+                    "enable_features": [
+                        "TreatBootstrapAsDefault"
                     ]
                 }
             ]

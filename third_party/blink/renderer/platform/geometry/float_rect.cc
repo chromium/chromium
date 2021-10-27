@@ -117,14 +117,6 @@ bool FloatRect::Contains(const FloatRect& other) const {
          bottom() >= other.bottom();
 }
 
-bool FloatRect::Contains(const FloatPoint& point,
-                         ContainsMode contains_mode) const {
-  if (contains_mode == kInsideOrOnStroke)
-    return Contains(point.x(), point.y());
-  return x() < point.x() && right() > point.x() && y() < point.y() &&
-         bottom() > point.y();
-}
-
 void FloatRect::Intersect(const IntRect& other) {
   float new_left = std::max(x(), static_cast<float>(other.x()));
   float new_top = std::max(y(), static_cast<float>(other.y()));

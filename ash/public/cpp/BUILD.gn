@@ -7,6 +7,8 @@ import("//mojo/public/tools/bindings/mojom.gni")
 # C++ headers and sources that can be used outside ash.
 component("cpp") {
   sources = [
+    "accelerator_configuration.cc",
+    "accelerator_configuration.h",
     "accelerators.cc",
     "accelerators.h",
     "accessibility_controller.cc",
@@ -179,9 +181,6 @@ component("cpp") {
     "media_client.h",
     "media_controller.cc",
     "media_controller.h",
-    "media_notification_provider.cc",
-    "media_notification_provider.h",
-    "media_notification_provider_observer.h",
     "message_center/arc_notification_constants.h",
     "message_center/arc_notification_manager_base.cc",
     "message_center/arc_notification_manager_base.h",

@@ -51,22 +51,6 @@ int32_t FetchRestoreWindowId(const std::string& app_id) {
   return FullRestoreReadHandler::GetInstance()->FetchRestoreWindowId(app_id);
 }
 
-int32_t GetArcRestoreWindowIdForTaskId(int32_t task_id) {
-  if (!full_restore::features::IsFullRestoreEnabled())
-    return 0;
-
-  return FullRestoreReadHandler::GetInstance()->GetArcRestoreWindowIdForTaskId(
-      task_id);
-}
-
-int32_t GetArcRestoreWindowIdForSessionId(int32_t session_id) {
-  if (!full_restore::features::IsFullRestoreEnabled())
-    return 0;
-
-  return FullRestoreReadHandler::GetInstance()
-      ->GetArcRestoreWindowIdForSessionId(session_id);
-}
-
 void SetActiveProfilePath(const base::FilePath& profile_path) {
   if (!full_restore::features::IsFullRestoreEnabled())
     return;

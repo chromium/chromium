@@ -149,7 +149,7 @@ void CastSocketImpl::set_id(int id) {
 }
 
 bool CastSocketImpl::keep_alive() const {
-  return open_params_.liveness_timeout > base::TimeDelta();
+  return open_params_.liveness_timeout.is_positive();
 }
 
 bool CastSocketImpl::audio_only() const {

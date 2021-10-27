@@ -10,6 +10,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_bar_view.h"
+#include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
 #include "ash/wm/desks/templates/desks_templates_delete_button.h"
 #include "ash/wm/desks/templates/desks_templates_dialog_controller.h"
@@ -126,6 +127,11 @@ class DesksTemplatesTest : public OverviewTestBase {
     desk_template->set_desk_restore_data(
         std::make_unique<app_restore::RestoreData>());
 
+    AddEntry(std::move(desk_template));
+  }
+
+  // Adds a captured desk entry to the desks model.
+  void AddEntry(std::unique_ptr<DeskTemplate> desk_template) {
     base::RunLoop loop;
     desk_model()->AddOrUpdateEntry(
         std::move(desk_template),
@@ -431,10 +437,10 @@ TEST_F(DesksTemplatesTest, DesksTemplatesGridItems) {
   // well as with the correct name and timestamp.
   for (auto& overview_grid : GetOverviewGridList()) {
     views::Widget* grid_widget = overview_grid->desks_templates_grid_widget();
-    DCHECK(grid_widget);
+    ASSERT_TRUE(grid_widget);
     const DesksTemplatesGridView* templates_grid_view =
         static_cast<DesksTemplatesGridView*>(grid_widget->GetContentsView());
-    DCHECK(templates_grid_view);
+    ASSERT_TRUE(templates_grid_view);
     std::vector<DesksTemplatesItemView*> grid_items =
         DesksTemplatesGridViewTestApi(templates_grid_view).grid_items();
 
@@ -487,10 +493,10 @@ TEST_F(DesksTemplatesTest, DeleteTemplate) {
   auto& grid_list = GetOverviewGridList();
   ASSERT_EQ(2u, grid_list.size());
   views::Widget* grid_widget = grid_list[0]->desks_templates_grid_widget();
-  DCHECK(grid_widget);
+  ASSERT_TRUE(grid_widget);
   const DesksTemplatesGridView* templates_grid_view =
       static_cast<DesksTemplatesGridView*>(grid_widget->GetContentsView());
-  DCHECK(templates_grid_view);
+  ASSERT_TRUE(templates_grid_view);
 
   // Helper function for attempting to delete a template based on its uuid. Also
   // checks if the grid item count is as expected before deleting.
@@ -586,6 +592,54 @@ TEST_F(DesksTemplatesTest, SaveDeskTemplateButtonVisibility) {
       GetCreateDeskTemplateWidgetVisibility(GetOverviewGridList()[0].get()));
   EXPECT_TRUE(
       GetCreateDeskTemplateWidgetVisibility(GetOverviewGridList()[1].get()));
+}
+
+// Tests that launching templates from the templates grid functions correctly.
+TEST_F(DesksTemplatesTest, LaunchTemplate) {
+  DesksController* desks_controller = DesksController::Get();
+  ASSERT_EQ(0, desks_controller->GetActiveDeskIndex());
+
+  auto test_window = CreateTestWindow();
+
+  // Capture the current desk .
+  // TODO: Change this once the save desk button is implemented.
+  std::unique_ptr<DeskTemplate> desk_template =
+      desks_controller->CaptureActiveDeskAsTemplate();
+  AddEntry(std::move(desk_template));
+
+  // Enter overview and show the Desks Templates Grid.
+  ToggleOverview();
+  WaitForUI();
+  ShowDesksTemplatesGrids();
+  WaitForUI();
+
+  // Find the grid item.
+  auto& grid_list = GetOverviewGridList();
+  ASSERT_EQ(1u, grid_list.size());
+  views::Widget* grid_widget = grid_list[0]->desks_templates_grid_widget();
+  ASSERT_TRUE(grid_widget);
+  const DesksTemplatesGridView* templates_grid_view =
+      static_cast<DesksTemplatesGridView*>(grid_widget->GetContentsView());
+  ASSERT_TRUE(templates_grid_view);
+  std::vector<DesksTemplatesItemView*> grid_items =
+      DesksTemplatesGridViewTestApi(templates_grid_view).grid_items();
+
+  // Check the current grid item count.
+  ASSERT_EQ(1ul, grid_items.size());
+
+  // Click on the grid item to launch the template.
+  DeskSwitchAnimationWaiter waiter;
+  ClickOnView(grid_items[0]);
+  WaitForUI();
+  waiter.Wait();
+
+  // Verify that we have created and activated a new desk.
+  EXPECT_EQ(2ul, desks_controller->desks().size());
+  EXPECT_EQ(1, desks_controller->GetActiveDeskIndex());
+
+  // Launching a template creates and activates a new desk, which also results
+  // in exiting overview mode, so we check to make sure overview is closed.
+  EXPECT_FALSE(InOverviewSession());
 }
 
 }  // namespace ash

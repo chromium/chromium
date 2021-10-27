@@ -104,18 +104,18 @@ function replaceNotificationOptionURLs(notification_details, callback) {
   });
 }
 
-function genHandle(name, failure_function) {
-  return function(id, input_notification_details, callback) {
+function generateHandler(name, failure_function) {
+  return function(id, notification_details, callback) {
+    // Since we need to modify the details object, we copy it to avoid those
+    // changes also being made to the object on the caller's side.
     // TODO(dewittj): Remove this hack. This is used as a way to deep
     // copy a complex JSON object.
-    var notification_details = $JSON.parse(
-        $JSON.stringify(input_notification_details));
-    var that = this;
-    var stack = exceptionHandler.getExtensionStackTrace();
-    replaceNotificationOptionURLs(notification_details, function(success) {
+    var notification_details_copy = $JSON.parse(
+        $JSON.stringify(notification_details));
+    replaceNotificationOptionURLs(notification_details_copy, function(success) {
       if (success) {
         bindingUtil.sendRequest(
-            name, [id, notification_details, callback], undefined);
+            name, [id, notification_details_copy, callback], undefined);
         return;
       }
       bindingUtil.runCallbackWithLastError(
@@ -126,15 +126,12 @@ function genHandle(name, failure_function) {
   };
 }
 
-var handleCreate = genHandle('notifications.create',
-                             function(callback, id) { callback(id); });
-var handleUpdate = genHandle('notifications.update',
-                             function(callback, id) { callback(false); });
-
-var notificationsCustomHook = function(bindingsAPI, extensionId) {
+apiBridge.registerCustomHook( function(bindingsAPI) {
   var apiFunctions = bindingsAPI.apiFunctions;
-  apiFunctions.setHandleRequest('create', handleCreate);
-  apiFunctions.setHandleRequest('update', handleUpdate);
-};
 
-apiBridge.registerCustomHook(notificationsCustomHook);
+  apiFunctions.setHandleRequest('create', generateHandler(
+      'notifications.create', function(callback, id) { callback(id); }));
+
+  apiFunctions.setHandleRequest('update', generateHandler(
+      'notifications.update', function(callback, id) { callback(false); }));
+});

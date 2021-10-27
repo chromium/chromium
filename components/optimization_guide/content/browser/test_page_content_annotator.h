@@ -6,8 +6,8 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_TEST_PAGE_CONTENT_ANNOTATOR_H_
 
 #include "base/containers/flat_map.h"
-#include "components/optimization_guide/content/browser/page_content_annotations_common.h"
 #include "components/optimization_guide/content/browser/page_content_annotator.h"
+#include "components/optimization_guide/core/page_content_annotations_common.h"
 
 namespace optimization_guide {
 

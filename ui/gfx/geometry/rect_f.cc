@@ -85,6 +85,11 @@ bool RectF::Contains(float point_x, float point_y) const {
          point_y < bottom();
 }
 
+bool RectF::InclusiveContains(float point_x, float point_y) const {
+  return point_x >= x() && point_x <= right() && point_y >= y() &&
+         point_y <= bottom();
+}
+
 bool RectF::Contains(const RectF& rect) const {
   return rect.x() >= x() && rect.right() <= right() && rect.y() >= y() &&
          rect.bottom() <= bottom();

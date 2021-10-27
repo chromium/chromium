@@ -34,7 +34,7 @@ double Vector2dF::LengthSquared() const {
 }
 
 float Vector2dF::Length() const {
-  return static_cast<float>(std::sqrt(LengthSquared()));
+  return hypotf(x_, y_);
 }
 
 void Vector2dF::Scale(float x_scale, float y_scale) {

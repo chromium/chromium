@@ -36,6 +36,7 @@
 #include "fuchsia/engine/browser/theme_manager.h"
 #include "fuchsia/engine/browser/url_request_rewrite_rules_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/wm/core/focus_controller.h"
 #include "url/gurl.h"
@@ -57,11 +58,15 @@ class FrameImpl : public fuchsia::web::Frame,
                   public content::WebContentsDelegate {
  public:
   // Returns FrameImpl that owns the |web_contents| or nullptr if the
-  // |web_contents| is nullptr.
+  // |web_contents| is nullptr. Returns nullptr if there is no FrameImpl that
+  // owns the |web_contents|, which can happen if FrameImpl has not been
+  // initialized yet.
   static FrameImpl* FromWebContents(content::WebContents* web_contents);
 
   // Returns FrameImpl that owns the |render_frame_host| or nullptr if the
-  // |render_frame_host| is nullptr.
+  // |render_frame_host| is nullptr. Returns nullptr if there is no FrameImpl
+  // that owns the |web_contents|, which can happen if FrameImpl has not been
+  // initialized yet.
   static FrameImpl* FromRenderFrameHost(
       content::RenderFrameHost* render_frame_host);
 
@@ -119,12 +124,31 @@ class FrameImpl : public fuchsia::web::Frame,
     return window_tree_host_.get();
   }
 
+  // Override |blink_prefs| with settings defined in |content_settings_|.
+  //
+  // This method is called when WebPreferences is first created and when it is
+  // recomputed.
+  void OverrideWebPreferences(blink::web_pref::WebPreferences* web_prefs);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(FrameImplTest, DelayedNavigationEventAck);
   FRIEND_TEST_ALL_PREFIXES(FrameImplTest, NavigationObserverDisconnected);
   FRIEND_TEST_ALL_PREFIXES(FrameImplTest, NoNavigationObserverAttached);
   FRIEND_TEST_ALL_PREFIXES(FrameImplTest, ReloadFrame);
   FRIEND_TEST_ALL_PREFIXES(FrameImplTest, Stop);
+
+  // Used for storing awaiting popup frames in |pending_popups_|
+  struct PendingPopup {
+    PendingPopup(FrameImpl* frame_ptr,
+                 fidl::InterfaceHandle<fuchsia::web::Frame> handle,
+                 fuchsia::web::PopupFrameCreationInfo creation_info);
+    PendingPopup(PendingPopup&& other);
+    ~PendingPopup();
+
+    FrameImpl* frame_ptr;
+    fidl::InterfaceHandle<fuchsia::web::Frame> handle;
+    fuchsia::web::PopupFrameCreationInfo creation_info;
+  };
 
   aura::Window* root_window() const;
 
@@ -250,6 +274,10 @@ class FrameImpl : public fuchsia::web::Frame,
       override;
   void SetPreferredTheme(fuchsia::settings::ThemeType theme) override;
   void SetPageScale(float scale) override;
+  void SetContentAreaSettings(
+      fuchsia::web::ContentAreaSettings settings) override;
+  void ResetContentAreaSettings() override;
+  void OnThemeManagerError();
 
   // content::WebContentsDelegate implementation.
   void CloseContents(content::WebContents* source) override;
@@ -330,16 +358,16 @@ class FrameImpl : public fuchsia::web::Frame,
   FramePermissionController permission_controller_;
   std::unique_ptr<NavigationPolicyHandler> navigation_policy_handler_;
 
-  // Current page scale. Updated by calling SetPageScale().
-  float page_scale_ = 1.0;
-
   // Session ID to use for fuchsia.media.AudioConsumer. Set with
   // SetMediaSessionId().
   uint64_t media_session_id_ = 0;
 
+  // Stored settings for web contents in the current Frame.
+  fuchsia::web::ContentAreaSettings content_area_settings_;
+
   // Used for receiving and dispatching popup created by this Frame.
   fuchsia::web::PopupFrameCreationListenerPtr popup_listener_;
-  std::list<std::unique_ptr<content::WebContents>> pending_popups_;
+  std::list<PendingPopup> pending_popups_;
   bool popup_ack_outstanding_ = false;
   gfx::Size render_size_override_;
 

@@ -141,6 +141,9 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // Sets focus without a11y announcements or focus ring.
   void SilentlyRequestFocus();
 
+  // Ensures that the item view is selected by `grid_delegate_`.
+  void EnsureSelected();
+
   AppListItem* item() const { return item_weak_; }
 
   views::Label* title() { return title_; }
@@ -361,8 +364,8 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // AppListControllerImpl by another name.
   AppListViewDelegate* const view_delegate_;
 
-  IconImageView* icon_ = nullptr;               // Strongly typed child view.
-  views::Label* title_ = nullptr;               // Strongly typed child view.
+  IconImageView* icon_ = nullptr;  // Strongly typed child view.
+  views::Label* title_ = nullptr;  // Strongly typed child view.
 
   std::unique_ptr<AppListMenuModelAdapter> context_menu_;
 

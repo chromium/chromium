@@ -16,6 +16,11 @@ extern const base::Feature kIPHDemoMode;
 // A feature for enabling a snooze mode for In-Product Help (IPH).
 extern const base::Feature kIPHSnooze;
 
+// A feature for enabling In-Product Help (IPH) to use client side
+// configuration. When this flag is enabled, finch config will be ignored for
+// all IPHs.
+extern const base::Feature kUseClientConfigIPH;
+
 // A feature to ensure all arrays can contain at least one feature.
 extern const base::Feature kIPHDummyFeature;
 

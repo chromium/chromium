@@ -168,9 +168,6 @@ extern const char kUseCustomMessagesDomainDescription[];
 extern const char kAndroidPictureInPictureAPIName[];
 extern const char kAndroidPictureInPictureAPIDescription[];
 
-extern const char kAppCacheName[];
-extern const char kAppCacheDescription[];
-
 extern const char kAssistantConsentV2Name[];
 extern const char kAssistantConsentV2Description[];
 
@@ -893,6 +890,9 @@ extern const char kInProductHelpDemoModeChoiceDescription[];
 
 extern const char kInProductHelpSnoozeName[];
 extern const char kInProductHelpSnoozeDescription[];
+
+extern const char kInProductHelpUseClientConfigName[];
+extern const char kInProductHelpUseClientConfigDescription[];
 
 extern const char kInstalledAppsInCbdName[];
 extern const char kInstalledAppsInCbdDescription[];
@@ -3003,6 +3003,9 @@ extern const char kWindowControlMenuDescription[];
 
 extern const char kLauncherNudgeName[];
 extern const char kLauncherNudgeDescription[];
+
+extern const char kLauncherNudgeShortIntervalName[];
+extern const char kLauncherNudgeShortIntervalDescription[];
 
 // Prefer keeping this section sorted to adding new declarations down here.
 

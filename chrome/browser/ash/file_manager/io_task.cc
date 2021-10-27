@@ -80,10 +80,6 @@ void DummyIOTask::Cancel() {
   progress_.state = State::kCancelled;
 }
 
-const ProgressStatus& DummyIOTask::progress() {
-  return progress_;
-}
-
 }  // namespace io_task
 
 }  // namespace file_manager

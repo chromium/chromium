@@ -465,6 +465,15 @@ LayerTreeHostImpl::LayerTreeHostImpl(
   compositor_frame_reporting_controller_->SetDroppedFrameCounter(
       &dropped_frame_counter_);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  const bool is_ui = settings.is_layer_tree_for_ui;
+  if (is_ui) {
+    dropped_frame_counter_.EnableReporForUI();
+    compositor_frame_reporting_controller_->SetThreadAffectsSmoothness(
+        FrameSequenceMetrics::ThreadType::kMain, true);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   dropped_frame_counter_.set_total_counter(&total_frame_counter_);
   frame_trackers_.set_custom_tracker_results_added_callback(
       base::BindRepeating(&LayerTreeHostImpl::NotifyThroughputTrackerResults,

@@ -53,7 +53,7 @@ bool SmoothEventSampler::ShouldSample() const {
 
 void SmoothEventSampler::RecordSample() {
   token_bucket_ -= min_capture_period_;
-  if (token_bucket_ < base::TimeDelta())
+  if (token_bucket_.is_negative())
     token_bucket_ = base::TimeDelta();
   TRACE_COUNTER1("gpu.capture", "MirroringTokenBucketUsec",
                  std::max<int64_t>(0, token_bucket_.InMicroseconds()));

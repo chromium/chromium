@@ -10,10 +10,20 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import './styles.js';
 import '../common/styles.js';
+import {assertNotReached} from '/assert.m.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getWallpaperProvider} from './mojo_interface_provider.js';
 import {initializeGooglePhotosData} from './personalization_controller.js';
 import {WithPersonalizationStore} from './personalization_store.js';
+
+/**
+ * Enumeration of supported tabs.
+ * @enum {string}
+ */
+const Tab = {
+  Albums: 'albums',
+  Photos: 'photos',
+};
 
 /** @polymer */
 export class GooglePhotos extends WithPersonalizationStore {
@@ -27,6 +37,23 @@ export class GooglePhotos extends WithPersonalizationStore {
 
   static get properties() {
     return {
+      /**
+       * The list of albums.
+       * @type {?Array<undefined>}
+       * @private
+       */
+      albums_: {
+        type: Array,
+      },
+
+      /**
+       * Whether the list of albums is currently loading.
+       * @type {boolean}
+       * @private
+       */
+      albumsLoading_: {
+        type: Boolean,
+      },
       /**
        * The list of photos.
        * @type {?Array<undefined>}
@@ -43,12 +70,25 @@ export class GooglePhotos extends WithPersonalizationStore {
        */
       photosLoading_: {
         type: Boolean,
-      }
+      },
+
+      /**
+       * The currently selected tab.
+       * @type {!Tab}
+       * @private
+       */
+      tab_: {
+        type: String,
+        value: Tab.Photos,
+      },
     };
   }
 
   static get observers() {
-    return ['onPhotosLoaded_(photos_, photosLoading_)'];
+    return [
+      'onAlbumsLoaded_(albums_, albumsLoading_)',
+      'onPhotosLoaded_(photos_, photosLoading_)',
+    ];
   }
 
   /** @override */
@@ -62,11 +102,23 @@ export class GooglePhotos extends WithPersonalizationStore {
   connectedCallback() {
     super.connectedCallback();
 
+    this.watch('albums_', state => state.googlePhotos.albums);
+    this.watch('albumsLoading_', state => state.loading.googlePhotos.albums);
     this.watch('photos_', state => state.googlePhotos.photos);
     this.watch('photosLoading_', state => state.loading.googlePhotos.photos);
     this.updateFromStore();
 
     initializeGooglePhotosData(this.wallpaperProvider_, this.getStore());
+  }
+
+  /**
+   * Invoked on changes to the list of albums and its loading state.
+   * @param {?Array<undefined>} albums
+   * @param {boolean} albumsLoading
+   * @private
+   */
+  onAlbumsLoaded_(albums, albumsLoading) {
+    // TODO(dmblack): Send event to untrusted via iframe API.
   }
 
   /**
@@ -77,6 +129,43 @@ export class GooglePhotos extends WithPersonalizationStore {
    */
   onPhotosLoaded_(photos, photosLoading) {
     // TODO(dmblack): Send event to untrusted via iframe API.
+  }
+
+  /**
+   * Invoked on tab selected.
+   * @param {!Event} e
+   * @private
+   */
+  onTabSelected_(e) {
+    switch (e.currentTarget.id) {
+      case 'albumsTab':
+        this.tab_ = Tab.Albums;
+        return;
+      case 'photosTab':
+        this.tab_ = Tab.Photos;
+        return;
+      default:
+        assertNotReached();
+        return;
+    }
+  }
+
+  /**
+   * Whether the albums tab is currently selected.
+   * @return {boolean}
+   * @private
+   */
+  isAlbumsTabSelected_() {
+    return this.tab_ === Tab.Albums;
+  }
+
+  /**
+   * Whether the photos tab is currently selected.
+   * @return {boolean}
+   * @private
+   */
+  isPhotosTabSelected_() {
+    return this.tab_ === Tab.Photos;
   }
 }
 

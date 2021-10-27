@@ -28,99 +28,82 @@ using media::android_mojo_util::CreateMediaDrmStorage;
 using media::android_mojo_util::CreateProvisionFetcher;
 
 namespace media {
-namespace {
 
-class AndroidPlatformDelegate : public GpuMojoMediaClient::PlatformDelegate {
- public:
-  explicit AndroidPlatformDelegate(GpuMojoMediaClient* client)
-      : client_(client) {}
-  ~AndroidPlatformDelegate() override = default;
+std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
+    const VideoDecoderTraits& traits) {
+  scoped_refptr<gpu::RefCountedLock> ref_counted_lock;
 
-  AndroidPlatformDelegate(const AndroidPlatformDelegate&) = delete;
-  void operator=(const AndroidPlatformDelegate&) = delete;
+  // When this feature is enabled, CodecImage, CodecBufferWaitCorrdinator and
+  // other media classes used in MCVD path will be accessed by multiple gpu
+  // threads. To implement thread safetyness, we are using a global ref
+  // counted lock here. CodecImage, CodecOutputBufferRenderer,
+  // CodecBufferWaitCoordinator expects this ref counted lock to be held by the
+  // classes which are accessing them (SharedImageVideo, MRE, FrameInfoHelper
+  // etc.)
+  if (features::NeedThreadSafeAndroidMedia()) {
+    ref_counted_lock = base::MakeRefCounted<gpu::RefCountedLock>();
+  }
 
-  // GpuMojoMediaClient::PlatformDelegate implementation.
-  std::unique_ptr<VideoDecoder> CreateVideoDecoder(
-      const VideoDecoderTraits& traits) override {
-    scoped_refptr<gpu::RefCountedLock> ref_counted_lock;
-
-    // When this feature is enabled, CodecImage, CodecBufferWaitCorrdinator and
-    // other media classes used in MCVD path will be accessed by multiple gpu
-    // threads. To implement thread safetyness, we are using a global ref
-    // counted lock here. CodecImage, CodecOutputBufferRenderer,
-    // CodecBufferWaitCoordinator expects this ref counted lock to be held by
-    // the classes which are accessing them (SharedImageVideo, MRE,
-    // FrameInfoHelper etc.)
-    if (features::NeedThreadSafeAndroidMedia()) {
-      ref_counted_lock = base::MakeRefCounted<gpu::RefCountedLock>();
-    }
-
-    std::unique_ptr<SharedImageVideoProvider> image_provider =
-        std::make_unique<DirectSharedImageVideoProvider>(
-            traits.gpu_task_runner, traits.get_command_buffer_stub_cb,
-            ref_counted_lock);
-
-    if (base::FeatureList::IsEnabled(kUsePooledSharedImageVideoProvider)) {
-      // Wrap |image_provider| in a pool.
-      image_provider = PooledSharedImageVideoProvider::Create(
+  std::unique_ptr<SharedImageVideoProvider> image_provider =
+      std::make_unique<DirectSharedImageVideoProvider>(
           traits.gpu_task_runner, traits.get_command_buffer_stub_cb,
-          std::move(image_provider), ref_counted_lock);
-    }
-    // TODO(liberato): Create this only if we're using Vulkan, else it's
-    // ignored.  If we can tell that here, then VideoFrameFactory can use it
-    // as a signal about whether it's supposed to get YCbCrInfo rather than
-    // requiring the provider to set |is_vulkan| in the ImageRecord.
-    auto frame_info_helper = FrameInfoHelper::Create(
+          ref_counted_lock);
+
+  if (base::FeatureList::IsEnabled(kUsePooledSharedImageVideoProvider)) {
+    // Wrap |image_provider| in a pool.
+    image_provider = PooledSharedImageVideoProvider::Create(
         traits.gpu_task_runner, traits.get_command_buffer_stub_cb,
-        ref_counted_lock);
-
-    return MediaCodecVideoDecoder::Create(
-        client_->gpu_preferences(), client_->gpu_feature_info(),
-        traits.media_log->Clone(), DeviceInfo::GetInstance(),
-        CodecAllocator::GetInstance(traits.gpu_task_runner),
-        std::make_unique<AndroidVideoSurfaceChooserImpl>(
-            DeviceInfo::GetInstance()->IsSetOutputSurfaceSupported()),
-        traits.android_overlay_factory_cb,
-        std::move(traits.request_overlay_info_cb),
-        std::make_unique<VideoFrameFactoryImpl>(
-            traits.gpu_task_runner, client_->gpu_preferences(),
-            std::move(image_provider),
-            MaybeRenderEarlyManager::Create(traits.gpu_task_runner,
-                                            ref_counted_lock),
-            std::move(frame_info_helper), ref_counted_lock),
-        ref_counted_lock);
+        std::move(image_provider), ref_counted_lock);
   }
+  // TODO(liberato): Create this only if we're using Vulkan, else it's
+  // ignored.  If we can tell that here, then VideoFrameFactory can use it
+  // as a signal about whether it's supposed to get YCbCrInfo rather than
+  // requiring the provider to set |is_vulkan| in the ImageRecord.
+  auto frame_info_helper = FrameInfoHelper::Create(
+      traits.gpu_task_runner, traits.get_command_buffer_stub_cb,
+      ref_counted_lock);
 
-  void GetSupportedVideoDecoderConfigs(
-      MojoMediaClient::SupportedVideoDecoderConfigsCallback callback) override {
-    std::move(callback).Run(MediaCodecVideoDecoder::GetSupportedConfigs());
-  }
+  return MediaCodecVideoDecoder::Create(
+      traits.gpu_preferences, traits.gpu_feature_info,
+      traits.media_log->Clone(), DeviceInfo::GetInstance(),
+      CodecAllocator::GetInstance(traits.gpu_task_runner),
+      std::make_unique<AndroidVideoSurfaceChooserImpl>(
+          DeviceInfo::GetInstance()->IsSetOutputSurfaceSupported()),
+      traits.android_overlay_factory_cb,
+      std::move(traits.request_overlay_info_cb),
+      std::make_unique<VideoFrameFactoryImpl>(
+          traits.gpu_task_runner, traits.gpu_preferences,
+          std::move(image_provider),
+          MaybeRenderEarlyManager::Create(traits.gpu_task_runner,
+                                          ref_counted_lock),
+          std::move(frame_info_helper), ref_counted_lock),
+      ref_counted_lock);
+}
 
-  std::unique_ptr<AudioDecoder> CreateAudioDecoder(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner) override {
-    return std::make_unique<MediaCodecAudioDecoder>(std::move(task_runner));
-  }
+absl::optional<SupportedVideoDecoderConfigs>
+GetPlatformSupportedVideoDecoderConfigs(
+    gpu::GpuDriverBugWorkarounds gpu_workarounds,
+    gpu::GpuPreferences gpu_preferences,
+    base::OnceCallback<SupportedVideoDecoderConfigs()> get_vda_configs) {
+  return MediaCodecVideoDecoder::GetSupportedConfigs();
+}
 
-  std::unique_ptr<CdmFactory> CreateCdmFactory(
-      mojom::FrameInterfaceFactory* frame_interfaces) override {
-    return std::make_unique<AndroidCdmFactory>(
-        base::BindRepeating(&CreateProvisionFetcher, frame_interfaces),
-        base::BindRepeating(&CreateMediaDrmStorage, frame_interfaces));
-  }
+std::unique_ptr<AudioDecoder> CreatePlatformAudioDecoder(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+  return std::make_unique<MediaCodecAudioDecoder>(std::move(task_runner));
+}
 
-  VideoDecoderType GetDecoderImplementationType() override {
-    return VideoDecoderType::kMediaCodec;
-  }
+std::unique_ptr<CdmFactory> CreatePlatformCdmFactory(
+    mojom::FrameInterfaceFactory* frame_interfaces) {
+  return std::make_unique<AndroidCdmFactory>(
+      base::BindRepeating(&CreateProvisionFetcher, frame_interfaces),
+      base::BindRepeating(&CreateMediaDrmStorage, frame_interfaces));
+}
 
- private:
-  GpuMojoMediaClient* client_;
-};
-
-}  // namespace
-
-std::unique_ptr<GpuMojoMediaClient::PlatformDelegate>
-GpuMojoMediaClient::PlatformDelegate::Create(GpuMojoMediaClient* client) {
-  return std::make_unique<AndroidPlatformDelegate>(client);
+VideoDecoderType GetPlatformDecoderImplementationType(
+    gpu::GpuDriverBugWorkarounds gpu_workarounds,
+    gpu::GpuPreferences gpu_preferences) {
+  return VideoDecoderType::kMediaCodec;
 }
 
 }  // namespace media

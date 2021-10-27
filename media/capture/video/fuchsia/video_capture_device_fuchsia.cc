@@ -370,7 +370,7 @@ void VideoCaptureDeviceFuchsia::ProcessNewFrame(
 
   ++frames_received_;
   float frame_rate =
-      (timestamp > base::TimeDelta())
+      (timestamp.is_positive())
           ? static_cast<float>(frames_received_) / timestamp.InSecondsF()
           : 0.0;
   VideoCaptureFormat capture_format(output_size, frame_rate, PIXEL_FORMAT_I420);

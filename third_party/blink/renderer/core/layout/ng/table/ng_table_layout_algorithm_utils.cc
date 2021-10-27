@@ -236,9 +236,8 @@ NGTableTypes::Row ComputeMinimumRowBlockSize(
     const wtf_size_t rowspan = cell.TableCellRowspan();
     NGTableTypes::CellBlockConstraint cell_block_constraint =
         NGTableTypes::CreateCellBlockConstraint(
-            cell, fragment.BlockSize(), fragment.FirstBaselineOrSynthesize(),
-            cell_borders, row_index, colspan_cell_tabulator->CurrentColumn(),
-            rowspan);
+            cell, fragment.BlockSize(), cell_borders, row_index,
+            colspan_cell_tabulator->CurrentColumn(), rowspan);
     colspan_cell_tabulator->ProcessCell(cell);
     cell_block_constraints->push_back(cell_block_constraint);
     is_constrained |= cell_block_constraint.is_constrained && rowspan == 1;

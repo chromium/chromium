@@ -207,9 +207,7 @@ source_set("browser") {
     "//skia/public/mojom",
     "//storage/browser",
     "//storage/common",
-
-    # TODO(jmadill): Isolate ANGLE version header. http://anglebug.com/2551
-    "//third_party/angle:angle_version",
+    "//third_party/angle:angle_version_info",
     "//third_party/blink/public:blink_headers",
     "//third_party/blink/public:buildflags",
     "//third_party/blink/public:resources",
@@ -1848,6 +1846,8 @@ source_set("browser") {
     "shared_storage/shared_storage_worklet_host.h",
     "shared_storage/shared_storage_worklet_host_manager.cc",
     "shared_storage/shared_storage_worklet_host_manager.h",
+    "site_info.cc",
+    "site_info.h",
     "site_instance_group.cc",
     "site_instance_group.h",
     "site_instance_group_manager.cc",
@@ -1929,6 +1929,8 @@ source_set("browser") {
     "tracing/tracing_service_controller.h",
     "ukm_internals_ui.cc",
     "ukm_internals_ui.h",
+    "url_info.cc",
+    "url_info.h",
     "url_loader_factory_getter.cc",
     "url_loader_factory_getter.h",
     "url_loader_factory_params_helper.cc",

@@ -28,6 +28,7 @@
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
+#include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/open_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
@@ -533,6 +534,9 @@ void EventRouter::Shutdown() {
   if (volume_manager) {
     volume_manager->RemoveObserver(this);
     volume_manager->RemoveObserver(device_event_router_.get());
+    auto* io_task_controller = volume_manager->io_task_controller();
+    if (io_task_controller)
+      io_task_controller->RemoveObserver(this);
   }
 
   chromeos::PowerManagerClient* const power_manager_client =
@@ -560,6 +564,9 @@ void EventRouter::ObserveEvents() {
   if (volume_manager) {
     volume_manager->AddObserver(this);
     volume_manager->AddObserver(device_event_router_.get());
+    auto* io_task_controller = volume_manager->io_task_controller();
+    if (io_task_controller)
+      io_task_controller->AddObserver(this);
   }
 
   chromeos::PowerManagerClient* const power_manager_client =
@@ -1159,6 +1166,10 @@ void EventRouter::OnDriveDialogResult(drivefs::mojom::DialogResult result) {
 
 base::WeakPtr<EventRouter> EventRouter::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
+}
+
+void EventRouter::OnIOTaskStatus(const io_task::ProgressStatus& status) {
+  notification_manager_->HandleIOTaskProgress(status);
 }
 
 }  // namespace file_manager

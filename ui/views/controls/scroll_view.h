@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/callback_list.h"
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
@@ -67,31 +68,8 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
     kEnabled
   };
 
-  class Observer {
-   public:
-    // Called when |contents_| scrolled. This can be triggered by each single
-    // event that is able to scroll the contents. KeyEvents like ui::VKEY_LEFT,
-    // ui::VKEY_RIGHT, or only ui::ET_MOUSEWHEEL will only trigger this function
-    // but not OnContentsScrollEnded below, since they do not belong to any
-    // events sequence. This function will also be triggered by each
-    // ui::ET_GESTURE_SCROLL_UPDATE event in the gesture scroll sequence or
-    // each ui::ET_MOUSEWHEEL event that associated with the ScrollEvent in the
-    // scroll events sequence while the OnContentsScrollEnded below will only be
-    // triggered once at the end of the events sequence.
-    virtual void OnContentsScrolled() {}
-
-    // Called at the end of a sequence of events that are generated to scroll
-    // the contents. The gesture scroll sequence {ui::ET_GESTURE_SCROLL_BEGIN,
-    // ui::ET_GESTURE_SCROLL_UPDATE, ..., ui::ET_GESTURE_SCROLL_UPDATE,
-    // ui::ET_GESTURE_SCROLL_END or ui::ET_SCROLL_FLING_START} or the scroll
-    // events sequence {ui::ET_SCROLL_FLING_CANCEL, ui::ET_SCROLL, ...,
-    // ui::ET_SCROLL, ui::ET_SCROLL_FLING_START} both will trigger this function
-    // on the events sequence end.
-    virtual void OnContentsScrollEnded() {}
-
-   protected:
-    virtual ~Observer() = default;
-  };
+  using ScrollViewCallbackList = base::RepeatingClosureList;
+  using ScrollViewCallback = ScrollViewCallbackList::CallbackType;
 
   ScrollView();
 
@@ -211,8 +189,27 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   bool GetHasFocusIndicator() const { return draw_focus_indicator_; }
   void SetHasFocusIndicator(bool has_focus_indicator);
 
-  void AddScrollViewObserver(Observer* observer);
-  void RemoveScrollViewObserver(Observer* observer);
+  // Called when |contents_| scrolled. This can be triggered by each single
+  // event that is able to scroll the contents. KeyEvents like ui::VKEY_LEFT,
+  // ui::VKEY_RIGHT, or only ui::ET_MOUSEWHEEL will only trigger this function
+  // but not OnContentsScrollEnded below, since they do not belong to any
+  // events sequence. This function will also be triggered by each
+  // ui::ET_GESTURE_SCROLL_UPDATE event in the gesture scroll sequence or
+  // each ui::ET_MOUSEWHEEL event that associated with the ScrollEvent in the
+  // scroll events sequence while the OnContentsScrollEnded below will only be
+  // triggered once at the end of the events sequence.
+  base::CallbackListSubscription AddContentsScrolledCallback(
+      ScrollViewCallback callback);
+
+  // Called at the end of a sequence of events that are generated to scroll
+  // the contents. The gesture scroll sequence {ui::ET_GESTURE_SCROLL_BEGIN,
+  // ui::ET_GESTURE_SCROLL_UPDATE, ..., ui::ET_GESTURE_SCROLL_UPDATE,
+  // ui::ET_GESTURE_SCROLL_END or ui::ET_SCROLL_FLING_START} or the scroll
+  // events sequence {ui::ET_SCROLL_FLING_CANCEL, ui::ET_SCROLL, ...,
+  // ui::ET_SCROLL, ui::ET_SCROLL_FLING_START} both will trigger this function
+  // on the events sequence end.
+  base::CallbackListSubscription AddContentsScrollEndedCallback(
+      ScrollViewCallback callback);
 
   // View overrides:
   gfx::Size CalculatePreferredSize() const override;
@@ -384,7 +381,9 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   // The layer type used for content view when scroll by layers is enabled.
   ui::LayerType layer_type_ = ui::LAYER_TEXTURED;
 
-  base::ObserverList<Observer>::Unchecked observers_;
+  // Scrolling callbacks.
+  ScrollViewCallbackList on_contents_scrolled_;
+  ScrollViewCallbackList on_contents_scroll_ended_;
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, ScrollView, View)

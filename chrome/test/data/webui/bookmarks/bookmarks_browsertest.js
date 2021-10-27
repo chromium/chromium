@@ -205,7 +205,7 @@ TEST_F('BookmarksExtensionAPITest', 'All', function() {
 var BookmarksExtensionAPIEditDisabledTest = class extends BookmarksBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://bookmarks/test_loader.html?module=bookmarks/extension_api_test_edit_disabled.js';
+    return 'chrome://bookmarks/test_loader.html?module=bookmarks/extension_api_test_edit_disabled.js&host=webui-test';
   }
 
   /** @override */

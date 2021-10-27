@@ -16,6 +16,7 @@
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
+#include "base/system/sys_info.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -25,6 +26,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/components/phonehub/camera_roll_download_manager.h"
 #include "chromeos/components/phonehub/proto/phonehub_api.pb.h"
 #include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "components/account_id/account_id.h"
@@ -36,6 +38,9 @@
 namespace ash {
 namespace phonehub {
 namespace {
+
+using CreatePayloadFilesResult =
+    chromeos::phonehub::CameraRollDownloadManager::CreatePayloadFilesResult;
 
 constexpr char kUserEmail[] = "user@email.com";
 
@@ -75,22 +80,44 @@ class CameraRollDownloadManagerImplTest : public testing::Test {
       const CameraRollDownloadManagerImplTest&) = delete;
   ~CameraRollDownloadManagerImplTest() override = default;
 
-  absl::optional<chromeos::secure_channel::mojom::PayloadFilesPtr>
-  CreatePayloadFiles(
+  chromeos::secure_channel::mojom::PayloadFilesPtr CreatePayloadFiles(
       int64_t payload_id,
       const chromeos::phonehub::proto::CameraRollItemMetadata& item_metadata) {
-    absl::optional<chromeos::secure_channel::mojom::PayloadFilesPtr> result;
+    chromeos::secure_channel::mojom::PayloadFilesPtr files_created;
     base::RunLoop run_loop;
     camera_roll_download_manager()->CreatePayloadFiles(
         payload_id, item_metadata,
         base::BindLambdaForTesting(
-            [&](absl::optional<chromeos::secure_channel::mojom::PayloadFilesPtr>
+            [&](CreatePayloadFilesResult result,
+                absl::optional<chromeos::secure_channel::mojom::PayloadFilesPtr>
                     payload_files) {
-              result = std::move(payload_files);
+              EXPECT_EQ(CreatePayloadFilesResult::kSuccess, result);
+              EXPECT_TRUE(payload_files.has_value());
+              files_created = std::move(payload_files.value());
               run_loop.Quit();
             }));
     run_loop.Run();
-    return result;
+    return files_created;
+  }
+
+  CreatePayloadFilesResult CreatePayloadFilesAndGetError(
+      int64_t payload_id,
+      const chromeos::phonehub::proto::CameraRollItemMetadata& item_metadata) {
+    CreatePayloadFilesResult error;
+    base::RunLoop run_loop;
+    camera_roll_download_manager()->CreatePayloadFiles(
+        payload_id, item_metadata,
+        base::BindLambdaForTesting(
+            [&](CreatePayloadFilesResult result,
+                absl::optional<chromeos::secure_channel::mojom::PayloadFilesPtr>
+                    payload_files) {
+              EXPECT_NE(CreatePayloadFilesResult::kSuccess, result);
+              EXPECT_FALSE(payload_files.has_value());
+              error = result;
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+    return error;
   }
 
   const base::FilePath& GetDownloadPath() const {
@@ -122,13 +149,12 @@ TEST_F(CameraRollDownloadManagerImplTest, CreatePayloadFiles) {
   chromeos::phonehub::proto::CameraRollItemMetadata item_metadata;
   item_metadata.set_file_name("IMG_0001.jpeg");
 
-  absl::optional<chromeos::secure_channel::mojom::PayloadFilesPtr>
-      payload_files = CreatePayloadFiles(/*payload_id=*/1234, item_metadata);
+  chromeos::secure_channel::mojom::PayloadFilesPtr payload_files =
+      CreatePayloadFiles(/*payload_id=*/1234, item_metadata);
 
-  EXPECT_TRUE(payload_files.has_value());
-  EXPECT_TRUE(payload_files.value()->input_file.IsValid());
-  EXPECT_TRUE(payload_files.value()->output_file.IsValid());
-  EXPECT_TRUE(payload_files.value()->output_file.created());
+  EXPECT_TRUE(payload_files->input_file.IsValid());
+  EXPECT_TRUE(payload_files->output_file.IsValid());
+  EXPECT_TRUE(payload_files->output_file.created());
   EXPECT_TRUE(base::PathExists(GetDownloadPath().Append("IMG_0001.jpeg")));
 }
 
@@ -138,10 +164,10 @@ TEST_F(CameraRollDownloadManagerImplTest,
   std::string invalid_file_name = "../../secret/IMG_0001.jpeg";
   item_metadata.set_file_name(invalid_file_name);
 
-  absl::optional<chromeos::secure_channel::mojom::PayloadFilesPtr>
-      payload_files = CreatePayloadFiles(/*payload_id=*/1234, item_metadata);
+  CreatePayloadFilesResult error =
+      CreatePayloadFilesAndGetError(/*payload_id=*/1234, item_metadata);
 
-  EXPECT_FALSE(payload_files.has_value());
+  EXPECT_EQ(CreatePayloadFilesResult::kInvalidFileName, error);
   EXPECT_FALSE(base::PathExists(GetDownloadPath().Append(invalid_file_name)));
 }
 
@@ -151,8 +177,25 @@ TEST_F(CameraRollDownloadManagerImplTest,
   item_metadata.set_file_name("IMG_0001.jpeg");
   CreatePayloadFiles(/*payload_id=*/1234, item_metadata);
 
-  EXPECT_FALSE(
-      CreatePayloadFiles(/*payload_id=*/1234, item_metadata).has_value());
+  CreatePayloadFilesResult error =
+      CreatePayloadFilesAndGetError(/*payload_id=*/1234, item_metadata);
+
+  EXPECT_EQ(CreatePayloadFilesResult::kPayloadAlreadyExists, error);
+}
+
+TEST_F(CameraRollDownloadManagerImplTest,
+       CreatePayloadFilesWithInsufficientDiskSpace) {
+  chromeos::phonehub::proto::CameraRollItemMetadata item_metadata;
+  item_metadata.set_file_name("IMG_0001.jpeg");
+  int64_t free_disk_space_bytes =
+      base::SysInfo::AmountOfFreeDiskSpace(GetDownloadPath());
+  item_metadata.set_file_size_bytes(free_disk_space_bytes + 1);
+
+  CreatePayloadFilesResult error =
+      CreatePayloadFilesAndGetError(/*payload_id=*/1234, item_metadata);
+
+  EXPECT_EQ(CreatePayloadFilesResult::kInsufficientDiskSpace, error);
+  EXPECT_FALSE(base::PathExists(GetDownloadPath().Append("IMG_0001.jpeg")));
 }
 
 TEST_F(CameraRollDownloadManagerImplTest,
@@ -161,10 +204,9 @@ TEST_F(CameraRollDownloadManagerImplTest,
   item_metadata.set_file_name("IMG_0001.jpeg");
 
   // Simulat the same item being downloaded twice.
-  EXPECT_TRUE(
-      CreatePayloadFiles(/*payload_id=*/1234, item_metadata).has_value());
-  EXPECT_TRUE(
-      CreatePayloadFiles(/*payload_id=*/-5678, item_metadata).has_value());
+  CreatePayloadFiles(/*payload_id=*/1234, item_metadata);
+  CreatePayloadFiles(/*payload_id=*/-5678, item_metadata);
+
   EXPECT_TRUE(base::PathExists(GetDownloadPath().Append("IMG_0001.jpeg")));
   EXPECT_TRUE(base::PathExists(GetDownloadPath().Append("IMG_0001 (1).jpeg")));
 }

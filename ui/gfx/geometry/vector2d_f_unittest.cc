@@ -11,6 +11,16 @@ namespace gfx {
 // Some Vector2dF unittests are in vector2d_unittest.cc sharing the same tests
 // with Vector2d.
 
+TEST(Vector2dFTest, Length) {
+  constexpr float kFloatMax = std::numeric_limits<float>::max();
+  EXPECT_FLOAT_EQ(0.f, Vector2dF(0, 0).Length());
+  EXPECT_FLOAT_EQ(1.f, Vector2dF(1, 0).Length());
+  EXPECT_FLOAT_EQ(1.414214f, Vector2dF(1, 1).Length());
+  EXPECT_FLOAT_EQ(2.236068f, Vector2dF(-1, -2).Length());
+  EXPECT_FLOAT_EQ(kFloatMax, Vector2dF(kFloatMax, 0).Length());
+  EXPECT_FLOAT_EQ(kFloatMax, Vector2dF(kFloatMax, kFloatMax).Length());
+}
+
 TEST(Vector2dFTest, SlopeAngleRadians) {
   // The function is required to be very accurate, so we use a smaller
   // tolerance than EXPECT_FLOAT_EQ().

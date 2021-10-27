@@ -513,8 +513,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("openQuickView"),
         TestCase("openQuickView").FilesSwa(),
         TestCase("openQuickViewDialog"),
-        // Doesn't work because using an "open" dialog.
-        // TestCase("openQuickViewDialog").FilesSwa(),
+        TestCase("openQuickViewDialog").FilesSwa(),
         TestCase("openQuickViewAndEscape"),
         TestCase("openQuickViewAndEscape").FilesSwa(),
         TestCase("openQuickView").InGuestMode(),
@@ -903,9 +902,11 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("transferInfoIsRemembered"),
         // TestCase("transferInfoIsRemembered").FilesSwa(),
         TestCase("transferToUsbHasDestinationText"),
-        TestCase("transferToUsbHasDestinationText").FilesSwa(),
+        // TODO(lucmult): Re-enable this once SWA uses the feedback panel.
+        // TestCase("transferToUsbHasDestinationText").FilesSwa(),
         TestCase("transferDismissedErrorIsRemembered"),
-        TestCase("transferDismissedErrorIsRemembered").FilesSwa(),
+        // TODO(lucmult): Re-enable this once SWA uses the feedback panel.
+        // TestCase("transferDismissedErrorIsRemembered").FilesSwa(),
         TestCase("transferNotSupportedOperationHasNoRemainingTimeText"),
         TestCase("transferNotSupportedOperationHasNoRemainingTimeText")
             .FilesSwa(),

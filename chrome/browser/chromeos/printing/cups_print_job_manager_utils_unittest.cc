@@ -5,6 +5,8 @@
 #include "chrome/browser/chromeos/printing/cups_print_job_manager_utils.h"
 
 #include <ostream>
+#include <utility>
+#include <vector>
 
 #include "chrome/browser/chromeos/printing/cups_print_job.h"
 #include "chrome/browser/chromeos/printing/history/print_job_info.pb.h"
@@ -24,12 +26,14 @@ struct Params {
   Params(State state,
          int pages,
          CupsJob::JobState job_state,
+         std::vector<CupsJob::JobStateReason> job_state_reasons,
          int job_pages,
          State expected_state,
          int expected_pages)
       : state(state),
         pages(pages),
         job_state(job_state),
+        job_state_reasons(std::move(job_state_reasons)),
         job_pages(job_pages),
         expected_state(expected_state),
         expected_pages(expected_pages) {}
@@ -37,12 +41,22 @@ struct Params {
   // Test state transition that does not affect the page count.
   // `job_pages` is set to `kTotalPages` so that terminal events such as
   // `JobState::COMPLETED` work properly.
-  Params(State state, CupsJob::JobState job_state, State expected_state)
-      : Params(state, 0, job_state, kTotalPages, expected_state, 0) {}
+  Params(State state,
+         CupsJob::JobState job_state,
+         std::vector<CupsJob::JobStateReason> job_state_reasons,
+         State expected_state)
+      : Params(state,
+               0,
+               job_state,
+               std::move(job_state_reasons),
+               kTotalPages,
+               expected_state,
+               0) {}
 
   State state;
   int pages;
   CupsJob::JobState job_state;
+  std::vector<CupsJob::JobStateReason> job_state_reasons;
   // Current printed page count.
   // The total print job page count for the tests is `kTotalPages`.
   int job_pages;
@@ -54,6 +68,10 @@ std::ostream& operator<<(std::ostream& out, const Params& params) {
   out << "state: " << static_cast<int>(params.state) << ", ";
   out << "pages: " << params.pages << ", ";
   out << "job_state: " << params.job_state << ", ";
+  for (const auto& job_state_reason : params.job_state_reasons) {
+    out << "job_state_reason: "
+        << printing::ToJobStateReasonString(job_state_reason) << ", ";
+  }
   out << "job_pages: " << params.job_pages << ", ";
   out << "expected_state: " << static_cast<int>(params.expected_state) << ", ";
   out << "expected_pages: " << params.expected_pages << std::endl;
@@ -65,7 +83,8 @@ std::vector<Params> GenerateParams(CupsJob::JobState job_state,
   std::vector<Params> params;
   for (State state :
        {State::STATE_WAITING, State::STATE_STARTED, State::STATE_PAGE_DONE}) {
-    params.emplace_back(state, job_state, terminal_state);
+    params.emplace_back(state, job_state,
+                        std::vector<CupsJob::JobStateReason>(), terminal_state);
   }
   return params;
 }
@@ -76,7 +95,8 @@ std::vector<Params> WaitingToStarted() {
   std::vector<Params> params;
 
   for (int i = 0; i <= kTotalPages; i++) {
-    params.emplace_back(State::STATE_WAITING, 0, CupsJob::PROCESSING, i,
+    params.emplace_back(State::STATE_WAITING, 0, CupsJob::PROCESSING,
+                        std::vector<CupsJob::JobStateReason>(), i,
                         State::STATE_STARTED, i);
   }
 
@@ -88,7 +108,8 @@ std::vector<Params> StartedToPageDone() {
   std::vector<Params> params;
 
   for (int i = 1; i <= kTotalPages; i++) {
-    params.emplace_back(State::STATE_STARTED, 1, CupsJob::PROCESSING, i,
+    params.emplace_back(State::STATE_STARTED, 1, CupsJob::PROCESSING,
+                        std::vector<CupsJob::JobStateReason>(), i,
                         State::STATE_PAGE_DONE, i);
   }
 
@@ -101,7 +122,8 @@ std::vector<Params> PageDoneToPageDone() {
 
   for (int i = 1; i <= kTotalPages; i++) {
     for (int j = i; j <= kTotalPages; j++) {
-      params.emplace_back(State::STATE_PAGE_DONE, i, CupsJob::PROCESSING, j,
+      params.emplace_back(State::STATE_PAGE_DONE, i, CupsJob::PROCESSING,
+                          std::vector<CupsJob::JobStateReason>(), j,
                           State::STATE_PAGE_DONE, j);
     }
   }
@@ -126,42 +148,70 @@ INSTANTIATE_TEST_SUITE_P(
     CupsPrintJobManagerUtilsTest,
     testing::ValuesIn(GenerateParams(CupsJob::ABORTED, State::STATE_FAILED)));
 
-INSTANTIATE_TEST_SUITE_P(Pending,
-                         CupsPrintJobManagerUtilsTest,
-                         testing::Values(Params(State::STATE_WAITING,
-                                                CupsJob::PENDING,
-                                                State::STATE_WAITING)));
+INSTANTIATE_TEST_SUITE_P(
+    ClientUnauthorizedToStateFailed,
+    CupsPrintJobManagerUtilsTest,
+    testing::Values(
+        Params(State::STATE_SUSPENDED,
+               CupsJob::HELD,
+               std::vector<CupsJob::JobStateReason>{
+                   CupsJob::JobStateReason::kCupsHeldForAuthentication},
+               State::STATE_FAILED)));
+
+INSTANTIATE_TEST_SUITE_P(
+    FilterFailedtoStateFailed,
+    CupsPrintJobManagerUtilsTest,
+    testing::Values(
+        Params(State::STATE_SUSPENDED,
+               CupsJob::STOPPED,
+               std::vector<CupsJob::JobStateReason>{
+                   CupsJob::JobStateReason::kJobCompletedWithErrors},
+               State::STATE_FAILED)));
+
+INSTANTIATE_TEST_SUITE_P(
+    Pending,
+    CupsPrintJobManagerUtilsTest,
+    testing::Values(Params(State::STATE_WAITING,
+                           CupsJob::PENDING,
+                           std::vector<CupsJob::JobStateReason>(),
+                           State::STATE_WAITING)));
 
 INSTANTIATE_TEST_SUITE_P(ProcessingWaitingToStarted,
                          CupsPrintJobManagerUtilsTest,
                          testing::ValuesIn(WaitingToStarted()));
 
-INSTANTIATE_TEST_SUITE_P(ProcessingWaitingToStartedUnknownState,
-                         CupsPrintJobManagerUtilsTest,
-                         testing::Values(Params(State::STATE_WAITING,
-                                                0,
-                                                CupsJob::PROCESSING,
-                                                -1,
-                                                State::STATE_STARTED,
-                                                0)));
+INSTANTIATE_TEST_SUITE_P(
+    ProcessingWaitingToStartedUnknownState,
+    CupsPrintJobManagerUtilsTest,
+    testing::Values(Params(State::STATE_WAITING,
+                           0,
+                           CupsJob::PROCESSING,
+                           std::vector<CupsJob::JobStateReason>(),
+                           -1,
+                           State::STATE_STARTED,
+                           0)));
 
-INSTANTIATE_TEST_SUITE_P(ProcessingStartedToStarted,
-                         CupsPrintJobManagerUtilsTest,
-                         testing::Values(Params(State::STATE_STARTED,
-                                                0,
-                                                CupsJob::PROCESSING,
-                                                0,
-                                                State::STATE_STARTED,
-                                                0)));
+INSTANTIATE_TEST_SUITE_P(
+    ProcessingStartedToStarted,
+    CupsPrintJobManagerUtilsTest,
+    testing::Values(Params(State::STATE_STARTED,
+                           0,
+                           CupsJob::PROCESSING,
+                           std::vector<CupsJob::JobStateReason>(),
+                           0,
+                           State::STATE_STARTED,
+                           0)));
 
-INSTANTIATE_TEST_SUITE_P(ProcessingStartedToStartedUnknownState,
-                         CupsPrintJobManagerUtilsTest,
-                         testing::Values(Params(State::STATE_STARTED,
-                                                0,
-                                                CupsJob::PROCESSING,
-                                                -1,
-                                                State::STATE_STARTED,
-                                                0)));
+INSTANTIATE_TEST_SUITE_P(
+    ProcessingStartedToStartedUnknownState,
+    CupsPrintJobManagerUtilsTest,
+    testing::Values(Params(State::STATE_STARTED,
+                           0,
+                           CupsJob::PROCESSING,
+                           std::vector<CupsJob::JobStateReason>(),
+                           -1,
+                           State::STATE_STARTED,
+                           0)));
 
 INSTANTIATE_TEST_SUITE_P(ProcessingStartedToPageDone,
                          CupsPrintJobManagerUtilsTest,
@@ -177,6 +227,10 @@ TEST_P(CupsPrintJobManagerUtilsTest, UpdatePrintJob) {
   job.id = 0;
   job.state = params.job_state;
   job.current_pages = params.job_pages;
+  for (const auto& job_state_reason : params.job_state_reasons) {
+    job.state_reasons.push_back(
+        printing::ToJobStateReasonString(job_state_reason).data());
+  }
   chromeos::CupsPrintJob print_job(
       chromeos::Printer(), 0, std::string(), kTotalPages,
       crosapi::mojom::PrintJob::Source::UNKNOWN, std::string(),

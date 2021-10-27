@@ -11,7 +11,7 @@ interface CrInputElement extends LegacyElementMixin, HTMLElement {
   autoValidate: boolean|null|undefined;
   disabled: boolean|null|undefined;
   errorMessage: string|null|undefined;
-  invalid: boolean|null|undefined;
+  invalid: boolean;
   max: number|null|undefined;
   min: number|null|undefined;
   maxlength: number|null|undefined;

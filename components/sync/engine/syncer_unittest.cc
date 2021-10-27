@@ -107,10 +107,10 @@ class SyncerTest : public testing::Test,
   void OnReceivedCustomNudgeDelays(
       const std::map<ModelType, base::TimeDelta>& delay_map) override {
     auto iter = delay_map.find(SESSIONS);
-    if (iter != delay_map.end() && iter->second > base::TimeDelta())
+    if (iter != delay_map.end() && iter->second.is_positive())
       last_sessions_commit_delay_ = iter->second;
     iter = delay_map.find(BOOKMARKS);
-    if (iter != delay_map.end() && iter->second > base::TimeDelta())
+    if (iter != delay_map.end() && iter->second.is_positive())
       last_bookmarks_commit_delay_ = iter->second;
   }
   void OnReceivedClientInvalidationHintBufferSize(int size) override {

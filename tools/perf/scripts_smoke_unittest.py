@@ -38,7 +38,7 @@ class ScriptsSmokeTest(unittest.TestCase):
                             env=env)
     stdout = proc.communicate()[0]
     return_code = proc.returncode
-    return return_code, stdout
+    return return_code, stdout.decode('utf-8')
 
   def testRunBenchmarkHelp(self):
     return_code, stdout = self.RunPerfScript('run_benchmark --help')
@@ -47,8 +47,15 @@ class ScriptsSmokeTest(unittest.TestCase):
 
   @decorators.Disabled('chromeos')  # crbug.com/754913
   def testRunBenchmarkListBenchmarks(self):
-    return_code, stdout = self.RunPerfScript(
-        ['run_benchmark', 'list', '--browser', self.options.browser_type])
+    cmdline = ['run_benchmark', 'list', '--browser', self.options.browser_type]
+    if self.options.browser_type == 'exact':
+      # If we're running with an exact browser and it was not specified with
+      # an absolute path, then there's no guarantee that we can actually find it
+      # now, so make the test a no-op.
+      if not os.path.isabs(self.options.browser_executable):
+        return
+      cmdline.extend(['--browser-executable', self.options.browser_executable])
+    return_code, stdout = self.RunPerfScript(cmdline)
     self.assertRegexpMatches(stdout, r'Available benchmarks .*? are:')
     self.assertEqual(return_code, 0)
 
@@ -83,17 +90,22 @@ class ScriptsSmokeTest(unittest.TestCase):
     tempdir = tempfile.mkdtemp()
     benchmarks = ['dummy_benchmark.stable_benchmark_1',
                   'dummy_benchmark.noisy_benchmark_1']
-    return_code, stdout = self.RunPerfScript(
-        '../../testing/scripts/run_performance_tests.py '
-        '../../tools/perf/run_benchmark '
-        '--benchmarks=%s '
-        '--browser=%s '
-        '--isolated-script-test-also-run-disabled-tests '
-        '--isolated-script-test-output=%s' % (
-            ','.join(benchmarks),
-            self.options.browser_type,
-            os.path.join(tempdir, 'output.json')
-        ))
+    cmdline = ('../../testing/scripts/run_performance_tests.py '
+               '../../tools/perf/run_benchmark '
+               '--benchmarks=%s '
+               '--browser=%s '
+               '--isolated-script-test-also-run-disabled-tests '
+               '--isolated-script-test-output=%s' %
+               (','.join(benchmarks), self.options.browser_type,
+                os.path.join(tempdir, 'output.json')))
+    if self.options.browser_type == 'exact':
+      # If the path to the browser executable is not absolute, there is no
+      # guarantee that we can actually find it at this point, so no-op the
+      # test.
+      if not os.path.isabs(self.options.browser_executable):
+        return
+      cmdline += ' --browser-executable=%s' % self.options.browser_executable
+    return_code, stdout = self.RunPerfScript(cmdline)
     self.assertEquals(return_code, 0, stdout)
     try:
       with open(os.path.join(tempdir, 'output.json')) as f:

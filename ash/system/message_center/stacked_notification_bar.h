@@ -71,8 +71,7 @@ class StackedNotificationBar : public views::View,
   // Clean up icon view after it's removal animation is complete, adds an icon
   // for `notification` if needed. Called from a callback registered in
   // `ShiftIconsLeft()`.
-  void OnIconAnimatedOut(message_center::Notification* notification,
-                         views::View* icon);
+  void OnIconAnimatedOut(std::string notification_id, views::View* icon);
 
   // Get the first icon which is `animating_out`.
   StackedNotificationBarIcon* GetFrontIcon(bool animating_out);

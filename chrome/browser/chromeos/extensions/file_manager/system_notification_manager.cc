@@ -21,6 +21,8 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "net/base/escape.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 
@@ -61,6 +63,23 @@ void RecordDeviceNotificationUserActionMetric(
     file_manager::DeviceNotificationUserActionUmaType type) {
   UMA_HISTOGRAM_ENUMERATION(file_manager::kNotificationUserActionHistogramName,
                             type);
+}
+
+std::u16string GetDisplayableFileName(GURL file_url) {
+  // Try to convert %20 to spaces, if this produces any invalid char, use the
+  // file name URL encoded.
+  std::string file_name;
+  if (!net::UnescapeBinaryURLComponentSafe(file_url.ExtractFileName(),
+                                           /*fail_on_path_separators=*/true,
+                                           &file_name)) {
+    file_name = file_url.ExtractFileName();
+  }
+
+  return base::UTF8ToUTF16(file_name);
+}
+
+std::u16string GetDisplayableFileName(storage::FileSystemURL file_url) {
+  return GetDisplayableFileName(file_url.ToGURL());
 }
 
 }  // namespace
@@ -293,7 +312,7 @@ SystemNotificationManager::MakeDriveSyncErrorNotification(
           DRIVE_SYNC_ERROR_TYPE_DELETE_WITHOUT_PERMISSION:
         message = l10n_util::GetStringFUTF16(
             IDS_FILE_BROWSER_SYNC_DELETE_WITHOUT_PERMISSION_ERROR,
-            base::UTF8ToUTF16(file_url.ExtractFileName()));
+            GetDisplayableFileName(file_url));
         notification = CreateNotification(id, title, message);
         break;
       case file_manager_private::DRIVE_SYNC_ERROR_TYPE_SERVICE_UNAVAILABLE:
@@ -302,9 +321,9 @@ SystemNotificationManager::MakeDriveSyncErrorNotification(
                                IDS_FILE_BROWSER_SYNC_SERVICE_UNAVAILABLE_ERROR);
         break;
       case file_manager_private::DRIVE_SYNC_ERROR_TYPE_NO_SERVER_SPACE:
-        message = l10n_util::GetStringFUTF16(
-            IDS_FILE_BROWSER_SYNC_NO_SERVER_SPACE,
-            base::UTF8ToUTF16(file_url.ExtractFileName()));
+        message =
+            l10n_util::GetStringFUTF16(IDS_FILE_BROWSER_SYNC_NO_SERVER_SPACE,
+                                       GetDisplayableFileName(file_url));
         notification = CreateNotification(id, title, message);
         break;
       case file_manager_private::DRIVE_SYNC_ERROR_TYPE_NO_LOCAL_SPACE:
@@ -313,9 +332,8 @@ SystemNotificationManager::MakeDriveSyncErrorNotification(
                                IDS_FILE_BROWSER_DRIVE_OUT_OF_SPACE_HEADER);
         break;
       case file_manager_private::DRIVE_SYNC_ERROR_TYPE_MISC:
-        message = l10n_util::GetStringFUTF16(
-            IDS_FILE_BROWSER_SYNC_MISC_ERROR,
-            base::UTF8ToUTF16(file_url.ExtractFileName()));
+        message = l10n_util::GetStringFUTF16(IDS_FILE_BROWSER_SYNC_MISC_ERROR,
+                                             GetDisplayableFileName(file_url));
         notification = CreateNotification(id, title, message);
         break;
       default:
@@ -416,9 +434,9 @@ SystemNotificationManager::UpdateDriveSyncNotification(
     message_template = is_sync_operation
                            ? IDS_FILE_BROWSER_SYNC_FILE_NAME
                            : IDS_FILE_BROWSER_OFFLINE_PROGRESS_MESSAGE;
-    GURL source_gurl(transfer_status.file_url);
     message = l10n_util::GetStringFUTF16(
-        message_template, base::UTF8ToUTF16(source_gurl.ExtractFileName()));
+        message_template,
+        GetDisplayableFileName(GURL(transfer_status.file_url)));
   } else {
     message_template = is_sync_operation
                            ? IDS_FILE_BROWSER_SYNC_FILE_NUMBER
@@ -500,10 +518,9 @@ void SystemNotificationManager::HandleCopyEvent(
 
   std::u16string message;
   if (status.source_url) {
-    GURL source_gurl(*status.source_url);
     message = l10n_util::GetStringFUTF16(
         IDS_FILE_BROWSER_COPY_FILE_NAME,
-        base::UTF8ToUTF16(source_gurl.ExtractFileName()));
+        GetDisplayableFileName(GURL(*status.source_url)));
   } else {
     message = l10n_util::GetStringUTF16(IDS_FILE_BROWSER_FILE_ERROR_GENERIC);
   }
@@ -537,6 +554,69 @@ void SystemNotificationManager::HandleCopyEvent(
       break;
     default:
       DLOG(WARNING) << "Unhandled copy event for type " << status.type;
+      break;
+  }
+
+  if (notification) {
+    GetNotificationDisplayService()->Display(
+        NotificationHandler::Type::TRANSIENT, *notification,
+        /*metadata=*/nullptr);
+  }
+}
+
+void SystemNotificationManager::HandleIOTaskProgress(
+    const file_manager::io_task::ProgressStatus& status) {
+  if (!swa_enabled_) {
+    return;
+  }
+
+  std::string id = base::StrCat(
+      {kSwaFileOperationPrefix, base::NumberToString(status.task_id)});
+
+  // TODO(lucmult): Send the progress to feedback panels if any SWA window is
+  // open.
+  // Check if we need to remove any progress notification when there
+  // are active SWA windows.
+  // if (DoFilesSwaWindowsExist()) {
+  //  GetNotificationDisplayService()->Close(NotificationHandler::Type::TRANSIENT,
+  //                                         id);
+  //  return;
+  //}
+  int progress = 0;
+  std::unique_ptr<message_center::Notification> notification;
+  std::u16string title = l10n_util::GetStringUTF16(IDS_FILEMANAGER_APP_NAME);
+
+  std::u16string message =
+      status.sources.size() > 1
+          ? l10n_util::GetStringFUTF16(
+                IDS_FILE_BROWSER_COPY_ITEMS_REMAINING,
+                base::NumberToString16(status.sources.size()))
+          : l10n_util::GetStringFUTF16(
+                IDS_FILE_BROWSER_COPY_FILE_NAME,
+                GetDisplayableFileName(status.sources.back().url));
+
+  switch (status.state) {
+    case file_manager::io_task::State::kQueued:
+      notification = CreateProgressNotification(id, title, message, 0);
+      notification->set_buttons({message_center::ButtonInfo(
+          l10n_util::GetStringUTF16(IDS_FILE_BROWSER_CANCEL_LABEL))});
+      break;
+    case file_manager::io_task::State::kInProgress:
+      if (status.total_bytes > 0) {
+        progress = status.bytes_transferred * 100.0 / status.total_bytes;
+      }
+      notification = CreateProgressNotification(id, title, message, progress);
+      notification->set_buttons({message_center::ButtonInfo(
+          l10n_util::GetStringUTF16(IDS_FILE_BROWSER_CANCEL_LABEL))});
+      break;
+    case file_manager::io_task::State::kError:
+    case file_manager::io_task::State::kCancelled:
+    case file_manager::io_task::State::kSuccess:
+      GetNotificationDisplayService()->Close(
+          NotificationHandler::Type::TRANSIENT, id);
+      break;
+    default:
+      NOTREACHED();
       break;
   }
 

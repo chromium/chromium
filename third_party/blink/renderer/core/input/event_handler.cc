@@ -1671,7 +1671,7 @@ bool EventHandler::GestureCorrespondsToAdjustedTouch(
                            FloatSize(event.TapAreaInRootFrame()) * 0.5,
                        FloatSize(event.TapAreaInRootFrame()));
     should_use_touch_event_adjusted_point_ =
-        tap_rect.Contains(touch_adjustment_result_.adjusted_point);
+        tap_rect.InclusiveContains(touch_adjustment_result_.adjusted_point);
   }
 
   return should_use_touch_event_adjusted_point_;

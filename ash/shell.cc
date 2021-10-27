@@ -114,6 +114,7 @@
 #include "ash/system/keyboard_brightness_control_delegate.h"
 #include "ash/system/locale/locale_update_controller_impl.h"
 #include "ash/system/machine_learning/user_settings_event_logger.h"
+#include "ash/system/media/media_notification_provider_impl.h"
 #include "ash/system/message_center/message_center_ash_impl.h"
 #include "ash/system/message_center/message_center_controller.h"
 #include "ash/system/model/system_tray_model.h"
@@ -959,6 +960,9 @@ void Shell::Init(
       std::make_unique<MultiDeviceNotificationPresenter>(
           message_center::MessageCenter::Get());
   media_controller_ = std::make_unique<MediaControllerImpl>();
+  media_notification_provider_ =
+      std::make_unique<MediaNotificationProviderImpl>(
+          shell_delegate_->GetMediaSessionService());
 
   tablet_mode_controller_ = std::make_unique<TabletModeController>();
 

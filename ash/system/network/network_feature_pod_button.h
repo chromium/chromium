@@ -1,45 +1,42 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ASH_SYSTEM_NETWORK_NETWORK_FEATURE_POD_BUTTON_H_
 #define ASH_SYSTEM_NETWORK_NETWORK_FEATURE_POD_BUTTON_H_
 
-#include "ash/system/network/network_icon_animation_observer.h"
-#include "ash/system/network/tray_network_state_observer.h"
+#include "ash/ash_export.h"
 #include "ash/system/unified/feature_pod_button.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
 
-// Button view class for network feature pod button. It uses network_icon
-// animation to implement network connecting animation on feature pod button.
-class NetworkFeaturePodButton : public FeaturePodButton,
-                                public network_icon::AnimationObserver,
-                                public TrayNetworkStateObserver {
+// This class that provides the corresponding controller with notifications of
+// when the theme for this view changes.
+class ASH_EXPORT NetworkFeaturePodButton : public FeaturePodButton {
  public:
-  explicit NetworkFeaturePodButton(FeaturePodControllerBase* controller);
+  METADATA_HEADER(NetworkFeaturePodButton);
 
+  // This class defines the interface that NetworkFeaturePodButton will use to
+  // propagate theme changes.
+  class Delegate {
+   public:
+    virtual void OnFeaturePodButtonThemeChanged() = 0;
+  };
+
+  NetworkFeaturePodButton(FeaturePodControllerBase* controller,
+                          Delegate* delegate);
   NetworkFeaturePodButton(const NetworkFeaturePodButton&) = delete;
   NetworkFeaturePodButton& operator=(const NetworkFeaturePodButton&) = delete;
-
   ~NetworkFeaturePodButton() override;
 
-  // Updates the button's icon and tooltip based on the current state of the
-  // system.
-  void Update();
-
-  // network_icon::AnimationObserver:
-  void NetworkIconChanged() override;
-
-  // TrayNetworkStateObserver:
-  void ActiveNetworkStateChanged() override;
+ private:
+  friend class NetworkFeaturePodButtonTest;
 
   // views::Button:
   void OnThemeChanged() override;
-  const char* GetClassName() const override;
 
- private:
-  void UpdateTooltip(const std::u16string& connection_state_message);
+  Delegate* delegate_;
 };
 
 }  // namespace ash

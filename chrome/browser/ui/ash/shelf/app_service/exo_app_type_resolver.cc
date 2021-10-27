@@ -10,7 +10,6 @@
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/app_restore/app_restore_utils.h"
-#include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/window_properties.h"
 #include "components/arc/arc_util.h"
 #include "components/exo/permission.h"
@@ -66,13 +65,13 @@ void ExoAppTypeResolver::PopulateProperties(
 
   int32_t restore_window_id = 0;
   if (task_id.has_value()) {
-    restore_window_id = full_restore::GetArcRestoreWindowIdForTaskId(*task_id);
+    restore_window_id = app_restore::GetArcRestoreWindowIdForTaskId(*task_id);
   } else {
     DCHECK(session_id.has_value());
     out_properties_container.SetProperty(app_restore::kGhostWindowSessionIdKey,
                                          *session_id);
     restore_window_id =
-        full_restore::GetArcRestoreWindowIdForSessionId(*session_id);
+        app_restore::GetArcRestoreWindowIdForSessionId(*session_id);
   }
 
   out_properties_container.SetProperty(app_restore::kRestoreWindowIdKey,

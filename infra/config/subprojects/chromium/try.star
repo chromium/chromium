@@ -842,7 +842,7 @@ try_.chromium_chromiumos_builder(
     name = "linux-chromeos-rel",
     branch_selector = branches.CROS_LTS_MILESTONE,
     builderless = not settings.is_main,
-    cores = None,
+    cores = 16,
     goma_jobs = goma.jobs.J300,
     main_list_view = "try",
     tryjob = try_.job(),
@@ -1304,42 +1304,19 @@ try_.chromium_linux_builder(
     ),
 )
 
-try_.chromium_linux_builder(
+try_.chromium_linux_orchestrator_pair(
     name = "linux-rel",
     branch_selector = branches.STANDARD_MILESTONE,
-    builderless = not settings.is_main,
-    cores = "2|4",
-    executable = "recipe:chromium/orchestrator",
     main_list_view = "try",
     use_clang_coverage = True,
     coverage_test_types = ["unit", "overall"],
-    properties = {
-        "$build/chromium_orchestrator": {
-            "compilator": "linux-rel-compilator",
-            "compilator_watcher_git_revision": compilator_watcher_git_revision,
-        },
-    },
-    service_account = "chromium-orchestrator@chops-service-accounts.iam.gserviceaccount.com",
-    tryjob = try_.job(),
-)
-
-try_.chromium_linux_builder(
-    name = "linux-rel-compilator",
-    branch_selector = branches.STANDARD_MILESTONE,
-    builderless = not settings.is_main,
-    cores = 16,
-    executable = "recipe:chromium/compilator",
-    goma_jobs = goma.jobs.J150,
-    main_list_view = "try",
-    use_clang_coverage = True,
-    coverage_test_types = ["unit", "overall"],
-    ssd = True,
-    properties = {
-        "orchestrator": {
-            "builder_name": "linux-rel",
-            "builder_group": "tryserver.chromium.linux",
-        },
-    },
+    orchestrator_builderless = not settings.is_main,
+    orchestrator_cores = "2|4",
+    orchestrator_tryjob = try_.job(),
+    compilator_builderless = not settings.is_main,
+    compilator_cores = 16,
+    compilator_goma_jobs = goma.jobs.J150,
+    compilator_name = "linux-rel-compilator",
 )
 
 try_.chromium_android_builder(
@@ -1437,44 +1414,17 @@ try_.chromium_linux_builder(
     name = "linux_chromium_archive_rel_ng",
 )
 
-try_.chromium_linux_builder(
+try_.chromium_linux_orchestrator_pair(
     name = "linux_chromium_asan_rel_ng",
     branch_selector = branches.STANDARD_MILESTONE,
-    goma_jobs = goma.jobs.J150,
-    ssd = True,
     main_list_view = "try",
-    tryjob = try_.job(),
-)
-
-try_.chromium_linux_builder(
-    name = "linux_chromium_asan_rel_ng-orchestrator",
-    builderless = False,
-    cores = 2,
-    executable = "recipe:chromium/orchestrator",
-    main_list_view = "try",
-    properties = {
-        "$build/chromium_orchestrator": {
-            "compilator": "linux_chromium_asan_rel_ng-compilator",
-            "compilator_watcher_git_revision": compilator_watcher_git_revision,
-        },
-    },
-    service_account = "chromium-orchestrator@chops-service-accounts.iam.gserviceaccount.com",
-)
-
-try_.chromium_linux_builder(
-    name = "linux_chromium_asan_rel_ng-compilator",
-    builderless = False,
-    cores = 16,
-    executable = "recipe:chromium/compilator",
-    goma_jobs = goma.jobs.J150,
-    main_list_view = "try",
-    ssd = True,
-    properties = {
-        "orchestrator": {
-            "builder_name": "linux_chromium_asan_rel_ng-orchestrator",
-            "builder_group": "tryserver.chromium.linux",
-        },
-    },
+    orchestrator_builderless = not settings.is_main,
+    orchestrator_cores = 2,
+    orchestrator_tryjob = try_.job(),
+    compilator_builderless = False,
+    compilator_cores = 16,
+    compilator_goma_jobs = goma.jobs.J150,
+    compilator_name = "linux_chromium_asan_rel_ng-compilator",
 )
 
 try_.chromium_linux_builder(
@@ -1562,44 +1512,17 @@ try_.chromium_linux_builder(
     goma_jobs = goma.jobs.J150,
 )
 
-try_.chromium_linux_builder(
+try_.chromium_linux_orchestrator_pair(
     name = "linux_chromium_tsan_rel_ng",
     branch_selector = branches.STANDARD_MILESTONE,
-    builderless = not settings.is_main,
-    goma_jobs = goma.jobs.J150,
     main_list_view = "try",
-    tryjob = try_.job(),
-)
-
-try_.chromium_linux_builder(
-    name = "linux_chromium_tsan_rel_ng-orchestrator",
-    builderless = False,
-    cores = 2,
-    executable = "recipe:chromium/orchestrator",
-    main_list_view = "try",
-    properties = {
-        "$build/chromium_orchestrator": {
-            "compilator": "linux_chromium_tsan_rel_ng-compilator",
-            "compilator_watcher_git_revision": compilator_watcher_git_revision,
-        },
-    },
-    service_account = "chromium-orchestrator@chops-service-accounts.iam.gserviceaccount.com",
-)
-
-try_.chromium_linux_builder(
-    name = "linux_chromium_tsan_rel_ng-compilator",
-    builderless = False,
-    cores = 16,
-    executable = "recipe:chromium/compilator",
-    goma_jobs = goma.jobs.J150,
-    main_list_view = "try",
-    ssd = True,
-    properties = {
-        "orchestrator": {
-            "builder_name": "linux_chromium_tsan_rel_ng-orchestrator",
-            "builder_group": "tryserver.chromium.linux",
-        },
-    },
+    orchestrator_builderless = not settings.is_main,
+    orchestrator_cores = 2,
+    orchestrator_tryjob = try_.job(),
+    compilator_builderless = False,
+    compilator_cores = 16,
+    compilator_goma_jobs = goma.jobs.J150,
+    compilator_name = "linux_chromium_tsan_rel_ng-compilator",
 )
 
 try_.chromium_linux_builder(
@@ -2041,42 +1964,19 @@ try_.chromium_win_builder(
     os = os.WINDOWS_10,
 )
 
-try_.chromium_win_builder(
+try_.chromium_win_orchestrator_pair(
     name = "win10_chromium_x64_rel_ng",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
-    builderless = False,
-    cores = 4,
-    os = os.LINUX_BIONIC,
-    executable = "recipe:chromium/orchestrator",
     use_clang_coverage = True,
     coverage_test_types = ["unit", "overall"],
-    properties = {
-        "$build/chromium_orchestrator": {
-            "compilator": "win10_chromium_x64_rel_ng-compilator",
-            "compilator_watcher_git_revision": compilator_watcher_git_revision,
-        },
-    },
-    service_account = "chromium-orchestrator@chops-service-accounts.iam.gserviceaccount.com",
     main_list_view = "try",
-    tryjob = try_.job(),
-)
-
-try_.chromium_win_builder(
-    name = "win10_chromium_x64_rel_ng-compilator",
-    builderless = False,
-    os = os.WINDOWS_10,
-    cores = 32,
-    ssd = True,
-    goma_jobs = goma.jobs.J300,
-    executable = "recipe:chromium/compilator",
-    use_clang_coverage = True,
-    coverage_test_types = ["unit", "overall"],
-    properties = {
-        "orchestrator": {
-            "builder_name": "win10_chromium_x64_rel_ng",
-            "builder_group": "tryserver.chromium.win",
-        },
-    },
+    orchestrator_builderless = False,
+    orchestrator_cores = 4,
+    orchestrator_tryjob = try_.job(),
+    compilator_builderless = False,
+    compilator_cores = 32,
+    compilator_goma_jobs = goma.jobs.J300,
+    compilator_name = "win10_chromium_x64_rel_ng-compilator",
 )
 
 try_.chromium_win_builder(

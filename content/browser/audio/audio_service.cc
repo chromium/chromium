@@ -56,7 +56,7 @@ absl::optional<base::TimeDelta> GetAudioServiceProcessIdleTimeout() {
   absl::optional<base::TimeDelta> timeout = GetCommandLineIdleTimeout();
   if (!timeout)
     timeout = GetFieldTrialIdleTimeout();
-  if (timeout && *timeout < base::TimeDelta())
+  if (timeout && timeout->is_negative())
     return absl::nullopt;
   return timeout;
 }

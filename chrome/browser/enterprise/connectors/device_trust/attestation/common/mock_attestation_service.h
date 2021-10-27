@@ -27,7 +27,6 @@ class MockAttestationService : public AttestationService {
                std::unique_ptr<SignalsType>,
                AttestationCallback),
               (override));
-  MOCK_METHOD(bool, RotateSigningKey, (const std::string&), (override));
 };
 
 }  // namespace test

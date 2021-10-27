@@ -7,7 +7,6 @@ import("//build/config/android/rules.gni")
 
 android_library("net_java") {
   sources = [
-    "java/src/org/chromium/net/AndroidCellularSignalStrength.java",
     "java/src/org/chromium/net/AndroidCertVerifyResult.java",
     "java/src/org/chromium/net/AndroidKeyStore.java",
     "java/src/org/chromium/net/AndroidNetworkLibrary.java",
@@ -213,7 +212,6 @@ java_cpp_enum("net_android_java_enums_srcjar") {
   sources = [
     "../base/network_change_notifier.h",
     "../socket/socket_tag.cc",
-    "cellular_signal_strength.cc",
     "cert_verify_result_android.h",
     "keystore.h",
     "network_change_notifier_android.cc",

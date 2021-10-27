@@ -1364,7 +1364,7 @@ void SourceBufferStream::GetTimestampInterval(const BufferQueue& buffers,
     // FrameProcessor should protect against unknown buffer durations.
     DCHECK_NE(duration, kNoTimestamp);
 
-    if (duration > base::TimeDelta() && !buffer->is_duration_estimated()) {
+    if (duration.is_positive() && !buffer->is_duration_estimated()) {
       timestamp += duration;
     } else {
       // TODO(chcunningham): Emit warning when 0ms durations are not expected.

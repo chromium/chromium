@@ -75,7 +75,8 @@ import java.util.List;
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-        "disable-features=" + ChromeFeatureList.ENABLE_DUPLICATE_DOWNLOAD_DIALOG})
+        "disable-features=" + ChromeFeatureList.ENABLE_DUPLICATE_DOWNLOAD_DIALOG + ","
+                + ChromeFeatureList.ENABLE_DANGEROUS_DOWNLOAD_DIALOG})
 public class DownloadTest implements CustomMainActivityStart {
     @ParameterAnnotations.ClassParameter
     private static List<ParameterSet> sClassParams = Arrays.asList(
@@ -487,6 +488,7 @@ public class DownloadTest implements CustomMainActivityStart {
     @Test
     @MediumTest
     @Feature({"Navigation"})
+    @DisabledTest(message = "crbug.com/1261941")
     public void testOMADownloadInterception() throws Exception {
         TestWebServer webServer = TestWebServer.start();
         try {

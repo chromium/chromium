@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.process_launcher.ChildProcessConnection;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content.browser.ChildProcessLauncherHelperImpl;
@@ -397,6 +398,10 @@ public class WebContentsTest {
 
     @Test
     @SmallTest
+    // This test may run with --site-per-process, which also enables a feature to maintain a
+    // spare renderer process. The test expects only one renderer process and may
+    // incorrectly check its assertions on the spare process instead, so disable it.
+    @CommandLineFlags.Add({"disable-features=SpareRendererForSitePerProcess"})
     public void testChildProcessImportance() {
         final ContentShellActivity activity =
                 mActivityTestRule.launchContentShellWithUrl(TEST_URL_1);
@@ -421,6 +426,10 @@ public class WebContentsTest {
 
     @Test
     @SmallTest
+    // This test may run with --site-per-process, which also enables a feature to maintain a
+    // spare renderer process. The test expects only one renderer process and may
+    // incorrectly check its assertions on the spare process instead, so disable it.
+    @CommandLineFlags.Add({"disable-features=SpareRendererForSitePerProcess"})
     public void testVisibilityControlsBinding() {
         final ContentShellActivity activity =
                 mActivityTestRule.launchContentShellWithUrl(TEST_URL_1);

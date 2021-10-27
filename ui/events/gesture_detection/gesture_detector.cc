@@ -287,7 +287,7 @@ bool GestureDetector::OnTouchEvent(const MotionEvent& ev,
           handled |= double_tap_listener_->OnDoubleTapEvent(ev);
         } else {
           // This is a first tap.
-          DCHECK(double_tap_timeout_ > base::TimeDelta());
+          DCHECK(double_tap_timeout_.is_positive());
           timeout_handler_->StartTimeout(TAP);
         }
       } else {

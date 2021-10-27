@@ -529,7 +529,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceFilter.PageLoad.ActivationState.DidInherit"
-    enum="SubresourceFilterActivationState" expires_after="2021-11-02">
+    enum="SubresourceFilterActivationState" expires_after="2022-11-02">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>

@@ -117,7 +117,8 @@ IN_PROC_BROWSER_TEST_F(AutofillProgressDialogViewsBrowserTest,
   EXPECT_TRUE(dialog_views);
   views::test::WidgetDestroyedWaiter destroyed_waiter(
       dialog_views->GetWidget());
-  dialog_views->Dismiss(/*show_confirmation_before_closing=*/true);
+  dialog_views->Dismiss(/*show_confirmation_before_closing=*/true,
+                        /*is_canceled_by_user=*/false);
   destroyed_waiter.Wait();
   EXPECT_FALSE(GetDialogViews());
   histogram_tester.ExpectUniqueSample(

@@ -27,12 +27,6 @@ class SiteForCookies;
 
 namespace embedder_support {
 
-// See ContentBrowserClient::AllowAppCache.
-bool AllowAppCache(const GURL& manifest_url,
-                   const net::SiteForCookies& site_for_cookies,
-                   const absl::optional<url::Origin>& top_frame_origin,
-                   const content_settings::CookieSettings* cookie_settings);
-
 // See ContentBrowserClient::AllowServiceWorker.
 content::AllowServiceWorkerResult AllowServiceWorker(
     const GURL& scope,

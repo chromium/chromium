@@ -295,9 +295,10 @@ class AppServiceProxyLacros : public KeyedService,
   void OnApps(std::vector<apps::mojom::AppPtr> deltas,
               apps::mojom::AppType app_type,
               bool should_notify_initialized) override;
-
-  apps::mojom::IntentFilterPtr FindBestMatchingFilter(
-      const apps::mojom::IntentPtr& intent);
+  void OnPreferredAppsChanged(
+      apps::mojom::PreferredAppChangesPtr changes) override;
+  void InitializePreferredApps(
+      PreferredAppsList::PreferredApps preferred_apps) override;
 
   apps::AppRegistryCache app_registry_cache_;
   apps::AppCapabilityAccessCache app_capability_access_cache_;

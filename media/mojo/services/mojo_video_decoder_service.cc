@@ -137,16 +137,9 @@ MojoVideoDecoderService::~MojoVideoDecoderService() {
 void MojoVideoDecoderService::GetSupportedConfigs(
     GetSupportedConfigsCallback callback) {
   DVLOG(3) << __func__;
+  TRACE_EVENT0("media", "MojoVideoDecoderService::GetSupportedConfigs");
 
-  mojo_media_client_->GetSupportedVideoDecoderConfigs(
-      base::BindOnce(&MojoVideoDecoderService::OnSupportedVideoDecoderConfigs,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void MojoVideoDecoderService::OnSupportedVideoDecoderConfigs(
-    GetSupportedConfigsCallback callback,
-    SupportedVideoDecoderConfigs configs) {
-  std::move(callback).Run(std::move(configs),
+  std::move(callback).Run(mojo_media_client_->GetSupportedVideoDecoderConfigs(),
                           mojo_media_client_->GetDecoderImplementationType());
 }
 

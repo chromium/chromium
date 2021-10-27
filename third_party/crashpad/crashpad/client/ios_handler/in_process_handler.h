@@ -19,6 +19,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "client/ios_handler/prune_intermediate_dumps_and_crash_reports_thread.h"
 #include "handler/crash_report_upload_thread.h"
 #include "snapshot/ios/process_snapshot_ios_intermediate_dump.h"
 #include "util/ios/ios_intermediate_dump_writer.h"
@@ -193,6 +194,7 @@ class InProcessHandler {
   std::unique_ptr<IOSIntermediateDumpWriter> writer_;
   std::unique_ptr<IOSIntermediateDumpWriter> alternate_mach_writer_;
   std::unique_ptr<CrashReportUploadThread> upload_thread_;
+  std::unique_ptr<PruneIntermediateDumpsAndCrashReportsThread> prune_thread_;
   std::unique_ptr<CrashReportDatabase> database_;
   std::string bundle_identifier_and_seperator_;
   InitializationStateDcheck initialized_;

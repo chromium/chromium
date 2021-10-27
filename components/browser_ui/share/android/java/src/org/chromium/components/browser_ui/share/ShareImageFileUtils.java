@@ -31,8 +31,11 @@ import org.chromium.base.Log;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.BackgroundOnlyAsyncTask;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.components.browser_ui.util.DownloadUtils;
 import org.chromium.content_public.browser.RenderWidgetHostView;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.Clipboard;
@@ -282,51 +285,8 @@ public class ShareImageFileUtils {
     private static void saveImage(String fileName, FilePathProvider filePathProvider,
             OnImageSaveListener listener, FileOutputStreamWriter writer, boolean isTemporary,
             String fileExtension) {
-        new AsyncTask<Uri>() {
-            @Override
-            protected Uri doInBackground() {
-                FileOutputStream fOut = null;
-                File destFile = null;
-                try {
-                    destFile = createFile(
-                            fileName, filePathProvider.getPath(), isTemporary, fileExtension);
-                    if (destFile != null && destFile.exists()) {
-                        fOut = new FileOutputStream(destFile);
-                        writer.write(fOut);
-                    } else {
-                        Log.w(TAG,
-                                "Share failed -- Unable to create or write to destination file.");
-                    }
-                } catch (IOException ie) {
-                    cancel(true);
-                } finally {
-                    StreamUtil.closeQuietly(fOut);
-                }
-
-                Uri uri = null;
-                if (!isTemporary) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                        uri = addToMediaStore(destFile);
-                    } else {
-                        long downloadId = addCompletedDownload(destFile);
-                        DownloadManager manager =
-                                (DownloadManager) ContextUtils.getApplicationContext()
-                                        .getSystemService(Context.DOWNLOAD_SERVICE);
-                        return manager.getUriForDownloadedFile(downloadId);
-                    }
-                } else {
-                    uri = FileUtils.getUriForFile(destFile);
-                }
-                return uri;
-            }
-
-            @Override
-            protected void onCancelled() {
-                listener.onImageSaveError(fileName);
-            }
-
-            @Override
-            protected void onPostExecute(Uri uri) {
+        Callback<Uri> saveImageCallback = (Uri uri) -> {
+            PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
                 if (uri == null) {
                     listener.onImageSaveError(fileName);
                     return;
@@ -338,8 +298,48 @@ public class ShareImageFileUtils {
                 }
 
                 listener.onImageSaved(uri, fileName);
+            });
+        };
+
+        Callback<File> outputStreamWriteCallback = (File destFile) -> {
+            Uri uri = null;
+            if (!isTemporary) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    uri = addToMediaStore(destFile);
+                } else {
+                    long downloadId = addCompletedDownload(destFile);
+                    DownloadManager manager =
+                            (DownloadManager) ContextUtils.getApplicationContext().getSystemService(
+                                    Context.DOWNLOAD_SERVICE);
+                    uri = manager.getUriForDownloadedFile(downloadId);
+                }
+            } else {
+                uri = FileUtils.getUriForFile(destFile);
             }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            saveImageCallback.onResult(uri);
+        };
+
+        PostTask.postTask(TaskTraits.BEST_EFFORT_MAY_BLOCK, () -> {
+            FileOutputStream fOut = null;
+            File destFile = null;
+            try {
+                destFile = createFile(
+                        fileName, filePathProvider.getPath(), isTemporary, fileExtension);
+                if (destFile != null && destFile.exists()) {
+                    fOut = new FileOutputStream(destFile);
+                    writer.write(fOut);
+                    StreamUtil.closeQuietly(fOut);
+                    outputStreamWriteCallback.onResult(destFile);
+                } else {
+                    Log.w(TAG, "Share failed -- Unable to create or write to destination file.");
+                    StreamUtil.closeQuietly(fOut);
+                    saveImageCallback.onResult(null);
+                }
+            } catch (IOException ie) {
+                saveImageCallback.onResult(null);
+                StreamUtil.closeQuietly(fOut);
+            }
+        });
     }
 
     /**

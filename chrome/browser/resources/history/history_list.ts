@@ -8,6 +8,7 @@ import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-threshold.js';
 import './shared_style.js';
 
+import {CrA11yAnnouncerElement} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
@@ -16,7 +17,6 @@ import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {IronScrollThresholdElement} from 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-threshold.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -160,10 +160,8 @@ export class HistoryListElement extends HistoryListElementBase {
     this.closeMenu_();
 
     if (info.term && !this.queryState.incremental) {
-      IronA11yAnnouncer.requestAvailability();
-      this.fire_(
-          'iron-announce',
-          {text: searchResultsTitle(results.length, info.term)});
+      CrA11yAnnouncerElement.getInstance().announce(
+          searchResultsTitle(results.length, info.term));
     }
 
     this.addNewResults(results, this.queryState.incremental, info.finished);
@@ -437,10 +435,8 @@ export class HistoryListElement extends HistoryListElementBase {
     const itemData = this.actionMenuModel_!;
 
     this.deleteItems_([itemData.item]).then(() => {
-      IronA11yAnnouncer.requestAvailability();
-      this.fire_(
-          'iron-announce',
-          {text: this.i18n('deleteSuccess', itemData.item.title)});
+      CrA11yAnnouncerElement.getInstance().announce(
+          this.i18n('deleteSuccess', itemData.item.title));
 
       // This unselect-all resets the toolbar when deleting a selected item
       // and clears selection state which can be invalid if items move

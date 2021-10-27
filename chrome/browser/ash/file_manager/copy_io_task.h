@@ -40,8 +40,6 @@ class CopyIOTask : public IOTask {
 
   void Cancel() override;
 
-  const ProgressStatus& progress() override;
-
  private:
   void Complete(State state);
   void GetFileSize(size_t idx);
@@ -62,7 +60,6 @@ class CopyIOTask : public IOTask {
 
   Profile* profile_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
-  ProgressStatus status_;
 
   // Stores the size of each source so we know what to increment the progress
   // bytes by for each copy completion.

@@ -6,7 +6,6 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/process/process_metrics.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
@@ -99,15 +98,6 @@ bool GetSwapFreeThreshold(uint64_t* threshold) {
   *threshold = static_cast<uint64_t>(memory_info.swap_total * threshold_ratio);
   return true;
 }
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class OomInterventionBrowserMonitorStatus {
-  kEnabledWithValidConfig = 0,
-  kDisabledWithInvalidParam = 1,
-  kEnabledWithNoSwap = 2,
-  kMaxValue = kEnabledWithNoSwap
-};
 
 }  // namespace
 

@@ -96,6 +96,10 @@ enum JobCompletionState {
   PROCESSING  // only jobs that are being processed
 };
 
+// Converts a JobStateReason to the exact string returned by CUPS.
+const base::StringPiece COMPONENT_EXPORT(PRINT_BACKEND)
+    ToJobStateReasonString(CupsJob::JobStateReason stateReason);
+
 // Returns the uri for printer with `id` as served by CUPS. Assumes that `id` is
 // a valid CUPS printer name and performs no error checking or escaping.
 std::string COMPONENT_EXPORT(PRINT_BACKEND)

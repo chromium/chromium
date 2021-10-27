@@ -123,9 +123,9 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, SafeBrowsingStatePolicyManaged) {
             IsEnhancedProtectionMessageVisibleOnInterstitial());
 }
 
-// Test that when safe browsing whitelist domains are set by policy, safe
+// Test that when safe browsing allowlist domains are set by policy, safe
 // browsing service gets the correct value.
-IN_PROC_BROWSER_TEST_F(PolicyTest, SafeBrowsingWhitelistDomains) {
+IN_PROC_BROWSER_TEST_F(PolicyTest, SafeBrowsingAllowlistDomains) {
   // Without setting up the enterprise policy,
   // |GetSafeBrowsingDomainsPref(..) should return empty list.
   const PrefService* const prefs = browser()->profile()->GetPrefs();
@@ -136,14 +136,14 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, SafeBrowsingWhitelistDomains) {
                                                      &canonicalized_domains);
   EXPECT_TRUE(canonicalized_domains.empty());
 
-  // Add 2 whitelisted domains to this policy.
+  // Add 2 allowlisted domains to this policy.
   PolicyMap policies;
-  base::ListValue whitelist_domains;
-  whitelist_domains.Append("mydomain.com");
-  whitelist_domains.Append("mydomain.net");
-  policies.Set(key::kSafeBrowsingWhitelistDomains, POLICY_LEVEL_MANDATORY,
+  base::ListValue allowlist_domains;
+  allowlist_domains.Append("mydomain.com");
+  allowlist_domains.Append("mydomain.net");
+  policies.Set(key::kSafeBrowsingAllowlistDomains, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-               whitelist_domains.Clone(), nullptr);
+               allowlist_domains.Clone(), nullptr);
   UpdateProviderPolicy(policies);
   EXPECT_TRUE(
       prefs->FindPreference(prefs::kSafeBrowsingAllowlistDomains)->IsManaged());
@@ -154,11 +154,11 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, SafeBrowsingWhitelistDomains) {
   EXPECT_EQ("mydomain.net", canonicalized_domains[1]);
 
   // Invalid domains will be skipped.
-  whitelist_domains.ClearList();
-  whitelist_domains.Append(std::string("%EF%BF%BDzyx.com"));
-  policies.Set(key::kSafeBrowsingWhitelistDomains, POLICY_LEVEL_MANDATORY,
+  allowlist_domains.ClearList();
+  allowlist_domains.Append(std::string("%EF%BF%BDzyx.com"));
+  policies.Set(key::kSafeBrowsingAllowlistDomains, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-               whitelist_domains.Clone(), nullptr);
+               allowlist_domains.Clone(), nullptr);
   UpdateProviderPolicy(policies);
   EXPECT_TRUE(
       prefs->FindPreference(prefs::kSafeBrowsingAllowlistDomains)->IsManaged());

@@ -70,6 +70,7 @@ class ShimlessRmaServiceTest : public testing::Test {
     cros_network_config_test_helper_ =
         std::make_unique<network_config::CrosNetworkConfigTestHelper>(false);
     cros_network_config_test_helper().Initialize(nullptr);
+    NetworkHandler::Initialize();
 
     FakeRmadClientForTest::Initialize();
     rmad_client_ = chromeos::RmadClient::Get();
@@ -87,6 +88,7 @@ class ShimlessRmaServiceTest : public testing::Test {
     // a null ptr dereference in the service destructor.
     shimless_rma_provider_.reset();
     chromeos::RmadClient::Shutdown();
+    NetworkHandler::Shutdown();
     cros_network_config_test_helper_.reset();
     chromeos::DBusThreadManager::Shutdown();
   }
@@ -300,6 +302,9 @@ TEST_F(ShimlessRmaServiceTest, WelcomeHasNoNetworkConnection) {
       }));
   run_loop.RunUntilIdle();
 
+  // TODO(gavindodd): Create a FakeVersionUpdater so no updates available and
+  // update progress can be tested.
+
   // No network should prompt select network page
   shimless_rma_provider_->BeginFinalization(base::BindLambdaForTesting(
       [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
@@ -377,14 +382,11 @@ TEST_F(ShimlessRmaServiceTest, ChooseNetworkHasNoNetworkConnection) {
       }));
   run_loop.RunUntilIdle();
 
-  // TODO(gavindodd): Once the component validation works this should only
-  // redirect to update screen if validation fails, so that a warning
-  // that updating may fix validation issues can be displayed.
-  // With no network it should still redirect to kUpdateOs
+  // With no network it should redirect to next rmad state
   shimless_rma_provider_->NetworkSelectionComplete(base::BindLambdaForTesting(
       [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
           rmad::RmadErrorCode error) {
-        EXPECT_EQ(state, mojom::RmaState::kUpdateOs);
+        EXPECT_EQ(state, mojom::RmaState::kSelectComponents);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
         run_loop.Quit();
       }));

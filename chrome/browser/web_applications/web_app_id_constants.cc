@@ -32,6 +32,10 @@ const char kCursiveAppId[] = "apignacaigpffemhdbhmnajajaccbckh";
 // GURL("chrome://diagnostics/"))
 const char kDiagnosticsAppId[] = "keejpcfcpecjhmepmpcfgjemkmlicpam";
 
+// Generated as: web_app::GenerateAppId(/*manifest_id=*/absl::nullopt,
+// GURL("chrome://accessory-update/"))
+const char kFirmwareUpdateAppId[] = "nedcdcceagjbkiaecmdbpafcmlhkiifa";
+
 // Generated as: web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(
 //     "https://mail.google.com/mail/?usp=installed_webapp"))
 const char kGmailAppId[] = "fmgjjmmmlfnkbppncabfkddbjimcfncm";

@@ -10,10 +10,6 @@ import("//components/optimization_guide/features.gni")
 static_library("browser") {
   sources = [
     "optimization_guide_decider.h",
-    "page_content_annotation_job.cc",
-    "page_content_annotation_job.h",
-    "page_content_annotations_common.cc",
-    "page_content_annotations_common.h",
     "page_content_annotations_service.cc",
     "page_content_annotations_service.h",
     "page_content_annotations_web_contents_observer.cc",
@@ -83,7 +79,6 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "page_content_annotation_job_unittest.cc",
     "page_content_annotations_web_contents_observer_unittest.cc",
     "page_text_dump_result_unittest.cc",
     "page_text_observer_unittest.cc",

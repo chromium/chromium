@@ -297,10 +297,8 @@ class ConnectionTest : public testing::Test,
       host_connection_ = std::make_unique<WebrtcConnectionToClient>(
           base::WrapUnique(host_session_),
           TransportContext::ForTests(protocol::TransportRole::SERVER),
-          task_environment_.GetMainThreadTaskRunner(),
           task_environment_.GetMainThreadTaskRunner());
       client_connection_ = std::make_unique<WebrtcConnectionToHost>();
-
     } else {
       host_connection_ = std::make_unique<IceConnectionToClient>(
           base::WrapUnique(host_session_),
