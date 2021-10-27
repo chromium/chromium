@@ -33,6 +33,10 @@ struct BLINK_COMMON_EXPORT InterestGroup {
     Ad(GURL render_url, absl::optional<std::string> metadata);
     ~Ad();
 
+    // Returns the approximate size of the contents of this InterestGroup::Ad,
+    // in bytes.
+    size_t EstimateSize() const;
+
     // Must use https.
     GURL render_url;
     // Opaque JSON data, passed as an object to auction worklet.
@@ -66,6 +70,10 @@ struct BLINK_COMMON_EXPORT InterestGroup {
   // Checks for validity. Performs same checks as IsBlinkInterestGroupValid().
   // Automatically checked when passing InterestGroups over Mojo.
   bool IsValid() const;
+
+  // Returns the approximate size of the contents of this InterestGroup, in
+  // bytes.
+  size_t EstimateSize() const;
 
   bool IsEqualForTesting(const InterestGroup& other) const;
 
