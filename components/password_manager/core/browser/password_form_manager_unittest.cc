@@ -1744,6 +1744,7 @@ TEST_P(PasswordFormManagerTest, FillForm) {
     PasswordFormFillData fill_data;
     EXPECT_CALL(driver_, FillPasswordForm(_)).WillOnce(SaveArg<0>(&fill_data));
     form_manager_->FillForm(form, {});
+    task_environment_.FastForwardUntilNoTasksRemain();
 
     EXPECT_EQ(form.fields[kUsernameFieldIndex].name,
               fill_data.username_field.name);
@@ -1798,6 +1799,39 @@ TEST_P(PasswordFormManagerTest, FillFormWaitForServerPredictions) {
   uint32_t expected_differences_mask = 2;  // renderer_id changes.
   histogram_tester.ExpectUniqueSample("PasswordManager.DynamicFormChanges",
                                       expected_differences_mask, 1);
+}
+
+TEST_P(PasswordFormManagerTest, UpdateFormWaitForServerPredictions) {
+  SetNonFederatedAndNotifyFetchCompleted({&saved_match_});
+
+  FormData changed_form = observed_form_;
+
+  changed_form.fields[kUsernameFieldIndex].unique_renderer_id.value() += 1000;
+  changed_form.fields[kPasswordFieldIndex].unique_renderer_id.value() += 1000;
+
+  // Check that no filling until server predicions or filling timeout
+  // expiration.
+  EXPECT_CALL(driver_, FillPasswordForm).Times(0);
+
+  // Wait half-delay time before updating form
+  task_environment_.FastForwardBy(kMaxFillingDelayForServerPredictions / 2);
+
+  // Updating form should cancel previous task for fill and start a new delayed
+  // fill task for waiting server-side predictions
+  form_manager_->FillForm(changed_form, {});
+
+  // Fire the cancelled fill task should do nothing
+  task_environment_.FastForwardBy(kMaxFillingDelayForServerPredictions / 2);
+
+  PasswordFormFillData fill_data;
+  EXPECT_CALL(driver_, FillPasswordForm(_)).WillOnce(SaveArg<0>(&fill_data));
+
+  // Check new fill task trigger form filling
+  task_environment_.FastForwardUntilNoTasksRemain();
+  EXPECT_EQ(changed_form.fields[kUsernameFieldIndex].unique_renderer_id,
+            fill_data.username_field.unique_renderer_id);
+  EXPECT_EQ(changed_form.fields[kPasswordFieldIndex].unique_renderer_id,
+            fill_data.password_field.unique_renderer_id);
 }
 
 TEST_P(PasswordFormManagerTest, Update) {

@@ -32,6 +32,10 @@
 
 namespace password_manager {
 
+// Filling timeout for waiting server predictions
+constexpr base::TimeDelta kMaxFillingDelayForServerPredictions =
+    base::Milliseconds(500);
+
 class PasswordFormMetricsRecorder;
 class PasswordManagerClient;
 class PasswordManagerDriver;
@@ -332,6 +336,10 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   void UpdateFormManagerWithFormChanges(
       const autofill::FormData& observed_form_data,
       const std::map<autofill::FormSignature, FormPredictions>& predictions);
+
+  // Delays form filling by |kMaxFillingDelayForServerPredictions| while waiting
+  // for server-side predictions.
+  void DelayFillForServerSidePredictions();
 
   // The client which implements embedder-specific PasswordManager operations.
   PasswordManagerClient* client_;
