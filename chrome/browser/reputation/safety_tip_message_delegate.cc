@@ -46,7 +46,7 @@ void SafetyTipMessageDelegate::DisplaySafetyTipPrompt(
       IDR_ANDROID_INFOBAR_SAFETYTIP_SHIELD));
   message_->DisableIconTint();
   message_->SetSecondaryIconResourceId(
-      ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_AUTOFILL_SETTINGS));
+      ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_MESSAGE_SETTINGS));
   message_->SetSecondaryButtonMenuText(
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_SAFETY_TIP_MORE_INFO_LINK));
 

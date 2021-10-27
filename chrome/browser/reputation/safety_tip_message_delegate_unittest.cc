@@ -174,7 +174,7 @@ TEST_F(SafetyTipMessageDelegateTest, MessagePropertyValuesBadReputation) {
   EXPECT_EQ(
       ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_INFOBAR_SAFETYTIP_SHIELD),
       GetMessageWrapper()->GetIconResourceId());
-  EXPECT_EQ(ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_AUTOFILL_SETTINGS),
+  EXPECT_EQ(ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_MESSAGE_SETTINGS),
             GetMessageWrapper()->GetSecondaryIconResourceId());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PAGE_INFO_SAFETY_TIP_MORE_INFO_LINK),
             GetMessageWrapper()->GetSecondaryButtonMenuText());
@@ -197,7 +197,7 @@ TEST_F(SafetyTipMessageDelegateTest, MessagePropertyValuesLookAlike) {
   EXPECT_EQ(
       ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_INFOBAR_SAFETYTIP_SHIELD),
       GetMessageWrapper()->GetIconResourceId());
-  EXPECT_EQ(ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_AUTOFILL_SETTINGS),
+  EXPECT_EQ(ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_MESSAGE_SETTINGS),
             GetMessageWrapper()->GetSecondaryIconResourceId());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PAGE_INFO_SAFETY_TIP_MORE_INFO_LINK),
             GetMessageWrapper()->GetSecondaryButtonMenuText());
