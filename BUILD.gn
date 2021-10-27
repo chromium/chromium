@@ -842,10 +842,6 @@ group("gn_all") {
     }
   }
 
-  if (enable_vulkan) {
-    deps += [ "//gpu/vulkan/demo" ]
-  }
-
   if (use_atk) {
     deps += [
       "//tools/accessibility/inspect:ax_dump_events",
