@@ -72,9 +72,18 @@ SkPath GetHighlightPathInternal(const View* view, float halo_thickness) {
       return highlight_path;
   }
 
+  gfx::Rect client_rect = view->GetLocalBounds();
   const double corner_radius = GetCornerRadius(halo_thickness);
-  return SkPath().addRRect(SkRRect::MakeRectXY(
-      RectToSkRect(view->GetLocalBounds()), corner_radius, corner_radius));
+  // Make sure the path is large enough to contain the corners. This covers
+  // narrow views and the case where view->GetLocalBounds() are empty. Doing so
+  // prevents DCHECK(IsPathUsable(path)) from failing in GetRingRoundRect()
+  // because the resulting path is empty.
+  if (client_rect.width() < 2 * corner_radius ||
+      client_rect.height() < 2 * corner_radius) {
+    client_rect.Outset(corner_radius);
+  }
+  return SkPath().addRRect(SkRRect::MakeRectXY(RectToSkRect(client_rect),
+                                               corner_radius, corner_radius));
 }
 
 }  // namespace
