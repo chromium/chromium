@@ -126,6 +126,7 @@ source_set("shell") {
     "Security.framework",
     "SystemConfiguration.framework",
     "UIKit.framework",
+    "UniformTypeIdentifiers.framework",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
