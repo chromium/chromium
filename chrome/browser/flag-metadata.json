@@ -5524,8 +5524,8 @@
   },
   {
     "name": "web-bundles",
-    "owners": [ "ksakamoto", "horo", "kinuko" ],
-    "expiry_milestone": 96
+    "owners": [ "//content/browser/web_package/OWNERS" ],
+    "expiry_milestone": 105
   },
   {
     "name": "web-feed",
