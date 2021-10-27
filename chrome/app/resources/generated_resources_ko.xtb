@@ -2089,6 +2089,7 @@
 <translation id="310671807099593501">사이트에서 블루투스를 사용하고 있습니다.</translation>
 <translation id="3108931485517391283">수신할 수 없습니다.</translation>
 <translation id="3109724472072898302">접힘</translation>
+<translation id="311214366526552035">무시하고 다운로드</translation>
 <translation id="311394601889664316">사이트에서 기기에 있는 파일이나 폴더를 수정하도록 허용하지 않음</translation>
 <translation id="3115147772012638511">캐시를 기다리는 중...</translation>
 <translation id="3115580024857770654">모두 접기</translation>
@@ -2370,6 +2371,7 @@
 <translation id="3429160811076349561">무료 체험 기능 사용 안함</translation>
 <translation id="3429271624041785769">웹 콘텐츠 언어</translation>
 <translation id="3429275422858276529">이 페이지를 북마크에 추가하여 나중에 쉽게 찾으세요.</translation>
+<translation id="343115368966109153"><ph name="FILE_NAME" /> 파일을 다운로드하시겠습니까? 기기를 이용 중인 사용자는 누구나 파일을 볼 수 있습니다.</translation>
 <translation id="3432227430032737297">표시된 항목 모두 삭제</translation>
 <translation id="3432762828853624962">공유 작업자</translation>
 <translation id="3433621910545056227">시스템이 기기 설치 시간 속성 잠금을 설정하는 데 실패했습니다.</translation>
@@ -2711,6 +2713,7 @@
 <translation id="3777806571986431400">확장 프로그램을 사용하도록 설정됨</translation>
 <translation id="3778152852029592020">다운로드가 취소되었습니다.</translation>
 <translation id="3778208826288864398">잘못된 PIN을 너무 여러 번 입력하여 보안 키가 잠겼습니다. 보안 키를 재설정해야 합니다.</translation>
+<translation id="3778369586810509692">파일이 기기에 저장되고 모든 사용자가 볼 수 있게 됩니다.</translation>
 <translation id="3778740492972734840">개발자 도구(&amp;D)</translation>
 <translation id="3778868487658107119">질문을 하고 작업을 지시하세요. 나만의 Google이 언제든지 도와드립니다.</translation>
 <translation id="3781742599892759500">Linux 마이크 액세스</translation>

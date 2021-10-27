@@ -2310,6 +2310,7 @@
 <translation id="8541158209346794904">புளூடூத் சாதனம்</translation>
 <translation id="8542014550340843547">டிரிப்பில் ஸ்டேப்பில் பாட்டம்</translation>
 <translation id="8543181531796978784"><ph name="BEGIN_ERROR_LINK" />கண்டறிவதில் சிக்கல் இருப்பதைப் புகாரளிக்கலாம்<ph name="END_ERROR_LINK" /> அல்லது உங்கள் பாதுகாப்பிற்கு ஏற்படக்கூடிய ஆபத்துகளைப் புரிந்துகொண்டிருந்தால், <ph name="BEGIN_LINK" />இந்தப் பாதுகாப்பற்ற தளத்திற்குச் செல்லலாம்<ph name="END_LINK" />.</translation>
+<translation id="8554010658308662631">மேலும் ஏற்று</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{அனுமதியை மீட்டமை}other{அனுமதிகளை மீட்டமை}}</translation>
 <translation id="8555010941760982128">செக்-அவுட்டின்போது இந்தக் குறியீட்டைப் பயன்படுத்துங்கள்</translation>
 <translation id="8557066899867184262">உங்கள் கார்டின் பின்புறத்தில் CVC எண் இருக்கும்.</translation>

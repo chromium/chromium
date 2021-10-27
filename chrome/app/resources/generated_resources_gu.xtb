@@ -326,6 +326,7 @@
 <translation id="133535873114485416">પસંદગીનું ઇનપુટ</translation>
 <translation id="1335929031622236846">તમારા ડિવાઇસની નોંધણી કરાવો</translation>
 <translation id="1336902454946927954">તમારી સિક્યુરિટી કી લૉક કરેલી હોવાને કારણે તમારી ફિંગરપ્રિન્ટ ઓળખી શક્યાં નહીં. તેને અનલૉક કરવા માટે, તમારો પિન દાખલ કરો.</translation>
+<translation id="1338631221631423366">જોડાણ કરી રહ્યાં છીએ...</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> આ ઍપ્લિકેશન ખોલવા માગે છે.</translation>
 <translation id="1338950911836659113">કાઢી રહ્યું છે ...</translation>
 <translation id="1339009753652684748">તમે "Ok Google" બોલો છો, ત્યારે તમારા Assistantને ઍક્સેસ કરો છો. બૅટરીની બચત કરવા માટે, “ચાલુ (સુઝાવ આપવામાં આવે છે)” પસંદ કરો. જ્યારે તમારું ડિવાઇસ પ્લગ-ઇન કરેલું હશે અથવા ચાર્જ થઈ રહ્યું હશે, માત્ર ત્યારે જ Assistant જવાબ આપશે.</translation>
@@ -6549,6 +6550,7 @@ USB ડિવાઇસ</translation>
 <translation id="7887864092952184874">Bluetooth માઉસ જોડાયું</translation>
 <translation id="7889371445710865055">ડિક્ટેશનની ભાષા બદલો</translation>
 <translation id="7890147169288018054">નેટવર્ક વિશેની માહિતી જુઓ, જેમ કે તમારું IP અથવા MAC ઍડ્રેસ</translation>
+<translation id="7892384782944609022">જોડાણ કરી શકાયું નથી. ફરી પ્રયાસ કરવા માટે ડિવાઇસ પસંદ કરો.</translation>
 <translation id="7893008570150657497">તમારા કમ્પ્યુટર પરથી ફોટો, સંગીત અને અન્ય મીડિયા ઍક્સેસ કરો</translation>
 <translation id="7893153962594818789">આ <ph name="DEVICE_TYPE" />માં Bluetooth બંધ છે. તમારો પાસવર્ડ દાખલ કરો અને Bluetooth ચાલુ કરો.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (ડિફૉલ્ટ)</translation>

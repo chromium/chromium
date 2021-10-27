@@ -2072,6 +2072,7 @@
 <translation id="310671807099593501">サイトで Bluetooth が使用されています</translation>
 <translation id="3108931485517391283">受信できません</translation>
 <translation id="3109724472072898302">折りたたみ表示中</translation>
+<translation id="311214366526552035">ダウンロードを続行</translation>
 <translation id="311394601889664316">サイトにデバイス上のファイルやフォルダの編集を許可しない</translation>
 <translation id="3115147772012638511">キャッシュを待機しています...</translation>
 <translation id="3115580024857770654">すべて折りたたむ</translation>
@@ -2353,6 +2354,7 @@
 <translation id="3429160811076349561">試用版機能はオフになっています</translation>
 <translation id="3429271624041785769">ウェブ コンテンツの言語</translation>
 <translation id="3429275422858276529">後で見つけやすいようにこのページをブックマークできます</translation>
+<translation id="343115368966109153"><ph name="FILE_NAME" /> をダウンロードしますか？ファイルは、このデバイスを使用するすべてのユーザーに表示されます。</translation>
 <translation id="3432227430032737297">表示中のサイトをすべて削除</translation>
 <translation id="3432762828853624962">共有ワーカー</translation>
 <translation id="3433621910545056227">デバイス インストール時の属性のロックを確立できませんでした。</translation>
@@ -2694,6 +2696,7 @@
 <translation id="3777806571986431400">有効化された拡張機能</translation>
 <translation id="3778152852029592020">ダウンロードがキャンセルされました。</translation>
 <translation id="3778208826288864398">PIN の入力間違いが許容回数を超えたため、セキュリティ キーがロックされています。セキュリティ キーをリセットする必要があります。</translation>
+<translation id="3778369586810509692">このファイルはデバイスに保存され、すべてのユーザーに表示されます。</translation>
 <translation id="3778740492972734840">デベロッパー ツール(&amp;D)</translation>
 <translation id="3778868487658107119">あなただけの Google が、知りたいこと、やりたいことをサポートします。なんでも話してみてください。</translation>
 <translation id="3781742599892759500">Linux のマイクへのアクセス</translation>
