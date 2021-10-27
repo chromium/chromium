@@ -14806,7 +14806,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Rollback.OobeRestoreResult" enum="Rollback_OobeRestoreResult"
-    expires_after="2021-12-01">
+    expires_after="2022-04-01">
   <owner>mpolzer@google.com</owner>
   <owner>managed-platforms@google.com</owner>
   <summary>
@@ -14815,7 +14815,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Rollback.RollbackSaveResult"
-    enum="Rollback_RollbackSaveResult" expires_after="2021-12-01">
+    enum="Rollback_RollbackSaveResult" expires_after="2022-04-01">
   <owner>mpolzer@google.com</owner>
   <owner>managed-platforms@google.com</owner>
   <summary>
