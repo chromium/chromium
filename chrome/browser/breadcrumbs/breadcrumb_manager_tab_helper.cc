@@ -10,8 +10,8 @@
 #include "components/breadcrumbs/core/breadcrumb_manager_keyed_service.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/security_state/content/content_utils.h"
+#include "components/security_state/core/security_state.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/security_style_explanations.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
@@ -81,14 +81,12 @@ void BreadcrumbManagerTabHelper::DidChangeVisibleSecurityState() {
   const bool displayed_mixed_content =
       visible_security_state->displayed_mixed_content;
 
-  content::SecurityStyleExplanations security_style_explanations;
-  const blink::SecurityStyle security_style = GetSecurityStyle(
+  security_state::SecurityLevel security_level =
       security_state::GetSecurityLevel(
-          *(visible_security_state.get()),
-          /*used_policy_installed_certificate=*/false),
-      *(visible_security_state.get()), &security_style_explanations);
+          *visible_security_state,
+          /*used_policy_installed_certificate=*/false);
   const bool security_style_authentication_broken =
-      security_style == blink::SecurityStyle::kInsecureBroken;
+      security_level == security_state::SecurityLevel::DANGEROUS;
 
   LogDidChangeVisibleSecurityState(displayed_mixed_content,
                                    security_style_authentication_broken);
