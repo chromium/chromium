@@ -888,7 +888,7 @@ mojom("mojom") {
     "network_service_test.mojom",
     "proxy_lookup_client.mojom",
     "proxy_resolving_socket.mojom",
-    "reporting_report.mojom",
+    "reporting_service.mojom",
     "ssl_config.mojom",
     "supports_loading_mode.mojom",
     "tcp_socket.mojom",
@@ -1078,6 +1078,19 @@ mojom("mojom") {
         traits_sources = [
           "//services/network/public/cpp/reporting_api_report_mojom_traits.cc",
         ]
+        traits_public_deps = [ "//net" ]
+      },
+      {
+        types = [
+          {
+            mojom = "network.mojom.ReportingApiEndpoint"
+            cpp = "::net::ReportingEndpoint"
+          },
+        ]
+        traits_headers = [
+          "//services/network/public/cpp/reporting_api_endpoint_mojom_traits.h",
+        ]
+        traits_sources = [ "//services/network/public/cpp/reporting_api_endpoint_mojom_traits.cc" ]
         traits_public_deps = [ "//net" ]
       },
     ]
