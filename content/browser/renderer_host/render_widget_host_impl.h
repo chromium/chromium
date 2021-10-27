@@ -928,7 +928,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
                            InputRouterReceivesHasTouchEventHandlers);
   FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostTest, EventDispatchPostDetach);
   FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostTest, InputEventRWHLatencyComponent);
-  FRIEND_TEST_ALL_PREFIXES(DevToolsManagerTest,
+  FRIEND_TEST_ALL_PREFIXES(DevToolsAgentHostImplTest,
                            NoUnresponsiveDialogInInspectedContents);
   FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostViewMacTest,
                            ConflictingAllocationsResolve);

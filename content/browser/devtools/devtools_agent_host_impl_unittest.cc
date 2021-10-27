@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/devtools/devtools_manager.h"
-
 #include <map>
 #include <memory>
 #include <string>
@@ -30,7 +28,6 @@
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
 
 namespace content {
 namespace {
@@ -63,9 +60,7 @@ class TestDevToolsClientHost : public DevToolsAgentHostClient {
 
   DevToolsAgentHost* agent_host() { return agent_host_.get(); }
 
-  static void ResetCounters() {
-    close_counter = 0;
-  }
+  static void ResetCounters() { close_counter = 0; }
 
   static int close_counter;
 
@@ -75,7 +70,6 @@ class TestDevToolsClientHost : public DevToolsAgentHostClient {
 };
 
 int TestDevToolsClientHost::close_counter = 0;
-
 
 class TestWebContentsDelegate : public WebContentsDelegate {
  public:
@@ -99,9 +93,9 @@ class TestWebContentsDelegate : public WebContentsDelegate {
 
 }  // namespace
 
-class DevToolsManagerTest : public RenderViewHostImplTestHarness {
+class DevToolsAgentHostImplTest : public RenderViewHostImplTestHarness {
  public:
-  DevToolsManagerTest() {}
+  DevToolsAgentHostImplTest() {}
 
  protected:
   void SetUp() override {
@@ -110,7 +104,7 @@ class DevToolsManagerTest : public RenderViewHostImplTestHarness {
   }
 };
 
-TEST_F(DevToolsManagerTest, OpenAndManuallyCloseDevToolsClientHost) {
+TEST_F(DevToolsAgentHostImplTest, OpenAndManuallyCloseDevToolsClientHost) {
   scoped_refptr<DevToolsAgentHost> agent(
       DevToolsAgentHost::GetOrCreateFor(web_contents()));
   EXPECT_FALSE(agent->IsAttached());
@@ -126,7 +120,7 @@ TEST_F(DevToolsManagerTest, OpenAndManuallyCloseDevToolsClientHost) {
   EXPECT_FALSE(agent->IsAttached());
 }
 
-TEST_F(DevToolsManagerTest, NoUnresponsiveDialogInInspectedContents) {
+TEST_F(DevToolsAgentHostImplTest, NoUnresponsiveDialogInInspectedContents) {
   const GURL url("http://www.google.com");
   contents()->NavigateAndCommit(url);
   TestRenderViewHost* inspected_rvh = test_rvh();
@@ -157,10 +151,9 @@ TEST_F(DevToolsManagerTest, NoUnresponsiveDialogInInspectedContents) {
   contents()->SetDelegate(nullptr);
 }
 
-class TestExternalAgentDelegate: public DevToolsExternalAgentProxyDelegate {
+class TestExternalAgentDelegate : public DevToolsExternalAgentProxyDelegate {
  public:
-  TestExternalAgentDelegate() {
-  }
+  TestExternalAgentDelegate() {}
   ~TestExternalAgentDelegate() override {
     expectEvent(1, "Attach");
     expectEvent(1, "Detach");
@@ -208,7 +201,7 @@ class TestExternalAgentDelegate: public DevToolsExternalAgentProxyDelegate {
   }
 };
 
-TEST_F(DevToolsManagerTest, TestExternalProxy) {
+TEST_F(DevToolsAgentHostImplTest, TestExternalProxy) {
   std::unique_ptr<TestExternalAgentDelegate> delegate(
       new TestExternalAgentDelegate());
 

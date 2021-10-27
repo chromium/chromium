@@ -13,7 +13,9 @@
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "content/browser/devtools/auction_worklet_devtools_agent_host.h"
+#include "content/browser/devtools/devtools_http_handler.h"
 #include "content/browser/devtools/devtools_manager.h"
+#include "content/browser/devtools/devtools_pipe_handler.h"
 #include "content/browser/devtools/devtools_stream_file.h"
 #include "content/browser/devtools/forwarding_agent_host.h"
 #include "content/browser/devtools/protocol/page.h"
@@ -28,6 +30,8 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/devtools_external_agent_proxy_delegate.h"
+#include "content/public/browser/devtools_manager_delegate.h"
+#include "content/public/browser/devtools_socket_factory.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
 namespace content {
@@ -46,6 +50,17 @@ GetDevtoolsObservers() {
       instance;
   return *instance;
 }
+
+void SetDevToolsHttpHandler(std::unique_ptr<DevToolsHttpHandler> handler) {
+  static base::NoDestructor<std::unique_ptr<DevToolsHttpHandler>> instance;
+  *instance = std::move(handler);
+}
+
+void SetDevToolsPipeHandler(std::unique_ptr<DevToolsPipeHandler> handler) {
+  static base::NoDestructor<std::unique_ptr<DevToolsPipeHandler>> instance;
+  *instance = std::move(handler);
+}
+
 }  // namespace
 
 const char DevToolsAgentHost::kTypePage[] = "page";
@@ -100,6 +115,38 @@ DevToolsAgentHost::List DevToolsAgentHost::GetOrCreateAll() {
 #endif
 
   return result;
+}
+
+// static
+void DevToolsAgentHost::StartRemoteDebuggingServer(
+    std::unique_ptr<DevToolsSocketFactory> server_socket_factory,
+    const base::FilePath& active_port_output_directory,
+    const base::FilePath& debug_frontend_dir) {
+  DevToolsManagerDelegate* delegate =
+      DevToolsManager::GetInstance()->delegate();
+  if (!delegate) {
+    return;
+  }
+  SetDevToolsHttpHandler(std::make_unique<DevToolsHttpHandler>(
+      delegate, std::move(server_socket_factory), active_port_output_directory,
+      debug_frontend_dir));
+}
+
+// static
+void DevToolsAgentHost::StartRemoteDebuggingPipeHandler(
+    base::OnceClosure on_disconnect) {
+  SetDevToolsPipeHandler(
+      std::make_unique<DevToolsPipeHandler>(std::move(on_disconnect)));
+}
+
+// static
+void DevToolsAgentHost::StopRemoteDebuggingServer() {
+  SetDevToolsHttpHandler(nullptr);
+}
+
+// static
+void DevToolsAgentHost::StopRemoteDebuggingPipeHandler() {
+  SetDevToolsPipeHandler(nullptr);
 }
 
 DevToolsAgentHostImpl::DevToolsAgentHostImpl(const std::string& id)

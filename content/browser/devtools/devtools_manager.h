@@ -7,16 +7,11 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/devtools_manager_delegate.h"
 
 namespace content {
-
-class DevToolsHttpHandler;
-class DevToolsPipeHandler;
 
 // This class is a singleton that manage global DevTools state for the whole
 // browser.
@@ -36,16 +31,10 @@ class CONTENT_EXPORT DevToolsManager {
 
   DevToolsManagerDelegate* delegate() const { return delegate_.get(); }
 
-  void SetHttpHandler(std::unique_ptr<DevToolsHttpHandler> http_handler);
-
-  void SetPipeHandler(std::unique_ptr<DevToolsPipeHandler> pipe_handler);
-
  private:
   friend struct base::DefaultSingletonTraits<DevToolsManager>;
 
   std::unique_ptr<DevToolsManagerDelegate> delegate_;
-  std::unique_ptr<DevToolsHttpHandler> http_handler_;
-  std::unique_ptr<DevToolsPipeHandler> pipe_handler_;
 };
 
 }  // namespace content
