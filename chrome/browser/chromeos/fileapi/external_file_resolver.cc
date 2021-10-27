@@ -64,7 +64,7 @@ class URLHelper {
     }
     Profile* const profile = reinterpret_cast<Profile*>(profile_id);
     content::StoragePartition* const storage =
-        profile->GetStoragePartitionForUrl(url);
+        profile->GetDefaultStoragePartition();
     DCHECK(storage);
 
     scoped_refptr<storage::FileSystemContext> context =
