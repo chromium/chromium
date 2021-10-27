@@ -101,6 +101,31 @@ const char kServicesCustomizationKey[] = "customization.manifest_cache";
 // Empty customization document that doesn't customize anything.
 const char kEmptyServicesCustomizationManifest[] = "{ \"version\": \"1.0\" }";
 
+constexpr net::NetworkTrafficAnnotationTag kCustomizationDocumentNetworkTag =
+    net::DefineNetworkTrafficAnnotation("customization_document",
+                                        R"(
+        semantics {
+          sender: "Customization document"
+          description:
+            "Get OEM customization manifest from OEM specific URLs that "
+            "provide custom configuration locales, wallpaper etc."
+          trigger:
+            "Triggered on OOBE after user accepts EULA and everytime the "
+            "device boots in. Expected to run only once at OOBE. If the "
+            "network request fails, retried each boot until it succeeds."
+          data: "None."
+          destination: GOOGLE_OWNED_SERVICE
+        }
+        policy {
+         cookies_allowed: NO
+         setting:
+           "This feature is set by OEMs and can be overridden by users."
+         policy_exception_justification:
+           "This request is made based on OEM customization and does not "
+           "send/store any sensitive data."
+         }
+        })");
+
 struct CustomizationDocumentTestOverride {
   ServicesCustomizationDocument* customization_document = nullptr;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
@@ -587,8 +612,8 @@ void ServicesCustomizationDocument::DoStartFileFetch() {
   request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   request->headers.SetHeader("Accept", "application/json");
 
-  url_loader_ = network::SimpleURLLoader::Create(std::move(request),
-                                                 NO_TRAFFIC_ANNOTATION_YET);
+  url_loader_ = network::SimpleURLLoader::Create(
+      std::move(request), kCustomizationDocumentNetworkTag);
 
   url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       g_test_overrides ? g_test_overrides->url_loader_factory.get()
