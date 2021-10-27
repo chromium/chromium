@@ -171,15 +171,13 @@ void ChromeExtensionCookies::IOData::UpdateNetworkCookieSettings() {
 void ChromeExtensionCookies::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type) {
+    ContentSettingsTypeSet content_type_set) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!io_data_)  // null after shutdown.
     return;
 
-  if (content_type != ContentSettingsType::COOKIES &&
-      content_type != ContentSettingsType::DEFAULT) {
+  if (!content_type_set.Contains(ContentSettingsType::COOKIES))
     return;
-  }
 
   ContentSettingsForOneType settings;
   HostContentSettingsMapFactory::GetForProfile(profile_)->GetSettingsForOneType(

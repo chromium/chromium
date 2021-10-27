@@ -8,6 +8,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -522,7 +523,8 @@ TEST_F(SBNavigationObserverTest, TestContentSettingChange) {
   // Simulate content setting change via page info UI.
   navigation_observer_->OnContentSettingChanged(
       ContentSettingsPattern::FromURL(web_content->GetLastCommittedURL()),
-      ContentSettingsPattern::Wildcard(), ContentSettingsType::NOTIFICATIONS);
+      ContentSettingsPattern::Wildcard(),
+      ContentSettingsTypeSet(ContentSettingsType::NOTIFICATIONS));
 
   // A user gesture should be recorded.
   ASSERT_EQ(1U, user_gesture_map()->size());
@@ -534,7 +536,8 @@ TEST_F(SBNavigationObserverTest, TestContentSettingChange) {
   // Simulate content setting change that cannot be changed via page info UI.
   navigation_observer_->OnContentSettingChanged(
       ContentSettingsPattern::FromURL(web_content->GetLastCommittedURL()),
-      ContentSettingsPattern::Wildcard(), ContentSettingsType::SITE_ENGAGEMENT);
+      ContentSettingsPattern::Wildcard(),
+      ContentSettingsTypeSet(ContentSettingsType::SITE_ENGAGEMENT));
   // No user gesture should be recorded.
   EXPECT_EQ(0U, user_gesture_map()->size());
 }

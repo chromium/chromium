@@ -241,12 +241,13 @@ void SafeBrowsingNavigationObserver::DidOpenRequestedURL(
 void SafeBrowsingNavigationObserver::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type) {
+    ContentSettingsTypeSet content_type_set) {
   // For all the content settings that can be changed via page info UI, we
   // assume there is a user gesture associated with the content setting change.
   if (web_contents() && !primary_pattern.MatchesAllHosts() &&
       primary_pattern.Matches(web_contents()->GetLastCommittedURL()) &&
-      PageInfoUI::ContentSettingsTypeInPageInfo(content_type)) {
+      (content_type_set.ContainsAllTypes() ||
+       PageInfoUI::ContentSettingsTypeInPageInfo(content_type_set.GetType()))) {
     OnUserInteraction();
   }
 }

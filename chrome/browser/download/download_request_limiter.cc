@@ -320,8 +320,8 @@ void DownloadRequestLimiter::TabDownloadState::OnUserInteraction() {
 void DownloadRequestLimiter::TabDownloadState::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type) {
-  if (content_type != ContentSettingsType::AUTOMATIC_DOWNLOADS)
+    ContentSettingsTypeSet content_type_set) {
+  if (!content_type_set.Contains(ContentSettingsType::AUTOMATIC_DOWNLOADS))
     return;
 
   if (origin_.opaque())

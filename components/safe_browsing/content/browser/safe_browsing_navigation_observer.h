@@ -157,9 +157,10 @@ class SafeBrowsingNavigationObserver : public base::SupportsUserData::Data,
                            bool renderer_initiated) override;
 
   // content_settings::Observer overrides.
-  void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
-                               const ContentSettingsPattern& secondary_pattern,
-                               ContentSettingsType content_type) override;
+  void OnContentSettingChanged(
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern,
+      ContentSettingsTypeSet content_type_set) override;
 
   // If the navigation is created from portal contents, records the new contents
   // to track the referrer chain across portal activations.
