@@ -588,6 +588,15 @@ def orchestrator_pair_builders(
     )
     return orchestrator_builder, compilator_builder
 
+def chromium_chromiumos_orchestrator_pair(
+        **kwargs):
+    return orchestrator_pair_builders(
+        builder_group_func = chromium_chromiumos_builder,
+        orchestrator_builder_group = "tryserver.chromium.chromiumos",
+        compilator_os = os.LINUX_BIONIC,
+        **kwargs
+    )
+
 def chromium_linux_orchestrator_pair(
         **kwargs):
     return orchestrator_pair_builders(
@@ -651,6 +660,7 @@ try_ = struct(
     chromium_angle_mac_builder = chromium_angle_mac_builder,
     chromium_angle_pinned_builder = chromium_angle_pinned_builder,
     chromium_chromiumos_builder = chromium_chromiumos_builder,
+    chromium_chromiumos_orchestrator_pair = chromium_chromiumos_orchestrator_pair,
     chromium_dawn_builder = chromium_dawn_builder,
     chromium_dawn_builderless_builder = chromium_dawn_builderless_builder,
     chromium_linux_builder = chromium_linux_builder,

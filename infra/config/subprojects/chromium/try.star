@@ -838,37 +838,19 @@ try_.chromium_chromiumos_builder(
     name = "linux-chromeos-inverse-fieldtrials-fyi-rel",
 )
 
-try_.chromium_chromiumos_builder(
+try_.chromium_chromiumos_orchestrator_pair(
     name = "linux-chromeos-rel",
     branch_selector = branches.CROS_LTS_MILESTONE,
-    builderless = not settings.is_main,
-    cores = 16,
-    goma_jobs = goma.jobs.J300,
-    main_list_view = "try",
-    tryjob = try_.job(),
-    use_clang_coverage = True,
-    os = os.LINUX_BIONIC_REMOVE,
-    coverage_test_types = ["unit", "overall"],
-)
-
-try_.chromium_chromiumos_builder(
-    name = "linux-chromeos-rel-compilator",
-    branch_selector = branches.CROS_LTS_MILESTONE,
-    builderless = not settings.is_main,
-    cores = 32,
-    executable = "recipe:chromium/compilator",
-    goma_jobs = goma.jobs.J300,
     main_list_view = "try",
     use_clang_coverage = True,
-    os = os.LINUX_BIONIC_REMOVE,
     coverage_test_types = ["unit", "overall"],
-    ssd = True,
-    properties = {
-        "orchestrator": {
-            "builder_name": "linux-chromeos-rel",
-            "builder_group": "tryserver.chromium.chromiumos",
-        },
-    },
+    orchestrator_builderless = not settings.is_main,
+    orchestrator_cores = 2,
+    orchestrator_tryjob = try_.job(),
+    compilator_builderless = not settings.is_main,
+    compilator_cores = 32,
+    compilator_goma_jobs = goma.jobs.J300,
+    compilator_name = "linux-chromeos-rel-compilator",
 )
 
 try_.chromium_chromiumos_builder(
