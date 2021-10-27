@@ -4,7 +4,9 @@
 
 #include "components/update_client/protocol_serializer.h"
 
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/containers/flat_map.h"
@@ -14,12 +16,14 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "base/values.h"
 #include "base/version.h"
 #include "build/build_config.h"
 #include "components/update_client/activity_data_service.h"
 #include "components/update_client/persisted_data.h"
 #include "components/update_client/update_query_params.h"
 #include "components/update_client/updater_state.h"
+#include "components/update_client/utils.h"
 
 #if defined(OS_WIN)
 #include "base/win/windows_version.h"
@@ -52,6 +56,22 @@ std::string GetServicePack() {
 #else
   return {};
 #endif
+}
+
+// Returns brand code in the expected format, or an empty string otherwise.
+std::string FilterBrandCode(const std::string& brand) {
+  return IsValidBrand(brand) ? brand : std::string("");
+}
+
+// Filters invalid attributes from |installer_attributes|.
+base::flat_map<std::string, std::string> FilterInstallerAttributes(
+    const InstallerAttributes& installer_attributes) {
+  base::flat_map<std::string, std::string> sanitized_attrs;
+  for (const auto& attr : installer_attributes) {
+    if (IsValidInstallerAttribute(attr))
+      sanitized_attrs.insert(attr);
+  }
+  return sanitized_attrs;
 }
 
 }  // namespace
@@ -176,35 +196,30 @@ protocol_request::Request MakeProtocolRequest(
 protocol_request::App MakeProtocolApp(
     const std::string& app_id,
     const base::Version& version,
-    absl::optional<std::vector<base::Value>> events) {
-  protocol_request::App app;
-  app.app_id = app_id;
-  app.version = version.GetString();
-  app.events = std::move(events);
-  return app;
-}
-
-protocol_request::App MakeProtocolApp(
-    const std::string& app_id,
-    const base::Version& version,
+    const std::string& ap,
     const std::string& brand_code,
     const std::string& install_source,
     const std::string& install_location,
     const std::string& fingerprint,
-    const base::flat_map<std::string, std::string>& installer_attributes,
+    const std::map<std::string, std::string>& installer_attributes,
     const std::string& cohort,
     const std::string& cohort_hint,
     const std::string& cohort_name,
     const std::string& release_channel,
     const std::vector<int>& disabled_reasons,
     absl::optional<protocol_request::UpdateCheck> update_check,
-    absl::optional<protocol_request::Ping> ping) {
-  auto app = MakeProtocolApp(app_id, version, absl::nullopt);
-  app.brand_code = brand_code;
+    absl::optional<protocol_request::Ping> ping,
+    absl::optional<std::vector<base::Value>> events) {
+  protocol_request::App app;
+  app.app_id = app_id;
+  app.version = version.GetString();
+  app.ap = ap;
+  app.events = std::move(events);
+  app.brand_code = FilterBrandCode(brand_code);
   app.install_source = install_source;
   app.install_location = install_location;
   app.fingerprint = fingerprint;
-  app.installer_attributes = installer_attributes;
+  app.installer_attributes = FilterInstallerAttributes(installer_attributes);
   app.cohort = cohort;
   app.cohort_hint = cohort_hint;
   app.cohort_name = cohort_name;

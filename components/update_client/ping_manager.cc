@@ -90,9 +90,19 @@ void PingSender::SendPing(const Component& component, Callback callback) {
   callback_ = std::move(callback);
 
   std::vector<protocol_request::App> apps;
-  apps.push_back(MakeProtocolApp(component.id(),
-                                 component.crx_component()->version,
-                                 component.GetEvents()));
+  // TODO(crbug.com/1259972): We need to transmit cohort information as well.
+  // TODO(crbug.com/1259972): We need to transmit brand information as well.
+  apps.push_back(MakeProtocolApp(
+      component.id(), component.crx_component()->version,
+      component.crx_component()->ap, {} /* brand */, {} /* install_source */,
+      component.crx_component()->install_location,
+      component.crx_component()->fingerprint,
+      component.crx_component()->installer_attributes, {} /* cohort */,
+      {} /* cohort name */, {} /* cohort hint */,
+      component.crx_component()->channel,
+      component.crx_component()->disabled_reasons,
+      absl::nullopt /* update check */, absl::nullopt /* ping */,
+      component.GetEvents()));
   request_sender_ = std::make_unique<RequestSender>(config_);
   request_sender_->Send(
       urls, {},

@@ -284,6 +284,11 @@ struct CrxComponent {
   // the CRX is installed.
   base::Version version;
 
+  // Optional. This additional parameter ("ap") is sent to the server, which
+  // often uses it to distinguish between variants of the software that were
+  // chosen at install time.
+  std::string ap;
+
   std::string fingerprint;  // Optional.
   std::string name;         // Optional.
 

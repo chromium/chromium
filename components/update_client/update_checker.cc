@@ -40,11 +40,6 @@ namespace update_client {
 
 namespace {
 
-// Returns a sanitized version of the brand or an empty string otherwise.
-std::string SanitizeBrand(const std::string& brand) {
-  return IsValidBrand(brand) ? brand : std::string("");
-}
-
 // Returns true if at least one item requires network encryption.
 bool IsEncryptionRequired(const IdToComponentPtrMap& components) {
   for (const auto& item : components) {
@@ -54,18 +49,6 @@ bool IsEncryptionRequired(const IdToComponentPtrMap& components) {
       return true;
   }
   return false;
-}
-
-// Filters invalid attributes from |installer_attributes|.
-using InstallerAttributesFlatMap = base::flat_map<std::string, std::string>;
-InstallerAttributesFlatMap SanitizeInstallerAttributes(
-    const InstallerAttributes& installer_attributes) {
-  InstallerAttributesFlatMap sanitized_attrs;
-  for (const auto& attr : installer_attributes) {
-    if (IsValidInstallerAttribute(attr))
-      sanitized_attrs.insert(attr);
-  }
-  return sanitized_attrs;
 }
 
 class UpdateCheckerImpl : public UpdateChecker {
@@ -206,11 +189,11 @@ void UpdateCheckerImpl::CheckForUpdatesHelper(
         crx_component->supports_group_policy_enable_component_updates &&
         !enabled_component_updates;
 
+    // TODO(crbug.com/1259972): Brand is per-item for some users.
     apps.push_back(MakeProtocolApp(
-        app_id, crx_component->version, SanitizeBrand(config_->GetBrand()),
+        app_id, crx_component->version, crx_component->ap, config_->GetBrand(),
         install_source, crx_component->install_location,
-        crx_component->fingerprint,
-        SanitizeInstallerAttributes(crx_component->installer_attributes),
+        crx_component->fingerprint, crx_component->installer_attributes,
         metadata_->GetCohort(app_id), metadata_->GetCohortName(app_id),
         metadata_->GetCohortHint(app_id), crx_component->channel,
         crx_component->disabled_reasons,
@@ -218,7 +201,8 @@ void UpdateCheckerImpl::CheckForUpdatesHelper(
                                 crx_component->target_version_prefix,
                                 crx_component->rollback_allowed),
         MakeProtocolPing(app_id, metadata_,
-                         active_ids.find(app_id) != active_ids.end())));
+                         active_ids.find(app_id) != active_ids.end()),
+        absl::nullopt));
   }
 
   const auto request = MakeProtocolRequest(

@@ -90,6 +90,7 @@ update_client::CrxComponent Installer::MakeCrxComponent() {
   component.crx_format_requirement =
       crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF;
   component.app_id = app_id_;
+  component.ap = ap_;
   component.name = app_id_;
   component.version = pv_;
   component.fingerprint = fingerprint_;

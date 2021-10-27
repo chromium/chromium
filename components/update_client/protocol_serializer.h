@@ -17,6 +17,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
+class Value;
 class Version;
 }
 
@@ -49,23 +50,20 @@ protocol_request::Request MakeProtocolRequest(
 protocol_request::App MakeProtocolApp(
     const std::string& app_id,
     const base::Version& version,
-    absl::optional<std::vector<base::Value>> events);
-
-protocol_request::App MakeProtocolApp(
-    const std::string& app_id,
-    const base::Version& version,
+    const std::string& ap,
     const std::string& brand_code,
     const std::string& install_source,
     const std::string& install_location,
     const std::string& fingerprint,
-    const base::flat_map<std::string, std::string>& installer_attributes,
+    const std::map<std::string, std::string>& installer_attributes,
     const std::string& cohort,
     const std::string& cohort_hint,
     const std::string& cohort_name,
     const std::string& release_channel,
     const std::vector<int>& disabled_reasons,
     absl::optional<protocol_request::UpdateCheck> update_check,
-    absl::optional<protocol_request::Ping> ping);
+    absl::optional<protocol_request::Ping> ping,
+    absl::optional<std::vector<base::Value>> events);
 
 protocol_request::UpdateCheck MakeProtocolUpdateCheck(
     bool is_update_disabled,

@@ -227,9 +227,8 @@ class IntegrationTest : public ::testing::Test {
     test_server->ExpectOnce(
         {base::BindRepeating(
             RequestMatcherRegex,
-            base::StrCat(
-                {R"(.*"appid":")", app_id,
-                 R"(","event":\[{"eventresult":1,"eventtype":2,.*)"}))},
+            base::StrCat({R"(.*"appid":")", app_id, R"(","enabled":true,")",
+                          R"(event":\[{"eventresult":1,"eventtype":2,.*)"}))},
         "");
   }
 
