@@ -246,8 +246,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kHoldingSpaceInProgressDownloadsIntegration;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kHoldingSpaceIncognitoProfileIntegration;
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::Feature kHpsNotify;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kImeMojoDecoder;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kImeMozcProto;
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -398,6 +396,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kSmartDimExperimentalComponent;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kSmartLockUIRevamp;
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kSnoopingProtection;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kStylusBatteryStatus;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kSyncConsentOptional;
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -515,7 +515,6 @@ bool IsHoldingSpaceInProgressDownloadsIntegrationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsHoldingSpaceIncognitoProfileIntegrationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHostnameSettingEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHpsNotifyEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsIdleInhibitEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsInputInDiagnosticsAppEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsInputNoiseCancellationUiEnabled();
@@ -581,6 +580,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsSettingsAppNotificationSettingsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsShelfLauncherNudgeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsShimlessRMAFlowEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSnoopingProtectionEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSyncSettingsCategorizationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSyncConsentOptionalEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsStylusBatteryStatusEnabled();
