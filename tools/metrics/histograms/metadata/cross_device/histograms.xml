@@ -1576,6 +1576,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="MultiDevice.BetterTogetherSuite.DoesMultiDeviceSetupClientExist"
     enum="BooleanSuccess" expires_after="2022-04-24">
+  <obsolete>
+    Deprecated as of 10/26/2021.
+  </obsolete>
   <owner>julietlevesque@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
