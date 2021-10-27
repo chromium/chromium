@@ -349,6 +349,8 @@ constexpr NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
       UITextField* textField = [[UITextField alloc] init];
       textField.text = textFieldConfiguration.text;
       textField.placeholder = textFieldConfiguration.placeholder;
+      textField.autocapitalizationType =
+          textFieldConfiguration.autocapitalizationType;
       textField.secureTextEntry = textFieldConfiguration.secureTextEntry;
       textField.accessibilityIdentifier =
           textFieldConfiguration.accessibilityIdentifier;
