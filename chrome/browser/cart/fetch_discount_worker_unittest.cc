@@ -10,6 +10,7 @@
 #include "chrome/browser/cart/cart_service_factory.h"
 #include "chrome/browser/commerce/commerce_feature_list.h"
 #include "chrome/browser/endpoint_fetcher/endpoint_fetcher.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
@@ -293,8 +294,13 @@ class FetchDiscountWorkerTest : public testing::Test {
 
     mock_fetcher_ = std::make_unique<MockCartDiscountFetcher>();
 
+    TestingProfile::Builder profile_builder;
+    profile_builder.AddTestingFactory(
+        HistoryServiceFactory::GetInstance(),
+        HistoryServiceFactory::GetDefaultFactory());
+    profile_ = profile_builder.Build();
     fake_cart_service_delegate_ = std::make_unique<FakeCartServiceDelegate>(
-        CartServiceFactory::GetForProfile(&profile_));
+        CartServiceFactory::GetForProfile(profile_.get()));
 
     fake_variations_client_ = std::make_unique<FakeVariationsClient>();
   }
@@ -358,13 +364,13 @@ class FetchDiscountWorkerTest : public testing::Test {
 
   std::unique_ptr<FakeVariationsClient> fake_variations_client_;
 
-  TestingProfile profile_;
+  std::unique_ptr<TestingProfile> profile_;
   bool is_signin_and_sync_ = false;
 };
 
 
 TEST_F(FetchDiscountWorkerTest, TestStart_EndToEnd) {
-  EXPECT_EQ(profile_.GetPrefs()->GetTime(prefs::kCartDiscountLastFetchedTime),
+  EXPECT_EQ(profile_->GetPrefs()->GetTime(prefs::kCartDiscountLastFetchedTime),
             base::Time());
   CartDiscountFetcher::CartDiscountMap fake_result;
   CreateCartDiscountFetcherFactory(std::move(fake_result), false);
@@ -372,7 +378,7 @@ TEST_F(FetchDiscountWorkerTest, TestStart_EndToEnd) {
 
   fetch_discount_worker_->Start(base::Milliseconds(0));
   task_environment_.RunUntilIdle();
-  EXPECT_NE(profile_.GetPrefs()->GetTime(prefs::kCartDiscountLastFetchedTime),
+  EXPECT_NE(profile_->GetPrefs()->GetTime(prefs::kCartDiscountLastFetchedTime),
             base::Time());
 }
 
