@@ -39,20 +39,23 @@ class WaylandBufferHandle {
   struct wl_buffer* wl_buffer() const {
     return wl_buffer_.get();
   }
+  bool released() const { return released_; }
 
-  // Tells if the buffer has already been released aka not busy, and the
-  // surface can tell the gpu about successful swap.
-  bool released = true;
+  // Call when this buffer is ready to be re-used (i.e. giving back to viz).
+  // N.B. This moves the release fence, so it is not idempotent.
+  gfx::GpuFenceHandle TakeReleaseFence() { return std::move(release_fence_); }
 
-  // Optional release fence. This may be set if the buffer is released
-  // via the explicit synchronization Wayland protocol.
-  gfx::GpuFenceHandle release_fence;
+  // Call when this buffer is attached to a surface.
+  void Attached();
+
+  // Call when this buffer is unattached from a surface.
+  void Release(gfx::GpuFenceHandle release_fence);
 
  private:
   // Called when wl_buffer object is created.
   void OnWlBufferCreated(wl::Object<struct wl_buffer> wl_buffer);
 
-  void OnRelease(struct wl_buffer* wl_buffer);
+  void OnWlBufferRelease(struct wl_buffer* wl_buffer);
 
   // wl_buffer_listener:
   static void BufferRelease(void* data, struct wl_buffer* wl_buffer);
@@ -67,6 +70,22 @@ class WaylandBufferHandle {
   // A callback that runs when the wl_buffer is released by the Wayland
   // compositor.
   base::OnceClosure released_callback_;
+
+  // Tells that the buffer has already been released aka not busy, and the
+  // surface can tell the gpu about a successful swap.
+  bool released_ = true;
+
+  // Optional release fence. This may be set if the buffer is released
+  // via the explicit synchronization Wayland protocol.
+  gfx::GpuFenceHandle release_fence_;
+
+  // There are two mechanisms to release buffers: release via wl_buffer, and
+  // release via linux_explicit_synchronization. These both run in parallel and
+  // both are sent. A wl_buffer release that comes late could be matched up with
+  // the same buffer, but after it has been released via explicit sync and
+  // reattached. To avoid this, keep track of how many releases from wl_buffer
+  // we are expecting.
+  int expected_wl_buffer_releases_ = 0;
 
   friend WaylandBufferBacking;
 

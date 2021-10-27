@@ -30,9 +30,20 @@ void WaylandBufferHandle::OnWlBufferCreated(
     std::move(created_callback_).Run();
 }
 
-void WaylandBufferHandle::OnRelease(struct wl_buffer* wl_buff) {
+void WaylandBufferHandle::Attached() {
+  expected_wl_buffer_releases_++;
+  released_ = false;
+}
+
+void WaylandBufferHandle::Release(gfx::GpuFenceHandle fence) {
+  released_ = true;
+  release_fence_ = std::move(fence);
+}
+
+void WaylandBufferHandle::OnWlBufferRelease(struct wl_buffer* wl_buff) {
   DCHECK_EQ(wl_buff, wl_buffer_.get());
-  if (!released_callback_.is_null())
+  expected_wl_buffer_releases_--;
+  if (!released_callback_.is_null() && expected_wl_buffer_releases_ == 0)
     std::move(released_callback_).Run();
 }
 
@@ -45,7 +56,7 @@ void WaylandBufferHandle::BufferRelease(void* data,
                                         struct wl_buffer* wl_buffer) {
   WaylandBufferHandle* self = static_cast<WaylandBufferHandle*>(data);
   DCHECK(self);
-  self->OnRelease(wl_buffer);
+  self->OnWlBufferRelease(wl_buffer);
 }
 
 }  // namespace ui
