@@ -22,6 +22,7 @@ third_party/liburlpattern/OWNERS
 third_party/liburlpattern/options.h
 third_party/liburlpattern/parse.cc
 third_party/liburlpattern/parse.h
+third_party/liburlpattern/parse_fuzzer.cc
 third_party/liburlpattern/parse_unittest.cc
 third_party/liburlpattern/pattern.cc
 third_party/liburlpattern/pattern.h
