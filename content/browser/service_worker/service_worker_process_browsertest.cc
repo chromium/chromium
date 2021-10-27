@@ -114,7 +114,7 @@ class ServiceWorkerProcessBrowserTest
   }
 
   RenderFrameHostImpl* current_frame_host() {
-    return web_contents()->GetFrameTree()->root()->current_frame_host();
+    return web_contents()->GetPrimaryFrameTree().root()->current_frame_host();
   }
 
  private:

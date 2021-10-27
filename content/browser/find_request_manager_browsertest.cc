@@ -120,7 +120,7 @@ class FindRequestManagerTest : public ContentBrowserTest,
     return last_request_id_;
   }
 
-  FrameTreeNode* root() { return contents()->GetFrameTree()->root(); }
+  FrameTreeNode* root() { return contents()->GetPrimaryFrameTree().root(); }
 
   FrameTreeNode* first_child() { return root()->child_at(0); }
 
@@ -277,8 +277,8 @@ IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, ScrollAndZoomIntoView) {
 #endif  // defined(OS_ANDROID)
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
   FrameTreeNode* child = root->child_at(0);
 
   // Start off at a non-origin scroll offset to ensure coordinate conversisons
@@ -535,9 +535,9 @@ IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, MAYBE(NavigateFrame)) {
   EXPECT_EQ(19, results.active_match_ordinal);
 
   // Navigate one of the empty frames to a page with 5 matches.
-  FrameTreeNode* root =
-      static_cast<WebContentsImpl*>(shell()->web_contents())->
-      GetFrameTree()->root();
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
   GURL url(embedded_test_server()->GetURL(
       GetParam() ? "b.com" : "a.com", "/find_in_simple_page.html"));
   delegate()->MarkNextReply();

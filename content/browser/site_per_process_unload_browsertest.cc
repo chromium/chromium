@@ -72,8 +72,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, DetachInUnloadHandler) {
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
 
   EXPECT_EQ(
       " Site A ------------ proxies for B\n"
@@ -120,8 +120,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, NavigateInUnloadHandler) {
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
 
   EXPECT_EQ(
       " Site A ------------ proxies for B\n"
@@ -178,7 +178,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), a_url));
 
   FrameTreeNode* child_node =
-      web_contents()->GetFrameTree()->root()->child_at(0);
+      web_contents()->GetPrimaryFrameTree().root()->child_at(0);
   GURL b_url(embedded_test_server()->GetURL(
       "b.com", "/render_frame_host/beforeunload.html"));
   EXPECT_TRUE(NavigateToURLFromRenderer(child_node, b_url));
@@ -245,8 +245,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       "a.com", "/cross_site_iframe_factory.html?a(b)"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
 
   // Open a popup on b.com.  The b.com subframe on the main frame will use this
   // in its unload handler.
@@ -408,7 +408,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // Add a unload handler to every frames. It notifies the browser using the
   // DomAutomationController it has been executed.
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   UnloadPrint(root, "A1");
   UnloadPrint(root->child_at(0), "B1");
   UnloadPrint(root->child_at(0)->child_at(0), "C1");
@@ -481,8 +481,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, SlowUnloadHandlerInIframe) {
   EXPECT_TRUE(NavigateToURL(shell(), initial_url));
 
   // 2) Act as if there was an infinite unload handler in B.
-  RenderFrameHostImpl* rfh_b =
-      web_contents()->GetFrameTree()->root()->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* rfh_b = web_contents()
+                                   ->GetPrimaryFrameTree()
+                                   .root()
+                                   ->child_at(0)
+                                   ->current_frame_host();
   rfh_b->DoNotDeleteForTesting();
 
   // With BackForwardCache, old document doesn't fire unload handlers as the
@@ -491,7 +494,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, SlowUnloadHandlerInIframe) {
                                     BackForwardCache::TEST_USES_UNLOAD_EVENT);
 
   // 3) Navigate and check the old document is deleted after some time.
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   RenderFrameDeletedObserver deleted_observer(root->current_frame_host());
   EXPECT_TRUE(NavigateToURL(shell(), next_url));
   deleted_observer.WaitUntilDeleted();
@@ -513,7 +516,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, Unload_ABAB) {
   EXPECT_TRUE(NavigateToURL(shell(), initial_url));
 
   // 2) Add unload handler on every frame.
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   UnloadPrint(root, "A1");
   UnloadPrint(root->child_at(0), "B1");
   UnloadPrint(root->child_at(0)->child_at(0), "A2");
@@ -659,7 +662,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, PartialUnloadHandler) {
   // 1) Navigate to A1(B1(A2))
   EXPECT_TRUE(NavigateToURL(shell(), url_aba));
 
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   RenderFrameHostImpl* a1 = root->current_frame_host();
   RenderFrameHostImpl* b1 = a1->child_at(0)->current_frame_host();
   RenderFrameHostImpl* a2 = b1->child_at(0)->current_frame_host();
@@ -771,7 +774,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // 1) Navigate to 0(1,2,3(4),5(6),7(8),9(10,11),12(13,14));
   EXPECT_TRUE(NavigateToURL(shell(), url_1));
 
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   RenderFrameHostImpl* rfh_0 = root->current_frame_host();
   RenderFrameHostImpl* rfh_1 = rfh_0->child_at(0)->current_frame_host();
   RenderFrameHostImpl* rfh_2 = rfh_0->child_at(1)->current_frame_host();
@@ -841,7 +844,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // 1) Navigate to a(b(c))
   EXPECT_TRUE(NavigateToURL(shell(), initial_url));
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   RenderFrameHostImpl* rfh_a = root->current_frame_host();
   RenderFrameHostImpl* rfh_b = rfh_a->child_at(0)->current_frame_host();
   RenderFrameHostImpl* rfh_c = rfh_b->child_at(0)->current_frame_host();
@@ -884,7 +887,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // 1) Navigate to a(b(c(b)))
   EXPECT_TRUE(NavigateToURL(shell(), initial_url));
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   RenderFrameHostImpl* rfh_a = root->current_frame_host();
   RenderFrameHostImpl* rfh_b1 = rfh_a->child_at(0)->current_frame_host();
   RenderFrameHostImpl* rfh_c = rfh_b1->child_at(0)->current_frame_host();
@@ -931,7 +934,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // 1) Navigate to a(a(b)).
   EXPECT_TRUE(NavigateToURL(shell(), initial_url));
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   RenderFrameHostImpl* rfh_a1 = root->current_frame_host();
   RenderFrameHostImpl* rfh_a2 = rfh_a1->child_at(0)->current_frame_host();
   RenderFrameHostImpl* rfh_b = rfh_a2->child_at(0)->current_frame_host();
@@ -970,7 +973,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   GURL main_url(embedded_test_server()->GetURL("a.com", "/empty.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
 
   // We will window.open() another URL on the same domain so they share a
   // renderer. This window has an unload handler that forces layout to occur.
@@ -1025,8 +1028,8 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_TRUE(NavigateToURL(shell(), page_url));
   RenderFrameHostImpl* node1 =
       static_cast<WebContentsImpl*>(shell()->web_contents())
-          ->GetFrameTree()
-          ->root()
+          ->GetPrimaryFrameTree()
+          .root()
           ->current_frame_host();
   RenderFrameHostImpl* node2 = node1->child_at(0)->current_frame_host();
   RenderFrameHostImpl* node3 = node2->child_at(0)->current_frame_host();
@@ -1119,8 +1122,8 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_TRUE(NavigateToURL(shell(), page_url));
   RenderFrameHostImpl* node1 =
       static_cast<WebContentsImpl*>(shell()->web_contents())
-          ->GetFrameTree()
-          ->root()
+          ->GetPrimaryFrameTree()
+          .root()
           ->current_frame_host();
   RenderFrameHostImpl* node2 = node1->child_at(0)->current_frame_host();
   RenderFrameHostImpl* node3 = node2->child_at(0)->current_frame_host();

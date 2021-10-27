@@ -1076,8 +1076,8 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, TwoUniqueOrigins) {
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
   FrameTreeNode* child = root->child_at(0);
   GURL b_url(https_server_.GetURL("b.com", "/title1.html"));
   EXPECT_TRUE(NavigateToURLFromRenderer(child, b_url));
@@ -1103,8 +1103,8 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, ThreeUniqueOrigins) {
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
   FrameTreeNode* child = root->child_at(0);
   FrameTreeNode* grand_child = child->child_at(0);
   GURL c_url(https_server_.GetURL("c.com", "/title1.html"));
@@ -1133,8 +1133,8 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, TwoUniqueOriginsConsecutive) {
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
   FrameTreeNode* child = root->child_at(0);
   FrameTreeNode* grand_child = child->child_at(0);
   GURL b_url(https_server_.GetURL("b.com", "/title1.html"));
@@ -1162,8 +1162,8 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, TwoUniqueOriginsInconsecutive) {
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
   FrameTreeNode* child = root->child_at(0);
   FrameTreeNode* grand_child = child->child_at(0);
   GURL a_url(https_server_.GetURL("a.com", "/title1.html"));
@@ -1191,8 +1191,8 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, RecordOutcomeWithCrossOriginFrame) {
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
 
   shell()->web_contents()->SetDelegate(&delegate_);
   auto provider = std::make_unique<MockSmsProvider>();
@@ -1234,8 +1234,8 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, RecordOutcomeWithSameOriginFrame) {
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
 
   shell()->web_contents()->SetDelegate(&delegate_);
   auto provider = std::make_unique<MockSmsProvider>();

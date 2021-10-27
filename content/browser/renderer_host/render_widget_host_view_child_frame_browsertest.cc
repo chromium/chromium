@@ -137,8 +137,8 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest, Screen) {
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
 
   // Load cross-site page into iframe.
   GURL cross_site_url(
@@ -189,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   auto* web_contents = static_cast<WebContentsImpl*>(shell()->web_contents());
-  FrameTreeNode* root = web_contents->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents->GetPrimaryFrameTree().root();
   RenderWidgetHostView* root_view =
       root->current_frame_host()->GetRenderWidgetHost()->GetView();
 
@@ -198,7 +198,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
   Portal* portal =
       CreatePortalToUrl(web_contents, main_url, number_of_navigations);
   WebContentsImpl* nested_contents = portal->GetPortalContents();
-  FrameTreeNode* nested_root = nested_contents->GetFrameTree()->root();
+  FrameTreeNode* nested_root = nested_contents->GetPrimaryFrameTree().root();
   RenderWidgetHostView* nested_root_view =
       nested_root->current_frame_host()->GetRenderWidgetHost()->GetView();
 
@@ -383,8 +383,8 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
   // Load cross-site page into iframe.
   GURL cross_site_url(
       embedded_test_server()->GetURL("foo.com", "/title2.html"));
@@ -442,7 +442,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
   shell()->web_contents()->SetDelegate(&display_mode_delegate);
 
   // Main frame.
-  FrameTreeNode* root = web_contents->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents->GetPrimaryFrameTree().root();
   RenderWidgetHostImpl* root_widget =
       root->current_frame_host()->GetRenderWidgetHost();
   // Out-of-process frame.
@@ -531,7 +531,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
   auto* web_contents = static_cast<WebContentsImpl*>(shell()->web_contents());
 
   // Main frame/root view.
-  FrameTreeNode* root = web_contents->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents->GetPrimaryFrameTree().root();
   RenderWidgetHostImpl* root_widget =
       root->current_frame_host()->GetRenderWidgetHost();
   RenderWidgetHostViewBase* root_view = root_widget->GetView();
@@ -641,7 +641,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
   auto* web_contents = static_cast<WebContentsImpl*>(shell()->web_contents());
 
   // Main frame.
-  FrameTreeNode* root = web_contents->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents->GetPrimaryFrameTree().root();
   RenderWidgetHostImpl* root_widget =
       root->current_frame_host()->GetRenderWidgetHost();
   ASSERT_TRUE(ExecJs(root->current_frame_host(),

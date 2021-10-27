@@ -114,7 +114,7 @@ class DocumentUserDataTest : public ContentBrowserTest {
   }
 
   RenderFrameHostImpl* top_frame_host() {
-    return web_contents()->GetFrameTree()->root()->current_frame_host();
+    return web_contents()->GetPrimaryFrameTree().root()->current_frame_host();
   }
 };
 
@@ -240,7 +240,7 @@ IN_PROC_BROWSER_TEST_F(DocumentUserDataTest,
   // 6) Re-initialize RenderFrame, now DUD should be cleared on new
   // RenderFrame creation after crash when
   // RenderFrameHostImpl::RenderFrameDeleted was called.
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   root->render_manager()->InitializeMainRenderFrameForImmediateUse();
   EXPECT_TRUE(did_clear_user_data);
 
@@ -296,7 +296,7 @@ IN_PROC_BROWSER_TEST_F(DocumentUserDataTest,
                            ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK));
   EXPECT_TRUE(manager.WaitForRequestStart());
 
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   RenderFrameHostImpl* pending_rfh =
       root->render_manager()->speculative_frame_host();
   NavigationRequest* navigation_request = root->navigation_request();
@@ -372,7 +372,7 @@ IN_PROC_BROWSER_TEST_F(DocumentUserDataTest,
   shell()->LoadURL(url_b);
   EXPECT_TRUE(manager.WaitForRequestStart());
 
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   // Speculative RenderFrameHost for B will commit early because current rfh_a
   // is not alive after the crash in step (2).
   RenderFrameHostImpl* current_rfh =
@@ -417,7 +417,7 @@ IN_PROC_BROWSER_TEST_F(DocumentUserDataTest,
   shell()->LoadURL(renderer_debug_url);
   ASSERT_EQ("hello", EvalJs(shell(), "document.body.innerText"));
 
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   RenderFrameHostImpl* rfh = root->current_frame_host();
 
   // 2) Get the DocumentUserData associated with rfh.
@@ -469,7 +469,7 @@ IN_PROC_BROWSER_TEST_F(DocumentUserDataTest,
   shell()->LoadURL(url_b);
   EXPECT_TRUE(manager.WaitForRequestStart());
 
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   RenderFrameHostImpl* pending_rfh =
       root->render_manager()->speculative_frame_host();
   NavigationRequest* navigation_request = root->navigation_request();
@@ -549,7 +549,7 @@ IN_PROC_BROWSER_TEST_F(DocumentUserDataTest, RenderFrameHostDeleted) {
 
   // 1) Navigate to a(b).
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   RenderFrameHostImpl* rfh_a = top_frame_host();
   RenderFrameHostImpl* rfh_b = rfh_a->child_at(0)->current_frame_host();
   RenderFrameDeletedObserver delete_observer_rfh_b(rfh_b);

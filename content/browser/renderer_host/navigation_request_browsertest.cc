@@ -418,8 +418,8 @@ class NavigationStartUrlRecorder : public WebContentsObserver {
 void ExpectChildFrameSetAsCollapsedInFTN(Shell* shell, bool expect_collapsed) {
   // Check if the frame should be collapsed in theory as per FTN.
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
   ASSERT_EQ(1u, root->child_count());
   FrameTreeNode* child = root->child_at(0u);
   EXPECT_EQ(expect_collapsed, child->is_collapsed());
@@ -560,8 +560,8 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, VerifyFrameTree) {
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
 
   // Verify the main frame.
   EXPECT_TRUE(main_observer.has_committed());
@@ -682,8 +682,8 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, VerifyRendererInitiated) {
     EXPECT_TRUE(NavigateToURL(shell(), url));
 
     FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                              ->GetFrameTree()
-                              ->root();
+                              ->GetPrimaryFrameTree()
+                              .root();
 
     NavigationHandleObserver observer(
         shell()->web_contents(),
@@ -720,8 +720,8 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, VerifySameDocument) {
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
   {
     NavigationHandleObserver observer(
         shell()->web_contents(),
@@ -1946,8 +1946,8 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
     navigation_observer.Wait();
 
     FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                              ->GetFrameTree()
-                              ->root();
+                              ->GetPrimaryFrameTree()
+                              .root();
     ASSERT_EQ(1u, root->child_count());
     FrameTreeNode* child = root->child_at(0u);
 
@@ -2363,8 +2363,8 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
 
       FrameTreeNode* root =
           static_cast<WebContentsImpl*>(shell()->web_contents())
-              ->GetFrameTree()
-              ->root();
+              ->GetPrimaryFrameTree()
+              .root();
       ASSERT_EQ(1u, root->child_count());
       if (test_case.blocked) {
         EXPECT_EQ(redirect, !!installer.will_start_called());
@@ -2505,8 +2505,8 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, StartToCommitMetrics) {
       shell(), embedded_test_server()->GetURL("/page_with_iframe.html")));
   FrameTreeNode* first_child =
       static_cast<WebContentsImpl*>(shell()->web_contents())
-          ->GetFrameTree()
-          ->root()
+          ->GetPrimaryFrameTree()
+          .root()
           ->child_at(0);
   {
     base::HistogramTester histograms;
@@ -2591,8 +2591,8 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
 
   // Add a new subframe.
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
   EXPECT_TRUE(ExecJs(
       root, "document.body.appendChild(document.createElement('iframe'));"));
 
@@ -3092,8 +3092,8 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBackForwardBrowserTest,
 
   EXPECT_TRUE(NavigateToURL(shell(), url1));
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
 
   {
     TestNavigationObserver navigation_observer(shell()->web_contents());

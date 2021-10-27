@@ -73,8 +73,8 @@ std::string GetSnapshotURL(const trace_analyzer::TraceEvent* event) {
 
 class FrameTreeNodeBlameContextTest : public RenderViewHostImplTestHarness {
  public:
-  FrameTree* tree() { return contents()->GetFrameTree(); }
-  FrameTreeNode* root() { return tree()->root(); }
+  FrameTree& tree() { return contents()->GetPrimaryFrameTree(); }
+  FrameTreeNode* root() { return tree().root(); }
   int process_id() {
     return root()->current_frame_host()->GetProcess()->GetID();
   }
@@ -93,7 +93,7 @@ class FrameTreeNodeBlameContextTest : public RenderViewHostImplTestHarness {
 
   void RemoveAllNonRootFrames() {
     while (root()->child_count())
-      tree()->RemoveFrame(root()->child_at(0));
+      tree().RemoveFrame(root()->child_at(0));
   }
 
  private:
@@ -101,7 +101,7 @@ class FrameTreeNodeBlameContextTest : public RenderViewHostImplTestHarness {
     int consumption = 0;
     for (int child_num = 1; shape[consumption++] == '('; ++child_num) {
       int child_id = self_id * 10 + child_num;
-      tree()->AddFrame(
+      tree().AddFrame(
           node->current_frame_host(), process_id(), child_id,
           TestRenderFrameHost::CreateStubFrameRemote(),
           TestRenderFrameHost::CreateStubBrowserInterfaceBrokerReceiver(),
@@ -151,7 +151,7 @@ TEST_F(FrameTreeNodeBlameContextTest, FrameCreation) {
   for (auto* event : events) {
     ExpectFrameTreeNodeObject(event);
     FrameTreeNode* node =
-        tree()->FindByID(strtol(event->id.c_str(), nullptr, 16));
+        tree().FindByID(strtol(event->id.c_str(), nullptr, 16));
     EXPECT_NE(nullptr, node);
     if (event->HasArg("snapshot")) {
       ExpectFrameTreeNodeSnapshot(event);
@@ -160,7 +160,7 @@ TEST_F(FrameTreeNodeBlameContextTest, FrameCreation) {
       std::string parent_id = GetParentNodeID(event);
       EXPECT_FALSE(parent_id.empty());
       EXPECT_EQ(node->parent()->frame_tree_node(),
-                tree()->FindByID(strtol(parent_id.c_str(), nullptr, 16)));
+                tree().FindByID(strtol(parent_id.c_str(), nullptr, 16)));
     } else {
       EXPECT_EQ(TRACE_EVENT_PHASE_CREATE_OBJECT, event->phase);
       EXPECT_FALSE(base::Contains(creation_traced, node));
@@ -185,7 +185,7 @@ TEST_F(FrameTreeNodeBlameContextTest, FrameDeletion) {
 
   CreateFrameTree(tree_shape);
   std::set<int> node_ids;
-  for (FrameTreeNode* node : tree()->Nodes())
+  for (FrameTreeNode* node : tree().Nodes())
     node_ids.insert(node->frame_tree_node_id());
 
   trace_analyzer::Start("*");

@@ -310,11 +310,11 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
   }
 
   RenderFrameHostImpl* current_frame_host() {
-    return web_contents()->GetFrameTree()->root()->current_frame_host();
+    return web_contents()->GetPrimaryFrameTree().root()->current_frame_host();
   }
 
   RenderFrameHostManager* render_frame_host_manager() {
-    return web_contents()->GetFrameTree()->root()->render_manager();
+    return web_contents()->GetPrimaryFrameTree().root()->render_manager();
   }
 
   std::string DepictFrameTree(FrameTreeNode* node) {
@@ -1400,7 +1400,7 @@ IN_PROC_BROWSER_TEST_F(HighCacheSizeBackForwardCacheBrowserTest,
   // 6) Post a task to run BeforeUnloadCompleted (task #2). This will continue
   // the BFCache restore navigation to B from step 5, which is currently waiting
   // for a BeforeUnloadCompleted call.
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&]() {
         root->navigator().BeforeUnloadCompleted(root, true /* proceed */,
@@ -10655,7 +10655,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // 1) Go to |url1|, then |url2|. Both pages should have script to save the
   // history.length value when getting restored from the back-forward cache.
   EXPECT_TRUE(NavigateToURL(shell(), url1));
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   FrameTreeNode* subframe = root->child_at(0);
 
   std::string restore_time_length_saver_script =
@@ -10718,7 +10718,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // 1) Go to |url1|, then |url2|. Both pages should have script to save the
   // history.length value when getting restored from the back-forward cache.
   EXPECT_TRUE(NavigateToURL(shell(), url1));
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   FrameTreeNode* subframe = root->child_at(0);
 
   std::string restore_time_length_saver_script =
@@ -11464,8 +11464,8 @@ IN_PROC_BROWSER_TEST_F(
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
   NavigationControllerImpl& controller = web_contents()->GetController();
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
 
   // Initial navigation (so that we can initiate a navigation from renderer).
   EXPECT_TRUE(NavigateToURL(shell(), start_url));
@@ -11536,8 +11536,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   GURL url_c(embedded_test_server()->GetURL("c.com", "/title1.html"));
   NavigationControllerImpl& controller = web_contents()->GetController();
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
 
   const std::string user_agent_override = "foo";
 
@@ -11647,8 +11647,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
   NavigationControllerImpl& controller = web_contents()->GetController();
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
 
   // Enable user agent override for future navigations.
   const std::string user_agent_override_1 = "foo";

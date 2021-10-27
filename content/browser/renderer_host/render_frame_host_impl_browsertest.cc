@@ -386,20 +386,24 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, RemoveFocusedFrame) {
   EXPECT_EQ("frame4", web_contents()->GetFocusedFrame()->GetFrameName());
   EXPECT_EQ("frame3",
             web_contents()->GetFocusedFrame()->GetParent()->GetFrameName());
-  EXPECT_NE(-1, web_contents()->GetFrameTree()->focused_frame_tree_node_id_);
+  EXPECT_NE(-1,
+            web_contents()->GetPrimaryFrameTree().focused_frame_tree_node_id_);
 
   EXPECT_TRUE(ExecJs(web_contents()->GetMainFrame(), "detachframe(3)"));
   EXPECT_EQ(nullptr, web_contents()->GetFocusedFrame());
-  EXPECT_EQ(-1, web_contents()->GetFrameTree()->focused_frame_tree_node_id_);
+  EXPECT_EQ(-1,
+            web_contents()->GetPrimaryFrameTree().focused_frame_tree_node_id_);
 
   EXPECT_TRUE(ExecJs(web_contents()->GetMainFrame(), "focusframe2()"));
   EXPECT_NE(nullptr, web_contents()->GetFocusedFrame());
   EXPECT_NE(web_contents()->GetMainFrame(), web_contents()->GetFocusedFrame());
-  EXPECT_NE(-1, web_contents()->GetFrameTree()->focused_frame_tree_node_id_);
+  EXPECT_NE(-1,
+            web_contents()->GetPrimaryFrameTree().focused_frame_tree_node_id_);
 
   EXPECT_TRUE(ExecJs(web_contents()->GetMainFrame(), "detachframe(2)"));
   EXPECT_EQ(nullptr, web_contents()->GetFocusedFrame());
-  EXPECT_EQ(-1, web_contents()->GetFrameTree()->focused_frame_tree_node_id_);
+  EXPECT_EQ(-1,
+            web_contents()->GetPrimaryFrameTree().focused_frame_tree_node_id_);
 }
 
 // Test that a frame is visible/hidden depending on its WebContents visibility
@@ -853,7 +857,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBeforeUnloadBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   // Install a beforeunload handler in the b.com subframe.
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   InstallBeforeUnloadHandler(root->child_at(0), SHOW_DIALOG);
 
   // Disable beforeunload timer to prevent flakiness.
@@ -957,7 +961,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBeforeUnloadBrowserTest,
 
   // Install a beforeunload handler in five of eight frames to send a ping via
   // domAutomationController and request a beforeunload dialog.
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   InstallBeforeUnloadHandler(root, SEND_PING | SHOW_DIALOG);
   InstallBeforeUnloadHandler(root->child_at(0)->child_at(0),
                              SEND_PING | SHOW_DIALOG);
@@ -999,7 +1003,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBeforeUnloadBrowserTest,
 
   // Install a beforeunload handler in two of five frames to send a ping via
   // domAutomationController and request a beforeunload dialog.
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   InstallBeforeUnloadHandler(root->child_at(0), SEND_PING | SHOW_DIALOG);
   InstallBeforeUnloadHandler(root->child_at(0)->child_at(0),
                              SEND_PING | SHOW_DIALOG);
@@ -1037,7 +1041,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBeforeUnloadBrowserTest,
 
   // Install a beforeunload handler in both a.com frames to send a ping via
   // domAutomationController.
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   InstallBeforeUnloadHandler(root, SEND_PING);
   InstallBeforeUnloadHandler(root->child_at(0), SEND_PING);
 
@@ -1087,7 +1091,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBeforeUnloadBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   // Install a beforeunload handler to send a ping in all frames.
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   InstallBeforeUnloadHandler(root, SEND_PING);
   InstallBeforeUnloadHandler(root->child_at(0), SEND_PING);
   InstallBeforeUnloadHandler(root->child_at(0)->child_at(0), SEND_PING);
@@ -1125,7 +1129,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBeforeUnloadBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   // Install a beforeunload handler in root frame to delete the subframe.
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   std::string script =
       "window.onbeforeunload = () => { "
       "  document.body.removeChild(document.querySelector('iframe'));"
@@ -1154,7 +1158,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBeforeUnloadBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   // Install a beforeunload handler to send a ping in all frames.
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   InstallBeforeUnloadHandler(root, SEND_PING);
   InstallBeforeUnloadHandler(root->child_at(0), SEND_PING);
   InstallBeforeUnloadHandler(root->child_at(0)->child_at(0), SEND_PING);
@@ -1185,7 +1189,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBeforeUnloadBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   // Install a beforeunload handler to send a ping in main frame.
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   InstallBeforeUnloadHandler(root, SEND_PING);
 
   // Install a beforeunload handler which never finishes in subframe.
@@ -1214,7 +1218,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBeforeUnloadBrowserTest,
   RenderFrameHostImpl* main_frame = web_contents()->GetMainFrame();
 
   // Install a beforeunload handler to show a dialog in both frames.
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   InstallBeforeUnloadHandler(root, SHOW_DIALOG);
   InstallBeforeUnloadHandler(root->child_at(0), SHOW_DIALOG);
 
@@ -2126,7 +2130,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
     EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
-    FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+    FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
     ASSERT_EQ(1u, root->child_count());
     FrameTreeNode* child = root->child_at(0u);
 
@@ -2179,7 +2183,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(ExecJs(shell(), kNavigateToOneThenTwoScript));
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   ASSERT_EQ(1u, root->child_count());
   FrameTreeNode* child = root->child_at(0u);
 
@@ -2233,7 +2237,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // Main frame navigation.
   ASSERT_TRUE(NavigateToURL(shell(), main_frame_url));
 
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   CheckURLOriginAndNetworkIsolationKey(root, main_frame_url, main_frame_origin,
                                        expected_main_frame_key);
 
@@ -2301,7 +2305,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // Main frame navigation.
   ASSERT_TRUE(NavigateToURL(shell(), main_frame_url));
 
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   CheckURLOriginAndNetworkIsolationKey(root, main_frame_url, main_frame_origin,
                                        expected_main_frame_key);
 
@@ -2352,7 +2356,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
       net::NetworkIsolationKey(origin, origin);
 
   ASSERT_TRUE(NavigateToURL(shell(), main_frame_url));
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   CheckURLOriginAndNetworkIsolationKey(root, main_frame_url, origin,
                                        expected_network_isolation_key);
   ASSERT_EQ(1u, root->child_count());
@@ -2410,7 +2414,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
       main_frame_origin, main_frame_origin);
 
   ASSERT_TRUE(NavigateToURL(shell(), main_frame_url));
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   CheckURLOriginAndNetworkIsolationKey(
       root, main_frame_url, main_frame_origin,
       expected_main_frame_network_isolation_key);
@@ -2475,7 +2479,7 @@ IN_PROC_BROWSER_TEST_F(
       main_frame_origin, main_frame_origin);
 
   ASSERT_TRUE(NavigateToURL(shell(), main_frame_url));
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   CheckURLOriginAndNetworkIsolationKey(
       root, main_frame_url, main_frame_origin,
       expected_main_frame_network_isolation_key);
@@ -2820,7 +2824,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
   // This will set up the page frame tree as A(A1()).
   ASSERT_TRUE(NavigateToURL(shell(), main_frame));
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   FrameTreeNode* nested_iframe_node = root->child_at(0);
   EXPECT_TRUE(NavigateToURLFromRenderer(nested_iframe_node, child_url));
 
@@ -2836,7 +2840,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, VisibilityChildInView) {
 
   // This will set up the page frame tree as A(A1()).
   ASSERT_TRUE(NavigateToURL(shell(), main_frame));
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   FrameTreeNode* nested_iframe_node = root->child_at(0);
   EXPECT_TRUE(NavigateToURLFromRenderer(nested_iframe_node, child_url));
 
@@ -4429,7 +4433,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   shell()->LoadURL(url_b);
   EXPECT_TRUE(manager.WaitForRequestStart());
 
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   RenderFrameHostImpl* pending_rfh =
       root->render_manager()->speculative_frame_host();
   NavigationRequest* navigation_request = root->navigation_request();
@@ -4542,7 +4546,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   shell()->LoadURL(url_b);
   EXPECT_TRUE(manager.WaitForRequestStart());
 
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   RenderFrameHostImpl* speculative_rfh =
       root->render_manager()->speculative_frame_host();
   NavigationRequest* navigation_request = root->navigation_request();
@@ -4617,7 +4621,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   shell()->LoadURL(url_b);
   EXPECT_TRUE(manager.WaitForRequestStart());
 
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   RenderFrameHostImpl* current_rfh =
       root->render_manager()->current_frame_host();
   NavigationRequest* navigation_request = root->navigation_request();
@@ -5440,7 +5444,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplSubframeReuseBrowserTest,
   int subframe_process_id = rfh_b->GetProcess()->GetID();
   RenderFrameDeletedObserver delete_rfh_b(rfh_b);
   TestFrameNavigationObserver commit_observer(
-      web_contents()->GetFrameTree()->root());
+      web_contents()->GetPrimaryFrameTree().root());
 
   // Navigate to another page on the same site with the same subframe.
   GURL url_2(embedded_test_server()->GetURL(
@@ -5958,7 +5962,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   std::map<RenderFrameHostImpl*, std::string> frame_to_label_map;
   size_t index = 0;
   // Map each RenderFrameHostImpl to its label and set of immediate local roots.
-  for (auto* ftn : web_contents()->GetFrameTree()->Nodes()) {
+  for (auto* ftn : web_contents()->GetPrimaryFrameTree().Nodes()) {
     std::string roots = immediate_local_roots[index++];
     frame_to_immediate_local_roots_map[ftn->current_frame_host()] = roots;
     frame_to_label_map[ftn->current_frame_host()] = roots.substr(0, 2);
@@ -5966,7 +5970,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
   // For each frame in the tree, verify that ForEachImmediateLocalRoot properly
   // visits each and only each immediate local root in a BFS traversal order.
-  for (auto* ftn : web_contents()->GetFrameTree()->Nodes()) {
+  for (auto* ftn : web_contents()->GetPrimaryFrameTree().Nodes()) {
     RenderFrameHostImpl* current_frame_host = ftn->current_frame_host();
     std::list<RenderFrameHostImpl*> frame_list;
     current_frame_host->ForEachImmediateLocalRoot(base::BindRepeating(
@@ -5989,7 +5993,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, GetSiblings) {
       "a.com", "/cross_site_iframe_factory.html?1(2,3(5),4)"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
-  FrameTreeNode* ftn1 = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* ftn1 = web_contents()->GetPrimaryFrameTree().root();
   FrameTreeNode* ftn2 = ftn1->child_at(0);
   FrameTreeNode* ftn3 = ftn1->child_at(1);
   FrameTreeNode* ftn4 = ftn1->child_at(2);

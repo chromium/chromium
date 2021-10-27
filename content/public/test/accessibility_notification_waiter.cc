@@ -81,8 +81,7 @@ void AccessibilityNotificationWaiter::ListenToAllFrames(
     VLOG(1) << "Waiting for AccessibilityEvent " << *event_to_wait_for_;
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(web_contents);
-  FrameTree* frame_tree = web_contents_impl->GetFrameTree();
-  for (FrameTreeNode* node : frame_tree->Nodes())
+  for (FrameTreeNode* node : web_contents_impl->GetPrimaryFrameTree().Nodes())
     ListenToFrame(node->current_frame_host());
 
   BrowserPluginGuestManager* guest_manager =

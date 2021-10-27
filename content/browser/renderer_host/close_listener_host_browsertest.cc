@@ -40,7 +40,7 @@ class CloseListenerHostBrowserTest : public ContentBrowserTest {
     EXPECT_TRUE(ExecJs(web_contents(), script));
 
     RenderFrameHostImpl* render_frame_host_impl =
-        web_contents()->GetFrameTree()->root()->current_frame_host();
+        web_contents()->GetPrimaryFrameTree().root()->current_frame_host();
     EXPECT_TRUE(
         CloseListenerHost::GetOrCreateForCurrentDocument(render_frame_host_impl)
             ->SignalIfActive());

@@ -55,8 +55,8 @@ class ScrollingIntegrationTest : public SitePerProcessBrowserTest {
 
   double GetScrollTop() {
     FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                              ->GetFrameTree()
-                              ->root();
+                              ->GetPrimaryFrameTree()
+                              .root();
     return EvalJs(root, "window.scrollY").ExtractDouble();
   }
 
@@ -72,8 +72,8 @@ class ScrollingIntegrationTest : public SitePerProcessBrowserTest {
 
   RenderWidgetHostImpl* GetRenderWidgetHostImpl() {
     FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                              ->GetFrameTree()
-                              ->root();
+                              ->GetPrimaryFrameTree()
+                              .root();
     return root->current_frame_host()->GetRenderWidgetHost();
   }
 };
@@ -141,7 +141,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessScrollAnchorTest,
       "a.com", "/page_with_samesite_iframe.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   FrameTreeNode* child = root->child_at(0);
 
   GURL frame_url(embedded_test_server()->GetURL("b.com", "/title1.html"));
@@ -274,7 +274,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessProgrammaticScrollTest,
   // to its maximum and then navigate the <iframe> to |url_a|. The page will be
   // structured as a(a(a(a(a(a(a)))))) where the inner-most <iframe> is empty.
   ASSERT_TRUE(NavigateToURL(shell(), url_a));
-  FrameTreeNode* node = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* node = web_contents()->GetPrimaryFrameTree().root();
   WaitForOnLoad(node);
   std::vector<gfx::Rect> reference_page_bounds_before_scroll = {
       GetBoundingClientRect(node->current_frame_host(), kIframeSelector)};
@@ -296,7 +296,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessProgrammaticScrollTest,
   ASSERT_TRUE(ExecJs(node, kScrollIntoViewScript));
   // Store current client bounds origins to later compare against those from the
   // page which contains OOPIFs.
-  node = web_contents()->GetFrameTree()->root();
+  node = web_contents()->GetPrimaryFrameTree().root();
   std::vector<gfx::Rect> reference_page_bounds_after_scroll = {
       GetBoundingClientRect(node->current_frame_host(), kIframeSelector)};
   node = node->child_at(0);
@@ -309,7 +309,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessProgrammaticScrollTest,
   // Repeat the same process for the page containing OOPIFs. The page is
   // structured as b(b(a(c(a(a(a)))))) where the inner-most <iframe> is empty.
   ASSERT_TRUE(NavigateToURL(shell(), url_b));
-  node = web_contents()->GetFrameTree()->root();
+  node = web_contents()->GetPrimaryFrameTree().root();
   WaitForOnLoad(node);
   std::vector<gfx::Rect> test_page_bounds_before_scroll = {
       GetBoundingClientRect(node->current_frame_host(), kIframeSelector)};
@@ -383,7 +383,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessProgrammaticScrollTest,
 #endif
 
   ASSERT_TRUE(NavigateToURL(shell(), url_a));
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   WaitForOnLoad(root);
   EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), url_a));
   WaitForOnLoad(root->child_at(0));
@@ -414,8 +414,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessProgrammaticScrollTest,
   Shell* new_shell = CreateBrowser();
   ASSERT_TRUE(NavigateToURL(new_shell, url_b));
   root = static_cast<WebContentsImpl*>(new_shell->web_contents())
-             ->GetFrameTree()
-             ->root();
+             ->GetPrimaryFrameTree()
+             .root();
   WaitForOnLoad(root);
 #if defined(OS_ANDROID)
   float scale_before_scroll_oopif = GetVisualViewportScale(root);
@@ -470,7 +470,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessProgrammaticScrollTest,
   GURL child_url_b(embedded_test_server()->GetURL("b.com", kInputBoxHTML));
 
   ASSERT_TRUE(NavigateToURL(shell(), url_a));
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   WaitForOnLoad(root);
   EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), child_url_b));
   WaitForOnLoad(root->child_at(0));
@@ -547,7 +547,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessProgrammaticScrollTest,
 
   // This will set up the page frame tree as A(B()).
   ASSERT_TRUE(NavigateToURL(shell(), main_frame));
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   WaitForOnLoad(root);
   EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), child_url_b));
   WaitForOnLoad(root->child_at(0));
@@ -586,7 +586,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessProgrammaticScrollTest,
   // here is that the inner frame A1 is recursively scrolling (smoothly) an
   // element inside its document into view (A2's origin is irrelevant here).
   ASSERT_TRUE(NavigateToURL(shell(), main_frame));
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   WaitForOnLoad(root);
   EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), child_url_b));
   WaitForOnLoad(root->child_at(0));
@@ -665,7 +665,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   RenderFrameSubmissionObserver frame_observer(shell()->web_contents());
 
   // It is safe to obtain the root frame tree node here, as it doesn't change.
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   ASSERT_EQ(1U, root->child_count());
 
   FrameTreeNode* parent_iframe_node = root->child_at(0);
@@ -744,7 +744,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       "a.com", "/scrollable_page_with_iframe.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url_domain_a));
   RenderFrameSubmissionObserver frame_observer(shell()->web_contents());
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
 
   FrameTreeNode* iframe_node = root->child_at(0);
   GURL url_domain_b(
@@ -852,8 +852,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // It is safe to obtain the root frame tree node here, as it doesn't change.
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
   ASSERT_EQ(1U, root->child_count());
 
   FrameTreeNode* parent_iframe_node = root->child_at(0);
@@ -1083,8 +1083,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // It is safe to obtain the root frame tree node here, as it doesn't change.
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
   ASSERT_EQ(1U, root->child_count());
 
   FrameTreeNode* iframe_node = root->child_at(0);
@@ -1155,7 +1155,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ScrollLocalSubframeInOOPIF) {
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   // It is safe to obtain the root frame tree node here, as it doesn't change.
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   ASSERT_EQ(1U, root->child_count());
 
   FrameTreeNode* parent_iframe_node = root->child_at(0);

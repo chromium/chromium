@@ -356,8 +356,8 @@ std::string ExpectNavigationFailureAndReturnConsoleMessage(
 
 FrameTreeNode* GetFirstChild(WebContents* web_contents) {
   return static_cast<WebContentsImpl*>(web_contents)
-      ->GetFrameTree()
-      ->root()
+      ->GetPrimaryFrameTree()
+      .root()
       ->child_at(0);
 }
 

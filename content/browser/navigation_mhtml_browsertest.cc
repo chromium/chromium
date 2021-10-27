@@ -48,7 +48,7 @@ class NavigationMhtmlBrowserTest : public ContentBrowserTest {
   }
 
   RenderFrameHostImpl* main_frame_host() {
-    return web_contents()->GetFrameTree()->root()->current_frame_host();
+    return web_contents()->GetPrimaryFrameTree().root()->current_frame_host();
   }
 
  protected:
@@ -787,8 +787,9 @@ IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest, PreloadedTextTrack) {
 // treated as an error page.
 IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest, ErrorBaseURL) {
   NavigationController& controller = web_contents()->GetController();
-  FrameTreeNode* root =
-      static_cast<WebContentsImpl*>(web_contents())->GetFrameTree()->root();
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
 
   // Prepare an MHTML document with the base URL set to the error page URL.
   MhtmlArchive mhtml_archive;

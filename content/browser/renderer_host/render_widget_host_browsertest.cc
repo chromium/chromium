@@ -548,8 +548,8 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostSitePerProcessTest,
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
   child_frame_observer.Wait();
   auto* filter = GetTouchActionFilterForWidget(web_contents()
-                                                   ->GetFrameTree()
-                                                   ->root()
+                                                   ->GetPrimaryFrameTree()
+                                                   .root()
                                                    ->child_at(0)
                                                    ->current_frame_host()
                                                    ->GetRenderWidgetHost());
@@ -584,7 +584,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostSitePerProcessTest,
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   auto* contents = static_cast<WebContentsImpl*>(shell()->web_contents());
-  FrameTreeNode* root = contents->GetFrameTree()->root();
+  FrameTreeNode* root = contents->GetPrimaryFrameTree().root();
   RenderFrameHostImpl* root_frame_host = root->current_frame_host();
   RenderProcessHost* process = root_frame_host->GetProcess();
 

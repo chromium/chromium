@@ -140,8 +140,8 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewMacTest,
 
   auto* web_contents_impl =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  auto* root = web_contents_impl->GetFrameTree()->root();
-  web_contents_impl->GetFrameTree()->SetFocusedFrame(
+  auto* root = web_contents_impl->GetPrimaryFrameTree().root();
+  web_contents_impl->GetPrimaryFrameTree().SetFocusedFrame(
       root, root->current_frame_host()->GetSiteInstance());
 
   RenderWidgetHostView* rwhv =

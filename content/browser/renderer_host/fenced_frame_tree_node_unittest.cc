@@ -24,13 +24,13 @@ class FencedFrameTreeNodeTest : public RenderViewHostImplTestHarness {
         {{"implementation_type", "shadow_dom"}});
   }
 
-  FrameTreeNode* AddFrame(FrameTree* frame_tree,
+  FrameTreeNode* AddFrame(FrameTree& frame_tree,
                           RenderFrameHostImpl* parent,
                           int process_id,
                           int new_routing_id,
                           const blink::FramePolicy& frame_policy,
                           blink::FrameOwnerElementType owner_type) {
-    return frame_tree->AddFrame(
+    return frame_tree.AddFrame(
         parent, process_id, new_routing_id,
         TestRenderFrameHost::CreateStubFrameRemote(),
         TestRenderFrameHost::CreateStubBrowserInterfaceBrokerReceiver(),
@@ -47,8 +47,8 @@ class FencedFrameTreeNodeTest : public RenderViewHostImplTestHarness {
 
 TEST_F(FencedFrameTreeNodeTest, IsFencedFrameHelpers) {
   main_test_rfh()->InitializeRenderFrameIfNeeded();
-  FrameTree* frame_tree = contents()->GetFrameTree();
-  FrameTreeNode* root = frame_tree->root();
+  FrameTree& frame_tree = contents()->GetPrimaryFrameTree();
+  FrameTreeNode* root = frame_tree.root();
   int process_id = root->current_frame_host()->GetProcess()->GetID();
 
   // Simulate attaching an iframe.

@@ -287,7 +287,9 @@ class NavigationBaseBrowserTest : public ContentBrowserTest {
     return static_cast<WebContentsImpl*>(shell()->web_contents());
   }
 
-  FrameTreeNode* main_frame() { return web_contents()->GetFrameTree()->root(); }
+  FrameTreeNode* main_frame() {
+    return web_contents()->GetPrimaryFrameTree().root();
+  }
 
   RenderFrameHostImpl* current_frame_host() {
     return main_frame()->current_frame_host();
@@ -5606,8 +5608,8 @@ IN_PROC_BROWSER_TEST_F(
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
   RenderFrameHostImpl* speculative_render_frame_host =
-      web_contents->GetFrameTree()
-          ->root()
+      web_contents->GetPrimaryFrameTree()
+          .root()
           ->render_manager()
           ->speculative_frame_host();
   ASSERT_TRUE(speculative_render_frame_host);
@@ -5621,7 +5623,7 @@ IN_PROC_BROWSER_TEST_F(
   const GURL final_url =
       embedded_test_server()->GetURL("c.com", "/title1.html");
   BeginNavigationInCommitCallbackInterceptor interceptor(
-      web_contents->GetFrameTree()->root(), final_url);
+      web_contents->GetPrimaryFrameTree().root(), final_url);
   speculative_render_frame_host->SetCommitCallbackInterceptorForTesting(
       &interceptor);
 
@@ -5650,8 +5652,8 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestWithPerformanceManager,
   FrameTreeNode* first_subframe_node =
       web_contents->GetMainFrame()->child_at(0);
   RenderProcessHost* const a_com_render_process_host =
-      web_contents->GetFrameTree()
-          ->root()
+      web_contents->GetPrimaryFrameTree()
+          .root()
           ->render_manager()
           ->current_frame_host()
           ->GetProcess();
@@ -5782,7 +5784,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestWithPerformanceManager,
   // Simulates a race where the a.com renderer detaches the second child frame
   // after the browser sends `CommitNavigation()` to the b.com renderer.
   DetachChildFrameInCommitCallbackInterceptor interceptor(
-      web_contents->GetFrameTree()->root(), 1);
+      web_contents->GetPrimaryFrameTree().root(), 1);
   speculative_render_frame_host->SetCommitCallbackInterceptorForTesting(
       &interceptor);
 

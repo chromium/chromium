@@ -3557,7 +3557,9 @@ void EnsureCookiesFlushed(BrowserContext* browser_context) {
 bool TestGuestAutoresize(WebContents* embedder_web_contents,
                          WebContents* guest_web_contents) {
   FrameTreeNode* guest_main_frame_node =
-      static_cast<WebContentsImpl*>(guest_web_contents)->GetFrameTree()->root();
+      static_cast<WebContentsImpl*>(guest_web_contents)
+          ->GetPrimaryFrameTree()
+          .root();
   RenderFrameProxyHost* subframe_proxy_host =
       guest_main_frame_node->render_manager()->GetProxyToOuterDelegate();
 

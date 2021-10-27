@@ -539,7 +539,7 @@ IN_PROC_BROWSER_TEST_F(TextFragmentAnchorBrowserTest,
 
   WebContentsImpl* main_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  FrameTreeNode* root = main_contents->GetFrameTree()->root();
+  FrameTreeNode* root = main_contents->GetPrimaryFrameTree().root();
 
   // Insert a same-origin iframe from which we'll execute script.
   {
@@ -593,7 +593,7 @@ IN_PROC_BROWSER_TEST_F(TextFragmentAnchorBrowserTest,
 
   WebContentsImpl* main_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  FrameTreeNode* root = main_contents->GetFrameTree()->root();
+  FrameTreeNode* root = main_contents->GetPrimaryFrameTree().root();
 
   // Insert a cross-origin iframe from which we'll execute script.
   {

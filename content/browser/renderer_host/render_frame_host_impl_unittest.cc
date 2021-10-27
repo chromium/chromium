@@ -232,7 +232,7 @@ TEST_F(RenderFrameHostImplTest, PolicyContainerLifecycle) {
   std::unique_ptr<WebContentsImpl> new_contents(
       WebContentsImpl::CreateWithOpener(params, child_frame));
   RenderFrameHostImpl* new_frame =
-      new_contents->GetFrameTree()->root()->current_frame_host();
+      new_contents->GetPrimaryFrameTree().root()->current_frame_host();
 
   ASSERT_NE(new_frame->policy_container_host(), nullptr);
   EXPECT_EQ(new_frame->policy_container_host()->referrer_policy(),

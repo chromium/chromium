@@ -586,8 +586,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, DragDropOnOopif) {
     run_loop.Run();
 
     EXPECT_EQ(drop_target_widget_,
-              RenderWidgetHostImpl::From(contents->GetFrameTree()
-                                             ->root()
+              RenderWidgetHostImpl::From(contents->GetPrimaryFrameTree()
+                                             .root()
                                              ->current_frame_host()
                                              ->GetRenderWidgetHost()));
   }
@@ -619,8 +619,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, DragDropOnOopif) {
     run_loop.Run();
 
     EXPECT_EQ(drop_target_widget_,
-              RenderWidgetHostImpl::From(contents->GetFrameTree()
-                                             ->root()
+              RenderWidgetHostImpl::From(contents->GetPrimaryFrameTree()
+                                             .root()
                                              ->current_frame_host()
                                              ->GetRenderWidgetHost()));
   }
@@ -974,8 +974,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, GetDropCallback_Run) {
   EXPECT_TRUE(drag_dest_delegate_.GetOnDropCalled());
   EXPECT_FALSE(drag_dest_delegate_.GetOnDragLeaveCalled());
   EXPECT_EQ(drop_target_widget_,
-            RenderWidgetHostImpl::From(contents->GetFrameTree()
-                                           ->root()
+            RenderWidgetHostImpl::From(contents->GetPrimaryFrameTree()
+                                           .root()
                                            ->current_frame_host()
                                            ->GetRenderWidgetHost()));
 }

@@ -97,7 +97,7 @@ TestRenderViewHost* TestWebContents::GetRenderViewHost() {
 
 TestRenderFrameHost* TestWebContents::GetSpeculativePrimaryMainFrame() {
   return static_cast<TestRenderFrameHost*>(
-      GetFrameTree()->root()->render_manager()->speculative_frame_host());
+      GetPrimaryFrameTree().root()->render_manager()->speculative_frame_host());
 }
 
 int TestWebContents::DownloadImage(const GURL& url,
@@ -301,7 +301,7 @@ RenderViewHostDelegateView* TestWebContents::GetDelegateView() {
 
 void TestWebContents::SetOpener(WebContents* opener) {
   frame_tree_.root()->SetOpener(
-      static_cast<WebContentsImpl*>(opener)->GetFrameTree()->root());
+      static_cast<WebContentsImpl*>(opener)->GetPrimaryFrameTree().root());
 }
 
 void TestWebContents::SetIsCrashed(base::TerminationStatus status,

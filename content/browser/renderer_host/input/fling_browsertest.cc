@@ -113,8 +113,8 @@ class BrowserSideFlingBrowserTest : public ContentBrowserTest {
     EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
     FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                              ->GetFrameTree()
-                              ->root();
+                              ->GetPrimaryFrameTree()
+                              .root();
     ASSERT_EQ(1U, root->child_count());
 
     // Navigate oopif to URL.
@@ -289,8 +289,8 @@ class BrowserSideFlingBrowserTest : public ContentBrowserTest {
 
   FrameTreeNode* GetRootNode() {
     return static_cast<WebContentsImpl*>(shell()->web_contents())
-        ->GetFrameTree()
-        ->root();
+        ->GetPrimaryFrameTree()
+        .root();
   }
 
   FrameTreeNode* GetChildNode() {
@@ -373,8 +373,8 @@ IN_PROC_BROWSER_TEST_F(BrowserSideFlingBrowserTest,
   // Wait for 100ms. Then check that the second page has not scrolled.
   GiveItSomeTime(100);
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
   EXPECT_EQ(
       0, EvalJs(root->current_frame_host(), "window.scrollY").ExtractDouble());
 }
@@ -529,8 +529,8 @@ IN_PROC_BROWSER_TEST_F(BrowserSideFlingBrowserTest,
                        NoFlingWhenViewIsDestroyed) {
   LoadURL(kBrowserFlingDataURL);
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
 
   GetWidgetHost()->GetView()->Destroy();
   SimulateTouchscreenFling(GetWidgetHost());

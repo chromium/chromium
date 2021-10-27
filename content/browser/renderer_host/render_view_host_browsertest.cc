@@ -86,15 +86,19 @@ IN_PROC_BROWSER_TEST_F(RenderViewHostTest, BasicRenderFrameHost) {
   GURL test_url = embedded_test_server()->GetURL("/simple_page.html");
   EXPECT_TRUE(NavigateToURL(shell(), test_url));
 
-  FrameTreeNode* old_root = static_cast<WebContentsImpl*>(
-      shell()->web_contents())->GetFrameTree()->root();
+  FrameTreeNode* old_root =
+      static_cast<WebContentsImpl*>(shell()->web_contents())
+          ->GetPrimaryFrameTree()
+          .root();
   EXPECT_TRUE(old_root->current_frame_host());
 
   ShellAddedObserver new_shell_observer;
   EXPECT_TRUE(ExecJs(shell(), "window.open();"));
   Shell* new_shell = new_shell_observer.GetShell();
-  FrameTreeNode* new_root = static_cast<WebContentsImpl*>(
-      new_shell->web_contents())->GetFrameTree()->root();
+  FrameTreeNode* new_root =
+      static_cast<WebContentsImpl*>(new_shell->web_contents())
+          ->GetPrimaryFrameTree()
+          .root();
 
   EXPECT_TRUE(new_root->current_frame_host());
   EXPECT_NE(old_root->current_frame_host()->routing_id(),

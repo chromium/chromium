@@ -89,7 +89,7 @@ class PageImplTest : public ContentBrowserTest {
   }
 
   RenderFrameHostImpl* primary_main_frame_host() {
-    return web_contents()->GetFrameTree()->root()->current_frame_host();
+    return web_contents()->GetPrimaryFrameTree().root()->current_frame_host();
   }
 
   PageImpl& page() { return primary_main_frame_host()->GetPage(); }
@@ -260,7 +260,7 @@ IN_PROC_BROWSER_TEST_F(PageImplTest, PageObjectAfterSubframeNavigation) {
   RenderFrameHostImpl* rfh_b = rfh_a->child_at(1)->current_frame_host();
 
   // It is safe to obtain the root frame tree node here, as it doesn't change.
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
 
   // 2) Check that Page for A1, A2, B point to same object.
   PageImpl& page_a = rfh_a->GetPage();
@@ -312,7 +312,7 @@ IN_PROC_BROWSER_TEST_F(PageImplTest, PageObjectBeforeAndAfterCommit) {
   shell()->LoadURL(url_b);
   EXPECT_TRUE(manager.WaitForRequestStart());
 
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   RenderFrameHostImpl* pending_rfh =
       root->render_manager()->speculative_frame_host();
   NavigationRequest* navigation_request = root->navigation_request();
@@ -462,7 +462,7 @@ IN_PROC_BROWSER_TEST_F(PageImplTest, NewPageObjectCreatedOnFrameCrash) {
   // 3) Re-initialize RenderFrame, this should result in invoking
   // PrimaryPageChanged callback.
   EXPECT_CALL(page_changed_observer, PrimaryPageChanged(testing::_)).Times(1);
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   root->render_manager()->InitializeMainRenderFrameForImmediateUse();
 
   // 4) Check that the old Page object was destroyed. There is no other way to

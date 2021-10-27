@@ -93,8 +93,8 @@ class PageLifecycleStateManagerBrowserTest : public ContentBrowserTest {
 
   RenderFrameHostImpl* current_frame_host() {
     return static_cast<WebContentsImpl*>(shell()->web_contents())
-        ->GetFrameTree()
-        ->root()
+        ->GetPrimaryFrameTree()
+        .root()
         ->current_frame_host();
   }
 };

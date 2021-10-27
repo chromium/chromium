@@ -707,8 +707,8 @@ IN_PROC_BROWSER_TEST_P(WorkerTest,
       }));
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
   EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), test_url));
   waiter.Run();
 

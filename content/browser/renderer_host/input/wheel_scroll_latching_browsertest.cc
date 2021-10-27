@@ -95,8 +95,8 @@ class WheelScrollLatchingBrowserTest : public ContentBrowserTest {
 
   RenderWidgetHostViewBase* GetRootView() {
     return static_cast<RenderWidgetHostViewBase*>(web_contents()
-                                                      ->GetFrameTree()
-                                                      ->root()
+                                                      ->GetPrimaryFrameTree()
+                                                      .root()
                                                       ->current_frame_host()
                                                       ->GetView());
   }
