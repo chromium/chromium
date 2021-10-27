@@ -49430,6 +49430,7 @@ from previous Chrome versions.
   <int value="-1103099187" label="NotificationStackingBarRedesign:disabled"/>
   <int value="-1102212525" label="enable-tcp-fastopen"/>
   <int value="-1101334831" label="SyncSupportTrustedVaultPassphrase:disabled"/>
+  <int value="-1101036307" label="SetTimeoutWithoutClamp:enabled"/>
   <int value="-1099618411" label="UpdatedCellularActivationUi:enabled"/>
   <int value="-1099142083" label="V8Ignition:disabled"/>
   <int value="-1099135056" label="AsyncDns:enabled"/>
@@ -52705,6 +52706,7 @@ from previous Chrome versions.
       label="DesktopPWAsFlashAppNameInsteadOfOrigin:enabled"/>
   <int value="1420007919" label="SyncTrustedVaultPassphrasePromo:disabled"/>
   <int value="1421620678" label="simple-clear-browsing-data-support-string"/>
+  <int value="1422421509" label="SetTimeoutWithoutClamp:disabled"/>
   <int value="1422462035" label="PaymentRequestBasicCard:disabled"/>
   <int value="1424775876" label="ToolbarIphAndroid:enabled"/>
   <int value="1425103276" label="SharedHighlightingV2:enabled"/>
