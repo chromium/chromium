@@ -37,7 +37,6 @@
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/features.h"
 #include "components/app_restore/full_restore_read_handler.h"
-#include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/restore_data.h"
 #include "components/app_restore/window_properties.h"
 #include "components/arc/arc_util.h"
@@ -416,11 +415,8 @@ void ArcAppLaunchHandler::PrepareAppLaunching(const std::string& app_id) {
 
     // Set an ARC session id to find the restore window id based on the new
     // created ARC task id in FullRestoreReadHandler.
-    int32_t arc_session_id =
-        ::full_restore::FullRestoreReadHandler::GetInstance()
-            ->GetArcSessionId();
-    ::full_restore::FullRestoreReadHandler::GetInstance()
-        ->SetArcSessionIdForWindowId(arc_session_id, data_it.first);
+    int32_t arc_session_id = ::app_restore::GetArcSessionId();
+    ::app_restore::SetArcSessionIdForWindowId(arc_session_id, data_it.first);
     window_id_to_session_id_[data_it.first] = arc_session_id;
     session_id_to_window_id_[arc_session_id] = data_it.first;
 
@@ -625,12 +621,9 @@ void ArcAppLaunchHandler::LaunchApp(const std::string& app_id,
   } else {
     // Set an ARC session id to find the restore window id based on the new
     // created ARC task id in FullRestoreReadHandler.
-    int32_t arc_session_id =
-        ::full_restore::FullRestoreReadHandler::GetInstance()
-            ->GetArcSessionId();
+    int32_t arc_session_id = ::app_restore::GetArcSessionId();
     window_info->window_id = arc_session_id;
-    ::full_restore::FullRestoreReadHandler::GetInstance()
-        ->SetArcSessionIdForWindowId(arc_session_id, window_id);
+    ::app_restore::SetArcSessionIdForWindowId(arc_session_id, window_id);
     window_id_to_session_id_[window_id] = arc_session_id;
   }
 

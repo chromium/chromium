@@ -41,14 +41,6 @@ void SaveWindowInfo(const app_restore::WindowInfo& window_info);
 COMPONENT_EXPORT(APP_RESTORE)
 int32_t FetchRestoreWindowId(const std::string& app_id);
 
-// Returns the restore window id for the ARC app's |task_id|.
-COMPONENT_EXPORT(APP_RESTORE)
-int32_t GetArcRestoreWindowIdForTaskId(int32_t task_id);
-
-// Returns the restore window id for the ARC app's |session_id|.
-COMPONENT_EXPORT(APP_RESTORE)
-int32_t GetArcRestoreWindowIdForSessionId(int32_t session_id);
-
 // Sets the current active profile path.
 COMPONENT_EXPORT(APP_RESTORE)
 void SetActiveProfilePath(const base::FilePath& profile_path);

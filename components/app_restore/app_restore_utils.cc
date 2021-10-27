@@ -109,4 +109,29 @@ void ModifyWidgetParams(int32_t restore_window_id,
   }
 }
 
+int32_t GetArcSessionId() {
+  return full_restore::FullRestoreReadHandler::GetInstance()->GetArcSessionId();
+}
+
+void SetArcSessionIdForWindowId(int32_t arc_session_id, int32_t window_id) {
+  return full_restore::FullRestoreReadHandler::GetInstance()
+      ->SetArcSessionIdForWindowId(arc_session_id, window_id);
+}
+
+int32_t GetArcRestoreWindowIdForTaskId(int32_t task_id) {
+  if (!full_restore::features::IsFullRestoreEnabled())
+    return 0;
+
+  return full_restore::FullRestoreReadHandler::GetInstance()
+      ->GetArcRestoreWindowIdForTaskId(task_id);
+}
+
+int32_t GetArcRestoreWindowIdForSessionId(int32_t session_id) {
+  if (!full_restore::features::IsFullRestoreEnabled())
+    return 0;
+
+  return full_restore::FullRestoreReadHandler::GetInstance()
+      ->GetArcRestoreWindowIdForSessionId(session_id);
+}
+
 }  // namespace app_restore

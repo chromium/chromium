@@ -38,6 +38,23 @@ COMPONENT_EXPORT(APP_RESTORE)
 void ModifyWidgetParams(int32_t restore_window_id,
                         views::Widget::InitParams* out_params);
 
+// Generates the ARC session id (1,000,000,001 - INT_MAX) for restored ARC
+// apps.
+COMPONENT_EXPORT(APP_RESTORE) int32_t GetArcSessionId();
+
+// Sets `arc_session_id` for `window_id`. `arc session id` is assigned when ARC
+// apps are restored.
+COMPONENT_EXPORT(APP_RESTORE)
+void SetArcSessionIdForWindowId(int32_t arc_session_id, int32_t window_id);
+
+// Returns the restore window id for the ARC app's `task_id`.
+COMPONENT_EXPORT(APP_RESTORE)
+int32_t GetArcRestoreWindowIdForTaskId(int32_t task_id);
+
+// Returns the restore window id for the ARC app's `session_id`.
+COMPONENT_EXPORT(APP_RESTORE)
+int32_t GetArcRestoreWindowIdForSessionId(int32_t session_id);
+
 }  // namespace app_restore
 
 #endif  // COMPONENTS_APP_RESTORE_APP_RESTORE_UTILS_H_

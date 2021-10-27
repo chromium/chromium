@@ -129,4 +129,33 @@ void DeskTemplateReadHandler::OnTaskDestroyed(int32_t task_id) {
     arc_read_handler_->OnTaskDestroyed(task_id);
 }
 
+int32_t DeskTemplateReadHandler::GetArcSessionId() {
+  NOTREACHED();
+  DCHECK(arc_read_handler_);
+  return arc_read_handler_ ? arc_read_handler_->GetArcSessionId() : 0;
+}
+
+void DeskTemplateReadHandler::SetArcSessionIdForWindowId(int32_t arc_session_id,
+                                                         int32_t window_id) {
+  NOTREACHED();
+  if (arc_read_handler_)
+    arc_read_handler_->SetArcSessionIdForWindowId(arc_session_id, window_id);
+}
+
+int32_t DeskTemplateReadHandler::GetArcRestoreWindowIdForTaskId(
+    int32_t task_id) {
+  NOTREACHED();
+  return arc_read_handler_
+             ? arc_read_handler_->GetArcRestoreWindowIdForTaskId(task_id)
+             : 0;
+}
+
+int32_t DeskTemplateReadHandler::GetArcRestoreWindowIdForSessionId(
+    int32_t session_id) {
+  NOTREACHED();
+  return arc_read_handler_
+             ? arc_read_handler_->GetArcRestoreWindowIdForSessionId(session_id)
+             : 0;
+}
+
 }  // namespace app_restore
