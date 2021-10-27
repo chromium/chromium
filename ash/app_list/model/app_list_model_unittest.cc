@@ -105,6 +105,23 @@ class AppListModelTest : public testing::Test {
     return s;
   }
 
+  bool MoveItemToFolderAt(AppListItem* item,
+                          const std::string& folder_id,
+                          const syncer::StringOrdinal& position) {
+    if (item->folder_id() == folder_id)
+      return false;
+
+    AppListFolderItem* src_folder = model_->FindFolderItem(item->folder_id());
+    if (src_folder &&
+        src_folder->folder_type() == AppListFolderItem::FOLDER_TYPE_OEM) {
+      return false;
+    }
+
+    model_->MoveItemToFolder(item, folder_id);
+    model_->SetItemPosition(item, position);
+    return true;
+  }
+
   std::string GetModelContents() {
     return GetItemListContents(model_->top_level_item_list());
   }
@@ -412,7 +429,7 @@ TEST_F(AppListModelFolderTest, MoveItemToFolder) {
   EXPECT_FALSE(folder_item);
 }
 
-TEST_F(AppListModelFolderTest, MoveItemToFolderAt) {
+TEST_F(AppListModelFolderTest, MoveItemToRootAt) {
   model_->AddItem(new AppListItem("Item 0"));
   model_->AddItem(new AppListItem("Item 1"));
   AppListFolderItem* folder1 = static_cast<AppListFolderItem*>(
@@ -422,22 +439,22 @@ TEST_F(AppListModelFolderTest, MoveItemToFolderAt) {
   ASSERT_EQ(5u, model_->top_level_item_list()->item_count());
   EXPECT_EQ("Item 0,Item 1,folder1,Item 2,Item 3", GetModelContents());
   // Move Item 1 to folder1, then Item 2 before Item 1.
-  model_->MoveItemToFolderAt(model_->top_level_item_list()->item_at(1),
-                             folder1->id(), syncer::StringOrdinal());
+  model_->MoveItemToFolder(model_->top_level_item_list()->item_at(1),
+                           folder1->id());
   EXPECT_EQ("Item 0,folder1,Item 2,Item 3", GetModelContents());
-  model_->MoveItemToFolderAt(model_->top_level_item_list()->item_at(2),
-                             folder1->id(),
-                             folder1->item_list()->item_at(0)->position());
+  MoveItemToFolderAt(
+      model_->top_level_item_list()->item_at(2), folder1->id(),
+      folder1->item_list()->item_at(0)->position().CreateBefore());
   EXPECT_EQ("Item 2,Item 1", GetItemListContents(folder1->item_list()));
   EXPECT_EQ("Item 0,folder1,Item 3", GetModelContents());
   // Move Item 2 out of folder to before folder.
-  model_->MoveItemToFolderAt(folder1->item_list()->item_at(0), "",
-                             folder1->position());
+  model_->MoveItemToRootAt(folder1->item_list()->item_at(0),
+                           folder1->position());
   EXPECT_EQ("Item 0,Item 2,folder1,Item 3", GetModelContents());
   // Move remaining folder item, (Item 1) out of folder to folder position.
   ASSERT_EQ(1u, folder1->item_list()->item_count());
-  model_->MoveItemToFolderAt(folder1->item_list()->item_at(0), "",
-                             folder1->position());
+  model_->MoveItemToRootAt(folder1->item_list()->item_at(0),
+                           folder1->position());
   EXPECT_EQ("Item 0,Item 2,Item 1,Item 3", GetModelContents());
 }
 
@@ -488,9 +505,9 @@ TEST_F(AppListModelFolderTest, UninstallFolderItems) {
   EXPECT_EQ("Item 0,Item 1,Item 2,folder1", GetModelContents());
 
   // Move all items to folder1.
-  model_->MoveItemToFolderAt(item0, folder1->id(), item0->position());
-  model_->MoveItemToFolderAt(item1, folder1->id(), item1->position());
-  model_->MoveItemToFolderAt(item2, folder1->id(), item2->position());
+  MoveItemToFolderAt(item0, folder1->id(), item0->position());
+  MoveItemToFolderAt(item1, folder1->id(), item1->position());
+  MoveItemToFolderAt(item2, folder1->id(), item2->position());
   EXPECT_EQ("Item 0,Item 1,Item 2", GetItemListContents(folder1->item_list()));
   EXPECT_EQ("folder1", GetModelContents());
 
@@ -514,8 +531,8 @@ TEST_F(AppListModelFolderTest, UninstallPersistentFolderItem) {
   EXPECT_EQ("Item 0,Item 1,folder1", GetModelContents());
 
   // Move all items to folder1.
-  model_->MoveItemToFolderAt(item0, folder1->id(), item0->position());
-  model_->MoveItemToFolderAt(item1, folder1->id(), item1->position());
+  MoveItemToFolderAt(item0, folder1->id(), item0->position());
+  MoveItemToFolderAt(item1, folder1->id(), item1->position());
   EXPECT_EQ("Item 0,Item 1", GetItemListContents(folder1->item_list()));
   EXPECT_EQ("folder1", GetModelContents());
 
@@ -532,7 +549,7 @@ TEST_F(AppListModelFolderTest, UninstallSingleItemFolderItem) {
   EXPECT_EQ("Item 0,folder1", GetModelContents());
 
   // Move item0 to folder1.
-  model_->MoveItemToFolderAt(item0, folder1->id(), item0->position());
+  MoveItemToFolderAt(item0, folder1->id(), item0->position());
   EXPECT_EQ("Item 0", GetItemListContents(folder1->item_list()));
   EXPECT_EQ("folder1", GetModelContents());
 
@@ -572,8 +589,7 @@ TEST_F(AppListModelFolderTest, OemFolder) {
   AppListItem* item1 = new AppListItem("Item 1");
   model_->AddItemToFolder(item1, folder_id);
   syncer::StringOrdinal item1_pos = item1->position();
-  bool move_res =
-      model_->MoveItemToFolderAt(item1, "", syncer::StringOrdinal());
+  bool move_res = MoveItemToFolderAt(item1, "", syncer::StringOrdinal());
   EXPECT_FALSE(move_res);
   EXPECT_TRUE(item1->position().Equals(item1_pos));
 }

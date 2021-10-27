@@ -21,6 +21,7 @@ namespace ash {
 
 namespace test {
 class AppsGridViewTest;
+class AppListTestModel;
 }  // namespace test
 
 class AppListItem;
@@ -90,6 +91,7 @@ class APP_LIST_MODEL_EXPORT AppListItemList {
  private:
   friend class AppListItemListTest;
   friend class AppListModel;
+  friend class test::AppListTestModel;
   friend class test::AppsGridViewTest;
 
   // Returns a unique, valid StringOrdinal immediately before |position| or at

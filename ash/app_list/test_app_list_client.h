@@ -68,6 +68,13 @@ class TestAppListClient : public AppListClient {
       int profile_id,
       std::string id,
       const syncer::StringOrdinal& new_position) override;
+  void OnMoveItemToFolderRequested(int profile_id,
+                                   std::string id,
+                                   const std::string& folder_id) override {}
+  void OnMoveItemToRootRequested(
+      int profile_id,
+      std::string id,
+      syncer::StringOrdinal target_position) override {}
   void OnQuickSettingsChanged(
       const std::string& setting_name,
       const std::map<std::string, int>& values) override {}

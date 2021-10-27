@@ -540,3 +540,34 @@ void ChromeAppListModelUpdater::HandleSetPosition(
   DCHECK(FindItem(id));
   SetItemPosition(id, new_position);
 }
+
+void ChromeAppListModelUpdater::HandleMoveItemToFolder(
+    std::string id,
+    const std::string& folder_id) {
+  DCHECK(!folder_id.empty());
+
+  // The target position relies on the items under the target folder. Therefore
+  // calculate `target_position` before moving the item to the folder.
+  syncer::StringOrdinal target_position;
+  ChromeAppListItem* last_child =
+      item_manager_->FindLastChildInFolder(folder_id);
+  if (!last_child) {
+    // The moved item is the first item under folder.
+    target_position = syncer::StringOrdinal::CreateInitialOrdinal();
+  } else {
+    // TODO(https://crbug.com/1247408): now the new item is always added to the
+    // rear. We should take launcher sort order into consideration.
+    target_position = last_child->position().CreateAfter();
+  }
+
+  SetItemFolderId(id, folder_id);
+  SetItemPosition(id, target_position);
+}
+
+void ChromeAppListModelUpdater::HandleMoveItemToRoot(
+    std::string id,
+    syncer::StringOrdinal target_position) {
+  SetItemFolderId(id, "");
+
+  SetItemPosition(id, target_position);
+}

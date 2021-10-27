@@ -122,6 +122,13 @@ class AppListClientImpl
       int profile_id,
       std::string id,
       const syncer::StringOrdinal& new_position) override;
+  void OnMoveItemToFolderRequested(int profile_id,
+                                   std::string id,
+                                   const std::string& folder_id) override;
+  void OnMoveItemToRootRequested(
+      int profile_id,
+      std::string id,
+      syncer::StringOrdinal target_position) override;
 
   // user_manager::UserManager::UserSessionStateObserver:
   void ActiveUserChanged(user_manager::User* active_user) override;

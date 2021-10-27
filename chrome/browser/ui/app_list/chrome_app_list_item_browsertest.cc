@@ -112,7 +112,15 @@ IN_PROC_BROWSER_TEST_F(ChromeAppListItemTest, IconLoadWithUI) {
 IN_PROC_BROWSER_TEST_F(ChromeAppListItemTest, FolderIconLoad) {
   std::vector<TestChromeAppListItem*> apps;
 
+  // A folder should exist before adding children.
   constexpr char kFakeFolderId[] = "FakeFolder";
+  auto folder_item_ptr = std::make_unique<TestChromeAppListItem>(
+      profile(), kFakeFolderId, model_updater_);
+  folder_item_ptr->SetChromeIsFolder(true);
+  folder_item_ptr->SetChromePosition(
+      syncer::StringOrdinal::CreateInitialOrdinal());
+  model_updater_->AddItem(std::move(folder_item_ptr));
+
   for (int i = 0; i < 2; ++i) {
     std::string app_id = base::StringPrintf("FakeAppId_%d", i);
     std::string app_name = base::StringPrintf("FakeApp_%d", i);

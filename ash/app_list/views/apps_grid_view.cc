@@ -1914,7 +1914,7 @@ void AppsGridView::ReparentItemForReorder(AppListItem* item,
 
   {
     ScopedModelUpdate update(this);
-    model_->MoveItemToFolderAt(item, "", target_position);
+    model_->MoveItemToRootAt(item, target_position);
   }
 
   RemoveLastItemFromReparentItemFolderIfNecessary(source_folder_id);
@@ -1976,7 +1976,7 @@ void AppsGridView::RemoveLastItemFromReparentItemFolderIfNecessary(
   // Now make the data change to remove the folder item in model.
   AppListItem* last_item = source_folder->item_list()->item_at(0);
   ScopedModelUpdate update(this);
-  model_->MoveItemToFolderAt(last_item, "", source_folder->position());
+  model_->MoveItemToRootAt(last_item, source_folder->position());
 }
 
 void AppsGridView::CancelContextMenusOnCurrentPage() {

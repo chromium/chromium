@@ -146,6 +146,13 @@ class ASH_PUBLIC_EXPORT AppListClient {
       int profile_id,
       std::string id,
       const syncer::StringOrdinal& new_position) = 0;
+  virtual void OnMoveItemToFolderRequested(int profile_id,
+                                           std::string id,
+                                           const std::string& folder_id) = 0;
+  virtual void OnMoveItemToRootRequested(
+      int profile_id,
+      std::string id,
+      syncer::StringOrdinal target_position) = 0;
 
  protected:
   virtual ~AppListClient() = default;
