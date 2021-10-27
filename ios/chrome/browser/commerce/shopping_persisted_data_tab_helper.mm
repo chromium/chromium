@@ -66,7 +66,10 @@ ShoppingPersistedDataTabHelper::GetPriceDrop() {
   if (!IsPriceAlertsEligible(web_state_->GetBrowserState()) ||
       !IsPriceAlertsEnabled())
     return nullptr;
-  if (!price_drop_ || price_drop_->url != web_state_->GetLastCommittedURL() ||
+  const GURL& url = web_state_->GetLastCommittedURL().is_valid()
+                        ? web_state_->GetLastCommittedURL()
+                        : web_state_->GetVisibleURL();
+  if (!price_drop_ || price_drop_->url != url ||
       IsPriceDropStale(price_drop_->timestamp)) {
     ResetPriceDrop();
     OptimizationGuideService* optimization_guide_service =
@@ -77,12 +80,10 @@ ShoppingPersistedDataTabHelper::GetPriceDrop() {
       return nullptr;
     optimization_guide::OptimizationMetadata metadata;
     if (optimization_guide_service->CanApplyOptimization(
-            web_state_->GetLastCommittedURL(),
-            optimization_guide::proto::PRICE_TRACKING,
-            &metadata) != optimization_guide::OptimizationGuideDecision::kTrue)
+            url, optimization_guide::proto::PRICE_TRACKING, &metadata) !=
+        optimization_guide::OptimizationGuideDecision::kTrue)
       return nullptr;
-    ParseProto(web_state_->GetLastCommittedURL(),
-               metadata.ParsedMetadata<commerce::PriceTrackingData>());
+    ParseProto(url, metadata.ParsedMetadata<commerce::PriceTrackingData>());
   }
   if (price_drop_) {
     return price_drop_.get();
