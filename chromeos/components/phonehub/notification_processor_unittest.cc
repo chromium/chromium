@@ -4,7 +4,9 @@
 
 #include "chromeos/components/phonehub/notification_processor.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/memory/ptr_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/components/phonehub/fake_notification_manager.h"
 #include "chromeos/components/phonehub/phone_model_test_util.h"
@@ -18,11 +20,15 @@ namespace {
 
 constexpr int64_t kNotificationIdA = 1;
 constexpr int64_t kNotificationIdB = 2;
+constexpr int64_t kNotificationIdC = 3;
 
 constexpr int64_t kInlineReplyIdA = 3;
 constexpr int64_t kInlineReplyIdB = 4;
 
 constexpr int64_t kOpenableActionId = -2;
+constexpr int64_t kAnswerActionId = 1;
+constexpr int64_t kDeclineActionId = 2;
+constexpr int64_t kHangupActionId = 3;
 
 const char kIconDataA[] = "icon_a";
 const char kIconDataB[] = "icon_b";
@@ -51,7 +57,12 @@ class NotificationProcessorTest : public testing::Test {
  public:
   friend class NotificationProcessor;
 
-  NotificationProcessorTest() = default;
+  NotificationProcessorTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kEcheSWA,
+                              features::kPhoneHubCallNotification},
+        /*disabled_features=*/{});
+  }
   NotificationProcessorTest(const NotificationProcessorTest&) = delete;
   NotificationProcessorTest& operator=(const NotificationProcessorTest&) =
       delete;
@@ -141,6 +152,8 @@ class NotificationProcessorTest : public testing::Test {
     notification.set_allocated_origin_app(origin_app.release());
     notification.set_contact_image(contact_image);
     notification.set_shared_image(shared_image);
+    notification.set_category(
+        proto::Notification::Category::Notification_Category_CONVERSATION);
 
     notification.add_actions();
     proto::Action* mutable_action = notification.mutable_actions(0);
@@ -175,10 +188,64 @@ class NotificationProcessorTest : public testing::Test {
     return notification;
   }
 
+  proto::Notification CreateIncomingCallNotification(int64_t notification_id) {
+    auto origin_app = std::make_unique<proto::App>();
+    origin_app->set_icon(std::string());
+
+    proto::Notification notification;
+    notification.set_id(notification_id);
+    notification.set_allocated_origin_app(origin_app.release());
+    notification.set_contact_image(std::string());
+    notification.set_shared_image(std::string());
+    notification.set_category(
+        proto::Notification::Category::Notification_Category_INCOMING_CALL);
+
+    notification.add_actions();
+    proto::Action* answer_action = notification.mutable_actions(0);
+    answer_action->set_id(kAnswerActionId);
+    answer_action->set_call_action(
+        proto::Action_CallAction::Action_CallAction_ANSWER);
+
+    notification.add_actions();
+    proto::Action* decline_action = notification.mutable_actions(1);
+    decline_action->set_id(kDeclineActionId);
+    decline_action->set_call_action(
+        proto::Action_CallAction::Action_CallAction_DECLINE);
+
+    return notification;
+  }
+
+  proto::Notification CreateOngoingCallNotification(int64_t notification_id) {
+    auto origin_app = std::make_unique<proto::App>();
+    origin_app->set_icon(std::string());
+
+    proto::Notification notification;
+    notification.set_id(notification_id);
+    notification.set_allocated_origin_app(origin_app.release());
+    notification.set_contact_image(std::string());
+    notification.set_shared_image(std::string());
+    notification.set_category(
+        proto::Notification::Category::Notification_Category_ONGOING_CALL);
+
+    notification.add_actions();
+    proto::Action* hangup_action = notification.mutable_actions(0);
+    hangup_action->set_id(kHangupActionId);
+    hangup_action->set_call_action(
+        proto::Action_CallAction::Action_CallAction_HANGUP);
+
+    notification.add_actions();
+    proto::Action* open_action = notification.mutable_actions(1);
+    open_action->set_id(kOpenableActionId);
+    open_action->set_type(proto::Action_InputType::Action_InputType_OPEN);
+
+    return notification;
+  }
+
  private:
   std::unique_ptr<FakeNotificationManager> fake_notification_manager_;
   std::unique_ptr<NotificationProcessor> notification_processor_;
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
@@ -411,6 +478,7 @@ TEST_F(NotificationProcessorTest, InteractionBehaviorPopulatedCorrectly) {
       fake_notification_manager()->GetNotification(kNotificationIdA);
   EXPECT_EQ(Notification::InteractionBehavior::kOpenable,
             notification->interaction_behavior());
+  EXPECT_EQ(Notification::Category::kConversation, notification->category());
 
   // The notification should not specify interaction behaviors if none are
   // available.
@@ -423,6 +491,71 @@ TEST_F(NotificationProcessorTest, InteractionBehaviorPopulatedCorrectly) {
   notification = fake_notification_manager()->GetNotification(kNotificationIdA);
   EXPECT_EQ(Notification::InteractionBehavior::kNone,
             notification->interaction_behavior());
+  EXPECT_EQ(Notification::Category::kConversation, notification->category());
+
+  // The notification has IncomingCall category if answer action is
+  // found.
+  first_set_of_notifications.clear();
+  first_set_of_notifications.emplace_back(
+      CreateIncomingCallNotification(kNotificationIdA));
+  notification_processor()->AddNotifications(first_set_of_notifications);
+  image_decoder_delegate()->RunAllCallbacks();
+
+  notification = fake_notification_manager()->GetNotification(kNotificationIdA);
+  EXPECT_EQ(Notification::Category::kIncomingCall, notification->category());
+
+  // The notification has OngoingCall category if hangup action is
+  // found.
+  first_set_of_notifications.clear();
+  first_set_of_notifications.emplace_back(
+      CreateOngoingCallNotification(kNotificationIdC));
+  notification_processor()->AddNotifications(first_set_of_notifications);
+  image_decoder_delegate()->RunAllCallbacks();
+
+  notification = fake_notification_manager()->GetNotification(kNotificationIdC);
+  EXPECT_EQ(Notification::Category::kOngoingCall, notification->category());
+}
+
+TEST_F(NotificationProcessorTest, ActionIdMapPopulatedCorrectly) {
+  std::vector<proto::Notification> first_set_of_notifications;
+
+  // The inline reply notification should have reply action id.
+  first_set_of_notifications.emplace_back(
+      CreateNewInlineReplyableNotification(kNotificationIdA, kInlineReplyIdA));
+  notification_processor()->AddNotifications(first_set_of_notifications);
+  image_decoder_delegate()->RunAllCallbacks();
+
+  const Notification* notification =
+      fake_notification_manager()->GetNotification(kNotificationIdA);
+  EXPECT_EQ(1u, notification->action_id_map().size());
+  EXPECT_EQ(kInlineReplyIdA, notification->action_id_map().at(
+                                 Notification::ActionType::kInlineReply));
+
+  // The incoming call notification should have answer and decline action ids.
+  first_set_of_notifications.clear();
+  first_set_of_notifications.emplace_back(
+      CreateIncomingCallNotification(kNotificationIdA));
+  notification_processor()->AddNotifications(first_set_of_notifications);
+  image_decoder_delegate()->RunAllCallbacks();
+
+  notification = fake_notification_manager()->GetNotification(kNotificationIdA);
+  EXPECT_EQ(2u, notification->action_id_map().size());
+  EXPECT_EQ(kAnswerActionId, notification->action_id_map().at(
+                                 Notification::ActionType::kAnswer));
+  EXPECT_EQ(kDeclineActionId, notification->action_id_map().at(
+                                  Notification::ActionType::kDecline));
+
+  // The ongoing call notification should have hangup action id.
+  first_set_of_notifications.clear();
+  first_set_of_notifications.emplace_back(
+      CreateOngoingCallNotification(kNotificationIdC));
+  notification_processor()->AddNotifications(first_set_of_notifications);
+  image_decoder_delegate()->RunAllCallbacks();
+
+  notification = fake_notification_manager()->GetNotification(kNotificationIdC);
+  EXPECT_EQ(1u, notification->action_id_map().size());
+  EXPECT_EQ(kHangupActionId, notification->action_id_map().at(
+                                 Notification::ActionType::kHangup));
 }
 
 }  // namespace phonehub

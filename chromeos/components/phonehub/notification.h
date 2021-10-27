@@ -8,7 +8,9 @@
 #include <stdint.h>
 #include <ostream>
 #include <string>
+#include <unordered_map>
 
+#include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image.h"
@@ -45,7 +47,46 @@ class Notification {
     kNone,
 
     // Notification can be opened.
-    kOpenable
+    kOpenable,
+  };
+
+  // Interaction behavior for integration with other features.
+  enum class ActionType {
+    // Default value. No interactions available.
+    kNone,
+
+    // User can click the reply button for the conversation type notification.
+    kInlineReply,
+
+    // User can click answer button for the incoming call notification.
+    kAnswer,
+
+    // User can click decline button for the incoming call notification.
+    kDecline,
+
+    // User can click hang up button for the ongoing call notification.
+    kHangup,
+  };
+
+  enum class Category {
+    // Default value..
+    kNone,
+
+    // User can click the reply button for the conversation type notification.
+    kConversation,
+
+    // The incoming call notification with answer and decline action buttons.
+    // User can click the answer button to open the App streaming window to
+    // answer the call and click the decline button to decline call directly.
+    kIncomingCall,
+
+    // The ongoing call notification with a hangup action button. User can
+    // click on the body of notification to open the App streaming window to
+    // resume the call.
+    kOngoingCall,
+
+    // The Screening call notification with a screening call action button.
+    kScreenCall,
   };
 
   // Notification importance; for more details, see
@@ -80,7 +121,8 @@ class Notification {
       const AppMetadata& app_metadata,
       const base::Time& timestamp,
       Importance importance,
-      int64_t inline_reply_id,
+      Notification::Category category,
+      const base::flat_map<Notification::ActionType, int64_t>& action_id_map,
       InteractionBehavior interaction_behavior,
       const absl::optional<std::u16string>& title = absl::nullopt,
       const absl::optional<std::u16string>& text_content = absl::nullopt,
@@ -97,7 +139,10 @@ class Notification {
   const AppMetadata& app_metadata() const { return app_metadata_; }
   base::Time timestamp() const { return timestamp_; }
   Importance importance() const { return importance_; }
-  int64_t inline_reply_id() const { return inline_reply_id_; }
+  Notification::Category category() const { return category_; }
+  base::flat_map<Notification::ActionType, int64_t> action_id_map() const {
+    return action_id_map_;
+  }
   InteractionBehavior interaction_behavior() const {
     return interaction_behavior_;
   }
@@ -117,7 +162,8 @@ class Notification {
   AppMetadata app_metadata_;
   base::Time timestamp_;
   Importance importance_;
-  int64_t inline_reply_id_;
+  Notification::Category category_;
+  base::flat_map<Notification::ActionType, int64_t> action_id_map_;
   InteractionBehavior interaction_behavior_;
   absl::optional<std::u16string> title_;
   absl::optional<std::u16string> text_content_;
@@ -133,6 +179,8 @@ std::ostream& operator<<(std::ostream& stream,
                          const Notification& notification);
 std::ostream& operator<<(std::ostream& stream,
                          const Notification::InteractionBehavior behavior);
+std::ostream& operator<<(std::ostream& stream,
+                         const Notification::Category category);
 }  // namespace phonehub
 }  // namespace chromeos
 

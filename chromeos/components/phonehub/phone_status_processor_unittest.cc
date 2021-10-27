@@ -47,7 +47,9 @@ class FakeNotificationProcessor : public NotificationProcessor {
     for (const auto& proto : notification_protos) {
       notifications.emplace(Notification(
           proto.id(), CreateFakeAppMetadata(), base::Time(),
-          Notification::Importance::kDefault, /*inline_reply_id=*/0,
+          Notification::Importance::kDefault,
+          Notification::Category::kConversation,
+          {{Notification::ActionType::kInlineReply, /*action_id=*/0}},
           Notification::InteractionBehavior::kNone, absl::nullopt,
           absl::nullopt, absl::nullopt, absl::nullopt));
     }

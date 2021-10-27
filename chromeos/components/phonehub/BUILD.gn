@@ -244,6 +244,7 @@ source_set("unit_tests") {
     ":debug",
     ":phonehub",
     ":test_support",
+    "//ash/constants",
     "//base",
     "//base/test:test_support",
     "//chromeos/components/multidevice",
