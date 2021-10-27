@@ -409,7 +409,6 @@ IN_PROC_BROWSER_TEST_P(AppListSearchSystemWebAppBrowserTest,
   EXPECT_EQ(result->position_priority(), 0);
   // No override url (will open app at default page).
   EXPECT_FALSE(result->query_url().has_value());
-  EXPECT_EQ(result->display_type(), DisplayType::kTile);
 }
 
 IN_PROC_BROWSER_TEST_P(AppListSearchSystemWebAppBrowserTest, Launch) {

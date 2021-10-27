@@ -13,6 +13,7 @@
 #include <unordered_set>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
@@ -533,18 +534,23 @@ void AppSearchProvider::UpdateRecommendedResults(
       result->set_relevance(0.0f);
     }
 
-    // Create a second result to the display in the launcher chips, that is
-    // otherwise identical to |result|.
-    std::unique_ptr<AppResult> chip_result =
-        app->data_source()->CreateResult(app->id(), list_controller_, true);
-    chip_result->SetMetadata(result->CloneMetadata());
-    chip_result->SetDisplayType(ChromeSearchResult::DisplayType::kChip);
-    chip_result->set_relevance(result->relevance());
+    // In the old launcher, create a second result to the display in the
+    // launcher chips, that is otherwise identical to |result|.
+    //
+    // TODO(crbug.com/1258415): This can be removed once the productivity
+    // launcher is launched.
+    if (!ash::features::IsProductivityLauncherEnabled()) {
+      std::unique_ptr<AppResult> chip_result =
+          app->data_source()->CreateResult(app->id(), list_controller_, true);
+      chip_result->SetMetadata(result->CloneMetadata());
+      chip_result->SetDisplayType(ChromeSearchResult::DisplayType::kChip);
+      chip_result->set_relevance(result->relevance());
+      MaybeAddResult(&new_results, std::move(chip_result),
+                     &seen_or_filtered_chip_apps);
+    }
 
     MaybeAddResult(&new_results, std::move(result),
                    &seen_or_filtered_tile_apps);
-    MaybeAddResult(&new_results, std::move(chip_result),
-                   &seen_or_filtered_chip_apps);
   }
   PublishQueriedResultsOrRecommendation(false, &new_results);
 }
