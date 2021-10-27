@@ -51,29 +51,29 @@ class FwupdClientImpl : public FwupdClient {
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
-  void GetUpgrades(std::string device_id) override {
+  void RequestUpgrades(std::string device_id) override {
     dbus::MethodCall method_call(kFwupdServiceInterface,
                                  kFwupdGetUpgradesMethodName);
     dbus::MessageWriter writer(&method_call);
     writer.AppendString(device_id);
     proxy_->CallMethodWithErrorResponse(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&FwupdClientImpl::GetUpgradesCallback,
+        base::BindOnce(&FwupdClientImpl::RequestUpgradesCallback,
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
-  void GetDevices() override {
+  void RequestDevices() override {
     dbus::MethodCall method_call(kFwupdServiceInterface,
                                  kFwupdGetDevicesMethodName);
     proxy_->CallMethodWithErrorResponse(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&FwupdClientImpl::GetDevicesCallback,
+        base::BindOnce(&FwupdClientImpl::RequestDevicesCallback,
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
  private:
-  void GetUpgradesCallback(dbus::Response* response,
-                           dbus::ErrorResponse* error_response) {
+  void RequestUpgradesCallback(dbus::Response* response,
+                               dbus::ErrorResponse* error_response) {
     if (!response) {
       LOG(ERROR) << "No Dbus response received from fwupd.";
       return;
@@ -81,11 +81,11 @@ class FwupdClientImpl : public FwupdClient {
 
     // TODO(swifton): This is a stub implementation. Replace this with a
     // callback call for FirmwareUpdateHandler when it's implemented.
-    ++get_upgrades_callback_call_count_for_testing_;
+    ++request_upgrades_callback_call_count_for_testing_;
   }
 
-  void GetDevicesCallback(dbus::Response* response,
-                          dbus::ErrorResponse* error_response) {
+  void RequestDevicesCallback(dbus::Response* response,
+                              dbus::ErrorResponse* error_response) {
     if (!response) {
       LOG(ERROR) << "No Dbus response received from fwupd.";
       return;

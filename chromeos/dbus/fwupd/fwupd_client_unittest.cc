@@ -68,8 +68,8 @@ class FwupdClientTest : public testing::Test {
     return fwupd_client_->device_signal_call_count_for_testing_;
   }
 
-  int GetGetUpgradesCallbackCallCount() {
-    return fwupd_client_->get_upgrades_callback_call_count_for_testing_;
+  int GetRequestUpgradesCallbackCallCount() {
+    return fwupd_client_->request_upgrades_callback_call_count_for_testing_;
   }
 
   void OnMethodCalled(dbus::MethodCall* method_call,
@@ -160,11 +160,11 @@ TEST_F(FwupdClientTest, RequestUpgrades) {
   std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
   AddDbusMethodCallResultSimulation(std::move(response), nullptr);
 
-  fwupd_client_->GetUpgrades(kFakeDeviceIdForTesting);
+  fwupd_client_->RequestUpgrades(kFakeDeviceIdForTesting);
 
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(1, GetGetUpgradesCallbackCallCount());
+  EXPECT_EQ(1, GetRequestUpgradesCallbackCallCount());
 }
 
 TEST_F(FwupdClientTest, RequestDevices) {
@@ -178,7 +178,7 @@ TEST_F(FwupdClientTest, RequestDevices) {
   std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
   AddDbusMethodCallResultSimulation(std::move(response), nullptr);
 
-  fwupd_client_->GetDevices();
+  fwupd_client_->RequestDevices();
 
   base::RunLoop().RunUntilIdle();
 }

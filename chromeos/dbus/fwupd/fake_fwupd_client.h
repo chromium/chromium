@@ -20,8 +20,8 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_FUWPD) FakeFwupdClient
   ~FakeFwupdClient() override;
 
   void Init(dbus::Bus* bus) override;
-  void GetUpgrades(std::string device_id) override;
-  void GetDevices() override;
+  void RequestUpgrades(std::string device_id) override;
+  void RequestDevices() override;
 };
 
 }  // namespace chromeos
