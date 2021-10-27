@@ -1,7 +1,7 @@
 <style include="cr-shared-style shimless-rma-shared">
   iron-icon {
-    width: 300px;
     height: 200px;
+    width: 300px;
   }
 </style>
 
@@ -15,16 +15,10 @@
     <p id="networkUnavailable" hidden$="{{networkAvailable}}">
       To check if OS is up to date, connect to the internet in previous screen
     </p>
-    <p hidden$="{{!checkInProgress_}}">Checking OS version...</p>
-    <cr-button disabled="{{checkInProgress_}}"
-        hidden$="{{updateCheckButtonHidden_(networkAvailable, updateAvailable_)}}"
-        id="checkUpdate" on-click="onUpdateCheckButtonClicked_">
-      Check for updates
-    </cr-button>
-    <cr-button disabled="{{updateInProgress_}}"
-        hidden$="{{!updateAvailable_}}"
+    <cr-button disabled="[[updateInProgress_]]"
+        hidden$="[[!updateAvailable_]]"
         id="performUpdate" on-click="onUpdateButtonClicked_">
-      Update version and restart
+      Update to version [[updateVersion_]] and restart
     </cr-button>
   </div>
   <div slot="body">
