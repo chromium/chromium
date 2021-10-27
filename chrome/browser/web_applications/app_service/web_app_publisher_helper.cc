@@ -64,6 +64,10 @@
 #include "components/sessions/core/session_id.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_service.h"
+#endif
+
 using apps::IconEffects;
 
 namespace web_app {
@@ -748,9 +752,15 @@ void WebAppPublisherHelper::SetPermission(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 void WebAppPublisherHelper::StopApp(const std::string& app_id) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!base::FeatureList::IsEnabled(features::kWebAppsCrosapi)) {
     return;
   }
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!chromeos::LacrosService::Get()->init_params()->web_apps_enabled) {
+    return;
+  }
+#endif
 
   apps::BrowserAppInstanceTracker* instance_tracker =
       apps::AppServiceProxyFactory::GetInstance()

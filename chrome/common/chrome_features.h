@@ -741,12 +741,10 @@ extern const base::Feature kWebAppManifestIconUpdating;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kWebAppManifestPolicyAppIdentityUpdate;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kWebAppsCrosapi;
-#endif  // defined(OS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kWebKioskEnableLacros;
 #endif
