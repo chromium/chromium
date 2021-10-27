@@ -53,6 +53,8 @@
 #include "ui/gfx/text_constants.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/border.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
@@ -91,6 +93,112 @@ std::unique_ptr<views::LabelButton> CreateMenuItem(
   return button;
 }
 
+class MenuItemFactory : public views::BubbleDialogModelHost::CustomViewFactory {
+ public:
+  MenuItemFactory(const std::u16string& name,
+                  views::Button::PressedCallback callback,
+                  const gfx::VectorIcon* icon = nullptr)
+      : name_(std::move(name)), callback_(std::move(callback)), icon_(icon) {}
+  ~MenuItemFactory() override = default;
+
+  // views::BubbleDialogModelHost::CustomViewFactory:
+  std::unique_ptr<views::View> CreateView() override {
+    // TODO(pbos): See if dialog_model()->host()->Close(); can be handled by the
+    // menu item itself (after calling callback_). All menu-item actions close
+    // the dialog. We should be able to chain some calls if we have access to
+    // DialogModelDelegate here.
+
+    return CreateMenuItem(-1, name_, callback_, icon_);
+  }
+
+  views::BubbleDialogModelHost::FieldType GetFieldType() const override {
+    return views::BubbleDialogModelHost::FieldType::kMenuItem;
+  }
+
+ private:
+  const std::u16string name_;
+  const views::Button::PressedCallback callback_;
+  const gfx::VectorIcon* const icon_;
+};
+
+class TabGroupEditorBubbleDelegate : public ui::DialogModelDelegate {
+ public:
+  TabGroupEditorBubbleDelegate(const Browser* browser,
+                               const tab_groups::TabGroupId& group)
+      : browser_(browser), group_(group) {}
+
+  TabGroupEditorBubbleDelegate(const TabGroupEditorBubbleDelegate&) = delete;
+  TabGroupEditorBubbleDelegate& operator=(const TabGroupEditorBubbleDelegate&) =
+      delete;
+
+  ~TabGroupEditorBubbleDelegate() override = default;
+
+  void NewTabInGroupPressed() {
+    base::RecordAction(
+        base::UserMetricsAction("TabGroups_TabGroupBubble_NewTabInGroup"));
+    TabStripModel* const model = browser_->tab_strip_model();
+    const auto tabs = model->group_model()->GetTabGroup(group_)->ListTabs();
+    model->delegate()->AddTabAt(GURL(), tabs.end(), true, group_);
+    // Close the widget to allow users to continue their work in their newly
+    // created tab.
+    dialog_model()->host()->Close();
+  }
+
+  void UngroupPressed(TabGroupHeader* header_view) {
+    base::RecordAction(
+        base::UserMetricsAction("TabGroups_TabGroupBubble_Ungroup"));
+    if (header_view) {
+      // TODO(pbos): See if this can be managed outside this dialog to prevent
+      // upcasting to BubbleDialogModelHost.
+      header_view->RemoveObserverFromWidget(
+          static_cast<views::BubbleDialogModelHost*>(dialog_model()->host())
+              ->GetWidget());
+    }
+    TabStripModel* const model = browser_->tab_strip_model();
+
+    const gfx::Range tab_range =
+        model->group_model()->GetTabGroup(group_)->ListTabs();
+
+    std::vector<int> tabs;
+    tabs.reserve(tab_range.length());
+    for (auto i = tab_range.start(); i < tab_range.end(); ++i)
+      tabs.push_back(i);
+
+    model->RemoveFromGroup(tabs);
+    // Close the widget because it is no longer applicable.
+    dialog_model()->host()->Close();
+  }
+
+  void CloseGroupPressed() {
+    base::RecordAction(
+        base::UserMetricsAction("TabGroups_TabGroupBubble_CloseGroup"));
+    browser_->tab_strip_model()->CloseAllTabsInGroup(group_);
+    // Close the widget because it is no longer applicable.
+    dialog_model()->host()->Close();
+  }
+
+  void MoveGroupToNewWindowPressed() {
+    browser_->tab_strip_model()->delegate()->MoveGroupToNewWindow(group_);
+    dialog_model()->host()->Close();
+  }
+
+  void SendFeedbackPressed() {
+    base::RecordAction(
+        base::UserMetricsAction("TabGroups_TabGroupBubble_SendFeedback"));
+    chrome::ShowFeedbackPage(
+        browser_, chrome::FeedbackSource::kFeedbackSourceDesktopTabGroups,
+        /*description_template=*/std::string(),
+        /*description_placeholder_text=*/std::string(),
+        /*category_tag=*/std::string(),
+        /*extra_diagnostics=*/std::string());
+    dialog_model()->host()->Close();
+  }
+
+ private:
+  const Browser* const browser_;
+  const tab_groups::TabGroupId group_;
+};
+
 }  // namespace
 
 // static
@@ -101,6 +209,92 @@ views::Widget* TabGroupEditorBubbleView::Show(
     absl::optional<gfx::Rect> anchor_rect,
     views::View* anchor_view,
     bool stop_context_menu_propagation) {
+  // TODO(pbos): Clean this duplicate implementation up. This is only here while
+  // development of a DialogModel version of this bubble is in progress. This is
+  // also only checked in so that development on DialogModel and
+  // BubbleDialogModelHost can happen in chunks and be checked in instead of
+  // landed as a gargantuan change.
+  static constexpr bool kUseDialogModel = false;
+  if (kUseDialogModel) {
+    auto bubble_delegate_unique =
+        std::make_unique<TabGroupEditorBubbleDelegate>(browser, group);
+    TabGroupEditorBubbleDelegate* const bubble_delegate =
+        bubble_delegate_unique.get();
+
+    ui::DialogModel::Builder dialog_builder(std::move(bubble_delegate_unique));
+
+    // TODO(pbos): This still does not include the title field, divider or color
+    // picker.
+
+    dialog_builder.OverrideShowCloseButton(false)
+        .AddCustomField(
+            std::make_unique<MenuItemFactory>(
+                l10n_util::GetStringUTF16(
+                    IDS_TAB_GROUP_HEADER_CXMENU_NEW_TAB_IN_GROUP),
+                base::BindRepeating(
+                    &TabGroupEditorBubbleDelegate::NewTabInGroupPressed,
+                    base::Unretained(bubble_delegate)),
+                &kNewTabInGroupIcon),
+            TAB_GROUP_HEADER_CXMENU_NEW_TAB_IN_GROUP)
+        .AddCustomField(
+            std::make_unique<MenuItemFactory>(
+                l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_UNGROUP),
+                base::BindRepeating(
+                    &TabGroupEditorBubbleDelegate::UngroupPressed,
+                    base::Unretained(bubble_delegate), header_view),
+                &kUngroupIcon),
+            TAB_GROUP_HEADER_CXMENU_UNGROUP)
+        .AddCustomField(
+            std::make_unique<MenuItemFactory>(
+                l10n_util::GetStringUTF16(
+                    IDS_TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP),
+                base::BindRepeating(
+                    &TabGroupEditorBubbleDelegate::CloseGroupPressed,
+                    base::Unretained(bubble_delegate)),
+                &kCloseGroupIcon),
+            TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP)
+        .AddCustomField(
+            std::make_unique<MenuItemFactory>(
+                l10n_util::GetStringUTF16(
+                    IDS_TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW),
+                base::BindRepeating(
+                    &TabGroupEditorBubbleDelegate::MoveGroupToNewWindowPressed,
+                    base::Unretained(bubble_delegate)),
+                &kMoveGroupToNewWindowIcon),
+            TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW);
+
+    // TODO(pbos): Add enabling/disabling of
+    // TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW item.
+
+    if (base::FeatureList::IsEnabled(features::kTabGroupsFeedback)) {
+      dialog_builder.AddCustomField(
+          std::make_unique<MenuItemFactory>(
+              l10n_util::GetStringUTF16(
+                  IDS_TAB_GROUP_HEADER_CXMENU_SEND_FEEDBACK),
+              base::BindRepeating(
+                  &TabGroupEditorBubbleDelegate::SendFeedbackPressed,
+                  base::Unretained(bubble_delegate))),
+          TAB_GROUP_HEADER_CXMENU_FEEDBACK);
+    }
+
+    std::unique_ptr<ui::DialogModel> dialog_model = dialog_builder.Build();
+
+    // If |header_view| is not null, use |header_view| as the |anchor_view|.
+    auto bubble = std::make_unique<views::BubbleDialogModelHost>(
+        std::move(dialog_model), header_view ? header_view : anchor_view,
+        views::BubbleBorder::TOP_LEFT);
+    if (anchor_rect)
+      bubble->SetAnchorRect(*anchor_rect);
+    views::BubbleDialogModelHost* const bubble_ptr = bubble.get();
+    views::Widget* const widget =
+        views::BubbleDialogDelegate::CreateBubble(std::move(bubble));
+    bubble_ptr->set_adjust_if_offscreen(true);
+    bubble_ptr->GetBubbleFrameView()->SetPreferredArrowAdjustment(
+        views::BubbleFrameView::PreferredArrowAdjustment::kOffset);
+    widget->Show();
+    return widget;
+  }
+
   // If |header_view| is not null, use |header_view| as the |anchor_view|.
   TabGroupEditorBubbleView* tab_group_editor_bubble_view =
       new TabGroupEditorBubbleView(

@@ -227,6 +227,14 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
       return *this;
     }
 
+    // Adds a custom field. See DialogModel::AddCustomField().
+    Builder& AddCustomField(
+        std::unique_ptr<DialogModelCustomField::Factory> factory,
+        int unique_id = -1) {
+      model_->AddCustomField(std::move(factory), unique_id);
+      return *this;
+    }
+
     // Sets which field should be initially focused in the dialog model. Must be
     // called after that field has been added. Can only be called once.
     Builder& SetInitiallyFocusedField(int unique_id);
@@ -267,6 +275,12 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
                     std::u16string text,
                     const DialogModelTextfield::Params& params =
                         DialogModelTextfield::Params());
+
+  // Adds a custom field at the end of the dialog model. This is used to inject
+  // framework-specific custom UI into dialogs that are otherwise constructed as
+  // DialogModels.
+  void AddCustomField(std::unique_ptr<DialogModelCustomField::Factory> factory,
+                      int unique_id = -1);
 
   // Check for the existence of a field. Should not be used if the code path
   // expects the |unique_id| to always be present, as GetFieldByUniqueId() and
