@@ -682,6 +682,7 @@ class SearchPrefetchServiceEnabledBrowserTest
     feature_list_.InitWithFeaturesAndParameters(
         {{kSearchPrefetchServicePrefetching,
           {{"stream_responses", GetParam() ? "true" : "false"},
+           {"max_attempts_per_caching_duration", "3"},
            {"cache_size", "1"},
            {"device_memory_threshold_MB", "0"}}},
          {{kSearchPrefetchService}, {}}},
@@ -2492,6 +2493,7 @@ class SearchPrefetchServiceZeroCacheTimeBrowserTest
     feature_list_.InitWithFeaturesAndParameters(
         {{kSearchPrefetchServicePrefetching,
           {{"prefetch_caching_limit_ms", "10"},
+           {"max_attempts_per_caching_duration", "3"},
            {"device_memory_threshold_MB", "0"}}},
          {{kSearchPrefetchService}, {}}},
         {});

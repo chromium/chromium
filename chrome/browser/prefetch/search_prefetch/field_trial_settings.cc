@@ -55,7 +55,7 @@ size_t SearchPrefetchMaxAttemptsPerCachingDuration() {
   }
   return base::GetFieldTrialParamByFeatureAsInt(
       kSearchPrefetchServicePrefetching, "max_attempts_per_caching_duration",
-      3);
+      7);
 }
 
 base::TimeDelta SearchPrefetchErrorBackoffDuration() {
