@@ -721,8 +721,18 @@ void LayoutText::AbsoluteQuadsForRange(Vector<FloatQuad>& quads,
       }
       if (UNLIKELY(text_combine))
         rect = text_combine->AdjustRectForBoundingBox(rect);
-      rect.Move(cursor.CurrentOffsetInBlockFlow());
-      const FloatQuad quad = LocalRectToAbsoluteQuad(rect);
+      FloatQuad quad;
+      if (item.Type() == NGFragmentItem::kSvgText) {
+        FloatRect float_rect(rect);
+        float_rect.MoveBy(item.SvgFragmentData()->rect.origin());
+        quad = item.BuildSvgTransformForBoundingBox().MapQuad(float_rect);
+        const float scaling_factor = item.SvgScalingFactor();
+        quad.Scale(1 / scaling_factor, 1 / scaling_factor);
+        quad = LocalToAbsoluteQuad(quad);
+      } else {
+        rect.Move(cursor.CurrentOffsetInBlockFlow());
+        quad = LocalRectToAbsoluteQuad(rect);
+      }
       if (!is_collapsed) {
         quads.push_back(quad);
         found_non_collapsed_quad = true;
