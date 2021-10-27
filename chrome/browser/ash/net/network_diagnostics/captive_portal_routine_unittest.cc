@@ -84,10 +84,9 @@ class CaptivePortalRoutineTest : public ::testing::Test {
   void InitializeManagedNetworkConfigurationHandler() {
     network_profile_handler_ = NetworkProfileHandler::InitializeForTesting();
     network_configuration_handler_ =
-        base::WrapUnique<NetworkConfigurationHandler>(
-            NetworkConfigurationHandler::InitializeForTest(
-                network_state_helper().network_state_handler(),
-                cros_network_config_test_helper().network_device_handler()));
+        NetworkConfigurationHandler::InitializeForTest(
+            network_state_helper().network_state_handler(),
+            cros_network_config_test_helper().network_device_handler());
 
     PrefProxyConfigTrackerImpl::RegisterProfilePrefs(user_prefs_.registry());
     PrefProxyConfigTrackerImpl::RegisterPrefs(local_state_.registry());

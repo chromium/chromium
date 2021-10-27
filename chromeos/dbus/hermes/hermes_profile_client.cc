@@ -113,7 +113,7 @@ class HermesProfileClientImpl : public HermesProfileClient {
   HermesProfileClient& operator=(const HermesProfileClient&) = delete;
   ~HermesProfileClientImpl() override = default;
 
-  using Object = std::pair<dbus::ObjectProxy*, Properties*>;
+  using Object = std::pair<dbus::ObjectProxy*, std::unique_ptr<Properties>>;
   using ObjectMap = std::map<dbus::ObjectPath, Object>;
 
   // HermesProfileClient:
@@ -155,13 +155,13 @@ class HermesProfileClientImpl : public HermesProfileClient {
 
   Properties* GetProperties(
       const dbus::ObjectPath& carrier_profile_path) override {
-    return GetObject(carrier_profile_path).second;
+    return GetObject(carrier_profile_path).second.get();
   }
 
   TestInterface* GetTestInterface() override { return nullptr; }
 
  private:
-  Object GetObject(const dbus::ObjectPath& object_path) {
+  Object& GetObject(const dbus::ObjectPath& object_path) {
     ObjectMap::iterator it = object_map_.find(object_path);
     if (it != object_map_.end())
       return it->second;
@@ -169,16 +169,16 @@ class HermesProfileClientImpl : public HermesProfileClient {
     dbus::ObjectProxy* object_proxy =
         bus_->GetObjectProxy(hermes::kHermesServiceName, object_path);
 
-    Properties* properties = new Properties(
+    auto properties = std::make_unique<Properties>(
         object_proxy,
         base::BindRepeating(&HermesProfileClientImpl::OnPropertyChanged,
                             weak_ptr_factory_.GetWeakPtr(), object_path));
     properties->ConnectSignals();
     properties->GetAll();
 
-    Object object = std::make_pair(object_proxy, properties);
-    object_map_[object_path] = object;
-    return object;
+    Object object = std::make_pair(object_proxy, std::move(properties));
+    object_map_[object_path] = std::move(object);
+    return object_map_[object_path];
   }
 
   void OnPropertyChanged(const dbus::ObjectPath& object_path,

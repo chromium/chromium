@@ -63,8 +63,8 @@ class CellularESimUninstallHandlerTest : public testing::Test {
     network_device_handler_ = NetworkDeviceHandler::InitializeForTesting(
         network_state_handler_.get());
     network_configuration_handler_ =
-        base::WrapUnique(NetworkConfigurationHandler::InitializeForTest(
-            network_state_handler_.get(), network_device_handler_.get()));
+        NetworkConfigurationHandler::InitializeForTest(
+            network_state_handler_.get(), network_device_handler_.get());
     network_connection_handler_ =
         std::make_unique<FakeNetworkConnectionHandler>();
     cellular_inhibitor_ = std::make_unique<CellularInhibitor>();

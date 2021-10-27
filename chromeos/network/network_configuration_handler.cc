@@ -686,10 +686,11 @@ void NetworkConfigurationHandler::ClearPropertiesErrorCallback(
 }
 
 // static
-NetworkConfigurationHandler* NetworkConfigurationHandler::InitializeForTest(
+std::unique_ptr<NetworkConfigurationHandler>
+NetworkConfigurationHandler::InitializeForTest(
     NetworkStateHandler* network_state_handler,
     NetworkDeviceHandler* network_device_handler) {
-  NetworkConfigurationHandler* handler = new NetworkConfigurationHandler();
+  auto handler = base::WrapUnique(new NetworkConfigurationHandler());
   handler->Init(network_state_handler, network_device_handler);
   return handler;
 }

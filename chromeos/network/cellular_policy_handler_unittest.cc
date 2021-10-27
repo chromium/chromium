@@ -106,9 +106,8 @@ class CellularPolicyHandlerTest : public testing::Test {
         network_connection_handler_.get(), network_profile_handler_.get(),
         network_state_handler_.get());
     network_configuration_handler_ =
-        base::WrapUnique<NetworkConfigurationHandler>(
-            NetworkConfigurationHandler::InitializeForTest(
-                network_state_handler_.get(), network_device_handler_.get()));
+        NetworkConfigurationHandler::InitializeForTest(
+            network_state_handler_.get(), network_device_handler_.get());
     managed_network_configuration_handler_ =
         ManagedNetworkConfigurationHandler::InitializeForTesting(
             network_state_handler_.get(), network_profile_handler_.get(),

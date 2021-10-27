@@ -46,7 +46,8 @@ class HermesEuiccClientImpl : public HermesEuiccClient {
   explicit HermesEuiccClientImpl(const HermesEuiccClient&) = delete;
   ~HermesEuiccClientImpl() override = default;
 
-  using ProxyPropertiesPair = std::pair<dbus::ObjectProxy*, Properties*>;
+  using ProxyPropertiesPair =
+      std::pair<dbus::ObjectProxy*, std::unique_ptr<Properties>>;
   using ObjectMap = std::map<dbus::ObjectPath, ProxyPropertiesPair>;
 
   // HermesEuiccClient:
@@ -138,7 +139,7 @@ class HermesEuiccClientImpl : public HermesEuiccClient {
   }
 
   Properties* GetProperties(const dbus::ObjectPath& euicc_path) override {
-    return GetOrCreateProperties(euicc_path).second;
+    return GetOrCreateProperties(euicc_path).second.get();
   }
 
   TestInterface* GetTestInterface() override { return nullptr; }
@@ -155,15 +156,15 @@ class HermesEuiccClientImpl : public HermesEuiccClient {
     dbus::ObjectProxy* object_proxy =
         bus_->GetObjectProxy(hermes::kHermesServiceName, euicc_path);
 
-    Properties* properties = new Properties(
+    auto properties = std::make_unique<Properties>(
         object_proxy,
         base::BindRepeating(&HermesEuiccClientImpl::OnPropertyChanged,
                             weak_ptr_factory_.GetWeakPtr(), euicc_path));
     properties->ConnectSignals();
     properties->GetAll();
 
-    ProxyPropertiesPair object = std::make_pair(object_proxy, properties);
-    object_map_[euicc_path] = object;
+    object_map_[euicc_path] =
+        std::make_pair(object_proxy, std::move(properties));
     return object_map_[euicc_path];
   }
 

@@ -70,6 +70,11 @@ char kLSanDefaultSuppressions[] =
     // Suppress leaks in CreateCdmInstance. https://crbug.com/961062
     "leak:media::CdmAdapter::CreateCdmInstance\n"
 
+#if defined(OS_CHROMEOS)
+    // Suppress leak in FileStream. crbug.com/1263374
+    "leak:chromeos::PipeReader::StartIO\n"
+#endif
+
     // PLEASE READ ABOVE BEFORE ADDING NEW SUPPRESSIONS.
 
     // End of suppressions.
