@@ -53,8 +53,6 @@ bool ShouldTriggerNetworkDataMigration();
 
 extern const base::Feature kWebUsbDeviceDetection;
 
-extern const base::Feature kOmniboxTriggerForPrerender2;
-
 }  // namespace features
 
 #endif  // CHROME_BROWSER_BROWSER_FEATURES_H_

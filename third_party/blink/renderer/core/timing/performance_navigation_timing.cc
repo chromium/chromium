@@ -321,7 +321,7 @@ void PerformanceNavigationTiming::BuildJSONValue(
   builder.AddString("type", type());
   builder.AddNumber("redirectCount", redirectCount());
 
-  if (RuntimeEnabledFeatures::Prerender2Enabled(
+  if (RuntimeEnabledFeatures::Prerender2RelatedFeaturesEnabled(
           ExecutionContext::From(builder.GetScriptState()))) {
     builder.AddNumber(
         "activationStart",

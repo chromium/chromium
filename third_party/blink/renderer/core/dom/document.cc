@@ -8113,7 +8113,8 @@ void Document::ActivateForPrerendering(base::TimeTicks activation_start) {
 
   // https://jeremyroman.github.io/alternate-loading-modes/#prerendering-browsing-context-activate
   // Step 8.3.4 "Fire an event named prerenderingchange at doc."
-  if (RuntimeEnabledFeatures::Prerender2Enabled(GetExecutionContext())) {
+  if (RuntimeEnabledFeatures::Prerender2RelatedFeaturesEnabled(
+          GetExecutionContext())) {
     DispatchEvent(*Event::Create(event_type_names::kPrerenderingchange));
   } else {
     AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(

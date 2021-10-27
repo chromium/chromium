@@ -1175,4 +1175,8 @@ bool IsParentAccessCodeForOnlineLoginEnabled() {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Enables omnibox trigger prerendering.
+const base::Feature kOmniboxTriggerForPrerender2{
+    "OmniboxTriggerForPrerender2", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
