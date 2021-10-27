@@ -243,7 +243,6 @@ function bindCheckbox(name, value) {
   }
   $(name).addEventListener('change', function() {
     browserProxy.setGlobalFlag(name, $(name).checked);
-    document.location.reload();
   });
 }
 
