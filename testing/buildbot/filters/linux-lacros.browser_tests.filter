@@ -141,8 +141,6 @@
 -ProfileListDesktopBrowserTest.SwitchToProfile
 -ProfileManagerBrowserTest.EphemeralProfile
 -ProfileManagerBrowserTest.SwitchToProfile
-# TODO(https://crbug.com/1170605): Investigate profile-related failures.
--ProfileMenuClickTest_*
 -RemoteCopyBrowserTest.ImageUrl
 -RemoteCopyBrowserTest.Text
 -RemoteCopyBrowserTest.TextThenImageUrl
