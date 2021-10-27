@@ -6,9 +6,14 @@
 
 namespace feature_engagement {
 
+// Features used by the In-Product Help system.
 const base::Feature kIPHDemoMode{"IPH_DemoMode",
                                  base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHSnooze{"IPH_Snooze", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kUseClientConfigIPH{"UseClientConfigIPH",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Features used by various clients to show their In-Product Help messages.
 const base::Feature kIPHDummyFeature{"IPH_Dummy",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
 

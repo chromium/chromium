@@ -3422,7 +3422,14 @@
   {
     "name": "in-product-help-snooze",
     "owners": [ "shaktisahu", "haileywang" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 101
+  },
+  {
+    "name": "in-product-help-use-client-config",
+    "owners": [ "shaktisahu", "haileywang" ],
+    // This flag is used by teams as they develop in-product help integrations,
+    // as well as by QA; this feature is difficult to test without this.
+    "expiry_milestone": -1
   },
   {
     "name": "incognito-brand-consistency-for-android",

@@ -78,6 +78,7 @@
   "ignore-gpu-blocklist",
   "ignore-previews-blocklist",
   "in-product-help-demo-mode-choice",
+  "in-product-help-use-client-config",
   "instant-tethering",
   "ios-breadcrumbs",
   "list-all-display-modes",
