@@ -35,7 +35,6 @@ CONTENT_EXPORT extern const char kAndroidAppScheme[];
 CONTENT_EXPORT extern const char kGoogleChromeScheme[];
 
 CONTENT_EXPORT extern const char kChromeUIAccessibilityHost[];
-CONTENT_EXPORT extern const char kChromeUIAppCacheInternalsHost[];
 CONTENT_EXPORT extern const char kChromeUIAttributionInternalsHost[];
 CONTENT_EXPORT extern const char kChromeUIBlobInternalsHost[];
 CONTENT_EXPORT extern const char kChromeUIBrowserCrashHost[];

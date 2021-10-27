@@ -329,21 +329,7 @@ void AppCacheInternalsHandler::Proxy::OnResponseDataReadComplete(
 AppCacheInternalsUI::AppCacheInternalsUI(WebUI* web_ui)
     : WebUIController(web_ui) {
   web_ui->AddMessageHandler(std::make_unique<AppCacheInternalsHandler>());
-  WebUIDataSource* source =
-      WebUIDataSource::Create(kChromeUIAppCacheInternalsHost);
-  source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src chrome://resources 'self' 'unsafe-eval';");
-  source->DisableTrustedTypesCSP();
-
-  source->UseStringsJs();
-  source->AddResourcePath("appcache_internals.js", IDR_APPCACHE_INTERNALS_JS);
-  source->AddResourcePath("appcache_internals.css", IDR_APPCACHE_INTERNALS_CSS);
-  source->SetDefaultResource(IDR_APPCACHE_INTERNALS_HTML);
-
-  BrowserContext* browser_context =
-      web_ui->GetWebContents()->GetBrowserContext();
-  WebUIDataSource::Add(browser_context, source);
+  // TODO(https://crbug.com/582750): remove this entire file
 }
 
 AppCacheInternalsUI::~AppCacheInternalsUI() = default;

@@ -562,7 +562,6 @@ const char* const kChromeHostURLs[] = {
 #if !defined(OS_ANDROID)
     kChromeUIWebAppInternalsHost,
 #endif
-    content::kChromeUIAppCacheInternalsHost,
     content::kChromeUIAttributionInternalsHost,
     content::kChromeUIBlobInternalsHost,
     content::kChromeUIDinoHost,

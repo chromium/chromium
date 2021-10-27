@@ -5,7 +5,6 @@
 #include "content/browser/webui/content_web_ui_controller_factory.h"
 
 #include "build/build_config.h"
-#include "content/browser/appcache/appcache_internals_ui.h"
 #include "content/browser/attribution_reporting/attribution_internals_ui.h"
 #include "content/browser/gpu/gpu_internals_ui.h"
 #include "content/browser/indexed_db/indexed_db_internals_ui.h"
@@ -42,7 +41,6 @@ WebUI::TypeID ContentWebUIControllerFactory::GetWebUIType(
       url.host_piece() == kChromeUIIndexedDBInternalsHost ||
       url.host_piece() == kChromeUIMediaInternalsHost ||
       url.host_piece() == kChromeUIServiceWorkerInternalsHost ||
-      url.host_piece() == kChromeUIAppCacheInternalsHost ||
       url.host_piece() == kChromeUINetworkErrorsListingHost ||
       url.host_piece() == kChromeUIPrerenderInternalsHost ||
       url.host_piece() == kChromeUIProcessInternalsHost ||
@@ -65,8 +63,6 @@ ContentWebUIControllerFactory::CreateWebUIControllerForURL(WebUI* web_ui,
   if (!url.SchemeIs(kChromeUIScheme))
     return nullptr;
 
-  if (url.host_piece() == kChromeUIAppCacheInternalsHost)
-    return std::make_unique<AppCacheInternalsUI>(web_ui);
   if (url.host_piece() == kChromeUIGpuHost)
     return std::make_unique<GpuInternalsUI>(web_ui);
   if (url.host_piece() == kChromeUIHistogramHost)
