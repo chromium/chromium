@@ -309,6 +309,18 @@
           'shards': 20,
         },
       },
+      'WebKit Linux ASAN (reclient shadow)': {
+        'args': [
+          '--additional-expectations',
+          '../../third_party/blink/web_tests/ASANExpectations',
+          '--time-out-ms',
+          '48000',
+          '--enable-sanitizer',
+        ],
+        'swarming': {
+          'shards': 20,
+        },
+      },
       'WebKit Linux Leak': {
         'args': [
           '--additional-expectations',
@@ -321,7 +333,34 @@
           'shards': 10,
         },
       },
+      'WebKit Linux Leak (reclient shadow)': {
+        'args': [
+          '--additional-expectations',
+          '../../third_party/blink/web_tests/LeakExpectations',
+          '--time-out-ms',
+          '48000',
+          '--enable-leak-detection',
+        ],
+        'swarming': {
+          'shards': 10,
+        },
+      },
       'WebKit Linux MSAN': {
+        'args': [
+          '--additional-expectations',
+          '../../third_party/blink/web_tests/MSANExpectations',
+          '--time-out-ms',
+          '66000',
+          '--enable-sanitizer',
+        ],
+        'swarming': {
+          'expiration': 36000,
+          'hard_timeout': 10800,
+          'io_timeout': 3600,
+          'shards': 20,
+        },
+      },
+      'WebKit Linux MSAN (reclient shadow)': {
         'args': [
           '--additional-expectations',
           '../../third_party/blink/web_tests/MSANExpectations',
@@ -1427,6 +1466,7 @@
       'ToTLinuxTSan',
       # https://crbug.com/crashpad/306
       'Linux CFI',
+      'Linux CFI (reclient shadow)',
       'CFI Linux ToT',
     ],
     'modifications': {

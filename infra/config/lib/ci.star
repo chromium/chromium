@@ -724,6 +724,7 @@ def mac_thin_tester(
 def memory_builder(
         *,
         name,
+        goma_backend = builders.goma.backend.RBE_PROD,
         goma_jobs = builders.goma.jobs.MANY_JOBS_FOR_CI,
         notifies = None,
         sheriff_rotations = None,
@@ -736,7 +737,7 @@ def memory_builder(
     return ci.builder(
         name = name,
         builder_group = "chromium.memory",
-        goma_backend = builders.goma.backend.RBE_PROD,
+        goma_backend = goma_backend,
         goma_jobs = goma_jobs,
         notifies = notifies,
         sheriff_rotations = listify(builders.sheriff_rotations.CHROMIUM, sheriff_rotations),
@@ -932,4 +933,9 @@ ci = struct(
 rbe_instance = struct(
     DEFAULT = "rbe-chromium-trusted",
     GVISOR_SHADOW = "rbe-chromium-gvisor-shadow",
+)
+
+rbe_jobs = struct(
+    DEFAULT = 250,
+    HIGH_JOBS_FOR_CI = 500,
 )

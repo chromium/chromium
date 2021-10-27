@@ -1,7 +1,7 @@
 {
   "$build/reclient": {
     "instance": "rbe-chromium-trusted",
-    "jobs": 500,
+    "jobs": 250,
     "metrics_project": "chromium-reclient-metrics"
   },
   "$recipe_engine/resultdb/test_presentation": {

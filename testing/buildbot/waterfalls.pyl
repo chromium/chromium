@@ -2505,6 +2505,17 @@
           'all'
         ],
       },
+      'Linux Builder (dbg) (reclient shadow)': {
+        'additional_compile_targets': [
+          'all'
+        ]
+      },
+      'Linux Builder (dbg)(32) (reclient shadow)': {
+        'additional_compile_targets': [
+          'google_apis_unittests',
+          'sync_integration_tests'
+        ]
+      },
       'Linux Builder (deps-cache) (reclient)': {
         # Copied from
         # https://source.chromium.org/chromium/chromium/src/+/main:testing/buildbot/waterfalls.pyl;l=4844-4854;drc=75f767e92e86611728189739fb26f4e2cdf212d9
@@ -2547,6 +2558,14 @@
         'additional_compile_targets': [
           'all'
         ],
+      },
+      'Linux CFI (reclient shadow)': {
+        'mixins': [
+          'linux-bionic',
+        ],
+        'test_suites': {
+          'gtest_tests': 'chromium_linux_and_gl_gtests',
+        },
       },
       'Linux Viz': {
         'mixins': [
@@ -2598,6 +2617,14 @@
         'test_suites': {
           'scripts': 'chromium_mac_scripts',
         }
+      },
+      'Mojo Linux (reclient shadow)': {
+        'mixins': [
+          'linux-bionic',
+        ],
+        'test_suites': {
+          'gtest_tests': 'mojo_linux_gtests',
+        },
       },
       'Site Isolation Android': {
         'additional_compile_targets': [
@@ -2657,6 +2684,33 @@
         ],
         'test_suites': {
           'gtest_tests': 'vr_platform_specific_chromium_gtests',
+        },
+      },
+      'WebKit Linux ASAN (reclient shadow)': {
+        'mixins': [
+          'linux-xenial',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'chromium_webkit_isolated_scripts',
+        },
+      },
+      'WebKit Linux Leak (reclient shadow)': {
+        'mixins': [
+          'linux-bionic',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'chromium_webkit_isolated_scripts',
+        },
+        'additional_compile_targets': [
+          'blink_tests',
+        ],
+      },
+      'WebKit Linux MSAN (reclient shadow)': {
+        'mixins': [
+          'linux-bionic',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'chromium_webkit_isolated_scripts',
         },
       },
       'WebKit Linux composite_after_paint Dummy Builder': {

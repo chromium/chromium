@@ -5,7 +5,7 @@
 load("//lib/branches.star", "branches")
 load("//lib/builders.star", "cpu", "goma", "os", "sheriff_rotations", "xcode")
 load("//lib/chromium_tests_builder_config.star", "ctbc")
-load("//lib/ci.star", "ci", "rbe_instance")
+load("//lib/ci.star", "ci", "rbe_instance", "rbe_jobs")
 load("//lib/consoles.star", "consoles")
 load("//console-header.star", "HEADER")
 load("//project.star", "settings")
@@ -4172,18 +4172,6 @@ ci.fyi_builder(
 )
 
 ci.fyi_builder(
-    name = "Linux TSan Builder (reclient)",
-    console_view_entry = consoles.console_view_entry(
-        category = "linux",
-        short_name = "tre",
-    ),
-    goma_backend = None,
-    reclient_instance = rbe_instance.DEFAULT,
-    reclient_rewrapper_env = {"RBE_cache_silo": "Linux TSan Builder (reclient)"},
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
-)
-
-ci.fyi_builder(
     name = "TSAN Debug (reclient)",
     console_view_entry = consoles.console_view_entry(
         category = "linux tsan",
@@ -4287,6 +4275,132 @@ ci.fyi_builder(
     reclient_jobs = 250,
     reclient_instance = rbe_instance.DEFAULT,
 )
+
+# Start - Reclient migration, phase 2, block 1 shadow builders
+ci.fyi_builder(
+    name = "Linux ASan LSan Builder (reclient shadow)",
+    branch_selector = branches.STANDARD_MILESTONE,
+    console_view_entry = consoles.console_view_entry(
+        category = "linux|asan lsan",
+        short_name = "bld",
+    ),
+    cq_mirrors_console_view = "mirrors",
+    os = os.LINUX_BIONIC,
+    ssd = True,
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
+)
+
+ci.fyi_builder(
+    name = "Linux Builder (dbg) (reclient shadow)",
+    branch_selector = branches.STANDARD_MILESTONE,
+    console_view_entry = consoles.console_view_entry(
+        category = "debug|builder",
+        short_name = "64",
+    ),
+    cq_mirrors_console_view = "mirrors",
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
+)
+
+ci.fyi_builder(
+    name = "Linux Builder (dbg)(32) (reclient shadow)",
+    console_view_entry = consoles.console_view_entry(
+        category = "debug|builder",
+        short_name = "32",
+    ),
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
+)
+
+ci.fyi_builder(
+    name = "Linux CFI (reclient shadow)",
+    console_view_entry = consoles.console_view_entry(
+        category = "cfi",
+        short_name = "lnx",
+    ),
+    cores = 32,
+    # TODO(thakis): Remove once https://crbug.com/927738 is resolved.
+    execution_timeout = 5 * time.hour,
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
+)
+
+ci.fyi_builder(
+    name = "Linux MSan Builder (reclient shadow)",
+    console_view_entry = consoles.console_view_entry(
+        category = "linux|msan",
+        short_name = "bld",
+    ),
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
+)
+
+ci.fyi_builder(
+    name = "Linux TSan Builder (reclient)",
+    console_view_entry = consoles.console_view_entry(
+        category = "linux",
+        short_name = "tre",
+    ),
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
+    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+)
+
+ci.fyi_builder(
+    name = "WebKit Linux ASAN (reclient shadow)",
+    console_view_entry = consoles.console_view_entry(
+        category = "linux|webkit",
+        short_name = "asn",
+    ),
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = rbe_instance.DEFAULT,
+    os = os.LINUX_BIONIC_REMOVE,
+)
+
+ci.fyi_builder(
+    name = "WebKit Linux Leak (reclient shadow)",
+    console_view_entry = consoles.console_view_entry(
+        category = "linux|webkit",
+        short_name = "lk",
+    ),
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = rbe_instance.DEFAULT,
+    os = os.LINUX_BIONIC_REMOVE,
+)
+
+ci.fyi_builder(
+    name = "WebKit Linux MSAN (reclient shadow)",
+    console_view_entry = consoles.console_view_entry(
+        category = "linux|webkit",
+        short_name = "msn",
+    ),
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = rbe_instance.DEFAULT,
+    os = os.LINUX_BIONIC_REMOVE,
+)
+
+ci.fyi_builder(
+    name = "Mojo Linux (reclient shadow)",
+    console_view_entry = consoles.console_view_entry(
+        short_name = "lnx",
+    ),
+    # From mojo_builder
+    execution_timeout = 10 * time.hour,
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = rbe_instance.DEFAULT,
+)
+# End - Reclient migration, phase 2, block 1 shadow builders
 
 ci.fyi_builder(
     name = "VR Linux (reclient)",
