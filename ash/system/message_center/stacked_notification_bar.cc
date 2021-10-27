@@ -7,16 +7,17 @@
 #include "ash/constants/ash_features.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/button_style.h"
 #include "ash/style/element_style.h"
 #include "ash/system/message_center/message_center_constants.h"
 #include "ash/system/message_center/message_center_style.h"
 #include "ash/system/message_center/unified_message_center_view.h"
 #include "ash/system/tray/tray_constants.h"
-#include "ash/system/tray/tray_popup_utils.h"
 #include "base/bind.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -25,11 +26,6 @@
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/vector_icons.h"
-#include "ui/views/animation/flood_fill_ink_drop_ripple.h"
-#include "ui/views/animation/ink_drop.h"
-#include "ui/views/animation/ink_drop_highlight.h"
-#include "ui/views/animation/ink_drop_impl.h"
-#include "ui/views/animation/ink_drop_mask.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
@@ -53,10 +49,8 @@ class StackingBarLabelButton : public views::LabelButton {
     label()->SetSubpixelRenderingEnabled(false);
     label()->SetFontList(views::Label::GetDefaultFontList().Derive(
         1, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
-    TrayPopupUtils::ConfigureTrayPopupButton(
-        this, TrayPopupInkDropStyle::FILL_BOUNDS, /*highlight_on_hover=*/true,
-        /*highlight_on_focus=*/true);
 
+    SkColor bg_color = gfx::kPlaceholderColor;
     if (features::IsNotificationsRefreshEnabled()) {
       // Need a textured layer here since the parent uses a solid color layer.
       SetPaintToLayer();
@@ -65,31 +59,12 @@ class StackingBarLabelButton : public views::LabelButton {
       views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
                                                     kTrayItemSize / 2.f);
     } else {
+      bg_color = message_center_style::kNotificationBackgroundColor;
       SetEnabledTextColors(message_center_style::kUnifiedMenuButtonColorActive);
-      // SetCreateHighlightCallback and SetCreateRippleCallback are
-      // explicitly called after ConfigureTrayPopupButton as
-      // ConfigureTrayPopupButton configures the InkDrop and these callbacks
-      // override that behavior.
-      views::InkDrop::Get(this)->SetCreateHighlightCallback(base::BindRepeating(
-          [](Button* host) {
-            auto highlight = std::make_unique<views::InkDropHighlight>(
-                gfx::SizeF(host->size()),
-                message_center_style::kInkRippleColor);
-            highlight->set_visible_opacity(
-                message_center_style::kInkRippleOpacity);
-            return highlight;
-          },
-          this));
-      views::InkDrop::Get(this)->SetCreateRippleCallback(base::BindRepeating(
-          [](Button* host) -> std::unique_ptr<views::InkDropRipple> {
-            return std::make_unique<views::FloodFillInkDropRipple>(
-                host->size(),
-                views::InkDrop::Get(host)->GetInkDropCenterBasedOnLastEvent(),
-                message_center_style::kInkRippleColor,
-                message_center_style::kInkRippleOpacity);
-          },
-          this));
     }
+    PillButton::ConfigureInkDrop(this, TrayPopupInkDropStyle::FILL_BOUNDS,
+                                 /*highlight_on_hover=*/true,
+                                 /*highlight_on_focus=*/true, bg_color);
   }
 
   StackingBarLabelButton(const StackingBarLabelButton&) = delete;

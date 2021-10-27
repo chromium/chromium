@@ -101,9 +101,10 @@ std::unique_ptr<views::InkDrop> CreateInkDrop(views::Button* host,
 
 std::unique_ptr<views::InkDropRipple> CreateInkDropRipple(
     TrayPopupInkDropStyle ink_drop_style,
-    const views::Button* host) {
+    const views::Button* host,
+    SkColor bg_color) {
   const AshColorProvider::RippleAttributes ripple_attributes =
-      AshColorProvider::Get()->GetRippleAttributes();
+      AshColorProvider::Get()->GetRippleAttributes(bg_color);
   return std::make_unique<views::FloodFillInkDropRipple>(
       host->size(), GetInkDropInsets(ink_drop_style),
       views::InkDrop::Get(host)->GetInkDropCenterBasedOnLastEvent(),
@@ -111,9 +112,10 @@ std::unique_ptr<views::InkDropRipple> CreateInkDropRipple(
 }
 
 std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight(
-    const views::View* host) {
+    const views::View* host,
+    SkColor bg_color) {
   const AshColorProvider::RippleAttributes ripple_attributes =
-      AshColorProvider::Get()->GetRippleAttributes();
+      AshColorProvider::Get()->GetRippleAttributes(bg_color);
   auto highlight = std::make_unique<views::InkDropHighlight>(
       gfx::SizeF(host->size()), ripple_attributes.base_color);
   highlight->set_visible_opacity(ripple_attributes.highlight_opacity);
@@ -126,17 +128,18 @@ std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight(
 void PillButton::ConfigureInkDrop(views::Button* button,
                                   TrayPopupInkDropStyle ink_drop_style,
                                   bool highlight_on_hover,
-                                  bool highlight_on_focus) {
+                                  bool highlight_on_focus,
+                                  SkColor bg_color) {
   button->SetInstallFocusRingOnFocus(true);
   views::InkDropHost* const ink_drop = views::InkDrop::Get(button);
   ink_drop->SetMode(views::InkDropHost::InkDropMode::ON);
   button->SetHasInkDropActionOnClick(true);
   ink_drop->SetCreateInkDropCallback(base::BindRepeating(
       &CreateInkDrop, button, highlight_on_hover, highlight_on_focus));
-  ink_drop->SetCreateRippleCallback(
-      base::BindRepeating(&CreateInkDropRipple, ink_drop_style, button));
+  ink_drop->SetCreateRippleCallback(base::BindRepeating(
+      &CreateInkDropRipple, ink_drop_style, button, bg_color));
   ink_drop->SetCreateHighlightCallback(
-      base::BindRepeating(&CreateInkDropHighlight, button));
+      base::BindRepeating(&CreateInkDropHighlight, button, bg_color));
 }
 
 PillButton::PillButton(PressedCallback callback,

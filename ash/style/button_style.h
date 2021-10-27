@@ -46,7 +46,8 @@ class PillButton : public views::LabelButton {
   static void ConfigureInkDrop(views::Button* button,
                                TrayPopupInkDropStyle style,
                                bool highlight_on_hover,
-                               bool highlight_on_focus);
+                               bool highlight_on_focus,
+                               SkColor bg_color = gfx::kPlaceholderColor);
 
   PillButton(PressedCallback callback,
              const std::u16string& text,
