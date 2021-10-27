@@ -105,7 +105,7 @@ IPC_ENUM_TRAITS_MIN_MAX_VALUE(PP_InputEvent_Type,
                               PP_INPUTEVENT_TYPE_FIRST,
                               PP_INPUTEVENT_TYPE_LAST)
 IPC_ENUM_TRAITS_MAX_VALUE(PP_IsolatedFileSystemType_Private,
-                          PP_ISOLATEDFILESYSTEMTYPE_PRIVATE_PLUGINPRIVATE)
+                          PP_ISOLATEDFILESYSTEMTYPE_PRIVATE_CRX)
 IPC_ENUM_TRAITS_MAX_VALUE(PP_NetAddressFamily_Private,
                           PP_NETADDRESSFAMILY_PRIVATE_IPV6)
 IPC_ENUM_TRAITS_MAX_VALUE(PP_NetworkList_State, PP_NETWORKLIST_STATE_UP)

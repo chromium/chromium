@@ -70,15 +70,11 @@ class PepperIsolatedFileSystemMessageFilter
   int32_t OnOpenFileSystem(ppapi::host::HostMessageContext* context,
                            PP_IsolatedFileSystemType_Private type);
   int32_t OpenCrxFileSystem(ppapi::host::HostMessageContext* context);
-  int32_t OpenPluginPrivateFileSystem(ppapi::host::HostMessageContext* context);
 
   const int render_process_id_;
   // Keep a copy from original thread.
   const base::FilePath profile_directory_;
   const GURL document_url_;
-
-  // Not owned by this object.
-  ppapi::host::PpapiHost* ppapi_host_;
 
   // Set of origins that can use CrxFs private APIs from NaCl.
   std::set<std::string> allowed_crxfs_origins_;
