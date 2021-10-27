@@ -44,6 +44,7 @@ const debug_suites_list = [
   'FakeUpdateProviderTest',
   'FirmwareUpdateApp',
   'PeripheralUpdatesListTest',
+  'UpdateCardTest',
 ];
 
 TEST_F('FirmwareUpdateAppBrowserTest', 'All', function() {

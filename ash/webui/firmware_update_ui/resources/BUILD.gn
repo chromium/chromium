@@ -14,6 +14,7 @@ preprocessed_gen_manifest = "preprocessed_gen_manifest.json"
 polymer_element_files = [
   "firmware_update_app.js",
   "peripheral_updates_list.js",
+  "update_card.js",
 ]
 
 generate_grd("build_grd") {
@@ -42,6 +43,7 @@ js_type_check("closure_compile") {
     ":firmware_update_types",
     ":mojo_interface_provider",
     ":peripheral_updates_list",
+    ":update_card",
   ]
 }
 
@@ -70,6 +72,12 @@ js_library("mojo_interface_provider") {
 }
 
 js_library("peripheral_updates_list") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("update_card") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
