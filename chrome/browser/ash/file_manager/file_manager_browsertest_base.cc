@@ -2090,10 +2090,16 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
 
   if (name == "launchFileManagerSwa") {
     std::string launchDir;
-    std::string search;
+    std::string type;
+    base::DictionaryValue arg_value;
     if (value.GetString("launchDir", &launchDir)) {
-      base::DictionaryValue arg_value;
       arg_value.SetString("currentDirectoryURL", launchDir);
+    }
+    if (value.GetString("type", &type)) {
+      arg_value.SetString("type", type);
+    }
+    std::string search;
+    if (arg_value.HasKey("currentDirectoryURL") || arg_value.HasKey("type")) {
       std::string json_args;
       base::JSONWriter::Write(arg_value, &json_args);
       search = base::StrCat(

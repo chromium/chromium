@@ -513,8 +513,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("openQuickView"),
         TestCase("openQuickView").FilesSwa(),
         TestCase("openQuickViewDialog"),
-        // Doesn't work because using an "open" dialog.
-        // TestCase("openQuickViewDialog").FilesSwa(),
+        TestCase("openQuickViewDialog").FilesSwa(),
         TestCase("openQuickViewAndEscape"),
         TestCase("openQuickViewAndEscape").FilesSwa(),
         TestCase("openQuickView").InGuestMode(),

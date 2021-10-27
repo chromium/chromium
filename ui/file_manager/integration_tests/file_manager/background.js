@@ -103,9 +103,11 @@ export async function openNewWindow(initialRoot, appState = {}) {
 
   if (remoteCall.isSwaMode()) {
     const launchDir = appState ? appState.currentDirectoryURL : undefined;
+    const type = appState ? appState.type : undefined;
     appId = await sendTestMessage({
       name: 'launchFileManagerSwa',
       launchDir: launchDir,
+      type: type,
     });
   } else {
     appId =
