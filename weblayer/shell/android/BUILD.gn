@@ -80,7 +80,7 @@ template("weblayer_shell_apk_helper") {
     ]
     apk_name = invoker.apk_name
     android_manifest = _weblayer_shell_manifest
-    min_sdk_version = 21
+    min_sdk_version = default_min_sdk_version
     target_sdk_version = 28
     android_manifest_dep = ":$_manifest_target"
 
@@ -268,7 +268,7 @@ android_apk("weblayer_support_apk") {
 
   apk_name = "WebLayerSupport"
   android_manifest = weblayer_support_manifest
-  min_sdk_version = 21
+  min_sdk_version = default_min_sdk_version
   target_sdk_version = 28
   android_manifest_dep = ":weblayer_support_manifest"
   shared_resources = true

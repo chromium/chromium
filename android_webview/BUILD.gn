@@ -39,7 +39,7 @@ template("standalone_system_webview_apk_tmpl") {
   system_webview_apk_or_module_tmpl(target_name) {
     forward_variables_from(invoker, "*")
     deps = upstream_only_webview_deps
-    min_sdk_version = 21
+    min_sdk_version = default_min_sdk_version
     if (android_64bit_target_cpu && defined(include_32_bit_webview) &&
         !include_32_bit_webview) {
       android_manifest = system_webview_64_android_manifest
@@ -108,7 +108,7 @@ if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
     system_webview_bundle("system_webview_bundle") {
       base_module_target = ":system_webview_base_bundle_module"
       bundle_name = "SystemWebView"
-      min_sdk_version = 21
+      min_sdk_version = default_min_sdk_version
       compress_shared_libraries = true
     }
 
@@ -145,7 +145,7 @@ if (android_64bit_target_cpu) {
     system_webview_bundle("system_webview_64_bundle") {
       base_module_target = ":system_webview_64_base_bundle_module"
       bundle_name = "SystemWebView64"
-      min_sdk_version = 21
+      min_sdk_version = default_min_sdk_version
       compress_shared_libraries = true
       include_32_bit_webview = false
     }
@@ -172,7 +172,7 @@ if (android_64bit_target_cpu) {
         base_module_target = ":system_webview_32_base_bundle_module"
         bundle_name = "SystemWebView32"
         include_64_bit_webview = false
-        min_sdk_version = 21
+        min_sdk_version = default_min_sdk_version
         compress_shared_libraries = true
       }
     }
