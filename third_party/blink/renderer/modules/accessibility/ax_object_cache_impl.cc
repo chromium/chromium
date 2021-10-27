@@ -399,6 +399,9 @@ bool IsLayoutObjectRelevantForAccessibility(const LayoutObject& layout_object) {
   if (node->IsPseudoElement())
     return AXObjectCacheImpl::IsRelevantPseudoElement(*node);
 
+  if (const HTMLSlotElement* slot = DynamicTo<HTMLSlotElement>(node))
+    return AXObjectCacheImpl::IsRelevantSlotElement(*slot);
+
   // <optgroup> is irrelevant inside of a <select> menulist.
   if (auto* opt_group = DynamicTo<HTMLOptGroupElement>(node)) {
     if (auto* select = opt_group->OwnerSelectElement())
@@ -484,6 +487,9 @@ bool IsNodeRelevantForAccessibility(const Node* node,
 
   if (node->IsPseudoElement())
     return AXObjectCacheImpl::IsRelevantPseudoElement(*node);
+
+  if (const HTMLSlotElement* slot = DynamicTo<HTMLSlotElement>(node))
+    return AXObjectCacheImpl::IsRelevantSlotElement(*slot);
 
   // <optgroup> is irrelevant inside of a <select> menulist.
   if (auto* opt_group = DynamicTo<HTMLOptGroupElement>(node)) {
@@ -967,6 +973,36 @@ bool AXObjectCacheImpl::ShouldCreateAXMenuListFor(LayoutObject* layout_object) {
     return select->UsesMenuList();
 
   return false;
+}
+
+// static
+bool AXObjectCacheImpl::IsRelevantSlotElement(const HTMLSlotElement& slot) {
+  // A <slot> descendant of a node that is still in the DOM but no longer
+  // rendered will return true for Node::isConnected() and false for
+  // AXObject::IsDetached(). But from the perspective of platform ATs, this
+  // subtree is not connected and is detached unless it is canvas fallback
+  // content. In order to detect this condition, we look to the first non-slot
+  // parent. If it has a layout object, the <slot>'s contents are rendered.
+  // If it doesn't, but it's in the canvas subtree, those contents should be
+  // treated as canvas fallback content.
+  //
+  // The alternative way to determine whether the <slot> is still relevant for
+  // rendering is to iterate FlatTreeTraversal::Parent until you get to the last
+  // parent, and see if it's a document. If it is not a document, then it is not
+  // relevant. This seems much slower than just checking GetLayoutObject() as it
+  // needs to iterate the parent chain. However, checking GetLayoutObject()
+  // could produce null in the case of something that is
+  // content-visibility:auto. This means that any slotted content inside
+  // content-visibility:auto may be removed from the AX tree depending on
+  // whether it was recently rendered.
+  //
+  // TODO(accessibility): There should be a better way to accomplish this.
+  // Could a new function be added to the slot element?
+  const Node* parent = LayoutTreeBuilderTraversal::Parent(slot);
+  if (const HTMLSlotElement* parent_slot = DynamicTo<HTMLSlotElement>(parent))
+    return AXObjectCacheImpl::IsRelevantSlotElement(*parent_slot);
+  return parent && (parent->GetLayoutObject() ||
+                    DynamicTo<HTMLElement>(parent)->IsInCanvasSubtree());
 }
 
 // static
@@ -3360,6 +3396,18 @@ AXObject* AXObjectCacheImpl::GetSerializationTarget(AXObject* obj) {
       !obj->GetDocument()->View() ||
       !obj->GetDocument()->View()->GetFrame().GetPage()) {
     return nullptr;
+  }
+
+  // A <slot> descendant of a node that is still in the DOM but no longer
+  // rendered will return true for Node::isConnected() and false for
+  // AXObject::IsDetached(). But from the perspective of platform ATs, this
+  // subtree is not connected and is detached.
+  // TODO(accessibility): The relevance check probably applies to all nodes
+  // not just slot elements.
+  if (const HTMLSlotElement* slot =
+          DynamicTo<HTMLSlotElement>(obj->GetNode())) {
+    if (!AXObjectCacheImpl::IsRelevantSlotElement(*slot))
+      return nullptr;
   }
 
   // Ensure still in tree.
