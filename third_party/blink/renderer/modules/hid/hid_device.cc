@@ -526,15 +526,17 @@ HIDReportItem* HIDDevice::ToHIDReportItem(
   result->setPhysicalMinimum(report_item.physical_minimum);
   result->setPhysicalMaximum(report_item.physical_maximum);
 
-  Vector<uint32_t> usages;
-  for (const auto& usage : report_item.usages)
-    usages.push_back(ConvertHidUsageAndPageToUint32(*usage));
-  result->setUsages(usages);
-
-  result->setUsageMinimum(
-      ConvertHidUsageAndPageToUint32(*report_item.usage_minimum));
-  result->setUsageMaximum(
-      ConvertHidUsageAndPageToUint32(*report_item.usage_maximum));
+  if (report_item.is_range) {
+    result->setUsageMinimum(
+        ConvertHidUsageAndPageToUint32(*report_item.usage_minimum));
+    result->setUsageMaximum(
+        ConvertHidUsageAndPageToUint32(*report_item.usage_maximum));
+  } else {
+    Vector<uint32_t> usages;
+    for (const auto& usage : report_item.usages)
+      usages.push_back(ConvertHidUsageAndPageToUint32(*usage));
+    result->setUsages(usages);
+  }
 
   String unit_system;
   int8_t unit_factor_length_exponent;
