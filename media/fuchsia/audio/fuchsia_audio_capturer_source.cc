@@ -11,6 +11,7 @@
 #include "base/bits.h"
 #include "base/cxx17_backports.h"
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/fuchsia/koid.h"
 #include "base/location.h"
 #include "base/task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -29,14 +30,17 @@ constexpr size_t kBufferPacketCapacity = 10;
 }  // namespace
 
 FuchsiaAudioCapturerSource::FuchsiaAudioCapturerSource(
-    fidl::InterfaceHandle<fuchsia::media::AudioCapturer> capturer_handle)
-    : capturer_handle_(std::move(capturer_handle)) {
+    fidl::InterfaceHandle<fuchsia::media::AudioCapturer> capturer_handle,
+    scoped_refptr<base::SingleThreadTaskRunner> capturer_task_runner)
+    : capturer_handle_(std::move(capturer_handle)),
+      capturer_task_runner_(capturer_task_runner) {
   DCHECK(capturer_handle_);
-  DETACH_FROM_THREAD(thread_checker_);
 }
 
 FuchsiaAudioCapturerSource::~FuchsiaAudioCapturerSource() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(!callback_)
+      << "Stop() must be called before FuchsiaAudioCapturerSource is released.";
+
   if (capture_buffer_) {
     zx_status_t status = zx::vmar::root_self()->unmap(
         reinterpret_cast<uint64_t>(capture_buffer_), capture_buffer_size_);
@@ -46,11 +50,11 @@ FuchsiaAudioCapturerSource::~FuchsiaAudioCapturerSource() {
 
 void FuchsiaAudioCapturerSource::Initialize(const AudioParameters& params,
                                             CaptureCallback* callback) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!capture_buffer_);
   DCHECK(!callback_);
   DCHECK(callback);
 
+  main_task_runner_ = base::ThreadTaskRunnerHandle::Get();
   params_ = params;
   callback_ = callback;
 
@@ -58,6 +62,60 @@ void FuchsiaAudioCapturerSource::Initialize(const AudioParameters& params,
     ReportError("Only AUDIO_PCM_LOW_LATENCY format is supported");
     return;
   }
+  capturer_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&FuchsiaAudioCapturerSource::InitializeOnCapturerThread,
+                     this));
+}
+
+void FuchsiaAudioCapturerSource::Start() {
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+  DCHECK(callback_);
+
+  capturer_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&FuchsiaAudioCapturerSource::StartOnCapturerThread, this));
+}
+
+void FuchsiaAudioCapturerSource::Stop() {
+  // Nothing to do if Initialize() hasn't been called.
+  if (!main_task_runner_)
+    return;
+
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+
+  {
+    base::AutoLock lock(callback_lock_);
+
+    if (!callback_)
+      return;
+
+    callback_ = nullptr;
+  }
+
+  capturer_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&FuchsiaAudioCapturerSource::StopOnCapturerThread, this));
+}
+
+void FuchsiaAudioCapturerSource::SetVolume(double volume) {
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+  NOTIMPLEMENTED();
+}
+
+void FuchsiaAudioCapturerSource::SetAutomaticGainControl(bool enable) {
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+  NOTIMPLEMENTED();
+}
+
+void FuchsiaAudioCapturerSource::SetOutputDeviceForAec(
+    const std::string& output_device_id) {
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+  NOTIMPLEMENTED();
+}
+
+void FuchsiaAudioCapturerSource::InitializeOnCapturerThread() {
+  DCHECK(capturer_task_runner_->BelongsToCurrentThread());
 
   // Bind AudioCapturer.
   capturer_.Bind(std::move(capturer_handle_));
@@ -110,84 +168,57 @@ void FuchsiaAudioCapturerSource::Initialize(const AudioParameters& params,
   capturer_->AddPayloadBuffer(kBufferId, std::move(buffer_vmo));
 }
 
-void FuchsiaAudioCapturerSource::Start() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+void FuchsiaAudioCapturerSource::StartOnCapturerThread() {
+  DCHECK(capturer_task_runner_->BelongsToCurrentThread());
 
   // Errors are reported asynchronously, so Start() may be called after an error
   // has occurred.
   if (!capturer_)
     return;
 
-  DCHECK(!is_active_);
-  is_active_ = true;
-
   if (!is_capturer_started_) {
     is_capturer_started_ = true;
     capturer_->StartAsyncCapture(params_.frames_per_buffer());
   }
 
-  // Post a task to call OnCaptureStarted() asynchronously, as required by
-  // AudioCapturerSource interface..
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  main_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&FuchsiaAudioCapturerSource::NotifyCaptureStarted,
-                     weak_factory_.GetWeakPtr()));
+      base::BindOnce(&FuchsiaAudioCapturerSource::NotifyCaptureStarted, this));
 }
 
-void FuchsiaAudioCapturerSource::Stop() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  // Errors are reported asynchronously, so Stop() may be called after an error
-  // has occurred.
-  if (!capturer_)
-    return;
-
-  // StopAsyncCapture() is an asynchronous operation that completes
-  // asynchronously and other methods cannot be called until it's complete.
-  // To avoid extra complexity, update internal state without actually stopping
-  // the capturer. The downside is that |capturer_| will keep sending packets in
-  // the stopped state. This is acceptable because normally AudioCapturerSource
-  // instances are not kept in the stopped state for significant amount of time,
-  // i.e. usually either destructor or Start() are called immediately after
-  // Stop().
-  is_active_ = false;
-}
-
-void FuchsiaAudioCapturerSource::SetVolume(double volume) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  NOTIMPLEMENTED();
-}
-
-void FuchsiaAudioCapturerSource::SetAutomaticGainControl(bool enable) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  NOTIMPLEMENTED();
-}
-
-void FuchsiaAudioCapturerSource::SetOutputDeviceForAec(
-    const std::string& output_device_id) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  NOTIMPLEMENTED();
+void FuchsiaAudioCapturerSource::StopOnCapturerThread() {
+  DCHECK(capturer_task_runner_->BelongsToCurrentThread());
+  capturer_.Unbind();
 }
 
 void FuchsiaAudioCapturerSource::NotifyCaptureError(
     const std::string& message) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+
+  // Nothing to do if Stop() was called.
+  if (!callback_)
+    return;
+
+  // `Stop()` cannot be called on other threads, so `callback_lock_` doesn't
+  // need to be held.
   callback_->OnCaptureError(AudioCapturerSource::ErrorCode::kUnknown, message);
 }
 
 void FuchsiaAudioCapturerSource::NotifyCaptureStarted() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
 
-  // Nothing to do if initialization has failed.
-  if (!capturer_ || !is_active_)
+  // Nothing to do if Stop() was called.
+  if (!callback_)
     return;
 
+  // `Stop()` cannot be called on other threads, so `callback_lock_` doesn't
+  // need to be held.
   callback_->OnCaptureStarted();
 }
 
 void FuchsiaAudioCapturerSource::OnPacketCaptured(
     fuchsia::media::StreamPacket packet) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(capturer_task_runner_->BelongsToCurrentThread());
 
   size_t bytes_per_frame = params_.GetBytesPerFrame(kSampleFormatF32);
 
@@ -199,31 +230,38 @@ void FuchsiaAudioCapturerSource::OnPacketCaptured(
     return;
   }
 
-  // If the capturer was stopped then just drop the packet.
-  if (is_active_) {
-    size_t num_frames = packet.payload_size / bytes_per_frame;
-    auto audio_bus = AudioBus::Create(params_.channels(), num_frames);
-    audio_bus->FromInterleaved<Float32SampleTypeTraits>(
-        reinterpret_cast<const float*>(capture_buffer_ + packet.payload_offset),
-        num_frames);
-    callback_->Capture(audio_bus.get(), base::TimeTicks::FromZxTime(packet.pts),
-                       /*volume=*/1.0,
-                       /*key_pressed=*/false);
-  }
+  // Keep the lock when calling `Capture()` to ensure that we don't call the
+  // callback after `Stop()`. If `Stop()` is called on the main thread while the
+  // lock is held it will wait until we release the lock below. This is
+  // acceptable because `CaptureCallback::Capture()` is expected to return
+  // quickly.
+  base::AutoLock lock(callback_lock_);
+
+  // If `Stop()` was called then we can drop the capturer - it won't be used
+  // again.
+  if (!callback_)
+    capturer_.Unbind();
+
+  size_t num_frames = packet.payload_size / bytes_per_frame;
+  auto audio_bus = AudioBus::Create(params_.channels(), num_frames);
+  audio_bus->FromInterleaved<Float32SampleTypeTraits>(
+      reinterpret_cast<const float*>(capture_buffer_ + packet.payload_offset),
+      num_frames);
+  callback_->Capture(audio_bus.get(), base::TimeTicks::FromZxTime(packet.pts),
+                     /*volume=*/1.0,
+                     /*key_pressed=*/false);
 
   capturer_->ReleasePacket(std::move(packet));
 }
 
 void FuchsiaAudioCapturerSource::ReportError(const std::string& message) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(capturer_task_runner_->BelongsToCurrentThread());
 
   capturer_.Unbind();
 
-  // Post async task to report the error as required by the the
-  // AudioCapturerSource interface.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  main_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&FuchsiaAudioCapturerSource::NotifyCaptureError,
-                                weak_factory_.GetWeakPtr(), message));
+                                this, message));
 }
 
 }  // namespace media

@@ -12,13 +12,18 @@
 #include "media/base/audio_capturer_source.h"
 #include "media/base/media_export.h"
 
+namespace base {
+class SingleThreadTaskRunner;
+}  // namespace base
+
 namespace media {
 
 class MEDIA_EXPORT FuchsiaAudioCapturerSource final
     : public AudioCapturerSource {
  public:
-  explicit FuchsiaAudioCapturerSource(
-      fidl::InterfaceHandle<fuchsia::media::AudioCapturer> capturer_handle);
+  FuchsiaAudioCapturerSource(
+      fidl::InterfaceHandle<fuchsia::media::AudioCapturer> capturer_handle,
+      scoped_refptr<base::SingleThreadTaskRunner> capturer_task_runner);
 
   FuchsiaAudioCapturerSource(const FuchsiaAudioCapturerSource&) = delete;
   FuchsiaAudioCapturerSource& operator=(const FuchsiaAudioCapturerSource&) =
@@ -36,6 +41,9 @@ class MEDIA_EXPORT FuchsiaAudioCapturerSource final
  private:
   ~FuchsiaAudioCapturerSource() override;
 
+  void InitializeOnCapturerThread();
+  void StartOnCapturerThread();
+  void StopOnCapturerThread();
   void NotifyCaptureError(const std::string& error);
   void NotifyCaptureStarted();
   void OnPacketCaptured(fuchsia::media::StreamPacket packet);
@@ -47,10 +55,21 @@ class MEDIA_EXPORT FuchsiaAudioCapturerSource final
   // in the constructor.
   fidl::InterfaceHandle<fuchsia::media::AudioCapturer> capturer_handle_;
 
+  // Task runner for the thread that's used for the |capturer_|.
+  scoped_refptr<base::SingleThreadTaskRunner> capturer_task_runner_;
+
+  // Main thread on which the object was initialized.
+  scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
+
   fuchsia::media::AudioCapturerPtr capturer_;
 
   AudioParameters params_;
   CaptureCallback* callback_ = nullptr;
+
+  // `callback_lock_` is used to synchronize `Stop()` called on the main thread
+  // and `CaptureCallback::Capture()` called on the capturer thread. All other
+  // `CaptureCallback` methods are called on the main thread.
+  base::Lock callback_lock_;
 
   // Shared VMO mapped to the current address space.
   uint8_t* capture_buffer_ = nullptr;
@@ -59,13 +78,6 @@ class MEDIA_EXPORT FuchsiaAudioCapturerSource final
   // Indicates that async capture mode has been activated for |capturer_|, i.e.
   // StartAsyncCapture() has been called.
   bool is_capturer_started_ = false;
-
-  // Set to true between Start() and Stop().
-  bool is_active_ = false;
-
-  THREAD_CHECKER(thread_checker_);
-
-  base::WeakPtrFactory<FuchsiaAudioCapturerSource> weak_factory_{this};
 };
 
 }  // namespace media
