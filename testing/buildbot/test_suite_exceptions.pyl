@@ -94,27 +94,9 @@
           '--max-processes=1',
         ],
       },
-      # TODO(crbug.com/1249209) Remove when VVL performance is fixed
-      'Win7 FYI Release (NVIDIA)': {
-        'args': [
-          '--batch-timeout=600',
-        ],
-      },
-      # TODO(crbug.com/1249209) Remove when VVL performance is fixed
-      'Win7 FYI x64 Release (NVIDIA)': {
-        'args': [
-          '--batch-timeout=600',
-        ],
-      },
       'win10-angle-x64-intel': {
         'args': [
           '--max-processes=1',
-        ],
-      },
-      # TODO(crbug.com/1249209) Remove when VVL performance is fixed
-      'win7-angle-x64-nvidia': {
-        'args': [
-          '--batch-timeout=600',
         ],
       },
     },

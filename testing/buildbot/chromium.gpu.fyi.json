@@ -37196,8 +37196,7 @@
         "args": [
           "angle_end2end_tests",
           "--gtest_filter=-*Vulkan_SwiftShader*",
-          "--bot-mode",
-          "--batch-timeout=600"
+          "--bot-mode"
         ],
         "merge": {
           "args": [],
@@ -38013,8 +38012,7 @@
         "args": [
           "angle_end2end_tests",
           "--gtest_filter=-*Vulkan_SwiftShader*",
-          "--bot-mode",
-          "--batch-timeout=600"
+          "--bot-mode"
         ],
         "merge": {
           "args": [],
