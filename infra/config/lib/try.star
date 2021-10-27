@@ -19,7 +19,7 @@ to set the default value. Can also be accessed through `try_.defaults`.
 
 load("./args.star", "args")
 load("./branches.star", "branches")
-load("./builders.star", "builders", "compilator_watcher_git_revision", "os", "os_category")
+load("./builders.star", "builder_url", "builders", "compilator_watcher_git_revision", "os", "os_category")
 
 DEFAULT_EXCLUDE_REGEXPS = [
     # Contains documentation that doesn't affect the outputs
@@ -554,6 +554,26 @@ def orchestrator_pair_builders(
         compilator_name,
         compilator_os,
         **common_kwargs):
+    common_description = common_kwargs.pop("description_html", "")
+    if common_description:
+        common_description += "<br>"
+    orchestrator_url = builder_url("try", name)
+    compilator_url = builder_url("try", compilator_name)
+    orchestrator_description = common_description + (
+        "This is the orchestrator half of an orchestrator + compilator pair of " +
+        "builders. The compilator is <a href=\"{}\">{}</a>.".format(
+            compilator_url,
+            compilator_name,
+        )
+    )
+    compilator_description = common_description + (
+        "This is the compilator half of an orchestrator + compilator pair of " +
+        "builders. The orchestrator is <a href=\"{}\">{}</a>.".format(
+            orchestrator_url,
+            name,
+        )
+    )
+
     orchestrator_builder = builder_group_func(
         name = name,
         executable = "recipe:chromium/orchestrator",
@@ -568,6 +588,7 @@ def orchestrator_pair_builders(
         tryjob = orchestrator_tryjob,
         service_account = "chromium-orchestrator@chops-service-accounts.iam.gserviceaccount.com",
         os = os.LINUX_BIONIC,
+        description_html = orchestrator_description,
         **common_kwargs
     )
     compilator_builder = builder_group_func(
@@ -584,6 +605,7 @@ def orchestrator_pair_builders(
             },
         },
         os = compilator_os,
+        description_html = compilator_description,
         **common_kwargs
     )
     return orchestrator_builder, compilator_builder
