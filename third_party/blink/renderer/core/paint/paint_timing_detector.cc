@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scoped_paint_chunk_properties.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -122,14 +123,23 @@ void PaintTimingDetector::NotifyBackgroundImagePaint(
   LocalFrameView* frame_view = object->GetFrameView();
   if (!frame_view)
     return;
-  PaintTimingDetector& detector = frame_view->GetPaintTimingDetector();
-  if (!detector.GetImagePaintTimingDetector())
+
+  ImagePaintTimingDetector* detector =
+      frame_view->GetPaintTimingDetector().GetImagePaintTimingDetector();
+  if (!detector)
     return;
+
   if (!IsBackgroundImageContentful(*object, image))
     return;
-  detector.GetImagePaintTimingDetector()->RecordImage(
-      *object, image.Size(), *style_image.CachedImage(),
-      current_paint_chunk_properties, &style_image, image_border);
+
+  ImageResourceContent* cached_image = style_image.CachedImage();
+  DCHECK(cached_image);
+  // TODO(yoav): |image| and |cached_image.GetImage()| are not the same here in
+  // the case of SVGs. Figure out why and if we can remove this footgun.
+
+  detector->RecordImage(*object, image.Size(), *cached_image,
+                        current_paint_chunk_properties, &style_image,
+                        image_border);
 }
 
 // static
@@ -144,12 +154,13 @@ void PaintTimingDetector::NotifyImagePaint(
   LocalFrameView* frame_view = object.GetFrameView();
   if (!frame_view)
     return;
-  PaintTimingDetector& detector = frame_view->GetPaintTimingDetector();
-  if (!detector.GetImagePaintTimingDetector())
+  ImagePaintTimingDetector* detector =
+      frame_view->GetPaintTimingDetector().GetImagePaintTimingDetector();
+  if (!detector)
     return;
-  detector.GetImagePaintTimingDetector()->RecordImage(
-      object, intrinsic_size, cached_image, current_paint_chunk_properties,
-      nullptr, image_border);
+
+  detector->RecordImage(object, intrinsic_size, cached_image,
+                        current_paint_chunk_properties, nullptr, image_border);
 }
 
 void PaintTimingDetector::NotifyImageFinished(
@@ -386,8 +397,8 @@ void PaintTimingDetector::UpdateLargestContentfulPaintCandidate() {
     largest_image_record = image_timing_detector->UpdateCandidate();
   }
 
-  lcp_calculator->UpdateLargestContentPaintIfNeeded(largest_text_record,
-                                                    largest_image_record);
+  lcp_calculator->UpdateLargestContentfulPaintIfNeeded(largest_text_record,
+                                                       largest_image_record);
 }
 
 void PaintTimingDetector::ReportIgnoredContent() {

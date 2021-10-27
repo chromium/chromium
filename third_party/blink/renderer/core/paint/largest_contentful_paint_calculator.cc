@@ -22,7 +22,7 @@ LargestContentfulPaintCalculator::LargestContentfulPaintCalculator(
     WindowPerformance* window_performance)
     : window_performance_(window_performance) {}
 
-void LargestContentfulPaintCalculator::UpdateLargestContentPaintIfNeeded(
+void LargestContentfulPaintCalculator::UpdateLargestContentfulPaintIfNeeded(
     const TextRecord* largest_text,
     const ImageRecord* largest_image) {
   uint64_t text_size = largest_text ? largest_text->first_size : 0u;
@@ -72,9 +72,12 @@ void LargestContentfulPaintCalculator::UpdateLargestContentfulImage(
       image_element ? image_element->GetIdAttribute() : AtomicString();
   window_performance_->OnLargestContentfulPaintUpdated(
       expose_paint_time_to_api ? largest_image->paint_time : base::TimeTicks(),
-      largest_image->first_size, largest_image->load_time, image_id, image_url,
-      image_element);
+      largest_image->first_size, largest_image->load_time,
+      expose_paint_time_to_api ? largest_image->first_animated_frame_time
+                               : base::TimeTicks(),
+      image_id, image_url, image_element);
 
+  // TODO: update trace value with animated frame data
   if (LocalDOMWindow* window = window_performance_->DomWindow()) {
     TRACE_EVENT_MARK_WITH_TIMESTAMP2(kTraceCategories, kLCPCandidate,
                                      largest_image->paint_time, "data",
@@ -100,7 +103,7 @@ void LargestContentfulPaintCalculator::UpdateLargestContentfulText(
       text_element ? text_element->GetIdAttribute() : AtomicString();
   window_performance_->OnLargestContentfulPaintUpdated(
       largest_text.paint_time, largest_text.first_size, base::TimeTicks(),
-      text_id, g_empty_string, text_element);
+      base::TimeTicks(), text_id, g_empty_string, text_element);
 
   if (LocalDOMWindow* window = window_performance_->DomWindow()) {
     TRACE_EVENT_MARK_WITH_TIMESTAMP2(kTraceCategories, kLCPCandidate,
