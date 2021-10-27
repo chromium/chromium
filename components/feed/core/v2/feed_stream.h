@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_FEED_CORE_V2_FEED_STREAM_H_
 #define COMPONENTS_FEED_CORE_V2_FEED_STREAM_H_
 
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -27,7 +28,7 @@
 #include "components/feed/core/v2/public/stream_type.h"
 #include "components/feed/core/v2/request_throttler.h"
 #include "components/feed/core/v2/scheduling.h"
-#include "components/feed/core/v2/stream/notice_card_tracker.h"
+#include "components/feed/core/v2/stream/privacy_notice_card_tracker.h"
 #include "components/feed/core/v2/stream/upload_criteria.h"
 #include "components/feed/core/v2/stream_model.h"
 #include "components/feed/core/v2/stream_surface_set.h"
@@ -46,6 +47,7 @@ namespace feed {
 namespace feed_stream {
 class UnreadContentNotifier;
 }
+class NoticeCardTracker;
 class FeedNetwork;
 class FeedStore;
 class WebFeedSubscriptionCoordinator;
@@ -156,6 +158,9 @@ class FeedStream : public FeedApi,
   void ReportStreamScrollStart() override;
   void ReportOtherUserAction(const StreamType& stream_type,
                              FeedUserActionType action_type) override;
+  void ReportNoticeViewed(const std::string& key) override;
+  void ReportNoticeOpenAction(const std::string& key) override;
+  void ReportNoticeDismissed(const std::string& key) override;
   base::Time GetLastFetchTime(const StreamType& stream_type) override;
   void SetContentOrder(const StreamType& stream_type,
                        ContentOrder content_order) override;
@@ -366,6 +371,8 @@ class FeedStream : public FeedApi,
   const Stream* FindStream(const StreamType& type) const;
   void UpdateExperiments(Experiments experiments);
 
+  NoticeCardTracker& GetNoticeCardTracker(const std::string& key);
+
   // Unowned.
 
   RefreshTaskScheduler* refresh_task_scheduler_;
@@ -411,7 +418,9 @@ class FeedStream : public FeedApi,
   feedui::StreamUpdate forced_stream_update_for_debugging_;
 
   feed_stream::UploadCriteria upload_criteria_;
-  NoticeCardTracker notice_card_tracker_;
+  PrivacyNoticeCardTracker privacy_notice_card_tracker_;
+
+  std::map<std::string, NoticeCardTracker> notice_card_trackers_;
 
   bool clear_all_in_progress_ = false;
 
