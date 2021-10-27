@@ -6778,17 +6778,6 @@ crbug.com/1232417 external/wpt/mediacapture-insertable-streams/MediaStreamTrackG
 
 # Sheriff 2021-07-26
 crbug.com/1232867 [ Mac10.12 ] fast/inline-block/contenteditable-baseline.html [ Failure Pass ]
-crbug.com/1231907 [ Win7 ] virtual/oopr-canvas2d/fast/canvas/canvas-arc-circumference-fill.html [ Failure Pass ]
-crbug.com/1231907 [ Win7 ] virtual/oopr-canvas2d/fast/canvas/canvas-arc-circumference.html [ Failure Pass ]
-crbug.com/1231907 [ Win7 ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-transformclip.html [ Failure Pass ]
-crbug.com/1231907 [ Win7 ] virtual/oopr-canvas2d/fast/canvas/canvas-composite.html [ Failure Pass ]
-crbug.com/1231907 [ Win7 ] virtual/oopr-canvas2d/fast/canvas/canvas-ellipse-circumference-fill.html [ Failure Pass ]
-crbug.com/1231907 [ Win7 ] virtual/oopr-canvas2d/fast/canvas/canvas-ellipse-circumference.html [ Failure Pass ]
-crbug.com/1231907 [ Win7 ] virtual/oopr-canvas2d/fast/canvas/canvas-ellipse-connecting-line.html [ Failure Pass ]
-crbug.com/1231907 [ Win7 ] virtual/oopr-canvas2d/fast/canvas/canvas-pattern-no-repeat-with-transformations.html [ Failure Pass ]
-crbug.com/1231907 [ Win7 ] virtual/oopr-canvas2d/fast/canvas/canvas-zero-length-lineCap.html [ Failure Pass ]
-crbug.com/1231907 [ Win7 ] virtual/oopr-canvas2d/fast/canvas/image-object-in-canvas.html [ Failure Pass ]
-crbug.com/1231907 [ Win7 ] virtual/oopr-canvas2d/fast/canvas/quadraticCurveTo.xml [ Failure Pass ]
 crbug.com/1254382 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/background-image-alpha.https.html [ Failure ]
 
 # Sheriff 2021-07-27
