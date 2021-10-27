@@ -5,6 +5,7 @@
 #include "ash/projector/projector_ui_controller.h"
 
 #include <memory>
+#include <string>
 
 #include "ash/constants/ash_features.h"
 #include "ash/fast_ink/laser/laser_pointer_controller.h"
@@ -15,11 +16,18 @@
 #include "ash/projector/test/mock_projector_client.h"
 #include "ash/projector/ui/projector_bar_view.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/message_center/message_center.h"
+#include "ui/message_center/message_center_observer.h"
+#include "ui/message_center/message_center_types.h"
+#include "ui/message_center/notification_list.h"
 
 namespace ash {
 
@@ -32,6 +40,22 @@ constexpr char kProjectorMarkerColorHistogramName[] =
     "Ash.Projector.MarkerColor.ClamshellMode";
 
 }  // namespace
+
+class MockMessageCenterObserver : public message_center::MessageCenterObserver {
+ public:
+  MockMessageCenterObserver() = default;
+  MockMessageCenterObserver(const MockMessageCenterObserver&) = delete;
+  MockMessageCenterObserver& operator=(const MockMessageCenterObserver&) =
+      delete;
+  ~MockMessageCenterObserver() override = default;
+
+  MOCK_METHOD1(OnNotificationAdded, void(const std::string& notification_id));
+  MOCK_METHOD2(OnNotificationRemoved,
+               void(const std::string& notification_id, bool by_user));
+  MOCK_METHOD2(OnNotificationDisplayed,
+               void(const std::string& notification_id,
+                    const message_center::DisplaySource source));
+};
 
 class ProjectorUiControllerTest
     : public AshTestBase,
@@ -380,6 +404,40 @@ TEST_P(ProjectorUiControllerTest, UmaMetricsTest) {
   int expected_count = IsAnnotatorEnabled() ? 21 : 22;
   histogram_tester.ExpectTotalCount(kProjectorToolbarHistogramName,
                                     expected_count);
+}
+
+TEST_P(ProjectorUiControllerTest, ShowFailureNotification) {
+  MockMessageCenterObserver mock_message_center_observer_;
+  message_center::MessageCenter::Get()->AddObserver(
+      &mock_message_center_observer_);
+
+  EXPECT_CALL(
+      mock_message_center_observer_,
+      OnNotificationAdded(/*notification_id=*/"projector_error_notification"))
+      .Times(2);
+  EXPECT_CALL(mock_message_center_observer_,
+              OnNotificationDisplayed(
+                  /*notification_id=*/"projector_error_notification",
+                  message_center::DisplaySource::DISPLAY_SOURCE_POPUP));
+
+  ProjectorUiController::ShowFailureNotification(
+      IDS_ASH_PROJECTOR_FAILURE_MESSAGE_SAVE_SCREENCAST);
+
+  EXPECT_CALL(
+      mock_message_center_observer_,
+      OnNotificationRemoved(/*notification_id=*/"projector_error_notification",
+                            /*by_user=*/false));
+
+  ProjectorUiController::ShowFailureNotification(
+      IDS_ASH_PROJECTOR_FAILURE_MESSAGE_DRIVEFS);
+
+  const message_center::NotificationList::Notifications& notifications =
+      message_center::MessageCenter::Get()->GetVisibleNotifications();
+  EXPECT_EQ(notifications.size(), 1u);
+  EXPECT_EQ((*notifications.begin())->id(), "projector_error_notification");
+  EXPECT_EQ(
+      (*notifications.begin())->message(),
+      l10n_util::GetStringUTF16(IDS_ASH_PROJECTOR_FAILURE_MESSAGE_DRIVEFS));
 }
 
 INSTANTIATE_TEST_SUITE_P(,

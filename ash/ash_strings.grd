@@ -4121,6 +4121,22 @@ Here are some things you can try to get started.
         Unknown
       </message>
 
+      <message name="IDS_ASH_PROJECTOR_DISPLAY_SOURCE" desc="The source of the notification from Projector.">
+        Projector
+      </message>
+
+      <message name="IDS_ASH_PROJECTOR_FAILURE_TITLE" desc="The title of the notification when Projector recording fails.">
+        An error occurred
+      </message>
+
+      <message name="IDS_ASH_PROJECTOR_FAILURE_MESSAGE_DRIVEFS" desc="The text of the notification when Projector recording fails due to DriveFS.">
+        Google Drive for desktop is unavailable
+      </message>
+
+      <message name="IDS_ASH_PROJECTOR_FAILURE_MESSAGE_SAVE_SCREENCAST" desc="The text of the notification when Projector recording fails to save the screencast file.">
+        Failed to save screencast
+      </message>
+
       <!-- SODA Download strings -->
       <message name="IDS_ASH_ACCESSIBILITY_DICTATION_SETTING_SUBTITLE_SODA_DOWNLOAD_COMPLETE" desc="Description explaining that the speech recognition library download has completed.">
         Speech files downloaded

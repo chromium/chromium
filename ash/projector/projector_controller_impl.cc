@@ -11,6 +11,7 @@
 #include "ash/public/cpp/projector/projector_client.h"
 #include "ash/public/cpp/projector/projector_session.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -97,7 +98,8 @@ void ProjectorControllerImpl::CreateScreencastContainerFolder(
   base::FilePath mounted_path;
   if (!client_->GetDriveFsMountPointPath(&mounted_path)) {
     LOG(ERROR) << "Failed to get DriveFs mounted point path.";
-    // TODO(b/200846160): Notify user when there is an error.
+    ProjectorUiController::ShowFailureNotification(
+        IDS_ASH_PROJECTOR_FAILURE_MESSAGE_DRIVEFS);
     std::move(callback).Run(base::FilePath());
     return;
   }
@@ -316,6 +318,8 @@ void ProjectorControllerImpl::OnContainerFolderCreated(
   if (!success) {
     LOG(ERROR) << "Failed to create screencast container path: "
                << path.DirName();
+    ProjectorUiController::ShowFailureNotification(
+        IDS_ASH_PROJECTOR_FAILURE_MESSAGE_SAVE_SCREENCAST);
     std::move(callback).Run(base::FilePath());
     return;
   }
