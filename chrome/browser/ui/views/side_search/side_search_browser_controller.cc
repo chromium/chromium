@@ -32,8 +32,8 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/view_class_properties.h"
@@ -155,22 +155,23 @@ views::WebView* ConfigureSidePanel(views::View* side_panel,
   // content area.
   side_panel->SetPreferredSize(gfx::Size(kSidePanelWidth, 1));
 
-  auto* layout =
-      side_panel->SetLayoutManager(std::make_unique<views::FlexLayout>());
-  layout->SetOrientation(views::LayoutOrientation::kVertical);
-  layout->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
+  auto container = std::make_unique<views::FlexLayoutView>();
+  container->SetOrientation(views::LayoutOrientation::kVertical);
+  container->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
 
-  side_panel->AddChildView(std::make_unique<HeaderView>(std::move(callback)));
-  side_panel->AddChildView(CreateSeparator());
+  container->AddChildView(std::make_unique<HeaderView>(std::move(callback)));
+  container->AddChildView(CreateSeparator());
 
   // The WebView will fill the remaining space after the header view has been
   // laid out.
   auto* web_view =
-      side_panel->AddChildView(std::make_unique<views::WebView>(profile));
+      container->AddChildView(std::make_unique<views::WebView>(profile));
   web_view->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded));
+
+  side_panel->AddChildView(std::move(container));
 
   return web_view;
 }
