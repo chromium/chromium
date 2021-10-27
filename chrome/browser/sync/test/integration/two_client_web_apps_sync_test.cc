@@ -30,6 +30,10 @@
 #include "content/public/test/test_utils.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#endif
+
 namespace web_app {
 
 namespace {
@@ -58,7 +62,8 @@ class TwoClientWebAppsSyncTest : public SyncTest {
   TwoClientWebAppsSyncTest() : SyncTest(TWO_CLIENT) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // Disable WebAppsCrosapi, so that Web Apps get synced in the Ash browser.
-    scoped_feature_list_.InitAndDisableFeature(features::kWebAppsCrosapi);
+    scoped_feature_list_.InitWithFeatures(
+        {}, {features::kWebAppsCrosapi, chromeos::features::kLacrosPrimary});
 #endif
   }
 

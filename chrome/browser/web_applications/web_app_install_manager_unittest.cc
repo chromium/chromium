@@ -51,6 +51,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
 #include "chrome/common/chrome_features.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -154,7 +155,8 @@ class WebAppInstallManagerTest
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     if (GetParam() == SyncParam::kWithSync) {
       // Disable WebAppsCrosapi, so that Web Apps get synced in the Ash browser.
-      scoped_feature_list_.InitAndDisableFeature(features::kWebAppsCrosapi);
+      scoped_feature_list_.InitWithFeatures(
+          {}, {features::kWebAppsCrosapi, chromeos::features::kLacrosPrimary});
     } else {
       // Enable WebAppsCrosapi, so that Web Apps don't get synced in the Ash
       // browser.
