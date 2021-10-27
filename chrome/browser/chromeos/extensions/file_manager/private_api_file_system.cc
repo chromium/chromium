@@ -31,6 +31,7 @@
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/ash/file_manager/zip_io_task.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/extensions/file_manager/event_router.h"
 #include "chrome/browser/chromeos/extensions/file_manager/event_router_factory.h"
@@ -1422,8 +1423,13 @@ FileManagerPrivateInternalStartIOTaskFunction::Run() {
           std::move(source_urls), std::move(destination_folder_url), profile,
           file_system_context);
       break;
+    case file_manager::io_task::OperationType::kZip:
+      task = std::make_unique<file_manager::io_task::ZipIOTask>(
+          std::move(source_urls), std::move(destination_folder_url),
+          file_system_context);
+      break;
     default:
-      // TODO(b/199804935): Replace with {Move/Zip/etc}IOTask when implemented.
+      // TODO(b/199804935): Replace with {Move/Delete}IOTask when implemented.
       task = std::make_unique<file_manager::io_task::DummyIOTask>(
           std::move(source_urls), std::move(destination_folder_url), *type);
       break;
