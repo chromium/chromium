@@ -130,34 +130,6 @@ static_assert(base::ranges::is_sorted(kPathNamePairs, PathNameComparator()),
 
 }  // namespace
 
-void RecordUserDataSizes(const base::FilePath& profile_data_dir) {
-  int64_t total_profile_dir_size = 0;
-  base::FileEnumerator enumerator(profile_data_dir, false /* recursive */,
-                                  base::FileEnumerator::FILES |
-                                      base::FileEnumerator::DIRECTORIES |
-                                      base::FileEnumerator::SHOW_SYM_LINKS);
-  for (base::FilePath entry = enumerator.Next(); !entry.empty();
-       entry = enumerator.Next()) {
-    const base::FileEnumerator::FileInfo& info = enumerator.GetInfo();
-
-    int64_t size;
-    if (S_ISREG(info.stat().st_mode)) {
-      size = info.GetSize();
-    } else if (S_ISDIR(info.stat().st_mode)) {
-      size = ComputeDirectorySizeWithoutLinks(entry);
-    } else {
-      // Skip links.
-      continue;
-    }
-    total_profile_dir_size += size;
-    RecordUserDataSize(entry, size);
-  }
-
-  // Record the total size of the user's profile data directory in MB.
-  base::UmaHistogramCustomCounts(
-      kTotalSize, total_profile_dir_size / 1024 / 1024, 1, 10000, 100);
-}
-
 int64_t ComputeDirectorySizeWithoutLinks(const base::FilePath& dir_path) {
   base::FileEnumerator enumerator(dir_path, false /* recursive */,
                                   base::FileEnumerator::FILES |
@@ -179,6 +151,10 @@ int64_t ComputeDirectorySizeWithoutLinks(const base::FilePath& dir_path) {
   }
 
   return size;
+}
+
+void RecordTotalSize(int64_t size) {
+  base::UmaHistogramCustomCounts(kTotalSize, size / 1024 / 1024, 1, 10000, 100);
 }
 
 void RecordUserDataSize(const base::FilePath& path, int64_t size) {

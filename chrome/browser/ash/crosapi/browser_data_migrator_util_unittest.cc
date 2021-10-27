@@ -82,37 +82,5 @@ TEST(BrowserDataMigratorUtilTest, RecordUserDataSize) {
   histogram_tester.ExpectBucketCount(uma_name, size / 1024 / 1024, 1);
 }
 
-TEST(BrowserDataMigratorUtilTest, RecordUserDataSizes) {
-  base::HistogramTester histogram_tester;
-  base::ScopedTempDir profile_data_dir;
-  ASSERT_TRUE(profile_data_dir.CreateUniqueTempDir());
-
-  ASSERT_TRUE(
-      base::CreateDirectory(profile_data_dir.GetPath().Append(kCodeCachePath)));
-  ASSERT_TRUE(base::WriteFile(profile_data_dir.GetPath()
-                                  .Append(kCodeCachePath)
-                                  .Append(FILE_PATH_LITERAL("cache")),
-                              kTextFileContent, kTextFileSize));
-  ASSERT_TRUE(base::WriteFile(
-      profile_data_dir.GetPath().Append(FILE_PATH_LITERAL("abcd")),
-      kTextFileContent, kTextFileSize));
-  std::string uma_name_1 =
-      std::string(kUserDataStatsRecorderDataSize) + kCodeCacheUMAName;
-  std::string uma_name_2 =
-      std::string(kUserDataStatsRecorderDataSize) + kUnknownUMAName;
-
-  RecordUserDataSizes(profile_data_dir.GetPath());
-
-  histogram_tester.ExpectTotalCount(uma_name_1, 1);
-  histogram_tester.ExpectTotalCount(uma_name_2, 1);
-
-  histogram_tester.ExpectBucketCount(uma_name_1, kTextFileSize / 1024 / 1024,
-                                     1);
-  histogram_tester.ExpectBucketCount(uma_name_2, kTextFileSize / 1024 / 1024,
-                                     1);
-  histogram_tester.ExpectBucketCount(kTotalSize,
-                                     kTextFileSize * 2 / 1024 / 1024, 1);
-}
-
 }  // namespace browser_data_migrator_util
 }  // namespace ash
