@@ -22,7 +22,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/app_launch_event_logger_helper.h"
-#include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
+#include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/arc/arc_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/ukm/app_source_url_recorder.h"
@@ -75,7 +77,7 @@ std::vector<std::string> Sample(const std::vector<std::string>& population,
 
 }  // namespace
 
-AppLaunchEventLogger::AppLaunchEventLogger()
+AppLaunchEventLogger::AppLaunchEventLogger(Profile* profile)
     : start_time_(base::Time::Now()),
       all_clicks_last_hour_(
           std::make_unique<ash::power::ml::RecentEventsCounter>(
@@ -85,7 +87,9 @@ AppLaunchEventLogger::AppLaunchEventLogger()
           std::make_unique<ash::power::ml::RecentEventsCounter>(
               kDayDuration,
               kQuarterHoursInADay)),
+      profile_(profile),
       weak_factory_(this) {
+  DCHECK(profile_);
   task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
@@ -148,11 +152,6 @@ std::string AppLaunchEventLogger::RemoveScheme(const std::string& id) {
   return app_id;
 }
 
-const GURL& AppLaunchEventLogger::GetLaunchWebURL(
-    const extensions::Extension* extension) {
-  return extensions::AppLaunchInfo::GetLaunchWebURL(extension);
-}
-
 void AppLaunchEventLogger::EnforceLoggingPolicy() {
   SetRegistryAndArcInfo();
 
@@ -160,7 +159,7 @@ void AppLaunchEventLogger::EnforceLoggingPolicy() {
     app.second.set_is_policy_compliant(false);
   }
 
-  // Store all Chrome, PWA and bookmark apps.
+  // Store all Chrome apps.
   // registry_ can be nullptr in tests.
   if (registry_) {
     std::unique_ptr<extensions::ExtensionSet> extensions =
@@ -170,17 +169,21 @@ void AppLaunchEventLogger::EnforceLoggingPolicy() {
       if (extension->from_webstore()) {
         AddAppIfMissing(AppLaunchEvent_AppType_CHROME, extension->id(),
                         base::EmptyString(), base::EmptyString(), true);
-        // PWA apps have from_bookmark() true. This will also categorize
-        // bookmark apps as AppLaunchEvent_AppType_PWA.
-      } else if (extension->from_bookmark()) {
-        AddAppIfMissing(AppLaunchEvent_AppType_PWA, extension->id(),
-                        base::EmptyString(),
-                        GetLaunchWebURL(extension.get()).spec(), true);
         // Other extensions are not to be logged to UKM.
       } else {
         AddAppIfMissing(AppLaunchEvent_AppType_OTHER, extension->id(),
                         base::EmptyString(), base::EmptyString(), false);
       }
+    }
+  }
+
+  const web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForLocalAppsUnchecked(profile_);
+  // Store all PWAs.
+  if (provider) {
+    for (const web_app::WebApp& web_app : provider->registrar().GetApps()) {
+      AddAppIfMissing(AppLaunchEvent_AppType_PWA, web_app.app_id(),
+                      base::EmptyString(), web_app.start_url().spec(), true);
     }
   }
 

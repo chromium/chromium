@@ -18,6 +18,8 @@
 #include "extensions/browser/extension_registry.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
+class Profile;
+
 namespace ash {
 namespace power {
 namespace ml {
@@ -39,16 +41,16 @@ namespace app_list {
 // using inference with the aggregated ML model.
 //
 // Logging is restricted to Arc apps with sync enabled, Chrome apps from the
-// app store, PWAs and bookmark apps. This class uses UKM for logging,
+// app store, PWAs. This class uses UKM for logging,
 // however, the metrics are not keyed by navigational urls. Instead, for Chrome
 // apps the keys are based upon the app id, for Arc apps the keys are based upon
-// a hash of the package name, and for PWAs and bookmark apps the keys are the
-// urls associated with the PWA/bookmark.
+// a hash of the package name, and for PWAs the keys are the
+// urls associated with the PWA.
 // At the time of app launch this class logs metrics about the app clicked on
 // and up to another 25 apps that were not clicked on, chosen at random.
 class AppLaunchEventLogger {
  public:
-  AppLaunchEventLogger();
+  explicit AppLaunchEventLogger(Profile* profile);
 
   AppLaunchEventLogger(const AppLaunchEventLogger&) = delete;
   AppLaunchEventLogger& operator=(const AppLaunchEventLogger&) = delete;
@@ -78,8 +80,6 @@ class AppLaunchEventLogger {
   static const char kShouldSync[];
 
  protected:
-  // Get the url used to launch a PWA or bookmark app.
-  virtual const GURL& GetLaunchWebURL(const extensions::Extension* extension);
   // Enforces logging policy, ensuring that the |app_features_map_| flags the
   // apps that are allowed to be logged. All apps are rechecked in case they
   // have been uninstalled since the previous check.
@@ -114,7 +114,7 @@ class AppLaunchEventLogger {
   // Updates the app data following a click.
   void ProcessClick(const AppLaunchEvent& event, const base::Time& now);
   // Returns a source id. |arc_package_name| is only required for Arc apps,
-  // |pwa_url| is only required for PWAs and bookmark apps.
+  // |pwa_url| is only required for PWAs.
   ukm::SourceId GetSourceId(AppLaunchEvent_AppType app_type,
                             const std::string& app_id,
                             const std::string& arc_package_name,
@@ -156,6 +156,9 @@ class AppLaunchEventLogger {
   // minutes.
   const std::unique_ptr<ash::power::ml::RecentEventsCounter>
       all_clicks_last_24_hours_;
+
+  // profile_ can't be null during AppLaunchEventLogger's lifetime.
+  Profile* profile_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::WeakPtrFactory<AppLaunchEventLogger> weak_factory_;
