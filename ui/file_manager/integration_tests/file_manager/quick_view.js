@@ -881,13 +881,15 @@ testcase.openQuickViewScrollText = async () => {
         'deepQueryAllElements', appId, [preview, ['display']]));
   });
 
-  // Get the Quick View preview scrollY.
+  // Statement to get the Quick View preview scrollY.
   const getScrollY = `${contentWindowQuery}.scrollY`;
-  const scrollY =
-      await remoteCall.executeJsInPreviewTag(appId, preview, getScrollY);
 
-  // Check: the initial preview scrollY should be 0.
-  chrome.test.assertEq('0', scrollY.toString());
+  // The initial preview scrollY should be 0.
+  await repeatUntil(async () => {
+    const scrollY =
+        await remoteCall.executeJsInPreviewTag(appId, preview, getScrollY);
+    return String(scrollY) === '0';
+  });
 
   // Scroll the preview and verify that it scrolled.
   await repeatUntil(async () => {
