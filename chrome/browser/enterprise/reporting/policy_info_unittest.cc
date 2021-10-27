@@ -5,6 +5,7 @@
 #include "components/enterprise/browser/reporting/policy_info.h"
 
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -87,11 +88,11 @@ class PolicyInfoTest : public ::testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  TestingProfile* profile_ = nullptr;
+  raw_ptr<TestingProfile> profile_ = nullptr;
   policy::PolicyMap policy_map_;
   policy::PolicyMap extension_policy_map_;
   policy::PolicyMap empty_policy_map_;
-  policy::MockPolicyService* policy_service_;
+  raw_ptr<policy::MockPolicyService> policy_service_;
 };
 
 // Verify two Chrome policies are appended to the Profile report properly.

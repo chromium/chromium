@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -65,7 +66,7 @@ class QuicChromeAlarm : public quic::QuicAlarm, public base::TickClock {
     return quic::QuicChromiumClock::QuicTimeToTimeTicks(clock_->Now());
   }
 
-  const quic::QuicClock* const clock_;
+  const raw_ptr<const quic::QuicClock> clock_;
   base::RepeatingClosure on_alarm_callback_;
   const std::unique_ptr<base::OneShotTimer> timer_;
 };

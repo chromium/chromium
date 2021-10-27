@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/optimization_guide/content/browser/optimization_guide_decider.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -84,7 +85,7 @@ class ShoppingDataProvider
   // The metadata for the last navigation in the associated web contents.
   std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta_for_navigation_;
 
-  optimization_guide::OptimizationGuideDecider* optimization_guide_;
+  raw_ptr<optimization_guide::OptimizationGuideDecider> optimization_guide_;
 
   base::WeakPtrFactory<ShoppingDataProvider> weak_ptr_factory_;
 

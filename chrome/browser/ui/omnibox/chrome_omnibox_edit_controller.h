@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_OMNIBOX_CHROME_OMNIBOX_EDIT_CONTROLLER_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/omnibox/browser/omnibox_edit_controller.h"
 
 class Browser;
@@ -54,9 +55,9 @@ class ChromeOmniboxEditController : public OmniboxEditController {
   ~ChromeOmniboxEditController() override;
 
  private:
-  Browser* const browser_;
-  Profile* const profile_;
-  CommandUpdater* const command_updater_;
+  const raw_ptr<Browser> browser_;
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<CommandUpdater> command_updater_;
 };
 
 #endif  // CHROME_BROWSER_UI_OMNIBOX_CHROME_OMNIBOX_EDIT_CONTROLLER_H_

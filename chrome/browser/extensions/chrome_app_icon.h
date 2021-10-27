@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "extensions/browser/extension_icon_image.h"
 #include "ui/gfx/image/image_skia.h"
@@ -92,8 +93,8 @@ class ChromeAppIcon : public IconImage::Observer {
   void OnExtensionIconImageChanged(IconImage* image) override;
 
   // Unowned pointers.
-  ChromeAppIconDelegate* const delegate_;
-  content::BrowserContext* const browser_context_;
+  const raw_ptr<ChromeAppIconDelegate> delegate_;
+  const raw_ptr<content::BrowserContext> browser_context_;
 
   // Called when this instance of ChromeAppIcon is destroyed.
   DestroyedCallback destroyed_callback_;

@@ -17,6 +17,7 @@
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
@@ -152,7 +153,7 @@ struct HttpCache::PendingOp {
       : entry(nullptr), entry_opened(false), callback_will_delete(false) {}
   ~PendingOp() = default;
 
-  disk_cache::Entry* entry;
+  raw_ptr<disk_cache::Entry> entry;
   bool entry_opened;  // rather than created.
 
   std::unique_ptr<disk_cache::Backend> backend;
@@ -223,10 +224,10 @@ class HttpCache::WorkItem {
 
  private:
   WorkItemOperation operation_;
-  Transaction* transaction_;
-  ActiveEntry** entry_;
+  raw_ptr<Transaction> transaction_;
+  raw_ptr<ActiveEntry*> entry_;
   CompletionOnceCallback callback_;  // User callback.
-  disk_cache::Backend** backend_;
+  raw_ptr<disk_cache::Backend*> backend_;
 };
 
 //-----------------------------------------------------------------------------

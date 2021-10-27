@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_TAB_STRIP_TAB_STRIP_UI_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip.mojom.h"
 #include "chrome/browser/ui/webui/tab_strip/thumbnail_tracker.h"
 #include "chrome/browser/ui/webui/webui_load_timer.h"
@@ -67,9 +68,9 @@ class TabStripUI : public ui::MojoWebUIController,
   mojo::Receiver<tab_strip::mojom::PageHandlerFactory> page_factory_receiver_{
       this};
 
-  Browser* browser_ = nullptr;
+  raw_ptr<Browser> browser_ = nullptr;
 
-  TabStripUIEmbedder* embedder_ = nullptr;
+  raw_ptr<TabStripUIEmbedder> embedder_ = nullptr;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

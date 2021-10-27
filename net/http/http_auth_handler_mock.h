@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/completion_once_callback.h"
 #include "net/http/http_auth_handler.h"
@@ -107,7 +108,7 @@ class HttpAuthHandlerMock : public HttpAuthHandler {
   CompletionOnceCallback callback_;
   bool generate_async_;
   int generate_rv_;
-  std::string* auth_token_;
+  raw_ptr<std::string> auth_token_;
   bool first_round_;
   bool connection_based_;
   bool allows_default_credentials_;

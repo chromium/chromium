@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/files/file.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -56,7 +57,7 @@ class RootDeleteHelper {
   FileStatusCallback callback_;
 
   // Not owned; owner of this instance owns it.
-  LocalFileSyncStatus* sync_status_;
+  raw_ptr<LocalFileSyncStatus> sync_status_;
 
   base::WeakPtrFactory<RootDeleteHelper> weak_factory_{this};
 };

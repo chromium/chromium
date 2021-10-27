@@ -6,6 +6,7 @@
 #define GPU_IPC_CLIENT_SHARED_IMAGE_INTERFACE_PROXY_H_
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -99,7 +100,7 @@ class SharedImageInterfaceProxy {
   void AddMailbox(const Mailbox& mailbox, uint32_t usage)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  GpuChannelHost* const host_;
+  const raw_ptr<GpuChannelHost> host_;
   const int32_t route_id_;
   base::Lock lock_;
   uint32_t next_release_id_ GUARDED_BY(lock_) = 0;

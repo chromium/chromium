@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
@@ -113,8 +114,8 @@ class InProcessContextProvider
   gpu::ContextResult bind_result_;
 
   gpu::ContextCreationAttribs attribs_;
-  gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager_;
-  gpu::ImageFactory* image_factory_;
+  raw_ptr<gpu::GpuMemoryBufferManager> gpu_memory_buffer_manager_;
+  raw_ptr<gpu::ImageFactory> image_factory_;
   gpu::SurfaceHandle window_;
   std::string debug_name_;
 

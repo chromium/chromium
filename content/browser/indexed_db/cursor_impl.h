@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key.h"
@@ -51,7 +52,7 @@ class CursorImpl : public blink::mojom::IDBCursor {
  private:
   // This raw pointer is safe because all CursorImpl instances are owned by an
   // IndexedDBDispatcherHost.
-  IndexedDBDispatcherHost* dispatcher_host_;
+  raw_ptr<IndexedDBDispatcherHost> dispatcher_host_;
   const blink::StorageKey storage_key_;
   scoped_refptr<base::SequencedTaskRunner> idb_runner_;
   std::unique_ptr<IndexedDBCursor> cursor_;

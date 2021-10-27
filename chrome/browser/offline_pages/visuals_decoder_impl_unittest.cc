@@ -5,6 +5,7 @@
 #include "chrome/browser/offline_pages/visuals_decoder_impl.h"
 
 #include "base/base64.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
@@ -28,7 +29,7 @@ class VisualsDecoderImplTest : public testing::Test {
     image_decoder = decoder.get();
     visuals_decoder = std::make_unique<VisualsDecoderImpl>(std::move(decoder));
   }
-  image_fetcher::MockImageDecoder* image_decoder;
+  raw_ptr<image_fetcher::MockImageDecoder> image_decoder;
   std::unique_ptr<VisualsDecoderImpl> visuals_decoder;
 };
 

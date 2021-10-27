@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
@@ -142,7 +143,7 @@ class ResourcePrefetchPredictorTest : public testing::Test {
   scoped_refptr<base::TestSimpleTaskRunner> db_task_runner_;
 
   std::unique_ptr<LoadingPredictor> loading_predictor_;
-  ResourcePrefetchPredictor* predictor_;
+  raw_ptr<ResourcePrefetchPredictor> predictor_;
   scoped_refptr<StrictMock<MockResourcePrefetchPredictorTables>> mock_tables_;
 
   RedirectDataMap test_host_redirect_data_;

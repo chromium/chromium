@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "chrome/browser/chrome_content_browser_client.h"
@@ -49,7 +50,7 @@ class WebUITestPageHandler : public web_ui_test::mojom::TestRunner,
   content::WebUI* GetWebUI() override { return web_ui_; }
 
  private:
-  content::WebUI* web_ui_;
+  raw_ptr<content::WebUI> web_ui_;
   mojo::Receiver<web_ui_test::mojom::TestRunner> receiver_{this};
 };
 
@@ -101,7 +102,7 @@ class MojoWebUIBrowserTest::WebUITestContentBrowserClient
   }
 
  private:
-  WebUITestPageHandler* test_page_handler_;
+  raw_ptr<WebUITestPageHandler> test_page_handler_;
 };
 
 MojoWebUIBrowserTest::MojoWebUIBrowserTest()

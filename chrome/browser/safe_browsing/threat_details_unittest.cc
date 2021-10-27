@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/pickle.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -156,8 +157,7 @@ class ThreatDetailsWrap : public ThreatDetails {
   void StartCollection() { ThreatDetails::StartCollection(); }
 
  private:
-
-  base::RunLoop* run_loop_;
+  raw_ptr<base::RunLoop> run_loop_;
   size_t done_callback_count_;
 };
 

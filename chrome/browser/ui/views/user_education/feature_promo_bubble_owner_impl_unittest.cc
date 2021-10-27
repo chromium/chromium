@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_bubble_view.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -46,7 +47,7 @@ class FeaturePromoBubbleOwnerImplTest : public ChromeViewsTestBase {
   }
 
   std::unique_ptr<views::Widget> anchor_widget_;
-  views::View* anchor_view_ = nullptr;
+  raw_ptr<views::View> anchor_view_ = nullptr;
 
   FeaturePromoBubbleOwnerImpl bubble_owner_;
 };

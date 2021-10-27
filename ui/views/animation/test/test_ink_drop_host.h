@@ -6,6 +6,7 @@
 #define UI_VIEWS_ANIMATION_TEST_TEST_INK_DROP_HOST_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/animation/ink_drop_host_view.h"
 #include "ui/views/animation/ink_drop_impl.h"
 
@@ -59,8 +60,8 @@ class TestInkDropHost : public View {
   mutable int num_ink_drop_ripples_created_ = 0;
   mutable int num_ink_drop_highlights_created_ = 0;
 
-  mutable const InkDropRipple* last_ink_drop_ripple_ = nullptr;
-  mutable const InkDropHighlight* last_ink_drop_highlight_ = nullptr;
+  mutable raw_ptr<const InkDropRipple> last_ink_drop_ripple_ = nullptr;
+  mutable raw_ptr<const InkDropHighlight> last_ink_drop_highlight_ = nullptr;
 
   // When true, the InkDropRipple/InkDropHighlight instances will have their
   // timers disabled after creation.

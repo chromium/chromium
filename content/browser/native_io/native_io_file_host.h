@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
@@ -62,7 +63,7 @@ class NativeIOFileHost : public blink::mojom::NativeIOFileHost {
 
   // Raw pointer use is safe because NativeIOHost owns this NativeIOFileHost,
   // and therefore is guaranteed to outlive it.
-  NativeIOHost* const origin_host_;
+  const raw_ptr<NativeIOHost> origin_host_;
 
   // The name of the file opened by this host.
   const std::string file_name_;

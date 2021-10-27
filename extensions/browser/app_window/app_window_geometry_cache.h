@@ -12,6 +12,7 @@
 #include <set>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -131,7 +132,7 @@ class AppWindowGeometryCache : public KeyedService,
   void SyncToStorage();
 
   // Preferences storage.
-  ExtensionPrefs* prefs_;
+  raw_ptr<ExtensionPrefs> prefs_;
 
   // Cached data.
   std::map<std::string, ExtensionData> cache_;

@@ -5,6 +5,7 @@
 #ifndef CONTENT_COMMON_ANDROID_CPU_TIME_METRICS_INTERNAL_H_
 #define CONTENT_COMMON_ANDROID_CPU_TIME_METRICS_INTERNAL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 
 #include <memory>
@@ -127,7 +128,7 @@ class CONTENT_EXPORT ProcessCpuTimeMetrics
       base::Seconds(5);
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  power_scheduler::PowerModeArbiter* const arbiter_;
+  const raw_ptr<power_scheduler::PowerModeArbiter> arbiter_;
 
   // Accessed on main thread.
   SEQUENCE_CHECKER(main_thread_);

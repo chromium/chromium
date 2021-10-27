@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/user_event_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -195,11 +196,11 @@ class SyncInternalsMessageHandlerTest : public ChromeRenderViewHostTestHarness {
 
  private:
   content::TestWebUI web_ui_;
-  TestSyncService* test_sync_service_;
-  FakeUserEventService* fake_user_event_service_;
+  raw_ptr<TestSyncService> test_sync_service_;
+  raw_ptr<FakeUserEventService> fake_user_event_service_;
   std::unique_ptr<TestableSyncInternalsMessageHandler> handler_;
   int about_sync_data_delegate_call_count_ = 0;
-  SyncService* last_delegate_sync_service_ = nullptr;
+  raw_ptr<SyncService> last_delegate_sync_service_ = nullptr;
   // Fake return value for sync_ui_util::ConstructAboutInformation().
   base::DictionaryValue about_information_;
 };

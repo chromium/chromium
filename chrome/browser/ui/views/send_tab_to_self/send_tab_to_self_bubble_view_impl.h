@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/media_router/cast_dialog_controller.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
@@ -78,11 +79,11 @@ class SendTabToSelfBubbleViewImpl : public SendTabToSelfBubbleView,
   // target devices.
   void CreateManageDevicesLink(views::GridLayout* layout);
 
-  SendTabToSelfBubbleController* controller_;  // Weak reference.
+  raw_ptr<SendTabToSelfBubbleController> controller_;  // Weak reference.
 
   // ScrollView containing the list of device buttons.
   // Only kept for GetButtonContainerForTesting().
-  views::ScrollView* scroll_view_ = nullptr;
+  raw_ptr<views::ScrollView> scroll_view_ = nullptr;
 };
 
 }  // namespace send_tab_to_self

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "components/password_manager/core/browser/password_store_backend.h"
 
 namespace password_manager {
@@ -66,8 +67,8 @@ class PasswordStoreProxyBackend : public PasswordStoreBackend {
 
   void GetSyncStatus(base::OnceCallback<void(bool)> callback) override;
 
-  PasswordStoreBackend* const main_backend_;
-  PasswordStoreBackend* const shadow_backend_;
+  const raw_ptr<PasswordStoreBackend> main_backend_;
+  const raw_ptr<PasswordStoreBackend> shadow_backend_;
 };
 
 }  // namespace password_manager

@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/bluetooth/web_bluetooth_pairing_manager.h"
 #include "content/browser/bluetooth/web_bluetooth_pairing_manager_delegate.h"
@@ -115,7 +116,7 @@ class CONTENT_EXPORT WebBluetoothPairingManagerImpl
   // implementation also owns this class (and thus will outlive it). The
   // contract is that the delegate provider is responsible for ensuring it
   // outlives the manager to which it is provided.
-  WebBluetoothPairingManagerDelegate* pairing_manager_delegate_;
+  raw_ptr<WebBluetoothPairingManagerDelegate> pairing_manager_delegate_;
   base::WeakPtrFactory<WebBluetoothPairingManagerImpl> weak_ptr_factory_{this};
 };
 

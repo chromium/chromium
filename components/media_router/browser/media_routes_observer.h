@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/media_router/common/media_route.h"
 
 namespace media_router {
@@ -46,7 +47,7 @@ class MediaRoutesObserver {
   const MediaSource::Id source_id() const { return source_id_; }
 
  private:
-  MediaRouter* const router_;
+  const raw_ptr<MediaRouter> router_;
   const MediaSource::Id source_id_;
 };
 

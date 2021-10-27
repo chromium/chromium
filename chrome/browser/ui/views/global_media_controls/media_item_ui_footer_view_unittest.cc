@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/global_media_controls/media_notification_device_entry_ui.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -101,7 +102,7 @@ class MediaItemUIFooterViewTest : public ChromeViewsTestBase {
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<StopCastingHandler> handler_;
   std::unique_ptr<MockFooterViewDelegate> delegate_;
-  MediaItemUIFooterView* view_ = nullptr;
+  raw_ptr<MediaItemUIFooterView> view_ = nullptr;
 };
 
 TEST_F(MediaItemUIFooterViewTest, ViewDuringCast) {

@@ -5,6 +5,7 @@
 #ifndef CC_ANIMATION_ELEMENT_ANIMATIONS_H_
 #define CC_ANIMATION_ELEMENT_ANIMATIONS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "cc/animation/animation_export.h"
@@ -216,7 +217,7 @@ class CC_ANIMATION_EXPORT ElementAnimations
       gfx::KeyframeModel* keyframe_model) const;
 
   base::ObserverList<KeyframeEffect>::Unchecked keyframe_effects_list_;
-  AnimationHost* animation_host_;
+  raw_ptr<AnimationHost> animation_host_;
   ElementId element_id_;
 
   bool has_element_in_active_list_;

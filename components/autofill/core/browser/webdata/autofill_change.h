@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/webdata/autofill_entry.h"
 
@@ -74,7 +75,7 @@ class AutofillDataModelChange : public GenericAutofillChange<std::string> {
 
  private:
   // Weak reference, can be NULL.
-  const DataType* data_model_;
+  raw_ptr<const DataType> data_model_;
 };
 
 typedef AutofillDataModelChange<AutofillProfile> AutofillProfileChange;

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/viz/service/display/output_surface.h"
 
@@ -51,7 +52,7 @@ class PixelTestOutputSurface : public viz::OutputSurface {
   void SwapBuffersCallback();
 
   bool external_stencil_test_ = false;
-  viz::OutputSurfaceClient* client_ = nullptr;
+  raw_ptr<viz::OutputSurfaceClient> client_ = nullptr;
   base::WeakPtrFactory<PixelTestOutputSurface> weak_ptr_factory_{this};
 };
 

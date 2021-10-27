@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/types/id_type.h"
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/v2/proto_util.h"
@@ -41,7 +42,7 @@ class ContentMap {
 
  private:
   ContentTag::Generator tag_generator_;
-  ContentRevision::Generator* revision_generator_;
+  raw_ptr<ContentRevision::Generator> revision_generator_;
   std::map<feedwire::ContentId, ContentTag, ContentIdCompareFunctor> mapping_;
 
   // These two containers work together to store and index content.
@@ -126,8 +127,8 @@ class FeatureTree {
   void RemoveFromParent(ContentTag node_id);
   bool RemoveFromParent(StreamNode* parent, ContentTag node_id);
 
-  const FeatureTree* base_ = nullptr;  // Unowned.
-  ContentMap* content_map_;            // Unowned.
+  raw_ptr<const FeatureTree> base_ = nullptr;  // Unowned.
+  raw_ptr<ContentMap> content_map_;            // Unowned.
   // Finding the root:
   // We pick the root node as the last STREAM node which has no parent.
   // In most cases, we can identify the root as the tree is built.

@@ -110,7 +110,7 @@ void AudioSystemImpl::GetInputStreamParameters(
   audio_manager_->GetTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&GetInputStreamParametersOnAudioThread,
-                     base::Unretained(audio_manager_), device_id,
+                     base::Unretained(audio_manager_.get()), device_id,
                      MaybeBindToCurrentLoop(std::move(on_params_cb))));
 }
 
@@ -121,7 +121,7 @@ void AudioSystemImpl::GetOutputStreamParameters(
   audio_manager_->GetTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&GetOutputStreamParametersOnAudioThread,
-                     base::Unretained(audio_manager_), device_id,
+                     base::Unretained(audio_manager_.get()), device_id,
                      MaybeBindToCurrentLoop(std::move(on_params_cb))));
 }
 
@@ -130,7 +130,7 @@ void AudioSystemImpl::HasInputDevices(OnBoolCallback on_has_devices_cb) {
   audio_manager_->GetTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&HasInputDevicesOnAudioThread,
-                     base::Unretained(audio_manager_),
+                     base::Unretained(audio_manager_.get()),
                      MaybeBindToCurrentLoop(std::move(on_has_devices_cb))));
 }
 
@@ -139,7 +139,7 @@ void AudioSystemImpl::HasOutputDevices(OnBoolCallback on_has_devices_cb) {
   audio_manager_->GetTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&HasOutputDevicesOnAudioThread,
-                     base::Unretained(audio_manager_),
+                     base::Unretained(audio_manager_.get()),
                      MaybeBindToCurrentLoop(std::move(on_has_devices_cb))));
 }
 
@@ -148,11 +148,12 @@ void AudioSystemImpl::GetDeviceDescriptions(
     OnDeviceDescriptionsCallback on_descriptions_cb) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   audio_manager_->GetTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&GetDeviceDescriptionsOnAudioThread,
-                                base::Unretained(audio_manager_), for_input,
-                                MaybeBindToCurrentLoop(
-                                    WrapCallbackWithDeviceNameLocalization(
-                                        std::move(on_descriptions_cb)))));
+      FROM_HERE,
+      base::BindOnce(
+          &GetDeviceDescriptionsOnAudioThread,
+          base::Unretained(audio_manager_.get()), for_input,
+          MaybeBindToCurrentLoop(WrapCallbackWithDeviceNameLocalization(
+              std::move(on_descriptions_cb)))));
 }
 
 void AudioSystemImpl::GetAssociatedOutputDeviceID(
@@ -162,7 +163,7 @@ void AudioSystemImpl::GetAssociatedOutputDeviceID(
   audio_manager_->GetTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&GetAssociatedOutputDeviceIDOnAudioThread,
-                     base::Unretained(audio_manager_), input_device_id,
+                     base::Unretained(audio_manager_.get()), input_device_id,
                      MaybeBindToCurrentLoop(std::move(on_device_id_cb))));
 }
 
@@ -173,8 +174,8 @@ void AudioSystemImpl::GetInputDeviceInfo(
   audio_manager_->GetTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &GetInputDeviceInfoOnAudioThread, base::Unretained(audio_manager_),
-          input_device_id,
+          &GetInputDeviceInfoOnAudioThread,
+          base::Unretained(audio_manager_.get()), input_device_id,
           MaybeBindToCurrentLoop(std::move(on_input_device_info_cb))));
 }
 

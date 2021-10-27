@@ -4,6 +4,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -1162,7 +1163,7 @@ class SitePerProcessInteractivePDFTest
 
  private:
   guest_view::TestGuestViewManagerFactory factory_;
-  guest_view::TestGuestViewManager* test_guest_view_manager_;
+  raw_ptr<guest_view::TestGuestViewManager> test_guest_view_manager_;
 };
 
 // This class observes a WebContents for a navigation to an extension scheme to

@@ -17,6 +17,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "sandbox/linux/bpf_dsl/seccomp_macros.h"
 #include "sandbox/linux/seccomp-bpf/die.h"
@@ -28,7 +29,7 @@
 namespace {
 
 struct arch_sigsys {
-  void* ip;
+  raw_ptr<void> ip;
   int nr;
   unsigned int arch;
 };
@@ -238,7 +239,7 @@ void Trap::SigSys(int nr, LinuxSigInfo* info, ucontext_t* ctx) {
     struct arch_seccomp_data data = {
         static_cast<int>(SECCOMP_SYSCALL(ctx)),
         SECCOMP_ARCH,
-        reinterpret_cast<uint64_t>(sigsys.ip),
+        reinterpret_cast<uint64_t>(sigsys.ip.get()),
         {static_cast<uint64_t>(SECCOMP_PARM1(ctx)),
          static_cast<uint64_t>(SECCOMP_PARM2(ctx)),
          static_cast<uint64_t>(SECCOMP_PARM3(ctx)),

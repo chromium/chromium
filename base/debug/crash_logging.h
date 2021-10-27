@@ -13,6 +13,7 @@
 
 #include "base/base_export.h"
 #include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 
@@ -114,7 +115,7 @@ class BASE_EXPORT ScopedCrashKeyString {
   ScopedCrashKeyString& operator=(ScopedCrashKeyString&&) = delete;
 
  private:
-  CrashKeyString* crash_key_;
+  raw_ptr<CrashKeyString> crash_key_;
 };
 
 // Internal helpers for the SCOPED_CRASH_KEY_... helper macros defined below.

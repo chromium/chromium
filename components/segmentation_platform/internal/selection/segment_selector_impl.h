@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SELECTION_SEGMENT_SELECTOR_IMPL_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SELECTION_SEGMENT_SELECTOR_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/segmentation_platform/internal/selection/segment_selector.h"
 
 #include "base/callback_helpers.h"
@@ -75,19 +76,19 @@ class SegmentSelectorImpl : public SegmentSelector {
   void UpdateSelectedSegment(OptimizationTarget new_selection);
 
   // The database storing metadata and results.
-  SegmentInfoDatabase* segment_database_;
+  raw_ptr<SegmentInfoDatabase> segment_database_;
 
   // The database to determine whether the signal storage requirements are met.
-  SignalStorageConfig* signal_storage_config_;
+  raw_ptr<SignalStorageConfig> signal_storage_config_;
 
   // Helper class to read/write results to the prefs.
-  SegmentationResultPrefs* result_prefs_;
+  raw_ptr<SegmentationResultPrefs> result_prefs_;
 
   // The config for providing configuration params.
-  const Config* config_;
+  raw_ptr<const Config> config_;
 
   // The time provider.
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
 
   const PlatformOptions platform_options_;
 

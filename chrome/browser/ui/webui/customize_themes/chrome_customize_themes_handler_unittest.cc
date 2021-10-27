@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -164,7 +165,7 @@ class ChromeCustomizeThemesHandlerTest : public testing::Test {
   extensions::TestExtensionEnvironment extension_environment_;
   NiceMock<MockCustomizeThemesClient> mock_client_;
   content::TestWebContentsFactory factory_;
-  content::WebContents* web_contents_;  // Weak. Owned by factory_.
+  raw_ptr<content::WebContents> web_contents_;  // Weak. Owned by factory_.
   std::unique_ptr<ChromeCustomizeThemesHandler> handler_;
 };
 

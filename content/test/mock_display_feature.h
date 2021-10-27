@@ -5,6 +5,7 @@
 #ifndef CONTENT_TEST_MOCK_DISPLAY_FEATURE_H_
 #define CONTENT_TEST_MOCK_DISPLAY_FEATURE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 
 #if defined(OS_ANDROID)
@@ -28,7 +29,7 @@ class MockDisplayFeature {
   void SetDisplayFeature(const DisplayFeature* display_feature);
 
  private:
-  RenderWidgetHostViewBase* render_widget_host_view_;
+  raw_ptr<RenderWidgetHostViewBase> render_widget_host_view_;
 #if defined(OS_ANDROID)
   std::unique_ptr<TestViewAndroidDelegate> test_view_android_delegate_;
 #endif  // defined(OS_ANDROID)

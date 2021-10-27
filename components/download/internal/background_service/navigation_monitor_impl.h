@@ -7,6 +7,7 @@
 
 #include "base/cancelable_callback.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/download/public/background_service/navigation_monitor.h"
 
@@ -33,7 +34,7 @@ class NavigationMonitorImpl : public NavigationMonitor {
   void ScheduleBackupTask();
   void OnNavigationFinished();
 
-  NavigationMonitor::Observer* observer_;
+  raw_ptr<NavigationMonitor::Observer> observer_;
 
   int current_navigation_count_;
 

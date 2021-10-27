@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "components/media_router/browser/media_router.h"
@@ -124,7 +125,7 @@ class CastRemotingConnector::RemotingBridge final
 
   // Weak pointer. Will be set to nullptr if the CastRemotingConnector is
   // destroyed before this RemotingBridge.
-  CastRemotingConnector* connector_;
+  raw_ptr<CastRemotingConnector> connector_;
 };
 
 // static

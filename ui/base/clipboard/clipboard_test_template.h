@@ -24,6 +24,7 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/pickle.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -103,7 +104,7 @@ class ClipboardTest : public PlatformTest {
   std::unique_ptr<PlatformEventSource> event_source_;
 #endif
   // Clipboard has a protected destructor, so scoped_ptr doesn't work here.
-  Clipboard* clipboard_ = nullptr;
+  raw_ptr<Clipboard> clipboard_ = nullptr;
 };
 
 // A mock delegate for testing.

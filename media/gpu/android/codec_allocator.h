@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
 #include "media/base/android/android_util.h"
@@ -99,7 +100,7 @@ class MEDIA_GPU_EXPORT CodecAllocator {
   const CodecFactoryCB factory_cb_;
 
   // Tick clock which can be replaced for test purposes.
-  const base::TickClock* tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   // The two task runners used for codec operations. The primary is allowed to
   // create CodecType::kAny MediaCodec instances, while the secondary one is

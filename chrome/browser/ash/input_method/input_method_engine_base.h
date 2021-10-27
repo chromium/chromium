@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
@@ -320,7 +321,7 @@ class InputMethodEngineBase : virtual public ui::IMEEngineHandlerInterface,
   // The observer object recieving events for this IME.
   std::unique_ptr<InputMethodEngineBase::Observer> observer_;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   unsigned int next_request_id_ = 1;
   std::map<std::string, PendingKeyEvent> pending_key_events_;

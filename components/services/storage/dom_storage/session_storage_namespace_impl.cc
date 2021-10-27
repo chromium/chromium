@@ -243,7 +243,7 @@ void SessionStorageNamespaceImpl::CloneAllNamespacesWaitingForClone(
         database, metadata->GetOrCreateNamespaceEntry(parent->namespace_id_));
   }
 
-  auto* delegate = parent->delegate_;
+  auto* delegate = parent->delegate_.get();
   for (const std::string& destination_namespace :
        child_namespaces_waiting_for_clone_call_) {
     if (parent->IsPopulated()) {

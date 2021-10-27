@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_origin_association_manager.h"
@@ -53,8 +54,8 @@ class UrlHandlerManager {
   }
 
  private:
-  Profile* const profile_;
-  WebAppRegistrar* registrar_;
+  const raw_ptr<Profile> profile_;
+  raw_ptr<WebAppRegistrar> registrar_;
   std::unique_ptr<WebAppOriginAssociationManager> association_manager_;
 };
 

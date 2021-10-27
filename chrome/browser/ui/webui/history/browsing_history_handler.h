@@ -15,6 +15,7 @@
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
 #include "base/values.h"
@@ -82,7 +83,7 @@ class BrowsingHistoryHandler : public content::WebUIMessageHandler,
   FRIEND_TEST_ALL_PREFIXES(BrowsingHistoryHandlerTest, MdTruncatesTitles);
 
   // The clock used to vend times.
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
 
   std::unique_ptr<history::BrowsingHistoryService> browsing_history_service_;
 

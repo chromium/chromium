@@ -13,10 +13,12 @@
 #include <type_traits>
 #include <utility>
 
+#include "base/allocator/buildflags.h"
 #include "base/bind.h"
 #include "base/callback_internal.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_scoped_refptr_mismatch_checker.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
@@ -25,6 +27,10 @@
 
 #if defined(OS_APPLE) && !HAS_FEATURE(objc_arc)
 #include "base/mac/scoped_block.h"
+#endif
+
+#if defined(OS_WIN) && BUILDFLAG(USE_BACKUP_REF_PTR)
+#include "base/win/windows_types.h"
 #endif
 
 // See base/callback.h for user documentation.
@@ -86,8 +92,41 @@ class UnretainedWrapper {
   T* get() const { return ptr_; }
 
  private:
-  T* ptr_;
+  raw_ptr<T> ptr_;
 };
+
+#if defined(OS_WIN) && BUILDFLAG(USE_BACKUP_REF_PTR)
+
+// Windows HANDLE types are pointer types but they are ids. When they happen to
+// fall on a BRP pool memory address, raw_ptr will try to access the ref count
+// and cause an issue. This macro creates specialized versions of
+// UnretainedWrapper so raw_ptr won't be used for HANDLE types.
+#define DECLARE_SPECIALIZED_UNRETAINED_WRAPPER(name)     \
+  template <>                                            \
+  class UnretainedWrapper<name##__> {                    \
+   public:                                               \
+    explicit UnretainedWrapper(name##__* o) : ptr_(o) {} \
+    name##__* get() const { return ptr_; }               \
+                                                         \
+   private:                                              \
+    name##__* ptr_;                                      \
+  }
+
+DECLARE_SPECIALIZED_UNRETAINED_WRAPPER(HDC);
+DECLARE_SPECIALIZED_UNRETAINED_WRAPPER(HDESK);
+DECLARE_SPECIALIZED_UNRETAINED_WRAPPER(HGLRC);
+DECLARE_SPECIALIZED_UNRETAINED_WRAPPER(HICON);
+DECLARE_SPECIALIZED_UNRETAINED_WRAPPER(HINSTANCE);
+DECLARE_SPECIALIZED_UNRETAINED_WRAPPER(HKEY);
+DECLARE_SPECIALIZED_UNRETAINED_WRAPPER(HKL);
+DECLARE_SPECIALIZED_UNRETAINED_WRAPPER(HMENU);
+DECLARE_SPECIALIZED_UNRETAINED_WRAPPER(HWINSTA);
+DECLARE_SPECIALIZED_UNRETAINED_WRAPPER(HWND);
+DECLARE_SPECIALIZED_UNRETAINED_WRAPPER(HMONITOR);
+
+#undef DECLARE_SPECIALIZED_UNRETAINED_WRAPPER
+
+#endif  // defined(OS_WIN) && BUILDFLAG(USE_BACKUP_REF_PTR)
 
 // Storage type for std::reference_wrapper so `BindState` can internally store
 // unprotected references using raw_ptr.
@@ -106,7 +145,7 @@ class UnretainedRefWrapper {
  private:
   // This is intentionally a pointer to ensure the Big Rewrite will change this
   // to raw_ptr.
-  T* const ptr_;
+  const raw_ptr<T> ptr_;
 };
 
 template <typename T>

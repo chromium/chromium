@@ -13,6 +13,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/extension_host_registry.h"
@@ -113,7 +114,7 @@ class LazyBackgroundTaskQueue : public KeyedService,
       content::BrowserContext* browser_context,
       const Extension* extension);
 
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
   PendingTasksMap pending_tasks_;
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>

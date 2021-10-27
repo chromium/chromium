@@ -7,6 +7,7 @@
 
 #include "base/callback_forward.h"
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -96,7 +97,7 @@ class VIEWS_EXPORT WidgetFadeAnimator : public AnimationDelegateViews,
   // WidgetObserver:
   void OnWidgetDestroying(Widget* widget) override;
 
-  Widget* widget_;
+  raw_ptr<Widget> widget_;
   base::ScopedObservation<Widget, WidgetObserver> widget_observation_{this};
   gfx::LinearAnimation fade_animation_{this};
   FadeType animation_type_ = FadeType::kNone;

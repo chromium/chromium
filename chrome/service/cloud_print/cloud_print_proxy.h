@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/values.h"
 #include "chrome/service/cloud_print/cloud_print_proxy_backend.h"
@@ -96,12 +97,13 @@ class CloudPrintProxy : public CloudPrintProxyFrontend,
   std::unique_ptr<CloudPrintProxyBackend> backend_;
   // This class does not own this. It is guaranteed to remain valid for the
   // lifetime of this class.
-  ServiceProcessPrefs* service_prefs_ = nullptr;
+  raw_ptr<ServiceProcessPrefs> service_prefs_ = nullptr;
   // This class does not own this. If non-NULL, It is guaranteed to remain
   // valid for the lifetime of this class.
-  Client* client_ = nullptr;
+  raw_ptr<Client> client_ = nullptr;
   // Used to listen for network connection changes.
-  network::NetworkConnectionTracker* network_connection_tracker_ = nullptr;
+  raw_ptr<network::NetworkConnectionTracker> network_connection_tracker_ =
+      nullptr;
   // The email address of the account used to authenticate to the Cloud Print
   // service.
   std::string user_email_;

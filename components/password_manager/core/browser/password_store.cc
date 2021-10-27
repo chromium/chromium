@@ -181,9 +181,9 @@ void PasswordStore::UpdateLoginWithPrimaryKey(
   OperationHandler* handler = OperationHandler::CreateOperationHandler();
   handler->AwaitOperation(
       base::BindOnce(&PasswordStoreBackend::RemoveLoginAsync,
-                     base::Unretained(backend_), old_primary_key));
+                     base::Unretained(backend_.get()), old_primary_key));
   handler->AwaitOperation(base::BindOnce(
-      &PasswordStoreBackend::AddLoginAsync, base::Unretained(backend_),
+      &PasswordStoreBackend::AddLoginAsync, base::Unretained(backend_.get()),
       new_form_with_correct_password_issues));
   handler->InvokeOnCompletion(
       base::BindOnce(&PasswordStore::NotifyLoginsChangedOnMainSequence, this));
@@ -274,7 +274,7 @@ void PasswordStore::GetLogins(const PasswordFormDigest& form,
     affiliated_match_helper_->GetAffiliatedAndroidAndWebRealms(
         form, request_handler->AffiliationsClosure().Then(base::BindOnce(
                   &PasswordStoreBackend::FillMatchingLoginsAsync,
-                  base::Unretained(backend_),
+                  base::Unretained(backend_.get()),
                   std::move(branding_injection_for_affiliations_callback),
                   /*include_psl=*/false)));
   } else {
@@ -426,7 +426,7 @@ void PasswordStore::UnblocklistInternal(
   for (const auto& form : forms_to_remove) {
     handler->AwaitOperation(
         base::BindOnce(&PasswordStoreBackend::RemoveLoginAsync,
-                       base::Unretained(backend_), form));
+                       base::Unretained(backend_.get()), form));
   }
 
   auto notify_callback =

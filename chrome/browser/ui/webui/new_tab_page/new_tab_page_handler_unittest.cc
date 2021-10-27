@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -162,7 +163,7 @@ class NewTabPageHandlerTest : public testing::Test {
   MockLogoService mock_logo_service_;
   testing::NiceMock<MockThemeProvider> mock_theme_provider_;
   content::TestWebContentsFactory factory_;
-  content::WebContents* web_contents_;  // Weak. Owned by factory_.
+  raw_ptr<content::WebContents> web_contents_;  // Weak. Owned by factory_.
   base::HistogramTester histogram_tester_;
   std::unique_ptr<NewTabPageHandler> handler_;
   ThemeServiceObserver* theme_service_observer_;

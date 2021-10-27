@@ -6,6 +6,7 @@
 #define COMPONENTS_MEDIA_ROUTER_BROWSER_ISSUES_OBSERVER_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/media_router/common/issue.h"
 
 namespace media_router {
@@ -38,7 +39,7 @@ class IssuesObserver {
   virtual void OnIssuesCleared() {}
 
  private:
-  IssueManager* const issue_manager_;
+  const raw_ptr<IssueManager> issue_manager_;
   bool initialized_;
 };
 

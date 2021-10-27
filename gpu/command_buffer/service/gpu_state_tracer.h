@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 
 namespace gfx {
 class Size;
@@ -34,7 +35,7 @@ class GPUStateTracer {
  private:
   explicit GPUStateTracer(const ContextState* state);
 
-  const ContextState* state_;
+  raw_ptr<const ContextState> state_;
 };
 
 }  // namespace gles2

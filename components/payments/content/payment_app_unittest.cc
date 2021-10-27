@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -185,7 +186,7 @@ class PaymentAppTest : public testing::TestWithParam<RequiredPaymentOptions>,
   content::BrowserTaskEnvironment task_environment_;
   content::TestBrowserContext browser_context_;
   content::TestWebContentsFactory test_web_contents_factory_;
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
   autofill::AutofillProfile address_;
   autofill::CreditCard local_card_;
   std::vector<autofill::AutofillProfile*> billing_profiles_;

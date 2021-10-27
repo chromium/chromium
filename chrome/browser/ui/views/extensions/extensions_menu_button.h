@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/extensions/extension_context_menu_controller.h"
@@ -53,10 +54,10 @@ class ExtensionsMenuButton : public HoverButton,
 
   void ButtonPressed();
 
-  Browser* const browser_;
+  const raw_ptr<Browser> browser_;
 
   // Responsible for executing the extension's actions.
-  ToolbarActionViewController* const controller_;
+  const raw_ptr<ToolbarActionViewController> controller_;
 
   bool allow_pinning_;
 };

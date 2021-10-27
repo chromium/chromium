@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/memory/aligned_memory.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -80,7 +81,7 @@ class AudioOutputTest : public testing::TestWithParam<bool> {
   std::unique_ptr<AudioManager> audio_manager_;
   std::unique_ptr<AudioDeviceInfoAccessorForTests> audio_manager_device_info_;
   AudioParameters stream_params_;
-  AudioOutputStream* stream_ = nullptr;
+  raw_ptr<AudioOutputStream> stream_ = nullptr;
   bool should_use_aaudio_ = false;
   bool aaudio_is_supported_ = false;
 #if defined(OS_ANDROID)

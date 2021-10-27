@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -160,7 +161,7 @@ class SharingService : public KeyedService, public syncer::SyncServiceObserver {
   std::unique_ptr<SharingHandlerRegistry> handler_registry_;
   std::unique_ptr<SharingFCMHandler> fcm_handler_;
 
-  syncer::SyncService* sync_service_;
+  raw_ptr<syncer::SyncService> sync_service_;
 
   net::BackoffEntry backoff_entry_;
   State state_;

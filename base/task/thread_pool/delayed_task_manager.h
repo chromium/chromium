@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/containers/intrusive_heap.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/task/common/checked_lock.h"
@@ -115,7 +116,7 @@ class BASE_EXPORT DelayedTaskManager {
 
   const RepeatingClosure process_ripe_tasks_closure_;
 
-  const TickClock* const tick_clock_;
+  const raw_ptr<const TickClock> tick_clock_;
 
   // Synchronizes access to |delayed_task_queue_| and the setting of
   // |service_thread_task_runner_|. Once |service_thread_task_runner_| is set,

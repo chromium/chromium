@@ -57,7 +57,7 @@ bool TestBookmarkClient::IsManagedNodeRoot(const BookmarkNode* node) {
 }
 
 bool TestBookmarkClient::IsAManagedNode(const BookmarkNode* node) {
-  return node && node->HasAncestor(unowned_managed_node_);
+  return node && node->HasAncestor(unowned_managed_node_.get());
 }
 
 bool TestBookmarkClient::SimulateFaviconLoaded(const GURL& page_url,

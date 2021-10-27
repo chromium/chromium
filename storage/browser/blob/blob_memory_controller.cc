@@ -18,6 +18,7 @@
 #include "base/guid.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
@@ -371,7 +372,7 @@ class BlobMemoryController::MemoryQuotaAllocationTask
   size_t allocation_size() const { return allocation_size_; }
 
  private:
-  BlobMemoryController* controller_;
+  raw_ptr<BlobMemoryController> controller_;
   std::vector<scoped_refptr<ShareableBlobDataItem>> pending_items_;
   MemoryQuotaRequestCallback done_callback_;
 
@@ -530,7 +531,7 @@ class BlobMemoryController::FileQuotaAllocationTask
   size_t allocation_size() const { return allocation_size_; }
 
  private:
-  BlobMemoryController* controller_;
+  raw_ptr<BlobMemoryController> controller_;
   std::vector<uint64_t> file_sizes_;
   std::vector<scoped_refptr<ShareableBlobDataItem>> pending_items_;
   FileQuotaRequestCallback done_callback_;

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_NAVIGATION_PREDICTOR_SEARCH_ENGINE_PRECONNECTOR_H_
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "url/origin.h"
 
@@ -49,7 +50,7 @@ class SearchEnginePreconnector {
   bool IsBrowserAppLikelyInForeground() const;
 
   // Used to get keyed services.
-  content::BrowserContext* const browser_context_;
+  const raw_ptr<content::BrowserContext> browser_context_;
 
   // Used to preconnect regularly.
   base::OneShotTimer timer_;

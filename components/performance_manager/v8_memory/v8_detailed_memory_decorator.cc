@@ -13,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
@@ -273,7 +274,7 @@ class NodeAttachedProcessData
   void EnsureRemote();
   void OnV8MemoryUsage(blink::mojom::PerProcessV8MemoryUsagePtr result);
 
-  const ProcessNode* const process_node_;
+  const raw_ptr<const ProcessNode> process_node_;
 
   // Measurement requests that will be sent to this process only.
   V8DetailedMemoryRequestQueue process_measurement_requests_

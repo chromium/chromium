@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "components/password_manager/core/browser/site_affiliation/affiliation_service.h"
 
 #include "base/memory/scoped_refptr.h"
@@ -139,7 +140,7 @@ class AffiliationServiceImpl : public AffiliationService,
   // living on the backend thread. It will be deleted asynchronously during
   // shutdown on the backend thread, so it will outlive |this| along with all
   // its in-flight tasks.
-  AffiliationBackend* backend_;
+  raw_ptr<AffiliationBackend> backend_;
 
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
 

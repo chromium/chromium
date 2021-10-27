@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/autofill/autofill_uitest_util.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
@@ -64,9 +65,9 @@ class AutofillPopupControllerBrowserTest : public InProcessBrowserTest,
   }
 
  protected:
-  ContentAutofillDriver* autofill_driver_ = nullptr;
-  BrowserAutofillManager* autofill_manager_ = nullptr;
-  TestAutofillExternalDelegate* autofill_external_delegate_ = nullptr;
+  raw_ptr<ContentAutofillDriver> autofill_driver_ = nullptr;
+  raw_ptr<BrowserAutofillManager> autofill_manager_ = nullptr;
+  raw_ptr<TestAutofillExternalDelegate> autofill_external_delegate_ = nullptr;
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> disable_animation_;
 };
 

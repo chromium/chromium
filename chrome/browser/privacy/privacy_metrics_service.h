@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PRIVACY_PRIVACY_METRICS_SERVICE_H_
 #define CHROME_BROWSER_PRIVACY_PRIVACY_METRICS_SERVICE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/driver/sync_service.h"
@@ -87,10 +88,10 @@ class PrivacyMetricsService : public KeyedService,
   // changed, indicating that a user enabled or disabled sync.
   bool primary_account_consent_changed_ = false;
 
-  const PrefService* const pref_service_;
-  const HostContentSettingsMap* const host_content_settings_map_;
-  syncer::SyncService* const sync_service_;
-  signin::IdentityManager* const identity_manager_;
+  const raw_ptr<const PrefService> pref_service_;
+  const raw_ptr<const HostContentSettingsMap> host_content_settings_map_;
+  const raw_ptr<syncer::SyncService> sync_service_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
 
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_service_observer_{this};

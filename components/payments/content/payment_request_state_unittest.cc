@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/guid.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -150,7 +151,8 @@ class PaymentRequestStateTest : public testing::Test,
   content::BrowserTaskEnvironment task_environment_;
   content::TestBrowserContext context_;
   content::TestWebContentsFactory web_contents_factory_;
-  content::WebContents* web_contents_;  // Owned by `web_contents_factory_`.
+  raw_ptr<content::WebContents>
+      web_contents_;  // Owned by `web_contents_factory_`.
   std::unique_ptr<PaymentRequestState> state_;
   std::unique_ptr<PaymentRequestSpec> spec_;
   int num_on_selected_information_changed_called_;

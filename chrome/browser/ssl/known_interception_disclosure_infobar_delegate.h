@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SSL_KNOWN_INTERCEPTION_DISCLOSURE_INFOBAR_DELEGATE_H_
 
 #include <algorithm>
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/time/default_clock.h"
 #include "build/build_config.h"
@@ -98,7 +99,7 @@ class KnownInterceptionDisclosureInfoBarDelegate
 #endif
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 };
 
 #endif  // CHROME_BROWSER_SSL_KNOWN_INTERCEPTION_DISCLOSURE_INFOBAR_DELEGATE_H_

@@ -13,6 +13,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
@@ -52,7 +53,7 @@ class DummyCertVerifier : public net::CertVerifier {
         std::move(cancel_cb).Run();
     }
 
-    net::CertVerifyResult* verify_result;
+    raw_ptr<net::CertVerifyResult> verify_result;
     net::CompletionOnceCallback callback;
 
     base::OnceClosure cancel_cb;
@@ -186,7 +187,7 @@ class CertVerifierServiceTest : public PlatformTest {
   CertVerifierServiceTest()
       : dummy_cv_(new DummyCertVerifier),
         cv_service_(new internal::CertVerifierServiceImpl(
-            base::WrapUnique(dummy_cv_),
+            base::WrapUnique(dummy_cv_.get()),
             cv_service_remote_.BindNewPipeAndPassReceiver(),
             /*cert_net_fetcher=*/nullptr)) {}
 
@@ -263,8 +264,8 @@ class CertVerifierServiceTest : public PlatformTest {
   base::test::TaskEnvironment task_environment_;
 
   mojo::Remote<mojom::CertVerifierService> cv_service_remote_;
-  DummyCertVerifier* dummy_cv_;
-  internal::CertVerifierServiceImpl* cv_service_;
+  raw_ptr<DummyCertVerifier> dummy_cv_;
+  raw_ptr<internal::CertVerifierServiceImpl> cv_service_;
 };
 }  // namespace
 

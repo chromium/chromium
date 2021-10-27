@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_OPTIMIZATION_GUIDE_ANDROID_OPTIMIZATION_GUIDE_TAB_URL_PROVIDER_ANDROID_H_
 #define CHROME_BROWSER_OPTIMIZATION_GUIDE_ANDROID_OPTIMIZATION_GUIDE_TAB_URL_PROVIDER_ANDROID_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/optimization_guide/core/tab_url_provider.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -52,7 +53,7 @@ class OptimizationGuideTabUrlProviderAndroid
   void SortTabs(std::vector<TabRepresentation>* tabs);
 
   // The profile associated with this tab URL provider.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 };
 
 }  // namespace android

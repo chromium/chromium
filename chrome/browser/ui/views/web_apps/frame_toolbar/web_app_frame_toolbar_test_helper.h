@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "content/public/browser/web_contents.h"
 
@@ -71,10 +72,10 @@ class WebAppFrameToolbarTestHelper {
   }
 
  private:
-  Browser* app_browser_ = nullptr;
-  BrowserView* browser_view_ = nullptr;
-  BrowserNonClientFrameView* frame_view_ = nullptr;
-  WebAppFrameToolbarView* web_app_frame_toolbar_ = nullptr;
+  raw_ptr<Browser> app_browser_ = nullptr;
+  raw_ptr<BrowserView> browser_view_ = nullptr;
+  raw_ptr<BrowserNonClientFrameView> frame_view_ = nullptr;
+  raw_ptr<WebAppFrameToolbarView> web_app_frame_toolbar_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_FRAME_TOOLBAR_WEB_APP_FRAME_TOOLBAR_TEST_HELPER_H_

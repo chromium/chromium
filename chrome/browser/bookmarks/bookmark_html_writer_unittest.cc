@@ -13,6 +13,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/i18n/time_formatting.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -147,7 +148,7 @@ class BookmarksObserver : public BookmarksExportObserver {
   }
 
  private:
-  base::RunLoop* loop_;
+  raw_ptr<base::RunLoop> loop_;
 };
 
 // Tests bookmark_html_writer by populating a BookmarkModel, writing it out by

@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
@@ -56,7 +57,7 @@ class AsyncReadResultHelper {
   void AssertLockAcquired() const;
 
   const scoped_refptr<AsyncReadResultLock> lock_;
-  SkiaOutputSurfaceImplOnGpu* impl_on_gpu_;
+  raw_ptr<SkiaOutputSurfaceImplOnGpu> impl_on_gpu_;
   std::unique_ptr<const SkSurface::AsyncReadResult> result_;
 };
 

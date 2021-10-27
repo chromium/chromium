@@ -14,6 +14,7 @@
 #include "base/callback.h"
 #include "base/cxx17_backports.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/safe_search_api/fake_url_checker_client.h"
@@ -89,7 +90,7 @@ class SafeSearchURLCheckerTest : public testing::Test {
   }
 
   size_t next_url_;
-  FakeURLCheckerClient* fake_client_;
+  raw_ptr<FakeURLCheckerClient> fake_client_;
   std::unique_ptr<URLChecker> checker_;
   base::test::SingleThreadTaskEnvironment task_environment_;
 };

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ANDROID_OOM_INTERVENTION_NEAR_OOM_REDUCTION_MESSAGE_DELEGATE_H_
 #define CHROME_BROWSER_ANDROID_OOM_INTERVENTION_NEAR_OOM_REDUCTION_MESSAGE_DELEGATE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/interventions/intervention_delegate.h"
 #include "components/messages/android/message_enums.h"
 #include "components/messages/android/message_wrapper.h"
@@ -36,7 +37,7 @@ class NearOomReductionMessageDelegate {
   void HandleMessageDismissed(messages::DismissReason dismiss_reason);
 
   std::unique_ptr<messages::MessageWrapper> message_;
-  InterventionDelegate* intervention_delegate_;
+  raw_ptr<InterventionDelegate> intervention_delegate_;
 };
 
 }  // namespace oom_intervention

@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "extensions/browser/management_policy.h"
 
 namespace extensions {
@@ -44,7 +45,7 @@ class StandardManagementPolicyProvider : public ManagementPolicy::Provider {
                             std::u16string* error) const override;
 
  private:
-  ExtensionManagement* settings_;
+  raw_ptr<ExtensionManagement> settings_;
   bool ReturnLoadError(const extensions::Extension* extension,
                        std::u16string* error) const;
 };

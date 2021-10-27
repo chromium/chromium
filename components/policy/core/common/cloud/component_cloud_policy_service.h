@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -144,9 +145,9 @@ class POLICY_EXPORT ComponentCloudPolicyService
   void FilterAndInstallPolicy();
 
   std::string policy_type_;
-  Delegate* delegate_;
-  SchemaRegistry* schema_registry_;
-  CloudPolicyCore* core_;
+  raw_ptr<Delegate> delegate_;
+  raw_ptr<SchemaRegistry> schema_registry_;
+  raw_ptr<CloudPolicyCore> core_;
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
 
   // The |backend_| handles all download scheduling, validation and caching of

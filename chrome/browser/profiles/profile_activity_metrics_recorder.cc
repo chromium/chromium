@@ -147,7 +147,7 @@ void ProfileActivityMetricsRecorder::OnBrowserSetLastActive(Browser* browser) {
     running_session_profile_ = active_profile;
     running_session_start_ = base::TimeTicks::Now();
     profile_observation_.Reset();
-    profile_observation_.Observe(running_session_profile_);
+    profile_observation_.Observe(running_session_profile_.get());
 
     // Record state at startup (when |last_session_end_| is 0) and whenever the
     // user starts browsing after a longer time of inactivity. Do it
@@ -183,7 +183,8 @@ void ProfileActivityMetricsRecorder::OnSessionEnded(
   // profiles.
   RecordProfileSessionDuration(running_session_profile_,
                                session_end - running_session_start_);
-  DCHECK(profile_observation_.IsObservingSource(running_session_profile_));
+  DCHECK(
+      profile_observation_.IsObservingSource(running_session_profile_.get()));
   profile_observation_.Reset();
   running_session_profile_ = nullptr;
   last_session_end_ = base::TimeTicks::Now();
@@ -199,7 +200,8 @@ void ProfileActivityMetricsRecorder::OnProfileWillBeDestroyed(
   // TODO(crbug.com/1096145): explore having
   // DesktopSessionDurationTracker call OnSessionEnded() when the
   // profile is destroyed. Remove this workaround if this is done.
-  DCHECK(profile_observation_.IsObservingSource(running_session_profile_));
+  DCHECK(
+      profile_observation_.IsObservingSource(running_session_profile_.get()));
   profile_observation_.Reset();
   running_session_profile_ = nullptr;
   last_active_profile_ = nullptr;

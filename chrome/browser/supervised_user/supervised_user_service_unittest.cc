@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -140,7 +141,7 @@ class SupervisedUserServiceTest : public ::testing::Test {
       identity_test_environment_adaptor_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-  SupervisedUserService* supervised_user_service_;
+  raw_ptr<SupervisedUserService> supervised_user_service_;
 };
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

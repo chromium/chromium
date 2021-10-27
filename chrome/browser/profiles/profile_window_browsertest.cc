@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile_window.h"
 
 #include <stddef.h>
@@ -145,7 +146,7 @@ class ProfileWindowCountBrowserTest : public ProfileWindowBrowserTest,
   }
 
  private:
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_P(ProfileWindowCountBrowserTest, CountProfileWindows) {

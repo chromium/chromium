@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "content/browser/background_fetch/background_fetch_test_base.h"
@@ -186,7 +187,7 @@ class BackgroundFetchDelegateProxyTest : public BackgroundFetchTestBase {
 
  protected:
   FakeTestBrowserContext browser_context_;
-  FakeBackgroundFetchDelegate* delegate_;
+  raw_ptr<FakeBackgroundFetchDelegate> delegate_;
   std::unique_ptr<BackgroundFetchDelegateProxy> delegate_proxy_;
   base::WeakPtrFactory<StoragePartitionImpl> storage_partition_factory_;
 };

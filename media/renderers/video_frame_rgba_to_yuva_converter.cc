@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/client/raster_interface.h"
@@ -100,7 +101,7 @@ class ScopedAcceleratedSkImage {
                            sk_sp<SkImage> sk_image)
       : provider_(provider), texture_id_(texture_id), sk_image_(sk_image) {}
 
-  viz::RasterContextProvider* const provider_;
+  const raw_ptr<viz::RasterContextProvider> provider_;
   uint32_t texture_id_ = 0;
   sk_sp<SkImage> sk_image_;
 };

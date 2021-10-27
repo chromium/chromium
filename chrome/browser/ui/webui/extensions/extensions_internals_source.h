@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/url_data_source.h"
 
 class Profile;
@@ -34,7 +35,7 @@ class ExtensionsInternalsSource : public content::URLDataSource {
   std::string WriteToString() const;
 
  private:
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_EXTENSIONS_EXTENSIONS_INTERNALS_SOURCE_H_

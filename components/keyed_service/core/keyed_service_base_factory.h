@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_KEYED_SERVICE_CORE_KEYED_SERVICE_BASE_FACTORY_H_
 #define COMPONENTS_KEYED_SERVICE_CORE_KEYED_SERVICE_BASE_FACTORY_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/keyed_service/core/dependency_node.h"
 #include "components/keyed_service/core/keyed_service_export.h"
@@ -102,7 +103,7 @@ class KEYED_SERVICE_EXPORT KeyedServiceBaseFactory : public DependencyNode {
 
   // The DependencyManager used. In real code, this will be a singleton used
   // by all the factories of a given type. Unit tests will use their own copy.
-  DependencyManager* dependency_manager_;
+  raw_ptr<DependencyManager> dependency_manager_;
 
   // Registers any preferences used by this service. This should be overridden
   // by any services that want to register context-specific preferences.

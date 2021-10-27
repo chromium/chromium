@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_REPORTING_PROFILE_REPORT_GENERATOR_DELEGATE_BASE_H_
 #define CHROME_BROWSER_ENTERPRISE_REPORTING_PROFILE_REPORT_GENERATOR_DELEGATE_BASE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/enterprise/browser/reporting/profile_report_generator.h"
 
@@ -44,7 +45,7 @@ class ProfileReportGeneratorDelegateBase
   policy::MachineLevelUserCloudPolicyManager* GetCloudPolicyManager() final;
 
  protected:
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 };
 
 }  // namespace enterprise_reporting

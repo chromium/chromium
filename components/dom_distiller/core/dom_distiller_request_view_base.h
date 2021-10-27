@@ -9,6 +9,7 @@
 #include <sstream>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "components/dom_distiller/core/distilled_page_prefs.h"
 #include "components/dom_distiller/core/dom_distiller_service.h"
 #include "components/dom_distiller/core/task_tracker.h"
@@ -59,7 +60,7 @@ class DomDistillerRequestViewBase : public ViewRequestDelegate,
   int page_count_;
 
   // Interface for accessing preferences for distilled pages.
-  DistilledPagePrefs* distilled_page_prefs_;
+  raw_ptr<DistilledPagePrefs> distilled_page_prefs_;
 
   // Flag to tell this observer that the web contents are in an error state.
   bool is_error_page_;

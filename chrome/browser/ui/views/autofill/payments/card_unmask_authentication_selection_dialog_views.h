@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/payments/card_unmask_authentication_selection_dialog_view.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "ui/views/controls/image_view.h"
@@ -53,7 +54,8 @@ class CardUnmaskAuthenticationSelectionDialogViews
   // button is clicked.
   void ReplaceContentWithProgressThrobber();
 
-  CardUnmaskAuthenticationSelectionDialogController* controller_ = nullptr;
+  raw_ptr<CardUnmaskAuthenticationSelectionDialogController> controller_ =
+      nullptr;
 };
 
 }  // namespace autofill

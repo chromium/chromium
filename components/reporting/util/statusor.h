@@ -62,6 +62,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "components/reporting/util/status.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -262,7 +263,7 @@ class WARN_UNUSED_RESULT StatusOr {
     }
 
    private:
-    StatusOr<T>* const status_or_;
+    const raw_ptr<StatusOr<T>> status_or_;
     const Status reset_to_status_;
   };
 

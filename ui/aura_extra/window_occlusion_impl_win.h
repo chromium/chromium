@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/aura_extra/aura_extra_export.h"
@@ -84,7 +85,7 @@ class AURA_EXTRA_EXPORT WindowsDesktopWindowIterator
 
   static BOOL CALLBACK EnumWindowsOcclusionCallback(HWND hwnd, LPARAM lParam);
 
-  WindowEvaluator* evaluator_ = nullptr;
+  raw_ptr<WindowEvaluator> evaluator_ = nullptr;
 };
 
 // Returns true if we are interested in |hwnd| for purposes of occlusion

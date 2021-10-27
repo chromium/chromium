@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list_types.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/policy_map.h"
@@ -165,7 +166,7 @@ class POLICY_EXPORT PolicyChangeRegistrar : public PolicyService::Observer {
  private:
   typedef std::map<std::string, UpdateCallback> CallbackMap;
 
-  PolicyService* policy_service_;
+  raw_ptr<PolicyService> policy_service_;
   PolicyNamespace ns_;
   CallbackMap callback_map_;
 };

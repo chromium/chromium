@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 
 namespace media {
 
@@ -54,7 +55,7 @@ class COMPONENT_EXPORT(LEARNING_IMPL) HasRandomNumberGenerator {
   RandomNumberGenerator* rng() const { return rng_; }
 
  private:
-  RandomNumberGenerator* rng_ = nullptr;
+  raw_ptr<RandomNumberGenerator> rng_ = nullptr;
 };
 
 }  // namespace media

@@ -5,6 +5,7 @@
 #include "chrome/browser/password_manager/password_store_utils.h"
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/password_reuse_manager_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
@@ -88,7 +89,7 @@ class StoreMetricReporterHelper : public base::SupportsUserData::Data {
     profile_->RemoveUserData(kPasswordStoreMetricsReporterKey);
   }
 
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
   // StoreMetricReporterHelper is owned by the profile. `metrics_reporter_` life
   // time is now bound to the profile.
   std::unique_ptr<password_manager::StoreMetricsReporter> metrics_reporter_;

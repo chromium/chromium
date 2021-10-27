@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/types/id_type.h"
@@ -303,15 +304,15 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
       apps::mojom::OptionalBool has_notification_indicator);
 #endif
 
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 
-  WebAppProvider* const provider_;
+  const raw_ptr<WebAppProvider> provider_;
 
   // The app type of the publisher. The app type is kSystemWeb if the web apps
   // are serving from Lacros, and the app type is kWeb for all other cases.
   const apps::mojom::AppType app_type_;
 
-  Delegate* const delegate_;
+  const raw_ptr<Delegate> delegate_;
 
   base::ScopedObservation<WebAppRegistrar, AppRegistrarObserver>
       registrar_observation_{this};

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "ui/views/widget/widget.h"
 
 #include <memory>
@@ -65,7 +66,7 @@ class FullscreenControlPopupTest : public views::test::WidgetTest {
 
  private:
   std::unique_ptr<gfx::AnimationTestApi> animation_api_;
-  views::Widget* parent_widget_ = nullptr;
+  raw_ptr<views::Widget> parent_widget_ = nullptr;
 };
 
 TEST_F(FullscreenControlPopupTest, ShowPopupAnimated) {

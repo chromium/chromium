@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/permissions/permission_update_message_delegate_android.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -84,7 +85,7 @@ class PermissionUpdateMessageController
       std::vector<std::string>& required_permissions,
       std::vector<std::string>& optional_permissions);
 
-  content::WebContents* web_contents_ = nullptr;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
   std::vector<std::unique_ptr<PermissionUpdateMessageDelegate>>
       message_delegates_;
 

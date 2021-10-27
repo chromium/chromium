@@ -11,6 +11,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 
 class Profile;
 
@@ -70,7 +71,7 @@ class MostVisitedSitesBridge {
   std::unique_ptr<JavaObserver> java_observer_;
 
   std::unique_ptr<ntp_tiles::MostVisitedSites> most_visited_;
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 };
 
 #endif  // CHROME_BROWSER_ANDROID_NTP_MOST_VISITED_SITES_BRIDGE_H_

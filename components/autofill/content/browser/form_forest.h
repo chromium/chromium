@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/form_data.h"
@@ -188,7 +189,7 @@ class FormForest {
     // empty FrameData is created when a parent form can Resolve() a child's
     // LocalFrameToken and no form from that child frame has been seen yet.
     // However, if |child_forms| is non-empty, then driver is non-null.
-    ContentAutofillDriver* driver = nullptr;
+    raw_ptr<ContentAutofillDriver> driver = nullptr;
   };
 
   FormForest();
@@ -360,7 +361,7 @@ class FormForest {
   // The frame managed by the FormForest that was last passed to
   // UpdateTreeOfRendererForm().
   // TODO(crbug.com/1240247): Remove and make Resolve() static.
-  content::RenderFrameHost* some_rfh_for_debugging_ = nullptr;
+  raw_ptr<content::RenderFrameHost> some_rfh_for_debugging_ = nullptr;
 
   // The FrameData nodes of the forest.
   // The members FrameData::frame_token must not be mutated.

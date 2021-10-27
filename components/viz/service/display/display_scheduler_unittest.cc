@@ -10,6 +10,7 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/null_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -110,7 +111,7 @@ class FakeDisplaySchedulerClient : public DisplaySchedulerClient {
   }
 
  protected:
-  TestDisplayDamageTracker* damage_tracker_ = nullptr;
+  raw_ptr<TestDisplayDamageTracker> damage_tracker_ = nullptr;
   int draw_and_swap_count_;
   bool next_draw_and_swap_fails_;
   BeginFrameAck last_begin_frame_ack_;

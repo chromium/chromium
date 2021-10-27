@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
@@ -52,7 +53,7 @@ class RasterizeAndRecordBenchmark : public MicroBenchmark {
   // The following is used in DCHECKs.
   bool main_thread_benchmark_done_;
 
-  LayerTreeHost* layer_tree_host_;
+  raw_ptr<LayerTreeHost> layer_tree_host_;
 
   base::WeakPtrFactory<RasterizeAndRecordBenchmark> weak_ptr_factory_{this};
 };

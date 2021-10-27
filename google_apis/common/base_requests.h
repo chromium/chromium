@@ -17,6 +17,7 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_checker.h"
@@ -260,7 +261,7 @@ class UrlFetchRequestBase : public AuthenticatedRequestInterface,
   ReAuthenticateCallback re_authenticate_callback_;
   int re_authenticate_count_;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
-  RequestSender* sender_;
+  raw_ptr<RequestSender> sender_;
   absl::optional<ApiErrorCode> error_code_;
   const ProgressCallback upload_progress_callback_;
   const ProgressCallback download_progress_callback_;

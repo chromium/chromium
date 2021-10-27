@@ -5,6 +5,7 @@
 #include "components/optimization_guide/content/browser/page_content_annotations_web_contents_observer.h"
 
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/google/core/common/google_switches.h"
@@ -114,7 +115,7 @@ class PageContentAnnotationsWebContentsObserverTest
 
     page_text_observer_ = new TestPageTextObserver(web_contents());
     web_contents()->SetUserData(TestPageTextObserver::UserDataKey(),
-                                base::WrapUnique(page_text_observer_));
+                                base::WrapUnique(page_text_observer_.get()));
 
     PageContentAnnotationsWebContentsObserver::CreateForWebContents(
         web_contents(), page_content_annotations_service_.get(),
@@ -164,8 +165,8 @@ class PageContentAnnotationsWebContentsObserverTest
   std::unique_ptr<FakePageContentAnnotationsService>
       page_content_annotations_service_;
   std::unique_ptr<TemplateURLService> template_url_service_;
-  TemplateURL* template_url_;
-  TestPageTextObserver* page_text_observer_;
+  raw_ptr<TemplateURL> template_url_;
+  raw_ptr<TestPageTextObserver> page_text_observer_;
 };
 
 TEST_F(PageContentAnnotationsWebContentsObserverTest,

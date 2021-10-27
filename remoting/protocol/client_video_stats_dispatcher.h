@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/base/constants.h"
 #include "remoting/protocol/channel_dispatcher_base.h"
@@ -33,7 +34,7 @@ class ClientVideoStatsDispatcher : public ChannelDispatcherBase {
  private:
   void OnIncomingMessage(std::unique_ptr<CompoundBuffer> message) override;
 
-  VideoStatsStub* video_stats_stub_;
+  raw_ptr<VideoStatsStub> video_stats_stub_;
 };
 
 }  // namespace protocol

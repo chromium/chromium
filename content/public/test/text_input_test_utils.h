@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "content/public/test/test_utils.h"
 #include "ui/base/ime/mojom/text_input_state.mojom.h"
@@ -290,7 +291,7 @@ class TextInputStateSender {
 
  private:
   ui::mojom::TextInputStatePtr text_input_state_;
-  RenderWidgetHostViewBase* const view_;
+  const raw_ptr<RenderWidgetHostViewBase> view_;
 };
 
 // This class is intended to observe the InputMethod.

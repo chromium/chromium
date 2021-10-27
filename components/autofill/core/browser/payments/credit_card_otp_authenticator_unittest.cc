@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
@@ -117,7 +118,7 @@ class CreditCardOtpAuthenticatorTest : public testing::Test {
   TestAutofillClient autofill_client_;
   std::unique_ptr<TestAutofillDriver> autofill_driver_;
   TestPersonalDataManager personal_data_manager_;
-  payments::TestPaymentsClient* payments_client_;
+  raw_ptr<payments::TestPaymentsClient> payments_client_;
   std::unique_ptr<CreditCardOtpAuthenticator> authenticator_;
   CreditCard card_;
   CardUnmaskChallengeOption selected_otp_challenge_option_;

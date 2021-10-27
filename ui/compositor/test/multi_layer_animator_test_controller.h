@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 
 namespace ui {
@@ -49,7 +50,7 @@ class MultiLayerAnimatorTestController {
   // queued, only the running ones will be progressed.
   void StepAnimations(const base::TimeDelta& duration);
 
-  MultiLayerAnimatorTestControllerDelegate* delegate_;
+  raw_ptr<MultiLayerAnimatorTestControllerDelegate> delegate_;
 };
 
 }  // namespace test

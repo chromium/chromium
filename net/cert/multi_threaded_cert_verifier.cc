@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
@@ -116,7 +117,7 @@ class MultiThreadedCertVerifier::InternalRequest
                             std::unique_ptr<ResultHelper> verify_result);
 
   CompletionOnceCallback callback_;
-  CertVerifyResult* caller_result_;
+  raw_ptr<CertVerifyResult> caller_result_;
 
   base::WeakPtrFactory<InternalRequest> weak_factory_{this};
 };

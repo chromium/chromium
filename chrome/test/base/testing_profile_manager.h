@@ -11,6 +11,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/test/scoped_path_override.h"
 #include "build/chromeos_buildflags.h"
@@ -155,16 +156,16 @@ class TestingProfileManager : public ProfileObserver {
   std::unique_ptr<base::ScopedPathOverride> user_data_dir_override_;
 
   // Weak reference to the browser process on which the ProfileManager is set.
-  TestingBrowserProcess* browser_process_;
+  raw_ptr<TestingBrowserProcess> browser_process_;
 
   // Local state in which all the profiles are registered.
-  ScopedTestingLocalState* local_state_;
+  raw_ptr<ScopedTestingLocalState> local_state_;
 
   // Owned local state for when it's not provided in the constructor.
   std::unique_ptr<ScopedTestingLocalState> owned_local_state_;
 
   // Weak reference to the profile manager.
-  ProfileManager* profile_manager_;
+  raw_ptr<ProfileManager> profile_manager_;
 
   // Map of profile_name to TestingProfile* from CreateTestingProfile().
   TestingProfilesMap testing_profiles_;

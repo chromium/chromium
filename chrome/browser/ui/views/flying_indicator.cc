@@ -85,7 +85,7 @@ FlyingIndicator::FlyingIndicator(const gfx::VectorIcon& icon,
   views::BubbleDialogDelegateView* const bubble_view_ptr = bubble_view.get();
   widget_ =
       views::BubbleDialogDelegateView::CreateBubble(std::move(bubble_view));
-  scoped_observation_.Observe(widget_);
+  scoped_observation_.Observe(widget_.get());
 
   // Set required frame properties.
   views::BubbleFrameView* const frame_view =

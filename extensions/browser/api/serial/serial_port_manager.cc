@@ -154,8 +154,8 @@ void SerialPortManager::DispatchReceiveEvent(const ReceiveParams& params,
 void SerialPortManager::DispatchEvent(
     const ReceiveParams& params,
     std::unique_ptr<extensions::Event> event) {
-  content::BrowserContext* context =
-      reinterpret_cast<content::BrowserContext*>(params.browser_context_id);
+  content::BrowserContext* context = reinterpret_cast<content::BrowserContext*>(
+      params.browser_context_id.get());
   if (!extensions::ExtensionsBrowserClient::Get()->IsValidContext(context))
     return;
 

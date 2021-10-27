@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "components/autofill/core/browser/autofill_regex_constants.h"
 #include "components/autofill/core/browser/autofill_type.h"
@@ -32,7 +33,7 @@ class FullNameField : public NameField {
   void AddClassifications(FieldCandidatesMap* field_candidates) const override;
 
  private:
-  AutofillField* field_;
+  raw_ptr<AutofillField> field_;
 };
 
 // A form field that parses a first name field and two last name fields as they

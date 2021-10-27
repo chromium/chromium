@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CART_CART_HANDLER_H_
 #define CHROME_BROWSER_CART_CART_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/cart/cart_service.h"
 #include "chrome/browser/cart/chrome_cart.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -44,7 +45,7 @@ class CartHandler : public chrome_cart::mojom::CartHandler {
                            bool success,
                            std::vector<CartDB::KeyAndValue> res);
   mojo::Receiver<chrome_cart::mojom::CartHandler> handler_;
-  CartService* cart_service_;
+  raw_ptr<CartService> cart_service_;
   base::WeakPtrFactory<CartHandler> weak_factory_{this};
 };
 

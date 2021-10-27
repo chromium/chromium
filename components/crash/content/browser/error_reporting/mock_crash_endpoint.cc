@@ -4,6 +4,7 @@
 
 #include "components/crash/content/browser/error_reporting/mock_crash_endpoint.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
@@ -40,7 +41,7 @@ class MockCrashEndpoint::Client : public crash_reporter::CrashReporterClient {
   }
 #endif
  private:
-  MockCrashEndpoint* owner_;
+  raw_ptr<MockCrashEndpoint> owner_;
 };
 
 MockCrashEndpoint::Report::Report(std::string query_value,

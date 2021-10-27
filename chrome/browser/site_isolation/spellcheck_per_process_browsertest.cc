@@ -9,6 +9,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -180,7 +181,7 @@ class MockSpellCheckHost : spellcheck::mojom::SpellCheckHost {
   void DisconnectSessionBridge() override {}
 #endif
 
-  content::RenderProcessHost* process_host_;
+  raw_ptr<content::RenderProcessHost> process_host_;
   bool text_received_ = false;
   std::u16string text_;
   mojo::Receiver<spellcheck::mojom::SpellCheckHost> receiver_{this};

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/kill.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -247,7 +248,7 @@ class MetricsWebContentsObserverTest
   }
 
   base::HistogramTester histogram_tester_;
-  TestMetricsWebContentsObserverEmbedder* embedder_interface_;
+  raw_ptr<TestMetricsWebContentsObserverEmbedder> embedder_interface_;
 
  private:
   int num_errors_ = 0;
@@ -257,7 +258,7 @@ class MetricsWebContentsObserverTest
   // previous structure that was passed when updating the PageLoadTiming.
   mojom::PageLoadTimingPtr previous_timing_;
   PageLoadMetricsTestContentBrowserClient browser_client_;
-  content::ContentBrowserClient* original_browser_client_ = nullptr;
+  raw_ptr<content::ContentBrowserClient> original_browser_client_ = nullptr;
 };
 
 TEST_F(MetricsWebContentsObserverTest, SuccessfulMainFrameNavigation) {
@@ -1645,7 +1646,7 @@ class MetricsWebContentsObserverNonPrimaryPageTest
     }
 
    private:
-    MetricsWebContentsObserverNonPrimaryPageTest* owner_;
+    raw_ptr<MetricsWebContentsObserverNonPrimaryPageTest> owner_;
     GURL committed_url_;
   };
 
@@ -1660,7 +1661,7 @@ class MetricsWebContentsObserverNonPrimaryPageTest
     }
 
    private:
-    MetricsWebContentsObserverNonPrimaryPageTest* owner_;
+    raw_ptr<MetricsWebContentsObserverNonPrimaryPageTest> owner_;
   };
 
   std::unique_ptr<TestMetricsWebContentsObserverEmbedder> CreateEmbedder()

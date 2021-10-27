@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane_listener.h"
@@ -88,34 +89,36 @@ class CollectedCookiesViews : public views::DialogDelegateView,
   void AddContentException(views::TreeView* tree_view, ContentSetting setting);
 
   // The web contents.
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 
   // Assorted views.
-  views::Label* allowed_label_ = nullptr;
-  views::Label* blocked_label_ = nullptr;
+  raw_ptr<views::Label> allowed_label_ = nullptr;
+  raw_ptr<views::Label> blocked_label_ = nullptr;
 
-  views::TreeView* allowed_cookies_tree_ = nullptr;
-  views::TreeView* blocked_cookies_tree_ = nullptr;
+  raw_ptr<views::TreeView> allowed_cookies_tree_ = nullptr;
+  raw_ptr<views::TreeView> blocked_cookies_tree_ = nullptr;
 
-  views::LabelButton* block_allowed_button_ = nullptr;
-  views::LabelButton* delete_allowed_button_ = nullptr;
-  views::LabelButton* allow_blocked_button_ = nullptr;
-  views::LabelButton* for_session_blocked_button_ = nullptr;
+  raw_ptr<views::LabelButton> block_allowed_button_ = nullptr;
+  raw_ptr<views::LabelButton> delete_allowed_button_ = nullptr;
+  raw_ptr<views::LabelButton> allow_blocked_button_ = nullptr;
+  raw_ptr<views::LabelButton> for_session_blocked_button_ = nullptr;
 
   std::unique_ptr<CookiesTreeModel> allowed_cookies_tree_model_;
   std::unique_ptr<CookiesTreeModel> blocked_cookies_tree_model_;
 
-  CookiesTreeViewDrawingProvider* allowed_cookies_drawing_provider_ = nullptr;
-  CookiesTreeViewDrawingProvider* blocked_cookies_drawing_provider_ = nullptr;
+  raw_ptr<CookiesTreeViewDrawingProvider> allowed_cookies_drawing_provider_ =
+      nullptr;
+  raw_ptr<CookiesTreeViewDrawingProvider> blocked_cookies_drawing_provider_ =
+      nullptr;
 
-  CookieInfoView* cookie_info_view_ = nullptr;
+  raw_ptr<CookieInfoView> cookie_info_view_ = nullptr;
 
-  InfobarView* infobar_ = nullptr;
+  raw_ptr<InfobarView> infobar_ = nullptr;
 
   // Weak pointers to the allowed and blocked panes so that they can be
   // shown/hidden as needed.
-  views::View* allowed_buttons_pane_ = nullptr;
-  views::View* blocked_buttons_pane_ = nullptr;
+  raw_ptr<views::View> allowed_buttons_pane_ = nullptr;
+  raw_ptr<views::View> blocked_buttons_pane_ = nullptr;
 
   bool status_changed_ = false;
 };

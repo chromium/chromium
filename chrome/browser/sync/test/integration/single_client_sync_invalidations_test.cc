@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
@@ -142,7 +143,7 @@ class GetUpdatesTriggeredObserver : public fake_server::FakeServer::Observer {
   }
 
  private:
-  fake_server::FakeServer* const fake_server_;
+  const raw_ptr<fake_server::FakeServer> fake_server_;
   const syncer::ModelType type_;
 
   size_t num_nudged_get_updates_for_data_type_ = 0;

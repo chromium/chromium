@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/shared_storage/shared_storage_worklet_driver.h"
@@ -150,7 +151,8 @@ class SharedStorageBrowserTest : public ContentBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 
-  TestSharedStorageWorkletHostManager* test_worklet_host_manager_ = nullptr;
+  raw_ptr<TestSharedStorageWorkletHostManager> test_worklet_host_manager_ =
+      nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, AddModule_Success) {

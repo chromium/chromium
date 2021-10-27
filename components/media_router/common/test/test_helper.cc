@@ -34,7 +34,7 @@ TestMediaSinkService::TestMediaSinkService()
 TestMediaSinkService::TestMediaSinkService(
     const OnSinksDiscoveredCallback& callback)
     : MediaSinkServiceBase(callback), timer_(new base::MockOneShotTimer()) {
-  SetTimerForTest(base::WrapUnique(timer_));
+  SetTimerForTest(base::WrapUnique(timer_.get()));
 }
 
 TestMediaSinkService::~TestMediaSinkService() = default;

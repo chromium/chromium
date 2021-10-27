@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_VR_ELEMENTS_RETICLE_H_
 #define CHROME_BROWSER_VR_ELEMENTS_RETICLE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/vr/elements/ui_element.h"
 #include "chrome/browser/vr/renderers/base_quad_renderer.h"
 #include "ui/gfx/geometry/point3_f.h"
@@ -65,13 +66,13 @@ class Reticle : public UiElement {
   // permitted to retain pointers to UiElements since they may be destructed,
   // but the scene itself is constant, so we will look up our elements on the
   // fly.
-  UiScene* scene_;
+  raw_ptr<UiScene> scene_;
 
   // Unlike other UiElements which bind their values form the model, the reticle
   // must derive values from the model late in the pipeline after the scene has
   // fully updated its geometry. We therefore retain a pointer to the model and
   // make use of it in |Render|.
-  Model* model_;
+  raw_ptr<Model> model_;
 };
 
 }  // namespace vr

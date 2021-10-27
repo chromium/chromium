@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
@@ -81,7 +82,7 @@ class TestChromeBrowserMainExtraParts : public ChromeBrowserMainExtraParts {
   void PreProfileInit() override { test_->SetUpNetworkInterceptors(); }
 
  private:
-  ExtensionUpdateClientBaseTest* test_;
+  raw_ptr<ExtensionUpdateClientBaseTest> test_;
 };
 
 class UpdateClientCompleteEventWaiter

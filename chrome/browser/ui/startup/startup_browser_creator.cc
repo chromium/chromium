@@ -21,6 +21,7 @@
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -240,7 +241,7 @@ class ProfileLaunchObserver : public ProfileObserver,
   // This is null until the profile to activate has been chosen. This value
   // should only be set once all profiles have been launched, otherwise,
   // activation may not happen after the launch of newer profiles.
-  Profile* profile_to_activate_ = nullptr;
+  raw_ptr<Profile> profile_to_activate_ = nullptr;
   // Set once we attempted to activate a profile. We only get one shot at this.
   bool activated_profile_ = false;
   base::ScopedMultiSourceObservation<Profile, ProfileObserver>

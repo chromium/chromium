@@ -74,17 +74,18 @@ void LayoutButton(ImageButton* button, const gfx::Rect& bounds) {
 CustomFrameView::CustomFrameView(Widget* frame)
     : frame_(frame), frame_background_(new FrameBackground()) {
   close_button_ = InitWindowCaptionButton(
-      base::BindRepeating(&Widget::CloseWithReason, base::Unretained(frame_),
+      base::BindRepeating(&Widget::CloseWithReason,
+                          base::Unretained(frame_.get()),
                           views::Widget::ClosedReason::kCloseButtonClicked),
       IDS_APP_ACCNAME_CLOSE, IDR_CLOSE, IDR_CLOSE_H, IDR_CLOSE_P);
   minimize_button_ = InitWindowCaptionButton(
-      base::BindRepeating(&Widget::Minimize, base::Unretained(frame_)),
+      base::BindRepeating(&Widget::Minimize, base::Unretained(frame_.get())),
       IDS_APP_ACCNAME_MINIMIZE, IDR_MINIMIZE, IDR_MINIMIZE_H, IDR_MINIMIZE_P);
   maximize_button_ = InitWindowCaptionButton(
-      base::BindRepeating(&Widget::Maximize, base::Unretained(frame_)),
+      base::BindRepeating(&Widget::Maximize, base::Unretained(frame_.get())),
       IDS_APP_ACCNAME_MAXIMIZE, IDR_MAXIMIZE, IDR_MAXIMIZE_H, IDR_MAXIMIZE_P);
   restore_button_ = InitWindowCaptionButton(
-      base::BindRepeating(&Widget::Restore, base::Unretained(frame_)),
+      base::BindRepeating(&Widget::Restore, base::Unretained(frame_.get())),
       IDS_APP_ACCNAME_RESTORE, IDR_RESTORE, IDR_RESTORE_H, IDR_RESTORE_P);
 
   if (frame_->widget_delegate()->ShouldShowWindowIcon()) {
@@ -457,7 +458,7 @@ void CustomFrameView::LayoutWindowControls() {
 
   bool is_restored = !is_maximized && !frame_->IsMinimized();
   ImageButton* invisible_button =
-      is_restored ? restore_button_ : maximize_button_;
+      is_restored ? restore_button_.get() : maximize_button_.get();
   invisible_button->SetVisible(false);
 
   WindowButtonOrderProvider* button_order =
@@ -576,7 +577,7 @@ ImageButton* CustomFrameView::GetImageButton(views::FrameButton frame_button) {
     }
     case views::FrameButton::kMaximize: {
       bool is_restored = !frame_->IsMaximized() && !frame_->IsMinimized();
-      button = is_restored ? maximize_button_ : restore_button_;
+      button = is_restored ? maximize_button_.get() : restore_button_.get();
       // If we should not show the maximize/restore button, then we return
       // NULL as we don't want this button to become visible and to be laid
       // out.

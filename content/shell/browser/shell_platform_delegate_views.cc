@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "content/shell/browser/shell_platform_delegate.h"
 
 #include <stddef.h>
@@ -298,16 +299,16 @@ class ShellView : public views::View, public views::TextfieldController {
   std::u16string title_;
 
   // Toolbar view contains forward/backward/reload button and URL entry
-  View* toolbar_view_ = nullptr;
-  views::Button* back_button_ = nullptr;
-  views::Button* forward_button_ = nullptr;
-  views::Button* refresh_button_ = nullptr;
-  views::Button* stop_button_ = nullptr;
-  views::Textfield* url_entry_ = nullptr;
+  raw_ptr<View> toolbar_view_ = nullptr;
+  raw_ptr<views::Button> back_button_ = nullptr;
+  raw_ptr<views::Button> forward_button_ = nullptr;
+  raw_ptr<views::Button> refresh_button_ = nullptr;
+  raw_ptr<views::Button> stop_button_ = nullptr;
+  raw_ptr<views::Textfield> url_entry_ = nullptr;
 
   // Contents view contains the web contents view
-  View* contents_view_ = nullptr;
-  views::WebView* web_view_ = nullptr;
+  raw_ptr<View> contents_view_ = nullptr;
+  raw_ptr<views::WebView> web_view_ = nullptr;
 };
 
 BEGIN_METADATA(ShellView, views::View)

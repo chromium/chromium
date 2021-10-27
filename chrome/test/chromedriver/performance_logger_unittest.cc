@@ -13,6 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/format_macros.h"
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/devtools_client_impl.h"
@@ -83,7 +84,8 @@ class FakeDevToolsClient : public StubDevToolsClient {
   const std::string id_;  // WebView id.
   std::vector<std::unique_ptr<DevToolsCommand>>
       sent_commands_;                // Commands that were sent.
-  DevToolsEventListener* listener_;  // The fake allows only one event listener.
+  raw_ptr<DevToolsEventListener>
+      listener_;  // The fake allows only one event listener.
   size_t command_index_;
 };
 

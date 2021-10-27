@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_DOM_DISTILLER_CONTENT_BROWSER_DISTILLABILITY_DRIVER_H_
 #define COMPONENTS_DOM_DISTILLER_CONTENT_BROWSER_DISTILLABILITY_DRIVER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/dom_distiller/content/browser/distillable_page_utils.h"
@@ -65,7 +66,7 @@ class DistillabilityDriver
   // metrics for the ReaderMode experiment.
   UMAHelper::DistillabilityDriverTimer timer_;
 
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
   base::RepeatingCallback<bool(content::WebContents*)> is_secure_check_;
 
   base::WeakPtrFactory<DistillabilityDriver> weak_factory_{this};

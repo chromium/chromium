@@ -17,6 +17,7 @@
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -430,10 +431,10 @@ class MenuManager : public ProfileObserver,
 
   ExtensionIconManager icon_manager_;
 
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
   // Owned by ExtensionSystem.
-  StateStore* store_;
+  raw_ptr<StateStore> store_;
 
   base::ObserverList<TestObserver> observers_;
 };

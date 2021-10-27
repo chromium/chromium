@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -206,22 +207,22 @@ class VIEWS_EXPORT AXVirtualView : public ui::AXPlatformNodeDelegateBase {
 
   // We own this, but it is reference-counted on some platforms so we can't use
   // a unique_ptr. It is destroyed in the destructor.
-  ui::AXPlatformNode* ax_platform_node_;
+  raw_ptr<ui::AXPlatformNode> ax_platform_node_;
 
   // Weak. Owns us if not nullptr.
   // Either |parent_view_| or |virtual_parent_view_| should be set but not both.
-  ViewAccessibility* parent_view_ = nullptr;
+  raw_ptr<ViewAccessibility> parent_view_ = nullptr;
 
   // Weak. Owns us if not nullptr.
   // Either |parent_view_| or |virtual_parent_view_| should be set but not both.
-  AXVirtualView* virtual_parent_view_ = nullptr;
+  raw_ptr<AXVirtualView> virtual_parent_view_ = nullptr;
 
   // We own our children.
   AXVirtualViews children_;
 
   // The AXAuraObjCache that owns the AXVirtualViewWrapper associated with
   // this object, if any.
-  AXAuraObjCache* ax_aura_obj_cache_ = nullptr;
+  raw_ptr<AXAuraObjCache> ax_aura_obj_cache_ = nullptr;
 
   ui::AXUniqueId unique_id_;
   ui::AXNodeData custom_data_;

@@ -142,7 +142,7 @@ void NotificationPlatformBridgeDelegator::GetDisplayed(
   // displayed notifications which may not return TRANSIENT style ones. Ideally
   // there would be only one bridge to query from.
   NotificationPlatformBridge* bridge =
-      system_bridge_ ? system_bridge_ : message_center_bridge_;
+      system_bridge_ ? system_bridge_.get() : message_center_bridge_.get();
   DCHECK(bridge);
   bridge->GetDisplayed(profile_, std::move(callback));
 }

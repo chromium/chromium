@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_FRAME_WEB_CONTENTS_CLOSE_HANDLER_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 
 class WebContentsCloseHandlerDelegate;
@@ -43,7 +44,7 @@ class WebContentsCloseHandler {
   // close was canceled.
   void OnStillHaventClosed();
 
-  WebContentsCloseHandlerDelegate* delegate_;
+  raw_ptr<WebContentsCloseHandlerDelegate> delegate_;
 
   // If true, WillCloseAllTabs() has been invoked.
   bool in_close_;

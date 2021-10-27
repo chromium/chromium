@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -70,10 +71,10 @@ class WebAppProtocolHandlerIntentPickerView : public views::DialogDelegateView {
   void RunCloseCallback(bool allowed, bool remember_user_choice);
 
   const GURL url_;
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
   const web_app::AppId app_id_;
-  views::Checkbox* remember_selection_checkbox_;
-  views::ImageView* icon_image_view_;
+  raw_ptr<views::Checkbox> remember_selection_checkbox_;
+  raw_ptr<views::ImageView> icon_image_view_;
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
   chrome::WebAppProtocolHandlerAcceptanceCallback close_callback_;

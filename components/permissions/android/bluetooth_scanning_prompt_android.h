@@ -6,6 +6,7 @@
 #define COMPONENTS_PERMISSIONS_ANDROID_BLUETOOTH_SCANNING_PROMPT_ANDROID_H_
 
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/bluetooth_scanning_prompt.h"
 #include "content/public/browser/web_contents.h"
 
@@ -41,7 +42,7 @@ class BluetoothScanningPromptAndroid : public content::BluetoothScanningPrompt {
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_dialog_;
 
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
   content::BluetoothScanningPrompt::EventHandler event_handler_;
   std::unique_ptr<BluetoothScanningPromptAndroidDelegate> delegate_;
 };

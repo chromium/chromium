@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/aura/test/aura_test_base.h"
 #include "ui/aura/test/test_window_delegate.h"
@@ -43,7 +44,7 @@ class OcclusionTrackWindowDelegate : public test::TestWindowDelegate {
     last_occluded_region_ = window_->occluded_region_in_root();
   }
 
-  Window* window_ = nullptr;
+  raw_ptr<Window> window_ = nullptr;
   int occlusion_change_count_ = 0;
   Window::OcclusionState last_occlusion_state_ =
       Window::OcclusionState::UNKNOWN;

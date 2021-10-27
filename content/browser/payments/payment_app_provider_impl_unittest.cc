@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "content/browser/payments/installed_payment_apps_finder_impl.h"
 #include "content/browser/payments/payment_app_content_unittest_base.h"
@@ -145,7 +146,7 @@ class PaymentAppProviderTest : public PaymentAppContentUnitTestBase {
 
  private:
   TestWebContentsFactory test_web_contents_factory_;
-  WebContents* web_contents_;
+  raw_ptr<WebContents> web_contents_;
 };
 
 TEST_F(PaymentAppProviderTest, AbortPaymentTest) {

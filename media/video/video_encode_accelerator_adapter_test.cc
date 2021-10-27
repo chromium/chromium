@@ -9,6 +9,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -51,7 +52,7 @@ class VideoEncodeAcceleratorAdapterTest
     gpu_factories_ =
         std::make_unique<MockGpuVideoAcceleratorFactories>(nullptr);
     EXPECT_CALL(*gpu_factories_.get(), DoCreateVideoEncodeAccelerator())
-        .WillRepeatedly(Return(vea_));
+        .WillRepeatedly(Return(vea_.get()));
     EXPECT_CALL(*gpu_factories_.get(), GetTaskRunner())
         .WillRepeatedly(Return(vea_runner_));
 
@@ -168,7 +169,7 @@ class VideoEncodeAcceleratorAdapterTest
  protected:
   VideoCodecProfile profile_ = VP8PROFILE_ANY;
   base::test::TaskEnvironment task_environment_;
-  FakeVideoEncodeAccelerator* vea_;  // owned by |vae_adapter_|
+  raw_ptr<FakeVideoEncodeAccelerator> vea_;  // owned by |vae_adapter_|
   std::unique_ptr<MockGpuVideoAcceleratorFactories> gpu_factories_;
   std::unique_ptr<VideoEncodeAcceleratorAdapter> vae_adapter_;
   scoped_refptr<base::SequencedTaskRunner> vea_runner_;

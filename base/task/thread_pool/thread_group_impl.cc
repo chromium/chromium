@@ -19,6 +19,7 @@
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram.h"
 #include "base/numerics/clamped_math.h"
 #include "base/ranges/algorithm.h"
@@ -198,7 +199,7 @@ class ThreadGroupImpl::ScopedCommandsExecutor
     }
   }
 
-  ThreadGroupImpl* const outer_;
+  const raw_ptr<ThreadGroupImpl> outer_;
 
   WorkerContainer workers_to_wake_up_;
   WorkerContainer workers_to_start_;
@@ -295,7 +296,7 @@ class ThreadGroupImpl::WorkerThreadDelegateImpl : public WorkerThread::Delegate,
     size_t num_tasks_since_last_detach = 0;
 
     // Associated WorkerThread, if any, initialized in OnMainEntry().
-    WorkerThread* worker_thread_;
+    raw_ptr<WorkerThread> worker_thread_;
 
 #if defined(OS_WIN)
     std::unique_ptr<win::ScopedWindowsThreadEnvironment> win_thread_environment;

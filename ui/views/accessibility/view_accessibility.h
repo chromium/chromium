@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -238,7 +239,7 @@ class VIEWS_EXPORT ViewAccessibility {
   friend class View;
 
   // Weak. Owns this.
-  View* const view_;
+  const raw_ptr<View> view_;
 
   // If there are any virtual children, they override any real children.
   // We own our virtual children.
@@ -247,7 +248,7 @@ class VIEWS_EXPORT ViewAccessibility {
   // The virtual child that is currently focused.
   // This is nullptr if no virtual child is focused.
   // See also OverrideFocus() and GetFocusedDescendant().
-  AXVirtualView* focused_virtual_child_;
+  raw_ptr<AXVirtualView> focused_virtual_child_;
 
   const ui::AXUniqueId unique_id_;
 
@@ -275,8 +276,8 @@ class VIEWS_EXPORT ViewAccessibility {
 
   // Used by the Views system to help some assistive technologies, such as
   // screen readers, transition focus from one widget to another.
-  Widget* next_focus_ = nullptr;
-  Widget* previous_focus_ = nullptr;
+  raw_ptr<Widget> next_focus_ = nullptr;
+  raw_ptr<Widget> previous_focus_ = nullptr;
 
   // This view's child tree id.
   absl::optional<ui::AXTreeID> child_tree_id_;
