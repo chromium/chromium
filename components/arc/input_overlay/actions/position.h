@@ -29,8 +29,9 @@ class Position {
   //   ]
   // }
   virtual bool ParseFromJson(const base::Value& value);
-  // Return the position coords in window.
-  virtual gfx::PointF CalculatePosition(const gfx::RectF& window_bounds);
+  // Return the position coords in window. |content_bounds| is the window bounds
+  // excluding caption if the caption shows.
+  virtual gfx::PointF CalculatePosition(const gfx::RectF& content_bounds);
 
   const gfx::PointF& anchor() const { return anchor_; }
   const gfx::Vector2dF& anchor_to_target() const { return anchor_to_target_; }

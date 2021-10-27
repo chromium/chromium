@@ -32,14 +32,16 @@ class ActionTapKey : public Action {
   // }
   bool ParseFromJson(const base::Value& value) override;
   bool RewriteEvent(const ui::Event& origin,
-                    std::list<ui::TouchEvent>& touch_events) override;
+                    std::list<ui::TouchEvent>& touch_events,
+                    const gfx::RectF& content_bounds) override;
   void OnTouchCancelled() override;
 
   ui::DomCode key() { return key_; }
 
  private:
   bool RewriteKeyEvent(const ui::KeyEvent& key_event,
-                       std::list<ui::TouchEvent>& rewritten_events);
+                       std::list<ui::TouchEvent>& rewritten_events,
+                       const gfx::RectF& content_bounds);
   ui::DomCode key_;
 };
 

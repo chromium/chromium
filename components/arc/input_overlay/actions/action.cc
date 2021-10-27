@@ -33,18 +33,18 @@ bool Action::ParseFromJson(const base::Value& value) {
   return true;
 }
 
-absl::optional<gfx::PointF> Action::CalculateTouchPosition() {
+absl::optional<gfx::PointF> Action::CalculateTouchPosition(
+    const gfx::RectF& content_bounds) {
   if (locations_.empty())
     return absl::nullopt;
   DCHECK(current_position_index_ < locations_.size());
   Position* position = locations_[current_position_index_].get();
-  const gfx::PointF point =
-      position->CalculatePosition(gfx::RectF(target_window_->bounds()));
+  const gfx::PointF point = position->CalculatePosition(content_bounds);
 
   float scale = target_window_->GetHost()->device_scale_factor();
 
   gfx::PointF root_point = gfx::PointF(point);
-  gfx::Point origin = target_window_->bounds().origin();
+  gfx::PointF origin = content_bounds.origin();
   root_point.Offset(origin.x(), origin.y());
 
   gfx::PointF root_location = gfx::PointF(root_point);

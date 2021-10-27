@@ -30,8 +30,10 @@ class Action {
   //    Call DiscardEvent to discard event such as repeated key event.
   // 3. Return false:
   //    No need to rewrite the event, so call SendEvent with original event.
+  // |content_bounds| is the window bounds excluding caption.
   virtual bool RewriteEvent(const ui::Event& origin,
-                            std::list<ui::TouchEvent>& touch_events) = 0;
+                            std::list<ui::TouchEvent>& touch_events,
+                            const gfx::RectF& content_bounds) = 0;
   // TODO (b/200210666): Can remove this after the bug is fixed.
   virtual void OnTouchCancelled() = 0;
 
@@ -52,7 +54,8 @@ class Action {
  protected:
   explicit Action(aura::Window* window);
 
-  absl::optional<gfx::PointF> CalculateTouchPosition();
+  absl::optional<gfx::PointF> CalculateTouchPosition(
+      const gfx::RectF& content_bounds);
 
   // name_ is basically for debugging and not visible to users.
   std::string name_;
