@@ -1237,7 +1237,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   android_aar_prebuilt("com_google_android_material_material_java") {
     aar_path =
-        "libs/com_google_android_material_material/material-1.5.0-alpha02.aar"
+        "libs/com_google_android_material_material/material-1.5.0-alpha05.aar"
     info_path = "libs/com_google_android_material_material/com_google_android_material_material.info"
 
     # Material Design is pulled in via Doubledown, thus this target should not
@@ -1254,6 +1254,7 @@ if (!limit_android_deps) {
       "//third_party/androidx:androidx_constraintlayout_constraintlayout_java",
       "//third_party/androidx:androidx_coordinatorlayout_coordinatorlayout_java",
       "//third_party/androidx:androidx_core_core_java",
+      "//third_party/androidx:androidx_drawerlayout_drawerlayout_java",
       "//third_party/androidx:androidx_dynamicanimation_dynamicanimation_java",
       "//third_party/androidx:androidx_fragment_fragment_java",
       "//third_party/androidx:androidx_lifecycle_lifecycle_runtime_java",
