@@ -38,6 +38,8 @@ constexpr std::array<std::pair<Category, float>, 8> kDefaultScores = {
     std::make_pair(Category::kSearchAndAssistant, 1e-5f),
 };
 
+constexpr double kEps = 1.0e-5;
+
 std::string CategoryToString(const Category value) {
   return base::NumberToString(static_cast<int>(value));
 }
@@ -85,13 +87,15 @@ void CategoryUsageRanker::Start(const std::u16string& query,
     return;
   }
 
-  // Retrieve all category scores, sorted low-to-high, and set category ranks
+  // Retrieve all category scores, sorted high-to-low, and set category ranks
   // based on their ordering.
+  // TODO(crbug.com/1199206): The kEps is useful for debugging here, but can be
+  // removed once no longer needed.
   auto category_scores = ranker_->GetAll();
   MrfuCache::Sort(category_scores);
   for (int i = 0; i < category_scores.size(); ++i) {
     const auto category = StringToCategory(category_scores[i].first);
-    categories[category] = category_scores.size() - i;
+    categories[category] = category_scores.size() - i * kEps;
   }
 }
 

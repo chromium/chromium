@@ -92,7 +92,7 @@ class MrfuCache {
   MrfuCache(const MrfuCache&) = delete;
   MrfuCache& operator=(const MrfuCache&) = delete;
 
-  // Sort |items| according to their scores.
+  // Sort |items| high-to-low according to their scores.
   static void Sort(Items& items);
 
   // Records the use of |item|, increasing its score and decaying other scores.
