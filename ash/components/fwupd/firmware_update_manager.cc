@@ -5,6 +5,8 @@
 #include "ash/components/fwupd/firmware_update_manager.h"
 
 #include "base/check_op.h"
+#include "chromeos/dbus/fwupd/fwupd_client.h"
+#include "dbus/message.h"
 
 namespace ash {
 
@@ -15,12 +17,17 @@ FirmwareUpdateManager* g_instance = nullptr;
 }  // namespace
 
 FirmwareUpdateManager::FirmwareUpdateManager() {
+  DCHECK(chromeos::FwupdClient::Get());
+  chromeos::FwupdClient::Get()->AddObserver(this);
+
   DCHECK_EQ(nullptr, g_instance);
   g_instance = this;
+  g_instance->RequestDevices();
 }
 
 FirmwareUpdateManager::~FirmwareUpdateManager() {
   DCHECK_EQ(this, g_instance);
+  chromeos::FwupdClient::Get()->RemoveObserver(this);
   g_instance = nullptr;
 }
 
@@ -28,6 +35,17 @@ FirmwareUpdateManager::~FirmwareUpdateManager() {
 FirmwareUpdateManager* FirmwareUpdateManager::Get() {
   DCHECK(g_instance);
   return g_instance;
+}
+
+void FirmwareUpdateManager::RequestDevices() {
+  chromeos::FwupdClient::Get()->GetDevices();
+}
+
+void FirmwareUpdateManager::OnDeviceListResponse(
+    chromeos::FwupdDeviceList* devices) {
+  DCHECK(devices);
+  // TODO(swifton): This is a stub implementation.
+  ++on_device_list_response_count_for_testing_;
 }
 
 }  // namespace ash

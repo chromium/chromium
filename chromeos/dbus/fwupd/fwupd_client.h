@@ -8,17 +8,29 @@
 #include <memory>
 
 #include "base/component_export.h"
+#include "base/observer_list.h"
 #include "chromeos/dbus/dbus_client.h"
+#include "chromeos/dbus/fwupd/fwupd_device.h"
+#include "dbus/message.h"
 
 namespace chromeos {
 // FwupdClient is used for handling signals from the fwupd daemon.
 class COMPONENT_EXPORT(CHROMEOS_DBUS_FUWPD) FwupdClient : public DBusClient {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    ~Observer() override = default;
+    virtual void OnDeviceListResponse(FwupdDeviceList* devices) = 0;
+  };
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
   // Create() should be used instead.
-  FwupdClient() = default;
+  FwupdClient();
   FwupdClient(const FwupdClient&) = delete;
   FwupdClient& operator=(const FwupdClient&) = delete;
-  ~FwupdClient() override = default;
+  ~FwupdClient() override;
 
   // Factory function.
   static std::unique_ptr<FwupdClient> Create();
@@ -40,7 +52,8 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_FUWPD) FwupdClient : public DBusClient {
   bool client_is_in_testing_mode_ = false;
   int device_signal_call_count_for_testing_ = 0;
   int get_upgrades_callback_call_count_for_testing_ = 0;
-  int get_devices_callback_call_count_for_testing_ = 0;
+
+  base::ObserverList<Observer> observers_;
 };
 }  // namespace chromeos
 

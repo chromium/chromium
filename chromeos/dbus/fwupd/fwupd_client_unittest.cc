@@ -8,6 +8,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "dbus/message.h"
 #include "dbus/mock_bus.h"
 #include "dbus/mock_object_proxy.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -69,10 +70,6 @@ class FwupdClientTest : public testing::Test {
 
   int GetGetUpgradesCallbackCallCount() {
     return fwupd_client_->get_upgrades_callback_call_count_for_testing_;
-  }
-
-  int GetGetDevicesCallbackCallCount() {
-    return fwupd_client_->get_devices_callback_call_count_for_testing_;
   }
 
   void OnMethodCalled(dbus::MethodCall* method_call,
@@ -141,6 +138,14 @@ class FwupdClientTest : public testing::Test {
   std::deque<MethodCallResult> dbus_method_call_simulated_results_;
 };
 
+class MockObserver : public FwupdClient::Observer {
+ public:
+  MOCK_METHOD(void,
+              OnDeviceListResponse,
+              (chromeos::FwupdDeviceList * devices),
+              ());
+};
+
 // TODO (swifton): Rewrite this test with an observer when it's available.
 TEST_F(FwupdClientTest, AddOneDevice) {
   EmitSignal(kFwupdDeviceAddedSignalName);
@@ -162,8 +167,11 @@ TEST_F(FwupdClientTest, RequestUpgrades) {
   EXPECT_EQ(1, GetGetUpgradesCallbackCallCount());
 }
 
-// TODO (swifton): Rewrite this test with an observer when it's available.
 TEST_F(FwupdClientTest, RequestDevices) {
+  MockObserver observer;
+  EXPECT_CALL(observer, OnDeviceListResponse(_)).Times(1);
+  fwupd_client_->AddObserver(&observer);
+
   EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
       .WillRepeatedly(Invoke(this, &FwupdClientTest::OnMethodCalled));
 
@@ -173,8 +181,6 @@ TEST_F(FwupdClientTest, RequestDevices) {
   fwupd_client_->GetDevices();
 
   base::RunLoop().RunUntilIdle();
-
-  EXPECT_EQ(1, GetGetDevicesCallbackCallCount());
 }
 
 }  // namespace chromeos
