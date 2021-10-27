@@ -35,14 +35,13 @@ public class MixedContentDownloadDialogBridge {
     /**
      * Called to show a warning dialog for mixed-content download.
      * @param windowAndroid Window to show the dialog.
-     * @param fillNegatieButton Whether to fill the negative button.
      * @param fileName Name of the download file.
      * @param totalBytes Total bytes of the file.
      * @param callbackId Native callback Id to invoke.
      */
     @CalledByNative
-    private void showDialog(WindowAndroid windowAndroid, boolean fillNegatieButton, String fileName,
-            long totalBytes, long callbackId) {
+    private void showDialog(
+            WindowAndroid windowAndroid, String fileName, long totalBytes, long callbackId) {
         Activity activity = windowAndroid.getActivity().get();
         if (activity == null) {
             onConfirmed(callbackId, false);
@@ -51,7 +50,7 @@ public class MixedContentDownloadDialogBridge {
 
         new MixedContentDownloadDialog().show(activity,
                 ((ModalDialogManagerHolder) activity).getModalDialogManager(), fileName, totalBytes,
-                fillNegatieButton, (accepted) -> { onConfirmed(callbackId, accepted); });
+                (accepted) -> { onConfirmed(callbackId, accepted); });
     }
 
     @CalledByNative
