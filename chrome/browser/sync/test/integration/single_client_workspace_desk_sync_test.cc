@@ -37,7 +37,7 @@ WorkspaceDeskSpecifics CreateWorkspaceDeskSpecifics(int templateIndex,
   WorkspaceDeskSpecifics specifics;
   specifics.set_uuid(base::StringPrintf(kUuidFormat, templateIndex));
   specifics.set_name(base::StringPrintf(kNameFormat, templateIndex));
-  specifics.set_created_time_usec(
+  specifics.set_created_time_windows_epoch_micros(
       created_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
   return specifics;
 }

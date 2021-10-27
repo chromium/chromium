@@ -171,8 +171,12 @@ WorkspaceDeskSpecifics ExampleWorkspaceDeskSpecifics(
   WorkspaceDeskSpecifics specifics;
   specifics.set_uuid(uuid);
   specifics.set_name(template_name);
-  specifics.set_created_time_usec(
+  specifics.set_created_time_windows_epoch_micros(
       created_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  specifics.set_updated_time_windows_epoch_micros(
+      (created_time + base::Minutes(5))
+          .ToDeltaSinceWindowsEpoch()
+          .InMicroseconds());
   Desk* desk = specifics.mutable_desk();
   FillExampleBrowserAppWindow(desk->add_apps());
   FillExampleChromeAppWindow(desk->add_apps());
@@ -218,7 +222,7 @@ WorkspaceDeskSpecifics CreateBrowserTemplateExpectedValue(
       base::StringPrintf(kUuidFormat, template_index));
   expected_desk_specifics.set_name(
       base::StringPrintf(kNameFormat, template_index));
-  expected_desk_specifics.set_created_time_usec(
+  expected_desk_specifics.set_created_time_windows_epoch_micros(
       created_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
   Desk* expected_desk = expected_desk_specifics.mutable_desk();
   WorkspaceDeskSpecifics_App* app = expected_desk->add_apps();
