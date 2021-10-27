@@ -1078,8 +1078,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SessionHistoryAfterActivation) {
   TestNavigationHistory(kPrerenderingUrl, 2, 3);
   EXPECT_EQ("teststate", EvalJs(web_contents(), "history.state"));
 
-  FrameTreeNode* root =
-      static_cast<WebContentsImpl*>(web_contents())->GetFrameTree()->root();
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
   // Go Back.
   {
     FrameNavigateParamsCapturer capturer(root);
@@ -2335,7 +2336,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                        JsReplace("location = $1", kPrerenderingUrl)));
 
     NavigationRequest* request =
-        web_contents_impl()->GetFrameTree()->root()->navigation_request();
+        web_contents_impl()->GetPrimaryFrameTree().root()->navigation_request();
 
     // Wait until the navigation is deferred by CommitDeferringCondition.
     // TODO(nhiroki): Avoid using base::RunUntilIdle() and instead use some
@@ -3275,7 +3276,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
     // Wait for the condition to pause the activation.
     condition.WaitUntilInvoked();
     NavigationRequest* request =
-        web_contents_impl()->GetFrameTree()->root()->navigation_request();
+        web_contents_impl()->GetPrimaryFrameTree().root()->navigation_request();
     EXPECT_TRUE(request->IsCommitDeferringConditionDeferredForTesting());
     EXPECT_EQ(web_contents()->GetLastCommittedURL(), kInitialUrl);
   }
@@ -3624,7 +3625,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
     // Wait for the condition to pause the activation.
     condition.WaitUntilInvoked();
     NavigationRequest* request =
-        web_contents_impl()->GetFrameTree()->root()->navigation_request();
+        web_contents_impl()->GetPrimaryFrameTree().root()->navigation_request();
     EXPECT_TRUE(request->IsCommitDeferringConditionDeferredForTesting());
     EXPECT_EQ(web_contents()->GetLastCommittedURL(), kInitialUrl);
   }
@@ -3698,7 +3699,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
     // Wait for the condition to pause the activation.
     condition.WaitUntilInvoked();
     NavigationRequest* request =
-        web_contents_impl()->GetFrameTree()->root()->navigation_request();
+        web_contents_impl()->GetPrimaryFrameTree().root()->navigation_request();
     EXPECT_TRUE(request->IsCommitDeferringConditionDeferredForTesting());
     EXPECT_EQ(web_contents()->GetLastCommittedURL(), kInitialUrl);
   }
@@ -4822,8 +4823,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
     EXPECT_EQ(current_frame_host()->active_sandbox_flags(),
               network::mojom::WebSandboxFlags::kNone);
     EXPECT_EQ(static_cast<WebContentsImpl*>(web_contents())
-                  ->GetFrameTree()
-                  ->root()
+                  ->GetPrimaryFrameTree()
+                  .root()
                   ->active_sandbox_flags(),
               network::mojom::WebSandboxFlags::kNone);
   }
@@ -4877,8 +4878,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                   ~network::mojom::WebSandboxFlags::kScripts &
                   ~network::mojom::WebSandboxFlags::kAutomaticFeatures);
     EXPECT_EQ(static_cast<WebContentsImpl*>(web_contents())
-                  ->GetFrameTree()
-                  ->root()
+                  ->GetPrimaryFrameTree()
+                  .root()
                   ->active_sandbox_flags(),
               network::mojom::WebSandboxFlags::kAll &
                   ~network::mojom::WebSandboxFlags::kScripts &

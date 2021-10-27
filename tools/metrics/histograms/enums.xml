@@ -1108,11 +1108,14 @@ Unknown properties are collapsed to zero. -->
   <int value="0" label="Add account button in Settings"/>
   <int value="1" label="Re-auth account button in Settings"/>
   <int value="2" label="ARC"/>
-  <int value="3" label="Automatically triggered from content area"/>
+  <int value="3"
+      label="Re-authentication flow automatically triggered from content area"/>
   <int value="4" label="Print Preview dialog"/>
   <int value="5" label="Account Manager migration welcome screen"/>
   <int value="6" label="Onboarding"/>
   <int value="7" label="Chrome profile creation"/>
+  <int value="8"
+      label="Account addition flow launched by the user from One Google Bar"/>
 </enum>
 
 <enum name="AccountManagerTokenLoadStatus">
@@ -66126,6 +66129,17 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="Invalid URLs found"/>
   <int value="4" label="OK"/>
   <int value="5" label="Invalid JSON (either syntactically or structurally)"/>
+</enum>
+
+<enum name="PasswordStoreAndroidBackendError">
+  <int value="0" label="Error can't be categorized."/>
+  <int value="1" label="API was called without a context."/>
+  <int value="2" label="API was called without an account."/>
+  <int value="3" label="Profile isn't initialized yet."/>
+  <int value="4" label="Sync service isn't available yet."/>
+  <int value="5" label="API was called with passphrase."/>
+  <int value="6" label="GMS Core version is not supported."/>
+  <int value="7" label="API was successfully called, but returned an error."/>
 </enum>
 
 <enum name="PasswordStoreChange">

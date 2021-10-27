@@ -2451,8 +2451,11 @@ TEST_F(WebContentsImplTestWithSiteIsolation, StartStopEventsBalance) {
   EXPECT_TRUE(observer.is_loading());
 
   // After navigation, the RenderFrameHost may change.
-  subframe = static_cast<TestRenderFrameHost*>(
-      contents()->GetFrameTree()->root()->child_at(0)->current_frame_host());
+  subframe = static_cast<TestRenderFrameHost*>(contents()
+                                                   ->GetPrimaryFrameTree()
+                                                   .root()
+                                                   ->child_at(0)
+                                                   ->current_frame_host());
   // Navigate the frame again, this time using LoadURLWithParams. This causes
   // RenderFrameHost to call into WebContents::DidStartLoading, which starts
   // the spinner.
@@ -2760,7 +2763,7 @@ TEST_F(WebContentsImplTest, StartingSandboxFlags) {
   params.starting_sandbox_flags = expected_flags;
   std::unique_ptr<WebContentsImpl> new_contents(
       WebContentsImpl::CreateWithOpener(params, nullptr));
-  FrameTreeNode* root = new_contents->GetFrameTree()->root();
+  FrameTreeNode* root = new_contents->GetPrimaryFrameTree().root();
   network::mojom::WebSandboxFlags pending_flags =
       root->pending_frame_policy().sandbox_flags;
   EXPECT_EQ(pending_flags, expected_flags);

@@ -107,8 +107,8 @@ int64_t GetTestDataFileSize(const base::FilePath::CharType* file_path) {
 
 FrameTreeNode* GetFirstChild(WebContents* web_contents) {
   return static_cast<WebContentsImpl*>(web_contents)
-      ->GetFrameTree()
-      ->root()
+      ->GetPrimaryFrameTree()
+      .root()
       ->child_at(0);
 }
 

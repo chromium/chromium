@@ -1,0 +1,3 @@
+[document web] tag:#document
+++[paragraph] tag:p
+++++[static] name='Slot contents'

@@ -595,6 +595,7 @@ public class InstantStartTest {
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
             "force-fieldtrials=Study/Group",
             IMMEDIATE_RETURN_PARAMS + "/start_surface_variation/single"})
+    @DisabledTest(message = "https://crbug.com/1263928")
     public void testFeedPlaceholderFromColdStart() {
         // clang-format on
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
@@ -623,6 +624,7 @@ public class InstantStartTest {
     // clang-format off
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
             IMMEDIATE_RETURN_PARAMS + "/start_surface_variation/single"})
+    @DisabledTest(message = "https://crbug.com/1263928")
     public void testCachedFeedVisibility() {
         // clang-format on
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
@@ -681,6 +683,7 @@ public class InstantStartTest {
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
             "force-fieldtrials=Study/Group",
             IMMEDIATE_RETURN_PARAMS + "/start_surface_variation/single"})
+    @DisabledTest(message = "https://crbug.com/1263928")
     public void testShowFeedPlaceholder() {
         // clang-format on
         StartSurfaceConfiguration.setFeedVisibilityForTesting(true);
@@ -797,6 +800,7 @@ public class InstantStartTest {
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
             "force-fieldtrials=Study/Group",
             IMMEDIATE_RETURN_PARAMS + "/start_surface_variation/single"})
+    @DisabledTest(message = "https://crbug.com/1263928")
     public void renderSingleAsHomepage_NoTab_scrollToolbarToTop() throws IOException {
         // clang-format on
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
@@ -834,6 +838,7 @@ public class InstantStartTest {
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
             "force-fieldtrials=Study/Group",
             IMMEDIATE_RETURN_PARAMS + "/start_surface_variation/single"})
+    @DisabledTest(message = "https://crbug.com/1263928")
     public void testShadowVisibility() {
         // clang-format on
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);

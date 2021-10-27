@@ -144,7 +144,7 @@ class DisplayCutoutBrowserTest : public ContentBrowserTest {
         "<meta name='viewport' content='viewport-fit=" +
         value + "'>";
 
-    FrameTreeNode* root = web_contents_impl()->GetFrameTree()->root();
+    FrameTreeNode* root = web_contents_impl()->GetPrimaryFrameTree().root();
     FrameTreeNode* child = root->child_at(0);
 
     ASSERT_TRUE(NavigateToURLFromRenderer(child, GURL(data)));
@@ -206,7 +206,7 @@ class DisplayCutoutBrowserTest : public ContentBrowserTest {
   }
 
   RenderFrameHostImpl* ChildFrame() {
-    FrameTreeNode* root = web_contents_impl()->GetFrameTree()->root();
+    FrameTreeNode* root = web_contents_impl()->GetPrimaryFrameTree().root();
     return root->child_at(0)->current_frame_host();
   }
 

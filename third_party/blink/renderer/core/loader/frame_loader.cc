@@ -1140,7 +1140,7 @@ void FrameLoader::DidAccessInitialDocument() {
     // Forbid script execution to prevent re-entering V8, since this is called
     // from a binding security check.
     ScriptForbiddenScope forbid_scripts;
-    frame_->GetLocalFrameHostRemote().DidAccessInitialDocument();
+    frame_->GetPage()->GetChromeClient().DidAccessInitialMainDocument();
   }
 }
 

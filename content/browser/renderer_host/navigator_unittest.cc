@@ -454,7 +454,7 @@ TEST_F(NavigatorTest, BeginNavigation) {
   contents()->NavigateAndCommit(kUrl1);
 
   // Add a subframe.
-  FrameTreeNode* root_node = contents()->GetFrameTree()->root();
+  FrameTreeNode* root_node = contents()->GetPrimaryFrameTree().root();
   TestRenderFrameHost* subframe_rfh = main_test_rfh()->AppendChild("Child");
   ASSERT_TRUE(subframe_rfh);
 

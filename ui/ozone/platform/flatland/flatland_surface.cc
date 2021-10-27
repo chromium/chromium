@@ -54,9 +54,8 @@ FlatlandSurface::FlatlandSurface(
   flatland_allocator_ = base::ComponentContextForProcess()
                             ->svc()
                             ->Connect<fuchsia::ui::composition::Allocator>();
-  flatland_allocator_.set_error_handler([](zx_status_t status) {
-    ZX_LOG(FATAL, status) << "Lost connection to Scenic Allocator";
-  });
+  flatland_allocator_.set_error_handler(base::LogFidlErrorAndExitProcess(
+      FROM_HERE, "fuchsia::ui::composition::Allocator"));
 
   // Create a transform and make it the root.
   root_transform_id_ = flatland_.NextTransformId();

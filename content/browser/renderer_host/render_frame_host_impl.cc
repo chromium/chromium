@@ -5266,11 +5266,8 @@ void RenderFrameHostImpl::NotifyUserActivation(
   GetAssociatedLocalFrame()->NotifyUserActivation(notification_type);
 }
 
-// TODO(https://crbug.com/1170277):  Move this IPC to LocalMainFrameHost
-// interface
-void RenderFrameHostImpl::DidAccessInitialDocument() {
-  if (is_main_frame())
-    frame_tree_->DidAccessInitialMainDocument();
+void RenderFrameHostImpl::DidAccessInitialMainDocument() {
+  frame_tree_->DidAccessInitialMainDocument();
 }
 
 void RenderFrameHostImpl::DidChangeName(const std::string& name,

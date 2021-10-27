@@ -163,6 +163,10 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   void SetWindowRectWithAdjustment(const IntRect& pending_rect,
                                    LocalFrame& frame);
 
+  // Tells the browser that another page has accessed the DOM of the initial
+  // empty document of a main frame.
+  virtual void DidAccessInitialMainDocument() = 0;
+
   // This gives the rect of the top level window that the given LocalFrame is a
   // part of.
   virtual IntRect RootWindowRect(LocalFrame&) = 0;

@@ -1441,22 +1441,22 @@ void UiControllerAndroid::OnUserDataChanged(
 
   if (field_change == UserData::FieldChange::ALL ||
       field_change == UserData::FieldChange::AVAILABLE_PROFILES) {
-    // Contact profiles.
+    // Contacts.
     auto jcontactlist =
         Java_AssistantCollectUserDataModel_createAutofillContactList(env);
     auto contact_indices = user_data::SortContactsByCompleteness(
-        *collect_user_data_options, user_data.available_profiles_);
+        *collect_user_data_options, user_data.available_contacts_);
     for (int index : contact_indices) {
       auto jcontact = Java_AssistantCollectUserDataModel_createAutofillContact(
           env, jcontext,
           autofill::PersonalDataManagerAndroid::CreateJavaProfileFromNative(
-              env, *user_data.available_profiles_[index]),
+              env, *user_data.available_contacts_[index]),
           collect_user_data_options->request_payer_name,
           collect_user_data_options->request_payer_phone,
           collect_user_data_options->request_payer_email);
       if (jcontact) {
         const auto& errors = user_data::GetContactValidationErrors(
-            user_data.available_profiles_[index].get(),
+            user_data.available_contacts_[index].get(),
             *collect_user_data_options);
         Java_AssistantCollectUserDataModel_addAutofillContact(
             env, jcontactlist, jcontact,
@@ -1469,10 +1469,10 @@ void UiControllerAndroid::OnUserDataChanged(
         env, jmodel, jselected_contact,
         base::android::ToJavaArrayOfStrings(env, selected_contact_errors));
 
-    // Billing address profiles.
+    // Billing addresses.
     auto jbillinglist =
         Java_AssistantCollectUserDataModel_createBillingAddressList(env);
-    for (const auto& profile : user_data.available_profiles_) {
+    for (const auto& profile : user_data.available_addresses_) {
       auto jaddress = Java_AssistantCollectUserDataModel_createAutofillAddress(
           env, jcontext,
           autofill::PersonalDataManagerAndroid::CreateJavaProfileFromNative(
@@ -1485,19 +1485,19 @@ void UiControllerAndroid::OnUserDataChanged(
     Java_AssistantCollectUserDataModel_setAvailableBillingAddresses(
         env, jmodel, jbillinglist);
 
-    // Shipping address profiles.
+    // Shipping addresses.
     auto jshippinglist =
         Java_AssistantCollectUserDataModel_createShippingAddressList(env);
     auto address_indices = user_data::SortShippingAddressesByCompleteness(
-        *collect_user_data_options, user_data.available_profiles_);
+        *collect_user_data_options, user_data.available_addresses_);
     for (int index : address_indices) {
       auto jaddress = Java_AssistantCollectUserDataModel_createAutofillAddress(
           env, jcontext,
           autofill::PersonalDataManagerAndroid::CreateJavaProfileFromNative(
-              env, *user_data.available_profiles_[index]));
+              env, *user_data.available_addresses_[index]));
       if (jaddress) {
         const auto& errors = user_data::GetShippingAddressValidationErrors(
-            user_data.available_profiles_[index].get(),
+            user_data.available_addresses_[index].get(),
             *collect_user_data_options);
         Java_AssistantCollectUserDataModel_addShippingAddress(
             env, jshippinglist, jaddress,

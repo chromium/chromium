@@ -20,6 +20,8 @@
       <!-- Mask for standard icons. -->
       <structure type="chrome_scaled_image" name="IDR_ICON_MASK" file="mask/mask.png" />
 
+      <structure type="chrome_scaled_image" name="IDR_ICON_BADGE_MASK" file="mask/badge-mask.png" />
+
       <!-- Default user profile images. -->
       <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER" file="default_user_images/avatar_anonymous.png" />
       <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_1" file="default_user_images/avatar_bee.png" />

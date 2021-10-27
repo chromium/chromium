@@ -375,7 +375,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   // At this point, C has finished loading and B is stalled.  Add a slow D frame
   // within C.
   GURL url_d = embedded_test_server()->GetURL("d.com", "/title1.html");
-  FrameTreeNode* subframe_c = web_contents->GetFrameTree()->root()->child_at(1);
+  FrameTreeNode* subframe_c =
+      web_contents->GetPrimaryFrameTree().root()->child_at(1);
   EXPECT_EQ(url_c, subframe_c->current_url());
   TestNavigationManager delayer_d(web_contents, url_d);
   const std::string add_d_script = base::StringPrintf(
@@ -546,7 +547,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, OpenURLSubframe) {
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("/frame_tree/top.html")));
   WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
-  FrameTreeNode* root = wc->GetFrameTree()->root();
+  FrameTreeNode* root = wc->GetPrimaryFrameTree().root();
   ASSERT_EQ(3UL, root->child_count());
   int frame_tree_node_id = root->child_at(0)->frame_tree_node_id();
   EXPECT_NE(-1, frame_tree_node_id);
@@ -1301,8 +1302,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, NewNamedWindow) {
 
     EXPECT_EQ("new_window",
               static_cast<WebContentsImpl*>(new_shell->web_contents())
-                  ->GetFrameTree()
-                  ->root()
+                  ->GetPrimaryFrameTree()
+                  .root()
                   ->frame_name());
 
     EXPECT_EQ(true, EvalJs(new_shell, "window.name == 'new_window';"));
@@ -1318,8 +1319,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, NewNamedWindow) {
     EXPECT_TRUE(WaitForLoadStop(new_shell->web_contents()));
 
     EXPECT_EQ("foo", static_cast<WebContentsImpl*>(new_shell->web_contents())
-                         ->GetFrameTree()
-                         ->root()
+                         ->GetPrimaryFrameTree()
+                         .root()
                          ->frame_name());
   }
 }
@@ -1798,7 +1799,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
       shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
   EXPECT_TRUE(WaitForLoadStop(wc));
 
-  FrameTreeNode* root = wc->GetFrameTree()->root();
+  FrameTreeNode* root = wc->GetPrimaryFrameTree().root();
   ASSERT_EQ(0U, root->child_count());
 
   std::string script =
@@ -1938,7 +1939,7 @@ IN_PROC_BROWSER_TEST_F(
       shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
   EXPECT_TRUE(WaitForLoadStop(wc));
 
-  FrameTreeNode* root = wc->GetFrameTree()->root();
+  FrameTreeNode* root = wc->GetPrimaryFrameTree().root();
   ASSERT_EQ(0U, root->child_count());
 
   std::string script =
@@ -2667,7 +2668,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   GURL url("about:blank");
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
-  FrameTreeNode* root = top_contents->GetFrameTree()->root();
+  FrameTreeNode* root = top_contents->GetPrimaryFrameTree().root();
   ASSERT_EQ(0U, root->child_count());
 
   std::string script =
@@ -2833,9 +2834,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   // Focus the child frame before sending it a copy command: the child frame
   // will detach itself upon getting a 'copy' event.
   ASSERT_TRUE(ExecJs(web_contents, "window[0].focus();"));
-  FrameTree* frame_tree = web_contents->GetFrameTree();
-  FrameTreeNode* root = frame_tree->root();
-  ASSERT_EQ(root->child_at(0), frame_tree->GetFocusedFrame());
+  FrameTreeNode* root = web_contents->GetPrimaryFrameTree().root();
+  ASSERT_EQ(root->child_at(0),
+            web_contents->GetPrimaryFrameTree().GetFocusedFrame());
   shell()->web_contents()->Copy();
 
   TitleWatcher title_watcher(web_contents, u"done");
@@ -2883,7 +2884,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, UpdateTargetURL) {
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b)");
   EXPECT_TRUE(NavigateToURL(shell(), url));
-  FrameTreeNode* subframe = web_contents->GetFrameTree()->root()->child_at(0);
+  FrameTreeNode* subframe =
+      web_contents->GetPrimaryFrameTree().root()->child_at(0);
   GURL subframe_url =
       embedded_test_server()->GetURL("b.com", "/simple_links.html");
   EXPECT_TRUE(NavigateToURLFromRenderer(subframe, subframe_url));
@@ -2970,7 +2972,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, DISABLED_UpdateLoadState) {
                    "a.com", "/cross_site_iframe_factory.html?a(b)")));
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  FrameTreeNode* a_frame = web_contents->GetFrameTree()->root();
+  FrameTreeNode* a_frame = web_contents->GetPrimaryFrameTree().root();
   FrameTreeNode* b_frame = a_frame->child_at(0);
 
   // Start loading the respective resources in each frame.
@@ -3089,7 +3091,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, SyncRendererPrefs) {
 
   // Retrieve all unique render view hosts.
   std::vector<RenderViewHostImpl*> render_view_hosts;
-  for (FrameTreeNode* frame_tree_node : web_contents->GetFrameTree()->Nodes()) {
+  for (FrameTreeNode* frame_tree_node :
+       web_contents->GetPrimaryFrameTree().Nodes()) {
     RenderViewHostImpl* render_view_host = static_cast<RenderViewHostImpl*>(
         frame_tree_node->current_frame_host()->GetRenderViewHost());
     ASSERT_NE(nullptr, render_view_host);
@@ -3201,8 +3204,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, FrozenAndUnfrozenIPC) {
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   RenderFrameHostImpl* rfh_a =
       static_cast<WebContentsImpl*>(shell()->web_contents())
-          ->GetFrameTree()
-          ->root()
+          ->GetPrimaryFrameTree()
+          .root()
           ->current_frame_host();
 
   RenderFrameHostImpl* rfh_b = rfh_a->child_at(0)->current_frame_host();
@@ -3768,7 +3771,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
       WebContents::Create(create_params);
   auto* web_contents = static_cast<WebContentsImpl*>(public_web_contents.get());
 
-  FrameTreeNode* root = web_contents->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents->GetPrimaryFrameTree().root();
 
   // Complete a navigation.
   GURL url1 = embedded_test_server()->GetURL("a.com", "/title1.html");
@@ -4457,7 +4460,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
 
   // Set up the iframe.
   auto* web_contents = static_cast<WebContentsImpl*>(shell()->web_contents());
-  FrameTreeNode* iframe = web_contents->GetFrameTree()->root()->child_at(0);
+  FrameTreeNode* iframe =
+      web_contents->GetPrimaryFrameTree().root()->child_at(0);
   GURL iframe_url(server->GetURL("b.co", "/scrollable_page_with_content.html"));
   EXPECT_TRUE(NavigateToURLFromRenderer(iframe, iframe_url));
 
@@ -4919,8 +4923,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
 
   RenderFrameCreatedObserver frame_created_obs(shell()->web_contents());
   static_cast<WebContentsImpl*>(shell()->web_contents())
-      ->GetFrameTree()
-      ->root()
+      ->GetPrimaryFrameTree()
+      .root()
       ->render_manager()
       ->InitializeMainRenderFrameForImmediateUse();
   frame_created_obs.WaitForRenderFrameCreated();

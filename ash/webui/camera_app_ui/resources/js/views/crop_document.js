@@ -42,10 +42,18 @@ export class CropDocument extends Review {
     this.cropContainerSize_ = null;
 
     /**
-     * @const {!HTMLDivElement}
+     * @const {!SVGElement}
      * @private
      */
-    this.cropArea_ = dom.getFrom(this.root, '.crop-area', HTMLDivElement);
+    this.cropAreaContainer_ =
+        dom.getFrom(this.root, '.crop-area-container', SVGElement);
+
+    /**
+     * @const {!SVGPolygonElement}
+     * @private
+     */
+    this.cropArea_ =
+        dom.getFrom(this.cropContainer_, '.crop-area', SVGPolygonElement);
 
     /**
      * @type {!Array<!Point>}
@@ -111,7 +119,7 @@ export class CropDocument extends Review {
     for (const eventName of ['pointerup', 'pointerleave', 'pointercancel']) {
       this.cropContainer_.addEventListener(eventName, (e) => {
         e.preventDefault();
-        this.dragging_ = null;
+        this.clearDragging_();
       });
     }
 
@@ -170,6 +178,17 @@ export class CropDocument extends Review {
         ({x, y}) => new Point(
             x / this.cropContainerSize_.width,
             y / this.cropContainerSize_.height));
+  }
+
+  /**
+   * @private
+   */
+  clearDragging_() {
+    if (this.dragging_ === null) {
+      return;
+    }
+    this.dragging_.classList.remove('dragging');
+    this.dragging_ = null;
   }
 
   /**
@@ -286,15 +305,17 @@ export class CropDocument extends Review {
       }
       return assertInstanceof(mnPt, Point);
     };
+    this.clearDragging_();
     this.dragging_ = el;
+    el.classList.add('dragging');
   }
 
   /**
    * @private
    */
   updateCorners_() {
-    const cords = this.corners_.map(({x, y}) => `${x}px ${y}px`).join(',');
-    this.cropArea_.attributeStyleMap.set('clip-path', `polygon(${cords})`);
+    const cords = this.corners_.map(({x, y}) => `${x},${y}`).join(' ');
+    this.cropArea_.setAttribute('points', cords);
     this.corners_.forEach(({x, y}, idx) => {
       const style = this.cornerEls_[idx].attributeStyleMap;
       style.set('left', CSS.px(x));
@@ -325,6 +346,7 @@ export class CropDocument extends Review {
               y / this.cropContainerSize_.height * height));
     }
     this.cropContainerSize_ = new Size(width, height);
+    this.cropAreaContainer_.setAttribute('viewBox', `0 0 ${width} ${height}`);
     this.updateCorners_();
     if (this.dragging_ !== null) {
       this.updateDragging_(this.dragging_);

@@ -145,8 +145,8 @@ class SplitCacheContentBrowserTest : public ContentBrowserTest {
     EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
     return static_cast<WebContentsImpl*>(shell()->web_contents())
-        ->GetFrameTree()
-        ->root()
+        ->GetPrimaryFrameTree()
+        .root()
         ->child_at(0)
         ->current_frame_host();
   }

@@ -46,9 +46,8 @@ void FlatlandSysmemBufferManager::Initialize(
 
   DCHECK(!flatland_allocator_);
   flatland_allocator_.Bind(std::move(flatland_allocator));
-  flatland_allocator_.set_error_handler([](zx_status_t status) {
-    ZX_LOG(FATAL, status) << "Lost connection to Scenic Allocator";
-  });
+  flatland_allocator_.set_error_handler(base::LogFidlErrorAndExitProcess(
+      FROM_HERE, "fuchsia::ui::composition::Allocator"));
 }
 
 void FlatlandSysmemBufferManager::Shutdown() {

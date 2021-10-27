@@ -155,7 +155,7 @@ RenderFrameHost* CreateSubframe(WebContentsImpl* web_contents,
   subframe_created_observer.Wait();
   if (wait_for_navigation)
     subframe_nav_observer.Wait();
-  FrameTreeNode* root = web_contents->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents->GetPrimaryFrameTree().root();
   return root->child_at(root->child_count() - 1)->current_frame_host();
 }
 
@@ -195,7 +195,7 @@ CollectAllRenderFrameHostsIncludingSpeculative(WebContentsImpl* web_contents) {
 }
 
 Shell* OpenBlankWindow(WebContentsImpl* web_contents) {
-  FrameTreeNode* root = web_contents->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents->GetPrimaryFrameTree().root();
   ShellAddedObserver new_shell_observer;
   EXPECT_TRUE(ExecJs(root, "last_opened_window = window.open()"));
   Shell* new_shell = new_shell_observer.GetShell();
@@ -206,7 +206,7 @@ Shell* OpenBlankWindow(WebContentsImpl* web_contents) {
 }
 
 Shell* OpenWindow(WebContentsImpl* web_contents, const GURL& url) {
-  FrameTreeNode* root = web_contents->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents->GetPrimaryFrameTree().root();
   ShellAddedObserver new_shell_observer;
   EXPECT_TRUE(
       ExecJs(root, JsReplace("last_opened_window = window.open($1)", url)));

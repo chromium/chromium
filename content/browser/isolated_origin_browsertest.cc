@@ -472,7 +472,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderCommandLineTest,
   // The .html main frame has two iframes, this test only uses the first one.
   EXPECT_EQ(3u, CollectAllRenderFrameHosts(shell()->web_contents()).size());
 
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   FrameTreeNode* child_frame_node = root->child_at(0);
 
   EXPECT_TRUE(
@@ -585,7 +585,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationPrerenderOptInHeaderTest,
   // Navigate primary tab to a non-isolated origin.
   EXPECT_TRUE(NavigateToURL(shell(), test_url));
   EXPECT_EQ(2u, CollectAllRenderFrameHosts(shell()->web_contents()).size());
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   FrameTreeNode* child_frame_node = root->child_at(0);
 
   // Create prerender tab, load non-isolated "a.foo.com".
@@ -656,7 +656,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationPrerenderOptInHeaderTest,
                                        "foo.com(foo.com)"));
   EXPECT_TRUE(NavigateToURL(shell(), test_url));
   EXPECT_EQ(2u, CollectAllRenderFrameHosts(shell()->web_contents()).size());
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   FrameTreeNode* child_frame_node = root->child_at(0);
   // Navigate child frame to a non-isolated origin "a.foo.com".
   GURL non_isolated_suborigin_url(
@@ -741,7 +741,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
   EXPECT_TRUE(NavigateToURL(shell(), test_url));
   EXPECT_EQ(2u, CollectAllRenderFrameHosts(shell()->web_contents()).size());
 
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   FrameTreeNode* child_frame_node = root->child_at(0);
   EXPECT_TRUE(
       NavigateToURLFromRenderer(child_frame_node, isolated_suborigin_url));
@@ -798,7 +798,7 @@ IN_PROC_BROWSER_TEST_F(SameProcessOriginIsolationOptInHeaderTest,
   EXPECT_TRUE(NavigateToURL(shell(), test_url));
   EXPECT_EQ(2u, CollectAllRenderFrameHosts(shell()->web_contents()).size());
 
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   FrameTreeNode* child_frame_node = root->child_at(0);
   EXPECT_TRUE(
       NavigateToURLFromRenderer(child_frame_node, isolated_suborigin_url));
@@ -853,7 +853,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(NavigateToURL(shell(), test_url));
   EXPECT_EQ(2u, CollectAllRenderFrameHosts(shell()->web_contents()).size());
 
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   FrameTreeNode* child_frame_node = root->child_at(0);
   EXPECT_TRUE(
       NavigateToURLFromRenderer(child_frame_node, isolated_suborigin_url));
@@ -986,7 +986,7 @@ IN_PROC_BROWSER_TEST_F(SameProcessNoWebSecurityOriginIsolationOptInHeaderTest,
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
   EXPECT_EQ(2u, CollectAllRenderFrameHosts(shell()->web_contents()).size());
 
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   FrameTreeNode* child_frame_node = root->child_at(0);
   EXPECT_TRUE(
       NavigateToURLFromRenderer(child_frame_node, isolated_suborigin_url));
@@ -1018,7 +1018,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
   EXPECT_TRUE(NavigateToURL(shell(), test_url));
   EXPECT_EQ(2u, CollectAllRenderFrameHosts(shell()->web_contents()).size());
 
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   FrameTreeNode* child_frame_node = root->child_at(0);
   EXPECT_TRUE(
       NavigateToURLFromRenderer(child_frame_node, isolated_suborigin_url));
@@ -1043,7 +1043,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
   EXPECT_TRUE(NavigateToURL(shell(), test_url));
   EXPECT_EQ(2u, CollectAllRenderFrameHosts(shell()->web_contents()).size());
 
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   FrameTreeNode* child = root->child_at(0);
 
   GURL isolated_sub_origin_url(
@@ -1172,7 +1172,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
   EXPECT_TRUE(NavigateToURL(shell(), test_url));
   EXPECT_EQ(3u, CollectAllRenderFrameHosts(shell()->web_contents()).size());
 
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   FrameTreeNode* child_frame_node0 = root->child_at(0);
   FrameTreeNode* child_frame_node1 = root->child_at(1);
 
@@ -1246,7 +1246,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
   EXPECT_TRUE(NavigateToURL(shell(), test_url));
   EXPECT_EQ(3u, CollectAllRenderFrameHosts(shell()->web_contents()).size());
 
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   FrameTreeNode* child_frame_node0 = root->child_at(0);
   FrameTreeNode* child_frame_node1 = root->child_at(1);
 
@@ -1309,7 +1309,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
   EXPECT_TRUE(NavigateToURL(shell(), test_url));
   EXPECT_EQ(2u, CollectAllRenderFrameHosts(shell()->web_contents()).size());
 
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   FrameTreeNode* child_frame_node0 = root->child_at(0);
 
   // Even though we're navigating to isolated.foo.com, there's no manifest
@@ -1364,7 +1364,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
   EXPECT_TRUE(NavigateToURL(shell(), test_url));
   EXPECT_EQ(2u, CollectAllRenderFrameHosts(shell()->web_contents()).size());
 
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   FrameTreeNode* child_frame_node0 = root->child_at(0);
 
   EXPECT_TRUE(
@@ -1490,7 +1490,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
   // Start on a page with same-site iframe.
   GURL opener_url(https_server()->GetURL("foo.com", "/page_with_iframe.html"));
   EXPECT_TRUE(NavigateToURL(shell(), opener_url));
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   FrameTreeNode* child = root->child_at(0);
   GURL isolated_opener_iframe_url(
       https_server()->GetURL("sub.foo.com", "/isolate_origin"));
@@ -1593,7 +1593,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest, IsolatedBaseOrigin) {
   EXPECT_TRUE(NavigateToURL(shell(), test_url));
   EXPECT_EQ(3u, CollectAllRenderFrameHosts(shell()->web_contents()).size());
 
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   FrameTreeNode* child_frame_node1 = root->child_at(0);
   FrameTreeNode* child_frame_node2 = root->child_at(1);
   EXPECT_TRUE(
@@ -1715,7 +1715,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
   EXPECT_TRUE(NavigateToURL(shell(), isolated_base_origin_url));
   EXPECT_EQ(3u, CollectAllRenderFrameHosts(shell()->web_contents()).size());
 
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   FrameTreeNode* child_frame_node1 = root->child_at(0);
   FrameTreeNode* child_frame_node2 = root->child_at(1);
   EXPECT_TRUE(NavigateToURLFromRenderer(child_frame_node1,
@@ -1797,8 +1797,8 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
   WebContentsImpl* web_contents_shell_otr =
       static_cast<WebContentsImpl*>(shell_otr->web_contents());
   SiteInstanceImpl* site_instance_shell_otr =
-      web_contents_shell_otr->GetFrameTree()
-          ->root()
+      web_contents_shell_otr->GetPrimaryFrameTree()
+          .root()
           ->current_frame_host()
           ->GetSiteInstance();
   EXPECT_FALSE(site_instance_shell_otr->GetSiteInfo().is_origin_keyed());
@@ -1817,8 +1817,8 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
   EXPECT_TRUE(NavigateToURL(shell(), isolated_origin_url));
   EXPECT_TRUE(policy->ShouldOriginGetOptInIsolation(
       static_cast<WebContentsImpl*>(shell()->web_contents())
-          ->GetFrameTree()
-          ->root()
+          ->GetPrimaryFrameTree()
+          .root()
           ->current_frame_host()
           ->GetSiteInstance()
           ->GetIsolationContext(),
@@ -1842,8 +1842,8 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
   // NavigationRequest::OnResponseStarted().
   EXPECT_TRUE(policy->ShouldOriginGetOptInIsolation(
       static_cast<WebContentsImpl*>(shell_otr->web_contents())
-          ->GetFrameTree()
-          ->root()
+          ->GetPrimaryFrameTree()
+          .root()
           ->current_frame_host()
           ->GetSiteInstance()
           ->GetIsolationContext(),
@@ -1854,10 +1854,11 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
   Shell* popup = OpenPopup(shell_otr, isolated_origin_url, "popup_otr");
   WebContentsImpl* web_contents_popup =
       static_cast<WebContentsImpl*>(popup->web_contents());
-  SiteInstanceImpl* site_instance_popup = web_contents_popup->GetFrameTree()
-                                              ->root()
-                                              ->current_frame_host()
-                                              ->GetSiteInstance();
+  SiteInstanceImpl* site_instance_popup =
+      web_contents_popup->GetPrimaryFrameTree()
+          .root()
+          ->current_frame_host()
+          ->GetSiteInstance();
   // This shouldn't be isolated because we already have a non-isolated version
   // of this origin in shell_otr's main frame, in the same BrowsingInstance.
   EXPECT_FALSE(site_instance_popup->GetSiteInfo().is_origin_keyed());
@@ -1875,8 +1876,8 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
   WebContentsImpl* web_contenst_shell_otr_tab2 =
       static_cast<WebContentsImpl*>(shell_otr_tab2->web_contents());
   SiteInstanceImpl* site_instance_shell_otr_tab2 =
-      web_contenst_shell_otr_tab2->GetFrameTree()
-          ->root()
+      web_contenst_shell_otr_tab2->GetPrimaryFrameTree()
+          .root()
           ->current_frame_host()
           ->GetSiteInstance();
   EXPECT_TRUE(site_instance_shell_otr_tab2->GetSiteInfo().is_origin_keyed());
@@ -1894,7 +1895,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest, FrameTreeTest) {
   EXPECT_TRUE(NavigateToURL(shell(),
                             https_server()->GetURL("bar.com", "/title1.html")));
   // Have tab1 call window.open() to create blank tab2.
-  FrameTreeNode* tab1_root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* tab1_root = web_contents()->GetPrimaryFrameTree().root();
   ShellAddedObserver new_shell_observer;
   ASSERT_TRUE(
       ExecJs(tab1_root->current_frame_host(), "window.w = window.open()"));
@@ -1903,8 +1904,8 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest, FrameTreeTest) {
   // Create iframe in tab2.
   FrameTreeNode* tab2_root =
       static_cast<WebContentsImpl*>(tab2_shell->web_contents())
-          ->GetFrameTree()
-          ->root();
+          ->GetPrimaryFrameTree()
+          .root();
   ASSERT_TRUE(ExecJs(tab2_root->current_frame_host(),
                      "var iframe = document.createElement('iframe');"
                      "document.body.appendChild(iframe);"));
@@ -1998,12 +1999,12 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
   // Now commit the non-isolated navigation.
   non_isolated_delayer.WaitForNavigationFinished();
 
-  FrameTreeNode* tab1_root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* tab1_root = web_contents()->GetPrimaryFrameTree().root();
   SiteInstanceImpl* tab1_site_instance =
       tab1_root->current_frame_host()->GetSiteInstance();
   FrameTreeNode* tab2_root = static_cast<WebContentsImpl*>(tab2->web_contents())
-                                 ->GetFrameTree()
-                                 ->root();
+                                 ->GetPrimaryFrameTree()
+                                 .root();
   SiteInstanceImpl* tab2_site_instance =
       tab2_root->current_frame_host()->GetSiteInstance();
   EXPECT_NE(tab1_site_instance, tab2_site_instance);
@@ -2090,7 +2091,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
   GURL isolated_origin_url(
       https_server()->GetURL("isolated.foo.com", "/isolate_origin"));
 
-  FrameTreeNode* tab1_root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* tab1_root = web_contents()->GetPrimaryFrameTree().root();
   // We use the following, slightly more verbose, code instead of
   // CreateBrowser() in order to avoid issues with NavigateToURL() in
   // InjectIsolationRequestingNavigation::WillProcessDidCommitNavigation()
@@ -2117,8 +2118,8 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
   SiteInstanceImpl* tab1_site_instance =
       tab1_root->current_frame_host()->GetSiteInstance();
   FrameTreeNode* tab2_root = static_cast<WebContentsImpl*>(tab2->web_contents())
-                                 ->GetFrameTree()
-                                 ->root();
+                                 ->GetPrimaryFrameTree()
+                                 .root();
   SiteInstanceImpl* tab2_site_instance =
       tab2_root->current_frame_host()->GetSiteInstance();
   EXPECT_NE(tab1_site_instance, tab2_site_instance);
@@ -2186,7 +2187,7 @@ IN_PROC_BROWSER_TEST_F(StrictOriginIsolationTest, SubframesAreIsolated) {
   EXPECT_EQ(5u, CollectAllRenderFrameHosts(shell()->web_contents()).size());
 
   // Make sure we have three separate processes.
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   RenderFrameHost* main_frame = root->current_frame_host();
   int main_frame_id = main_frame->GetProcess()->GetID();
   RenderFrameHost* child_frame0 = root->child_at(0)->current_frame_host();
@@ -2460,7 +2461,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest, Subframe) {
   GURL isolated_url(embedded_test_server()->GetURL("isolated.foo.com",
                                                    "/page_with_iframe.html"));
 
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   FrameTreeNode* child = root->child_at(0);
 
   NavigateIframeToURL(web_contents(), "test_iframe", isolated_url);
@@ -2508,7 +2509,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest,
       embedded_test_server()->GetURL("www.foo.com", "/page_with_iframe.html"));
   EXPECT_TRUE(NavigateToURL(shell(), top_url));
 
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   FrameTreeNode* child = root->child_at(0);
 
   GURL isolated_url(embedded_test_server()->GetURL("isolated.foo.com",
@@ -2553,7 +2554,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest, SubframeReusesExistingProcess) {
   GURL top_url(
       embedded_test_server()->GetURL("www.foo.com", "/page_with_iframe.html"));
   EXPECT_TRUE(NavigateToURL(shell(), top_url));
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   FrameTreeNode* child = root->child_at(0);
 
   // Open an unrelated tab in a separate BrowsingInstance, and navigate it to
@@ -2605,8 +2606,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest, SubframeReusesExistingProcess) {
                       isolated_url);
   FrameTreeNode* second_subframe =
       static_cast<WebContentsImpl*>(second_shell->web_contents())
-          ->GetFrameTree()
-          ->root()
+          ->GetPrimaryFrameTree()
+          .root()
           ->child_at(0);
   EXPECT_EQ(isolated_process,
             second_subframe->current_frame_host()->GetProcess());
@@ -2637,7 +2638,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest,
   GURL foo_url(
       embedded_test_server()->GetURL("www.foo.com", "/page_with_iframe.html"));
   EXPECT_TRUE(NavigateToURL(shell(), foo_url));
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   FrameTreeNode* child = root->child_at(0);
 
   // Navigate iframe cross-site, but not to an isolated origin.  This should
@@ -2708,7 +2709,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest,
   // Start on www.foo.com.
   GURL foo_url(embedded_test_server()->GetURL("www.foo.com", "/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), foo_url));
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
 
   // Open a blank popup.
   ShellAddedObserver new_shell_observer;
@@ -2785,7 +2786,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest,
   EXPECT_TRUE(ExecJs(shell(), "location.href = '" + bar_url.spec() + "';"));
   observer.Wait();
 
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   FrameTreeNode* child = root->child_at(0);
 
   // Navigate bar.com's subframe to an isolated origin with its own subframe.
@@ -2834,7 +2835,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest, ProcessLimit) {
   GURL foo_url(
       embedded_test_server()->GetURL("www.foo.com", "/page_with_iframe.html"));
   EXPECT_TRUE(NavigateToURL(shell(), foo_url));
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   RenderProcessHost* foo_process = root->current_frame_host()->GetProcess();
   FrameTreeNode* child = root->child_at(0);
 
@@ -3170,8 +3171,8 @@ IN_PROC_BROWSER_TEST_F(
   NavigateIframeToURL(new_shell->web_contents(), "test_iframe", isolated_url);
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(new_shell->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
   FrameTreeNode* child = root->child_at(0);
   EXPECT_NE(child->current_frame_host()->GetProcess(),
             root->current_frame_host()->GetProcess());
@@ -3233,7 +3234,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Cancel the hung request and commit a real navigation to an isolated
   // origin. This should now end up in the ServiceWorker's process.
-  web_contents()->GetFrameTree()->root()->ResetNavigationRequest(false);
+  web_contents()->GetPrimaryFrameTree().root()->ResetNavigationRequest(false);
   GURL isolated_url(
       embedded_test_server()->GetURL("isolated.foo.com", "/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), isolated_url));
@@ -3248,7 +3249,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest, IsolatedOriginWithSubdomain) {
                                                    "/page_with_iframe.html"));
   EXPECT_TRUE(NavigateToURL(shell(), isolated_url));
 
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   FrameTreeNode* child = root->child_at(0);
   scoped_refptr<SiteInstance> isolated_instance =
       web_contents()->GetSiteInstance();
@@ -3818,7 +3819,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest, SubframeErrorPages) {
   GURL regular_url(embedded_test_server()->GetURL("a.com", "/close-socket"));
 
   EXPECT_TRUE(NavigateToURL(shell(), top_url));
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   EXPECT_EQ(2u, root->child_count());
 
   FrameTreeNode* child1 = root->child_at(0);
@@ -3898,7 +3899,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest, AIsolatedCA) {
       "www.foo.com",
       "/cross_site_iframe_factory.html?a(isolated.foo.com(c(www.foo.com)))"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   RenderFrameHost* a = root->current_frame_host();
   RenderFrameHost* b = root->child_at(0)->current_frame_host();
   RenderFrameHost* c = root->child_at(0)->child_at(0)->current_frame_host();
@@ -3991,7 +3992,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest, NavigateToBlobURL) {
   GURL isolated_url(embedded_test_server()->GetURL("isolated.foo.com",
                                                    "/page_with_iframe.html"));
 
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   FrameTreeNode* child = root->child_at(0);
 
   NavigateIframeToURL(web_contents(), "test_iframe", isolated_url);
@@ -4099,7 +4100,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginNoFlagOverrideTest,
   GURL main_url(embedded_test_server()->GetURL(
       "isolated.foo.com", "/cross_site_iframe_factory.html?a(b(c),d(c))"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   RenderFrameHost* a = root->current_frame_host();
   RenderFrameHost* b = root->child_at(0)->current_frame_host();
   RenderFrameHost* c1 = root->child_at(0)->child_at(0)->current_frame_host();
@@ -4203,7 +4204,7 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest,
       embedded_test_server()->GetURL("foo.com", "/page_with_iframe.html"));
   EXPECT_TRUE(NavigateToURL(shell(), foo_url));
 
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   FrameTreeNode* child = root->child_at(0);
 
   // Navigate iframe cross-site.
@@ -4269,8 +4270,8 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest,
 
   FrameTreeNode* second_root =
       static_cast<WebContentsImpl*>(second_shell->web_contents())
-          ->GetFrameTree()
-          ->root();
+          ->GetPrimaryFrameTree()
+          .root();
   FrameTreeNode* second_child = second_root->child_at(0);
 
   NavigateIframeToURL(second_shell->web_contents(), "test_iframe", bar_url);
@@ -4390,7 +4391,7 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest, OldProcessCanAccessCookies) {
 
   GURL foo_url(embedded_test_server()->GetURL("foo.com", "/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), foo_url));
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
 
   // Since foo.com isn't isolated yet, its process lock should allow any site.
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
@@ -4408,8 +4409,8 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest, OldProcessCanAccessCookies) {
   EXPECT_TRUE(NavigateToURL(second_shell, foo_url));
   FrameTreeNode* second_root =
       static_cast<WebContentsImpl*>(second_shell->web_contents())
-          ->GetFrameTree()
-          ->root();
+          ->GetPrimaryFrameTree()
+          .root();
 
   // The new window's process should be locked to "foo.com".
   int isolated_foo_com_process_id =
@@ -4497,8 +4498,8 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest, IsolatedSubdomain) {
   EXPECT_TRUE(NavigateToURL(new_shell, foo_url));
   NavigateIframeToURL(new_shell->web_contents(), "test_iframe", sub_foo_url);
   FrameTreeNode* root = static_cast<WebContentsImpl*>(new_shell->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
   FrameTreeNode* child = root->child_at(0);
 
   EXPECT_NE(root->current_frame_host()->GetSiteInstance(),
@@ -4525,7 +4526,7 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest,
   GURL foo_url(https_server()->GetURL("foo.com", "/page_with_iframe.html"));
   EXPECT_TRUE(NavigateToURL(shell(), foo_url));
 
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   FrameTreeNode* child = root->child_at(0);
 
   // Navigate iframe cross-site.
@@ -4556,8 +4557,8 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest,
   EXPECT_TRUE(NavigateToURL(new_shell, foo_url));
   FrameTreeNode* new_root =
       static_cast<WebContentsImpl*>(new_shell->web_contents())
-          ->GetFrameTree()
-          ->root();
+          ->GetPrimaryFrameTree()
+          .root();
   FrameTreeNode* new_child = new_root->child_at(0);
 
   EXPECT_EQ(new_root->current_frame_host()->GetProcess(),
@@ -4714,7 +4715,7 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest, PerProfileIsolation) {
   WebContentsImpl* other_contents =
       static_cast<WebContentsImpl*>(other_shell->web_contents());
   NavigateIframeToURL(other_contents, "test_iframe", bar_url);
-  FrameTreeNode* root = other_contents->GetFrameTree()->root();
+  FrameTreeNode* root = other_contents->GetPrimaryFrameTree().root();
   FrameTreeNode* child = root->child_at(0);
   EXPECT_EQ(child->current_url(), bar_url);
   EXPECT_NE(root->current_frame_host()->GetSiteInstance(),
@@ -4726,7 +4727,7 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest, PerProfileIsolation) {
   // different profile.
   EXPECT_TRUE(NavigateToURL(shell(), foo_url));
   NavigateIframeToURL(web_contents(), "test_iframe", bar_url);
-  root = web_contents()->GetFrameTree()->root();
+  root = web_contents()->GetPrimaryFrameTree().root();
   child = root->child_at(0);
   EXPECT_EQ(child->current_url(), bar_url);
   if (AreStrictSiteInstancesEnabled()) {
@@ -4753,7 +4754,7 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest, ForceBrowsingInstanceSwap) {
   GURL foo_url(embedded_test_server()->GetURL(
       "foo.com", "/cross_site_iframe_factory.html?foo.com(bar.com)"));
   EXPECT_TRUE(NavigateToURL(shell(), foo_url));
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   FrameTreeNode* child = root->child_at(0);
   scoped_refptr<SiteInstance> first_instance =
       root->current_frame_host()->GetSiteInstance();
@@ -4809,7 +4810,7 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest,
   // Navigate to a foo.com page.
   GURL foo_url(embedded_test_server()->GetURL("foo.com", "/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), foo_url));
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   scoped_refptr<SiteInstance> first_instance =
       root->current_frame_host()->GetSiteInstance();
   EXPECT_FALSE(first_instance->RequiresDedicatedProcess());
@@ -4861,7 +4862,7 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest,
   // Navigate to a page that won't be in a dedicated process.
   GURL foo_url(embedded_test_server()->GetURL("foo.com", "/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), foo_url));
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   scoped_refptr<SiteInstance> first_instance =
       root->current_frame_host()->GetSiteInstance();
   EXPECT_FALSE(first_instance->RequiresDedicatedProcess());
@@ -4902,7 +4903,7 @@ IN_PROC_BROWSER_TEST_F(
   // Navigate to a page that won't be in a dedicated process.
   GURL foo_url(embedded_test_server()->GetURL("foo.com", "/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), foo_url));
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   scoped_refptr<SiteInstance> first_instance =
       root->current_frame_host()->GetSiteInstance();
   EXPECT_FALSE(first_instance->RequiresDedicatedProcess());
@@ -5076,7 +5077,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTestWithStrictSiteInstances,
   ASSERT_FALSE(IsIsolatedOrigin(url::Origin::Create(top_url)));
   EXPECT_TRUE(NavigateToURL(shell(), top_url));
 
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   FrameTreeNode* child1 = root->child_at(0);
   FrameTreeNode* child2 = root->child_at(1);
 
@@ -5145,7 +5146,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTestWithStrictSiteInstances,
                                                    "/page_with_iframe.html"));
   ASSERT_TRUE(IsIsolatedOrigin(url::Origin::Create(isolated_url)));
 
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   FrameTreeNode* child = root->child_at(0);
 
   NavigateIframeToURL(web_contents(), "test_iframe", isolated_url);
@@ -5204,7 +5205,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTestWithStrictSiteInstances,
   ASSERT_TRUE(IsIsolatedOrigin(url::Origin::Create(isolated_url)));
   EXPECT_TRUE(NavigateToURL(shell(), isolated_url));
 
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   FrameTreeNode* child = root->child_at(0);
   EXPECT_EQ(web_contents()->GetSiteInstance(),
             child->current_frame_host()->GetSiteInstance());
@@ -5255,7 +5256,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTestWithStrictSiteInstances,
   GURL foo_url(
       embedded_test_server()->GetURL("www.foo.com", "/page_with_iframe.html"));
   EXPECT_TRUE(NavigateToURL(shell(), foo_url));
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
 
   // Open a blank popup.
   ShellAddedObserver new_shell_observer;
@@ -5289,8 +5290,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTestWithStrictSiteInstances,
       "Where A = http://bar.com/\n"
       "      B = http://foo.com/",
       DepictFrameTree(*static_cast<WebContentsImpl*>(new_shell->web_contents())
-                           ->GetFrameTree()
-                           ->root()));
+                           ->GetPrimaryFrameTree()
+                           .root()));
 }
 
 class WildcardOriginIsolationTest : public IsolatedOriginTestBase {
@@ -5430,7 +5431,7 @@ IN_PROC_BROWSER_TEST_F(WildcardOriginIsolationTest, SubFrameNavigation) {
       "b.isolated.foo.com,a.foo.com,a.isolated.com))");
 
   EXPECT_TRUE(NavigateToURL(shell(), url));
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
 
   EXPECT_EQ(
       " Site A ------------ proxies for B C D\n"
@@ -5553,7 +5554,7 @@ IN_PROC_BROWSER_TEST_F(COOPIsolationTest, SameOrigin) {
                      "iframe.id = 'child';"
                      "document.body.appendChild(iframe);",
                      EXECUTE_SCRIPT_NO_USER_GESTURE));
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   FrameTreeNode* child = root->child_at(0);
   GURL c_url(https_server()->GetURL("c.com", "/title1.html"));
   EXPECT_TRUE(NavigateIframeToURL(web_contents(), "child", c_url));
@@ -5633,8 +5634,8 @@ IN_PROC_BROWSER_TEST_F(COOPIsolationTest, SameOriginAllowPopups) {
   EXPECT_NE(new_instance, coop_instance);
   FrameTreeNode* popup_child =
       static_cast<WebContentsImpl*>(popup->web_contents())
-          ->GetFrameTree()
-          ->root()
+          ->GetPrimaryFrameTree()
+          .root()
           ->child_at(0);
   EXPECT_EQ(popup_child->current_frame_host()->GetSiteInstance(),
             coop_instance);
@@ -5692,7 +5693,7 @@ IN_PROC_BROWSER_TEST_F(COOPIsolationTest, SiteGranularity) {
                      "var iframe = document.createElement('iframe');"
                      "iframe.id = 'child';"
                      "document.body.appendChild(iframe);"));
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   FrameTreeNode* child = root->child_at(0);
   GURL c_url(https_server()->GetURL("baz.coop.com", "/title1.html"));
   EXPECT_TRUE(NavigateIframeToURL(web_contents(), "child", c_url));
@@ -5777,7 +5778,7 @@ IN_PROC_BROWSER_TEST_F(COOPIsolationTest, COOPAndOriginAgentClusterNoPorts) {
   EXPECT_EQ(web_contents()->GetMainFrame()->cross_origin_opener_policy().value,
             network::mojom::CrossOriginOpenerPolicyValue::kSameOrigin);
 
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   FrameTreeNode* child1 = root->child_at(0);
   FrameTreeNode* child2 = root->child_at(1);
 
@@ -5831,7 +5832,7 @@ IN_PROC_BROWSER_TEST_F(COOPIsolationTest,
   EXPECT_EQ(web_contents()->GetMainFrame()->cross_origin_opener_policy().value,
             network::mojom::CrossOriginOpenerPolicyValue::kSameOrigin);
 
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
 
   // Add a subframe and navigate to foo.coop.com.
   ASSERT_TRUE(ExecJs(shell(),
@@ -5917,7 +5918,7 @@ IN_PROC_BROWSER_TEST_F(COOPIsolationTest, UserActivation) {
   EXPECT_TRUE(NavigateToURL(shell(), coop_url));
   EXPECT_EQ(web_contents()->GetMainFrame()->cross_origin_opener_policy().value,
             network::mojom::CrossOriginOpenerPolicyValue::kSameOrigin);
-  FrameTreeNode* coop_root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* coop_root = web_contents()->GetPrimaryFrameTree().root();
   SiteInstance* coop_instance =
       web_contents()->GetMainFrame()->GetSiteInstance();
   // The b.com COOP page should trigger the isolation heuristic and require a
@@ -5936,8 +5937,8 @@ IN_PROC_BROWSER_TEST_F(COOPIsolationTest, UserActivation) {
   EXPECT_TRUE(NavigateToURL(shell2, no_coop_b_url));
   FrameTreeNode* shell2_root =
       static_cast<WebContentsImpl*>(shell2->web_contents())
-          ->GetFrameTree()
-          ->root();
+          ->GetPrimaryFrameTree()
+          .root();
   scoped_refptr<SiteInstance> instance2 =
       shell2->web_contents()->GetMainFrame()->GetSiteInstance();
   EXPECT_FALSE(instance2->RequiresDedicatedProcess());
@@ -5979,8 +5980,8 @@ IN_PROC_BROWSER_TEST_F(COOPIsolationTest, UserActivation) {
   Shell* popup = OpenPopup(shell2, another_b_url, "");
   FrameTreeNode* popup_root =
       static_cast<WebContentsImpl*>(popup->web_contents())
-          ->GetFrameTree()
-          ->root();
+          ->GetPrimaryFrameTree()
+          .root();
   EXPECT_EQ(popup_root->current_frame_host()->GetSiteInstance(), instance2);
 
   EXPECT_TRUE(NavigateToURLFromRenderer(
@@ -6028,7 +6029,7 @@ IN_PROC_BROWSER_TEST_F(COOPIsolationTest, UserActivationInSubframe) {
                      "iframe.id = 'child';"
                      "document.body.appendChild(iframe);",
                      EXECUTE_SCRIPT_NO_USER_GESTURE));
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   FrameTreeNode* child = root->child_at(0);
   GURL c_url(https_server()->GetURL("c.com", "/title1.html"));
   EXPECT_TRUE(NavigateIframeToURL(web_contents(), "child", c_url));
@@ -6086,7 +6087,7 @@ IN_PROC_BROWSER_TEST_F(COOPIsolationTest, UserActivationInAboutBlankSubframe) {
                      "iframe.id = 'child';"
                      "document.body.appendChild(iframe);",
                      EXECUTE_SCRIPT_NO_USER_GESTURE));
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   FrameTreeNode* child = root->child_at(0);
 
   EXPECT_FALSE(root->HasTransientUserActivation());
@@ -6257,7 +6258,7 @@ IN_PROC_BROWSER_TEST_F(JITIsolationTest, SubFrameTest) {
   EXPECT_EQ(2u, CollectAllRenderFrameHosts(shell()->web_contents()).size());
 
   // Top frame 'foo.com' should have JIT enabled as that's the default.
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   EXPECT_FALSE(root->current_frame_host()->GetProcess()->IsJitDisabled());
   // The frame containing jit-disabled.com should have JIT disabled.
   FrameTreeNode* child_frame_node = root->child_at(0);
@@ -6275,7 +6276,7 @@ IN_PROC_BROWSER_TEST_F(JITIsolationTest, SubFrameTest) {
                 .size());
 
   // Top frame 'jit-disabled.com' should have JIT disabled.
-  root = web_contents()->GetFrameTree()->root();
+  root = web_contents()->GetPrimaryFrameTree().root();
   EXPECT_TRUE(root->current_frame_host()->GetProcess()->IsJitDisabled());
   // The frame containing foo.com should have JIT enabled as that's the default.
   child_frame_node = root->child_at(0);

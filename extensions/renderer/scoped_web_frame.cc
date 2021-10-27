@@ -34,7 +34,9 @@ ScopedWebFrame::ScopedWebFrame()
                                                    &frame_client_,
                                                    nullptr,
                                                    blink::LocalFrameToken(),
-                                                   nullptr)) {}
+                                                   nullptr)) {
+  view_->DidAttachLocalMainFrame();
+}
 
 ScopedWebFrame::~ScopedWebFrame() {
   view_->Close();

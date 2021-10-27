@@ -2459,7 +2459,8 @@ message CollectUserDataProto {
   repeated RequiredDataPiece required_billing_address_data_piece = 36;
 
   message UserDataProto {
-    repeated ProfileProto available_profiles = 1;
+    repeated ProfileProto available_contacts = 1;
+    repeated ProfileProto available_addresses = 4;
     repeated PaymentInstrumentProto available_payment_instruments = 2;
     // The locale to be used when creating this data. This can have influence
     // on the potential processing by Autofill.

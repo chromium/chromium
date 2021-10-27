@@ -93,7 +93,7 @@ class BackForwardCacheMetricsBrowserTestBase : public ContentBrowserTest,
   }
 
   RenderFrameHostImpl* current_frame_host() {
-    return web_contents()->GetFrameTree()->root()->current_frame_host();
+    return web_contents()->GetPrimaryFrameTree().root()->current_frame_host();
   }
 
   void DidStartNavigation(NavigationHandle* navigation_handle) override {
@@ -838,7 +838,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
   RenderFrameHostImpl* rfh_url1 =
-      web_contents()->GetFrameTree()->root()->current_frame_host();
+      web_contents()->GetPrimaryFrameTree().root()->current_frame_host();
 
   // Make url1 ineligible for caching so that when we navigate back it doesn't
   // fetch the RenderFrameHost from the back/forward cache.

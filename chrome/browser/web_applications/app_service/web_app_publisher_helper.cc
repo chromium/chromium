@@ -1105,9 +1105,10 @@ void WebAppPublisherHelper::OnWebContentsDestroyed(
 void WebAppPublisherHelper::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type) {
+    ContentSettingsTypeSet content_type_set) {
   // If content_type is not one of the supported permissions, do nothing.
-  if (!IsSupportedWebAppPermissionType(content_type)) {
+  if (!content_type_set.ContainsAllTypes() &&
+      !IsSupportedWebAppPermissionType(content_type_set.GetType())) {
     return;
   }
 

@@ -133,7 +133,10 @@ void HpsDBusClient::Initialize(dbus::Bus* bus) {
 
 // static
 void HpsDBusClient::InitializeFake() {
-  new FakeHpsDBusClient();
+  // Do not create a new fake if it was initialized early in a test, to allow
+  // the test to set its own client.
+  if (!FakeHpsDBusClient::Get())
+    new FakeHpsDBusClient();
 }
 
 // static

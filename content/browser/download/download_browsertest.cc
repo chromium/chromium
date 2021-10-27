@@ -4616,7 +4616,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, DownloadIgnoresXFO) {
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   std::unique_ptr<DownloadTestObserver> observer(CreateWaiter(shell(), 1));
-  NavigateFrameToURL(web_contents->GetFrameTree()->root()->child_at(0),
+  NavigateFrameToURL(web_contents->GetPrimaryFrameTree().root()->child_at(0),
                      download_url);
   observer->WaitForFinished();
   EXPECT_EQ(

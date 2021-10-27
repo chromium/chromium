@@ -36,6 +36,10 @@
 #include "extensions/browser/app_sorting.h"
 #include "extensions/browser/extension_system.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#endif
+
 namespace web_app {
 namespace {
 
@@ -56,7 +60,8 @@ class TwoClientWebAppsBMOSyncTest : public SyncTest {
             base::BindRepeating(&CreateFakeWebAppProvider)) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // Disable WebAppsCrosapi, so that Web Apps get synced in the Ash browser.
-    scoped_feature_list_.InitAndDisableFeature(features::kWebAppsCrosapi);
+    scoped_feature_list_.InitWithFeatures(
+        {}, {features::kWebAppsCrosapi, chromeos::features::kLacrosPrimary});
 #endif
   }
 

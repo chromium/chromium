@@ -58,7 +58,7 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacade {
     kArc = 2,
     // Launched automatically from Chrome content area. As of now, this is
     // possible only when an account requires re-authentication.
-    kContentArea = 3,
+    kContentAreaReauth = 3,
     // Print Preview dialog.
     kPrintPreviewDialog = 4,
     // Account Manager migration welcome screen.
@@ -67,8 +67,10 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacade {
     kOnboarding = 6,
     // At profile creation, main account of secondary profile.
     kChromeProfileCreation = 7,
+    // Account addition flow launched by the user from One Google Bar.
+    kOgbAddAccount = 8,
 
-    kMaxValue = kChromeProfileCreation
+    kMaxValue = kOgbAddAccount
   };
 
   AccountManagerFacade();

@@ -41,6 +41,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/policy/handlers/system_features_disable_list_policy_handler.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -247,7 +248,8 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
     if (GetParam() == TestParam::kLacrosEnabled) {
       scoped_feature_list_.InitAndEnableFeature(features::kWebAppsCrosapi);
     } else if (GetParam() == TestParam::kLacrosDisabled) {
-      scoped_feature_list_.InitAndDisableFeature(features::kWebAppsCrosapi);
+      scoped_feature_list_.InitWithFeatures(
+          {}, {features::kWebAppsCrosapi, chromeos::features::kLacrosPrimary});
     }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     ChromeRenderViewHostTestHarness::SetUp();

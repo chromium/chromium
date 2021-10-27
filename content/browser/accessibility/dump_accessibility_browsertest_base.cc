@@ -372,8 +372,7 @@ std::vector<std::string> DumpAccessibilityTestBase::CollectAllFrameUrls(
     const std::vector<std::string>& skip_urls) {
   std::vector<std::string> all_frame_urls;
   // Get the url of every frame in the frame tree.
-  FrameTree* frame_tree = GetWebContents()->GetFrameTree();
-  for (FrameTreeNode* node : frame_tree->Nodes()) {
+  for (FrameTreeNode* node : GetWebContents()->GetPrimaryFrameTree().Nodes()) {
     // Ignore about:blank urls because of the case where a parent frame A
     // has a child iframe B and it writes to the document using
     // contentDocument.open() on the child frame B.

@@ -23,8 +23,8 @@ class CORE_EXPORT LargestContentfulPaintCalculator final
   LargestContentfulPaintCalculator& operator=(
       const LargestContentfulPaintCalculator&) = delete;
 
-  void UpdateLargestContentfulPaintIfNeeded(const TextRecord* largest_text,
-                                            const ImageRecord* largest_image);
+  void UpdateLargestContentPaintIfNeeded(const TextRecord* largest_text,
+                                         const ImageRecord* largest_image);
 
   void Trace(Visitor* visitor) const;
 

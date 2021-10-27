@@ -389,6 +389,12 @@ function addPeerConnection(data) {
   signalingStates.className = 'signalingstate';
   peerConnectionElement.appendChild(signalingStates);
 
+  const candidatePair = document.createElement('div');
+  candidatePair.textContent = 'ICE Candidate pair: ';
+  candidatePair.className = 'candidatepair';
+  candidatePair.appendChild(document.createElement('span'));
+  peerConnectionElement.appendChild(candidatePair);
+
   return peerConnectionElement;
 }
 
@@ -456,6 +462,61 @@ function addStandardStats(data) {
     const report = data.reports[i];
     statsTable.addStatsReport(peerConnectionElement, report);
     drawSingleReport(peerConnectionElement, report, false);
+  }
+  // Determine currently connected candidate pair.
+  const stats = r.statsById;
+
+  let activeCandidatePair = null;
+  let remoteCandidate = null;
+  let localCandidate = null;
+
+  // Get the first active candidate pair. This ignores the rare case of
+  // non-bundled connections.
+  stats.forEach(report => {
+    if (report.type === 'transport' && !activeCandidatePair) {
+      activeCandidatePair = stats.get(report.selectedCandidatePairId);
+    }
+  });
+
+  const candidateElement = peerConnectionElement
+    .getElementsByClassName('candidatepair')[0].firstElementChild;
+  if (activeCandidatePair) {
+    if (activeCandidatePair.remoteCandidateId) {
+      remoteCandidate = stats.get(activeCandidatePair.remoteCandidateId);
+    }
+    if (activeCandidatePair.localCandidateId) {
+      localCandidate = stats.get(activeCandidatePair.localCandidateId);
+    }
+    if (localCandidate && localCandidate.address &&
+        localCandidate.address.indexOf(':') !== -1) {
+      // Show IPv6 in []
+      candidateElement.innerText =
+          '[' + localCandidate.address + ']:' + localCandidate.port
+          + ' <=> [' + remoteCandidate.address + ']:' + remoteCandidate.port;
+    } else {
+      candidateElement.innerText =
+          localCandidate.address + ':' + localCandidate.port
+          + ' <=> ' + remoteCandidate.address + ':' + remoteCandidate.port;
+    }
+
+    const statsContainer =
+        document.getElementById(peerConnectionElement.id + '-table-container');
+    const activeConnectionClass = 'stats-table-active-connection';
+    statsContainer.childNodes.forEach(node => {
+      if (node.nodeName !== 'DETAILS') {
+        return;
+      }
+      const innerText = node.firstElementChild.innerText;
+      if (innerText.startsWith(activeCandidatePair.id)
+          || innerText.startsWith(localCandidate.id)
+          || innerText.startsWith(remoteCandidate.id)) {
+        node.classList.add(activeConnectionClass);
+      } else {
+        node.classList.remove(activeConnectionClass);
+      }
+    });
+  } else {
+    candidateElement.innerText = '(not connected)';
   }
 }
 

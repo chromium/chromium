@@ -16,7 +16,6 @@ group("closure_compile") {
     "dialogs:closure_compile",
     "oobe_carousel:closure_compile",
     "oobe_slide:closure_compile",
-    "progress_list_item:closure_compile",
     "throbber_notice:closure_compile",
   ]
 }
@@ -40,6 +39,7 @@ group("closure_compile_module") {
     "common_styles:closure_compile_module",
     "dialogs:closure_compile_module",
     "oobe_vars:closure_compile_module",
+    "progress_list_item:closure_compile_module",
 
     # Local targets
     ":display_manager_types.m",
@@ -48,8 +48,8 @@ group("closure_compile_module") {
     ":long_touch_detector.m",
     ":network_select_login.m",
     ":oobe_a11y_option.m",
-    ":oobe_icons.m",
     ":oobe_i18n_dropdown.m",
+    ":oobe_icons.m",
     ":oobe_network_icons.m",
     ":oobe_select.m",
     ":oobe_types.m",
@@ -60,24 +60,23 @@ group("closure_compile_module") {
 
 group("polymer3_elements") {
   public_deps = [
-    "behaviors:modulize",
-    "buttons:polymer3_elements",
-    "common_styles:polymer3_elements",
-    "dialogs:polymer3_elements",
-    "oobe_vars:polymer3_elements",
+                  "behaviors:modulize",
+                  "buttons:polymer3_elements",
+                  "common_styles:polymer3_elements",
+                  "dialogs:polymer3_elements",
+                  "oobe_vars:polymer3_elements",
+                  "progress_list_item:polymer3_elements",
 
-    # Local targets
-    ":hd_iron_icon_module",
-    ":html_echo_module",
-    ":long_touch_detector_module",
-    ":network_select_login_module",
-    ":oobe_a11y_option_module",
-    ":oobe_icons_module",
-    ":oobe_i18n_dropdown_module",
-    ":oobe_network_icons_module",
-  ] + [
-    ":modulize"
-  ]
+                  # Local targets
+                  ":hd_iron_icon_module",
+                  ":html_echo_module",
+                  ":long_touch_detector_module",
+                  ":network_select_login_module",
+                  ":oobe_a11y_option_module",
+                  ":oobe_icons_module",
+                  ":oobe_i18n_dropdown_module",
+                  ":oobe_network_icons_module",
+                ] + [ ":modulize" ]
 }
 
 ###############################

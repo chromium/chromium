@@ -42,7 +42,7 @@ class DevToolsIssueStorageBrowserTest : public DevToolsProtocolTest {
   }
 
   RenderFrameHostImpl* main_frame_host() {
-    return web_contents()->GetFrameTree()->GetMainFrame();
+    return web_contents()->GetPrimaryFrameTree().GetMainFrame();
   }
 
   void WaitForDummyIssueNotification() {

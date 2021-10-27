@@ -17,6 +17,7 @@
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/skia/include/core/SkColor.h"
 
 namespace aura {
 class Window;
@@ -224,6 +225,13 @@ void UpdateContainerPref(Profile* profile,
                          const ContainerId& container_id,
                          const std::string& key,
                          base::Value value);
+
+SkColor GetContainerBadgeColor(Profile* profile,
+                               const ContainerId& container_id);
+
+void SetContainerBadgeColor(Profile* profile,
+                            const ContainerId& container_id,
+                            SkColor badge_color);
 
 bool IsContainerVersionExpired(Profile* profile,
                                const ContainerId& container_id);

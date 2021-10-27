@@ -3393,7 +3393,7 @@ class ServiceWorkerBackForwardCacheAndKeepActiveFreezingBrowserTest
   }
 
   RenderFrameHostImpl* current_frame_host() {
-    return web_contents()->GetFrameTree()->root()->current_frame_host();
+    return web_contents()->GetPrimaryFrameTree().root()->current_frame_host();
   }
 
   const std::string kTryToTriggerEvictionScript = R"(
@@ -3631,8 +3631,8 @@ class ServiceWorkerBackForwardCacheBrowserTest
 
   RenderFrameHostImpl* current_frame_host() {
     return static_cast<WebContentsImpl*>(shell()->web_contents())
-        ->GetFrameTree()
-        ->root()
+        ->GetPrimaryFrameTree()
+        .root()
         ->current_frame_host();
   }
 

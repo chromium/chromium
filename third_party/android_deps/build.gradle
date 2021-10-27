@@ -112,7 +112,9 @@ dependencies {
     compile 'com.android.tools:desugar_jdk_libs_configuration:1.1.1'
 
     // Needed by androidx.
-    compile 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.0'
+    String kotlinxVersion = '1.5.0'
+    compile "org.jetbrains.kotlinx:kotlinx-coroutines-android:${kotlinxVersion}"
+    compile "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:${kotlinxVersion}"
 
 
     // Upstream guava introduced versions with -android suffix starting with version

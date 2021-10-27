@@ -73,9 +73,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessDevToolsBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   // It is safe to obtain the root frame tree node here, as it doesn't change.
-  FrameTreeNode* root =
-      static_cast<WebContentsImpl*>(shell()->web_contents())->
-          GetFrameTree()->root();
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
 
   list = DevToolsAgentHost::GetOrCreateAll();
   EXPECT_EQ(1U, list.size());
@@ -148,9 +148,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessDevToolsBrowserTest, AgentHostForFrames) {
       DevToolsAgentHost::GetOrCreateFor(shell()->web_contents());
 
   // It is safe to obtain the root frame tree node here, as it doesn't change.
-  FrameTreeNode* root =
-      static_cast<WebContentsImpl*>(shell()->web_contents())->
-          GetFrameTree()->root();
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
 
   scoped_refptr<DevToolsAgentHost> main_frame_agent =
       RenderFrameDevToolsAgentHost::GetOrCreateFor(root);
@@ -184,9 +184,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessDevToolsBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   // It is safe to obtain the root frame tree node here, as it doesn't change.
-  FrameTreeNode* root =
-      static_cast<WebContentsImpl*>(shell()->web_contents())->
-          GetFrameTree()->root();
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
   FrameTreeNode* child = root->child_at(0);
 
   // Load cross-site page into iframe.

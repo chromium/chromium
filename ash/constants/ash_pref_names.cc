@@ -431,6 +431,11 @@ const char kCanCellularSetupNotificationBeShown[] =
 const char kManagedGuestSessionPrivacyWarningsEnabled[] =
     "managed_session.privacy_warning_enabled";
 
+// Boolean pref indicating whether the user has enabled detection of snooping
+// over their shoulder.
+const char kSnoopingProtectionEnabled[] =
+    "ash.privacy.snooping_protection_enabled";
+
 // A string pref storing the type of lock screen notification mode.
 // "show" -> show notifications on the lock screen
 // "hide" -> hide notifications at all on the lock screen (default)

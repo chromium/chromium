@@ -377,13 +377,13 @@ class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
   // Instance self-delete when its |agent_scheduling_groups|'s process will
   // exit.
   static MockRenderWidgetHostImpl* Create(
-      FrameTree* frame_tree,
+      FrameTree& frame_tree,
       RenderWidgetHostDelegate* delegate,
       AgentSchedulingGroupHost& agent_scheduling_group,
       int32_t routing_id,
       bool hidden) {
     return new MockRenderWidgetHostImpl(
-        frame_tree, delegate, agent_scheduling_group, routing_id, hidden);
+        &frame_tree, delegate, agent_scheduling_group, routing_id, hidden);
   }
 
   MockWidgetInputHandler* input_handler() { return &input_handler_; }
@@ -508,9 +508,10 @@ class RenderWidgetHostViewAuraTest : public testing::Test {
     return new FakeRenderWidgetHostViewAura(widget_host);
   }
 
-  FrameTree* GetFrameTree() {
+  FrameTree& GetFrameTree() {
     DCHECK(web_contents_);
-    return static_cast<WebContentsImpl*>(web_contents_.get())->GetFrameTree();
+    return static_cast<WebContentsImpl*>(web_contents_.get())
+        ->GetPrimaryFrameTree();
   }
 
   void DestroyView(FakeRenderWidgetHostViewAura* view) {

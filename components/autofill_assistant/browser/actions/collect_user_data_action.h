@@ -96,7 +96,8 @@ class CollectUserDataAction : public Action,
   bool CreateOptionsFromProto();
 
   bool CheckInitialAutofillDataComplete(
-      const std::vector<std::unique_ptr<autofill::AutofillProfile>>& profiles,
+      const std::vector<std::unique_ptr<autofill::AutofillProfile>>& contacts,
+      const std::vector<std::unique_ptr<autofill::AutofillProfile>>& addresses,
       const std::vector<std::unique_ptr<PaymentInstrument>>&
           payment_instruments);
 
@@ -113,7 +114,8 @@ class CollectUserDataAction : public Action,
   void UpdatePersonalDataManagerCards(
       UserData* user_data,
       UserData::FieldChange* field_change = nullptr);
-  void UpdateSelectedProfiles(UserData* user_data);
+  void UpdateSelectedContact(UserData* user_data);
+  void UpdateSelectedShippingAddress(UserData* user_data);
   void UpdateSelectedCreditCard(UserData* user_data);
   void UpdateDateTimeRangeStart(UserData* user_data,
                                 UserData::FieldChange* field_change = nullptr);

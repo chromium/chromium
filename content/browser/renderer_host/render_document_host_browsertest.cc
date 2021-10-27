@@ -43,7 +43,7 @@ class RenderDocumentHostBrowserTest : public ContentBrowserTest {
   }
 
   RenderFrameHostImpl* current_main_frame() {
-    return web_contents()->GetFrameTree()->root()->current_frame_host();
+    return web_contents()->GetPrimaryFrameTree().root()->current_frame_host();
   }
 
  private:

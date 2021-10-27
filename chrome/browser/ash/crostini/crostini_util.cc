@@ -574,6 +574,27 @@ void UpdateContainerPref(Profile* profile,
   }
 }
 
+SkColor GetContainerBadgeColor(Profile* profile,
+                               const ContainerId& container_id) {
+  const base::Value* badge_color_value =
+      GetContainerPrefValue(profile, container_id, prefs::kContainerColorKey);
+  if (badge_color_value) {
+    return badge_color_value->GetIfInt().value_or(SK_ColorTRANSPARENT);
+  } else {
+    return SK_ColorTRANSPARENT;
+  }
+}
+
+void SetContainerBadgeColor(Profile* profile,
+                            const ContainerId& container_id,
+                            SkColor badge_color) {
+  UpdateContainerPref(profile, container_id, prefs::kContainerColorKey,
+                      base::Value(static_cast<int>(badge_color)));
+
+  guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile)
+      ->ContainerBadgeColorChanged(container_id);
+}
+
 bool IsContainerVersionExpired(Profile* profile,
                                const ContainerId& container_id) {
   auto* value = GetContainerPrefValue(profile, container_id,

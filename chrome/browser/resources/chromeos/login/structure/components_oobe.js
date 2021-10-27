@@ -9,6 +9,5 @@
 // <include src="../oobe_welcome.js">
 // <include src="../screens/oobe/oobe_network.js">
 // <include src="../oobe_update.js">
-// <include src="../screens/oobe/demo_setup.js">
 // <include src="../screens/oobe/demo_preferences.js">
 // <include src="../enterprise_enrollment.js">

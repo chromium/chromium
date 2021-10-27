@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/types/strong_alias.h"
+#include "chrome/browser/password_manager/android/android_backend_error.h"
 #include "components/password_manager/core/browser/password_form.h"
 
 namespace password_manager {
@@ -40,7 +41,7 @@ class PasswordStoreAndroidBackendBridge {
 
     // Asynchronous response called with the `job_id` which was passed to the
     // corresponding call to `PasswordStoreAndroidBackendBridge`.
-    virtual void OnError(JobId job_id) = 0;
+    virtual void OnError(JobId job_id, AndroidBackendErrorType error) = 0;
   };
 
   virtual ~PasswordStoreAndroidBackendBridge() = default;
@@ -55,7 +56,14 @@ class PasswordStoreAndroidBackendBridge {
 
   // Factory function for creating the bridge. Implementation is pulled in by
   // including an implementation or by defining it explicitly in tests.
+  // Ensure `CanCreateBackend` returns true before calling this method.
   static std::unique_ptr<PasswordStoreAndroidBackendBridge> Create();
+
+  // Method that checks whether a backend can be created or whether `Create`
+  // would fail. It returns true iff all nontransient prerequisistes are
+  // fulfilled. E.g. if the backend requires a minimum GMS version this method
+  // would return false.
+  static bool CanCreateBackend();
 };
 
 }  // namespace password_manager

@@ -70,3 +70,11 @@ config_setting(
     },
     visibility = [":__subpackages__"],
 )
+
+config_setting(
+    name = "fuchsia",
+    values = {
+        "cpu": "fuchsia",
+    },
+    visibility = [":__subpackages__"],
+)

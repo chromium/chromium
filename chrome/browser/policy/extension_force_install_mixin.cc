@@ -26,12 +26,14 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/crx_file/crx_verifier.h"
 #include "components/crx_file/id_util.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
+#include "components/policy/core/common/policy_service.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -55,6 +57,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
+#include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #endif
@@ -375,6 +378,29 @@ void UpdatePolicyViaDevicePolicyCrosTestHelper(
   device_policy_cros_test_helper->RefreshDevicePolicy();
 }
 
+void UpdatePolicyViaLocalPolicyMixin(
+    const extensions::ExtensionId& extension_id,
+    const GURL& update_manifest_url,
+    ash::LocalPolicyTestServerMixin* local_policy_mixin,
+    policy::UserPolicyBuilder* user_policy_builder,
+    const std::string& account_id,
+    const std::string& policy_type) {
+  user_policy_builder->payload()
+      .mutable_extensioninstallforcelist()
+      ->mutable_value()
+      ->add_entries(
+          MakeForceInstallPolicyItemValue(extension_id, update_manifest_url));
+  user_policy_builder->Build();
+
+  ASSERT_TRUE(local_policy_mixin->server()->UpdatePolicy(
+      policy_type, account_id,
+      user_policy_builder->payload().SerializeAsString()));
+
+  base::RunLoop run_loop;
+  g_browser_process->policy_service()->RefreshPolicies(run_loop.QuitClosure());
+  run_loop.Run();
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
@@ -418,6 +444,29 @@ void ExtensionForceInstallMixin::InitWithDevicePolicyCrosTestHelper(
   DCHECK(!device_policy_cros_test_helper_);
   profile_ = profile;
   device_policy_cros_test_helper_ = device_policy_cros_test_helper;
+}
+
+void ExtensionForceInstallMixin::InitWithLocalPolicyMixin(
+    Profile* profile,
+    ash::LocalPolicyTestServerMixin* local_policy_mixin,
+    policy::UserPolicyBuilder* user_policy_builder,
+    const std::string& account_id,
+    const std::string& policy_type) {
+  DCHECK(profile);
+  DCHECK(local_policy_mixin);
+  DCHECK(user_policy_builder);
+  DCHECK(!account_id.empty());
+  DCHECK(!policy_type.empty());
+  DCHECK(!profile_) << "Init already called";
+  DCHECK(!local_policy_mixin_);
+  DCHECK(!user_policy_builder_);
+  DCHECK(account_id_.empty());
+  DCHECK(policy_type_.empty());
+  profile_ = profile;
+  local_policy_mixin_ = local_policy_mixin;
+  user_policy_builder_ = user_policy_builder;
+  account_id_ = account_id;
+  policy_type_ = policy_type;
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -631,6 +680,12 @@ bool ExtensionForceInstallMixin::UpdatePolicy(
   if (device_policy_cros_test_helper_) {
     UpdatePolicyViaDevicePolicyCrosTestHelper(extension_id, update_manifest_url,
                                               device_policy_cros_test_helper_);
+    return true;
+  }
+  if (local_policy_mixin_) {
+    UpdatePolicyViaLocalPolicyMixin(extension_id, update_manifest_url,
+                                    local_policy_mixin_, user_policy_builder_,
+                                    account_id_, policy_type_);
     return true;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

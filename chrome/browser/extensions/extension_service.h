@@ -92,8 +92,6 @@ class ExtensionServiceInterface
   // Installs an update with the contents from |extension_path|. Returns true if
   // the install can be started. Sets |out_crx_installer| to the installer if
   // one was started.
-  // TODO(aa): This method can be removed. ExtensionUpdater could use
-  // CrxInstaller directly instead.
   virtual bool UpdateExtension(const CRXFileInfo& file,
                                bool file_ownership_passed,
                                CrxInstaller** out_crx_installer) = 0;

@@ -226,7 +226,9 @@ def run_command(argv, env=None, cwd=None, log=True):
     print('Running %r in %r (env: %r)' % (argv, cwd, env))
   process = _popen(argv, env=env, cwd=cwd, stderr=subprocess.STDOUT)
   forward_signals([process])
-  return wait_with_signals(process)
+  exit_code = wait_with_signals(process)
+  print('Command returned exit code %d' % exit_code)
+  return exit_code
 
 
 def run_command_output_to_handle(argv, file_handle, env=None, cwd=None):

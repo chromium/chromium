@@ -429,8 +429,8 @@ IN_PROC_BROWSER_TEST_F(CrossSiteTransferTest, NoDeliveryToDetachedFrame) {
   EXPECT_TRUE(NavigateToURL(shell(), attacker_page));
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
 
   RenderFrameHostImpl* child_frame = root->child_at(0)->current_frame_host();
 

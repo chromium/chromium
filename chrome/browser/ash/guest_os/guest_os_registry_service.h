@@ -18,10 +18,12 @@
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/ash/crostini/crostini_simple_types.h"
+#include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chromeos/dbus/vm_applications/apps.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/resource/resource_scale_factor.h"
 
 class Profile;
@@ -212,6 +214,11 @@ class GuestOsRegistryService : public KeyedService {
   // The existing list of apps is replaced by |application_list|.
   void UpdateApplicationList(const vm_tools::apps::ApplicationList& app_list);
 
+  // Inform the registry that the badge color for `container_id` has changed. In
+  // practice, this sends an update notification for all apps associated with
+  // this container, which will prompt the icons to be regenerated.
+  void ContainerBadgeColorChanged(const crostini::ContainerId& container_id);
+
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
@@ -256,6 +263,12 @@ class GuestOsRegistryService : public KeyedService {
   // TerminalSystemApp feature is removed.  Current expectation is to remove
   // feature in M83, this function can then be remoevd after M84.
   void MigrateTerminal() const;
+
+  // Apply container-specific badging to `icon`. This is run after the generic
+  // icon loading code.
+  void ApplyContainerBadge(SkColor badge_color,
+                           apps::mojom::Publisher::LoadIconCallback callback,
+                           apps::mojom::IconValuePtr icon);
 
   // Owned by the Profile.
   Profile* const profile_;

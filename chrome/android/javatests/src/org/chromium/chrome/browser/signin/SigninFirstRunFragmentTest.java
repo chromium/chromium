@@ -436,7 +436,7 @@ public class SigninFirstRunFragmentTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> { mFragment.onNativeInitialized(); });
         launchActivityWithFragment();
 
-        onView(withId(R.id.signin_fre_footer)).perform(clickOnClickableSpan());
+        onView(withId(R.id.signin_fre_footer)).perform(clickOnUMADialogSpan());
 
         onView(withText(R.string.signin_fre_uma_dialog_title)).check(matches(isDisplayed()));
         onView(withId(R.id.fre_uma_dialog_switch)).check(matches(isDisplayed()));
@@ -456,7 +456,7 @@ public class SigninFirstRunFragmentTest {
     public void testFragmentWhenDismissingUMADialog() {
         TestThreadUtils.runOnUiThreadBlocking(() -> { mFragment.onNativeInitialized(); });
         launchActivityWithFragment();
-        onView(withId(R.id.signin_fre_footer)).perform(clickOnClickableSpan());
+        onView(withId(R.id.signin_fre_footer)).perform(clickOnUMADialogSpan());
 
         onView(withText(R.string.done)).perform(click());
 
@@ -468,7 +468,7 @@ public class SigninFirstRunFragmentTest {
     public void testDismissButtonWhenAllowCrashUploadTurnedOff() {
         TestThreadUtils.runOnUiThreadBlocking(() -> { mFragment.onNativeInitialized(); });
         launchActivityWithFragment();
-        onView(withId(R.id.signin_fre_footer)).perform(clickOnClickableSpan());
+        onView(withId(R.id.signin_fre_footer)).perform(clickOnUMADialogSpan());
         onView(withId(R.id.fre_uma_dialog_switch)).perform(click());
         onView(withText(R.string.done)).perform(click());
 
@@ -483,11 +483,11 @@ public class SigninFirstRunFragmentTest {
     public void testUMADialogSwitchIsOffWhenAllowCrashUploadWasTurnedOffBefore() {
         TestThreadUtils.runOnUiThreadBlocking(() -> { mFragment.onNativeInitialized(); });
         launchActivityWithFragment();
-        onView(withId(R.id.signin_fre_footer)).perform(clickOnClickableSpan());
+        onView(withId(R.id.signin_fre_footer)).perform(clickOnUMADialogSpan());
         onView(withId(R.id.fre_uma_dialog_switch)).check(matches(isChecked())).perform(click());
         onView(withText(R.string.done)).perform(click());
 
-        onView(withId(R.id.signin_fre_footer)).perform(clickOnClickableSpan());
+        onView(withId(R.id.signin_fre_footer)).perform(clickOnUMADialogSpan());
 
         onView(withId(R.id.fre_uma_dialog_switch))
                 .check(matches(not(isChecked())))
@@ -504,7 +504,7 @@ public class SigninFirstRunFragmentTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> { mFragment.onNativeInitialized(); });
         mAccountManagerTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
         launchActivityWithFragment();
-        onView(withId(R.id.signin_fre_footer)).perform(clickOnClickableSpan());
+        onView(withId(R.id.signin_fre_footer)).perform(clickOnUMADialogSpan());
         onView(withId(R.id.fre_uma_dialog_switch)).perform(click());
         onView(withText(R.string.done)).perform(click());
 
@@ -670,7 +670,7 @@ public class SigninFirstRunFragmentTest {
                 mChromeActivityTestRule.getActivity(), Stage.RESUMED);
     }
 
-    private ViewAction clickOnClickableSpan() {
+    private ViewAction clickOnUMADialogSpan() {
         return new ViewAction() {
             @Override
             public Matcher<View> getConstraints() {
@@ -679,7 +679,7 @@ public class SigninFirstRunFragmentTest {
 
             @Override
             public String getDescription() {
-                return "Clicks on the one and only clickable span in the view";
+                return "Clicks on the second clickable span which opens UMA consent dialog";
             }
 
             @Override
@@ -694,8 +694,8 @@ public class SigninFirstRunFragmentTest {
                             .withRootView(textView)
                             .build();
                 }
-                Assert.assertEquals("There should be only one clickable link", 1, spans.length);
-                spans[0].onClick(view);
+                Assert.assertEquals("There should be exactly two clickable link", 2, spans.length);
+                spans[1].onClick(view);
             }
         };
     }

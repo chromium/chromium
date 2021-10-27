@@ -74,7 +74,8 @@ class SingleClientWebAppsSyncTest : public SyncTest {
   SingleClientWebAppsSyncTest() : SyncTest(SINGLE_CLIENT) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // Disable WebAppsCrosapi, so that Web Apps get synced in the Ash browser.
-    scoped_feature_list_.InitAndDisableFeature(features::kWebAppsCrosapi);
+    scoped_feature_list_.InitWithFeatures(
+        {}, {features::kWebAppsCrosapi, chromeos::features::kLacrosPrimary});
 #endif
   }
   ~SingleClientWebAppsSyncTest() override = default;

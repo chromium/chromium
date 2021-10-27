@@ -2849,6 +2849,11 @@ void WebViewImpl::SendWindowRectToMainFrameHost(
   local_main_frame_host_remote_->SetWindowRect(bounds, std::move(ack_callback));
 }
 
+void WebViewImpl::DidAccessInitialMainDocument() {
+  DCHECK(local_main_frame_host_remote_);
+  local_main_frame_host_remote_->DidAccessInitialMainDocument();
+}
+
 void WebViewImpl::UpdateTargetURL(const WebURL& url,
                                   const WebURL& fallback_url) {
   KURL latest_url = KURL(url.IsEmpty() ? fallback_url : url);

@@ -4178,10 +4178,6 @@ void WebContentsImpl::SetCaptureHandleConfig(
                              capture_handle_config_);
 }
 
-FrameTree* WebContentsImpl::GetFrameTree() {
-  return &frame_tree_;
-}
-
 bool WebContentsImpl::IsJavaScriptDialogShowing() const {
   return is_showing_javascript_dialog_;
 }

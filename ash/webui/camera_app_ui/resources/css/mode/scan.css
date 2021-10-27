@@ -332,19 +332,57 @@ body.enable-scan-barcode .barcode-scan-box {
   touch-action: none;
 }
 
-#crop-container .crop-area {
-  background: rgba(var(--blue-300-rgb), 0.4);
+#crop-container .crop-area-container {
   height: 100%;
+  pointer-events: none;
   touch-action: none;
   width: 100%;
 }
 
+#crop-container .crop-area {
+  fill: rgba(var(--blue-300-rgb), 0.3);
+  stroke: var(--blue-500);
+}
+
 #crop-container .dot {
-  background: var(--blue-600);
+  --icon-size: 8px;
+  --focus-size: 32px;
+
   border-radius: 50%;
-  height: 50px;
+  height: 48px;
   position: absolute;
   touch-action: none;
   transform: translate(-50%, -50%);
-  width: 50px;
+  width: 48px;
+}
+
+#crop-container .dot::before,
+#crop-container .dot::after {
+  border-radius: 50%;
+  content: '';
+  height: var(--icon-size);
+  left: 50%;
+  pointer-events: none;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: var(--icon-size);
+}
+
+#crop-container .dot::before {
+  background: var(--blue-500);
+  box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14), 0 1px 3px 0 rgba(0, 0, 0, 0.12);
+}
+
+#crop-container .dot::after {
+  background: rgba(var(--blue-300-rgb), 0.24);
+  border: 1px solid var(--blue-500);
+  box-sizing: border-box;
+}
+
+#crop-container .dot.dragging::after {
+  height: var(--focus-size);
+  transition-duration: var(--fast1-duration);
+  transition-property: width, height;
+  width: var(--focus-size);
 }

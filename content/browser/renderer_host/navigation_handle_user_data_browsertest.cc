@@ -58,7 +58,7 @@ class NavigationHandleUserDataBrowserTest : public ContentBrowserTest {
   }
 
   RenderFrameHostImpl* top_frame_host() {
-    return web_contents()->GetFrameTree()->root()->current_frame_host();
+    return web_contents()->GetPrimaryFrameTree().root()->current_frame_host();
   }
 };
 
@@ -180,7 +180,7 @@ IN_PROC_BROWSER_TEST_F(NavigationHandleUserDataBrowserTest, VeryEarlyAttach) {
   web_contents_impl->GetController().LoadURLWithParams(
       NavigationController::LoadURLParams(url));
   auto* navigation =
-      web_contents_impl->GetFrameTree()->root()->navigation_request();
+      web_contents_impl->GetPrimaryFrameTree().root()->navigation_request();
   ASSERT_TRUE(navigation);
   navigation_id = navigation->GetNavigationId();
 

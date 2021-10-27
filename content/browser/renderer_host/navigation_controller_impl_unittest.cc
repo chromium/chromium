@@ -249,19 +249,20 @@ class NavigationControllerTest : public RenderViewHostImplTestHarness,
   }
 
   bool HasNavigationRequest() {
-    return contents()->GetFrameTree()->root()->navigation_request() != nullptr;
+    return contents()->GetPrimaryFrameTree().root()->navigation_request() !=
+           nullptr;
   }
 
   const GURL GetLastNavigationURL() {
     NavigationRequest* navigation_request =
-        contents()->GetFrameTree()->root()->navigation_request();
+        contents()->GetPrimaryFrameTree().root()->navigation_request();
     CHECK(navigation_request);
     return navigation_request->common_params().url;
   }
 
   blink::PreviewsState GetLastNavigationPreviewsState() {
     NavigationRequest* navigation_request =
-        contents()->GetFrameTree()->root()->navigation_request();
+        contents()->GetPrimaryFrameTree().root()->navigation_request();
     CHECK(navigation_request);
     return navigation_request->common_params().previews_state;
   }
@@ -272,7 +273,7 @@ class NavigationControllerTest : public RenderViewHostImplTestHarness,
                : contents()->GetMainFrame();
   }
 
-  FrameTreeNode* root_ftn() { return contents()->GetFrameTree()->root(); }
+  FrameTreeNode* root_ftn() { return contents()->GetPrimaryFrameTree().root(); }
 
  protected:
   GURL navigated_url_;
@@ -1893,8 +1894,12 @@ TEST_F(NavigationControllerTest, AutoSubframe) {
       blink::mojom::TreeScopeType::kDocument, std::string(), unique_name0,
       false, blink::LocalFrameToken(), base::UnguessableToken::Create(),
       blink::FramePolicy(), blink::mojom::FrameOwnerProperties(), kOwnerType);
-  TestRenderFrameHost* subframe = static_cast<TestRenderFrameHost*>(
-      contents()->GetFrameTree()->root()->child_at(0)->current_frame_host());
+  TestRenderFrameHost* subframe =
+      static_cast<TestRenderFrameHost*>(contents()
+                                            ->GetPrimaryFrameTree()
+                                            .root()
+                                            ->child_at(0)
+                                            ->current_frame_host());
   const GURL url2("http://foo/2");
   {
     // Navigating should do nothing.
@@ -1932,8 +1937,12 @@ TEST_F(NavigationControllerTest, AutoSubframe) {
       blink::mojom::TreeScopeType::kDocument, std::string(), unique_name1,
       false, blink::LocalFrameToken(), base::UnguessableToken::Create(),
       blink::FramePolicy(), blink::mojom::FrameOwnerProperties(), kOwnerType);
-  TestRenderFrameHost* subframe2 = static_cast<TestRenderFrameHost*>(
-      contents()->GetFrameTree()->root()->child_at(1)->current_frame_host());
+  TestRenderFrameHost* subframe2 =
+      static_cast<TestRenderFrameHost*>(contents()
+                                            ->GetPrimaryFrameTree()
+                                            .root()
+                                            ->child_at(1)
+                                            ->current_frame_host());
   const GURL url3("http://foo/3");
   {
     // Navigating should do nothing.
@@ -1973,8 +1982,8 @@ TEST_F(NavigationControllerTest, AutoSubframe) {
       blink::FramePolicy(), blink::mojom::FrameOwnerProperties(), kOwnerType);
   TestRenderFrameHost* subframe3 =
       static_cast<TestRenderFrameHost*>(contents()
-                                            ->GetFrameTree()
-                                            ->root()
+                                            ->GetPrimaryFrameTree()
+                                            .root()
                                             ->child_at(0)
                                             ->child_at(0)
                                             ->current_frame_host());
@@ -2029,7 +2038,8 @@ TEST_F(NavigationControllerTest, BackSubframe) {
       blink::LocalFrameToken(), base::UnguessableToken::Create(),
       blink::FramePolicy(), blink::mojom::FrameOwnerProperties(),
       blink::FrameOwnerElementType::kIframe);
-  FrameTreeNode* subframe = contents()->GetFrameTree()->root()->child_at(0);
+  FrameTreeNode* subframe =
+      contents()->GetPrimaryFrameTree().root()->child_at(0);
   TestRenderFrameHost* subframe_rfh =
       static_cast<TestRenderFrameHost*>(subframe->current_frame_host());
   const GURL subframe_url("http://foo1/subframe");
@@ -2656,7 +2666,7 @@ TEST_F(NavigationControllerTest, ShowRendererURLInNewTabUntilModified) {
 
   // If something else modifies the contents of the about:blank page, then
   // we must revert to showing about:blank to avoid a URL spoof.
-  main_test_rfh()->DidAccessInitialDocument();
+  main_test_rfh()->DidAccessInitialMainDocument();
   EXPECT_TRUE(contents()->HasAccessedInitialDocument());
   EXPECT_FALSE(controller.GetVisibleEntry());
   EXPECT_EQ(url, controller.GetPendingEntry()->GetURL());
@@ -2700,7 +2710,7 @@ TEST_F(NavigationControllerTest, ShowBrowserURLAfterFailUntilModified) {
 
   // If something else later modifies the contents of the about:blank page, then
   // we must revert to showing about:blank to avoid a URL spoof.
-  main_test_rfh()->DidAccessInitialDocument();
+  main_test_rfh()->DidAccessInitialMainDocument();
   EXPECT_TRUE(contents()->HasAccessedInitialDocument());
   EXPECT_FALSE(controller.GetVisibleEntry());
   EXPECT_FALSE(controller.GetPendingEntry());
@@ -2738,7 +2748,7 @@ TEST_F(NavigationControllerTest, ShowRendererURLAfterFailUntilModified) {
 
   // If something else later modifies the contents of the about:blank page, then
   // we must revert to showing about:blank to avoid a URL spoof.
-  main_test_rfh()->DidAccessInitialDocument();
+  main_test_rfh()->DidAccessInitialMainDocument();
   EXPECT_TRUE(contents()->HasAccessedInitialDocument());
   EXPECT_FALSE(controller.GetVisibleEntry());
   EXPECT_EQ(url, controller.GetPendingEntry()->GetURL());
@@ -2778,7 +2788,7 @@ TEST_F(NavigationControllerTest, ShowRendererURLAfterCancelUntilModified) {
   // we must revert to showing about:blank to avoid a URL spoof.
   // Pending entry should also be discarded, because renderer doesn't want to
   // show this page anymore.
-  main_test_rfh()->DidAccessInitialDocument();
+  main_test_rfh()->DidAccessInitialMainDocument();
   EXPECT_TRUE(contents()->HasAccessedInitialDocument());
   EXPECT_FALSE(controller.GetVisibleEntry());
   EXPECT_FALSE(controller.GetPendingEntry());
@@ -2856,8 +2866,12 @@ TEST_F(NavigationControllerTest, SameSubframe) {
       blink::LocalFrameToken(), base::UnguessableToken::Create(),
       blink::FramePolicy(), blink::mojom::FrameOwnerProperties(),
       blink::FrameOwnerElementType::kIframe);
-  TestRenderFrameHost* subframe = static_cast<TestRenderFrameHost*>(
-      contents()->GetFrameTree()->root()->child_at(0)->current_frame_host());
+  TestRenderFrameHost* subframe =
+      static_cast<TestRenderFrameHost*>(contents()
+                                            ->GetPrimaryFrameTree()
+                                            .root()
+                                            ->child_at(0)
+                                            ->current_frame_host());
   const GURL subframe_url("http://www.google.com/#");
   NavigationSimulator::NavigateAndCommitFromDocument(subframe_url, subframe);
 
@@ -3008,8 +3022,12 @@ TEST_F(NavigationControllerTest, SubframeWhilePending) {
       blink::LocalFrameToken(), base::UnguessableToken::Create(),
       blink::FramePolicy(), blink::mojom::FrameOwnerProperties(),
       blink::FrameOwnerElementType::kIframe);
-  TestRenderFrameHost* subframe = static_cast<TestRenderFrameHost*>(
-      contents()->GetFrameTree()->root()->child_at(0)->current_frame_host());
+  TestRenderFrameHost* subframe =
+      static_cast<TestRenderFrameHost*>(contents()
+                                            ->GetPrimaryFrameTree()
+                                            .root()
+                                            ->child_at(0)
+                                            ->current_frame_host());
   const GURL url1_sub("http://foo/subframe");
 
   auto subframe_navigation =
@@ -4186,8 +4204,12 @@ TEST_F(NavigationControllerTest, SubFrameNavigationUIData) {
       blink::LocalFrameToken(), base::UnguessableToken::Create(),
       blink::FramePolicy(), blink::mojom::FrameOwnerProperties(),
       blink::FrameOwnerElementType::kIframe);
-  TestRenderFrameHost* subframe = static_cast<TestRenderFrameHost*>(
-      contents()->GetFrameTree()->root()->child_at(0)->current_frame_host());
+  TestRenderFrameHost* subframe =
+      static_cast<TestRenderFrameHost*>(contents()
+                                            ->GetPrimaryFrameTree()
+                                            .root()
+                                            ->child_at(0)
+                                            ->current_frame_host());
   const GURL subframe_url("http://foo1/subframe");
 
   LoadCommittedDetailsObserver observer(contents());
@@ -4265,7 +4287,7 @@ TEST_F(NavigationControllerTest,
       static_cast<TestWebContents*>(other_contents.get());
   NavigationControllerImpl& other_controller =
       other_contents_impl->GetController();
-  FrameTreeNode* node = other_contents_impl->GetFrameTree()->root();
+  FrameTreeNode* node = other_contents_impl->GetPrimaryFrameTree().root();
   RenderFrameHostImpl* frame = node->current_frame_host();
 
   // The newly created contents has no entries.

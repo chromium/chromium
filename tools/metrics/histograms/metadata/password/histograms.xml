@@ -1094,7 +1094,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.CleanedUpPasswords" units="units"
-    expires_after="2021-12-05">
+    expires_after="2022-12-05">
   <owner>vasilii@chromium.org</owner>
   <owner>src/components/password_manager/OWNERS</owner>
   <summary>
@@ -2147,6 +2147,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Real-time duration of the asynchronous call to get all logins from the
     PasswordStore backend.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.PasswordStoreAndroidBackend.ErrorCode"
+    enum="PasswordStoreAndroidBackendError" expires_after="2022-06-30">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    This metric reports the error observed when retrieving/adding/updating or
+    removing logins from the PasswordStore Android backend. Recorded when the
+    asynchronous job has returned.
   </summary>
 </histogram>
 

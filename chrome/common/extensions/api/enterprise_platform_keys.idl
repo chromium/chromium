@@ -45,7 +45,7 @@ namespace enterprise.platformKeys {
     // <code>window.crypto.subtle</code>. Equally, <code>Key</code> objects
     // created with <code>window.crypto.subtle</code> cannot be used with this
     // interface.</p>
-    [nodoc, instanceOf = SubtleCrypto] object softwareBackedSubtleCrypto;
+    [instanceOf = SubtleCrypto] object softwareBackedSubtleCrypto;
   };
 
   // Invoked by <code>getTokens</code> with the list of available Tokens.

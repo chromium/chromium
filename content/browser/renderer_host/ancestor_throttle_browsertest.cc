@@ -65,8 +65,8 @@ IN_PROC_BROWSER_TEST_F(AncestorThrottleTest, FailedCSP) {
   // Check that we have an opaque origin, since the frame was blocked.
   // TODO(lfg): We can't check last_navigation_succeded because of
   // https://crbug.com/1000804.
-  EXPECT_TRUE(web_contents->GetFrameTree()
-                  ->root()
+  EXPECT_TRUE(web_contents->GetPrimaryFrameTree()
+                  .root()
                   ->child_at(0)
                   ->current_frame_host()
                   ->GetLastCommittedOrigin()
@@ -92,8 +92,8 @@ IN_PROC_BROWSER_TEST_F(AncestorThrottleTest, XFOAndCSPFrameAncestors) {
   // Check that we do not have an opaque origin, since the frame was allowed.
   // TODO(lfg): We can't check last_navigation_succeded because of
   // https://crbug.com/1000804.
-  EXPECT_FALSE(web_contents->GetFrameTree()
-                   ->root()
+  EXPECT_FALSE(web_contents->GetPrimaryFrameTree()
+                   .root()
                    ->child_at(0)
                    ->current_frame_host()
                    ->GetLastCommittedOrigin()
@@ -117,8 +117,8 @@ IN_PROC_BROWSER_TEST_F(AncestorThrottleTest, RedirectCommitsIfNoCSP) {
   // loaded.
   // TODO(lfg): We can't check last_navigation_succeded because of
   // https://crbug.com/1000804.
-  EXPECT_FALSE(web_contents->GetFrameTree()
-                   ->root()
+  EXPECT_FALSE(web_contents->GetPrimaryFrameTree()
+                   .root()
                    ->child_at(0)
                    ->current_frame_host()
                    ->GetLastCommittedOrigin()
@@ -141,8 +141,8 @@ IN_PROC_BROWSER_TEST_F(AncestorThrottleTest, RedirectFails) {
   // Check that we have an opaque origin, since the frame was blocked.
   // TODO(lfg): We can't check last_navigation_succeded because of
   // https://crbug.com/1000804.
-  EXPECT_TRUE(web_contents->GetFrameTree()
-                  ->root()
+  EXPECT_TRUE(web_contents->GetPrimaryFrameTree()
+                  .root()
                   ->child_at(0)
                   ->current_frame_host()
                   ->GetLastCommittedOrigin()
@@ -191,8 +191,8 @@ IN_PROC_BROWSER_TEST_F(AncestorThrottleTest, FrameAncestorsFileURLs) {
     // Check that we have an opaque origin, since the frame was blocked.
     // TODO(lfg): We can't check last_navigation_succeded because of
     // https://crbug.com/1000804.
-    bool is_opaque = web_contents->GetFrameTree()
-                         ->root()
+    bool is_opaque = web_contents->GetPrimaryFrameTree()
+                         .root()
                          ->child_at(0)
                          ->current_frame_host()
                          ->GetLastCommittedOrigin()
@@ -248,7 +248,7 @@ IN_PROC_BROWSER_TEST_F(AncestorThrottleSXGTest, SXGWithCSP) {
 
   GURL url = embedded_test_server()->GetURL("/sxg/test.example.org_csp.sxg");
   FrameTreeNode* iframe_node =
-      web_contents->GetFrameTree()->root()->child_at(0);
+      web_contents->GetPrimaryFrameTree().root()->child_at(0);
   NavigateFrameToURL(iframe_node, url);
   EXPECT_TRUE(
       iframe_node->current_frame_host()->GetLastCommittedOrigin().opaque());

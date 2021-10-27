@@ -41,6 +41,8 @@
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "extensions/browser/api/file_handlers/mime_util.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
+#include "ui/gfx/image/image_skia_operations.h"
 
 using vm_tools::apps::App;
 
@@ -712,8 +714,26 @@ void GuestOsRegistryService::LoadIcon(
     int fallback_icon_resource_id,
     apps::mojom::Publisher::LoadIconCallback callback) {
   if (icon_key) {
+    // Add container-badging to all apps except the terminal, which is shared
+    // between containers. This is part of the multi-container UI, so is guarded
+    // by a flag.
+    if (app_id != crostini::kCrostiniTerminalSystemAppId &&
+        crostini::CrostiniFeatures::Get()->IsMultiContainerAllowed(profile_)) {
+      auto reg = GetRegistration(app_id);
+      if (reg) {
+        callback = base::BindOnce(
+            &GuestOsRegistryService::ApplyContainerBadge,
+            weak_ptr_factory_.GetWeakPtr(),
+            crostini::GetContainerBadgeColor(
+                profile_,
+                crostini::ContainerId(reg->VmName(), reg->ContainerName())),
+            std::move(callback));
+      }
+    }
+
     apps::IconType icon_type =
         apps::ConvertMojomIconTypeToIconType(mojom_icon_type);
+
     if (icon_key->resource_id != apps::mojom::IconKey::kInvalidResourceId) {
       // The icon is a resource built into the Chrome OS binary.
       constexpr bool is_placeholder_icon = false;
@@ -747,6 +767,27 @@ void GuestOsRegistryService::LoadIcon(
 
   // On failure, we still run the callback, with the zero IconValue.
   std::move(callback).Run(apps::mojom::IconValue::New());
+}
+
+void GuestOsRegistryService::ApplyContainerBadge(
+    SkColor badge_color,
+    apps::mojom::Publisher::LoadIconCallback callback,
+    apps::mojom::IconValuePtr icon) {
+  gfx::ImageSkia badge_mask =
+      *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+          IDR_ICON_BADGE_MASK);
+
+  if (badge_mask.size() != icon->uncompressed.size()) {
+    badge_mask = gfx::ImageSkiaOperations::CreateResizedImage(
+        badge_mask, skia::ImageOperations::RESIZE_BEST,
+        icon->uncompressed.size());
+  }
+  badge_mask =
+      gfx::ImageSkiaOperations::CreateColorMask(badge_mask, badge_color);
+  icon->uncompressed = gfx::ImageSkiaOperations::CreateSuperimposedImage(
+      icon->uncompressed, badge_mask);
+
+  std::move(callback).Run(std::move(icon));
 }
 
 void GuestOsRegistryService::LoadIconFromVM(
@@ -966,6 +1007,25 @@ void GuestOsRegistryService::UpdateApplicationList(
   for (Observer& obs : observers_) {
     obs.OnRegistryUpdated(this, app_list.vm_type(), updated_apps, removed_apps,
                           inserted_apps);
+  }
+}
+
+void GuestOsRegistryService::ContainerBadgeColorChanged(
+    const crostini::ContainerId& container_id) {
+  std::vector<std::string> updated_apps;
+
+  for (const auto& it : GetAllRegisteredApps()) {
+    if (it.second.VmName() == container_id.vm_name &&
+        it.second.ContainerName() == container_id.container_name) {
+      updated_apps.push_back(it.first);
+    }
+  }
+
+  std::vector<std::string> removed_apps;
+  std::vector<std::string> inserted_apps;
+  for (Observer& obs : observers_) {
+    obs.OnRegistryUpdated(this, VmType::ApplicationList_VmType_TERMINA,
+                          updated_apps, removed_apps, inserted_apps);
   }
 }
 

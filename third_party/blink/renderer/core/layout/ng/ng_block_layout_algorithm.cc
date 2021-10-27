@@ -770,9 +770,9 @@ scoped_refptr<const NGLayoutResult> NGBlockLayoutAlgorithm::FinishLayout(
   // <div contenteditable></div>, <input type="button" value="">
   if (container_builder_.HasSeenAllChildren() &&
       HasLineEvenIfEmpty(Node().GetLayoutBox())) {
-    intrinsic_block_size_ =
-        std::max(intrinsic_block_size_, BorderScrollbarPadding().block_start +
-                                            Node().EmptyLineBlockSize());
+    intrinsic_block_size_ = std::max(
+        intrinsic_block_size_, BorderScrollbarPadding().block_start +
+                                   Node().EmptyLineBlockSize(BreakToken()));
     if (container_builder_.IsInitialColumnBalancingPass()) {
       container_builder_.PropagateTallestUnbreakableBlockSize(
           intrinsic_block_size_);

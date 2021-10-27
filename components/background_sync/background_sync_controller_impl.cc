@@ -66,11 +66,12 @@ BackgroundSyncControllerImpl::~BackgroundSyncControllerImpl() = default;
 void BackgroundSyncControllerImpl::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type) {
+    ContentSettingsTypeSet content_type_set) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (content_type != ContentSettingsType::BACKGROUND_SYNC &&
-      content_type != ContentSettingsType::PERIODIC_BACKGROUND_SYNC) {
+  if (!content_type_set.Contains(ContentSettingsType::BACKGROUND_SYNC) &&
+      !content_type_set.Contains(
+          ContentSettingsType::PERIODIC_BACKGROUND_SYNC)) {
     return;
   }
 

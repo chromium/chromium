@@ -163,4 +163,9 @@ static_assert(sizeof(void*) != 8, "");
 #define PA_HAS_ALLOCATION_GUARD
 #endif
 
+// Defined on platforms where the total amount of committed memory is limited.
+#if defined(OS_WIN)
+#define PA_COMMIT_CHARGE_IS_LIMITED
+#endif
+
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_CONFIG_H_

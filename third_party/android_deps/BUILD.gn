@@ -1435,6 +1435,17 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  java_prebuilt("org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm_java") {
+    jar_path = "libs/org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm/kotlinx-coroutines-core-jvm-1.5.0.jar"
+    output_name = "org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm"
+    supports_android = true
+    deps = [
+      ":org_jetbrains_kotlin_kotlin_stdlib_common_java",
+      ":org_jetbrains_kotlin_kotlin_stdlib_jdk8_java",
+    ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_robolectric_robolectric_java") {
     jar_path = "libs/org_robolectric_robolectric/robolectric-4.3.1.jar"
     output_name = "org_robolectric_robolectric"
@@ -2563,24 +2574,6 @@ if (!limit_android_deps) {
     deps = [
       ":org_jetbrains_kotlin_kotlin_stdlib_java",
       ":org_jetbrains_kotlin_kotlin_stdlib_jdk7_java",
-    ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  java_prebuilt("org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm_java") {
-    jar_path = "libs/org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm/kotlinx-coroutines-core-jvm-1.5.0.jar"
-    output_name = "org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm"
-    supports_android = true
-
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-    deps = [
-      ":org_jetbrains_kotlin_kotlin_stdlib_common_java",
-      ":org_jetbrains_kotlin_kotlin_stdlib_jdk8_java",
     ]
   }
 

@@ -67,6 +67,7 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
   void ChromeDestroyed() override;
   void SetWindowRect(const IntRect&, LocalFrame&) override;
   IntRect RootWindowRect(LocalFrame&) override;
+  void DidAccessInitialMainDocument() override;
   void FocusPage() override;
   void DidFocusPage() override;
   bool CanTakeFocus(mojom::blink::FocusType) override;

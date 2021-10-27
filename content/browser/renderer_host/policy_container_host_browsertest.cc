@@ -110,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest, CopiedFromPopupOpener) {
     WebContentsImpl* popup_webcontents = static_cast<WebContentsImpl*>(
         shell_observer.GetShell()->web_contents());
     RenderFrameHostImpl* popup_frame =
-        popup_webcontents->GetFrameTree()->root()->current_frame_host();
+        popup_webcontents->GetPrimaryFrameTree().root()->current_frame_host();
     EXPECT_EQ(network::mojom::ReferrerPolicy::kOrigin,
               popup_frame->policy_container_host()->referrer_policy());
     EXPECT_EQ(*main_document_policies,
@@ -130,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest, CopiedFromPopupOpener) {
         shell_observer.GetShell()->web_contents());
     WaitForLoadStop(popup_webcontents);
     RenderFrameHostImpl* popup_frame =
-        popup_webcontents->GetFrameTree()->root()->current_frame_host();
+        popup_webcontents->GetPrimaryFrameTree().root()->current_frame_host();
     EXPECT_EQ(network::mojom::ReferrerPolicy::kNever,
               popup_frame->policy_container_host()->referrer_policy());
     EXPECT_EQ(0u, popup_frame->policy_container_host()
@@ -447,7 +447,7 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest, HistoryForChildFrame) {
           "/set-header?Referrer-Policy: strict-origin-when-cross-origin"));
 
   GURL main_url(embedded_test_server()->GetURL("/page_with_blank_iframe.html"));
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   ASSERT_TRUE(NavigateToURL(shell(), main_url));
 
   ASSERT_EQ(1U, root->child_count());
@@ -581,7 +581,7 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest, HistoryForChildFrame) {
   controller.GoBack();
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
-  child = web_contents()->GetFrameTree()->root()->child_at(0);
+  child = web_contents()->GetPrimaryFrameTree().root()->child_at(0);
   ASSERT_NE(nullptr, child);
 
   // The correct referrer policy should be restored from history.
@@ -647,7 +647,7 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest,
                        "frame.name = 'test_iframe';"
                        "document.body.appendChild(frame);"));
 
-    FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+    FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
     ASSERT_EQ(1U, root->child_count());
     FrameTreeNode* child = root->child_at(0);
     ASSERT_NE(nullptr, child);
@@ -670,7 +670,7 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest,
     WebContentsImpl* popup_webcontents = static_cast<WebContentsImpl*>(
         shell_observer.GetShell()->web_contents());
     RenderFrameHostImpl* popup_frame =
-        popup_webcontents->GetFrameTree()->root()->current_frame_host();
+        popup_webcontents->GetPrimaryFrameTree().root()->current_frame_host();
 
     // The popup inherits from the creator.
     EXPECT_EQ(*policies_a, popup_frame->policy_container_host()->policies());
@@ -694,7 +694,7 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest,
       "/set-header?Referrer-Policy: unsafe-url"));
   ASSERT_TRUE(NavigateToURL(shell(), always_referrer_url));
 
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
 
   // Create child frame
   ASSERT_TRUE(ExecJs(current_frame_host(), R"(
@@ -910,7 +910,7 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest, FailedNavigation) {
       popup_webcontents->GetController().GetLastCommittedEntry();
   EXPECT_EQ(PAGE_TYPE_ERROR, entry->GetPageType());
   RenderFrameHostImpl* popup_frame =
-      popup_webcontents->GetFrameTree()->root()->current_frame_host();
+      popup_webcontents->GetPrimaryFrameTree().root()->current_frame_host();
   EXPECT_EQ(network::mojom::ReferrerPolicy::kDefault,
             popup_frame->policy_container_host()->referrer_policy());
 }

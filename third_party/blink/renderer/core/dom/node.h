@@ -328,6 +328,9 @@ class CORE_EXPORT Node : public EventTarget {
   DISABLE_CFI_PERF bool IsFirstLetterPseudoElement() const {
     return GetPseudoId() == kPseudoIdFirstLetter;
   }
+  DISABLE_CFI_PERF bool IsBackdropPseudoElement() const {
+    return GetPseudoId() == kPseudoIdBackdrop;
+  }
   virtual PseudoId GetPseudoId() const { return kPseudoIdNone; }
 
   CustomElementState GetCustomElementState() const {

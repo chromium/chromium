@@ -309,10 +309,10 @@ TEST_F(PrerenderHostTest, ActivationAfterPageStateUpdate) {
   EXPECT_EQ(web_contents->GetMainFrame(), prerender_rfh);
   NavigationEntryImpl* activated_nav_entry =
       web_contents->GetController().GetLastCommittedEntry();
-  EXPECT_EQ(
-      page_state,
-      activated_nav_entry->GetFrameEntry(web_contents->GetFrameTree()->root())
-          ->page_state());
+  EXPECT_EQ(page_state,
+            activated_nav_entry
+                ->GetFrameEntry(web_contents->GetPrimaryFrameTree().root())
+                ->page_state());
 }
 
 // Test that WebContentsObserver::LoadProgressChanged is not invoked when the

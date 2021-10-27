@@ -215,8 +215,8 @@ RenderViewHostTestHarness::CreateTestWebContents() {
 }
 void RenderViewHostTestHarness::FocusWebContentsOnMainFrame() {
   TestWebContents* contents = static_cast<TestWebContents*>(web_contents());
-  auto* root = contents->GetFrameTree()->root();
-  contents->GetFrameTree()->SetFocusedFrame(
+  auto* root = contents->GetPrimaryFrameTree().root();
+  contents->GetPrimaryFrameTree().SetFocusedFrame(
       root, root->current_frame_host()->GetSiteInstance());
 }
 

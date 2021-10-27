@@ -1075,6 +1075,14 @@ bool NGBlockNode::CanUseNewLayout() const {
   return CanUseNewLayout(*box_);
 }
 
+LayoutUnit NGBlockNode::EmptyLineBlockSize(
+    const NGBlockBreakToken* incoming_break_token) const {
+  // Only return a line-height for the first fragment.
+  if (IsResumingLayout(incoming_break_token))
+    return LayoutUnit();
+  return box_->LogicalHeightForEmptyLine();
+}
+
 String NGBlockNode::ToString() const {
   return String::Format("NGBlockNode: '%s'",
                         GetLayoutBox()->DebugName().Ascii().c_str());
