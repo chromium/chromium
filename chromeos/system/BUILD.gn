@@ -67,3 +67,12 @@ source_set("unit_tests") {
     ]
   }
 }
+
+if (is_chromeos_ash) {
+  import("//testing/libfuzzer/fuzzer_test.gni")
+
+  fuzzer_test("name_value_pairs_parser_fuzzer") {
+    sources = [ "name_value_pairs_parser_fuzzer.cc" ]
+    deps = [ ":system" ]
+  }
+}

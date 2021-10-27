@@ -51,6 +51,8 @@ class COMPONENT_EXPORT(CHROMEOS_SYSTEM) NameValuePairsParser {
   FRIEND_TEST_ALL_PREFIXES(NameValuePairsParser,
                            TestParseNameValuePairsWithComments);
 
+  friend class NameValuePairsParserFuzzer;
+
   void AddNameValuePair(const std::string& key, const std::string& value);
 
   // These will parse strings with output in the format:
