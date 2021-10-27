@@ -28,7 +28,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/link.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -61,55 +61,51 @@ void ShowFirstRunDialog(Profile* profile) {
 }
 
 void ShowFirstRunDialogViews(Profile* profile) {
-  FirstRunDialog::Show(profile);
+  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+  FirstRunDialog::Show(
+      base::BindRepeating(&platform_util::OpenExternal,
+                          base::Unretained(profile),
+                          GURL(chrome::kLearnMoreReportingURL)),
+      run_loop.QuitClosure());
+  run_loop.Run();
 }
 
 }  // namespace first_run
 
 // static
-void FirstRunDialog::Show(Profile* profile) {
-  FirstRunDialog* dialog = new FirstRunDialog(profile);
+void FirstRunDialog::Show(base::RepeatingClosure learn_more_callback,
+                          base::RepeatingClosure quit_runloop) {
+  FirstRunDialog* dialog = new FirstRunDialog(std::move(learn_more_callback),
+                                              std::move(quit_runloop));
   views::DialogDelegate::CreateDialogWidget(dialog, NULL, NULL)->Show();
-
-  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-  dialog->quit_runloop_ = run_loop.QuitClosure();
-  run_loop.Run();
 }
 
-FirstRunDialog::FirstRunDialog(Profile* profile) {
+FirstRunDialog::FirstRunDialog(base::RepeatingClosure learn_more_callback,
+                               base::RepeatingClosure quit_runloop)
+    : quit_runloop_(quit_runloop) {
   SetTitle(l10n_util::GetStringUTF16(IDS_FIRST_RUN_DIALOG_WINDOW_TITLE));
   SetButtons(ui::DIALOG_BUTTON_OK);
   SetExtraView(
       std::make_unique<views::Link>(l10n_util::GetStringUTF16(IDS_LEARN_MORE)))
-      ->SetCallback(base::BindRepeating(&platform_util::OpenExternal,
-                                        base::Unretained(profile),
-                                        GURL(chrome::kLearnMoreReportingURL)));
+      ->SetCallback(std::move(learn_more_callback));
 
-  set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
-      views::DialogContentType::kText, views::DialogContentType::kText));
-  views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical,
+      ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
+          views::DialogContentType::kControl,
+          views::DialogContentType::kControl),
+      ChromeLayoutProvider::Get()->GetDistanceMetric(
+          views::DISTANCE_RELATED_CONTROL_VERTICAL)));
 
-  views::ColumnSet* column_set = layout->AddColumnSet(0);
-  column_set->AddColumn(views::GridLayout::FILL, views::GridLayout::CENTER,
-                        views::GridLayout::kFixedSize,
-                        views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
+  make_default_ = AddChildView(std::make_unique<views::Checkbox>(
+      l10n_util::GetStringUTF16(IDS_FR_CUSTOMIZE_DEFAULT_BROWSER)));
+  make_default_->SetChecked(true);
 
-  layout->StartRow(views::GridLayout::kFixedSize, 0);
-  auto make_default = std::make_unique<views::Checkbox>(
-      l10n_util::GetStringUTF16(IDS_FR_CUSTOMIZE_DEFAULT_BROWSER));
-  make_default->SetChecked(true);
-  make_default_ = layout->AddView(std::move(make_default));
-
-  layout->StartRowWithPadding(views::GridLayout::kFixedSize, 0,
-                              views::GridLayout::kFixedSize,
-                              ChromeLayoutProvider::Get()->GetDistanceMetric(
-                                  views::DISTANCE_RELATED_CONTROL_VERTICAL));
-  auto report_crashes = std::make_unique<views::Checkbox>(
-      l10n_util::GetStringUTF16(IDS_FR_ENABLE_LOGGING));
+  report_crashes_ = AddChildView(std::make_unique<views::Checkbox>(
+      l10n_util::GetStringUTF16(IDS_FR_ENABLE_LOGGING)));
   // Having this box checked means the user has to opt-out of metrics recording.
-  report_crashes->SetChecked(!first_run::IsMetricsReportingOptIn());
-  report_crashes_ = layout->AddView(std::move(report_crashes));
+  report_crashes_->SetChecked(!first_run::IsMetricsReportingOptIn());
+
   chrome::RecordDialogCreation(chrome::DialogIdentifier::FIRST_RUN_DIALOG);
 }
 

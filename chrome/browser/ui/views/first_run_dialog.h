@@ -10,8 +10,6 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
-class Profile;
-
 namespace views {
 class Checkbox;
 }
@@ -24,10 +22,12 @@ class FirstRunDialog : public views::DialogDelegateView {
   FirstRunDialog& operator=(const FirstRunDialog&) = delete;
 
   // Displays the first run UI for reporting opt-in, import data etc.
-  static void Show(Profile* profile);
+  static void Show(base::RepeatingClosure learn_more_callback,
+                   base::RepeatingClosure quit_runloop);
 
  private:
-  explicit FirstRunDialog(Profile* profile);
+  FirstRunDialog(base::RepeatingClosure learn_more_callback,
+                 base::RepeatingClosure quit_runloop);
   ~FirstRunDialog() override;
 
   // This terminates the nested message-loop.
