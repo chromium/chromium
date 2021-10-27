@@ -23,9 +23,9 @@ class ReactionLayout extends RelativeLayout {
     private final int mReactionPadding;
     private final Context mContext;
 
+    private ChromeImageButton mAdjustButton;
     private ChromeImageButton mCopyButton;
     private ChromeImageButton mDeleteButton;
-    private ChromeImageButton mAdjustButton;
     private Drawable mDrawable;
     private ImageView mReaction;
     private SceneEditorDelegate mSceneEditorDelegate;
@@ -53,9 +53,9 @@ class ReactionLayout extends RelativeLayout {
     public void onFinishInflate() {
         super.onFinishInflate();
         mReaction = findViewById(R.id.reaction_view);
+        setUpAdjustButton();
         setUpCopyButton();
         setUpDeleteButton();
-        mAdjustButton = findViewById(R.id.adjust_button);
     }
 
     void setActive(boolean isActive) {
@@ -113,6 +113,63 @@ class ReactionLayout extends RelativeLayout {
                         layoutParams.leftMargin = (int) (motionEvent.getRawX() - mBaseX);
                         layoutParams.topMargin = (int) (motionEvent.getRawY() - mBaseY);
                         ReactionLayout.this.setLayoutParams(layoutParams);
+                        break;
+                }
+                return true;
+            }
+        });
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private void setUpAdjustButton() {
+        mAdjustButton = findViewById(R.id.adjust_button);
+        mAdjustButton.setOnTouchListener(new OnTouchListener() {
+            private float mBaseAngle;
+            private float mBaseX;
+            private float mBaseY;
+            private int mBaseWidth;
+            private int mBaseHeight;
+            private double mCenterX;
+            private double mCenterY;
+            private double mInitialDistFromCenter;
+
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                if (!mIsActive) {
+                    return true;
+                }
+                RelativeLayout.LayoutParams layoutParams =
+                        (RelativeLayout.LayoutParams) ReactionLayout.this.getLayoutParams();
+                float x = motionEvent.getRawX();
+                float y = motionEvent.getRawY();
+                switch (motionEvent.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        mBaseAngle = ReactionLayout.this.getRotation();
+                        mBaseX = x;
+                        mBaseY = y;
+                        mBaseWidth = layoutParams.width;
+                        mBaseHeight = layoutParams.height;
+                        mCenterX = layoutParams.leftMargin + mBaseWidth / 2.0;
+                        mCenterY = layoutParams.topMargin + mBaseHeight / 2.0;
+                        mInitialDistFromCenter = Math.hypot(mCenterX - mBaseX, mCenterY - mBaseY);
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        // Resize calculations
+                        double currentDistFromCenter = Math.hypot(mCenterX - x, mCenterY - y);
+                        double distRatio = currentDistFromCenter / mInitialDistFromCenter;
+                        layoutParams.width = (int) (distRatio * mBaseWidth);
+                        layoutParams.height = (int) (distRatio * mBaseHeight);
+                        layoutParams.leftMargin = (int) (mCenterX - layoutParams.width / 2.0);
+                        layoutParams.topMargin = (int) (mCenterY - layoutParams.height / 2.0);
+                        ReactionLayout.this.setLayoutParams(layoutParams);
+
+                        // Rotation calculations
+                        double newAngle = (Math.toDegrees(Math.atan2(mCenterY - y, mCenterX - x))
+                                                  - Math.toDegrees(Math.atan2(
+                                                          mCenterY - mBaseY, mCenterX - mBaseX))
+                                                  + mBaseAngle + 360.0)
+                                % 360.0;
+                        ReactionLayout.this.setRotation((float) newAngle);
                         break;
                 }
                 return true;
