@@ -59,16 +59,15 @@ cast_streaming::ReceiverSession::AVConstraints CreateConstraints(
     const PlatformInfoSerializer& deserializer) {
   cast_streaming::ReceiverSession::AVConstraints constraints;
 
-  const auto width = deserializer.MaxWidth();
-  const auto height = deserializer.MaxHeight();
-  const auto frame_rate = deserializer.MaxFrameRate();
-  if (width && width.value() && height && height.value() && frame_rate &&
-      frame_rate.value()) {
+  const absl::optional<int> width = deserializer.MaxWidth();
+  const absl::optional<int> height = deserializer.MaxHeight();
+  const absl::optional<int> frame_rate = deserializer.MaxFrameRate();
+  if (width && *width && height && *height && frame_rate && *frame_rate) {
     auto display_description =
         std::make_unique<openscreen::cast::ReceiverSession::Display>();
-    display_description->dimensions.width = width.value();
-    display_description->dimensions.height = height.value();
-    display_description->dimensions.frame_rate = frame_rate.value();
+    display_description->dimensions.width = *width;
+    display_description->dimensions.height = *height;
+    display_description->dimensions.frame_rate = *frame_rate;
     constraints.display_description = std::move(display_description);
   } else {
     LOG(WARNING) << "Some Display properties missing. Using default values for "
@@ -77,7 +76,7 @@ cast_streaming::ReceiverSession::AVConstraints CreateConstraints(
 #if DCHECK_IS_ON()
     if (!height) {
       LOG(INFO) << "MaxHeight value not present in received AV Settings.";
-    } else if (!height.value()) {
+    } else if (!*height) {
       LOG(WARNING) << "Invalid MaxHeight of 0 parsed from AV Settings.";
     } else if (height) {
       LOG(WARNING)
@@ -86,7 +85,7 @@ cast_streaming::ReceiverSession::AVConstraints CreateConstraints(
 
     if (!width) {
       LOG(INFO) << "MaxWidth value not present in received AV Settings.";
-    } else if (!width.value()) {
+    } else if (!*width) {
       LOG(WARNING) << "Invalid MaxWidth of 0 parsed from AV Settings.";
     } else if (width) {
       LOG(WARNING)
@@ -95,7 +94,7 @@ cast_streaming::ReceiverSession::AVConstraints CreateConstraints(
 
     if (!frame_rate) {
       LOG(INFO) << "MaxFrameRate value not present in received AV Settings.";
-    } else if (!frame_rate.value()) {
+    } else if (!*frame_rate) {
       LOG(WARNING) << "Invalid MaxFrameRate of 0 parsed from AV Settings.";
     } else if (frame_rate) {
       LOG(WARNING)
@@ -107,10 +106,10 @@ cast_streaming::ReceiverSession::AVConstraints CreateConstraints(
   auto audio_codec_infos = deserializer.SupportedAudioCodecs();
   std::vector<openscreen::cast::AudioCodec> audio_codecs;
   std::vector<openscreen::cast::ReceiverSession::AudioLimits> audio_limits;
-  if (!audio_codec_infos || !audio_codec_infos.value().size()) {
+  if (!audio_codec_infos || (*audio_codec_infos).empty()) {
     DLOG(WARNING) << "No AudioCodecInfos in received AV Settings.";
   } else {
-    for (auto& info : audio_codec_infos.value()) {
+    for (auto& info : *audio_codec_infos) {
       const auto converted_codec = ToOpenscreenCodec(info.codec);
       if (converted_codec == openscreen::cast::AudioCodec::kNotSpecified) {
         continue;
@@ -147,19 +146,19 @@ cast_streaming::ReceiverSession::AVConstraints CreateConstraints(
     constraints.audio_limits = std::move(audio_limits);
   } else {
     auto max_channels = deserializer.MaxChannels();
-    if (max_channels) {
+    if (max_channels && *max_channels) {
       constraints.audio_limits.emplace_back();
       constraints.audio_limits.back().applies_to_all_codecs = true;
-      constraints.audio_limits.back().max_channels = max_channels.value();
+      constraints.audio_limits.back().max_channels = *max_channels;
     }
   }
 
   auto video_codec_infos = deserializer.SupportedVideoCodecs();
-  if (!video_codec_infos || !video_codec_infos.value().size()) {
+  if (!video_codec_infos || (*video_codec_infos).empty()) {
     DLOG(WARNING) << "No VideoCodecInfos in received AV Settings.";
   } else {
     std::vector<openscreen::cast::VideoCodec> video_codecs;
-    for (auto& info : video_codec_infos.value()) {
+    for (auto& info : *video_codec_infos) {
       const auto converted_codec = ToOpenscreenCodec(info.codec);
       if (converted_codec != openscreen::cast::VideoCodec::kNotSpecified &&
           std::find(video_codecs.begin(), video_codecs.end(),
@@ -299,7 +298,7 @@ bool StreamingReceiverSessionClient::TryStartStreamingSession() {
   DCHECK(av_constraints_);
   DCHECK(receiver_session_factory_);
   receiver_session_ =
-      std::move(receiver_session_factory_).Run(av_constraints_.value());
+      std::move(receiver_session_factory_).Run(*av_constraints_);
   DCHECK(receiver_session_);
   receiver_session_->SetCastStreamingReceiver(
       std::move(cast_streaming_receiver_));
@@ -331,14 +330,14 @@ bool StreamingReceiverSessionClient::OnMessage(
   }
 
   absl::optional<PlatformInfoSerializer> deserializer =
-      PlatformInfoSerializer::TryParse(message);
+      PlatformInfoSerializer::Deserialize(message);
   if (!deserializer) {
     LOG(ERROR) << "AV Settings with invalid JSON received: " << message;
     TriggerError();
     return false;
   }
 
-  auto constraints = CreateConstraints(deserializer.value());
+  auto constraints = CreateConstraints(*deserializer);
   streaming_state_ |= LaunchState::kAVSettingsReceived;
   if (!has_streaming_launched()) {
     av_constraints_ = std::move(constraints);
@@ -347,7 +346,7 @@ bool StreamingReceiverSessionClient::OnMessage(
   }
 
   DCHECK(av_constraints_);
-  if (!constraints.IsSupersetOf(av_constraints_.value())) {
+  if (!constraints.IsSupersetOf(*av_constraints_)) {
     LOG(WARNING) << "Device no longer supports capabilities used for "
                  << "cast streaming session negotiation: " << message;
     TriggerError();

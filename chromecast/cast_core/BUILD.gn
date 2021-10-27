@@ -203,7 +203,6 @@ if (is_linux) {
       "//third_party/cast_core/public/src/proto/common:application_config_proto",
       "//third_party/cast_core/public/src/proto/core:cast_core_service_proto",
       "//third_party/cast_core/public/src/proto/metrics:metrics_recorder_proto",
-      "//third_party/cast_core/public/src/proto/v2:cast_message_proto",
       "//third_party/cast_core/public/src/proto/v2:core_application_service_proto",
       "//third_party/grpc:grpc++",
     ]
