@@ -10,12 +10,14 @@
 #include <numeric>
 #include <utility>
 
+#include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/token.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util_video_device.h"
@@ -506,6 +508,12 @@ void MediaStreamVideoSource::UpdateTrackSettings(
 
 bool MediaStreamVideoSource::SupportsEncodedOutput() const {
   return false;
+}
+
+void MediaStreamVideoSource::Crop(
+    const base::Token& crop_id,
+    base::OnceCallback<void(media::mojom::CropRequestResult)> callback) {
+  std::move(callback).Run(media::mojom::CropRequestResult::kErrorGeneric);
 }
 
 VideoCaptureFeedbackCB MediaStreamVideoSource::GetFeedbackCallback() const {

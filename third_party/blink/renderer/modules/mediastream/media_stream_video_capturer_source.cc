@@ -6,6 +6,10 @@
 
 #include <utility>
 
+#include "base/callback.h"
+#include "base/token.h"
+#include "media/capture/mojom/video_capture_types.mojom-blink.h"
+#include "media/capture/video_capture_types.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -185,6 +189,13 @@ void MediaStreamVideoCapturerSource::ChangeSourceImpl(
       capture_params_, frame_callback_,
       WTF::BindRepeating(&MediaStreamVideoCapturerSource::OnRunStateChanged,
                          WTF::Unretained(this), capture_params_));
+}
+
+void MediaStreamVideoCapturerSource::Crop(
+    const base::Token& crop_id,
+    base::OnceCallback<void(media::mojom::CropRequestResult)> callback) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  source_->Crop(crop_id, std::move(callback));
 }
 
 base::WeakPtr<MediaStreamVideoSource>

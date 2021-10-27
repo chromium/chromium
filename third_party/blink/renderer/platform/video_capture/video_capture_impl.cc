@@ -19,12 +19,14 @@
 #include <GLES2/gl2extchromium.h>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/token.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
@@ -36,6 +38,7 @@
 #include "media/base/video_frame.h"
 #include "media/capture/mojom/video_capture_buffer.mojom-blink.h"
 #include "media/capture/mojom/video_capture_types.mojom-blink.h"
+#include "media/capture/video_capture_types.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
@@ -638,6 +641,16 @@ void VideoCaptureImpl::SuspendCapture(bool suspend) {
     GetVideoCaptureHost()->Resume(device_id_, session_id_, params_);
 }
 
+void VideoCaptureImpl::Crop(
+    const base::Token& crop_id,
+    base::OnceCallback<void(media::mojom::CropRequestResult)> callback) {
+  DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
+  GetVideoCaptureHost()->Crop(
+      device_id_, crop_id,
+      base::BindOnce(&VideoCaptureImpl::OnCropResult,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
 void VideoCaptureImpl::StartCapture(
     int client_id,
     const media::VideoCaptureParams& params,
@@ -1109,6 +1122,13 @@ void VideoCaptureImpl::OnDeviceFormatsInUse(
     const Vector<media::VideoCaptureFormat>& formats_in_use) {
   DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
   std::move(callback).Run(formats_in_use);
+}
+
+void VideoCaptureImpl::OnCropResult(
+    base::OnceCallback<void(media::mojom::CropRequestResult)> callback,
+    media::mojom::CropRequestResult result) {
+  DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
+  std::move(callback).Run(result);
 }
 
 bool VideoCaptureImpl::RemoveClient(int client_id, ClientInfoMap* clients) {

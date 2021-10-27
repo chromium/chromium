@@ -14,6 +14,8 @@
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
+#include "base/token.h"
+#include "media/capture/mojom/video_capture_types.mojom-shared.h"
 #include "media/capture/video_capture_types.h"
 #include "third_party/blink/public/common/media/video_capture.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
@@ -86,6 +88,14 @@ class BLINK_PLATFORM_EXPORT WebVideoCaptureImplManager {
   // Requests frame delivery be suspended/resumed for a given capture session.
   void Suspend(const media::VideoCaptureSessionId& id);
   void Resume(const media::VideoCaptureSessionId& id);
+
+  // Start/stop cropping a video track.
+  // Non-empty |crop_id| sets (or changes) the crop-target.
+  // Empty |crop_id| reverts the capture to its original, uncropped state.
+  // The callback reports success/failure.
+  void Crop(const media::VideoCaptureSessionId& id,
+            const base::Token& crop_id,
+            base::OnceCallback<void(media::mojom::CropRequestResult)> callback);
 
   // Get supported formats supported by the device for the given session
   // ID. |callback| will be called on the IO thread.

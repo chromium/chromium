@@ -23,11 +23,14 @@
 #include <algorithm>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/token.h"
 #include "media/base/bind_to_current_loop.h"
+#include "media/capture/mojom/video_capture_types.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
@@ -192,6 +195,21 @@ void WebVideoCaptureImplManager::Resume(
   Platform::Current()->GetIOTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&VideoCaptureImpl::SuspendCapture,
                                 it->impl->GetWeakPtr(), false));
+}
+
+void WebVideoCaptureImplManager::Crop(
+    const media::VideoCaptureSessionId& id,
+    const base::Token& crop_id,
+    base::OnceCallback<void(media::mojom::CropRequestResult)> callback) {
+  DCHECK(render_main_task_runner_->BelongsToCurrentThread());
+  const auto it = std::find_if(
+      devices_.begin(), devices_.end(),
+      [id](const DeviceEntry& entry) { return entry.session_id == id; });
+  if (it == devices_.end())
+    return;
+  Platform::Current()->GetIOTaskRunner()->PostTask(
+      FROM_HERE, base::BindOnce(&VideoCaptureImpl::Crop, it->impl->GetWeakPtr(),
+                                crop_id, std::move(callback)));
 }
 
 void WebVideoCaptureImplManager::GetDeviceSupportedFormats(

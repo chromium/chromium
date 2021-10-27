@@ -7,12 +7,14 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/token.h"
 #include "media/capture/mojom/video_capture.mojom-blink.h"
 #include "media/capture/mojom/video_capture_buffer.mojom-blink.h"
 #include "media/capture/mojom/video_capture_types.mojom-blink.h"
@@ -79,6 +81,10 @@ class MockMojoVideoCaptureHost : public media::mojom::blink::VideoCaptureHost {
                void(const base::UnguessableToken&,
                     const base::UnguessableToken&,
                     const media::VideoCaptureParams&));
+  MOCK_METHOD3(Crop,
+               void(const base::UnguessableToken&,
+                    const base::Token&,
+                    CropCallback));
   MOCK_METHOD1(RequestRefreshFrame, void(const base::UnguessableToken&));
   MOCK_METHOD3(ReleaseBuffer,
                void(const base::UnguessableToken&,
