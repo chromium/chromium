@@ -350,7 +350,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       int frame_tree_node_id) override;
   void ForEachFrame(
       const base::RepeatingCallback<void(RenderFrameHost*)>& on_frame) override;
-  std::vector<RenderFrameHost*> GetAllFrames() override;
   int SendToAllFrames(IPC::Message* message) override;
   void ForEachRenderFrameHost(
       RenderFrameHost::FrameIterationCallback on_frame) override;
@@ -1247,10 +1246,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // WebContentsDelegate.
   void SystemDragEnded(RenderWidgetHost* source_rwh);
 
-  // They are similar to functions GetAllFrames() and SendToAllFrames() in
-  // WebContents interface, but also include pendings frames. See bug:
-  // http://crbug.com/1087806
-  std::vector<RenderFrameHost*> GetAllFramesIncludingPending();
+  // This is similar to SendToAllFrames() in WebContents interface, but also
+  // include pendings frames. See bug: http://crbug.com/1087806
   int SendToAllFramesIncludingPending(IPC::Message* message);
 
   // These are the content internal equivalents of

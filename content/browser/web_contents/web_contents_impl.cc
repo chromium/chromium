@@ -1332,14 +1332,6 @@ void WebContentsImpl::ForEachFrame(
   }
 }
 
-std::vector<RenderFrameHost*> WebContentsImpl::GetAllFrames() {
-  return GetAllFramesImpl(frame_tree_, /*include_pending=*/false);
-}
-
-std::vector<RenderFrameHost*> WebContentsImpl::GetAllFramesIncludingPending() {
-  return GetAllFramesImpl(frame_tree_, /*include_pending=*/true);
-}
-
 int WebContentsImpl::SendToAllFrames(IPC::Message* message) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::SendToAllFrames");
   return SendToAllFramesImpl(frame_tree_, /*include_pending=*/false, message);
