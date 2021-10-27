@@ -15,6 +15,22 @@
 
 namespace optimization_guide {
 
+// TODO(crbug/1249632): Replace with PageEntitiesModelExecutor.
+class HumanReadablePageEntitiesModelExecutor {
+ public:
+  virtual ~HumanReadablePageEntitiesModelExecutor() = default;
+
+  using PageEntitiesMetadataModelExecutedCallback = base::OnceCallback<void(
+      const absl::optional<std::vector<ScoredEntityMetadata>>&)>;
+
+  // Annotates |text| with page entities likely represented on the page,
+  // returning the entity metadata in the reader's locale with associated score.
+  // Invokes |callback| when done.
+  virtual void HumanReadableExecuteModelWithInput(
+      const std::string& text,
+      PageEntitiesMetadataModelExecutedCallback callback) = 0;
+};
+
 // The PageEntitiesModelExecutor is responsible for executing the PAGE_ENTITIES
 // model.
 class PageEntitiesModelExecutor {

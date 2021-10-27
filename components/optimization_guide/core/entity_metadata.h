@@ -17,6 +17,9 @@ struct EntityMetadata {
   ~EntityMetadata();
   EntityMetadata(const EntityMetadata&);
 
+  // The opaque entity id.
+  std::string entity_id;
+
   // The human-readable name of the entity in the user's locale.
   std::string human_readable_name;
 
@@ -24,6 +27,15 @@ struct EntityMetadata {
   // locale to the confidence that the category is related to the entity. Will
   // contain the top 5 entries based on confidence score.
   base::flat_map<std::string, float> human_readable_categories;
+};
+
+// The metadata with its score as output of the model execution.
+struct ScoredEntityMetadata {
+  // The metadata.
+  EntityMetadata metadata;
+
+  // The score.
+  float score;
 };
 
 }  // namespace optimization_guide
