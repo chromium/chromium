@@ -5194,6 +5194,11 @@
     "expiry_milestone": 98
   },
   {
+    "name": "tabs-search-ios",
+    "owners": [ "mrefaat", "michaeldo", "bling-flags@google.com" ],
+    "expiry_milestone":100
+  },
+  {
     "name": "terminal-ssh",
     "owners": [ "lxj@google.com", "joelhockey", "//chrome/browser/ash/guest_os/OWNERS" ],
     "expiry_milestone": 100
