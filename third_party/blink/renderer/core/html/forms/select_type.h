@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
+#include "third_party/blink/renderer/core/html/forms/popup_menu.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
@@ -62,7 +63,7 @@ class SelectType : public GarbageCollected<SelectType> {
 
   virtual void CreateShadowSubtree(ShadowRoot& root);
   virtual Element& InnerElement() const;
-  virtual void ShowPopup();
+  virtual void ShowPopup(PopupMenu::ShowEventType type);
   virtual void HidePopup();
   virtual void PopupDidHide();
   virtual bool PopupIsVisible() const;

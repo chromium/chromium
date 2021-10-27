@@ -316,24 +316,20 @@ void InternalPopupMenu::WriteDocument(SharedBuffer* data) {
 
   data->Append(ChooserResourceLoader::GetPickerCommonStyleSheet());
   data->Append(ChooserResourceLoader::GetListPickerStyleSheet());
-  if (!RuntimeEnabledFeatures::ForceTallerSelectPopupEnabled())
-    PagePopupClient::AddString("@media (any-pointer:coarse) {", data);
-  int padding = static_cast<int>(roundf(4 * scale_factor));
-  int min_height = static_cast<int>(roundf(24 * scale_factor));
-  PagePopupClient::AddString(String::Format("option, optgroup {"
-                                            "padding-top: %dpx;"
-                                            "}\n"
-                                            "option {"
-                                            "padding-bottom: %dpx;"
-                                            "min-height: %dpx;"
-                                            "display: flex;"
-                                            "align-items: center;"
-                                            "}",
-                                            padding, padding, min_height),
-                             data);
-  if (!RuntimeEnabledFeatures::ForceTallerSelectPopupEnabled()) {
-    // Closes @media.
-    PagePopupClient::AddString("}", data);
+  if (taller_options_) {
+    int padding = static_cast<int>(roundf(4 * scale_factor));
+    int min_height = static_cast<int>(roundf(24 * scale_factor));
+    PagePopupClient::AddString(String::Format("option, optgroup {"
+                                              "padding-top: %dpx;"
+                                              "}\n"
+                                              "option {"
+                                              "padding-bottom: %dpx;"
+                                              "min-height: %dpx;"
+                                              "display: flex;"
+                                              "align-items: center;"
+                                              "}",
+                                              padding, padding, min_height),
+                               data);
   }
 
   PagePopupClient::AddString(
@@ -597,8 +593,10 @@ void InternalPopupMenu::Dispose() {
     chrome_client_->ClosePagePopup(popup_);
 }
 
-void InternalPopupMenu::Show() {
+void InternalPopupMenu::Show(PopupMenu::ShowEventType type) {
   DCHECK(!popup_);
+  taller_options_ = type == PopupMenu::kTouch ||
+                    RuntimeEnabledFeatures::ForceTallerSelectPopupEnabled();
   popup_ = chrome_client_->OpenPagePopup(this);
 }
 

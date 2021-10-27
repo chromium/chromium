@@ -130,6 +130,12 @@ function clickToOpenPickerWithPromise(x, y, callback, errorCallback) {
 function setPopupOpenCallback(callback) {
     console.assert(popupWindow);
     popupOpenCallback = callback;
+    if (popupWindow.didOpenPicker) {
+        // We need some delay.  Without it, testRunner.notifyDone() freezes.
+        // See crbug.com/562311.
+        setTimeout(popupOpenCallback, 20);
+        return;
+    }
     try {
         popupWindow.addEventListener("didOpenPicker", popupOpenCallbackWrapper, false);
     } catch(e) {
