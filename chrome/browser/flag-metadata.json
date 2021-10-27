@@ -688,7 +688,7 @@
   {
     "name": "chrome-tips-in-main-menu",
     "owners": [ "dfried" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 100
   },
   {
     "name": "chrome-tips-in-main-menu-new-badge",
