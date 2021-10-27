@@ -6714,9 +6714,6 @@ crbug.com/1228246 http/tests/inspector-protocol/network/same-site-issue-warn-coo
 crbug.com/1228246 http/tests/inspector-protocol/network/webbundle.js [ Crash Failure Pass Skip Timeout ]
 
 # linux_layout_tests_layout_ng_disabled needs its own baselines.
-crbug.com/1231699 [ Linux ] virtual/oopr-canvas2d/fast/canvas/canvas-composite.html [ Failure Pass ]
-crbug.com/1231699 [ Linux ] virtual/oopr-canvas2d/fast/canvas/canvas-text-alignment.html [ Failure Pass ]
-crbug.com/1231699 [ Linux ] virtual/gpu/fast/canvas/canvas-text-alignment.html [ Failure Pass ]
 crbug.com/1231699 [ Linux ] fast/borders/border-inner-bleed.html [ Failure Pass ]
 crbug.com/1231699 [ Linux ] fast/canvas/canvas-composite-video-shadow.html [ Failure Pass ]
 crbug.com/1231699 [ Linux ] fast/canvas/canvas-composite-video.html [ Failure Pass ]
@@ -6818,7 +6815,6 @@ crbug.com/1238130 external/wpt/animation-worklet/worklet-animation-with-scroll-t
 
 # Sheriff 2021-07-29
 crbug.com/626703 http/tests/security/cross-frame-access-put.html [ Failure Pass ]
-crbug.com/626703 virtual/oopr-canvas2d/fast/canvas/canvas-composite-canvas.html [ Failure Pass ]
 
 # Sheriff 2021-07-30
 crbug.com/1234619 external/wpt/screen-capture/permissions-policy-audio+video.https.sub.html [ Failure ]
@@ -6830,7 +6826,6 @@ crbug.com/1215390 [ Linux ] external/wpt/pointerevents/pointerevent_pointerId_sc
 
 # Sheriff 2021-08/05
 crbug.com/1230534 external/wpt/webrtc/simulcast/getStats.https.html [ Failure Pass Skip Timeout ]
-crbug.com/1237132 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-pattern-over-gradient.html [ Pass Skip Timeout ]
 
 # Sheriff 2021-08-10
 crbug.com/1233840 external/wpt/html/cross-origin-opener-policy/historical/coep-navigate-popup-unsafe-inherit.https.html [ Pass Skip Timeout ]
@@ -6908,9 +6903,6 @@ crbug.com/1249071 virtual/composite-clip-path-animation/external/wpt/css/css-mas
 # Sheriff 2021-09-08
 crbug.com/1250666 [ Mac ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/valid-image-before-load.https.html [ Pass Timeout ]
 crbug.com/1250666 [ Mac ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/valid-image-after-load.https.html [ Pass Timeout ]
-crbug.com/1247758 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-shadow-part4.html [ Crash Pass ]
-crbug.com/1247758 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-color-over-pattern.html [ Crash Pass Timeout ]
-crbug.com/1247758 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-pattern-over-image.html [ Pass Timeout ]
 
 # Sheriff 2021-09-13
 crbug.com/1229701 [ Linux ] http/tests/inspector-protocol/network/disable-cache-media-resource.js [ Failure Pass Timeout ]
@@ -7260,9 +7252,7 @@ crbug.com/1243568 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/window-d
 
 # Sheriff 2021-10-15
 crbug.com/1256763 [ Linux ] virtual/gpu-rasterization/images/color-profile-image-pseudo-content.html [ Failure Pass ]
-crbug.com/1260393 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-image-over-image.html [ Pass Timeout ]
-crbug.com/1260393 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-image.html [ Pass Timeout ]
-crbug.com/1260393 [ Mac ] virtual/oopr-canvas2d/fast/canvas/color-space/canvas-createImageBitmap-p3.html [ Failure Pass Timeout ]
+crbug.com/1260393 [ Mac ] virtual/oopr-canvas2d/fast/canvas/color-space/canvas-createImageBitmap-p3.html [ Failure Pass ]
 
 # Sheriff 2021-10-19
 crbug.com/1256763 [ Linux ] images/color-profile-background-image-cross-fade.html [ Failure Pass ]

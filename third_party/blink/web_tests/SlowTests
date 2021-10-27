@@ -165,8 +165,15 @@ crbug.com/726075 [ Linux ] css3/filters/effect-reference-zoom-hw.html [ Slow ]
 crbug.com/726075 [ Mac ] css3/filters/effect-reference-zoom-hw.html [ Slow ]
 
 # Slow oopr canvas tests
+crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-color-over-pattern.html [ Slow ]
+crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-pattern-over-image.html [ Slow ]
+crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-image-over-image.html [ Slow ]
 crbug.com/1152496 virtual/oopr-canvas2d/fast/canvas/canvas-composite-alpha.html [ Slow ]
 crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-composite.html [ Slow ]
+crbug.com/1081534 [ Linux ] virtual/oopr-canvas2d/fast/canvas/canvas-composite.html [ Slow ]
+crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-canvas.html [ Slow ]
+crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-image.html [ Slow ]
+crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-shadow-part4.html [ Slow ]
 crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-transformclip.html [ Slow ]
 crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-video-shadow.html [ Slow ]
 crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-video.html [ Slow ]
@@ -187,8 +194,9 @@ crbug.com/1081534 [ Linux ] virtual/oopr-canvas2d/fast/canvas/canvas-blend-image
 crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blend-solid.html [ Slow ]
 crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-incremental-repaint.html [ Slow ]
 crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/fillrect_gradient.html [ Slow ]
-crbug.com/1232548 virtual/oopr-canvas2d/fast/canvas/color-space/canvas-createImageBitmap-e_srgb.html [ Slow ]
-crbug.com/1232548 virtual/oopr-canvas2d/fast/canvas/color-space/canvas-createImageBitmap-rec2020.html [ Slow ]
+crbug.com/1081534 virtual/oopr-canvas2d/fast/canvas/color-space/canvas-createImageBitmap-e_srgb.html [ Slow ]
+crbug.com/1081534 virtual/oopr-canvas2d/fast/canvas/color-space/canvas-createImageBitmap-p3.html [ Slow ]
+crbug.com/1081534 virtual/oopr-canvas2d/fast/canvas/color-space/canvas-createImageBitmap-rec2020.html [ Slow ]
 
 # Media controls tests have to wait for panel to fade out.
 crbug.com/722825 media/controls/video-enter-exit-fullscreen-without-hovering-doesnt-show-controls.html [ Slow ]
