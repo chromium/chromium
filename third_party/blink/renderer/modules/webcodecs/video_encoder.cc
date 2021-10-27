@@ -643,7 +643,7 @@ void VideoEncoder::ProcessEncode(Request* request) {
                                    uint32_t reset_count,
                                    media::VideoEncoder::StatusCB done_callback,
                                    scoped_refptr<media::VideoFrame> frame) {
-        if (!self || self->reset_count_ != reset_count)
+        if (!self || self->reset_count_ != reset_count || !frame)
           return;
 
         DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);

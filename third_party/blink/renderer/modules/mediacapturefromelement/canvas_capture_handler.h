@@ -34,9 +34,8 @@ namespace blink {
 class LocalFrame;
 class MediaStreamComponent;
 class StaticBitmapImage;
-class WebGraphicsContext3DProvider;
+class StaticBitmapImageToVideoFrameCopier;
 class WebGraphicsContext3DProviderWrapper;
-class WebGraphicsContext3DVideoFramePool;
 
 // CanvasCaptureHandler acts as the link between Blink side HTMLCanvasElement
 // and Chrome side VideoCapturerSource. It is responsible for handling
@@ -90,41 +89,14 @@ class MODULES_EXPORT CanvasCaptureHandler {
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       MediaStreamComponent** component);
 
-  // Helper functions to read pixel content.
-  void ReadARGBPixelsSync(scoped_refptr<StaticBitmapImage> image);
-  void ReadARGBPixelsAsync(
-      scoped_refptr<StaticBitmapImage> image,
-      blink::WebGraphicsContext3DProvider* context_provider);
-  void ReadYUVPixelsAsync(
-      scoped_refptr<StaticBitmapImage> image,
-      base::WeakPtr<blink::WebGraphicsContext3DProviderWrapper>
-          context_provider);
-  void OnARGBPixelsReadAsync(scoped_refptr<StaticBitmapImage> image,
-                             scoped_refptr<media::VideoFrame> temp_argb_frame,
-                             base::TimeTicks this_frame_ticks,
-                             GrSurfaceOrigin result_origin,
-                             bool success);
-  void OnYUVPixelsReadAsync(scoped_refptr<media::VideoFrame> yuv_frame,
-                            base::TimeTicks this_frame_ticks,
-                            bool success);
-  void OnReleaseMailbox(scoped_refptr<StaticBitmapImage> image);
-
-  scoped_refptr<media::VideoFrame> ConvertToYUVFrame(
-      scoped_refptr<media::VideoFrame> argb_video_frame,
-      bool flip);
-  void SendFrame(scoped_refptr<media::VideoFrame> video_frame,
-                 base::TimeTicks this_frame_ticks,
-                 const gfx::ColorSpace& color_space);
+  void SendFrame(base::TimeTicks this_frame_ticks,
+                 const gfx::ColorSpace& color_space,
+                 scoped_refptr<media::VideoFrame> video_frame);
 
   void AddVideoCapturerSourceToVideoTrack(
       LocalFrame* frame,
       std::unique_ptr<VideoCapturerSource> source,
       MediaStreamComponent** component);
-
-  // Helper methods to increment/decrement the number of ongoing async pixel
-  // readouts currently happening.
-  void IncrementOngoingAsyncPixelReadouts();
-  void DecrementOngoingAsyncPixelReadouts();
 
   // Send a refresh frame.
   void SendRefreshFrame();
@@ -135,16 +107,15 @@ class MODULES_EXPORT CanvasCaptureHandler {
 
   media::VideoCaptureFormat capture_format_;
   bool can_discard_alpha_ = false;
-  bool ask_for_new_frame_;
-  media::VideoFramePool frame_pool_;
-  std::unique_ptr<WebGraphicsContext3DVideoFramePool> accelerated_frame_pool_;
+  bool ask_for_new_frame_ = false;
   absl::optional<base::TimeTicks> first_frame_ticks_;
   scoped_refptr<media::VideoFrame> last_frame_;
+
+  std::unique_ptr<StaticBitmapImageToVideoFrameCopier> converter_;
 
   // The following attributes ensure that CanvasCaptureHandler emits
   // frames with monotonically increasing timestamps.
   bool deferred_request_refresh_frame_ = false;
-  int num_ongoing_async_pixel_readouts_ = 0;
 
   const scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
   std::unique_ptr<CanvasCaptureHandlerDelegate> delegate_;

@@ -96,7 +96,12 @@ bool WebGraphicsContext3DVideoFramePool::CopyRGBATextureToVideoFrame(
     GrSurfaceOrigin src_surface_origin,
     const gpu::MailboxHolder& src_mailbox_holder,
     const gfx::ColorSpace& dst_color_space,
-    base::OnceCallback<void(scoped_refptr<media::VideoFrame>)> callback) {
+    FrameReadyCallback callback) {
+  // Issue `callback` with a nullptr VideoFrame if we return early.
+  base::ScopedClosureRunner failure_runner(WTF::Bind(
+      [](FrameReadyCallback* callback) { std::move(*callback).Run(nullptr); },
+      base::Unretained(&callback)));
+
   if (!weak_context_provider_)
     return false;
   auto* context_provider = weak_context_provider_->ContextProvider();
@@ -119,6 +124,7 @@ bool WebGraphicsContext3DVideoFramePool::CopyRGBATextureToVideoFrame(
   if (!copy_succeeded)
     return false;
 
+  IgnoreResult(failure_runner.Release());
   raster_context_provider->ContextSupport()->SignalSyncToken(
       copy_done_sync_token, base::BindOnce(std::move(callback), dst_frame));
   return true;
