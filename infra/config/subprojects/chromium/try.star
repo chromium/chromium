@@ -1301,38 +1301,20 @@ try_.chromium_linux_orchestrator_pair(
     compilator_name = "linux-rel-compilator",
 )
 
-try_.chromium_android_builder(
+try_.chromium_android_orchestrator_pair(
     name = "android-marshmallow-x86-rel-orchestrator",
-    builderless = False,
-    cores = 4,
-    executable = "recipe:chromium/orchestrator",
     main_list_view = "try",
     use_java_coverage = True,
     coverage_test_types = ["unit", "overall"],
-    properties = {
-        "$build/chromium_orchestrator": {
-            "compilator": "android-marshmallow-x86-rel-compilator",
-            "compilator_watcher_git_revision": compilator_watcher_git_revision,
-        },
-    },
-    service_account = "chromium-orchestrator@chops-service-accounts.iam.gserviceaccount.com",
-)
-
-try_.chromium_android_builder(
-    name = "android-marshmallow-x86-rel-compilator",
-    builderless = False,
-    cores = 32,
-    executable = "recipe:chromium/compilator",
-    goma_jobs = goma.jobs.J300,
-    ssd = True,
-    use_java_coverage = True,
-    coverage_test_types = ["unit", "overall"],
-    properties = {
-        "orchestrator": {
-            "builder_name": "android-marshmallow-x86-rel-orchestrator",
-            "builder_group": "tryserver.chromium.android",
-        },
-    },
+    orchestrator_builderless = False,
+    orchestrator_cores = 4,
+    orchestrator_tryjob = try_.job(
+        experiment_percentage = 10,
+    ),
+    compilator_builderless = False,
+    compilator_cores = 32,
+    compilator_goma_jobs = goma.jobs.J300,
+    compilator_name = "android-marshmallow-x86-rel-compilator",
 )
 
 try_.chromium_linux_builder(

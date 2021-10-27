@@ -637,6 +637,15 @@ def chromium_win_orchestrator_pair(
         **kwargs
     )
 
+def chromium_android_orchestrator_pair(
+        **kwargs):
+    return orchestrator_pair_builders(
+        builder_group_func = chromium_android_builder,
+        orchestrator_builder_group = "tryserver.chromium.android",
+        compilator_os = os.LINUX_BIONIC,
+        **kwargs
+    )
+
 def presubmit_builder(*, name, tryjob, os = builders.os.LINUX_BIONIC_SWITCH_TO_DEFAULT, **kwargs):
     """Define a presubmit builder.
 
@@ -677,6 +686,7 @@ try_ = struct(
     blink_mac_builder = blink_mac_builder,
     chromium_builder = chromium_builder,
     chromium_android_builder = chromium_android_builder,
+    chromium_android_orchestrator_pair = chromium_android_orchestrator_pair,
     chromium_angle_builder = chromium_angle_builder,
     chromium_angle_ios_builder = chromium_angle_ios_builder,
     chromium_angle_mac_builder = chromium_angle_mac_builder,
