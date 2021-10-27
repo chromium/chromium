@@ -26,7 +26,7 @@ namespace cc {
 // to be rastered directly, it uses the SkImage constructor.
 class CC_PAINT_EXPORT DecodedDrawImage {
  public:
-  DecodedDrawImage(sk_sp<const SkImage> image,
+  DecodedDrawImage(sk_sp<SkImage> image,
                    sk_sp<SkColorFilter> dark_mode_color_filter,
                    const SkSize& src_rect_offset,
                    const SkSize& scale_adjustment,
@@ -49,7 +49,7 @@ class CC_PAINT_EXPORT DecodedDrawImage {
   DecodedDrawImage();
   ~DecodedDrawImage();
 
-  const sk_sp<const SkImage>& image() const { return image_; }
+  const sk_sp<SkImage>& image() const { return image_; }
   const sk_sp<SkColorFilter>& dark_mode_color_filter() const {
     return dark_mode_color_filter_;
   }
@@ -73,7 +73,7 @@ class CC_PAINT_EXPORT DecodedDrawImage {
   }
 
  private:
-  sk_sp<const SkImage> image_;
+  sk_sp<SkImage> image_;
   gpu::Mailbox mailbox_;
   absl::optional<uint32_t> transfer_cache_entry_id_;
   sk_sp<SkColorFilter> dark_mode_color_filter_;
