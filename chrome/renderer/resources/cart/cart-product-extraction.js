@@ -934,11 +934,6 @@ async function extractAllItems(root) {
 
   if (document.URL.includes("samsclub.com")) {
     items = root.querySelectorAll(".sc-cart-item-shipping");
-  } else if (document.URL.includes("zazzle.com")) {
-    // TODO(yuezhanggg@): This is a workaround due to that zazzle.com
-    // has two images in cart item. Remove this when we support cart
-    // with multiple images for one product.
-    items = root.getElementsByClassName("CartItem CartLineItem");
   } else if (document.URL.includes("kiehls.com")
     || document.URL.includes("laroche-posay.us")) {
     items = root.querySelectorAll(".c-product-table__row");
