@@ -1181,7 +1181,7 @@
       "chrome-apps-platform-rationalization@google.com",
       "quickoffice-chrome-eng@google.com"
     ],
-    "expiry_milestone": 95
+    "expiry_milestone": 110
   },
   {
     "name": "disable-process-reuse",
