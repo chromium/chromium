@@ -88,31 +88,15 @@ void LogDeprecationMessages(const WebFormControlElement& element) {
 }
 
 // Determines whether the form is interesting enough to be sent to the browser
-// for further operations.
+// for further operations. This is the case if any of the below holds:
+// (1) At least one field is editable.
+// (2) At least one field has a non-empty autocomplete attribute.
+// (3) There is at least one iframe.
 bool IsFormInteresting(const FormData& form, size_t num_editable_elements) {
-  if (form.fields.empty() && form.child_frames.empty())
-    return false;
-
-  // If the form has at least one field with an autocomplete attribute, it is a
-  // candidate for autofill.
-  bool all_fields_are_passwords = true;
-  for (const FormFieldData& field : form.fields) {
-    if (!field.autocomplete_attribute.empty())
-      return true;
-    if (field.form_control_type != "password")
-      all_fields_are_passwords = false;
-  }
-
-  // If there are no autocomplete attributes, the form needs to have at least
-  // the required number of editable fields for the prediction routines to be a
-  // candidate for autofill.
-  return num_editable_elements >= kMinRequiredFieldsForHeuristics ||
-         num_editable_elements >= kMinRequiredFieldsForQuery ||
-         num_editable_elements >= kMinRequiredFieldsForUpload ||
-         (all_fields_are_passwords &&
-          num_editable_elements >=
-              kRequiredFieldsForFormsWithOnlyPasswordFields) ||
-         form.child_frames.size() > 0;
+  DCHECK_GE(form.fields.size(), num_editable_elements);
+  return num_editable_elements >= 1 || !form.child_frames.empty() ||
+         base::ranges::any_of(form.fields, base::not_fn(&std::string::empty),
+                              &FormFieldData::autocomplete_attribute);
 }
 
 }  // namespace
