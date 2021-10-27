@@ -52,13 +52,14 @@ void CopyToClipboardShareAction::LaunchAction(
           !(intent->share_title.value().empty())) {
         anchor_text = intent->share_title.value();
       }
-      clipboard_writer.WriteHyperlink(base::UTF8ToUTF16(anchor_text),
-                                      extracted_text.url.spec());
+      clipboard_writer.WriteText(base::UTF8ToUTF16(extracted_text.url.spec()));
     }
   }
 
   // TODO(crbug.com/1244143) Add image and file copying logic.
-  controller_->CloseBubble(::sharesheet::SharesheetResult::kSuccess);
+  if (controller_) {
+    controller_->CloseBubble(::sharesheet::SharesheetResult::kSuccess);
+  }
 }
 
 void CopyToClipboardShareAction::OnClosing(
