@@ -1670,23 +1670,21 @@ void RenderWidgetHostViewAura::GetActiveTextInputControlLayoutBounds(
     absl::optional<gfx::Rect>* control_bounds,
     absl::optional<gfx::Rect>* selection_bounds) {
   if (text_input_manager_) {
-    const ui::mojom::TextInputState* state =
-        text_input_manager_->GetTextInputState();
-    if (state) {
-      if (state->edit_context_control_bounds) {
-        *control_bounds =
-            ConvertRectToScreen(state->edit_context_control_bounds.value());
-        TRACE_EVENT1(
-            "ime",
-            "RenderWidgetHostViewAura::GetActiveTextInputControlLayoutBounds",
-            "control_bounds_rect", control_bounds->value().ToString());
-      }
-      // Selection bounds are currently populated only for EditContext.
-      // For editable elements we use GetCompositionCharacterBounds.
-      if (state->edit_context_selection_bounds) {
-        *selection_bounds =
-            ConvertRectToScreen(state->edit_context_selection_bounds.value());
-      }
+    const absl::optional<gfx::Rect> text_control_bounds =
+        text_input_manager_->GetTextControlBounds();
+    if (text_control_bounds) {
+      *control_bounds = ConvertRectToScreen(text_control_bounds.value());
+      TRACE_EVENT1(
+          "ime",
+          "RenderWidgetHostViewAura::GetActiveTextInputControlLayoutBounds",
+          "control_bounds_rect", control_bounds->value().ToString());
+    }
+    // Selection bounds are currently populated only for EditContext.
+    // For editable elements we use GetCompositionCharacterBounds.
+    const absl::optional<gfx::Rect> text_selection_bounds =
+        text_input_manager_->GetTextSelectionBounds();
+    if (text_selection_bounds) {
+      *selection_bounds = ConvertRectToScreen(text_selection_bounds.value());
     }
   }
 }

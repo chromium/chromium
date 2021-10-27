@@ -724,7 +724,6 @@
 <translation id="1722460139690167654">מכשיר <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> שלך מנוהל<ph name="END_LINK" /> על ידי <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">&amp;חלון חדש</translation>
 <translation id="1725562816265788801">גלילה בין כרטיסיות</translation>
-<translation id="1727662110063605623">‏יש לפתוח את ההגדרות כדי לחבר את <ph name="USB_DEVICE_NAME" /> אל Parallels Desktop או Linux</translation>
 <translation id="1729533290416704613">הגדרה זו גם קובעת איזה דף מוצג כשמחפשים מסרגל הכתובות.</translation>
 <translation id="1730917990259790240">‏<ph name="BEGIN_PARAGRAPH1" />כדי להסיר אפליקציות, נכנסים אל 'הגדרות' &gt; 'חנות Google Play' &gt; 'ניהול העדפות Android' &gt;'אפליקציות' או 'מנהל האפליקציות'. אחר כך מקישים על האפליקציה שרוצים להסיר (ייתכן שיהיה צורך להחליק ימינה או שמאלה כדי למצוא את האפליקציה). לסיום, מקישים על 'הסרת התקנה' או 'השבתה'.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1731911755844941020">בקשה נשלחת...</translation>

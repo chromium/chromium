@@ -725,7 +725,6 @@
 <translation id="1722460139690167654">Your <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> is managed<ph name="END_LINK" /> by <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">&amp;New window</translation>
 <translation id="1725562816265788801">Tab scrolling</translation>
-<translation id="1727662110063605623">Open Settings to connect <ph name="USB_DEVICE_NAME" /> to Parallels Desktop or Linux</translation>
 <translation id="1729533290416704613">It also controls what page is shown when you search from the Omnibox.</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />To remove apps, go to Settings &gt; Google Play Store &gt; Manage Android preferences &gt; Apps or Application manager. Then tap the app that you want to uninstall (you may need to swipe right or left to find the app). Then tap Uninstall or Disable.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1731911755844941020">Sending request...</translation>

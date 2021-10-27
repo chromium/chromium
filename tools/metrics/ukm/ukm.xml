@@ -1183,8 +1183,7 @@ be describing additional metrics about the same event.
     from the suggestion chip, or from the grid of apps. The UKM metrics are not
     keyed by navigational urls. Instead, for Chrome apps the keys are based upon
     the app id, for Play apps the keys are based upon a hash of the package name
-    and for PWAs and bookmark apps the keys are the urls associated with the
-    PWA/bookmark.
+    and for PWAs the keys are the urls associated with the PWA.
   </summary>
   <metric name="AllClicksLast24Hours">
     <summary>

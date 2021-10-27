@@ -16,8 +16,11 @@
     });
 
     const wbn_url = "../resources/wbn/subresource.wbn";
-    const resource1 = "../resources/wbn/root.js";
-    const resource2 = "../resources/wbn/submodule.js";
+    const resource1 = "root.js";
+    const resource2 = "submodule.js";
+
+    const resource1_url = `../resources/wbn/${resource1}`;
+    const resource2_url = `../resources/wbn/${resource2}`;
 
     let script1;
     let script2;
@@ -32,18 +35,18 @@
     }
 
     async function assertResource1CanBeFetched() {
-      const response = await fetch(resource1);
+      const response = await fetch(resource1_url);
       const text = await response.text();
       assert_equals(text, "export * from './submodule.js';\n");
     }
 
     async function assertResource1CanNotBeFetched() {
-      const response = await fetch(resource1);
+      const response = await fetch(resource1_url);
       assert_equals(response.status, 404);
     }
 
     async function assertResource2CanBeFetched() {
-      const response = await fetch(resource2);
+      const response = await fetch(resource2_url);
       const text = await response.text();
       assert_equals(text, "export const result = 'OK';\n");
     }

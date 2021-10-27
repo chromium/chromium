@@ -8,6 +8,7 @@
 #include "base/callback_helpers.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_registry.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_tracker.h"
+#include "chrome/browser/apps/app_service/instance_registry_updater.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_service.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
@@ -57,6 +58,9 @@ AppServiceProxyChromeOs::AppServiceProxyChromeOs(Profile* profile)
     browser_app_instance_registry_ =
         std::make_unique<apps::BrowserAppInstanceRegistry>(
             *browser_app_instance_tracker_);
+    browser_app_instance_app_service_updater_ =
+        std::make_unique<apps::InstanceRegistryUpdater>(
+            *browser_app_instance_registry_, instance_registry_);
   }
   Initialize();
 }

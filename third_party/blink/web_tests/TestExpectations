@@ -110,11 +110,6 @@ crbug.com/1254932 http/tests/preload/meta-csp.html [ Failure ]
 # Extra box in the output:
 crbug.com/1254933 css3/filters/filterRegions.html [ Failure ]
 
-# Table layout changes:
-crbug.com/1254935 fragmentation/nested-repeating-thead-4.html [ Failure ]
-crbug.com/1254935 fragmentation/nested-repeating-thead-tfoot-4.html [ Failure ]
-crbug.com/1254935 fragmentation/nested-repeating-thead-tfoot.html [ Failure ]
-
 # More line messages added and removed:
 crbug.com/1254937 http/tests/devtools/oopif/oopif-presentation-console-messages.js [ Failure ]
 crbug.com/1254937 http/tests/devtools/resource-tree/resource-tree-frame-add.js [ Failure ]
@@ -170,8 +165,6 @@ crbug.com/1254945 external/wpt/html/semantics/embedded-content/media-elements/tr
 crbug.com/1254945 external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-cuechange.html [ Failure ]
 crbug.com/1254945 external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-enter-exit.html [ Failure Pass ]
 crbug.com/1254945 external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-remove-insert-ready-state.html [ Failure Pass ]
-
-crbug.com/1262985 fullscreen/enter-exit-full-screen-hover.html [ Failure Pass ]
 
 # ====== Synchronous, budgeted HTML parser tests to here ========================
 
@@ -4516,12 +4509,8 @@ crbug.com/1245166 external/wpt/web-bundle/subresource-loading/script-accept-head
 crbug.com/1245166 external/wpt/web-bundle/subresource-loading/script-nested-bundle.https.tentative.html [ Skip ]
 crbug.com/1245166 external/wpt/web-bundle/subresource-loading/script-network-error.https.tentative.html [ Skip ]
 crbug.com/1245166 external/wpt/web-bundle/subresource-loading/script-relative-url-in-web-bundle.https.tentative.html [ Skip ]
-crbug.com/1245166 external/wpt/web-bundle/subresource-loading/script-relative-url-with-base.https.tentative.html [ Skip ]
-crbug.com/1245166 external/wpt/web-bundle/subresource-loading/script-relative-url.https.tentative.html [ Skip ]
 crbug.com/1245166 external/wpt/web-bundle/subresource-loading/script-request-destination.https.tentative.html [ Skip ]
 crbug.com/1245166 external/wpt/web-bundle/subresource-loading/script-service-worker-controlled.https.tentative.html [ Skip ]
-crbug.com/1245166 external/wpt/web-bundle/subresource-loading/script-static-element.https.tentative.sub.html [ Skip ]
-crbug.com/1245166 external/wpt/web-bundle/subresource-loading/script-static-element-with-base.https.tentative.sub.html [ Skip ]
 crbug.com/1245166 external/wpt/web-bundle/subresource-loading/script-subresource-load.https.tentative.sub.html [ Skip ]
 
 # Sheriff failures 2017-07-03

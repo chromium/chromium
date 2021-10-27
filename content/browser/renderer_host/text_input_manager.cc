@@ -153,6 +153,31 @@ const TextInputManager::TextSelection* TextInputManager::GetTextSelection(
   return (view && IsRegistered(view)) ? &text_selection_map_.at(view) : nullptr;
 }
 
+const absl::optional<gfx::Rect> TextInputManager::GetTextControlBounds() const {
+  const ui::mojom::TextInputState* state = GetTextInputState();
+  if (!active_view_ || !state || !state->edit_context_control_bounds)
+    return absl::nullopt;
+
+  auto control_bounds = state->edit_context_control_bounds.value();
+  auto new_top_left =
+      active_view_->TransformPointToRootCoordSpace(control_bounds.origin());
+  return absl::optional<gfx::Rect>(
+      gfx::Rect(new_top_left, control_bounds.size()));
+}
+
+const absl::optional<gfx::Rect> TextInputManager::GetTextSelectionBounds()
+    const {
+  const ui::mojom::TextInputState* state = GetTextInputState();
+  if (!active_view_ || !state || !state->edit_context_selection_bounds)
+    return absl::nullopt;
+
+  auto selection_bounds = state->edit_context_selection_bounds.value();
+  auto new_top_left =
+      active_view_->TransformPointToRootCoordSpace(selection_bounds.origin());
+  return absl::optional<gfx::Rect>(
+      gfx::Rect(new_top_left, selection_bounds.size()));
+}
+
 void TextInputManager::UpdateTextInputState(
     RenderWidgetHostViewBase* view,
     const ui::mojom::TextInputState& text_input_state) {

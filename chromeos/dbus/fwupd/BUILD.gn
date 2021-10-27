@@ -19,6 +19,8 @@ component("fwupd") {
     "fake_fwupd_client.h",
     "fwupd_client.cc",
     "fwupd_client.h",
+    "fwupd_device.cc",
+    "fwupd_device.h",
   ]
 }
 

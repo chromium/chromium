@@ -557,10 +557,8 @@ void AppServiceAppWindowShelfController::RegisterWindow(
         ->SetIcon(*ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
             IDR_LOGO_PLUGIN_VM_DEFAULT_192));
     // Set fullscreen properties.
-    if (base::FeatureList::IsEnabled(ash::features::kPluginVmFullscreen)) {
-      exo::SetShellUseImmersiveForFullscreen(window, false);
-      window->SetProperty(chromeos::kEscHoldToExitFullscreen, true);
-    }
+    exo::SetShellUseImmersiveForFullscreen(window, false);
+    window->SetProperty(chromeos::kEscHoldToExitFullscreen, true);
   } else if (borealis::BorealisWindowManager::IsBorealisWindow(window)) {
     // Set fullscreen properties for Borealis.
     window->SetProperty(chromeos::kEscHoldToExitFullscreen, true);

@@ -198,7 +198,7 @@ class WaylandBufferManagerHost::Surface {
     for (auto& buffer : submitted_buffers_) {
       auto* buff = buffer.buffer.get();
       if (buff)
-        buff->released = true;
+        buff->Release(/*release_fence=*/gfx::GpuFenceHandle());
     }
     MaybeProcessSubmittedBuffers();
 
@@ -281,11 +281,12 @@ class WaylandBufferManagerHost::Surface {
     // to reattach the buffer.
     bool should_attach_buffer =
         submitted_buffers_.empty() ||
-        submitted_buffers_.back().buffer_id != buffer->id() || buffer->released;
+        submitted_buffers_.back().buffer_id != buffer->id() ||
+        buffer->released();
     if (should_attach_buffer) {
       // Once the BufferRelease is called, the buffer will be released.
-      DCHECK(buffer->released);
-      buffer->released = false;
+      DCHECK(buffer->released());
+      buffer->Attached();
       AttachBuffer(buffer, std::move(access_fence_handle));
     }
 
@@ -392,10 +393,8 @@ class WaylandBufferManagerHost::Surface {
     // It's possible to be unable to find the released buffer in
     // |submitted_buffers_| due to the manual releasing in
     // ResetSurfaceContents().
-    if (buffer) {
-      buffer->released = true;
-      buffer->release_fence = std::move(release_fence);
-    }
+    if (buffer)
+      buffer->Release(std::move(release_fence));
 
     // A release means we may be able to send OnSubmission for previously
     // submitted buffers.
@@ -435,7 +434,7 @@ class WaylandBufferManagerHost::Surface {
       // destroyed. This includes if we have a release fence for it - in that
       // case, the OnSubmission for the 2nd oldest buffer should contain the
       // release fence for the oldest buffer.
-      bool buffer0_released = !buffer0 || buffer0->released;
+      bool buffer0_released = !buffer0 || buffer0->released();
       // We can send OnSubmission for the 2nd oldest buffer if the oldest buffer
       // is released, or it's the same buffer.
       if (!buffer0_released &&
@@ -445,7 +444,7 @@ class WaylandBufferManagerHost::Surface {
       DCHECK(submitted_buffers_[0].acked);
       DCHECK(!submitted_buffers_[1].acked);
       submitted_buffers_.erase(submitted_buffers_.begin());
-      ProcessOldestSubmittedBuffer(buffer0 ? std::move(buffer0->release_fence)
+      ProcessOldestSubmittedBuffer(buffer0 ? buffer0->TakeReleaseFence()
                                            : gfx::GpuFenceHandle());
     }
   }

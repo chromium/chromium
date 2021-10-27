@@ -2086,8 +2086,14 @@ CommandHandler.COMMANDS_['zip-selection'] = new class extends FilesCommand {
     }
 
     const selectionEntries = fileManager.getSelection().entries;
-    fileManager.fileOperationManager.zipSelection(
-        selectionEntries, /** @type {!DirectoryEntry} */ (dirEntry));
+    if (window.isSWA) {
+      chrome.fileManagerPrivate.startIOTask(
+          chrome.fileManagerPrivate.IOTaskType.ZIP, selectionEntries,
+          {destinationFolder: /** @type {!DirectoryEntry} */ (dirEntry)});
+    } else {
+      fileManager.fileOperationManager.zipSelection(
+          selectionEntries, /** @type {!DirectoryEntry} */ (dirEntry));
+    }
   }
 
   /** @override */

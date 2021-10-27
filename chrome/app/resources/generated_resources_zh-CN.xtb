@@ -710,7 +710,6 @@
 <translation id="1722460139690167654">您的<ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /><ph name="END_LINK" />由 <ph name="ENROLLMENT_DOMAIN" /> 管理</translation>
 <translation id="1723824996674794290">打开新的窗口(&amp;N)</translation>
 <translation id="1725562816265788801">标签页滚动</translation>
-<translation id="1727662110063605623">打开“设置”以将 <ph name="USB_DEVICE_NAME" /> 连接到 Parallels Desktop 或 Linux</translation>
 <translation id="1729533290416704613">它还能够控制您通过多功能框进行搜索时系统显示的页面。</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />要想卸载应用，请依次转到“设置”&gt;“Google Play 商店”&gt;“管理 Android 偏好设置”&gt;“应用”或“应用管理器”，点按您要卸载的应用（您可能需要左右滑动才能找到相应的应用），然后点按“卸载”或“停用”。<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1731911755844941020">正在发送请求...</translation>

@@ -714,7 +714,6 @@
 <translation id="1722460139690167654">Il tuo dispositivo <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> è gestito<ph name="END_LINK" /> da <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">&amp;Nuova finestra</translation>
 <translation id="1725562816265788801">Scorrimento delle schede</translation>
-<translation id="1727662110063605623">Apri Impostazioni per connettere <ph name="USB_DEVICE_NAME" /> a Parallels Desktop o a Linux</translation>
 <translation id="1729533290416704613">Controlla anche la pagina visualizzata quando esegui ricerche dalla Omnibox.</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />Per rimuovere le app apri Impostazioni &gt; Google Play Store &gt; Gestisci le preferenze Android &gt; App o Gestione applicazioni, quindi tocca l'app che vuoi disinstallare (potresti dover scorrere verso sinistra o verso destra per trovarla) e infine tocca Disinstalla o Disattiva.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1731911755844941020">Invio richiesta in corso...</translation>

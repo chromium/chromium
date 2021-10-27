@@ -647,7 +647,11 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
       focused = *create_data->focused;
   }
 
-  // Create a new BrowserWindow.
+  // Create a new BrowserWindow if possible.
+  if (Browser::GetCreationStatusForProfile(window_profile) !=
+      Browser::CreationStatus::kOk) {
+    return RespondNow(Error(tabs_constants::kBrowserWindowNotAllowed));
+  }
   Browser::CreateParams create_params(window_type, window_profile,
                                       user_gesture());
   if (extension_id.empty()) {

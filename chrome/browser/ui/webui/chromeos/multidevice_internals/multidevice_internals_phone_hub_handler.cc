@@ -12,6 +12,7 @@
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/phonehub/camera_roll_item.h"
 #include "chromeos/components/phonehub/fake_phone_hub_manager.h"
+#include "chromeos/components/phonehub/notification.h"
 #include "chromeos/components/phonehub/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -535,7 +536,9 @@ void MultidevicePhoneHubHandler::HandleSetNotification(
   }
 
   auto notification = phonehub::Notification(
-      *id, app_metadata, timestamp, importance, *inline_reply_id,
+      *id, app_metadata, timestamp, importance,
+      phonehub::Notification::Category::kConversation,
+      {{phonehub::Notification::ActionType::kInlineReply, *inline_reply_id}},
       phonehub::Notification::InteractionBehavior::kNone, opt_title,
       opt_text_content, opt_shared_image, opt_contact_image);
 

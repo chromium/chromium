@@ -14,9 +14,11 @@
 <translation id="1047773237499189053">নতুন ফিচার উপলভ্য আছে, আরও জানতে, 'উর্ধমুখী তীরচিহ্ন' বোতাম ব্যবহার করুন।</translation>
 <translation id="1052916631016577720">আইটেম স্ক্যান</translation>
 <translation id="1056775291175587022">নেটওয়ার্ক নেই</translation>
+<translation id="1056898198331236512">সতর্কতা</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">প্রতিস্থাপন করুন</translation>
 <translation id="1073899992769346247">ব্যাটারিটি বদলান বা রিচার্জ করুন</translation>
+<translation id="1081015718268701546">Linux অ্যাপ বর্তমানে কাজ করে না। অন্যান্য অ্যাপ সেভ করা হবে।</translation>
 <translation id="108486256082349153">সেলুলার: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">শুভ অপরাহ্ন <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">আমি বোর হয়ে গেছি</translation>
@@ -43,6 +45,7 @@
 <translation id="1225748608451425081">কোনও পরিচিত সমস্যার কারণে আপনার Chromebook লক হয়ে গেছে। আপনি এতক্ষণ পর আবার সাইন-ইন করতে পারবেন: <ph name="TIME_LEFT" />।</translation>
 <translation id="1229194443904279055">বেছে নেওয়ার কাজটি থামান</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> ফিচারটি কানেক্ট করা আছে।</translation>
+<translation id="1246890715821376239">কাজ করে না এমন অ্যাপ</translation>
 <translation id="1247372569136754018">মাইক্রোফোন (অভ্যন্তরীণ)</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> থেকে চার্জ হচ্ছে</translation>
 <translation id="1255033239764210633">আবহাওয়া কি রকম?</translation>
@@ -168,6 +171,7 @@
 <translation id="2148716181193084225">আজ</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: আবার চেষ্টা করুন</translation>
 <translation id="2170530631236737939">'এক নজরে' মোড থেকে বেরিয়ে আসতে তিনটি আঙুল দিয়ে নিচের দিকে সোয়াইপ করুন</translation>
+<translation id="2201071101391734388"><ph name="TOTAL_COUNT" />-এর মধ্যে <ph name="INDEX" /> নম্বরের সাম্প্রতিক ফটো</translation>
 <translation id="2208323208084708176">একীভূত ডেস্কটপ মোড</translation>
 <translation id="2220572644011485463">PIN বা পাসওয়ার্ড</translation>
 <translation id="2222841058024245321">ডেস্ক ৭</translation>
@@ -247,6 +251,7 @@
 <translation id="2825619548187458965">তাক</translation>
 <translation id="2841907151129139818">'ট্যাবলেট' মোডে পাল্টানো হয়েছে</translation>
 <translation id="2844169650293029770">USB-C ডিভাইস (বাঁ দিকের সামনের পোর্ট)</translation>
+<translation id="2849936225196189499">জটিল</translation>
 <translation id="2860184359326882502">সেরা মিল</translation>
 <translation id="2865888419503095837">নেটওয়ার্ক তথ্য</translation>
 <translation id="2872961005593481000">বন্ধ করুন</translation>
@@ -291,6 +296,7 @@
 <translation id="3151786313568798007">সজ্জা</translation>
 <translation id="3153444934357957346">একধিক সাইন-ইনে আপনার সর্বাধিক <ph name="MULTI_PROFILE_USER_LIMIT" />টি অ্যাকাউন্ট থাকতে পারে।</translation>
 <translation id="3154351730702813399">ডিভাইস প্রশাসক আপনার ব্রাউজিং অ্যাক্টিভিটি পর্যবেক্ষণ করতে পারেন।</translation>
+<translation id="316086887565479535">টেমপ্লেটে এমন কিছু অ্যাপ আছে যা কাজ করে না</translation>
 <translation id="3181441307743005334">রিস্টার্ট করতে কিছুক্ষণ সময় লাগতে পারে</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{একটি ডিভাইসে কানেক্ট রয়েছে}one{#টি ডিভাইসে কানেক্ট রয়েছে}other{#টি ডিভাইসে কানেক্ট রয়েছে}}</translation>
 <translation id="320207200541803018">টাইমার সেট করুন</translation>
@@ -388,6 +394,7 @@
 <translation id="383058930331066723">'ব্যাটারি সেভার' মোড চালু আছে</translation>
 <translation id="3835880383832568924">আপডেট দেখতে, 'শর্টকার্ট' অ্যাপ খুলুন</translation>
 <translation id="383629559565718788">কীবোর্ড সেটিংস দেখান</translation>
+<translation id="384082539148746321">টেমপ্লেট মুছবেন?</translation>
 <translation id="3846214748874656680">পূর্ণস্ক্রীন থেকে প্রস্থান করুন</translation>
 <translation id="3846575436967432996">কোনো নেটওয়ার্ক সংক্রান্ত তথ্য উপলব্ধ নেই</translation>
 <translation id="385051799172605136">ফিরুন</translation>
@@ -822,6 +829,7 @@
 <translation id="7029814467594812963">সেশন থেকে প্রস্থান</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistant</translation>
 <translation id="7042322267639375032">স্ট্যাটাস এরিয়া আড়াল করুন</translation>
+<translation id="7045033600005038336">টেমপ্লেট পরিবর্তন করবেন?</translation>
 <translation id="7045595904618419789">ম্যাগনিফায়ার চালু করুন</translation>
 <translation id="7055381872777910864">বু</translation>
 <translation id="7055910611768509537">এক সপ্তাহের বেশি সময় ধরে স্টাইলাস ব্যবহার করা হয়নি</translation>
@@ -958,6 +966,7 @@
 <translation id="8036504271468642248">আগের বাক্য</translation>
 <translation id="8042893070933512245">অ্যাক্সেসিবিলিটি সেটিংস মেনু খুলুন</translation>
 <translation id="8048123526339889627">ব্লুটুথ সেটিংস</translation>
+<translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> নামের টেমপ্লেট আগে থেকেই আছে</translation>
 <translation id="8052898407431791827">ক্লিপবোর্ডে কপি করা হয়েছে</translation>
 <translation id="8054466585765276473">ব্যাটারি সময় গণনা করা হচ্ছে।</translation>
 <translation id="8061464966246066292">উচ্চ বৈসাদৃশ্য</translation>
@@ -1063,6 +1072,7 @@
 <translation id="8876661425082386199">আপনার ইন্টারনেট কানেকশন চেক করুন</translation>
 <translation id="8877788021141246043">রিমাইন্ডার সেট করুন</translation>
 <translation id="8878886163241303700">স্ক্রিন সম্প্রসারণ করা হচ্ছে</translation>
+<translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> স্থায়ীভাবে মুছে ফেলা হবে</translation>
 <translation id="890616557918890486">সোর্স পরিবর্তন করুন</translation>
 <translation id="8909138438987180327">ব্যাটারিতে <ph name="PERCENTAGE" /> শতাংশ চার্জ আছে।</translation>
 <translation id="8913384980486163186">থিমযুক্ত (ডিফল্ট)</translation>

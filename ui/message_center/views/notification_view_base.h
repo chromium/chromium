@@ -214,6 +214,10 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   // inline settings or vice versa.
   virtual void ToggleInlineSettings(const ui::Event& event);
 
+  // This function is called when user clicks on the notification action
+  // buttons.
+  virtual void ActionButtonPressed(size_t index, const ui::Event& event);
+
   NotificationControlButtonsView* control_buttons_view() {
     return control_buttons_view_;
   }
@@ -309,7 +313,6 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   void CreateOrUpdateActionButtonViews(const Notification& notification);
 
   void HeaderRowPressed();
-  void ActionButtonPressed(size_t index, const ui::Event& event);
 
   void ToggleExpanded();
 

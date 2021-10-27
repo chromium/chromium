@@ -16,7 +16,8 @@
 
 namespace ash {
 
-// The current HPS notify state in the system tray.
+// The icon in the system tray notifying a user that a second person has been
+// detected looking over their shoulder.
 class HpsNotifyView : public TrayItemView,
                       public SessionObserver,
                       public chromeos::HpsDBusClient::Observer {
@@ -46,15 +47,17 @@ class HpsNotifyView : public TrayItemView,
   // session state. Also updates the current cached states.
   void UpdateIconVisibility(bool is_oobe, bool hps_state);
 
-  // A callback to set our initial state by polling HPS. If we have received a
-  // signal before the callback is executed, this becomes a no-op.
+  // A callback to set our initial state by polling the presence daemon. If we
+  // have received a signal before the callback is executed, this becomes a
+  // no-op.
   void OnHpsPollResult(absl::optional<bool> result);
 
   // Used to track whether a signal should actually trigger a visibility change.
   bool hps_state_;
   bool is_oobe_;
 
-  // Used to avoid a race between polling and being signaled by the HPS service.
+  // Used to avoid a race between polling and being signaled by the presence
+  // daemon.
   bool first_signal_received_;
 
   base::ScopedObservation<SessionController, SessionObserver>

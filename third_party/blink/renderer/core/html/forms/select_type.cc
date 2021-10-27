@@ -97,7 +97,7 @@ class MenuListSelectType final : public SelectType {
 
   void CreateShadowSubtree(ShadowRoot& root) override;
   Element& InnerElement() const override;
-  void ShowPopup() override;
+  void ShowPopup(PopupMenu::ShowEventType type) override;
   void HidePopup() override;
   void PopupDidHide() override;
   bool PopupIsVisible() const override;
@@ -247,7 +247,8 @@ bool MenuListSelectType::DefaultEventHandler(const Event& event) {
         // TODO(lanwei): Will check if we need to add
         // InputDeviceCapabilities here when select menu list gets
         // focus, see https://crbug.com/476530.
-        ShowPopup();
+        ShowPopup(mouse_event->FromTouch() ? PopupMenu::kTouch
+                                           : PopupMenu::kOther);
       }
     }
     return true;
@@ -291,7 +292,7 @@ bool MenuListSelectType::HandlePopupOpenKeyboardEvent() {
   // SelectOptionByPopup, which gets called after the user makes a selection
   // from the menu.
   SaveLastSelection();
-  ShowPopup();
+  ShowPopup(PopupMenu::kOther);
   return true;
 }
 
@@ -311,7 +312,7 @@ Element& MenuListSelectType::InnerElement() const {
   return *inner_element;
 }
 
-void MenuListSelectType::ShowPopup() {
+void MenuListSelectType::ShowPopup(PopupMenu::ShowEventType type) {
   if (PopupIsVisible())
     return;
   Document& document = select_->GetDocument();
@@ -332,7 +333,7 @@ void MenuListSelectType::ShowPopup() {
   SetPopupIsVisible(true);
   ObserveTreeMutation();
 
-  popup_->Show();
+  popup_->Show(type);
   if (AXObjectCache* cache = document.ExistingAXObjectCache())
     cache->DidShowMenuListPopup(select_->GetLayoutObject());
 }
@@ -1341,7 +1342,7 @@ Element& SelectType::InnerElement() const {
   return *select_;
 }
 
-void SelectType::ShowPopup() {
+void SelectType::ShowPopup(PopupMenu::ShowEventType) {
   NOTREACHED();
 }
 

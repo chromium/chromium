@@ -55,6 +55,8 @@ class ASH_EXPORT PhoneHubNotificationController
 
  private:
   FRIEND_TEST_ALL_PREFIXES(PhoneHubNotificationControllerTest,
+                           CustomActionRowExpanded);
+  FRIEND_TEST_ALL_PREFIXES(PhoneHubNotificationControllerTest,
                            ReplyBrieflyDisabled);
   FRIEND_TEST_ALL_PREFIXES(PhoneHubNotificationControllerTest,
                            NotificationHasPhoneName);
@@ -106,6 +108,12 @@ class ASH_EXPORT PhoneHubNotificationController
 
   static std::unique_ptr<message_center::MessageView>
   CreateCustomNotificationView(
+      base::WeakPtr<PhoneHubNotificationController> notification_controller,
+      const message_center::Notification& notification,
+      bool shown_in_popup);
+
+  static std::unique_ptr<message_center::MessageView>
+  CreateCustomActionNotificationView(
       base::WeakPtr<PhoneHubNotificationController> notification_controller,
       const message_center::Notification& notification,
       bool shown_in_popup);

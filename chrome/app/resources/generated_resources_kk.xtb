@@ -325,6 +325,7 @@
 <translation id="133535873114485416">Қалаған енгізу әдісі</translation>
 <translation id="1335929031622236846">Құрылғыны тіркеу</translation>
 <translation id="1336902454946927954">Саусағыңыздың ізі танылмағандықтан, қауіпсіздік кілті құлыптаулы тұр. Оның құлпын ашу үшін PIN кодыңызды енгізіңіз.</translation>
+<translation id="1338631221631423366">Жұпталуда…</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> осы қолданбаны ашқысы келеді.</translation>
 <translation id="1338950911836659113">Жойылуда…</translation>
 <translation id="1339009753652684748">Assistant қолданбасына "Ok Google" деп кіресіз. Батарея зарядын үнемдеу үшін "Қосулы (ұсынылады)" опциясын таңдағаныңыз дұрыс. Құрылғыңыз қуат көзіне қосылғанда немесе зарядталып жатқанда ғана, Assistant жауап береді.</translation>
@@ -710,7 +711,6 @@
 <translation id="1722460139690167654"><ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> құрылғыңызды <ph name="END_LINK" /> <ph name="ENROLLMENT_DOMAIN" /> басқарады.</translation>
 <translation id="1723824996674794290">&amp;Жаңа терезе</translation>
 <translation id="1725562816265788801">Қойындыны айналдыру</translation>
-<translation id="1727662110063605623">Параметрлерді ашып, <ph name="USB_DEVICE_NAME" /> құрылғысын Parallels Desktop немесе Linux жүйесіне қосыңыз.</translation>
 <translation id="1729533290416704613">Сонымен қатар ол Omnibox жүйесінен іздегенде қайсы бет көрсетілуін бақылайды.</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />Қолданбаларды өшіру үшін "Параметрлер &gt; Google Play Store &gt; Android параметрлерін басқару &gt; Қолданбалар немесе қолданба реттеушісі" тармағына өтіңіз. Одан кейін жойылатын қолданбаны (қолданбаны табу үшін саусақпен оңға немесе солға сырғыту керек), одан кейін "Жою" немесе "Өшіру" опциясын түртіңіз.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1731911755844941020">Сұрау жіберілуде…</translation>
@@ -6543,6 +6543,7 @@
 <translation id="7887864092952184874">Bluetooth тінтуірі жұптастырылды</translation>
 <translation id="7889371445710865055">Мәтінді дауыспен енгізу тілін өзгерту</translation>
 <translation id="7890147169288018054">IP не MAC мекенжайы сияқты желі ақпаратын көру</translation>
+<translation id="7892384782944609022">Жұпталмады. Әрекетті қайталау үшін құрылғыны таңдаңыз.</translation>
 <translation id="7893008570150657497">Компьютеріңіздегі фотосуреттерге, музыкаға және басқа медиафайлдарға кіру</translation>
 <translation id="7893153962594818789">Bluetooth функциясы бұл <ph name="DEVICE_TYPE" /> құрылғысында өшірулі. Құпия сөзді енгізіп, Bluetooth функциясын қосыңыз.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Әдепкі)</translation>

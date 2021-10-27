@@ -9,7 +9,9 @@
 #include "base/callback_helpers.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
 namespace apps {
@@ -99,6 +101,43 @@ void StandaloneBrowserExtensionApps::Launch(
   params->app_id = app_id;
   params->launch_source = launch_source;
   controller_->Launch(std::move(params), /*callback=*/base::DoNothing());
+}
+
+void StandaloneBrowserExtensionApps::LaunchAppWithIntent(
+    const std::string& app_id,
+    int32_t event_flags,
+    apps::mojom::IntentPtr intent,
+    apps::mojom::LaunchSource launch_source,
+    apps::mojom::WindowInfoPtr window_info) {
+  // It is possible that Lacros is briefly unavailable, for example if it shuts
+  // down for an update.
+  if (!controller_.is_bound())
+    return;
+
+  auto launch_params = crosapi::mojom::LaunchParams::New();
+  launch_params->app_id = app_id;
+  launch_params->launch_source = launch_source;
+  launch_params->intent = apps_util::ConvertAppServiceToCrosapiIntent(
+      intent, ProfileManager::GetPrimaryUserProfile());
+  controller_->Launch(std::move(launch_params), /*callback=*/base::DoNothing());
+}
+
+void StandaloneBrowserExtensionApps::LaunchAppWithFiles(
+    const std::string& app_id,
+    int32_t event_flags,
+    apps::mojom::LaunchSource launch_source,
+    apps::mojom::FilePathsPtr file_paths) {
+  // It is possible that Lacros is briefly unavailable, for example if it shuts
+  // down for an update.
+  if (!controller_.is_bound())
+    return;
+
+  auto launch_params = crosapi::mojom::LaunchParams::New();
+  launch_params->app_id = app_id;
+  launch_params->launch_source = launch_source;
+  launch_params->intent =
+      apps_util::CreateCrosapiIntentForViewFiles(file_paths);
+  controller_->Launch(std::move(launch_params), /*callback=*/base::DoNothing());
 }
 
 void StandaloneBrowserExtensionApps::GetMenuModel(

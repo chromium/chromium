@@ -1580,6 +1580,11 @@ void ChromeContentRendererClient::
 
   if (base::FeatureList::IsEnabled(subresource_filter::kAdTagging))
     blink::WebRuntimeFeatures::EnableAdTagging(true);
+
+  if (blink::features::IsPrerender2Enabled() &&
+      base::FeatureList::IsEnabled(features::kOmniboxTriggerForPrerender2)) {
+    blink::WebRuntimeFeatures::EnablePrerender2RelatedFeatures(true);
+  }
 }
 
 bool ChromeContentRendererClient::AllowScriptExtensionForServiceWorker(

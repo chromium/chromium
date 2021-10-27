@@ -175,7 +175,7 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     readonly attribute boolean wasDiscarded;
 
     // https://jeremyroman.github.io/alternate-loading-modes/#dom-document-prerendering
-    [RuntimeEnabled=Prerender2] readonly attribute boolean prerendering;
+    [RuntimeEnabled=Prerender2RelatedFeatures] readonly attribute boolean prerendering;
 
     // CORS and RFC1918
     // https://wicg.github.io/cors-rfc1918/#feature-detect
@@ -213,7 +213,7 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     attribute EventHandler onbeforecut;
     attribute EventHandler onbeforepaste;
     attribute EventHandler onfreeze;
-    [RuntimeEnabled=Prerender2] attribute EventHandler onprerenderingchange;
+    [RuntimeEnabled=Prerender2RelatedFeatures] attribute EventHandler onprerenderingchange;
     attribute EventHandler onresume;
     attribute EventHandler onsearch;
     attribute EventHandler onvisibilitychange;

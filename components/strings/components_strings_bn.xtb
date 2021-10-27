@@ -301,6 +301,7 @@
 <translation id="1842969606798536927">পেমেন্ট করুন</translation>
 <translation id="1856713167556118146">'ছদ্মবেশী' মোড কী করতে পারে না</translation>
 <translation id="1863257867908022953">ট্রে ১২</translation>
+<translation id="1864927262126810325"><ph name="SOURCE_NAME" /> থেকে</translation>
 <translation id="1871208020102129563">
 প্রক্সি স্থির প্রক্সি সার্ভারগুলি ব্যবহার করতে সেট করা আছে কোনো .pac স্ক্রিপ্ট URL নয়৷</translation>
 <translation id="1871284979644508959">আবশ্যক ক্ষেত্র</translation>
@@ -964,6 +965,7 @@
 <translation id="4117700440116928470">নীতির সুযোগটি সমর্থিত নয়৷</translation>
 <translation id="4121428309786185360">এই তারিখে মেয়াদউত্তীর্ণ হয়</translation>
 <translation id="4123572138124678573">নিচে ট্রিপল পাঞ্চ</translation>
+<translation id="4127575959421463246">ChromeOS ফ্ল্যাগ খুঁজছেন? দেখুন</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{আরও ১টি}one{অন্যান্য #টি}other{অন্যান্য #টি}}</translation>
 <translation id="4130226655945681476">নেটওয়ার্কের তার, মডেম, এবং রাউটার পরীক্ষা করুন</translation>
 <translation id="4133224101597112888">এই ট্যাব বোতামটি শেয়ার করুন। লিংক শেয়ার করে, QR কোড তৈরি করে, কাস্ট করে, এবং আরও অন্যান্য বিকল্পের সাহায্যে এই ট্যাবটি শেয়ার করতে Enter প্রেস করুন।</translation>
@@ -1135,6 +1137,7 @@
 <translation id="4606870351894164739">প্রভাবশালী</translation>
 <translation id="4607603470419975064">Chrome সম্পর্কিত পরামর্শ দেখুন বোতাম, Chrome-এর ফিচার সম্পর্কে জানতে Enter প্রেস করুন</translation>
 <translation id="4607608436550361748">Chrome-এর পরামর্শ দেখুন</translation>
+<translation id="4627675673814409125">এই নীতিটি Chrome প্রোফাইল লেভেলে সেট করা যাবে না এবং এড়িয়ে যাওয়া হবে।</translation>
 <translation id="4628948037717959914">ফটো</translation>
 <translation id="4631649115723685955">ক্যাশব্যাক অফার লিঙ্ক করা হয়েছে</translation>
 <translation id="4636930964841734540">তথ্য</translation>
@@ -1765,6 +1768,7 @@
 <translation id="674375294223700098">অজানা সার্ভার সার্টিফিকেট ত্রুটি৷</translation>
 <translation id="6744009308914054259">কানেকশনের জন্য অপেক্ষা করার সময়, আপনি ডাউনলোডে গিয়ে অফলাইন নিবন্ধগুলি পড়তে পারেন।</translation>
 <translation id="6753269504797312559">নীতি মান</translation>
+<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">আপনার ডিভাইস নিদ্রা মোডে গিয়েছে।</translation>
 <translation id="6767985426384634228">ঠিকানা আপডেট করবেন?</translation>
 <translation id="6768213884286397650">Hagaki (Postcard)</translation>
@@ -1852,6 +1856,7 @@
 <translation id="706295145388601875">Chrome সেটিংসে ঠিকানা যোগ ও ম্যানেজ করুন</translation>
 <translation id="7064851114919012435">পরিচিতি তথ্য</translation>
 <translation id="7068733155164172741"><ph name="OTP_LENGTH" />-সংখ্যার কোড লিখুন</translation>
+<translation id="7070090581017165256">এই সাইটের বিষয়ে</translation>
 <translation id="70705239631109039">এই কানেকশন সম্পূর্ণরূপে নিরাপদ নয়</translation>
 <translation id="7075452647191940183">অনুরোধ অত্যন্ত বড়</translation>
 <translation id="7079718277001814089">এই সাইটটিতে ম্যালওয়্যার আছে</translation>
@@ -2096,6 +2101,7 @@
 <translation id="7813600968533626083">Chrome থেকে ফর্ম প্রস্তাবনা সরাবেন?</translation>
 <translation id="781440967107097262">ক্লিপবোর্ড শেয়ার করবেন?</translation>
 <translation id="7815407501681723534">'<ph name="SEARCH_STRING" />' এর জন্য <ph name="NUMBER_OF_RESULTS" />টি <ph name="SEARCH_RESULTS" /> খুঁজে পাওয়া গেছে</translation>
+<translation id="782125616001965242">এই সাইটের বিষয়ে তথ্য দেখুন</translation>
 <translation id="782886543891417279">আপনি যে (<ph name="WIFI_NAME" />) ওয়াই-ফাই ব্যবহার করছেন সেটির জন্য অপনাকে এটির লগ-ইন পৃষ্ঠাতে যেতে হতে পরে৷</translation>
 <translation id="7836231406687464395">Postfix (Envelope)</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{একটিও নয়}=1{১টি অ্যাপ (<ph name="EXAMPLE_APP_1" />)}=2{২টি অ্যাপ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{#টি অ্যাপ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}other{#টি অ্যাপ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
@@ -2374,6 +2380,7 @@
 <translation id="8792626944327216835">মাইক্রোফোন</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> আপনার ব্রাউজারে Chrome Enterprise কানেক্টর চালু করেছে। এই কানেক্টর আপনার কিছু ডেটা অ্যাক্সেস করতে পারবে।</translation>
 <translation id="8798099450830957504">ডিফল্ট</translation>
+<translation id="8798739476508189189">ব্রাউজার ফ্ল্যাগ খুঁজছেন? দেখুন</translation>
 <translation id="8805819170075074995">তালিকার এন্ট্রি "<ph name="LANGUAGE_ID" />": এন্ট্রিটি SpellcheckLanguage নীতিতেও অন্তর্ভুক্ত থাকার জন্য এটি অগ্রাহ্য করা হয়েছে।</translation>
 <translation id="8807160976559152894">প্রতিটি পৃষ্ঠার পর ট্রিম করুন</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, আপনার Chrome সেটিংসে Chrome আপডেট করতে, প্রথমে Tab আর তারপরে Enter প্রেস করুন</translation>
@@ -2479,6 +2486,7 @@
 <translation id="9157595877708044936">সেট-আপ হচ্ছে...</translation>
 <translation id="9158625974267017556">C6 (Envelope)</translation>
 <translation id="9164029392738894042">আরও উন্নত করার জন্য, দেওয়া পরামর্শ যাচাই করা</translation>
+<translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">আপনি কোনও পেমেন্ট পদ্ধতি সেভ করেছেন কিনা তা সাইটগুলিকে যাচাই করতে দিন</translation>
 <translation id="9169664750068251925">এই সাইটে সর্বদা অবরোধ করুন</translation>
 <translation id="9169931577761441333"><ph name="APP_NAME" /> অ্যাপটি হোম স্ক্রিনে যোগ করুন</translation>

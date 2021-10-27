@@ -711,7 +711,6 @@
 <translation id="1722460139690167654"><ph name="ENROLLMENT_DOMAIN" /> administra tu <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /><ph name="END_LINK" /></translation>
 <translation id="1723824996674794290">&amp;Nueva ventana</translation>
 <translation id="1725562816265788801">Desplazamiento de pestañas</translation>
-<translation id="1727662110063605623">Abre la Configuración para conectar el dispositivo <ph name="USB_DEVICE_NAME" /> a Parallels Desktop o Linux.</translation>
 <translation id="1729533290416704613">También controla qué página se muestra al realizar búsquedas desde el cuadro multifunción.</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />Para quitar apps, ve a Configuración &gt; Google Play Store &gt; Administrar preferencias de Android &gt; Apps o Administrador de aplicaciones. Luego, presiona la app que quieras desinstalar (es posible que debas deslizar el dedo hacia la derecha o la izquierda para encontrarla). A continuación, presiona Desinstalar o Inhabilitar.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1731911755844941020">Enviando solicitud...</translation>

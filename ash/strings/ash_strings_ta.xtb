@@ -14,9 +14,11 @@
 <translation id="1047773237499189053">புதிய அம்சம் உள்ளது. மேலும் அறிய, மேல்நோக்கிய அம்புக்குறி விசையைப் பயன்படுத்துங்கள்.</translation>
 <translation id="1052916631016577720">ஸ்கேன் செய்</translation>
 <translation id="1056775291175587022">நெட்வொர்க்குகள் இல்லை</translation>
+<translation id="1056898198331236512">எச்சரிக்கை</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">மாற்றியமை</translation>
 <translation id="1073899992769346247">பேட்டரியை மாற்றவும் அல்லது ரீசார்ஜ் செய்யவும்</translation>
+<translation id="1081015718268701546">Linux ஆப்ஸ் தற்போது ஆதரிக்கப்படுவதில்லை. பிற ஆப்ஸ் சேமிக்கப்படும்.</translation>
 <translation id="108486256082349153">மொபைல்: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">மதிய வணக்கம் <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">எனக்குப் பொழுதுபோகவில்லை</translation>
@@ -43,6 +45,7 @@
 <translation id="1225748608451425081">உங்கள் Chromebook பூட்டப்பட்டது, இதற்கான காரணத்தை அறிவோம். <ph name="TIME_LEFT" /> கடந்ததும் உங்களால் உள்நுழைய முடியும்.</translation>
 <translation id="1229194443904279055">தேர்ந்தெடுப்பதை நிறுத்து</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> இணைக்கப்பட்டது.</translation>
+<translation id="1246890715821376239">ஆதரிக்கப்படாத ஆப்ஸ்</translation>
 <translation id="1247372569136754018">மைக்ரோஃபோன் (அகம்)</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> இலிருந்து சார்ஜ் செய்யப்படுகிறது</translation>
 <translation id="1255033239764210633">வானிலை எப்படி இருக்கிறது?</translation>
@@ -168,6 +171,7 @@
 <translation id="2148716181193084225">இன்று</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: மீண்டும் முயலுங்கள்</translation>
 <translation id="2170530631236737939">மேலோட்டப் பயன்முறையில் இருந்து வெளியேற, கீழ்நோக்கி மூன்று விரல்களால் ஸ்வைப் செய்யவும்</translation>
+<translation id="2201071101391734388">சமீபத்திய படம்: <ph name="TOTAL_COUNT" /> இல் <ph name="INDEX" />வது.</translation>
 <translation id="2208323208084708176">ஒன்றிணைந்த டெஸ்க்டாப் பயன்முறை</translation>
 <translation id="2220572644011485463">பின் அல்லது கடவுச்சொல்</translation>
 <translation id="2222841058024245321">டெஸ்க் 7</translation>
@@ -247,6 +251,7 @@
 <translation id="2825619548187458965">அடுக்கு</translation>
 <translation id="2841907151129139818">டேப்லெட் பயன்முறைக்கு மாற்றப்பட்டது</translation>
 <translation id="2844169650293029770">USB-C சாதனம் (இடது பக்கம் முன்னே இருக்கும் போர்ட்)</translation>
+<translation id="2849936225196189499">சிக்கலான</translation>
 <translation id="2860184359326882502">சிறப்பாகப் பொருந்துபவை</translation>
 <translation id="2865888419503095837">நெட்வொர்க் தகவல்</translation>
 <translation id="2872961005593481000">நிறுத்து</translation>
@@ -291,6 +296,7 @@
 <translation id="3151786313568798007">திசையமைப்பு</translation>
 <translation id="3153444934357957346">பல உள்நுழைவில் <ph name="MULTI_PROFILE_USER_LIMIT" /> கணக்குகள் வரை மட்டுமே வைத்திருக்கலாம்.</translation>
 <translation id="3154351730702813399">சாதன நிர்வாகி உங்கள் உலாவல் செயல்பாட்டைக் கண்காணிக்கக்கூடும்.</translation>
+<translation id="316086887565479535">டெம்ப்ளேட்டில் ஆதரிக்கப்படாத ஆப்ஸ் உள்ளன</translation>
 <translation id="3181441307743005334">மீண்டும் தொடங்க சிறிது நேரம் ஆகலாம்</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{ஒரு சாதனத்துடன் இணைக்கப்பட்டுள்ளது}other{# சாதனங்களுடன் இணைக்கப்பட்டுள்ளது}}</translation>
 <translation id="320207200541803018">டைமரை அமை</translation>
@@ -388,6 +394,7 @@
 <translation id="383058930331066723">பேட்டரி சேமிப்பான் பயன்முறை இயக்கத்தில் உள்ளது</translation>
 <translation id="3835880383832568924">மாற்றங்களைப் பார்க்க Shortcuts ஆப்ஸைத் திறக்கவும்</translation>
 <translation id="383629559565718788">கீபோர்டு அமைப்புகளைக் காண்பிக்கும்</translation>
+<translation id="384082539148746321">டெம்ப்ளேட்டை நீக்கவா?</translation>
 <translation id="3846214748874656680">முழுத்திரை வேண்டாம்</translation>
 <translation id="3846575436967432996">நெட்வொர்க் தகவல் எதுவும் இல்லை</translation>
 <translation id="385051799172605136">திரும்பு</translation>
@@ -822,6 +829,7 @@
 <translation id="7029814467594812963">அமர்விலிருந்து வெளியேறவும்</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google அசிஸ்டண்ட்</translation>
 <translation id="7042322267639375032">நிலைப் பகுதியை சுருக்கும்</translation>
+<translation id="7045033600005038336">டெம்ப்ளேட்டை மாற்றியமைக்கவா?</translation>
 <translation id="7045595904618419789">பெரிதாக்கியை இயக்கு</translation>
 <translation id="7055381872777910864">புத</translation>
 <translation id="7055910611768509537">ஒரு வாரத்திற்கும் மேலாக ஸ்டைலஸ் பயன்படுத்தப்படவில்லை</translation>
@@ -958,6 +966,7 @@
 <translation id="8036504271468642248">முந்தைய வாக்கியம்</translation>
 <translation id="8042893070933512245">அணுகல்தன்மை அமைப்புகள் மெனுவைத் திற</translation>
 <translation id="8048123526339889627">புளூடூத் அமைப்புகள்</translation>
+<translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> என்ற பெயரில் ஏற்கெனவே ஒரு டெம்ப்ளேட் உள்ளது</translation>
 <translation id="8052898407431791827">கிளிப்போர்டுக்கு நகலெடுக்கப்பட்டது</translation>
 <translation id="8054466585765276473">பேட்டரி நேரத்தைக் கணக்கிடுகிறது.</translation>
 <translation id="8061464966246066292">உயர் மாறுபாடு</translation>
@@ -1063,6 +1072,7 @@
 <translation id="8876661425082386199">இணைய இணைப்பைச் சரிபார்க்கவும்</translation>
 <translation id="8877788021141246043">நினைவூட்டலை அமை</translation>
 <translation id="8878886163241303700">திரையை விரிவாக்குகிறது</translation>
+<translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> நிரந்தரமாக நீக்கப்படும்</translation>
 <translation id="890616557918890486">மூலத்தை மாற்று</translation>
 <translation id="8909138438987180327">பேட்டரி: <ph name="PERCENTAGE" /> சதவீதம்.</translation>
 <translation id="8913384980486163186">தீம் வண்ணம் (இயல்பு)</translation>

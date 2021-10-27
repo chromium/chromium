@@ -131,6 +131,7 @@
 <translation id="2122305276694332719">Жасырын желіге автоматты түрде қосылсаңыз, басқалар сіздің құрылғыңызды және кейбір желілік параметрлеріңізді көре алады. Сондықтан жасырын желіге автоматты түрде қосылмағаныңыз жөн.</translation>
 <translation id="2125607626296734455">Кхмер</translation>
 <translation id="2139545522194199494"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />%, әкімшіңіз басқарады, қосылу</translation>
+<translation id="2141347188420181405">Желі: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />%, әкімші бөгеген, мәліметтер</translation>
 <translation id="2142680004883808240">Орыс (фонетикалық YaZHert пернетақтасымен)</translation>
 <translation id="2143778271340628265">Прокси конфигурациясын қолмен реттеу</translation>
 <translation id="2163152940313951844">Жарамсыз таңба: <ph name="CHARACTER_NAME" /></translation>
@@ -185,6 +186,7 @@
 <translation id="2563185590376525700">Бақа</translation>
 <translation id="2578394532502990878">Тамиль (фонетикалық)</translation>
 <translation id="2579959351793446050">Одия</translation>
+<translation id="2602810353103180630">Желі: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />%, әкімші бөгеген, мәліметтер</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> бейнесі</translation>
 <translation id="2617342710774726426">SIM картасы құлыпталған</translation>
 <translation id="2620090360073999360">Google Drive жүйесіне қазір кіру мүмкін емес.</translation>

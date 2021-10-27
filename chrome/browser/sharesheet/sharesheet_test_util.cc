@@ -9,7 +9,11 @@
 namespace sharesheet {
 
 apps::mojom::IntentPtr CreateValidTextIntent() {
-  return apps_util::CreateShareIntentFromText("text", "title");
+  return apps_util::CreateShareIntentFromText(kTestText, kTestTitle);
+}
+
+apps::mojom::IntentPtr CreateValidUrlIntent() {
+  return apps_util::CreateShareIntentFromText(kTestUrl, kTestTitle);
 }
 
 apps::mojom::IntentPtr CreateInvalidIntent() {

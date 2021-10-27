@@ -287,7 +287,7 @@ TEST_F(MrfuCacheTest, Sort) {
   MrfuCache::Items items = {{"A", 0.5f}, {"B", 0.3f}, {"C", 0.4f}};
   MrfuCache::Sort(items);
   EXPECT_THAT(items,
-              ElementsAre(Pair("B", 0.3f), Pair("C", 0.4f), Pair("A", 0.5f)));
+              ElementsAre(Pair("A", 0.5f), Pair("C", 0.4f), Pair("B", 0.3f)));
 }
 
 TEST_F(MrfuCacheTest, ResetWithItems) {

@@ -726,7 +726,6 @@
 <translation id="1722460139690167654">Din <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> administreres<ph name="END_LINK" /> af <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">&amp;Nyt vindue</translation>
 <translation id="1725562816265788801">Fanerulning</translation>
-<translation id="1727662110063605623">Åbn Indstillinger for at knytte <ph name="USB_DEVICE_NAME" /> til Parallels Desktop eller Linux</translation>
 <translation id="1729533290416704613">Den styrer også, hvilken side der vises, når du søger via omnifeltet.</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />Hvis du vil fjerne apps, skal du gå til Indstillinger &gt; Google Play Butik &gt; Administrer Android-præferencer &gt; Apps eller Administration af apps. Tryk derefter på den app, du vil afinstallere (du skal muligvis stryge til højre eller venstre for at finde appen). Tryk derefter på Afinstaller eller Deaktiver.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1731911755844941020">Sender anmodning...</translation>

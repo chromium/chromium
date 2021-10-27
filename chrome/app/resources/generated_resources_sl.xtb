@@ -728,7 +728,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="1722460139690167654">Napravo <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> upravlja<ph name="END_LINK" /> domena <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">&amp;Novo okno</translation>
 <translation id="1725562816265788801">Drsenje z zavihki</translation>
-<translation id="1727662110063605623">Odprite nastavitve, če želite napravo <ph name="USB_DEVICE_NAME" /> povezati s programom Parallels Desktop ali z Linuxom.</translation>
 <translation id="1729533290416704613">Določa tudi, katera stran je prikazana, ko iščete v naslovni vrstici.</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />Če želite odstraniti aplikacije, pojdite v »Nastavitve« &gt; »Trgovina Google Play« &gt; »Upravljanje nastavitev Androida« &gt; »Aplikacije« ali odprite upravitelja aplikacij. Nato se dotaknite aplikacije, ki jo želite odstraniti (morda boste morali s prstom povleči v desno ali levo, da jo boste našli). Nato se dotaknite »Odstrani« ali »Onemogoči«.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1731911755844941020">Pošiljanje zahteve ...</translation>

@@ -62,9 +62,6 @@ bool PasswordFormManager::wait_for_server_predictions_for_filling_ = true;
 
 namespace {
 
-constexpr base::TimeDelta kMaxFillingDelayForServerPredictions =
-    base::Milliseconds(500);
-
 // Returns bit masks with differences in forms attributes which are important
 // for parsing. Bits are set according to enum FormDataDifferences.
 uint32_t FindFormsDifferences(const FormData& lhs, const FormData& rhs) {
@@ -627,6 +624,17 @@ PasswordFormManager::PasswordFormManager(
   owned_form_fetcher_->Fetch();
 }
 
+void PasswordFormManager::DelayFillForServerSidePredictions() {
+  waiting_for_server_predictions_ = true;
+
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&PasswordFormManager::Fill,
+                     weak_ptr_factory_.GetWeakPtr()),
+      kMaxFillingDelayForServerPredictions);
+}
+
 void PasswordFormManager::OnFetchCompleted() {
   received_stored_credentials_time_ = TimeTicks::Now();
 
@@ -654,12 +662,7 @@ void PasswordFormManager::OnFetchCompleted() {
     ReportTimeBetweenStoreAndServerUMA();
     Fill();
   } else if (!waiting_for_server_predictions_) {
-    waiting_for_server_predictions_ = true;
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&PasswordFormManager::Fill,
-                       weak_ptr_factory_.GetWeakPtr()),
-        kMaxFillingDelayForServerPredictions);
+    DelayFillForServerSidePredictions();
   }
 }
 
@@ -1070,6 +1073,8 @@ void PasswordFormManager::UpdateFormManagerWithFormChanges(
   autofills_left_ = kMaxTimesAutofill;
   parser_.reset_predictions();
   UpdatePredictionsForObservedForm(predictions);
+
+  DelayFillForServerSidePredictions();
 }
 
 }  // namespace password_manager

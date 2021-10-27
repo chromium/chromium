@@ -2604,9 +2604,6 @@ extern const char kDisableQuickAnswersV2TranslationDescription[];
 extern const char kESimPolicyName[];
 extern const char kESimPolicyDescription[];
 
-extern const char kPluginVmFullscreenName[];
-extern const char kPluginVmFullscreenDescription[];
-
 extern const char kTrimOnMemoryPressureName[];
 extern const char kTrimOnMemoryPressureDescription[];
 

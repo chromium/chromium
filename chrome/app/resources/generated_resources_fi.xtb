@@ -724,7 +724,6 @@
 <translation id="1722460139690167654"><ph name="BEGIN_LINK" />Laitettasi (<ph name="DEVICE_TYPE" />) ylläpitää<ph name="END_LINK" /> <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">Uusi ikku&amp;na</translation>
 <translation id="1725562816265788801">Välilehden vieritys</translation>
-<translation id="1727662110063605623">Avaa Asetukset, jotta <ph name="USB_DEVICE_NAME" /> voidaan yhdistää Parallels Desktopiin tai Linuxiin</translation>
 <translation id="1729533290416704613">Määrittää myös omnibox-hakujen aloitussivun.</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />Jos haluat poistaa sovelluksia, valitse Asetukset &gt; Google Play Kauppa &gt; Hallitse Android-asetuksia &gt; Sovellukset tai Sovellusten hallinta. Valitse sitten sovellus, jonka haluat poistaa (jos sovellusta ei näy, pyyhkäise oikealle tai vasemmalle). Valitse sitten Poista tai Poista käytöstä.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1731911755844941020">Lähetetään pyyntöä...</translation>

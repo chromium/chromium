@@ -327,6 +327,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="133535873114485416">Preferowane urządzenie wejściowe</translation>
 <translation id="1335929031622236846">Zarejestruj swoje urządzenie</translation>
 <translation id="1336902454946927954">Klucz bezpieczeństwa jest zablokowany, bo nie udało się rozpoznać Twojego odcisku palca. Aby odblokować klucz bezpieczeństwa, wpisz kod PIN.</translation>
+<translation id="1338631221631423366">Paruję…</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> chce otworzyć tę aplikację.</translation>
 <translation id="1338950911836659113">Usuwam...</translation>
 <translation id="1339009753652684748">Uruchamiaj Asystenta, mówiąc „OK Google”. Aby oszczędzać baterię, wybierz „Wł. (zalecane)”. Asystent będzie reagować tylko podczas ładowania urządzenia i wtedy, gdy będzie ono podłączone do zasilania.</translation>
@@ -715,7 +716,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1722460139690167654">Twoim <ph name="BEGIN_LINK" />urządzeniem <ph name="DEVICE_TYPE" /> zarządza<ph name="END_LINK" /> domena <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">&amp;Nowe okno</translation>
 <translation id="1725562816265788801">Przewijanie kart</translation>
-<translation id="1727662110063605623">Otwórz Ustawienia, by podłączyć urządzenie <ph name="USB_DEVICE_NAME" /> do Parallels Desktop lub Linuksa</translation>
 <translation id="1729533290416704613">Kontroluje także to, jaka strona wyświetla się po wyszukiwaniu w omniboksie.</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />Aby usunąć aplikacje, otwórz Ustawienia &gt; Sklep Google Play &gt; Zarządzaj ustawieniami Androida &gt; Aplikacje lub Menedżer aplikacji. Następnie kliknij aplikację, którą chcesz odinstalować (jeśli to konieczne, przesuń palcem w prawo lub w lewo, by ją znaleźć), a potem kliknij Odinstaluj lub Wyłącz.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1731911755844941020">Wysyłanie żądania...</translation>
@@ -6544,6 +6544,7 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7887864092952184874">Sparowano mysz Bluetooth</translation>
 <translation id="7889371445710865055">Zmień język dyktowania</translation>
 <translation id="7890147169288018054">Sprawdzanie informacji o sieci, takich jak adres IP lub MAC</translation>
+<translation id="7892384782944609022">Nie udało się sparować. Wybierz urządzenie, aby spróbować ponownie.</translation>
 <translation id="7893008570150657497">Dostęp do zdjęć, muzyki i innych multimediów na komputerze</translation>
 <translation id="7893153962594818789">Bluetooth jest wyłączony na urządzeniu <ph name="DEVICE_TYPE" />. Wpisz hasło i włącz Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (domyślna)</translation>

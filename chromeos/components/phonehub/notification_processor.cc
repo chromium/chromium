@@ -4,6 +4,7 @@
 
 #include "chromeos/components/phonehub/notification_processor.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/barrier_closure.h"
 #include "base/callback.h"
 #include "base/strings/utf_string_conversions.h"
@@ -38,31 +39,69 @@ Notification::Importance GetNotificationImportanceFromProto(
   }
 }
 
-absl::optional<int64_t> GetInlineReplyIdFromProto(
-    const proto::Notification& proto) {
-  auto actions_it = std::find_if(
-      proto.actions().begin(), proto.actions().end(), [](const auto& action) {
-        return action.type() == proto::Action_InputType::Action_InputType_TEXT;
-      });
-
-  if (actions_it == proto.actions().end())
-    return absl::nullopt;
-
-  return actions_it->id();
+bool HasSupportedActionIdInProto(const proto::Notification& proto) {
+  for (const auto& action : proto.actions()) {
+    if (action.type() == proto::Action_InputType::Action_InputType_TEXT ||
+        action.call_action() ==
+            proto::Action_CallAction::Action_CallAction_ANSWER ||
+        action.call_action() ==
+            proto::Action_CallAction::Action_CallAction_DECLINE ||
+        action.call_action() ==
+            proto::Action_CallAction::Action_CallAction_HANGUP)
+      return true;
+  }
+  return false;
 }
 
-Notification CreateInlineReplyNotification(const proto::Notification& proto,
-                                           const gfx::Image& icon,
-                                           const gfx::Image& shared_image,
-                                           const gfx::Image& contact_image) {
-  absl::optional<int64_t> inline_reply_id = GetInlineReplyIdFromProto(proto);
-  DCHECK(inline_reply_id.has_value());
+Notification CreateInternalNotification(const proto::Notification& proto,
+                                        const gfx::Image& icon,
+                                        const gfx::Image& shared_image,
+                                        const gfx::Image& contact_image) {
+  base::flat_map<Notification::ActionType, int64_t> action_id_map;
+  Notification::InteractionBehavior behavior =
+      Notification::InteractionBehavior::kNone;
+  for (const auto& action : proto.actions()) {
+    if (action.type() == proto::Action_InputType::Action_InputType_TEXT) {
+      action_id_map[Notification::ActionType::kInlineReply] = action.id();
+    } else if (action.type() ==
+               proto::Action_InputType::Action_InputType_OPEN) {
+      behavior = Notification::InteractionBehavior::kOpenable;
+    } else if (action.call_action() ==
+               proto::Action_CallAction::Action_CallAction_ANSWER) {
+      action_id_map[Notification::ActionType::kAnswer] = action.id();
+    } else if (action.call_action() ==
+               proto::Action_CallAction::Action_CallAction_DECLINE) {
+      action_id_map[Notification::ActionType::kDecline] = action.id();
+    } else if (action.call_action() ==
+               proto::Action_CallAction::Action_CallAction_HANGUP) {
+      action_id_map[Notification::ActionType::kHangup] = action.id();
+    }
+  }
 
-  auto actions_it = std::find_if(
-      proto.actions().begin(), proto.actions().end(), [](const auto& action) {
-        return action.type() == proto::Action_InputType::Action_InputType_OPEN;
-      });
-  bool includes_open_action = actions_it != proto.actions().end();
+  Notification::Category category = Notification::Category::kNone;
+  switch (proto.category()) {
+    case proto::Notification::Category::Notification_Category_UNSPECIFIED:
+      category = Notification::Category::kNone;
+      break;
+    case proto::Notification::Category::Notification_Category_CONVERSATION:
+      category = Notification::Category::kConversation;
+      break;
+    case proto::Notification::Category::Notification_Category_INCOMING_CALL:
+      category = Notification::Category::kIncomingCall;
+      break;
+    case proto::Notification::Category::Notification_Category_ONGOING_CALL:
+      category = Notification::Category::kOngoingCall;
+      break;
+    case proto::Notification::Category::Notification_Category_SCREEN_CALL:
+      category = Notification::Category::kScreenCall;
+      break;
+    case proto::
+        Notification_Category_Notification_Category_INT_MIN_SENTINEL_DO_NOT_USE_:  // NOLINT
+    case proto::
+        Notification_Category_Notification_Category_INT_MAX_SENTINEL_DO_NOT_USE_:  // NOLINT
+      PA_LOG(WARNING) << "Notification category is unknown or unspecified.";
+      break;
+  }
 
   absl::optional<std::u16string> title = absl::nullopt;
   if (!proto.title().empty())
@@ -80,17 +119,15 @@ Notification CreateInlineReplyNotification(const proto::Notification& proto,
   if (!contact_image.IsEmpty())
     opt_contact_image = contact_image;
 
-  return Notification(
-      proto.id(),
-      Notification::AppMetadata(
-          base::UTF8ToUTF16(proto.origin_app().visible_name()),
-          proto.origin_app().package_name(), icon,
-          proto.origin_app().user_id()),
-      base::Time::FromJsTime(proto.epoch_time_millis()),
-      GetNotificationImportanceFromProto(proto.importance()), *inline_reply_id,
-      includes_open_action ? Notification::InteractionBehavior::kOpenable
-                           : Notification::InteractionBehavior::kNone,
-      title, text_content, opt_shared_image, opt_contact_image);
+  return Notification(proto.id(),
+                      Notification::AppMetadata(
+                          base::UTF8ToUTF16(proto.origin_app().visible_name()),
+                          proto.origin_app().package_name(), icon,
+                          proto.origin_app().user_id()),
+                      base::Time::FromJsTime(proto.epoch_time_millis()),
+                      GetNotificationImportanceFromProto(proto.importance()),
+                      category, action_id_map, behavior, title, text_content,
+                      opt_shared_image, opt_contact_image);
 }
 
 }  // namespace
@@ -128,15 +165,16 @@ void NotificationProcessor::AddNotifications(
   if (notification_protos.empty())
     return;
 
-  std::vector<proto::Notification> inline_replyable_notification_protos;
+  std::vector<proto::Notification> processed_notification_protos;
   std::vector<DecodeImageRequestMetadata> decode_image_requests;
 
   for (const auto& proto : notification_protos) {
-    // Only process notifications that are messaging apps with inline-replies.
-    if (!GetInlineReplyIdFromProto(proto).has_value())
+    // Only process notifications that are messaging apps with inline-replies
+    // or dialer apps with call-style actions.
+    if (!HasSupportedActionIdInProto(proto))
       continue;
 
-    inline_replyable_notification_protos.emplace_back(proto);
+    processed_notification_protos.emplace_back(proto);
 
     decode_image_requests.emplace_back(
         proto.id(), NotificationImageField::kIcon, proto.origin_app().icon());
@@ -163,7 +201,7 @@ void NotificationProcessor::AddNotifications(
       decode_image_requests.size(),
       base::BindOnce(&NotificationProcessor::OnAllImagesDecoded,
                      weak_ptr_factory_.GetWeakPtr(),
-                     std::move(inline_replyable_notification_protos)));
+                     std::move(processed_notification_protos)));
 
   base::OnceClosure add_request =
       base::BindOnce(&NotificationProcessor::StartDecodingImages,
@@ -254,15 +292,15 @@ void NotificationProcessor::OnDecodedBitmapReady(
 }
 
 void NotificationProcessor::OnAllImagesDecoded(
-    std::vector<proto::Notification> inline_replyable_notifications) {
+    std::vector<proto::Notification> notification_protos) {
   base::flat_set<Notification> notifications;
-  for (const auto& proto : inline_replyable_notifications) {
+  for (const auto& proto : notification_protos) {
     auto it = id_to_images_map_.find(proto.id());
     if (it == id_to_images_map_.end())
       continue;
 
     NotificationImages notification_images = it->second;
-    notifications.emplace(CreateInlineReplyNotification(
+    notifications.emplace(CreateInternalNotification(
         proto, notification_images.icon, notification_images.shared_image,
         notification_images.contact_image));
   }

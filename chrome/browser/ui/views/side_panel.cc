@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
@@ -20,11 +21,29 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/view_observer.h"
 
 namespace {
 
-constexpr int kBorderThickness = 16;
+// This thickness includes the solid-color background and the inner round-rect
+// border-color stroke. It does not include the outer-color separator.
+constexpr int kBorderThickness = 16 + views::Separator::kThickness;
+
+// This is how many units of the toolbar are essentially expected to be
+// background.
+constexpr int kOverlapFromToolbar = 4;
+
+// We want the border to visually look like kBorderThickness units on all sides.
+// On the top side, background is drawn on top of the top-content separator and
+// some units of background inside the toolbar (or bookmarks bar) itself.
+// Subtract both of those to not get visually-excessive padding.
+constexpr gfx::Insets kBorderInsets(kBorderThickness -
+                                        views::Separator::kThickness -
+                                        kOverlapFromToolbar,
+                                    kBorderThickness,
+                                    kBorderThickness,
+                                    kBorderThickness);
 
 // This border paints the toolbar color around the side panel content and draws
 // a roundrect viewport around the side panel content.
@@ -46,7 +65,8 @@ class SidePanelBorder : public views::Border {
     gfx::RectF scaled_bounds = gfx::ConvertRectToPixels(
         view.GetLocalBounds(), view.layer()->device_scale_factor());
 
-    const float corner_radius = kBorderThickness * dsf / 2;
+    const float corner_radius = view.GetLayoutProvider()->GetCornerRadiusMetric(
+        views::Emphasis::kMedium, view.GetContentsBounds().size());
     gfx::Insets insets_in_pixels =
         gfx::ToFlooredInsets(gfx::ConvertInsetsToPixels(GetInsets(), dsf));
     scaled_bounds.Inset(insets_in_pixels);
@@ -73,8 +93,10 @@ class SidePanelBorder : public views::Border {
   }
 
   gfx::Insets GetInsets() const override {
-    return gfx::Insets(kBorderThickness + views::Separator::kThickness,
-                       kBorderThickness, kBorderThickness, kBorderThickness);
+    // This additional inset matches the growth inside BorderView::Layout()
+    // below to let us paint on top of the toolbar separator. This additional
+    // inset is outside the SidePanel itself, but not outside the BorderView.
+    return kBorderInsets + gfx::Insets(views::Separator::kThickness, 0, 0, 0);
   }
   gfx::Size GetMinimumSize() const override {
     return gfx::Size(GetInsets().width(), GetInsets().height());
@@ -120,11 +142,11 @@ SidePanel::SidePanel()
   constexpr int kDefaultWidth = 320;
   int default_width = kDefaultWidth;
   if (border_view_)
-    default_width += 2 * kBorderThickness;
+    default_width += kBorderInsets.width();
   SetPanelWidth(default_width);
 
   if (base::FeatureList::IsEnabled(features::kSidePanelBorder))
-    SetBorder(views::CreateEmptyBorder(gfx::Insets(kBorderThickness)));
+    SetBorder(views::CreateEmptyBorder(gfx::Insets(kBorderInsets)));
 
   AddObserver(this);
 }

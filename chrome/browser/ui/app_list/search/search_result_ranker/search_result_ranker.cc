@@ -193,7 +193,8 @@ void SearchResultRanker::InitializeRankers(
             base::Unretained(this), default_config));
   }
 
-  app_launch_event_logger_ = std::make_unique<app_list::AppLaunchEventLogger>();
+  app_launch_event_logger_ =
+      std::make_unique<app_list::AppLaunchEventLogger>(profile_);
 
   // Initialize on-device app ranking model.
   RecurrenceRankerConfigProto config;

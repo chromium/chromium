@@ -297,6 +297,7 @@ class CORE_EXPORT StyleRuleLayerBlock : public StyleRuleGroup {
   ~StyleRuleLayerBlock();
 
   const LayerName& GetName() const { return name_; }
+  String GetNameAsString() const;
 
   StyleRuleLayerBlock* Copy() const {
     return MakeGarbageCollected<StyleRuleLayerBlock>(*this);
@@ -316,6 +317,7 @@ class CORE_EXPORT StyleRuleLayerStatement : public StyleRuleBase {
   ~StyleRuleLayerStatement();
 
   const Vector<LayerName>& GetNames() const { return names_; }
+  Vector<String> GetNamesAsStrings() const;
 
   StyleRuleLayerStatement* copy() const {
     return MakeGarbageCollected<StyleRuleLayerStatement>(*this);

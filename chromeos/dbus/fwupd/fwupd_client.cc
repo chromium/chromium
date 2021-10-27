@@ -91,9 +91,12 @@ class FwupdClientImpl : public FwupdClient {
       return;
     }
 
-    // TODO(swifton): This is a stub implementation. Replace this with a
-    // callback call for FirmwareUpdateHandler when it's implemented.
-    ++get_devices_callback_call_count_for_testing_;
+    // TODO(swifton): Get the devices from the response. This just sends an
+    // empty list right now.
+    auto devices = std::make_unique<FwupdDeviceList>();
+
+    for (auto& observer : observers_)
+      observer.OnDeviceListResponse(devices.get());
   }
 
   void OnSignalConnected(const std::string& interface_name,
@@ -119,15 +122,27 @@ class FwupdClientImpl : public FwupdClient {
   base::WeakPtrFactory<FwupdClientImpl> weak_ptr_factory_{this};
 };
 
-FwupdClientImpl::FwupdClientImpl() {
+void FwupdClient::AddObserver(FwupdClient::Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void FwupdClient::RemoveObserver(FwupdClient::Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+FwupdClient::FwupdClient() {
   DCHECK(!g_instance);
   g_instance = this;
 }
 
-FwupdClientImpl::~FwupdClientImpl() {
+FwupdClient::~FwupdClient() {
   DCHECK_EQ(g_instance, this);
   g_instance = nullptr;
 }
+
+FwupdClientImpl::FwupdClientImpl() = default;
+
+FwupdClientImpl::~FwupdClientImpl() = default;
 
 // static
 std::unique_ptr<FwupdClient> FwupdClient::Create() {

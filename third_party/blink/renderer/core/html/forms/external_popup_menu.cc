@@ -147,7 +147,7 @@ bool ExternalPopupMenu::ShowInternal() {
   return false;
 }
 
-void ExternalPopupMenu::Show() {
+void ExternalPopupMenu::Show(PopupMenu::ShowEventType) {
   if (!ShowInternal())
     return;
 #if defined(OS_MAC)

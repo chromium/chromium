@@ -725,7 +725,6 @@
 <translation id="1722460139690167654">Din <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> hanteras<ph name="END_LINK" /> av <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">&amp;Nytt fönster</translation>
 <translation id="1725562816265788801">Scrolla mellan flikar</translation>
-<translation id="1727662110063605623">Öppna inställningarna och anslut <ph name="USB_DEVICE_NAME" /> till Parallels Desktop eller Linux</translation>
 <translation id="1729533290416704613">Det styr också vilken sida som visas när du söker i adressfältet.</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />Om du vill ta bort appar öppnar du Inställningar &gt; Google Play Butik &gt; Hantera Android-inställningar &gt; Appar eller Apphanteraren. Tryck sedan på appen du vill avinstallera (du kanske måste svepa åt höger eller vänster för att hitta appen). Tryck sedan på Avinstallera eller Inaktivera.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1731911755844941020">Skickar begäran...</translation>
@@ -7735,7 +7734,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="9103868373786083162">Tryck här om du vill återgå till föregående, visa historiken med snabbmenyn</translation>
 <translation id="9108035152087032312">Namnge fönstret …</translation>
 <translation id="9108072915170399168">Den aktuella inställningen för dataanvändning är Utan internet</translation>
-<translation id="9108692355621501797">I <ph name="LINK_BEGIN" />sekretessmeddelandet för G Suite for Education<ph name="LINK_END" /> förklarar vi för användare av G Suite for Education och föräldrar vilken data produkten samlar in, varför den samlas in och vad som händer med den.</translation>
+<translation id="9108692355621501797">I <ph name="LINK_BEGIN" />integritetsmeddelandet för G Suite for Education<ph name="LINK_END" /> förklarar vi för användare av G Suite for Education och föräldrar vilken data produkten samlar in, varför den samlas in och vad som händer med den.</translation>
 <translation id="9108808586816295166">Säker DNS kanske inte alltid är tillgänglig</translation>
 <translation id="9109122242323516435">Frigör utrymme genom att ta bort filer från lagringsutrymmet på enheten.</translation>
 <translation id="9109283579179481106">Anslut till ett mobilnätverk</translation>

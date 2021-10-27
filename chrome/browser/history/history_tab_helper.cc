@@ -152,7 +152,11 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
       hidden, history::SOURCE_BROWSED, navigation_handle->DidReplaceEntry(),
       ShouldConsiderForNtpMostVisited(*web_contents(), navigation_handle),
       /*floc_allowed=*/false,
-      navigation_handle->IsSameDocument()
+      // Reloads do not result in calling TitleWasSet() (which normally sets
+      // the title), so a reload needs to set the title. This is important for
+      // a reload after clearing history.
+      navigation_handle->IsSameDocument() ||
+              navigation_handle->GetReloadType() != content::ReloadType::NONE
           ? absl::optional<std::u16string>(
                 navigation_handle->GetWebContents()->GetTitle())
           : absl::nullopt,

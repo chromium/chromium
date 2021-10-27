@@ -78,7 +78,7 @@ TEST_F(CategoryUsageRankerTest, TrainIncreasesScore) {
     LaunchData launch;
     launch.launched_from = ash::AppListLaunchedFrom::kLaunchedFromSearchBox;
     launch.result_type = ResultType::kOmnibox;
-    for (int i = 0; i < 2; ++i)
+    for (int i = 0; i < 3; ++i)
       ranker.Train(launch);
   }
 
@@ -92,11 +92,13 @@ TEST_F(CategoryUsageRankerTest, TrainIncreasesScore) {
     }
   }
 
-  // The apps should take top spot in the results.
+  // The apps category should rank higher than the web category, but both should
+  // be ranked highly.
   CategoriesMap categories;
   ResultsMap results;
   ranker.Start(u"", results, categories);
-  EXPECT_FLOAT_EQ(categories[Category::kApps], 1.0);
+  EXPECT_GT(categories[Category::kApps], categories[Category::kWeb]);
+  EXPECT_GT(categories[Category::kWeb], 0.5);
 }
 
 }  // namespace app_list

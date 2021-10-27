@@ -45,7 +45,7 @@ TEST(InternalPopupMenuTest, ShowSelectDisplayNone) {
   div->SetInlineStyleProperty(CSSPropertyID::kDisplay, "none");
 
   // This call should not cause a crash.
-  menu->Show();
+  menu->Show(PopupMenu::kOther);
 }
 
 #endif  // defined(OS_ANDROID)

@@ -366,15 +366,20 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     ZipFiles, /* zip_files.js */
     FilesAppBrowserTest,
-    ::testing::Values(TestCase("zipFileOpenDownloads").InGuestMode(),
-                      TestCase("zipFileOpenDownloads"),
-                      TestCase("zipFileOpenDrive"),
-                      TestCase("zipFileOpenUsb"),
-                      TestCase("zipNotifyFileTasks"),
-                      TestCase("zipCreateFileDownloads").InGuestMode(),
-                      TestCase("zipCreateFileDownloads"),
-                      TestCase("zipCreateFileDrive"),
-                      TestCase("zipCreateFileUsb")));
+    ::testing::Values(
+        TestCase("zipFileOpenDownloads").InGuestMode(),
+        TestCase("zipFileOpenDownloads"),
+        TestCase("zipFileOpenDrive"),
+        TestCase("zipFileOpenUsb"),
+        TestCase("zipNotifyFileTasks"),
+        TestCase("zipCreateFileDownloads").InGuestMode(),
+        TestCase("zipCreateFileDownloads"),
+        TestCase("zipCreateFileDownloads").InGuestMode().FilesSwa(),
+        TestCase("zipCreateFileDownloads").FilesSwa(),
+        TestCase("zipCreateFileDrive"),
+        TestCase("zipCreateFileDrive").FilesSwa(),
+        TestCase("zipCreateFileUsb"),
+        TestCase("zipCreateFileUsb").FilesSwa()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     CreateNewFolder, /* create_new_folder.js */

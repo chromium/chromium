@@ -1090,15 +1090,13 @@ const base::Feature kWebAppManifestPolicyAppIdentityUpdate{
 // be used instead.
 const base::Feature kWebKioskEnableLacros{"WebKioskEnableLacros",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
-#endif
 
-#if defined(OS_CHROMEOS)
 // When enabled, the Ash browser only manages system web apps, and non-system
 // web apps are managed by the Lacros browser. When disabled, the Ash browser
 // manages all web apps.
 const base::Feature kWebAppsCrosapi{"WebAppsCrosapi",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !defined(OS_ANDROID)
 // Allow capturing of WebRTC event logs, and uploading of those logs to Crash.
@@ -1176,5 +1174,9 @@ bool IsParentAccessCodeForOnlineLoginEnabled() {
   return base::FeatureList::IsEnabled(kParentAccessCodeForOnlineLogin);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Enables omnibox trigger prerendering.
+const base::Feature kOmniboxTriggerForPrerender2{
+    "OmniboxTriggerForPrerender2", base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace features

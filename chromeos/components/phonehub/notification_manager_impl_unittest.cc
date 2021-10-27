@@ -34,8 +34,9 @@ Notification CreateNotification(int64_t id) {
                                                     /*icon=*/gfx::Image(),
                                                     kUserId),
       base::Time::Now(), Notification::Importance::kDefault,
-      /*inline_reply_id=*/0, Notification::InteractionBehavior::kNone, kTitle,
-      kTextContent);
+      Notification::Category::kConversation,
+      {{Notification::ActionType::kInlineReply, /*action_id=*/0}},
+      Notification::InteractionBehavior::kNone, kTitle, kTextContent);
 }
 
 using multidevice_setup::mojom::Feature;

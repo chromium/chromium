@@ -6,6 +6,7 @@
 
 #include <tuple>
 
+#include "base/containers/flat_map.h"
 #include "base/logging.h"
 
 namespace chromeos {
@@ -35,21 +36,24 @@ bool Notification::AppMetadata::operator!=(const AppMetadata& other) const {
   return !(*this == other);
 }
 
-Notification::Notification(int64_t id,
-                           const AppMetadata& app_metadata,
-                           const base::Time& timestamp,
-                           Importance importance,
-                           int64_t inline_reply_id,
-                           InteractionBehavior interaction_behavior,
-                           const absl::optional<std::u16string>& title,
-                           const absl::optional<std::u16string>& text_content,
-                           const absl::optional<gfx::Image>& shared_image,
-                           const absl::optional<gfx::Image>& contact_image)
+Notification::Notification(
+    int64_t id,
+    const AppMetadata& app_metadata,
+    const base::Time& timestamp,
+    Importance importance,
+    Notification::Category category,
+    const base::flat_map<Notification::ActionType, int64_t>& action_id_map,
+    InteractionBehavior interaction_behavior,
+    const absl::optional<std::u16string>& title,
+    const absl::optional<std::u16string>& text_content,
+    const absl::optional<gfx::Image>& shared_image,
+    const absl::optional<gfx::Image>& contact_image)
     : id_(id),
       app_metadata_(app_metadata),
       timestamp_(timestamp),
       importance_(importance),
-      inline_reply_id_(inline_reply_id),
+      category_(category),
+      action_id_map_(action_id_map),
       interaction_behavior_(interaction_behavior),
       title_(title),
       text_content_(text_content),
@@ -67,7 +71,8 @@ bool Notification::operator<(const Notification& other) const {
 bool Notification::operator==(const Notification& other) const {
   return id_ == other.id_ && app_metadata_ == other.app_metadata_ &&
          timestamp_ == other.timestamp_ && importance_ == other.importance_ &&
-         inline_reply_id_ == other.inline_reply_id_ &&
+         category_ == other.category_ &&
+         action_id_map_ == other.action_id_map_ &&
          interaction_behavior_ == other.interaction_behavior_ &&
          title_ == other.title_ && text_content_ == other.text_content_ &&
          shared_image_ == other.shared_image_ &&
@@ -124,11 +129,34 @@ std::ostream& operator<<(std::ostream& stream,
 }
 
 std::ostream& operator<<(std::ostream& stream,
+                         Notification::Category catetory) {
+  switch (catetory) {
+    case Notification::Category::kNone:
+      stream << "[None]";
+      break;
+    case Notification::Category::kConversation:
+      stream << "[Conversation]";
+      break;
+    case Notification::Category::kIncomingCall:
+      stream << "[IncomingCall]";
+      break;
+    case Notification::Category::kOngoingCall:
+      stream << "[OngoingCall]";
+      break;
+    case Notification::Category::kScreenCall:
+      stream << "[ScreenCall]";
+      break;
+  }
+  return stream;
+}
+
+std::ostream& operator<<(std::ostream& stream,
                          const Notification& notification) {
   stream << "{Id: " << notification.id() << ", "
          << "App: " << notification.app_metadata() << ", "
          << "Timestamp: " << notification.timestamp() << ", "
          << "Importance: " << notification.importance() << ", "
+         << "Category: " << notification.category() << ", "
          << "InteractionBehavior: " << notification.interaction_behavior()
          << "}";
   return stream;

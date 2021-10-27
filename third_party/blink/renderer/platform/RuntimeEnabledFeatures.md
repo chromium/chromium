@@ -81,6 +81,16 @@ defined in [content/child/runtime_features.cc]. See the [initialize blink featur
 
 **Note:** If a feature is implemented at both Chromium side and blink side, as the blink feature doesn't fully work by itself, we normally don't set the blink feature's status so that the Chromium feature can fully control the blink feature ([example][controlled by chromium feature]).
 
+### Introducing dependencies among Runtime Enabled Features
+
+The parameters of `implied_by` and `depends_on` can be used to specify the relationship to other features.
+
+* "implied_by": With this field specified, this feature is enabled automatically if any of the implied_by features is enabled.
+
+* "depends_on": With this field specified, this feature is enabled only if all of the depends_on features are enabled.
+
+**Note:** Only one of `implied_by` and `depends_on` can be specified.
+
 ### Runtime Enabled CSS Properties
 
 If your feature is adding new CSS Properties you will need to use the runtime_flag argument in [renderer/core/css/css_properties.json5][cssProperties].

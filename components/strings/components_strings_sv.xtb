@@ -1273,7 +1273,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="503498442187459473"><ph name="HOST" /> vill använda kameran och mikrofonen</translation>
 <translation id="5039762155821394373">Teckensnittsstorlek</translation>
 <translation id="5039804452771397117">Tillåt</translation>
-<translation id="5040262127954254034">Sekretess</translation>
+<translation id="5040262127954254034">Integritet</translation>
 <translation id="5043480802608081735">Länk som du har kopierat</translation>
 <translation id="5045550434625856497">Felaktigt lösenord</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Om du vill skicka den här filen med Närdelning ska du frigöra utrymme (<ph name="DISK_SPACE_SIZE" />) på enheten}other{Om du vill skicka de här filerna med Närdelning ska du frigöra utrymme (<ph name="DISK_SPACE_SIZE" />) på enheten}}</translation>

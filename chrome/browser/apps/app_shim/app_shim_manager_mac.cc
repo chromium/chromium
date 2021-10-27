@@ -745,8 +745,10 @@ void AppShimManager::OpenAppURLInBrowserWindow(
       profile_path.empty() ? nullptr : ProfileForPath(profile_path);
   if (!profile)
     profile = profile_manager_->GetLastUsedProfile();
-  if (!profile)
+  if (!profile || Browser::GetCreationStatusForProfile(profile) !=
+                      Browser::CreationStatus::kOk) {
     return;
+  }
   Browser* browser = Browser::Create(
       Browser::CreateParams(Browser::TYPE_NORMAL, profile, true));
   browser->window()->Show();

@@ -710,7 +710,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="1722460139690167654"><ph name="BEGIN_LINK" />Ihr <ph name="DEVICE_TYPE" /> wird von <ph name="ENROLLMENT_DOMAIN" /> verwaltet<ph name="END_LINK" /></translation>
 <translation id="1723824996674794290">Neues &amp;Fenster</translation>
 <translation id="1725562816265788801">Tab-Scrollen</translation>
-<translation id="1727662110063605623">"Einstellungen" öffnen, um <ph name="USB_DEVICE_NAME" /> mit Parallels Desktop oder Linux zu verbinden</translation>
 <translation id="1729533290416704613">Die Erweiterung legt auch fest, welche Seite bei der Suche über die Omnibox angezeigt wird.</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />Wenn Sie eine App entfernen möchten, gehen Sie zu "Einstellungen" &gt; "Google Play Store" &gt; "Android-Einstellungen verwalten" &gt; "Apps" oder rufen Sie den Anwendungsmanager auf. Tippen Sie dann auf die App, die Sie deinstallieren möchten, und wählen Sie "Deinstallieren" oder "Deaktivieren" aus. Möglicherweise müssen Sie nach rechts oder links wischen, um die App zu finden.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1731911755844941020">Anfrage wird gesendet...</translation>
@@ -3473,7 +3472,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4615586811063744755">Kein Cookie ausgewählt</translation>
 <translation id="461661862154729886">Energiequelle</translation>
 <translation id="4617001782309103936">Zu kurz</translation>
-<translation id="4617270414136722281">Erweiterungsoptionen</translation>
+<translation id="4617270414136722281">Optionen</translation>
 <translation id="4619564267100705184">Identität bestätigen</translation>
 <translation id="4619615317237390068">Tabs von anderen Geräten</translation>
 <translation id="4620809267248568679">Diese Einstellung wird durch eine Erweiterung erzwungen.</translation>

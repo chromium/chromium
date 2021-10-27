@@ -196,11 +196,7 @@ gfx::Size ArcNotificationView::CalculatePreferredSize() const {
 
 void ArcNotificationView::Layout() {
   // Setting the bounds before calling the parent to prevent double Layout.
-  gfx::Rect content_bounds = GetContentsBounds();
-  content_bounds.set_width(content_bounds.width() -
-                           ArcNotificationContentView::kScrollBarWidth);
-
-  content_view_->SetBoundsRect(content_bounds);
+  content_view_->SetBoundsRect(GetContentsBounds());
 
   message_center::MessageView::Layout();
 

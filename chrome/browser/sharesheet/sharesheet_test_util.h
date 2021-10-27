@@ -9,9 +9,13 @@
 
 namespace sharesheet {
 
+const char kTestText[] = "text";
+const char kTestTitle[] = "title";
 const char kTestUrl[] = "https://fake-url.com/fake";
 
 apps::mojom::IntentPtr CreateValidTextIntent();
+
+apps::mojom::IntentPtr CreateValidUrlIntent();
 
 apps::mojom::IntentPtr CreateInvalidIntent();
 

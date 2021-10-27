@@ -4430,12 +4430,6 @@
   <message name="IDS_CROSTINI_INSTALLER_SETUP_CONTAINER_ERROR" desc="Text shown in the Crostini installer dialog when the container fails to be set up inside the VM">
     The Linux container setup did not complete. Please try again.
   </message>
-  <message name="IDS_CROSTINI_INSTALLER_FETCH_SSH_KEYS_ERROR" desc="Text shown in the Crostini installer dialog when there is an error fetching ssh keys">
-    Error configuring Linux files. Please try again.
-  </message>
-  <message name="IDS_CROSTINI_INSTALLER_MOUNT_CONTAINER_ERROR" desc="Text shown in the Crostini installer dialog when the container ssh mount fails">
-    Error mounting Linux files. Please try again.
-  </message>
   <message name="IDS_CROSTINI_INSTALLER_UNKNOWN_ERROR" desc="Text shown in the Crostini installer dialog when some unknown error happens">
     Something went wrong. Please try again.
   </message>

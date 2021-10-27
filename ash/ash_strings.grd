@@ -1457,6 +1457,15 @@ This file contains the strings for ash.
       <message name="IDS_ASH_PHONE_HUB_BLUETOOTH_DISABLED_DIALOG_LEARN_MORE_BUTTON" desc="Learn more button on the bluetooth disabled dialog to show more related information.">
         Learn more
       </message>
+      <message name="IDS_ASH_PHONE_HUB_NOTIFICATION_CALL_ANSWER_BUTTON" desc="Label for the answer call button inside a PhoneHub notification.">
+        Answer
+      </message>
+      <message name="IDS_ASH_PHONE_HUB_NOTIFICATION_CALL_DECLINE_BUTTON" desc="Label for the decline call button inside a PhoneHub notification.">
+        Decline
+      </message>
+      <message name="IDS_ASH_PHONE_HUB_NOTIFICATION_CALL_HANGUP_BUTTON" desc="Label for the hangup call button inside a PhoneHub notification.">
+        Hang up
+      </message>
       <message name="IDS_ASH_PHONE_HUB_NOTIFICATION_INLINE_REPLY_BUTTON" desc="Label for the inline reply button inside a PhoneHub notification.">
         Reply
       </message>

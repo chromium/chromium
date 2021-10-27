@@ -61,8 +61,6 @@ void AddStringResources(content::WebUIDataSource* source) {
       {"startContainerError", IDS_CROSTINI_INSTALLER_START_CONTAINER_ERROR},
       {"configureContainerError",
        IDS_CROSTINI_INSTALLER_CONFIGURE_CONTAINER_ERROR},
-      {"fetchSshKeysError", IDS_CROSTINI_INSTALLER_FETCH_SSH_KEYS_ERROR},
-      {"mountContainerError", IDS_CROSTINI_INSTALLER_MOUNT_CONTAINER_ERROR},
       {"setupContainerError", IDS_CROSTINI_INSTALLER_SETUP_CONTAINER_ERROR},
       {"unknownError", IDS_CROSTINI_INSTALLER_UNKNOWN_ERROR},
 

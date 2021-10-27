@@ -88,7 +88,7 @@ MrfuCache::~MrfuCache() {}
 
 void MrfuCache::Sort(Items& items) {
   std::sort(items.begin(), items.end(),
-            [](auto const& a, auto const& b) { return a.second < b.second; });
+            [](auto const& a, auto const& b) { return a.second > b.second; });
 }
 
 void MrfuCache::Use(const std::string& item) {

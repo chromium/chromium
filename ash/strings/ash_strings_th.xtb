@@ -14,6 +14,7 @@
 <translation id="1047773237499189053">มีฟีเจอร์ใหม่ ใช้แป้นลูกศรขึ้นเพื่อดูข้อมูลเพิ่มเติม</translation>
 <translation id="1052916631016577720">สแกนรายการ</translation>
 <translation id="1056775291175587022">ไม่พบเครือข่าย</translation>
+<translation id="1056898198331236512">คำเตือน</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">แทนที่</translation>
 <translation id="1073899992769346247">โปรดเปลี่ยนหรือชาร์จแบตเตอรี่</translation>
@@ -250,6 +251,7 @@
 <translation id="2825619548187458965">ชั้นวาง</translation>
 <translation id="2841907151129139818">เปลี่ยนเป็นโหมดแท็บเล็ตแล้ว</translation>
 <translation id="2844169650293029770">อุปกรณ์ USB-C (พอร์ตด้านหน้าซ้าย)</translation>
+<translation id="2849936225196189499">สำคัญ</translation>
 <translation id="2860184359326882502">ตรงที่สุด</translation>
 <translation id="2865888419503095837">ข้อมูลเครือข่าย</translation>
 <translation id="2872961005593481000">ปิด</translation>

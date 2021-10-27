@@ -725,7 +725,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="1722460139690167654">A(z) <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> kezelője<ph name="END_LINK" />: <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">&amp;Új ablak</translation>
 <translation id="1725562816265788801">Lapgörgetés</translation>
-<translation id="1727662110063605623">A(z) <ph name="USB_DEVICE_NAME" /> eszközt a Beállítások között csatlakoztathatja a Parallels Desktop vagy a Linux rendszerhez</translation>
 <translation id="1729533290416704613">Továbbá azt is szabályozza, hogy melyik oldal jelenik meg a cím- és keresősávban indított kereséskor.</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />Az alkalmazásokat a Beállítások &gt; Google Play Áruház &gt; Android-beállítások kezelése &gt; Alkalmazások vagy Alkalmazáskezelő menüben távolíthatja el. Koppintson a törölni kívánt alkalmazásra (lehet, hogy jobbra vagy balra kell csúsztatnia az alkalmazásokat, hogy megtalálja), majd koppintson az Eltávolítás vagy Letiltás lehetőségre.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1731911755844941020">Lekérés küldése folyamatban...</translation>

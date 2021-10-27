@@ -860,7 +860,8 @@
                   '|components/policy/proto/record',
     },
     'cros_sharesheet': {
-      'filepath': 'chrome/browser/ui/ash/sharesheet/',
+      'filepath': 'chrome/browser/ui/ash/sharesheet/'\
+                  '|chrome/browser/ash/sharesheet/',
     },
     'crostini': {
       'filepath': 'cicerone'\

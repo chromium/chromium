@@ -29,6 +29,7 @@
 <translation id="1743802530341753419">சாதனத்தை இணைக்க, தளங்களை அனுமதிப்பதற்கு முன், கேள் (பரிந்துரைக்கப்படுவது)</translation>
 <translation id="1779089405699405702">இமேஜ் டீகோடர்</translation>
 <translation id="1818308510395330587">ARரைப் பயன்படுத்த <ph name="APP_NAME" /> ஆப்ஸை அனுமதிப்பதற்கு <ph name="BEGIN_LINK" />Android அமைப்புகளிலும்<ph name="END_LINK" /> கேமராவிற்கான அனுமதியை இயக்கவும்.</translation>
+<translation id="1864927262126810325">மூலம்: <ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">இந்தச் சாதனத்திற்கான இருப்பிட அணுகல் முடக்கப்பட்டுள்ளது. அதை <ph name="BEGIN_LINK" />Android அமைப்புகளில்<ph name="END_LINK" /> இயக்கவும்.</translation>
 <translation id="1919345977826869612">விளம்பரங்கள்</translation>
 <translation id="1919950603503897840">தொடர்புகளைத் தேர்ந்தெடுக்கவும்</translation>
@@ -236,6 +237,7 @@
 <translation id="7016516562562142042">நடப்புத் தேடல் இன்ஜினுக்கு அனுமதிக்கப்பட்டுள்ளது</translation>
 <translation id="7053983685419859001">தடு</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 தேர்ந்தெடுக்கப்பட்டது}other{# தேர்ந்தெடுக்கப்பட்டன}}</translation>
+<translation id="7070090581017165256">இந்தத் தளத்தைப் பற்றி</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> தேர்ந்தெடுக்கப்பட்டன.  திரையின் மேற்பகுதிக்கு அருகில், விருப்பங்கள் உள்ளன</translation>
 <translation id="7141896414559753902">தளங்கள் பாப்-அப்களையும் திசைதிருப்புதல்களையும் காட்டாமல் தடு (பரிந்துரைக்கப்படுகிறது)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> கி.பை.</translation>

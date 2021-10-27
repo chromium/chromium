@@ -108,6 +108,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="129863573139666797"><ph name="BEGIN_LINK" />Pokušajte obrisati kolačiće<ph name="END_LINK" /></translation>
 <translation id="1301324364792935241">Provjerite postavke sigurnosnog DNS-a</translation>
 <translation id="1307966114820526988">Zastarjele funkcije</translation>
+<translation id="1308113895091915999">Dostupna je ponuda</translation>
 <translation id="1312803275555673949">Koji dokazi idu tome u prilog?</translation>
 <translation id="131405271941274527"><ph name="URL" /> želi slati i primati informacije kada svojim telefonom dodirnete NFC uređaj</translation>
 <translation id="1314509827145471431">Povezivanje desne strane</translation>
@@ -963,7 +964,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4117700440116928470">Opseg pravila nije podržan.</translation>
 <translation id="4121428309786185360">Ističe</translation>
 <translation id="4123572138124678573">Trostruko bušenje na donjoj strani</translation>
-<translation id="4127575959421463246">Tražite li oznake OS-a Chrome? Posjetite</translation>
+<translation id="4127575959421463246">Tražite oznake Chrome OS-a? Posjeti</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{i još 1}one{i još #}few{i još #}other{i još #}}</translation>
 <translation id="4130226655945681476">Provjeriti mrežne kablove, modem i ruter</translation>
 <translation id="4133224101597112888">Dugme Dijeli ovu karticu, pritisnite Enter da dijelite ovu karticu dijeljenjem linka, kreiranjem QR koda, emitiranjem i drugo.</translation>
@@ -1135,7 +1136,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4606870351894164739">Privlačno</translation>
 <translation id="4607603470419975064">Dugme Prikaži savjete za Chrome, pritisnite Enter da saznate više o funkcijama Chromea</translation>
 <translation id="4607608436550361748">Prikaži savjete za Chrome</translation>
-<translation id="4627675673814409125">To se pravilo ne može postaviti na razini profila u Chromeu i zanemarit će se.</translation>
+<translation id="4627675673814409125">Nije moguće postaviti ovo pravilo na nivou Chrome profila i bit će zanemareno.</translation>
 <translation id="4628948037717959914">Fotografija</translation>
 <translation id="4631649115723685955">Usluga povrata novca je povezana</translation>
 <translation id="4636930964841734540">Informacije</translation>
@@ -1855,7 +1856,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="706295145388601875">Dodajte adrese i upravljajte njima u postavkama Chromea</translation>
 <translation id="7064851114919012435">Podaci za kontakt</translation>
 <translation id="7068733155164172741">Unesite <ph name="OTP_LENGTH" />-cifreni kôd</translation>
-<translation id="7070090581017165256">O ovoj web-lokaciji</translation>
+<translation id="7070090581017165256">O ovoj web lokaciji</translation>
 <translation id="70705239631109039">Vaša veza nije u potpunosti sigurna</translation>
 <translation id="7075452647191940183">Zahtjev je prevelik</translation>
 <translation id="7079718277001814089">Ova web lokacija sadrži zlonamjeran softver</translation>
@@ -2100,7 +2101,7 @@ Dodatni detalji:
 <translation id="7813600968533626083">Ukloniti prijedlog obrasca iz Chromea?</translation>
 <translation id="781440967107097262">Dijeliti međumemoriju?</translation>
 <translation id="7815407501681723534">Pronađeno <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> za "<ph name="SEARCH_STRING" />"</translation>
-<translation id="782125616001965242">Prikaži informacije o ovoj web-lokaciji</translation>
+<translation id="782125616001965242">Pogledajte informacije o ovoj web lokaciji</translation>
 <translation id="782886543891417279">WiFi koji koristite (<ph name="WIFI_NAME" />) može zahtijevati da posjetite stranicu za prijavu.</translation>
 <translation id="7836231406687464395">Postfix (koverta)</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Ništa}=1{1 aplikacija (<ph name="EXAMPLE_APP_1" />)}=2{2 aplikacije (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# aplikacija (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}few{# aplikacije (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# aplikacija (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
@@ -2380,7 +2381,7 @@ Dodatni detalji:
 <translation id="8792626944327216835">mikrofon</translation>
 <translation id="8793655568873652685">Domena <ph name="ENROLLMENT_DOMAIN" /> je uključila Konektore Chromea za preduzeća u vašem pregledniku. Pomoću tih konektora je moguće pristupiti nekim vašim podacima.</translation>
 <translation id="8798099450830957504">Zadano</translation>
-<translation id="8798739476508189189">Tražite li oznake preglednika? Posjetite</translation>
+<translation id="8798739476508189189">Tražite oznake preglednika? Posjeti</translation>
 <translation id="8805819170075074995">Unos na listi "<ph name="LANGUAGE_ID" />": Unos je zanemaren jer je uključen i u pravilo SpellcheckLanguage.</translation>
 <translation id="8807160976559152894">Skraćivanje nakon svake stranice</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pritisnite Tab, a zatim Enter da ažurirate Chrome iz postavki Chromea</translation>

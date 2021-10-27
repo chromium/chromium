@@ -28,6 +28,8 @@
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_import_rule.h"
 #include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
+#include "third_party/blink/renderer/core/css/css_layer_block_rule.h"
+#include "third_party/blink/renderer/core/css/css_layer_statement_rule.h"
 #include "third_party/blink/renderer/core/css/css_media_rule.h"
 #include "third_party/blink/renderer/core/css/css_namespace_rule.h"
 #include "third_party/blink/renderer/core/css/css_page_rule.h"
@@ -257,9 +259,13 @@ CSSRule* StyleRuleBase::CreateCSSOMWrapper(CSSStyleSheet* parent_sheet,
           To<StyleRuleKeyframes>(self), parent_sheet);
       break;
     case kLayerBlock:
+      rule = MakeGarbageCollected<CSSLayerBlockRule>(
+          To<StyleRuleLayerBlock>(self), parent_sheet);
+      break;
     case kLayerStatement:
-      // TODO(crbug.com/1095765): Implement.
-      return nullptr;
+      rule = MakeGarbageCollected<CSSLayerStatementRule>(
+          To<StyleRuleLayerStatement>(self), parent_sheet);
+      break;
     case kNamespace:
       rule = MakeGarbageCollected<CSSNamespaceRule>(
           To<StyleRuleNamespace>(self), parent_sheet);
@@ -477,6 +483,20 @@ void StyleRuleGroup::TraceAfterDispatch(blink::Visitor* visitor) const {
   StyleRuleBase::TraceAfterDispatch(visitor);
 }
 
+namespace {
+
+String LayerNameAsString(const StyleRuleBase::LayerName& name_parts) {
+  StringBuilder result;
+  for (const auto& part : name_parts) {
+    if (result.length())
+      result.Append(".");
+    result.Append(part);
+  }
+  return result.ToString();
+}
+
+}  // namespace
+
 StyleRuleLayerBlock::StyleRuleLayerBlock(
     LayerName&& name,
     HeapVector<Member<StyleRuleBase>>& adopt_rules)
@@ -491,6 +511,10 @@ void StyleRuleLayerBlock::TraceAfterDispatch(blink::Visitor* visitor) const {
   StyleRuleGroup::TraceAfterDispatch(visitor);
 }
 
+String StyleRuleLayerBlock::GetNameAsString() const {
+  return LayerNameAsString(name_);
+}
+
 StyleRuleLayerStatement::StyleRuleLayerStatement(Vector<LayerName>&& names)
     : StyleRuleBase(kLayerStatement), names_(std::move(names)) {}
 
@@ -502,6 +526,13 @@ StyleRuleLayerStatement::~StyleRuleLayerStatement() = default;
 void StyleRuleLayerStatement::TraceAfterDispatch(
     blink::Visitor* visitor) const {
   StyleRuleBase::TraceAfterDispatch(visitor);
+}
+
+Vector<String> StyleRuleLayerStatement::GetNamesAsStrings() const {
+  Vector<String> result;
+  for (const auto& name : names_)
+    result.push_back(LayerNameAsString(name));
+  return result;
 }
 
 StyleRuleCondition::StyleRuleCondition(

@@ -50,7 +50,7 @@ class CORE_EXPORT InternalPopupMenu final : public PopupMenu,
                                       const ComputedStyle&);
 
   // PopupMenu functions:
-  void Show() override;
+  void Show(ShowEventType type) override;
   void Hide() override;
   void DisconnectClient() override;
   void UpdateFromElement(UpdateReason) override;
@@ -72,6 +72,7 @@ class CORE_EXPORT InternalPopupMenu final : public PopupMenu,
   Member<HTMLSelectElement> owner_element_;
   PagePopup* popup_;
   bool needs_update_;
+  bool taller_options_ = false;
 };
 
 }  // namespace blink

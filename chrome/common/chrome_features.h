@@ -741,12 +741,10 @@ extern const base::Feature kWebAppManifestIconUpdating;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kWebAppManifestPolicyAppIdentityUpdate;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kWebAppsCrosapi;
-#endif  // defined(OS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kWebKioskEnableLacros;
 #endif
@@ -787,6 +785,14 @@ extern const base::Feature kWriteBasicSystemProfileToPersistentHistogramsFile;
 COMPONENT_EXPORT(CHROME_FEATURES)
 bool IsParentAccessCodeForOnlineLoginEnabled();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// This flag is used for enabling Omnibox triggered prerendering and
+// blink::WebRuntimeFeatures::Prerender2RelatedFeatures that enables Prerender2
+// related web exposed features. This flag takes effect only when
+// blink::features::Prerender2 is enabled. See crbug.com/1166085 for more
+// details of Omnibox triggered prerendering.
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kOmniboxTriggerForPrerender2;
 
 bool PrefServiceEnabled();
 

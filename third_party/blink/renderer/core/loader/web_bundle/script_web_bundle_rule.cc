@@ -69,10 +69,10 @@ absl::optional<ScriptWebBundleRule> ScriptWebBundleRule::ParseJson(
   }
 
   HashSet<KURL> scope_urls =
-      ParseJSONArrayAsURLs(json_obj->GetArray("scopes"), base_url);
+      ParseJSONArrayAsURLs(json_obj->GetArray("scopes"), source_url);
 
   HashSet<KURL> resource_urls =
-      ParseJSONArrayAsURLs(json_obj->GetArray("resources"), base_url);
+      ParseJSONArrayAsURLs(json_obj->GetArray("resources"), source_url);
 
   return ScriptWebBundleRule(source_url, credentials_mode,
                              std::move(scope_urls), std::move(resource_urls));

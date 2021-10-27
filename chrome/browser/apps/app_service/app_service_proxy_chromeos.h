@@ -35,6 +35,7 @@ namespace apps {
 
 class AppPlatformMetrics;
 class AppPlatformMetricsService;
+class InstanceRegistryUpdater;
 class BorealisApps;
 class BrowserAppInstanceRegistry;
 class BrowserAppInstanceTracker;
@@ -205,6 +206,8 @@ class AppServiceProxyChromeOs : public AppServiceProxyBase,
       browser_app_instance_tracker_;
   std::unique_ptr<apps::BrowserAppInstanceRegistry>
       browser_app_instance_registry_;
+  std::unique_ptr<apps::InstanceRegistryUpdater>
+      browser_app_instance_app_service_updater_;
 
   // When PauseApps is called, the app is added to |pending_pause_requests|.
   // When the user clicks the OK from the pause app dialog, the pause status is

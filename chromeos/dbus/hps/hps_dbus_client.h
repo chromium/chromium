@@ -16,10 +16,8 @@ class Bus;
 
 namespace chromeos {
 
-// D-Bus client for HPS. Allows features to call to and listen for signals from
-// the HPS daemon.
-//
-// See go/cros-hps-notify-ui-impl for feature details.
+// D-Bus client for ambient presence sensing. Communicates with the Chrome OS
+// presence daemon to allow for features that depend on user presence.
 //
 // TODO(crbug/1241706): clarify naming.
 class COMPONENT_EXPORT(HPS) HpsDBusClient {

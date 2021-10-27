@@ -17,6 +17,9 @@
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/test/clipboard_test_util.h"
+#include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 
@@ -82,6 +85,34 @@ TEST_F(ShareActionTest, ShareActionCacheHasVisibleActions) {
   // True as a drive intent means drive_share_action is visible.
   EXPECT_TRUE(share_action_cache()->HasVisibleActions(
       CreateDriveIntent(), /*contains_hosted_document=*/true));
+}
+
+TEST_F(ShareActionTest, CopyToClipboardText) {
+  auto* copy_action =
+      share_action_cache()->GetActionFromName(l10n_util::GetStringUTF16(
+          IDS_SHARESHEET_COPY_TO_CLIPBOARD_SHARE_ACTION_LABEL));
+  copy_action->LaunchAction(/*controller=*/nullptr, /*root_view=*/nullptr,
+                            CreateValidTextIntent());
+  // Check text copied correctly.
+  std::u16string clipboard_text;
+  ui::Clipboard::GetForCurrentThread()->ReadText(
+      ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
+      &clipboard_text);
+  EXPECT_EQ(::sharesheet::kTestText, base::UTF16ToUTF8(clipboard_text));
+}
+
+TEST_F(ShareActionTest, CopyToClipboardUrl) {
+  auto* copy_action =
+      share_action_cache()->GetActionFromName(l10n_util::GetStringUTF16(
+          IDS_SHARESHEET_COPY_TO_CLIPBOARD_SHARE_ACTION_LABEL));
+  copy_action->LaunchAction(/*controller=*/nullptr, /*root_view=*/nullptr,
+                            CreateValidUrlIntent());
+  // Check url copied correctly.
+  std::u16string clipboard_url;
+  ui::Clipboard::GetForCurrentThread()->ReadText(
+      ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
+      &clipboard_url);
+  EXPECT_EQ(::sharesheet::kTestUrl, base::UTF16ToUTF8(clipboard_url));
 }
 
 }  // namespace sharesheet

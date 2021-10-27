@@ -5,7 +5,7 @@
 // https://jeremyroman.github.io/alternate-loading-modes/#performance-navigation-timing-extension
 [
     ImplementedAs=PerformanceNavigationTimingActivationStart,
-    RuntimeEnabled=Prerender2
+    RuntimeEnabled=Prerender2RelatedFeatures
 ] partial interface PerformanceNavigationTiming {
     readonly attribute DOMHighResTimeStamp activationStart;
 };

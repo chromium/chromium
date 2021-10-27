@@ -62,7 +62,7 @@ class AppSourceUrlRecorder {
   // "app://play/pjhgmeephkiehhlkfcoginnkbphkdang".
   static SourceId GetSourceIdForArc(const std::string& package_name);
 
-  // Get a UKM SourceId for a PWA or bookmark app.
+  // Get a UKM SourceId for a PWA.
   static SourceId GetSourceIdForPWA(const GURL& url);
 
   // Get a UKM SourceId with the prefix "app://" for a Crostini app with an XDG

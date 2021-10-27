@@ -1350,7 +1350,7 @@ void HTMLSelectElement::ProvisionalSelectionChanged(unsigned list_index) {
 }
 
 void HTMLSelectElement::ShowPopup() {
-  select_type_->ShowPopup();
+  select_type_->ShowPopup(PopupMenu::kOther);
 }
 
 void HTMLSelectElement::HidePopup() {

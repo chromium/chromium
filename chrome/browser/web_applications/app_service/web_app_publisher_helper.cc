@@ -64,6 +64,10 @@
 #include "components/sessions/core/session_id.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_service.h"
+#endif
+
 using apps::IconEffects;
 
 namespace web_app {
@@ -344,8 +348,11 @@ void WebAppPublisherHelper::PopulateWebAppPermissions(
 apps::mojom::AppPtr WebAppPublisherHelper::ConvertWebApp(
     const WebApp* web_app) {
   apps::mojom::Readiness readiness =
-      web_app->is_locally_installed() ? apps::mojom::Readiness::kReady
-                                      : apps::mojom::Readiness::kDisabledByUser;
+      web_app->is_locally_installed()
+          ? (web_app->is_uninstalling()
+                 ? apps::mojom::Readiness::kUninstalledByUser
+                 : apps::mojom::Readiness::kReady)
+          : apps::mojom::Readiness::kDisabledByUser;
 #if defined(OS_CHROMEOS)
   DCHECK(web_app->chromeos_data().has_value());
   if (web_app->chromeos_data()->is_disabled)
@@ -748,9 +755,15 @@ void WebAppPublisherHelper::SetPermission(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 void WebAppPublisherHelper::StopApp(const std::string& app_id) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!base::FeatureList::IsEnabled(features::kWebAppsCrosapi)) {
     return;
   }
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!chromeos::LacrosService::Get()->init_params()->web_apps_enabled) {
+    return;
+  }
+#endif
 
   apps::BrowserAppInstanceTracker* instance_tracker =
       apps::AppServiceProxyFactory::GetInstance()
