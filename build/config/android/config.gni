@@ -48,7 +48,7 @@ if (is_android || is_chromeos) {
 
     # The default to use for android:minSdkVersion for targets that do
     # not explicitly set it.
-    default_min_sdk_version = 21
+    default_min_sdk_version = 23
 
     # [WIP] Allows devs to achieve much faster edit-build-install cycles.
     # Currently only works for ChromeModern apks due to incremental install.
