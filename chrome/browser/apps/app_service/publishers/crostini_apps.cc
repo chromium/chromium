@@ -282,9 +282,14 @@ void CrostiniApps::OnRegistryUpdated(
     return;
   }
 
+  // TODO(sidereal) Do something cleverer here so we only need to publish a new
+  // icon when the icon has actually changed.
+  const bool update_icon =
+      crostini::CrostiniFeatures::Get()->IsMultiContainerAllowed(profile_);
   for (const std::string& app_id : updated_apps) {
     if (auto registration = registry_->GetRegistration(app_id)) {
-      Publish(Convert(*registration, /*new_icon_key=*/false), subscribers_);
+      Publish(Convert(*registration, /*new_icon_key=*/update_icon),
+              subscribers_);
     }
   }
   for (const std::string& app_id : removed_apps) {
