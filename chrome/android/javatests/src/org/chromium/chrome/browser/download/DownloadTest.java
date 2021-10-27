@@ -488,6 +488,7 @@ public class DownloadTest implements CustomMainActivityStart {
     @Test
     @MediumTest
     @Feature({"Navigation"})
+    @DisabledTest(message = "crbug.com/1261941")
     public void testOMADownloadInterception() throws Exception {
         TestWebServer webServer = TestWebServer.start();
         try {
