@@ -212,6 +212,9 @@ extern const char kCanCellularSetupNotificationBeShown[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kManagedGuestSessionPrivacyWarningsEnabled[];
 
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kSnoopingProtectionEnabled[];
+
 // Lock screen notification settings.
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kMessageCenterLockScreenMode[];
