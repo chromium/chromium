@@ -38,6 +38,11 @@ PasswordStoreAndroidBackendBridge::Create() {
   return std::make_unique<PasswordStoreAndroidBackendBridgeImpl>();
 }
 
+bool PasswordStoreAndroidBackendBridge::CanCreateBackend() {
+  return Java_PasswordStoreAndroidBackendBridgeImpl_canCreateBackend(
+      base::android::AttachCurrentThread());
+}
+
 }  // namespace password_manager
 
 PasswordStoreAndroidBackendBridgeImpl::PasswordStoreAndroidBackendBridgeImpl() {

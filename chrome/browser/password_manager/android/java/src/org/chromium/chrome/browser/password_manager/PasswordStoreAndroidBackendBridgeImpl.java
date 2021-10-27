@@ -42,6 +42,11 @@ class PasswordStoreAndroidBackendBridgeImpl {
     }
 
     @CalledByNative
+    static boolean canCreateBackend() {
+        return PasswordStoreAndroidBackendFactory.getInstance().canCreateBackend();
+    }
+
+    @CalledByNative
     void getAllLogins(@JobId int jobId) {
         mBackend.getAllLogins(
                 passwords

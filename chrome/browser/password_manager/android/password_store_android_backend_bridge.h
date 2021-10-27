@@ -55,7 +55,14 @@ class PasswordStoreAndroidBackendBridge {
 
   // Factory function for creating the bridge. Implementation is pulled in by
   // including an implementation or by defining it explicitly in tests.
+  // Ensure `CanCreateBackend` returns true before calling this method.
   static std::unique_ptr<PasswordStoreAndroidBackendBridge> Create();
+
+  // Method that checks whether a backend can be created or whether `Create`
+  // would fail. It returns true iff all nontransient prerequisistes are
+  // fulfilled. E.g. if the backend requires a minimum GMS version this method
+  // would return false.
+  static bool CanCreateBackend();
 };
 
 }  // namespace password_manager
