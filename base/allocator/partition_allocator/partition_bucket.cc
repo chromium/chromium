@@ -543,6 +543,9 @@ PartitionBucket<thread_safe>::AllocNewSlotSpan(PartitionRoot<thread_safe>* root,
                                      PageUpdatePermissions);
   }
 
+  PA_CHECK(get_slots_per_span() <=
+           SlotSpanMetadata<ThreadSafe>::kMaxSlotsPerSlotSpan);
+
   // Double check that we had enough space in the super page for the new slot
   // span.
   PA_DCHECK(root->next_partition_page <= root->next_partition_page_end);
@@ -833,6 +836,15 @@ bool PartitionBucket<thread_safe>::SetNewActiveSlotSpan() {
   active_slot_spans_head =
       SlotSpanMetadata<thread_safe>::get_sentinel_slot_span();
   return false;
+}
+
+template <bool thread_safe>
+void PartitionBucket<thread_safe>::SortSlotSpanFreelists() {
+  for (auto* slot_span = active_slot_spans_head; slot_span;
+       slot_span = slot_span->next_slot_span) {
+    if (slot_span->num_allocated_slots > 0)
+      slot_span->SortFreelist();
+  }
 }
 
 template <bool thread_safe>
