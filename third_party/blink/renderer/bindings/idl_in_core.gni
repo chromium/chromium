@@ -56,6 +56,8 @@ static_idl_files_in_core = get_path_info(
           "//third_party/blink/renderer/core/css/css_import_rule.idl",
           "//third_party/blink/renderer/core/css/css_keyframe_rule.idl",
           "//third_party/blink/renderer/core/css/css_keyframes_rule.idl",
+          "//third_party/blink/renderer/core/css/css_layer_block_rule.idl",
+          "//third_party/blink/renderer/core/css/css_layer_statement_rule.idl",
           "//third_party/blink/renderer/core/css/css_media_rule.idl",
           "//third_party/blink/renderer/core/css/css_namespace_rule.idl",
           "//third_party/blink/renderer/core/css/css_page_rule.idl",
