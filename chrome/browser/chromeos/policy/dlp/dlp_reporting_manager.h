@@ -17,6 +17,8 @@ namespace policy {
 // helper function to create DlpPolicyEvents to be enqueued or used to test
 // against.
 DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_pattern,
+                                    DlpRulesManager::Restriction restriction);
+DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_pattern,
                                     DlpRulesManager::Restriction restriction,
                                     DlpRulesManager::Level level);
 DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_pattern,
@@ -56,6 +58,8 @@ class DlpReportingManager {
                    DlpRulesManager::Component dst_component,
                    DlpRulesManager::Restriction restriction,
                    DlpRulesManager::Level level);
+  void ReportWarningProceededEvent(const std::string& src_pattern,
+                                   DlpRulesManager::Restriction restriction);
 
   ReportQueueSetterCallback GetReportQueueSetter();
 

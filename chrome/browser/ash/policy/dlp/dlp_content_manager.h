@@ -259,6 +259,11 @@ class DlpContentManager : public DlpContentObserver,
   void MaybeReportEvent(const RestrictionLevelAndUrl& restriction_info,
                         DlpRulesManager::Restriction restriction);
 
+  // Reports warning events if required by the |restriction_info| and
+  // `reporting_manager` is configured.
+  void MaybeReportWarnEvent(const RestrictionLevelAndUrl& restriction_info,
+                            DlpRulesManager::Restriction restriction);
+
   // Called back from Screen Capture warning dialogs. Saves the user's response
   // and passes it along to |callback| which handles continuing or cancelling
   // the action based on this response.

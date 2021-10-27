@@ -64,7 +64,8 @@ bool IsWarn(RestrictionLevelAndUrl restriction_info) {
   return restriction_info.level == DlpRulesManager::Level::kWarn;
 }
 
-// Helper method to check if event should be reported
+// Helper method to check if event should be reported.
+// Does not apply to warning mode reporting.
 bool IsReported(RestrictionLevelAndUrl restriction_info) {
   return restriction_info.level == DlpRulesManager::Level::kReport ||
          IsBlocked(restriction_info);
@@ -702,6 +703,15 @@ void DlpContentManager::MaybeReportEvent(
   if (IsReported(restriction_info) && reporting_manager_) {
     ReportEvent(restriction_info.url, restriction, restriction_info.level,
                 reporting_manager_);
+  }
+}
+
+void DlpContentManager::MaybeReportWarnEvent(
+    const RestrictionLevelAndUrl& restriction_info,
+    DlpRulesManager::Restriction restriction) {
+  if (IsWarn(restriction_info) && reporting_manager_) {
+    ReportEvent(restriction_info.url, restriction,
+                DlpRulesManager::Level::kWarn, reporting_manager_);
   }
 }
 
