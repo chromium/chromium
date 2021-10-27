@@ -8,6 +8,7 @@
 #include "chromecast/graphics/accessibility/accessibility_layer.h"
 
 #include "ui/aura/window.h"
+#include "ui/compositor/compositor.h"
 #include "ui/compositor/compositor_animation_observer.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/paint_recorder.h"

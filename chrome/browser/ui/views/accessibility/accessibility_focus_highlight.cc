@@ -10,6 +10,7 @@
 #include "chrome/common/pref_names.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/focused_node_details.h"
+#include "ui/compositor/compositor.h"
 #include "ui/compositor/compositor_animation_observer.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/paint_recorder.h"

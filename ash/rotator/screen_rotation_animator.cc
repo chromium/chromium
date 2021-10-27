@@ -25,6 +25,7 @@
 #include "ui/base/class_property.h"
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/callback_layer_animation_observer.h"
+#include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_animation_sequence.h"
