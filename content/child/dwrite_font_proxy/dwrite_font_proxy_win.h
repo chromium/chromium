@@ -15,6 +15,8 @@
 #include "base/callback.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/macros.h"
+#include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 #include "base/threading/sequence_local_storage_slot.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -30,8 +32,8 @@ class DWriteFontFamilyProxy;
 // into a custom font collection.
 // This is needed because the sandbox interferes with DirectWrite's
 // communication with the system font service.
-// This class can be accessed from any thread, but it is expected that a lock
-// internal to DWrite prevents concurrent accesses.
+// This class can be accessed from any thread, uses locks and thread annotations
+// to coordinate concurrent accesses.
 class DWriteFontCollectionProxy
     : public Microsoft::WRL::RuntimeClass<
           Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
@@ -62,10 +64,13 @@ class DWriteFontCollectionProxy
                                            UINT32* index,
                                            BOOL* exists) override;
   HRESULT STDMETHODCALLTYPE
-  GetFontFamily(UINT32 index, IDWriteFontFamily** font_family) override;
-  UINT32 STDMETHODCALLTYPE GetFontFamilyCount() override;
+  GetFontFamily(UINT32 index, IDWriteFontFamily** font_family) override
+      LOCKS_EXCLUDED(families_lock_);
+  UINT32 STDMETHODCALLTYPE GetFontFamilyCount() override
+      LOCKS_EXCLUDED(families_lock_);
   HRESULT STDMETHODCALLTYPE GetFontFromFontFace(IDWriteFontFace* font_face,
-                                                IDWriteFont** font) override;
+                                                IDWriteFont** font) override
+      LOCKS_EXCLUDED(families_lock_);
 
   // IDWriteFontCollectionLoader:
   HRESULT STDMETHODCALLTYPE CreateEnumeratorFromKey(
@@ -93,25 +98,34 @@ class DWriteFontCollectionProxy
   // used to avoid an IPC call when both the index and family name are known.
   bool GetFontFamily(UINT32 family_index,
                      const std::u16string& family_name,
-                     IDWriteFontFamily** font_family);
+                     IDWriteFontFamily** font_family)
+      LOCKS_EXCLUDED(families_lock_);
 
   bool LoadFamilyNames(UINT32 family_index, IDWriteLocalizedStrings** strings);
 
   blink::mojom::DWriteFontProxy& GetFontProxy();
 
  private:
-  DWriteFontFamilyProxy* GetFamily(UINT32 family_index);
-  DWriteFontFamilyProxy* CreateFamily(UINT32 family_index);
+  UINT32 GetFontFamilyCountLockRequired()
+      EXCLUSIVE_LOCKS_REQUIRED(families_lock_);
+  DWriteFontFamilyProxy* GetFamily(UINT32 family_index)
+      LOCKS_EXCLUDED(families_lock_);
+  DWriteFontFamilyProxy* GetOrCreateFamilyLockRequired(UINT32 family_index)
+      EXCLUSIVE_LOCKS_REQUIRED(families_lock_);
 
   HRESULT FindFamilyName(const std::u16string& family_name,
                          UINT32* index,
-                         BOOL* exists);
+                         BOOL* exists) LOCKS_EXCLUDED(families_lock_);
 
+  base::Lock families_lock_;
+
+  // This is initialized in ctor (RuntimeClassInitialize) and will not change.
   Microsoft::WRL::ComPtr<IDWriteFactory> factory_;
 
-  std::vector<Microsoft::WRL::ComPtr<DWriteFontFamilyProxy>> families_;
-  std::map<std::u16string, UINT32> family_names_;
-  UINT32 family_count_ = UINT_MAX;
+  std::vector<Microsoft::WRL::ComPtr<DWriteFontFamilyProxy>> families_
+      GUARDED_BY(families_lock_);
+  std::map<std::u16string, UINT32> family_names_ GUARDED_BY(families_lock_);
+  UINT32 family_count_ GUARDED_BY(families_lock_) = UINT_MAX;
 
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   // Per-sequence mojo::Remote<DWriteFontProxy>. This is preferred to a
@@ -119,6 +133,8 @@ class DWriteFontCollectionProxy
   // doesn't originate from the "bound" sequence.
   base::SequenceLocalStorageSlot<mojo::Remote<blink::mojom::DWriteFontProxy>>
       font_proxy_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   DISALLOW_ASSIGN(DWriteFontCollectionProxy);
 };
@@ -140,8 +156,8 @@ class DWriteFontFamilyProxy
   GetFontCollection(IDWriteFontCollection** font_collection) override;
   UINT32 STDMETHODCALLTYPE GetFontCount() override;
   HRESULT STDMETHODCALLTYPE GetFont(UINT32 index, IDWriteFont** font) override;
-  HRESULT STDMETHODCALLTYPE
-  GetFamilyNames(IDWriteLocalizedStrings** names) override;
+  HRESULT STDMETHODCALLTYPE GetFamilyNames(
+      IDWriteLocalizedStrings** names) override LOCKS_EXCLUDED(family_lock_);
   HRESULT STDMETHODCALLTYPE
   GetFirstMatchingFont(DWRITE_FONT_WEIGHT weight,
                        DWRITE_FONT_STRETCH stretch,
@@ -156,22 +172,29 @@ class DWriteFontFamilyProxy
   HRESULT STDMETHODCALLTYPE
   RuntimeClassInitialize(DWriteFontCollectionProxy* collection, UINT32 index);
 
-  bool GetFontFromFontFace(IDWriteFontFace* font_face, IDWriteFont** font);
+  bool GetFontFromFontFace(IDWriteFontFace* font_face, IDWriteFont** font)
+      LOCKS_EXCLUDED(family_lock_);
 
-  void SetName(const std::u16string& family_name);
-  const std::u16string& GetName();
-
-  bool IsLoaded();
-
- protected:
-  IDWriteFontFamily* LoadFamily();
+  const std::u16string& GetName() LOCKS_EXCLUDED(family_lock_);
+  void SetName(const std::u16string& family_name) LOCKS_EXCLUDED(family_lock_);
+  void SetNameIfNotLoaded(const std::u16string& family_name)
+      LOCKS_EXCLUDED(family_lock_);
 
  private:
+  IDWriteFontFamily* LoadFamily() LOCKS_EXCLUDED(family_lock_);
+
+  base::Lock family_lock_;
+
+  // These are initialized in ctor (RuntimeClassInitialize) and will not change.
   UINT32 family_index_;
-  std::u16string family_name_;
   Microsoft::WRL::ComPtr<DWriteFontCollectionProxy> proxy_collection_;
-  Microsoft::WRL::ComPtr<IDWriteFontFamily> family_;
-  Microsoft::WRL::ComPtr<IDWriteLocalizedStrings> family_names_;
+
+  Microsoft::WRL::ComPtr<IDWriteFontFamily> family_ GUARDED_BY(family_lock_);
+  std::u16string family_name_ GUARDED_BY(family_lock_);
+  Microsoft::WRL::ComPtr<IDWriteLocalizedStrings> family_names_
+      GUARDED_BY(family_lock_);
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   DISALLOW_ASSIGN(DWriteFontFamilyProxy);
 };
