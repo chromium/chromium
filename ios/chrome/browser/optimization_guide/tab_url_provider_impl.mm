@@ -40,7 +40,7 @@ const std::vector<GURL> TabUrlProviderImpl::GetUrlsOfActiveTabs(
       web::WebState* web_state = web_state_list->GetWebStateAt(i);
       DCHECK(web_state);
       web::NavigationItem* navigation_item =
-          web_state->GetNavigationManager()->GetLastCommittedItem();
+          web_state->GetNavigationManager()->GetVisibleItem();
       if (!navigation_item)
         continue;
 
