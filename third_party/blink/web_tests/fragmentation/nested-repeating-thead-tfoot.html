@@ -9,7 +9,7 @@ thead, tfoot {
 }
 </style>
 <p>crbug.com/759195: Headers and footers should be placed correctly.</p>
-<div style="columns:3; column-fill: auto; height:412px; background-color: yellow;">
+<div id="multicol" style="display:none; columns:3; column-fill: auto; height:412px; background-color: yellow;">
   <table cellpadding=0 cellspacing=0>
     <thead>
       <tr>
@@ -112,3 +112,7 @@ thead, tfoot {
     </tfoot>
   </table>
 </div>
+<script>
+  // Avoid crbug.com/1254935
+  multicol.style.display = "block";
+</script>

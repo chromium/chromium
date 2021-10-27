@@ -110,11 +110,6 @@ crbug.com/1254932 http/tests/preload/meta-csp.html [ Failure ]
 # Extra box in the output:
 crbug.com/1254933 css3/filters/filterRegions.html [ Failure ]
 
-# Table layout changes:
-crbug.com/1254935 fragmentation/nested-repeating-thead-4.html [ Failure ]
-crbug.com/1254935 fragmentation/nested-repeating-thead-tfoot-4.html [ Failure ]
-crbug.com/1254935 fragmentation/nested-repeating-thead-tfoot.html [ Failure ]
-
 # More line messages added and removed:
 crbug.com/1254937 http/tests/devtools/oopif/oopif-presentation-console-messages.js [ Failure ]
 crbug.com/1254937 http/tests/devtools/resource-tree/resource-tree-frame-add.js [ Failure ]
