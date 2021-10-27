@@ -72,7 +72,6 @@
     'remove_from': [
       # TODO(ynovikov) Investigate why the test breaks on older devices.
       'Android FYI Release (Nexus 5)',
-      'Android FYI Release (Nexus 6)',
       'Android FYI Release (Nexus 9)',
       # Temporarily disabled due to bad NVIDIA driver upgrade crbug.com/950542
       'Linux FYI Debug (NVIDIA)',

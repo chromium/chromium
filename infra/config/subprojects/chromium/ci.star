@@ -4927,14 +4927,6 @@ ci.gpu_fyi_linux_builder(
 )
 
 ci.gpu_fyi_linux_builder(
-    name = "Android FYI Release (Nexus 6)",
-    console_view_entry = consoles.console_view_entry(
-        category = "Android|L32",
-        short_name = "N6",
-    ),
-)
-
-ci.gpu_fyi_linux_builder(
     name = "Android FYI Release (Nexus 9)",
     console_view_entry = consoles.console_view_entry(
         category = "Android|M64|NVDA",

@@ -4028,21 +4028,6 @@
           'android_webview_gpu_telemetry_tests': 'android_webview_gpu_telemetry_tests',
         },
       },
-      'Android FYI Release (Nexus 6)': {
-        'browser_config': 'android-chromium',
-        'os_type': 'android',
-        'skip_merge_script': True,
-        'mixins': [
-          'has_native_resultdb_integration',
-          'gpu-swarming-pool',
-          'lollipop_generic',
-          'shamu',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_fyi_android_gtests',
-          'gpu_telemetry_tests': 'gpu_common_telemetry_tests',
-        },
-      },
       'Android FYI Release (Nexus 9)': {
         'browser_config': 'android-chromium',
         'os_type': 'android',

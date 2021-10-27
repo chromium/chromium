@@ -636,7 +636,6 @@
           'oreo_fleet',
           'pie_fleet',
           'sailfish',
-          'shamu',
           'walleye',
         ],
       },
