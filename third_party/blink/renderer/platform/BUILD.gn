@@ -2180,6 +2180,7 @@ source_set("blink_platform_unittests_sources") {
     "peerconnection/webrtc_audio_sink_test.cc",
     "peerconnection/webrtc_decoding_info_handler_test.cc",
     "peerconnection/webrtc_encoding_info_handler_test.cc",
+    "peerconnection/webrtc_timer_test.cc",
     "peerconnection/webrtc_video_track_source_test.cc",
     "region_capture_crop_id_test.cc",
     "runtime_enabled_features_test.cc",
