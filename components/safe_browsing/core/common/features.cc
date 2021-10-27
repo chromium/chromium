@@ -93,10 +93,6 @@ const base::Feature kPasswordProtectionForSignedInUsers {
 #endif
 };
 
-const base::Feature kPasswordProtectionWithToken{
-    "SafeBrowsingPasswordProtectionRequestWithToken",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kPromptEsbForDeepScanning{
     "SafeBrowsingPromptEsbForDeepScanning", base::FEATURE_ENABLED_BY_DEFAULT};
 
@@ -172,7 +168,6 @@ constexpr struct {
     {&kFileTypePoliciesTag, true},
     {&kOmitNonUserGesturesFromReferrerChain, true},
     {&kPasswordProtectionForSignedInUsers, true},
-    {&kPasswordProtectionWithToken, true},
     {&kRealTimeUrlLookupReferrerChain, true},
     {&kRealTimeUrlLookupReferrerChainForEnterprise, true},
     {&kSafeBrowsingPageLoadToken, true},

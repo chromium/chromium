@@ -436,10 +436,8 @@ bool PasswordProtectionServiceBase::CanGetAccessToken() {
   if (!try_token_fetch_ || is_off_the_record_)
     return false;
 
-  // Return true if the finch feature is enabled for an ESB user, and if the
-  // primary user account is signed in.
-  return base::FeatureList::IsEnabled(kPasswordProtectionWithToken) &&
-         pref_service_ && IsEnhancedProtectionEnabled(*pref_service_) &&
+  // Return true if the primary user account of an ESB user is signed in.
+  return pref_service_ && IsEnhancedProtectionEnabled(*pref_service_) &&
          identity_manager_ &&
          safe_browsing::SyncUtils::IsPrimaryAccountSignedIn(identity_manager_);
 }

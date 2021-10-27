@@ -1043,8 +1043,7 @@ TEST_P(PasswordProtectionServiceBaseTest,
   histograms_.ExpectTotalCount(kPasswordOnFocusRequestWithTokenHistogram, 0);
   SetEnhancedProtectionPrefForTests(&test_pref_service_, true);
   SetFeatures(
-      /*enable_features*/ {kPasswordProtectionWithToken,
-                           kSafeBrowsingRemoveCookiesInAuthRequests},
+      /*enable_features*/ {kSafeBrowsingRemoveCookiesInAuthRequests},
       /*disable_features*/ {});
   std::string access_token = "fake access token";
   test_url_loader_factory_.SetInterceptor(
@@ -1078,9 +1077,6 @@ TEST_P(PasswordProtectionServiceBaseTest,
 TEST_P(PasswordProtectionServiceBaseTest,
        TestPasswordOnFocusRequestNoEnhancedProtectionShouldNotHaveToken) {
   histograms_.ExpectTotalCount(kPasswordOnFocusRequestWithTokenHistogram, 0);
-  SetFeatures(
-      /*enable_features*/ {kPasswordProtectionWithToken},
-      /*disable_features*/ {});
   std::string access_token = "fake access token";
   test_url_loader_factory_.SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
@@ -1102,29 +1098,6 @@ TEST_P(PasswordProtectionServiceBaseTest,
   base::RunLoop().RunUntilIdle();
   histograms_.ExpectUniqueSample(kPasswordOnFocusRequestWithTokenHistogram,
                                  0 /* No attached token */, 1);
-}
-
-TEST_P(PasswordProtectionServiceBaseTest,
-       TestPasswordOnFocusRequestDisabledFeatureShouldNotHaveToken) {
-  SetEnhancedProtectionPrefForTests(&test_pref_service_, true);
-  SetFeatures(
-      /*enable_features*/ {},
-      /*disable_features*/ {kPasswordProtectionWithToken});
-  std::string access_token = "fake access token";
-  test_url_loader_factory_.SetInterceptor(
-      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
-        std::string out;
-        EXPECT_FALSE(request.headers.GetHeader(
-            net::HttpRequestHeaders::kAuthorization, &out));
-      }));
-
-  // Never call token fetcher
-  EXPECT_CALL(*raw_token_fetcher_, Start(_)).Times(0);
-
-  std::unique_ptr<content::WebContents> web_contents = GetWebContents();
-  InitializeAndStartPasswordOnFocusRequest(/*match_allowlist=*/false,
-                                           /*timeout_in_ms=*/10000,
-                                           web_contents.get());
 }
 
 TEST_P(PasswordProtectionServiceBaseTest,
