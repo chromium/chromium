@@ -159,11 +159,13 @@ function createWebBundleElement(url, resources, options) {
   const script = document.createElement("script");
   script.type = "webbundle";
   const json_rule  = {"source": url, "resources": resources};
+  if (options && options.scopes) {
+    json_rule.scopes = options.scopes;
+  }
   if (options && options.credentials) {
     json_rule.credentials = options.credentials;
   }
   script.textContent = JSON.stringify(json_rule);
-  // TODO(crbug.com/1245166): Support |options.scopes|.
   return script;
 }
 

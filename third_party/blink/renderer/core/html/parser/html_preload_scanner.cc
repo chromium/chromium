@@ -59,6 +59,7 @@
 #include "third_party/blink/renderer/core/loader/importance_attribute.h"
 #include "third_party/blink/renderer/core/loader/preload_helper.h"
 #include "third_party/blink/renderer/core/loader/subresource_integrity_helper.h"
+#include "third_party/blink/renderer/core/loader/web_bundle/script_web_bundle_rule.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trials.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/script/script_loader.h"
@@ -140,6 +141,38 @@ void ParseWebBundleUrlsAndFillHash(const AtomicString& value,
       url_hash.insert(std::move(url));
     }
   }
+}
+
+void ScanScriptWebBundle(
+    const String& inline_text,
+    const KURL& base_url,
+    scoped_refptr<const PreloadRequest::ExclusionInfo>& exclusion_info) {
+  absl::optional<ScriptWebBundleRule> rule =
+      ScriptWebBundleRule::ParseJson(inline_text, base_url);
+  if (!rule)
+    return;
+
+  HashSet<KURL> scopes;
+  HashSet<KURL> resources;
+  if (exclusion_info) {
+    scopes = exclusion_info->scopes();
+    resources = exclusion_info->resources();
+  }
+
+  for (const KURL& scope_url : rule->scope_urls())
+    scopes.insert(scope_url);
+  for (const KURL& resource_url : rule->resource_urls())
+    resources.insert(resource_url);
+
+  exclusion_info = base::MakeRefCounted<PreloadRequest::ExclusionInfo>(
+      base_url, std::move(scopes), std::move(resources));
+}
+
+void ScanScriptWebBundle(
+    const HTMLToken::DataVector& data,
+    const KURL& base_url,
+    scoped_refptr<const PreloadRequest::ExclusionInfo>& exclusion_info) {
+  ScanScriptWebBundle(data.AsAtomicString(), base_url, exclusion_info);
 }
 
 }  // namespace
@@ -865,6 +898,7 @@ TokenPreloadScanner::TokenPreloadScanner(
       in_style_(false),
       in_picture_(false),
       in_script_(false),
+      in_script_web_bundle_(false),
       seen_body_(false),
       seen_img_(false),
       template_count_(0),
@@ -885,8 +919,8 @@ TokenPreloadScanner::~TokenPreloadScanner() = default;
 TokenPreloadScannerCheckpoint TokenPreloadScanner::CreateCheckpoint() {
   TokenPreloadScannerCheckpoint checkpoint = checkpoints_.size();
   checkpoints_.push_back(Checkpoint(predicted_base_element_url_, in_style_,
-                                    in_script_, template_count_,
-                                    exclusion_info_));
+                                    in_script_, in_script_web_bundle_,
+                                    template_count_, exclusion_info_));
   return checkpoint;
 }
 
@@ -902,6 +936,7 @@ void TokenPreloadScanner::RewindTo(
 
   did_rewind_ = true;
   in_script_ = checkpoint.in_script;
+  in_script_web_bundle_ = checkpoint.in_script_web_bundle;
 
   css_scanner_.Reset();
   checkpoints_.clear();
@@ -1005,6 +1040,13 @@ void TokenPreloadScanner::ScanCommon(
         css_scanner_.Scan(token.Data(), source, requests,
                           predicted_base_element_url_, exclusion_info_.get());
       }
+      if (in_script_web_bundle_) {
+        ScanScriptWebBundle(token.Data(),
+                            predicted_base_element_url_.IsEmpty()
+                                ? document_url_
+                                : predicted_base_element_url_,
+                            exclusion_info_);
+      }
       return;
     }
     case HTMLToken::kEndTag: {
@@ -1022,6 +1064,7 @@ void TokenPreloadScanner::ScanCommon(
       }
       if (Match(tag_impl, html_names::kScriptTag)) {
         in_script_ = false;
+        in_script_web_bundle_ = false;
         return;
       }
       if (Match(tag_impl, html_names::kPictureTag)) {
@@ -1046,6 +1089,17 @@ void TokenPreloadScanner::ScanCommon(
       // too.
       if (Match(tag_impl, html_names::kScriptTag)) {
         in_script_ = true;
+
+        const typename Token::Attribute* type_attribute =
+            token.GetAttributeItem(html_names::kTypeAttr);
+        if (type_attribute &&
+            ScriptLoader::GetScriptTypeAtPrepare(
+                type_attribute->Value(),
+                /*language_attribute_value=*/g_empty_atom,
+                ScriptLoader::kDisallowLegacyTypeInTypeAttribute) ==
+                ScriptLoader::ScriptTypeAtPrepare::kWebBundle) {
+          in_script_web_bundle_ = true;
+        }
       }
       if (Match(tag_impl, html_names::kBaseTag)) {
         // The first <base> element is the one that wins.

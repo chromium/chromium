@@ -4514,12 +4514,8 @@ crbug.com/1245166 external/wpt/web-bundle/subresource-loading/script-accept-head
 crbug.com/1245166 external/wpt/web-bundle/subresource-loading/script-nested-bundle.https.tentative.html [ Skip ]
 crbug.com/1245166 external/wpt/web-bundle/subresource-loading/script-network-error.https.tentative.html [ Skip ]
 crbug.com/1245166 external/wpt/web-bundle/subresource-loading/script-relative-url-in-web-bundle.https.tentative.html [ Skip ]
-crbug.com/1245166 external/wpt/web-bundle/subresource-loading/script-relative-url-with-base.https.tentative.html [ Skip ]
-crbug.com/1245166 external/wpt/web-bundle/subresource-loading/script-relative-url.https.tentative.html [ Skip ]
 crbug.com/1245166 external/wpt/web-bundle/subresource-loading/script-request-destination.https.tentative.html [ Skip ]
 crbug.com/1245166 external/wpt/web-bundle/subresource-loading/script-service-worker-controlled.https.tentative.html [ Skip ]
-crbug.com/1245166 external/wpt/web-bundle/subresource-loading/script-static-element.https.tentative.sub.html [ Skip ]
-crbug.com/1245166 external/wpt/web-bundle/subresource-loading/script-static-element-with-base.https.tentative.sub.html [ Skip ]
 crbug.com/1245166 external/wpt/web-bundle/subresource-loading/script-subresource-load.https.tentative.sub.html [ Skip ]
 
 # Sheriff failures 2017-07-03
