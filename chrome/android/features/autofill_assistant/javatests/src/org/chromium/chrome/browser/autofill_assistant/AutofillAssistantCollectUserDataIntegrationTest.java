@@ -1062,7 +1062,7 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
     @MediumTest
     public void testEnterBackendContact() throws Exception {
         UserDataProto
-                .Builder data = UserDataProto.newBuilder().setLocale("en-US").addAvailableProfiles(
+                .Builder data = UserDataProto.newBuilder().setLocale("en-US").addAvailableContacts(
                 ProfileProto.newBuilder()
                         .putValues(7, AutofillEntryProto.newBuilder().setValue("John Doe").build())
                         .putValues(9,

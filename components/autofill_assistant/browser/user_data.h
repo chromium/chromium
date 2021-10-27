@@ -123,7 +123,8 @@ class UserData {
   absl::optional<int> date_time_range_start_timeslot_;
   absl::optional<int> date_time_range_end_timeslot_;
 
-  std::vector<std::unique_ptr<autofill::AutofillProfile>> available_profiles_;
+  std::vector<std::unique_ptr<autofill::AutofillProfile>> available_contacts_;
+  std::vector<std::unique_ptr<autofill::AutofillProfile>> available_addresses_;
   std::vector<std::unique_ptr<PaymentInstrument>>
       available_payment_instruments_;
 

@@ -387,10 +387,28 @@ bool RequiresContact(const CollectUserDataOptions& collect_user_data_options) {
          collect_user_data_options.request_payer_phone;
 }
 
-bool RequiresProfiles(const CollectUserDataOptions& collect_user_data_options) {
-  return RequiresContact(collect_user_data_options) ||
-         collect_user_data_options.request_shipping ||
+bool RequiresShipping(const CollectUserDataOptions& collect_user_data_options) {
+  return collect_user_data_options.request_shipping;
+}
+
+bool RequiresAddress(const CollectUserDataOptions& collect_user_data_options) {
+  return RequiresShipping(collect_user_data_options) ||
          RequiresPaymentMethod(collect_user_data_options);
+}
+
+void AddProtoDataToAutofillDataModel(
+    const google::protobuf::Map<int32_t, AutofillEntryProto>& data,
+    const std::string& locale,
+    autofill::AutofillDataModel* model) {
+  for (const auto& it : data) {
+    if (it.second.raw()) {
+      model->SetRawInfo(static_cast<autofill::ServerFieldType>(it.first),
+                        base::UTF8ToUTF16(it.second.value()));
+    } else {
+      model->SetInfo(static_cast<autofill::ServerFieldType>(it.first),
+                     base::UTF8ToUTF16(it.second.value()), locale);
+    }
+  }
 }
 
 }  // namespace
@@ -620,7 +638,7 @@ void CollectUserDataAction::OnShowToUser(UserData* user_data,
   if (!shown_to_user_) {
     shown_to_user_ = true;
     initially_prefilled_ = CheckInitialAutofillDataComplete(
-        user_data->available_profiles_,
+        user_data->available_contacts_, user_data->available_addresses_,
         user_data->available_payment_instruments_);
   }
 
@@ -970,48 +988,46 @@ bool CollectUserDataAction::CreateOptionsFromProto() {
 }
 
 bool CollectUserDataAction::CheckInitialAutofillDataComplete(
-    const std::vector<std::unique_ptr<autofill::AutofillProfile>>& profiles,
+    const std::vector<std::unique_ptr<autofill::AutofillProfile>>& contacts,
+    const std::vector<std::unique_ptr<autofill::AutofillProfile>>& addresses,
     const std::vector<std::unique_ptr<PaymentInstrument>>&
         payment_instruments) {
   DCHECK(collect_user_data_options_ != nullptr);
-  bool request_contact = RequiresContact(*collect_user_data_options_);
-  if (request_contact || collect_user_data_options_->request_shipping) {
-    if (request_contact) {
-      auto complete_contact_iter = std::find_if(
-          profiles.begin(), profiles.end(), [this](const auto& profile) {
-            return user_data::GetContactValidationErrors(
-                       profile.get(), *collect_user_data_options_)
-                .empty();
-          });
-      if (complete_contact_iter == profiles.end()) {
-        return false;
-      }
-    }
 
-    if (collect_user_data_options_->request_shipping) {
-      auto complete_address_iter = std::find_if(
-          profiles.begin(), profiles.end(), [this](const auto& profile) {
-            return user_data::GetShippingAddressValidationErrors(
-                       profile.get(), *collect_user_data_options_)
-                .empty();
-          });
-      if (complete_address_iter == profiles.end()) {
-        return false;
-      }
+  if (RequiresContact(*collect_user_data_options_)) {
+    bool has_complete_contact =
+        base::ranges::any_of(contacts, [this](const auto& profile) {
+          return user_data::GetContactValidationErrors(
+                     profile.get(), *collect_user_data_options_)
+              .empty();
+        });
+    if (!has_complete_contact) {
+      return false;
+    }
+  }
+
+  if (RequiresShipping(*collect_user_data_options_)) {
+    bool has_complete_shipping_address =
+        base::ranges::any_of(addresses, [this](const auto& profile) {
+          return user_data::GetShippingAddressValidationErrors(
+                     profile.get(), *collect_user_data_options_)
+              .empty();
+        });
+    if (!has_complete_shipping_address) {
+      return false;
     }
   }
 
   if (collect_user_data_options_->request_payment_method) {
-    auto complete_payment_instrument_iter =
-        std::find_if(payment_instruments.begin(), payment_instruments.end(),
-                     [this](const auto& payment_instrument) {
-                       return user_data::GetPaymentInstrumentValidationErrors(
-                                  payment_instrument->card.get(),
-                                  payment_instrument->billing_address.get(),
-                                  *collect_user_data_options_)
-                           .empty();
-                     });
-    if (complete_payment_instrument_iter == payment_instruments.end()) {
+    bool has_complete_payment_instrument = base::ranges::any_of(
+        payment_instruments, [this](const auto& payment_instrument) {
+          return user_data::GetPaymentInstrumentValidationErrors(
+                     payment_instrument->card.get(),
+                     payment_instrument->billing_address.get(),
+                     *collect_user_data_options_)
+              .empty();
+        });
+    if (!has_complete_payment_instrument) {
       return false;
     }
   }
@@ -1279,71 +1295,57 @@ void CollectUserDataAction::UpdateUserDataFromProto(
     UserData* user_data) {
   DCHECK(user_data != nullptr);
 
-  if (RequiresProfiles(*collect_user_data_options_)) {
-    user_data->available_profiles_.clear();
-    for (const auto& profile_data : proto_data.available_profiles()) {
+  if (RequiresContact(*collect_user_data_options_)) {
+    user_data->available_contacts_.clear();
+    for (const auto& profile_data : proto_data.available_contacts()) {
       auto profile = std::make_unique<autofill::AutofillProfile>();
-      for (const auto& it : profile_data.values()) {
-        if (it.second.raw()) {
-          profile->SetRawInfo(static_cast<autofill::ServerFieldType>(it.first),
-                              base::UTF8ToUTF16(it.second.value()));
-        } else {
-          profile->SetInfo(static_cast<autofill::ServerFieldType>(it.first),
-                           base::UTF8ToUTF16(it.second.value()),
-                           proto_data.locale());
-        }
-      }
+      AddProtoDataToAutofillDataModel(profile_data.values(),
+                                      proto_data.locale(), profile.get());
       profile->FinalizeAfterImport();
-      user_data->available_profiles_.emplace_back(std::move(profile));
+      user_data->available_contacts_.emplace_back(std::move(profile));
     }
-    UpdateSelectedProfiles(user_data);
+    UpdateSelectedContact(user_data);
+  }
+
+  if (RequiresAddress(*collect_user_data_options_)) {
+    user_data->available_addresses_.clear();
+    for (const auto& profile_data : proto_data.available_addresses()) {
+      auto profile = std::make_unique<autofill::AutofillProfile>();
+      AddProtoDataToAutofillDataModel(profile_data.values(),
+                                      proto_data.locale(), profile.get());
+      profile->FinalizeAfterImport();
+      user_data->available_addresses_.emplace_back(std::move(profile));
+    }
+    UpdateSelectedShippingAddress(user_data);
   }
 
   if (RequiresPaymentMethod(*collect_user_data_options_)) {
     user_data->available_payment_instruments_.clear();
     for (const auto& payment_data :
          proto_data.available_payment_instruments()) {
-      auto unique_card = std::make_unique<autofill::CreditCard>();
-      unique_card->set_record_type(autofill::CreditCard::MASKED_SERVER_CARD);
-      for (const auto& it : payment_data.card_values()) {
-        if (it.second.raw()) {
-          unique_card->SetRawInfo(
-              static_cast<autofill::ServerFieldType>(it.first),
-              base::UTF8ToUTF16(it.second.value()));
-        } else {
-          unique_card->SetInfo(static_cast<autofill::ServerFieldType>(it.first),
-                               base::UTF8ToUTF16(it.second.value()),
-                               proto_data.locale());
-        }
-      }
+      auto credit_card = std::make_unique<autofill::CreditCard>();
+      credit_card->set_record_type(autofill::CreditCard::MASKED_SERVER_CARD);
+      AddProtoDataToAutofillDataModel(payment_data.card_values(),
+                                      proto_data.locale(), credit_card.get());
       // Note: If the incoming card did not set a network GetPaymentRequestData
       // will fall back to "generic".
       if (!collect_user_data_options_->supported_basic_card_networks.empty() &&
           std::find(
               collect_user_data_options_->supported_basic_card_networks.begin(),
               collect_user_data_options_->supported_basic_card_networks.end(),
-              autofill::data_util::GetPaymentRequestData(unique_card->network())
+              autofill::data_util::GetPaymentRequestData(credit_card->network())
                   .basic_card_issuer_network) ==
               collect_user_data_options_->supported_basic_card_networks.end()) {
         continue;
       }
 
       auto payment_instrument = std::make_unique<PaymentInstrument>();
-      payment_instrument->card = std::move(unique_card);
+      payment_instrument->card = std::move(credit_card);
 
       if (!payment_data.address_values().empty()) {
         auto profile = std::make_unique<autofill::AutofillProfile>();
-        for (const auto& it : payment_data.address_values()) {
-          if (it.second.raw()) {
-            profile->SetRawInfo(
-                static_cast<autofill::ServerFieldType>(it.first),
-                base::UTF8ToUTF16(it.second.value()));
-          } else {
-            profile->SetInfo(static_cast<autofill::ServerFieldType>(it.first),
-                             base::UTF8ToUTF16(it.second.value()),
-                             proto_data.locale());
-          }
-        }
+        AddProtoDataToAutofillDataModel(payment_data.address_values(),
+                                        proto_data.locale(), profile.get());
         profile->FinalizeAfterImport();
         payment_instrument->billing_address = std::move(profile);
       }
@@ -1358,18 +1360,28 @@ void CollectUserDataAction::UpdateUserDataFromProto(
 void CollectUserDataAction::UpdatePersonalDataManagerProfiles(
     UserData* user_data,
     UserData::FieldChange* field_change) {
-  if (!RequiresProfiles(*collect_user_data_options_)) {
+  bool requires_contact = RequiresContact(*collect_user_data_options_);
+  bool requires_address = RequiresAddress(*collect_user_data_options_);
+  if (!requires_contact && !requires_address) {
     return;
   }
   DCHECK(user_data != nullptr);
 
-  user_data->available_profiles_.clear();
+  user_data->available_contacts_.clear();
+  user_data->available_addresses_.clear();
   for (const auto* profile :
        delegate_->GetPersonalDataManager()->GetProfilesToSuggest()) {
-    user_data->available_profiles_.emplace_back(
-        user_data::MakeUniqueFromProfile(*profile));
+    if (requires_contact) {
+      user_data->available_contacts_.emplace_back(
+          user_data::MakeUniqueFromProfile(*profile));
+    }
+    if (requires_address) {
+      user_data->available_addresses_.emplace_back(
+          user_data::MakeUniqueFromProfile(*profile));
+    }
   }
-  UpdateSelectedProfiles(user_data);
+  UpdateSelectedContact(user_data);
+  UpdateSelectedShippingAddress(user_data);
 
   if (field_change != nullptr) {
     *field_change = UserData::FieldChange::AVAILABLE_PROFILES;
@@ -1421,31 +1433,23 @@ void CollectUserDataAction::UpdatePersonalDataManagerCards(
   }
 }
 
-void CollectUserDataAction::UpdateSelectedProfiles(UserData* user_data) {
+void CollectUserDataAction::UpdateSelectedContact(UserData* user_data) {
   DCHECK(user_data != nullptr);
 
-  bool found_profile = false;
-  bool found_shipping_address = false;
-
-  auto* selected_profile = user_data->selected_address(
+  bool found_contact = false;
+  auto* selected_contact = user_data->selected_address(
       collect_user_data_options_->contact_details_name);
-  auto* shipping_address = user_data->selected_address(
-      collect_user_data_options_->shipping_address_name);
-  for (const std::unique_ptr<autofill::AutofillProfile>& profile :
-       user_data->available_profiles_) {
-    if (selected_profile != nullptr &&
-        user_data::CompareContactDetails(*collect_user_data_options_,
-                                         profile.get(), selected_profile)) {
-      found_profile = true;
-    }
-
-    if (shipping_address != nullptr &&
-        profile->Compare(*shipping_address) == 0) {
-      found_shipping_address = true;
-    }
+  if (selected_contact != nullptr) {
+    found_contact = base::ranges::any_of(
+        user_data->available_contacts_,
+        [&selected_contact,
+         this](const std::unique_ptr<autofill::AutofillProfile>& profile) {
+          return user_data::CompareContactDetails(
+              *collect_user_data_options_, profile.get(), selected_contact);
+        });
   }
 
-  if (!found_profile && selected_profile != nullptr) {
+  if (!found_contact && selected_contact != nullptr) {
     delegate_->GetUserModel()->SetSelectedAutofillProfile(
         collect_user_data_options_->contact_details_name,
         /* profile= */ nullptr, user_data);
@@ -1455,31 +1459,48 @@ void CollectUserDataAction::UpdateSelectedProfiles(UserData* user_data) {
           collect_user_data_options_->contact_details_name) &&
       RequiresContact(*collect_user_data_options_)) {
     int default_selection = user_data::GetDefaultContactProfile(
-        *collect_user_data_options_, user_data->available_profiles_);
+        *collect_user_data_options_, user_data->available_contacts_);
     if (default_selection != -1) {
       delegate_->GetUserModel()->SetSelectedAutofillProfile(
           collect_user_data_options_->contact_details_name,
           user_data::MakeUniqueFromProfile(
-              *(user_data->available_profiles_[default_selection])),
+              *(user_data->available_contacts_[default_selection])),
           user_data);
     }
   }
+}
 
-  if (!found_shipping_address && shipping_address != nullptr) {
+void CollectUserDataAction::UpdateSelectedShippingAddress(UserData* user_data) {
+  DCHECK(user_data != nullptr);
+
+  bool found_shipping_address = false;
+  auto* selected_shipping_address = user_data->selected_address(
+      collect_user_data_options_->shipping_address_name);
+  if (selected_shipping_address != nullptr) {
+    found_shipping_address = base::ranges::any_of(
+        user_data->available_addresses_,
+        [&selected_shipping_address](
+            const std::unique_ptr<autofill::AutofillProfile>& profile) {
+          return profile->Compare(*selected_shipping_address) == 0;
+        });
+  }
+
+  if (!found_shipping_address && selected_shipping_address != nullptr) {
     delegate_->GetUserModel()->SetSelectedAutofillProfile(
         collect_user_data_options_->shipping_address_name,
         /* profile= */ nullptr, user_data);
   }
+
   if (!user_data->has_selected_address(
           collect_user_data_options_->shipping_address_name) &&
-      collect_user_data_options_->request_shipping) {
+      RequiresShipping(*collect_user_data_options_)) {
     int default_selection = user_data::GetDefaultShippingAddressProfile(
-        *collect_user_data_options_, user_data->available_profiles_);
+        *collect_user_data_options_, user_data->available_addresses_);
     if (default_selection != -1) {
       delegate_->GetUserModel()->SetSelectedAutofillProfile(
           collect_user_data_options_->shipping_address_name,
           user_data::MakeUniqueFromProfile(
-              *(user_data->available_profiles_[default_selection])),
+              *(user_data->available_addresses_[default_selection])),
           user_data);
     }
   }

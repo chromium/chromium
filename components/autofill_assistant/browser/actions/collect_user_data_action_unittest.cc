@@ -1694,14 +1694,14 @@ TEST_F(CollectUserDataActionTest, OverwriteExistingUserData) {
   EXPECT_EQ(user_data_.GetAdditionalValue("key3")->strings().values(0), "val3");
 }
 
-TEST_F(CollectUserDataActionTest, AttachesProfiles) {
+TEST_F(CollectUserDataActionTest, AttachesProfilesToContactsAndAddresses) {
   ON_CALL(mock_personal_data_manager_, IsAutofillProfileEnabled)
       .WillByDefault(Return(true));
 
   autofill::AutofillProfile profile;
   autofill::test::SetProfileInfo(&profile, "Adam", "", "West",
-                                 "adam.west@gmail.com", "", "", "", "", "", "",
-                                 "", "");
+                                 "adam.west@gmail.com", "", "Main St. 18", "",
+                                 "abc", "New York", "NY", "10001", "us", "");
 
   ON_CALL(mock_personal_data_manager_, GetProfiles)
       .WillByDefault(
@@ -1711,12 +1711,18 @@ TEST_F(CollectUserDataActionTest, AttachesProfiles) {
       .WillByDefault(
           Invoke([=](CollectUserDataOptions* collect_user_data_options) {
             user_model_.SetSelectedAutofillProfile(
-                kMemoryLocation,
+                "contact", std::make_unique<autofill::AutofillProfile>(profile),
+                &user_data_);
+            user_model_.SetSelectedAutofillProfile(
+                "shipping-address",
                 std::make_unique<autofill::AutofillProfile>(profile),
                 &user_data_);
 
-            EXPECT_THAT(user_data_.available_profiles_, SizeIs(1));
-            EXPECT_EQ(user_data_.available_profiles_[0]->Compare(profile), 0);
+            EXPECT_THAT(user_data_.available_contacts_, SizeIs(1));
+            EXPECT_EQ(user_data_.available_contacts_[0]->Compare(profile), 0);
+
+            EXPECT_THAT(user_data_.available_addresses_, SizeIs(1));
+            EXPECT_EQ(user_data_.available_addresses_[0]->Compare(profile), 0);
 
             std::move(collect_user_data_options->confirm_callback)
                 .Run(&user_data_, nullptr);
@@ -1728,6 +1734,7 @@ TEST_F(CollectUserDataActionTest, AttachesProfiles) {
   auto* contact_details = user_data->mutable_contact_details();
   contact_details->set_request_payer_name(true);
   contact_details->set_contact_details_name("contact");
+  user_data->set_shipping_address_name("shipping-address");
 
   EXPECT_CALL(
       callback_,
@@ -2533,9 +2540,9 @@ TEST_F(CollectUserDataActionTest, ContactDataFromProto) {
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault([&](CollectUserDataOptions* collect_user_data_options) {
         EXPECT_FALSE(collect_user_data_options->should_store_data_changes);
-        EXPECT_THAT(user_data_.available_profiles_[0]->guid(), Not(IsEmpty()));
+        EXPECT_THAT(user_data_.available_contacts_[0]->guid(), Not(IsEmpty()));
         auto mappings = field_formatter::CreateAutofillMappings(
-            *user_data_.available_profiles_[0], "en-US");
+            *user_data_.available_contacts_[0], "en-US");
         EXPECT_THAT(
             mappings,
             IsSupersetOf({Pair(field_formatter::Key(3), "John"),
@@ -2558,7 +2565,7 @@ TEST_F(CollectUserDataActionTest, ContactDataFromProto) {
       kMemoryLocation);
   collect_user_data->mutable_user_data()->set_locale("en-US");
   auto* profile =
-      collect_user_data->mutable_user_data()->add_available_profiles();
+      collect_user_data->mutable_user_data()->add_available_contacts();
   (*profile->mutable_values())[7] = MakeAutofillEntry("John Doe");
   (*profile->mutable_values())[14] = MakeAutofillEntry("+1 123-456-7890");
 
@@ -2646,9 +2653,9 @@ TEST_F(CollectUserDataActionTest, ShippingDataFromProto) {
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault([&](CollectUserDataOptions* collect_user_data_options) {
         EXPECT_FALSE(collect_user_data_options->should_store_data_changes);
-        EXPECT_THAT(user_data_.available_profiles_[0]->guid(), Not(IsEmpty()));
+        EXPECT_THAT(user_data_.available_addresses_[0]->guid(), Not(IsEmpty()));
         auto mappings = field_formatter::CreateAutofillMappings(
-            *user_data_.available_profiles_[0], "en-US");
+            *user_data_.available_addresses_[0], "en-US");
         EXPECT_THAT(mappings,
                     IsSupersetOf({Pair(field_formatter::Key(3), "John"),
                                   Pair(field_formatter::Key(5), "Doe"),
@@ -2670,7 +2677,7 @@ TEST_F(CollectUserDataActionTest, ShippingDataFromProto) {
   collect_user_data->set_shipping_address_name("shipping");
   collect_user_data->mutable_user_data()->set_locale("en-US");
   auto* address =
-      collect_user_data->mutable_user_data()->add_available_profiles();
+      collect_user_data->mutable_user_data()->add_available_addresses();
   (*address->mutable_values())[7] = MakeAutofillEntry("John Doe");
   (*address->mutable_values())[30] =
       MakeAutofillEntry("Brandschenkestrasse 110");
@@ -2691,9 +2698,9 @@ TEST_F(CollectUserDataActionTest, RawDataFromProtoDoesNotGetFormatted) {
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault([&](CollectUserDataOptions* collect_user_data_options) {
         EXPECT_FALSE(collect_user_data_options->should_store_data_changes);
-        EXPECT_THAT(user_data_.available_profiles_[0]->guid(), Not(IsEmpty()));
+        EXPECT_THAT(user_data_.available_contacts_[0]->guid(), Not(IsEmpty()));
         auto mappings = field_formatter::CreateAutofillMappings(
-            *user_data_.available_profiles_[0], "en-US");
+            *user_data_.available_contacts_[0], "en-US");
         // Note: Phone number is still getting formatted on extraction, even if
         // it was added with |raw|.
         EXPECT_THAT(
@@ -2719,7 +2726,7 @@ TEST_F(CollectUserDataActionTest, RawDataFromProtoDoesNotGetFormatted) {
       kMemoryLocation);
   collect_user_data->mutable_user_data()->set_locale("en-US");
   auto* profile =
-      collect_user_data->mutable_user_data()->add_available_profiles();
+      collect_user_data->mutable_user_data()->add_available_contacts();
   (*profile->mutable_values())[7] =
       MakeAutofillEntry("John Doe", /* raw= */ true);
   (*profile->mutable_values())[14] =
