@@ -333,10 +333,6 @@ void AudioRendererImpl::ResetDecoderDone() {
       buffer_converter_->Reset();
     algorithm_->FlushBuffers();
   }
-
-  // Changes in buffering state are always posted. Flush callback must only be
-  // run after buffering state has been set back to nothing.
-  flush_cb_ = BindToCurrentLoop(std::move(flush_cb_));
   FinishFlush();
 }
 
@@ -690,7 +686,11 @@ void AudioRendererImpl::FinishFlush() {
   DCHECK(flush_cb_);
   TRACE_EVENT_NESTABLE_ASYNC_END0("media", "AudioRendererImpl::Flush",
                                   TRACE_ID_LOCAL(this));
-  std::move(flush_cb_).Run();
+  // The |flush_cb_| must always post in order to avoid deadlocking, as some of
+  // the functions which may be bound here are re-entrant into lock-acquiring
+  // methods of AudioRendererImpl, and FinishFlush may be called while holding
+  // the lock. See crbug.com/c/1163459 for a detailed explanation of this.
+  task_runner_->PostTask(FROM_HERE, std::move(flush_cb_));
 }
 
 void AudioRendererImpl::OnPlaybackError(PipelineStatus error) {

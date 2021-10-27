@@ -1726,4 +1726,23 @@ TEST_F(AudioRendererImplTest, UnmuteWhilePlaying) {
   EXPECT_CALL(*mock_sink_, Stop());
 }
 
+TEST_F(AudioRendererImplTest, DecodeAudioReadyPreemptsFlush) {
+  Initialize();
+
+  Preroll();
+  StartTicking();
+  EXPECT_TRUE(ConsumeBufferedDataUntilNotFull());
+  WaitForPendingRead();
+  EXPECT_CALL(*this, OnError(PIPELINE_ERROR_DECODE));
+  StopTicking();
+  EXPECT_TRUE(IsDecodePending());
+
+  // Imitate the behavior of a pending seek as flush_cb_;
+  renderer_->Flush(base::BindOnce(&AudioRendererImpl::StartPlaying,
+                                  base::Unretained(renderer_.get())));
+
+  // This shouldn't cause a deadlock.
+  renderer_->decoded_audio_ready_for_testing();
+}
+
 }  // namespace media

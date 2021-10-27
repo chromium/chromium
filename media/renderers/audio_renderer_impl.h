@@ -114,6 +114,10 @@ class MEDIA_EXPORT AudioRendererImpl
   void SetPlayDelayCBForTesting(PlayDelayCBForTesting cb);
   bool was_unmuted_for_testing() const { return was_unmuted_; }
 
+  void decoded_audio_ready_for_testing() {
+    DecodedAudioReady(StatusCode::kCodeOnlyForTesting);
+  }
+
  private:
   friend class AudioRendererImplTest;
 
