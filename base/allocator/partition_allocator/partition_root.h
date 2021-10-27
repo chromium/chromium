@@ -394,7 +394,8 @@ struct alignas(64) BASE_EXPORT PartitionRoot {
   ALWAYS_INLINE bool TryRecommitSystemPagesForData(
       void* address,
       size_t length,
-      PageAccessibilityDisposition accessibility_disposition);
+      PageAccessibilityDisposition accessibility_disposition)
+      LOCKS_EXCLUDED(lock_);
 
   [[noreturn]] NOINLINE void OutOfMemory(size_t size);
 
@@ -467,7 +468,7 @@ struct alignas(64) BASE_EXPORT PartitionRoot {
   ALWAYS_INLINE size_t AllocationCapacityFromRequestedSize(size_t size) const;
 
   // Frees memory from this partition, if possible, by decommitting pages or
-  // even etnire slot spans. |flags| is an OR of base::PartitionPurgeFlags.
+  // even entire slot spans. |flags| is an OR of base::PartitionPurgeFlags.
   void PurgeMemory(int flags);
 
   // Reduces the size of the empty slot spans ring, until the dirty size is <=
@@ -1323,14 +1324,26 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::DecommitSystemPagesForData(
   DecreaseCommittedPages(length);
 }
 
+// Not unified with TryRecommitSystemPagesForData() to preserve error codes.
 template <bool thread_safe>
 ALWAYS_INLINE void PartitionRoot<thread_safe>::RecommitSystemPagesForData(
     void* address,
     size_t length,
     PageAccessibilityDisposition accessibility_disposition) {
   internal::ScopedSyscallTimer<thread_safe> timer{this};
+#if defined(PA_COMMIT_CHARGE_IS_LIMITED)
+  bool ok = TryRecommitSystemPages(address, length, PageReadWriteTagged,
+                                   accessibility_disposition);
+  if (UNLIKELY(!ok)) {
+    // Decommit some memory and retry.
+    DecommitEmptySlotSpans();
+    RecommitSystemPages(address, length, PageReadWriteTagged,
+                        accessibility_disposition);
+  }
+#else
   RecommitSystemPages(address, length, PageReadWriteTagged,
                       accessibility_disposition);
+#endif  // defined(PA_COMMIT_CHARGE_IS_LIMITED)
   IncreaseCommittedPages(length);
 }
 
@@ -1342,6 +1355,17 @@ ALWAYS_INLINE bool PartitionRoot<thread_safe>::TryRecommitSystemPagesForData(
   internal::ScopedSyscallTimer<thread_safe> timer{this};
   bool ok = TryRecommitSystemPages(address, length, PageReadWriteTagged,
                                    accessibility_disposition);
+#if defined(PA_COMMIT_CHARGE_IS_LIMITED)
+  if (UNLIKELY(!ok)) {
+    {
+      ScopedGuard guard(lock_);
+      DecommitEmptySlotSpans();
+    }
+    ok = TryRecommitSystemPages(address, length, PageReadWriteTagged,
+                                accessibility_disposition);
+  }
+#endif  // defined(PA_COMMIT_CHARGE_IS_LIMITED)
+
   if (ok)
     IncreaseCommittedPages(length);
 
