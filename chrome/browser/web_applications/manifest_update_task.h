@@ -7,11 +7,13 @@
 
 #include "base/check_op.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/web_applications/web_app_icon_downloader.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_application_info.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -155,8 +157,14 @@ class ManifestUpdateTask final
     : public base::SupportsWeakPtr<ManifestUpdateTask>,
       public content::WebContentsObserver {
  public:
+  using UpdatePendingCallback = base::OnceCallback<void(const GURL& url)>;
   using StoppedCallback = base::OnceCallback<void(const ManifestUpdateTask&,
                                                   ManifestUpdateResult result)>;
+  // Sets a |callback| for testing code to get notified when a manifest update
+  // is needed and there is a PWA window preventing the update from proceeding.
+  // Only called once, iff the update process determines that waiting is needed.
+  static void SetUpdatePendingCallbackForTesting(
+      UpdatePendingCallback callback);
 
   ManifestUpdateTask(const GURL& url,
                      const AppId& app_id,
@@ -230,6 +238,11 @@ class ManifestUpdateTask final
   Stage stage_;
   absl::optional<WebApplicationInfo> web_application_info_;
   absl::optional<WebAppIconDownloader> icon_downloader_;
+
+  // Two KeepAlive objects, to make sure in progress manifest updates survive
+  // during shutdown.
+  std::unique_ptr<ScopedKeepAlive> keep_alive_;
+  std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
 
   const GURL url_;
   const AppId app_id_;

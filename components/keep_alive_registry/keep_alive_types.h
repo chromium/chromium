@@ -65,6 +65,7 @@ enum class KeepAliveOrigin {
   WEB_APP_INTENT_PICKER,
 
   // c/b/web_applications
+  APP_MANIFEST_UPDATE,
   APP_START_URL_MIGRATION,
 
   // c/b/sessions

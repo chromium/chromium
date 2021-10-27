@@ -200,6 +200,16 @@ class UpdateCheckResultAwaiter {
   absl::optional<ManifestUpdateResult> result_;
 };
 
+void WaitForUpdatePendingCallback(const GURL& url) {
+  base::RunLoop run_loop;
+  ManifestUpdateTask::SetUpdatePendingCallbackForTesting(
+      base::BindLambdaForTesting([&](const GURL& update_url) {
+        if (url == update_url)
+          run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
 }  // namespace
 
 class ManifestUpdateManagerBrowserTest : public InProcessBrowserTest {
@@ -3484,6 +3494,143 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_ManifestId,
             ManifestUpdateResult::kAppUpdated);
   EXPECT_TRUE(
       GetProvider().registrar().GetAppById(app_id)->manifest_id().has_value());
+}
+
+// This test exercises the upgrade path for App Identity manifest updates with
+// the update pending while Chrome is in the process of shutting down.
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerAppIdentityBrowserTest,
+                       PRE_TestUpgradeDuringShutdownForAppIdentity) {
+  constexpr char kManifestTemplate[] = R"(
+    {
+      "name": "$1",
+      "start_url": "manifest_test_page.html",
+      "scope": "/",
+      "display": "standalone",
+      "icons": $2
+    }
+  )";
+
+  constexpr char kIconList[] = R"(
+    [
+      { "src": "256x256-green.png", "sizes": "256x256", "type": "image/png" }
+    ]
+  )";
+  constexpr char kUpdatedSingleIconList[] = R"(
+    [
+      { "src": "256x256-red.png", "sizes": "256x256", "type": "image/png" }
+    ]
+  )";
+
+  // Simulate the user accepting the App Identity update dialog (when it
+  // appears).
+  chrome::SetAutoAcceptAppIdentityUpdateForTesting(true);
+
+  // Setup the web app, install it and immediately update the manifest.
+  OverrideManifest(kManifestTemplate, {"Test app name", kIconList});
+  AppId app_id = InstallWebApp();
+  OverrideManifest(kManifestTemplate,
+                   {"Different app name", kUpdatedSingleIconList});
+
+  // Navigate to the app in a dedicated PWA window. Note that this opens a
+  // second browser window.
+  GURL url = GetAppURL();
+  Browser* web_app_browser =
+      LaunchWebAppBrowserAndWait(browser()->profile(), app_id);
+
+  // Wait for the PWA to a) detect that an update is needed and b) start waiting
+  // on its window to close.
+  WaitForUpdatePendingCallback(url);
+
+  // Now close the initial browser opened during the test (leaving the PWA
+  // running).
+  CloseBrowserSynchronously(browser());
+
+  // Close the PWA window. This will fire the window close notifier that the PWA
+  // has been waiting for, triggering the manifest update to take effect.
+  UpdateCheckResultAwaiter result_awaiter(web_app_browser, url);
+  CloseBrowserSynchronously(web_app_browser);
+  EXPECT_EQ(std::move(result_awaiter).AwaitNextResult(),
+            ManifestUpdateResult::kAppUpdated);
+
+  // Check the histogram updated correctly. Remaining update checks need to
+  // happen post-restart, because GetProvider() DCHECKs when trying to use it
+  // during shutdown.
+  histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
+                                      ManifestUpdateResult::kAppUpdated, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerAppIdentityBrowserTest,
+                       TestUpgradeDuringShutdownForAppIdentity) {
+  // The app installed in the pre-test should be the only app installed.
+  auto app_ids = GetProvider().registrar().GetAppIds();
+  ASSERT_EQ(1u, app_ids.size());
+  AppId app_id = app_ids[0];
+
+  EXPECT_EQ("Different app name",
+            GetProvider().registrar().GetAppShortName(app_id));
+
+  constexpr SkColor kUpdatedIconTopLeftColor = SkColorSetRGB(0xFF, 0x00, 0x00);
+  CheckShortcutInfoUpdated(app_id, kUpdatedIconTopLeftColor);
+}
+
+// This test exercises the upgrade path for benign (non-App Identity) manifest
+// updates with the update pending while Chrome is in the process of shutting
+// down.
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerAppIdentityBrowserTest,
+                       PRE_TestUpgradeDuringShutdownForBenignUpdate) {
+  constexpr char kManifestTemplate[] = R"(
+    {
+      "name": "Test app name",
+      "start_url": "manifest_test_page.html",
+      "scope": "/",
+      "display": "standalone",
+      "icons": $1,
+      "background_color": "$2"
+    }
+  )";
+  OverrideManifest(kManifestTemplate, {kInstallableIconList, "blue"});
+  AppId app_id = InstallWebApp();
+  EXPECT_EQ(GetProvider().registrar().GetAppBackgroundColor(app_id),
+            SK_ColorBLUE);
+  OverrideManifest(kManifestTemplate, {kInstallableIconList, "red"});
+
+  // Navigate to the app in a dedicated PWA window. Note that this opens a
+  // second browser window.
+  GURL url = GetAppURL();
+  Browser* web_app_browser =
+      LaunchWebAppBrowserAndWait(browser()->profile(), app_id);
+
+  // Wait for the PWA to a) detect that an update is needed and b) start waiting
+  // on its window to close.
+  WaitForUpdatePendingCallback(url);
+
+  // Now close the initial browser opened during the test (leaving the PWA
+  // running).
+  CloseBrowserSynchronously(browser());
+
+  // Close the PWA window. This will fire the window close notifier that the PWA
+  // has been waiting for, triggering the manifest update to take effect.
+  UpdateCheckResultAwaiter result_awaiter(web_app_browser, url);
+  CloseBrowserSynchronously(web_app_browser);
+  EXPECT_EQ(std::move(result_awaiter).AwaitNextResult(),
+            ManifestUpdateResult::kAppUpdated);
+
+  // Check the histogram updated correctly. Remaining update checks need to
+  // happen post-restart, because GetProvider() DCHECKs when trying to use it
+  // during shutdown.
+  histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
+                                      ManifestUpdateResult::kAppUpdated, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerAppIdentityBrowserTest,
+                       TestUpgradeDuringShutdownForBenignUpdate) {
+  // The app installed in the pre-test should be the only app installed.
+  auto app_ids = GetProvider().registrar().GetAppIds();
+  ASSERT_EQ(1u, app_ids.size());
+  AppId app_id = app_ids[0];
+
+  EXPECT_EQ(GetProvider().registrar().GetAppBackgroundColor(app_id),
+            SK_ColorRED);
 }
 
 // Test that showing the AppIdentity update confirmation and allowing the update
