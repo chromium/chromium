@@ -10,6 +10,7 @@
 #include "base/macros.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/focus_ring.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace views {
 
@@ -50,6 +51,12 @@ class VIEWS_EXPORT RadioButton : public Checkbox {
   void GetViewsInGroupFromParent(int group, Views* views);
 };
 
+BEGIN_VIEW_BUILDER(VIEWS_EXPORT, RadioButton, Checkbox)
+VIEW_BUILDER_PROPERTY(bool, Checked)
+END_VIEW_BUILDER
+
 }  // namespace views
+
+DEFINE_VIEW_BUILDER(VIEWS_EXPORT, RadioButton)
 
 #endif  // UI_VIEWS_CONTROLS_BUTTON_RADIO_BUTTON_H_

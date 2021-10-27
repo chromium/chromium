@@ -29,8 +29,8 @@
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/radio_button.h"
 #include "ui/views/controls/textfield/textfield.h"
-#include "ui/views/layout/grid_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/layout/table_layout.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -55,94 +55,94 @@ WebAppConfirmationView::WebAppConfirmationView(
     chrome::AppInstallationAcceptanceCallback callback)
     : web_app_info_(std::move(web_app_info)), callback_(std::move(callback)) {
   DCHECK(web_app_info_);
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
-                 l10n_util::GetStringUTF16(IDS_CREATE_SHORTCUTS_BUTTON_LABEL));
-  SetModalType(ui::MODAL_TYPE_CHILD);
-  SetTitle(IDS_ADD_TO_OS_LAUNCH_SURFACE_BUBBLE_TITLE);
   const ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
-  set_margins(layout_provider->GetDialogInsetsForContentType(
-      views::DialogContentType::kControl, views::DialogContentType::kText));
-  views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
-  constexpr int kColumnSetId = 0;
 
-  views::ColumnSet* column_set = layout->AddColumnSet(kColumnSetId);
-  column_set->AddColumn(views::GridLayout::FILL, views::GridLayout::CENTER,
-                        views::GridLayout::kFixedSize,
-                        views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  column_set->AddPaddingColumn(views::GridLayout::kFixedSize,
-                               layout_provider->GetDistanceMetric(
-                                   views::DISTANCE_RELATED_CONTROL_HORIZONTAL));
+  // Define the table layout.
   constexpr int textfield_width = 320;
-  column_set->AddColumn(views::GridLayout::FILL, views::GridLayout::CENTER,
-                        views::GridLayout::kFixedSize,
-                        views::GridLayout::ColumnSize::kFixed, textfield_width,
-                        0);
+  auto* layout = SetLayoutManager(std::make_unique<views::TableLayout>());
+  layout
+      ->AddColumn(views::LayoutAlignment::kStretch,
+                  views::LayoutAlignment::kCenter,
+                  views::TableLayout::kFixedSize,
+                  views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddPaddingColumn(views::TableLayout::kFixedSize,
+                        layout_provider->GetDistanceMetric(
+                            views::DISTANCE_RELATED_CONTROL_HORIZONTAL))
+      .AddColumn(views::LayoutAlignment::kStretch,
+                 views::LayoutAlignment::kCenter,
+                 views::TableLayout::kFixedSize,
+                 views::TableLayout::ColumnSize::kFixed, textfield_width, 0)
+      .AddRows(1, views::TableLayout::kFixedSize)
+      .AddPaddingRow(
+          views::TableLayout::kFixedSize,
+          layout_provider->GetDistanceMetric(DISTANCE_CONTROL_LIST_VERTICAL))
+      .AddRows(ShowRadioButtons() ? 3 : 1, views::TableLayout::kFixedSize);
 
-  auto icon_image_view = std::make_unique<views::ImageView>();
   gfx::Size image_size(web_app::kWebAppIconSmall, web_app::kWebAppIconSmall);
   gfx::ImageSkia image(
       std::make_unique<WebAppInfoImageSource>(web_app::kWebAppIconSmall,
                                               web_app_info_->icon_bitmaps.any),
       image_size);
-  icon_image_view->SetImageSize(image_size);
-  icon_image_view->SetImage(image);
-  layout->StartRow(views::GridLayout::kFixedSize, kColumnSetId);
-  layout->AddView(std::move(icon_image_view));
 
-  auto title_tf = std::make_unique<views::Textfield>();
-  title_tf->SetText(web_app_info_->title);
-  title_tf->SetAccessibleName(
-      l10n_util::GetStringUTF16(IDS_BOOKMARK_APP_AX_BUBBLE_NAME_LABEL));
-  title_tf->set_controller(this);
-  title_tf_ = layout->AddView(std::move(title_tf));
+  // Builds the header row child views.
+  auto builder =
+      views::Builder<WebAppConfirmationView>(this)
+          .SetButtonLabel(
+              ui::DIALOG_BUTTON_OK,
+              l10n_util::GetStringUTF16(IDS_CREATE_SHORTCUTS_BUTTON_LABEL))
+          .SetModalType(ui::MODAL_TYPE_CHILD)
+          .SetTitle(IDS_ADD_TO_OS_LAUNCH_SURFACE_BUBBLE_TITLE)
+          .set_margins(layout_provider->GetDialogInsetsForContentType(
+              views::DialogContentType::kControl,
+              views::DialogContentType::kText))
+          .AddChildren(views::Builder<views::ImageView>()
+                           .SetImageSize(image_size)
+                           .SetImage(image),
+                       views::Builder<views::Textfield>()
+                           .CopyAddressTo(&title_tf_)
+                           .SetText(web_app_info_->title)
+                           .SetAccessibleName(l10n_util::GetStringUTF16(
+                               IDS_BOOKMARK_APP_AX_BUBBLE_NAME_LABEL))
+                           .SetController(this));
 
-  layout->AddPaddingRow(
-      views::GridLayout::kFixedSize,
-      layout_provider->GetDistanceMetric(DISTANCE_CONTROL_LIST_VERTICAL));
-
+  const auto display_mode = web_app_info_->user_display_mode;
+  // Build the content child views.
   if (ShowRadioButtons()) {
     constexpr int kRadioGroupId = 1;
-    auto open_as_tab_radio = std::make_unique<views::RadioButton>(
-        l10n_util::GetStringUTF16(IDS_BOOKMARK_APP_BUBBLE_OPEN_AS_TAB),
-        kRadioGroupId);
-    auto open_as_window_radio = std::make_unique<views::RadioButton>(
-        l10n_util::GetStringUTF16(IDS_BOOKMARK_APP_BUBBLE_OPEN_AS_WINDOW),
-        kRadioGroupId);
-    auto open_as_tabbed_window_radio = std::make_unique<views::RadioButton>(
-        l10n_util::GetStringUTF16(
-            IDS_BOOKMARK_APP_BUBBLE_OPEN_AS_TABBED_WINDOW),
-        kRadioGroupId);
-
-    layout->StartRow(views::GridLayout::kFixedSize, kColumnSetId);
-    layout->SkipColumns(1);
-    open_as_tab_radio_ = layout->AddView(std::move(open_as_tab_radio));
-
-    layout->StartRow(views::GridLayout::kFixedSize, kColumnSetId);
-    layout->SkipColumns(1);
-    open_as_window_radio_ = layout->AddView(std::move(open_as_window_radio));
-
-    layout->StartRow(views::GridLayout::kFixedSize, kColumnSetId);
-    layout->SkipColumns(1);
-    open_as_tabbed_window_radio_ =
-        layout->AddView(std::move(open_as_tabbed_window_radio));
-
-    if (web_app_info_->user_display_mode == web_app::DisplayMode::kBrowser)
-      open_as_tab_radio_->SetChecked(true);
-    else if (web_app_info_->user_display_mode == web_app::DisplayMode::kTabbed)
-      open_as_tabbed_window_radio_->SetChecked(true);
-    else
-      open_as_window_radio_->SetChecked(true);
+    builder.AddChildren(
+        views::Builder<views::View>(),  // Skip the first column.
+        views::Builder<views::RadioButton>()
+            .CopyAddressTo(&open_as_tab_radio_)
+            .SetText(
+                l10n_util::GetStringUTF16(IDS_BOOKMARK_APP_BUBBLE_OPEN_AS_TAB))
+            .SetGroup(kRadioGroupId)
+            .SetChecked(display_mode == web_app::DisplayMode::kBrowser),
+        views::Builder<views::View>(),  // Column skip.
+        views::Builder<views::RadioButton>()
+            .CopyAddressTo(&open_as_window_radio_)
+            .SetText(l10n_util::GetStringUTF16(
+                IDS_BOOKMARK_APP_BUBBLE_OPEN_AS_WINDOW))
+            .SetGroup(kRadioGroupId)
+            .SetChecked(display_mode != web_app::DisplayMode::kBrowser &&
+                        display_mode != web_app::DisplayMode::kTabbed),
+        views::Builder<views::View>(),  // Column skip.
+        views::Builder<views::RadioButton>()
+            .CopyAddressTo(&open_as_tabbed_window_radio_)
+            .SetText(l10n_util::GetStringUTF16(
+                IDS_BOOKMARK_APP_BUBBLE_OPEN_AS_TABBED_WINDOW))
+            .SetGroup(kRadioGroupId)
+            .SetChecked(display_mode == web_app::DisplayMode::kTabbed));
   } else {
-    auto open_as_window_checkbox = std::make_unique<views::Checkbox>(
-        l10n_util::GetStringUTF16(IDS_BOOKMARK_APP_BUBBLE_OPEN_AS_WINDOW));
-    open_as_window_checkbox->SetChecked(web_app_info_->user_display_mode !=
-                                        web_app::DisplayMode::kBrowser);
-    layout->StartRow(views::GridLayout::kFixedSize, kColumnSetId);
-    layout->SkipColumns(1);
-    open_as_window_checkbox_ =
-        layout->AddView(std::move(open_as_window_checkbox));
+    builder.AddChildren(
+        views::Builder<views::View>(),  // Column skip.
+        views::Builder<views::Checkbox>()
+            .CopyAddressTo(&open_as_window_checkbox_)
+            .SetText(l10n_util::GetStringUTF16(
+                IDS_BOOKMARK_APP_BUBBLE_OPEN_AS_WINDOW))
+            .SetChecked(display_mode != web_app::DisplayMode::kBrowser));
   }
+
+  std::move(builder).BuildChildren();
 
   if (g_auto_check_open_in_window_for_testing) {
     if (ShowRadioButtons())
