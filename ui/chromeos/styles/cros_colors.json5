@@ -22,9 +22,11 @@
     /* =========================================================================
      * Core colors.
      * =======================================================================*/
+    light_color_primary: "$google_grey_900",
+    dark_color_primary: "$google_grey_200",
     color_primary: {
-      light: "$google_grey_900",
-      dark: "$google_grey_200",
+      light: "$light_color_primary",
+      dark: "$dark_color_primary",
     },
     color_secondary: {
       light: "$google_grey_700",
@@ -39,13 +41,17 @@
       dark: "$google_blue_300",
       debug: "$google_red_600",
     },
+    light_color_alert: "$google_red_600",
+    dark_color_alert: "$google_red_300",
     color_alert: {
-      light: "$google_red_600",
-      dark: "$google_red_300",
+      light: "$light_color_alert",
+      dark: "$dark_color_alert",
     },
+    light_color_warning: "$google_yellow_600",
+    dark_color_warning: "$google_yellow_300",
     color_warning: {
-      light: "$google_yellow_600",
-      dark: "$google_yellow_300",
+      light: "$light_color_warning",
+      dark: "$dark_color_warning",
     },
     color_positive: {
       light: "$google_green_600",
@@ -68,9 +74,11 @@
       light: "$white",
       dark: "#2a2a2d", /* google_grey_900 + white 4% */
     },
+    light_bg_color_elevation_2: "$white",
+    dark_bg_color_elevation_2: "#2e2e31", /* google_grey_900 + white 6% */
     bg_color_elevation_2: {
-      light: "$white",
-      dark: "#2e2e31", /* google_grey_900 + white 6% */
+      light: "$light_bg_color_elevation_2",
+      dark: "$dark_bg_color_elevation_2",
     },
     bg_color_elevation_3: {
       light: "$white",
@@ -364,6 +372,29 @@
     dialog_title_background_color: {
       light:"$google_grey_100",
       dark:"$google_grey_900",
+    },
+
+    /* toast */
+    /* Toast colors are inverted for contrast. */
+    toast_background_color: {
+      light:"$dark_bg_color_elevation_2",
+      dark:"$light_bg_color_elevation_2",
+    },
+    toast_text_color: {
+      light:"$dark_color_primary",
+      dark:"$light_color_primary",
+    },
+    toast_icon_color: {
+      light:"$dark_color_primary",
+      dark:"$light_color_primary",
+    },
+    toast_icon_color_warning: {
+      light:"$dark_color_warning",
+      dark:"$light_color_warning",
+    },
+    toast_icon_color_error: {
+      light:"$dark_color_alert",
+      dark:"$light_color_alert",
     },
   },
   opacities: {
