@@ -7,7 +7,10 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/startup_utils.h"
+#include "chrome/browser/ash/login/ui/login_display_host.h"
+#include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/ui/ash/login_screen_client_impl.h"
 #include "components/account_id/account_id.h"
@@ -26,6 +29,10 @@ void OobeTestAPIHandler::DeclareLocalizedValues(
 
 void OobeTestAPIHandler::DeclareJSCallbacks() {
   AddCallback("OobeTestApi.loginWithPin", &OobeTestAPIHandler::LoginWithPin);
+  AddCallback("OobeTestApi.advanceToScreen",
+              &OobeTestAPIHandler::AdvanceToScreen);
+  AddCallback("OobeTestApi.skipPostLoginScreens",
+              &OobeTestAPIHandler::SkipPostLoginScreens);
 }
 
 void OobeTestAPIHandler::Initialize() {}
@@ -44,6 +51,14 @@ void OobeTestAPIHandler::LoginWithPin(const std::string& username,
       base::BindOnce([](bool success) {
         LOG_IF(ERROR, !success) << "Failed to authenticate with pin";
       }));
+}
+
+void OobeTestAPIHandler::AdvanceToScreen(const std::string& screen) {
+  ash::LoginDisplayHost::default_host()->StartWizard(ash::OobeScreenId(screen));
+}
+
+void OobeTestAPIHandler::SkipPostLoginScreens() {
+  ash::WizardController::SkipPostLoginScreensForTesting();
 }
 
 }  // namespace chromeos
