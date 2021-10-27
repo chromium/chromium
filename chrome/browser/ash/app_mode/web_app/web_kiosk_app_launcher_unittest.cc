@@ -192,8 +192,6 @@ class WebKioskAppLauncherTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<AppWindowCloser> closer_;
 };
 
-// TODO(crbug.com/1097708): these tests flakily fail on MSAN Builds.
-#if !defined(MEMORY_SANITIZER)
 TEST_F(WebKioskAppLauncherTest, NormalFlowNotInstalled) {
   SetupAppData(/*installed*/ false);
 
@@ -224,7 +222,6 @@ TEST_F(WebKioskAppLauncherTest, NormalFlowNotInstalled) {
 
   CloseAppWindow();
 }
-#endif
 
 TEST_F(WebKioskAppLauncherTest, NormalFlowAlreadyInstalled) {
   SetupAppData(/*installed*/ true);
@@ -243,8 +240,6 @@ TEST_F(WebKioskAppLauncherTest, NormalFlowAlreadyInstalled) {
   CloseAppWindow();
 }
 
-// TODO(crbug.com/1097708): these tests flakily fail on MSAN Builds.
-#if !defined(MEMORY_SANITIZER)
 TEST_F(WebKioskAppLauncherTest, NormalFlowBadLaunchUrl) {
   SetupAppData(/*installed*/ false);
 
@@ -316,7 +311,6 @@ TEST_F(WebKioskAppLauncherTest, InstallationRestarted) {
 
   CloseAppWindow();
 }
-#endif
 
 TEST_F(WebKioskAppLauncherTest, UrlNotLoaded) {
   SetupAppData(/*installed*/ false);

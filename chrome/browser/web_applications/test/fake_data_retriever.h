@@ -79,7 +79,7 @@ class FakeDataRetriever : public WebAppDataRetriever {
 
   blink::mojom::ManifestPtr manifest_;
   GURL manifest_url_;
-  bool is_installable_;
+  bool is_installable_ = false;
 
   IconsMap icons_map_;
   GetIconsDelegate get_icons_delegate_;
