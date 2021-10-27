@@ -58,19 +58,12 @@ class ShareServiceUnitTest : public ChromeRenderViewHostTestHarness {
         base::BindRepeating(&ShareServiceUnitTest::AcceptShareRequest));
 #endif
 #if defined(OS_WIN)
-    if (!IsSupportedEnvironment())
-      return;
+    if (!webshare::ScopedShareOperationFakeComponents::IsSupportedEnvironment())
+      GTEST_SKIP();
 
     ASSERT_NO_FATAL_FAILURE(scoped_fake_components_.SetUp());
 #endif
   }
-
-#if defined(OS_WIN)
-  bool IsSupportedEnvironment() {
-    return webshare::ScopedShareOperationFakeComponents::
-        IsSupportedEnvironment();
-  }
-#endif
 
   ShareError ShareGeneratedFileData(const std::string& extension,
                                     const std::string& content_type,
@@ -171,11 +164,6 @@ class ShareServiceUnitTest : public ChromeRenderViewHostTestHarness {
 };
 
 TEST_F(ShareServiceUnitTest, FileCount) {
-#if defined(OS_WIN)
-  if (!IsSupportedEnvironment())
-    return;
-#endif
-
   EXPECT_EQ(ShareError::OK, ShareGeneratedFileData(".txt", "text/plain", 1234,
                                                    kMaxSharedFileCount));
   EXPECT_EQ(ShareError::PERMISSION_DENIED,
@@ -216,11 +204,6 @@ TEST_F(ShareServiceUnitTest, DangerousMimeType) {
 }
 
 TEST_F(ShareServiceUnitTest, Multimedia) {
-#if defined(OS_WIN)
-  if (!IsSupportedEnvironment())
-    return;
-#endif
-
   EXPECT_EQ(ShareError::OK, ShareGeneratedFileData(".bmp", "image/bmp"));
   EXPECT_EQ(ShareError::OK, ShareGeneratedFileData(".xbm", "image/x-xbitmap"));
   EXPECT_EQ(ShareError::OK, ShareGeneratedFileData(".flac", "audio/flac"));
@@ -228,11 +211,6 @@ TEST_F(ShareServiceUnitTest, Multimedia) {
 }
 
 TEST_F(ShareServiceUnitTest, PortableDocumentFormat) {
-#if defined(OS_WIN)
-  if (!IsSupportedEnvironment())
-    return;
-#endif
-
   EXPECT_EQ(ShareError::OK, ShareGeneratedFileData(".pdf", "application/pdf"));
 }
 
