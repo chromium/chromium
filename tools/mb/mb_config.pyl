@@ -2265,7 +2265,7 @@
     ],
 
     'gpu_tests_chromeos_amd64_release_trybot_dcheck_off_no_symbols': [
-      'gpu_tests', 'chromeos_amd64-generic', 'release_trybot_dcheck_off',
+      'gpu_tests', 'chromeos_amd64-generic-vm', 'release_trybot_dcheck_off',
       'no_symbols',
     ],
 

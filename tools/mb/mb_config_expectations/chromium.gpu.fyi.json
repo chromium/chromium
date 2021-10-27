@@ -159,7 +159,7 @@
     }
   },
   "ChromeOS FYI Release (amd64-generic)": {
-    "args_file": "//build/args/chromeos/amd64-generic.gni",
+    "args_file": "//build/args/chromeos/amd64-generic-vm.gni",
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": false,
