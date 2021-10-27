@@ -673,8 +673,6 @@ fileOperationUtil.Task = class {
       processedBytes: this.processedBytes,
       processingEntryName: processingEntry ? processingEntry.name : '',
       targetDirEntryName: this.targetDirEntry.name,
-      currentSpeed: this.speedometer_.getCurrentSpeed(),
-      averageSpeed: this.speedometer_.getAverageSpeed(),
       remainingTime: this.speedometer_.getRemainingTime()
     };
   }
@@ -1258,8 +1256,6 @@ fileOperationUtil.ZipTask = class extends fileOperationUtil.Task {
  *   processedBytes: number,
  *   processingEntryName: string,
  *   targetDirEntryName: string,
- *   currentSpeed: number,
- *   averageSpeed: number,
  *   remainingTime: number,
  * }}
  */
@@ -1394,8 +1390,6 @@ fileOperationUtil.EventRouter = class extends EventTarget {
       processedBytes: task.processedBytes,
       processingEntryName: task.entries.length > 0 ? task.entries[0].name : '',
       targetDirEntryName: '',
-      currentSpeed: 0,
-      averageSpeed: 0,
       remainingTime: 0,
     };
     event.trashedEntries = task.trashedEntries;
@@ -1444,29 +1438,6 @@ fileOperationUtil.Speedometer = class {
    */
   getSampleCount() {
     return this.samples_.length;
-  }
-
-  /**
-   * @returns {number} Current speed in bytes per second, or NaN if there aren't
-   *     enough samples.
-   */
-  getCurrentSpeed() {
-    const a = this.interpolate_();
-    return a ? 1000 * a.speed : NaN;
-  }
-
-  /**
-   * @returns {number} Average speed in bytes per second, or NaN if there aren't
-   *     enough samples.
-   */
-  getAverageSpeed() {
-    const first = this.first_;
-    if (!first) {
-      return NaN;
-    }
-
-    const last = this.samples_[this.samples_.length - 1];
-    return 1000 * (last.bytes - first.bytes) / (last.time - first.time);
   }
 
   /**

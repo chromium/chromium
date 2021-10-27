@@ -59,7 +59,7 @@ export class ProgressCenterPanel {
    */
   generateSourceString_(item, info) {
     switch (item.state) {
-      case 'progressing':
+      case ProgressItemState.PROGRESSING:
         if (item.itemCount === 1) {
           if (item.type === ProgressItemType.COPY) {
             return strf('COPY_FILE_NAME', info['source']);
@@ -78,14 +78,14 @@ export class ProgressCenterPanel {
           }
         }
         break;
-      case 'completed':
+      case ProgressItemState.COMPLETED:
         if (info['count'] > 1) {
           return strf('FILE_ITEMS', info['source']);
         }
         return info['source'] || item.message;
-      case 'error':
+      case ProgressItemState.ERROR:
         return item.message;
-      case 'canceled':
+      case ProgressItemState.CANCELED:
         return '';
       default:
         assertNotReached();
@@ -116,13 +116,13 @@ export class ProgressCenterPanel {
   generatePrimaryString_(item, info) {
     const hasDestination = this.isNonEmptyString_(info['destination']);
     switch (item.state) {
-      case 'progressing':
+      case ProgressItemState.PROGRESSING:
         // Source and primary string are the same for missing destination.
         if (!hasDestination) {
           return this.generateSourceString_(item, info);
         }
         // fall through
-      case 'completed':
+      case ProgressItemState.COMPLETED:
         if (item.itemCount === 1) {
           if (item.type === ProgressItemType.COPY) {
             if (hasDestination) {
@@ -167,9 +167,9 @@ export class ProgressCenterPanel {
           }
         }
         break;
-      case 'error':
+      case ProgressItemState.ERROR:
         return item.message;
-      case 'canceled':
+      case ProgressItemState.CANCELED:
         return '';
       default:
         assertNotReached();
@@ -203,7 +203,9 @@ export class ProgressCenterPanel {
     if (!(isFinite(seconds) && seconds > 0)) {
       // Return empty string for invalid remaining time in non progressing
       // state.
-      return item.state == 'progressing' ? str('PENDING_LABEL') : '';
+      return item.state === ProgressItemState.PROGRESSING ?
+          str('PENDING_LABEL') :
+          '';
     }
 
     const hours = Math.floor(seconds / 3600);
@@ -278,7 +280,7 @@ export class ProgressCenterPanel {
       };
       panelItem.progress = item.progressRateInPercent.toString();
       switch (item.state) {
-        case 'completed':
+        case ProgressItemState.COMPLETED:
           // Create a completed panel for copies, moves and formats.
           // TODO(crbug.com/947388) decide if we want these for delete, etc.
           if (item.type === 'copy' || item.type === 'move' ||
@@ -302,11 +304,11 @@ export class ProgressCenterPanel {
             }, 4000);
           }
           // Drop through to remove the progress panel.
-        case 'canceled':
+        case ProgressItemState.CANCELED:
           // Remove the feedback panel when complete.
           this.feedbackHost_.removePanelItem(panelItem);
           break;
-        case 'error':
+        case ProgressItemState.ERROR:
           panelItem.panelType = panelItem.panelTypeError;
           panelItem.primaryText = item.message;
           panelItem.secondaryText = '';

@@ -276,8 +276,6 @@ export function testSpeedometerMovingAverage() {
   mockDate.tick(10000);
 
   assertEquals(0, speedometer.getSampleCount());
-  assertTrue(isNaN(speedometer.getAverageSpeed()));
-  assertTrue(isNaN(speedometer.getCurrentSpeed()));
   assertTrue(isNaN(speedometer.getRemainingTime()));
 
   // 1st sample, t=0s.
@@ -285,8 +283,6 @@ export function testSpeedometerMovingAverage() {
   speedometer.update(100);
 
   assertEquals(1, speedometer.getSampleCount());
-  assertTrue(isNaN(speedometer.getAverageSpeed()));
-  assertTrue(isNaN(speedometer.getCurrentSpeed()));
   assertTrue(isNaN(speedometer.getRemainingTime()));
 
   // Sample received less than a second after the previous one should be
@@ -295,8 +291,6 @@ export function testSpeedometerMovingAverage() {
   speedometer.update(300);
 
   assertEquals(1, speedometer.getSampleCount());
-  assertTrue(isNaN(speedometer.getAverageSpeed()));
-  assertTrue(isNaN(speedometer.getCurrentSpeed()));
   assertTrue(isNaN(speedometer.getRemainingTime()));
 
   // From 2 samples, the average and the current speed can be computed.
@@ -305,8 +299,6 @@ export function testSpeedometerMovingAverage() {
   speedometer.update(300);
 
   assertEquals(2, speedometer.getSampleCount());
-  assertEquals(200, speedometer.getAverageSpeed());
-  assertEquals(200, Math.round(speedometer.getCurrentSpeed()));
   assertEquals(9, Math.round(speedometer.getRemainingTime()));
 
   // 3rd sample, t=2s.
@@ -314,8 +306,6 @@ export function testSpeedometerMovingAverage() {
   speedometer.update(300);
 
   assertEquals(3, speedometer.getSampleCount());
-  assertEquals(100, speedometer.getAverageSpeed());
-  assertEquals(100, Math.round(speedometer.getCurrentSpeed()));
   assertEquals(17, Math.round(speedometer.getRemainingTime()));
 
   // 4th sample, t=4s.
@@ -323,8 +313,6 @@ export function testSpeedometerMovingAverage() {
   speedometer.update(300);
 
   assertEquals(4, speedometer.getSampleCount());
-  assertEquals(50, speedometer.getAverageSpeed());
-  assertEquals(40, Math.round(speedometer.getCurrentSpeed()));
   assertEquals(42, Math.round(speedometer.getRemainingTime()));
 
   // 5th sample, t=5s.
@@ -332,8 +320,6 @@ export function testSpeedometerMovingAverage() {
   speedometer.update(600);
 
   assertEquals(5, speedometer.getSampleCount());
-  assertEquals(100, speedometer.getAverageSpeed());
-  assertEquals(73, Math.round(speedometer.getCurrentSpeed()));
   assertEquals(20, Math.round(speedometer.getRemainingTime()));
 
   // Elapsed time should be taken in account by getRemainingTime().
@@ -365,11 +351,7 @@ export function testSpeedometerBufferRing() {
   }
 
   assertEquals(maxSamples, speedometer.getSampleCount());
-  assertEquals(100, Math.round(speedometer.getAverageSpeed()));
-  assertEquals(100, Math.round(speedometer.getCurrentSpeed()));
   assertEquals(181, Math.round(speedometer.getRemainingTime()));
-
-  let previousSpeed = speedometer.getCurrentSpeed();
 
   // Faster speed of 300 bytes per second.
   for (let i = 0; i < maxSamples; i++) {
@@ -378,15 +360,12 @@ export function testSpeedometerBufferRing() {
     mockDate.tick(1000);
     speedometer.update(2100 + i * 300);
 
-    // Current speed should be seen as accelerating.
-    const speed = speedometer.getCurrentSpeed();
-    assertGT(speed, previousSpeed);
-    previousSpeed = speed;
+    // Current speed should be seen as accelerating, thus the remaining time
+    // decreasing.
+    assertGT(181, Math.round(speedometer.getRemainingTime()));
   }
 
   assertEquals(maxSamples, speedometer.getSampleCount());
-  assertEquals(200, Math.round(speedometer.getAverageSpeed()));
-  assertEquals(300, Math.round(speedometer.getCurrentSpeed()));
   assertEquals(41, Math.round(speedometer.getRemainingTime()));
 
   // Stalling.
@@ -395,16 +374,9 @@ export function testSpeedometerBufferRing() {
     assertEquals(maxSamples, speedometer.getSampleCount());
     mockDate.tick(1000);
     speedometer.update(7965);
-
-    // Current speed should be seen as decelerating.
-    const speed = speedometer.getCurrentSpeed();
-    assertLT(speed, previousSpeed);
-    previousSpeed = speed;
   }
 
   assertEquals(maxSamples, speedometer.getSampleCount());
-  assertEquals(135, Math.round(speedometer.getAverageSpeed()));
-  assertEquals(0, Math.round(speedometer.getCurrentSpeed()));
 
   // getRemainingTime() can return an infinite value.
   assertEquals(Infinity, Math.round(speedometer.getRemainingTime()));
