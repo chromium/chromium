@@ -38,9 +38,12 @@
 #include "components/guest_view/browser/guest_view_manager.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -51,7 +54,6 @@ namespace {
 using ::testing::ElementsAre;
 
 const test::UIPath kEulaWebview = {"oobe-eula-md", "crosEulaFrame"};
-const test::UIPath kEulaDialog = {"oobe-eula-md", "eulaDialog"};
 const test::UIPath kAcceptEulaButton = {"oobe-eula-md", "acceptButton"};
 const test::UIPath kUsageStats = {"oobe-eula-md", "usageStats"};
 const test::UIPath kAdditionalTermsLink = {"oobe-eula-md", "additionalTerms"};
@@ -59,6 +61,49 @@ const test::UIPath kAdditionalTermsDialog = {"oobe-eula-md", "additionalToS"};
 const test::UIPath kLearnMoreLink = {"oobe-eula-md", "learnMore"};
 
 const char kRemoraRequisition[] = "remora";
+
+// Helper class to wait until the WebCotnents finishes loading.
+class WebContentsLoadFinishedWaiter : public content::WebContentsObserver {
+ public:
+  explicit WebContentsLoadFinishedWaiter(content::WebContents* web_contents)
+      : content::WebContentsObserver(web_contents) {}
+
+  WebContentsLoadFinishedWaiter(const WebContentsLoadFinishedWaiter&) = delete;
+  WebContentsLoadFinishedWaiter& operator=(
+      const WebContentsLoadFinishedWaiter&) = delete;
+
+  ~WebContentsLoadFinishedWaiter() override = default;
+
+  void Wait() {
+    if (!web_contents()->IsLoading() &&
+        web_contents()->GetLastCommittedURL() != GURL::EmptyGURL()) {
+      return;
+    }
+
+    run_loop_ = std::make_unique<base::RunLoop>();
+    run_loop_->Run();
+  }
+
+ private:
+  void DidFinishLoad(content::RenderFrameHost* render_frame_host,
+                     const GURL& url) override {
+    if (run_loop_)
+      run_loop_->Quit();
+  }
+
+  std::unique_ptr<base::RunLoop> run_loop_;
+};
+
+// Helper invoked by GuestViewManager::ForEachGuest to collect WebContents of
+// Webview named as `web_view_name`.
+bool AddNamedWebContentsToSet(std::set<content::WebContents*>* frame_set,
+                              const std::string& web_view_name,
+                              content::WebContents* web_contents) {
+  auto* web_view = extensions::WebViewGuest::FromWebContents(web_contents);
+  if (web_view && web_view->name() == web_view_name)
+    frame_set->insert(web_contents);
+  return false;
+}
 
 class EulaTest : public OobeBaseTest {
  public:
@@ -72,8 +117,6 @@ class EulaTest : public OobeBaseTest {
   void ShowEulaScreen() {
     LoginDisplayHost::default_host()->StartWizard(EulaView::kScreenId);
     OobeScreenWaiter(EulaView::kScreenId).Wait();
-    // Wait until the webview has finished loading.
-    test::OobeJS().CreateVisibilityWaiter(true, kEulaDialog)->Wait();
   }
 
  protected:
@@ -81,6 +124,41 @@ class EulaTest : public OobeBaseTest {
     OobeBaseTest::SetUpOnMainThread();
     LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build =
         true;
+  }
+
+  content::WebContents* FindEulaContents() {
+    // Tag the Eula webview in use with a unique name.
+    constexpr char kUniqueEulaWebviewName[] = "unique-eula-webview-name";
+    test::OobeJS().Evaluate(base::StringPrintf(
+        "(function(){"
+        "  var eulaWebView = $('oobe-eula-md').$.crosEulaFrame;"
+        "  eulaWebView.name = '%s';"
+        "})();",
+        kUniqueEulaWebviewName));
+
+    // Find the WebContents tagged with the unique name.
+    std::set<content::WebContents*> frame_set;
+    auto* const owner_contents = GetLoginUI()->GetWebContents();
+    auto* const manager = guest_view::GuestViewManager::FromBrowserContext(
+        owner_contents->GetBrowserContext());
+    manager->ForEachGuest(
+        owner_contents,
+        base::BindRepeating(&AddNamedWebContentsToSet, &frame_set,
+                            kUniqueEulaWebviewName));
+    EXPECT_EQ(1u, frame_set.size());
+    return *frame_set.begin();
+  }
+
+  // Wait for the fallback offline page (loaded as data url) to be loaded.
+  void WaitForLocalWebviewLoad() {
+    content::WebContents* eula_contents = FindEulaContents();
+    ASSERT_TRUE(eula_contents);
+
+    while (!eula_contents->GetLastCommittedURL().SchemeIs("data")) {
+      // Pump messages to avoid busy loop so that renderer could do some work.
+      base::RunLoop().RunUntilIdle();
+      WebContentsLoadFinishedWaiter(eula_contents).Wait();
+    }
   }
 
   base::OnceClosure SetCollectStatsConsentClosure(bool consented) {
@@ -141,6 +219,7 @@ class EulaOfflineTest : public EulaTest {
 IN_PROC_BROWSER_TEST_F(EulaOfflineTest, LoadOffline) {
   ShowEulaScreen();
 
+  WaitForLocalWebviewLoad();
   EXPECT_TRUE(test::GetWebViewContents(kEulaWebview)
                   .find(FakeEulaMixin::kOfflineEULAWarning) !=
               std::string::npos);
@@ -149,6 +228,14 @@ IN_PROC_BROWSER_TEST_F(EulaOfflineTest, LoadOffline) {
 // Tests that online version is shown when it is accessible.
 IN_PROC_BROWSER_TEST_F(EulaTest, LoadOnline) {
   ShowEulaScreen();
+
+  // Wait until the webview has finished loading.
+  content::WebContents* eula_contents = FindEulaContents();
+  ASSERT_TRUE(eula_contents);
+  WebContentsLoadFinishedWaiter(eula_contents).Wait();
+
+  // Wait until the Accept button on the EULA frame becomes enabled.
+  test::OobeJS().CreateEnabledWaiter(true, kAcceptEulaButton)->Wait();
 
   const std::string webview_contents = test::GetWebViewContents(kEulaWebview);
   EXPECT_TRUE(webview_contents.find(FakeEulaMixin::kFakeOnlineEula) !=
