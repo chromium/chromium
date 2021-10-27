@@ -338,7 +338,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kPhoneHubRecentApps;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kPinSetupForManagedUsers;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kPipRoundedCorners;
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kPluginVmFullscreen;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kPreferConstantFrameRate;
 COMPONENT_EXPORT(ASH_CONSTANTS)

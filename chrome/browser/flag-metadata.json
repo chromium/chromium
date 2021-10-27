@@ -4403,11 +4403,6 @@
     "expiry_milestone": 100
   },
   {
-    "name": "pluginvm-fullscreen",
-    "owners": [ "joelhockey" ],
-    "expiry_milestone": 96
-  },
-  {
     "name": "post-quantum-cecpq2",
     "owners": [ "agl" ],
     "expiry_milestone": 100

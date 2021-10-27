@@ -887,10 +887,6 @@ const base::Feature kPinSetupForManagedUsers{"PinSetupForManagedUsers",
 const base::Feature kPipRoundedCorners{"PipRoundedCorners",
                                        base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Hides shelf in immersive mode and allows esc hold to exit.
-const base::Feature kPluginVmFullscreen{"PluginVmFullscreen",
-                                        base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables or disables the preference of using constant frame rate for camera
 // when streaming.
 const base::Feature kPreferConstantFrameRate{"PreferConstantFrameRate",
