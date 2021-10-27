@@ -145,8 +145,8 @@ class GEOMETRY_EXPORT RectF {
   // is empty, this method returns true only if the point is at the origin of
   // this rectangle.
   bool InclusiveContains(float point_x, float point_y) const;
-  bool InclusiveContains(const Point& point) const {
-    return Contains(point.x(), point.y());
+  bool InclusiveContains(const PointF& point) const {
+    return InclusiveContains(point.x(), point.y());
   }
 
   // Returns true if this rectangle contains the specified rectangle.
