@@ -818,13 +818,7 @@ void RenderThreadImpl::Shutdown() {
   // crashes caused by shutdown ordering. Immediate exit eliminates
   // those problems.
 
-  // Give the V8 isolate a chance to dump internal stats useful for performance
-  // evaluation and debugging.
-  blink::MainThreadIsolate()->DumpAndResetStats();
-
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDumpBlinkRuntimeCallStats))
-    blink::LogRuntimeCallStats();
+  blink::LogStatsDuringShutdown();
 
   // In a single-process mode, we cannot call _exit(0) in Shutdown() because
   // it will exit the process before the browser side is ready to exit.

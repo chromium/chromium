@@ -65,6 +65,9 @@ class CORE_EXPORT V8MetricsRecorder : public v8::metrics::Recorder {
   v8::Isolate* isolate_;
 };
 
+// Returns the total number of contexts created for windows.
+CORE_EXPORT int TotalNumberV8ContextsCreatedOfWindow();
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_V8_METRICS_H_

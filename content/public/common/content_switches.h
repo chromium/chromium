@@ -100,7 +100,6 @@ CONTENT_EXPORT extern const char kDisableWebSecurity[];
 CONTENT_EXPORT extern const char kDisableZeroCopyDxgiVideo[];
 CONTENT_EXPORT extern const char kDomAutomationController[];
 extern const char kDisable2dCanvasClipAntialiasing[];
-CONTENT_EXPORT extern const char kDumpBlinkRuntimeCallStats[];
 CONTENT_EXPORT extern const char kEnableAggressiveDOMStorageFlushing[];
 CONTENT_EXPORT extern const char kEnableAutomation[];
 CONTENT_EXPORT extern const char kEnableBlinkFeatures[];

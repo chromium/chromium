@@ -59,6 +59,10 @@ const char kDisableThreadedScrolling[] = "disable-threaded-scrolling";
 // Disable rasterizer that writes directly to GPU memory associated with tiles.
 const char kDisableZeroCopy[] = "disable-zero-copy";
 
+// Logs Runtime Call Stats. --single-process also needs to be used along with
+// this for the stats to be logged.
+const char kDumpRuntimeCallStats[] = "dump-blink-runtime-call-stats";
+
 // Specify that all compositor resources should be backed by GPU memory buffers.
 const char kEnableGpuMemoryBufferCompositorResources[] =
     "enable-gpu-memory-buffer-compositor-resources";

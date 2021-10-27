@@ -1549,6 +1549,15 @@ _CONFIG = [
             'base::CommandLine',
         ]
     },
+    {
+        'paths': [
+            'third_party/blink/renderer/controller/blink_shutdown.cc',
+        ],
+        'allowed': [
+            'base::CommandLine',
+            'switches::kDumpRuntimeCallStats',
+        ]
+    },
 ]
 
 

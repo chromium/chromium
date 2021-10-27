@@ -3446,6 +3446,31 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Blink.V8.InitPerIsolateData" units="microseconds"
+    expires_after="2022-01-30">
+  <owner>sky@chromium.org</owner>
+  <owner>yukishiino@chromium.org</owner>
+  <summary>
+    The number of microseconds it takes to call V8PerIsolateData::Initialize().
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
+  </summary>
+</histogram>
+
+<histogram name="Blink.V8.NumberContextsCreatedOfWindow" units="count"
+    expires_after="2022-01-30">
+  <owner>sky@chromium.org</owner>
+  <owner>yukishiino@chromium.org</owner>
+  <summary>
+    The number of V8 contexts blink created for windows. Logged when the
+    renderer shuts down.
+  </summary>
+</histogram>
+
 <histogram name="Blink.VisibleBeforeLoaded.LazyLoadEligibleFrames.BelowTheFold"
     enum="NQEEffectiveConnectionType" expires_after="2021-02-21">
   <owner>sclittle@chromium.org</owner>
