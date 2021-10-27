@@ -28,14 +28,14 @@
                 {"from_dir": ".", "to_dir": "chrome-chromeos"}
             ],
             "gcs_bucket": "chromium-browser-snapshots",
-            "gcs_path": "experimental/Linux_ChromiumOS_Full/{%position%}/chrome-chromeos.zip",
+            "gcs_path": "Linux_ChromiumOS_Full/{%position%}/chrome-chromeos.zip",
             "archive_type": "ARCHIVE_TYPE_ZIP",
             "latest_upload": {
-                "gcs_path": "experimental/Linux_ChromiumOS_Full/LAST_CHANGE",
+                "gcs_path": "Linux_ChromiumOS_Full/LAST_CHANGE",
                 "gcs_file_content": "{%position%}"
             },
             "revisions_file": {
-                "gcs_path": "experimental/Linux_ChromiumOS_Full/{%position%}/REVISIONS"
+                "gcs_path": "Linux_ChromiumOS_Full/{%position%}/REVISIONS"
             }
         }
     ]

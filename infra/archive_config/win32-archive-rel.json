@@ -92,14 +92,14 @@
                 {"from_dir": ".", "to_dir": "chrome-win"}
             ],
             "gcs_bucket": "chromium-browser-snapshots",
-            "gcs_path": "experimental/Win/{%position%}/chrome-win.zip",
+            "gcs_path": "Win/{%position%}/chrome-win.zip",
             "archive_type": "ARCHIVE_TYPE_ZIP",
             "latest_upload": {
-                "gcs_path": "experimental/Win/LAST_CHANGE",
+                "gcs_path": "Win/LAST_CHANGE",
                 "gcs_file_content": "{%position%}"
             },
             "revisions_file": {
-                "gcs_path": "experimental/Win/{%position%}/REVISIONS"
+                "gcs_path": "Win/{%position%}/REVISIONS"
             }
         },
         {
@@ -130,7 +130,7 @@
                 {"from_dir": ".", "to_dir": "chrome-win32-syms"}
             ],
             "gcs_bucket": "chromium-browser-snapshots",
-            "gcs_path": "experimental/Win/{%position%}/chrome-win32-syms.zip",
+            "gcs_path": "Win/{%position%}/chrome-win32-syms.zip",
             "archive_type": "ARCHIVE_TYPE_ZIP"
         },
         {
@@ -141,7 +141,7 @@
                 {"from_dir": ".", "to_dir": "chromedriver_win32-syms"}
             ],
             "gcs_bucket": "chromium-browser-snapshots",
-            "gcs_path": "experimental/Win/{%position%}/chromedriver_win32-syms.zip",
+            "gcs_path": "Win/{%position%}/chromedriver_win32-syms.zip",
             "archive_type": "ARCHIVE_TYPE_ZIP"
         },
         {
@@ -152,7 +152,7 @@
                 {"from_dir": ".", "to_dir": "chromedriver_win32"}
             ],
             "gcs_bucket": "chromium-browser-snapshots",
-            "gcs_path": "experimental/Win/{%position%}/chromedriver_win32.zip",
+            "gcs_path": "Win/{%position%}/chromedriver_win32.zip",
             "archive_type": "ARCHIVE_TYPE_ZIP"
         },
         {
@@ -169,7 +169,7 @@
                 {"from_dir": ".", "to_dir": "content-shell"}
             ],
             "gcs_bucket": "chromium-browser-snapshots",
-            "gcs_path": "experimental/Win/{%position%}/content-shell.zip",
+            "gcs_path": "Win/{%position%}/content-shell.zip",
             "archive_type": "ARCHIVE_TYPE_ZIP"
         },
         {
@@ -178,7 +178,7 @@
                 {"from_dir": ".", "to_dir": "devtools-frontend"}
             ],
             "gcs_bucket": "chromium-browser-snapshots",
-            "gcs_path": "experimental/Win/{%position%}/devtools-frontend.zip",
+            "gcs_path": "Win/{%position%}/devtools-frontend.zip",
             "archive_type": "ARCHIVE_TYPE_ZIP"
         },
         {
@@ -191,7 +191,7 @@
                 {"from_dir": ".", "to_dir": "gcapi"}
             ],
             "gcs_bucket": "chromium-browser-snapshots",
-            "gcs_path": "experimental/Win/{%position%}/gcapi.zip",
+            "gcs_path": "Win/{%position%}/gcapi.zip",
             "archive_type": "ARCHIVE_TYPE_ZIP"
         },
         {
@@ -204,7 +204,7 @@
                 {"from_dir": ".", "to_dir": "metrics-metadata"}
             ],
             "gcs_bucket": "chromium-browser-snapshots",
-            "gcs_path": "experimental/Win/{%position%}/metrics-metadata.zip",
+            "gcs_path": "Win/{%position%}/metrics-metadata.zip",
             "archive_type": "ARCHIVE_TYPE_ZIP"
         },
         {
@@ -212,7 +212,7 @@
                 "mini_installer.exe"
             ],
             "gcs_bucket": "chromium-browser-snapshots",
-            "gcs_path": "experimental/Win/{%position%}",
+            "gcs_path": "Win/{%position%}",
             "archive_type": "ARCHIVE_TYPE_FILES"
         },
         {
@@ -221,7 +221,7 @@
                 {"from_dir": ".", "to_dir": "pnacl"}
             ],
             "gcs_bucket": "chromium-browser-snapshots",
-            "gcs_path": "experimental/Win/{%position%}/pnacl.zip",
+            "gcs_path": "Win/{%position%}/pnacl.zip",
             "archive_type": "ARCHIVE_TYPE_ZIP"
         },
         {
@@ -229,7 +229,7 @@
                 "remoting-me2me-host-win.zip"
             ],
             "gcs_bucket": "chromium-browser-snapshots",
-            "gcs_path": "experimental/Win/{%position%}",
+            "gcs_path": "Win/{%position%}",
             "archive_type": "ARCHIVE_TYPE_FILES"
         },
         {
@@ -241,7 +241,7 @@
             ],
             "dirs": ["UpdaterSigning"],
             "gcs_bucket": "chromium-browser-snapshots",
-            "gcs_path": "experimental/Win/{%position%}/updater.zip",
+            "gcs_path": "Win/{%position%}/updater.zip",
             "archive_type": "ARCHIVE_TYPE_ZIP"
         }
     ]

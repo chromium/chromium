@@ -10,14 +10,14 @@
                 {"from_dir": ".", "to_dir": "chrome-android"}
             ],
             "gcs_bucket": "chromium-browser-snapshots",
-            "gcs_path": "experimental/Android/{%position%}/chrome-android.zip",
+            "gcs_path": "Android/{%position%}/chrome-android.zip",
             "archive_type": "ARCHIVE_TYPE_ZIP",
             "latest_upload": {
-                "gcs_path": "experimental/Android/LAST_CHANGE",
+                "gcs_path": "Android/LAST_CHANGE",
                 "gcs_file_content": "{%position%}"
             },
             "revisions_file": {
-                "gcs_path": "experimental/Android/{%position%}/REVISIONS"
+                "gcs_path": "Android/{%position%}/REVISIONS"
             }
         }
     ]

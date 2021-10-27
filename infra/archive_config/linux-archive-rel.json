@@ -33,14 +33,14 @@
                 {"from_dir": ".", "to_dir": "chrome-linux"}
             ],
             "gcs_bucket": "chromium-browser-snapshots",
-            "gcs_path": "experimental/Linux_x64/{%position%}/chrome-linux.zip",
+            "gcs_path": "Linux_x64/{%position%}/chrome-linux.zip",
             "archive_type": "ARCHIVE_TYPE_ZIP",
             "latest_upload": {
-                "gcs_path": "experimental/Linux_x64/LAST_CHANGE",
+                "gcs_path": "Linux_x64/LAST_CHANGE",
                 "gcs_file_content": "{%position%}"
             },
             "revisions_file": {
-                "gcs_path": "experimental/Linux_x64/{%position%}/REVISIONS"
+                "gcs_path": "Linux_x64/{%position%}/REVISIONS"
             }
         },
         {
@@ -51,7 +51,7 @@
                 {"from_dir": ".", "to_dir": "chromedriver_linux64"}
             ],
             "gcs_bucket": "chromium-browser-snapshots",
-            "gcs_path": "experimental/Linux_x64/{%position%}/chromedriver_linux64.zip",
+            "gcs_path": "Linux_x64/{%position%}/chromedriver_linux64.zip",
             "archive_type": "ARCHIVE_TYPE_ZIP"
         },
         {
@@ -70,7 +70,7 @@
                 {"from_dir": ".", "to_dir": "content-shell"}
             ],
             "gcs_bucket": "chromium-browser-snapshots",
-            "gcs_path": "experimental/Linux_x64/{%position%}/content-shell.zip",
+            "gcs_path": "Linux_x64/{%position%}/content-shell.zip",
             "archive_type": "ARCHIVE_TYPE_ZIP"
         },
         {
@@ -79,7 +79,7 @@
                 {"from_dir": ".", "to_dir": "devtools-frontend"}
             ],
             "gcs_bucket": "chromium-browser-snapshots",
-            "gcs_path": "experimental/Linux_x64/{%position%}/devtools-frontend.zip",
+            "gcs_path": "Linux_x64/{%position%}/devtools-frontend.zip",
             "archive_type": "ARCHIVE_TYPE_ZIP"
         },
         {
@@ -91,7 +91,7 @@
                 {"from_dir": ".", "to_dir": "headless-shell"}
             ],
             "gcs_bucket": "chromium-browser-snapshots",
-            "gcs_path": "experimental/Linux_x64/{%position%}/headless-shell.zip",
+            "gcs_path": "Linux_x64/{%position%}/headless-shell.zip",
             "archive_type": "ARCHIVE_TYPE_ZIP"
         },
         {
@@ -134,7 +134,7 @@
                 {"from_dir": ".", "to_dir": "mojojs"}
             ],
             "gcs_bucket": "chromium-browser-snapshots",
-            "gcs_path": "experimental/Linux_x64/{%position%}/mojojs.zip",
+            "gcs_path": "Linux_x64/{%position%}/mojojs.zip",
             "archive_type": "ARCHIVE_TYPE_ZIP"
         },
         {
@@ -143,7 +143,7 @@
                 {"from_dir": ".", "to_dir": "pnacl"}
             ],
             "gcs_bucket": "chromium-browser-snapshots",
-            "gcs_path": "experimental/Linux_x64/{%position%}/pnacl.zip",
+            "gcs_path": "Linux_x64/{%position%}/pnacl.zip",
             "archive_type": "ARCHIVE_TYPE_ZIP"
         }
     ]
