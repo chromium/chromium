@@ -1,29 +1,4 @@
 {
-  "ASAN Debug (reclient)": {
-    "gn_args": {
-      "is_asan": true,
-      "is_component_build": true,
-      "is_debug": true,
-      "is_lsan": true,
-      "symbol_level": 1,
-      "use_rbe": true,
-      "use_remoteexec": true
-    }
-  },
-  "ASAN Release Media (reclient shadow)": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "ffmpeg_branding": "ChromeOS",
-      "is_asan": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "is_lsan": true,
-      "proprietary_codecs": true,
-      "use_rbe": true,
-      "use_remoteexec": true,
-      "v8_enable_verify_heap": true
-    }
-  },
   "Afl Upload Linux ASan": {
     "gn_args": {
       "archive_seed_corpus": false,
@@ -240,39 +215,6 @@
       "use_remoteexec": true
     }
   },
-  "Linux Builder (deps-cache) (reclient)": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "use_rbe": true,
-      "use_remoteexec": true
-    }
-  },
-  "Linux Builder (j-500) (g-ip) (reclient)": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "use_rbe": true,
-      "use_remoteexec": true
-    }
-  },
-  "Linux Builder (j-500) (n2) (reclient)": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "use_rbe": true,
-      "use_remoteexec": true
-    }
-  },
   "Linux Builder (j-500) (reclient)": {
     "gn_args": {
       "dcheck_always_on": false,
@@ -309,16 +251,6 @@
       "use_remoteexec": true
     }
   },
-  "Linux TSan Builder (goma cache silo)": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "enable_nacl": false,
-      "is_component_build": false,
-      "is_debug": false,
-      "is_tsan": true,
-      "use_goma": true
-    }
-  },
   "Linux TSan Builder (reclient)": {
     "gn_args": {
       "dcheck_always_on": false,
@@ -338,28 +270,6 @@
       "is_debug": false,
       "symbol_level": 1,
       "use_goma": true
-    }
-  },
-  "MSAN Release (chained origins) (reclient shadow)": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "is_component_build": false,
-      "is_debug": false,
-      "is_msan": true,
-      "msan_track_origins": 2,
-      "use_rbe": true,
-      "use_remoteexec": true
-    }
-  },
-  "MSAN Release (no origins) (reclient shadow)": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "is_component_build": false,
-      "is_debug": false,
-      "is_msan": true,
-      "msan_track_origins": 0,
-      "use_rbe": true,
-      "use_remoteexec": true
     }
   },
   "Mac Builder (reclient compare)": {
@@ -438,38 +348,6 @@
       "target_cpu": "arm64",
       "target_os": "android",
       "use_goma": true
-    }
-  },
-  "TSAN Debug (reclient)": {
-    "gn_args": {
-      "enable_nacl": false,
-      "is_component_build": true,
-      "is_debug": true,
-      "is_tsan": true,
-      "symbol_level": 1,
-      "use_rbe": true,
-      "use_remoteexec": true
-    }
-  },
-  "UBSan Release (reclient)": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "is_component_build": false,
-      "is_debug": false,
-      "is_ubsan": true,
-      "use_rbe": true,
-      "use_remoteexec": true
-    }
-  },
-  "UBSan vptr Release (reclient shadow)": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "is_component_build": false,
-      "is_debug": false,
-      "is_ubsan_no_recover": true,
-      "is_ubsan_vptr": true,
-      "use_rbe": true,
-      "use_remoteexec": true
     }
   },
   "VR Linux": {
