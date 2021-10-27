@@ -8,7 +8,12 @@
 #include <string>
 #include <vector>
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_export.h"
+
+namespace base {
+class FilePath;
+}
 
 namespace ui {
 
@@ -51,6 +56,20 @@ class AX_EXPORT AXInspectScenario {
   static AXInspectScenario From(
       const std::string& directive_prefix,
       const std::vector<std::string>& lines,
+      const std::vector<AXPropertyFilter>& default_filters = {});
+
+  // Parses a given testing scenario.
+  // @directive_prefix  platform dependent directive prefix, for example,
+  //                    @MAC- is used for filter directives on Mac
+  // @scenario_path     Path can be a plain file or HTML file containing a
+  //                    scenario in a <!-- --> comment section.
+  // @default_filters   set of default filters, a special type of directives,
+  //                    defining which property gets (or not) into the output,
+  //                    useful to not make each test to specify common filters
+  //                    all over
+  static absl::optional<AXInspectScenario> From(
+      const std::string& directive_prefix,
+      const base::FilePath& scenario_path,
       const std::vector<AXPropertyFilter>& default_filters = {});
 
   // A list of URLs of resources that are never expected to load. For example,

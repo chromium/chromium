@@ -57,29 +57,20 @@ AXTreeServer::AXTreeServer(const AXTreeSelector& selector,
 
 absl::optional<ui::AXInspectScenario> AXTreeServer::GetInspectScenario(
     const base::FilePath& filters_path) {
-  std::vector<std::string> lines;
-
-  // Return with the default filter scenario
+  // Return with the default filter scenario if no file is provided
   if (filters_path.empty()) {
-    return ui::AXInspectScenario::From("@", lines);
+    return ui::AXInspectScenario::From("@", std::vector<std::string>());
   }
 
-  std::string raw_filters_text;
-  base::ScopedAllowBlockingForTesting allow_io_for_test_setup;
-  if (!base::ReadFileToString(filters_path, &raw_filters_text)) {
+  absl::optional<ui::AXInspectScenario> scenario =
+      ui::AXInspectScenario::From("@", filters_path);
+  if (!scenario) {
     LOG(ERROR) << "Failed to open filters file " << filters_path
                << ". Note: path traversal components ('..') are not allowed "
                   "for security reasons";
     return absl::nullopt;
   }
-
-  // Otherwise, assume the whole file contains only directives
-  lines = base::SplitString(raw_filters_text, "\n", base::TRIM_WHITESPACE,
-                            base::SPLIT_WANT_ALL);
-
-  // The first argument optionally specifies platform (ex: mac, auralinux),
-  // which we might add support for in the future.
-  return ui::AXInspectScenario::From("@", lines);
+  return scenario;
 }
 
 }  // namespace content

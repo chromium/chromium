@@ -189,6 +189,17 @@ ui::AXInspectScenario DumpAccessibilityTestHelper::ParseScenario(
                                      default_filters);
 }
 
+absl::optional<ui::AXInspectScenario>
+DumpAccessibilityTestHelper::ParseScenario(
+    const base::FilePath& scenario_path,
+    const std::vector<ui::AXPropertyFilter>& default_filters) {
+  const TypeInfo::Mapping* mapping = TypeMapping(expectation_type_);
+  if (!mapping)
+    return ui::AXInspectScenario();
+  return ui::AXInspectScenario::From(mapping->directive_prefix, scenario_path,
+                                     default_filters);
+}
+
 // static
 std::vector<AXInspectFactory::Type>
 DumpAccessibilityTestHelper::TreeTestPasses() {
