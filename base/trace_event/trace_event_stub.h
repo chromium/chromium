@@ -41,7 +41,6 @@ struct IgnoredValue {
 #define INTERNAL_TRACE_EVENT_ADD(...) INTERNAL_TRACE_IGNORE(__VA_ARGS__)
 #define INTERNAL_TRACE_EVENT_ADD_SCOPED(...) INTERNAL_TRACE_IGNORE(__VA_ARGS__)
 #define INTERNAL_TRACE_EVENT_ADD_WITH_ID(...) INTERNAL_TRACE_IGNORE(__VA_ARGS__)
-#define INTERNAL_TRACE_TASK_EXECUTION(...) INTERNAL_TRACE_IGNORE(__VA_ARGS__)
 #define INTERNAL_TRACE_LOG_MESSAGE(...) INTERNAL_TRACE_IGNORE(__VA_ARGS__)
 #define INTERNAL_TRACE_EVENT_ADD_SCOPED_WITH_FLOW(...) \
   INTERNAL_TRACE_IGNORE(__VA_ARGS__)
@@ -188,6 +187,7 @@ namespace perfetto {
 
 class TracedArray;
 class TracedDictionary;
+class EventContext;
 
 class StaticString {
  public:

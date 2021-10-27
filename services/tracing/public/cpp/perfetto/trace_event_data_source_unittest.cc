@@ -19,6 +19,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/common/task_annotator.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -1309,11 +1310,16 @@ TEST_F(TraceEventDataSourceTest, EventWithConvertableArgs) {
 TEST_F(TraceEventDataSourceTest, TaskExecutionEvent) {
   StartTraceEventDataSource(/*privacy_filtering_enabled=*/false, "toplevel");
 
-  base::PendingTask task;
-  task.posted_from =
-      base::Location("my_func", "my_file", 0, /*program_counter=*/&task);
-  { TRACE_TASK_EXECUTION("ThreadControllerImpl::RunTask1", task); }
-  { TRACE_TASK_EXECUTION("ThreadControllerImpl::RunTask1", task); }
+  base::TaskAnnotator task_annotator;
+  for (int i = 0; i < 2; ++i) {
+    base::PendingTask task;
+    task.task = base::DoNothing();
+    task.posted_from =
+        base::Location("my_func", "my_file", 0, /*program_counter=*/&task);
+    // TaskAnnotator::RunTask is responsible for emitting the task execution
+    // event.
+    task_annotator.RunTask("ThreadControllerImpl::RunTask1", task);
+  }
 
   size_t packet_index = ExpectStandardPreamble();
   size_t category_iid = 1;
@@ -1367,10 +1373,15 @@ TEST_F(TraceEventDataSourceTest, TaskExecutionEvent) {
 TEST_F(TraceEventDataSourceTest, TaskExecutionEventWithoutFunction) {
   StartTraceEventDataSource(/*privacy_filtering_enabled=*/false, "toplevel");
 
+  base::TaskAnnotator task_annotator;
   base::PendingTask task;
+  task.task = base::DoNothing();
   task.posted_from = base::Location(/*function_name=*/nullptr, "my_file", 0,
                                     /*program_counter=*/&task);
-  { TRACE_TASK_EXECUTION("ThreadControllerImpl::RunTask1", task); }
+
+  // TaskAnnotator::RunTask is responsible for emitting the task execution
+  // event.
+  task_annotator.RunTask("ThreadControllerImpl::RunTask1", task);
 
   size_t packet_index = ExpectStandardPreamble();
   size_t category_iid = 1;

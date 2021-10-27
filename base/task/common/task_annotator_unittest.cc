@@ -39,7 +39,7 @@ TEST(TaskAnnotatorTest, QueueAndRunTask) {
   TaskAnnotator annotator;
   annotator.WillQueueTask("TaskAnnotatorTest::Queue", &pending_task, "?");
   EXPECT_EQ(0, result);
-  annotator.RunTask("TaskAnnotatorTest::Queue", &pending_task);
+  annotator.RunTask("TaskAnnotator::RunTask", pending_task);
   EXPECT_EQ(123, result);
 }
 

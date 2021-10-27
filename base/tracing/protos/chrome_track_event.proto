@@ -420,9 +420,38 @@ message RenderFrameHost {
   optional RenderFrameHost embedder = 10;
 }
 
+message ChromeThreadPoolTask {
+  enum Priority {
+    PRIORITY_UNSPECIFIED = 0;
+    PRIORITY_BEST_EFFORT = 1;
+    PRIORITY_USER_VISIBLE = 2;
+    PRIORITY_USER_BLOCKING = 3;
+  }
+
+  enum ExecutionMode {
+    EXECTUION_MODE_UNSPECIFIED = 0;
+    EXECUTION_MODE_PARALLEL = 1;
+    EXECUTION_MODE_SEQUENCED = 2;
+    EXECUTION_MODE_SINGLE_THREAD = 3;
+    EXECUTION_MODE_JOB = 4;
+  }
+
+  enum ShutdownBehavior {
+    SHUTDOWN_BEHAVIOR_UNSPECIFIED = 0;
+    SHUTDOWN_BEHAVIOR_CONTINUE_ON_SHUTDOWN = 1;
+    SHUTDOWN_BEHAVIOR_SKIP_ON_SHUTDOWN = 2;
+    SHUTDOWN_BEHAVIOR_BLOCK_SHUTDOWN = 3;
+  }
+
+  optional Priority task_priority = 1;
+  optional ExecutionMode execution_mode = 2;
+  optional int64 sequence_token = 3;
+  optional ShutdownBehavior shutdown_behavior = 4;
+}
+
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1029
+  // Next ID: 1030
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -484,5 +513,7 @@ message ChromeTrackEvent {
     optional GlobalRenderFrameHostId global_render_frame_host_id = 1027;
 
     optional RenderFrameHost render_frame_host = 1028;
+
+    optional ChromeThreadPoolTask thread_pool_task = 1029;
   }
 }

@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/debug/alias.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -36,47 +37,17 @@ namespace internal {
 
 namespace {
 
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+using perfetto::protos::pbzero::ChromeThreadPoolTask;
+using perfetto::protos::pbzero::ChromeTrackEvent;
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
+
 constexpr const char* kExecutionModeString[] = {"parallel", "sequenced",
                                                 "single thread", "job"};
 static_assert(
     size(kExecutionModeString) ==
         static_cast<size_t>(TaskSourceExecutionMode::kMax) + 1,
     "Array kExecutionModeString is out of sync with TaskSourceExecutionMode.");
-
-// An immutable copy of a thread pool task's info required by tracing.
-class TaskTracingInfo : public trace_event::ConvertableToTraceFormat {
- public:
-  TaskTracingInfo(const TaskTraits& task_traits,
-                  const char* execution_mode,
-                  const SequenceToken& sequence_token)
-      : task_traits_(task_traits),
-        execution_mode_(execution_mode),
-        sequence_token_(sequence_token) {}
-  TaskTracingInfo(const TaskTracingInfo&) = delete;
-  TaskTracingInfo& operator=(const TaskTracingInfo&) = delete;
-
-  // trace_event::ConvertableToTraceFormat implementation.
-  void AppendAsTraceFormat(std::string* out) const override;
-
- private:
-  const TaskTraits task_traits_;
-  const char* const execution_mode_;
-  const SequenceToken sequence_token_;
-};
-
-void TaskTracingInfo::AppendAsTraceFormat(std::string* out) const {
-  Value dict(Value::Type::DICTIONARY);
-
-  dict.SetStringKey("task_priority",
-                    base::TaskPriorityToString(task_traits_.priority()));
-  dict.SetStringKey("execution_mode", execution_mode_);
-  if (sequence_token_.IsValid())
-    dict.SetIntKey("sequence_token", sequence_token_.ToInternalValue());
-
-  std::string tmp;
-  JSONWriter::Write(dict, &tmp);
-  out->append(tmp);
-}
 
 bool HasLogBestEffortTasksSwitch() {
   // The CommandLine might not be initialized if ThreadPool is initialized in a
@@ -163,6 +134,67 @@ class EphemeralTaskExecutor : public TaskExecutor {
   SingleThreadTaskRunner* const single_thread_task_runner_;
   const TaskTraits* const sequence_traits_;
 };
+
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+ChromeThreadPoolTask::Priority TaskPriorityToProto(TaskPriority priority) {
+  switch (priority) {
+    case TaskPriority::BEST_EFFORT:
+      return ChromeThreadPoolTask::PRIORITY_BEST_EFFORT;
+    case TaskPriority::USER_VISIBLE:
+      return ChromeThreadPoolTask::PRIORITY_USER_VISIBLE;
+    case TaskPriority::USER_BLOCKING:
+      return ChromeThreadPoolTask::PRIORITY_USER_BLOCKING;
+  }
+}
+
+ChromeThreadPoolTask::ExecutionMode ExecutionModeToProto(
+    TaskSourceExecutionMode mode) {
+  switch (mode) {
+    case TaskSourceExecutionMode::kParallel:
+      return ChromeThreadPoolTask::EXECUTION_MODE_PARALLEL;
+    case TaskSourceExecutionMode::kSequenced:
+      return ChromeThreadPoolTask::EXECUTION_MODE_SEQUENCED;
+    case TaskSourceExecutionMode::kSingleThread:
+      return ChromeThreadPoolTask::EXECUTION_MODE_SINGLE_THREAD;
+    case TaskSourceExecutionMode::kJob:
+      return ChromeThreadPoolTask::EXECUTION_MODE_JOB;
+  }
+}
+
+ChromeThreadPoolTask::ShutdownBehavior ShutdownBehaviorToProto(
+    TaskShutdownBehavior shutdown_behavior) {
+  switch (shutdown_behavior) {
+    case TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN:
+      return ChromeThreadPoolTask::SHUTDOWN_BEHAVIOR_CONTINUE_ON_SHUTDOWN;
+    case TaskShutdownBehavior::SKIP_ON_SHUTDOWN:
+      return ChromeThreadPoolTask::SHUTDOWN_BEHAVIOR_SKIP_ON_SHUTDOWN;
+    case TaskShutdownBehavior::BLOCK_SHUTDOWN:
+      return ChromeThreadPoolTask::SHUTDOWN_BEHAVIOR_BLOCK_SHUTDOWN;
+  }
+}
+#endif  //  BUILDFLAG(ENABLE_BASE_TRACING)
+
+auto EmitThreadPoolTraceEventMetadata(perfetto::EventContext& ctx,
+                                      const TaskTraits& traits,
+                                      TaskSource* task_source,
+                                      const SequenceToken& token) {
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+  // Other parameters are included only when "scheduler" category is enabled.
+  const uint8_t* scheduler_category_enabled =
+      TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED("scheduler");
+
+  if (!*scheduler_category_enabled)
+    return;
+  auto* task = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
+                   ->set_thread_pool_task();
+  task->set_task_priority(TaskPriorityToProto(traits.priority()));
+  task->set_execution_mode(ExecutionModeToProto(task_source->execution_mode()));
+  task->set_shutdown_behavior(
+      ShutdownBehaviorToProto(traits.shutdown_behavior()));
+  if (token.IsValid())
+    task->set_sequence_token(token.ToInternalValue());
+#endif  //  BUILDFLAG(ENABLE_BASE_TRACING)
+}
 
 }  // namespace
 
@@ -510,19 +542,7 @@ void TaskTracker::RunTask(Task task,
         break;
     }
 
-    TRACE_TASK_EXECUTION("ThreadPool_RunTask", task);
-
-    // TODO(gab): In a better world this would be tacked on as an extra arg
-    // to the trace event generated above. This is not possible however until
-    // http://crbug.com/652692 is resolved.
-    TRACE_EVENT1("thread_pool", "ThreadPool_TaskInfo", "task_info",
-                 std::make_unique<TaskTracingInfo>(
-                     traits,
-                     kExecutionModeString[static_cast<size_t>(
-                         task_source->execution_mode())],
-                     environment.token));
-
-    RunTaskWithShutdownBehavior(traits.shutdown_behavior(), &task);
+    RunTaskWithShutdownBehavior(task, traits, task_source, environment.token);
 
     // Make sure the arguments bound to the callback are deleted within the
     // scope in which the callback runs.
@@ -652,30 +672,53 @@ void TaskTracker::CallFlushCallbackForTesting() {
     std::move(flush_callback).Run();
 }
 
-NOINLINE void TaskTracker::RunContinueOnShutdown(Task* task) {
-  task_annotator_.RunTask("ThreadPool_RunTask_ContinueOnShutdown", task);
+NOINLINE void TaskTracker::RunContinueOnShutdown(Task& task,
+                                                 const TaskTraits& traits,
+                                                 TaskSource* task_source,
+                                                 const SequenceToken& token) {
+  NO_CODE_FOLDING();
+  RunTaskImpl(task, traits, task_source, token);
 }
 
-NOINLINE void TaskTracker::RunSkipOnShutdown(Task* task) {
-  task_annotator_.RunTask("ThreadPool_RunTask_SkipOnShutdown", task);
+NOINLINE void TaskTracker::RunSkipOnShutdown(Task& task,
+                                             const TaskTraits& traits,
+                                             TaskSource* task_source,
+                                             const SequenceToken& token) {
+  NO_CODE_FOLDING();
+  RunTaskImpl(task, traits, task_source, token);
 }
 
-NOINLINE void TaskTracker::RunBlockShutdown(Task* task) {
-  task_annotator_.RunTask("ThreadPool_RunTask_BlockShutdown", task);
+NOINLINE void TaskTracker::RunBlockShutdown(Task& task,
+                                            const TaskTraits& traits,
+                                            TaskSource* task_source,
+                                            const SequenceToken& token) {
+  NO_CODE_FOLDING();
+  RunTaskImpl(task, traits, task_source, token);
 }
 
-void TaskTracker::RunTaskWithShutdownBehavior(
-    TaskShutdownBehavior shutdown_behavior,
-    Task* task) {
-  switch (shutdown_behavior) {
+void TaskTracker::RunTaskImpl(Task& task,
+                              const TaskTraits& traits,
+                              TaskSource* task_source,
+                              const SequenceToken& token) {
+  task_annotator_.RunTask(
+      "ThreadPool_RunTask", task, [&](perfetto::EventContext& ctx) {
+        EmitThreadPoolTraceEventMetadata(ctx, traits, task_source, token);
+      });
+}
+
+void TaskTracker::RunTaskWithShutdownBehavior(Task& task,
+                                              const TaskTraits& traits,
+                                              TaskSource* task_source,
+                                              const SequenceToken& token) {
+  switch (traits.shutdown_behavior()) {
     case TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN:
-      RunContinueOnShutdown(task);
+      RunContinueOnShutdown(task, traits, task_source, token);
       return;
     case TaskShutdownBehavior::SKIP_ON_SHUTDOWN:
-      RunSkipOnShutdown(task);
+      RunSkipOnShutdown(task, traits, task_source, token);
       return;
     case TaskShutdownBehavior::BLOCK_SHUTDOWN:
-      RunBlockShutdown(task);
+      RunBlockShutdown(task, traits, task_source, token);
       return;
   }
 }
