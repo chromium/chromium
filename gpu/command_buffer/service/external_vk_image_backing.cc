@@ -397,6 +397,10 @@ bool ExternalVkImageBacking::BeginAccess(
     auto release_semaphore =
         ExternalVkImageGLRepresentationShared::ReleaseTexture(
             external_semaphore_pool(), texture_id, info.fImageLayout);
+    if (!release_semaphore) {
+      context_state_->MarkContextLost();
+      return false;
+    }
     EndAccessInternal(readonly, std::move(release_semaphore));
   }
 
