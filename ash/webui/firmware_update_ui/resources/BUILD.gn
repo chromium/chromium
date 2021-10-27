@@ -16,6 +16,7 @@ polymer_element_files = [ "firmware_update_app.js" ]
 generate_grd("build_grd") {
   input_files = [
     "app_icon_192.png",
+    "fake_data.js",
     "fake_update_provider.js",
     "firmware_update_types.js",
     "index.html",
@@ -32,6 +33,7 @@ js_type_check("closure_compile") {
   is_polymer3 = true
   closure_flags = default_closure_args
   deps = [
+    ":fake_data",
     ":fake_update_provider",
     ":firmware_update_app",
     ":firmware_update_types",
@@ -39,7 +41,15 @@ js_type_check("closure_compile") {
   ]
 }
 
+js_library("fake_data") {
+  deps = [ ":firmware_update_types" ]
+}
+
 js_library("fake_update_provider") {
+  deps = [
+    "//ash/webui/common/resources:fake_observables",
+    "//ui/webui/resources/js:cr.m",
+  ]
 }
 
 js_library("firmware_update_app") {

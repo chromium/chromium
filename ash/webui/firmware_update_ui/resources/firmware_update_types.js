@@ -11,8 +11,48 @@
  */
 
 /**
+ * The priority of an update.
+ * @enum {number}
+ */
+export const UpdatePriority = {
+  kLow: 0,
+  kMedium: 1,
+  kHigh: 2,
+  kCritical: 3,
+};
+
+/**
+ * @typedef {{
+ *   deviceId: string,
+ *   deviceName: string,
+ *   version: string,
+ *   description: string,
+ *   priority: !UpdatePriority,
+ *   updateModeInstructions: ?string,
+ *   screenshotUrl: ?string,
+ * }}
+ */
+export let FirmwareUpdate;
+
+/**
+ * Type alias for UpdateObserver.
+ * @typedef {{
+ *   onUpdateListChanged: !function(!Array<!FirmwareUpdate>)
+ * }}
+ */
+export let UpdateObserver;
+
+/**
+ * Type of UpdateProviderInterface.ObservePeripheralUpdatesFunction function.
+ * @typedef {!function(!UpdateObserver): void}
+ */
+export let ObservePeripheralUpdatesFunction;
+
+/**
  * Type alias for the UpdateProviderInterface.
  * TODO(michaelcheco): Replace with a real mojo type when implemented.
- * @typedef {!Object}
+ * @typedef {{
+ *   observePeripheralUpdates: !ObservePeripheralUpdatesFunction,
+ * }}
  */
 export let UpdateProviderInterface;
