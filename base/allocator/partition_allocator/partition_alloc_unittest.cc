@@ -11,7 +11,6 @@
 #include <cstddef>
 #include <limits>
 #include <memory>
-#include <random>
 #include <vector>
 
 #include "base/allocator/buildflags.h"
@@ -29,7 +28,6 @@
 #include "base/cpu.h"
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/memory/tagging.h"
 #include "base/rand_util.h"
 #include "base/system/sys_info.h"
 #include "base/test/bind.h"
@@ -1988,13 +1986,8 @@ TEST_F(PartitionAllocDeathTest, FreelistCorruption) {
   allocator.root()->Free(uaf_data);
   // Try to confuse the allocator. This is still easy to circumvent willingly,
   // "just" need to set uaf_data[1] to ~uaf_data[0].
-  void* previous_uaf_data = uaf_data[0];
   uaf_data[0] = fake_freelist_entry;
   EXPECT_DEATH(allocator.root()->Alloc(alloc_size, ""), "");
-
-  // Restore the freelist entry value, otherwise freelist corruption is detected
-  // in TearDown(), crashing this process.
-  uaf_data[0] = previous_uaf_data;
 }
 
 // With DCHECK_IS_ON(), cookie already handles off-by-one detection.
@@ -2006,15 +1999,11 @@ TEST_F(PartitionAllocDeathTest, OffByOneDetection) {
   if (cpu.has_mte()) {
     EXPECT_DEATH(array[alloc_size] = 'A', "");
   } else {
-    char previous_value = array[alloc_size];
     array[alloc_size] = 'A';
     // Crash at the next allocation. This assumes that we are touching a new,
     // non-randomized slot span, where the next slot to be handed over to the
     // application directly follows the current one.
     EXPECT_DEATH(allocator.root()->Alloc(alloc_size, ""), "");
-
-    // Restore integrity, otherwise the process will crash in TearDown().
-    array[alloc_size] = previous_value;
   }
 }
 
@@ -2026,14 +2015,11 @@ TEST_F(PartitionAllocDeathTest, OffByOneDetectionWithRealisticData) {
   if (cpu.has_mte()) {
     EXPECT_DEATH(array[2] = &valid, "");
   } else {
-    void* previous_value = array[2];
     array[2] = &valid;
     // Crash at the next allocation. This assumes that we are touching a new,
     // non-randomized slot span, where the next slot to be handed over to the
     // application directly follows the current one.
     EXPECT_DEATH(allocator.root()->Alloc(alloc_size, ""), "");
-
-    array[2] = previous_value;
   }
 }
 #endif  // !DCHECK_IS_ON()
@@ -3782,42 +3768,6 @@ TEST_F(PartitionAllocTest, HandleMixedAllocations) {
   free(ptr);
 }
 #endif
-
-TEST_F(PartitionAllocTest, SortFreelist) {
-  const size_t count = 100;
-  const size_t allocation_size = 1;
-  void* first_ptr = allocator.root()->Alloc(allocation_size, "");
-
-  std::vector<void*> allocations;
-  for (size_t i = 0; i < count; ++i)
-    allocations.push_back(allocator.root()->Alloc(allocation_size, ""));
-
-  // Shuffle and free memory out of order.
-  std::random_device rd;
-  std::mt19937 generator(rd());
-  std::shuffle(allocations.begin(), allocations.end(), generator);
-
-  // Keep one allocation alive (first_ptr), so that the SlotSpan is not fully
-  // empty.
-  for (void* ptr : allocations)
-    allocator.root()->Free(ptr);
-  allocations.clear();
-
-  allocator.root()->PurgeMemory(PartitionPurgeDiscardUnusedSystemPages);
-  for (size_t i = 0; i < count; ++i)
-    allocations.push_back(allocator.root()->Alloc(allocation_size, ""));
-
-  // Check that it is sorted.
-  for (size_t i = 1; i < allocations.size(); i++) {
-    EXPECT_LT(
-        reinterpret_cast<uintptr_t>(memory::UnmaskPtr(allocations[i - 1])),
-        reinterpret_cast<uintptr_t>(memory::UnmaskPtr(allocations[i])));
-  }
-
-  for (void* ptr : allocations)
-    allocator.root()->Free(ptr);
-  allocator.root()->Free(first_ptr);
-}
 
 }  // namespace internal
 }  // namespace base

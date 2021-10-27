@@ -137,9 +137,6 @@ struct PartitionBucket {
     return offset_in_slot;
   }
 
-  // Sort the freelists of all slot spans.
-  void SortSlotSpanFreelists();
-
  private:
   static NOINLINE void OnFull();
 
