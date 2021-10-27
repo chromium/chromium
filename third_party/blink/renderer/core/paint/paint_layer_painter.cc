@@ -455,7 +455,8 @@ PaintResult PaintLayerPainter::PaintLayerContents(
   offset_from_root += subpixel_accumulation;
 
   if (RuntimeEnabledFeatures::CullRectUpdateEnabled()) {
-    if (object.FirstFragment().NextFragment()) {
+    if (object.FirstFragment().NextFragment() ||
+        IsUnclippedLayoutView(paint_layer_)) {
       result = kMayBeClippedByCullRect;
     } else {
       IntRect visual_rect = FirstFragmentVisualRect(object);
