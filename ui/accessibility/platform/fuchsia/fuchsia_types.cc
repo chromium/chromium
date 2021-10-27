@@ -6,10 +6,10 @@
 
 namespace ui {
 
-NodeID::NodeID() = default;
-NodeID::~NodeID() = default;
+AXNodeDescriptorFuchsia::AXNodeDescriptorFuchsia() = default;
+AXNodeDescriptorFuchsia::~AXNodeDescriptorFuchsia() = default;
 
-NodeUpdate::NodeUpdate() = default;
-NodeUpdate::~NodeUpdate() = default;
+AXNodeUpdateFuchsia::AXNodeUpdateFuchsia() = default;
+AXNodeUpdateFuchsia::~AXNodeUpdateFuchsia() = default;
 
 }  // namespace ui
