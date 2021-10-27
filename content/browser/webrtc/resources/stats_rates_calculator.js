@@ -548,8 +548,10 @@ export class StatsRatesCalculator {
               'bytesSent', 'timestamp', CalculatorModifier.kBytesToBits),
           bytesReceived: new RateCalculator(
               'bytesReceived', 'timestamp', CalculatorModifier.kBytesToBits),
-          // TODO(https://crbug.com/webrtc/10568): Add packetsSent and
-          // packetsReceived once implemented.
+          packetsSent: new RateCalculator(
+              'packetsSent', 'timestamp'),
+          packetsReceived: new RateCalculator(
+              'packetsReceived', 'timestamp'),
         },
       },
       {
@@ -559,8 +561,10 @@ export class StatsRatesCalculator {
               'bytesSent', 'timestamp', CalculatorModifier.kBytesToBits),
           bytesReceived: new RateCalculator(
               'bytesReceived', 'timestamp', CalculatorModifier.kBytesToBits),
-          // TODO(https://crbug.com/webrtc/10569): Add packetsSent and
-          // packetsReceived once implemented.
+          packetsSent: new RateCalculator(
+              'packetsSent', 'timestamp'),
+          packetsReceived: new RateCalculator(
+              'packetsReceived', 'timestamp'),
           totalRoundTripTime:
               new RateCalculator('totalRoundTripTime', 'responsesReceived'),
         },
