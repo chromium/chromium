@@ -298,10 +298,11 @@ void PluginInfoHostImpl::Context::DecidePluginStatus(
 #endif
 }
 
+// TODO(crbug.com/850278): Remove unused parameters.
 bool PluginInfoHostImpl::Context::FindEnabledPlugin(
-    int render_frame_id,
+    int /*render_frame_id*/,
     const GURL& url,
-    const url::Origin& main_frame_origin,
+    const url::Origin& /*main_frame_origin*/,
     const std::string& mime_type,
     chrome::mojom::PluginStatus* status,
     WebPluginInfo* plugin,
@@ -329,8 +330,7 @@ bool PluginInfoHostImpl::Context::FindEnabledPlugin(
   size_t i = 0;
   for (; i < matching_plugins.size(); ++i) {
     if (!filter ||
-        filter->IsPluginAvailable(render_process_id_, render_frame_id, url,
-                                  main_frame_origin, &matching_plugins[i])) {
+        filter->IsPluginAvailable(render_process_id_, matching_plugins[i])) {
       break;
     }
   }

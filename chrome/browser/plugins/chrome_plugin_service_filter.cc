@@ -117,13 +117,9 @@ void ChromePluginServiceFilter::AuthorizeAllPlugins(
   }
 }
 
-// TODO(crbug.com/1261922): Remove unused parameters from all call sites.
 bool ChromePluginServiceFilter::IsPluginAvailable(
     int render_process_id,
-    int /*render_frame_id*/,
-    const GURL& /*plugin_content_url*/,
-    const url::Origin& /*main_frame_origin*/,
-    content::WebPluginInfo* plugin) {
+    const content::WebPluginInfo& plugin) {
   base::AutoLock auto_lock(lock_);
 
   content::RenderProcessHost* rph =
@@ -140,7 +136,7 @@ bool ChromePluginServiceFilter::IsPluginAvailable(
     return false;
 
   const ContextInfo* context_info = context_info_it->second.get();
-  if (!context_info->plugin_prefs.get()->IsPluginEnabled(*plugin))
+  if (!context_info->plugin_prefs.get()->IsPluginEnabled(plugin))
     return false;
 
   return true;

@@ -47,7 +47,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_switches.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 using content::WebContents;
 using content::WebContentsObserver;
@@ -60,8 +59,6 @@ void PluginsLoadedCallback(
   std::move(quit_closure).Run();
 }
 
-const char kDummyPrintUrl[] = "chrome-untrusted://print/dummy.pdf";
-
 void CheckPdfPluginForRenderFrame(content::RenderFrameHost* frame) {
   static const base::FilePath kPdfInternalPluginPath(
       ChromeContentClient::kPDFPluginPath);
@@ -71,9 +68,8 @@ void CheckPdfPluginForRenderFrame(content::RenderFrameHost* frame) {
       kPdfInternalPluginPath, &pdf_internal_plugin_info));
 
   ChromePluginServiceFilter* filter = ChromePluginServiceFilter::GetInstance();
-  EXPECT_TRUE(filter->IsPluginAvailable(
-      frame->GetProcess()->GetID(), frame->GetRoutingID(), GURL(kDummyPrintUrl),
-      url::Origin(), &pdf_internal_plugin_info));
+  EXPECT_TRUE(filter->IsPluginAvailable(frame->GetProcess()->GetID(),
+                                        pdf_internal_plugin_info));
 }
 
 }  // namespace
@@ -256,9 +252,7 @@ IN_PROC_BROWSER_TEST_P(PrintPreviewDialogControllerBrowserTest,
   ChromePluginServiceFilter* filter = ChromePluginServiceFilter::GetInstance();
   EXPECT_FALSE(filter->IsPluginAvailable(
       initiator()->GetMainFrame()->GetProcess()->GetID(),
-      initiator()->GetMainFrame()->GetRoutingID(), GURL(),
-      url::Origin::Create(GURL("http://google.com")),
-      &pdf_external_plugin_info));
+      pdf_external_plugin_info));
 
   PrintPreview();
 

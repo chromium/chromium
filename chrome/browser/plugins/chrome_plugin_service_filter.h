@@ -48,13 +48,8 @@ class ChromePluginServiceFilter : public content::PluginServiceFilter,
                            const std::string& identifier);
 
   // PluginServiceFilter implementation.
-  // If |plugin_content_url| is not available, pass the same URL used to
-  // generate |main_frame_origin|. These parameters may be empty.
   bool IsPluginAvailable(int render_process_id,
-                         int render_frame_id,
-                         const GURL& plugin_content_url,
-                         const url::Origin& main_frame_origin,
-                         content::WebPluginInfo* plugin) override;
+                         const content::WebPluginInfo& plugin) override;
 
   // CanLoadPlugin always grants permission to the browser
   // (render_process_id == 0)

@@ -2459,11 +2459,8 @@ class MockPluginServiceFilter : public content::PluginServiceFilter {
   MOCK_METHOD1(MockPluginAvailable, bool(const base::FilePath&));
 
   bool IsPluginAvailable(int render_process_id,
-                         int render_view_id,
-                         const GURL& url,
-                         const url::Origin& main_frame_origin,
-                         content::WebPluginInfo* plugin) override {
-    return MockPluginAvailable(plugin->path);
+                         const content::WebPluginInfo& plugin) override {
+    return MockPluginAvailable(plugin.path);
   }
 
   bool CanLoadPlugin(int render_process_id,
