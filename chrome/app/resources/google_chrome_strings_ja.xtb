@@ -47,6 +47,7 @@
 <translation id="2121284319307530122">再起動して Chrome を更新(&amp;C)</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />現在の設定<ph name="END_LINK" />を送信して Chrome の品質向上にご協力ください</translation>
 <translation id="2151406531797534936">Chrome を今すぐ再起動してください</translation>
+<translation id="2189289170880510015">Chrome の最も重要なプライバシー設定をカスタマイズできます</translation>
 <translation id="2246246234298806438">Google Chrome では、組み込みの PDF ビューアがない場合、印刷プレビューを表示できません。</translation>
 <translation id="2290014774651636340">Google API キーが欠落しています。Google Chrome の一部の機能は無効になります。</translation>
 <translation id="2290095356545025170">Google Chrome をアンインストールしてもよろしいですか？</translation>
@@ -109,6 +110,7 @@
 <translation id="3596080736082218006">{COUNT,plural, =0{管理者が、アップデートを適用するために Chrome を再起動するよう求めています}=1{管理者が、アップデートを適用するために Chrome を再起動するよう求めています。シークレット ウィンドウは、再起動後は自動的には開きません。}other{管理者が、アップデートを適用するために Chrome を再起動するよう求めています。現在開いている # 個のシークレット ウィンドウは、再起動後は自動的には開きません。}}</translation>
 <translation id="3622797965165704966">共有パソコンの Chrome で Google アカウントが簡単に使用できるようになりました。</translation>
 <translation id="3673813398384385993">Chrome で「<ph name="EXTENSION_NAME" />」に不正なソフトウェアが含まれていることが検出されました</translation>
+<translation id="3678552270983184277">ほとんどの場合はデフォルトの設定を使用できますが、Chrome の用途に合わせてカスタマイズすることも可能です</translation>
 <translation id="3718181793972440140">このデバイスから 1 件の項目を削除します。後でデータを取得するには、<ph name="USER_EMAIL" /> として Chrome にログインしてください。</translation>
 <translation id="3735758079232443276">拡張機能「<ph name="EXTENSION_NAME" />」により、Chrome の起動時に表示されるページが変更されました。</translation>
 <translation id="3779473566290487688">今後、Google Chrome のアップデートを受信するには、OS X 10.11 以降が必要となります。このパソコンでは OS X 10.10 が実行されています。</translation>

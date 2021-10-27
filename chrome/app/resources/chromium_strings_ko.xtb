@@ -45,6 +45,7 @@
 <translation id="2577788541081224677">모든 기기에서 Chromium 계정 정보에 액세스하려면 로그인하여 동기화하세요.</translation>
 <translation id="2583187216237139145">북마크, 방문 기록, 비밀번호, 기타 설정 생성 등 이 프로필을 사용하는 동안 생성된 모든 Chromium 데이터는 직장 프로필 관리자가 삭제할 수 있습니다. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">업데이트를 적용하려면 Chromium OS를 다시 시작해야 합니다.</translation>
+<translation id="2614883797045469742">사용자 대부분에게는 기본 설정이 적합하지만 사용자는 자신의 Chromium 이용 방식에 따라 설정을 맞춤설정할 수 있습니다</translation>
 <translation id="2648074677641340862">설치 중 운영체제 오류가 발생했습니다. Chromium을 다시 다운로드하세요.</translation>
 <translation id="2661879430930417727">기기를 공유하는 경우 친구와 가족이 개별적으로 탐색하고 원하는 대로 Chromium을 설정할 수 있습니다.</translation>
 <translation id="2711502716910134313">Chromium 탭</translation>
@@ -210,6 +211,7 @@
 <translation id="6990124437352146030">이 사이트에서 마이크에 액세스하려면 Chromium에 권한이 필요합니다</translation>
 <translation id="705851970750939768">Chromium 업데이트</translation>
 <translation id="7067091210845072982">이미지에 유용한 설명이 없으면 Chromium에서 자동으로 설명을 제공하려고 시도합니다. 설명을 생성하기 위해 이미지가 Google로 전송됩니다.</translation>
+<translation id="7147279922647361552">Chromium의 가장 중요한 개인 정보 보호 옵션 일부 맞춤설정</translation>
 <translation id="718435575166326686">Chromium에서 사이트에 대한 카메라 권한이 필요합니다.</translation>
 <translation id="7196312274710523067">Chromium을 실행할 수 없습니다. 다시 시도해 보세요.</translation>
 <translation id="7197677400338048821">Chromium에서 비밀번호를 확인할 수 없습니다. 24시간 후 다시 시도해 보세요.</translation>

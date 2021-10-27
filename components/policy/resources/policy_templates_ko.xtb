@@ -1018,6 +1018,7 @@
 <translation id="2204379573346866896">현재 시에서 경과한 분입니다.</translation>
 <translation id="2204753382813641270">임시보관함 자동 숨김 제어</translation>
 <translation id="2208976000652006649">POST를 사용하는 검색 URL용 매개변수</translation>
+<translation id="2212603374276864511">사용자가 사전 정의된 데스크 템플릿을 사용하도록 허용</translation>
 <translation id="2213059592185933570">로밍 프로필 생성 사용</translation>
 <translation id="2215238871726750562">정책을 True로 설정하면 세션을 시작할 때 브라우저 창이 실행되지 않습니다.
 
@@ -1981,6 +1982,7 @@ False로 설정하면 개인정보 보호 화면은 항상 사용 중지됩니�
         * 4로 설정하면 등록 후 사용자가 로그인하기 전에 <ph name="TPM_FIRMWARE_UPDATE_TPM" /> 펌웨어가 업데이트됩니다.
 
       정책을 설정하지 않으면 <ph name="TPM_FIRMWARE_UPDATE_TPM" /> 펌웨어 업데이트가 제공되지 않습니다.</translation>
+<translation id="3232563711929146405">네트워크 서비스 샌드박스 사용 중지</translation>
 <translation id="3232691106293445015">비보안 HTTP 연결에는 <ph name="BASIC_AUTH" /> 인증 사용이 허용되지 않고 HTTPS 연결이 요구됨</translation>
 <translation id="3235085623859932253"> 이 정책을 사용 중지하면 사용자는 PCIe 터널링을 통해 Thunderbolt/USB4 주변기기를 완전히 연결할 수 없습니다.
 
@@ -2104,6 +2106,7 @@ False로 설정하면 개인정보 보호 화면은 항상 사용 중지됩니�
       정책을 설정하지 않으면 0밀리초가 제한 시간으로 사용됩니다.
 
       <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" /> 정책이 설정되어 있지 않으면 이 정책이 적용되지 않습니다.</translation>
+<translation id="3399859571630358395">빠른 페어링(빠른 블루투스 페어링)이 사용 중지되도록 강제 적용</translation>
 <translation id="341285788698114069">이 정책은 Windows에서 오디오 프로세서의 우선순위를 제어합니다.
       정책을 사용하면 오디오 프로세스가 일반적인 우선순위 이상으로 실행됩니다.
       정책을 사용 중지하면 오디오 프로세스가 일반적인 우선순위로 실행됩니다.
@@ -2223,6 +2226,7 @@ False로 설정하면 개인정보 보호 화면은 항상 사용 중지됩니�
 
       올바른 URL 패턴을 자세히 알아보려면 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns를 참고하세요.</translation>
 <translation id="3540935459049973317">앱별 시간 제한</translation>
+<translation id="354592434146464541">사용자가 사전 정의된 데스크 템플릿을 사용하도록 허용하지 않음</translation>
 <translation id="3547954654003013442">프록시 설정</translation>
 <translation id="3550122827225052130">이 정책은 지원이 중단되었으며 <ph name="PRODUCT_OS_NAME" /> 버전 85에서 삭제될 예정입니다. 대신 <ph name="SCREEN_LOCK_DELAYS_POLICY_NAME" /> 정책을 사용하세요.
 
@@ -2988,6 +2992,7 @@ False로 설정하면 <ph name="PRODUCT_NAME" />에서 기본 알림을 사용�
 <translation id="4557134566541205630">기본 검색 공급자 새 탭 페이지 URL</translation>
 <translation id="4558166110367609724">서비스 약관을 자동으로 건너뛰고 브라우저 로드</translation>
 <translation id="4559846397119102037"><ph name="LACROS_NAME" /> 사용 허용</translation>
+<translation id="4561560385824323005">사용자가 사전 구성된 데스크톱 레이아웃을 선택하여 로드하도록 허용</translation>
 <translation id="4562165737444703281">사용자가 Crostini 포트 전달을 [사용 설정/구성]할 수 있도록 허용</translation>
 <translation id="456686782928669977">이 정책은 <ph name="IE_PRODUCT_NAME" />의 SiteList 정책으로부터 규칙을 로드할지 제어합니다.
 
@@ -3333,6 +3338,7 @@ False로 설정하면 <ph name="PRODUCT_NAME" />에서 기본 알림을 사용�
 <translation id="5017369989680827157">정책을 True로 설정하거나 설정하지 않으면 사용자가 UI의 주소 자동 완성을 제어할 수 있습니다.
 
       정책을 False로 설정하면 자동 완성에서 주소 정보를 제안하거나 채워 넣지 않고, 사용자가 웹을 탐색하는 동안 제출한 추가 주소 정보도 저장하지 않습니다.</translation>
+<translation id="5017691827598069017">빠른 페어링 사용 설정(빠른 블루투스 페어링)</translation>
 <translation id="5021550478471824215">정책을 설정하면 미리 설정된 네트워크 파일 공유 목록이 지정됩니다. 각 항목은 <ph name="SHARE_URL_FIELD_NAME" /> 및 <ph name="MODE_FIELD_NAME" />의 2가지 속성을 갖는 객체입니다.
 
       공유 URL은 <ph name="SHARE_URL_FIELD_NAME" />이어야 합니다.
@@ -3448,6 +3454,7 @@ False로 설정하면 <ph name="PRODUCT_NAME" />에서 기본 알림을 사용�
       유효한 <ph name="URL_LABEL" /> 패턴에 관해 자세히 알아보려면 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns를 참고하세요. <ph name="WILDCARD_VALUE" />는 이 정책에 허용되는 값이 아닙니다.</translation>
 <translation id="5177260184597743704">OnSecurityEvent Chrome Enterprise 커넥터 설정 정책</translation>
 <translation id="5178479074002209469">이 정책에 따라 업데이트가 필요할 경우 비관리 사용자 세션이 알림을 받고 강제로 로그아웃될지 나타내는 부울 플래그입니다.</translation>
+<translation id="5179853299156742425">데스크 템플릿을 다운로드할 수 있는 URL입니다.</translation>
 <translation id="5182055907976889880"><ph name="PRODUCT_OS_NAME" />에서 Google Drive를 구성합니다.</translation>
 <translation id="5182483318861266793">실행기를 화면 오른쪽에 놓기</translation>
 <translation id="51859390023061147">전체 복원 기능 사용 안함</translation>
@@ -3503,6 +3510,7 @@ False로 설정하면 <ph name="PRODUCT_NAME" />에서 시스템 알림을 사�
       정책이 설정되지 않거나 유효하지 않으면 '채널 다운그레이드 시 보완할 대상 채널 대기'와 동일하게 동작합니다.</translation>
 <translation id="5229339291699779956">기기가 완전히 정상 작동하도록 Thunderbolt/USB4 주변기기에 대한 PCIe 터널링을 사용 설정</translation>
 <translation id="523505283826916779">접근성 설정</translation>
+<translation id="5238976843489093540">빠른 페어링(빠른 블루투스 페어링)이 사용 설정되도록 강제 적용</translation>
 <translation id="52393120393725840">정책을 사용 설정하면 사용자가 다음에 사이트에 로그인할 때 비밀번호를 제공하도록 <ph name="PRODUCT_NAME" />에서 비밀번호를 기억합니다.
 
       사용 중지하면 사용자가 새 비밀번호를 저장할 수 없지만, 이전에 저장된 비밀번호는 계속 작동합니다.
@@ -3854,6 +3862,9 @@ False로 설정하면 <ph name="PRODUCT_NAME" />에서 시스템 알림을 사�
 <translation id="5625771176514429288">Chrome 앱이 이러한 플랫폼에서 실행됩니다.</translation>
 <translation id="5630352020869108293">마지막 세션 복원</translation>
 <translation id="5633871703004128675">캐럿 강조표시 접근성 기능 사용</translation>
+<translation id="5639454129004500060">설정된 경우 정책에 데스크 템플릿 파일을 다운로드하기 위한 정보가 포함됩니다.  파일에 현재 사용자에게 프로비저닝할 데스크 템플릿이 포함됩니다.
+      설정되지 않은 경우 사전 구성된 데스크 템플릿이 데스크 템플릿 목록에 포함되지 않습니다.  <ph name="DESK_TEMPLATES_ENABLED_POLICY_NAME" />
+      정책이 참으로 설정되지 않은 경우 정책은 적용되지 않습니다.</translation>
 <translation id="5641279111657132737">이 정책은 지원 중단되었으므로 '<ph name="AUTH_SERVER_ALLOWLIST_POLICY_NAME" />' 정책을 대신 사용하세요.
 
       정책을 설정하면 통합 인증에 허용되어야 하는 서버가 지정됩니다. 통합 인증은 <ph name="PRODUCT_NAME" />이 허용 목록에 있는 서버 또는 프록시에서 인증 요청을 받은 경우에만 사용 설정됩니다.
@@ -4015,6 +4026,7 @@ False로 설정하면 <ph name="PRODUCT_NAME" />에서 시스템 알림을 사�
 <translation id="5809728392451418079">기기 로컬 계정용 표시 이름 설정</translation>
 <translation id="5814301096961727113">로그인 화면에서 음성 피드백의 기본 상태를 설정</translation>
 <translation id="5815129011704381141">업데이트 후 자동 재부팅</translation>
+<translation id="5816106589769772877">정책을 사용으로 설정하면 사용자가 사전 구성된 데스크톱 레이아웃 템플릿을 사용할 수 있습니다.  정책을 사용 중지로 설정하거나 설정하지 않으면 템플릿을 사용할 수 없습니다.</translation>
 <translation id="582857022372205358">짧은 쪽 양면 인쇄 사용 설정</translation>
 <translation id="5830196507442186669">기기가 <ph name="PRODUCT_OS_NAME" />에서 <ph name="BOREALIS_NAME" />를 사용하도록 허용</translation>
 <translation id="5832274826894536455">지원 중단된 정책</translation>
@@ -4282,6 +4294,7 @@ False로 설정하면 <ph name="PRODUCT_NAME" />에서 시스템 알림을 사�
 <translation id="6174065452773547810">정책을 사용으로 설정하거나 설정하지 않은 채로 두면 기기가 상세 보고 제어 권한을 받을 수 있습니다.
       정책을 사용 안함으로 설정하면 등록된 기기가 상세 보고 제어 권한을 받을 수 없습니다.</translation>
 <translation id="6178075938488052838">이 정책은 누가 <ph name="PRODUCT_OS_NAME" /> 세션을 시작할지 제어합니다. 이 정책은 사용자가 Android 내에서 추가 Google 계정에 로그인하지 못하도록 막지 않습니다. 사용자가 추가 Google 계정으로 로그인하지 못하게 하려면 <ph name="ARC_POLICY_POLICY_NAME" />의 일환으로 Android <ph name="ACCOUNT_TYPES_WITH_MANAGEMENT_DISABLED_CLOUDDPC_POLICY_NAME" /> 정책을 구성하세요.</translation>
+<translation id="6181304954168534748">데스크 템플릿의 SHA-256 해시입니다.</translation>
 <translation id="6181618732396778048">모든 사이트에서 파일 및 디렉터리 쓰기 액세스 권한을 요청하지 못하도록 차단</translation>
 <translation id="6181783961196084973">앱 활동 모음 전환 버튼의 값입니다. True로 설정하면 자녀와 부모의 <ph name="PRODUCT_NAME" /> 앱에 표시될 수 있도록 사용자 앱 활동이 서버로 전송됩니다. False로 설정하면 앱별 시간제한 기능은 계속 작동되나 데이터가 서버로 전송되거나 <ph name="PRODUCT_NAME" />에 표시되지 않습니다.</translation>
 <translation id="6183327369896253878">정책을 설정하면 <ph name="PRODUCT_OS_NAME" />에 런처 바에 고정된 앱으로 표시되는 애플리케이션 식별자를 고정하며 사용자는 이를 변경할 수 없습니다.
@@ -5894,6 +5907,10 @@ False로 설정하면 <ph name="PRODUCT_NAME" />에서 시스템 알림을 사�
 <translation id="8101381354936029836">정책 전체 그룹:</translation>
 <translation id="8102913158860568230">기본 mediastream 설정</translation>
 <translation id="8104962233214241919">이 사이트에 대해 클라이언트 인증서를 자동으로 선택합니다.</translation>
+<translation id="8111502498815410897">정책을 설정하면 빠른 페어링이 강제로 사용 설정 또는 중지됩니다.
+      빠른 페어링은 새로운 블루투스 페어링 플로우로 페어링된 주변기기를 GAIA 계정과 연결합니다.
+      이를 사용하면 동일한 GAIA 계정으로 로그인된 다른 Chrome OS 및 Android 기기가 자동으로 페어링됩니다.
+      설정되지 않은 경우 빠른 페어링은 Chrome OS의 기본값인 사용 설정으로 지정됩니다.</translation>
 <translation id="8114382167597081590">YouTube에 제한 모드 사용 안함</translation>
 <translation id="8117921351531866504">웹사이트에서 사용자의 결제 수단 저장 여부를 확인하도록 허용할지 선택할 수 있습니다.
 
@@ -6005,6 +6022,7 @@ False로 설정하면 로그인 화면이 표시될 때 개인정보 보호 화�
       이 정책을 설정하지 않으면 <ph name="PRODUCT_OS_NAME" />은 기기 로컬 계정의 이메일 계정 ID를 로그인 화면의 표시 이름으로 사용합니다.
 
       이 정책은 일반 사용자 계정에서는 무시됩니다.</translation>
+<translation id="8257863622304579015">네트워크 서비스 샌드박스 사용 설정</translation>
 <translation id="8259375588339409826">Chromium과 Chrome은 같은 정책 조합을 지원합니다. 이 문서는 고지 없이 변경되거나 삭제될 수 있는 출시되지 않은 정책(즉, '지원' 항목은 아직 출시되지 않은 <ph name="PRODUCT_NAME" /> 버전을 가리킴)을 포함할 수 있으며, 보안 및 개인정보 보호 속성에 관한 보장을 포함한 그 어떤 보장도 제공되지 않습니다.
 
 이 정책은 조직 내부용 <ph name="PRODUCT_NAME" />의 인스턴스를 설정할 때 사용하기 위한 것입니다. 조직 외부에서(예: 공개 배포 프로그램) 이러한 정책을 사용하면 멀웨어로 간주되어 Google 및 바이러스 백신 공급업체에 의해 멀웨어로 지정될 수 있습니다.
@@ -6517,6 +6535,11 @@ Windows에서는 GPO를 통해 정책을 설정하는 것이 좋습니다. 하�
 
       정책을 설정하지 않으면 <ph name="MS_WIN_NAME" />에서는 <ph name="IE_PRODUCT_NAME" />, <ph name="MAC_OS_NAME" />에서는 <ph name="SAFARI_PRODUCT_NAME" />와 같이 플랫폼별 기본값이 사용됩니다. <ph name="LINUX_OS_NAME" />에서는 대체 브라우저가 실행되지 않습니다.</translation>
 <translation id="8836975838488342340">액세스 코드가 유효한 시간(초)입니다.</translation>
+<translation id="8839799083601163225">정책은 네트워크 서비스 프로세스가 샌드박스 처리되어 실행되는지 여부를 제어합니다.
+      정책이 사용 설정되면 샌드박스 처리된 네트워크 서비스 프로세스가 실행됩니다.
+      정책을 사용 중지하면 샌드박스 처리되지 않은 네트워크 서비스 프로세스가 실행됩니다. 이 경우 사용자가 샌드박스 처리되지 않은 네트워크 서비스 실행과 관련된 추가 보안 위험에 노출될 수 있습니다.
+      정책을 설정하지 않으면 네트워크 샌드박스의 기본 구성이 사용됩니다. 이는 <ph name="PRODUCT_NAME" /> 버전, 현재 실행 중인 필드 체험판, 플랫폼에 따라 다를 수 있습니다.
+      정책은 기업이 네트워크 서비스 샌드박스를 방해하는 타사 소프트웨어를 사용하는 경우 필요에 따라 기업에서 네트워크 샌드박스를 사용 중지할 수 있도록 만들어졌습니다.</translation>
 <translation id="8842208363354615697">HTTPS 전용 모드가 사용 설정되도록 허용</translation>
 <translation id="885147810817138322">사용자에게 미디어 추천 표시</translation>
 <translation id="8852579753940989645">렌더러 코드 무결성 사용</translation>

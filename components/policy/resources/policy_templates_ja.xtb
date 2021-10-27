@@ -992,6 +992,7 @@
 <translation id="2204379573346866896">現在時刻での経過時間（分）です。</translation>
 <translation id="2204753382813641270">シェルフの自動非表示を指定する</translation>
 <translation id="2208976000652006649">POST を使用する検索 URL のパラメータ</translation>
+<translation id="2212603374276864511">事前設定のデスク テンプレートの使用をユーザーに許可する</translation>
 <translation id="2213059592185933570">ローミング プロファイルの作成を有効にする</translation>
 <translation id="2215238871726750562">このポリシーを True に設定した場合、セッションの開始時にブラウザ ウィンドウが起動しなくなります。このポリシーを False にするか未設定のままにすれば、ウィンドウが起動します。注: 他のポリシーやコマンドライン フラグの設定によっては、ブラウザ ウィンドウが起動しない場合もあります。</translation>
 <translation id="2215471798823435557">このポリシーを設定すると、企業で管理する <ph name="PRODUCT_OS_NAME" /> デバイスへの適用を許可するバリエーションを指定できます。
@@ -1902,6 +1903,7 @@
         * 4: <ph name="TPM_FIRMWARE_UPDATE_TPM" /> ファームウェアの更新は、登録後、ユーザーがログインする前に行われます。
 
       このポリシーを未設定のままにした場合、<ph name="TPM_FIRMWARE_UPDATE_TPM" /> ファームウェアの更新は行われません。</translation>
+<translation id="3232563711929146405">ネットワーク サービスのサンドボックスを無効にする</translation>
 <translation id="3232691106293445015">保護されていない HTTP 接続で <ph name="BASIC_AUTH" /> 認証の使用を禁止し、HTTPS を必須とする</translation>
 <translation id="3235085623859932253"> このポリシーを無効にした場合、ユーザーは PCIe トンネリング経由で Thunderbolt/USB4 周辺機器を完全に接続することができません。
 
@@ -2024,6 +2026,7 @@
       このポリシーを未設定のままにした場合、タイムアウトは 0 ミリ秒に設定されます。
 
       <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" /> ポリシーが設定されていない場合、このポリシーは無視されます。</translation>
+<translation id="3399859571630358395">ファスト ペアリング（ファスト Bluetooth ペアリング）を強制的に無効にする。</translation>
 <translation id="341285788698114069">このポリシーでは、Windows での音声処理の優先度を制御できます。
       このポリシーを有効に設定した場合、音声処理は通常より高い優先度で実行されます。
       このポリシーを無効に設定した場合、音声処理は通常の優先度で実行されます。
@@ -2140,6 +2143,7 @@
 
       有効な URL パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。</translation>
 <translation id="3540935459049973317">アプリごとの時間制限</translation>
+<translation id="354592434146464541">事前設定のデスク テンプレートの使用をユーザーに許可しない</translation>
 <translation id="3547954654003013442">プロキシ設定</translation>
 <translation id="3550122827225052130">このポリシーはサポートが終了しており、<ph name="PRODUCT_OS_NAME" /> バージョン 85 で削除されます。代わりに <ph name="SCREEN_LOCK_DELAYS_POLICY_NAME" /> を使用してください。
 
@@ -2886,6 +2890,7 @@
 <translation id="4557134566541205630">デフォルトの検索プロバイダの新しいタブ ページ URL</translation>
 <translation id="4558166110367609724">利用規約を自動的にスキップし、ブラウザを読み込みます。</translation>
 <translation id="4559846397119102037"><ph name="LACROS_NAME" /> の使用を許可する</translation>
+<translation id="4561560385824323005">読み込む事前設定のパソコン用レイアウトの選択をユーザーに許可する</translation>
 <translation id="4562165737444703281">Crostini ポート転送の [有効化 / 設定] をユーザーに許可する</translation>
 <translation id="456686782928669977">このポリシーでは、<ph name="IE_PRODUCT_NAME" /> のサイトリスト ポリシーからルールを読み込むかどうかを管理します。
 
@@ -3220,6 +3225,7 @@
 <translation id="4997074784107449343">「画像として印刷する」オプションが使用可能な場合、「画像として印刷する」オプションは PDF ドキュメントの印刷プレビューでデフォルトで設定されません。</translation>
 <translation id="500149597848135831">すべてのバリエーションを有効にします</translation>
 <translation id="5017369989680827157">このポリシーを True に設定するか未設定のままにした場合、ユーザーは UI で住所の自動入力を制御できます。このポリシーを False に設定した場合、住所情報が候補として表示されたり、自動入力されたりすることはありません。また、ユーザーがウェブの利用中に送信した住所情報が追加で保存されることもありません。</translation>
+<translation id="5017691827598069017">ファスト ペアリング（ファスト Bluetooth ペアリング）を有効にする</translation>
 <translation id="5021550478471824215">このポリシーでは、事前設定のネットワーク ファイル共有のリストを指定できます。個々の項目は、<ph name="SHARE_URL_FIELD_NAME" /> と <ph name="MODE_FIELD_NAME" /> の 2 つのプロパティで構成されるオブジェクトとなります。
 
       <ph name="SHARE_URL_FIELD_NAME" /> には共有 URL を指定します。
@@ -3327,6 +3333,7 @@
       有効な <ph name="URL_LABEL" /> パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。このポリシーの値に「<ph name="WILDCARD_VALUE" />」は使用できません。</translation>
 <translation id="5177260184597743704">OnSecurityEvent Chrome Enterprise コネクタの設定ポリシー</translation>
 <translation id="5178479074002209469">このポリシーによりアップデートが必須となっている場合に、管理対象外のユーザー セッションで通知を表示してログアウトするかどうかを示すブール値のフラグです。</translation>
+<translation id="5179853299156742425">デスク テンプレートをダウンロードすることのできる URL です。</translation>
 <translation id="5182055907976889880"><ph name="PRODUCT_OS_NAME" /> で Google ドライブを設定します</translation>
 <translation id="5182483318861266793">シェルフを画面の右側に配置する</translation>
 <translation id="51859390023061147">完全復元機能を無効にする</translation>
@@ -3378,6 +3385,7 @@
       このポリシーを未設定のままにした場合や無効な場合、「ターゲット チャンネルがチャンネル ダウングレードの対象になるまで待機する」と同じ動作になります。</translation>
 <translation id="5229339291699779956">Thunderbolt / USB4 周辺機器の PCIe トンネリングを有効にする（周辺機器の機能は制限されません）</translation>
 <translation id="523505283826916779">ユーザー補助機能の設定</translation>
+<translation id="5238976843489093540">ファスト ペアリング（ファスト Bluetooth ペアリング）を強制的に有効にする。</translation>
 <translation id="52393120393725840">このポリシーを有効に設定した場合、ユーザーは <ph name="PRODUCT_NAME" /> でパスワードを保存して、次回サイトにログインする際に提示するように設定できます。
 
       このポリシーを無効に設定した場合、ユーザーは新しいパスワードを保存できなくなりますが、以前に保存したパスワードは引き続き使用できます。
@@ -3708,6 +3716,8 @@
 <translation id="5625771176514429288">指定プラットフォームで Chrome アプリを実行できる。</translation>
 <translation id="5630352020869108293">最後のセッションを復元する</translation>
 <translation id="5633871703004128675">「テキストカーソルによるハイライト表示」のユーザー補助機能を有効にする</translation>
+<translation id="5639454129004500060">設定した場合、このポリシーによって、デスク テンプレート ファイルをダウンロードするための情報が含められます。このファイルには、現在のユーザーにプロビジョニングするデスク テンプレートが含まれます。
+      未設定の場合、デスク テンプレートのリストに事前設定のデスク テンプレートは含められません。<ph name="DESK_TEMPLATES_ENABLED_POLICY_NAME" /> ポリシーが true に設定されていない場合、このポリシーは無視されます。</translation>
 <translation id="5641279111657132737">このポリシーはサポートが終了しています。代わりに <ph name="AUTH_SERVER_ALLOWLIST_POLICY_NAME" /> ポリシーを使用してください。
 
       このポリシーでは、統合認証を許可するサーバーを指定できます。統合認証は、<ph name="PRODUCT_NAME" /> がこの許可されたリストに含まれているプロキシやサーバーから認証チャレンジを取得するときにのみ有効になります。
@@ -3867,6 +3877,7 @@
 <translation id="5809728392451418079">デバイスのローカル アカウントの表示名を設定する</translation>
 <translation id="5814301096961727113">ログイン画面での音声フィードバックのデフォルト状態を設定する</translation>
 <translation id="5815129011704381141">更新後に自動再起動</translation>
+<translation id="5816106589769772877">このポリシーを有効にした場合、ユーザーは事前設定のパソコン用レイアウト テンプレートを使用できます。このポリシーを無効に設定するか未設定のままにした場合、これらのテンプレートは使用できません。</translation>
 <translation id="582857022372205358">短辺とじの両面印刷を有効にする</translation>
 <translation id="5830196507442186669">デバイスに対して <ph name="PRODUCT_OS_NAME" /> での <ph name="BOREALIS_NAME" /> の使用を許可する</translation>
 <translation id="5832274826894536455">非推奨ポリシー</translation>
@@ -4117,6 +4128,7 @@
       このポリシーを未設定のままにした場合、ユーザーはこの機能をオンまたはオフに指定できます。</translation>
 <translation id="6174065452773547810">このポリシーを有効に設定するか未設定のままにした場合、デバイスで詳細なレポート コントロールを受けることができます。このポリシーを無効に設定した場合、登録済みデバイスは詳細なレポート コントロールを受けません。</translation>
 <translation id="6178075938488052838">このポリシーでは、<ph name="PRODUCT_OS_NAME" /> セッションを開始できるユーザーを管理します。このポリシーを設定しても、ユーザーが Android で他の Google アカウントにログインすることを防ぐことはできません。ログインを防ぐには、<ph name="ARC_POLICY_POLICY_NAME" /> の一部として Android 用の <ph name="ACCOUNT_TYPES_WITH_MANAGEMENT_DISABLED_CLOUDDPC_POLICY_NAME" /> ポリシーを設定してください。</translation>
+<translation id="6181304954168534748">デスク テンプレートの SHA-256 ハッシュです。</translation>
 <translation id="6181618732396778048">どのサイトにもファイルとディレクトリへの書き込みアクセスの要求を許可しない</translation>
 <translation id="6181783961196084973">アプリのアクティビティを収集するかどうかの切り替え値です。true に設定した場合、ユーザーによるアプリのアクティビティ レポートがサーバーに送信され、お子様と保護者の <ph name="PRODUCT_NAME" /> アプリに表示されます。false に設定した場合、アプリごとの利用時間の上限は引き続き有効ですが、レポートデータはサーバーに送信されず、<ph name="PRODUCT_NAME" /> にも表示されません。</translation>
 <translation id="6183327369896253878">このポリシーを設定した場合、<ph name="PRODUCT_OS_NAME" /> でランチャーバーに表示されるアプリケーション ID が固定され、ユーザーが変更できなくなります。Chrome アプリの場合は ID（「pjkljhegncpnkpknbcohdijeoejaedia」など）、Android アプリの場合はパッケージ名（「com.google.android.gm」など）、ウェブアプリの場合は <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> で使用する URL（「https://google.com/maps」など）を指定します。このポリシーが未設定の場合、ユーザーはランチャーの固定アプリのリストを変更できます。</translation>
@@ -5654,6 +5666,10 @@
 <translation id="8101381354936029836">ポリシーの最小単位グループ:</translation>
 <translation id="8102913158860568230">デフォルトのメディアストリームの設定</translation>
 <translation id="8104962233214241919">これらのサイトのクライアント証明書を自動的に選択する</translation>
+<translation id="8111502498815410897">このポリシーでは、ファスト ペアリングを強制的に有効または無効にできます。
+      ファスト ペアリングは、ペア設定済みの周辺機器と GAIA アカウントをリンクする新しい Bluetooth ペア設定フローです。
+      これにより、同じ GAIA アカウントでログインしている他の Chrome OS（および Android）デバイスを自動的にペア設定できるようになります。
+      未設定の場合、ファスト ペアリングは Chrome OS のデフォルトである有効に設定されます。</translation>
 <translation id="8114382167597081590">YouTube で制限モードを強制適用しない</translation>
 <translation id="8117921351531866504">保存されているお支払い方法の確認をウェブサイトに許可するかどうかを設定します。
 
@@ -5763,6 +5779,7 @@
       このポリシーが設定されていない場合、<ph name="PRODUCT_OS_NAME" /> はログイン画面での表示名としてデバイスのローカル アカウントのメール アカウント ID を使用します。
 
       このポリシーは、通常のユーザー アカウントでは無視されます。</translation>
+<translation id="8257863622304579015">ネットワーク サービスのサンドボックスを有効にする</translation>
 <translation id="8259375588339409826">Chromium と Google Chrome では、同じ一連のポリシーがサポートされます。このドキュメントには、リリース前のポリシー（「サポート対象」項目が <ph name="PRODUCT_NAME" /> のリリース前のバージョンであるポリシー）が含まれている可能性があります。そうしたポリシーは事前の通知なく変更または削除されることがあり、そうしたポリシーについて一切の保証（ポリシーのセキュリティやプライバシー面の性質に関する保証など）は行われません。
 
 これらのポリシーの使用目的は、組織内部の <ph name="PRODUCT_NAME" /> インスタンスの設定のみに限定されています。これらのポリシーを組織外部（一般に配布されるプログラムなど）で使用すると、不正なソフトウェアと見なされ、Google およびウィルス対策ベンダーによって不正なソフトウェアとラベル付けされる可能性があります。
@@ -6266,6 +6283,11 @@
 
       このポリシーを未設定のままにすると、プラットフォーム固有のデフォルトが使用されます。すなわち、<ph name="MS_WIN_NAME" /> の場合は <ph name="IE_PRODUCT_NAME" />、<ph name="MAC_OS_NAME" /> の場合は <ph name="SAFARI_PRODUCT_NAME" /> が使用されます。<ph name="LINUX_OS_NAME" /> では、代替ブラウザの起動は失敗します。</translation>
 <translation id="8836975838488342340">アクセスコードが有効な時間（秒）です。</translation>
+<translation id="8839799083601163225">このポリシーでは、ネットワーク サービス処理をサンドボックス化して実行するかどうかを管理します。
+      このポリシーを有効に設定した場合、ネットワーク サービス処理はサンドボックス化されます。
+      このポリシーを無効に設定した場合、ネットワーク サービス処理はサンドボックス化されません。この場合、サンドボックス化されていないネットワーク サービスを実行することによるセキュリティ上のリスクが発生します。
+      このポリシーを設定しない場合は、ネットワークのサンドボックス化に関するデフォルトの設定が使用されます。デフォルトの設定は、<ph name="PRODUCT_NAME" /> のリリース（現在フィールド テストを実施中）およびプラットフォームごとに異なる場合があります。
+      このポリシーは、企業でネットワーク サービスのサンドボックス化の妨げとなるサードパーティ ソフトウェアを使用している場合に、ネットワークのサンドボックス化を無効にできるようにするためのものです。</translation>
 <translation id="8842208363354615697">HTTPS 専用モードの有効化を許可する</translation>
 <translation id="885147810817138322">おすすめメディアをユーザーに表示する</translation>
 <translation id="8852579753940989645">レンダラコードの整合性チェックを有効にする</translation>

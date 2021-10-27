@@ -43,6 +43,7 @@
 <translation id="2577788541081224677">お使いのすべてのデバイスで Chromium の設定やデータを使用するには、ログインしてください。ログインすると同期を有効にできます。</translation>
 <translation id="2583187216237139145">このプロファイルの使用中に生成された Chromium データ（ブックマーク、履歴、パスワード、他の設定など）は、仕事用プロファイルの管理者によって削除される場合があります。<ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">アップデートを適用するには Chromium OS を再起動する必要があります。</translation>
+<translation id="2614883797045469742">ほとんどの場合はデフォルトの設定を使用できますが、Chromium の用途に合わせてカスタマイズすることも可能です</translation>
 <translation id="2648074677641340862">インストール中にオペレーティング システム エラーが発生しました。Chromium をダウンロードし直してください。</translation>
 <translation id="2661879430930417727">デバイスを共有している場合でも、友だちや家族はそれぞれ Chromium を自分専用のブラウザとして自分用の設定をして使うことができます</translation>
 <translation id="2711502716910134313">Chromium タブ</translation>
@@ -207,6 +208,7 @@
 <translation id="6990124437352146030">このサイトを利用するには、Chromium でマイクの使用を許可する必要があります</translation>
 <translation id="705851970750939768">Chromium を更新</translation>
 <translation id="7067091210845072982">画像に有効な説明が設定されていない場合に、Chromium で説明を自動的に生成できるよう Google に画像が送信されます。</translation>
+<translation id="7147279922647361552">Chromium の最も重要なプライバシー設定をカスタマイズできます</translation>
 <translation id="718435575166326686">このサイトを利用するには、Chromium でカメラの使用を許可する必要があります</translation>
 <translation id="7196312274710523067">Chromium を起動できませんでした。もう一度お試しください。</translation>
 <translation id="7197677400338048821">Chromium でパスワードを確認できません。24 時間後にもう一度お試しください。</translation>
