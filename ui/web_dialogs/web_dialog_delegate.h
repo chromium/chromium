@@ -149,9 +149,14 @@ class WEB_DIALOGS_EXPORT WebDialogDelegate {
 
   // A callback to allow the delegate to inhibit context menu or show
   // customized menu.
+  //
+  // The `render_frame_host` represents the frame that requests the context menu
+  // (typically this frame is focused, but this is not necessarily the case -
+  // see https://crbug.com/1257907#c14).
+  //
   // Returns true iff you do NOT want the standard context menu to be
   // shown (because you want to handle it yourself).
-  virtual bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
+  virtual bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                                  const content::ContextMenuParams& params);
 
   // A callback to allow the delegate to open a new URL inside |source|.

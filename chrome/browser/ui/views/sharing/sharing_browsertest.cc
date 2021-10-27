@@ -177,7 +177,7 @@ std::unique_ptr<TestRenderViewContextMenu> SharingBrowserTest::InitContextMenu(
   params.writing_direction_right_to_left = 0;
 #endif
   auto menu = std::make_unique<TestRenderViewContextMenu>(
-      web_contents_->GetMainFrame(), params);
+      *web_contents_->GetMainFrame(), params);
   menu->Init();
   return menu;
 }

@@ -30,7 +30,8 @@ class ChromeWebViewGuestDelegate : public WebViewGuestDelegate {
   ~ChromeWebViewGuestDelegate() override;
 
   // WebViewGuestDelegate implementation.
-  bool HandleContextMenu(const content::ContextMenuParams& params) override;
+  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
+                         const content::ContextMenuParams& params) override;
   void OnShowContextMenu(int request_id) override;
 
   WebViewGuest* web_view_guest() const { return web_view_guest_; }

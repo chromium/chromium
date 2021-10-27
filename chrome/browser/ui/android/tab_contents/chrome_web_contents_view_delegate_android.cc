@@ -27,7 +27,7 @@ ChromeWebContentsViewDelegateAndroid::GetDragDestDelegate() {
 }
 
 void ChromeWebContentsViewDelegateAndroid::ShowContextMenu(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
   // TODO(dtrainor, kouhei): Give WebView a Populator/delegate so it can use
   // the same context menu code.

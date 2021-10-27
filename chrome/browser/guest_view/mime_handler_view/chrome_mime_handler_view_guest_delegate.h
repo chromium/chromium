@@ -8,11 +8,6 @@
 #include "base/macros.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest_delegate.h"
 
-namespace content {
-class WebContents;
-struct ContextMenuParams;
-}  // namespace content
-
 namespace extensions {
 
 class ChromeMimeHandlerViewGuestDelegate : public MimeHandlerViewGuestDelegate {
@@ -27,7 +22,7 @@ class ChromeMimeHandlerViewGuestDelegate : public MimeHandlerViewGuestDelegate {
   ~ChromeMimeHandlerViewGuestDelegate() override;
 
   // MimeHandlerViewGuestDelegate.
-  bool HandleContextMenu(content::WebContents* web_contents,
+  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) override;
   void RecordLoadMetric(bool in_main_frame,
                         const std::string& mime_type) override;

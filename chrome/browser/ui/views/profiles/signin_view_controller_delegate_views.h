@@ -85,7 +85,7 @@ class SigninViewControllerDelegateViews
   void SetWebContents(content::WebContents* web_contents) override;
 
   // content::WebContentsDelegate:
-  bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
+  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) override;
   bool HandleKeyboardEvent(
       content::WebContents* source,

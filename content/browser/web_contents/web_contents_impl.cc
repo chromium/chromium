@@ -6601,7 +6601,7 @@ void WebContentsImpl::RenderFrameDeleted(
 }
 
 void WebContentsImpl::ShowContextMenu(
-    RenderFrameHost* render_frame_host,
+    RenderFrameHost& render_frame_host,
     mojo::PendingAssociatedRemote<blink::mojom::ContextMenuClient>
         context_menu_client,
     const ContextMenuParams& params) {

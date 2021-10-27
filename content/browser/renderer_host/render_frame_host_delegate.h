@@ -177,7 +177,7 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // A context menu should be shown, to be built using the context information
   // provided in the supplied params.
   virtual void ShowContextMenu(
-      RenderFrameHost* render_frame_host,
+      RenderFrameHost& render_frame_host,
       mojo::PendingAssociatedRemote<blink::mojom::ContextMenuClient>
           context_menu_client,
       const ContextMenuParams& params) {}

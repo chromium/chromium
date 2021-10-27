@@ -45,14 +45,15 @@ class ChromeWebContentsViewDelegateViews
   void ResetStoredFocus() override;
   bool Focus() override;
   bool TakeFocus(bool reverse) override;
-  void ShowContextMenu(content::RenderFrameHost* render_frame_host,
+  void ShowContextMenu(content::RenderFrameHost& render_frame_host,
                        const content::ContextMenuParams& params) override;
+  void ExecuteCommandForTesting(int command_id, int event_flags) override;
   void OnPerformDrop(const content::DropData& drop_data,
                      DropCompletionCallback callback) override;
 
   // Overridden from ContextMenuDelegate.
   std::unique_ptr<RenderViewContextMenuBase> BuildMenu(
-      content::WebContents* web_contents,
+      content::RenderFrameHost& render_frame_host,
       const content::ContextMenuParams& params) override;
   void ShowMenu(std::unique_ptr<RenderViewContextMenuBase> menu) override;
 

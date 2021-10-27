@@ -264,8 +264,14 @@ class CONTENT_EXPORT WebContentsDelegate {
                            const std::string& request_method,
                            base::OnceCallback<void(bool)> callback);
 
+  // Asks the delegate to open/show the context menu based on `params`.
+  //
+  // The `render_frame_host` represents the frame that requests the context menu
+  // (typically this frame is focused, but this is not necessarily the case -
+  // see https://crbug.com/1257907#c14).
+  //
   // Returns true if the context menu operation was handled by the delegate.
-  virtual bool HandleContextMenu(RenderFrameHost* render_frame_host,
+  virtual bool HandleContextMenu(RenderFrameHost& render_frame_host,
                                  const ContextMenuParams& params);
 
   // Allows delegates to handle keyboard events before sending to the renderer.

@@ -654,7 +654,7 @@ void RenderViewContextMenu::AddSpellCheckServiceItem(ui::SimpleMenuModel* menu,
 }
 
 RenderViewContextMenu::RenderViewContextMenu(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params)
     : RenderViewContextMenuBase(render_frame_host, params),
       extension_items_(browser_context_,

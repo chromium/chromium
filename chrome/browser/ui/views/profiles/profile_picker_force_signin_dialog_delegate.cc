@@ -68,7 +68,7 @@ void ProfilePickerForceSigninDialogDelegate::DisplayErrorMessage() {
 }
 
 bool ProfilePickerForceSigninDialogDelegate::HandleContextMenu(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
   // Prevents the context menu from being shown. While the signin page could do
   // this just with JS, there could be a brief moment before a context menu

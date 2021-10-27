@@ -93,7 +93,7 @@ class RenderViewContextMenu : public RenderViewContextMenuBase,
       base::OnceCallback<void(content::RenderFrameHost*,
                               blink::mojom::PluginActionType)>;
 
-  RenderViewContextMenu(content::RenderFrameHost* render_frame_host,
+  RenderViewContextMenu(content::RenderFrameHost& render_frame_host,
                         const content::ContextMenuParams& params);
 
   RenderViewContextMenu(const RenderViewContextMenu&) = delete;

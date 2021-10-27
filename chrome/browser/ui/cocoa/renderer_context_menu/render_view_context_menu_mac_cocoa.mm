@@ -187,7 +187,7 @@ class ToolkitDelegateMacCocoa : public RenderViewContextMenu::ToolkitDelegate {
 // Obj-C bridge class that is the target of all items in the context menu.
 // Relies on the tag being set to the command id.
 RenderViewContextMenuMacCocoa::RenderViewContextMenuMacCocoa(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params,
     NSView* parent_view)
     : RenderViewContextMenuMac(render_frame_host, params),

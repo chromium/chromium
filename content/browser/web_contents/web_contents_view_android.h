@@ -84,7 +84,7 @@ class WebContentsViewAndroid : public WebContentsView,
   void SetOverscrollControllerEnabled(bool enabled) override;
 
   // Backend implementation of RenderViewHostDelegateView.
-  void ShowContextMenu(RenderFrameHost* render_frame_host,
+  void ShowContextMenu(RenderFrameHost& render_frame_host,
                        const ContextMenuParams& params) override;
   void ShowPopupMenu(
       RenderFrameHost* render_frame_host,

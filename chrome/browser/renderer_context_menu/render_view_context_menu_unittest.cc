@@ -112,7 +112,7 @@ std::unique_ptr<TestRenderViewContextMenu> CreateContextMenu(
   content::ContextMenuParams params = CreateParams(MenuItem::LINK);
   params.unfiltered_link_url = params.link_url;
   auto menu = std::make_unique<TestRenderViewContextMenu>(
-      web_contents->GetMainFrame(), params);
+      *web_contents->GetMainFrame(), params);
   menu->set_protocol_handler_registry(registry);
   menu->Init();
   return menu;
@@ -467,7 +467,7 @@ class RenderViewContextMenuPrefsTest : public ChromeRenderViewHostTestHarness {
     params.unfiltered_link_url = params.link_url =
         GURL(chrome::kChromeUISettingsURL);
     auto menu = std::make_unique<TestRenderViewContextMenu>(
-        web_contents()->GetMainFrame(), params);
+        *web_contents()->GetMainFrame(), params);
     menu->set_protocol_handler_registry(registry_.get());
     menu->Init();
     return menu;
@@ -525,7 +525,7 @@ TEST_F(RenderViewContextMenuPrefsTest,
   content::ContextMenuParams params = CreateParams(MenuItem::SELECTION);
   params.page_url = GURL("http://www.foo.com/");
   auto menu = std::make_unique<TestRenderViewContextMenu>(
-      web_contents()->GetMainFrame(), params);
+      *web_contents()->GetMainFrame(), params);
   menu->set_dlp_rules_manager(nullptr);
   menu->set_selection_navigation_url(GURL("http://www.bar.com/"));
 
@@ -585,7 +585,7 @@ TEST_F(RenderViewContextMenuPrefsTest, DataSaverDisabledSaveImageAs) {
   content::ContextMenuParams params = CreateParams(MenuItem::IMAGE);
   params.unfiltered_link_url = params.link_url;
   auto menu = std::make_unique<TestRenderViewContextMenu>(
-      web_contents()->GetMainFrame(), params);
+      *web_contents()->GetMainFrame(), params);
 
   menu->ExecuteCommand(IDC_CONTENT_CONTEXT_SAVEIMAGEAS, 0);
 
@@ -602,7 +602,7 @@ TEST_F(RenderViewContextMenuPrefsTest, LoadBrokenImage) {
   params.unfiltered_link_url = params.link_url;
   params.has_image_contents = false;
   auto menu = std::make_unique<TestRenderViewContextMenu>(
-      web_contents()->GetMainFrame(), params);
+      *web_contents()->GetMainFrame(), params);
   AppendImageItems(menu.get());
 
   ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_LOAD_IMAGE));
@@ -615,7 +615,7 @@ TEST_F(RenderViewContextMenuPrefsTest, SaveMediaSuggestedFileName) {
   content::ContextMenuParams params = CreateParams(MenuItem::VIDEO);
   params.suggested_filename = kTestSuggestedFileName;
   auto menu = std::make_unique<TestRenderViewContextMenu>(
-      web_contents()->GetMainFrame(), params);
+      *web_contents()->GetMainFrame(), params);
   menu->ExecuteCommand(IDC_CONTENT_CONTEXT_SAVEAVAS, 0 /* event_flags */);
 
   // Video item should have suggested file name.
@@ -626,7 +626,7 @@ TEST_F(RenderViewContextMenuPrefsTest, SaveMediaSuggestedFileName) {
   params = CreateParams(MenuItem::AUDIO);
   params.suggested_filename = kTestSuggestedFileName;
   menu = std::make_unique<TestRenderViewContextMenu>(
-      web_contents()->GetMainFrame(), params);
+      *web_contents()->GetMainFrame(), params);
   menu->ExecuteCommand(IDC_CONTENT_CONTEXT_SAVEAVAS, 0 /* event_flags */);
 
   // Audio item should have suggested file name.
@@ -640,7 +640,7 @@ TEST_F(RenderViewContextMenuPrefsTest, SaveMediaSuggestedFileName) {
 TEST_F(RenderViewContextMenuPrefsTest, OpenLinkNavigationParamsSet) {
   TestNavigationDelegate delegate;
   web_contents()->SetDelegate(&delegate);
-  content::RenderFrameHost* main_frame = web_contents()->GetMainFrame();
+  content::RenderFrameHost& main_frame = *web_contents()->GetMainFrame();
 
   content::ContextMenuParams params = CreateParams(MenuItem::LINK);
   params.unfiltered_link_url = params.link_url;
@@ -652,9 +652,9 @@ TEST_F(RenderViewContextMenuPrefsTest, OpenLinkNavigationParamsSet) {
 
   // Verify that the ContextMenu source frame is set as the navigation
   // initiator.
-  EXPECT_EQ(main_frame->GetFrameToken(),
+  EXPECT_EQ(main_frame.GetFrameToken(),
             delegate.last_navigation_params()->initiator_frame_token);
-  EXPECT_EQ(main_frame->GetProcess()->GetID(),
+  EXPECT_EQ(main_frame.GetProcess()->GetID(),
             delegate.last_navigation_params()->initiator_process_id);
 
   // Verify that the impression is attached to the navigation.
@@ -665,7 +665,7 @@ TEST_F(RenderViewContextMenuPrefsTest, OpenLinkNavigationParamsSet) {
 TEST_F(RenderViewContextMenuPrefsTest, OpenLinkNavigationInitiatorSet) {
   TestNavigationDelegate delegate;
   web_contents()->SetDelegate(&delegate);
-  content::RenderFrameHost* main_frame = web_contents()->GetMainFrame();
+  content::RenderFrameHost& main_frame = *web_contents()->GetMainFrame();
 
   content::ContextMenuParams params = CreateParams(MenuItem::LINK);
   params.unfiltered_link_url = params.link_url;
@@ -692,7 +692,7 @@ TEST_F(RenderViewContextMenuPrefsTest, ShowAllPasswords) {
   params.input_field_type =
       blink::mojom::ContextMenuDataInputFieldType::kPassword;
   auto menu = std::make_unique<TestRenderViewContextMenu>(
-      web_contents()->GetMainFrame(), params);
+      *web_contents()->GetMainFrame(), params);
   menu->Init();
 
   EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SHOWALLSAVEDPASSWORDS));
@@ -715,7 +715,7 @@ TEST_F(RenderViewContextMenuPrefsTest, ShowAllPasswordsIncognito) {
   params.input_field_type =
       blink::mojom::ContextMenuDataInputFieldType::kPassword;
   auto menu = std::make_unique<TestRenderViewContextMenu>(
-      incognito_web_contents->GetMainFrame(), params);
+      *incognito_web_contents->GetMainFrame(), params);
   menu->Init();
 
   EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SHOWALLSAVEDPASSWORDS));
