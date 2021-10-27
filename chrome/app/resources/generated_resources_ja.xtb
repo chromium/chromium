@@ -714,7 +714,6 @@
 <translation id="1722460139690167654">ご使用の <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> は <ph name="ENROLLMENT_DOMAIN" /> によって管理されています<ph name="END_LINK" /></translation>
 <translation id="1723824996674794290">新しいウィンドウ(&amp;N)</translation>
 <translation id="1725562816265788801">タブスクロール</translation>
-<translation id="1727662110063605623">[設定] を開いて <ph name="USB_DEVICE_NAME" /> を Parallels Desktop または Linux に接続します</translation>
 <translation id="1729533290416704613">この拡張機能では、アドレスバーからの検索時に表示されるページも制御されます。</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />アプリを削除するには、まず [設定] &gt; [Google Play ストア] &gt; [Android 設定を管理] &gt; [アプリ] または [アプリケーション管理] に移動して、アンインストールするアプリをタップします（必要であれば左右にスワイプしてアプリを見つけます）。次に、[アンインストール] または [無効にする] をタップします。<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1731911755844941020">リクエストを送信しています...</translation>

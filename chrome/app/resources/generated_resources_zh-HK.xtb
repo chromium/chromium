@@ -724,7 +724,6 @@
 <translation id="1722460139690167654">您的 <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> 由 <ph name="END_LINK" /><ph name="ENROLLMENT_DOMAIN" /> 管理</translation>
 <translation id="1723824996674794290">新視窗(&amp;N)</translation>
 <translation id="1725562816265788801">分頁捲動</translation>
-<translation id="1727662110063605623">開啟「設定」以便將 <ph name="USB_DEVICE_NAME" /> 連線至 Parallels Desktop 或 Linux</translation>
 <translation id="1729533290416704613">這個擴充功能也會控管您使用網址列搜尋時所顯示的網頁。</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />如要移除應用程式，請前往「設定」&gt;「Google Play 商店」&gt;「管理 Android 偏好設定」&gt;「應用程式」或「應用程式管理員」，然後輕按您想解除安裝的應用程式 (您可能需要向右或向左滑動，才能找到應用程式)，再輕按 [解除安裝] 或 [停用]。<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1731911755844941020">正在傳送要求…</translation>

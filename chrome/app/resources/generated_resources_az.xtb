@@ -710,7 +710,6 @@
 <translation id="1722460139690167654"><ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> cihazını idarə edir<ph name="END_LINK" />: <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">&amp;Yeni pəncərə</translation>
 <translation id="1725562816265788801">Tab Sürüşdürülməsi</translation>
-<translation id="1727662110063605623"><ph name="USB_DEVICE_NAME" /> cihazını Parallels Desktop və ya Linux'a qoşmaq üçün Parametrləri açın</translation>
 <translation id="1729533290416704613">Həmçinin Omnibox'dan axtarış etdiyiniz zaman göstərilən səhifəyə nəzarət edir.</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />Tətbiqləri silmək üçün Ayarlar &gt; Google Play Market &gt; Android tərcihlərini idarə edin &gt; Tətbiqlər və ya Tətbiq meneceri bölməsinə daxil olun. Sonra sistemdən silmək istədiyiniz tətbiqə klikləyin (tətbiqi tapmaq üçün sağa və ya sola sürüşdürməlisiniz). Quraşdırmanı Ləğv Edin və ya Deaktiv Edin seçiminə klikləyin.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1731911755844941020">Sorğu göndərilir...</translation>
@@ -2073,6 +2072,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="310671807099593501">Sayt bluetooth istifadə edir</translation>
 <translation id="3108931485517391283">Qəbul etmək olmur</translation>
 <translation id="3109724472072898302">Yığcamlaşdı</translation>
+<translation id="311214366526552035">İstənilən halda endirin</translation>
 <translation id="311394601889664316">Saytlara cihazınızdakı faylları və ya qovluqları redaktə etmək icazəsi verməyin</translation>
 <translation id="3115147772012638511">Keş gözlənilir...</translation>
 <translation id="3115580024857770654">Hamısını yığcamlaşdırın</translation>
@@ -2354,6 +2354,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3429160811076349561">Sınaq funksiyaları deaktivdir</translation>
 <translation id="3429271624041785769">Veb məzmun dilləri</translation>
 <translation id="3429275422858276529">Səhifəni sonradan asanlıqla tapmaq üçün əlfəcin qoyun</translation>
+<translation id="343115368966109153"><ph name="FILE_NAME" /> endirilsin? Cihazı istifadə edən hər kəs bunu görə bilər.</translation>
 <translation id="3432227430032737297">Bütün Göstərilənləri Silin</translation>
 <translation id="3432762828853624962">Birgə İşləyənlər</translation>
 <translation id="3433621910545056227">Sistem cihaz quraşdırma vaxtının atribut kilidini yarada bilmədi.</translation>
@@ -2695,6 +2696,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3777806571986431400">Artırma Aktivdir</translation>
 <translation id="3778152852029592020">Endirmə ləğv edildi.</translation>
 <translation id="3778208826288864398">Həddindən çox yanlış PIN daxil edildiyinə görə güvənlik açarı kilidləndi. Güvənlik açarını sıfırlamalısınız.</translation>
+<translation id="3778369586810509692">Bu fayl cihazda saxlanılacaq və hər kəs onu görə biləcək.</translation>
 <translation id="3778740492972734840">&amp;Developer alətləri</translation>
 <translation id="3778868487658107119">Ona suallar verin və iş tapşırın. Bu Sizin şəxsi Google'dur, hər zaman kömək etməyə hazırdır.</translation>
 <translation id="3781742599892759500">Linux mikrofona girişi</translation>

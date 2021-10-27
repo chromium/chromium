@@ -715,7 +715,6 @@
 <translation id="1722460139690167654">Votre <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> est géré<ph name="END_LINK" /> par <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">&amp;Nouvelle fenêtre</translation>
 <translation id="1725562816265788801">Défilement des onglets</translation>
-<translation id="1727662110063605623">Ouvrir les paramètres pour connecter <ph name="USB_DEVICE_NAME" /> à Parallels Desktop ou à Linux</translation>
 <translation id="1729533290416704613">Elle contrôle également la page qui s'affiche lorsque vous effectuez une recherche dans l'omnibox.</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />Pour supprimer des applications, sélectionnez Paramètres &gt; Google Play Store &gt; Gérer les préférences Android &gt; Applications ou Gestionnaire d'applications, puis appuyez sur l'application que vous souhaitez désinstaller. Vous devrez peut-être balayer l'écran vers la gauche ou la droite pour localiser l'application. Ensuite, appuyez sur "Désinstaller" ou "Désactiver".<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1731911755844941020">Envoi de la requête...</translation>

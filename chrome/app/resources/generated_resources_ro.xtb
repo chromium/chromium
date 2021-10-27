@@ -715,7 +715,6 @@
 <translation id="1722460139690167654">Dispozitivul <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> este gestionat<ph name="END_LINK" /> de <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">&amp;Fereastră nouă</translation>
 <translation id="1725562816265788801">Derulare prin file</translation>
-<translation id="1727662110063605623">Deschide Setările pentru a conecta dispozitivul <ph name="USB_DEVICE_NAME" /> la Parallels Desktop sau la Linux</translation>
 <translation id="1729533290416704613">Stabilește și ce pagină se afișează când căutați din caseta polivalentă.</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />Pentru a elimina aplicații, accesează Setări &gt; Magazin Google Play &gt; Gestionează preferințele Android &gt; Aplicații sau Manager de aplicații. Apoi atinge aplicația pe care dorești să o dezinstalezi (poate fi necesar să glisezi la dreapta sau la stânga pentru a găsi aplicația). Apoi, atinge Dezinstalează sau Dezactivează.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1731911755844941020">Se trimite solicitarea...</translation>

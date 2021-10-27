@@ -14,9 +14,11 @@
 <translation id="1047773237499189053">नवीन वैशिष्ट्य उपलब्ध आहे, अधिक जाणून घेण्यासाठी अप अ‍ॅरो की वापरा.</translation>
 <translation id="1052916631016577720">आयटम स्कॅन</translation>
 <translation id="1056775291175587022">नेटवर्क नाहीत</translation>
+<translation id="1056898198331236512">चेतावणी</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">पुनर्स्थित करा</translation>
 <translation id="1073899992769346247">बॅटरी बदला किंवा रिचार्ज करा</translation>
+<translation id="1081015718268701546">Linux ॲप्सना सध्या सपोर्ट नाही. इतर ॲप्स सेव्ह केली जातील.</translation>
 <translation id="108486256082349153">सेल्युलर: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">शुभ दुपार <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">मला कंटाळा आला आहे</translation>
@@ -43,6 +45,7 @@
 <translation id="1225748608451425081">एका माहीत असलेल्या समस्येमुळे तुमचे Chromebook लॉक झाले आहे. तुम्हाला या वेळेनंतर साइन इन करता येईल: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">निवडणे थांबवा</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> शी कनेक्ट केले.</translation>
+<translation id="1246890715821376239">सपोर्ट नसलेली ॲप्स</translation>
 <translation id="1247372569136754018">मायक्रोफोन (अंतर्गत)</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> पासून चार्ज होत आहे</translation>
 <translation id="1255033239764210633">हवामान कसे आहे?</translation>
@@ -168,6 +171,7 @@
 <translation id="2148716181193084225">आज</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: पुन्हा प्रयत्न करा</translation>
 <translation id="2170530631236737939">अवलोकन मधून बाहेर पडण्यासाठी तीन बोटांनी खाली स्वाइप करा</translation>
+<translation id="2201071101391734388"><ph name="TOTAL_COUNT" /> पैकी <ph name="INDEX" /> अलीकडील फोटो.</translation>
 <translation id="2208323208084708176">एकीकृत डेस्कटॉप मोड</translation>
 <translation id="2220572644011485463">पिन किंवा पासवर्ड</translation>
 <translation id="2222841058024245321">डेस्‍क ७</translation>
@@ -247,6 +251,7 @@
 <translation id="2825619548187458965">शेल्फ</translation>
 <translation id="2841907151129139818">टॅबलेट मोडवर स्विच केले</translation>
 <translation id="2844169650293029770">USB-C डिव्‍हाइस (डाव्‍या बाजूचे पुढील पोर्ट)</translation>
+<translation id="2849936225196189499">गंभीर</translation>
 <translation id="2860184359326882502">सर्वोत्तम जुळणी</translation>
 <translation id="2865888419503095837">नेटवर्क माहिती</translation>
 <translation id="2872961005593481000">बंद करा</translation>
@@ -291,6 +296,7 @@
 <translation id="3151786313568798007">अभिमुखता</translation>
 <translation id="3153444934357957346">मल्टिपल साइन इन मध्ये तुमच्याकडे जास्तीत जास्त फक्त <ph name="MULTI_PROFILE_USER_LIMIT" /> खाती असू शकतात.</translation>
 <translation id="3154351730702813399">डिव्हाइस प्रशासक कदाचित आपल्या ब्राउझिंग क्रियाकलापाचे परीक्षण करू शकतो.</translation>
+<translation id="316086887565479535">टेंप्लेटमधील सपोर्ट करत नसलेली ॲप्स</translation>
 <translation id="3181441307743005334">रीस्टार्टला थोडा वेळ लागू शकतो</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{डिव्हाइसशी कनेक्ट केले}other{# डिव्हाइसशी कनेक्ट केले}}</translation>
 <translation id="320207200541803018">टायमर सेट करा</translation>
@@ -388,6 +394,7 @@
 <translation id="383058930331066723">बॅटरी सेव्हर मोड सुरू आहे</translation>
 <translation id="3835880383832568924">अपडेट पाहण्यासाठी, Shortcuts ॲप उघडा</translation>
 <translation id="383629559565718788">कीबोर्ड सेटिंग्ज दाखवा</translation>
+<translation id="384082539148746321">टेंप्लेट हटवायचे आहे का?</translation>
 <translation id="3846214748874656680">क्षेत्रेमधून बाहेर पडा</translation>
 <translation id="3846575436967432996">कोणतीही नेटवर्क माहिती उपलब्ध नाही</translation>
 <translation id="385051799172605136">मागील</translation>
@@ -822,6 +829,7 @@
 <translation id="7029814467594812963">सेशनमधून बाहेर पडा</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistant</translation>
 <translation id="7042322267639375032">स्थिती क्षेत्र कोलॅप्स करा</translation>
+<translation id="7045033600005038336">टेंप्लेट बदलायचे आहे का?</translation>
 <translation id="7045595904618419789">मॅग्निफायर सुरू करा</translation>
 <translation id="7055381872777910864">बु</translation>
 <translation id="7055910611768509537">एका आठवड्यापेक्षा जास्त वेळापासून स्टायलस वापरले नाही</translation>
@@ -958,6 +966,7 @@
 <translation id="8036504271468642248">मागील वाक्य</translation>
 <translation id="8042893070933512245">अ‍ॅक्सेसिबिलिटी सेटिंग्ज मेनू उघडा</translation>
 <translation id="8048123526339889627">ब्लूटूथ सेटिंग्ज</translation>
+<translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> नावाचे टेंप्लेट आधीपासून अस्तित्वात आहे</translation>
 <translation id="8052898407431791827">क्लिपबोर्डवर कॉपी केले</translation>
 <translation id="8054466585765276473">बॅटरी वेळ गणना करत आहे.</translation>
 <translation id="8061464966246066292">उच्च रंगभेद</translation>
@@ -1063,6 +1072,7 @@
 <translation id="8876661425082386199">तुमचे कनेक्शन तपासा</translation>
 <translation id="8877788021141246043">रिमाइंडर सेट करा</translation>
 <translation id="8878886163241303700">स्क्रीन विस्तृत करत आहे</translation>
+<translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> कायमचे हटवले जाईल</translation>
 <translation id="890616557918890486">स्रोत बदला</translation>
 <translation id="8909138438987180327">बॅटरी <ph name="PERCENTAGE" /> टक्के आहे.</translation>
 <translation id="8913384980486163186">थीम असलेले (डीफॉल्ट)</translation>

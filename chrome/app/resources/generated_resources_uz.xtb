@@ -712,7 +712,6 @@
 <translation id="1722460139690167654"><ph name="DEVICE_TYPE" /> qurilmangiz <ph name="ENROLLMENT_DOMAIN" /> <ph name="BEGIN_LINK" />domenida boshqariladi<ph name="END_LINK" /></translation>
 <translation id="1723824996674794290">&amp;Yangi oyna</translation>
 <translation id="1725562816265788801">Varaqni aylantirish</translation>
-<translation id="1727662110063605623"><ph name="USB_DEVICE_NAME" /> qurilmasini Parallels Desktopga ulash uchun Sozlamalarni oching</translation>
 <translation id="1729533290416704613">Bundan tashqari kengaytma Omniboksda so‘rovlar kiritishda foydalaniladigan birlamchi qidiruv tizimini o‘zgartirib qo‘ydi.</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />Ilovalarni olib tashlash uchun Sozlamalar &gt; Google Play Market &gt; Android sozlamalari boshqaruvi &gt; Ilovalar yoki Ilovalar menejeri menyusiga kiring. Kerakli ilovani tanlab (ilovani topish uchun ekranni oʻng yoki chapga suring), “Olib tashlash” yoki “Faolsizlantirish” parametrini bosing.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1731911755844941020">So‘rov yuborilmoqda...</translation>
@@ -2077,6 +2076,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="310671807099593501">Sayt Bluetooth aloqasidan foydalanmoqda</translation>
 <translation id="3108931485517391283">Qabul qilinmadi</translation>
 <translation id="3109724472072898302">Yig‘ilgan</translation>
+<translation id="311214366526552035">Baribir yuklab olish</translation>
 <translation id="311394601889664316">Saytlarga qurilmadagi fayl yoki jildlarni tahrirlashni taqiqlash</translation>
 <translation id="3115147772012638511">Kesh kutilmoqda...</translation>
 <translation id="3115580024857770654">Hammasini yigʻish</translation>
@@ -2358,6 +2358,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="3429160811076349561">Bepul sinov funksiyalari faolsizlantirilgan</translation>
 <translation id="3429271624041785769">Veb kontent tilllari</translation>
 <translation id="3429275422858276529">Bu sahifani xatcho‘plarga qo‘shib keyinchalik oson topishingiz mumkin</translation>
+<translation id="343115368966109153"><ph name="FILE_NAME" /> yuklab olinsinmi? Qurilmadan foydalanadigan har qanday kishi uni koʻra oladi.</translation>
 <translation id="3432227430032737297">Barcha ko‘rsatilganlarni o‘chirish</translation>
 <translation id="3432762828853624962">Worker’ning ajratiladigan obyektlari</translation>
 <translation id="3433621910545056227">Ana xolos! Tizim qurilma atributlarini o‘rnatish vaqtida qulflay olmadi.</translation>
@@ -2699,6 +2700,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="3777806571986431400">Kengaytma yoqilgan</translation>
 <translation id="3778152852029592020">Yuklab olish bekor qilindi.</translation>
 <translation id="3778208826288864398">PIN kod koʻp marta xato kiritilganligi uchun elektron kalit qulflandi. Elektron kalit sozlamalarini qayta tiklang.</translation>
+<translation id="3778369586810509692">Bu fayl qurilmaga saqlanadi va uni har qanday kishi koʻra oladi.</translation>
 <translation id="3778740492972734840">&amp;Dasturchilar asboblari</translation>
 <translation id="3778868487658107119">Undan savol va biror ishni bajarishni so‘rang. U yordamchingiz. Doim yordam berishga tayyor.</translation>
 <translation id="3781742599892759500">Linux tizimidagi mikrofondan foydalanish</translation>

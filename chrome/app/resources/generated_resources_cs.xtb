@@ -716,7 +716,6 @@
 <translation id="1722460139690167654">Vaše <ph name="BEGIN_LINK" />zařízení <ph name="DEVICE_TYPE" /> je spravováno<ph name="END_LINK" /> doménou <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">Nové okno</translation>
 <translation id="1725562816265788801">Posouvání karet</translation>
-<translation id="1727662110063605623">Chcete-li zařízení <ph name="USB_DEVICE_NAME" /> připojit k systému Parallels Desktop, otevřete Nastavení</translation>
 <translation id="1729533290416704613">Také řídí, která stránka se zobrazí, když budete vyhledávat v omniboxu.</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />Chcete-li odstranit aplikace, přejděte do Nastavení &gt; Obchod Google Play &gt; Spravovat nastavení aplikací Android &gt; Aplikace nebo Správce aplikací. Poté klepněte na aplikaci, kterou chcete odinstalovat (je možné, že aplikacemi bude třeba listovat doprava či doleva). Následně klepněte na Odinstalovat nebo Deaktivovat.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1731911755844941020">Zasílání požadavku</translation>
@@ -2076,6 +2075,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="310671807099593501">Web používá Bluetooth</translation>
 <translation id="3108931485517391283">Nelze přijmout</translation>
 <translation id="3109724472072898302">Sbaleno</translation>
+<translation id="311214366526552035">Přesto stáhnout</translation>
 <translation id="311394601889664316">Nepovolovat webům upravovat soubory a složky v zařízení</translation>
 <translation id="3115147772012638511">Čekání na mezipaměť</translation>
 <translation id="3115580024857770654">Sbalit vše</translation>
@@ -2357,6 +2357,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3429160811076349561">Zkušební funkce jsou vypnuté</translation>
 <translation id="3429271624041785769">Jazyky webového obsahu</translation>
 <translation id="3429275422858276529">Přidejte si tuto stránku do záložek, abyste ji později snáze našli</translation>
+<translation id="343115368966109153">Stáhnout balíček <ph name="FILE_NAME" />? Budou ho moci zobrazit všichni uživatelé zařízení.</translation>
 <translation id="3432227430032737297">Odstranit všechny zobrazené</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433621910545056227">Jejda! Systému se nepodařilo nastavit zámek atributů installation-time zařízení.</translation>
@@ -2698,6 +2699,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3777806571986431400">Rozšíření povoleno</translation>
 <translation id="3778152852029592020">Stahování bylo zrušeno</translation>
 <translation id="3778208826288864398">Bezpečnostní klíč je uzamčen, protože byl příliš mnohokrát zadán nesprávný PIN. Budete bezpečnostní klíč muset resetovat.</translation>
+<translation id="3778369586810509692">Tento soubor bude uložen na zařízení a všichni ho budou moci zobrazit.</translation>
 <translation id="3778740492972734840">&amp;Nástroje pro vývojáře</translation>
 <translation id="3778868487658107119">Můžete mu zadávat dotazy. Můžete mu udělovat příkazy. Je to váš osobní Google a je vám neustále k službám.</translation>
 <translation id="3781742599892759500">Přístup Linuxu k mikrofonu</translation>

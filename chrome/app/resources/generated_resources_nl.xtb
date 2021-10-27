@@ -714,7 +714,6 @@
 <translation id="1722460139690167654">Je <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> wordt beheerd<ph name="END_LINK" /> door <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">&amp;Nieuw venster</translation>
 <translation id="1725562816265788801">Tabbladstrook scrollen</translation>
-<translation id="1727662110063605623">Open Instellingen om <ph name="USB_DEVICE_NAME" /> verbinding te maken met Parallels Desktop of Linux</translation>
 <translation id="1729533290416704613">Hiermee wordt ook gecontroleerd welke pagina wordt getoond wanneer je vanuit de omnibox zoekt.</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />Als je apps wilt verwijderen, ga je naar Instellingen &gt; Google Play Store &gt; Android-voorkeuren beheren &gt; Apps of App-beheer en tik je op de app die je wilt verwijderen (je moet mogelijk naar rechts of links swipen om de app te vinden). Tik vervolgens op Verwijderen of Uitzetten.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1731911755844941020">Aanvraag wordt verstuurd...</translation>
@@ -2074,6 +2073,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="310671807099593501">Site gebruikt Bluetooth</translation>
 <translation id="3108931485517391283">Kan niet ontvangen</translation>
 <translation id="3109724472072898302">Samengevouwen</translation>
+<translation id="311214366526552035">Toch downloaden</translation>
 <translation id="311394601889664316">Niet toestaan dat sites bestanden of mappen op je apparaat bewerken</translation>
 <translation id="3115147772012638511">Wachten op cache...</translation>
 <translation id="3115580024857770654">Alles samenvouwen</translation>
@@ -2355,6 +2355,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3429160811076349561">Proeffuncties staan uit</translation>
 <translation id="3429271624041785769">Talen voor webcontent</translation>
 <translation id="3429275422858276529">Stel een bookmark in voor deze pagina zodat je de pagina later makkelijk kunt terugvinden</translation>
+<translation id="343115368966109153"><ph name="FILE_NAME" /> downloaden? Iedereen die het apparaat gebruikt, kan dit zien.</translation>
 <translation id="3432227430032737297">Getoonde verwijderen</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433621910545056227">Het systeem kan de vergrendeling van de instellingen ten tijde van de apparaatinstallatie niet uitvoeren.</translation>
@@ -2696,6 +2697,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3777806571986431400">Extensie aangezet</translation>
 <translation id="3778152852029592020">Downloaden is geannuleerd.</translation>
 <translation id="3778208826288864398">De beveiligingssleutel is vergrendeld omdat je te vaak een onjuiste pincode hebt ingevoerd. De beveiligingssleutel moet worden gereset.</translation>
+<translation id="3778369586810509692">Dit bestand wordt opgeslagen op het apparaat, waar iedereen het kan zien.</translation>
 <translation id="3778740492972734840">&amp;Hulpprogramma's voor ontwikkelaars</translation>
 <translation id="3778868487658107119">Je kunt de Assistent vragen stellen en opdrachten geven. De Assistent is je eigen persoonlijke Google dat altijd klaarstaat om je te helpen.</translation>
 <translation id="3781742599892759500">Microfoontoegang voor Linux</translation>

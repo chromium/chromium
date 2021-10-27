@@ -2305,6 +2305,7 @@ Dodatkowe informacje:
 <translation id="8541158209346794904">Urządzenie Bluetooth</translation>
 <translation id="8542014550340843547">Trzy zszywki na dole</translation>
 <translation id="8543181531796978784">Możesz <ph name="BEGIN_ERROR_LINK" />zgłosić problem z wykrywaniem<ph name="END_ERROR_LINK" /> lub – jeśli rozumiesz zagrożenie – <ph name="BEGIN_LINK" />wejść na tę niebezpieczną stronę<ph name="END_LINK" />.</translation>
+<translation id="8554010658308662631">Wczytaj więcej</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Zresetuj uprawnienia}few{Zresetuj uprawnienia}many{Zresetuj uprawnienia}other{Zresetuj uprawnienia}}</translation>
 <translation id="8555010941760982128">Użyj tego kodu w momencie płatności</translation>
 <translation id="8557066899867184262">Kod CVC znajduje się na odwrocie karty.</translation>

@@ -724,7 +724,6 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1722460139690167654">Uređajem <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> upravlja<ph name="END_LINK" /> <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">&amp;Novi prozor</translation>
 <translation id="1725562816265788801">Klizanje po karticama</translation>
-<translation id="1727662110063605623">Otvorite Postavke da povežete uređaj <ph name="USB_DEVICE_NAME" /> s Parallels Desktopom ili Linuxom</translation>
 <translation id="1729533290416704613">Također kontrolira koja stranica se prikazuje prilikom pretraživanja iz višenamjenskog okvira.</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />Da uklonite aplikacije, idite u Postavke &gt; Google Play trgovina &gt; Upravljanje postavkama za Android &gt; Aplikacije ili Upravitelj aplikacija. Zatim dodirnite aplikaciju koju želite deinstalirati (možda ćete morati prevući desno ili lijevo kako biste pronašli aplikaciju). Zatim dodirnite Deinstaliraj ili Onemogući.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1731911755844941020">Slanje zahtjeva...</translation>
@@ -2088,6 +2087,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="310671807099593501">Web lokacija koristi bluetooth</translation>
 <translation id="3108931485517391283">Nije moguće primiti</translation>
 <translation id="3109724472072898302">Skupljeno</translation>
+<translation id="311214366526552035">Ipak preuzmi</translation>
 <translation id="311394601889664316">Nemoj dozvoliti web lokacijama uređivanje fajlova ili foldera na mom uređaju</translation>
 <translation id="3115147772012638511">Čekanje na keš momoriju...</translation>
 <translation id="3115580024857770654">Sažmi sve</translation>
@@ -2369,6 +2369,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3429160811076349561">Funkcije probnog perioda su isključene</translation>
 <translation id="3429271624041785769">Jezici web sadržaja</translation>
 <translation id="3429275422858276529">Označite ovu stranicu kako biste je kasnije lakše pronašli</translation>
+<translation id="343115368966109153">Preuzeti <ph name="FILE_NAME" />? To mogu vidjeti svi koji koriste uređaj.</translation>
 <translation id="3432227430032737297">Ukloni sve prikazano</translation>
 <translation id="3432762828853624962">Dijeljeni radnici</translation>
 <translation id="3433621910545056227">Ups!  Sistem nije uspio uspostaviti zaključavanje atributa za vrijeme instalacije na uređaju.</translation>
@@ -2710,6 +2711,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3777806571986431400">Ekstenzija je omogućena</translation>
 <translation id="3778152852029592020">Preuzimanje je otkazano.</translation>
 <translation id="3778208826288864398">Sigurnosni ključ je zaključan zato što je pogrešan PIN unesen više puta. Morate vratiti sigurnosni ključ na zadanu vrijednost.</translation>
+<translation id="3778369586810509692">Ovaj fajl će se pohraniti na uređaju i svi će ga moći vidjeti.</translation>
 <translation id="3778740492972734840">&amp;Alati za programere</translation>
 <translation id="3778868487658107119">Postavljajte mu pitanja. Dajte mu naredbe. To je vaš osobni Google, uvijek spreman pomoći.</translation>
 <translation id="3781742599892759500">Pristup mikrofonu na Linuxu</translation>

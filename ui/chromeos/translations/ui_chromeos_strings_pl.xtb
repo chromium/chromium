@@ -131,6 +131,7 @@
 <translation id="2122305276694332719">Automatyczne łączenie się z ukrytą siecią pozwala innym widzieć Twoje urządzenie wraz z niektórymi ustawieniami sieci. Nie zalecamy korzystania z tej funkcji.</translation>
 <translation id="2125607626296734455">Khmerski</translation>
 <translation id="2139545522194199494">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />%, zarządzana przez administratora, połącz</translation>
+<translation id="2141347188420181405">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />%, zablokowana przez administratora, szczegóły</translation>
 <translation id="2142680004883808240">Rosyjski z fonetyczną klawiaturą YaZHert</translation>
 <translation id="2143778271340628265">Ręczna konfiguracja serwera proxy</translation>
 <translation id="2163152940313951844">Nieprawidłowy znak: <ph name="CHARACTER_NAME" /></translation>
@@ -185,6 +186,7 @@
 <translation id="2563185590376525700">Żaba</translation>
 <translation id="2578394532502990878">Tamilski fonetyczny</translation>
 <translation id="2579959351793446050">Orija</translation>
+<translation id="2602810353103180630">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />%, zablokowana przez administratora, szczegóły</translation>
 <translation id="2614589611416690597">Plik wideo <ph name="VIDEO_TYPE" /></translation>
 <translation id="2617342710774726426">Karta SIM jest zablokowana</translation>
 <translation id="2620090360073999360">Dysk Google jest obecnie nieosiągalny.</translation>

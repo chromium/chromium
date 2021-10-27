@@ -716,7 +716,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1722460139690167654">Jūsu ierīci <ph name="BEGIN_LINK" />(veids: <ph name="DEVICE_TYPE" />) pārvalda<ph name="END_LINK" /> <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">Jauns logs</translation>
 <translation id="1725562816265788801">Ciļņu ritināšana</translation>
-<translation id="1727662110063605623">Lai ierīcē <ph name="USB_DEVICE_NAME" /> izveidotu savienojumu ar Parallels Desktop vai Linux, atveriet sadaļu Iestatījumi.</translation>
 <translation id="1729533290416704613">Tas nosaka arī to, kāda lapa tiks rādīta, kad meklēsiet, izmantojot universālo lodziņu.</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />Lai noņemtu lietotnes, pārejiet uz sadaļu Iestatījumi &gt; Google Play veikals &gt; Pārvaldīt Android preferences &gt; Lietotnes vai Lietojumprogrammu pārvaldnieks. Pēc tam pieskarieties lietotnei, kuru vēlaties atinstalēt (iespējams, būs jāvelk pa labi vai pa kreisi, lai atrastu lietotni). Pēc tam pieskarieties vienumam Atinstalēt vai Atspējot.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1731911755844941020">Notiek pieprasījuma sūtīšana...</translation>

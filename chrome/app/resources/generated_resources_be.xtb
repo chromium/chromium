@@ -717,7 +717,6 @@
 <translation id="1722460139690167654">Ваша <ph name="BEGIN_LINK" />прылада <ph name="DEVICE_TYPE" /> знаходзіцца пад кіраваннем<ph name="END_LINK" /> дамена <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">&amp;Новае акно</translation>
 <translation id="1725562816265788801">Прагортка ўкладак</translation>
-<translation id="1727662110063605623">Каб падключыць прыладу "<ph name="USB_DEVICE_NAME" />" да Parallels Desktop або Linux, адкрыйце Налады</translation>
 <translation id="1729533290416704613">Таксама вызначае, якая старонка паказваецца пры пошуку ў амнібоксе.</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />Каб выдаліць праграмы, перайдзіце ў раздзел "Налады &gt; Крама Google Play &gt; Кіраванне параметрамі Android" і адкрыйце "Праграмы" або "Менеджар праграм". Там націсніце на значок праграмы, якую трэба выдаліць (каб знайсці патрэбную праграму, магчыма, трэба будзе прагартаць экран управа або ўлева). Затым націсніце "Выдаліць" ("Адключыць" або "Выключыць").<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1731911755844941020">Ідзе адпраўка запыту...</translation>

@@ -721,7 +721,6 @@
 <translation id="1722460139690167654"><ph name="ENROLLMENT_DOMAIN" />-с таны <ph name="BEGIN_LINK" /> <ph name="DEVICE_TYPE" />-г удирдаж байна<ph name="END_LINK" /></translation>
 <translation id="1723824996674794290">&amp;Шинэ цонх</translation>
 <translation id="1725562816265788801">Таб гүйлгэх</translation>
-<translation id="1727662110063605623"><ph name="USB_DEVICE_NAME" />-г Parallels дэлгэц эсвэл Linux-д холбохын тулд Тохиргоог нээнэ үү</translation>
 <translation id="1729533290416704613">Omnibox-оос хайлт хийхэд ямар хуудсуудыг харуулахыг мөн хянадаг.</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />Апп хасахын тулд Тохиргоо &gt; Google Play Дэлгүүр&gt; Андройдын тохиргоог удирдах &gt; Aпп эсвэл аппын менежер хэсэгт очно уу. Дараа нь устгахыг хүссэн апп дээрээ товшино уу (та аппыг олохын тулд баруун эсвэл зүүн тийш шударч болзошгүй ). Тэгээд Устгах эсвэл Идэвхгүй болгох дээр товшино уу.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1731911755844941020">Хүсэлтийг илгээж байна...</translation>
