@@ -253,7 +253,7 @@ void ResolveContext::RecordRtt(size_t server_index,
 
   // RTT values shouldn't be less than 0, but it shouldn't cause a crash if
   // they are anyway, so clip to 0. See https://crbug.com/753568.
-  if (rtt < base::TimeDelta())
+  if (rtt.is_negative())
     rtt = base::TimeDelta();
 
   // Histogram-based method.

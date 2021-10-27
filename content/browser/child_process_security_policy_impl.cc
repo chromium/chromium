@@ -2420,7 +2420,7 @@ void ChildProcessSecurityPolicyImpl::
         ChildProcessSecurityPolicyImpl::GetInstance();
     policy->RemoveOptInIsolatedOriginsForBrowsingInstanceInternal(id);
   };
-  if (browsing_instance_cleanup_delay_ > base::TimeDelta()) {
+  if (browsing_instance_cleanup_delay_.is_positive()) {
     // Do the actual state cleanup after posting a task to the IO thread, to
     // give a chance for any last unprocessed tasks to be handled. The cleanup
     // itself locks the data structures and can safely happen from either

@@ -114,7 +114,7 @@ class TestOption : public InProcessBrowserTest {
   void QuitSoon() { QuitAfter(kWaitAfterLastCall); }
 
   void QuitAfter(base::TimeDelta delta) {
-    DCHECK(delta > base::TimeDelta());
+    DCHECK(delta.is_positive());
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE, run_loop_->QuitClosure(), delta);
   }

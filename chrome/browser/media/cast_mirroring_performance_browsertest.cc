@@ -313,7 +313,7 @@ class SkewedCastEnvironment : public media::cast::StandaloneCastEnvironment {
     // per million faster or slower than the local sender's clock. This is the
     // worst-case scenario for skew in-the-wild.
     if (!delta.is_zero()) {
-      const double skew = delta < base::TimeDelta() ? 0.999950 : 1.000050;
+      const double skew = delta.is_negative() ? 0.999950 : 1.000050;
       skewed_clock_.SetSkew(skew, delta);
     }
     clock_ = &skewed_clock_;

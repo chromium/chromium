@@ -1521,12 +1521,12 @@ void MainThreadSchedulerImpl::UpdatePolicyLocked(UpdateType update_type) {
   // which case we choose the other.
   base::TimeDelta new_policy_duration = expected_use_case_duration;
   if (new_policy_duration.is_zero() ||
-      (gesture_expected_flag_valid_for_duration > base::TimeDelta() &&
+      (gesture_expected_flag_valid_for_duration.is_positive() &&
        new_policy_duration > gesture_expected_flag_valid_for_duration)) {
     new_policy_duration = gesture_expected_flag_valid_for_duration;
   }
 
-  if (new_policy_duration > base::TimeDelta()) {
+  if (new_policy_duration.is_positive()) {
     main_thread_only().current_policy_expiration_time =
         now + new_policy_duration;
     delayed_update_policy_runner_.SetDeadline(FROM_HERE, new_policy_duration,
@@ -1721,7 +1721,7 @@ UseCase MainThreadSchedulerImpl::ComputeCurrentUseCase(
   // Above all else we want to be responsive to user input.
   *expected_use_case_duration =
       any_thread().user_model.TimeLeftInUserGesture(now);
-  if (*expected_use_case_duration > base::TimeDelta()) {
+  if (expected_use_case_duration->is_positive()) {
     // Has a gesture been fully established?
     if (any_thread().awaiting_touch_start_response) {
       // No, so arrange for compositor tasks to be run at the highest priority.

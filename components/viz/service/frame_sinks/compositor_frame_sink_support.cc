@@ -1159,7 +1159,7 @@ void CompositorFrameSinkSupport::CheckPendingSurfaces() {
 
 bool CompositorFrameSinkSupport::ShouldThrottleBeginFrameAsRequested(
     base::TimeTicks frame_time) {
-  return begin_frame_interval_ > base::TimeDelta() &&
+  return begin_frame_interval_.is_positive() &&
          (frame_time - last_frame_time_) < begin_frame_interval_;
 }
 

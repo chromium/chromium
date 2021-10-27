@@ -537,7 +537,7 @@ void Job::StartURLRequest(URLRequestContext* context) {
   url_request_->Start();
 
   // Start a timer to limit how long the job runs for.
-  if (request_params_->timeout > base::TimeDelta()) {
+  if (request_params_->timeout.is_positive()) {
     timer_.Start(FROM_HERE, request_params_->timeout,
                  base::BindOnce(&Job::FailRequest, base::Unretained(this),
                                 ERR_TIMED_OUT));

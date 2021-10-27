@@ -335,7 +335,7 @@ void FrameSender::OnCancelSendingFrames() {}
 void FrameSender::OnReceivedCastFeedback(const RtcpCastMessage& cast_feedback) {
   DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
 
-  const bool have_valid_rtt = current_round_trip_time_ > base::TimeDelta();
+  const bool have_valid_rtt = current_round_trip_time_.is_positive();
   if (have_valid_rtt) {
     congestion_control_->UpdateRtt(current_round_trip_time_);
 
@@ -461,7 +461,7 @@ bool FrameSender::ShouldDropNextFrame(base::TimeDelta frame_duration) const {
   const base::TimeDelta allowed_in_flight = GetAllowedInFlightMediaDuration();
   if (VLOG_IS_ON(1)) {
     const int64_t percent =
-        allowed_in_flight > base::TimeDelta()
+        allowed_in_flight.is_positive()
             ? base::ClampRound<int64_t>(duration_would_be_in_flight /
                                         allowed_in_flight * 100)
             : std::numeric_limits<int64_t>::max();

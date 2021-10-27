@@ -316,12 +316,12 @@ void SpeechRecognitionRecognizerImpl::OnLanguageChanged(
 }
 
 void SpeechRecognitionRecognizerImpl::RecordDuration() {
-  if (caption_bubble_visible_duration_ > base::TimeDelta()) {
+  if (caption_bubble_visible_duration_.is_positive()) {
     base::UmaHistogramLongTimes100(kCaptionBubbleVisibleHistogramName,
                                    caption_bubble_visible_duration_);
   }
 
-  if (caption_bubble_hidden_duration_ > base::TimeDelta()) {
+  if (caption_bubble_hidden_duration_.is_positive()) {
     base::UmaHistogramLongTimes100(kCaptionBubbleHiddenHistogramName,
                                    caption_bubble_hidden_duration_);
   }

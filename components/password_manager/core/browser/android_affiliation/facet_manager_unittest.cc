@@ -203,7 +203,7 @@ base::Time SafeAdd(base::Time time, base::TimeDelta delay) {
 // if |duration| is of length zero.
 std::vector<base::TimeDelta> SamplingPoints(base::TimeDelta duration) {
   std::vector<base::TimeDelta> deltas;
-  if (duration > base::TimeDelta()) {
+  if (duration.is_positive()) {
     while (duration > Epsilon()) {
       deltas.push_back(std::min(GetShortTestPeriod(), duration - Epsilon()));
       duration -= deltas.back();

@@ -21,7 +21,7 @@ IdleDeadline::IdleDeadline(base::TimeTicks deadline,
 
 double IdleDeadline::timeRemaining() const {
   base::TimeDelta time_remaining = deadline_ - clock_->NowTicks();
-  if (time_remaining < base::TimeDelta() ||
+  if (time_remaining.is_negative() ||
       ThreadScheduler::Current()->ShouldYieldForHighPriorityWork()) {
     return 0;
   }

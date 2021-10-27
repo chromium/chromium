@@ -741,7 +741,7 @@ void MediaSessionImpl::Stop(SuspendType suspend_type) {
 void MediaSessionImpl::Seek(base::TimeDelta seek_time) {
   DCHECK(!seek_time.is_zero());
 
-  if (seek_time > base::TimeDelta()) {
+  if (seek_time.is_positive()) {
     // If the site has registered an action handler for seek forward then we
     // should pass it to the site and let them handle it.
     if (ShouldRouteAction(
@@ -752,7 +752,7 @@ void MediaSessionImpl::Seek(base::TimeDelta seek_time) {
 
     for (const auto& it : normal_players_)
       it.first.observer->OnSeekForward(it.first.player_id, seek_time);
-  } else if (seek_time < base::TimeDelta()) {
+  } else if (seek_time.is_negative()) {
     // If the site has registered an action handler for seek backward then we
     // should pass it to the site and let them handle it.
     if (ShouldRouteAction(

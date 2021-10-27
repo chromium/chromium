@@ -1898,7 +1898,7 @@ void QuicStreamFactory::ConfigureInitialRttEstimate(
   // Sometimes *srtt is negative. See https://crbug.com/1225616.
   // TODO(ricea): When the root cause of the negative value is fixed, change the
   // non-negative assertion to a DCHECK.
-  if (srtt != nullptr && *srtt > base::TimeDelta()) {
+  if (srtt && srtt->is_positive()) {
     SetInitialRttEstimate(*srtt, INITIAL_RTT_CACHED, config);
     return;
   }
@@ -1915,7 +1915,7 @@ void QuicStreamFactory::ConfigureInitialRttEstimate(
     return;
   }
 
-  if (params_.initial_rtt_for_handshake > base::TimeDelta()) {
+  if (params_.initial_rtt_for_handshake.is_positive()) {
     SetInitialRttEstimate(
         base::Microseconds(params_.initial_rtt_for_handshake.InMicroseconds()),
         INITIAL_RTT_DEFAULT, config);

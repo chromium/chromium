@@ -190,7 +190,7 @@ void V4UpdateProtocolManager::ScheduleNextUpdateWithBackoff(bool back_off) {
 // back off after a certain number of errors.
 base::TimeDelta V4UpdateProtocolManager::GetNextUpdateInterval(bool back_off) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(next_update_interval_ > base::TimeDelta());
+  DCHECK(next_update_interval_.is_positive());
 
   base::TimeDelta next = next_update_interval_;
   if (back_off) {

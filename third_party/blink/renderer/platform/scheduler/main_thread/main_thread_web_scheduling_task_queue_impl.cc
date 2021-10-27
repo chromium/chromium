@@ -42,8 +42,8 @@ bool MainThreadWebSchedulingTaskQueueImpl::WebSchedulingTaskRunner::
 
 base::SingleThreadTaskRunner* MainThreadWebSchedulingTaskQueueImpl::
     WebSchedulingTaskRunner::GetTaskRunnerForDelay(base::TimeDelta delay) {
-  return delay > base::TimeDelta() ? delayed_task_runner_.get()
-                                   : immediate_task_runner_.get();
+  return delay.is_positive() ? delayed_task_runner_.get()
+                             : immediate_task_runner_.get();
 }
 
 MainThreadWebSchedulingTaskQueueImpl::MainThreadWebSchedulingTaskQueueImpl(

@@ -32,7 +32,7 @@ bool ShouldUpload(const StoredAction& action) {
       base::Time::UnixEpoch() +
       base::Seconds(action.action().client_data().timestamp_seconds());
   base::TimeDelta age = base::Time::Now() - action_time;
-  if (age < base::TimeDelta())
+  if (age.is_negative())
     age = base::TimeDelta();
 
   return action.upload_attempt_count() <

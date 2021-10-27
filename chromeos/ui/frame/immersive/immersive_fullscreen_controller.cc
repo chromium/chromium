@@ -615,7 +615,7 @@ void ImmersiveFullscreenController::MaybeEndReveal(Animate animate) {
 
   reveal_state_ = SLIDING_CLOSED;
   base::TimeDelta duration = GetAnimationDuration(animate);
-  if (duration > base::TimeDelta()) {
+  if (duration.is_positive()) {
     animation_->SetSlideDuration(duration);
     animation_->Hide();
   } else {

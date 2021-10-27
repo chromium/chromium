@@ -249,7 +249,7 @@ bool AudioFileReader::OnNewFrame(
     const base::TimeDelta frame_duration =
         base::Seconds(frames_read / static_cast<double>(sample_rate_));
 
-    if (pkt_duration < frame_duration && pkt_duration > base::TimeDelta()) {
+    if (pkt_duration < frame_duration && pkt_duration.is_positive()) {
       const int new_frames_read =
           base::ClampFloor(frames_read * (pkt_duration / frame_duration));
       DVLOG(2) << "Shrinking AAC frame from " << frames_read << " to "

@@ -119,7 +119,7 @@ int PacFileDecider::Start(const ProxyConfigWithAnnotation& config,
 
   // Save the |wait_delay| as a non-negative value.
   wait_delay_ = wait_delay;
-  if (wait_delay_ < base::TimeDelta())
+  if (wait_delay_.is_negative())
     wait_delay_ = base::TimeDelta();
 
   pac_mandatory_ = config.value().pac_mandatory();

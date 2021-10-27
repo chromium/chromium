@@ -165,7 +165,7 @@ bool IntersectionObservation::MaybeDelayAndReschedule(
     return true;
   base::TimeDelta delay = base::Milliseconds(observer_->GetEffectiveDelay() -
                                              (timestamp - last_run_time_));
-  if (!(flags & kIgnoreDelay) && delay > base::TimeDelta()) {
+  if (!(flags & kIgnoreDelay) && delay.is_positive()) {
     TrackingDocument(this).View()->ScheduleAnimation(delay);
     return true;
   }

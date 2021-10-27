@@ -134,7 +134,7 @@ void BatchingMediaLog::AddLogRecordLocked(
         base::Seconds(1) - (tick_clock_->NowTicks() - last_ipc_send_time_);
   }
 
-  if (delay_for_next_ipc_send > base::TimeDelta()) {
+  if (delay_for_next_ipc_send.is_positive()) {
     task_runner_->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&BatchingMediaLog::SendQueuedMediaEvents, weak_this_),

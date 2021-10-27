@@ -203,7 +203,7 @@ bool WaitableEvent::TimedWait(const TimeDelta& wait_delta) {
   const TimeTicks end_time =
       wait_delta.is_max() ? TimeTicks::Max()
                           : subtle::TimeTicksNowIgnoringOverride() + wait_delta;
-  for (TimeDelta remaining = wait_delta; remaining > TimeDelta() && !sw.fired();
+  for (TimeDelta remaining = wait_delta; remaining.is_positive() && !sw.fired();
        remaining = end_time.is_max()
                        ? TimeDelta::Max()
                        : end_time - subtle::TimeTicksNowIgnoringOverride()) {

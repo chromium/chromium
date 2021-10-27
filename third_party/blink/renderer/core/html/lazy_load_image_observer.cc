@@ -108,7 +108,7 @@ void RecordVisibleLoadTimeForImage(
   base::TimeDelta visible_load_delay =
       visible_load_time_metrics.time_when_first_load_finished -
       visible_load_time_metrics.time_when_first_visible;
-  if (visible_load_delay < base::TimeDelta())
+  if (visible_load_delay.is_negative())
     visible_load_delay = base::TimeDelta();
 
   switch (GetNetworkStateNotifier().EffectiveType()) {

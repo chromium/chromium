@@ -125,7 +125,7 @@ ModuleInspectionResult InspectModule(const base::FilePath& module_path) {
 // (1601-01-01 00:00:00 UTC).
 uint32_t CalculateTimeStamp(base::Time time) {
   const auto delta = time.ToDeltaSinceWindowsEpoch();
-  return delta < base::TimeDelta() ? 0 : static_cast<uint32_t>(delta.InHours());
+  return delta.is_negative() ? 0 : static_cast<uint32_t>(delta.InHours());
 }
 
 std::string GenerateCodeId(const ModuleInfoKey& module_key) {

@@ -196,7 +196,7 @@ void AudioOutputDevice::RequestDeviceAuthorizationOnIOThread() {
   state_ = AUTHORIZATION_REQUESTED;
   ipc_->RequestDeviceAuthorization(this, session_id_, device_id_);
 
-  if (auth_timeout_ > base::TimeDelta()) {
+  if (auth_timeout_.is_positive()) {
     // Create the timer on the thread it's used on. It's guaranteed to be
     // deleted on the same thread since users must call Stop() before deleting
     // AudioOutputDevice; see ShutDownOnIOThread().

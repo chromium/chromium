@@ -578,7 +578,7 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
   // ApplyDurationEstimateIfNeeded().
   if (encoded_duration != kNoTimestamp) {
     DCHECK(encoded_duration != kInfiniteDuration);
-    DCHECK(encoded_duration > base::TimeDelta());
+    DCHECK(encoded_duration.is_positive());
     buffer->set_duration(encoded_duration);
 
     DVLOG(3) << __func__ << " : "
@@ -624,8 +624,7 @@ WebMClusterParser::Track::Track(int track_num,
       default_duration_(default_duration),
       max_frame_duration_(kNoTimestamp),
       media_log_(media_log) {
-  DCHECK(default_duration_ == kNoTimestamp ||
-         default_duration_ > base::TimeDelta());
+  DCHECK(default_duration_ == kNoTimestamp || default_duration_.is_positive());
 }
 
 WebMClusterParser::Track::Track(const Track& other) = default;
@@ -756,13 +755,13 @@ bool WebMClusterParser::Track::QueueBuffer(
         buffers_.back()->GetDecodeTimestamp() <= buffer->GetDecodeTimestamp());
 
   base::TimeDelta duration = buffer->duration();
-  if (duration < base::TimeDelta() || duration == kNoTimestamp) {
+  if (duration.is_negative() || duration == kNoTimestamp) {
     MEDIA_LOG(ERROR, media_log_)
         << "Invalid buffer duration: " << duration.InSecondsF();
     return false;
   }
 
-  if (duration > base::TimeDelta()) {
+  if (duration.is_positive()) {
     base::TimeDelta orig_max_duration = max_frame_duration_;
 
     if (max_frame_duration_ == kNoTimestamp) {
@@ -800,7 +799,7 @@ base::TimeDelta WebMClusterParser::Track::GetDurationEstimate() {
     duration = max_frame_duration_;
   }
 
-  DCHECK(duration > base::TimeDelta());
+  DCHECK(duration.is_positive());
   DCHECK(duration != kNoTimestamp);
   return duration;
 }

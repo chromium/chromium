@@ -688,7 +688,7 @@ base::Value AboutSigninInternals::SigninStatus::ToValue(
         identity_manager->GetDiagnosticsProvider()
             ->GetDelayBeforeMakingCookieRequests();
 
-    if (cookie_requests_delay > base::TimeDelta()) {
+    if (cookie_requests_delay.is_positive()) {
       base::Time next_retry_time =
           base::Time::NowFromSystemTime() + cookie_requests_delay;
       AddSectionEntry(detailed_info, "Cookie Manager Next Retry",
@@ -699,7 +699,7 @@ base::Value AboutSigninInternals::SigninStatus::ToValue(
         identity_manager->GetDiagnosticsProvider()
             ->GetDelayBeforeMakingAccessTokenRequests();
 
-    if (token_requests_delay > base::TimeDelta()) {
+    if (token_requests_delay.is_positive()) {
       base::Time next_retry_time =
           base::Time::NowFromSystemTime() + token_requests_delay;
       AddSectionEntry(detailed_info, "Token Service Next Retry",

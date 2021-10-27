@@ -97,12 +97,12 @@ void SetDiscardPadding(AVPacket* packet,
                        DecoderBuffer* buffer,
                        double samples_per_second) {
   // Discard negative timestamps.
-  if (buffer->timestamp() + buffer->duration() < base::TimeDelta()) {
+  if ((buffer->timestamp() + buffer->duration()).is_negative()) {
     buffer->set_discard_padding(
         std::make_pair(kInfiniteDuration, base::TimeDelta()));
     return;
   }
-  if (buffer->timestamp() < base::TimeDelta()) {
+  if (buffer->timestamp().is_negative()) {
     buffer->set_discard_padding(
         std::make_pair(-buffer->timestamp(), base::TimeDelta()));
     return;

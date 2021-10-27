@@ -77,7 +77,7 @@ void HttpRefreshScheduler::Schedule(
   DCHECK(document_->GetFrame());
   if (!document_->GetFrame()->IsNavigationAllowed())
     return;
-  if (delay < base::TimeDelta() || delay > kMaxScheduledDelay)
+  if (delay.is_negative() || delay > kMaxScheduledDelay)
     return;
   if (url.IsEmpty())
     return;

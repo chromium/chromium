@@ -51,7 +51,7 @@ void SimpleWatchTimer::Tick() {
   last_current_time_ = current_time;
 
   // Accumulate watch time if the duration is reasonable.
-  if (duration > base::TimeDelta() && duration < kQueryInterval * 2) {
+  if (duration.is_positive() && duration < kQueryInterval * 2) {
     unreported_ms_ += duration.InMilliseconds();
   }
 

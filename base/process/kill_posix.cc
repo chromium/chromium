@@ -109,7 +109,7 @@ bool WaitForProcessesToExit(const FilePath::StringType& executable_name,
       break;
     }
     PlatformThread::Sleep(Milliseconds(100));
-  } while ((end_time - TimeTicks::Now()) > TimeDelta());
+  } while ((end_time - TimeTicks::Now()).is_positive());
 
   return result;
 }

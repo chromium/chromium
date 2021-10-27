@@ -67,7 +67,7 @@ void DownloadShelfPageHandler::ShowContextMenu(uint32_t download_id,
       base::BindOnce(
           [](base::Time start_time) {
             const base::TimeDelta elapsed_time = base::Time::Now() - start_time;
-            if (elapsed_time > base::TimeDelta()) {
+            if (elapsed_time.is_positive()) {
               base::UmaHistogramTimes(
                   "Download.Shelf.WebUI.ShowContextMenuTime", elapsed_time);
             }

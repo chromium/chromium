@@ -121,8 +121,8 @@ CastTransportImpl::CastTransportImpl(
       pacer_(kTargetBurstSize,
              kMaxBurstSize,
              clock,
-             logging_flush_interval > base::TimeDelta() ? &recent_packet_events_
-                                                        : nullptr,
+             logging_flush_interval.is_positive() ? &recent_packet_events_
+                                                  : nullptr,
              transport_.get(),
              transport_task_runner),
       last_byte_acked_for_audio_(0) {
@@ -130,7 +130,7 @@ CastTransportImpl::CastTransportImpl(
   DCHECK(transport_client_);
   DCHECK(transport_);
   DCHECK(transport_task_runner_);
-  if (logging_flush_interval_ > base::TimeDelta()) {
+  if (logging_flush_interval_.is_positive()) {
     transport_task_runner_->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&CastTransportImpl::SendRawEvents,
@@ -281,7 +281,7 @@ PacketReceiverCallback CastTransportImpl::PacketReceiverForTesting() {
 }
 
 void CastTransportImpl::SendRawEvents() {
-  DCHECK(logging_flush_interval_ > base::TimeDelta());
+  DCHECK(logging_flush_interval_.is_positive());
 
   if (!recent_frame_events_.empty() || !recent_packet_events_.empty()) {
     std::unique_ptr<std::vector<FrameEvent>> frame_events(

@@ -125,7 +125,7 @@ void WatchTimeRecorder::FinalizeWatchTime(
     if (ShouldRecordUma() && !key_str.empty()) {
       if (kv.second >= kMinimumElapsedWatchTime) {
         RecordWatchTimeInternal(key_str, kv.second);
-      } else if (kv.second > base::TimeDelta()) {
+      } else if (kv.second.is_positive()) {
         auto it = std::find_if(extended_metrics_keys_.begin(),
                                extended_metrics_keys_.end(),
                                [kv](const ExtendedMetricsKeyMap& map) {
@@ -472,7 +472,7 @@ void WatchTimeRecorder::RecordUkmPlaybackData() {
       base::UmaHistogramEnumeration("Media.AudioCodecProfile.AAC", profile);
   }
 
-  if (total_foreground_audible_watch_time > base::TimeDelta()) {
+  if (total_foreground_audible_watch_time.is_positive()) {
     std::move(record_playback_cb_)
         .Run(total_foreground_audible_watch_time, last_timestamp_,
              properties_->has_video, properties_->has_audio);

@@ -307,11 +307,11 @@ void FakePacketSocketFactory::ReceivePacket(
     max_buffer_delay_ = delay;
   ++total_packets_received_;
 
-  if (latency_average_ > base::TimeDelta()) {
+  if (latency_average_.is_positive()) {
     delay += base::Milliseconds(GetNormalRandom(
         latency_average_.InMillisecondsF(), latency_stddev_.InMillisecondsF()));
   }
-  if (delay < base::TimeDelta())
+  if (delay.is_negative())
     delay = base::TimeDelta();
 
   // Put the packet to the |pending_packets_| and post a task for

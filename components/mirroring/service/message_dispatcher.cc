@@ -143,7 +143,7 @@ void MessageDispatcher::RequestReply(mojom::CastMessagePtr message,
                                      const base::TimeDelta& timeout,
                                      OnceResponseCallback callback) {
   DCHECK(!callback.is_null());
-  DCHECK(timeout > base::TimeDelta());
+  DCHECK(timeout.is_positive());
 
   Unsubscribe(response_type);  // Cancel the old request if there is any.
   RequestHolder* const request_holder = new RequestHolder();

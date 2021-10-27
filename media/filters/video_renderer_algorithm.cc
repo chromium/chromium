@@ -71,7 +71,7 @@ scoped_refptr<VideoFrame> VideoRendererAlgorithm::Render(
   // Step 3: Update the wall clock timestamps and frame duration estimates for
   // all frames currently in the |frame_queue_|.
   UpdateFrameStatistics();
-  const bool have_known_duration = average_frame_duration_ > base::TimeDelta();
+  const bool have_known_duration = average_frame_duration_.is_positive();
   if (!was_time_moving_ || !have_known_duration || render_interval_.is_zero()) {
     ReadyFrame& ready_frame = frame_queue_.front();
     DCHECK(ready_frame.frame);
@@ -383,7 +383,7 @@ void VideoRendererAlgorithm::EnqueueFrame(scoped_refptr<VideoFrame> frame) {
   // Note: This duration value is not compensated for playback rate and
   // thus is different than |average_frame_duration_| which is compensated.
   if (!frame_duration_calculator_.count() &&
-      metadata_frame_duration > base::TimeDelta()) {
+      metadata_frame_duration.is_positive()) {
     media_timestamps.push_back(timestamp + metadata_frame_duration);
   }
 
@@ -482,7 +482,7 @@ void VideoRendererAlgorithm::UpdateFrameStatistics() {
     const auto& last_frame = frame_queue_.back().frame;
     base::TimeDelta metadata_frame_duration =
         last_frame->metadata().frame_duration.value_or(base::TimeDelta());
-    if (metadata_frame_duration > base::TimeDelta()) {
+    if (metadata_frame_duration.is_positive()) {
       have_metadata_duration = true;
       media_timestamps.push_back(last_frame->timestamp() +
                                  metadata_frame_duration);
@@ -661,7 +661,7 @@ int VideoRendererAlgorithm::FindBestFrameByCoverage(
   if (best_frame_by_coverage >= 0) {
     coverage[best_frame_by_coverage] = base::TimeDelta();
     auto it = std::max_element(coverage.begin(), coverage.end());
-    if (*it > base::TimeDelta())
+    if (it->is_positive())
       *second_best = it - coverage.begin();
   }
 

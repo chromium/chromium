@@ -120,7 +120,7 @@ void InkDropHighlight::AnimateFade(AnimationType animation_type,
                             ? visible_opacity_
                             : kHiddenOpacity;
   views::AnimationBuilder builder;
-  if (effective_duration > base::TimeDelta())
+  if (effective_duration.is_positive())
     animation_abort_handle_ = builder.GetAbortHandle();
   builder
       .SetPreemptionStrategy(

@@ -54,7 +54,7 @@ const RelativeTimeFormat& GetRelativeTimeFormat(base::TimeDelta delta) {
 void GetRelativeTimeStringAndNextUpdateTime(base::TimeDelta delta,
                                             std::u16string* relative_time,
                                             base::TimeDelta* next_update) {
-  bool past = delta < base::TimeDelta();
+  bool past = delta.is_negative();
   base::TimeDelta absolute = past ? -delta : delta;
   const RelativeTimeFormat& format = GetRelativeTimeFormat(absolute);
 

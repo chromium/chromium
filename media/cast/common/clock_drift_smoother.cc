@@ -16,7 +16,7 @@ namespace cast {
 ClockDriftSmoother::ClockDriftSmoother(base::TimeDelta time_constant)
     : time_constant_(time_constant),
       estimate_us_(0.0) {
-  DCHECK(time_constant_ > base::TimeDelta());
+  DCHECK(time_constant_.is_positive());
 }
 
 ClockDriftSmoother::~ClockDriftSmoother() = default;

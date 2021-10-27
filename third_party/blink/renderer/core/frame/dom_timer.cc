@@ -81,7 +81,7 @@ DOMTimer::DOMTimer(ExecutionContext* context,
   DCHECK_GT(timeout_id, 0);
 
   // Step 10:
-  if (timeout < base::TimeDelta())
+  if (timeout.is_negative())
     timeout = base::TimeDelta();
 
   // Steps 12 and 13:

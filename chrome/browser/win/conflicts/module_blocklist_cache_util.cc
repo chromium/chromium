@@ -83,7 +83,7 @@ const base::FilePath::CharType kModuleListComponentRelativePath[] =
 
 uint32_t CalculateTimeDateStamp(base::Time time) {
   const auto delta = time.ToDeltaSinceWindowsEpoch();
-  return delta < base::TimeDelta() ? 0 : static_cast<uint32_t>(delta.InHours());
+  return delta.is_negative() ? 0 : static_cast<uint32_t>(delta.InHours());
 }
 
 ReadResult ReadModuleBlocklistCache(

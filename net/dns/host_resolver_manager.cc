@@ -3446,7 +3446,7 @@ void HostResolverManager::CacheResult(HostCache* cache,
                                       const HostCache::Entry& entry,
                                       base::TimeDelta ttl) {
   // Don't cache an error unless it has a positive TTL.
-  if (cache && (entry.error() == OK || ttl > base::TimeDelta()))
+  if (cache && (entry.error() == OK || ttl.is_positive()))
     cache->Set(key, entry, tick_clock_->NowTicks(), ttl);
 }
 

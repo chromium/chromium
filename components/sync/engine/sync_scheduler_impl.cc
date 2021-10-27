@@ -546,7 +546,7 @@ void SyncSchedulerImpl::AdjustPolling(PollAdjustType type) {
       TimeTicks new_poll_time = poll_interval + last_poll_reset_;
       poll_delay = new_poll_time - TimeTicks::Now();
 
-      if (poll_delay < base::TimeDelta()) {
+      if (poll_delay.is_negative()) {
         // The desired poll time was in the past, so trigger a poll now (the
         // timer will post the task asynchronously, so re-entrancy isn't an
         // issue).

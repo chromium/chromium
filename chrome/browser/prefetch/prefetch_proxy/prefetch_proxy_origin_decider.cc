@@ -59,7 +59,7 @@ void PrefetchProxyOriginDecider::ReportOriginRetryAfter(
     const GURL& url,
     base::TimeDelta retry_after) {
   // Ignore negative times.
-  if (retry_after < base::TimeDelta()) {
+  if (retry_after.is_negative()) {
     return;
   }
 

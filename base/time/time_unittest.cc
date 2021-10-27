@@ -1864,12 +1864,14 @@ TEST(TimeDelta, Overflows) {
   // Some sanity checks. static_asserts used where possible to verify constexpr
   // evaluation at the same time.
   static_assert(TimeDelta::Max().is_max(), "");
-  static_assert(-TimeDelta::Max() < TimeDelta(), "");
+  static_assert(TimeDelta::Max().is_positive(), "");
+  static_assert((-TimeDelta::Max()).is_negative(), "");
   static_assert(-TimeDelta::Max() == TimeDelta::Min(), "");
   static_assert(TimeDelta() > -TimeDelta::Max(), "");
 
   static_assert(TimeDelta::Min().is_min(), "");
-  static_assert(-TimeDelta::Min() > TimeDelta(), "");
+  static_assert(TimeDelta::Min().is_negative(), "");
+  static_assert((-TimeDelta::Min()).is_positive(), "");
   static_assert(-TimeDelta::Min() == TimeDelta::Max(), "");
   static_assert(TimeDelta() < -TimeDelta::Min(), "");
 

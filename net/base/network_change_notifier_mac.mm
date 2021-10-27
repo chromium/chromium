@@ -94,7 +94,7 @@ NetworkChangeNotifierMac::GetCurrentConnectionType() const {
   base::TimeDelta remaining_time =
       base::Seconds(kMaxWaitForConnectionTypeInSeconds);
   base::TimeTicks end_time = base::TimeTicks::Now() + remaining_time;
-  while (remaining_time > base::TimeDelta()) {
+  while (remaining_time.is_positive()) {
     initial_connection_type_cv_.TimedWait(remaining_time);
     if (connection_type_initialized_)
       return connection_type_;

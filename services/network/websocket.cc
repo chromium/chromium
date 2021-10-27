@@ -465,7 +465,7 @@ WebSocket::WebSocket(
   }
   handshake_client_.set_disconnect_handler(base::BindOnce(
       &WebSocket::OnConnectionError, base::Unretained(this), FROM_HERE));
-  if (delay_ > base::TimeDelta()) {
+  if (delay_.is_positive()) {
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&WebSocket::AddChannel, weak_ptr_factory_.GetWeakPtr(),
