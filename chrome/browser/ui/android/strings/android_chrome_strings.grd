@@ -2676,8 +2676,8 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_SIGNIN_FRE_DISMISS_BUTTON" desc="Text for the dismiss button on the welcome sign-in screen. By clicking this button users will continue without signing in,">
         Use without an account
       </message>
-      <message name="IDS_SIGNIN_FRE_FOOTER" desc="Text for asking the user to allow sending diagnostic reports">
-        To help improve the app, Chrome sends diagnostic data to Google. <ph name="BEGIN_LINK">&lt;LINK&gt;</ph>Change<ph name="END_LINK">&lt;/LINK&gt;</ph>
+      <message name="IDS_SIGNIN_FRE_FOOTER" desc="The text is displayed in a footer on the very first screen of Chrome. The link ‘Terms of Service’ opens the Google Terms of Service. Preferably, ensure consistency with the “Usage statistics and crash reports” section of the Chrome Privacy Policy (google.com/chrome/privacy). Separate the first and the second part through a line break.">
+        By continuing, you agree to the <ph name="BEGIN_LINK1">&lt;LINK1&gt;</ph>Terms of Service<ph name="END_LINK1">&lt;/LINK1&gt;</ph>.\nTo help improve the app, Chrome sends usage and crash data to Google. <ph name="BEGIN_LINK2">&lt;LINK2&gt;</ph>Manage<ph name="END_LINK2">&lt;/LINK2&gt;</ph>
       </message>
       <message name="IDS_SIGNIN_FRE_UMA_DIALOG_TITLE" desc="Title for the FRE footer dialog">
         Make Chrome better
