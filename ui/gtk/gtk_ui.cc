@@ -335,14 +335,16 @@ GtkUi::GtkUi() {
   DCHECK(delegate);
   platform_ = CreateGtkUiPlatform(delegate->GetBackend());
 
-  SelectFileDialogImpl::Initialize();
-
   // Avoid GTK initializing atk-bridge, and let AuraLinux implementation
   // do it once it is ready.
   std::unique_ptr<base::Environment> env(base::Environment::Create());
   env->SetVar("NO_AT_BRIDGE", "1");
   GtkInitFromCommandLine(*base::CommandLine::ForCurrentProcess());
   native_theme_ = NativeThemeGtk::instance();
+
+  // This creates an extra thread that may race against GtkInitFromCommandLine,
+  // so this must be done after to avoid the race condition.
+  SelectFileDialogImpl::Initialize();
 
   window_frame_actions_ = {
       {ActionSource::kDoubleClick, Action::kToggleMaximize},
