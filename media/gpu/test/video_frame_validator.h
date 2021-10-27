@@ -86,6 +86,8 @@ class VideoFrameValidator : public VideoFrameProcessor {
   SEQUENCE_CHECKER(validator_thread_sequence_checker_);
 
  private:
+  void CleanUpOnValidatorThread();
+
   // Stop the frame validation thread.
   void Destroy();
 
@@ -104,7 +106,7 @@ class VideoFrameValidator : public VideoFrameProcessor {
 
   // An optional video frame processor that all corrupted frames will be
   // forwarded to. This can be used to e.g. write corrupted frames to disk.
-  const std::unique_ptr<VideoFrameProcessor> corrupt_frame_processor_;
+  std::unique_ptr<VideoFrameProcessor> corrupt_frame_processor_;
 
   // The number of frames currently queued for validation.
   size_t num_frames_validating_ GUARDED_BY(frame_validator_lock_);
