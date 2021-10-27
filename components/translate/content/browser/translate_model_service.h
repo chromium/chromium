@@ -21,6 +21,8 @@ class OptimizationGuideModelProvider;
 
 namespace translate {
 
+using GetModelCallback = base::OnceCallback<void(base::File)>;
+
 // Service that manages models required to support translation in the browser.
 // Currently, the service should only be used in the browser as it relies on
 // the Optimization Guide.
@@ -28,8 +30,6 @@ class TranslateModelService
     : public KeyedService,
       public optimization_guide::OptimizationTargetModelObserver {
  public:
-  using GetModelCallback = base::OnceCallback<void(base::File)>;
-
   TranslateModelService(
       optimization_guide::OptimizationGuideModelProvider* opt_guide,
       const scoped_refptr<base::SequencedTaskRunner>& background_task_runner);
