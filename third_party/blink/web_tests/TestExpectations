@@ -110,9 +110,6 @@ crbug.com/1254932 http/tests/preload/meta-csp.html [ Failure ]
 # Extra box in the output:
 crbug.com/1254933 css3/filters/filterRegions.html [ Failure ]
 
-# Extra \n at the end (maybe ok?):
-crbug.com/1254934 external/wpt/html/webappapis/dynamic-markup-insertion/document-write/051.html [ Failure ]
-
 # Table layout changes:
 crbug.com/1254935 fragmentation/nested-repeating-thead-4.html [ Failure ]
 crbug.com/1254935 fragmentation/nested-repeating-thead-tfoot-4.html [ Failure ]
