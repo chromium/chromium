@@ -2304,11 +2304,10 @@ ci.cipd_builder(
                 "sdk_package_name": "sources;android-30",
                 "cipd_yaml": "third_party/android_sdk/cipd/sources/android-30.yaml",
             },
-            # TODO(crbug.com/1223110): Enable once S is released to AOSP.
-            # {
-            #     "sdk_package_name": "sources;android-31",
-            #     "cipd_yaml": "third_party/android_sdk/cipd/sources/android-31.yaml",
-            # },
+            {
+                "sdk_package_name": "sources;android-31",
+                "cipd_yaml": "third_party/android_sdk/cipd/sources/android-31.yaml",
+            },
             {
                 "sdk_package_name": "system-images;android-23;google_apis;x86",
                 "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-23/google_apis/x86.yaml",
