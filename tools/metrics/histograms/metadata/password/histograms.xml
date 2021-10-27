@@ -2150,17 +2150,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.PasswordStoreAndroidBackend.ErrorCode"
-    enum="PasswordStoreAndroidBackendError" expires_after="2022-06-30">
-  <owner>fhorschig@chromium.org</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    This metric reports the error observed when retrieving/adding/updating or
-    removing logins from the PasswordStore Android backend. Recorded when the
-    asynchronous job has returned.
-  </summary>
-</histogram>
-
 <histogram
     name="PasswordManager.PasswordStoreAndroidBackend.GetAllLoginsAsync.Latency"
     units="ms" expires_after="2022-06-30">

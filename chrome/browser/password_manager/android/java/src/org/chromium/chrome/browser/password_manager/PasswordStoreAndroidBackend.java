@@ -12,17 +12,6 @@ import org.chromium.base.Callback;
  */
 public interface PasswordStoreAndroidBackend {
     /**
-     * Serves as a general exception for failed requests to the PasswordStoreAndroidBackend.
-     */
-    public class BackendException extends Exception {
-        public @AndroidBackendErrorType int errorCode;
-
-        public BackendException(String message, @AndroidBackendErrorType int error) {
-            super(message);
-            errorCode = error;
-        }
-    }
-    /**
      * Triggers an async list call to retrieve all logins.
      *
      * @param loginsReply Callback that is called on success with serialized {@link

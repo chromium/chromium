@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/types/strong_alias.h"
-#include "chrome/browser/password_manager/android/android_backend_error.h"
 #include "components/password_manager/core/browser/password_form.h"
 
 namespace password_manager {
@@ -41,7 +40,7 @@ class PasswordStoreAndroidBackendBridge {
 
     // Asynchronous response called with the `job_id` which was passed to the
     // corresponding call to `PasswordStoreAndroidBackendBridge`.
-    virtual void OnError(JobId job_id, AndroidBackendErrorType error) = 0;
+    virtual void OnError(JobId job_id) = 0;
   };
 
   virtual ~PasswordStoreAndroidBackendBridge() = default;

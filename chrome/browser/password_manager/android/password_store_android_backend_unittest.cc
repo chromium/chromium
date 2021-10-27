@@ -134,8 +134,6 @@ TEST_P(PasswordStoreAndroidBackendTestForMetrics, GetAllLoginsAsyncMetrics) {
       "PasswordManager.PasswordStoreAndroidBackend.GetAllLoginsAsync.Latency";
   const char kSuccessMetric[] =
       "PasswordManager.PasswordStoreAndroidBackend.GetAllLoginsAsync.Success";
-  const char kErrorCodeMetric[] =
-      "PasswordManager.PasswordStoreAndroidBackend.ErrorCode";
   base::HistogramTester histogram_tester;
   base::MockCallback<LoginsReply> mock_reply;
   EXPECT_CALL(*bridge(), GetAllLogins).WillOnce(Return(kJobId));
@@ -145,16 +143,13 @@ TEST_P(PasswordStoreAndroidBackendTestForMetrics, GetAllLoginsAsyncMetrics) {
   if (ShouldSucceed())
     consumer().OnCompleteWithLogins(kJobId, {});
   else
-    consumer().OnError(kJobId, AndroidBackendErrorType::kUncategorized);
+    consumer().OnError(kJobId);
   RunUntilIdle();
   histogram_tester.ExpectTotalCount(kDurationMetric, 1);
   histogram_tester.ExpectTimeBucketCount(kDurationMetric, kLatencyDelta, 1);
   histogram_tester.ExpectTotalCount(kSuccessMetric, 1);
   histogram_tester.ExpectBucketCount(kSuccessMetric, true, ShouldSucceed());
   histogram_tester.ExpectBucketCount(kSuccessMetric, false, !ShouldSucceed());
-  if (!ShouldSucceed()) {
-    histogram_tester.ExpectBucketCount(kErrorCodeMetric, 0, 1);
-  }
 }
 
 INSTANTIATE_TEST_SUITE_P(,
