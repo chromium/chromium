@@ -149,19 +149,18 @@ NotificationView::NotificationView(
   header_row->ConfigureLabelsStyle(font_list, text_view_padding, false);
   header_row->SetPreferredSize(header_row->GetPreferredSize() -
                                gfx::Size(GetInsets().width(), 0));
-  header_row->AddChildView(CreateControlButtonsView());
+  header_row->AddChildView(CreateControlButtonsBuilder().Build());
 
   auto content_row = CreateContentRow();
   auto* content_row_layout =
       static_cast<views::BoxLayout*>(content_row->GetLayoutManager());
   content_row_layout->set_inside_border_insets(kContentRowPadding);
 
-  auto left_content = CreateLeftContentView();
-  left_content->SetBorder(views::CreateEmptyBorder(kLeftContentPadding));
-  auto* left_content_ptr_ = content_row->AddChildView(std::move(left_content));
+  auto* left_content_ptr =
+      content_row->AddChildView(CreateLeftContentBuilder().Build());
   static_cast<views::BoxLayout*>(content_row->GetLayoutManager())
-      ->SetFlexForView(left_content_ptr_, 1);
-  content_row->AddChildView(CreateRightContentView());
+      ->SetFlexForView(left_content_ptr, 1);
+  content_row->AddChildView(CreateRightContentBuilder().Build());
 
   AddChildView(std::move(header_row));
   AddChildView(std::move(content_row));

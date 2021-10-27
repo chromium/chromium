@@ -10,6 +10,7 @@
 #include "ui/message_center/views/notification_input_container.h"
 #include "ui/message_center/views/notification_view.h"
 #include "ui/message_center/views/notification_view_base.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace message_center {
 class Notification;
@@ -84,53 +85,12 @@ class ASH_EXPORT AshNotificationView
   gfx::Size GetIconViewSize() const override;
   void ToggleInlineSettings(const ui::Event& event) override;
 
- private:
-  friend class AshNotificationViewTest;
-
-  // Customized title row for this notification view with added timestamp in
-  // collapse mode.
-  class NotificationTitleRow : public views::View {
-   public:
-    METADATA_HEADER(NotificationTitleRow);
-    explicit NotificationTitleRow(const std::u16string& title);
-    NotificationTitleRow(const NotificationTitleRow&) = delete;
-    NotificationTitleRow& operator=(const NotificationTitleRow&) = delete;
-    ~NotificationTitleRow() override;
-
-    // Changed the expand state. Title view size will change based on the state.
-    void SetExpanded(bool expanded, int left_content_width);
-
-    // Update title view's text.
-    void UpdateTitle(const std::u16string& title);
-
-    // Update the text for `timestamp_in_collapsed_view_`. Also used the timer
-    // to re-update this timestamp view when the next update is needed.
-    void UpdateTimestamp(base::Time timestamp);
-
-    // Update children's visibility based on the state of expand/collapse.
-    void UpdateVisibility(bool in_collapsed_mode);
-
-   private:
-    friend class AshNotificationViewTest;
-
-    // Showing notification title.
-    views::Label* const title_view_;
-
-    // Timestamp view shown alongside the title in collapsed state.
-    views::Label* const title_row_divider_;
-    views::Label* const timestamp_in_collapsed_view_;
-
-    // Timer that updates the timestamp over time.
-    base::OneShotTimer timestamp_update_timer_;
-    absl::optional<base::Time> timestamp_;
-  };
-
   // Customized expand button for this notification view. Used for grouped as
   // well as singular notifications.
   class ExpandButton : public views::Button {
    public:
     METADATA_HEADER(ExpandButton);
-    explicit ExpandButton(PressedCallback callback);
+    explicit ExpandButton(PressedCallback callback = PressedCallback());
     ExpandButton(const ExpandButton&) = delete;
     ExpandButton& operator=(const ExpandButton&) = delete;
     ~ExpandButton() override;
@@ -170,6 +130,49 @@ class ASH_EXPORT AshNotificationView
     // The expand state of the button.
     bool expanded_ = false;
   };
+  BEGIN_VIEW_BUILDER(/*no export*/, ExpandButton, views::Button)
+  END_VIEW_BUILDER
+
+ private:
+  friend class AshNotificationViewTest;
+
+  // Customized title row for this notification view with added timestamp in
+  // collapse mode.
+  class NotificationTitleRow : public views::View {
+   public:
+    METADATA_HEADER(NotificationTitleRow);
+    explicit NotificationTitleRow(const std::u16string& title);
+    NotificationTitleRow(const NotificationTitleRow&) = delete;
+    NotificationTitleRow& operator=(const NotificationTitleRow&) = delete;
+    ~NotificationTitleRow() override;
+
+    // Changed the expand state. Title view size will change based on the state.
+    void SetExpanded(bool expanded);
+
+    // Update title view's text.
+    void UpdateTitle(const std::u16string& title);
+
+    // Update the text for `timestamp_in_collapsed_view_`. Also used the timer
+    // to re-update this timestamp view when the next update is needed.
+    void UpdateTimestamp(base::Time timestamp);
+
+    // Update children's visibility based on the state of expand/collapse.
+    void UpdateVisibility(bool in_collapsed_mode);
+
+   private:
+    friend class AshNotificationViewTest;
+
+    // Showing notification title.
+    views::Label* const title_view_;
+
+    // Timestamp view shown alongside the title in collapsed state.
+    views::Label* const title_row_divider_;
+    views::Label* const timestamp_in_collapsed_view_;
+
+    // Timer that updates the timestamp over time.
+    base::OneShotTimer timestamp_update_timer_;
+    absl::optional<base::Time> timestamp_;
+  };
 
   // Update `message_in_expanded_view_` according to the given notification.
   void UpdateMessageViewInExpandedState(
@@ -178,9 +181,8 @@ class ASH_EXPORT AshNotificationView
   // Update the background color with rounded corner.
   void UpdateBackground(int top_radius, int bottom_radius);
 
-  // Get the available space for `content_row()` and `left_content_` width.
-  int GetContentRowWidth();
-  int GetLeftContentWidth();
+  // Get the available space for `message_view_in_expanded_state_` width.
+  int GetExpandedMessageViewWidth();
 
   // Disable the notification of this view. Called after the turn of
   // notifications button is clicked.
@@ -189,6 +191,7 @@ class ASH_EXPORT AshNotificationView
   // Owned by views hierarchy.
   RoundedImageView* app_icon_view_ = nullptr;
   ExpandButton* expand_button_ = nullptr;
+  views::View* control_buttons_container_ = nullptr;
   views::View* left_content_ = nullptr;
   views::Label* message_view_in_expanded_state_ = nullptr;
   views::View* grouped_notifications_container_ = nullptr;
@@ -197,7 +200,6 @@ class ASH_EXPORT AshNotificationView
   views::View* main_view_ = nullptr;
   views::LabelButton* turn_off_notifications_button_ = nullptr;
   views::LabelButton* inline_settings_cancel_button_ = nullptr;
-  views::BoxLayout* const layout_manager_ = nullptr;
 
   // These views below are dynamically created inside view hierarchy.
   NotificationTitleRow* title_row_ = nullptr;
@@ -227,5 +229,7 @@ class ASH_EXPORT AshNotificationView
 };
 
 }  // namespace ash
+
+DEFINE_VIEW_BUILDER(/* no export */, ash::AshNotificationView::ExpandButton)
 
 #endif  // ASH_SYSTEM_MESSAGE_CENTER_ASH_NOTIFICATION_VIEW_H_

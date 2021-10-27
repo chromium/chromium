@@ -27,7 +27,6 @@ namespace message_center {
 NotificationControlButtonsView::NotificationControlButtonsView(
     MessageView* message_view)
     : message_view_(message_view), icon_color_(gfx::kChromeIconGrey) {
-  DCHECK(message_view);
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal));
   // Do not stretch buttons as that would stretch their focus indicator.
@@ -142,6 +141,10 @@ void NotificationControlButtonsView::SetBackgroundColor(SkColor color) {
     return;
   background_color_ = color;
   UpdateButtonIconColors();
+}
+
+void NotificationControlButtonsView::SetMessageView(MessageView* message_view) {
+  message_view_ = message_view;
 }
 
 void NotificationControlButtonsView::UpdateButtonIconColors() {

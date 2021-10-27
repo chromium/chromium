@@ -63,6 +63,7 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/native_cursor.h"
 #include "ui/views/style/typography.h"
@@ -557,13 +558,12 @@ bool NotificationViewBase::IsIconViewShown() const {
   return icon_view_ && (!hide_icon_on_expanded_ || !expanded_);
 }
 
-std::unique_ptr<NotificationControlButtonsView>
-NotificationViewBase::CreateControlButtonsView() {
+views::Builder<NotificationControlButtonsView>
+NotificationViewBase::CreateControlButtonsBuilder() {
   DCHECK(!control_buttons_view_);
-  auto control_buttons_view =
-      std::make_unique<NotificationControlButtonsView>(this);
-  control_buttons_view_ = control_buttons_view.get();
-  return control_buttons_view;
+  return views::Builder<NotificationControlButtonsView>()
+      .CopyAddressTo(&control_buttons_view_)
+      .SetMessageView(this);
 }
 
 std::unique_ptr<NotificationHeaderView>
@@ -586,21 +586,19 @@ NotificationViewBase::CreateHeaderRow() {
   return header_row;
 }
 
-std::unique_ptr<views::View> NotificationViewBase::CreateLeftContentView() {
+views::Builder<views::BoxLayoutView>
+NotificationViewBase::CreateLeftContentBuilder() {
   DCHECK(!left_content_);
-  auto left_content = std::make_unique<views::View>();
-  left_content->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, gfx::Insets(), 0));
-  left_content_ = left_content.get();
-  return left_content;
+  return views::Builder<views::BoxLayoutView>()
+      .CopyAddressTo(&left_content_)
+      .SetOrientation(views::BoxLayout::Orientation::kVertical);
 }
 
-std::unique_ptr<views::View> NotificationViewBase::CreateRightContentView() {
+views::Builder<views::View> NotificationViewBase::CreateRightContentBuilder() {
   DCHECK(!right_content_);
-  auto right_content = std::make_unique<views::View>();
-  right_content->SetLayoutManager(std::make_unique<views::FillLayout>());
-  right_content_ = right_content.get();
-  return right_content;
+  return views::Builder<views::View>()
+      .CopyAddressTo(&right_content_)
+      .SetUseDefaultFillLayout(true);
 }
 
 std::unique_ptr<views::View> NotificationViewBase::CreateContentRow() {

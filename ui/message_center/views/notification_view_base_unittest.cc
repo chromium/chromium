@@ -64,10 +64,10 @@ class TestNotificationView : public NotificationViewBase {
     SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical, gfx::Insets(), 0));
     AddChildView(CreateHeaderRow());
-    AddChildView(CreateControlButtonsView());
+    AddChildView(CreateControlButtonsBuilder().Build());
     AddChildView(CreateContentRow());
-    AddChildView(CreateLeftContentView());
-    AddChildView(CreateRightContentView());
+    AddChildView(CreateLeftContentBuilder().Build());
+    AddChildView(CreateRightContentBuilder().Build());
     AddChildView(CreateImageContainerView());
     AddChildView(CreateInlineSettingsView());
     AddChildView(CreateActionsRow());
