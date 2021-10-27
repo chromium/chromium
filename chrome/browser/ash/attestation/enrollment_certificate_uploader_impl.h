@@ -61,38 +61,37 @@ class EnrollmentCertificateUploaderImpl : public EnrollmentCertificateUploader {
   void ObtainAndUploadCertificate(UploadCallback callback) override;
 
  private:
-  enum class EnrollmentCertificateRequest {
-    kExistingCertificate,
-    kNewCertificate
-  };
-
   // Starts certificate obtention and upload.
   void Start();
 
-  // Run all callbacks with |status|.
-  void RunCallbacks(Status status);
-
-  // Gets a certificate.
-  void GetCertificate(EnrollmentCertificateRequest certificate_request);
+  // Gets a certificate. If |force_new_key| is false, fetches existing
+  // certificate if any. Otherwise, fetches new certificate.
+  void GetCertificate(bool force_new_key);
 
   // Handles failure of getting a certificate.
-  void HandleGetCertificateFailure(
-      EnrollmentCertificateRequest certificate_request,
-      AttestationStatus status);
+  void HandleGetCertificateFailure(AttestationStatus status);
+
+  // Checks if fetched certificate has expired. If so, starts again with
+  // fetching new certificate.
+  void CheckCertificateExpiry(const std::string& pem_certificate_chain);
+
+  // Uploads an enterprise certificate to the policy server if it has not been
+  // already uploaded. If it was uploaded - reports success without further
+  // upload.
+  void UploadCertificateIfNeeded(const std::string& pem_certificate_chain);
 
   // Called when a certificate upload operation completes. On success, |status|
   // will be true.
   void OnUploadComplete(bool status);
 
-  // Uploads an enterprise certificate to the policy server.
-  void UploadCertificate(const std::string& pem_certificate_chain);
-
-  // Reschedules certificate upload from |GetCertificate()| checkpoint with
-  // given |certificate_request|  and returns true.
+  // Reschedules certificate upload from |Start()| checkpoint and returns true.
   // If |retry_limit_| is exceeded, does not reschedule and returns false.
   // TODO(crbug.com/256845): A better solution would be to wait for a dbus
   // signal which indicates the system is ready to process this task.
-  bool Reschedule(EnrollmentCertificateRequest certificate_request);
+  bool Reschedule();
+
+  // Run all callbacks with |status|.
+  void RunCallbacks(Status status);
 
   policy::CloudPolicyClient* policy_client_;
   AttestationFlow* attestation_flow_;
@@ -104,7 +103,8 @@ class EnrollmentCertificateUploaderImpl : public EnrollmentCertificateUploader {
   int retry_limit_;
   base::TimeDelta retry_delay_;
 
-  // Indicates whether certificate has already been uploaded successfully.
+  // Indicates whether certificate has already been uploaded successfully. False
+  // when no certificate is uploaded or the current certificate has expired.
   bool has_already_uploaded_ = false;
 
   // Note: This should remain the last member so it'll be destroyed and
