@@ -120,6 +120,27 @@ void RunHintsFetchedCallbackWithResponse(
   std::move(hints_fetched_callback).Run(std::move(response));
 }
 
+// Returns the default params used for the kOptimizationHints feature.
+base::FieldTrialParams GetOptimizationHintsDefaultFeatureParams() {
+  return {{
+      "max_host_keyed_hint_cache_size",
+      "1",
+  }};
+}
+
+std::unique_ptr<base::test::ScopedFeatureList>
+SetUpDeferStartupActiveTabsHintsFetch(bool is_enabled) {
+  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list =
+      std::make_unique<base::test::ScopedFeatureList>();
+  auto params = GetOptimizationHintsDefaultFeatureParams();
+
+  params["defer_startup_active_tabs_hints_fetch"] =
+      is_enabled ? "true" : "false";
+  scoped_feature_list->InitAndEnableFeatureWithParameters(
+      optimization_guide::features::kOptimizationHints, params);
+  return scoped_feature_list;
+}
+
 }  // namespace
 
 // A mock class implementation of TopHostProvider.
@@ -270,7 +291,7 @@ class HintsManagerTest
   HintsManagerTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         optimization_guide::features::kOptimizationHints,
-        {{"max_host_keyed_hint_cache_size", "1"}});
+        GetOptimizationHintsDefaultFeatureParams());
   }
   ~HintsManagerTest() override = default;
 
@@ -280,9 +301,6 @@ class HintsManagerTest
   void SetUp() override {
     optimization_guide::ProtoDatabaseProviderTestBase::SetUp();
     CreateHintsManager(/*top_host_provider=*/nullptr);
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        optimization_guide::switches::
-            kDisableFetchHintsForActiveTabsOnDeferredStartup);
   }
 
   void TearDown() override {
@@ -1974,6 +1992,8 @@ TEST_F(HintsManagerFetchingTest,
 }
 
 TEST_F(HintsManagerFetchingTest, HintsFetcherEnabledNoHostsOrUrlsToFetch) {
+  auto scoped_feature_list = SetUpDeferStartupActiveTabsHintsFetch(false);
+  base::HistogramTester histogram_tester;
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       optimization_guide::switches::kDisableCheckingUserPermissionsForTesting);
   std::unique_ptr<FakeTopHostProvider> top_host_provider =
@@ -1986,6 +2006,11 @@ TEST_F(HintsManagerFetchingTest, HintsFetcherEnabledNoHostsOrUrlsToFetch) {
       BuildTestHintsFetcherFactory(
           {HintsFetcherEndState::kFetchSuccessWithHostHints}));
   InitializeWithDefaultConfig("1.0.0");
+
+  // No hints fetch should happen on startup.
+  RunUntilIdle();
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.HintsManager.ActiveTabUrlsToFetchFor", 0);
 
   // Force timer to expire after random delay and schedule a hints fetch.
   MoveClockForwardBy(base::Seconds(60 * 2));
@@ -2003,8 +2028,8 @@ TEST_F(HintsManagerFetchingTest, HintsFetcherEnabledNoHostsOrUrlsToFetch) {
 }
 
 TEST_F(HintsManagerFetchingTest, HintsFetcherEnabledNoHostsButHasUrlsToFetch) {
+  auto scoped_feature_list = SetUpDeferStartupActiveTabsHintsFetch(false);
   base::HistogramTester histogram_tester;
-
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       optimization_guide::switches::kDisableCheckingUserPermissionsForTesting);
   std::unique_ptr<FakeTopHostProvider> top_host_provider =
@@ -2020,6 +2045,11 @@ TEST_F(HintsManagerFetchingTest, HintsFetcherEnabledNoHostsButHasUrlsToFetch) {
 
   tab_url_provider()->SetUrls(
       {GURL("https://a.com"), GURL("https://b.com"), GURL("chrome://new-tab")});
+
+  // No hints fetch should happen on startup.
+  RunUntilIdle();
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.HintsManager.ActiveTabUrlsToFetchFor", 0);
 
   // Force timer to expire after random delay and schedule a hints fetch that
   // succeeds.
@@ -2041,12 +2071,16 @@ TEST_F(HintsManagerFetchingTest, HintsFetcherEnabledNoHostsButHasUrlsToFetch) {
       "OptimizationGuide.HintsManager.ActiveTabUrlsToFetchFor", 0, 1);
 }
 
-TEST_F(HintsManagerFetchingTest, HintsFetcherTimerFetch) {
+// Verifies hints for active tab URLs is not fetched immediately on startup. It
+// should be fetched after a random delay for the first time, and then continue
+// to be fetched.
+TEST_F(HintsManagerFetchingTest, HintsFetcherTimerFetchOnStartup) {
+  auto scoped_feature_list = SetUpDeferStartupActiveTabsHintsFetch(false);
+  base::HistogramTester histogram_tester;
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       optimization_guide::switches::kDisableCheckingUserPermissionsForTesting);
   std::unique_ptr<FakeTopHostProvider> top_host_provider =
-      std::make_unique<FakeTopHostProvider>(
-          std::vector<std::string>({"example1.com", "example2.com"}));
+      std::make_unique<FakeTopHostProvider>(std::vector<std::string>({}));
 
   CreateHintsManager(top_host_provider.get());
   hints_manager()->RegisterOptimizationTypes(
@@ -2056,14 +2090,75 @@ TEST_F(HintsManagerFetchingTest, HintsFetcherTimerFetch) {
           {HintsFetcherEndState::kFetchSuccessWithHostHints}));
   InitializeWithDefaultConfig("1.0.0");
 
+  tab_url_provider()->SetUrls(
+      {GURL("https://a.com"), GURL("https://b.com"), GURL("chrome://new-tab")});
+
+  // No hints fetch should happen on startup.
+  RunUntilIdle();
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.HintsManager.ActiveTabUrlsToFetchFor", 0);
+  EXPECT_EQ(nullptr, batch_update_hints_fetcher());
+  EXPECT_EQ(0, tab_url_provider()->get_num_urls_called());
+
   // Force timer to expire after random delay and schedule a hints fetch that
   // succeeds.
   MoveClockForwardBy(base::Seconds(60 * 2));
+  histogram_tester.ExpectBucketCount(
+      "OptimizationGuide.HintsManager.ActiveTabUrlsToFetchFor", 2, 1);
+  EXPECT_EQ(1, tab_url_provider()->get_num_urls_called());
   EXPECT_EQ(1, batch_update_hints_fetcher()->num_fetches_requested());
 
   // Move it forward again to make sure timer is scheduled.
   MoveClockForwardBy(base::Seconds(kUpdateFetchHintsTimeSecs));
-  EXPECT_EQ(2, batch_update_hints_fetcher()->num_fetches_requested());
+  histogram_tester.ExpectBucketCount(
+      "OptimizationGuide.HintsManager.ActiveTabUrlsToFetchFor", 0, 1);
+  EXPECT_EQ(2, tab_url_provider()->get_num_urls_called());
+  EXPECT_EQ(1, batch_update_hints_fetcher()->num_fetches_requested());
+}
+
+// Verifies the deferred startup mode that fetches hints for active tab URLs on
+// deferred startup (but not on immediate startup). It should continue to be
+// fetched after a refresh duration.
+TEST_F(HintsManagerFetchingTest, HintsFetcherDeferredStartup) {
+  auto scoped_feature_list = SetUpDeferStartupActiveTabsHintsFetch(true);
+  base::HistogramTester histogram_tester;
+
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      optimization_guide::switches::kDisableCheckingUserPermissionsForTesting);
+  std::unique_ptr<FakeTopHostProvider> top_host_provider =
+      std::make_unique<FakeTopHostProvider>(std::vector<std::string>({}));
+
+  CreateHintsManager(top_host_provider.get());
+  hints_manager()->RegisterOptimizationTypes(
+      {optimization_guide::proto::DEFER_ALL_SCRIPT});
+  hints_manager()->SetHintsFetcherFactoryForTesting(
+      BuildTestHintsFetcherFactory(
+          {HintsFetcherEndState::kFetchSuccessWithHostHints}));
+  InitializeWithDefaultConfig("1.0.0");
+
+  tab_url_provider()->SetUrls(
+      {GURL("https://a.com"), GURL("https://b.com"), GURL("chrome://new-tab")});
+
+  // No hints fetch should happen on startup.
+  RunUntilIdle();
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.HintsManager.ActiveTabUrlsToFetchFor", 0);
+  EXPECT_EQ(0, tab_url_provider()->get_num_urls_called());
+
+  // Hints fetch should be triggered on deferred startup.
+  hints_manager()->OnDeferredStartup();
+  RunUntilIdle();
+  histogram_tester.ExpectBucketCount(
+      "OptimizationGuide.HintsManager.ActiveTabUrlsToFetchFor", 2, 1);
+  EXPECT_EQ(1, tab_url_provider()->get_num_urls_called());
+  EXPECT_EQ(1, batch_update_hints_fetcher()->num_fetches_requested());
+
+  // Move it forward again to make sure timer is scheduled.
+  MoveClockForwardBy(base::Seconds(kUpdateFetchHintsTimeSecs));
+  histogram_tester.ExpectBucketCount(
+      "OptimizationGuide.HintsManager.ActiveTabUrlsToFetchFor", 0, 1);
+  EXPECT_EQ(2, tab_url_provider()->get_num_urls_called());
+  EXPECT_EQ(1, batch_update_hints_fetcher()->num_fetches_requested());
 }
 
 TEST_F(HintsManagerFetchingTest,

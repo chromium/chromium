@@ -567,12 +567,9 @@ void HintsManager::OnComponentHintsUpdated(base::OnceClosure update_closure,
       optimization_guide::kComponentHintsUpdatedResultHistogramString,
       hints_updated);
 
-  bool shouldInitiateFetchScheduling = true;
-#if defined(OS_ANDROID)
-  shouldInitiateFetchScheduling = optimization_guide::switches::
-      DisableFetchHintsForActiveTabsOnDeferredStartup();
-#endif
-  if (shouldInitiateFetchScheduling)
+  // Initiate the hints fetch scheduling if deferred startup handling is not
+  // enabled. Otherwise OnDeferredStartup() will iniitate it.
+  if (!features::ShouldDeferStartupActiveTabsHintsFetch())
     InitiateHintsFetchScheduling();
   MaybeRunUpdateClosure(std::move(update_closure));
 }
@@ -583,8 +580,7 @@ void HintsManager::InitiateHintsFetchScheduling() {
     SetLastHintsFetchAttemptTime(clock_->Now());
 
     if (optimization_guide::switches::ShouldOverrideFetchHintsTimer() ||
-        !optimization_guide::switches::
-            DisableFetchHintsForActiveTabsOnDeferredStartup()) {
+        features::ShouldDeferStartupActiveTabsHintsFetch()) {
       FetchHintsForActiveTabs();
     } else if (!active_tabs_hints_fetch_timer_.IsRunning()) {
       // Batch update hints with a random delay.
@@ -1372,7 +1368,8 @@ void HintsManager::OnNavigationFinish(
 }
 
 void HintsManager::OnDeferredStartup() {
-  InitiateHintsFetchScheduling();
+  if (features::ShouldDeferStartupActiveTabsHintsFetch())
+    InitiateHintsFetchScheduling();
 }
 
 optimization_guide::OptimizationGuideStore* HintsManager::hint_store() {
