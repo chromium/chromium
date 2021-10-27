@@ -1110,6 +1110,7 @@ export class SelectToSpeak {
     const voiceName = options['voiceName'] || '';
     const fallbackVoiceName = this.prefsManager_.getLocalVoice();
 
+    MetricsUtils.recordTtsEngineUsed(voiceName, this.prefsManager_);
     this.ttsManager_.speak(
         nodeGroup.text, options, this.prefsManager_.isNetworkVoice(voiceName),
         fallbackVoiceName);
