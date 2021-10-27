@@ -154,6 +154,7 @@ SharesheetBubbleView::SharesheetBubbleView(
     gfx::NativeWindow native_window,
     ::sharesheet::SharesheetServiceDelegator* delegator)
     : delegator_(delegator) {
+  SetID(SHARESHEET_BUBBLE_VIEW_ID);
   // We set the dialog role because views::BubbleDialogDelegate defaults this to
   // an alert dialog. This would make screen readers announce all of this dialog
   // which is undesirable.
@@ -192,9 +193,11 @@ void SharesheetBubbleView::ShowBubble(
       main_view_->AddChildView(std::make_unique<SharesheetHeaderView>(
           intent_->Clone(), delegator_->GetProfile(), show_content_previews));
   body_view_ = main_view_->AddChildView(std::make_unique<views::View>());
+  body_view_->SetID(BODY_VIEW_ID);
   body_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
   footer_view_ = main_view_->AddChildView(std::make_unique<views::View>());
+  footer_view_->SetID(FOOTER_VIEW_ID);
   auto* footer_layout =
       footer_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal,
@@ -321,12 +324,14 @@ std::unique_ptr<views::View> SharesheetBubbleView::MakeScrollableTargetView(
           views::BoxLayout::Orientation::kVertical));
   layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
   default_view_ = scrollable_view->AddChildView(std::move(default_view));
+  default_view_->SetID(TARGETS_DEFAULT_VIEW_ID);
   if (expanded_layout) {
     expanded_view_separator_ =
         scrollable_view->AddChildView(std::make_unique<views::Separator>());
     expanded_view_separator_->SetProperty(views::kMarginsKey,
                                           gfx::Insets(0, kSpacing));
     expanded_view_ = scrollable_view->AddChildView(std::move(expanded_view));
+    expanded_view_->SetID(TARGETS_EXPANDED_VIEW_ID);
     // |expanded_view_| is not visible by default.
     expanded_view_->SetVisible(false);
     expanded_view_separator_->SetVisible(false);
@@ -458,18 +463,6 @@ void SharesheetBubbleView::CloseBubble(views::Widget::ClosedReason reason) {
   if (!is_bubble_closing_) {
     CloseWidgetWithAnimateFadeOut(reason);
   }
-}
-
-SharesheetHeaderView* SharesheetBubbleView::GetHeaderViewForTesting() {
-  return header_view_;
-}
-
-views::View* SharesheetBubbleView::GetBodyViewForTesting() {
-  return body_view_;
-}
-
-views::View* SharesheetBubbleView::GetFooterViewForTesting() {
-  return footer_view_;
 }
 
 bool SharesheetBubbleView::AcceleratorPressed(

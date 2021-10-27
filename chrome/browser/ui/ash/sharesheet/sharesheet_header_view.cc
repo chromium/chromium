@@ -249,6 +249,7 @@ SharesheetHeaderView::SharesheetHeaderView(apps::mojom::IntentPtr intent,
     : profile_(profile),
       intent_(std::move(intent)),
       thumbnail_loader_(profile) {
+  SetID(HEADER_VIEW_ID);
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
       /* inside_border_insets */ gfx::Insets(kSpacing),
