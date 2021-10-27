@@ -55,6 +55,20 @@ void FontFamily::AppendFamily(AtomicString family_name, Type family_type) {
   AppendFamily(appended_family);
 }
 
+void FontFamily::Prewarm(const FontDescription& font_description) const {
+  DCHECK(!FamilyName().IsEmpty());
+  DCHECK(!is_prewarmed_);
+  is_prewarmed_ = true;
+  switch (family_type_) {
+    case Type::kFamilyName:
+      FontCache::PrewarmFamily(FamilyName());
+      break;
+    case Type::kGenericFamily:
+      // TODO(kojii): Support generic family.
+      break;
+  }
+}
+
 String FontFamily::ToString() const {
   StringBuilder builder;
   builder.Append(family_name_);
