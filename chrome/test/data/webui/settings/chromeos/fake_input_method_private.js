@@ -6,12 +6,12 @@
  * @fileoverview Fake implementation of chrome.inputMethodPrivate
  * for testing.
  */
-  /**
-   * Fake of the chrome.inputMethodsPrivate API. Only methods that are called
-   * during testing have been implemented.
-   *
-   * @constructor
-   */
+/**
+ * Fake of the chrome.inputMethodsPrivate API. Only methods that are called
+ * during testing have been implemented.
+ *
+ * @constructor
+ */
 export function FakeInputMethodPrivate() {}
 
 FakeInputMethodPrivate.prototype = {
