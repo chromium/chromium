@@ -108,22 +108,21 @@ void DesksTemplatesPresenter::OnGetAllEntries(
   if (status != desks_storage::DeskModel::GetAllEntriesStatus::kOk)
     return;
 
-  // The desks templates button is invisible if there are no entries to view.
-  const bool visible = !entries.empty();
+  should_show_templates_ui_ = !entries.empty();
   for (auto& overview_grid : overview_session_->grid_list()) {
-    const DesksBarView* desks_bar_view = overview_grid->desks_bar_view();
-    if (desks_bar_view) {
-      const bool is_zero_state = desks_bar_view->IsZeroState();
-      desks_bar_view->zero_state_desks_templates_button()->SetVisible(
-          is_zero_state && visible);
-      desks_bar_view->expanded_state_desks_templates_button()->SetVisible(
-          !is_zero_state && visible);
+    if (DesksBarView* desks_bar_view =
+            const_cast<DesksBarView*>(overview_grid->desks_bar_view())) {
+      // When templates is enabled but templates haven't loaded, the templates
+      // button may be visible but have a size of 0x0 so we have to make a
+      // Layout() call here.
+      desks_bar_view->UpdateDesksTemplatesButtonVisibility();
+      desks_bar_view->Layout();
     }
 
     if (!overview_grid->IsShowingDesksTemplatesGrid())
       continue;
 
-    if (!visible) {
+    if (!should_show_templates_ui_) {
       // When deleting, it is possible to delete the last template. In this
       // case, close the template grid and go back to overview.
       overview_grid->HideDesksTemplatesGrid();

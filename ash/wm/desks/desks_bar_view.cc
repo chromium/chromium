@@ -26,6 +26,7 @@
 #include "ash/wm/desks/expanded_desks_bar_button.h"
 #include "ash/wm/desks/persistent_desks_bar_button.h"
 #include "ash/wm/desks/scroll_arrow_button.h"
+#include "ash/wm/desks/templates/desks_templates_presenter.h"
 #include "ash/wm/desks/templates/desks_templates_util.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -193,8 +194,6 @@ class DesksBarScrollViewLayout : public views::LayoutManager {
     const gfx::Rect scroll_bounds = bar_view_->scroll_view_->bounds();
 
     // |host| here is |scroll_view_contents_|.
-    // TODO(crbug.com/1255185): Make templates button compatible with zero
-    // state.
     if (bar_view_->IsZeroState()) {
       host->SetBoundsRect(scroll_bounds);
       auto* zero_state_default_desk_button =
@@ -207,20 +206,25 @@ class DesksBarScrollViewLayout : public views::LayoutManager {
       const gfx::Size zero_state_new_desk_button_size =
           zero_state_new_desk_button->GetPreferredSize();
 
-      auto* desks_templates_button =
+      const bool should_show_templates_ui =
+          desks_templates_util::AreDesksTemplatesEnabled() &&
+          DesksTemplatesPresenter::Get()->should_show_templates_ui();
+      auto* zero_state_desks_templates_button =
           bar_view_->zero_state_desks_templates_button();
-      const gfx::Size desks_templates_button_size =
-          desks_templates_button ? desks_templates_button->GetPreferredSize()
-                                 : gfx::Size();
-      const int width_for_desks_templates_button =
-          desks_templates_button
-              ? desks_templates_button_size.width() + kZeroStateButtonSpacing
+      const gfx::Size zero_state_desks_templates_button_size =
+          should_show_templates_ui
+              ? zero_state_desks_templates_button->GetPreferredSize()
+              : gfx::Size();
+      const int width_for_zero_state_desks_templates_button =
+          should_show_templates_ui
+              ? zero_state_desks_templates_button_size.width() +
+                    kZeroStateButtonSpacing
               : 0;
 
       const int content_width = zero_state_default_desk_button_size.width() +
                                 kZeroStateButtonSpacing +
                                 zero_state_new_desk_button_size.width() +
-                                width_for_desks_templates_button;
+                                width_for_zero_state_desks_templates_button;
       zero_state_default_desk_button->SetBoundsRect(gfx::Rect(
           gfx::Point((scroll_bounds.width() - content_width) / 2, kZeroStateY),
           zero_state_default_desk_button_size));
@@ -237,12 +241,13 @@ class DesksBarScrollViewLayout : public views::LayoutManager {
                      kZeroStateY),
           zero_state_new_desk_button_size));
 
-      if (desks_templates_button) {
-        desks_templates_button->SetBoundsRect(
+      if (zero_state_desks_templates_button) {
+        zero_state_desks_templates_button->SetBoundsRect(
             gfx::Rect(gfx::Point(zero_state_new_desk_button->bounds().right() +
                                      kZeroStateButtonSpacing,
                                  kZeroStateY),
-                      desks_templates_button_size));
+                      zero_state_desks_templates_button_size));
+        zero_state_desks_templates_button->SetVisible(should_show_templates_ui);
       }
 
       // Keep the background view's translation updated while the height of bar
@@ -259,17 +264,19 @@ class DesksBarScrollViewLayout : public views::LayoutManager {
     if (mini_views.empty())
       return;
 
-    auto* desks_templates_button =
+    auto* expanded_state_desks_templates_button =
         bar_view_->expanded_state_desks_templates_button();
-    const bool desks_templates_button_visible =
-        desks_templates_button && desks_templates_button->GetVisible();
+    const bool expanded_state_desks_templates_button_visible =
+        expanded_state_desks_templates_button &&
+        expanded_state_desks_templates_button->GetVisible();
 
     gfx::Size mini_view_size = mini_views[0]->GetPreferredSize();
     const int mini_view_spacing = GetSpaceBetweenMiniViews(mini_views[0]);
     // The new desk button and template button in the expanded bar view has the
     // same size as mini view.
-    const int num_items = static_cast<int>(mini_views.size()) +
-                          (desks_templates_button_visible ? 2 : 1);
+    const int num_items =
+        static_cast<int>(mini_views.size()) +
+        (expanded_state_desks_templates_button_visible ? 2 : 1);
     const int content_width =
         num_items * (mini_view_size.width() + mini_view_spacing) -
         mini_view_spacing;
@@ -290,9 +297,9 @@ class DesksBarScrollViewLayout : public views::LayoutManager {
     bar_view_->expanded_state_new_desk_button()->SetBoundsRect(
         gfx::Rect(gfx::Point(x, y), mini_view_size));
 
-    if (desks_templates_button_visible) {
+    if (expanded_state_desks_templates_button) {
       x += (mini_view_size.width() + mini_view_spacing);
-      desks_templates_button->SetBoundsRect(
+      expanded_state_desks_templates_button->SetBoundsRect(
           gfx::Rect(gfx::Point(x, y), mini_view_size));
     }
   }
@@ -382,13 +389,6 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
             &kDesksTemplatesIcon,
             base::BindRepeating(&DesksBarView::OnDesksTemplatesButtonPressed,
                                 base::Unretained(this))));
-    // Hide the button initially. The presenter will ask the desk model and
-    // update the visibility of this button if there are any entries to
-    // view. Note that we should not control visibility after creating them
-    // invisible in this class like other buttons, and have the
-    // DesksTemplatesPresenter control the visibility.
-    expanded_state_desks_templates_button_->SetVisible(false);
-    zero_state_desks_templates_button_->SetVisible(false);
   }
   scroll_view_contents_->SetLayoutManager(
       std::make_unique<DesksBarScrollViewLayout>(this));
@@ -782,6 +782,8 @@ void DesksBarView::OnDeskRemoved(const Desk* desk) {
     EndDragDesk(removed_mini_view, /*end_by_user=*/false);
 
   expanded_state_new_desk_button_->UpdateButtonState();
+  if (desks_templates_util::AreDesksTemplatesEnabled())
+    expanded_state_desks_templates_button_->UpdateButtonState();
 
   for (auto* mini_view : mini_views_)
     mini_view->UpdateCloseButtonVisibility();
@@ -815,7 +817,8 @@ void DesksBarView::OnDeskRemoved(const Desk* desk) {
       removed_mini_view,
       std::vector<DeskMiniView*>(mini_views_.begin(), partition_iter),
       std::vector<DeskMiniView*>(partition_iter, mini_views_.end()),
-      expanded_state_new_desk_button_, begin_x - GetFirstMiniViewXOffset());
+      expanded_state_new_desk_button_, expanded_state_desks_templates_button_,
+      begin_x - GetFirstMiniViewXOffset());
 }
 
 void DesksBarView::OnDeskReordered(int old_index, int new_index) {
@@ -938,6 +941,8 @@ void DesksBarView::OnNewDeskButtonPressed(
   set_should_name_nudge(true);
   controller->NewDesk(desks_creation_removal_source);
   expanded_state_new_desk_button_->UpdateButtonState();
+  if (desks_templates_util::AreDesksTemplatesEnabled())
+    expanded_state_desks_templates_button_->UpdateButtonState();
 }
 
 void DesksBarView::UpdateButtonsForDesksTemplatesGrid() {
@@ -945,13 +950,26 @@ void DesksBarView::UpdateButtonsForDesksTemplatesGrid() {
   // desks bar so `IsZeroState()` should never be true here. Currently the
   // aforementioned behavior is WIP so leave this as an early return for now to
   // satisfy tests.
-  if (IsZeroState())
+  if (IsZeroState() || !desks_templates_util::AreDesksTemplatesEnabled())
     return;
 
   FindMiniViewForDesk(Shell::Get()->desks_controller()->active_desk())
       ->UpdateBorderColor();
   expanded_state_desks_templates_button_->set_active(true);
   expanded_state_desks_templates_button_->UpdateBorderColor();
+}
+
+void DesksBarView::UpdateDesksTemplatesButtonVisibility() {
+  if (!desks_templates_util::AreDesksTemplatesEnabled())
+    return;
+
+  const bool should_show_ui =
+      DesksTemplatesPresenter::Get()->should_show_templates_ui();
+  const bool is_zero_state = IsZeroState();
+  zero_state_desks_templates_button_->SetVisible(should_show_ui &&
+                                                 is_zero_state);
+  expanded_state_desks_templates_button_->SetVisible(should_show_ui &&
+                                                     !is_zero_state);
 }
 
 DeskMiniView* DesksBarView::FindMiniViewForDesk(const Desk* desk) const {
@@ -1026,6 +1044,8 @@ void DesksBarView::UpdateDeskButtonsVisibility() {
   expanded_state_new_desk_button_->SetVisible(!is_zero_state);
   if (vertical_dots_button_)
     vertical_dots_button_->SetVisible(!is_zero_state);
+
+  UpdateDesksTemplatesButtonVisibility();
 }
 
 void DesksBarView::UpdateScrollButtonsVisibility() {

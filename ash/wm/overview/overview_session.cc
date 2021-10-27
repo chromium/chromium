@@ -170,6 +170,15 @@ void OverviewSession::Init(const WindowList& windows,
   if (active_window_before_overview_)
     active_window_before_overview_->AddObserver(this);
 
+  // Create this before the desks bar widget.
+  if (desks_templates_util::AreDesksTemplatesEnabled() &&
+      !desks_templates_presenter_) {
+    desks_templates_presenter_ =
+        std::make_unique<DesksTemplatesPresenter>(this);
+    desks_templates_dialog_controller_ =
+        std::make_unique<DesksTemplatesDialogController>();
+  }
+
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
   std::sort(root_windows.begin(), root_windows.end(),
             [](const aura::Window* a, const aura::Window* b) {
@@ -690,16 +699,6 @@ void OverviewSession::OnStartingAnimationComplete(bool canceled,
 
   if (canceled)
     return;
-
-  // Create this after the desks bar widget. This will try to update the desks
-  // templates button on the desks bar views during construction.
-  if (desks_templates_util::AreDesksTemplatesEnabled() &&
-      !desks_templates_presenter_) {
-    desks_templates_presenter_ =
-        std::make_unique<DesksTemplatesPresenter>(this);
-    desks_templates_dialog_controller_ =
-        std::make_unique<DesksTemplatesDialogController>();
-  }
 
   if (overview_focus_widget_) {
     if (should_focus_overview) {
