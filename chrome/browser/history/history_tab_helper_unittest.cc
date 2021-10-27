@@ -185,6 +185,31 @@ TEST_F(HistoryTabHelperTest, CreateAddPageArgsReferringURLMainFrameNoReferrer) {
   EXPECT_TRUE(args.referrer.is_empty());
 }
 
+TEST_F(HistoryTabHelperTest, CreateAddPageArgsHistoryTitleAfterPageReload) {
+  NiceMock<content::MockNavigationHandle> navigation_handle(web_contents());
+  navigation_handle.set_redirect_chain({GURL("https://someurl.com")});
+  navigation_handle.set_previous_main_frame_url(GURL("http://previousurl.com"));
+  navigation_handle.set_reload_type(content::ReloadType::NORMAL);
+  history::HistoryAddPageArgs args =
+      history_tab_helper()->CreateHistoryAddPageArgs(
+          GURL("http://someurl.com"), base::Time(), 1, &navigation_handle);
+
+  EXPECT_EQ(args.title, web_contents()->GetTitle());
+}
+
+TEST_F(HistoryTabHelperTest,
+       CreateAddPageArgsHistoryTitleAfterPageReloadBypassingCache) {
+  NiceMock<content::MockNavigationHandle> navigation_handle(web_contents());
+  navigation_handle.set_redirect_chain({GURL("https://someurl.com")});
+  navigation_handle.set_previous_main_frame_url(GURL("http://previousurl.com"));
+  navigation_handle.set_reload_type(content::ReloadType::BYPASSING_CACHE);
+  history::HistoryAddPageArgs args =
+      history_tab_helper()->CreateHistoryAddPageArgs(
+          GURL("http://someurl.com"), base::Time(), 1, &navigation_handle);
+
+  EXPECT_EQ(args.title, web_contents()->GetTitle());
+}
+
 TEST_F(HistoryTabHelperTest,
        CreateAddPageArgsReferringURLMainFrameSameOriginReferrer) {
   NiceMock<content::MockNavigationHandle> navigation_handle(web_contents());
