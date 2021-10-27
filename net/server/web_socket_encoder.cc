@@ -301,22 +301,32 @@ WebSocket::ParseResult WebSocketEncoder::DecodeFrame(
   std::string current_output;
   WebSocket::ParseResult result = DecodeFrameHybi17(
       frame, type_ == FOR_SERVER, bytes_consumed, &current_output, &compressed);
-  if (result == WebSocket::FRAME_OK_FINAL ||
-      result == WebSocket::FRAME_OK_MIDDLE || result == WebSocket::FRAME_PING) {
-    if (continuation_message_frames_.empty())
-      is_current_message_compressed_ = compressed;
-    continuation_message_frames_.push_back(current_output);
-  }
-  if (result == WebSocket::FRAME_OK_FINAL || result == WebSocket::FRAME_PING) {
-    *output = base::StrCat(continuation_message_frames_);
-    if (is_current_message_compressed_) {
-      if (!Inflate(output))
-        result = WebSocket::FRAME_ERROR;
+  switch (result) {
+    case WebSocket::FRAME_OK_FINAL:
+    case WebSocket::FRAME_OK_MIDDLE: {
+      if (continuation_message_frames_.empty())
+        is_current_message_compressed_ = compressed;
+      continuation_message_frames_.push_back(current_output);
+
+      if (result == WebSocket::FRAME_OK_FINAL) {
+        *output = base::StrCat(continuation_message_frames_);
+        continuation_message_frames_.clear();
+        if (is_current_message_compressed_ && !Inflate(output)) {
+          return WebSocket::FRAME_ERROR;
+        }
+      }
+      break;
     }
+
+    case WebSocket::FRAME_PING:
+      *output = current_output;
+      break;
+
+    default:
+      // This function doesn't need special handling for other parse results.
+      break;
   }
-  if (result != WebSocket::FRAME_OK_MIDDLE &&
-      result != WebSocket::FRAME_INCOMPLETE)
-    continuation_message_frames_.clear();
+
   return result;
 }
 
