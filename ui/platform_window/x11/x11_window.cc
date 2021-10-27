@@ -2241,6 +2241,11 @@ void X11Window::OnWMStateUpdated() {
 
 void X11Window::UpdateWindowProperties(
     const base::flat_set<x11::Atom>& new_window_properties) {
+  // If the window is hidden, ignore new properties.
+  // See https://crbug.com/1260832
+  if (!window_mapped_in_client_)
+    return;
+
   window_properties_ = new_window_properties;
 
   // Ignore requests by the window manager to enter or exit fullscreen (e.g. as
