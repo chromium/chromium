@@ -21,7 +21,9 @@ PASS axElement2.nameElementCount() is axElement1.nameElementCount()
 
 
 Checking accessibility properties for ids: check_label1, check_label2
-PASS axElement1 == null && axElement2 == null is true
+PASS axElement2.role is axElement1.role
+PASS collapseWhitespace(axElement2.name) is collapseWhitespace(axElement1.name)
+PASS axElement2.nameElementCount() is axElement1.nameElementCount()
 
 
 Checking accessibility properties for ids: check1, check2
@@ -31,7 +33,9 @@ PASS axElement2.nameElementCount() is axElement1.nameElementCount()
 
 
 Checking accessibility properties for ids: radio_label1, radio_label2
-PASS axElement1 == null && axElement2 == null is true
+PASS axElement2.role is axElement1.role
+PASS collapseWhitespace(axElement2.name) is collapseWhitespace(axElement1.name)
+PASS axElement2.nameElementCount() is axElement1.nameElementCount()
 
 
 Checking accessibility properties for ids: radio1, radio2

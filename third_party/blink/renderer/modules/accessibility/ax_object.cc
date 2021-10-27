@@ -478,6 +478,20 @@ void AddIntListAttributeFromObjects(ax::mojom::blink::IntListAttribute attr,
     node_data->AddIntListAttribute(attr, ids);
 }
 
+void AddIntListAttributeFromObjectsExcludingIgnored(
+    ax::mojom::blink::IntListAttribute attr,
+    const AXObject::AXObjectVector& objects,
+    ui::AXNodeData* node_data) {
+  DCHECK(node_data);
+  std::vector<int32_t> ids;
+  for (const auto& obj : objects) {
+    if (!obj->AccessibilityIsIgnored())
+      ids.push_back(obj->AXObjectID());
+  }
+  if (!ids.empty())
+    node_data->AddIntListAttribute(attr, ids);
+}
+
 // Max length for attributes such as aria-label.
 static constexpr uint32_t kMaxStringAttributeLength = 10000;
 // Max length for a static text name.
@@ -1387,7 +1401,7 @@ void AXObject::SerializeNameAndDescriptionAttributes(
     TruncateAndAddStringAttribute(
         node_data, ax::mojom::blink::StringAttribute::kName, name, max_length);
     node_data->SetNameFrom(name_from);
-    AddIntListAttributeFromObjects(
+    AddIntListAttributeFromObjectsExcludingIgnored(
         ax::mojom::blink::IntListAttribute::kLabelledbyIds, name_objects,
         node_data);
   }
@@ -1402,7 +1416,7 @@ void AXObject::SerializeNameAndDescriptionAttributes(
         node_data, ax::mojom::blink::StringAttribute::kDescription,
         description);
     node_data->SetDescriptionFrom(description_from);
-    AddIntListAttributeFromObjects(
+    AddIntListAttributeFromObjectsExcludingIgnored(
         ax::mojom::blink::IntListAttribute::kDescribedbyIds,
         description_objects, node_data);
   }
@@ -2824,6 +2838,13 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
   // This is useful for APIs that return the node referenced by
   // aria-labeledby and aria-describedby.
   if (GetLayoutObject() && IsAriaHidden())
+    return true;
+
+  // Labels are sometimes marked ignored, to prevent duplication when the AT
+  // reads the label and the control it labels (see
+  // AXNodeObject::IsRedundantLabel), but we will need them to calculate the
+  // name of the control.
+  if (IsA<HTMLLabelElement>(node))
     return true;
 
   // Custom elements and their children are included in the tree.
