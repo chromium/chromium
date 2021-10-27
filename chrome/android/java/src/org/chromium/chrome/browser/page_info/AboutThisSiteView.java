@@ -14,6 +14,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
 import org.chromium.components.page_info.proto.AboutThisSiteMetadataProto.SiteDescription;
 import org.chromium.components.page_info.proto.AboutThisSiteMetadataProto.SiteInfo;
@@ -38,11 +39,17 @@ public class AboutThisSiteView extends LinearLayout {
         int paddingVertical = context.getResources().getDimensionPixelSize(
                 org.chromium.components.page_info.R.dimen.page_info_popup_padding_vertical);
         setPadding(paddingSides, paddingVertical, paddingSides, paddingVertical);
+
         mDescriptionView = new TextView(context);
         mDescriptionView.setPadding(0, 0, 0, paddingSides);
+        ApiCompatibilityUtils.setTextAppearance(
+                mDescriptionView, R.style.TextAppearance_TextMedium_Secondary);
         addView(mDescriptionView);
+
         mSourceView = new TextView(context);
         mSourceView.setMovementMethod(LinkMovementMethod.getInstance());
+        ApiCompatibilityUtils.setTextAppearance(
+                mSourceView, R.style.TextAppearance_TextMedium_Secondary);
         addView(mSourceView);
     }
 
