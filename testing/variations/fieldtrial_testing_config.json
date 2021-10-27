@@ -3457,9 +3457,9 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledFilledNegativeButton",
+                    "name": "EnabledNoFilledButton",
                     "params": {
-                        "filled_negative_button": "true"
+                        "filled_negative_button": "false"
                     },
                     "enable_features": [
                         "EnableDangerousDownloadDialog"
