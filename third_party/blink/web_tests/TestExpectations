@@ -130,9 +130,6 @@ crbug.com/1235685 plugins/focus-change-4-change-focus-and-blur.html [ Failure Pa
 crbug.com/1254938 http/tests/doc-write-intervention/doc-write-sync-third-party-script-block.html [ Timeout ]
 crbug.com/1254938 http/tests/mixed-autoupgrade/optionally/image-upgrade-console-message.https.html [ Timeout ]
 
-# Added "FAIL" message
-crbug.com/1254939 http/tests/misc/embed-image-load-outlives-gc-without-crashing.html [ Failure ]
-
 # Script preloaded: No
 crbug.com/1254940 http/tests/security/contentSecurityPolicy/nonces/scriptnonce-redirect.html [ Failure ]
 
