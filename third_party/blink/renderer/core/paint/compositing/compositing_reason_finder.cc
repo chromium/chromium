@@ -153,6 +153,9 @@ CompositingReasonFinder::DirectReasonsForPaintPropertiesExceptScrolling(
       reasons |= CompositingReason::kPreserve3DWith3DDescendants;
   }
 
+  if (layer->IsRootLayer() && object.GetFrame()->IsLocalRoot())
+    reasons |= CompositingReason::kRoot;
+
   if (RequiresCompositingForRootScroller(*layer))
     reasons |= CompositingReason::kRootScroller;
 
