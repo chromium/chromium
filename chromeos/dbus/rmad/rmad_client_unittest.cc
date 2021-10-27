@@ -119,11 +119,13 @@ class RmadClientTest : public testing::Test {
       double progress) {
     dbus::Signal signal(rmad::kRmadInterfaceName,
                         rmad::kCalibrationProgressSignal);
-    rmad::CalibrationComponentStatus status_proto;
-    status_proto.set_component(component);
-    status_proto.set_status(status);
-    status_proto.set_progress(progress);
-    dbus::MessageWriter(&signal).AppendProtoAsArrayOfBytes(status_proto);
+    dbus::MessageWriter writer(&signal);
+    dbus::MessageWriter struct_writer(nullptr);
+    writer.OpenStruct(&struct_writer);
+    struct_writer.AppendInt32(static_cast<int32_t>(component));
+    struct_writer.AppendInt32(static_cast<int32_t>(status));
+    struct_writer.AppendDouble(progress);
+    writer.CloseContainer(&struct_writer);
     EmitSignal(&signal);
   }
 
@@ -167,10 +169,12 @@ class RmadClientTest : public testing::Test {
                                             std::string error_message) {
     dbus::Signal signal(rmad::kRmadInterfaceName,
                         rmad::kHardwareVerificationResultSignal);
-    rmad::HardwareVerificationResult result_proto;
-    result_proto.set_is_compliant(is_compliant);
-    result_proto.set_error_str(error_message);
-    dbus::MessageWriter(&signal).AppendProtoAsArrayOfBytes(result_proto);
+    dbus::MessageWriter writer(&signal);
+    dbus::MessageWriter struct_writer(nullptr);
+    writer.OpenStruct(&struct_writer);
+    struct_writer.AppendBool(is_compliant);
+    struct_writer.AppendString(error_message);
+    writer.CloseContainer(&struct_writer);
     EmitSignal(&signal);
   }
 
@@ -293,10 +297,9 @@ class TestObserver : public RmadClient::Observer {
 
   // Called when hardware verification completes.
   void HardwareVerificationResult(
-      const rmad::HardwareVerificationResult& last_hardware_verification_result)
-      override {
+      const rmad::HardwareVerificationResult& result) override {
     num_hardware_verification_result_++;
-    last_hardware_verification_result_ = last_hardware_verification_result;
+    last_hardware_verification_result_ = result;
   }
 
  private:
