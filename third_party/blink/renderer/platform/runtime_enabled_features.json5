@@ -1337,10 +1337,6 @@
       // This is enabled by features::kLazyInitializeMediaControls.
     },
     {
-      name: "LCPAnimatedImagesWebExposed",
-      status: "test",
-    },
-    {
       name: "LegacyWindowsDWriteFontFallback",
       // Enabled by features::kLegacyWindowsDWriteFontFallback;
     },

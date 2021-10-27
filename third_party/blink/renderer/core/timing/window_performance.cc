@@ -638,20 +638,16 @@ void WindowPerformance::OnLargestContentfulPaintUpdated(
     base::TimeTicks paint_time,
     uint64_t paint_size,
     base::TimeTicks load_time,
-    base::TimeTicks first_animated_frame_time,
     const AtomicString& id,
     const String& url,
     Element* element) {
   base::TimeDelta render_timestamp = MonotonicTimeToTimeDelta(paint_time);
   base::TimeDelta load_timestamp = MonotonicTimeToTimeDelta(load_time);
-  base::TimeDelta first_animated_frame_timestamp =
-      MonotonicTimeToTimeDelta(first_animated_frame_time);
-  // TODO(yoav): Should we modify start to represent the animated frame?
   base::TimeDelta start_timestamp =
       render_timestamp.is_zero() ? load_timestamp : render_timestamp;
   auto* entry = MakeGarbageCollected<LargestContentfulPaint>(
       start_timestamp.InMillisecondsF(), render_timestamp, paint_size,
-      load_timestamp, first_animated_frame_timestamp, id, url, element);
+      load_timestamp, id, url, element);
   if (HasObserverFor(PerformanceEntry::kLargestContentfulPaint))
     NotifyObserversOfEntry(*entry);
   AddLargestContentfulPaint(entry);

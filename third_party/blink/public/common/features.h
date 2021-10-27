@@ -522,8 +522,6 @@ BLINK_COMMON_EXPORT extern const base::Feature kDeprecationWillLogToConsole;
 BLINK_COMMON_EXPORT extern const base::Feature
     kDeprecationWillLogToDevToolsIssue;
 
-BLINK_COMMON_EXPORT extern const base::Feature kLCPAnimatedImagesReporting;
-
 }  // namespace features
 }  // namespace blink
 

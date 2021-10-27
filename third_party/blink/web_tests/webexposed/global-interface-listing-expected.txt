@@ -4944,7 +4944,6 @@ interface KeyframeEffect : AnimationEffect
 interface LargestContentfulPaint : PerformanceEntry
     attribute @@toStringTag
     getter element
-    getter firstAnimatedFrameTime
     getter id
     getter loadTime
     getter renderTime
