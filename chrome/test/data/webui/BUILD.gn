@@ -640,6 +640,7 @@ generate_grd("build_grd") {
     "chai_assert.js",
     "mojo_webui_test_support.js",
     "test_browser_proxy.js",
+    "test_plural_string_proxy.js",
     "test_store.js",
     "test_util.js",
   ]
@@ -680,6 +681,7 @@ ts_definitions("generate_definitions") {
     "chai_assert.js",
     "mojo_webui_test_support.js",
     "test_browser_proxy.js",
+    "test_plural_string_proxy.js",
     "test_store.js",
     "test_util.js",
   ]

@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PrintPreviewNumberSettingsSectionElement} from 'chrome://print/print_preview.js';
+import 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {triggerInputEvent} from 'chrome://test/print_preview/print_preview_test_utils.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
+import {triggerInputEvent} from './print_preview_test_utils.js';
 
 window.number_settings_section_interactive_test = {};
 number_settings_section_interactive_test.suiteName =
