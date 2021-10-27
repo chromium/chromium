@@ -69,13 +69,6 @@ class __thisIsHereToForceASemicolonAfterThisMacro;
   void* operator new(size_t, NotNullTag, void*) = delete; \
   void* operator new(size_t, void*) = delete
 
-#define IS_GARBAGE_COLLECTED_TYPE()         \
- public:                                    \
-  using IsGarbageCollectedTypeMarker = int; \
-                                            \
- private:                                   \
-  friend class ::WTF::internal::__thisIsHereToForceASemicolonAfterThisMacro
-
 #if defined(__clang__)
 #define ANNOTATE_STACK_ALLOCATED \
   __attribute__((annotate("blink_stack_allocated")))
