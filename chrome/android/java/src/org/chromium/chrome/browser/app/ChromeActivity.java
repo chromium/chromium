@@ -506,7 +506,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 getTabContentManagerSupplier(), getOverviewModeBehaviorSupplier(),
                 this::getSnackbarManager, getActivityType(), this::isInOverviewMode,
                 this::isWarmOnResume, /* appMenuDelegate= */ this,
-                /* statusBarColorProvider= */ this, getIntentRequestTracker());
+                /* statusBarColorProvider= */ this, getIntentRequestTracker(), false);
         // clang-format on
     }
 

@@ -101,8 +101,9 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
     /**
      * @param toolbar The toolbar contained inside this control container. Should be called
      *                after inflation is complete.
+     * @param isIncognito Whether the toolbar should be initialized with incognito colors.
      */
-    public void setToolbar(Toolbar toolbar) {
+    public void setToolbar(Toolbar toolbar, boolean isIncognito) {
         mToolbar = toolbar;
         mToolbarContainer.setToolbar(mToolbar);
 
@@ -116,8 +117,8 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
             final Drawable backgroundDrawable =
                     AppCompatResources.getDrawable(getContext(), R.drawable.toolbar_background)
                             .mutate();
-            // TODO(https://crbug.com/1250039): Make this work for incognito as well.
-            backgroundDrawable.setTint(ChromeColors.getDefaultThemeColor(getContext(), false));
+            backgroundDrawable.setTint(
+                    ChromeColors.getDefaultThemeColor(getContext(), isIncognito));
             backgroundDrawable.setTintMode(PorterDuff.Mode.MULTIPLY);
             setBackground(backgroundDrawable);
         }
