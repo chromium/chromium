@@ -96,7 +96,6 @@ buildflag_header("buildflags") {
   flags = [
     "USE_MINIKIN_HYPHENATION=$use_minikin_hyphenation",
     "ENABLE_CHROMIUM_UPDATER=$enable_chromium_updater",
-    "ENABLE_APP_SESSION_SERVICE=$enable_app_session_service",
     "USE_THIN_LTO=$use_thin_lto",
   ]
   if (is_win) {
@@ -6808,6 +6807,10 @@ static_library("browser") {
 
   if (enable_session_service) {
     sources += [
+      "sessions/app_session_service.cc",
+      "sessions/app_session_service.h",
+      "sessions/app_session_service_factory.cc",
+      "sessions/app_session_service_factory.h",
       "sessions/exit_type_service.cc",
       "sessions/exit_type_service.h",
       "sessions/exit_type_service_factory.cc",
@@ -6845,15 +6848,6 @@ static_library("browser") {
       "sessions/tab_loader_delegate.h",
     ]
     deps += [ "//components/tab_groups" ]
-  }
-
-  if (enable_session_service && enable_app_session_service) {
-    sources += [
-      "sessions/app_session_service.cc",
-      "sessions/app_session_service.h",
-      "sessions/app_session_service_factory.cc",
-      "sessions/app_session_service_factory.h",
-    ]
   }
 
   if (enable_spellcheck) {

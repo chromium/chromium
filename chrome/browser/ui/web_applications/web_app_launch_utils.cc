@@ -8,6 +8,8 @@
 #include "base/strings/string_util.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sessions/app_session_service.h"
+#include "chrome/browser/sessions/app_session_service_factory.h"
 #include "chrome/browser/sessions/session_service_base.h"
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/sessions/session_service_lookup.h"
@@ -32,11 +34,6 @@
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
-#include "chrome/browser/sessions/app_session_service.h"
-#include "chrome/browser/sessions/app_session_service_factory.h"
-#endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/ui/extensions/hosted_app_browser_controller.h"
@@ -68,14 +65,12 @@ Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
       true);
   target_browser->window()->Show();
 
-#if BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
   // The app window will be registered correctly, however the tab will not
   // be correctly tracked. We need to do a reset to get the tab correctly
   // tracked by the app service.
   AppSessionService* app_service =
       AppSessionServiceFactory::GetForProfile(target_browser->profile());
   app_service->ResetFromCurrentBrowsers();
-#endif
 
   return target_browser;
 }

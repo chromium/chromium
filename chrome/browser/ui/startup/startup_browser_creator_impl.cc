@@ -30,6 +30,8 @@
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_io_data.h"
+#include "chrome/browser/sessions/app_session_service.h"
+#include "chrome/browser/sessions/app_session_service_factory.h"
 #include "chrome/browser/sessions/session_service.h"
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -92,16 +94,10 @@
 #include "chromeos/lacros/lacros_service.h"
 #endif
 
-#if BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
-#include "chrome/browser/sessions/app_session_service.h"
-#include "chrome/browser/sessions/app_session_service_factory.h"
-#endif
-
 namespace {
 
 // Utility functions ----------------------------------------------------------
 
-#if BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
 // In ChromeOS, if the full restore feature is disabled, always restores apps
 // unconditionally. If the full restore feature is enabled, check the previous
 // apps launching history info to decide whether restore apps.
@@ -122,7 +118,6 @@ bool ShouldRestoreApps(bool is_post_restart, Profile* profile) {
   return is_post_restart;
 #endif
 }
-#endif
 
 void UrlsToTabs(const std::vector<GURL>& urls, StartupTabs* tabs) {
   for (const GURL& url : urls)
@@ -570,11 +565,8 @@ bool StartupBrowserCreatorImpl::MaybeAsyncRestore(const StartupTabs& tabs,
   if (!SessionServiceFactory::GetForProfileForSessionRestore(profile_))
     return false;
 
-  bool restore_apps = false;
-#if BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
-  restore_apps =
+  bool restore_apps =
       ShouldRestoreApps(StartupBrowserCreator::WasRestarted(), profile_);
-#endif  // BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
   // Note: there's no session service in incognito or guest mode.
   SessionService* service =
       SessionServiceFactory::GetForProfileForSessionRestore(profile_);
@@ -590,14 +582,12 @@ Browser* StartupBrowserCreatorImpl::RestoreOrCreateBrowser(
     bool is_post_crash_launch) {
   Browser* browser = nullptr;
   if (behavior == BrowserOpenBehavior::SYNCHRONOUS_RESTORE) {
-#if BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
     // It's worth noting that this codepath is not hit by crash restore
     // because we want to avoid a crash restore loop, so we don't
     // automatically restore after a crash.
     // Crash restores are triggered via session_crashed_bubble_view.cc
     if (ShouldRestoreApps(StartupBrowserCreator::WasRestarted(), profile_))
       restore_options |= SessionRestore::RESTORE_APPS;
-#endif  //  BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
 
     browser = SessionRestore::RestoreSession(profile_, nullptr, restore_options,
                                              TabsToUrls(tabs));

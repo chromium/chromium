@@ -15,9 +15,4 @@ declare_args() {
   # integration with the open source, cross-platform Chromium updater.
   # TODO(crbug.com/1054060)
   enable_chromium_updater = false
-
-  # TODO(stahon@microsoft.com) Remove this when app_session_service is enabled
-  # across the board. Until then, this buildflag allows some platforms to use
-  # app_session_service and some not.
-  enable_app_session_service = !is_android && !is_chromecast
 }
