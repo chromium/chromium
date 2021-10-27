@@ -487,6 +487,9 @@ const char kDisableOopRasterization[] = "disable-oop-rasterization";
 // would have been used.  Enables the chromium_raster_transport extension.
 const char kEnableOopRasterization[] = "enable-oop-rasterization";
 
+// Forces the Chrome major version to 100 in the User-Agent string.
+const char kForceMajorVersionTo100[] = "force-major-version-to-100";
+
 // Forces use of hardware overlay for fullscreen video playback. Useful for
 // testing the Android overlay fullscreen functionality on other platforms.
 const char kForceOverlayFullscreenVideo[]   = "force-overlay-fullscreen-video";

@@ -111,6 +111,11 @@ GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
       // Overrides for headless
       {::switches::kHeadless, std::cref(blink::features::kPaintHolding),
        base::FeatureList::OVERRIDE_DISABLE_FEATURE},
+
+      // Override for --force-major-version-to-100.
+      {switches::kForceMajorVersionTo100,
+       std::cref(blink::features::kForceMajorVersion100InUserAgent),
+       base::FeatureList::OVERRIDE_ENABLE_FEATURE},
   };
 
   std::vector<base::FeatureList::FeatureOverrideInfo> overrides;

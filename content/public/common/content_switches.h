@@ -141,6 +141,7 @@ CONTENT_EXPORT extern const char kFileUrlPathAlias[];
 CONTENT_EXPORT extern const char kForceDisplayList2dCanvas[];
 CONTENT_EXPORT extern const char kDisableOopRasterization[];
 CONTENT_EXPORT extern const char kEnableOopRasterization[];
+CONTENT_EXPORT extern const char kForceMajorVersionTo100[];
 CONTENT_EXPORT extern const char kForceOverlayFullscreenVideo[];
 CONTENT_EXPORT extern const char kForcePresentationReceiverForTesting[];
 CONTENT_EXPORT extern const char kForceRendererAccessibility[];
