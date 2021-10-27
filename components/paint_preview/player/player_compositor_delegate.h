@@ -40,6 +40,10 @@ class DirectoryKey;
 // PaintPreviewCompositor.
 class PlayerCompositorDelegate {
  public:
+  enum PressureLevelCount : size_t {
+    kLevels = base::MemoryPressureListener::kMaxValue + 1,
+  };
+
   PlayerCompositorDelegate();
   virtual ~PlayerCompositorDelegate();
 
@@ -47,13 +51,14 @@ class PlayerCompositorDelegate {
   PlayerCompositorDelegate& operator=(const PlayerCompositorDelegate&) = delete;
 
   // Initializes the compositor.
-  void Initialize(PaintPreviewBaseService* paint_preview_service,
-                  const GURL& url,
-                  const DirectoryKey& key,
-                  bool main_frame_mode,
-                  base::OnceCallback<void(int)> compositor_error,
-                  base::TimeDelta timeout_duration,
-                  size_t max_requests);
+  void Initialize(
+      PaintPreviewBaseService* paint_preview_service,
+      const GURL& url,
+      const DirectoryKey& key,
+      bool main_frame_mode,
+      base::OnceCallback<void(int)> compositor_error,
+      base::TimeDelta timeout_duration,
+      std::array<size_t, PressureLevelCount::kLevels> max_requests_map);
 
   // Returns whether initialization has happened.
   bool IsInitialized() const { return paint_preview_service_; }
@@ -110,7 +115,7 @@ class PlayerCompositorDelegate {
       bool main_frame_mode,
       base::OnceCallback<void(int)> compositor_error,
       base::TimeDelta timeout_duration,
-      size_t max_requests,
+      std::array<size_t, PressureLevelCount::kLevels> max_requests_map,
       std::unique_ptr<PaintPreviewCompositorService, base::OnTaskRunnerDeleter>
           fake_compositor_service);
 
@@ -128,13 +133,14 @@ class PlayerCompositorDelegate {
   virtual base::MemoryPressureMonitor* memory_pressure_monitor();
 
  private:
-  void InitializeInternal(PaintPreviewBaseService* paint_preview_service,
-                          const GURL& expected_url,
-                          const DirectoryKey& key,
-                          bool main_frame_mode,
-                          base::OnceCallback<void(int)> compositor_error,
-                          base::TimeDelta timeout_duration,
-                          size_t max_requests);
+  void InitializeInternal(
+      PaintPreviewBaseService* paint_preview_service,
+      const GURL& expected_url,
+      const DirectoryKey& key,
+      bool main_frame_mode,
+      base::OnceCallback<void(int)> compositor_error,
+      base::TimeDelta timeout_duration,
+      std::array<size_t, PressureLevelCount::kLevels> max_requests_map);
 
   void ValidateProtoAndLoadAXTree(const GURL& expected_url);
 
@@ -183,6 +189,7 @@ class PlayerCompositorDelegate {
 
   base::CancelableOnceClosure timeout_;
   int max_requests_{1};
+  std::array<size_t, PressureLevelCount::kLevels> max_requests_map_{1, 1, 1};
   bool main_frame_mode_{false};
 
   std::unique_ptr<

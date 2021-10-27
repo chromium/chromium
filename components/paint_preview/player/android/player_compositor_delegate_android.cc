@@ -35,8 +35,15 @@ namespace paint_preview {
 namespace {
 
 // To minimize peak memory usage limit the number of concurrent bitmap requests.
-constexpr size_t kMaxParallelBitmapRequests = 2;
-constexpr size_t kMaxParallelBitmapRequestsLowMemory = 1;
+// These correspond to memory pressure levels None, Moderate, Critical
+// respectively. If a value of 0 is used for any level the process will abort
+// once that memory level is reached.
+constexpr std::
+    array<size_t, PlayerCompositorDelegateAndroid::PressureLevelCount::kLevels>
+        kMaxParallelBitmapRequests = {2, 1, 0};
+constexpr std::
+    array<size_t, PlayerCompositorDelegateAndroid::PressureLevelCount::kLevels>
+        kMaxParallelBitmapRequestsLowMemory = {1, 0, 0};
 
 ScopedJavaLocalRef<jobjectArray> ToJavaUnguessableTokenArray(
     JNIEnv* env,

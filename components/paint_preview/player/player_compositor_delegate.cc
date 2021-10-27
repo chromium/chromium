@@ -127,7 +127,7 @@ void PlayerCompositorDelegate::Initialize(
     bool main_frame_mode,
     base::OnceCallback<void(int)> compositor_error,
     base::TimeDelta timeout_duration,
-    size_t max_requests) {
+    std::array<size_t, PressureLevelCount::kLevels> max_requests_map) {
   TRACE_EVENT0("paint_preview", "PlayerCompositorDelegate::Initialize");
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("paint_preview",
                                     "PlayerCompositorDelegate CreateCompositor",
@@ -152,7 +152,7 @@ void PlayerCompositorDelegate::Initialize(
 
   InitializeInternal(paint_preview_service, expected_url, key, main_frame_mode,
                      std::move(compositor_error), timeout_duration,
-                     max_requests);
+                     std::move(max_requests_map));
 }
 
 void PlayerCompositorDelegate::SetCaptureResult(
@@ -167,7 +167,7 @@ void PlayerCompositorDelegate::InitializeWithFakeServiceForTest(
     bool main_frame_mode,
     base::OnceCallback<void(int)> compositor_error,
     base::TimeDelta timeout_duration,
-    size_t max_requests,
+    std::array<size_t, PressureLevelCount::kLevels> max_requests_map,
     std::unique_ptr<PaintPreviewCompositorService, base::OnTaskRunnerDeleter>
         fake_compositor_service) {
   paint_preview_compositor_service_ = std::move(fake_compositor_service);
@@ -177,7 +177,7 @@ void PlayerCompositorDelegate::InitializeWithFakeServiceForTest(
 
   InitializeInternal(paint_preview_service, expected_url, key, main_frame_mode,
                      std::move(compositor_error), timeout_duration,
-                     max_requests);
+                     std::move(max_requests_map));
 }
 
 void PlayerCompositorDelegate::InitializeInternal(
@@ -187,8 +187,10 @@ void PlayerCompositorDelegate::InitializeInternal(
     bool main_frame_mode,
     base::OnceCallback<void(int)> compositor_error,
     base::TimeDelta timeout_duration,
-    size_t max_requests) {
-  max_requests_ = max_requests;
+    std::array<size_t, PressureLevelCount::kLevels> max_requests_map) {
+  max_requests_map_ = max_requests_map;
+  max_requests_ = max_requests_map_
+      [base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE];
   main_frame_mode_ = main_frame_mode;
   compositor_error_ = std::move(compositor_error);
   paint_preview_service_ = paint_preview_service;
@@ -284,8 +286,14 @@ void PlayerCompositorDelegate::OnMemoryPressure(
   if (paint_preview_compositor_service_) {
     paint_preview_compositor_service_->OnMemoryPressure(memory_pressure_level);
   }
-  if (memory_pressure_level ==
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+
+  DCHECK(memory_pressure_level >= 0 &&
+         static_cast<size_t>(memory_pressure_level) <
+             PressureLevelCount::kLevels);
+  max_requests_ = max_requests_map_[memory_pressure_level];
+  if (max_requests_ == 0 ||
+      memory_pressure_level ==
+          base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) {
     if (paint_preview_compositor_client_)
       paint_preview_compositor_client_.reset();
 
@@ -529,6 +537,7 @@ void PlayerCompositorDelegate::OnCompositorTimeout() {
 void PlayerCompositorDelegate::ProcessBitmapRequestsFromQueue() {
   TRACE_EVENT0("paint_preview",
                "PlayerCompositorDelegate::ProcessBitmapRequestsFromQueue");
+
   while (active_requests_ < max_requests_ && bitmap_request_queue_.size()) {
     int request_id = bitmap_request_queue_.front();
     bitmap_request_queue_.pop();

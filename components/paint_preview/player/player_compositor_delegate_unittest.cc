@@ -29,7 +29,9 @@ namespace paint_preview {
 
 namespace {
 
-constexpr size_t kMaxParallelRequests = 1;
+constexpr std::array<size_t,
+                     PlayerCompositorDelegate::PressureLevelCount::kLevels>
+    kMaxParallelRequests = {1, 1, 1};
 
 class FakePaintPreviewCompositorClient : public PaintPreviewCompositorClient {
  public:
@@ -74,11 +76,12 @@ class FakePaintPreviewCompositorClient : public PaintPreviewCompositorClient {
     SkBitmap bitmap;
     bitmap.allocPixels(
         SkImageInfo::MakeN32Premul(clip_rect.width(), clip_rect.height()));
-    task_runner_->PostTask(
+    task_runner_->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
                        mojom::PaintPreviewCompositor::BitmapStatus::kSuccess,
-                       bitmap));
+                       bitmap),
+        base::Seconds(1));
   }
 
   void BeginMainFrameComposite(
@@ -100,11 +103,12 @@ class FakePaintPreviewCompositorClient : public PaintPreviewCompositorClient {
     SkBitmap bitmap;
     bitmap.allocPixels(
         SkImageInfo::MakeN32Premul(clip_rect.width(), clip_rect.height()));
-    task_runner_->PostTask(
+    task_runner_->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
                        mojom::PaintPreviewCompositor::BitmapStatus::kSuccess,
-                       bitmap));
+                       bitmap),
+        base::Seconds(1));
   }
 
   void SetRootFrameUrl(const GURL& url) override {
@@ -813,7 +817,8 @@ TEST_F(PlayerCompositorDelegateTest, RequestBitmapSuccessQueued) {
     env.RunUntilIdle();
     EXPECT_TRUE(player_compositor_delegate.WasStatusChecked());
 
-    base::RunLoop loop;
+    base::RunLoop loop_1;
+    base::RunLoop loop_2;
     player_compositor_delegate.RequestBitmap(
         base::UnguessableToken::Create(), gfx::Rect(10, 20, 30, 40), 1.0,
         base::BindOnce(
@@ -824,8 +829,20 @@ TEST_F(PlayerCompositorDelegateTest, RequestBitmapSuccessQueued) {
                         status);
               std::move(quit).Run();
             },
-            loop.QuitClosure()));
-    loop.Run();
+            loop_1.QuitClosure()));
+    player_compositor_delegate.RequestBitmap(
+        base::UnguessableToken::Create(), gfx::Rect(10, 20, 30, 40), 1.0,
+        base::BindOnce(
+            [](base::OnceClosure quit,
+               mojom::PaintPreviewCompositor::BitmapStatus status,
+               const SkBitmap& bitmap) {
+              EXPECT_EQ(mojom::PaintPreviewCompositor::BitmapStatus::kSuccess,
+                        status);
+              std::move(quit).Run();
+            },
+            loop_2.QuitClosure()));
+    loop_1.Run();
+    loop_2.Run();
   }
   env.RunUntilIdle();
 }
@@ -955,6 +972,56 @@ TEST_F(PlayerCompositorDelegateTest, CriticalMemoryPressureBeforeStart) {
 
     player_compositor_delegate.OnMemoryPressure(
         base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+    loop.Run();
+  }
+  env.RunUntilIdle();
+}
+
+TEST_F(PlayerCompositorDelegateTest,
+       RequestBitmapSuccessQueuedWithPressureAbort) {
+  auto* service = GetBaseService();
+  auto file_manager = service->GetFileMixin()->GetFileManager();
+  auto key = file_manager->CreateKey(1U);
+  GURL url("https://www.chromium.org/");
+  auto proto = CreateValidProto(url);
+  SerializeProtoAndCreateRootSkp(&proto, key);
+  {
+    // This test skips setting up files as the fakes don't use them. In normal
+    // execution the files are required by the service or no bitmap will be
+    // created.
+    PlayerCompositorDelegateImpl player_compositor_delegate;
+    player_compositor_delegate.SetExpectedStatus(CompositorStatus::OK);
+    base::RunLoop loop;
+    player_compositor_delegate.InitializeWithFakeServiceForTest(
+        service, url, key, /*main_frame_mode=*/false,
+        base::BindOnce(
+            [](base::OnceClosure quit, int compositor_status) {
+              EXPECT_EQ(compositor_status,
+                        static_cast<int>(
+                            CompositorStatus::STOPPED_DUE_TO_MEMORY_PRESSURE));
+              std::move(quit).Run();
+            },
+            loop.QuitClosure()),
+        base::TimeDelta::Max(), {1, 0, 0}, CreateCompositorService());
+    env.RunUntilIdle();
+    EXPECT_TRUE(player_compositor_delegate.WasStatusChecked());
+
+    base::RunLoop request_loop;
+    player_compositor_delegate.RequestBitmap(
+        base::UnguessableToken::Create(), gfx::Rect(10, 20, 30, 40), 1.0,
+        base::BindOnce(
+            [](base::OnceClosure quit,
+               mojom::PaintPreviewCompositor::BitmapStatus status,
+               const SkBitmap& bitmap) {
+              EXPECT_EQ(mojom::PaintPreviewCompositor::BitmapStatus::kSuccess,
+                        status);
+              std::move(quit).Run();
+            },
+            request_loop.QuitClosure()));
+    request_loop.Run();
+
+    player_compositor_delegate.OnMemoryPressure(
+        base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
     loop.Run();
   }
   env.RunUntilIdle();
