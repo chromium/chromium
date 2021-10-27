@@ -9,18 +9,13 @@
 #include <memory>
 #include <set>
 #include <string>
-#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/memory/singleton.h"
 #include "base/synchronization/lock.h"
-#include "chrome/browser/plugins/plugin_prefs.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/plugin_service_filter.h"
-#include "content/public/common/webplugininfo.h"
-#include "url/gurl.h"
-#include "url/origin.h"
 
 class Profile;
 
@@ -39,12 +34,6 @@ class ChromePluginServiceFilter : public content::PluginServiceFilter,
   void RegisterProfile(Profile* profile);
 
   void UnregisterProfile(Profile* profile);
-
-  // Overrides the plugin lookup mechanism for a given tab to use a specific
-  // plugin.
-  void OverridePluginForFrame(int render_process_id,
-                              int render_frame_id,
-                              const content::WebPluginInfo& plugin);
 
   // Authorizes a given plugin for a given process.
   void AuthorizePlugin(int render_process_id,
@@ -76,17 +65,11 @@ class ChromePluginServiceFilter : public content::PluginServiceFilter,
   friend struct base::DefaultSingletonTraits<ChromePluginServiceFilter>;
   struct ContextInfo;
 
-  struct OverriddenPlugin {
-    const int render_frame_id;
-    const content::WebPluginInfo plugin;
-  };
-
   struct ProcessDetails {
     ProcessDetails();
     ProcessDetails(const ProcessDetails& other);
     ~ProcessDetails();
 
-    std::vector<OverriddenPlugin> overridden_plugins;
     std::set<base::FilePath> authorized_plugins;
   };
 

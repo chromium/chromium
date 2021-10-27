@@ -11,20 +11,15 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/lazy_instance.h"
-#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/plugins/chrome_plugin_service_filter.h"
 #include "chrome/browser/printing/print_preview_dialog_controller.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_ui.h"
-#include "chrome/common/chrome_content_client.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/plugin_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/webplugininfo.h"
 #include "ipc/ipc_message_macros.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "printing/buildflags/buildflags.h"
@@ -48,21 +43,6 @@ PrintManager* g_receiver_for_testing = nullptr;
 base::LazyInstance<std::map<content::RenderProcessHost*, base::OnceClosure>>::
     Leaky g_scripted_print_preview_closure_map = LAZY_INSTANCE_INITIALIZER;
 
-void EnableInternalPDFPluginForContents(int render_process_id,
-                                        int render_frame_id) {
-  // Always enable the internal PDF plugin for the print preview page.
-  static const base::NoDestructor<base::FilePath> pdf_plugin_path(
-      ChromeContentClient::kPDFPluginPath);
-  auto* plugin_service = content::PluginService::GetInstance();
-  const content::PepperPluginInfo* info =
-      plugin_service->GetRegisteredPpapiPluginInfo(*pdf_plugin_path);
-  if (!info)
-    return;
-
-  ChromePluginServiceFilter::GetInstance()->OverridePluginForFrame(
-      render_process_id, render_frame_id, info->ToWebPluginInfo());
-}
-
 content::WebContents* GetPrintPreviewDialog(
     content::WebContents* web_contents) {
   PrintPreviewDialogController* dialog_controller =
@@ -75,13 +55,7 @@ content::WebContents* GetPrintPreviewDialog(
 }  // namespace
 
 PrintViewManager::PrintViewManager(content::WebContents* web_contents)
-    : PrintViewManagerBase(web_contents) {
-  if (PrintPreviewDialogController::IsPrintPreviewURL(web_contents->GetURL())) {
-    EnableInternalPDFPluginForContents(
-        web_contents->GetMainFrame()->GetProcess()->GetID(),
-        web_contents->GetMainFrame()->GetRoutingID());
-  }
-}
+    : PrintViewManagerBase(web_contents) {}
 
 PrintViewManager::~PrintViewManager() {
   DCHECK_EQ(NOT_PREVIEWING, print_preview_state_);
@@ -237,15 +211,6 @@ void PrintViewManager::OnPrintPreviewRequestRejected(int render_process_id,
   }
   PrintPreviewDone();
   PrintPreviewRejectedForTesting();
-}
-
-void PrintViewManager::RenderFrameCreated(
-    content::RenderFrameHost* render_frame_host) {
-  if (PrintPreviewDialogController::IsPrintPreviewURL(
-          web_contents()->GetURL())) {
-    EnableInternalPDFPluginForContents(render_frame_host->GetProcess()->GetID(),
-                                       render_frame_host->GetRoutingID());
-  }
 }
 
 void PrintViewManager::RenderFrameDeleted(

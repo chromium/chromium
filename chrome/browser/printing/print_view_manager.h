@@ -76,7 +76,6 @@ class PrintViewManager : public PrintViewManagerBase,
                       CheckForCancelCallback callback) override;
 
   // content::WebContentsObserver implementation.
-  void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
 
   content::RenderFrameHost* print_preview_rfh() { return print_preview_rfh_; }
