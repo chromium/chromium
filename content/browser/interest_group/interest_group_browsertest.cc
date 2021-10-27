@@ -454,14 +454,24 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
     }
   }
 
+  // Waits for `url` to be requested by `https_server_`, or any other server
+  // that OnHttpsTestServerRequestMonitor() has been configured to monitor.
+  // `url`'s hostname is replaced with "127.0.0.1", since the embedded test
+  // server always claims requests were for 127.0.0.1, rather than revealing the
+  // hostname that was actually associated with a request.
   void WaitForURL(const GURL& url) {
+    GURL::Replacements replacements;
+    replacements.SetHostStr("127.0.0.1");
+    GURL wait_for_url = url.ReplaceComponents(replacements);
+
     {
       base::AutoLock auto_lock(requests_lock_);
-      if (received_https_test_server_requests_.count(url) > 0u)
+      if (received_https_test_server_requests_.count(wait_for_url) > 0u)
         return;
-      wait_for_url_ = url;
+      wait_for_url_ = wait_for_url;
       request_run_loop_ = std::make_unique<base::RunLoop>();
     }
+
     request_run_loop_->Run();
     request_run_loop_.reset();
   }
@@ -575,9 +585,7 @@ class InterestGroupFencedFrameBrowserTest
     // Wait for the URL to be requested, to make sure the fenced frame has
     // started loading. Used in both ShadowDOM and MPArch cases, but it's only
     // needed in the MPArch case. On regression, this is likely to hang.
-    GURL::Replacements replacements;
-    replacements.SetHostStr("127.0.0.1");
-    WaitForURL(expected_url.ReplaceComponents(replacements));
+    WaitForURL(expected_url);
 
     switch (GetParam()) {
       case blink::features::FencedFramesImplementationType::kShadowDOM: {
@@ -1465,9 +1473,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionWithWinner) {
           test_url.DeprecatedGetOriginAsURL().spec(),
           https_server_->GetURL("a.test", "/interest_group/decision_logic.js")
               .spec())));
-  // Reporting urls should be fetched after an auction succeeded.
-  WaitForURL(https_server_->GetURL("/echoall?report_seller"));
-  WaitForURL(https_server_->GetURL("/echoall?report_bidder"));
 
   // Check ResourceRequest structs of requests issued by the worklet process.
   const struct ExpectedRequest {
@@ -1532,6 +1537,10 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionWithWinner) {
   };
   for (const auto& expected_report_url : kExpectedReportUrls) {
     SCOPED_TRACE(expected_report_url);
+
+    // Wait for the report URL to be fetched, which only happens after the
+    // auction has completed.
+    WaitForURL(expected_report_url);
 
     absl::optional<network::ResourceRequest> request =
         url_loader_monitor.GetRequestInfo(expected_report_url);
@@ -1601,9 +1610,6 @@ perBuyerSignals: {$1: {even: 'more', x: 4.5}}
           test_url.DeprecatedGetOriginAsURL().spec(),
           https_server_->GetURL("a.test", "/interest_group/decision_logic.js")
               .spec())));
-  // Reporting urls should be fetched after an auction succeeded.
-  WaitForURL(https_server_->GetURL("/echoall?report_seller"));
-  WaitForURL(https_server_->GetURL("/echoall?report_bidder"));
 
   // Check ResourceRequest structs of requests issued by the worklet process.
   const struct ExpectedRequest {
@@ -1668,6 +1674,10 @@ perBuyerSignals: {$1: {even: 'more', x: 4.5}}
   };
   for (const auto& expected_report_url : kExpectedReportUrls) {
     SCOPED_TRACE(expected_report_url);
+
+    // Wait for the report URL to be fetched, which only happens after the
+    // auction has completed.
+    WaitForURL(expected_report_url);
 
     absl::optional<network::ResourceRequest> request =
         url_loader_monitor.GetRequestInfo(expected_report_url);
@@ -3344,8 +3354,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
                 ->trusted_params->client_security_state->ip_address_space);
 
   // Check that both reports reached the server.
-  WaitForURL(remote_test_server_.GetURL(bidder_report_to_url.path()));
-  WaitForURL(remote_test_server_.GetURL(seller_report_to_url.path()));
+  WaitForURL(bidder_report_to_url);
+  WaitForURL(seller_report_to_url);
 }
 
 // Make sure that the IPAddressSpace of the frame that triggers the update is
