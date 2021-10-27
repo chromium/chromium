@@ -80073,6 +80073,19 @@
        {}
       ]
      ],
+     "widows-block-in-inline-001.html": [
+      "8b5438bbc7251b597247617bac1063f4f32831e4",
+      [
+       null,
+       [
+        [
+         "/css/css-break/reference/widows-block-in-inline-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "widows-orphans-001.html": [
       "8da27f0b6594fc7ddd90bdb160be8f80a9479038",
       [
@@ -218751,7 +218764,7 @@
       []
      ],
      "sec-ch-ua.py": [
-      "01bcb9682a1ae9d176b9afe7c2d3376f1bdf8c13",
+      "ddeb582a19bc8e4681e794c6a963fb72e7dc4c34",
       []
      ],
      "stale-echo-client-hints.py": [
@@ -231557,6 +231570,10 @@
      "reference": {
       "widows-001-ref.html": [
        "4f822f8fd67aed18355177a5e9de18d8a63f895e",
+       []
+      ],
+      "widows-block-in-inline-001-ref.html": [
+       "c2f4768613e4c568504c4ac69f7c5b8a22b41053",
        []
       ],
       "widows-orphans-001-ref.html": [
@@ -287879,6 +287896,14 @@
      "6941207373e513cfe10729077f59d369c59e6046",
      []
     ],
+    "anim-tao.png": [
+     "925e2efc9a97ade490f04d57271adc10b2fe69b6",
+     []
+    ],
+    "anim-tao.png.headers": [
+     "0230e176e44567f3bd1d58912d7f669b3e15b6ba",
+     []
+    ],
     "apng.png": [
      "e96e6471e6a8df81c462c47be588ffbbcac5ecfb",
      []
@@ -288059,6 +288084,10 @@
     ],
     "transparent50.png": [
      "55f8e69325bc61ff83f769a6524f7f9c3310be1f",
+     []
+    ],
+    "webp-animated.webp": [
+     "35a8dfcf34d58060ec70f0a2a04e0d58e357e084",
      []
     ],
     "wpt-logo": {
@@ -290167,7 +290196,7 @@
       []
      ],
      "largest-contentful-paint-helpers.js": [
-      "e12ece0a7561cbafa5174bf6cfcc1dddd55a8883",
+      "5012faf3b1be3388b9e342af5ee25265e4c3de22",
       []
      ]
     }
@@ -300204,6 +300233,10 @@
       "4a77e1a9036a0b67830c0947a99d346f7c9c0c09",
       []
      ],
+     "focus-autofocus-expected.txt": [
+      "f61743f965bbb068618c3c138b16c678b576a9be",
+      []
+     ],
      "focus-method-delegatesFocus-expected.txt": [
       "361c14d641c734975e7789d123d52868cae6abd5",
       []
@@ -306277,10 +306310,6 @@
     ],
     "RTCRtpSynchronizationSource-helper.js": [
      "10cfd651554a259817cd34521ab44556063f4f44",
-     []
-    ],
-    "RTCRtpSynchronizationSource-senderCaptureTimeOffset-expected.txt": [
-     "4ccdd8f7b566b4f03ea8378d536f73ac187bd8da",
      []
     ],
     "transfer-datachannel-service-worker.js": [
@@ -330858,7 +330887,7 @@
      ]
     ],
     "sec-ch-ua.https.html": [
-     "bc7a1a8f7d9eabaf71b4d1aed9e8df272edb6c3b",
+     "deb81692165f1c062c99db2e6bdb4f35c005e5e4",
      [
       null,
       {}
@@ -449734,6 +449763,50 @@
     ]
    },
    "largest-contentful-paint": {
+    "animated": {
+     "observe-animated-image-gif.tentative.html": [
+      "a2c0d7975abe348ea29b55a93781bffaca1a4084",
+      [
+       null,
+       {}
+      ]
+     ],
+     "observe-animated-image-webp.tentative.html": [
+      "de59d5c5f78c685ffd49e22738751e471525e894",
+      [
+       null,
+       {}
+      ]
+     ],
+     "observe-animated-image.tentative.html": [
+      "cf7d262b0f842a020fa9ee94fd05669c62d1edd0",
+      [
+       null,
+       {}
+      ]
+     ],
+     "observe-cross-origin-animated-image.tentative.html": [
+      "993883c607b8f737238f36730881f3a72b66f079",
+      [
+       null,
+       {}
+      ]
+     ],
+     "observe-cross-origin-tao-animated-image.tentative.html": [
+      "137dde66383f772b06d381e4f6293e15a1d8b88a",
+      [
+       null,
+       {}
+      ]
+     ],
+     "observe-non-animated-image.tentative.html": [
+      "6bbc0958b1deb25f45bfbaf0d461f2da3188adcc",
+      [
+       null,
+       {}
+      ]
+     ]
+    },
     "contracted-image.html": [
      "8816bf4ba99cb71e9f79ba44859a80a4c103ebad",
      [
@@ -483210,6 +483283,15 @@
        }
       ]
      ],
+     "focus-autofocus.html": [
+      "75a50b84c6df5525b5da0df86192637b70247820",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
      "focus-method-delegatesFocus.html": [
       "99667029ad866a200587335c63706d97c82dfe58",
       [
@@ -494048,6 +494130,31 @@
         [
          "script",
          "/resources/idlharness.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "useragentdata.https.any.js": [
+     "fc1e9e0b3c98907aace3795cf0b92eb78b6617cc",
+     [
+      "ua-client-hints/useragentdata.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "tests for navigator.userAgentData"
+        ]
+       ]
+      }
+     ],
+     [
+      "ua-client-hints/useragentdata.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "tests for navigator.userAgentData"
         ]
        ]
       }

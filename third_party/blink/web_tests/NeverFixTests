@@ -2024,3 +2024,5 @@ crbug.com/509989 [ Linux ] virtual/text-antialias/font-synthesis-style-local-win
 crbug.com/509989 [ Mac ] virtual/text-antialias/font-synthesis-style-local-win.html [ Skip ]
 crbug.com/509989 [ Fuchsia ] virtual/text-antialias/font-synthesis-style-local-win.html [ Skip ]
 crbug.com/509989 [ Android ] virtual/text-antialias/font-synthesis-style-local-win.html [ Skip ]
+crbug.com/626703 [ Mac10.15 ] external/wpt/appmanifest/icons-member/icons-member-cors-fail-manual.sub.html [ Skip ]
+crbug.com/626703 [ Mac10.15 ] external/wpt/appmanifest/start_url-member/start_url-member-pass-manual.html [ Skip ]
