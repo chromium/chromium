@@ -910,7 +910,7 @@ const base::FeatureParam<std::string>
 
 // New compositing algorithm. See renderer/core/paint/README.md.
 const base::Feature kCompositeAfterPaint{"CompositeAfterPaint",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
+                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether the Sanitizer API is available.
 const base::Feature kSanitizerAPI{"SanitizerAPI",

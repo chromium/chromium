@@ -412,7 +412,7 @@
     },
     {
       name: "CompositeAfterPaint",
-      status: "test",
+      status: "stable",
     },
     {
       name: "CompositeBGColorAnimation",
