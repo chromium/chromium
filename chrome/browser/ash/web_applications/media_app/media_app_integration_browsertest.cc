@@ -29,9 +29,11 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/crash/content/browser/error_reporting/mock_crash_endpoint.h"
+#include "content/public/browser/media_session_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/entry_info.h"
+#include "services/media_session/public/mojom/media_controller.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -886,6 +888,57 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationAudioEnabledTest, Autoplay) {
 
   EXPECT_LE(
       1, MediaAppUiBrowserTest::EvalJsInAppFrame(web_ui, kWaitForPlayedLength));
+}
+
+// Ensures the autoplay on audio file launch updates the global media controls
+// with an appropriate media source name.
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationAudioEnabledTest, MediaControls) {
+  using absl::optional;
+  class MediaControlsObserver
+      : public media_session::mojom::MediaControllerObserver {
+   public:
+    void MediaSessionInfoChanged(
+        media_session::mojom::MediaSessionInfoPtr info) override {}
+    void MediaSessionMetadataChanged(
+        const optional<media_session::MediaMetadata>& metadata) override {
+      if (metadata) {
+        source_title = metadata->source_title;
+        if (run_loop.IsRunningOnCurrentThread()) {
+          run_loop.Quit();
+        }
+      }
+    }
+    void MediaSessionActionsChanged(
+        const std::vector<media_session::mojom::MediaSessionAction>& action)
+        override {}
+    void MediaSessionChanged(
+        const optional<base::UnguessableToken>& request_id) override {}
+    void MediaSessionPositionChanged(
+        const optional<media_session::MediaPosition>& position) override {}
+
+    std::u16string source_title;
+    base::RunLoop run_loop;
+  } observer;
+
+  mojo::Receiver<media_session::mojom::MediaControllerObserver>
+      observer_receiver_(&observer);
+  mojo::Remote<media_session::mojom::MediaControllerManager>
+      controller_manager_remote;
+  mojo::Remote<media_session::mojom::MediaController> media_controller_remote;
+  content::GetMediaSessionService().BindMediaControllerManager(
+      controller_manager_remote.BindNewPipeAndPassReceiver());
+  controller_manager_remote->CreateActiveMediaController(
+      media_controller_remote.BindNewPipeAndPassReceiver());
+  media_controller_remote->AddObserver(
+      observer_receiver_.BindNewPipeAndPassRemote());
+
+  LaunchWithOneTestFile(kFileAudioOgg);
+
+  if (observer.source_title.empty()) {
+    observer.run_loop.Run();
+  }
+  // TODO(b/189171964): Show a better source name than the URL.
+  EXPECT_EQ(u"chrome://media-app", observer.source_title);
 }
 
 // Test that the MediaApp can navigate other files in the directory of a file

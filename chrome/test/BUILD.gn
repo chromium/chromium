@@ -3696,6 +3696,7 @@ if (!is_android && !is_fuchsia) {
         "//services/audio/public/cpp",
         "//services/audio/public/cpp:test_support",
         "//services/device/public/cpp/hid",
+        "//services/media_session/public/mojom",
         "//services/network/public/mojom",
         "//services/preferences/public/cpp",
         "//services/preferences/public/mojom",
