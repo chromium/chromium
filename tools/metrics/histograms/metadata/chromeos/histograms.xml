@@ -27,6 +27,11 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   ChromeOS.FeatureUsage.* histograms to record different events related to the
   feature -->
 
+  <variant name="ClamshellLauncher" summary="app launcher in clamshell mode">
+    <owner>jamescook@chromium.org</owner>
+    <owner>tbarzic@chromium.org</owner>
+    <owner>chromeos-launcher@google.com</owner>
+  </variant>
   <variant name="ESim" summary="esim">
     <owner>azeemarshad@chromium.org</owner>
     <owner>cros-connectivity@google.com</owner>
@@ -117,6 +122,11 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
                replaced into garage">
     <owner>kenalba@google.com</owner>
     <owner>chromeos-tango@google.com</owner>
+  </variant>
+  <variant name="TabletLauncher" summary="app launcher in tablet mode">
+    <owner>jamescook@chromium.org</owner>
+    <owner>tbarzic@chromium.org</owner>
+    <owner>chromeos-launcher@google.com</owner>
   </variant>
 </variants>
 
