@@ -64,6 +64,36 @@ TEST(ScriptWebBundleRuleTest, InvalidType) {
   EXPECT_TRUE(rule.resource_urls().IsEmpty());
 }
 
+TEST(ScriptWebBundleRuleTest, ResourcesShouldBeResolvedOnBundleURL) {
+  const KURL base_url("https://example.com/");
+  auto result = ScriptWebBundleRule::ParseJson(
+      R"({
+        "source": "hello/foo.wbn",
+        "resources": ["dir/a.css"]
+      })",
+      base_url);
+  ASSERT_TRUE(result);
+  ScriptWebBundleRule& rule = *result;
+  EXPECT_EQ(rule.source_url(), "https://example.com/hello/foo.wbn");
+  EXPECT_THAT(rule.resource_urls(), testing::UnorderedElementsAre(
+                                        "https://example.com/hello/dir/a.css"));
+}
+
+TEST(ScriptWebBundleRuleTest, ScopesShouldBeResolvedOnBundleURL) {
+  const KURL base_url("https://example.com/");
+  auto result = ScriptWebBundleRule::ParseJson(
+      R"({
+        "source": "hello/foo.wbn",
+        "scopes": ["js"]
+      })",
+      base_url);
+  ASSERT_TRUE(result);
+  ScriptWebBundleRule& rule = *result;
+  EXPECT_EQ(rule.source_url(), "https://example.com/hello/foo.wbn");
+  EXPECT_THAT(rule.scope_urls(),
+              testing::UnorderedElementsAre("https://example.com/hello/js"));
+}
+
 TEST(ScriptWebBundleRuleTest, CredentialsDefaultIsSameOrigin) {
   const KURL base_url("https://example.com/");
   auto result = ScriptWebBundleRule::ParseJson(
