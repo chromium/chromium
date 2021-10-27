@@ -38,6 +38,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
             android:text="@string/back"
+            android:visibility="invisible"
             style="@style/TextButton" />
 
         <View
