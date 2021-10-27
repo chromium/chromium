@@ -58,14 +58,19 @@ DesksTemplatesItemView::DesksTemplatesItemView(DeskTemplate* desk_template)
     : uuid_(desk_template->uuid()) {
   // TODO(richui): Remove all the borders. It is only used for visualizing
   // bounds while it is a placeholder.
+
   auto delete_button_callback = base::BindRepeating(
       &DesksTemplatesItemView::OnDeleteButtonPressed, base::Unretained(this));
+  auto launch_template_callback = base::BindRepeating(
+      &DesksTemplatesItemView::OnGridItemPressed, base::Unretained(this));
 
   views::View* spacer;
   views::BoxLayoutView* container;
   views::Builder<DesksTemplatesItemView>(this)
       .SetPreferredSize(kPreferredSize)
       .SetUseDefaultFillLayout(true)
+      .SetAccessibleName(desk_template->template_name())
+      .SetCallback(std::move(launch_template_callback))
       .SetBorder(views::CreateSolidBorder(/*thickness=*/2, SK_ColorDKGRAY))
       .AddChildren(
           views::Builder<views::BoxLayoutView>()
@@ -92,7 +97,7 @@ DesksTemplatesItemView::DesksTemplatesItemView(DeskTemplate* desk_template)
                       .SetBetweenChildSpacing(kIconSpacingDp)),
           views::Builder<DesksTemplatesDeleteButton>()
               .CopyAddressTo(&delete_button_)
-              .SetCallback(delete_button_callback))
+              .SetCallback(std::move(delete_button_callback)))
       .BuildChildren();
 
   container->SetFlexForView(spacer, 1);
@@ -145,7 +150,11 @@ void DesksTemplatesItemView::OnDeleteButtonPressed() {
   DesksTemplatesPresenter::Get()->DeleteEntry(uuid_.AsLowercaseString());
 }
 
-BEGIN_METADATA(DesksTemplatesItemView, views::View)
+void DesksTemplatesItemView::OnGridItemPressed() {
+  DesksTemplatesPresenter::Get()->LaunchDeskTemplate(uuid_.AsLowercaseString());
+}
+
+BEGIN_METADATA(DesksTemplatesItemView, views::Button)
 END_METADATA
 
 }  // namespace ash

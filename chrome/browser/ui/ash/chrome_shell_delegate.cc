@@ -430,6 +430,10 @@ void ChromeShellDelegate::OpenFeedbackPageForPersistentDesksBar() {
                              /*description_template=*/"#BentoBar\n\n");
 }
 
+desks_storage::DeskModel* ChromeShellDelegate::GetDeskModel() {
+  return DesksClient::Get()->GetDeskModel();
+}
+
 void ChromeShellDelegate::GetFaviconForUrl(
     const std::string& page_url,
     favicon_base::FaviconImageCallback callback,
@@ -461,6 +465,11 @@ void ChromeShellDelegate::GetIconForAppId(
       /*allow_placeholder_icon=*/false, std::move(callback));
 }
 
+void ChromeShellDelegate::LaunchAppsFromTemplate(
+    std::unique_ptr<ash::DeskTemplate> desk_template) {
+  DesksClient::Get()->LaunchAppsFromTemplate(std::move(desk_template));
+}
+
 // static
 void ChromeShellDelegate::SetDisableLoggingRedirectForTesting(bool value) {
   disable_logging_redirect_for_testing = value;
@@ -469,8 +478,4 @@ void ChromeShellDelegate::SetDisableLoggingRedirectForTesting(bool value) {
 // static
 void ChromeShellDelegate::ResetDisableLoggingRedirectForTesting() {
   disable_logging_redirect_for_testing.reset();
-}
-
-desks_storage::DeskModel* ChromeShellDelegate::GetDeskModel() {
-  return DesksClient::Get()->GetDeskModel();
 }

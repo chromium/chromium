@@ -73,6 +73,8 @@ class ChromeShellDelegate : public ash::ShellDelegate {
       int desired_icon_size,
       base::OnceCallback<void(apps::mojom::IconValuePtr icon_value)> callback)
       const override;
+  void LaunchAppsFromTemplate(
+      std::unique_ptr<ash::DeskTemplate> desk_template) override;
 
   static void SetDisableLoggingRedirectForTesting(bool value);
   static void ResetDisableLoggingRedirectForTesting();

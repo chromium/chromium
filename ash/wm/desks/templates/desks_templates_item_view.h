@@ -7,7 +7,7 @@
 
 #include "base/guid.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/views/view.h"
+#include "ui/views/controls/button/button.h"
 
 namespace views {
 class BoxLayoutView;
@@ -22,7 +22,7 @@ class DeskTemplate;
 
 // A view that represents each individual template item in the desks templates
 // grid.
-class DesksTemplatesItemView : public views::View {
+class DesksTemplatesItemView : public views::Button {
  public:
   METADATA_HEADER(DesksTemplatesItemView);
 
@@ -41,10 +41,12 @@ class DesksTemplatesItemView : public views::View {
  private:
   friend class DesksTemplatesItemViewTestApi;
 
-  // TODO(richui): Pass a list of icons as the parameter.
+  // TODO(chinsenj): Pass a list of icons as the parameter.
   void SetIcons();
 
   void OnDeleteButtonPressed();
+
+  void OnGridItemPressed();
 
   // Owned by the views hierarchy.
   views::Textfield* name_view_ = nullptr;
@@ -60,7 +62,7 @@ class DesksTemplatesItemView : public views::View {
   const base::GUID uuid_;
 };
 
-BEGIN_VIEW_BUILDER(/* no export */, DesksTemplatesItemView, views::View)
+BEGIN_VIEW_BUILDER(/* no export */, DesksTemplatesItemView, views::Button)
 END_VIEW_BUILDER
 
 }  // namespace ash

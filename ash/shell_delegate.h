@@ -46,9 +46,10 @@ class DeskModel;
 namespace ash {
 
 class AccessibilityDelegate;
-class CaptureModeDelegate;
-class BackGestureContextualNudgeDelegate;
 class BackGestureContextualNudgeController;
+class BackGestureContextualNudgeDelegate;
+class CaptureModeDelegate;
+class DeskTemplate;
 class NearbyShareController;
 class NearbyShareDelegate;
 
@@ -168,6 +169,11 @@ class ASH_EXPORT ShellDelegate {
       int desired_icon_size,
       base::OnceCallback<void(apps::mojom::IconValuePtr icon_value)> callback)
       const = 0;
+
+  // Launches apps into the active desk. Ran immediately after a desk is created
+  // for a template.
+  virtual void LaunchAppsFromTemplate(
+      std::unique_ptr<DeskTemplate> desk_template) = 0;
 };
 
 }  // namespace ash

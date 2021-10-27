@@ -175,6 +175,21 @@ void DesksClient::LaunchDeskTemplate(const std::string& template_uuid,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+void DesksClient::LaunchAppsFromTemplate(
+    std::unique_ptr<ash::DeskTemplate> desk_template) {
+  DCHECK(desk_template);
+  const app_restore::RestoreData* restore_data =
+      desk_template->desk_restore_data();
+  if (!restore_data)
+    return;
+
+  MaybeCreateAppLaunchHandler();
+  DCHECK(app_launch_handler_);
+  app_launch_handler_->SetRestoreDataAndLaunch(restore_data->Clone());
+
+  RecordLaunchFromTemplateHistogram();
+}
+
 desks_storage::DeskModel* DesksClient::GetDeskModel() {
   if (chromeos::features::IsDeskTemplateSyncEnabled()) {
     return DeskSyncServiceFactory::GetForProfile(active_profile_)
@@ -183,6 +198,31 @@ desks_storage::DeskModel* DesksClient::GetDeskModel() {
 
   DCHECK(storage_manager_.get());
   return storage_manager_.get();
+}
+
+// Sets the preconfigured desk template.  Data contains the contents of the JSON
+// file with the template information
+void DesksClient::SetPolicyPreconfiguredTemplate(
+    const AccountId& account_id,
+    std::unique_ptr<std::string> data) {
+  Profile* profile =
+      ash::ProfileHelper::Get()->GetProfileByAccountId(account_id);
+  if (!data || !IsSupportedProfile(profile))
+    return;
+
+  std::string& in_map_data = preconfigured_desk_templates_json_[account_id];
+  if (in_map_data == *data)
+    return;
+
+  in_map_data = *data;
+
+  if (profile && profile == active_profile_)
+    GetDeskModel()->SetPolicyDeskTemplates(*data);
+}
+
+void DesksClient::RemovePolicyPreconfiguredTemplate(
+    const AccountId& account_id) {
+  preconfigured_desk_templates_json_.erase(account_id);
 }
 
 void DesksClient::MaybeCreateAppLaunchHandler() {
@@ -270,18 +310,13 @@ void DesksClient::OnCreateAndActivateNewDesk(
   }
 
   DCHECK(desk_template);
-  const app_restore::RestoreData* restore_data =
-      desk_template->desk_restore_data();
-  if (!restore_data) {
+  if (!desk_template->desk_restore_data()) {
     std::move(callback).Run(std::string(kMissingTemplateDataError));
     return;
   }
 
-  DCHECK(app_launch_handler_);
-  app_launch_handler_->SetRestoreDataAndLaunch(restore_data->Clone());
+  LaunchAppsFromTemplate(std::move(desk_template));
   std::move(callback).Run(std::string(""));
-
-  RecordLaunchFromTemplateHistogram();
 }
 
 void DesksClient::OnCaptureActiveDeskAndSaveTemplate(
@@ -343,29 +378,4 @@ void DesksClient::OnGetAllTemplates(
       std::string(status != desks_storage::DeskModel::GetAllEntriesStatus::kOk
                       ? kStorageError
                       : ""));
-}
-
-// Sets the preconfigured desk template.  Data contains the contents of the JSON
-// file with the template information
-void DesksClient::SetPolicyPreconfiguredTemplate(
-    const AccountId& account_id,
-    std::unique_ptr<std::string> data) {
-  Profile* profile =
-      ash::ProfileHelper::Get()->GetProfileByAccountId(account_id);
-  if (!data || !IsSupportedProfile(profile))
-    return;
-
-  std::string& in_map_data = preconfigured_desk_templates_json_[account_id];
-  if (in_map_data == *data)
-    return;
-
-  in_map_data = *data;
-
-  if (profile && profile == active_profile_)
-    GetDeskModel()->SetPolicyDeskTemplates(*data);
-}
-
-void DesksClient::RemovePolicyPreconfiguredTemplate(
-    const AccountId& account_id) {
-  preconfigured_desk_templates_json_.erase(account_id);
 }
