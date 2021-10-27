@@ -54,6 +54,8 @@
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_types.h"
+#include "ui/views/metadata/view_factory_internal.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
@@ -72,6 +74,7 @@ constexpr gfx::Insets kActionButtonsRowPadding(0, 22, 0, 0);
 constexpr int kContentRowHorizontalSpacing = 16;
 constexpr int kLeftContentVerticalSpacing = 4;
 constexpr int kTitleRowSpacing = 6;
+constexpr int kHeaderRowSpacing = 4;
 
 // Bullet character. The divider symbol between the title and the timestamp.
 constexpr char16_t kTitleRowDivider[] = u"\u2022";
@@ -93,6 +96,8 @@ constexpr int kMessageLabelSize = 13;
 // title/message view and expand button).
 constexpr int kIconViewSize = 48;
 
+// Helpers ---------------------------------------------------------------------
+
 // Configure the style for labels in notification view. `is_color_primary`
 // indicates if the color of the text is primary or secondary text color.
 void ConfigureLabelStyle(views::Label* label, int size, bool is_color_primary) {
@@ -105,6 +110,46 @@ void ConfigureLabelStyle(views::Label* label, int size, bool is_color_primary) {
           : ash::AshColorProvider::ContentLayerType::kTextColorSecondary;
   label->SetEnabledColor(
       ash::AshColorProvider::Get()->GetContentLayerColor(layer_type));
+}
+
+// Create a view that will contain the `content_row`,
+// `message_view_in_expanded_state_`, inline settings and the large image.
+views::Builder<views::View> CreateMainRightViewBuilder() {
+  auto layout_manager = std::make_unique<views::FlexLayout>();
+  layout_manager
+      ->SetDefault(views::kMarginsKey,
+                   gfx::Insets(0, 0, kMainRightViewVerticalSpacing, 0))
+      .SetOrientation(views::LayoutOrientation::kVertical)
+      .SetInteriorMargin(kMainRightViewPadding);
+
+  return views::Builder<views::View>()
+      .SetID(message_center::NotificationViewBase::ViewId::kMainRightView)
+      .SetLayoutManager(std::move(layout_manager))
+      .SetProperty(
+          views::kFlexBehaviorKey,
+          views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                                   views::MaximumFlexSizeRule::kUnbounded));
+}
+
+// Create a view containing the title and message for the notification in a
+// single line. This is used when a grouped child notification is in a
+// collapsed parent notification.
+views::Builder<views::BoxLayoutView> CreateCollapsedSummaryBuilder(
+    const message_center::Notification& notification) {
+  return views::Builder<views::BoxLayoutView>()
+      .SetID(
+          message_center::NotificationViewBase::ViewId::kCollapsedSummaryView)
+      .SetInsideBorderInsets(ash::kGroupedCollapsedSummaryInsets)
+      .SetBetweenChildSpacing(ash::kGroupedCollapsedSummaryLabelSpacing)
+      .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
+      .SetVisible(false)
+      .AddChild(views::Builder<views::Label>()
+                    .SetText(notification.title())
+                    .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT))
+      .AddChild(views::Builder<views::Label>()
+                    .SetText(notification.message())
+                    .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
+                    .SetTextStyle(views::style::STYLE_SECONDARY));
 }
 
 // A class to provide custom (non MD) styling for buttons shown in the actions
@@ -347,10 +392,87 @@ AshNotificationView::AshNotificationView(
       .SetInteriorMargin(notification.group_child() ? gfx::Insets()
                                                     : kNotificationViewPadding);
 
+  auto content_row_layout = std::make_unique<views::FlexLayout>();
+  content_row_layout->SetInteriorMargin(kMainRightViewChildPadding);
+
+  auto content_row_builder =
+      CreateContentRowBuilder()
+          .SetLayoutManager(std::move(content_row_layout))
+          .AddChild(
+              views::Builder<views::BoxLayoutView>()
+                  .SetID(kHeaderLeftContent)
+                  .SetOrientation(Orientation::kVertical)
+                  .SetBetweenChildSpacing(kLeftContentVerticalSpacing)
+                  .SetProperty(views::kFlexBehaviorKey,
+                               views::FlexSpecification(
+                                   views::MinimumFlexSizeRule::kScaleToZero,
+                                   views::MaximumFlexSizeRule::kScaleToMaximum))
+                  .AddChild(
+                      CreateHeaderRowBuilder()
+                          .SetIsInAshNotificationView(true)
+                          .SetColor(
+                              AshColorProvider::Get()->GetContentLayerColor(
+                                  AshColorProvider::ContentLayerType::
+                                      kTextColorSecondary)))
+                  .AddChild(
+                      CreateLeftContentBuilder()
+                          .CopyAddressTo(&left_content_)
+                          .SetBetweenChildSpacing(kLeftContentVerticalSpacing)))
+          .AddChild(
+              views::Builder<views::BoxLayoutView>()
+                  .SetMainAxisAlignment(MainAxisAlignment::kEnd)
+                  .SetInsideBorderInsets(
+                      gfx::Insets(0, kContentRowHorizontalSpacing, 0, 0))
+                  .SetBetweenChildSpacing(kContentRowHorizontalSpacing)
+                  .SetProperty(views::kFlexBehaviorKey,
+                               views::FlexSpecification(
+                                   views::MinimumFlexSizeRule::kPreferred,
+                                   views::MaximumFlexSizeRule::kUnbounded))
+                  .AddChild(CreateRightContentBuilder())
+                  .AddChild(
+                      views::Builder<views::FlexLayoutView>()
+                          .SetOrientation(views::LayoutOrientation::kHorizontal)
+                          .AddChild(views::Builder<ExpandButton>()
+                                        .CopyAddressTo(&expand_button_)
+                                        .SetCallback(base::BindRepeating(
+                                            &AshNotificationView::ToggleExpand,
+                                            base::Unretained(this)))
+                                        .SetProperty(
+                                            views::kCrossAxisAlignmentKey,
+                                            views::LayoutAlignment::kCenter))));
+
+  // Main right view contains all the views besides control buttons and
+  // icon.
+  auto main_right_view_builder =
+      CreateMainRightViewBuilder()
+          .AddChild(content_row_builder)
+          .AddChild(
+              views::Builder<views::Label>()
+                  .CopyAddressTo(&message_view_in_expanded_state_)
+                  .SetHorizontalAlignment(gfx::ALIGN_TO_HEAD)
+                  .SetMultiLine(true)
+                  .SetMaxLines(message_center::kMaxLinesForExpandedMessageView)
+                  .SetAllowCharacterBreak(true)
+                  .SetBorder(
+                      views::CreateEmptyBorder(kMainRightViewChildPadding))
+                  // TODO(crbug/682266): This is a workaround to that bug by
+                  // explicitly
+                  // setting the width. Ideally, we should fix the original bug,
+                  // but it seems there's no obvious solution for the bug
+                  // according to https://crbug.com/678337#c7. We will consider
+                  // making changes to this code when the bug is fixed
+                  .SetMaximumWidth(GetExpandedMessageViewWidth()))
+          .AddChild(CreateInlineSettingsBuilder())
+          .AddChild(CreateImageContainerBuilder());
+
+  ConfigureLabelStyle(message_view_in_expanded_state_, kMessageLabelSize,
+                      false);
+
   AddChildView(
       views::Builder<views::BoxLayoutView>()
           .CopyAddressTo(&control_buttons_container_)
           .SetMainAxisAlignment(MainAxisAlignment::kEnd)
+          .SetVisible(!notification.group_child())
           .AddChild(CreateControlButtonsBuilder()
                         .CopyAddressTo(&control_buttons_view_)
                         .SetButtonIconColors(
@@ -359,130 +481,41 @@ AshNotificationView::AshNotificationView(
                                     kIconColorPrimary)))
           .Build());
 
-  // Header left content contains header row and left content.
-  auto header_left_content = std::make_unique<views::View>();
-  header_left_content->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kScaleToMaximum));
-
-  header_left_content_layout_ =
-      header_left_content->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          Orientation::kVertical, gfx::Insets(), kLeftContentVerticalSpacing));
-
-  auto header_row = CreateHeaderRow();
-  header_row->ConfigureLabelsStyle(
-      gfx::FontList({kGoogleSansFont}, gfx::Font::NORMAL, kHeaderViewLabelSize,
-                    gfx::Font::Weight::MEDIUM),
-      gfx::Insets(), true);
-  header_row->SetColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorSecondary));
-  header_left_content->AddChildView(std::move(header_row));
-
-  header_left_content->AddChildView(
-      CreateLeftContentBuilder()
-          .CopyAddressTo(&left_content_)
-          .SetBetweenChildSpacing(kLeftContentVerticalSpacing)
+  AddChildView(
+      views::Builder<views::FlexLayoutView>()
+          .CopyAddressTo(&main_view_)
+          .SetOrientation(views::LayoutOrientation::kHorizontal)
+          .AddChild(views::Builder<views::BoxLayoutView>()
+                        .SetID(kAppIconViewContainer)
+                        .SetOrientation(Orientation::kVertical)
+                        .SetMainAxisAlignment(MainAxisAlignment::kStart)
+                        .AddChild(views::Builder<RoundedImageView>()
+                                      .CopyAddressTo(&app_icon_view_)
+                                      .SetCornerRadius(kAppIconViewSize / 2)))
+          .AddChild(main_right_view_builder)
           .Build());
-  auto content_row = CreateContentRow();
-  content_row->SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetInteriorMargin(kMainRightViewChildPadding);
 
-  content_row->AddChildView(std::move(header_left_content));
-  content_row->AddChildView(
-      views::Builder<views::BoxLayoutView>()
-          .SetMainAxisAlignment(MainAxisAlignment::kEnd)
-          .SetInsideBorderInsets(
-              gfx::Insets(0, kContentRowHorizontalSpacing, 0, 0))
-          .SetBetweenChildSpacing(kContentRowHorizontalSpacing)
-          .SetProperty(
-              views::kFlexBehaviorKey,
-              views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
-                                       views::MaximumFlexSizeRule::kUnbounded))
-          .AddChild(CreateRightContentBuilder())
-          .AddChild(
-              views::Builder<views::FlexLayoutView>()
-                  .SetOrientation(views::LayoutOrientation::kHorizontal)
-                  .AddChild(views::Builder<ExpandButton>()
-                                .CopyAddressTo(&expand_button_)
-                                .SetCallback(base::BindRepeating(
-                                    &AshNotificationView::ToggleExpand,
-                                    base::Unretained(this)))
-                                .SetProperty(views::kCrossAxisAlignmentKey,
-                                             views::LayoutAlignment::kCenter)))
-          .Build());
-  // TODO(crbug/1241990): add an icon view here.
-  auto app_icon_container = std::make_unique<views::View>();
-  app_icon_container
-      ->SetLayoutManager(
-          std::make_unique<views::BoxLayout>(Orientation::kVertical))
-      ->set_main_axis_alignment(MainAxisAlignment::kStart);
-  auto app_icon_view = std::make_unique<RoundedImageView>(
-      kAppIconViewSize / 2, RoundedImageView::Alignment::kCenter);
-  app_icon_view_ = app_icon_container->AddChildView(std::move(app_icon_view));
+  AddChildView(CreateCollapsedSummaryBuilder(notification)
+                   .CopyAddressTo(&collapsed_summary_view_)
+                   .Build());
 
-  // Main right view contains all the views besides control buttons and icon.
-  auto main_right_view = std::make_unique<views::View>();
-  main_right_view->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kUnbounded));
-  main_right_view->SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kVertical)
-      .SetInteriorMargin(kMainRightViewPadding)
-      .SetDefault(views::kMarginsKey,
-                  gfx::Insets(0, 0, kMainRightViewVerticalSpacing, 0));
-  main_right_view->AddChildView(std::move(content_row));
-
-  // We add `message_view_in_expanded_state_` to the view hierarchy in the
-  // constructor rather than dynamically like `message_view()` to prevent
-  // messing up the views structure in the case of removing and adding back.
-  main_right_view->AddChildView(
-      views::Builder<views::Label>()
-          .CopyAddressTo(&message_view_in_expanded_state_)
-          .SetHorizontalAlignment(gfx::ALIGN_TO_HEAD)
-          .SetMultiLine(true)
-          .SetMaxLines(message_center::kMaxLinesForExpandedMessageView)
-          .SetAllowCharacterBreak(true)
-          .SetBorder(views::CreateEmptyBorder(kMainRightViewChildPadding))
-          // TODO(crbug/682266): This is a workaround to that bug by explicitly
-          // setting the width. Ideally, we should fix the original bug, but it
-          // seems there's no obvious solution for the bug according to
-          // https://crbug.com/678337#c7. We will consider making changes to
-          // this code when the bug is fixed.
-          .SetMaximumWidth(GetExpandedMessageViewWidth())
-          .Build());
-  ConfigureLabelStyle(message_view_in_expanded_state_, kMessageLabelSize,
-                      false);
-
-  main_right_view->AddChildView(CreateInlineSettingsView());
-  main_right_view->AddChildView(CreateImageContainerView());
-
-  // Main view contains all the views besides control buttons.
-  auto main_view = std::make_unique<views::View>();
-
-  main_view->SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kHorizontal);
-
-  main_view->AddChildView(std::move(app_icon_container));
-  main_view->AddChildView(std::move(main_right_view));
-  main_view_ = AddChildView(std::move(main_view));
-
-  collapsed_summary_view_ =
-      AddChildView(CreateCollapsedSummaryView(notification));
-
-  auto grouped_notifications_container = std::make_unique<views::View>();
-  grouped_notifications_container->SetLayoutManager(
-      std::make_unique<views::BoxLayout>(
-          Orientation::kVertical, kGroupedNotificationContainerInsets,
-          IsExpanded() ? kGroupedNotificationsExpandedSpacing
-                       : kGroupedNotificationsCollapsedSpacing));
-  grouped_notifications_container_ =
-      AddChildView(std::move(grouped_notifications_container));
+  AddChildView(views::Builder<views::BoxLayoutView>()
+                   .CopyAddressTo(&grouped_notifications_container_)
+                   .SetOrientation(Orientation::kVertical)
+                   .SetInsideBorderInsets(kGroupedNotificationContainerInsets)
+                   .SetBetweenChildSpacing(
+                       IsExpanded() ? kGroupedNotificationsExpandedSpacing
+                                    : kGroupedNotificationsCollapsedSpacing)
+                   .Build());
 
   AddChildView(CreateActionsRow());
+
+  // Custom paddings for `AshNotificationView`
   static_cast<views::BoxLayout*>(action_buttons_row()->GetLayoutManager())
       ->set_inside_border_insets(kActionButtonsRowPadding);
+  static_cast<views::FlexLayout*>(header_row()->GetLayoutManager())
+      ->SetDefault(views::kMarginsKey, gfx::Insets(0, 0, 0, kHeaderRowSpacing))
+      .SetInteriorMargin(gfx::Insets());
 
   if (shown_in_popup_ && !notification.group_child()) {
     layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
@@ -565,30 +598,6 @@ void AshNotificationView::RemoveGroupNotification(
   PreferredSizeChanged();
 }
 
-std::unique_ptr<views::View> AshNotificationView::CreateCollapsedSummaryView(
-    const message_center::Notification& notification) {
-  auto collapsed_summary_view = std::make_unique<views::View>();
-  collapsed_summary_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal,
-      kGroupedCollapsedSummaryInsets, kGroupedCollapsedSummaryLabelSpacing));
-  collapsed_summary_view->SetVisible(false);
-
-  auto title_label = std::make_unique<views::Label>(
-      notification.title(), views::style::CONTEXT_DIALOG_BODY_TEXT);
-  title_label->SetMaximumWidthSingleLine(kGroupedCollapsedSummaryTitleLength);
-
-  auto content_label = std::make_unique<views::Label>(
-      notification.message(), views::style::CONTEXT_DIALOG_BODY_TEXT,
-      views::style::STYLE_SECONDARY);
-  content_label->SetMaximumWidthSingleLine(
-      kGroupedCollapsedSummaryMessageLength);
-
-  collapsed_summary_view->AddChildView(std::move(title_label));
-  collapsed_summary_view->AddChildView(std::move(content_label));
-
-  return collapsed_summary_view;
-}
-
 void AshNotificationView::SetGroupedChildExpanded(bool expanded) {
   collapsed_summary_view_->SetVisible(!expanded);
   main_view_->SetVisible(expanded);
@@ -616,7 +625,8 @@ void AshNotificationView::UpdateViewForExpandedState(bool expanded) {
       ConfigureLabelStyle(message_view(), kMessageLabelSize, false);
     }
     message_view()->SetVisible(!expanded);
-    message_view_in_expanded_state_->SetVisible(expanded);
+    message_view_in_expanded_state_->SetVisible(expanded &&
+                                                !is_grouped_parent_view_);
   }
 
   expand_button_->SetExpanded(expanded);

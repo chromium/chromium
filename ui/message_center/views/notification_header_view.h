@@ -29,8 +29,7 @@ class MESSAGE_CENTER_EXPORT NotificationHeaderView : public views::Button {
  public:
   METADATA_HEADER(NotificationHeaderView);
 
-  explicit NotificationHeaderView(PressedCallback callback,
-                                  bool is_in_ash_notification = false);
+  explicit NotificationHeaderView(PressedCallback callback = PressedCallback());
   NotificationHeaderView(const NotificationHeaderView&) = delete;
   NotificationHeaderView& operator=(const NotificationHeaderView&) = delete;
   ~NotificationHeaderView() override;
@@ -71,6 +70,8 @@ class MESSAGE_CENTER_EXPORT NotificationHeaderView : public views::Button {
 
   // Shows or hides the app icon.
   void SetAppIconVisible(bool visible);
+
+  void SetIsInAshNotificationView(bool is_in_ash_notification);
 
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
@@ -125,9 +126,17 @@ class MESSAGE_CENTER_EXPORT NotificationHeaderView : public views::Button {
   bool using_default_app_icon_ = false;
 
   // Whether this view is used for an ash notification view.
-  const bool is_in_ash_notification_;
+  bool is_in_ash_notification_ = false;
 };
 
+BEGIN_VIEW_BUILDER(MESSAGE_CENTER_EXPORT, NotificationHeaderView, views::Button)
+VIEW_BUILDER_PROPERTY(bool, IsInAshNotificationView)
+VIEW_BUILDER_PROPERTY(absl::optional<SkColor>, Color)
+END_VIEW_BUILDER
+
 }  // namespace message_center
+
+DEFINE_VIEW_BUILDER(MESSAGE_CENTER_EXPORT,
+                    message_center::NotificationHeaderView)
 
 #endif  // UI_MESSAGE_CENTER_VIEWS_NOTIFICATION_HEADER_VIEW_H_
