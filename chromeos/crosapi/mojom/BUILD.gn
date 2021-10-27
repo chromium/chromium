@@ -147,6 +147,16 @@ mojom("mojom") {
           cpp = "::apps::mojom::PermissionPtr"
           move_only = true
         },
+        {
+          mojom = "crosapi.mojom.PreferredApp"
+          cpp = "::apps::mojom::PreferredAppPtr"
+          move_only = true
+        },
+        {
+          mojom = "crosapi.mojom.PreferredAppChanges"
+          cpp = "::apps::mojom::PreferredAppChangesPtr"
+          move_only = true
+        },
       ]
       traits_headers = [
         "//chromeos/crosapi/mojom/app_service_types_mojom_traits.h",

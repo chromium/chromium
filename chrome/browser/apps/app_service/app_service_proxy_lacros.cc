@@ -434,7 +434,25 @@ void AppServiceProxyLacros::AddPreferredApp(const std::string& app_id,
 void AppServiceProxyLacros::AddPreferredApp(
     const std::string& app_id,
     const apps::mojom::IntentPtr& intent) {
-  NOTIMPLEMENTED();
+  auto* service = chromeos::LacrosService::Get();
+
+  if (!service) {
+    return;
+  }
+
+  if (!service->IsAvailable<crosapi::mojom::AppServiceProxy>()) {
+    return;
+  }
+
+  // TODO(https://crbug.com/853604): Remove this and convert to a DCHECK
+  // after finding out the root cause.
+  if (app_id.empty()) {
+    base::debug::DumpWithoutCrashing();
+    return;
+  }
+
+  service->GetRemote<crosapi::mojom::AppServiceProxy>()->AddPreferredApp(
+      app_id, apps_util::ConvertAppServiceToCrosapiIntent(intent, profile_));
 }
 
 void AppServiceProxyLacros::SetSupportedLinksPreference(
@@ -465,30 +483,14 @@ void AppServiceProxyLacros::OnApps(std::vector<apps::mojom::AppPtr> deltas,
                              should_notify_initialized);
 }
 
-apps::mojom::IntentFilterPtr AppServiceProxyLacros::FindBestMatchingFilter(
-    const apps::mojom::IntentPtr& intent) {
-  apps::mojom::IntentFilterPtr best_matching_intent_filter;
-  if (!crosapi_receiver_.is_bound()) {
-    return best_matching_intent_filter;
-  }
+void AppServiceProxyLacros::OnPreferredAppsChanged(
+    apps::mojom::PreferredAppChangesPtr changes) {
+  preferred_apps_.ApplyBulkUpdate(std::move(changes));
+}
 
-  int best_match_level = apps_util::IntentFilterMatchLevel::kNone;
-  app_registry_cache_.ForEachApp(
-      [&intent, &best_match_level,
-       &best_matching_intent_filter](const apps::AppUpdate& update) {
-        for (const auto& filter : update.IntentFilters()) {
-          if (!apps_util::IntentMatchesFilter(intent, filter)) {
-            continue;
-          }
-          auto match_level = apps_util::GetFilterMatchLevel(filter);
-          if (match_level <= best_match_level) {
-            continue;
-          }
-          best_matching_intent_filter = filter->Clone();
-          best_match_level = match_level;
-        }
-      });
-  return best_matching_intent_filter;
+void AppServiceProxyLacros::InitializePreferredApps(
+    PreferredAppsList::PreferredApps preferred_apps) {
+  preferred_apps_.Init(preferred_apps);
 }
 
 void AppServiceProxyLacros::FlushMojoCallsForTesting() {
