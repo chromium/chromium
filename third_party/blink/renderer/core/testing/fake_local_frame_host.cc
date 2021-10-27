@@ -87,8 +87,6 @@ void FakeLocalFrameHost::BubbleLogicalScrollInParentFrame(
     blink::mojom::blink::ScrollDirection direction,
     ui::ScrollGranularity granularity) {}
 
-void FakeLocalFrameHost::DidAccessInitialDocument() {}
-
 void FakeLocalFrameHost::DidBlockNavigation(
     const KURL& blocked_url,
     const KURL& initiator_url,

@@ -319,11 +319,6 @@ interface LocalFrameHost {
   BubbleLogicalScrollInParentFrame(ScrollDirection direction,
                                    ui.mojom.ScrollGranularity granularity);
 
-  // Indicates that another page has accessed the DOM of the initial empty
-  // document of a main frame. After this, it is no longer safe to show a
-  // pending navigation's URL, because a URL spoof is possible.
-  DidAccessInitialDocument();
-
   // Indicates an attempt by the associated frame to navigate from the
   // |initiator_url| to the |blocked_url|, but the navigation was
   // blocked because of |reason|.
@@ -1254,6 +1249,11 @@ interface LocalMainFrameHost {
   // Sent once a paint happens after the first non empty layout. In other words,
   // after the frame has painted something.
   DidFirstVisuallyNonEmptyPaint();
+
+  // Indicates that another page has accessed the DOM of the initial empty
+  // document of a main frame. After this, it is no longer safe to show a
+  // pending navigation's URL, because a URL spoof is possible.
+  DidAccessInitialMainDocument();
 };
 
 // Implemented in Browser, this interface defines remote-main-frame-specific

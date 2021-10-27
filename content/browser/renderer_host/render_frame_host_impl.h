@@ -2020,7 +2020,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void BubbleLogicalScrollInParentFrame(
       blink::mojom::ScrollDirection direction,
       ui::ScrollGranularity granularity) override;
-  void DidAccessInitialDocument() override;
   void DidBlockNavigation(
       const GURL& blocked_url,
       const GURL& initiator_url,
@@ -2139,6 +2138,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void SetWindowRect(const gfx::Rect& bounds,
                      SetWindowRectCallback callback) override;
   void DidFirstVisuallyNonEmptyPaint() override;
+  void DidAccessInitialMainDocument() override;
 
   void ReportNoBinderForInterface(const std::string& error);
 

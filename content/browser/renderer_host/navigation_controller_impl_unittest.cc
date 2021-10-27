@@ -2666,7 +2666,7 @@ TEST_F(NavigationControllerTest, ShowRendererURLInNewTabUntilModified) {
 
   // If something else modifies the contents of the about:blank page, then
   // we must revert to showing about:blank to avoid a URL spoof.
-  main_test_rfh()->DidAccessInitialDocument();
+  main_test_rfh()->DidAccessInitialMainDocument();
   EXPECT_TRUE(contents()->HasAccessedInitialDocument());
   EXPECT_FALSE(controller.GetVisibleEntry());
   EXPECT_EQ(url, controller.GetPendingEntry()->GetURL());
@@ -2710,7 +2710,7 @@ TEST_F(NavigationControllerTest, ShowBrowserURLAfterFailUntilModified) {
 
   // If something else later modifies the contents of the about:blank page, then
   // we must revert to showing about:blank to avoid a URL spoof.
-  main_test_rfh()->DidAccessInitialDocument();
+  main_test_rfh()->DidAccessInitialMainDocument();
   EXPECT_TRUE(contents()->HasAccessedInitialDocument());
   EXPECT_FALSE(controller.GetVisibleEntry());
   EXPECT_FALSE(controller.GetPendingEntry());
@@ -2748,7 +2748,7 @@ TEST_F(NavigationControllerTest, ShowRendererURLAfterFailUntilModified) {
 
   // If something else later modifies the contents of the about:blank page, then
   // we must revert to showing about:blank to avoid a URL spoof.
-  main_test_rfh()->DidAccessInitialDocument();
+  main_test_rfh()->DidAccessInitialMainDocument();
   EXPECT_TRUE(contents()->HasAccessedInitialDocument());
   EXPECT_FALSE(controller.GetVisibleEntry());
   EXPECT_EQ(url, controller.GetPendingEntry()->GetURL());
@@ -2788,7 +2788,7 @@ TEST_F(NavigationControllerTest, ShowRendererURLAfterCancelUntilModified) {
   // we must revert to showing about:blank to avoid a URL spoof.
   // Pending entry should also be discarded, because renderer doesn't want to
   // show this page anymore.
-  main_test_rfh()->DidAccessInitialDocument();
+  main_test_rfh()->DidAccessInitialMainDocument();
   EXPECT_TRUE(contents()->HasAccessedInitialDocument());
   EXPECT_FALSE(controller.GetVisibleEntry());
   EXPECT_FALSE(controller.GetPendingEntry());

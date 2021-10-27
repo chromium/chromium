@@ -206,6 +206,10 @@ IntRect ChromeClientImpl::RootWindowRect(LocalFrame& frame) {
   return IntRect(frame.GetWidgetForLocalRoot()->WindowRect());
 }
 
+void ChromeClientImpl::DidAccessInitialMainDocument() {
+  web_view_->DidAccessInitialMainDocument();
+}
+
 void ChromeClientImpl::FocusPage() {
   web_view_->Focus();
 }
