@@ -26,6 +26,7 @@ BrowserTutorialServiceFactory* BrowserTutorialServiceFactory::GetInstance() {
   BrowserTutorialServiceFactory* factory =
       base::Singleton<BrowserTutorialServiceFactory>::get();
   factory->RegisterBubbleFactories();
+  factory->RegisterTutorials();
   return factory;
 }
 
@@ -44,14 +45,10 @@ BrowserTutorialServiceFactory::~BrowserTutorialServiceFactory() = default;
 
 KeyedService* BrowserTutorialServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  std::unique_ptr<TutorialRegistry> tutorial_registry =
-      std::make_unique<BrowserTutorialRegistry>();
-  tutorial_registry->RegisterTutorials();
-
   std::unique_ptr<TutorialBubbleFactoryRegistry> bubble_owner_registry =
       std::make_unique<TutorialBubbleFactoryRegistry>();
 
-  TutorialService* service = new TutorialService(std::move(tutorial_registry));
+  TutorialService* service = new TutorialService();
 
   return service;
 }
@@ -84,8 +81,14 @@ BrowserTutorialServiceFactory::GetDefaultElementContextForProfile(
   return views::ElementTrackerViews::GetContextForView(browser_view);
 }
 
-void BrowserTutorialRegistry::RegisterTutorials() {
-  {
+void BrowserTutorialServiceFactory::RegisterTutorials() {
+  if (registered_tutorials_)
+    return;
+
+  TutorialRegistry* tutorial_registry =
+      TutorialServiceManager::GetInstance()->tutorial_registry();
+
+  {  // Tab Group Tutorial
     TutorialDescription* description = new TutorialDescription();
     TutorialDescription::Step step1(
         absl::nullopt,
@@ -117,6 +120,6 @@ void BrowserTutorialRegistry::RegisterTutorials() {
         TutorialDescription::Step::Arrow::TOP, absl::nullopt);
     description->steps.emplace_back(std::move(step4));
 
-    AddTutorial("Tab Group Tutorial", *description);
+    tutorial_registry->AddTutorial("Tab Group Tutorial", *description);
   }
 }

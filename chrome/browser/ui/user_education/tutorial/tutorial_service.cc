@@ -13,19 +13,22 @@
 #include "chrome/browser/ui/user_education/tutorial/tutorial_identifier.h"
 #include "chrome/browser/ui/user_education/tutorial/tutorial_service_manager.h"
 
-TutorialService::TutorialService(
-    std::unique_ptr<TutorialRegistry> tutorial_registry)
-    : tutorial_registry_(std::move(tutorial_registry)) {}
-
+TutorialService::TutorialService() = default;
 TutorialService::~TutorialService() = default;
 
 bool TutorialService::StartTutorial(TutorialIdentifier id,
                                     ui::ElementContext context) {
+  TutorialServiceManager* tutorial_service_manager =
+      TutorialServiceManager::GetInstance();
+
   TutorialBubbleFactoryRegistry* factory_registry =
-      TutorialServiceManager::GetInstance()->bubble_factory_registry();
+      tutorial_service_manager->bubble_factory_registry();
+
+  TutorialRegistry* tutorial_registry =
+      tutorial_service_manager->tutorial_registry();
 
   return StartTutorialImpl(
-      tutorial_registry_->CreateTutorial(id, this, factory_registry, context));
+      tutorial_registry->CreateTutorial(id, this, factory_registry, context));
 }
 
 bool TutorialService::StartTutorialImpl(std::unique_ptr<Tutorial> tutorial) {
@@ -68,5 +71,9 @@ bool TutorialService::IsRunningTutorial() const {
 
 std::vector<TutorialIdentifier> TutorialService::GetTutorialIdentifiers()
     const {
-  return tutorial_registry_->GetTutorialIdentifiers();
+  TutorialServiceManager* tutorial_service_manager =
+      TutorialServiceManager::GetInstance();
+
+  return tutorial_service_manager->tutorial_registry()
+      ->GetTutorialIdentifiers();
 }
