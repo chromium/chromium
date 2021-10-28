@@ -1836,8 +1836,10 @@ base::TimeTicks MainThreadSchedulerImpl::EnableVirtualTime() {
   virtual_time_control_task_queue_->GetTaskQueue()->SetTimeDomain(
       virtual_time_domain_.get());
 
-  main_thread_only().use_virtual_time = true;
   ForceUpdatePolicy();
+  for (auto* page_scheduler : main_thread_only().page_schedulers) {
+    page_scheduler->OnVirtualTimeEnabled();
+  }
 
   virtual_time_domain_->SetCanAdvanceVirtualTime(
       !main_thread_only().virtual_time_stopped);
@@ -1863,6 +1865,8 @@ void MainThreadSchedulerImpl::DisableVirtualTimeForTesting() {
   }
 
   ForceUpdatePolicy();
+  // This can only happen during test tear down, in which case there is no need
+  // to notify the pages that virtual time was disabled.
 
   virtual_time_control_task_queue_->ShutdownTaskQueue();
   virtual_time_control_task_queue_ = nullptr;

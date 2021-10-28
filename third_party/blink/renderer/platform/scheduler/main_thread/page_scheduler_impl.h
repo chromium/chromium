@@ -125,6 +125,8 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
 
   void OnThrottlingStatusUpdated();
 
+  void OnVirtualTimeEnabled();
+
   void OnTraceLogEnabled();
 
   void OnFirstContentfulPaintInMainFrame();
@@ -285,11 +287,12 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   void EnableThrottling();
 
   // Returns true if the page is backgrounded, false otherwise. A page is
-  // considered backgrounded if it is both not visible and not playing audio.
+  // considered backgrounded if it is not visible, not playing audio and
+  // virtual time is disabled.
   bool IsBackgrounded() const;
 
   // Returns true if the page should be frozen after delay, which happens if
-  // IsBackgrounded() and freezing is enabled.
+  // IsBackgrounded() is true and freezing is enabled.
   bool ShouldFreezePage() const;
 
   // Callback for freezing the page. Freezing must be enabled and the page must
