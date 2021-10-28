@@ -872,9 +872,7 @@ void AXEventGenerator::FireLiveRegionEvents(AXNode* node) {
     return;
 
   // Fire LIVE_REGION_NODE_CHANGED on each node that changed.
-  if (!node->data()
-           .GetStringAttribute(ax::mojom::StringAttribute::kName)
-           .empty()) {
+  if (!node->GetStringAttribute(ax::mojom::StringAttribute::kName).empty()) {
     AddEvent(node, Event::LIVE_REGION_NODE_CHANGED);
   }
 
