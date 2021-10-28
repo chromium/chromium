@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/web_applications/web_app_callback_app_identity.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/window/dialog_delegate.h"
 
 class Profile;
@@ -63,5 +64,12 @@ class WebAppIdentityUpdateConfirmationView : public views::DialogDelegateView {
   base::WeakPtrFactory<WebAppIdentityUpdateConfirmationView> weak_factory_{
       this};
 };
+
+BEGIN_VIEW_BUILDER(,
+                   WebAppIdentityUpdateConfirmationView,
+                   views::DialogDelegateView)
+END_VIEW_BUILDER
+
+DEFINE_VIEW_BUILDER(, WebAppIdentityUpdateConfirmationView)
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_IDENTITY_UPDATE_CONFIRMATION_VIEW_H_

@@ -127,7 +127,7 @@ class ClassPropertyUniquePtrSetter : public PropertySetterBase {
 template <typename TClass, typename TSig, TSig Set, typename... Args>
 class ClassMethodCaller : public PropertySetterBase {
  public:
-  explicit ClassMethodCaller(Args&&... args)
+  explicit ClassMethodCaller(Args... args)
       : args_(std::make_tuple<Args...>(std::forward<Args>(args)...)) {}
   ClassMethodCaller(const ClassMethodCaller&) = delete;
   ClassMethodCaller& operator=(const ClassMethodCaller&) = delete;
