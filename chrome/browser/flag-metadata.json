@@ -406,7 +406,7 @@
   {
     "name": "autofill-enable-toolbar-status-chip",
     "owners": [ "siyua" ],
-    "expiry_milestone": 96
+    "expiry_milestone": 102
   },
   {
     "name": "autofill-enable-virtual-card",
@@ -1460,7 +1460,7 @@
   {
     "name": "enable-autofill-credit-card-upload-feedback",
     "owners": [ "siyua@chromium.org", "payments-autofill-team@google.com" ],
-    "expiry_milestone": 96
+    "expiry_milestone": 102
   },
   {
     "name": "enable-autofill-manual-fallback",
