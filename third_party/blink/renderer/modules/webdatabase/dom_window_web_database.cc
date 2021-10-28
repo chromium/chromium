@@ -79,8 +79,12 @@ Database* DOMWindowWebDatabase::openDatabase(
               features::kWebSQLInThirdPartyContextEnabled) &&
           !base::CommandLine::ForCurrentProcess()->HasSwitch(
               blink::switches::kWebSQLInThirdPartyContextEnabled)) {
-        exception_state.ThrowSecurityError(
-            "Access to the WebDatabase API is denied in third party contexts.");
+        if (base::FeatureList::IsEnabled(
+                features::kWebSQLInThirdPartyContextThrowsWhenDisabled)) {
+          exception_state.ThrowSecurityError(
+              "Access to the WebDatabase API is denied in third party "
+              "contexts.");
+        }
         return nullptr;
       }
     }
