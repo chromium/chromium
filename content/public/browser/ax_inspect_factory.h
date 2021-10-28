@@ -43,7 +43,6 @@ class CONTENT_EXPORT AXInspectFactory {
   enum TypeConstant {
     kAndroid,
     kBlink,
-    kFuchsia,
     kMac,
     kLinux,
     kWinIA2,
