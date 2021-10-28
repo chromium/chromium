@@ -164,7 +164,7 @@ class PasswordStoreAndroidBackend
   void OnLoginsChanged(PasswordStoreAndroidBackendBridge::JobId task_id,
                        const PasswordStoreChangeList& changes) override;
   void OnError(PasswordStoreAndroidBackendBridge::JobId job_id,
-               AndroidBackendErrorType error) override;
+               AndroidBackendError error) override;
 
   base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetSyncControllerDelegate();

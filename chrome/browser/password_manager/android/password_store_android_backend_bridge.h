@@ -49,7 +49,7 @@ class PasswordStoreAndroidBackendBridge {
 
     // Asynchronous response called with the `job_id` which was passed to the
     // corresponding call to `PasswordStoreAndroidBackendBridge`.
-    virtual void OnError(JobId job_id, AndroidBackendErrorType error) = 0;
+    virtual void OnError(JobId job_id, AndroidBackendError error) = 0;
   };
 
   virtual ~PasswordStoreAndroidBackendBridge() = default;

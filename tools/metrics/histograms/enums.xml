@@ -66172,6 +66172,14 @@ Called by update_net_trust_anchors.py.-->
   <int value="5" label="Invalid JSON (either syntactically or structurally)"/>
 </enum>
 
+<enum name="PasswordStoreAndroidBackendAPIError">
+  <int value="8" label="INTERNAL_ERROR"/>
+  <int value="17" label="API_NOT_CONNECTED"/>
+  <int value="20" label="CONNECTION_SUSPENDED_DURING_CALL"/>
+  <int value="11000" label="PASSPHRASE_REQUIRED"/>
+  <int value="11004" label="ACCESS_DENIED"/>
+</enum>
+
 <enum name="PasswordStoreAndroidBackendError">
   <int value="0" label="Error can't be categorized."/>
   <int value="1" label="API was called without a context."/>

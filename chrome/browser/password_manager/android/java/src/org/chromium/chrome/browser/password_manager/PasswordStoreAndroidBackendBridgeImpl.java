@@ -71,6 +71,7 @@ class PasswordStoreAndroidBackendBridgeImpl {
 
         @AndroidBackendErrorType
         int error = AndroidBackendErrorType.UNCATEGORIZED;
+        int api_error_code = 0; // '0' means SUCCESS.
 
         if (exception instanceof PasswordStoreAndroidBackend.BackendException) {
             error = ((PasswordStoreAndroidBackend.BackendException) exception).errorCode;
@@ -78,9 +79,11 @@ class PasswordStoreAndroidBackendBridgeImpl {
 
         if (exception instanceof ApiException) {
             error = AndroidBackendErrorType.EXTERNAL_ERROR;
+            api_error_code = ((ApiException) exception).getStatusCode();
         }
 
-        PasswordStoreAndroidBackendBridgeImplJni.get().onError(mNativeBackendBridge, jobId, error);
+        PasswordStoreAndroidBackendBridgeImplJni.get().onError(
+                mNativeBackendBridge, jobId, error, api_error_code);
     }
 
     @CalledByNative
@@ -94,6 +97,7 @@ class PasswordStoreAndroidBackendBridgeImpl {
                 @JobId int jobId, byte[] passwords);
         void onLoginDeleted(long nativePasswordStoreAndroidBackendBridgeImpl, @JobId int jobId,
                 byte[] pwdSpecificsData);
-        void onError(long nativePasswordStoreAndroidBackendBridgeImpl, @JobId int jobId, int error);
+        void onError(long nativePasswordStoreAndroidBackendBridgeImpl, @JobId int jobId,
+                int errorType, int apiErrorCode);
     }
 }
