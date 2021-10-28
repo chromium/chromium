@@ -639,6 +639,13 @@ const base::Feature kHoldingSpaceInProgressDownloadsIntegration{
     "HoldingSpaceInProgressDownloadsIntegration",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables in-progress downloads notification suppression with the productivity
+// feature that aims to reduce context switching by enabling users to collect
+// content and transfer or access it later.
+const base::Feature kHoldingSpaceInProgressDownloadsNotificationSuppression{
+    "HoldingSpaceInProgressNotificationSuppression",
+    base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Enables incognito profile integration with the productivity feature that
 // aims to reduce context switching by enabling users to collect content and
 // transfer or access it later.
@@ -1440,6 +1447,11 @@ bool IsHideShelfControlsInTabletModeEnabled() {
 bool IsHoldingSpaceInProgressDownloadsIntegrationEnabled() {
   return base::FeatureList::IsEnabled(
       kHoldingSpaceInProgressDownloadsIntegration);
+}
+
+bool IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled() {
+  return base::FeatureList::IsEnabled(
+      kHoldingSpaceInProgressDownloadsNotificationSuppression);
 }
 
 bool IsHoldingSpaceIncognitoProfileIntegrationEnabled() {

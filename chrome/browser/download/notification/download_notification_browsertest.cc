@@ -277,16 +277,17 @@ void WaitForDownloadNotificationForDisplayService(
 }  // namespace
 
 // Base class for tests parameterized by whether the holding space in-progress
-// downloads integration feature is enabled.
+// downloads notification suppression feature is enabled.
 class DownloadNotificationTestBase
     : public InProcessBrowserTest,
       public testing::WithParamInterface<
-          /*is_holding_space_in_progress_downloads_integration_enabled=*/bool> {
+          /*is_holding_space_in_progress_downloads_notification_suppression_enabled=*/
+          bool> {
  public:
   DownloadNotificationTestBase() {
     scoped_feature_list_.InitWithFeatureState(
-        ash::features::kHoldingSpaceInProgressDownloadsIntegration,
-        IsHoldingSpaceInProgressDownloadsIntegrationEnabled());
+        ash::features::kHoldingSpaceInProgressDownloadsNotificationSuppression,
+        IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled());
   }
 
   DownloadNotificationTestBase(const DownloadNotificationTestBase&) = delete;
@@ -325,9 +326,9 @@ class DownloadNotificationTestBase
     download_terminal_observer.WaitForFinished();
   }
 
-  // Returns whether holding space in-progress downloads integration is enabled
-  // given test parameterization.
-  bool IsHoldingSpaceInProgressDownloadsIntegrationEnabled() const {
+  // Returns whether holding space in-progress downloads notification
+  // suppression is enabled given test parameterization.
+  bool IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled() const {
     return GetParam();
   }
 
@@ -430,10 +431,11 @@ class DownloadNotificationTest : public DownloadNotificationTestBase {
 
     // Confirms that a notification is created when the `download_item_` is not
     // in-progress, dangerous, mixed content, or holding space in-progress
-    // downloads integration is disabled. Otherwise notification is suppressed.
+    // downloads notification suppression is disabled. Otherwise notification is
+    // suppressed.
     if (download_item_->GetState() != download::DownloadItem::IN_PROGRESS ||
         download_item_->IsDangerous() || download_item_->IsMixedContent() ||
-        !IsHoldingSpaceInProgressDownloadsIntegrationEnabled()) {
+        !IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled()) {
       WaitForDownloadNotification(browser);
       CacheNotification(browser);
     } else {
@@ -517,15 +519,15 @@ class DownloadNotificationTest : public DownloadNotificationTestBase {
 INSTANTIATE_TEST_SUITE_P(
     All,
     DownloadNotificationTest,
-    /*is_holding_space_in_progress_downloads_integration_enabled=*/
+    /*is_holding_space_in_progress_downloads_notification_suppression_enabled=*/
     testing::Bool());
 
 IN_PROC_BROWSER_TEST_P(DownloadNotificationTest, DownloadFile) {
   CreateDownload();
 
-  // If holding space in-progress downloads integration is enabled, the
-  // notification is expected to have been suppressed.
-  if (!IsHoldingSpaceInProgressDownloadsIntegrationEnabled()) {
+  // If holding space in-progress downloads notification suppression is enabled,
+  // the notification is expected to have been suppressed.
+  if (!IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled()) {
     EXPECT_EQ(
         l10n_util::GetStringFUTF16(
             IDS_DOWNLOAD_STATUS_IN_PROGRESS_TITLE,
@@ -543,9 +545,9 @@ IN_PROC_BROWSER_TEST_P(DownloadNotificationTest, DownloadFile) {
 
   CompleteTheDownload();
 
-  // If holding space in-progress downloads integration is enabled, the
-  // notification is expected to be created following download completion.
-  if (IsHoldingSpaceInProgressDownloadsIntegrationEnabled())
+  // If holding space in-progress downloads notification suppression is enabled,
+  // the notification is expected to be created following download completion.
+  if (IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled())
     CacheNotification(browser());
 
   // Checks strings.
@@ -681,9 +683,9 @@ IN_PROC_BROWSER_TEST_P(DownloadNotificationTest,
 
   CompleteTheDownload();
 
-  // If holding space in-progress downloads integration is enabled, the
-  // notification is expected to be created following download completion.
-  if (IsHoldingSpaceInProgressDownloadsIntegrationEnabled())
+  // If holding space in-progress downloads notification suppression is enabled,
+  // the notification is expected to be created following download completion.
+  if (IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled())
     CacheNotification(browser());
 
   CloseNotification();
@@ -694,8 +696,9 @@ IN_PROC_BROWSER_TEST_P(DownloadNotificationTest,
 IN_PROC_BROWSER_TEST_P(DownloadNotificationTest,
                        CloseNotificationWhileDownloading) {
   // This test is only relevant if holding space in-progress downloads
-  // integration is disabled. Otherwise the notification will be suppressed.
-  if (IsHoldingSpaceInProgressDownloadsIntegrationEnabled())
+  // notification suppression is disabled. Otherwise the notification will be
+  // suppressed.
+  if (IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled())
     return;
 
   CreateDownload();
@@ -714,9 +717,9 @@ IN_PROC_BROWSER_TEST_P(DownloadNotificationTest, InterruptDownload) {
 
   InterruptTheDownload();
 
-  // If holding space in-progress downloads integration is enabled, the
-  // notification is expected to be created following download interruption.
-  if (IsHoldingSpaceInProgressDownloadsIntegrationEnabled())
+  // If holding space in-progress downloads notification suppression is enabled,
+  // the notification is expected to be created following download interruption.
+  if (IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled())
     CacheNotification(browser());
 
   EXPECT_EQ(1u, GetDownloadNotifications().size());
@@ -739,8 +742,9 @@ IN_PROC_BROWSER_TEST_P(DownloadNotificationTest, InterruptDownload) {
 IN_PROC_BROWSER_TEST_P(DownloadNotificationTest,
                        InterruptDownloadAfterClosingNotification) {
   // This test is only relevant if holding space in-progress downloads
-  // integration is disabled. Otherwise the notification will be suppressed.
-  if (IsHoldingSpaceInProgressDownloadsIntegrationEnabled())
+  // notification suppression is disabled. Otherwise the notification will be
+  // suppressed.
+  if (IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled())
     return;
 
   CreateDownload();
@@ -769,9 +773,9 @@ IN_PROC_BROWSER_TEST_P(DownloadNotificationTest,
 IN_PROC_BROWSER_TEST_P(DownloadNotificationTest, DownloadRemoved) {
   CreateDownload();
 
-  // If holding space in-progress downloads integration is enabled, the
-  // notification is expected to have been suppressed.
-  if (!IsHoldingSpaceInProgressDownloadsIntegrationEnabled())
+  // If holding space in-progress downloads notification suppression is enabled,
+  // the notification is expected to have been suppressed.
+  if (!IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled())
     EXPECT_TRUE(notification());
 
   download_item()->Remove();
@@ -792,10 +796,10 @@ IN_PROC_BROWSER_TEST_P(DownloadNotificationTest,
   // Starts the 1st download.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
 
-  // If holding space in-progress downloads integration is enabled, the
-  // notification is expected to have been suppressed.
+  // If holding space in-progress downloads notification suppression is enabled,
+  // the notification is expected to have been suppressed.
   std::string notification_id1;
-  if (!IsHoldingSpaceInProgressDownloadsIntegrationEnabled()) {
+  if (!IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled()) {
     WaitForDownloadNotification();
     auto notifications = GetDownloadNotifications();
     ASSERT_EQ(1u, notifications.size());
@@ -814,9 +818,9 @@ IN_PROC_BROWSER_TEST_P(DownloadNotificationTest,
   // Starts the 2nd download.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url2));
 
-  // If holding space in-progress downloads integration is enabled, the
-  // notification is expected to have been suppressed.
-  if (!IsHoldingSpaceInProgressDownloadsIntegrationEnabled())
+  // If holding space in-progress downloads notification suppression is enabled,
+  // the notification is expected to have been suppressed.
+  if (!IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled())
     WaitForDownloadNotification();
 
   // Confirms that there are 2 downloads.
@@ -834,10 +838,10 @@ IN_PROC_BROWSER_TEST_P(DownloadNotificationTest,
 
   auto notifications = GetDownloadNotifications();
 
-  // If holding space in-progress downloads integration is enabled, the
-  // notification is expected to have been suppressed.
+  // If holding space in-progress downloads notification suppression is enabled,
+  // the notification is expected to have been suppressed.
   std::string notification_id2;
-  if (!IsHoldingSpaceInProgressDownloadsIntegrationEnabled()) {
+  if (!IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled()) {
     // Confirms that there are 2 notifications.
     EXPECT_EQ(2u, notifications.size());
 
@@ -876,9 +880,9 @@ IN_PROC_BROWSER_TEST_P(DownloadNotificationTest,
   notifications = GetDownloadNotifications();
   EXPECT_EQ(2u, notifications.size());
 
-  // If holding space in-progress downloads integration is enabled,
+  // If holding space in-progress downloads notification suppression is enabled,
   // notifications are expected to be created following download completion.
-  if (IsHoldingSpaceInProgressDownloadsIntegrationEnabled()) {
+  if (IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled()) {
     EXPECT_TRUE(notification_id1.empty());
     EXPECT_TRUE(notification_id2.empty());
     notification_id1 = notifications[0].id();
@@ -911,17 +915,17 @@ IN_PROC_BROWSER_TEST_P(DownloadNotificationTest,
   download::DownloadItem* first_download_item = download_item();
   std::string first_notification_id;
 
-  // If holding space in-progress downloads integration is enabled, the
-  // notification is expected to have been suppressed.
-  if (!IsHoldingSpaceInProgressDownloadsIntegrationEnabled())
+  // If holding space in-progress downloads notification suppression is enabled,
+  // the notification is expected to have been suppressed.
+  if (!IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled())
     first_notification_id = notification_id();
 
   CompleteTheDownload();
   EXPECT_EQ(download::DownloadItem::COMPLETE, first_download_item->GetState());
 
-  // If holding space in-progress downloads integration is enabled, the
-  // notification is expected to be created following download completion.
-  if (IsHoldingSpaceInProgressDownloadsIntegrationEnabled()) {
+  // If holding space in-progress downloads notification suppression is enabled,
+  // the notification is expected to be created following download completion.
+  if (IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled()) {
     CacheNotification(browser());
     first_notification_id = notification_id();
   }
@@ -933,9 +937,9 @@ IN_PROC_BROWSER_TEST_P(DownloadNotificationTest,
   GURL url(SlowDownloadInterceptor::kKnownSizeUrl);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  // If holding space in-progress downloads integration is enabled, the
-  // notification is expected to have been suppressed.
-  if (!IsHoldingSpaceInProgressDownloadsIntegrationEnabled()) {
+  // If holding space in-progress downloads notification suppression is enabled,
+  // the notification is expected to have been suppressed.
+  if (!IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled()) {
     WaitForDownloadNotification();
 
     // Confirms that the second notification is created.
@@ -972,8 +976,9 @@ IN_PROC_BROWSER_TEST_P(DownloadNotificationTest,
 
 IN_PROC_BROWSER_TEST_P(DownloadNotificationTest, CancelDownload) {
   // This test is only relevant if holding space in-progress downloads
-  // integration is disabled. Otherwise the notification will be suppressed.
-  if (IsHoldingSpaceInProgressDownloadsIntegrationEnabled())
+  // notification suppression is disabled. Otherwise the notification will be
+  // suppressed.
+  if (IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled())
     return;
 
   CreateDownload();
@@ -1217,7 +1222,7 @@ class MultiProfileDownloadNotificationTest
 INSTANTIATE_TEST_SUITE_P(
     All,
     MultiProfileDownloadNotificationTest,
-    /*is_holding_space_in_progress_downloads_integration_enabled=*/
+    /*is_holding_space_in_progress_downloads_notification_suppression_enabled=*/
     testing::Bool());
 
 IN_PROC_BROWSER_TEST_P(MultiProfileDownloadNotificationTest,
@@ -1245,9 +1250,9 @@ IN_PROC_BROWSER_TEST_P(MultiProfileDownloadNotificationTest,
   // First user starts a download.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser1, url));
 
-  // If holding space in-progress downloads integration is enabled, the
-  // notification is expected to have been suppressed.
-  if (!IsHoldingSpaceInProgressDownloadsIntegrationEnabled())
+  // If holding space in-progress downloads notification suppression is enabled,
+  // the notification is expected to have been suppressed.
+  if (!IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled())
     WaitForDownloadNotificationForDisplayService(display_service1_.get());
 
   // Confirms that the download is started.
@@ -1256,10 +1261,10 @@ IN_PROC_BROWSER_TEST_P(MultiProfileDownloadNotificationTest,
   EXPECT_EQ(1u, downloads.size());
   download::DownloadItem* download1 = downloads[0];
 
-  // If holding space in-progress downloads integration is enabled, the
-  // notification is expected to have been suppressed.
+  // If holding space in-progress downloads notification suppression is enabled,
+  // the notification is expected to have been suppressed.
   std::string notification_id_user1;
-  if (!IsHoldingSpaceInProgressDownloadsIntegrationEnabled()) {
+  if (!IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled()) {
     // Confirms that a download notification is generated.
     auto notifications1 = display_service1_->GetDisplayedNotificationsForType(
         NotificationHandler::Type::TRANSIENT);
@@ -1276,10 +1281,10 @@ IN_PROC_BROWSER_TEST_P(MultiProfileDownloadNotificationTest,
   // Second user starts a download.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser2, url));
 
-  // If holding space in-progress downloads integration is enabled, the
-  // notification is expected to have been suppressed.
+  // If holding space in-progress downloads notification suppression is enabled,
+  // the notification is expected to have been suppressed.
   std::string notification_id_user2;
-  if (!IsHoldingSpaceInProgressDownloadsIntegrationEnabled()) {
+  if (!IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled()) {
     WaitForDownloadNotificationForDisplayService(display_service2_.get());
     auto notifications2 = display_service2_->GetDisplayedNotificationsForType(
         NotificationHandler::Type::TRANSIENT);
@@ -1301,9 +1306,9 @@ IN_PROC_BROWSER_TEST_P(MultiProfileDownloadNotificationTest,
   // Second user starts another download.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser2, url));
 
-  // If holding space in-progress downloads integration is enabled, the
-  // notification is expected to have been suppressed.
-  if (!IsHoldingSpaceInProgressDownloadsIntegrationEnabled()) {
+  // If holding space in-progress downloads notification suppression is enabled,
+  // the notification is expected to have been suppressed.
+  if (!IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled()) {
     WaitForDownloadNotificationForDisplayService(display_service2_.get());
     auto notifications2 = display_service2_->GetDisplayedNotificationsForType(
         NotificationHandler::Type::TRANSIENT);
@@ -1331,9 +1336,9 @@ IN_PROC_BROWSER_TEST_P(MultiProfileDownloadNotificationTest,
   ASSERT_EQ(1u, downloads.size());
   EXPECT_EQ(download1, downloads[0]);
 
-  // If holding space in-progress downloads integration is enabled,
+  // If holding space in-progress downloads notification suppression is enabled,
   // notifications are expected to have been suppressed.
-  if (!IsHoldingSpaceInProgressDownloadsIntegrationEnabled()) {
+  if (!IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled()) {
     // Confirms the types of download notifications are correct.
     // Normal notification for user1.
     EXPECT_EQ(
@@ -1367,9 +1372,9 @@ IN_PROC_BROWSER_TEST_P(MultiProfileDownloadNotificationTest,
   download_terminal_observer.WaitForFinished();
   download_terminal_observer2.WaitForFinished();
 
-  // If holding space in-progress downloads integration is enabled, the
-  // notification is expected to be created following download completion.
-  if (IsHoldingSpaceInProgressDownloadsIntegrationEnabled()) {
+  // If holding space in-progress downloads notification suppression is enabled,
+  // the notification is expected to be created following download completion.
+  if (IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled()) {
     auto notifications1 = display_service1_->GetDisplayedNotificationsForType(
         NotificationHandler::Type::TRANSIENT);
     ASSERT_EQ(1u, notifications1.size());

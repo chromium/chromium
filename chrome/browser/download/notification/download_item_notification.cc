@@ -452,17 +452,18 @@ void DownloadItemNotification::UpdateNotificationData(bool display,
 
   const bool was_suppressed = suppressed_;
 
-  // When holding space in-progress downloads integration is enabled,
-  // download in-progress notifications should be suppressed so long as they
-  // do not `force_pop_up`, such as is done in the case of dangerous or mixed
-  // content downloads. Note that download notifications associated with an
-  // incognito profile are only suppressed if holding space incognito profile
+  // When holding space in-progress downloads notification suppression is
+  // enabled, download in-progress notifications should be suppressed so long as
+  // they do not `force_pop_up`, such as is done in the case of dangerous or
+  // mixed content downloads. Note that download notifications associated with
+  // an incognito profile are only suppressed if holding space incognito profile
   // integration is also enabled.
   if (!item_->profile()->IsIncognitoProfile() ||
       ash::features::IsHoldingSpaceIncognitoProfileIntegrationEnabled()) {
     suppressed_ =
         display && !force_pop_up &&
-        ash::features::IsHoldingSpaceInProgressDownloadsIntegrationEnabled() &&
+        ash::features::
+            IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled() &&
         item_->GetState() == download::DownloadItem::IN_PROGRESS;
   } else {
     suppressed_ = false;
