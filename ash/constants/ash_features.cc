@@ -1548,8 +1548,14 @@ bool IsNotificationsInContextMenuEnabled() {
   return base::FeatureList::IsEnabled(kNotificationsInContextMenu);
 }
 
+// True if `kNotificationsRefresh` or `kDarkLightMode` is enabled. Showing the
+// new notifications UI if the D/L mode feature is enabled, since the new
+// notifications UI supports D/L mode. These two features will be launched at
+// the same time, or the new notifications UI will be launched earlier than D/L
+// mode, so it is safe to do this.
 bool IsNotificationsRefreshEnabled() {
-  return base::FeatureList::IsEnabled(kNotificationsRefresh);
+  return base::FeatureList::IsEnabled(kNotificationsRefresh) ||
+         IsDarkLightModeEnabled();
 }
 
 bool IsOobeChromeVoxHintEnabled() {
