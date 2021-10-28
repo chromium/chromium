@@ -1147,6 +1147,16 @@ IFACEMETHODIMP AXPlatformNodeWin::get_accValue(VARIANT var_id, BSTR* value) {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_ACC_VALUE);
   AXPlatformNodeWin* target;
   COM_OBJECT_VALIDATE_VAR_ID_1_ARG_AND_GET_TARGET(var_id, value, target);
+  // Special case for indeterminate progressbar.
+  if (GetRole() == ax::mojom::Role::kProgressIndicator &&
+      !HasFloatAttribute(ax::mojom::FloatAttribute::kValueForRange)) {
+    // The MIXED state is also exposed for an indeterminate value.
+    // However, without some value here, NVDA/JAWS 2022 will ignore the
+    // progress indicator in the virtual buffer.
+    *value = SysAllocString(L"0");
+    return S_OK;
+  }
+
   *value = GetValueAttributeAsBstr(target);
   return S_OK;
 }
