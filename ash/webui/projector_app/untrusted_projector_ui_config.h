@@ -12,7 +12,7 @@ namespace content {
 class WebUI;
 }  // namespace content
 
-namespace chromeos {
+namespace ash {
 
 // TODO(b/193670945): Migrate to ash/components and ash/webui.
 class UntrustedProjectorUIConfig : public ui::WebUIConfig {
@@ -24,6 +24,6 @@ class UntrustedProjectorUIConfig : public ui::WebUIConfig {
       content::WebUI* web_ui) override;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_PROJECTOR_APP_UNTRUSTED_PROJECTOR_UI_CONFIG_H_

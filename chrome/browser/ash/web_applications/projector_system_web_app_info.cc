@@ -13,19 +13,18 @@
 #include "ui/base/l10n/l10n_util.h"
 
 ProjectorSystemWebAppDelegate::ProjectorSystemWebAppDelegate(Profile* profile)
-    : web_app::SystemWebAppDelegate(
-          web_app::SystemAppType::PROJECTOR,
-          "Projector",
-          GURL(chromeos::kChromeUITrustedProjectorAppUrl),
-          profile) {}
+    : web_app::SystemWebAppDelegate(web_app::SystemAppType::PROJECTOR,
+                                    "Projector",
+                                    GURL(ash::kChromeUITrustedProjectorAppUrl),
+                                    profile) {}
 
 ProjectorSystemWebAppDelegate::~ProjectorSystemWebAppDelegate() = default;
 
 std::unique_ptr<WebApplicationInfo>
 ProjectorSystemWebAppDelegate::GetWebAppInfo() const {
   auto info = std::make_unique<WebApplicationInfo>();
-  info->start_url = GURL(chromeos::kChromeUITrustedProjectorAppUrl);
-  info->scope = GURL(chromeos::kChromeUITrustedProjectorAppUrl);
+  info->start_url = GURL(ash::kChromeUITrustedProjectorAppUrl);
+  info->scope = GURL(ash::kChromeUITrustedProjectorAppUrl);
 
   info->title = l10n_util::GetStringUTF16(IDS_PROJECTOR_APP_NAME);
 

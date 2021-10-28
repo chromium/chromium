@@ -391,9 +391,9 @@ WebUIController* NewWebUI<chromeos::OobeUI>(WebUI* web_ui, const GURL& url) {
 }
 
 template <>
-WebUIController* NewWebUI<chromeos::TrustedProjectorUI>(WebUI* web_ui,
-                                                        const GURL& url) {
-  return new chromeos::TrustedProjectorUI(web_ui, url);
+WebUIController* NewWebUI<ash::TrustedProjectorUI>(WebUI* web_ui,
+                                                   const GURL& url) {
+  return new ash::TrustedProjectorUI(web_ui, url);
 }
 
 void BindPrintManagement(
@@ -891,8 +891,8 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<nearby_share::NearbyShareDialogUI>;
   }
   if (ash::features::IsProjectorEnabled() &&
-      url.host_piece() == chromeos::kChromeUIProjectorAppHost) {
-    return &NewWebUI<chromeos::TrustedProjectorUI>;
+      url.host_piece() == ash::kChromeUIProjectorAppHost) {
+    return &NewWebUI<ash::TrustedProjectorUI>;
   }
   if (url.host_piece() == chrome::kChromeUISetTimeHost)
     return &NewWebUI<chromeos::SetTimeUI>;

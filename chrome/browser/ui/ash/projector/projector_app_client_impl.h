@@ -19,7 +19,7 @@ class PrefRegistrySyncable;
 }  // namespace user_prefs
 
 // Implements the interface for Projector App.
-class ProjectorAppClientImpl : public chromeos::ProjectorAppClient {
+class ProjectorAppClientImpl : public ash::ProjectorAppClient {
  public:
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 

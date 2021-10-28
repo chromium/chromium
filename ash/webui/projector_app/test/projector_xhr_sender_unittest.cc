@@ -25,7 +25,7 @@ constexpr char kValidUrl2[] =
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 class ProjectorXhrSenderTest : public testing::Test {
  public:
@@ -187,4 +187,5 @@ TEST_F(ProjectorXhrSenderTest, UnsupportedUrl) {
 
   run_loop.Run();
 }
-}  // namespace chromeos
+
+}  // namespace ash

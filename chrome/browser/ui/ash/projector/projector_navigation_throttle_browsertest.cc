@@ -74,7 +74,7 @@ IN_PROC_BROWSER_TEST_P(ProjectorNavigationThrottleTestParameterized,
                        PwaNavigationRedirects) {
   base::HistogramTester histogram_tester;
 
-  std::string url = chromeos::kChromeUIUntrustedProjectorPwaUrl;
+  std::string url = kChromeUIUntrustedProjectorPwaUrl;
   url += "/";
   url += kFilePath;
   GURL gurl(url);
@@ -119,7 +119,7 @@ IN_PROC_BROWSER_TEST_P(ProjectorNavigationThrottleTestParameterized,
             content::PAGE_TYPE_NORMAL);
 
   // Construct the new redirected URL.
-  std::string expected_url = chromeos::kChromeUITrustedProjectorAppUrl;
+  std::string expected_url = kChromeUITrustedProjectorAppUrl;
   expected_url += kFilePath;
   EXPECT_EQ(tab->GetVisibleURL().spec(), expected_url);
 
@@ -138,7 +138,7 @@ INSTANTIATE_TEST_SUITE_P(,
 // Verifies that navigating to chrome-untrusted://projector does not redirect.
 IN_PROC_BROWSER_TEST_F(ProjectorNavigationThrottleTest,
                        UntrustedNavigationNoRedirect) {
-  std::string url = chromeos::kChromeUIUntrustedProjectorAppUrl;
+  std::string url = kChromeUIUntrustedProjectorAppUrl;
   GURL gurl(url);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
@@ -162,7 +162,7 @@ IN_PROC_BROWSER_TEST_F(ProjectorNavigationThrottleTest,
 // Verifies that navigating to chrome://projector/app/ does not redirect.
 IN_PROC_BROWSER_TEST_F(ProjectorNavigationThrottleTest,
                        TrustedNavigationNoRedirect) {
-  std::string url = chromeos::kChromeUITrustedProjectorAppUrl;
+  std::string url = kChromeUITrustedProjectorAppUrl;
   GURL gurl(url);
 
   ui_test_utils::NavigateToURLWithDisposition(

@@ -80,7 +80,7 @@ WebUIConfigList CreateConfigs() {
   register_config(
       std::make_unique<ash::HelpAppKidsMagazineUntrustedUIConfig>());
   if (ash::features::IsProjectorEnabled())
-    register_config(std::make_unique<chromeos::UntrustedProjectorUIConfig>());
+    register_config(std::make_unique<ash::UntrustedProjectorUIConfig>());
   if (ash::features::IsFileManagerSwaEnabled())
     register_config(
         std::make_unique<ash::file_manager::FileManagerUntrustedUIConfig>());

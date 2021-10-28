@@ -12,7 +12,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -55,14 +55,14 @@ class AnnotatorMessageHandlerTest : public testing::Test {
 
   content::TestWebUI& web_ui() { return web_ui_; }
   AnnotatorMessageHandler* handler() { return message_handler_.get(); }
-  ash::MockProjectorController& controller() { return controller_; }
+  MockProjectorController& controller() { return controller_; }
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
 
   std::unique_ptr<AnnotatorMessageHandler> message_handler_;
   content::TestWebUI web_ui_;
-  ash::MockProjectorController controller_;
+  MockProjectorController controller_;
 };
 
 TEST_F(AnnotatorMessageHandlerTest, SetTool) {
@@ -113,4 +113,4 @@ TEST_F(AnnotatorMessageHandlerTest, UndoRedoAvailabilityChanged) {
   SendUndoRedoAvailableChanged(false, true);
 }
 
-}  // namespace chromeos
+}  // namespace ash

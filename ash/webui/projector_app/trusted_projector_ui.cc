@@ -17,13 +17,13 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
 content::WebUIDataSource* CreateProjectorHTMLSource() {
   content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chromeos::kChromeUIProjectorAppHost);
+      content::WebUIDataSource::Create(kChromeUIProjectorAppHost);
 
   source->AddResourcePaths(base::make_span(
       kAshProjectorAppTrustedResources, kAshProjectorAppTrustedResourcesSize));
@@ -70,4 +70,4 @@ TrustedProjectorUI::~TrustedProjectorUI() = default;
 
 WEB_UI_CONTROLLER_TYPE_IMPL(TrustedProjectorUI)
 
-}  // namespace chromeos
+}  // namespace ash

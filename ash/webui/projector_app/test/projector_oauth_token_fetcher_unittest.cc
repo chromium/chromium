@@ -20,7 +20,7 @@ const char kTestUser2Email[] = "testuser2@gmail.com";
 const base::TimeDelta kExpiryTimeFromNow = base::Minutes(10);
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 class ProjectorOAuthTokenFetcherTest : public testing::Test {
  public:
@@ -195,4 +195,4 @@ TEST_F(ProjectorOAuthTokenFetcherTest, ValidCachedToken) {
   EXPECT_TRUE(fetcher().HasCachedTokenForTest(kTestUserEmail));
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -24,12 +24,12 @@ namespace {
 const base::TimeDelta kBufferTime = base::Seconds(4);
 
 signin::IdentityManager* GetIdentityManager() {
-  return chromeos::ProjectorAppClient::Get()->GetIdentityManager();
+  return ash::ProjectorAppClient::Get()->GetIdentityManager();
 }
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 AccessTokenRequests::AccessTokenRequests() = default;
 
@@ -138,4 +138,4 @@ void ProjectorOAuthTokenFetcher::OnAccessTokenRequestCompleted(
   pending_oauth_token_fetch_.erase(email);
 }
 
-}  // namespace chromeos
+}  // namespace ash

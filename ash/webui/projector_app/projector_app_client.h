@@ -17,7 +17,7 @@ namespace signin {
 class IdentityManager;
 }  // namespace signin
 
-namespace chromeos {
+namespace ash {
 
 // Defines interface to access Browser side functionalities for the
 // ProjectorApp.
@@ -58,6 +58,6 @@ class ProjectorAppClient {
   virtual ~ProjectorAppClient();
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_PROJECTOR_APP_PROJECTOR_APP_CLIENT_H_

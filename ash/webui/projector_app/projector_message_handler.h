@@ -17,7 +17,7 @@ namespace signin {
 struct AccessTokenInfo;
 }  // namespace signin
 
-namespace chromeos {
+namespace ash {
 
 // Enum to record the different errors that may occur in the Projector app.
 enum class ProjectorError {
@@ -115,6 +115,6 @@ class ProjectorMessageHandler : public content::WebUIMessageHandler,
   base::WeakPtrFactory<ProjectorMessageHandler> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_PROJECTOR_APP_PROJECTOR_MESSAGE_HANDLER_H_

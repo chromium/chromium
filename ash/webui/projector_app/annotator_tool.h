@@ -12,7 +12,7 @@ namespace base {
 class Value;
 }  // namespace base
 
-namespace chromeos {
+namespace ash {
 
 // The annotator tool type.
 enum class COMPONENT_EXPORT(PROJECTOR) AnnotatorToolType {
@@ -41,6 +41,6 @@ struct COMPONENT_EXPORT(PROJECTOR) AnnotatorTool {
   AnnotatorToolType type = AnnotatorToolType::kMarker;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_PROJECTOR_APP_ANNOTATOR_TOOL_H_

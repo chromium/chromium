@@ -27,7 +27,7 @@ class MockProjectorController : public ash::ProjectorController {
   MOCK_METHOD1(SetProjectorToolsVisible, void(bool is_visible));
   MOCK_CONST_METHOD0(IsEligible, bool());
   MOCK_CONST_METHOD0(CanStartNewSession, bool());
-  MOCK_METHOD1(OnToolSet, void(const chromeos::AnnotatorTool& tool));
+  MOCK_METHOD1(OnToolSet, void(const AnnotatorTool& tool));
   MOCK_METHOD2(OnUndoRedoAvailabilityChanged,
                void(bool undo_available, bool redo_available));
 };

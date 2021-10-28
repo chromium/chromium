@@ -161,12 +161,12 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, ShowOrCloseSelfieCamTest) {
 
 // This test verifies that the selfie cam WebUI URL is valid.
 IN_PROC_BROWSER_TEST_F(ProjectorClientTest, SelfieCamUrlValid) {
-  VerifyUrlValid(chromeos::kChromeUITrustedProjectorSelfieCamUrl);
+  VerifyUrlValid(kChromeUITrustedProjectorSelfieCamUrl);
 }
 
 // This test verifies that the Projector app WebUI URL is valid.
 IN_PROC_BROWSER_TEST_F(ProjectorClientTest, AppUrlValid) {
-  VerifyUrlValid(chromeos::kChromeUITrustedProjectorAppUrl);
+  VerifyUrlValid(kChromeUITrustedProjectorAppUrl);
 }
 
 // TODO(crbug/1199396): Add a test to verify the selfie cam turns off when the

@@ -250,7 +250,7 @@ class SelfieCamBubbleDialogView : public WebUIBubbleDialogView {
 // Renders the WebUI contents and asks for camera permission so that
 // we don't need to prompt the user.
 class SelfieCamBubbleContentsWrapper
-    : public BubbleContentsWrapperT<TrustedProjectorUI> {
+    : public BubbleContentsWrapperT<ash::TrustedProjectorUI> {
  public:
   SelfieCamBubbleContentsWrapper(const GURL& webui_url,
                                  content::BrowserContext* browser_context,
@@ -287,7 +287,7 @@ void SelfieCamBubbleManager::Show(Profile* profile,
     return;
 
   auto contents_wrapper = std::make_unique<SelfieCamBubbleContentsWrapper>(
-      GURL(chromeos::kChromeUITrustedProjectorSelfieCamUrl), profile,
+      GURL(ash::kChromeUITrustedProjectorSelfieCamUrl), profile,
       IDS_SELFIE_CAM_TITLE);
   // Need to reload the web contents here because the view isn't visible unless
   // ShowUI is called from the JS side.  By reloading, we trigger the JS to

@@ -46,7 +46,7 @@ const char kInstallSodaCallback[] = "installSodaCallback";
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 class ProjectorMessageHandlerUnitTest : public testing::Test {
  public:
@@ -68,14 +68,14 @@ class ProjectorMessageHandlerUnitTest : public testing::Test {
 
   ProjectorMessageHandler* message_handler() { return message_handler_.get(); }
   content::TestWebUI& web_ui() { return web_ui_; }
-  ash::MockProjectorController& controller() { return mock_controller_; }
+  MockProjectorController& controller() { return mock_controller_; }
   MockAppClient& mock_app_client() { return mock_app_client_; }
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
 
   std::unique_ptr<ProjectorMessageHandler> message_handler_;
-  ash::MockProjectorController mock_controller_;
+  MockProjectorController mock_controller_;
   MockAppClient mock_app_client_;
   content::TestWebUI web_ui_;
 };
@@ -337,4 +337,4 @@ INSTANTIATE_TEST_CASE_P(SessionStartSuccessFailTest,
                         ProjectorSessionStartUnitTest,
                         ::testing::Values(true, false));
 
-}  // namespace chromeos
+}  // namespace ash

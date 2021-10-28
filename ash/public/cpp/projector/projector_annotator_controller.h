@@ -7,11 +7,9 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 
-namespace chromeos {
-struct AnnotatorTool;
-}  // namespace chromeos
-
 namespace ash {
+
+struct AnnotatorTool;
 
 // This controller provides an interface to control the annotator tools.
 class ASH_PUBLIC_EXPORT ProjectorAnnotatorController {
@@ -28,7 +26,7 @@ class ASH_PUBLIC_EXPORT ProjectorAnnotatorController {
   // annotator.
 
   // Sets the tool inside the annotator WebUI.
-  virtual void SetTool(const chromeos::AnnotatorTool& tool) = 0;
+  virtual void SetTool(const AnnotatorTool& tool) = 0;
   // Undoes the last stroke in the annotator content.
   virtual void Undo() = 0;
   // Redoes the undone stroke in the annotator content.

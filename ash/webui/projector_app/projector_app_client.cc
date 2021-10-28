@@ -6,7 +6,7 @@
 
 #include "base/check_op.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 ProjectorAppClient* g_instance = nullptr;
@@ -28,4 +28,4 @@ ProjectorAppClient::~ProjectorAppClient() {
   g_instance = nullptr;
 }
 
-}  // namespace chromeos
+}  // namespace ash
