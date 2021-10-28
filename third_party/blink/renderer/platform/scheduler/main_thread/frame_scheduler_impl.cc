@@ -673,7 +673,7 @@ WebScopedVirtualTimePauser FrameSchedulerImpl::CreateWebScopedVirtualTimePauser(
 void FrameSchedulerImpl::ResetForNavigation() {
   document_bound_weak_factory_.InvalidateWeakPtrs();
   back_forward_cache_disabling_feature_tracker_.Reset();
-  last_uploaded_active_features_ = 0;
+  last_uploaded_bfcache_disabling_features_ = 0;
 }
 
 void FrameSchedulerImpl::OnStartedUsingFeature(
@@ -735,10 +735,10 @@ void FrameSchedulerImpl::ReportFeaturesToDelegate() {
   DCHECK(delegate_);
   feature_report_scheduled_ = false;
   uint64_t mask = GetActiveFeaturesTrackedForBackForwardCacheMetricsMask();
-  if (mask == last_uploaded_active_features_)
+  if (mask == last_uploaded_bfcache_disabling_features_)
     return;
-  last_uploaded_active_features_ = mask;
-  delegate_->UpdateActiveSchedulerTrackedFeatures(mask);
+  last_uploaded_bfcache_disabling_features_ = mask;
+  delegate_->UpdateBackForwardCacheDisablingFeatures(mask);
 }
 
 base::WeakPtr<FrameScheduler> FrameSchedulerImpl::GetWeakPtr() {
