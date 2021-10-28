@@ -2066,6 +2066,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="310671807099593501">Il sito sta usando il Bluetooth</translation>
 <translation id="3108931485517391283">Impossibile ricevere</translation>
 <translation id="3109724472072898302">Compresso</translation>
+<translation id="311214366526552035">Scarica comunque</translation>
 <translation id="311394601889664316">Non consentire ai siti di modificare file o cartelle sul dispositivo</translation>
 <translation id="3115147772012638511">In attesa di elaborazione cache...</translation>
 <translation id="3115580024857770654">Comprimi tutto</translation>
@@ -2345,6 +2346,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="3429160811076349561">Le funzionalità di prova non sono attive</translation>
 <translation id="3429271624041785769">Lingue contenuti web</translation>
 <translation id="3429275422858276529">Aggiungi questa pagina ai preferiti per trovarla facilmente in seguito</translation>
+<translation id="343115368966109153">Vuoi scaricare <ph name="FILE_NAME" />? Tutte le persone che usano il dispositivo potranno vedere il file.</translation>
 <translation id="3432227430032737297">Rimuovi tutti i cookie visualizzati</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433621910545056227">Spiacenti. Il sistema non è riuscito a stabilire il blocco degli attributi del tempo di installazione del dispositivo.</translation>
@@ -2686,6 +2688,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="3777806571986431400">Estensione attivata</translation>
 <translation id="3778152852029592020">Il download è stato annullato.</translation>
 <translation id="3778208826288864398">Il token di sicurezza è stato bloccato perché è stato inserito troppe volte il PIN errato. Dovrai reimpostare il token di sicurezza.</translation>
+<translation id="3778369586810509692">Questo file verrà memorizzato sul dispositivo e potranno vederlo tutti.</translation>
 <translation id="3778740492972734840">&amp;Strumenti per sviluppatori</translation>
 <translation id="3778868487658107119">Chiedigli tutto quello che vuoi e fatti aiutare nelle tue attività. Google è personalizzato per te ed è sempre al tuo fianco.</translation>
 <translation id="3781742599892759500">Accesso al microfono su Linux</translation>
@@ -4699,6 +4702,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="597235323114979258">Mostra altre destinazioni</translation>
 <translation id="5972666587303800813">Servizio autonomo</translation>
 <translation id="5972708806901999743">Sposta in alto</translation>
+<translation id="5972801171078377748">Non mostrare più</translation>
 <translation id="5972826969634861500">Avvia <ph name="PRODUCT_NAME" /></translation>
 <translation id="5973041996755340290">"<ph name="CLIENT_NAME" />" ha iniziato il debug del browser</translation>
 <translation id="5973605538625120605">Modifica un PIN</translation>

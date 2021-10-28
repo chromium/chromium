@@ -2067,6 +2067,7 @@
 <translation id="310671807099593501">Сайт использует Bluetooth</translation>
 <translation id="3108931485517391283">Не удалось получить файл</translation>
 <translation id="3109724472072898302">Свернуто</translation>
+<translation id="311214366526552035">Все равно скачать</translation>
 <translation id="311394601889664316">Запретить сайтам изменять файлы и папки на устройстве</translation>
 <translation id="3115147772012638511">Ожидание кеша…</translation>
 <translation id="3115580024857770654">Свернуть все</translation>
@@ -2346,6 +2347,7 @@
 <translation id="3429160811076349561">Функции отключены</translation>
 <translation id="3429271624041785769">Языки веб-контента</translation>
 <translation id="3429275422858276529">Чтобы в будущем эту страницу было проще найти, добавьте ее в закладки</translation>
+<translation id="343115368966109153">Скачать файл <ph name="FILE_NAME" />? Он будет доступен всем пользователям этого устройства.</translation>
 <translation id="3432227430032737297">Удалить все показанные файлы cookie</translation>
 <translation id="3432762828853624962">Разделяемые объекты worker</translation>
 <translation id="3433621910545056227">Системе не удалось заблокировать атрибуты устройства на время установки.</translation>
@@ -2687,6 +2689,7 @@
 <translation id="3777806571986431400">Расширение включено</translation>
 <translation id="3778152852029592020">Скачивание отменено.</translation>
 <translation id="3778208826288864398">Слишком много попыток ввода PIN-кода. Электронный ключ заблокирован. Сбросьте настройки электронного ключа.</translation>
+<translation id="3778369586810509692">Файл будет храниться на этом устройстве, и все смогут его видеть.</translation>
 <translation id="3778740492972734840">&amp;Инструменты разработчика</translation>
 <translation id="3778868487658107119">Это ваш личный помощник, который всегда рядом. Просто спросите его о чем-нибудь или дайте поручение.</translation>
 <translation id="3781742599892759500">Доступ к микрофону в Linux</translation>
@@ -4700,6 +4703,7 @@
 <translation id="597235323114979258">Другие места назначения печати</translation>
 <translation id="5972666587303800813">No-op</translation>
 <translation id="5972708806901999743">К началу</translation>
+<translation id="5972801171078377748">Больше не показывать</translation>
 <translation id="5972826969634861500">Запустить <ph name="PRODUCT_NAME" /></translation>
 <translation id="5973041996755340290">Инструмент "<ph name="CLIENT_NAME" />" запустил отладку этого браузера.</translation>
 <translation id="5973605538625120605">Изменение PIN-кода</translation>

@@ -1001,6 +1001,7 @@
 <translation id="2204379573346866896">当前小时内已流逝的分钟数。</translation>
 <translation id="2204753382813641270">控制任务栏是否自动隐藏</translation>
 <translation id="2208976000652006649">在使用 POST 的搜索网址中所需的参数</translation>
+<translation id="2212603374276864511">允许用户使用预定义的桌面模板</translation>
 <translation id="2213059592185933570">允许创建漫游个人资料</translation>
 <translation id="2215238871726750562">如果此政策设为 True，系统会阻止浏览器窗口在会话开始时启动。
 
@@ -1952,6 +1953,7 @@
         * 4，系统将在注册后且用户登录前更新 <ph name="TPM_FIRMWARE_UPDATE_TPM" /> 固件。
 
       如果您未设置此政策，<ph name="TPM_FIRMWARE_UPDATE_TPM" /> 固件更新将不可用。</translation>
+<translation id="3232563711929146405">停用网络服务沙盒</translation>
 <translation id="3232691106293445015">不安全的 HTTP 连接无法使用<ph name="BASIC_AUTH" />身份验证，只有 HTTPS 能使用该验证方案</translation>
 <translation id="3235085623859932253"> 如果此政策已停用，用户将无法通过 PCIe 隧道完全连接 Thunderbolt/USB4 外围设备。
 
@@ -2072,6 +2074,7 @@
       如果您不设置此政策，则超时时间为 0 毫秒。
 
       如果 <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" /> 政策未设置，则此政策不会产生任何效力。</translation>
+<translation id="3399859571630358395">强制停用快速配对（快速蓝牙配对）。</translation>
 <translation id="341285788698114069">此政策用于控制音频进程在 Windows 上的优先级。
       如果已启用，音频进程将以高于普通优先级的优先级运行。
       如果已停用，音频进程将以普通优先级运行。
@@ -2187,6 +2190,7 @@
 
       如需详细了解有效网址格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。</translation>
 <translation id="3540935459049973317">应用级时间限制</translation>
+<translation id="354592434146464541">不允许用户使用预定义的桌面模板</translation>
 <translation id="3547954654003013442">代理设置</translation>
 <translation id="3550122827225052130">请注意，此政策已被弃用，并将在 <ph name="PRODUCT_OS_NAME" />版本 85 中移除。请改用 <ph name="SCREEN_LOCK_DELAYS_POLICY_NAME" />。
 
@@ -2945,6 +2949,7 @@
 <translation id="4557134566541205630">默认搜索服务提供商新标签页网址</translation>
 <translation id="4558166110367609724">自动跳过《服务条款》并加载浏览器。</translation>
 <translation id="4559846397119102037">允许使用 <ph name="LACROS_NAME" /></translation>
+<translation id="4561560385824323005">允许用户选择要加载的预配置桌面布局</translation>
 <translation id="4562165737444703281">允许用户 [启用/配置] Crostini 端口转发</translation>
 <translation id="456686782928669977">此政策旨在控制是否从 <ph name="IE_PRODUCT_NAME" /> 的 SiteList 政策中加载规则。
 
@@ -3288,6 +3293,7 @@
 <translation id="5017369989680827157">如果此政策设为 True 或未设置，用户可以控制是否在界面中自动填充地址。
 
       如果此政策设为 False，“自动填充”功能一律不会建议或填充地址信息，也不会保存用户在浏览网页时提交的其他地址信息。</translation>
+<translation id="5017691827598069017">启用快速配对（快速蓝牙配对）</translation>
 <translation id="5021550478471824215">通过设置此政策，您能以列表形式指定一系列预先配置的网络文件共享。每个列表项都是一个包含下面这 2 项属性的对象：<ph name="SHARE_URL_FIELD_NAME" /> 和 <ph name="MODE_FIELD_NAME" />。
 
       <ph name="SHARE_URL_FIELD_NAME" /> 应设为共享文件的网址。
@@ -3403,6 +3409,7 @@
       如需详细了解有效的<ph name="URL_LABEL" />格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是此政策可接受的值。</translation>
 <translation id="5177260184597743704">OnSecurityEvent Chrome Enterprise Connector 的配置政策</translation>
 <translation id="5178479074002209469">一个布尔值标记，用于表明：如果此政策要求进行更新，不受管理的用户会话是否应收到通知以及用户是否应被强制退出登录。</translation>
+<translation id="5179853299156742425">可供下载桌面模板的网址。</translation>
 <translation id="5182055907976889880">在 <ph name="PRODUCT_OS_NAME" />中配置 Google 云端硬盘。</translation>
 <translation id="5182483318861266793">将文件架放置到屏幕右侧</translation>
 <translation id="51859390023061147">停用“完全还原”功能。</translation>
@@ -3458,6 +3465,7 @@
       如果此政策未设置或无效，则等同于选择了“为实现版本降级，等待当前版本有可用的稳定版”这一行为选项。</translation>
 <translation id="5229339291699779956">为 Thunderbolt/USB4 外围设备启用 PCIe 隧道，外围设备会将自身的所有功能都发挥到极致</translation>
 <translation id="523505283826916779">无障碍设置</translation>
+<translation id="5238976843489093540">强制启用快速配对（快速蓝牙配对）。</translation>
 <translation id="52393120393725840">如果此政策已启用，用户便可让 <ph name="PRODUCT_NAME" /> 记住密码并在自己下次登录相应网站时提供密码。
 
       如果此政策已停用，用户将无法保存新密码，但先前保存的密码仍可正常使用。
@@ -3808,6 +3816,8 @@
 <translation id="5625771176514429288">Chrome 应用可以在这些平台上运行。</translation>
 <translation id="5630352020869108293">恢复上次的会话</translation>
 <translation id="5633871703004128675">启用“插入符号突出显示”无障碍功能</translation>
+<translation id="5639454129004500060">如果此政策已设置，它会包含用于下载桌面模板文件的信息。这个文件包含要为当前用户配置的桌面模板。
+      如果此政策未设置，桌面模板列表中将不包含任何预配置的桌面模板。此政策在以下情况下将不起任何作用：<ph name="DESK_TEMPLATES_ENABLED_POLICY_NAME" /> 政策未设为 true。</translation>
 <translation id="5641279111657132737">此政策已被弃用，请改用“<ph name="AUTH_SERVER_ALLOWLIST_POLICY_NAME" />”政策。
 
       通过设置此政策，您可以指定应允许哪些服务器进行集成身份验证。仅当收到由此许可名单中的代理服务器或服务器发出的身份验证请求时，<ph name="PRODUCT_NAME" /> 才会启用集成式身份验证机制。
@@ -3957,6 +3967,7 @@
 <translation id="5809728392451418079">设置设备本地帐号的显示名称</translation>
 <translation id="5814301096961727113">设置登录屏幕上语音反馈的默认状态</translation>
 <translation id="5815129011704381141">更新后自动重启</translation>
+<translation id="5816106589769772877">如果此政策已启用，用户便能使用预配置的桌面布局模板。如果此政策已停用或未设置，则意味着这些模板不可用。</translation>
 <translation id="582857022372205358">启用短边双面打印</translation>
 <translation id="5830196507442186669">允许搭载 <ph name="PRODUCT_OS_NAME" />的设备使用 <ph name="BOREALIS_NAME" /></translation>
 <translation id="5832274826894536455">已弃用的政策</translation>
@@ -4209,6 +4220,7 @@
 <translation id="6174065452773547810">如果此政策已启用或未设置，系统便会允许设备接收精细报告控件的报告。
       如果此政策已停用，已注册的设备将不会接收精细报告控件的报告。</translation>
 <translation id="6178075938488052838">此政策用于控制谁可以启动 <ph name="PRODUCT_OS_NAME" />会话，但不会阻止用户在 Android 内登录其他 Google 帐号。如果您想阻止此类情况，请将 Android 专用的 <ph name="ACCOUNT_TYPES_WITH_MANAGEMENT_DISABLED_CLOUDDPC_POLICY_NAME" /> 政策配置为 <ph name="ARC_POLICY_POLICY_NAME" /> 的一部分。</translation>
+<translation id="6181304954168534748">桌面模板的 SHA-256 哈希值。</translation>
 <translation id="6181618732396778048">不允许任何网站请求对文件和目录的写入权限</translation>
 <translation id="6181783961196084973">用于切换应用活动记录功能的状态的值。如果设为 true，系统会向服务器报告用户的应用活动，以便在孩子和家长的 <ph name="PRODUCT_NAME" /> 应用中显示该数据。如果设为 false，应用级使用时限功能仍会正常运行，但系统不会向服务器报告任何数据，因此 <ph name="PRODUCT_NAME" /> 中也不会显示任何数据。</translation>
 <translation id="6183327369896253878">设置此政策可确定 <ph name="PRODUCT_OS_NAME" />会将哪些应用标识符显示为启动器栏中的固定应用，且无法由用户更改。
@@ -5801,6 +5813,10 @@
 <translation id="8101381354936029836">政策原子组：</translation>
 <translation id="8102913158860568230">默认 mediastream 设置</translation>
 <translation id="8104962233214241919">自动选择这些网站的客户端证书</translation>
+<translation id="8111502498815410897">设置此政策会强制启用或停用快速配对功能。
+      快速配对是一种新的蓝牙配对流程，用于将已配对的外围设备与 GAIA 帐号关联起来。
+      这样便能让使用同一 GAIA 帐号登录的其他 Chrome 操作系统（和 Android）设备自动配对。
+      如果此政策未设置，快速配对功能将遵循 Chrome 操作系统的默认设置（处于启用状态）。</translation>
 <translation id="8114382167597081590">不强制启用 YouTube 受限模式</translation>
 <translation id="8117921351531866504">该政策让您能够设置是否允许网站检查用户有无已保存的付款方式。
 
@@ -5912,6 +5928,7 @@
       如果未设置此策略，“<ph name="PRODUCT_OS_NAME" />”将使用设备本地帐号的电子邮件帐号 ID 作为登录屏幕上的显示名称。
 
       普通用户帐号忽略此策略。</translation>
+<translation id="8257863622304579015">启用网络服务沙盒</translation>
 <translation id="8259375588339409826">Chromium 和 Google Chrome 支持同一组政策。请注意，本文档中可能包含未发布的政策（即它们的“支持的环境”条目是指尚未发布的 <ph name="PRODUCT_NAME" /> 版本），这些政策可能会被随时更改或撤消，恕不另行通知；对于这些政策，我们也不会提供任何类型的保证（包括安全性和隐私权方面的保证）。
 
 这些政策仅适用于配置您单位内部所用的 <ph name="PRODUCT_NAME" /> 实例。在您单位外部（例如在某款公开发布的程序中）使用这些政策的软件将被视为恶意软件，并且很可能会被 Google 和防病毒软件供应商标记为恶意软件。
@@ -6413,6 +6430,11 @@
 
       如果您未设置此政策，系统会使用相应的平台专用默认浏览器：在 <ph name="MS_WIN_NAME" /> 上使用 <ph name="IE_PRODUCT_NAME" />，在 <ph name="MAC_OS_NAME" /> 上使用 <ph name="SAFARI_PRODUCT_NAME" />。在 <ph name="LINUX_OS_NAME" /> 上，无法启动备用浏览器。</translation>
 <translation id="8836975838488342340">访问代码的有效时长（以秒为单位）。</translation>
+<translation id="8839799083601163225">此政策用于控制网络服务进程是否在已沙盒化的环境中运行。
+      如果此政策已启用，网络服务进程将在已沙盒化的环境中运行。
+      如果此政策已停用，网络服务进程将在未沙盒化的环境中运行。这会导致用户面临与在未沙盒化的环境中运行网络服务相关的更多安全风险。
+      如果此政策未设置，系统将使用网络沙盒的默认配置。网络沙盒的默认配置可能会因 <ph name="PRODUCT_NAME" /> 版本、当前运行的现场试验以及平台而异。
+      此政策旨在给予企业灵活度，让企业在使用会干扰网络服务沙盒的第三方软件的情况下仍可停用网络沙盒。</translation>
 <translation id="8842208363354615697">允许启用纯 HTTPS 模式</translation>
 <translation id="885147810817138322">向用户显示推荐的媒体内容</translation>
 <translation id="8852579753940989645">启用“渲染程序代码完整性”</translation>

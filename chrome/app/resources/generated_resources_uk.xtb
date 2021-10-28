@@ -2084,6 +2084,7 @@
 <translation id="310671807099593501">Сайт використовує Bluetooth</translation>
 <translation id="3108931485517391283">Не вдалось отримати файл</translation>
 <translation id="3109724472072898302">Згорнуто</translation>
+<translation id="311214366526552035">Усе одно завантажити</translation>
 <translation id="311394601889664316">Заборонити сайтам змінювати файли чи папки на пристрої</translation>
 <translation id="3115147772012638511">...</translation>
 <translation id="3115580024857770654">Згорнути всі</translation>
@@ -2363,6 +2364,7 @@
 <translation id="3429160811076349561">Пробні функції вимкнено</translation>
 <translation id="3429271624041785769">Мови веб-контенту</translation>
 <translation id="3429275422858276529">Створіть закладку цієї сторінки, щоб легко знайти її пізніше</translation>
+<translation id="343115368966109153">Завантажити файл <ph name="FILE_NAME" />? Його зможуть бачити всі користувачі пристрою.</translation>
 <translation id="3432227430032737297">Вилучити всі показані</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433621910545056227">На жаль, системі не вдалося заблокувати атрибути часу встановлення на пристрої.</translation>
@@ -2704,6 +2706,7 @@
 <translation id="3777806571986431400">Розширення ввімкнено</translation>
 <translation id="3778152852029592020">Завантаження скасовано.</translation>
 <translation id="3778208826288864398">Ключ безпеки заблоковано, оскільки ви ввели неправильний PIN-код забагато разів. Потрібно скинути ключ безпеки.</translation>
+<translation id="3778369586810509692">Цей файл зберігатиметься на пристрої, його зможуть бачити всі користувачі.</translation>
 <translation id="3778740492972734840">&amp;Інструменти розробника</translation>
 <translation id="3778868487658107119">Ставте запитання. Давайте завдання. Ваш персональний Google Асистент завжди готовий допомогти.</translation>
 <translation id="3781742599892759500">Доступ до мікрофона в Linux</translation>
@@ -4718,6 +4721,7 @@
 <translation id="597235323114979258">Переглянути більше пунктів призначення</translation>
 <translation id="5972666587303800813">Сервіс, що не потребує керування</translation>
 <translation id="5972708806901999743">На початок</translation>
+<translation id="5972801171078377748">Більше не показувати</translation>
 <translation id="5972826969634861500">Запустити <ph name="PRODUCT_NAME" /></translation>
 <translation id="5973041996755340290">Інструмент "<ph name="CLIENT_NAME" />" розпочав налагодження цього веб-переглядача</translation>
 <translation id="5973605538625120605">Змінити PIN-код</translation>

@@ -48,6 +48,7 @@
 <translation id="2121284319307530122">Neu starten, um &amp;Chrome zu aktualisieren</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />Aktuelle Einstellungen<ph name="END_LINK" /> übermitteln und so helfen, Chrome zu verbessern</translation>
 <translation id="2151406531797534936">Starten Sie Chrome jetzt neu</translation>
+<translation id="2189289170880510015">Passen Sie einige der wichtigsten Datenschutzeinstellungen von Chrome an</translation>
 <translation id="2246246234298806438">Google Chrome kann ohne den integrierten PDF-Viewer keine Druckvorschau anzeigen.</translation>
 <translation id="2290014774651636340">Google API-Schlüssel fehlen. Einige Funktionen von Google Chrome sind deaktiviert.</translation>
 <translation id="2290095356545025170">Möchten Sie Google Chrome wirklich deinstallieren?</translation>
@@ -110,6 +111,7 @@
 <translation id="3596080736082218006">{COUNT,plural, =0{Laut Ihrem Administrator müssen Sie Chrome neu starten, um ein Update durchzuführen}=1{Laut Ihrem Administrator müssen Sie Chrome neu starten, um ein Update durchzuführen. Ihr Inkognitofenster wird nicht wieder geöffnet.}other{Laut Ihrem Administrator müssen Sie Chrome neu starten, um ein Update durchzuführen. Ihre # Inkognitofenster werden nicht wieder geöffnet.}}</translation>
 <translation id="3622797965165704966">Sie können Chrome jetzt noch einfacher mit Ihrem Google-Konto und auf gemeinsam genutzten Computern verwenden.</translation>
 <translation id="3673813398384385993">Chrome hat festgestellt, dass „<ph name="EXTENSION_NAME" />“ Malware enthält</translation>
+<translation id="3678552270983184277">Die Standardeinstellungen sind für die meisten Nutzer geeignet, Sie können sie aber ändern und Chrome so an Ihre Bedürfnisse anpassen</translation>
 <translation id="3718181793972440140">Dadurch wird 1 Element von diesem Gerät gelöscht. Wenn Sie Ihre Daten später abrufen möchten, melden Sie sich als <ph name="USER_EMAIL" /> in Chrome an.</translation>
 <translation id="3735758079232443276">Die beim Start von Chrome angezeigte Seite wurde durch die Erweiterung <ph name="EXTENSION_NAME" /> geändert.</translation>
 <translation id="3779473566290487688">Sie benötigen OS X 10.11 oder höher, um zukünftige Google Chrome-Updates zu erhalten. Dieser Computer verfügt über OS X 10.10.</translation>

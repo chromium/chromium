@@ -1023,6 +1023,7 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 <translation id="2204379573346866896">Menit berlalu dalam jam saat ini.</translation>
 <translation id="2204753382813641270">Kontrol sembunyi otomatis rak</translation>
 <translation id="2208976000652006649">Parameter untuk URL penelusuran yang menggunakan POST</translation>
+<translation id="2212603374276864511">Izinkan pengguna menggunakan template desktop yang telah ditentukan sebelumnya</translation>
 <translation id="2213059592185933570">Izinkan pembuatan profil roaming</translation>
 <translation id="2215238871726750562">Jika kebijakan ditetapkan ke Benar (True), jendela browser tidak akan diluncurkan saat sesi dimulai.
 
@@ -1987,6 +1988,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
         * 4, firmware <ph name="TPM_FIRMWARE_UPDATE_TPM" /> akan diupdate setelah pendaftaran, sebelum pengguna login.
 
       Jika kebijakan tidak disetel, update firmware <ph name="TPM_FIRMWARE_UPDATE_TPM" /> tidak akan tersedia.</translation>
+<translation id="3232563711929146405">Nonaktifkan sandbox layanan jaringan</translation>
 <translation id="3232691106293445015">Koneksi HTTP yang tidak aman dilarang menggunakan autentikasi <ph name="BASIC_AUTH" />; HTTPS diwajibkan</translation>
 <translation id="3235085623859932253"> Jika kebijakan ini dinonaktifkan, pengguna tidak akan dapat menghubungkan sepenuhnya perangkat periferal Thunderbolt/USB4 melalui tunneling PCIe.
 
@@ -2114,6 +2116,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
       Jika tidak disetel, 0 milidetik akan digunakan sebagai waktu tunggu.
 
       Jika kebijakan <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" /> tidak disetel, kebijakan ini tidak berpengaruh.</translation>
+<translation id="3399859571630358395">Paksa penonaktifan Sambungan Cepat (penyambungan Bluetooth cepat).</translation>
 <translation id="341285788698114069">Kebijakan ini mengontrol prioritas proses audio di Windows.
       Jika kebijakan ini diaktifkan, proses audio akan berjalan dengan prioritas di atas normal.
       Jika kebijakan ini dinonaktifkan, proses audio akan berjalan dengan prioritas normal.
@@ -2231,6 +2234,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 
       Untuk informasi mendetail tentang pola URL yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="3540935459049973317">Batas Waktu per Aplikasi</translation>
+<translation id="354592434146464541">Jangan izinkan pengguna menggunakan template desktop yang telah ditentukan sebelumnya</translation>
 <translation id="3547954654003013442">Setelan proxy</translation>
 <translation id="3550122827225052130">Perhatikan bahwa kebijakan ini sudah tidak digunakan lagi dan akan dihapus di <ph name="PRODUCT_OS_NAME" /> versi 85. Sebagai gantinya, gunakan <ph name="SCREEN_LOCK_DELAYS_POLICY_NAME" />.
 
@@ -2996,6 +3000,7 @@ Jika kebijakan ini disetel, <ph name="PRODUCT_OS_NAME" /> hanya mengizinkan peng
 <translation id="4557134566541205630">URL halaman tab baru penyedia penelusuran default</translation>
 <translation id="4558166110367609724">Otomatis melewati ToS dan memuat browser.</translation>
 <translation id="4559846397119102037">Mengizinkan penggunaan <ph name="LACROS_NAME" /></translation>
+<translation id="4561560385824323005">Mengizinkan pengguna memilih tata letak desktop yang dikonfigurasi sebelumnya untuk dimuat</translation>
 <translation id="4562165737444703281">Mengizinkan pengguna untuk [mengaktifkan/mengonfigurasi] penerusan port Crostini</translation>
 <translation id="456686782928669977">Kebijakan ini akan mengontrol apakah untuk memuat aturan dari kebijakan SiteList <ph name="IE_PRODUCT_NAME" /> atau tidak.
 
@@ -3342,6 +3347,7 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 <translation id="5017369989680827157">Jika kebijakan ditetapkan ke Benar (True) atau tidak ditetapkan, pengguna akan dapat mengontrol fitur Isi otomatis alamat di UI.
 
       Jika kebijakan ditetapkan ke Salah (False), Isi otomatis tidak akan menyarankan atau mengisi informasi alamat, juga tidak akan menyimpan informasi alamat tambahan yang dikirimkan pengguna saat menjelajahi web.</translation>
+<translation id="5017691827598069017">Mengaktifkan Sambungan Cepat (penyambungan Bluetooth cepat)</translation>
 <translation id="5021550478471824215">Menyetel kebijakan akan menentukan daftar berbagi file jaringan preset. Setiap item adalah objek dengan 2 properti: <ph name="SHARE_URL_FIELD_NAME" /> dan <ph name="MODE_FIELD_NAME" />.
 
       URL yang dibagikan harus <ph name="SHARE_URL_FIELD_NAME" />.
@@ -3458,6 +3464,7 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
       Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> bukanlah nilai yang diterima untuk kebijakan ini.</translation>
 <translation id="5177260184597743704">Kebijakan konfigurasi untuk Chrome Enterprise Connector OnSecurityEvent</translation>
 <translation id="5178479074002209469">Tanda boolean menunjukkan apakah sesi pengguna yang tidak dikelola harus menerima notifikasi dan memaksa logout jika update diperlukan sesuai kebijakan ini.</translation>
+<translation id="5179853299156742425">URL tempat template desktop dapat didownload.</translation>
 <translation id="5182055907976889880">Konfigurasi Google Drive di <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="5182483318861266793">Posisikan rak di sisi kanan layar</translation>
 <translation id="51859390023061147">Nonaktifkan fitur pemulihan penuh.</translation>
@@ -3513,6 +3520,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Jika tidak disetel atau tidak valid, perilaku akan sama dengan "Tunggu saluran target juga mengalami downgrade saluran rilis".</translation>
 <translation id="5229339291699779956">Mengaktifkan tunneling PCIe untuk perangkat periferal Thunderbolt/USB4, perangkat periferal akan berfungsi pada kemampuan penuh</translation>
 <translation id="523505283826916779">Setelan aksesibilitas</translation>
+<translation id="5238976843489093540">Paksa pengaktifan Sambungan Cepat (penyambungan Bluetooth cepat).</translation>
 <translation id="52393120393725840">Menyetel kebijakan ke Aktif berarti pengguna dapat membuat <ph name="PRODUCT_NAME" /> mengingat sandi dan memberikannya saat mereka kembali login ke situs.
 
       Jika kebijakan disetel ke Nonaktif, pengguna tidak dapat menyimpan sandi baru, tetapi sandi yang disimpan sebelumnya masih berfungsi.
@@ -3864,6 +3872,9 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="5625771176514429288">Aplikasi Chrome akan diizinkan berjalan di platform berikut.</translation>
 <translation id="5630352020869108293">Mengembalikan sesi terakhir</translation>
 <translation id="5633871703004128675">Mengaktifkan fitur aksesibilitas sorotan tanda sisipan</translation>
+<translation id="5639454129004500060">Jika disetel, kebijakan ini akan berisi informasi untuk mendownload file template desktop.  File tersebut berisi template desktop yang akan disediakan untuk pengguna saat ini.
+      Jika tidak disetel, template desktop yang dikonfigurasi sebelumnya tidak disertakan dalam daftar template desktop.  Jika kebijakan <ph name="DESK_TEMPLATES_ENABLED_POLICY_NAME" />
+      tidak disetel ke benar (true), kebijakan ini tidak akan berpengaruh.</translation>
 <translation id="5641279111657132737">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan kebijakan '<ph name="AUTH_SERVER_ALLOWLIST_POLICY_NAME" />'.
 
       Menyetel kebijakan akan menentukan server mana yang diizinkan untuk autentikasi terintegrasi. Autentikasi terintegrasi hanya aktif jika <ph name="PRODUCT_NAME" /> mendapat pernyataan autentikasi dari proxy atau dari server yang ada di daftar yang diizinkan.
@@ -4025,6 +4036,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="5809728392451418079">Setel nama tampilan untuk akun lokal perangkat</translation>
 <translation id="5814301096961727113">Menyetel status default masukan yang diucapkan di layar masuk</translation>
 <translation id="5815129011704381141">Booting ulang otomatis setelah pembaruan</translation>
+<translation id="5816106589769772877">Jika kebijakan disetel ke Aktif, pengguna akan dapat menggunakan template tata letak desktop yang telah dikonfigurasi sebelumnya.  Jika kebijakan disetel ke Nonaktif atau tidak disetel, template tersebut tidak akan tersedia.</translation>
 <translation id="582857022372205358">Aktifkan pencetakan dupleks tepi pendek</translation>
 <translation id="5830196507442186669">Izinkan perangkat untuk menggunakan <ph name="BOREALIS_NAME" /> di <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="5832274826894536455">Kebijakan yang tidak digunakan lagi</translation>
@@ -4292,6 +4304,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="6174065452773547810">Jika kebijakan disetel ke Aktif atau tidak disetel, perangkat akan diizinkan menerima kontrol pelaporan terperinci.
       Jika kebijakan disetel ke Nonaktif, perangkat terdaftar tidak akan menerima kontrol pelaporan terperinci.</translation>
 <translation id="6178075938488052838">Kebijakan ini mengontrol siapa yang dapat memulai sesi <ph name="PRODUCT_OS_NAME" />. Kebijakan ini tidak mencegah pengguna login ke akun Google lain dalam Android. Jika Anda ingin mencegah tindakan ini, konfigurasikan kebijakan <ph name="ACCOUNT_TYPES_WITH_MANAGEMENT_DISABLED_CLOUDDPC_POLICY_NAME" /> khusus Android sebagai bagian dari <ph name="ARC_POLICY_POLICY_NAME" />.</translation>
+<translation id="6181304954168534748">Hash SHA-256 template desktop.</translation>
 <translation id="6181618732396778048">Jangan izinkan situs apa pun meminta akses tulis ke file atau direktori</translation>
 <translation id="6181783961196084973">Nilai tombol alih pengumpulan data aktivitas aplikasi. Jika disetel ke benar (true), aktivitas aplikasi pengguna akan dilaporkan ke server dengan tujuan untuk ditampilkan di aplikasi <ph name="PRODUCT_NAME" /> anak dan orang tua. Jika disetel ke salah (false), fitur Batas waktu per aplikasi akan tetap berfungsi, tetapi tidak ada data yang akan dilaporkan ke server dan oleh karena itu, tidak ada data yang akan ditampilkan di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6183327369896253878">Menetapkan kebijakan akan menetapkan ID aplikasi mana yang ditampilkan <ph name="PRODUCT_OS_NAME" /> sebagai aplikasi yang dipasangi pin di kotak peluncur, dan pengguna tidak dapat mengubahnya.
@@ -5896,6 +5909,10 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
 <translation id="8101381354936029836">Grup atom kebijakan:</translation>
 <translation id="8102913158860568230">Setelan streaming media default</translation>
 <translation id="8104962233214241919">Memilih sertifikat klien untuk situs ini secara otomatis</translation>
+<translation id="8111502498815410897">Menyetel kebijakan ini akan memaksa pengaktifan atau penonaktifan Sambungan Cepat.
+      Sambungan Cepat adalah alur penyambungan Bluetooth baru yang menautkan periferal yang disambungkan dengan akun GAIA.
+      Penyambungan ini memungkinkan perangkat Chrome OS (dan Android) lain yang login dengan akun GAIA yang sama untuk disambungkan secara otomatis.
+      Jika tidak disetel, Sambungan Cepat akan mengikuti setelan default Chrome OS, yaitu diaktifkan.</translation>
 <translation id="8114382167597081590">Jangan terapkan Mode Terbatas di YouTube</translation>
 <translation id="8117921351531866504">Memungkinkan Anda menentukan situs diizinkan atau tidak untuk memeriksa apakah pengguna telah menyimpan metode pembayaran.
 
@@ -6007,6 +6024,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan,
       Jika kebijakan dibiarkan tidak disetel, <ph name="PRODUCT_OS_NAME" /> akan menggunakan ID akun email dari akun lokal perangkat sebagai nama tampilan di layar masuk.
 
       Kebijakan ini diabaikan untuk akun pengguna reguler.</translation>
+<translation id="8257863622304579015">Aktifkan sandbox layanan jaringan</translation>
 <translation id="8259375588339409826">Chromium dan Google Chrome mendukung rangkaian kebijakan yang sama. Perlu diperhatikan bahwa dokumen ini mungkin berisi kebijakan yang belum dirilis (yaitu entri "Didukung di" merujuk ke versi <ph name="PRODUCT_NAME" /> yang belum dirilis) yang dapat berubah atau dihapus tanpa pemberitahuan, dan tidak ada jaminan apa pun yang diberikan, termasuk tidak ada jaminan sehubungan dengan keamanan dan privasi.
 
 Kebijakan ini khusus ditujukan untuk mengonfigurasi instance internal <ph name="PRODUCT_NAME" /> ke organisasi Anda. Penggunaan kebijakan ini di luar organisasi (misalnya, dalam program yang didistribusikan secara publik) dianggap sebagai malware dan kemungkinan akan diberi label sebagai malware oleh Google dan vendor anti-virus.
@@ -6517,6 +6535,11 @@ Kebijakan akan dihapus pada M75.</translation>
 
       Jika kebijakan tidak disetel, kebijakan default khusus platform akan digunakan: <ph name="IE_PRODUCT_NAME" /> untuk <ph name="MS_WIN_NAME" />, atau <ph name="SAFARI_PRODUCT_NAME" /> untuk <ph name="MAC_OS_NAME" />. Di <ph name="LINUX_OS_NAME" />, peluncuran browser alternatif akan gagal.</translation>
 <translation id="8836975838488342340">Durasi waktu kode akses valid (dalam detik).</translation>
+<translation id="8839799083601163225">Kebijakan ini mengontrol apakah proses layanan jaringan akan berjalan dalam sandbox atau tidak.
+      Jika kebijakan ini disetel ke aktif, proses layanan jaringan akan berjalan dalam sandbox.
+      Jika kebijakan ini disetel ke nonaktif, proses layanan jaringan akan berjalan di luar sandbox. Hal ini akan membuat pengguna rentan terhadap risiko keamanan tambahan terkait proses menjalankan layanan jaringan di luar sandbox.
+      Jika kebijakan ini tidak disetel, konfigurasi default untuk sandbox jaringan akan digunakan. Konfigurasi default ini dapat bervariasi bergantung pada rilis <ph name="PRODUCT_NAME" />, uji coba kolom yang sedang berjalan, dan platform.
+      Kebijakan ini dimaksudkan untuk memberikan fleksibilitas kepada perusahaan guna menonaktifkan sandbox jaringan jika perusahaan menggunakan software pihak ketiga yang mengganggu sandbox layanan jaringan.</translation>
 <translation id="8842208363354615697">Mengizinkan pengaktifan Mode Khusus HTTPS</translation>
 <translation id="885147810817138322">Tampilkan rekomendasi media kepada pengguna</translation>
 <translation id="8852579753940989645">Mengaktifkan Integritas Kode Perender</translation>

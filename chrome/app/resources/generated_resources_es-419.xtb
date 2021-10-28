@@ -2063,6 +2063,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="310671807099593501">El sitio está usando la conexión Bluetooth</translation>
 <translation id="3108931485517391283">No se puede recibir el archivo</translation>
 <translation id="3109724472072898302">Contraído</translation>
+<translation id="311214366526552035">Descargar de todos modos</translation>
 <translation id="311394601889664316">No permitir que los sitios editen archivos ni carpetas de tu dispositivo</translation>
 <translation id="3115147772012638511">Esperando caché...</translation>
 <translation id="3115580024857770654">Contraer todo</translation>
@@ -2342,6 +2343,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3429160811076349561">Las funciones de prueba están desactivadas</translation>
 <translation id="3429271624041785769">Idiomas del contenido web</translation>
 <translation id="3429275422858276529">Agrega esta página a favoritos para encontrarla fácilmente más tarde</translation>
+<translation id="343115368966109153">¿Quieres descargar <ph name="FILE_NAME" />? Todas las personas que usen el dispositivo podrán ver el archivo.</translation>
 <translation id="3432227430032737297">Quitar todo lo que se muestra</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433621910545056227">El sistema no pudo establecer el bloqueo de atributos del tiempo de instalación del dispositivo.</translation>
@@ -2683,6 +2685,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3777806571986431400">Extensión habilitada</translation>
 <translation id="3778152852029592020">Se canceló la descarga.</translation>
 <translation id="3778208826288864398">Se ingresó el PIN de forma incorrecta demasiadas veces; por lo tanto, se bloqueó la llave de seguridad. Deberás restablecerla.</translation>
+<translation id="3778369586810509692">Este archivo se almacenará en el dispositivo, y cualquier persona podrá verlo.</translation>
 <translation id="3778740492972734840">&amp;Herramientas del desarrollador</translation>
 <translation id="3778868487658107119">Hazle preguntas. Encárgale tareas. Es tu versión personal de Google, está siempre lista para ayudarte.</translation>
 <translation id="3781742599892759500">Acceso al micrófono en Linux</translation>
@@ -4696,6 +4699,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="597235323114979258">Ver más destinos</translation>
 <translation id="5972666587303800813">Servicio sin funcionamiento</translation>
 <translation id="5972708806901999743">Mover al principio</translation>
+<translation id="5972801171078377748">No volver a mostrar</translation>
 <translation id="5972826969634861500">Comienzo <ph name="PRODUCT_NAME" /></translation>
 <translation id="5973041996755340290">"<ph name="CLIENT_NAME" />" comenzó a depurar este navegador</translation>
 <translation id="5973605538625120605">Cambiar un PIN</translation>

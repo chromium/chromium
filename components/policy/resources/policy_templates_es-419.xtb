@@ -1018,6 +1018,7 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 <translation id="2204379573346866896">Los minutos transcurridos de la hora actual.</translation>
 <translation id="2204753382813641270">Controlar opción para ocultar archivos automáticamente</translation>
 <translation id="2208976000652006649">Parámetros para URL de búsqueda que utiliza POST</translation>
+<translation id="2212603374276864511">Permitir que los usuarios utilicen plantillas de escritorio predefinidas</translation>
 <translation id="2213059592185933570">Habilitar la creación de perfiles de roaming</translation>
 <translation id="2215238871726750562">Si estableces la política como verdadera, no se ejecutará la ventana del navegador al inicio de la sesión.
 
@@ -1981,6 +1982,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
         * 4, se actualizará el firmware <ph name="TPM_FIRMWARE_UPDATE_TPM" /> después de la inscripción, antes de que el usuario acceda.
 
       Si no estableces la política, no estará disponible la actualización del firmware <ph name="TPM_FIRMWARE_UPDATE_TPM" />.</translation>
+<translation id="3232563711929146405">Inhabilitar la zona de pruebas del servicio de red</translation>
 <translation id="3232691106293445015">Las conexiones HTTP no seguras no pueden usar la autenticación <ph name="BASIC_AUTH" />; se requiere una conexión HTTPS</translation>
 <translation id="3235085623859932253"> Si inhabilitas esta política, el usuario no podrá conectar por completo su dispositivo periférico Thunderbolt/USB4 mediante la tunelización PCIe.
 
@@ -2108,6 +2110,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       Si no la estableces, se utilizará 0 milisegundos como tiempo de espera.
 
       Si no estableces la política <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" />, esta política no tendrá efecto.</translation>
+<translation id="3399859571630358395">Inhabilitar de manera automática la Vinculación rápida (vinculación rápida por Bluetooth)</translation>
 <translation id="341285788698114069">Esta política controla la prioridad del proceso de audio en Windows.
       Si habilitas la política, se ejecutará el proceso de audio con prioridad por encima de la normal.
       Si la inhabilitas, se ejecutará el proceso de audio con prioridad normal.
@@ -2222,6 +2225,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 
       Para obtener información detallada sobre los patrones de URL válidos, consulta: https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="3540935459049973317">Límites de tiempo por app</translation>
+<translation id="354592434146464541">No permitir que los usuarios utilicen plantillas de escritorio predefinidas</translation>
 <translation id="3547954654003013442">Configuración de proxy</translation>
 <translation id="3550122827225052130">Ten en cuenta que esta política es obsoleta y se quitará en la versión 85 de <ph name="PRODUCT_OS_NAME" />. En su lugar, utiliza <ph name="SCREEN_LOCK_DELAYS_POLICY_NAME" />.
 
@@ -2986,6 +2990,7 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
 <translation id="4557134566541205630">URL de la página Nueva pestaña del proveedor de búsqueda predeterminado</translation>
 <translation id="4558166110367609724">Omite automáticamente las Condiciones del Servicio y carga el navegador</translation>
 <translation id="4559846397119102037">Permitir el uso de <ph name="LACROS_NAME" /></translation>
+<translation id="4561560385824323005">Permitir que los usuarios seleccionen un diseño de escritorio preconfigurado para cargar</translation>
 <translation id="4562165737444703281">Permite que los usuarios habiliten o configuren la redirección de puertos de Crostini</translation>
 <translation id="456686782928669977">Esta política controla si se cargan las reglas de la política SiteList de <ph name="IE_PRODUCT_NAME" />.
 
@@ -3330,6 +3335,7 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
 <translation id="5017369989680827157">Si estableces la política como verdadera o no la estableces, los usuarios podrán configurar la función Autocompletar para las direcciones que aparecen en la IU.
 
       Si la estableces como falsa, la función Autocompletar nunca sugerirá ni completará datos de las direcciones, ni guardará información adicional relacionada que envíen los usuarios cuando navegan por la Web.</translation>
+<translation id="5017691827598069017">Habilitar la Vinculación rápida (vinculación rápida por Bluetooth)</translation>
 <translation id="5021550478471824215">Si se establece la política, se especificará una lista predeterminada para la función Network File Shares. Cada elemento es un objeto con 2 propiedades: <ph name="SHARE_URL_FIELD_NAME" /> y <ph name="MODE_FIELD_NAME" />.
 
       La URL compartida debe ser <ph name="SHARE_URL_FIELD_NAME" />.
@@ -3445,6 +3451,7 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="5177260184597743704">Política de configuración para Chrome Enterprise Connector OnSecurityEvent</translation>
 <translation id="5178479074002209469">Función experimental booleana que indica si las sesiones de usuario no administrado deben recibir o no notificaciones y si se debe salir de la cuenta cuando se requiere una actualización conforme a esta política.</translation>
+<translation id="5179853299156742425">URL desde la cual se puede descargar la plantilla de escritorio.</translation>
 <translation id="5182055907976889880">Configura Google Drive en <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="5182483318861266793">Ubicar la biblioteca en el lado derecho de la pantalla</translation>
 <translation id="51859390023061147">Inhabilitar la función de restauración completa</translation>
@@ -3500,6 +3507,7 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
       Si no estableces la opción o el valor ingresado no es válido, el comportamiento será el mismo que la opción "Espera a que el canal objetivo complete el cambio a la versión inferior del canal".</translation>
 <translation id="5229339291699779956">Habilitar la tunelización PCIe para los dispositivos periféricos Thunderbolt/USB4 (los dispositivos periféricos funcionarán con todas sus capacidades)</translation>
 <translation id="523505283826916779">Configuración de accesibilidad</translation>
+<translation id="5238976843489093540">Habilitar de manera automática la Vinculación rápida (vinculación rápida por Bluetooth)</translation>
 <translation id="52393120393725840">Si habilitas la política, <ph name="PRODUCT_NAME" /> recordará las contraseñas y las proporcionará a los usuarios la siguiente vez que accedan a su cuenta en un sitio.
 
       Si inhabilitas la política, los usuarios no podrán guardar nuevas contraseñas, pero seguirán funcionando las que se hayan guardado antes.
@@ -3850,6 +3858,9 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
 <translation id="5625771176514429288">Las Apps de Chrome podrán ejecutarse en estas plataformas.</translation>
 <translation id="5630352020869108293">Restaurar la última sesión</translation>
 <translation id="5633871703004128675">Habilita la función de accesibilidad de resaltar el signo de intercalación</translation>
+<translation id="5639454129004500060">Si la estableces, esta política incluirá información para descargar un archivo de plantilla de escritorio.  El archivo incluye una plantilla de escritorio para proporcionarle al usuario actual.
+      Si no la estableces, no se incluirá ninguna plantilla de escritorio preconfigurada en la lista de plantillas de escritorio.  Si no estableces la política <ph name="DESK_TEMPLATES_ENABLED_POLICY_NAME" />
+      como verdadera, esta política no tendrá efecto.</translation>
 <translation id="5641279111657132737">Esta política dejó de estar disponible. Usa la política "<ph name="AUTH_SERVER_ALLOWLIST_POLICY_NAME" />" en su lugar.
 
       Si estableces la política, se especificarán los servidores que deben habilitarse para la autenticación integrada, la cual solo está activa cuando <ph name="PRODUCT_NAME" /> recibe un desafío de autenticación de un proxy o de un servidor que se encuentra en la lista autorizada.
@@ -4009,6 +4020,7 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
 <translation id="5809728392451418079">Establecer el nombre para mostrar de las cuentas locales del dispositivo</translation>
 <translation id="5814301096961727113">Establece el estado predeterminado de los comentarios por voz en la pantalla de acceso.</translation>
 <translation id="5815129011704381141">Reinicia automáticamente después de la actualización.</translation>
+<translation id="5816106589769772877">Si habilitas la política, los usuarios podrán usar las plantillas de diseño de escritorio preconfiguradas.  Si inhabilitas la política o no la estableces, estas plantillas no estarán disponibles.</translation>
 <translation id="582857022372205358">Habilitar la impresión doble con bordes cortos</translation>
 <translation id="5830196507442186669">Permite que los dispositivos usen <ph name="BOREALIS_NAME" /> en <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="5832274826894536455">Políticas obsoletas</translation>
@@ -4276,6 +4288,7 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 <translation id="6174065452773547810">Si habilitas la política o no la estableces, los dispositivos tendrán controles de informes detallados.
       Si inhabilitas la política, los dispositivos inscritos no tendrán controles de informes detallados.</translation>
 <translation id="6178075938488052838">Esta política controla quién puede iniciar una sesión en <ph name="PRODUCT_OS_NAME" />, pero no impide que los usuarios accedan a otras cuentas de Google en Android. Si quieres impedirlo, configura la política <ph name="ACCOUNT_TYPES_WITH_MANAGEMENT_DISABLED_CLOUDDPC_POLICY_NAME" /> específica de Android como parte de la política <ph name="ARC_POLICY_POLICY_NAME" />.</translation>
+<translation id="6181304954168534748">Hash SHA-256 de la plantilla de escritorio.</translation>
 <translation id="6181618732396778048">No permite que ningún sitio solicite acceso de escritura a archivos ni directorios</translation>
 <translation id="6181783961196084973">El valor del botón de activación de la recopilación de actividades en apps. Si lo estableces como verdadero, se enviará al servidor la información de la actividad del usuario en apps para que se muestre en la app de <ph name="PRODUCT_NAME" /> del hijo y del padre o la madre. Si lo estableces como falso, seguirá activa la función de Límites de tiempo por app, pero no se enviarán datos al servidor y, por lo tanto, tampoco se mostrarán en <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6183327369896253878">Si estableces la política, se determinarán los identificadores de apps que el <ph name="PRODUCT_OS_NAME" /> mostrará como apps fijas en la barra del Selector; los usuarios no podrán cambiarlos.
@@ -5878,6 +5891,10 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="8101381354936029836">Grupo atómico de la política:</translation>
 <translation id="8102913158860568230">Configuración de mediastream predeterminada</translation>
 <translation id="8104962233214241919">Seleccionar automáticamente certificados de clientes para estos sitios</translation>
+<translation id="8111502498815410897">Si estableces esta política, se habilitará o inhabilitará de manera automática la Vinculación rápida.
+      Esta función consiste en un nuevo flujo de vinculación por Bluetooth que asocia dispositivos periféricos vinculados con una cuenta de GAIA.
+      Así, otros dispositivos con Chrome OS (y Android) que hayan accedido con la misma cuenta de GAIA se vinculan de manera automática.
+      Si no estableces esta política, la Vinculación rápida utilizará la configuración predeterminada de Chrome OS, la cual estará habilitada.</translation>
 <translation id="8114382167597081590">No aplicar el modo restringido en YouTube</translation>
 <translation id="8117921351531866504">Te permite establecer si los sitios web están autorizados a verificar que el usuario tenga formas de pago guardadas.
 
@@ -5989,6 +6006,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       Si la política no se establece, <ph name="PRODUCT_OS_NAME" /> utilizará la Id. de cuenta de correo electrónico de la cuenta local del dispositivo como nombre para mostrar en la pantalla de acceso.
 
       Esta política no se aplica a las cuentas de usuario normales.</translation>
+<translation id="8257863622304579015">Habilitar la zona de pruebas del servicio de red</translation>
 <translation id="8259375588339409826">Chromium y Google Chrome se rigen por las mismas políticas.
       Debes tener en cuenta que es posible que este documento incluya
       políticas no publicadas (p. ej., la entrada "Disponible en" hace
@@ -6521,6 +6539,11 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 
       Si no estableces la política, se utilizará la configuración predeterminada específica de la plataforma: <ph name="IE_PRODUCT_NAME" /> para <ph name="MS_WIN_NAME" /> o <ph name="SAFARI_PRODUCT_NAME" /> para <ph name="MAC_OS_NAME" />. En <ph name="LINUX_OS_NAME" />, se producirá un error al intentar ejecutar un navegador alternativo.</translation>
 <translation id="8836975838488342340">El período durante el cual es válido el código de acceso (en segundos).</translation>
+<translation id="8839799083601163225">Esta política controla si el proceso del servicio de red se ejecuta o no en una zona de pruebas.
+      Si habilitas esta política, el proceso del servicio de red se ejecutará en una zona de pruebas.
+      Si la inhabilitas, el proceso del servicio de red se ejecutará fuera de una zona de pruebas. Esta acción deja a los usuarios desprotegidos ante riesgos de seguridad adicionales relacionados con la ejecución del servicio de red fuera de una zona de pruebas.
+      Si no estableces esta política, se utilizará la configuración predeterminada para la zona de pruebas de la red. Esta configuración predeterminada puede variar según la versión de <ph name="PRODUCT_NAME" />, las pruebas de campo actualmente en ejecución y la plataforma.
+      Esta política permite que las empresas inhabiliten la zona de pruebas de la red si utilizan software de terceros que interfiere con la zona de pruebas del servicio de red.</translation>
 <translation id="8842208363354615697">Permitir que se habilite el modo solo HTTPS</translation>
 <translation id="885147810817138322">Muestra recomendaciones de contenido multimedia para el usuario</translation>
 <translation id="8852579753940989645">Habilitar la integridad del código del renderizador</translation>

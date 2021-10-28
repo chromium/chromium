@@ -2063,6 +2063,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="310671807099593501">Die Website verwendet Bluetooth</translation>
 <translation id="3108931485517391283">Empfang nicht möglich</translation>
 <translation id="3109724472072898302">Minimiert</translation>
+<translation id="311214366526552035">Trotzdem herunterladen</translation>
 <translation id="311394601889664316">Websites dürfen keine Dateien oder Ordner auf meinem Gerät bearbeiten</translation>
 <translation id="3115147772012638511">Warten auf den Cache...</translation>
 <translation id="3115580024857770654">Alle ausblenden</translation>
@@ -2342,6 +2343,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3429160811076349561">Testfunktionen sind deaktiviert</translation>
 <translation id="3429271624041785769">Sprachen für Webinhalte</translation>
 <translation id="3429275422858276529">Seite als Lesezeichen speichern, um sie später schneller zu finden</translation>
+<translation id="343115368966109153"><ph name="FILE_NAME" /> herunterladen? Alle, die das Gerät verwenden, können die Datei sehen.</translation>
 <translation id="3432227430032737297">Alle angezeigten Cookies entfernen</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433621910545056227">Hoppla! Das System konnte die Attributsperre für die Installationszeit des Geräts nicht einrichten.</translation>
@@ -2683,6 +2685,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3777806571986431400">Erweiterung aktiviert</translation>
 <translation id="3778152852029592020">Der Download wurde abgebrochen.</translation>
 <translation id="3778208826288864398">Der Sicherheitsschlüssel wurde gesperrt, weil zu oft die falsche PIN eingegeben wurde. Sie müssen den Sicherheitsschlüssel zurücksetzen.</translation>
+<translation id="3778369586810509692">Diese Datei wird auf dem Gerät gespeichert und alle können sie sehen.</translation>
 <translation id="3778740492972734840">E&amp;ntwicklertools</translation>
 <translation id="3778868487658107119">Sie können ihm Fragen stellen und ihn Dinge erledigen lassen. Er ist immer für Sie da.</translation>
 <translation id="3781742599892759500">Mikrofonzugriff für Linux</translation>
@@ -4694,6 +4697,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="597235323114979258">Weitere Ziele anzeigen</translation>
 <translation id="5972666587303800813">Managementfreier Dienst</translation>
 <translation id="5972708806901999743">An den Anfang verschieben</translation>
+<translation id="5972801171078377748">Nicht mehr anzeigen</translation>
 <translation id="5972826969634861500"><ph name="PRODUCT_NAME" /> starten</translation>
 <translation id="5973041996755340290">"<ph name="CLIENT_NAME" />" hat die Fehlerbehebung für diesen Browser gestartet</translation>
 <translation id="5973605538625120605">PIN ändern</translation>

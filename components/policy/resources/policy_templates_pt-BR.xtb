@@ -1016,6 +1016,7 @@ Se você desativar a política, essa rolagem será desativada.</translation>
 <translation id="2204379573346866896">Minutos decorridos da hora atual.</translation>
 <translation id="2204753382813641270">Controlar a ocultação automática da estante</translation>
 <translation id="2208976000652006649">Parâmetros para URL de pesquisa que usa POST</translation>
+<translation id="2212603374276864511">Permitir que os usuários usem modelos de espaço de trabalho predefinidos</translation>
 <translation id="2213059592185933570">Permitir a criação de perfis de roaming</translation>
 <translation id="2215238871726750562">Se a política for definida como verdadeira, a janela do navegador não será aberta no início da sessão.
 
@@ -1980,6 +1981,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
         * 4, o firmware do <ph name="TPM_FIRMWARE_UPDATE_TPM" /> será atualizado após a inscrição e antes de o usuário fazer login.
 
       Deixar a política sem definição tornará indisponíveis as atualizações de firmware do <ph name="TPM_FIRMWARE_UPDATE_TPM" />.</translation>
+<translation id="3232563711929146405">Desativar o sandbox de serviço de rede</translation>
 <translation id="3232691106293445015">Conexões HTTP não seguras não têm permissão para usar autenticação <ph name="BASIC_AUTH" />. O uso de HTTPS é obrigatório</translation>
 <translation id="3235085623859932253"> Se esta política for desativada, não será possível conectar completamente um dispositivo periférico Thunderbolt/USB4 usando o encapsulamento de PCIe.
 
@@ -2103,6 +2105,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
       Se a política não for definida, o tempo limite de 0 milissegundos será usado.
 
       Se a <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" /> não for definida, esta política não terá efeito.</translation>
+<translation id="3399859571630358395">Forçar a desativação do Pareamento rápido (pareamento rápido por Bluetooth).</translation>
 <translation id="341285788698114069">Esta política controla a prioridade do processo de áudio no Windows.
       Se ela for ativada, o processo de áudio será executado com prioridade acima do normal.
       Se ela for desativada, o processo de áudio será executado com prioridade normal.
@@ -2217,6 +2220,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 
       Para informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="3540935459049973317">Limites de tempo por app</translation>
+<translation id="354592434146464541">Não permitir que os usuários usem modelos de espaços de trabalho predefinidos</translation>
 <translation id="3547954654003013442">Configurações de proxy</translation>
 <translation id="3550122827225052130">Esta política está obsoleta e será removida na versão 85 do <ph name="PRODUCT_OS_NAME" />. Por isso, passe a usar <ph name="SCREEN_LOCK_DELAYS_POLICY_NAME" />.
 
@@ -2982,6 +2986,7 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
 <translation id="4557134566541205630">URL da página "Nova guia" do provedor de pesquisa padrão</translation>
 <translation id="4558166110367609724">Ignora os TOS automaticamente e carrega o navegador.</translation>
 <translation id="4559846397119102037">Permitir uso do <ph name="LACROS_NAME" /></translation>
+<translation id="4561560385824323005">Permitir que os usuários selecionem um layout de área de trabalho pré-configurado para carregar</translation>
 <translation id="4562165737444703281">Permitir que os usuários [ativem/configurem] o encaminhamento de portas do Crostini</translation>
 <translation id="456686782928669977">Esta política controla o carregamento das regras da política SiteList do <ph name="IE_PRODUCT_NAME" />.
 
@@ -3326,6 +3331,7 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
 <translation id="5017369989680827157">Se a política for definida como verdadeira ou não for definida, os usuários poderão controlar o preenchimento automático de endereços na IU.
 
       Se ela for definida como falsa, o preenchimento automático nunca fará sugestões ou preencherá informações de endereço nem salvará outros dados desse tipo que os usuários enviarem ao navegar na Web.</translation>
+<translation id="5017691827598069017">Ativar o Pareamento rápido (pareamento rápido por Bluetooth)</translation>
 <translation id="5021550478471824215">A definição da política especifica uma lista de compartilhamentos de arquivos de rede predefinidos. Cada item é um objeto com duas propriedades: <ph name="SHARE_URL_FIELD_NAME" /> e <ph name="MODE_FIELD_NAME" />.
 
       O URL de compartilhamento precisa ser <ph name="SHARE_URL_FIELD_NAME" />.
@@ -3439,6 +3445,7 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
       Para ver informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
 <translation id="5177260184597743704">Política de configuração para o conector OnSecurityEvent do Chrome Enterprise</translation>
 <translation id="5178479074002209469">Uma sinalização booleana indicando se as sessões de usuários não gerenciados precisam receber notificações e ter a desconexão forçada caso uma atualização seja exigida por esta política.</translation>
+<translation id="5179853299156742425">O URL no qual o download do modelo de espaço de trabalho pode ser feito.</translation>
 <translation id="5182055907976889880">Configura o Google Drive no <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="5182483318861266793">Posicionar a estante no lado direito da tela</translation>
 <translation id="51859390023061147">Desativar o recurso de restauração completa.</translation>
@@ -3494,6 +3501,7 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
       Se a política não for definida ou for inválida, o comportamento será o mesmo de "Esperar que o canal conclua o downgrade de canal".</translation>
 <translation id="5229339291699779956">Ativa o encapsulamento de PCIe para dispositivos periféricos Thunderbolt/USB4, que funcionarão perfeitamente</translation>
 <translation id="523505283826916779">Configurações de acessibilidade</translation>
+<translation id="5238976843489093540">Forçar a ativação do Pareamento rápido (pareamento rápido por Bluetooth).</translation>
 <translation id="52393120393725840">Se a política for definida como "Ativada", os usuários poderão fazer com que o <ph name="PRODUCT_NAME" /> se lembre de senhas e as forneça na próxima vez em que eles fizerem login em um site.
 
       Se a política for definida como "Desativada", os usuários não poderão salvar senhas novas, mas as senhas salvas anteriormente ainda poderão ser usadas.
@@ -3845,6 +3853,9 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 <translation id="5625771176514429288">A execução de apps do Chrome será permitida nestas plataformas.</translation>
 <translation id="5630352020869108293">Restaurar a última sessão</translation>
 <translation id="5633871703004128675">Ativar o recurso de acessibilidade que destaca o cursor</translation>
+<translation id="5639454129004500060">Se definida, esta política contém informações para download de um arquivo de modelo de espaço de trabalho.  O arquivo contém um modelo de espaço de trabalho a ser fornecido para o usuário atual.
+      Se a política não for definida, nenhum modelo de espaço de trabalho pré-configurado será incluído na lista.  Se a política <ph name="DESK_TEMPLATES_ENABLED_POLICY_NAME" />
+      não for definida como verdadeira, esta política não terá efeito.</translation>
 <translation id="5641279111657132737">Esta política está obsoleta. Use a <ph name="AUTH_SERVER_ALLOWLIST_POLICY_NAME" />.
 
       Definir a política especifica quais servidores devem ter permissão para a autenticação integrada, que só é ativada quando o <ph name="PRODUCT_NAME" /> recebe um desafio de autenticação de um proxy ou de um servidor nessa lista permitida.
@@ -4002,6 +4013,7 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 <translation id="5809728392451418079">Definir o nome de exibição das contas locais de dispositivo</translation>
 <translation id="5814301096961727113">Definir estado padrão do feedback falado na tela de login</translation>
 <translation id="5815129011704381141">Reinicializar automaticamente após a atualização</translation>
+<translation id="5816106589769772877">Se a política for definida como "Ativada", os usuários poderão usar modelos de layout de área de trabalho pré-configurados.  Se a política for definida como "Desativada" ou não for definida, esses modelos não ficarão disponíveis.</translation>
 <translation id="582857022372205358">Ativar impressão duplex de borda curta</translation>
 <translation id="5830196507442186669">Permitir que dispositivos usem a <ph name="BOREALIS_NAME" /> no <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="5832274826894536455">Políticas suspensas</translation>
@@ -4269,6 +4281,7 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 <translation id="6174065452773547810">Se a política for ativada ou deixada sem definição, o dispositivo poderá receber controles de geração de relatórios granulares.
       Se a política for desativada, os dispositivos registrados não receberão controles de geração de relatórios granulares.</translation>
 <translation id="6178075938488052838">Esta política controla quem pode iniciar uma sessão do <ph name="PRODUCT_OS_NAME" />. Ela não impede que os usuários façam login em outras Contas do Google no Android. Para impedir essa ação, configure a política <ph name="ACCOUNT_TYPES_WITH_MANAGEMENT_DISABLED_CLOUDDPC_POLICY_NAME" /> específica para Android como parte da <ph name="ARC_POLICY_POLICY_NAME" />.</translation>
+<translation id="6181304954168534748">A hash SHA-256 do modelo de espaço de trabalho.</translation>
 <translation id="6181618732396778048">Não permitir que qualquer site solicite acesso de gravação de arquivos ou diretórios</translation>
 <translation id="6181783961196084973">O valor da alternância da coleta de atividade em apps. Se ele for definido como verdadeiro, a atividade em apps será enviada ao servidor para ser exibida no app <ph name="PRODUCT_NAME" /> da criança e do pai/mãe. Se definido como falso o recurso de limites de tempo por app ainda funcionará, mas nenhum dado será enviado ao servidor ou exibido no <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6183327369896253878">A definição da política estabelece quais identificadores de aplicativo do <ph name="PRODUCT_OS_NAME" /> são mostrados como apps fixados na barra de acesso rápido, e os usuários não podem mudá-los.
@@ -5869,6 +5882,10 @@ Se a política não for definida, a configuração ficará ativada, mas o usuár
 <translation id="8101381354936029836">Grupo atômico de políticas:</translation>
 <translation id="8102913158860568230">Configuração padrão mediastream</translation>
 <translation id="8104962233214241919">Selecionar certificados de cliente automaticamente para estes sites</translation>
+<translation id="8111502498815410897">A definição desta política forçará a ativação ou desativação do Pareamento rápido.
+      O Pareamento rápido é um novo fluxo de pareamento por Bluetooth que vincula periféricos pareados com uma conta do GAIA.
+      Isso permite que outros dispositivos do Chrome OS (e Android) conectados à mesma conta do GAIA sejam pareados automaticamente.
+      Se esta política não for definida, o Pareamento rápido seguirá o padrão do Chrome OS, que é a ativação.</translation>
 <translation id="8114382167597081590">Não aplicar o Modo restrito no YouTube</translation>
 <translation id="8117921351531866504">Permite que você defina se os sites têm permissão de verificar se os usuários salvaram formas de pagamento.
 
@@ -5980,6 +5997,7 @@ Se a política não for definida, a tela de privacidade ficará inicialmente des
       Se a política não estiver definida, o <ph name="PRODUCT_OS_NAME" /> usará o ID da conta de e-mail da conta local de dispositivo como nome de exibição na tela de login.
 
       Esta política é ignorada para contas de usuário comuns.</translation>
+<translation id="8257863622304579015">Ativar o sandbox de serviço de rede</translation>
 <translation id="8259375588339409826">Tanto o Chromium como o Google Chrome são compatíveis com o mesmo conjunto de políticas. É possível que este documento inclua políticas não lançadas (ou seja, a entrada "Compatível com" se refere a uma versão ainda não lançada do <ph name="PRODUCT_NAME" />), que estão sujeitas a alteração ou remoção sem aviso prévio e para as quais nenhuma garantia de qualquer tipo é fornecida, incluindo garantias com relação às propriedades de privacidade e segurança delas.
 
 Essas políticas devem ser usadas estritamente para configurar instâncias do <ph name="PRODUCT_NAME" /> internas à sua organização. O uso dessas políticas fora da sua organização (por exemplo, em um programa distribuído publicamente) é considerado malware e provavelmente será identificado como malware pelo Google e por fornecedores de programas antivírus.
@@ -6493,6 +6511,11 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 
       Se a política não for definida, o padrão usado seguirá a plataforma: <ph name="IE_PRODUCT_NAME" /> para <ph name="MS_WIN_NAME" /> ou <ph name="SAFARI_PRODUCT_NAME" /> para <ph name="MAC_OS_NAME" />. No <ph name="LINUX_OS_NAME" />, não será possível abrir um navegador alternativo.</translation>
 <translation id="8836975838488342340">Tempo pelo qual o código de acesso é válido (em segundos).</translation>
+<translation id="8839799083601163225">Esta política controla se o processo de serviço de rede é executado no sandbox.
+      Se esta política for ativada, o processo de serviço de rede será executado no sandbox.
+      Se esta política for desativada, o processo de serviço de rede será executado fora do sandbox. Essa opção deixa os usuários vulneráveis a riscos de segurança relacionados à execução do serviço de rede fora do sandbox.
+      Se a política não for definida, será usada a configuração padrão para o sandbox de rede. Ela pode variar dependendo da versão do <ph name="PRODUCT_NAME" />, da execução de testes de campo e da plataforma.
+      Esta política tem como objetivo oferecer às empresas flexibilidade para desativar o sandbox de rede, caso elas usem um software de terceiros que interfira nesse tipo de sandbox.</translation>
 <translation id="8842208363354615697">Permitir que o HTTPS-Only Mode seja ativado</translation>
 <translation id="885147810817138322">Exibir recomendações de mídia aos usuários</translation>
 <translation id="8852579753940989645">Ativar integridade do código renderizador</translation>

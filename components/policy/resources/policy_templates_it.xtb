@@ -1013,6 +1013,7 @@ Lasciare il criterio non impostato significa che nessuna estensione è esente da
 <translation id="2204379573346866896">I minuti trascorsi nell'ora corrente.</translation>
 <translation id="2204753382813641270">Controlla la visualizzazione automatica della barra delle app</translation>
 <translation id="2208976000652006649">Parametri per l'URL di ricerca che utilizza POST</translation>
+<translation id="2212603374276864511">Gli utenti possono usare i modelli di scrivanie predefiniti</translation>
 <translation id="2213059592185933570">Attiva la creazione di profili di roaming</translation>
 <translation id="2215238871726750562">Se il criterio è impostato su True, la finestra del browser non viene avviata all'inizio della sessione.
 
@@ -1969,6 +1970,7 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
         * 4, il firmware <ph name="TPM_FIRMWARE_UPDATE_TPM" /> viene aggiornato in seguito alla registrazione, prima dell'accesso dell'utente.
 
       Se il criterio non viene configurato, la visualizzazione dell'aggiornamento del firmware <ph name="TPM_FIRMWARE_UPDATE_TPM" /> non è disponibile.</translation>
+<translation id="3232563711929146405">Disattiva la sandbox del servizio di rete</translation>
 <translation id="3232691106293445015">Per le connessioni HTTP non sicure non è possibile usare l'autenticazione <ph name="BASIC_AUTH" />; sono richieste connessioni HTTPS</translation>
 <translation id="3235085623859932253"> Se questo criterio viene disattivato, l'utente non potrà collegare completamente il proprio dispositivo periferico Thunderbolt/USB4 tramite tunneling PCIe.
 
@@ -2093,6 +2095,7 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
       Se il criterio non viene configurato, il timeout è 0 millisecondi.
 
       Se il criterio <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" /> non viene configurato, questo criterio non ha alcun effetto.</translation>
+<translation id="3399859571630358395">Viene forzata la disattivazione della funzionalità Accoppiamento rapido (accoppiamento rapido tramite Bluetooth)</translation>
 <translation id="341285788698114069">Questo criterio consente di stabilire la priorità del processo audio su Windows.
       Se il criterio viene attivato, il processo audio verrà eseguito con priorità sopra la norma.
       Se il criterio viene disattivato, il processo audio verrà eseguito con priorità normale.
@@ -2210,6 +2213,7 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 
       Per informazioni dettagliate sui pattern URL validi, vai all'indirizzo https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="3540935459049973317">Limiti di utilizzo per app</translation>
+<translation id="354592434146464541">Gli utenti non possono usare i modelli di scrivanie predefiniti</translation>
 <translation id="3547954654003013442">Impostazioni proxy</translation>
 <translation id="3550122827225052130">Tieni presente che questo criterio è obsoleto e verrà rimosso nella versione 85 di <ph name="PRODUCT_OS_NAME" />. Usa il criterio <ph name="SCREEN_LOCK_DELAYS_POLICY_NAME" />.
 
@@ -2969,6 +2973,7 @@ Se questo criterio viene configurato, <ph name="PRODUCT_OS_NAME" /> consente agl
 <translation id="4557134566541205630">URL pagina Nuova scheda provider di ricerca predefinito</translation>
 <translation id="4558166110367609724">Salta automaticamente TdS e carica il browser</translation>
 <translation id="4559846397119102037">Consenti l'utilizzo di <ph name="LACROS_NAME" /></translation>
+<translation id="4561560385824323005">Consente agli utenti di selezionare un layout desktop preconfigurato da caricare</translation>
 <translation id="4562165737444703281">Consenti agli utenti di [attivare/configurare] il port forwarding in Crostini</translation>
 <translation id="456686782928669977">Questo criterio consente di stabilire se caricare o meno le regole del criterio SiteList di <ph name="IE_PRODUCT_NAME" />.
 
@@ -3316,6 +3321,7 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
 <translation id="5017369989680827157">Se il criterio è impostato su True o se non viene configurato, gli utenti possono controllare la compilazione automatica per gli indirizzi nella UI.
 
       Se il criterio è impostato su False, la compilazione automatica non fornisce mai suggerimenti né compila le informazioni relative agli indirizzi, né salva le nuove informazioni inviate dagli utenti durante la navigazione sul Web.</translation>
+<translation id="5017691827598069017">Attiva la funzionalità Accoppiamento rapido (accoppiamento rapido tramite Bluetooth)</translation>
 <translation id="5021550478471824215">La configurazione del criterio consente di specificare un elenco di condivisioni file di rete preimpostate. Ogni elemento ha un oggetto con 2 proprietà: <ph name="SHARE_URL_FIELD_NAME" /> e <ph name="MODE_FIELD_NAME" />.
 
       L'URL condivisione deve essere <ph name="SHARE_URL_FIELD_NAME" />.
@@ -3431,6 +3437,7 @@ Se questa norma non viene impostata viene utilizzata la riga di comando predefin
       Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.</translation>
 <translation id="5177260184597743704">Criterio di configurazione per il connettore OnSecurityEvent di Chrome Enterprise</translation>
 <translation id="5178479074002209469">Un flag booleano che indica se le sessioni utente non gestite devono ricevere o meno notifiche e forzare o meno l'uscita dall'account in caso di aggiornamento obbligatorio, in base a questo criterio.</translation>
+<translation id="5179853299156742425">L'URL da cui è possibile scaricare il modello di scrivania.</translation>
 <translation id="5182055907976889880">Configura Google Drive in <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="5182483318861266793">Posiziona la barra delle app sul lato destro dello schermo</translation>
 <translation id="51859390023061147">Disattiva la funzionalità di ripristino completo.</translation>
@@ -3486,6 +3493,7 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
       Se il criterio non viene configurato o se non è valido, viene eseguito lo stesso comportamento dell'opzione "Attendi che il canale di destinazione controlli il downgrade del canale".</translation>
 <translation id="5229339291699779956">Viene attivato il tunneling PCIe per i dispositivi periferici Thunderbolt/USB4, i dispositivi periferici funzioneranno con le loro capacità complete</translation>
 <translation id="523505283826916779">Impostazioni di accessibilità</translation>
+<translation id="5238976843489093540">Forza l'attivazione della funzionalità Accoppiamento rapido (accoppiamento rapido tramite Bluetooth)</translation>
 <translation id="52393120393725840">Se il criterio viene impostato su Attivato, <ph name="PRODUCT_NAME" /> ricorda le password degli utenti e le suggerisce all'accesso successivo a un sito.
 
       Se viene impostato su Disattivato, gli utenti non possono salvare le nuove password, ma quelle salvate in precedenza restano attive.
@@ -3837,6 +3845,8 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 <translation id="5625771176514429288">Sarà consentita l'esecuzione delle app di Chrome su queste piattaforme</translation>
 <translation id="5630352020869108293">Ripristina l'ultima sessione</translation>
 <translation id="5633871703004128675">Attiva la funzione di accessibilità di evidenziazione del cursore di testo</translation>
+<translation id="5639454129004500060">Se viene configurato, questo criterio contiene informazioni per scaricare il file di un modello di scrivania da fornire all'utente corrente.
+      Se non viene configurato, nell'elenco di modelli di scrivanie non sarà incluso alcun modello di scrivania preconfigurato.  Se il criterio <ph name="DESK_TEMPLATES_ENABLED_POLICY_NAME" /> non viene impostato su vero, questo criterio non ha alcun effetto.</translation>
 <translation id="5641279111657132737">Questo criterio è deprecato. Usa il criterio "<ph name="AUTH_SERVER_ALLOWLIST_POLICY_NAME" />".
 
       La configurazione del criterio consente di specificare i server consentiti per l'autenticazione integrata. L'autenticazione integrata viene attivata soltanto quando <ph name="PRODUCT_NAME" /> riceve una richiesta di autenticazione da un proxy o da un server presente nell'elenco dei server consentiti.
@@ -3988,6 +3998,7 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
 <translation id="5809728392451418079">Imposta il nome visualizzato per gli account del dispositivo</translation>
 <translation id="5814301096961727113">Impostazione stato predefinito della lettura vocale nella schermata di accesso</translation>
 <translation id="5815129011704381141">Riavvia automaticamente dopo l'aggiornamento</translation>
+<translation id="5816106589769772877">Se il criterio viene impostato su Attivato, gli utenti possono usare i modelli di layout di scrivanie preconfigurati.  Se il criterio viene impostato su Disattivato o se non viene configurato, questi modelli non saranno disponibili.</translation>
 <translation id="582857022372205358">Attiva la stampa fronte/retro su lato corto</translation>
 <translation id="5830196507442186669">Consenti ai dispositivi di usare <ph name="BOREALIS_NAME" /> su <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="5832274826894536455">Norme obsolete</translation>
@@ -4240,6 +4251,7 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
 <translation id="6174065452773547810">Se il criterio viene impostato su Attivato o se non viene configurato, il dispositivo riceverà i controlli di reporting granulare.
       Se viene impostato su Disattivato, i dispositivi registrati non riceveranno i controlli di reporting granulare.</translation>
 <translation id="6178075938488052838">Questa norma consente di stabilire chi può avviare una sessione di <ph name="PRODUCT_OS_NAME" />. Non impedisce agli utenti di accedere ad altri Account Google su Android. Se invece vuoi impedirlo, configura la norma <ph name="ACCOUNT_TYPES_WITH_MANAGEMENT_DISABLED_CLOUDDPC_POLICY_NAME" /> specifica per Android nell'ambito della norma <ph name="ARC_POLICY_POLICY_NAME" />.</translation>
+<translation id="6181304954168534748">L'hash SHA-256 del modello di scrivania.</translation>
 <translation id="6181618732396778048">Non consentire a nessun sito di richiedere l'accesso di scrittura di file e directory</translation>
 <translation id="6181783961196084973">Il valore dell'opzione di attivazione/disattivazione della raccolta di attività nelle app. Se il criterio viene impostato su vero, l'attività nelle app dell'utente verrà segnalata al server per poter essere visualizzata nell'app <ph name="PRODUCT_NAME" /> del figlio e del genitore. Se il criterio viene impostato su falso, la funzionalità Limiti di utilizzo per app rimarrà disponibile, ma non verranno segnalati dati al server, che quindi non verranno visualizzati in <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6183327369896253878">La configurazione del criterio consente di correggere quali identificatori di applicazioni vengono mostrati da <ph name="PRODUCT_OS_NAME" /> come app bloccate nella barra Avvio app e gli utenti non possono modificarli.
@@ -5846,6 +5858,10 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="8101381354936029836">Gruppo atomico di criteri:</translation>
 <translation id="8102913158860568230">Impostazione stream multimediale predefinito</translation>
 <translation id="8104962233214241919">Seleziona automaticamente i certificati client per questi siti</translation>
+<translation id="8111502498815410897">Se questo criterio viene configurato, viene forzata l'attivazione o la disattivazione della funzionalità Accoppiamento rapido.
+      Accoppiamento rapido è un nuovo flusso di accoppiamento tramite Bluetooth che consente di collegare periferiche accoppiate a un account GAIA.
+      In questo modo possono essere accoppiati automaticamente altri dispositivi Chrome OS (e Android) su cui è stato eseguito l'accesso con lo stesso account GAIA.
+      Se il criterio non viene configurato, verrà usata l'impostazione predefinita di Chrome OS per l'Accoppiamento rapido, ossia funzionalità attiva.</translation>
 <translation id="8114382167597081590">Non imporre la Modalità con restrizioni su YouTube</translation>
 <translation id="8117921351531866504">Consente di stabilire se consentire o meno ai siti web di controllare se l'utente ha salvato dei metodi di pagamento.
 
@@ -5957,6 +5973,7 @@ Se questo criterio non viene impostato, verrà applicato il comportamento predef
       Se il criterio non viene impostato, <ph name="PRODUCT_OS_NAME" /> utilizzerà l'ID account email dell'account dispositivo come nome visualizzato nella schermata di accesso.
 
       Questo criterio viene ignorato per gli account utente standard.</translation>
+<translation id="8257863622304579015">Attiva la sandbox del servizio di rete</translation>
 <translation id="8259375588339409826">Chromium e Google Chrome supportano lo stesso insieme di norme. Questo documento potrebbe includere norme riferite a versioni non ancora introdotte (la relativa voce "Supported on" si riferisce a una versione non rilasciata di <ph name="PRODUCT_NAME" />). Tali norme sono soggette a modifica o rimozione senza preavviso e non viene fornita alcuna garanzia in merito, neanche in relazione alle proprietà di privacy e sicurezza.
 
 Queste norme devono essere utilizzate esclusivamente per la configurazione delle istanze di <ph name="PRODUCT_NAME" /> interne all'organizzazione. L'utilizzo di queste norme al di fuori dell'organizzazione (ad esempio in un programma distribuito pubblicamente) viene considerato malware e potrebbe essere contrassegnato come malware da Google e dai fornitori di programmi antivirus.
@@ -6463,6 +6480,11 @@ Se la norma non viene impostata o viene impostata su false, la posizione non vie
 
       Se il criterio non viene configurato, viene usato un valore predefinito specifico della piattaforma: <ph name="IE_PRODUCT_NAME" /> per <ph name="MS_WIN_NAME" /> oppure <ph name="SAFARI_PRODUCT_NAME" /> per <ph name="MAC_OS_NAME" />. Su <ph name="LINUX_OS_NAME" /> non è possibile aprire un browser alternativo.</translation>
 <translation id="8836975838488342340">La durata della validità del codice di accesso (in secondi).</translation>
+<translation id="8839799083601163225">Questo criterio consente di stabilire se eseguire o meno il processo del servizio di rete con limitazione tramite sandbox.
+      Se questo criterio viene attivato, il processo del servizio di rete verrà eseguito con limitazione tramite sandbox.
+      Se questo criterio viene disattivato, il processo del servizio di rete verrà eseguito senza limitazione tramite sandbox. Gli utenti saranno esposti a rischi di sicurezza aggiuntivi correlati all'esecuzione del servizio di rete senza limitazione tramite sandbox.
+      Se questo criterio non viene configurato, verrà usata la configurazione predefinita della sandbox della rete. Questa configurazione potrebbe variare in base alla release di <ph name="PRODUCT_NAME" />, alle prove sul campo attualmente in esecuzione e alla piattaforma.
+      Questo criterio è pensato per offrire alle aziende la possibilità di disattivare la sandbox della rete se usano software di terze parti che interferisce con la sandbox del servizio di rete.</translation>
 <translation id="8842208363354615697">Consenti l'attivazione della Modalità solo HTTPS</translation>
 <translation id="885147810817138322">Mostra all'utente consigli di contenuti multimediali</translation>
 <translation id="8852579753940989645">Attiva l'integrità del codice del renderer</translation>

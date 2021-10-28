@@ -2067,6 +2067,7 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="310671807099593501">Le site utilise le Bluetooth</translation>
 <translation id="3108931485517391283">Impossible de recevoir le transfert</translation>
 <translation id="3109724472072898302">Réduit</translation>
+<translation id="311214366526552035">Télécharger quand même</translation>
 <translation id="311394601889664316">Ne pas autoriser les sites à modifier les fichiers ni les dossiers sur votre appareil</translation>
 <translation id="3115147772012638511">En attente de l'affichage du cache</translation>
 <translation id="3115580024857770654">Tout réduire</translation>
@@ -2346,6 +2347,7 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="3429160811076349561">Les fonctionnalités à l'essai sont désactivées</translation>
 <translation id="3429271624041785769">Langues du contenu Web</translation>
 <translation id="3429275422858276529">Ajoutez cette page aux favoris pour la retrouver facilement</translation>
+<translation id="343115368966109153">Télécharger <ph name="FILE_NAME" /> ? Toute personne qui utilise cet appareil pourra le voir.</translation>
 <translation id="3432227430032737297">Supprimer tous les cookies affichés</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433621910545056227">Petit problème… Le système n'a pas réussi à établir le verrouillage des attributs du temps d'installation de l'appareil.</translation>
@@ -2687,6 +2689,7 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="3777806571986431400">Extension activée</translation>
 <translation id="3778152852029592020">Le téléchargement a été annulé.</translation>
 <translation id="3778208826288864398">La clé de sécurité est verrouillée, car vous avez saisi un code erroné trop de fois. Vous devez la réinitialiser.</translation>
+<translation id="3778369586810509692">Ce fichier sera enregistré sur l'appareil. Tout le monde pourra le voir.</translation>
 <translation id="3778740492972734840">Outils de &amp;développement</translation>
 <translation id="3778868487658107119">Posez-lui des questions et donnez-lui des choses à faire. L'Assistant Google est toujours là pour vous aider.</translation>
 <translation id="3781742599892759500">Accès au micro sous Linux</translation>
@@ -4701,6 +4704,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="597235323114979258">Voir plus de destinations</translation>
 <translation id="5972666587303800813">Service expérimental</translation>
 <translation id="5972708806901999743">Placer en premier</translation>
+<translation id="5972801171078377748">Ne plus afficher</translation>
 <translation id="5972826969634861500">Lancer <ph name="PRODUCT_NAME" /></translation>
 <translation id="5973041996755340290"><ph name="CLIENT_NAME" /> a démarré le débogage de ce navigateur</translation>
 <translation id="5973605538625120605">Modifier un code</translation>

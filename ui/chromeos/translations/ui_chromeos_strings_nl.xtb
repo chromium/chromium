@@ -86,7 +86,7 @@
 <translation id="1729953886957086472">Duits (Duitsland)</translation>
 <translation id="1730235522912993863">Chinees (Cangjie)</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> items gekopieerd.</translation>
-<translation id="174173592514158117">Alle Play-mappen tonen</translation>
+<translation id="174173592514158117">Alle Play-mappen bekijken</translation>
 <translation id="1742316578210444689">Hebreeuws (transliteratie)</translation>
 <translation id="1747761757048858544">Nederlands (Nederland)</translation>
 <translation id="174937106936716857">Totaal aantal bestanden</translation>
@@ -457,7 +457,7 @@
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">Een bewerking duurt langer dan verwacht. Wil je deze afbreken?</translation>
 <translation id="5036159836254554629">Delen met Parallels Desktop beheren</translation>
-<translation id="5038625366300922036">Meer tonen…</translation>
+<translation id="5038625366300922036">Meer bekijken…</translation>
 <translation id="5044852990838351217">Armeens</translation>
 <translation id="5045550434625856497">Onjuist wachtwoord</translation>
 <translation id="5059127710849015030">Nepalees (transliteratie)</translation>
@@ -735,7 +735,7 @@
     <ph name="LINE_BREAK1" />
     Klaar om back-up te maken in <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
 <translation id="7495372004724182530">Malayalam (fonetisch)</translation>
-<translation id="7505167922889582512">Verborgen bestanden tonen</translation>
+<translation id="7505167922889582512">Verborgen bestanden bekijken</translation>
 <translation id="7514365320538308">Downloaden</translation>
 <translation id="751507702149411736">Wit-Russisch</translation>
 <translation id="7532029025027028521">Perzisch (transliteratie)</translation>
@@ -764,7 +764,7 @@
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> gekopieerd.</translation>
 <translation id="7711920809702896782">Afbeeldingsgegevens</translation>
 <translation id="7724603315864178912">Knip</translation>
-<translation id="7730494089396812859">Details van cloudback-up tonen</translation>
+<translation id="7730494089396812859">Details van cloudback-up bekijken</translation>
 <translation id="7732111077498238432">Netwerk wordt beheerd op basis van beleid</translation>
 <translation id="7748626145866214022">Meer opties beschikbaar op de actiebalk. Druk op Alt+A om de focus op de actiebalk te plaatsen.</translation>
 <translation id="7760449188139285140">Chinees (Wubi)</translation>

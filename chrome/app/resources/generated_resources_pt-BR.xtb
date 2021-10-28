@@ -2082,6 +2082,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="310671807099593501">O site está usando o Bluetooth</translation>
 <translation id="3108931485517391283">Não foi possível receber</translation>
 <translation id="3109724472072898302">Recolhido</translation>
+<translation id="311214366526552035">Fazer o download mesmo assim</translation>
 <translation id="311394601889664316">Não permitir que os sites editem arquivos ou pastas no seu dispositivo</translation>
 <translation id="3115147772012638511">Aguardando o cache...</translation>
 <translation id="3115580024857770654">Recolher tudo</translation>
@@ -2362,6 +2363,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="3429160811076349561">Os recursos de teste estão desativados</translation>
 <translation id="3429271624041785769">Idiomas de conteúdo da Web</translation>
 <translation id="3429275422858276529">Adicionar esta página aos favoritos para encontrá-la mais facilmente depois</translation>
+<translation id="343115368966109153">Fazer o download de <ph name="FILE_NAME" />? Qualquer pessoa que esteja usando o dispositivo pode ver.</translation>
 <translation id="3432227430032737297">Remover todos os cookies mostrados</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433621910545056227">Ops! O sistema falhou ao estabelecer o bloqueio de atributos da hora de instalação do dispositivo.</translation>
@@ -2703,6 +2705,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="3777806571986431400">Extensão ativada</translation>
 <translation id="3778152852029592020">O download foi cancelado.</translation>
 <translation id="3778208826288864398">A chave de segurança está bloqueada porque o PIN incorreto foi inserido muitas vezes. Redefina a chave de segurança.</translation>
+<translation id="3778369586810509692">Este arquivo será armazenado no dispositivo, e todos poderão vê-lo.</translation>
 <translation id="3778740492972734840">Ferramentas do &amp;desenvolvedor</translation>
 <translation id="3778868487658107119">Faça perguntas ou diga a ele o que fazer. É o seu Google pessoal, sempre pronto para ajudar.</translation>
 <translation id="3781742599892759500">Acesso ao microfone no Linux</translation>
@@ -4718,6 +4721,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="597235323114979258">Ver mais destinos</translation>
 <translation id="5972666587303800813">Serviço sem operação</translation>
 <translation id="5972708806901999743">Mover para a parte superior</translation>
+<translation id="5972801171078377748">Não mostrar novamente</translation>
 <translation id="5972826969634861500">Iniciar o <ph name="PRODUCT_NAME" /></translation>
 <translation id="5973041996755340290">"<ph name="CLIENT_NAME" />" começou a depurar esse navegador</translation>
 <translation id="5973605538625120605">Alterar um PIN</translation>

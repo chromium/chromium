@@ -2360,7 +2360,7 @@
 <translation id="3429160811076349561">試用功能已關閉</translation>
 <translation id="3429271624041785769">網頁內容語言</translation>
 <translation id="3429275422858276529">將此網頁加入書籤，以便日後輕鬆查找</translation>
-<translation id="343115368966109153">要下載「<ph name="FILE_NAME" />」嗎？使用這部裝置的所有人都會看到該檔案。</translation>
+<translation id="343115368966109153">要下載「<ph name="FILE_NAME" />」嗎？使用裝置的所有人都能看到此檔案。</translation>
 <translation id="3432227430032737297">移除所有顯示項目</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433621910545056227">糟糕！系統無法鎖定裝置安裝時的屬性。</translation>
@@ -2702,7 +2702,7 @@
 <translation id="3777806571986431400">擴充功能已啟用</translation>
 <translation id="3778152852029592020">下載操作已取消。</translation>
 <translation id="3778208826288864398">由於您輸入太多次錯誤的 PIN，因此安全密鑰已被鎖定。您需要重設安全密鑰。</translation>
-<translation id="3778369586810509692">系統會將這個檔案儲存在裝置上，所有人都能查看。</translation>
+<translation id="3778369586810509692">此檔案將儲存在裝置上，所有人都能查看。</translation>
 <translation id="3778740492972734840">開發人員工具(&amp;D)</translation>
 <translation id="3778868487658107119">度身訂造的「Google 助理」隨時為您提供協助，不但可根據您的問題提供解答，還可以按指令執行各種操作。</translation>
 <translation id="3781742599892759500">Linux 的麥克風存取權</translation>

@@ -45,7 +45,7 @@
 <translation id="2577788541081224677">如要透過所有裝置存取 Chromium 資料，請登入以便開啟同步處理功能。</translation>
 <translation id="2583187216237139145">工作設定檔管理員可移除任何在使用此設定檔時產生的 Chromium 資料 (例如建立的書籤、記錄、密碼和其他設定)。<ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">必須重新啟動 Chromium OS，才能套用更新。</translation>
-<translation id="2614883797045469742">預設設定適用於大多數使用者，但你也可以根據自己習慣使用 Chromium 的方式自訂設定</translation>
+<translation id="2614883797045469742">預設設定已能滿足大部分人的需要，不過您亦可根據自己習慣使用 Chromium 的方式自訂設定</translation>
 <translation id="2648074677641340862">安裝期間發生作業系統錯誤，請再次下載 Chromium。</translation>
 <translation id="2661879430930417727">如果您與親朋好友共用裝置，每人都能各自瀏覽網頁，並按需求設定 Chromium</translation>
 <translation id="2711502716910134313">Chromium 分頁</translation>
@@ -210,7 +210,7 @@
 <translation id="6990124437352146030">Chromium 需要取得權限，才能讓這個網站存取您的麥克風</translation>
 <translation id="705851970750939768">更新 Chromium</translation>
 <translation id="7067091210845072982">如果圖片並無有用的說明，Chromium 會嘗試為您提供說明。因此，圖片將傳送至 Google 以建立說明。</translation>
-<translation id="7147279922647361552">自訂 Chromium 最重要的部分隱私權選項</translation>
+<translation id="7147279922647361552">自訂 Chromium 最重要的部分私隱選項</translation>
 <translation id="718435575166326686">Chromium 需要相機權限，才能執行此網站要求的功能</translation>
 <translation id="7196312274710523067">無法啟動 Chromium，請再試一次。</translation>
 <translation id="7197677400338048821">Chromium 無法檢查密碼，請於 24 小時後再試一次。</translation>

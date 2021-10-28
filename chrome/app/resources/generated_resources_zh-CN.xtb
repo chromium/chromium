@@ -2062,6 +2062,7 @@
 <translation id="310671807099593501">该网站正在使用蓝牙</translation>
 <translation id="3108931485517391283">无法接收</translation>
 <translation id="3109724472072898302">已收起</translation>
+<translation id="311214366526552035">仍然下载</translation>
 <translation id="311394601889664316">不允许网站修改您设备上的文件或文件夹</translation>
 <translation id="3115147772012638511">正在等待存入缓存...</translation>
 <translation id="3115580024857770654">全部收起</translation>
@@ -2341,6 +2342,7 @@
 <translation id="3429160811076349561">试用版功能已关闭</translation>
 <translation id="3429271624041785769">网页内容语言</translation>
 <translation id="3429275422858276529">为此网页添加书签，以便日后查找</translation>
+<translation id="343115368966109153">下载 <ph name="FILE_NAME" />？所有使用此设备的用户都能查看该文件。</translation>
 <translation id="3432227430032737297">移除显示的所有 Cookie</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433621910545056227">糟糕！系统无法建立设备安装时间属性锁定。</translation>
@@ -2682,6 +2684,7 @@
 <translation id="3777806571986431400">扩展程序已启用</translation>
 <translation id="3778152852029592020">已取消下载。</translation>
 <translation id="3778208826288864398">此安全密钥已被锁定，因为您输错 PIN 码的次数过多。您需要重置此安全密钥。</translation>
+<translation id="3778369586810509692">该文件将存储在此设备上，并且每位用户都能查看它。</translation>
 <translation id="3778740492972734840">开发者工具(&amp;D)</translation>
 <translation id="3778868487658107119">您可以向它询问各种问题，指示它处理各种事务。它是专门为您配置的 Google 助手，随时为您提供帮助。</translation>
 <translation id="3781742599892759500">Linux 麦克风使用权限</translation>
@@ -4694,6 +4697,7 @@
 <translation id="597235323114979258">查看更多目的地</translation>
 <translation id="5972666587303800813">无运维服务</translation>
 <translation id="5972708806901999743">移到顶部</translation>
+<translation id="5972801171078377748">不再显示</translation>
 <translation id="5972826969634861500">启动<ph name="PRODUCT_NAME" /></translation>
 <translation id="5973041996755340290">“<ph name="CLIENT_NAME" />”已开始调试此浏览器</translation>
 <translation id="5973605538625120605">更改 PIN 码</translation>
