@@ -26,6 +26,15 @@ const ROTATIONS = [
 ];
 
 /**
+ * @typedef {{
+ *   el: !HTMLDivElement,
+ *   pt: !Point,
+ *   pointerId: ?number,
+ * }}
+ */
+let Corner;  // eslint-disable-line no-unused-vars
+
+/**
  * View controller for review document crop area page.
  */
 export class CropDocument extends Review {
@@ -91,36 +100,22 @@ export class CropDocument extends Review {
 
     /**
      * Coordinates of document with respect to |this.cornerSpaceSize_|.
-     * @type {!Array<!Point>}
+     * @type {!Array<!Corner>}
      * @private
      */
-    this.corners_ = [];
-
-    /**
-     * @type {!Array<!HTMLDivElement>}
-     * @private
-     */
-    this.cornerEls_ = (() => {
+    this.corners_ = (() => {
       const ret = [];
       for (let i = 0; i < 4; i++) {
         const tpl = util.instantiateTemplate('#document-drag-point-template');
-        ret.push(dom.getFrom(tpl, `.dot`, HTMLDivElement));
+        ret.push({
+          el: dom.getFrom(tpl, `.dot`, HTMLDivElement),
+          pt: new Point(0, 0),
+          pointerId: null,
+        });
         this.image_.appendChild(tpl);
       }
       return ret;
     })();
-
-    /**
-     * @type {?HTMLDivElement}
-     * @private
-     */
-    this.dragging_ = null;
-
-    /**
-     * @type {function(!Point): !Point}
-     * @private
-     */
-    this.mapToValidArea_;
 
     const clockwiseBtn = dom.getFrom(
         this.root, 'button[i18n-aria=rotate_clockwise_button]',
@@ -140,23 +135,18 @@ export class CropDocument extends Review {
     });
 
     const cornerSize = (() => {
-      const style =
-          dom.getFrom(this.root, '.dot', HTMLDivElement).computedStyleMap();
+      const style = this.corners_[0].el.computedStyleMap();
       const width = util.getStyleValueInPx(style, 'width');
       const height = util.getStyleValueInPx(style, 'height');
       return new Size(width, height);
     })();
 
-    // TODO(b/203181872): Tweak the drag behavior.
-
     // Start dragging on one corner.
-    this.cornerEls_.forEach((el) => {
-      el.addEventListener('pointerdown', (e) => {
+    this.corners_.forEach((corn) => {
+      corn.el.addEventListener('pointerdown', (e) => {
         e.preventDefault();
-        if (e.target !== el) {
-          return;
-        }
-        this.updateDragging_(el);
+        assert(e.target === corn.el);
+        this.setDragging_(corn, assertInstanceof(e, PointerEvent).pointerId);
       });
     });
 
@@ -164,38 +154,38 @@ export class CropDocument extends Review {
     for (const eventName of ['pointerup', 'pointerleave', 'pointercancel']) {
       this.image_.addEventListener(eventName, (e) => {
         e.preventDefault();
-        this.clearDragging_();
+        this.clearDragging_(assertInstanceof(e, PointerEvent).pointerId);
       });
     }
 
     // Move drag corner.
     this.image_.addEventListener('pointermove', (e) => {
       e.preventDefault();
-      if (this.dragging_ === null) {
+
+      const pointerId = assertInstanceof(e, PointerEvent).pointerId;
+      const corn = this.findDragging_(pointerId);
+      if (corn === null) {
         return;
       }
+      assert(corn.el.classList.contains('dragging'));
 
-      this.corners_.forEach((corn, idx) => {
-        const el = this.cornerEls_[idx];
-        if (el !== this.dragging_) {
-          return;
-        }
+      let dragX = e.offsetX;
+      let dragY = e.offsetY;
+      const target = assertInstanceof(e.target, HTMLElement);
+      // The offsetX, offsetY of corners.el are measured from their own left,
+      // top.
+      if (this.corners_.find(({el}) => el === target) !== undefined) {
+        const style = target.attributeStyleMap;
+        dragX += util.getStyleValueInPx(style, 'left') - cornerSize.width / 2;
+        dragY += util.getStyleValueInPx(style, 'top') - cornerSize.height / 2;
+      }
 
-        let dragX = e.offsetX;
-        let dragY = e.offsetY;
-        const target = assertInstanceof(e.target, HTMLElement);
-        if (this.cornerEls_.includes(/** @type {!HTMLDivElement} */ (target))) {
-          // The offsetX, offsetY of cornerEls are measured from their own left,
-          // top.
-          const style = target.attributeStyleMap;
-          dragX += util.getStyleValueInPx(style, 'left') - cornerSize.width / 2;
-          dragY += util.getStyleValueInPx(style, 'top') - cornerSize.height / 2;
-        }
-        const dragPt = this.mapToValidArea_(new Point(dragX, dragY));
-        this.corners_[idx] = dragPt;
-      });
-
-      this.updateCorners_();
+      const validPt = this.mapToValidArea_(corn, new Point(dragX, dragY));
+      if (validPt === null) {
+        return;
+      }
+      corn.pt = validPt;
+      this.updateCornerEl_();
     });
 
     // Prevent contextmenu popup triggered by long touch.
@@ -213,7 +203,6 @@ export class CropDocument extends Review {
    */
   async reviewCropArea(corners) {
     this.initialCorners_ = corners;
-    this.corners_ = [];
     this.cornerSpaceSize_ = null;
     await super.startReview({
       positive: new Options(
@@ -222,36 +211,61 @@ export class CropDocument extends Review {
       negative: new Options(),
     });
     const newCorners = this.corners_.map(
-        ({x, y}) => new Point(
+        ({pt: {x, y}}) => new Point(
             x / this.cornerSpaceSize_.width, y / this.cornerSpaceSize_.height));
     return {corners: newCorners, rotation: ROTATIONS[this.rotation_]};
   }
 
   /**
+   * @param {!Corner} corn
+   * @param {number} pointerId
    * @private
    */
-  clearDragging_() {
-    if (this.dragging_ === null) {
-      return;
-    }
-    this.dragging_.classList.remove('dragging');
-    this.dragging_ = null;
+  setDragging_(corn, pointerId) {
+    corn.el.classList.add('dragging');
+    corn.pointerId = pointerId;
   }
 
   /**
-   * @param {!HTMLDivElement} el
+   * @param {number} pointerId
+   * @return {?Corner}
+   */
+  findDragging_(pointerId) {
+    return this.corners_.find(({pointerId: id}) => id === pointerId) || null;
+  }
+
+  /**
+   * @param {number} pointerId
    * @private
    */
-  updateDragging_(el) {
-    const idx = this.cornerEls_.findIndex((element) => element === el);
+  clearDragging_(pointerId) {
+    const corn = this.findDragging_(pointerId);
+    if (corn === null) {
+      return;
+    }
+    corn.el.classList.remove('dragging');
+    corn.pointerId = null;
+  }
+
+  /**
+   * @param {!Corner} corn
+   * @param {!Point} pt
+   * @return {?Point}
+   * @private
+   */
+  mapToValidArea_(corn, pt) {
+    pt = new Point(
+        Math.max(Math.min(pt.x, this.cornerSpaceSize_.width), 0),
+        Math.max(Math.min(pt.y, this.cornerSpaceSize_.height), 0));
+
+    const idx = this.corners_.findIndex((c) => c === corn);
     assert(idx !== -1);
-    const prevPt = this.corners_[(idx + 3) % 4];
-    const nextPt = this.corners_[(idx + 1) % 4];
-    const restPt = this.corners_[(idx + 2) % 4];
+    const prevPt = this.corners_[(idx + 3) % 4].pt;
+    const nextPt = this.corners_[(idx + 1) % 4].pt;
+    const restPt = this.corners_[(idx + 2) % 4].pt;
     const closestDist =
         Math.min(this.cornerSpaceSize_.width, this.cornerSpaceSize_.height) *
         CLOSEST_DISTANCE_RATIO;
-    const box = new Box(assertInstanceof(this.cornerSpaceSize_, Size));
     const prevDir = vectorFromPoints(restPt, prevPt).direction();
     const prevBorder = (new Line(prevPt, prevDir)).moveParallel(closestDist);
     const nextDir = vectorFromPoints(nextPt, restPt).direction();
@@ -259,16 +273,22 @@ export class CropDocument extends Review {
     const restDir = vectorFromPoints(nextPt, prevPt).direction();
     const restBorder = (new Line(prevPt, restDir)).moveParallel(closestDist);
 
+    if (prevBorder.isInward(pt) && nextBorder.isInward(pt) &&
+        restBorder.isInward(pt)) {
+      return pt;
+    }
+
     const prevBorderPt = prevBorder.intersect(restBorder);
     if (prevBorderPt === null) {
       // May completely overlapped.
-      return;
+      return null;
     }
     const nextBorderPt = nextBorder.intersect(restBorder);
     if (nextBorderPt === null) {
       // May completely overlapped.
-      return;
+      return null;
     }
+    const box = new Box(assertInstanceof(this.cornerSpaceSize_, Size));
 
     // Find boundary points of valid area by cases of whether |prevBorderPt| and
     // |nextBorderPt| are inside/outside the box.
@@ -277,7 +297,7 @@ export class CropDocument extends Review {
       const intersectPts = box.segmentIntersect(prevBorderPt, nextBorderPt);
       if (intersectPts.length === 0) {
         // Valid area is completely outside the bounding box.
-        return;
+        return null;
       } else {
         boundaryPts.push(...intersectPts);
       }
@@ -329,43 +349,30 @@ export class CropDocument extends Review {
       };
     };
 
-    this.mapToValidArea_ = (pt) => {
-      pt = new Point(
-          Math.max(Math.min(pt.x, this.cornerSpaceSize_.width), 0),
-          Math.max(Math.min(pt.y, this.cornerSpaceSize_.height), 0));
-
-      if (prevBorder.isInward(pt) && nextBorder.isInward(pt) &&
-          restBorder.isInward(pt)) {
-        return pt;
+    // Project |pt| to nearest point on boundary.
+    let mn = Infinity;
+    let mnPt = null;
+    for (let i = 1; i < boundaryPts.length; i++) {
+      const {dist2, nearest} =
+          distToSegment(boundaryPts[i - 1], boundaryPts[i], pt);
+      if (dist2 < mn) {
+        mn = dist2;
+        mnPt = nearest;
       }
-      // Project |pt| to nearest point on boundary.
-      let mn = Infinity;
-      let mnPt = null;
-      for (let i = 1; i < boundaryPts.length; i++) {
-        const {dist2, nearest} =
-            distToSegment(boundaryPts[i - 1], boundaryPts[i], pt);
-        if (dist2 < mn) {
-          mn = dist2;
-          mnPt = nearest;
-        }
-      }
-      return assertInstanceof(mnPt, Point);
-    };
-    this.clearDragging_();
-    this.dragging_ = el;
-    el.classList.add('dragging');
+    }
+    return assertInstanceof(mnPt, Point);
   }
 
   /**
    * @private
    */
-  updateCorners_() {
-    const cords = this.corners_.map(({x, y}) => `${x},${y}`).join(' ');
+  updateCornerEl_() {
+    const cords = this.corners_.map(({pt: {x, y}}) => `${x},${y}`).join(' ');
     this.cropArea_.setAttribute('points', cords);
-    this.corners_.forEach(({x, y}, idx) => {
-      const style = this.cornerEls_[idx].attributeStyleMap;
-      style.set('left', CSS.px(x));
-      style.set('top', CSS.px(y));
+    this.corners_.forEach((corn) => {
+      const style = corn.el.attributeStyleMap;
+      style.set('left', CSS.px(corn.pt.x));
+      style.set('top', CSS.px(corn.pt.y));
     });
   }
 
@@ -395,15 +402,18 @@ export class CropDocument extends Review {
 
     // Update corner space.
     if (this.cornerSpaceSize_ === null) {
-      this.corners_ = this.initialCorners_.map(
-          ({x, y}) => new Point(x * newImageW, y * newImageH));
+      this.initialCorners_.forEach(({x, y}, idx) => {
+        this.corners_[idx].pt = new Point(x * newImageW, y * newImageH);
+      });
       this.initialCorners_ = null;
     } else {
       const oldImageW = this.cornerSpaceSize_?.width || newImageW;
       const oldImageH = this.cornerSpaceSize_?.height || newImageH;
-      this.corners_ = this.corners_.map(
-          ({x, y}) =>
-              new Point(x / oldImageW * newImageW, y / oldImageH * newImageH));
+      this.corners_.forEach((corn) => {
+        corn.pt = new Point(
+            corn.pt.x / oldImageW * newImageW,
+            corn.pt.y / oldImageH * newImageH);
+      });
     }
     this.cornerSpaceSize_ = new Size(newImageW, newImageH);
 
@@ -418,7 +428,7 @@ export class CropDocument extends Review {
     style.set(
         'transform', new CSSTransformValue([new CSSRotate(CSS.deg(deg))]));
 
-    this.updateCorners_();
+    this.updateCornerEl_();
   }
 
   /**
@@ -449,6 +459,11 @@ export class CropDocument extends Review {
     const rect = this.imageFrame_.getBoundingClientRect();
     this.frameSize_ = new Size(rect.width, rect.height);
     this.updateImage_();
-    this.clearDragging_();
+    // Clear all dragging corners.
+    for (const corn of this.corners_) {
+      if (corn.pointerId !== null) {
+        this.clearDragging_(corn.pointerId);
+      }
+    }
   }
 }
