@@ -56,15 +56,15 @@ const base::FilePath::CharType kDatabasePath[] =
 // Version 3 adds a field for ad components.
 // Version 4 adds joining origin and url.
 // Version 5 adds k-anonymity tables and fields.
-const int kCurrentVersionNumber = 4;
+const int kCurrentVersionNumber = 5;
 
 // Earliest version of the code which can use a |kCurrentVersionNumber|
 // database without failing.
-const int kCompatibleVersionNumber = 4;
+const int kCompatibleVersionNumber = 5;
 
 // Latest version of the database that cannot be upgraded to
 // |kCurrentVersionNumber| without razing the database.
-const int kDeprecatedVersionNumber = 3;
+const int kDeprecatedVersionNumber = 4;
 
 // TODO(crbug.com/1195852): Add UMA to count errors.
 
