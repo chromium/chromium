@@ -17,7 +17,8 @@
         android:layout_weight="1"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_gravity="start" />
+        android:layout_gravity="start"
+        android:duplicateParentState="true" />
 
     <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/menu_item_icon"
@@ -26,5 +27,6 @@
         android:layout_height="match_parent"
         android:layout_gravity="end"
         android:gravity="center_vertical"
-        android:tint="?attr/default_icon_color_secondary" />
+        android:tint="?attr/default_icon_color_secondary"
+        android:duplicateParentState="true" />
 </LinearLayout>
