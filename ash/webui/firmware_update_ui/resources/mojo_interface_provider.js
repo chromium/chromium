@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.m.js';
+import {fakeFirmwareUpdates} from './fake_data.js';
 import {FakeUpdateProvider} from './fake_update_provider.js';
 import {UpdateProviderInterface} from './firmware_update_types.js';
 
@@ -29,7 +30,10 @@ export function setUpdateProviderForTesting(testProvider) {
  * TODO(michaelcheco): Remove once mojo bindings are implemented.
  */
 function setupFakeUpdateProvider() {
-  setUpdateProviderForTesting(new FakeUpdateProvider());
+  const provider = new FakeUpdateProvider();
+
+  provider.setFakeFirmwareUpdates(fakeFirmwareUpdates);
+  setUpdateProviderForTesting(provider);
 }
 
 /**

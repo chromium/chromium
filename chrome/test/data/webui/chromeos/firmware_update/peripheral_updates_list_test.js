@@ -2,14 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {fakeFirmwareUpdates} from 'chrome://accessory-update/fake_data.js';
+import {FakeUpdateProvider} from 'chrome://accessory-update/fake_update_provider.js';
+import {FirmwareUpdate} from 'chrome://accessory-update/firmware_update_types.js';
+import {setUpdateProviderForTesting} from 'chrome://accessory-update/mojo_interface_provider.js';
 import {PeripheralUpdateListElement} from 'chrome://accessory-update/peripheral_updates_list.js';
 
-import {assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertDeepEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.js';
 
 export function peripheralUpdatesListTest() {
   /** @type {?PeripheralUpdateListElement} */
   let peripheralUpdateListElement = null;
+
+  /** @type {?FakeUpdateProvider} */
+  let provider = null;
+
+  suiteSetup(() => {
+    provider = new FakeUpdateProvider();
+    setUpdateProviderForTesting(provider);
+  });
 
   setup(() => {
     document.body.innerHTML = '';
@@ -20,10 +32,13 @@ export function peripheralUpdatesListTest() {
       peripheralUpdateListElement.remove();
     }
     peripheralUpdateListElement = null;
+    provider.reset();
+    provider = null;
   });
 
   function initializeUpdateList() {
     assertFalse(!!peripheralUpdateListElement);
+    provider.setFakeFirmwareUpdates(fakeFirmwareUpdates);
 
     // Add the update list to the DOM.
     peripheralUpdateListElement = /** @type {!PeripheralUpdateListElement} */ (
@@ -34,12 +49,17 @@ export function peripheralUpdatesListTest() {
     return flushTasks();
   }
 
-  test('UpdateListInitialized', () => {
-    // TODO(michaelcheco): Remove this stub test once the update list element
-    // has more capabilities to test.
+  /**
+   * @suppress {visibility}
+   * @return {!Array<!FirmwareUpdate>}
+   */
+  function getFirmwareUpdates() {
+    return peripheralUpdateListElement.firmwareUpdates_;
+  }
+
+  test('FirmwareUpdatesPopulated', () => {
     return initializeUpdateList().then(() => {
-      assertTrue(
-          !!peripheralUpdateListElement.shadowRoot.querySelector('#container'));
+      assertDeepEquals(getFirmwareUpdates(), fakeFirmwareUpdates[0]);
     });
   });
 }
