@@ -105,7 +105,6 @@
 -OobeTest.*
 -OobeTestApiRemoraRequisitionTest.*
 -OobeTestApiTest.*
--OobeTestApiWizardControllerTest.*
 -OobeZeroTouchInteractiveUITest.*
 -OsInstallScreenTest.*
 -OsTrialScreenTest.*
