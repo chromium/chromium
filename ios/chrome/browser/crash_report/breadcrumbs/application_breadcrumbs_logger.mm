@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/crash_report/breadcrumbs/application_breadcrumbs_logger_ios.h"
+#include "ios/chrome/browser/crash_report/breadcrumbs/application_breadcrumbs_logger.h"
 
 #include <string>
 
@@ -15,7 +15,7 @@
 
 const char kBreadcrumbOrientation[] = "Orientation";
 
-ApplicationBreadcrumbsLoggerIOS::ApplicationBreadcrumbsLoggerIOS(
+ApplicationBreadcrumbsLogger::ApplicationBreadcrumbsLogger(
     breadcrumbs::BreadcrumbManager* breadcrumb_manager)
     : breadcrumbs::ApplicationBreadcrumbsLogger(breadcrumb_manager) {
   orientation_observer_ = [NSNotificationCenter.defaultCenter
@@ -55,6 +55,6 @@ ApplicationBreadcrumbsLoggerIOS::ApplicationBreadcrumbsLoggerIOS(
               }];
 }
 
-ApplicationBreadcrumbsLoggerIOS::~ApplicationBreadcrumbsLoggerIOS() {
+ApplicationBreadcrumbsLogger::~ApplicationBreadcrumbsLogger() {
   [NSNotificationCenter.defaultCenter removeObserver:orientation_observer_];
 }

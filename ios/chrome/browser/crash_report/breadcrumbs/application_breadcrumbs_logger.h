@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_CRASH_REPORT_BREADCRUMBS_APPLICATION_BREADCRUMBS_LOGGER_IOS_H_
-#define IOS_CHROME_BROWSER_CRASH_REPORT_BREADCRUMBS_APPLICATION_BREADCRUMBS_LOGGER_IOS_H_
+#ifndef IOS_CHROME_BROWSER_CRASH_REPORT_BREADCRUMBS_APPLICATION_BREADCRUMBS_LOGGER_H_
+#define IOS_CHROME_BROWSER_CRASH_REPORT_BREADCRUMBS_APPLICATION_BREADCRUMBS_LOGGER_H_
 
 #import <UIKit/UIKit.h>
 
@@ -16,14 +16,13 @@ extern const char kBreadcrumbOrientation[];
 // Listens for and logs application-wide breadcrumb events to the
 // BreadcrumbManager passed in the constructor. Includes iOS-specific events
 // such as device orientation.
-class ApplicationBreadcrumbsLoggerIOS
+class ApplicationBreadcrumbsLogger
     : public breadcrumbs::ApplicationBreadcrumbsLogger {
  public:
-  explicit ApplicationBreadcrumbsLoggerIOS(
+  explicit ApplicationBreadcrumbsLogger(
       breadcrumbs::BreadcrumbManager* breadcrumb_manager);
-  ApplicationBreadcrumbsLoggerIOS(const ApplicationBreadcrumbsLoggerIOS&) =
-      delete;
-  ~ApplicationBreadcrumbsLoggerIOS();
+  ApplicationBreadcrumbsLogger(const ApplicationBreadcrumbsLogger&) = delete;
+  ~ApplicationBreadcrumbsLogger();
 
  private:
   // Observes device orientation.
@@ -33,4 +32,4 @@ class ApplicationBreadcrumbsLoggerIOS
   absl::optional<UIDeviceOrientation> last_orientation_;
 };
 
-#endif  // IOS_CHROME_BROWSER_CRASH_REPORT_BREADCRUMBS_APPLICATION_BREADCRUMBS_LOGGER_IOS_H_
+#endif  // IOS_CHROME_BROWSER_CRASH_REPORT_BREADCRUMBS_APPLICATION_BREADCRUMBS_LOGGER_H_

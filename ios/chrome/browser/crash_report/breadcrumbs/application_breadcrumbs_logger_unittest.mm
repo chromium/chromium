@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/crash_report/breadcrumbs/application_breadcrumbs_logger_ios.h"
+#import "ios/chrome/browser/crash_report/breadcrumbs/application_breadcrumbs_logger.h"
 
 #import <UIKit/UIKit.h>
 
@@ -19,19 +19,19 @@
 #endif
 
 // Test fixture for testing ApplicationBreadcrumbsLogger class.
-class ApplicationBreadcrumbsLoggerIOSTest : public PlatformTest {
+class ApplicationBreadcrumbsLoggerTest : public PlatformTest {
  protected:
-  ApplicationBreadcrumbsLoggerIOSTest()
-      : logger_(std::make_unique<ApplicationBreadcrumbsLoggerIOS>(
+  ApplicationBreadcrumbsLoggerTest()
+      : logger_(std::make_unique<ApplicationBreadcrumbsLogger>(
             &breadcrumb_manager_)) {}
 
   breadcrumbs::BreadcrumbManager breadcrumb_manager_{
       breadcrumbs::GetStartTime()};
-  std::unique_ptr<ApplicationBreadcrumbsLoggerIOS> logger_;
+  std::unique_ptr<ApplicationBreadcrumbsLogger> logger_;
 };
 
 // Tests logging device orientation.
-TEST_F(ApplicationBreadcrumbsLoggerIOSTest, Orientation) {
+TEST_F(ApplicationBreadcrumbsLoggerTest, Orientation) {
   ASSERT_EQ(1U, breadcrumb_manager_.GetEvents(0).size());  // startup event
 
   [NSNotificationCenter.defaultCenter
