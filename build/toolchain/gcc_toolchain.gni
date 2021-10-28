@@ -747,7 +747,9 @@ template("clang_toolchain") {
                            [
                              "strip",
                              "default_shlib_subdir",
+                             "dwp",
                              "enable_linker_map",
+                             "loadable_module_extension",
                              "use_unstripped_as_runtime_outputs",
                            ])
 
