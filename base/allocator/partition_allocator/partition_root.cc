@@ -457,10 +457,10 @@ void DCheckIfManagedByPartitionAllocBRPPool(void* ptr) {
 template <bool thread_safe>
 [[noreturn]] NOINLINE void PartitionRoot<thread_safe>::OutOfMemory(
     size_t size) {
-#if !defined(ARCH_CPU_64_BITS)
   const size_t virtual_address_space_size =
       total_size_of_super_pages.load(std::memory_order_relaxed) +
       total_size_of_direct_mapped_pages.load(std::memory_order_relaxed);
+#if !defined(ARCH_CPU_64_BITS)
   const size_t uncommitted_size =
       virtual_address_space_size -
       total_size_of_committed_pages.load(std::memory_order_relaxed);
@@ -492,6 +492,7 @@ template <bool thread_safe>
     internal::PartitionOutOfMemoryWithLargeVirtualSize(
         virtual_address_space_size);
   }
+#endif  // #if !defined(ARCH_CPU_64_BITS)
 
   // Out of memory can be due to multiple causes, such as:
   // - Out of GigaCage virtual address space
@@ -506,7 +507,6 @@ template <bool thread_safe>
   PA_DEBUG_DATA_ON_STACK("commit", get_total_size_of_committed_pages());
   PA_DEBUG_DATA_ON_STACK("size", size);
 
-#endif
   if (internal::g_oom_handling_function)
     (*internal::g_oom_handling_function)(size);
   OOM_CRASH(size);

@@ -5,6 +5,8 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_CHECK_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_CHECK_H_
 
+#include <cstdint>
+
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/check.h"
@@ -97,11 +99,19 @@
 namespace pa {
 
 // Used for PA_DEBUG_DATA_ON_STACK, below.
-struct DebugKv {
+struct alignas(16) DebugKv {
+  // 16 bytes object aligned on 16 bytes, to make it easier to see in crash
+  // reports.
   char k[8] = {};  // Not necessarily 0-terminated.
-  size_t v = 0;
+  uint64_t v = 0;
 
   DebugKv(const char* key, size_t value) {
+    // Fill with ' ', so that the stack dump is nicer to read.  Not using
+    // memset() on purpose, this header is included from *many* places.
+    for (int index = 0; index < 8; index++) {
+      k[index] = ' ';
+    }
+
     for (int index = 0; index < 8; index++) {
       k[index] = key[index];
       if (key[index] == '\0')
