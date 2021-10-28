@@ -16,6 +16,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -643,31 +644,45 @@ content::WebContents* WebAppPublisherHelper::LaunchAppWithFiles(
     }
   }
 
+  if (base::FeatureList::IsEnabled(
+          features::kDesktopPWAsFileHandlingSettingsGated)) {
+    NOTIMPLEMENTED();
+    return nullptr;
+  }
+
   // The app will be launched for the currently active profile.
   return LaunchAppWithParams(std::move(params));
 }
 
-content::WebContents* WebAppPublisherHelper::LaunchAppWithIntent(
+void WebAppPublisherHelper::LaunchAppWithIntent(
     const std::string& app_id,
     int32_t event_flags,
     apps::mojom::IntentPtr intent,
     apps::mojom::LaunchSource launch_source,
-    apps::mojom::WindowInfoPtr window_info) {
+    apps::mojom::WindowInfoPtr window_info,
+    apps::mojom::Publisher::LaunchAppWithIntentCallback callback) {
   CHECK(intent);
-  content::WebContents* web_contents = LaunchAppWithIntentImpl(
+  LaunchAppWithIntentImpl(
       app_id, event_flags, std::move(intent), launch_source,
-      window_info ? window_info->display_id : display::kInvalidDisplayId);
-
+      window_info ? window_info->display_id : display::kInvalidDisplayId,
+      base::BindOnce(
+          [](apps::mojom::Publisher::LaunchAppWithIntentCallback
+                 success_callback,
+             apps::mojom::LaunchSource launch_source,
+             content::WebContents* web_contents) {
 // TODO(crbug.com/1214763): Set ArcWebContentsData for Lacros.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (launch_source == apps::mojom::LaunchSource::kFromArc && web_contents) {
-    // Add a flag to remember this tab originated in the ARC context.
-    web_contents->SetUserData(&arc::ArcWebContentsData::kArcTransitionFlag,
-                              std::make_unique<arc::ArcWebContentsData>());
-  }
+            if (launch_source == apps::mojom::LaunchSource::kFromArc &&
+                web_contents) {
+              // Add a flag to remember this tab originated in the ARC context.
+              web_contents->SetUserData(
+                  &arc::ArcWebContentsData::kArcTransitionFlag,
+                  std::make_unique<arc::ArcWebContentsData>());
+            }
 #endif
-
-  return web_contents;
+            std::move(success_callback).Run(/*success=*/!!web_contents);
+          },
+          std::move(callback), launch_source));
 }
 
 content::WebContents* WebAppPublisherHelper::LaunchAppWithParams(
@@ -1203,20 +1218,23 @@ content::WebContents* WebAppPublisherHelper::MaybeNavigateExistingWindow(
   return web_contents;
 }
 
-content::WebContents* WebAppPublisherHelper::LaunchAppWithIntentImpl(
+void WebAppPublisherHelper::LaunchAppWithIntentImpl(
     const std::string& app_id,
     int32_t event_flags,
     apps::mojom::IntentPtr intent,
     apps::mojom::LaunchSource launch_source,
-    int64_t display_id) {
+    int64_t display_id,
+    base::OnceCallback<void(content::WebContents*)> callback) {
   if (!profile_) {
-    return nullptr;
+    std::move(callback).Run(nullptr);
+    return;
   }
 
   content::WebContents* web_contents =
       MaybeNavigateExistingWindow(app_id, intent->url);
   if (web_contents) {
-    return web_contents;
+    std::move(callback).Run(web_contents);
+    return;
   }
 
   auto params = apps::CreateAppLaunchParamsForIntent(
@@ -1224,7 +1242,15 @@ content::WebContents* WebAppPublisherHelper::LaunchAppWithIntentImpl(
       ConvertDisplayModeToAppLaunchContainer(
           registrar().GetAppEffectiveDisplayMode(app_id)),
       std::move(intent), profile_);
-  return LaunchAppWithParams(std::move(params));
+  if (params.launch_files.empty() ||
+      !base::FeatureList::IsEnabled(
+          features::kDesktopPWAsFileHandlingSettingsGated)) {
+    std::move(callback).Run(LaunchAppWithParams(std::move(params)));
+    return;
+  }
+
+  LaunchAppWithFilesCheckingUserPermission(app_id, std::move(params),
+                                           std::move(callback));
 }
 
 #if defined(OS_CHROMEOS)
@@ -1323,5 +1349,62 @@ apps::mojom::OptionalBool WebAppPublisherHelper::ShouldShowBadge(
              : apps::mojom::OptionalBool::kFalse;
 }
 #endif
+
+void WebAppPublisherHelper::LaunchAppWithFilesCheckingUserPermission(
+    const std::string& app_id,
+    apps::AppLaunchParams params,
+    base::OnceCallback<void(content::WebContents*)> callback) {
+  absl::optional<GURL> file_handler_url =
+      provider_->os_integration_manager().GetMatchingFileHandlerURL(
+          app_id, params.launch_files);
+  if (!file_handler_url) {
+    NOTREACHED() << "App " << app_id
+                 << " was asked to launch with files it can't handle.";
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  const WebApp* web_app = provider_->registrar().GetAppById(app_id);
+  DCHECK(web_app);
+  if (web_app->IsSystemApp()) {
+    std::move(callback).Run(LaunchAppWithParams(std::move(params)));
+    return;
+  }
+
+  auto launch_callback = base::BindOnce(
+      &WebAppPublisherHelper::OnFileHandlerDialogCompleted,
+      weak_ptr_factory_.GetWeakPtr(), std::move(params), std::move(callback));
+
+  switch (web_app->file_handler_approval_state()) {
+    case ApiApprovalState::kRequiresPrompt:
+      // TODO(estade): this should use a file handling dialog, but until that's
+      // implemented, this reuses the PH dialog with a dummy URL as a stand-in.
+      chrome::ShowWebAppProtocolHandlerIntentPicker(GURL("https://example.com"),
+                                                    profile(), app_id,
+                                                    std::move(launch_callback));
+      break;
+    case ApiApprovalState::kAllowed:
+      std::move(launch_callback)
+          .Run(/*allowed=*/true, /*remember_user_choice=*/false);
+      break;
+    case ApiApprovalState::kDisallowed:
+      // We shouldn't have gotten this far (i.e. "open with" should not have
+      // been selectable) if file handling was already disallowed for the app.
+      NOTREACHED();
+      std::move(launch_callback)
+          .Run(/*allowed=*/false, /*remember_user_choice=*/false);
+      break;
+  }
+}
+
+void WebAppPublisherHelper::OnFileHandlerDialogCompleted(
+    apps::AppLaunchParams params,
+    base::OnceCallback<void(content::WebContents*)> callback,
+    bool allowed,
+    bool remember_user_choice) {
+  // TODO(estade): implement `remember_user_choice`.
+  std::move(callback).Run(allowed ? LaunchAppWithParams(std::move(params))
+                                  : nullptr);
+}
 
 }  // namespace web_app
