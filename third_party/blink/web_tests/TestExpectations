@@ -6347,7 +6347,7 @@ crbug.com/1197528 [ Linux ] pointer-lock/pointerlockchange-pointerlockerror-even
 crbug.com/1201123 [ Fuchsia ] tables/mozilla/bugs/bug1188.html [ Failure Pass ]
 
 # Sheriff 2021-04-26
-crbug.com/1202722 [ Linux ] virtual/scroll-unification/fast/events/mouseenter-mouseleave-on-drag.html [ Pass Timeout ]
+crbug.com/1202722 [ Linux ] virtual/scroll-unification/fast/events/mouseenter-mouseleave-on-drag.html [ Pass Timeout Failure ]
 
 # Sheriff 2021-04-29
 crbug.com/1203963 [ Mac10.14 ] external/wpt/css/css-paint-api/idlharness.html [ Failure Pass Skip Timeout ]
