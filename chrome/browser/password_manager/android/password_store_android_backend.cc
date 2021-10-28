@@ -270,10 +270,13 @@ void PasswordStoreAndroidBackend::OnCompleteWithLogins(
                      WrapPasswordsIntoPointers(std::move(passwords))));
 }
 
-void PasswordStoreAndroidBackend::OnError(JobId job_id) {
+void PasswordStoreAndroidBackend::OnError(JobId job_id,
+                                          AndroidBackendErrorType error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   JobReturnHandler reply = GetAndEraseJob(job_id);
   reply.RecordMetrics(JobReturnHandler::WasSuccess(false));
+  base::UmaHistogramEnumeration(
+      "PasswordManager.PasswordStoreAndroidBackend.ErrorCode", error);
 }
 
 base::WeakPtr<syncer::ModelTypeControllerDelegate>

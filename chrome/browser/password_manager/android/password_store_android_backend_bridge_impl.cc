@@ -68,14 +68,18 @@ void PasswordStoreAndroidBackendBridgeImpl::OnCompleteWithLogins(
   consumer_->OnCompleteWithLogins(JobId(job_id), CreateFormsVector(passwords));
 }
 
-void PasswordStoreAndroidBackendBridgeImpl::OnError(JNIEnv* env, jint job_id) {
+void PasswordStoreAndroidBackendBridgeImpl::OnError(JNIEnv* env,
+                                                    jint job_id,
+                                                    jint error) {
   DCHECK(consumer_);
   // Posting the tasks to the same sequence prevents that synchronous responses
   // try to finish tasks before their registration was completed.
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
-      base::BindOnce(&PasswordStoreAndroidBackendBridge::Consumer::OnError,
-                     consumer_, JobId(job_id)));
+      base::BindOnce(
+          &PasswordStoreAndroidBackendBridge::Consumer::OnError, consumer_,
+          JobId(job_id),
+          static_cast<password_manager::AndroidBackendErrorType>(error)));
 }
 
 JobId PasswordStoreAndroidBackendBridgeImpl::GetAllLogins() {
