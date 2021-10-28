@@ -2592,10 +2592,10 @@ bool ShellUtil::GetOldUserSpecificRegistrySuffix(std::wstring* suffix) {
 // static
 bool ShellUtil::RegisterFileHandlerProgIdsForAppId(
     const std::wstring& prog_id,
-    std::vector<std::wstring>& file_handler_prog_ids) {
+    const std::vector<std::wstring>& file_handler_prog_ids) {
   std::vector<std::unique_ptr<RegistryEntry>> entries;
 
-  // Save file handler prog_ids in the registry for use during uninstallation.
+  // Save file handler ProgIds in the registry for use during uninstallation.
   const std::wstring prog_id_path =
       base::StrCat({ShellUtil::kRegClasses, kFilePathSeparator, prog_id});
   entries.push_back(std::make_unique<RegistryEntry>(
@@ -2603,6 +2603,25 @@ bool ShellUtil::RegisterFileHandlerProgIdsForAppId(
       base::JoinString(file_handler_prog_ids, L";")));
 
   return AddRegistryEntries(HKEY_CURRENT_USER, entries);
+}
+
+// static
+std::vector<std::wstring> ShellUtil::GetFileHandlerProgIdsForAppId(
+    const std::wstring& prog_id) {
+  std::vector<std::wstring> file_handler_prog_ids;
+  const std::wstring prog_id_path =
+      base::StrCat({kRegClasses, kFilePathSeparator, prog_id});
+
+  const RegKey file_handlers_key(HKEY_CURRENT_USER, prog_id_path.c_str(),
+                                 KEY_QUERY_VALUE);
+  std::wstring file_handler_prog_ids_value;
+  if (file_handlers_key.ReadValue(
+          kFileHandlerProgIds, &file_handler_prog_ids_value) == ERROR_SUCCESS) {
+    file_handler_prog_ids =
+        base::SplitString(file_handler_prog_ids_value, std::wstring(L";"),
+                          base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  }
+  return file_handler_prog_ids;
 }
 
 // static
