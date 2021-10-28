@@ -363,12 +363,10 @@ interface PowerCableStateObserver {
   OnPowerCableStateChanged(bool plugged_in);
 };
 
-// Implemented by clients to receive status of finalization (hardware
-// verification).
+// Implemented by clients to receive status of finalization progress.
 interface FinalizationObserver {
-  // OnHardwareVerificationResult is called to report if hardware verification
-  // succeeded or failed. With an optional error message for failures.
-  OnHardwareVerificationResult(bool is_compliant, string error_message);
+  // OnFinalizationUpdated is called to report progress of device finalization.
+  OnFinalizationUpdated(FinalizationStatus status, float progress);
 };
 
 // Enables clients in the webui to manage the RMA flow.
@@ -666,6 +664,6 @@ interface ShimlessRmaService {
   // The power cable state is needed to indicate if the device is ready for
   // battery cutoff.
   ObservePowerCableState(pending_remote<PowerCableStateObserver> observer);
-  // Registers an observer for completion of hardware finalization.
+  // Registers an observer for status of finalization.
   ObserveFinalizationStatus(pending_remote<FinalizationObserver> observer);
 };

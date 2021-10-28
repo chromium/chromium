@@ -6,7 +6,7 @@ import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_reso
 import {FakeObservables} from 'chrome://resources/ash/common/fake_observables.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 
-import {CalibrationComponentStatus, CalibrationObserverRemote, CalibrationOverallStatus, CalibrationSetupInstruction, CalibrationStatus, Component, ComponentType, ErrorObserverRemote, FinalizationObserverRemote, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningObserverRemote, ProvisioningStep, QrCode, RmadErrorCode, RmaState, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
+import {CalibrationComponentStatus, CalibrationObserverRemote, CalibrationOverallStatus, CalibrationSetupInstruction, CalibrationStatus, Component, ComponentType, ErrorObserverRemote, FinalizationObserverRemote, FinalizationStatus, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningObserverRemote, ProvisioningStep, QrCode, RmadErrorCode, RmaState, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
 
 /** @implements {ShimlessRmaServiceInterface} */
 export class FakeShimlessRmaService {
@@ -841,19 +841,22 @@ export class FakeShimlessRmaService {
    */
   observeFinalizationStatus(remote) {
     this.observables_.observe(
-        'FinalizationObserver_onHardwareVerificationResult',
-        (is_compliant, error_message) => {
-          remote.onHardwareVerificationResult(
-              /** @type {boolean} */ (is_compliant),
-              /** @type {string} */ (error_message));
+        'FinalizationObserver_onFinalizationUpdated', (status, progress) => {
+          remote.onFinalizationUpdated(
+              /** @type {!FinalizationStatus} */ (status),
+              /** @type {number} */ (progress));
         });
     if (this.automaticallyTriggerFinalizationObservation_) {
-      this.triggerFinalizationObserver(true, '', 3000);
+      this.triggerFinalizationObserver(
+          FinalizationStatus.kInProgress, 0.25, 1000);
+      this.triggerFinalizationObserver(
+          FinalizationStatus.kInProgress, 0.75, 2000);
+      this.triggerFinalizationObserver(FinalizationStatus.kComplete, 1.0, 3000);
     }
   }
 
   /**
-   * Trigger a finalization is compliant observation when an observer is added.
+   * Trigger a finalization progress observation when an observer is added.
    */
   automaticallyTriggerFinalizationObservation() {
     this.automaticallyTriggerFinalizationObservation_ = true;
@@ -935,14 +938,14 @@ export class FakeShimlessRmaService {
 
   /**
    * Causes the finalization observer to fire after a delay.
-   * @param {boolean} is_compliant
-   * @param {string} error_message
+   * @param {!FinalizationStatus} status
+   * @param {number} progress
    * @param {number} delayMs
    */
-  triggerFinalizationObserver(is_compliant, error_message, delayMs) {
+  triggerFinalizationObserver(status, progress, delayMs) {
     return this.triggerObserverAfterMs(
-        'FinalizationObserver_onHardwareVerificationResult',
-        [is_compliant, error_message], delayMs);
+        'FinalizationObserver_onFinalizationUpdated', [status, progress],
+        delayMs);
   }
 
   /**
@@ -1079,8 +1082,7 @@ export class FakeShimlessRmaService {
         'HardwareWriteProtectionStateObserver_onHardwareWriteProtectionStateChanged');
     this.observables_.register(
         'PowerCableStateObserver_onPowerCableStateChanged');
-    this.observables_.register(
-        'FinalizationObserver_onHardwareVerificationResult');
+    this.observables_.register('FinalizationObserver_onFinalizationUpdated');
   }
 
   /**

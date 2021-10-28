@@ -778,13 +778,12 @@ void ShimlessRmaService::PowerCableState(bool plugged_in) {
   }
 }
 
-void ShimlessRmaService::HardwareVerificationResult(
-    const rmad::HardwareVerificationResult& hardware_verification_result) {
-  last_hardware_verification_result_ = hardware_verification_result;
+void ShimlessRmaService::FinalizationProgress(
+    const rmad::FinalizeStatus& status) {
+  last_finalization_progress_ = status;
   if (finalization_observer_.is_bound()) {
-    finalization_observer_->OnHardwareVerificationResult(
-        hardware_verification_result.is_compliant(),
-        hardware_verification_result.error_str());
+    finalization_observer_->OnFinalizationUpdated(status.status(),
+                                                  status.progress());
   }
 }
 
@@ -840,10 +839,10 @@ void ShimlessRmaService::ObservePowerCableState(
 void ShimlessRmaService::ObserveFinalizationStatus(
     ::mojo::PendingRemote<mojom::FinalizationObserver> observer) {
   finalization_observer_.Bind(std::move(observer));
-  if (last_hardware_verification_result_) {
-    finalization_observer_->OnHardwareVerificationResult(
-        last_hardware_verification_result_->is_compliant(),
-        last_hardware_verification_result_->error_str());
+  if (last_finalization_progress_) {
+    finalization_observer_->OnFinalizationUpdated(
+        last_finalization_progress_->status(),
+        last_finalization_progress_->progress());
   }
 }
 
