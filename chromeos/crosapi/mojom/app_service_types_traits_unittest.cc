@@ -64,6 +64,8 @@ TEST(AppServiceTypesTraitsTest, RoundTrip) {
   permission->is_managed = true;
   input->permissions.push_back(std::move(permission));
 
+  input->allow_uninstall = apps::mojom::OptionalBool::kTrue;
+
   apps::mojom::AppPtr output;
   ASSERT_TRUE(
       mojo::test::SerializeAndDeserialize<crosapi::mojom::App>(input, output));
@@ -117,6 +119,8 @@ TEST(AppServiceTypesTraitsTest, RoundTrip) {
   ASSERT_TRUE(out_permission->value->is_bool_value());
   EXPECT_TRUE(out_permission->value->get_bool_value());
   EXPECT_TRUE(out_permission->is_managed);
+
+  EXPECT_EQ(output->allow_uninstall, apps::mojom::OptionalBool::kTrue);
 }
 
 // Test that serialization and deserialization works with optional fields that
@@ -145,6 +149,7 @@ TEST(AppServiceTypesTraitsTest, RoundTripNoOptional) {
       apps::mojom::PatternMatchType::kNone, intent_filter);
   input->intent_filters.push_back(std::move(intent_filter));
   input->window_mode = apps::mojom::WindowMode::kBrowser;
+  input->allow_uninstall = apps::mojom::OptionalBool::kTrue;
 
   apps::mojom::AppPtr output;
   ASSERT_TRUE(
@@ -178,6 +183,7 @@ TEST(AppServiceTypesTraitsTest, RoundTripNoOptional) {
             apps::mojom::PatternMatchType::kNone);
 
   EXPECT_EQ(output->window_mode, apps::mojom::WindowMode::kBrowser);
+  EXPECT_EQ(output->allow_uninstall, apps::mojom::OptionalBool::kTrue);
 }
 
 // Test that serialization and deserialization works with updating app type.

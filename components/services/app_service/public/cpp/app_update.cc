@@ -131,6 +131,9 @@ void AppUpdate::Merge(apps::mojom::App* state, const apps::mojom::App* delta) {
   if (delta->show_in_management != apps::mojom::OptionalBool::kUnknown) {
     state->show_in_management = delta->show_in_management;
   }
+  if (delta->allow_uninstall != apps::mojom::OptionalBool::kUnknown) {
+    state->allow_uninstall = delta->allow_uninstall;
+  }
   if (delta->has_badge != apps::mojom::OptionalBool::kUnknown) {
     state->has_badge = delta->has_badge;
   }
@@ -694,6 +697,25 @@ bool AppUpdate::ShowInManagementChanged() const {
           apps::mojom::OptionalBool::kUnknown) &&
          (!mojom_state_ || (mojom_delta_->show_in_management !=
                             mojom_state_->show_in_management));
+}
+
+apps::mojom::OptionalBool AppUpdate::AllowUninstall() const {
+  if (mojom_delta_ &&
+      (mojom_delta_->allow_uninstall != apps::mojom::OptionalBool::kUnknown)) {
+    return mojom_delta_->allow_uninstall;
+  }
+  if (mojom_state_) {
+    return mojom_state_->allow_uninstall;
+  }
+  return apps::mojom::OptionalBool::kUnknown;
+}
+
+bool AppUpdate::AllowUninstallChanged() const {
+  return mojom_delta_ &&
+         (mojom_delta_->allow_uninstall !=
+          apps::mojom::OptionalBool::kUnknown) &&
+         (!mojom_state_ ||
+          (mojom_delta_->allow_uninstall != mojom_state_->allow_uninstall));
 }
 
 apps::mojom::OptionalBool AppUpdate::HasBadge() const {
