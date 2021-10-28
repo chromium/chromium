@@ -6,6 +6,7 @@
 
 #include "ash/app_list/model/app_list_item_observer.h"
 #include "ash/public/cpp/app_list/app_list_config_provider.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace ash {
 
@@ -73,6 +74,10 @@ const gfx::ImageSkia& AppListItem::GetDefaultIcon() const {
 void AppListItem::SetIconVersion(int icon_version) {
   if (metadata_->icon_version == icon_version)
     return;
+
+  // Clears last set icon if any. AppIconLoadHelper use that to decide
+  // whether to trigger an icon load when it is created with UI.
+  metadata_->icon = gfx::ImageSkia();
 
   metadata_->icon_version = icon_version;
   for (auto& observer : observers_) {
