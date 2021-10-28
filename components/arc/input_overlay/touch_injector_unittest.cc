@@ -30,44 +30,43 @@ constexpr const char kValidJsonActionTapKey[] =
           {
             "name": "Fight",
             "key": "KeyA",
-            "location": {
-              "position": [
-                {
-                  "anchor": [
-                    0,
-                    0
-                  ],
-                  "anchor_to_target": [
-                    0.5,
-                    0.5
-                  ]
-                },
-                {
-                  "anchor": [
-                    0,
-                    0
-                  ],
-                  "anchor_to_target": [
-                    0.3,
-                    0.3
-                  ]
-                }
-              ]
-            }
+            "location": [
+              {
+                "type": "position",
+                "anchor": [
+                  0,
+                  0
+                ],
+                "anchor_to_target": [
+                  0.5,
+                  0.5
+                ]
+              },
+              {
+                "type": "position",
+                "anchor": [
+                  0,
+                  0
+                ],
+                "anchor_to_target": [
+                  0.3,
+                  0.3
+                ]
+              }
+            ]
           },
           {
             "name": "Run",
             "key": "KeyB",
-            "location": {
-              "position": [
-                {
-                  "anchor_to_target": [
-                    0.8,
-                    0.8
-                  ]
-                }
-              ]
-            }
+            "location": [
+              {
+                "type": "position",
+                "anchor_to_target": [
+                  0.8,
+                  0.8
+                ]
+              }
+            ]
           }
         ]
       }

@@ -22,7 +22,7 @@ bool Action::ParseFromJson(const base::Value& value) {
     name_ = *name;
   }
   // Location can be empty for mouse related actions.
-  const base::Value* position = value.FindKey(kLocation);
+  const base::Value* position = value.FindListKey(kLocation);
   if (position) {
     auto parsed_pos = ParseLocation(*position);
     if (parsed_pos) {

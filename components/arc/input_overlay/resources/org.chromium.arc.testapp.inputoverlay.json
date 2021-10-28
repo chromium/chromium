@@ -8,34 +8,32 @@
       {
         "name": "TestA",
         "key": "KeyA",
-        "location": {
-          "position": [
-            {
-              "anchor_to_target": [
-                0.5,
-                0.5
-              ]
-            }
-          ]
-        }
+        "location": [
+          {
+            "type": "position",
+            "anchor_to_target": [
+              0.5,
+              0.5
+            ]
+          }
+        ]
       },
       {
         "name": "TestB",
         "key": "KeyB",
-        "location": {
-          "position": [
-            {
-              "anchor": [
-                1,
-                1
-              ],
-              "anchor_to_target": [
-                -0.1,
-                -0.1
-              ]
-            }
-          ]
-        }
+        "location": [
+          {
+            "type": "position",
+            "anchor": [
+              1,
+              1
+            ],
+            "anchor_to_target": [
+              -0.1,
+              -0.1
+            ]
+          }
+        ]
       }
     ]
   }

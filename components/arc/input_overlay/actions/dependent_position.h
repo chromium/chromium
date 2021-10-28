@@ -26,6 +26,7 @@ class DependentPosition : public Position {
   // Parse position from Json.
   // Json value format:
   // {
+  //   "type": "dependent-position",
   //   "anchor": [, ],
   //   "anchor_to_target": [, ],
   //   "x_on_y": 1.5, // Can be null for width-dependent position.
