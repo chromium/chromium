@@ -19,6 +19,9 @@ String Directive::type() const {
   switch (type_) {
     case kText:
       return text;
+    case kUnknown:
+      NOTREACHED();
+      return String();
   }
 
   NOTREACHED();

@@ -34,41 +34,6 @@ namespace blink {
 
 namespace {
 
-bool ParseTextDirective(const String& fragment_directive,
-                        Vector<TextFragmentSelector>* out_selectors) {
-  DCHECK(out_selectors);
-
-  wtf_size_t start_pos = 0;
-  wtf_size_t end_pos = 0;
-  while (end_pos != kNotFound) {
-    if (fragment_directive.Find(kTextFragmentIdentifierPrefix, start_pos) !=
-        start_pos) {
-      // If this is not a text directive, continue to the next directive
-      end_pos = fragment_directive.find('&', start_pos + 1);
-      start_pos = end_pos + 1;
-      continue;
-    }
-
-    start_pos += kTextFragmentIdentifierPrefixStringLength;
-    end_pos = fragment_directive.find('&', start_pos);
-
-    String target_text;
-    if (end_pos == kNotFound) {
-      target_text = fragment_directive.Substring(start_pos);
-    } else {
-      target_text =
-          fragment_directive.Substring(start_pos, end_pos - start_pos);
-      start_pos = end_pos + 1;
-    }
-
-    TextFragmentSelector selector = TextFragmentSelector::Create(target_text);
-    if (selector.Type() != TextFragmentSelector::kInvalid)
-      out_selectors->push_back(selector);
-  }
-
-  return out_selectors->size() > 0;
-}
-
 bool CheckSecurityRestrictions(LocalFrame& frame) {
   // This algorithm checks the security restrictions detailed in
   // https://wicg.github.io/ScrollToTextFragment/#should-allow-a-text-fragment
@@ -138,42 +103,34 @@ bool TextFragmentAnchor::GenerateNewTokenForSameDocument(
 
   // Only generate a token if it's going to be consumed (i.e. the new fragment
   // has a text fragment in it).
-  {
-    String fragment = loader.Url().FragmentIdentifier();
-    wtf_size_t start_pos = fragment.Find(kFragmentDirectivePrefix);
-    if (start_pos == kNotFound)
-      return false;
-
-    String fragment_directive =
-        fragment.Substring(start_pos + kFragmentDirectivePrefixStringLength);
-    Vector<TextFragmentSelector> selectors;
-    if (!ParseTextDirective(fragment_directive, &selectors))
-      return false;
+  FragmentDirective& fragment_directive =
+      loader.GetFrame()->GetDocument()->fragmentDirective();
+  if (!fragment_directive.LastNavigationHadFragmentDirective() ||
+      fragment_directive.GetDirectives<TextDirective>().IsEmpty()) {
+    return false;
   }
 
   return true;
 }
 
 // static
-TextFragmentAnchor* TextFragmentAnchor::TryCreateFragmentDirective(
-    const KURL& url,
-    LocalFrame& frame,
-    bool should_scroll) {
+TextFragmentAnchor* TextFragmentAnchor::TryCreate(const KURL& url,
+                                                  LocalFrame& frame,
+                                                  bool should_scroll) {
   DCHECK(RuntimeEnabledFeatures::TextFragmentIdentifiersEnabled(
       frame.DomWindow()));
 
-  if (!frame.GetDocument()->GetFragmentDirective())
-    return nullptr;
-
-  Vector<TextFragmentSelector> selectors;
-  if (!ParseTextDirective(frame.GetDocument()->GetFragmentDirective(),
-                          &selectors)) {
-    UseCounter::Count(frame.GetDocument(),
-                      WebFeature::kInvalidFragmentDirective);
+  HeapVector<Member<TextDirective>> text_directives =
+      frame.GetDocument()->fragmentDirective().GetDirectives<TextDirective>();
+  if (text_directives.IsEmpty()) {
+    if (frame.GetDocument()
+            ->fragmentDirective()
+            .LastNavigationHadFragmentDirective()) {
+      UseCounter::Count(frame.GetDocument(),
+                        WebFeature::kInvalidFragmentDirective);
+    }
     return nullptr;
   }
-
-  frame.GetDocument()->fragmentDirective().ClearDirectives();
 
   if (!CheckSecurityRestrictions(frame)) {
     return nullptr;
@@ -193,35 +150,32 @@ TextFragmentAnchor* TextFragmentAnchor::TryCreateFragmentDirective(
     }
   }
 
-  return MakeGarbageCollected<TextFragmentAnchor>(selectors, frame,
+  return MakeGarbageCollected<TextFragmentAnchor>(text_directives, frame,
                                                   should_scroll);
 }
 
 TextFragmentAnchor::TextFragmentAnchor(
-    const Vector<TextFragmentSelector>& text_fragment_selectors,
+    HeapVector<Member<TextDirective>>& text_directives,
     LocalFrame& frame,
     bool should_scroll)
     : frame_(&frame),
       should_scroll_(should_scroll),
       metrics_(MakeGarbageCollected<TextFragmentAnchorMetrics>(
           frame_->GetDocument())) {
-  DCHECK(!text_fragment_selectors.IsEmpty());
+  DCHECK(!text_directives.IsEmpty());
   DCHECK(frame_->View());
 
   metrics_->DidCreateAnchor(
-      text_fragment_selectors.size(),
-      frame.GetDocument()->GetFragmentDirective().length());
+      text_directives.size(),
+      frame.GetDocument()->fragmentDirective().LengthForMetrics());
 
-  text_fragment_finders_.ReserveCapacity(text_fragment_selectors.size());
-  for (TextFragmentSelector selector : text_fragment_selectors) {
-    text_fragment_finders_.push_back(MakeGarbageCollected<TextFragmentFinder>(
-        *this, selector, frame_->GetDocument(),
-        TextFragmentFinder::FindBufferRunnerType::kSynchronous));
-
-    dom_text_directives_.push_back(
-        MakeGarbageCollected<TextDirective>(selector));
-    frame_->GetDocument()->fragmentDirective().AddDirective(
-        dom_text_directives_.back().Get());
+  directive_finder_pairs_.ReserveCapacity(text_directives.size());
+  for (Member<TextDirective>& directive : text_directives) {
+    directive_finder_pairs_.push_back(std::make_pair(
+        directive,
+        MakeGarbageCollected<TextFragmentFinder>(
+            *this, directive->GetSelector(), frame_->GetDocument(),
+            TextFragmentFinder::FindBufferRunnerType::kSynchronous)));
   }
 }
 
@@ -283,8 +237,8 @@ bool TextFragmentAnchor::Invoke() {
     base::AutoReset<bool> reset_user_scrolled(&user_scrolled_, user_scrolled_);
 
     metrics_->ResetMatchCount();
-    for (auto& finder : text_fragment_finders_)
-      finder->FindMatch();
+    for (auto& directive_finder_pair : directive_finder_pairs_)
+      directive_finder_pair.second->FindMatch();
   }
 
   if (beforematch_state_ != kEventQueued)
@@ -338,12 +292,11 @@ void TextFragmentAnchor::PerformPreRafActions() {
   }
 
   // Notify the DOM object exposed to JavaScript that we've completed the
-  // search and pass it the range we found. This can invoke script so it needs
-  // to happen here.
-  for (wtf_size_t i = 0; i < text_fragment_finders_.size(); ++i) {
-    TextFragmentFinder* finder = text_fragment_finders_.at(i).Get();
-    TextDirective* dom_text_directive = dom_text_directives_.at(i).Get();
-    dom_text_directive->DidFinishMatching(finder->FirstMatch());
+  // search and pass it the range we found.
+  for (DirectiveFinderPair& directive_finder_pair : directive_finder_pairs_) {
+    TextDirective* text_directive = directive_finder_pair.first.Get();
+    TextFragmentFinder* finder = directive_finder_pair.second.Get();
+    text_directive->DidFinishMatching(finder->FirstMatch());
   }
 }
 
@@ -351,8 +304,7 @@ void TextFragmentAnchor::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
   visitor->Trace(element_fragment_anchor_);
   visitor->Trace(metrics_);
-  visitor->Trace(text_fragment_finders_);
-  visitor->Trace(dom_text_directives_);
+  visitor->Trace(directive_finder_pairs_);
   FragmentAnchor::Trace(visitor);
 }
 

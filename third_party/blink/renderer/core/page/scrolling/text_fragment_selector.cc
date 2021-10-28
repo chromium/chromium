@@ -49,7 +49,8 @@ bool IsSuffix(const String& term) {
 
 }  // namespace
 
-TextFragmentSelector TextFragmentSelector::Create(String target_text) {
+TextFragmentSelector TextFragmentSelector::FromTextDirective(
+    const String& directive) {
   DEFINE_STATIC_LOCAL(const TextFragmentSelector, kInvalidSelector, (kInvalid));
   SelectorType type;
   String start;
@@ -57,10 +58,10 @@ TextFragmentSelector TextFragmentSelector::Create(String target_text) {
   String prefix;
   String suffix;
 
-  DCHECK_EQ(target_text.find('&'), kNotFound);
+  DCHECK_EQ(directive.find('&'), kNotFound);
 
   Vector<String> terms;
-  target_text.Split(",", true, terms);
+  directive.Split(",", true, terms);
 
   if (terms.IsEmpty() || terms.size() > 4)
     return kInvalidSelector;
