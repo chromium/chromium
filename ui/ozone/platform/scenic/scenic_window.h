@@ -198,6 +198,11 @@ class COMPONENT_EXPORT(OZONE) ScenicWindow final : public PlatformWindow,
 
   // True if |view_| is currently attached to a scene.
   bool is_view_attached_ = false;
+
+  // True if SetCapture() was called. Currently does not reflect capture state
+  // in Scenic.
+  // TODO(crbug.com/1231516): Use Scenic capture APIs.
+  bool has_capture_ = false;
 };
 
 }  // namespace ui
