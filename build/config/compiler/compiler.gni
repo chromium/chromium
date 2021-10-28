@@ -306,9 +306,10 @@ use_debug_fission = use_debug_fission && symbol_level == 2
 # the build (like nacl) and we don't want to assert on those.
 # iOS does not support component builds so add an exception for this platform.
 if (forbid_non_component_debug_builds) {
-  assert(symbol_level != 2 || current_toolchain != default_toolchain ||
-             is_component_build || !is_debug || is_ios,
-         "Can't do non-component debug builds at symbol_level=2")
+  assert(
+      symbol_level != 2 || current_toolchain != default_toolchain ||
+          is_component_build || !is_debug || is_ios || use_debug_fission,
+      "Can't do non-component debug builds at symbol_level=2 without use_debug_fission=true")
 }
 
 # Assert that the configuration isn't going to hit https://crbug.com/648948.
