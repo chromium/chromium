@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/public/cpp/assistant/assistant_web_view_factory.h"
+#include "ash/public/cpp/ash_web_view_factory.h"
 
 #include "base/check_op.h"
 
@@ -10,22 +10,22 @@ namespace ash {
 
 namespace {
 
-AssistantWebViewFactory* g_instance = nullptr;
+AshWebViewFactory* g_instance = nullptr;
 
 }  // namespace
 
-AssistantWebViewFactory::AssistantWebViewFactory() {
+AshWebViewFactory::AshWebViewFactory() {
   DCHECK_EQ(nullptr, g_instance);
   g_instance = this;
 }
 
-AssistantWebViewFactory::~AssistantWebViewFactory() {
+AshWebViewFactory::~AshWebViewFactory() {
   DCHECK_EQ(g_instance, this);
   g_instance = nullptr;
 }
 
 // static
-AssistantWebViewFactory* AssistantWebViewFactory::Get() {
+AshWebViewFactory* AshWebViewFactory::Get() {
   return g_instance;
 }
 

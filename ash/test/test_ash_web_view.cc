@@ -2,42 +2,42 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/assistant/test/test_assistant_web_view.h"
+#include "ash/test/test_ash_web_view.h"
 
 #include "base/bind.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 
 namespace ash {
 
-TestAssistantWebView::TestAssistantWebView() = default;
+TestAshWebView::TestAshWebView() = default;
 
-TestAssistantWebView::~TestAssistantWebView() = default;
+TestAshWebView::~TestAshWebView() = default;
 
-void TestAssistantWebView::AddObserver(Observer* observer) {
+void TestAshWebView::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
 
-void TestAssistantWebView::RemoveObserver(Observer* observer) {
+void TestAshWebView::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-gfx::NativeView TestAssistantWebView::GetNativeView() {
+gfx::NativeView TestAshWebView::GetNativeView() {
   // Not yet implemented for unittests.
   return nullptr;
 }
 
-bool TestAssistantWebView::GoBack() {
+bool TestAshWebView::GoBack() {
   // Not yet implemented for unittests.
   return false;
 }
 
-void TestAssistantWebView::Navigate(const GURL& url) {
+void TestAshWebView::Navigate(const GURL& url) {
   // Simulate navigation by notifying |observers_| of the expected event that
   // would normally signal navigation completion. We do this asynchronously to
   // more accurately simulate real-world conditions.
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(
-                     [](const base::WeakPtr<TestAssistantWebView>& self) {
+                     [](const base::WeakPtr<TestAshWebView>& self) {
                        if (self) {
                          for (auto& observer : self->observers_)
                            observer.DidStopLoading();

@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_ASSISTANT_ASSISTANT_WEB_VIEW_IMPL_H_
-#define CHROME_BROWSER_UI_ASH_ASSISTANT_ASSISTANT_WEB_VIEW_IMPL_H_
+#ifndef CHROME_BROWSER_UI_ASH_ASH_WEB_VIEW_IMPL_H_
+#define CHROME_BROWSER_UI_ASH_ASH_WEB_VIEW_IMPL_H_
 
-#include "ash/public/cpp/assistant/assistant_web_view.h"
+#include "ash/public/cpp/ash_web_view.h"
 #include "base/observer_list.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
-
-class Profile;
 
 namespace content {
 class WebContents;
@@ -20,19 +18,19 @@ namespace views {
 class WebView;
 }  // namespace views
 
-// Implements AssistantWebView used by Ash to work around dependency
+// Implements AshWebView used by Ash to work around dependency
 // restrictions.
-class AssistantWebViewImpl : public ash::AssistantWebView,
-                             public content::WebContentsDelegate,
-                             public content::WebContentsObserver {
+class AshWebViewImpl : public ash::AshWebView,
+                       public content::WebContentsDelegate,
+                       public content::WebContentsObserver {
  public:
-  explicit AssistantWebViewImpl(Profile* profile, const InitParams& params);
-  ~AssistantWebViewImpl() override;
+  explicit AshWebViewImpl(const InitParams& params);
+  ~AshWebViewImpl() override;
 
-  AssistantWebViewImpl(AssistantWebViewImpl&) = delete;
-  AssistantWebViewImpl& operator=(AssistantWebViewImpl&) = delete;
+  AshWebViewImpl(AshWebViewImpl&) = delete;
+  AshWebViewImpl& operator=(AshWebViewImpl&) = delete;
 
-  // ash::AssistantWebView:
+  // ash::AshWebView:
   const char* GetClassName() const override;
   gfx::NativeView GetNativeView() override;
   void ChildPreferredSizeChanged(views::View* child) override;
@@ -90,7 +88,7 @@ class AssistantWebViewImpl : public ash::AssistantWebView,
 
   base::ObserverList<Observer> observers_;
 
-  base::WeakPtrFactory<AssistantWebViewImpl> weak_factory_{this};
+  base::WeakPtrFactory<AshWebViewImpl> weak_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_ASSISTANT_ASSISTANT_WEB_VIEW_IMPL_H_
+#endif  // CHROME_BROWSER_UI_ASH_ASH_WEB_VIEW_IMPL_H_

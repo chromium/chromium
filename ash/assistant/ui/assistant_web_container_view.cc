@@ -12,7 +12,7 @@
 #include "ash/assistant/ui/assistant_ui_constants.h"
 #include "ash/assistant/ui/assistant_web_view_delegate.h"
 #include "ash/assistant/util/deep_link_util.h"
-#include "ash/public/cpp/assistant/assistant_web_view_factory.h"
+#include "ash/public/cpp/ash_web_view_factory.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/window_open_disposition.h"
@@ -127,11 +127,11 @@ bool AssistantWebContainerView::GoBack() {
 void AssistantWebContainerView::OpenUrl(const GURL& url) {
   RemoveContents();
 
-  AssistantWebView::InitParams contents_params;
+  AshWebView::InitParams contents_params;
   contents_params.suppress_navigation = true;
   contents_params.minimize_on_back_key = true;
 
-  contents_view_ = AssistantWebViewFactory::Get()->Create(contents_params);
+  contents_view_ = AshWebViewFactory::Get()->Create(contents_params);
 
   // We observe |contents_view_| so that we can handle events from the
   // underlying WebContents.
@@ -145,7 +145,7 @@ void AssistantWebContainerView::SetCanGoBackForTesting(bool can_go_back) {
   DidChangeCanGoBack(can_go_back);
 }
 
-AssistantWebView* AssistantWebContainerView::ContentsView() {
+AshWebView* AssistantWebContainerView::ContentsView() {
   return contents_view_ptr_ ? contents_view_ptr_ : contents_view_.get();
 }
 

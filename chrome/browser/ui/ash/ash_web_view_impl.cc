@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/assistant/assistant_web_view_impl.h"
+#include "chrome/browser/ui/ash/ash_web_view_impl.h"
 
 #include "ash/public/cpp/window_properties.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "content/public/browser/focused_node_details.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
@@ -18,44 +19,43 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
-AssistantWebViewImpl::AssistantWebViewImpl(Profile* profile,
-                                           const InitParams& params)
-    : params_(params) {
+AshWebViewImpl::AshWebViewImpl(const InitParams& params) : params_(params) {
+  Profile* profile = ProfileManager::GetActiveUserProfile();
   InitWebContents(profile);
   InitLayout(profile);
 }
 
-AssistantWebViewImpl::~AssistantWebViewImpl() {
+AshWebViewImpl::~AshWebViewImpl() {
   Observe(nullptr);
   web_contents_->SetDelegate(nullptr);
 }
 
-const char* AssistantWebViewImpl::GetClassName() const {
-  return "AssistantWebViewImpl";
+const char* AshWebViewImpl::GetClassName() const {
+  return "AshWebViewImpl";
 }
 
-gfx::NativeView AssistantWebViewImpl::GetNativeView() {
+gfx::NativeView AshWebViewImpl::GetNativeView() {
   return web_contents_->GetNativeView();
 }
 
-void AssistantWebViewImpl::ChildPreferredSizeChanged(views::View* child) {
+void AshWebViewImpl::ChildPreferredSizeChanged(views::View* child) {
   DCHECK_EQ(web_view_, child);
   SetPreferredSize(web_view_->GetPreferredSize());
 }
 
-void AssistantWebViewImpl::Layout() {
+void AshWebViewImpl::Layout() {
   web_view_->SetBoundsRect(GetContentsBounds());
 }
 
-void AssistantWebViewImpl::AddObserver(Observer* observer) {
+void AshWebViewImpl::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
 
-void AssistantWebViewImpl::RemoveObserver(Observer* observer) {
+void AshWebViewImpl::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-bool AssistantWebViewImpl::GoBack() {
+bool AshWebViewImpl::GoBack() {
   if (web_contents_->GetController().CanGoBack()) {
     web_contents_->GetController().GoBack();
     return true;
@@ -63,17 +63,17 @@ bool AssistantWebViewImpl::GoBack() {
   return false;
 }
 
-void AssistantWebViewImpl::Navigate(const GURL& url) {
+void AshWebViewImpl::Navigate(const GURL& url) {
   content::NavigationController::LoadURLParams params(url);
   web_contents_->GetController().LoadURLWithParams(params);
 }
 
-void AssistantWebViewImpl::AddedToWidget() {
+void AshWebViewImpl::AddedToWidget() {
   UpdateMinimizeOnBackProperty();
-  AssistantWebView::AddedToWidget();
+  AshWebView::AddedToWidget();
 }
 
-bool AssistantWebViewImpl::IsWebContentsCreationOverridden(
+bool AshWebViewImpl::IsWebContentsCreationOverridden(
     content::SiteInstance* source_site_instance,
     content::mojom::WindowContainerType window_container_type,
     const GURL& opener_url,
@@ -90,7 +90,7 @@ bool AssistantWebViewImpl::IsWebContentsCreationOverridden(
       target_url);
 }
 
-content::WebContents* AssistantWebViewImpl::OpenURLFromTab(
+content::WebContents* AshWebViewImpl::OpenURLFromTab(
     content::WebContents* source,
     const content::OpenURLParams& params) {
   if (params_.suppress_navigation) {
@@ -101,15 +101,14 @@ content::WebContents* AssistantWebViewImpl::OpenURLFromTab(
   return content::WebContentsDelegate::OpenURLFromTab(source, params);
 }
 
-void AssistantWebViewImpl::ResizeDueToAutoResize(
-    content::WebContents* web_contents,
-    const gfx::Size& new_size) {
+void AshWebViewImpl::ResizeDueToAutoResize(content::WebContents* web_contents,
+                                           const gfx::Size& new_size) {
   DCHECK_EQ(web_contents_.get(), web_contents);
   web_view_->SetPreferredSize(new_size);
 }
 
-bool AssistantWebViewImpl::TakeFocus(content::WebContents* web_contents,
-                                     bool reverse) {
+bool AshWebViewImpl::TakeFocus(content::WebContents* web_contents,
+                               bool reverse) {
   DCHECK_EQ(web_contents_.get(), web_contents);
   auto* focus_manager = GetFocusManager();
   if (focus_manager)
@@ -117,19 +116,19 @@ bool AssistantWebViewImpl::TakeFocus(content::WebContents* web_contents,
   return false;
 }
 
-void AssistantWebViewImpl::NavigationStateChanged(
+void AshWebViewImpl::NavigationStateChanged(
     content::WebContents* web_contents,
     content::InvalidateTypes changed_flags) {
   DCHECK_EQ(web_contents_.get(), web_contents);
   UpdateCanGoBack();
 }
 
-void AssistantWebViewImpl::DidStopLoading() {
+void AshWebViewImpl::DidStopLoading() {
   for (auto& observer : observers_)
     observer.DidStopLoading();
 }
 
-void AssistantWebViewImpl::OnFocusChangedInPage(
+void AshWebViewImpl::OnFocusChangedInPage(
     content::FocusedNodeDetails* details) {
   // When navigating to the |web_contents_|, it may not focus it. Request focus
   // as needed. This is a workaround to get a non-empty rect of the focused
@@ -142,9 +141,8 @@ void AssistantWebViewImpl::OnFocusChangedInPage(
     observer.DidChangeFocusedNode(details->node_bounds_in_screen);
 }
 
-void AssistantWebViewImpl::RenderViewHostChanged(
-    content::RenderViewHost* old_host,
-    content::RenderViewHost* new_host) {
+void AshWebViewImpl::RenderViewHostChanged(content::RenderViewHost* old_host,
+                                           content::RenderViewHost* new_host) {
   if (!web_contents_->GetRenderWidgetHostView())
     return;
 
@@ -163,11 +161,11 @@ void AssistantWebViewImpl::RenderViewHostChanged(
                                                              max_size);
 }
 
-void AssistantWebViewImpl::NavigationEntriesDeleted() {
+void AshWebViewImpl::NavigationEntriesDeleted() {
   UpdateCanGoBack();
 }
 
-void AssistantWebViewImpl::InitWebContents(Profile* profile) {
+void AshWebViewImpl::InitWebContents(Profile* profile) {
   web_contents_ =
       content::WebContents::Create(content::WebContents::CreateParams(
           profile, content::SiteInstance::Create(profile)));
@@ -187,12 +185,12 @@ void AssistantWebViewImpl::InitWebContents(Profile* profile) {
   }
 }
 
-void AssistantWebViewImpl::InitLayout(Profile* profile) {
+void AshWebViewImpl::InitLayout(Profile* profile) {
   web_view_ = AddChildView(std::make_unique<views::WebView>(profile));
   web_view_->SetWebContents(web_contents_.get());
 }
 
-void AssistantWebViewImpl::NotifyDidSuppressNavigation(
+void AshWebViewImpl::NotifyDidSuppressNavigation(
     const GURL& url,
     WindowOpenDisposition disposition,
     bool from_user_gesture) {
@@ -202,7 +200,7 @@ void AssistantWebViewImpl::NotifyDidSuppressNavigation(
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(
-          [](const base::WeakPtr<AssistantWebViewImpl>& self, GURL url,
+          [](const base::WeakPtr<AshWebViewImpl>& self, GURL url,
              WindowOpenDisposition disposition, bool from_user_gesture) {
             if (self) {
               for (auto& observer : self->observers_) {
@@ -219,7 +217,7 @@ void AssistantWebViewImpl::NotifyDidSuppressNavigation(
           weak_factory_.GetWeakPtr(), url, disposition, from_user_gesture));
 }
 
-void AssistantWebViewImpl::UpdateCanGoBack() {
+void AshWebViewImpl::UpdateCanGoBack() {
   const bool can_go_back = web_contents_->GetController().CanGoBack();
   if (can_go_back_ == can_go_back)
     return;
@@ -232,7 +230,7 @@ void AssistantWebViewImpl::UpdateCanGoBack() {
     observer.DidChangeCanGoBack(can_go_back_);
 }
 
-void AssistantWebViewImpl::UpdateMinimizeOnBackProperty() {
+void AshWebViewImpl::UpdateMinimizeOnBackProperty() {
   const bool minimize_on_back = params_.minimize_on_back_key && !can_go_back_;
   views::Widget* widget = GetWidget();
   if (widget) {

@@ -2,18 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/assistant/assistant_web_view_impl.h"
+#include "chrome/browser/ui/ash/ash_web_view_impl.h"
 
 #include <memory>
 #include <string>
 
-#include "ash/public/cpp/assistant/assistant_web_view.h"
-#include "ash/public/cpp/assistant/assistant_web_view_factory.h"
+#include "ash/public/cpp/ash_web_view.h"
+#include "ash/public/cpp/ash_web_view_factory.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/browser/ui/ash/assistant/assistant_test_mixin.h"
-#include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,19 +20,10 @@
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/widget.h"
 
-namespace chromeos {
-namespace assistant {
-
 namespace {
 
-using ash::AssistantWebView;
-using ash::AssistantWebViewFactory;
-
-// Please remember to set auth token when *not* running in |kReplay| mode.
-constexpr auto kMode = FakeS3Mode::kReplay;
-
-// Update this when you introduce breaking changes to existing tests.
-constexpr int kVersion = 1;
+using ash::AshWebView;
+using ash::AshWebViewFactory;
 
 // Macros ----------------------------------------------------------------------
 
@@ -55,9 +45,8 @@ constexpr int kVersion = 1;
 
 #define EXPECT_DID_STOP_LOADING(web_view_)                                     \
   {                                                                            \
-    MockAssistantWebViewObserver mock;                                         \
-    base::ScopedObservation<AssistantWebView, AssistantWebView::Observer> obs{ \
-        &mock};                                                                \
+    MockAshWebViewObserver mock;                                               \
+    base::ScopedObservation<AshWebView, AshWebView::Observer> obs{&mock};      \
     obs.Observe(web_view_);                                                    \
                                                                                \
     base::RunLoop run_loop;                                                    \
@@ -67,42 +56,40 @@ constexpr int kVersion = 1;
     run_loop.Run();                                                            \
   }
 
-#define EXPECT_DID_SUPPRESS_NAVIGATION(web_view_, expected_url_,               \
-                                       expected_disposition_,                  \
-                                       expected_from_user_gesture_)            \
-  {                                                                            \
-    MockAssistantWebViewObserver mock;                                         \
-    base::ScopedObservation<AssistantWebView, AssistantWebView::Observer> obs{ \
-        &mock};                                                                \
-    obs.Observe(web_view_);                                                    \
-                                                                               \
-    base::RunLoop run_loop;                                                    \
-    EXPECT_CALL(mock, DidSuppressNavigation)                                   \
-        .WillOnce(testing::Invoke([&](const GURL& url,                         \
-                                      WindowOpenDisposition disposition,       \
-                                      bool from_user_gesture) {                \
-          EXPECT_EQ(expected_url_, url);                                       \
-          EXPECT_EQ(expected_disposition_, disposition);                       \
-          EXPECT_EQ(expected_from_user_gesture_, from_user_gesture);           \
-          run_loop.QuitClosure().Run();                                        \
-        }));                                                                   \
-    run_loop.Run();                                                            \
+#define EXPECT_DID_SUPPRESS_NAVIGATION(web_view_, expected_url_,          \
+                                       expected_disposition_,             \
+                                       expected_from_user_gesture_)       \
+  {                                                                       \
+    MockAshWebViewObserver mock;                                          \
+    base::ScopedObservation<AshWebView, AshWebView::Observer> obs{&mock}; \
+    obs.Observe(web_view_);                                               \
+                                                                          \
+    base::RunLoop run_loop;                                               \
+    EXPECT_CALL(mock, DidSuppressNavigation)                              \
+        .WillOnce(testing::Invoke([&](const GURL& url,                    \
+                                      WindowOpenDisposition disposition,  \
+                                      bool from_user_gesture) {           \
+          EXPECT_EQ(expected_url_, url);                                  \
+          EXPECT_EQ(expected_disposition_, disposition);                  \
+          EXPECT_EQ(expected_from_user_gesture_, from_user_gesture);      \
+          run_loop.QuitClosure().Run();                                   \
+        }));                                                              \
+    run_loop.Run();                                                       \
   }
 
-#define EXPECT_DID_CHANGE_CAN_GO_BACK(web_view_, expected_can_go_back_)        \
-  {                                                                            \
-    MockAssistantWebViewObserver mock;                                         \
-    base::ScopedObservation<AssistantWebView, AssistantWebView::Observer> obs{ \
-        &mock};                                                                \
-    obs.Observe(web_view_);                                                    \
-                                                                               \
-    base::RunLoop run_loop;                                                    \
-    EXPECT_CALL(mock, DidChangeCanGoBack)                                      \
-        .WillOnce(testing::Invoke([&](bool can_go_back) {                      \
-          EXPECT_EQ(expected_can_go_back_, can_go_back);                       \
-          run_loop.QuitClosure().Run();                                        \
-        }));                                                                   \
-    run_loop.Run();                                                            \
+#define EXPECT_DID_CHANGE_CAN_GO_BACK(web_view_, expected_can_go_back_)   \
+  {                                                                       \
+    MockAshWebViewObserver mock;                                          \
+    base::ScopedObservation<AshWebView, AshWebView::Observer> obs{&mock}; \
+    obs.Observe(web_view_);                                               \
+                                                                          \
+    base::RunLoop run_loop;                                               \
+    EXPECT_CALL(mock, DidChangeCanGoBack)                                 \
+        .WillOnce(testing::Invoke([&](bool can_go_back) {                 \
+          EXPECT_EQ(expected_can_go_back_, can_go_back);                  \
+          run_loop.QuitClosure().Run();                                   \
+        }));                                                              \
+    run_loop.Run();                                                       \
   }
 
 // Helpers ---------------------------------------------------------------------
@@ -150,10 +137,9 @@ class MockViewObserver : public testing::NiceMock<views::ViewObserver> {
               (override));
 };
 
-class MockAssistantWebViewObserver
-    : public testing::NiceMock<AssistantWebView::Observer> {
+class MockAshWebViewObserver : public testing::NiceMock<AshWebView::Observer> {
  public:
-  // AssistantWebView::Observer:
+  // AshWebView::Observer:
   MOCK_METHOD(void, DidStopLoading, (), (override));
 
   MOCK_METHOD(void,
@@ -168,31 +154,31 @@ class MockAssistantWebViewObserver
 
 }  // namespace
 
-// AssistantWebViewImplBrowserTest ---------------------------------------------
+// AshWebViewImplBrowserTest
+// -------------AshWebViewImpl--------------------------------
 
-class AssistantWebViewImplBrowserTest : public MixinBasedInProcessBrowserTest {
+class AshWebViewImplBrowserTest : public InProcessBrowserTest {
  public:
-  AssistantWebViewImplBrowserTest() = default;
-  ~AssistantWebViewImplBrowserTest() override = default;
-
- private:
-  AssistantTestMixin tester_{&mixin_host_, this, embedded_test_server(), kMode,
-                             kVersion};
+  AshWebViewImplBrowserTest() = default;
+  AshWebViewImplBrowserTest(const AshWebViewImplBrowserTest&) = delete;
+  AshWebViewImplBrowserTest& operator=(const AshWebViewImplBrowserTest&) =
+      delete;
+  ~AshWebViewImplBrowserTest() override = default;
 };
 
 // Tests -----------------------------------------------------------------------
 
-// Tests that AssistantWebViewImpl will automatically update its preferred size
+// Tests that AshWebViewImpl will automatically update its preferred size
 // to match the desired size of its hosted contents.
-IN_PROC_BROWSER_TEST_F(AssistantWebViewImplBrowserTest, ShouldAutoResize) {
-  AssistantWebView::InitParams params;
+IN_PROC_BROWSER_TEST_F(AshWebViewImplBrowserTest, ShouldAutoResize) {
+  AshWebView::InitParams params;
   params.enable_auto_resize = true;
   params.min_size = gfx::Size(600, 400);
   params.max_size = gfx::Size(800, 600);
 
   auto widget = CreateWidget();
-  AssistantWebView* web_view =
-      widget->SetContentsView(AssistantWebViewFactory::Get()->Create(params));
+  AshWebView* web_view =
+      widget->SetContentsView(AshWebViewFactory::Get()->Create(params));
 
   // Verify auto-resizing within min/max bounds.
   web_view->Navigate(
@@ -210,26 +196,25 @@ IN_PROC_BROWSER_TEST_F(AssistantWebViewImplBrowserTest, ShouldAutoResize) {
   EXPECT_PREFERRED_SIZE(web_view, gfx::Size(800, 600));
 }
 
-// Tests that AssistantWebViewImpl will notify DidStopLoading() events.
-IN_PROC_BROWSER_TEST_F(AssistantWebViewImplBrowserTest,
-                       ShouldNotifyDidStopLoading) {
+// Tests that AshWebViewImpl will notify DidStopLoading() events.
+IN_PROC_BROWSER_TEST_F(AshWebViewImplBrowserTest, ShouldNotifyDidStopLoading) {
   auto widget = CreateWidget();
-  AssistantWebView* web_view = widget->SetContentsView(
-      AssistantWebViewFactory::Get()->Create(AssistantWebView::InitParams()));
+  AshWebView* web_view = widget->SetContentsView(
+      AshWebViewFactory::Get()->Create(AshWebView::InitParams()));
 
   web_view->Navigate(CreateDataUrl());
   EXPECT_DID_STOP_LOADING(web_view);
 }
 
-// Tests that AssistantWebViewImpl will notify DidSuppressNavigation() events.
-IN_PROC_BROWSER_TEST_F(AssistantWebViewImplBrowserTest,
+// Tests that AshWebViewImpl will notify DidSuppressNavigation() events.
+IN_PROC_BROWSER_TEST_F(AshWebViewImplBrowserTest,
                        ShouldNotifyDidSuppressNavigation) {
-  AssistantWebView::InitParams params;
+  AshWebView::InitParams params;
   params.suppress_navigation = true;
 
   auto widget = CreateWidget();
-  AssistantWebView* web_view = widget->SetContentsView(
-      AssistantWebViewFactory::Get()->Create(std::move(params)));
+  AshWebView* web_view = widget->SetContentsView(
+      AshWebViewFactory::Get()->Create(std::move(params)));
 
   web_view->Navigate(CreateDataUrlWithBody(R"(
       <script>
@@ -267,12 +252,12 @@ IN_PROC_BROWSER_TEST_F(AssistantWebViewImplBrowserTest,
       /*from_user_gesture=*/true);
 }
 
-// Tests that AssistantWebViewImpl will notify DidChangeCanGoBack() events.
-IN_PROC_BROWSER_TEST_F(AssistantWebViewImplBrowserTest,
+// Tests that AshWebViewImpl will notify DidChangeCanGoBack() events.
+IN_PROC_BROWSER_TEST_F(AshWebViewImplBrowserTest,
                        ShouldNotifyDidChangeCanGoBack) {
   auto widget = CreateWidget();
-  AssistantWebView* web_view = widget->SetContentsView(
-      AssistantWebViewFactory::Get()->Create(AssistantWebView::InitParams()));
+  AshWebView* web_view = widget->SetContentsView(
+      AshWebViewFactory::Get()->Create(AshWebView::InitParams()));
 
   web_view->Navigate(CreateDataUrlWithBody("<div>First Page</div>"));
   EXPECT_DID_STOP_LOADING(web_view);
@@ -283,6 +268,3 @@ IN_PROC_BROWSER_TEST_F(AssistantWebViewImplBrowserTest,
   web_view->GoBack();
   EXPECT_DID_CHANGE_CAN_GO_BACK(web_view, /*can_go_back=*/false);
 }
-
-}  // namespace assistant
-}  // namespace chromeos

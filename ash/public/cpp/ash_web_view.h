@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PUBLIC_CPP_ASSISTANT_ASSISTANT_WEB_VIEW_H_
-#define ASH_PUBLIC_CPP_ASSISTANT_ASSISTANT_WEB_VIEW_H_
+#ifndef ASH_PUBLIC_CPP_ASH_WEB_VIEW_H_
+#define ASH_PUBLIC_CPP_ASH_WEB_VIEW_H_
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/observer_list_types.h"
@@ -17,33 +17,33 @@ namespace ash {
 
 // A view which wraps a views::WebView (and associated WebContents) to work
 // around dependency restrictions in Ash.
-class ASH_PUBLIC_EXPORT AssistantWebView : public views::View {
+class ASH_PUBLIC_EXPORT AshWebView : public views::View {
  public:
-  // Initialization parameters which dictate how an instance of AssistantWebView
+  // Initialization parameters which dictate how an instance of AshWebView
   // should behave.
   struct InitParams {
     InitParams();
     InitParams(const InitParams& copy);
     ~InitParams();
 
-    // If enabled, AssistantWebView will automatically resize to the size
+    // If enabled, AshWebView will automatically resize to the size
     // desired by its embedded WebContents. Note that, if specified, the
     // WebContents will be bounded by |min_size| and |max_size|.
     bool enable_auto_resize = false;
     absl::optional<gfx::Size> min_size = absl::nullopt;
     absl::optional<gfx::Size> max_size = absl::nullopt;
 
-    // If enabled, AssistantWebView will suppress navigation attempts of its
+    // If enabled, AshWebView will suppress navigation attempts of its
     // embedded WebContents. When navigation suppression occurs,
     // Observer::DidSuppressNavigation() will be invoked.
     bool suppress_navigation = false;
 
-    // If enabled, AssistantWebView can be minimized once we received a ash
+    // If enabled, AshWebView can be minimized once we received a ash
     // synthesized back event when we're at the bottom of the stack.
     bool minimize_on_back_key = false;
   };
 
-  // An observer which receives AssistantWebView events.
+  // An observer which receives AshWebView events.
   class Observer : public base::CheckedObserver {
    public:
     // Invoked when the embedded WebContents has stopped loading.
@@ -62,7 +62,7 @@ class ASH_PUBLIC_EXPORT AssistantWebView : public views::View {
     virtual void DidChangeFocusedNode(const gfx::Rect& node_bounds_in_screen) {}
   };
 
-  ~AssistantWebView() override;
+  ~AshWebView() override;
 
   // Adds/removes the specified |observer|.
   virtual void AddObserver(Observer* observer) = 0;
@@ -80,9 +80,9 @@ class ASH_PUBLIC_EXPORT AssistantWebView : public views::View {
   virtual void Navigate(const GURL& url) = 0;
 
  protected:
-  AssistantWebView();
+  AshWebView();
 };
 
 }  // namespace ash
 
-#endif  // ASH_PUBLIC_CPP_ASSISTANT_ASSISTANT_WEB_VIEW_H_
+#endif  // ASH_PUBLIC_CPP_ASHE_WEB_VIEW_H_

@@ -16,7 +16,6 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/assistant/assistant_context_util.h"
 #include "chrome/browser/ui/ash/assistant/assistant_setup.h"
-#include "chrome/browser/ui/ash/assistant/assistant_web_view_factory_impl.h"
 #include "chrome/browser/ui/ash/assistant/device_actions_delegate_impl.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/assistant/public/mojom/assistant_audio_decoder.mojom.h"
@@ -81,11 +80,6 @@ void AssistantBrowserDelegateImpl::MaybeInit(Profile* profile) {
   service_->Init();
 
   assistant_setup_ = std::make_unique<AssistantSetup>();
-
-  if (!assistant_web_view_factory_) {
-    assistant_web_view_factory_ =
-        std::make_unique<AssistantWebViewFactoryImpl>(profile_);
-  }
 }
 
 void AssistantBrowserDelegateImpl::MaybeStartAssistantOptInFlow() {
@@ -206,17 +200,6 @@ void AssistantBrowserDelegateImpl::OnUserSessionStarted(bool is_primary_user) {
 void AssistantBrowserDelegateImpl::OnAssistantFeatureAllowedChanged(
     chromeos::assistant::AssistantAllowedState allowed_state) {
   Profile* profile = ProfileManager::GetActiveUserProfile();
-
-  if (allowed_state != chromeos::assistant::AssistantAllowedState::ALLOWED) {
-    // This is a short term workaround since Quick Answers also use the webview
-    // factory.
-    // TODO(b/198811694): Refactor AssistantWebViewFactoryImpl.
-    if (!assistant_web_view_factory_) {
-      assistant_web_view_factory_ =
-          std::make_unique<AssistantWebViewFactoryImpl>(profile);
-    }
-    return;
-  }
 
   MaybeInit(profile);
 }
