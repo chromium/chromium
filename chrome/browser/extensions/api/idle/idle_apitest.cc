@@ -70,6 +70,16 @@ IN_PROC_BROWSER_TEST_P(IdleApiTest, QueryStateLocked) {
       RunExtensionTest("idle/query_state", {.custom_arg = "queryStateLocked"}));
 }
 
+IN_PROC_BROWSER_TEST_P(IdleApiTest, SetDetectionInterval) {
+  // The default value for this property is 60. 37 seems random enough for this
+  // test.
+  ASSERT_TRUE(
+      RunExtensionTest("idle/set_detection_interval", {.custom_arg = "37"}));
+  // The test should set the detection interval per the custom_arg value.
+  EXPECT_EQ(37, IdleManagerFactory::GetForBrowserContext(profile())
+                    ->GetThresholdForTest(last_loaded_extension_id()));
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_P(IdleApiTest, IdleGetAutoLockDelay) {
   ASSERT_TRUE(RunExtensionTest("idle/get_auto_lock_delay")) << message_;
