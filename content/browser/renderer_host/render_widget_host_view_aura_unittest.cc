@@ -5865,7 +5865,7 @@ class MockWebContentsViewDelegate : public WebContentsViewDelegate {
   }
 
   // WebContentsViewDelegate overrides.
-  void ShowContextMenu(RenderFrameHost* render_frame_host,
+  void ShowContextMenu(RenderFrameHost& render_frame_host,
                        const ContextMenuParams& params) override {
     context_menu_request_received_ = true;
     context_menu_params_ = params;
@@ -5902,7 +5902,7 @@ TEST_F(RenderWidgetHostViewAuraWithViewHarnessTest,
   ContextMenuParams context_menu_params;
   context_menu_params.source_type = ui::MENU_SOURCE_MOUSE;
   contents()->ShowContextMenu(
-      contents()->GetRenderViewHost()->GetMainRenderFrameHost(),
+      *contents()->GetRenderViewHost()->GetMainRenderFrameHost(),
       mojo::NullAssociatedRemote(), context_menu_params);
   EXPECT_TRUE(delegate->context_menu_request_received());
   EXPECT_EQ(delegate->context_menu_source_type(), ui::MENU_SOURCE_MOUSE);
@@ -5914,7 +5914,7 @@ TEST_F(RenderWidgetHostViewAuraWithViewHarnessTest,
   delegate->ClearState();
   context_menu_params.source_type = ui::MENU_SOURCE_TOUCH;
   contents()->ShowContextMenu(
-      contents()->GetRenderViewHost()->GetMainRenderFrameHost(),
+      *contents()->GetRenderViewHost()->GetMainRenderFrameHost(),
       mojo::NullAssociatedRemote(), context_menu_params);
   EXPECT_TRUE(delegate->context_menu_request_received());
 
@@ -5925,7 +5925,7 @@ TEST_F(RenderWidgetHostViewAuraWithViewHarnessTest,
   delegate->ClearState();
   context_menu_params.source_type = ui::MENU_SOURCE_LONG_TAP;
   contents()->ShowContextMenu(
-      contents()->GetRenderViewHost()->GetMainRenderFrameHost(),
+      *contents()->GetRenderViewHost()->GetMainRenderFrameHost(),
       mojo::NullAssociatedRemote(), context_menu_params);
   EXPECT_TRUE(delegate->context_menu_request_received());
 
@@ -5936,7 +5936,7 @@ TEST_F(RenderWidgetHostViewAuraWithViewHarnessTest,
   delegate->ClearState();
   context_menu_params.source_type = ui::MENU_SOURCE_LONG_PRESS;
   contents()->ShowContextMenu(
-      contents()->GetRenderViewHost()->GetMainRenderFrameHost(),
+      *contents()->GetRenderViewHost()->GetMainRenderFrameHost(),
       mojo::NullAssociatedRemote(), context_menu_params);
   EXPECT_TRUE(delegate->context_menu_request_received());
 

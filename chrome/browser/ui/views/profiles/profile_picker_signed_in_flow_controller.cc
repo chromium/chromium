@@ -191,7 +191,7 @@ void ProfilePickerSignedInFlowController::SwitchToProfileSwitch(
 }
 
 bool ProfilePickerSignedInFlowController::HandleContextMenu(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
   // Ignores context menu.
   return true;

@@ -47,7 +47,7 @@ ContextMenuHelper::~ContextMenuHelper() {
 }
 
 void ContextMenuHelper::ShowContextMenu(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
   // TODO(crbug.com/851495): support context menu in VR.
   if (vr::VrTabHelper::IsUiSuppressedInVr(
@@ -65,7 +65,7 @@ void ContextMenuHelper::ShowContextMenu(
   Java_ContextMenuHelper_showContextMenu(
       env, java_obj_,
       context_menu::BuildJavaContextMenuParams(context_menu_params_),
-      render_frame_host->GetJavaRenderFrameHost(), view->GetContainerView(),
+      render_frame_host.GetJavaRenderFrameHost(), view->GetContainerView(),
       view->content_offset() * view->GetDipScale());
 }
 

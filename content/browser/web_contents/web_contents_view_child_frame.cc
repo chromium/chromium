@@ -147,7 +147,7 @@ void WebContentsViewChildFrame::TakeFocus(bool reverse) {
 }
 
 void WebContentsViewChildFrame::ShowContextMenu(
-    RenderFrameHost* render_frame_host,
+    RenderFrameHost& render_frame_host,
     const ContextMenuParams& params) {
   NOTREACHED();
 }

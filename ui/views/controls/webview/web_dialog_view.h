@@ -126,7 +126,7 @@ class WEBVIEW_EXPORT WebDialogView : public ClientView,
                        bool* out_close_dialog) override;
   bool ShouldShowDialogTitle() const override;
   bool ShouldCenterDialogTitleText() const override;
-  bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
+  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) override;
 
   // content::WebContentsDelegate:

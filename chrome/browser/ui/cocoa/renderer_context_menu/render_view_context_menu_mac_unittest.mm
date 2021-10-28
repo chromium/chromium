@@ -31,7 +31,7 @@ class RenderViewContextMenuMacTest : public testing::Test {
     content::ContextMenuParams params;
     params.selection_text = base::UTF8ToUTF16(text);
     auto menu = std::make_unique<RenderViewContextMenuMac>(
-        contents_->GetMainFrame(), params);
+        *contents_->GetMainFrame(), params);
     menu->InitToolkitMenu();
     return menu;
   }

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "chrome/browser/guest_view/web_view/chrome_web_view_guest_delegate.h"
 
 #include <memory>
@@ -33,7 +32,11 @@ ChromeWebViewGuestDelegate::~ChromeWebViewGuestDelegate() {
 }
 
 bool ChromeWebViewGuestDelegate::HandleContextMenu(
+    content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
+  DCHECK_EQ(guest_web_contents(),
+            content::WebContents::FromRenderFrameHost(&render_frame_host));
+
   if ((params.source_type == ui::MENU_SOURCE_LONG_PRESS ||
        params.source_type == ui::MENU_SOURCE_LONG_TAP ||
        params.source_type == ui::MENU_SOURCE_TOUCH) &&
@@ -52,7 +55,7 @@ bool ChromeWebViewGuestDelegate::HandleContextMenu(
   ContextMenuDelegate* menu_delegate =
       ContextMenuDelegate::FromWebContents(guest_web_contents());
   DCHECK(menu_delegate);
-  pending_menu_ = menu_delegate->BuildMenu(guest_web_contents(), params);
+  pending_menu_ = menu_delegate->BuildMenu(render_frame_host, params);
   // It's possible for the returned menu to be null, so early out to avoid
   // a crash. TODO(wjmaclean): find out why it's possible for this to happen
   // in the first place, and if it's an error.

@@ -1034,7 +1034,7 @@ void ProfileMenuViewBase::OnWindowClosing() {
 }
 
 bool ProfileMenuViewBase::HandleContextMenu(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
   // Suppresses the context menu because some features, such as inspecting
   // elements, are not appropriate in a bubble.

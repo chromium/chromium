@@ -167,7 +167,7 @@ void SigninViewControllerDelegateViews::SetWebContents(
 }
 
 bool SigninViewControllerDelegateViews::HandleContextMenu(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
   // Discard the context menu
   return true;

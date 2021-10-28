@@ -17,7 +17,7 @@
 // target of the NSMenu, bridging back to this C++ class.
 class RenderViewContextMenuMacCocoa : public RenderViewContextMenuMac {
  public:
-  RenderViewContextMenuMacCocoa(content::RenderFrameHost* render_frame_host,
+  RenderViewContextMenuMacCocoa(content::RenderFrameHost& render_frame_host,
                                 const content::ContextMenuParams& params,
                                 NSView* parent_view);
 

@@ -17,7 +17,7 @@
 using ui::MenuModel;
 
 TestRenderViewContextMenu::TestRenderViewContextMenu(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     content::ContextMenuParams params)
     : RenderViewContextMenu(render_frame_host, params) {}
 
@@ -34,7 +34,7 @@ std::unique_ptr<TestRenderViewContextMenu> TestRenderViewContextMenu::Create(
   params.link_url = link_url;
   params.frame_url = frame_url;
   auto menu = std::make_unique<TestRenderViewContextMenu>(
-      web_contents->GetMainFrame(), params);
+      *web_contents->GetMainFrame(), params);
   menu->Init();
   return menu;
 }

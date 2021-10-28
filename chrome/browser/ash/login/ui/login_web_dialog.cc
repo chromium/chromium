@@ -144,7 +144,7 @@ bool LoginWebDialog::ShouldShowDialogTitle() const {
 }
 
 bool LoginWebDialog::HandleContextMenu(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
   // Disable context menu.
   return true;

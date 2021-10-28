@@ -26,7 +26,7 @@ class ContextMenuHelper
 
   ~ContextMenuHelper() override;
 
-  void ShowContextMenu(content::RenderFrameHost* render_frame_host,
+  void ShowContextMenu(content::RenderFrameHost& render_frame_host,
                        const content::ContextMenuParams& params);
 
   void OnContextMenuClosed(JNIEnv* env,

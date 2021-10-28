@@ -153,7 +153,7 @@ class WebUILoginView : public views::View,
   void OnKeyboardVisibilityChanged(bool visible) override;
 
   // Overridden from content::WebContentsDelegate.
-  bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
+  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) override;
   bool HandleKeyboardEvent(
       content::WebContents* source,
