@@ -180,10 +180,45 @@ TEST(MediaQuerySetTest, Basic) {
       {"only or", "not all"},
       {"not (orientation)", "not all"},
       {"only (orientation)", "not all"},
+      {"(max-width: 800px()), (max-width: 800px)",
+       "not all, (max-width: 800px)"},
+      {"(max-width: 900px(()), (max-width: 900px)", "not all"},
+      {"(max-width: 600px(())))), (max-width: 600px)",
+       "not all, (max-width: 600px)"},
+      {"(max-width: 500px(((((((((())))), (max-width: 500px)", "not all"},
+      {"(max-width: 800px[]), (max-width: 800px)",
+       "not all, (max-width: 800px)"},
+      {"(max-width: 900px[[]), (max-width: 900px)", "not all"},
+      {"(max-width: 600px[[]]]]), (max-width: 600px)",
+       "not all, (max-width: 600px)"},
+      {"(max-width: 500px[[[[[[[[[[]]]]), (max-width: 500px)", "not all"},
+      {"(max-width: 800px{}), (max-width: 800px)",
+       "not all, (max-width: 800px)"},
+      {"(max-width: 900px{{}), (max-width: 900px)", "not all"},
+      {"(max-width: 600px{{}}}}), (max-width: 600px)",
+       "not all, (max-width: 600px)"},
+      {"(max-width: 500px{{{{{{{{{{}}}}), (max-width: 500px)", "not all"},
+      {"[(), (max-width: 400px)", "not all"},
+      {"[{}, (max-width: 500px)", "not all"},
+      {"[{]}], (max-width: 900px)", "not all, (max-width: 900px)"},
+      {"[{[]{}{{{}}}}], (max-width: 900px)", "not all, (max-width: 900px)"},
+      {"[{[}], (max-width: 900px)", "not all"},
+      {"[({)}], (max-width: 900px)", "not all"},
+      {"[]((), (max-width: 900px)", "not all"},
+      {"((), (max-width: 900px)", "not all"},
+      {"(foo(), (max-width: 900px)", "not all"},
+      {"[](()), (max-width: 900px)", "not all, (max-width: 900px)"},
+      {"all an[isdfs bla())(i())]icalc(i)(()), (max-width: 400px)",
+       "not all, (max-width: 400px)"},
+      {"all an[isdfs bla())(]icalc(i)(()), (max-width: 500px)", "not all"},
+      {"all an[isdfs bla())(]icalc(i)(())), (max-width: 600px)", "not all"},
+      {"all an[isdfs bla())(]icalc(i)(()))], (max-width: 800px)",
+       "not all, (max-width: 800px)"},
       {nullptr, nullptr}  // Do not remove the terminator line.
   };
 
   for (unsigned i = 0; test_cases[i].input; ++i) {
+    SCOPED_TRACE(test_cases[i].input);
     scoped_refptr<MediaQuerySet> query_set =
         MediaQuerySet::Create(test_cases[i].input, nullptr);
     TestMediaQuery(test_cases[i], *query_set);

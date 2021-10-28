@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_mode.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
-#include "third_party/blink/renderer/core/css/parser/media_query_block_watcher.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -94,8 +93,8 @@ class CORE_EXPORT MediaQueryParser {
 
   scoped_refptr<MediaQuerySet> ParseImpl(CSSParserTokenRange);
 
-  // Like a regular Consume, except notifies MediaQueryBlockWatcher
-  // before returning the token.
+  // Like a regular Consume, except verifies that don't consume past
+  // block start/ends.
   CSSParserToken ConsumeToken(CSSParserTokenRange&);
 
   void ProcessToken(CSSParserTokenRange&);
@@ -118,7 +117,6 @@ class CORE_EXPORT MediaQueryParser {
   ParserType parser_type_;
   MediaQueryData media_query_data_;
   scoped_refptr<MediaQuerySet> query_set_;
-  MediaQueryBlockWatcher block_watcher_;
   CSSParserMode mode_;
   const ExecutionContext* execution_context_;
 
