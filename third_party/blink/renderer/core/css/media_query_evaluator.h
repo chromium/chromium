@@ -82,15 +82,19 @@ class CORE_EXPORT MediaQueryEvaluator final
 
   bool MediaTypeMatch(const String& media_type_to_match) const;
 
+  // Output from Eval functions:
+  struct Results {
+    MediaQueryResultList* viewport_dependent = nullptr;
+    MediaQueryResultList* device_dependent = nullptr;
+  };
+
   // Evaluates a list of media queries.
-  bool Eval(const MediaQuerySet&,
-            MediaQueryResultList* viewport_dependent = nullptr,
-            MediaQueryResultList* device_dependent = nullptr) const;
+  bool Eval(const MediaQuerySet&) const;
+  bool Eval(const MediaQuerySet&, Results) const;
 
   // Evaluates media query.
-  bool Eval(const MediaQuery&,
-            MediaQueryResultList* viewport_dependent = nullptr,
-            MediaQueryResultList* device_dependent = nullptr) const;
+  bool Eval(const MediaQuery&) const;
+  bool Eval(const MediaQuery&, Results) const;
 
   bool Eval(const MediaQueryExpNode&) const;
 
