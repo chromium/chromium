@@ -5474,6 +5474,12 @@ others/histograms.xml -->
   <int value="2" label="Import with section union"/>
 </enum>
 
+<enum name="AutofillAssistantDependenciesInvalidated">
+  <int value="0" label="Invalidated outside of flow"/>
+  <int value="1" label="Invalidated during startup"/>
+  <int value="2" label="Invalidated during flow"/>
+</enum>
+
 <enum name="AutofillAssistantDropOutReason">
   <int value="0" label="Autofill Assistant started"/>
   <int value="1" label="Autostart timed out"/>
