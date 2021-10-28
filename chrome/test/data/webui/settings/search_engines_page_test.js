@@ -255,6 +255,23 @@ suite('SearchEngineEntryTests', function() {
   });
 
   /**
+   * Checks that the given button is hidden for the given search engine.
+   * @param {!SearchEngine} searchEngine
+   * @param {string} buttonId
+   */
+  function testButtonHidden(searchEngine, buttonId) {
+    entry.engine = searchEngine;
+    const button = entry.$[buttonId];
+    assertTrue(!!button);
+    assertTrue(button.hidden);
+  }
+
+  test('Remove_Hidden', function() {
+    testButtonHidden(
+        createSampleSearchEngine(0, 'G', true, true, false), 'delete');
+  });
+
+  /**
    * Checks that the given button is disabled for the given search engine.
    * @param {!SearchEngine} searchEngine
    * @param {string} buttonId
@@ -265,11 +282,6 @@ suite('SearchEngineEntryTests', function() {
     assertTrue(!!button);
     assertTrue(button.disabled);
   }
-
-  test('Remove_Disabled', function() {
-    testButtonDisabled(
-        createSampleSearchEngine(0, 'G', true, true, false), 'delete');
-  });
 
   test('MakeDefault_Disabled', function() {
     testButtonDisabled(
