@@ -1316,7 +1316,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2312219318583366810">Sidans webbadress</translation>
 <translation id="2314165183524574721">Den aktuella synlighetsinställningen är Dold</translation>
 <translation id="2314774579020744484">Språk som sidor ska översättas till</translation>
-<translation id="2315414688463285945">Ett fel uppstod när Linux-filer skulle konfigureras. Försök igen.</translation>
 <translation id="2315587498123194634">Skicka länk till <ph name="DEVICE_NAME" /></translation>
 <translation id="2316129865977710310">Nej tack</translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" /> % klart</translation>
@@ -2365,7 +2364,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3424969259347320884">Beskriv vad du höll på med när fliken kraschade</translation>
 <translation id="3427092606871434483">Tillåt (standard)</translation>
 <translation id="3428419049384081277">Du är inloggad!</translation>
-<translation id="3428747202529429621">Skyddar dig i Chrome och kan användas för förbättrad säkerhet i andra Google-appar där du är inloggad</translation>
 <translation id="3429086384982427336">Apparna nedan hanterar inte protokollänkar.</translation>
 <translation id="3429160811076349561">Provfunktionerna är inaktiverade</translation>
 <translation id="3429271624041785769">Språk för webbinnehåll</translation>
@@ -5130,7 +5128,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6410328738210026208">Byt kanal och Powerwash</translation>
 <translation id="6410390304316730527">Säker webbsökning skyddar dig mot angripare som kan försöka lura dig att göra något riskfyllt, till exempel installera skadlig programvara eller avslöja personliga uppgifter som lösenord, telefonnummer eller kreditkortsuppgifter. Om du inaktiverar detta bör du vara försiktig när du besöker okända webbplatser.</translation>
 <translation id="6410668567036790476">Lägg till sökmotor</translation>
-<translation id="6412673304250309937">Kontrollera webbadresser mot en lista över osäkra webbplatser i Chrome. Om du utsätts för försök att kapa ditt lösenord på en webbplats eller om du laddar ned en skadlig fil kan webbadresserna skickas från Chrome till Säker webbsökning tillsammans med delar av sidinnehållet.</translation>
 <translation id="641469293210305670">Installera uppdateringar och appar</translation>
 <translation id="6414878884710400018">Öppna Systeminställningar</translation>
 <translation id="6414888972213066896">Du har frågat en förälder om lov att besöka den här webbplatsen.</translation>
@@ -5539,7 +5536,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6843264316370513305">Felsökning av nätverk</translation>
 <translation id="6843423766595476978">Ok Google är klart att använda</translation>
 <translation id="6845038076637626672">Öppna maximerad</translation>
-<translation id="6845325883481699275">Bidra till att göra Chrome säkrare</translation>
 <translation id="6846178040388691741"><ph name="EXTENSION_NAME" /> försöker skriva ut <ph name="FILE_NAME" /> med <ph name="PRINTER_NAME" />.</translation>
 <translation id="6847125920277401289">Frigör utrymme om du vill fortsätta</translation>
 <translation id="6848388270925200958">Du har för närvarande några kort som bara kan användas på den här enheten</translation>
@@ -6992,7 +6988,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8324784016256120271">Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookies och till exempel anpassa annonser</translation>
 <translation id="8325413836429495820">Får inte se urklippet</translation>
 <translation id="8326478304147373412">PKCS #7, certifikatkedja</translation>
-<translation id="8327039559959785305">Ett fel uppstod när Linux-filer skulle monteras. Försök igen.</translation>
 <translation id="8327676037044516220">Behörigheter och innehållsinställningar</translation>
 <translation id="833256022891467078">Delade mappar i Crostini</translation>
 <translation id="8335587457941836791">Ta bort från hyllan</translation>

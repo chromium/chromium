@@ -131,6 +131,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1882897271359938046">Mise en miroir pour <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Déverrouillage avec empreinte</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> n'est pas compatible avec la résolution <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). La résolution <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) sera utilisée à la place. Cliquez sur "Confirmer" pour valider cette modification. Les paramètres précédents seront restaurés dans <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="1915307458270490472">Raccrocher</translation>
 <translation id="1919743966458266018">Le raccourci permettant d'ouvrir le gestionnaire de tâches a été modifié. Utilisez "<ph name="NEW_SHORTCUT" />" au lieu de "<ph name="OLD_SHORTCUT" />".</translation>
 <translation id="1923539912171292317">Clics automatiques</translation>
 <translation id="1928739107511554905">Pour télécharger la mise à jour, utilisez l'écran tactile pour redémarrer votre Chromebook avec le clavier branché.</translation>
@@ -1129,6 +1130,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="925832987464884575">Masquer les aperçus</translation>
 <translation id="938963181863597773">Qu'y a-t-il dans mon agenda ?</translation>
 <translation id="945522503751344254">Envoyer un commentaire</translation>
+<translation id="951991426597076286">Refuser</translation>
 <translation id="98515147261107953">Paysage</translation>
 <translation id="990277280839877440">Fenêtre <ph name="WINDOW_TITILE" /> fermée.</translation>
 </translationbundle>

@@ -131,6 +131,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1882897271359938046">Mirroring su <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Sblocca con l'impronta digitale</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> non supporta <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). È stata impostata la risoluzione <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Fai clic su Conferma per mantenere le modifiche. Le impostazioni precedenti verranno ripristinate tra <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="1915307458270490472">Chiudi</translation>
 <translation id="1919743966458266018">La scorciatoia per aprire Task Manager è cambiata. Utilizza <ph name="NEW_SHORTCUT" /> invece di <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Clic automatici</translation>
 <translation id="1928739107511554905">Per scaricare l'aggiornamento, utilizza il touchscreen e riavvia il Chromebook con la tastiera collegata.</translation>
@@ -372,6 +373,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3665889125180354336">Registra microfono</translation>
 <translation id="3680908746918359504">Cancella tutti gli indicatori</translation>
 <translation id="36813544980941320">Il tuo telefono e il dispositivo <ph name="DEVICE_NAME" /> useranno le stesse reti Wi-Fi</translation>
+<translation id="3701206655856637070">Ora puoi cambiare la posizione in cui vengono salvate le acquisizioni schermo</translation>
 <translation id="3702809606464356667">Dalla visualizzazione delle finestre della scrivania corrente, premi il tasto Freccia su per mostrare le finestre di tutte le scrivanie</translation>
 <translation id="3702846122927433391">Popolazione della Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
@@ -562,6 +564,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
         <ph name="NOTIFICATION" />,
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="4945196315133970626">Disattiva le notifiche</translation>
 <translation id="4946376291507881335">Acquisisci</translation>
 <translation id="495046168593986294">Scorri verso l'alto</translation>
 <translation id="4952936045814352993">Localizza telefono non è disponibile quando i suoni di avviso sono disattivati</translation>
@@ -1130,6 +1133,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="925832987464884575">Nascondi anteprime</translation>
 <translation id="938963181863597773">Cosa è segnato sul mio calendario?</translation>
 <translation id="945522503751344254">Invia feedback</translation>
+<translation id="951991426597076286">Rifiuta</translation>
 <translation id="98515147261107953">Orizzontale</translation>
 <translation id="990277280839877440">Finestra <ph name="WINDOW_TITILE" /> chiusa.</translation>
 </translationbundle>

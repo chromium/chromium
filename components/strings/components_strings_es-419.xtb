@@ -108,6 +108,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="129863573139666797"><ph name="BEGIN_LINK" />Intenta borrar tus cookies<ph name="END_LINK" /></translation>
 <translation id="1301324364792935241">Revisa la configuración de DNS seguro</translation>
 <translation id="1307966114820526988">Funciones obsoletas</translation>
+<translation id="1308113895091915999">Oferta disponible</translation>
 <translation id="1312803275555673949">¿Qué evidencia lo respalda?</translation>
 <translation id="131405271941274527"><ph name="URL" /> quiere enviar y recibir información cuando presionas tu teléfono en un dispositivo NFC</translation>
 <translation id="1314509827145471431">Encuadernado a la derecha</translation>
@@ -296,6 +297,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1842969606798536927">Pagar</translation>
 <translation id="1856713167556118146">Qué no hace el modo Incógnito</translation>
 <translation id="1863257867908022953">Bandeja 12</translation>
+<translation id="1864927262126810325">De <ph name="SOURCE_NAME" /></translation>
 <translation id="1871208020102129563">El proxy está configurado para usar servidores proxy fijos, no una URL de script .pac.</translation>
 <translation id="1871284979644508959">Campo obligatorio</translation>
 <translation id="1875025161375567525">Bandeja de fotos</translation>
@@ -958,6 +960,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4117700440116928470">No se admite el alcance de la política.</translation>
 <translation id="4121428309786185360">Vence el</translation>
 <translation id="4123572138124678573">Perforación triple en la parte inferior</translation>
+<translation id="4127575959421463246">¿Buscas funciones experimentales de Chrome OS? Visitar</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 más}other{# más}}</translation>
 <translation id="4130226655945681476">Comprobar los cables de red, el módem y el router</translation>
 <translation id="4133224101597112888">Botón Compartir esta pestaña, presiona Intro para compartir esta pestaña con el vínculo, creando un código QR, transmitiendo la pestaña y más.</translation>
@@ -1125,6 +1128,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4606870351894164739">Impactful</translation>
 <translation id="4607603470419975064">Botón para ver sugerencias de Chrome, presiona Intro para conocer las funciones de Chrome</translation>
 <translation id="4607608436550361748">Ver sugerencias para Chrome</translation>
+<translation id="4627675673814409125">Se ignorará esta política porque no se puede establecer en el perfil de Chrome.</translation>
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4631649115723685955">Devolución de dinero vinculada</translation>
 <translation id="4636930964841734540">Información</translation>
@@ -1756,6 +1760,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="674375294223700098">Error de certificado de servidor desconocido.</translation>
 <translation id="6744009308914054259">Mientras esperas a que se restablezca la conexión, puedes visitar Descargas para leer artículos sin conexión.</translation>
 <translation id="6753269504797312559">Valor de la política</translation>
+<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">El dispositivo se suspendió.</translation>
 <translation id="6767985426384634228">¿Deseas actualizar la dirección?</translation>
 <translation id="6768213884286397650">Hagaki (Postcard)</translation>
@@ -1843,6 +1848,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="706295145388601875">Agrega y administra direcciones en la configuración de Chrome</translation>
 <translation id="7064851114919012435">Información de contacto</translation>
 <translation id="7068733155164172741">Ingresa un código de <ph name="OTP_LENGTH" /> dígitos</translation>
+<translation id="7070090581017165256">Acerca de este sitio</translation>
 <translation id="70705239631109039">La conexión no es completamente segura</translation>
 <translation id="7075452647191940183">La solicitud es demasiado grande</translation>
 <translation id="7079718277001814089">Este sitio contiene software malicioso</translation>
@@ -2087,6 +2093,7 @@ Detalles adicionales:
 <translation id="7813600968533626083">¿Confirmas que quieres quitar la sugerencia de formulario de Chrome?</translation>
 <translation id="781440967107097262">¿Quieres compartir el portapapeles?</translation>
 <translation id="7815407501681723534">Se encontraron <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> para "<ph name="SEARCH_STRING" />"</translation>
+<translation id="782125616001965242">Mostrar información acerca de este sitio</translation>
 <translation id="782886543891417279">Es posible que la red Wi-Fi que estás usando (<ph name="WIFI_NAME" />) requiera que visites la página de acceso.</translation>
 <translation id="7836231406687464395">Postfix (Envelope)</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Ninguna}=1{1 app (<ph name="EXAMPLE_APP_1" />)}=2{2 apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
@@ -2367,6 +2374,7 @@ Detalles adicionales:
 <translation id="8792626944327216835">micrófono</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> activó Chrome Enterprise Connectors en tu navegador. Estos conectores tienen acceso a algunos de tus datos.</translation>
 <translation id="8798099450830957504">Predeterminado</translation>
+<translation id="8798739476508189189">¿Buscas funciones experimentales del navegador? Visitar</translation>
 <translation id="8805819170075074995">Entrada de lista "<ph name="LANGUAGE_ID" />": Se ignorará la entrada porque también se incluye en la política SpellcheckLanguage.</translation>
 <translation id="8807160976559152894">Cortar después de cada página</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />: presiona Tab y, luego, Intro para actualizar Chrome desde la configuración del navegador</translation>
@@ -2472,6 +2480,7 @@ Detalles adicionales:
 <translation id="9157595877708044936">Configurando...</translation>
 <translation id="9158625974267017556">C6 (Envelope)</translation>
 <translation id="9164029392738894042">Verificación de exactitud</translation>
+<translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">Permitir que los sitios comprueben si tienes formas de pago guardadas</translation>
 <translation id="9169664750068251925">Bloquear siempre en este sitio</translation>
 <translation id="9169931577761441333">Agrega <ph name="APP_NAME" /> a la pantalla principal</translation>

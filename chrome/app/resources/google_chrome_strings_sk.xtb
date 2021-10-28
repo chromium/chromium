@@ -100,6 +100,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="3379938682270551431">{0,plural, =0{Chrome sa teraz reštartuje}=1{Chrome sa reštartuje o 1 sekundu}few{Chrome sa reštartuje o # sekundy}many{Chrome sa reštartuje o # sekundy}other{Chrome sa reštartuje o # sekúnd}}</translation>
 <translation id="3395323229510056640">Pomoc so systémom Chrome OS</translation>
 <translation id="3396977131400919238">V priebehu inštalácie sa vyskytla chyba operačného systému. Stiahnite prehliadač Google Chrome znova.</translation>
+<translation id="3428747202529429621">Chráni vás v Chrome a môže zlepšiť zabezpečenie v ďalších aplikáciách Google, keď sa prihlásite</translation>
 <translation id="3434246496373299699">Keď sa prihlásite pomocou účtu Google, Chrome môže skontrolovať vaše heslá</translation>
 <translation id="3451115285585441894">Prebieha pridávanie do prehliadača Chrome...</translation>
 <translation id="345171907106878721">Pridajte si účet do prehliadača Chrome</translation>
@@ -207,6 +208,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="6291089322031436445">Aplikácie pre Chrome vo verzii pre vývojárov</translation>
 <translation id="6291549208091401781">Google Chrome už majú nainštalovaný všetci používatelia na vašom počítači.</translation>
 <translation id="6368958679917195344">Chrome OS mohol vzniknúť vďaka ďalšiemu <ph name="BEGIN_LINK_CROS_OSS" />softvéru s otvoreným zdrojom<ph name="END_LINK_CROS_OSS" />.</translation>
+<translation id="6412673304250309937">Kontroluje webové adresy podľa zoznamu nebezpečných webov uloženého v Chrome. Ak sa vám určitý web pokúsi ukradnúť heslo alebo stiahnete škodlivý súbor, Chrome môže tiež odoslať webové adresy vrátane častí obsahu stránky Bezpečnému prehliadaniu.</translation>
 <translation id="6418662306461808273">Chcete prepnúť na existujúci profil Chromu?</translation>
 <translation id="6506909944137591434">Chrome vyžaduje na vytvorenie 3D mapy vášho okolia povolený prístup ku kamere</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>

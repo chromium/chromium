@@ -131,6 +131,7 @@
 <translation id="1882897271359938046">กำลังแสดงผลไปที่ <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">ปลดล็อกด้วยลายนิ้วมือ</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> ไม่รองรับ <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) ความละเอียดเปลี่ยนเป็น <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) แล้ว คลิก "ยืนยัน" เพื่อเก็บการเปลี่ยนแปลงไว้ ระบบจะคืนการตั้งค่าก่อนหน้าใน <ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="1915307458270490472">วางซ้อนไว้ด้านบน</translation>
 <translation id="1919743966458266018">มีการเปลี่ยนแปลงทางลัดที่ใช้เปิดตัวจัดการงาน โปรดใช้ <ph name="NEW_SHORTCUT" /> แทน <ph name="OLD_SHORTCUT" /></translation>
 <translation id="1923539912171292317">การคลิกอัตโนมัติ</translation>
 <translation id="1928739107511554905">หากต้องการรับอัปเดต ให้ใช้หน้าจอสัมผัสเพื่อรีสตาร์ท Chromebook ในขณะที่ยังเชื่อมต่อกับแป้นพิมพ์</translation>
@@ -1129,6 +1130,7 @@
 <translation id="925832987464884575">ซ่อนตัวอย่าง</translation>
 <translation id="938963181863597773">มีอะไรในปฏิทินของฉันบ้าง</translation>
 <translation id="945522503751344254">ส่งความคิดเห็น</translation>
+<translation id="951991426597076286">ปฏิเสธ</translation>
 <translation id="98515147261107953">แนวนอน</translation>
 <translation id="990277280839877440">ปิดหน้าต่าง <ph name="WINDOW_TITILE" /> แล้ว</translation>
 </translationbundle>

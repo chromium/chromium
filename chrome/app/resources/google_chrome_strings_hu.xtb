@@ -98,6 +98,7 @@
 <translation id="3379938682270551431">{0,plural, =0{A Chrome most újraindul}=1{A Chrome 1 másodpercen belül újraindul}other{A Chrome # másodpercen belül újraindul}}</translation>
 <translation id="3395323229510056640">Segítség a Chrome OS használatával kapcsolatban</translation>
 <translation id="3396977131400919238">Az operációs rendszer hibát jelzett a telepítés során.</translation>
+<translation id="3428747202529429621">Gondoskodik a biztonságáról a Chrome-ban, és használható a biztonság növelésére más Google-alkalmazásokban olyankor, amikor Ön be van jelentkezve.</translation>
 <translation id="3434246496373299699">A Chrome ellenőrizni tudja a mentett jelszavakat, ha Ön bejelentkezik Google-fiókjával</translation>
 <translation id="3451115285585441894">Hozzáadás a Chrome-hoz...</translation>
 <translation id="345171907106878721">Adja hozzá magát a Chrome-ban</translation>
@@ -201,6 +202,7 @@
 <translation id="6291089322031436445">Chrome Dev-alkalmazások</translation>
 <translation id="6291549208091401781">A Google Chrome már telepítve van az összes felhasználó számára a számítógépen.</translation>
 <translation id="6368958679917195344">A Chrome OS-hez egyéb <ph name="BEGIN_LINK_CROS_OSS" />nyílt forráskódú szoftver<ph name="END_LINK_CROS_OSS" /> is hozzájárult.</translation>
+<translation id="6412673304250309937">Ellenőrzi az URL-eket a Chrome-ban a nem biztonságos webhelyekről tárolt lista alapján. Ha egy webhely megpróbálja ellopni az Ön jelszavát, illetve ha Ön ártalmas fájlt tölt le, akkor a Chrome elküldheti az URL-eket is (az oldaltartalmak részleteivel együtt) a Biztonságos Böngészésnek.</translation>
 <translation id="6418662306461808273">Szeretne meglévő Chrome-profilra váltani?</translation>
 <translation id="6506909944137591434">A Chrome-nak kamerahasználati engedélyre van szüksége, hogy 3D-s térképet készíthessen az Ön környezetéről</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>

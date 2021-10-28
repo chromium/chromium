@@ -1302,7 +1302,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2312219318583366810">URL de la página</translation>
 <translation id="2314165183524574721">El ajuste de visibilidad actual es oculto</translation>
 <translation id="2314774579020744484">Idioma utilizado al traducir páginas</translation>
-<translation id="2315414688463285945">No se han podido configurar los archivos de Linux. Inténtalo de nuevo.</translation>
 <translation id="2315587498123194634">Enviar enlace a <ph name="DEVICE_NAME" /></translation>
 <translation id="2316129865977710310">No, gracias</translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" />% completado</translation>
@@ -2074,6 +2073,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="310671807099593501">El sitio web está usando el Bluetooth</translation>
 <translation id="3108931485517391283">Error al recibir</translation>
 <translation id="3109724472072898302">Contraído</translation>
+<translation id="311214366526552035">Descargar de todos modos</translation>
 <translation id="311394601889664316">No permitir que los sitios editen archivos ni carpetas de tu dispositivo</translation>
 <translation id="3115147772012638511">Esperando caché...</translation>
 <translation id="3115580024857770654">Ocultar todo</translation>
@@ -2350,11 +2350,11 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3424969259347320884">Describe qué estabas haciendo cuando la pestaña se bloqueó</translation>
 <translation id="3427092606871434483">Permitir (predeterminado)</translation>
 <translation id="3428419049384081277">Has iniciado sesión</translation>
-<translation id="3428747202529429621">Te protege en Chrome y puede usarse para mejorar tu seguridad en otras aplicaciones de Google cuando has iniciado sesión</translation>
 <translation id="3429086384982427336">Las aplicaciones que se indican abajo nunca gestionarán enlaces de protocolo.</translation>
 <translation id="3429160811076349561">Las funciones de prueba están desactivadas.</translation>
 <translation id="3429271624041785769">Idiomas del contenido web</translation>
 <translation id="3429275422858276529">Añade esta página a marcadores para encontrarla fácilmente en otro momento</translation>
+<translation id="343115368966109153">¿Descargar <ph name="FILE_NAME" />? Cualquiera que use el dispositivo podrá verlo.</translation>
 <translation id="3432227430032737297">Quitar todas las que se muestran</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433621910545056227">¡Vaya! El sistema no ha podido establecer el bloqueo de atributos del tiempo de instalación del dispositivo.</translation>
@@ -2696,6 +2696,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3777806571986431400">Extensión activada</translation>
 <translation id="3778152852029592020">Se ha cancelado la descarga.</translation>
 <translation id="3778208826288864398">La llave de seguridad está bloqueada porque se ha introducido el PIN de forma incorrecta demasiadas veces. Tendrás que restablecer la llave de seguridad.</translation>
+<translation id="3778369586810509692">Este archivo se guardará en el dispositivo y cualquiera podrá verlo.</translation>
 <translation id="3778740492972734840">&amp;Herramientas para desarrolladores</translation>
 <translation id="3778868487658107119">Puedes hacerle preguntas e indicarle tareas para que las realice. Esta función, siempre lista para ayudarte, te permite utilizar Google de forma personalizada.</translation>
 <translation id="3781742599892759500">Acceso a micrófono en Linux</translation>
@@ -5113,7 +5114,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6410328738210026208">Cambiar canal y Powerwash</translation>
 <translation id="6410390304316730527">La función Navegación segura te protege frente a atacantes que pueden intentar engañarte para que realices alguna acción peligrosa, como instalar software malicioso o revelar información personal, incluidas contraseñas, números de teléfono o tarjetas de crédito. Si desactivas esta función, debes tener cuidado al navegar por sitios desconocidos o que no sean de confianza.</translation>
 <translation id="6410668567036790476">Añadir motor de búsqueda</translation>
-<translation id="6412673304250309937">Comprueba las URL guardadas en Chrome con una lista de sitios que no son seguros. Si un sitio web intenta robarte la contraseña o te descargas un archivo dañino, puede que Chrome también envíe URL, así como fragmentos de contenido de la página, a Navegación segura.</translation>
 <translation id="641469293210305670">Instalar actualizaciones y aplicaciones</translation>
 <translation id="6414878884710400018">Abrir Preferencias del Sistema</translation>
 <translation id="6414888972213066896">Has solicitado permiso a uno de tus padres para poder acceder a este sitio web</translation>
@@ -5522,7 +5522,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6843264316370513305">Depuración de red</translation>
 <translation id="6843423766595476978">Ok Google ya se ha configurado</translation>
 <translation id="6845038076637626672">Abrir de forma maximizada</translation>
-<translation id="6845325883481699275">Ayudar a mejorar la seguridad de Chrome</translation>
 <translation id="6846178040388691741"><ph name="EXTENSION_NAME" /> quiere imprimir <ph name="FILE_NAME" /> en <ph name="PRINTER_NAME" />.</translation>
 <translation id="6847125920277401289">Libera espacio para continuar</translation>
 <translation id="6848388270925200958">Tienes algunas tarjetas que solo se pueden utilizar en este dispositivo</translation>
@@ -6975,7 +6974,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8324784016256120271">Los sitios pueden usar cookies para ver tu actividad de navegación en otros sitios, por ejemplo, para personalizar anuncios</translation>
 <translation id="8325413836429495820">No puede ver tu portapapeles</translation>
 <translation id="8326478304147373412">PKCS #7, cadena de certificados</translation>
-<translation id="8327039559959785305">No se han podido activar los archivos de Linux. Inténtalo de nuevo.</translation>
 <translation id="8327676037044516220">Permisos y configuración de contenido</translation>
 <translation id="833256022891467078">Carpetas compartidas de Crostini</translation>
 <translation id="8335587457941836791">No fijar en la estantería</translation>

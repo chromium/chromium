@@ -102,6 +102,7 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="3379938682270551431">{0,plural, =0{Chrome će se sada ponovo pokrenuti}=1{Chrome će se ponovo pokrenuti za 1 sekundu}one{Chrome će se ponovo pokrenuti za # sekundu}few{Chrome će se ponovo pokrenuti za # sekunde}other{Chrome će se ponovo pokrenuti za # sekundi}}</translation>
 <translation id="3395323229510056640">Potražite pomoć za Chrome OS</translation>
 <translation id="3396977131400919238">Došlo je do greške operativnog sistema prilikom instalacije. Ponovo preuzmite Google Chrome.</translation>
+<translation id="3428747202529429621">Štiti vas na Chromeu i može se koristiti da poboljša vašu sigurnost u drugim Google aplikacijama kada ste prijavljeni</translation>
 <translation id="3434246496373299699">Chrome može provjeravati vaše lozinke kada se prijavite pomoću Google računa</translation>
 <translation id="3451115285585441894">Dodavanje u Chrome...</translation>
 <translation id="345171907106878721">Dodajte sebe na Chrome</translation>
@@ -208,6 +209,7 @@ Moguće je da neke funkcije neće biti dostupne. Odredite drugi direktorij profi
 <translation id="6291089322031436445">Chrome Dev aplikacije</translation>
 <translation id="6291549208091401781">Google Chrome je već instaliran za sve korisnike na vašem računaru.</translation>
 <translation id="6368958679917195344">Chrome OS je moguć zahvaljujući dodatnom <ph name="BEGIN_LINK_CROS_OSS" />softveru otvorenog koda<ph name="END_LINK_CROS_OSS" />.</translation>
+<translation id="6412673304250309937">Provjerava URL-ove s listom nesigurnih web lokacija pohranjenih u Chromeu. Ako web lokacija pokuša ukrasti vašu lozinku, ili kada preuzimate štetan fajl, Chrome može slati i URL-ove, uključujući dijelove sadržaja stranice, u Sigurno pregledanje.</translation>
 <translation id="6418662306461808273">Želite li se prebaciti na postojeći Chrome profil?</translation>
 <translation id="6506909944137591434">Chromeu je potrebno odobrenje za kameru radi kreiranja 3D mape vašeg okruženja</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>

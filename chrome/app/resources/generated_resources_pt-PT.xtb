@@ -123,6 +123,7 @@
 <translation id="1122068467107743258">Trabalho</translation>
 <translation id="1122198203221319518">&amp;Ferramentas</translation>
 <translation id="1122242684574577509">Falha na autenticação. Clique para aceder à página de início de sessão da rede Wi-Fi que está a utilizar (<ph name="NETWORK_ID" />).</translation>
+<translation id="1122913801042512795">Os detalhes de início de sessão da sua conta estão desatualizados. Termine e inicie novamente sessão.</translation>
 <translation id="1122960773616686544">Nome do marcador</translation>
 <translation id="1124772482545689468">Utilizador</translation>
 <translation id="1125550662859510761">Parece ter <ph name="WIDTH" /> x <ph name="HEIGHT" /> (nativo)</translation>
@@ -1301,7 +1302,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2312219318583366810">URL da página</translation>
 <translation id="2314165183524574721">A definição de visibilidade atual é Oculto.</translation>
 <translation id="2314774579020744484">Idioma utilizado na tradução de páginas</translation>
-<translation id="2315414688463285945">Ocorreu um erro ao configurar os ficheiros Linux. Tente novamente.</translation>
 <translation id="2315587498123194634">Enviar link para <ph name="DEVICE_NAME" /></translation>
 <translation id="2316129865977710310">Não, obrigado</translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" />% concluída</translation>
@@ -2351,7 +2351,6 @@ Pretende pará-lo?</translation>
 <translation id="3424969259347320884">Descreva o que estava a fazer quando o separador falhou</translation>
 <translation id="3427092606871434483">Permitir (predefinição)</translation>
 <translation id="3428419049384081277">Tem sessão iniciada</translation>
-<translation id="3428747202529429621">Mantém a sua segurança no Chrome e pode ser utilizado para melhorar a sua segurança noutras apps Google quando tem sessão iniciada.</translation>
 <translation id="3429086384982427336">As apps listadas abaixo nunca processam links de protocolo.</translation>
 <translation id="3429160811076349561">As funcionalidades de avaliação estão desativadas</translation>
 <translation id="3429271624041785769">Idiomas de conteúdo Web</translation>
@@ -5116,7 +5115,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6410328738210026208">Alterar canal e Powerwash</translation>
 <translation id="6410390304316730527">A Navegação segura permite-lhe proteger-se contra os atacantes que o podem enganar no sentido de fazer algo perigoso, como instalar software malicioso, ou revelar informações pessoais, como palavras-passe, números de telefone ou cartões de crédito. Se a desativar, tenha cuidado ao navegar em sites desconhecidos ou pouco credíveis.</translation>
 <translation id="6410668567036790476">Adicionar motor de pesquisa</translation>
-<translation id="6412673304250309937">Verifica os URLs com listas de sites inseguros armazenados no Chrome. Se um site tentar roubar a sua palavra-passe, ou quando transferir um ficheiro prejudicial, o Chrome também pode enviar URLs, incluindo bits de conteúdo das páginas, para a Navegação segura.</translation>
 <translation id="641469293210305670">Instale atualizações e apps</translation>
 <translation id="6414878884710400018">Abra as preferências do sistema</translation>
 <translation id="6414888972213066896">Perguntaste ao teu pai/à tua mãe se podes aceder a este site.</translation>
@@ -5525,7 +5523,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6843264316370513305">Depuração de rede</translation>
 <translation id="6843423766595476978">O Ok Google está pronto</translation>
 <translation id="6845038076637626672">Abrir Maximizada</translation>
-<translation id="6845325883481699275">Ajudar a melhorar a segurança do Chrome</translation>
 <translation id="6846178040388691741">A extensão "<ph name="EXTENSION_NAME" />" pretende imprimir o ficheiro <ph name="FILE_NAME" /> com a impressora <ph name="PRINTER_NAME" />.</translation>
 <translation id="6847125920277401289">Liberte espaço para continuar</translation>
 <translation id="6848388270925200958">De momento, tem alguns cartões que apenas podem ser utilizados neste dispositivo.</translation>
@@ -6978,7 +6975,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8324784016256120271">Os sites podem utilizar cookies para ver a sua atividade de navegação em diferentes sites, por exemplo, para personalizar anúncios.</translation>
 <translation id="8325413836429495820">Sem autorização para ver a sua área de transferência</translation>
 <translation id="8326478304147373412">PKCS #7, cadeia de certificados</translation>
-<translation id="8327039559959785305">Erro ao montar os ficheiros Linux. Tente novamente.</translation>
 <translation id="8327676037044516220">Definições de conteúdo e autorizações</translation>
 <translation id="833256022891467078">Pastas partilhadas do Crostini</translation>
 <translation id="8335587457941836791">Soltar da prateleira</translation>
@@ -7500,6 +7496,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8879284080359814990">Mo&amp;strar Como Separador</translation>
 <translation id="8879921471468674457">Memorizar informações de início de sessão</translation>
 <translation id="8880054210564666174">Não é possível transferir a lista de contactos. Verifique a sua ligação de rede ou <ph name="LINK_BEGIN" />tente novamente<ph name="LINK_END" />.</translation>
+<translation id="8880344290593529089">Abra as Definições para ligar o <ph name="USB_DEVICE_NAME" /> ao Linux ou Parallels Desktop.</translation>
 <translation id="8881020143150461183">Tente novamente. Para obter apoio técnico, contacte o operador <ph name="CARRIER_NAME" />.</translation>
 <translation id="8883273463630735858">Ativar aceleração do touchpad</translation>
 <translation id="8884570509232205463">Agora, o seu dispositivo será bloqueado à(s) <ph name="UNLOCK_TIME" />.</translation>

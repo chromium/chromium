@@ -97,6 +97,7 @@
 <translation id="3379938682270551431">{0,plural, =0{Chrome は今すぐ再起動されます}=1{Chrome は 1 秒後に再起動されます}other{Chrome は # 秒後に再起動されます}}</translation>
 <translation id="3395323229510056640">Chrome OS のヘルプを見る</translation>
 <translation id="3396977131400919238">インストール中にオペレーティング システム エラーが発生しました。Google Chrome をダウンロード直してください。</translation>
+<translation id="3428747202529429621">ログイン時に、Chrome を安全に利用できるようにするほか、他の Google アプリのセキュリティ強化に使用されることがあります</translation>
 <translation id="3434246496373299699">Google アカウントでログインすると、Chrome がパスワードを確認できます。</translation>
 <translation id="3451115285585441894">Chrome に追加...</translation>
 <translation id="345171907106878721">Chrome に自分を追加</translation>
@@ -201,6 +202,7 @@
 <translation id="6291089322031436445">Chrome Dev アプリ</translation>
 <translation id="6291549208091401781">Google Chrome は既にパソコンのすべてのユーザー対してインストールされています。</translation>
 <translation id="6368958679917195344">Chrome OS は、さらに追加の<ph name="BEGIN_LINK_CROS_OSS" />オープンソース ソフトウェア<ph name="END_LINK_CROS_OSS" />によって実現しました。</translation>
+<translation id="6412673304250309937">Chrome に保存されている安全でないサイトのリストと URL を照合します。サイトがパスワードを不正に取得しようとしている場合や、ユーザーが安全でないファイルをダウンロードしようとした場合は、URL とページ コンテンツの一部をセーフ ブラウジングに送信することがあります。</translation>
 <translation id="6418662306461808273">既存の Chrome プロファイルに切り替えますか？</translation>
 <translation id="6506909944137591434">周囲の 3D マップを作成するには、Chrome にカメラの使用を許可する必要があります</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>

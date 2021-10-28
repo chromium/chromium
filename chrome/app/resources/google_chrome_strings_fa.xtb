@@ -98,6 +98,7 @@
 <translation id="3379938682270551431">{0,plural, =0{‏Chrome هم‌اکنون راه‌اندازی مجدد می‌شود}=1{‏Chrome ‏۱ ثانیه دیگر راه‌اندازی مجدد می‌شود}one{‏Chrome ‏# ثانیه دیگر راه‌اندازی مجدد می‌شود}other{‏Chrome ‏# ثانیه دیگر راه‌اندازی مجدد می‌شود}}</translation>
 <translation id="3395323229510056640">‏دریافت کمک از Chrome OS</translation>
 <translation id="3396977131400919238">‏هنگام نصب یک خطای سیستم‌عامل رخ داد. لطفاً دوباره Google Chrome را بارگیری کنید.</translation>
+<translation id="3428747202529429621">‏وقتی به سیستم وارد شده باشید، امنیت شما را در Chrome حفظ می‌کند و ممکن است برای بهبود امنیت شما در برنامه‌های دیگر Google استفاده شود</translation>
 <translation id="3434246496373299699">‏Chrome زمانی می‌تواند گذرواژه‌هایتان را بررسی کند که با «حساب Google» خود به سیستم وارد شوید</translation>
 <translation id="3451115285585441894">‏افزودن به Chrome...</translation>
 <translation id="345171907106878721">‏افرودن خودتان به Chrome</translation>
@@ -202,6 +203,7 @@
 <translation id="6291089322031436445">‏برنامه‌های Chrome نسخه Dev</translation>
 <translation id="6291549208091401781">‏Google Chrome از قبل برای همه کاربران این رایانه نصب شده است.</translation>
 <translation id="6368958679917195344">‏Chrome OS با یک <ph name="BEGIN_LINK_CROS_OSS" />نرم‌افزار منبع آزاد<ph name="END_LINK_CROS_OSS" /> دیگر امکان‌پذیر است.</translation>
+<translation id="6412673304250309937">‏نشانی‌های وب را با فهرست سایت‌های ناامنی که در Chrome ذخیره شده است مقایسه می‌کند. اگر سایتی تلاش کند گذرواژه شما را به‌سرقت ببرد، یا وقتی فایل مخربی بارگیری می‌کنید، Chrome ممکن است نشانی‌های وب را نیز به همراه بخش‌های کوچکی از محتوای صفحه، به «مرور ایمن» ارسال کند.</translation>
 <translation id="6418662306461808273">‏به نمایه Chrome موجود می‌روید؟</translation>
 <translation id="6506909944137591434">‏Chrome برای ایجاد نقشه سه‌بعدی از محیط اطرافتان به اجازه دوربین نیاز دارد</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>

@@ -96,6 +96,7 @@
 <translation id="3379938682270551431">{0,plural, =0{Chrome uruchomi się ponownie teraz}=1{Chrome uruchomi się ponownie za 1 sekundę}few{Chrome uruchomi się ponownie za # sekundy}many{Chrome uruchomi się ponownie za # sekund}other{Chrome uruchomi się ponownie za # sekundy}}</translation>
 <translation id="3395323229510056640">Pomoc do Chrome OS</translation>
 <translation id="3396977131400919238">Podczas instalacji wystąpił błąd systemu operacyjnego. Pobierz Google Chrome ponownie.</translation>
+<translation id="3428747202529429621">Dba o Twoje bezpieczeństwo w Chrome i może poprawiać Twoje bezpieczeństwo w innych aplikacjach Google, gdy się w nich zalogujesz</translation>
 <translation id="3434246496373299699">Chrome może sprawdzić Twoje hasła, gdy zalogujesz się na swoje konto Google.</translation>
 <translation id="3451115285585441894">Dodaję do Chrome...</translation>
 <translation id="345171907106878721">Dodaj siebie do Chrome</translation>
@@ -198,6 +199,7 @@
 <translation id="6291089322031436445">Aplikacje do Chrome w wersji deweloperskiej</translation>
 <translation id="6291549208091401781">Google Chrome jest już zainstalowany dla wszystkich użytkowników tego komputera.</translation>
 <translation id="6368958679917195344">Opracowanie systemu operacyjnego Chrome było możliwe dzięki dodatkowemu <ph name="BEGIN_LINK_CROS_OSS" />oprogramowaniu typu open source<ph name="END_LINK_CROS_OSS" />.</translation>
+<translation id="6412673304250309937">Sprawdza, czy URL jest na liście potencjalnie niebezpiecznych stron zapisanej w Chrome. Jeśli strona próbuje wykraść Twoje hasło lub pobierasz szkodliwy plik, Chrome może też wysłać URL wraz z fragmentami zawartości strony do usługi Bezpieczne przeglądanie.</translation>
 <translation id="6418662306461808273">Przełączyć na istniejący profil Chrome?</translation>
 <translation id="6506909944137591434">Aby utworzyć mapę 3D Twojego otoczenia, Chrome potrzebuje dostępu do aparatu</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>

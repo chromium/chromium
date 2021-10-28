@@ -101,6 +101,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="3379938682270551431">{0,plural, =0{Chrome do të hapet përsëri tani}=1{Chrome do të hapet përsëri për 1 sekondë}other{Chrome do të hapet përsëri për # sekonda}}</translation>
 <translation id="3395323229510056640">Merr ndihmë për Chrome OS</translation>
 <translation id="3396977131400919238">Ndodhi një gabim në sistemin operativ gjatë instalimit. Shkarko përsëri Google Chrome.</translation>
+<translation id="3428747202529429621">Të mban të sigurt në Chrome dhe mund të përdoret për të përmirësuar sigurinë tënde në aplikacionet e tjera të Google kur je i identifikuar</translation>
 <translation id="3434246496373299699">Chrome mund t'i kontrollojë fjalëkalimet e tua kur të identifikohesh me "Llogarinë tënde të Google"</translation>
 <translation id="3451115285585441894">Po shton te Chrome...</translation>
 <translation id="345171907106878721">Shtoje veten te Chrome</translation>
@@ -209,6 +210,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="6291089322031436445">Aplikacionet e Chrome Dev</translation>
 <translation id="6291549208091401781">Google Chrome është i instaluar tashmë për të gjithë përdoruesit në kompjuterin tënd.</translation>
 <translation id="6368958679917195344">Sistemi operativ Chrome bëhet i mundur nga softueri shtesë <ph name="BEGIN_LINK_CROS_OSS" />me burim të hapur<ph name="END_LINK_CROS_OSS" />.</translation>
+<translation id="6412673304250309937">Kontrollon URL-të kundrejt një liste sajtesh të pasigurta të ruajtur në Chrome. Nëse një sajt përpiqet të vjedhë fjalëkalimin tënd, ose kur shkarkon një skedar të dëmshëm, Chrome mund t'i dërgojë po ashtu "Shfletimit të sigurt" URL-të, duke përfshirë pjesë të përmbajtjes së faqes.</translation>
 <translation id="6418662306461808273">Të kalohet te profili ekzistues i Chrome?</translation>
 <translation id="6506909944137591434">Chrome ka nevojë për lejen e kamerës për të krijuar një hartë 3D të ambientit tënd rrethues</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>

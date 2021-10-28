@@ -18,6 +18,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">Ersetzen</translation>
 <translation id="1073899992769346247">Akku austauschen oder aufladen</translation>
+<translation id="1081015718268701546">Linux-Apps werden derzeit nicht unterstützt. Andere Apps werden gespeichert.</translation>
 <translation id="108486256082349153">Mobil: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Guten Tag <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">Mir ist langweilig</translation>
@@ -44,6 +45,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1225748608451425081">Dein Chromebook wurde aufgrund eines bekannten Problems gesperrt. Eine Anmeldung ist wieder möglich in: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Auswahl beenden</translation>
 <translation id="1239161794459865856">"<ph name="FEATURE_NAME" />" ist verbunden.</translation>
+<translation id="1246890715821376239">Nicht unterstützte Apps</translation>
 <translation id="1247372569136754018">Mikrofon (intern)</translation>
 <translation id="1252999807265626933">Wird über ein <ph name="POWER_SOURCE" /> aufgeladen</translation>
 <translation id="1255033239764210633">Wie ist das Wetter?</translation>
@@ -129,6 +131,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1882897271359938046">Wird auf <ph name="DISPLAY_NAME" /> gespiegelt...</translation>
 <translation id="1885785240814121742">Mit Fingerabdruck entsperren</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> unterstützt <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) nicht. Die Auflösung wurde zu <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz) geändert. Bitte bestätigen, um die Änderungen beizubehalten. Die vorherigen Einstellungen werden in <ph name="TIMEOUT_SECONDS" /> wiederhergestellt.</translation>
+<translation id="1915307458270490472">Auflegen</translation>
 <translation id="1919743966458266018">Die Tastenkombination zum Öffnen des Task-Managers hat sich geändert. Bitte drücken Sie <ph name="NEW_SHORTCUT" /> statt <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Automatische Klicks</translation>
 <translation id="1928739107511554905">Sie können das Update vornehmen, indem Sie den Touchscreen verwenden, um Ihr Chromebook mit angeschlossener Tastatur neu zu starten.</translation>
@@ -169,6 +172,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2148716181193084225">Heute</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Wiederholen</translation>
 <translation id="2170530631236737939">Wischen Sie mit drei Fingern nach unten, um die Übersicht zu schließen</translation>
+<translation id="2201071101391734388">Vor Kurzem aufgenommenes Foto <ph name="INDEX" /> von <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2208323208084708176">Unified Desktop-Modus</translation>
 <translation id="2220572644011485463">PIN oder Passwort</translation>
 <translation id="2222841058024245321">Desktop 7</translation>
@@ -293,6 +297,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="3151786313568798007">Ausrichtung</translation>
 <translation id="3153444934357957346">Bei der Mehrfachanmeldung sind maximal <ph name="MULTI_PROFILE_USER_LIMIT" /> Konten zulässig.</translation>
 <translation id="3154351730702813399">Der Geräteadministrator überwacht unter Umständen Ihre Browseraktivitäten.</translation>
+<translation id="316086887565479535">Nicht unterstützte Apps in der Vorlage</translation>
 <translation id="3181441307743005334">Der Neustart kann etwas dauern</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Mit einem Gerät verbunden}other{Mit # Geräten verbunden}}</translation>
 <translation id="320207200541803018">Timer einstellen</translation>
@@ -390,6 +395,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="383058930331066723">Energiesparmodus ist aktiviert</translation>
 <translation id="3835880383832568924">Öffnen Sie die App mit den Tastenkombinationen, um sich die Neuerungen anzusehen</translation>
 <translation id="383629559565718788">Tastatureinstellungen anzeigen</translation>
+<translation id="384082539148746321">Vorlage löschen?</translation>
 <translation id="3846214748874656680">Vollbildmodus beenden</translation>
 <translation id="3846575436967432996">Keine Netzwerkinformationen verfügbar</translation>
 <translation id="385051799172605136">Zurück</translation>
@@ -824,6 +830,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="7029814467594812963">Sitzung beenden</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistant</translation>
 <translation id="7042322267639375032">Statusbereich minimieren</translation>
+<translation id="7045033600005038336">Vorlage ersetzen?</translation>
 <translation id="7045595904618419789">Lupe verwenden</translation>
 <translation id="7055381872777910864">M</translation>
 <translation id="7055910611768509537">Eingabestift wurde seit über einer Woche nicht mehr verwendet</translation>
@@ -960,6 +967,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="8036504271468642248">Vorheriger Satz</translation>
 <translation id="8042893070933512245">Menü "Bedienungshilfen" öffnen</translation>
 <translation id="8048123526339889627">Bluetooth-Einstellungen</translation>
+<translation id="8051716679295756675">Eine Vorlage namens „<ph name="DESK_TEMPLATE_NAME" />“ ist bereits vorhanden</translation>
 <translation id="8052898407431791827">In Zwischenablage kopiert</translation>
 <translation id="8054466585765276473">Akku-Laufzeit wird berechnet.</translation>
 <translation id="8061464966246066292">Hoher Kontrast</translation>
@@ -1065,6 +1073,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="8876661425082386199">Verbindung prüfen</translation>
 <translation id="8877788021141246043">Erinnerungen einrichten</translation>
 <translation id="8878886163241303700">Bildschirmerweiterung</translation>
+<translation id="8896630965521842259">„<ph name="DESK_TEMPLATE_NAME" />“ wird endgültig gelöscht</translation>
 <translation id="890616557918890486">Quelle ändern</translation>
 <translation id="8909138438987180327">Akkustand: <ph name="PERCENTAGE" />.</translation>
 <translation id="8913384980486163186">Design (Standard)</translation>
@@ -1121,6 +1130,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="925832987464884575">Vorschauen ausblenden</translation>
 <translation id="938963181863597773">Welche Termine stehen an?</translation>
 <translation id="945522503751344254">Feedback geben</translation>
+<translation id="951991426597076286">Ablehnen</translation>
 <translation id="98515147261107953">Querformat</translation>
 <translation id="990277280839877440">Fenster "<ph name="WINDOW_TITILE" />" geschlossen.</translation>
 </translationbundle>

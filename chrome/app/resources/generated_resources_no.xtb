@@ -1309,7 +1309,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2312219318583366810">Sidens nettadresse</translation>
 <translation id="2314165183524574721">Den gjeldende synlighetsinnstillingen er skjult</translation>
 <translation id="2314774579020744484">Språket som brukes ved oversetting av sider</translation>
-<translation id="2315414688463285945">Feil ved konfigurering av Linux-filer. Prøv på nytt.</translation>
 <translation id="2315587498123194634">Send link til <ph name="DEVICE_NAME" /></translation>
 <translation id="2316129865977710310">Nei takk</translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" /> % ferdig</translation>
@@ -2358,7 +2357,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="3424969259347320884">Beskriv hva du holdt på med da fanen krasjet</translation>
 <translation id="3427092606871434483">Tillat (standard)</translation>
 <translation id="3428419049384081277">Du er pålogget</translation>
-<translation id="3428747202529429621">Holder deg trygg i Chrome og kan brukes til å øke sikkerheten din i andre Google-apper når du er pålogget</translation>
 <translation id="3429086384982427336">Appene som er oppført nedenfor, kommer aldri til å håndtere protokoll-linker.</translation>
 <translation id="3429160811076349561">Prøvefunksjoner er avslått</translation>
 <translation id="3429271624041785769">Språk for nettinnhold</translation>
@@ -5119,7 +5117,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6410328738210026208">Bytt kanal og bruk Powerwash</translation>
 <translation id="6410390304316730527">Safe Browsing beskytter deg mot angripere som kan prøve å lure deg til å gjøre farlige ting, som å installere skadelig programvare eller avsløre personopplysninger, for eksempel passord, telefonnumre eller kredittkortinformasjon. Hvis du slår det av, må du være forsiktig når du surfer på ukjente eller useriøse nettsteder.</translation>
 <translation id="6410668567036790476">Legg til søkemotor</translation>
-<translation id="6412673304250309937">Kontrollerer nettadresser opp mot en liste i Chrome over utrygge nettsteder. Hvis nettsteder prøver å stjele passordet ditt, eller når du laster ned skadelige filer, kan Chrome også sende nettadresser, inkludert deler av sideinnholdet, til Safe Browsing.</translation>
 <translation id="641469293210305670">Installer oppdateringer og apper</translation>
 <translation id="6414878884710400018">Åpne Systemvalg</translation>
 <translation id="6414888972213066896">Du har spurt forelderen din om det er greit å besøke dette nettstedet</translation>
@@ -5528,7 +5525,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6843264316370513305">Nettverksfeilsøking</translation>
 <translation id="6843423766595476978">Ok Google er konfigurert</translation>
 <translation id="6845038076637626672">Maksimer ved åpning</translation>
-<translation id="6845325883481699275">Bidra til å gjøre Chrome sikrere</translation>
 <translation id="6846178040388691741">«<ph name="EXTENSION_NAME" />» vil skrive ut <ph name="FILE_NAME" /> med <ph name="PRINTER_NAME" />.</translation>
 <translation id="6847125920277401289">Frigjør plass for å fortsette</translation>
 <translation id="6848388270925200958">Akkurat nå har du noen kort som bare kan brukes på denne enheten</translation>
@@ -6979,7 +6975,6 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8324784016256120271">Nettsteder kan bruke informasjonskapsler for å se nettleseraktiviteten din på andre nettsteder, for eksempel for å vise deg personlig tilpassede annonser</translation>
 <translation id="8325413836429495820">Nettsteder som ikke har lov til å se utklippstavlen din</translation>
 <translation id="8326478304147373412">PKCS #7, sertifikat-kjede</translation>
-<translation id="8327039559959785305">Feil ved bruk av Linux-filer. Prøv på nytt.</translation>
 <translation id="8327676037044516220">Tillatelser og innholdsinnstillinger</translation>
 <translation id="833256022891467078">Delte mapper i Crostini</translation>
 <translation id="8335587457941836791">Løsne fra hyllen</translation>

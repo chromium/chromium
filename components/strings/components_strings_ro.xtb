@@ -301,6 +301,7 @@
 <translation id="1842969606798536927">Plătește</translation>
 <translation id="1856713167556118146">Ce nu face modul incognito</translation>
 <translation id="1863257867908022953">Tava 12</translation>
+<translation id="1864927262126810325">De la <ph name="SOURCE_NAME" /></translation>
 <translation id="1871208020102129563">Configurația proxy este setată să utilizeze servere proxy fixe, și nu o adresă URL pentru scripturi .pac.</translation>
 <translation id="1871284979644508959">Câmp obligatoriu</translation>
 <translation id="1875025161375567525">Tava foto</translation>
@@ -963,6 +964,7 @@
 <translation id="4117700440116928470">Domeniul politicii nu este acceptat.</translation>
 <translation id="4121428309786185360">Expiră la</translation>
 <translation id="4123572138124678573">Perforare triplă în partea de jos</translation>
+<translation id="4127575959421463246">Cauți semnalizatoare ChromeOS? Accesează</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{încă 1}few{încă #}other{încă #}}</translation>
 <translation id="4130226655945681476">să verifici cablurile de rețea, modemul și routerul;</translation>
 <translation id="4133224101597112888">Butonul Distribuie fila, apasă pe Enter pentru a trimite fila prin distribuirea linkului, crearea unui cod QR, proiectare și altele.</translation>
@@ -1134,6 +1136,7 @@
 <translation id="4606870351894164739">De impact</translation>
 <translation id="4607603470419975064">Butonul Vezi sfaturile privind Chrome, apasă pe Enter pentru a afla despre funcțiile Chrome</translation>
 <translation id="4607608436550361748">Vezi sfaturile privind Chrome</translation>
+<translation id="4627675673814409125">Această politică nu se poate seta la nivelul profilului Chrome și va fi ignorată.</translation>
 <translation id="4628948037717959914">Fotografie</translation>
 <translation id="4631649115723685955">Ofertă cu returnare de bani</translation>
 <translation id="4636930964841734540">Informații</translation>
@@ -1765,6 +1768,7 @@
 <translation id="674375294223700098">Eroare de certificat de server necunoscută.</translation>
 <translation id="6744009308914054259">În timp ce aștepți o conexiune, poți accesa Descărcările pentru a citi articole offline.</translation>
 <translation id="6753269504797312559">Valoarea politicii</translation>
+<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Dispozitivul este inactiv.</translation>
 <translation id="6767985426384634228">Actualizezi adresa?</translation>
 <translation id="6768213884286397650">Hagaki (Carte poștală)</translation>
@@ -1852,6 +1856,7 @@
 <translation id="706295145388601875">Adaugă și gestionează adrese din setările Chrome</translation>
 <translation id="7064851114919012435">Informații de contact</translation>
 <translation id="7068733155164172741">Introdu codul de <ph name="OTP_LENGTH" /> cifre</translation>
+<translation id="7070090581017165256">Despre acest site</translation>
 <translation id="70705239631109039">Conexiunea nu este complet sigură</translation>
 <translation id="7075452647191940183">Solicitarea este prea mare</translation>
 <translation id="7079718277001814089">Acest site conține programe malware</translation>
@@ -2096,6 +2101,7 @@ Detalii suplimentare:
 <translation id="7813600968533626083">Elimini sugestia pentru formular din Chrome?</translation>
 <translation id="781440967107097262">Permiți accesul la clipboard?</translation>
 <translation id="7815407501681723534">S-au găsit <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> pentru „<ph name="SEARCH_STRING" />”</translation>
+<translation id="782125616001965242">Afișează informații despre acest site</translation>
 <translation id="782886543891417279">Rețeaua Wi-Fi pe care o folosești (<ph name="WIFI_NAME" />) poate solicita accesarea paginii de conectare.</translation>
 <translation id="7836231406687464395">Postfix (Plic)</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Niciuna}=1{O aplicație (<ph name="EXAMPLE_APP_1" />)}=2{Două aplicații (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}few{# aplicații (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# de aplicații (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
@@ -2376,6 +2382,7 @@ Detalii suplimentare:
 <translation id="8792626944327216835">Microfon</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> a activat Chrome Enterprise Connectors în browser. Acești conectori au acces la o parte din datele tale.</translation>
 <translation id="8798099450830957504">Prestabilit</translation>
+<translation id="8798739476508189189">Cauți semnalizatoare de browser? Accesează</translation>
 <translation id="8805819170075074995">Intrarea din listă „<ph name="LANGUAGE_ID" />”: intrarea este ignorată deoarece este inclusă și în politica SpellcheckLanguage.</translation>
 <translation id="8807160976559152894">Decupare după fiecare pagină</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a actualiza Chrome din setările Chrome</translation>
@@ -2481,6 +2488,7 @@ Detalii suplimentare:
 <translation id="9157595877708044936">Se configurează...</translation>
 <translation id="9158625974267017556">C6 (Plic)</translation>
 <translation id="9164029392738894042">Verificarea preciziei</translation>
+<translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">Permite site-urilor să verifice dacă ai salvat metode de plată</translation>
 <translation id="9169664750068251925">Blocați întotdeauna pe acest site</translation>
 <translation id="9169931577761441333">Adaugă <ph name="APP_NAME" /> la ecranul de pornire</translation>

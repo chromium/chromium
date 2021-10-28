@@ -101,6 +101,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="3379938682270551431">{0,plural, =0{Chrome wordt nu opnieuw gestart}=1{Chrome wordt over één seconde opnieuw gestart}other{Chrome wordt over # seconden opnieuw gestart}}</translation>
 <translation id="3395323229510056640">Hulp bij Chrome OS</translation>
 <translation id="3396977131400919238">Er is tijdens de installatie een probleem opgetreden met het besturingssysteem. Download Google Chrome opnieuw.</translation>
+<translation id="3428747202529429621">Beschermt je op Chrome en kan worden gebruikt om de beveiliging in andere Google-apps te verbeteren als je bent ingelogd</translation>
 <translation id="3434246496373299699">Chrome kan je wachtwoorden checken als je inlogt met je Google-account</translation>
 <translation id="3451115285585441894">Toevoegen aan Chrome...</translation>
 <translation id="345171907106878721">Jezelf toevoegen aan Chrome</translation>
@@ -178,7 +179,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="5386244825306882791">Hiermee wordt ook gecontroleerd welke pagina wordt getoond wanneer je Chrome start of vanuit de omnibox zoekt.</translation>
 <translation id="5394833366792865639">Een Chrome-tabblad delen</translation>
 <translation id="5430073640787465221">Je bestand met voorkeuren is beschadigd of ongeldig. Google Chrome kan je instellingen niet herstellen.</translation>
-<translation id="556024056938947818">Google Chrome probeert wachtwoorden te tonen.</translation>
+<translation id="556024056938947818">Google Chrome probeert wachtwoorden te bekijken.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5657226924540934362">Als je een instelling niet ziet op deze pagina, kijk je in de <ph name="LINK_BEGIN" />Chrome OS-instellingen<ph name="LINK_END" /></translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> kan gevaarlijk zijn en is daarom door Chrome geblokkeerd.</translation>
@@ -206,6 +207,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="6291089322031436445">Chrome Dev-apps</translation>
 <translation id="6291549208091401781">Google Chrome is al geïnstalleerd voor alle gebruikers op je computer.</translation>
 <translation id="6368958679917195344">Chrome OS wordt mogelijk gemaakt door aanvullende <ph name="BEGIN_LINK_CROS_OSS" />opensource-software<ph name="END_LINK_CROS_OSS" />.</translation>
+<translation id="6412673304250309937">Controleert URL's aan de hand van een lijst met onveilige sites die is opgeslagen in Chrome. Als een site je wachtwoord probeert te stelen of als je een schadelijk bestand downloadt, kan Chrome ook URL's, inclusief delen van de paginacontent, naar Safe Browsing sturen.</translation>
 <translation id="6418662306461808273">Overschakelen naar bestaand Chrome-profiel?</translation>
 <translation id="6506909944137591434">Chrome heeft camerarechten nodig om een 3D-kaart van je omgeving te maken</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
@@ -267,7 +269,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="8129812357326543296">Over &amp;Google Chrome</translation>
 <translation id="822971176939352383">De volgende accounts zijn niet ingelogd bij Chrome-profielen. Als je een account wilt gebruiken in een ander profiel, verwijder je eerst dat profiel.</translation>
 <translation id="8255190535488645436">Google Chrome gebruikt je camera en microfoon.</translation>
-<translation id="8286862437124483331">Google Chrome probeert wachtwoorden te tonen. Geef je Windows-wachtwoord op om dit toe te staan.</translation>
+<translation id="8286862437124483331">Google Chrome probeert wachtwoorden te bekijken. Geef je Windows-wachtwoord op om dit toe te staan.</translation>
 <translation id="828798499196665338">Je ouder heeft 'Rechten voor sites, apps en extensies' uitgezet voor Chrome. Je mag deze <ph name="EXTENSION_TYPE_PARAMETER" /> niet aanzetten.</translation>
 <translation id="8290100596633877290">Oeps! Google Chrome is vastgelopen. Nu opnieuw starten?</translation>
 <translation id="8342675569599923794">Dit bestand is gevaarlijk en is daarom door Chrome geblokkeerd.</translation>

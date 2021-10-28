@@ -131,6 +131,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1882897271359938046">Zrcaljenje na zaslon <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Otključavanje otiskom prsta</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> ne podržava <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Razlučivost je promijenjena u <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Kliknite Potvrdi da bi se promjene zadržale. Prethodne postavke vratit će se za <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="1915307458270490472">Prekini vezu</translation>
 <translation id="1919743966458266018">Promijenio se prečac za otvaranje upravitelja zadataka. Upotrijebite <ph name="NEW_SHORTCUT" /> umjesto <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Automatski klikovi</translation>
 <translation id="1928739107511554905">Da biste preuzeli ažuriranje, ponovo pokrenite Chromebook pomoću dodirnog zaslona dok je tipkovnica priključena.</translation>
@@ -372,6 +373,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="3665889125180354336">Snimanje mikrofona</translation>
 <translation id="3680908746918359504">Izbriši sve markere</translation>
 <translation id="36813544980941320">Wi-Fi mreže dijelit će se između vašeg telefona i uređaja <ph name="DEVICE_NAME" /></translation>
+<translation id="3701206655856637070">Sada možete promijeniti gdje se spremaju snimke zaslona</translation>
 <translation id="3702809606464356667">Prikazuju se prozori s trenutačne radne površine, pritisnite tipku strelice prema gore da bi se prikazali prozori sa svih radnih površina</translation>
 <translation id="3702846122927433391">Broj stanovnika u Nigeriji</translation>
 <translation id="3705722231355495246">-</translation>
@@ -561,6 +563,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
         <ph name="NOTIFICATION" />,
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="4945196315133970626">Isključi obavijesti</translation>
 <translation id="4946376291507881335">Fotografiraj</translation>
 <translation id="495046168593986294">Pomakni prema gore</translation>
 <translation id="4952936045814352993">Lociranje telefona nije moguće kad su onemogućeni zvukovi alarma</translation>
@@ -1129,6 +1132,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="925832987464884575">Sakrij preglede</translation>
 <translation id="938963181863597773">Što je na mojem kalendaru?</translation>
 <translation id="945522503751344254">Pošaljite povratne informacije</translation>
+<translation id="951991426597076286">Odbijam</translation>
 <translation id="98515147261107953">Pejzaž</translation>
 <translation id="990277280839877440">Zatvoren je prozor <ph name="WINDOW_TITILE" />.</translation>
 </translationbundle>

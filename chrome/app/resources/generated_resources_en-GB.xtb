@@ -125,6 +125,7 @@
 <translation id="1122068467107743258">Work</translation>
 <translation id="1122198203221319518">&amp;Tools</translation>
 <translation id="1122242684574577509">Authentication failed. Click to visit the login page for the Wi-Fi network you are using (<ph name="NETWORK_ID" />).</translation>
+<translation id="1122913801042512795">Your account sign-in details are out of date. Please sign out and sign in again.</translation>
 <translation id="1122960773616686544">Bookmark name</translation>
 <translation id="1124772482545689468">User</translation>
 <translation id="1125550662859510761">Looks like <ph name="WIDTH" /> x <ph name="HEIGHT" /> (Native)</translation>
@@ -1316,7 +1317,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2312219318583366810">Page URL</translation>
 <translation id="2314165183524574721">Current visibility setting is hidden</translation>
 <translation id="2314774579020744484">Language used when translating pages</translation>
-<translation id="2315414688463285945">Error configuring Linux files. Please try again.</translation>
 <translation id="2315587498123194634">Send link to <ph name="DEVICE_NAME" /></translation>
 <translation id="2316129865977710310">No, thanks</translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" />% done</translation>
@@ -2365,7 +2365,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3424969259347320884">Describe What you Were Doing When the Tab Crashed</translation>
 <translation id="3427092606871434483">Allow (default)</translation>
 <translation id="3428419049384081277">You're signed in!</translation>
-<translation id="3428747202529429621">Keeps you safe on Chrome and may be used to improve your security in other Google apps when you are signed in</translation>
 <translation id="3429086384982427336">Apps listed below will never handle protocol links.</translation>
 <translation id="3429160811076349561">Trial features are off</translation>
 <translation id="3429271624041785769">Web content languages</translation>
@@ -5130,7 +5129,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6410328738210026208">Change channel and Powerwash</translation>
 <translation id="6410390304316730527">Safe Browsing protects you against attackers who may trick you into doing something dangerous, like installing malicious software or revealing personal information such as passwords, phone numbers or credit cards. If you turn it off, be careful when browsing unfamiliar or unreputable sites.</translation>
 <translation id="6410668567036790476">Add search engine</translation>
-<translation id="6412673304250309937">Checks URLs with a list of unsafe sites stored in Chrome. If a site tries to steal your password, or when you download a harmful file, Chrome may also send URLs, including bits of page content, to Safe Browsing.</translation>
 <translation id="641469293210305670">Install updates and apps</translation>
 <translation id="6414878884710400018">Open system preferences</translation>
 <translation id="6414888972213066896">You asked your parent if it's OK to visit this site</translation>
@@ -5539,7 +5537,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6843264316370513305">Network debugging</translation>
 <translation id="6843423766595476978">"Ok Google" is ready</translation>
 <translation id="6845038076637626672">Open Maximised</translation>
-<translation id="6845325883481699275">Help improve Chrome security</translation>
 <translation id="6846178040388691741">'<ph name="EXTENSION_NAME" />' wants to print <ph name="FILE_NAME" /> with <ph name="PRINTER_NAME" />.</translation>
 <translation id="6847125920277401289">Free up space to continue</translation>
 <translation id="6848388270925200958">At the moment, you have some cards that can only be used on this device</translation>
@@ -6992,7 +6989,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8324784016256120271">Sites can use cookies to see your browsing activity across different sites, for example, to personalise ads</translation>
 <translation id="8325413836429495820">Not allowed to see your clipboard</translation>
 <translation id="8326478304147373412">PKCS #7, certificate chain</translation>
-<translation id="8327039559959785305">Error mounting Linux files. Please try again.</translation>
 <translation id="8327676037044516220">Permissions and content settings</translation>
 <translation id="833256022891467078">Crostini shared folders</translation>
 <translation id="8335587457941836791">Unpin from shelf</translation>
@@ -7514,6 +7510,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8879284080359814990">&amp;Show As Tab</translation>
 <translation id="8879921471468674457">Remember sign-in info</translation>
 <translation id="8880054210564666174">Unable to download contact list. Please check your network connection, or <ph name="LINK_BEGIN" />try again<ph name="LINK_END" />.</translation>
+<translation id="8880344290593529089">Open Settings to connect <ph name="USB_DEVICE_NAME" /> to Linux or Parallels Desktop</translation>
 <translation id="8881020143150461183">Please try again. For technical support, contact <ph name="CARRIER_NAME" />.</translation>
 <translation id="8883273463630735858">Enable touchpad acceleration</translation>
 <translation id="8884570509232205463">Your device now locks at <ph name="UNLOCK_TIME" />.</translation>

@@ -102,6 +102,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="3379938682270551431">{0,plural, =0{Chrome se bo zdaj znova zagnal}=1{Chrome se bo znova zagnal čez eno sekundo}one{Chrome se bo znova zagnal čez # sekundo}two{Chrome se bo znova zagnal čez # sekundi}few{Chrome se bo znova zagnal čez # sekunde}other{Chrome se bo znova zagnal čez # sekund}}</translation>
 <translation id="3395323229510056640">Pomoč za OS Chrome</translation>
 <translation id="3396977131400919238">Med namestitvijo je prišlo do napake v operacijskem sistemu. Ponovno prenesite program Google Chrome.</translation>
+<translation id="3428747202529429621">Skrbi za vašo varnost v Chromu in ga je mogoče uporabiti za okrepitev varnosti v drugih Googlovih aplikacijah, ko ste prijavljeni.</translation>
 <translation id="3434246496373299699">Chrome lahko preveri vaša gesla, ko se prijavite z računom Google</translation>
 <translation id="3451115285585441894">Dodajanje v Chrome ...</translation>
 <translation id="345171907106878721">Dodajte se v Chrome</translation>
@@ -210,6 +211,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="6291089322031436445">Aplikacije za Chrome Dev</translation>
 <translation id="6291549208091401781">Google Chrome je že nameščen za vse uporabnike v računalniku.</translation>
 <translation id="6368958679917195344">Sistem Chrome OS uporablja dodatno <ph name="BEGIN_LINK_CROS_OSS" />odprtokodno programsko opremo<ph name="END_LINK_CROS_OSS" />.</translation>
+<translation id="6412673304250309937">Preveri URL-je, tako da jih primerja s seznamom spletnih mest, ki niso varna, shranjenim v Chromu. Če vam spletno mesto poskusi ukrasti geslo ali ko prenašate škodljivo datoteko, lahko Chrome prav tako pošlje URL-je, vključno z delčki vsebine strani, Varnemu brskanju.</translation>
 <translation id="6418662306461808273">Želite preklopiti na obstoječi profil v Chromu?</translation>
 <translation id="6506909944137591434">Chrome potrebuje dovoljenje za dostop do fotoaparata zaradi ustvarjanja tridimenzionalnega zemljevida okolice.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> različica Google Chroma za razvijalce</translation>

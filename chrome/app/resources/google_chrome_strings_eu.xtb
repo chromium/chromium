@@ -100,6 +100,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="3379938682270551431">{0,plural, =0{Orain berrabiaraziko da Chrome}=1{1 segundo barru berrabiaraziko da Chrome}other{# segundo barru berrabiaraziko da Chrome}}</translation>
 <translation id="3395323229510056640">Lortu Chrome OS erabiltzeko laguntza</translation>
 <translation id="3396977131400919238">Sistema-eragilean errore bat gertatu da instalatu bitartean. Deskargatu Google Chrome berriro.</translation>
+<translation id="3428747202529429621">Babestuta mantentzen zaitu Chrome-n, eta segurtasuna hobetzeko erabil daiteke Google-ren beste aplikazio batzuetan saioa hasita daukazunean</translation>
 <translation id="3434246496373299699">Google-ko kontu batekin saioa hasten duzunean egiazta ditzake Chrome-k pasahitzak</translation>
 <translation id="3451115285585441894">Chrome-n gehitzen…</translation>
 <translation id="345171907106878721">Gehitu zeure burua Chrome-n</translation>
@@ -207,6 +208,7 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="6291089322031436445">Chrome Dev aplikazioak</translation>
 <translation id="6291549208091401781">Ordenagailuko erabiltzaile guztientzat dago instalatuta Google Chrome.</translation>
 <translation id="6368958679917195344"><ph name="BEGIN_LINK_CROS_OSS" />Kode irekiko software<ph name="END_LINK_CROS_OSS" /> gehigarriari esker da posible Chrome OS.</translation>
+<translation id="6412673304250309937">URLak Chrome-n gordetako webgune ez-seguruen zerrendan dauden ala ez egiaztatzen du. Webguneren bat pasahitza lapurtzen saiatzen bada, edo fitxategi kaltegarriren bat deskargatzen baduzu, baliteke Chrome-k URLak ere bidaltzea (orriko edukiaren zati batzuk barne) Arakatze segurua eginbideari.</translation>
 <translation id="6418662306461808273">Lehendik dagoen Chrome-ko profilera aldatu nahi duzu?</translation>
 <translation id="6506909944137591434">Chrome-k kamera atzitzeko baimena behar du zure inguruaren 3D-ko mapa bat sortzeko</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>

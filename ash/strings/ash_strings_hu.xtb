@@ -131,6 +131,7 @@
 <translation id="1882897271359938046">Tükrözés: <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Feloldás ujjlenyomattal</translation>
 <translation id="1888656773939766144">A(z) <ph name="DISPLAY_NAME" /> nem támogatja a következő felbontást: <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). A felbontás erre módosult: <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). A módosítás megtartásához kattintson a Megerősítés gombra. A beállítás <ph name="TIMEOUT_SECONDS" /> múlva visszaáll a korábbi értékre.</translation>
+<translation id="1915307458270490472">Hívás befejezése</translation>
 <translation id="1919743966458266018">Megváltozott a feladatkezelő megnyitásának billentyűkódja. A <ph name="OLD_SHORTCUT" /> helyett használja a következőt: <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Automatikus kattintások</translation>
 <translation id="1928739107511554905">A frissítés alkalmazásához és a csatlakoztatott billentyűzet használatához indítsa újra a Chromebookot az érintőképernyő segítségével.</translation>
@@ -1130,6 +1131,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="925832987464884575">Előnézetek elrejtése</translation>
 <translation id="938963181863597773">Mi van a naptáramban?</translation>
 <translation id="945522503751344254">Visszajelzés küldése</translation>
+<translation id="951991426597076286">Elutasítás</translation>
 <translation id="98515147261107953">Fekvő</translation>
 <translation id="990277280839877440">Bezárta a következő ablakot: <ph name="WINDOW_TITILE" />.</translation>
 </translationbundle>

@@ -131,6 +131,7 @@
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> သို့ ပုံတူပွားနေ</translation>
 <translation id="1885785240814121742">လက်ဗွေရာသုံး၍ လော့ခ်ဖွင့်ခြင်း</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> က <ph name="SPECIFIED_RESOLUTION" /> ကို မပံ့ပိုးပါ (<ph name="SPECIFIED_REFRESH_RATE" /> Hz)။ ပုံရိပ်ပြတ်သားကိန်းကို <ph name="FALLBACK_RESOLUTION" /> သို့ ပြောင်းထားသည် (<ph name="FALLBACK_REFRESH_RATE" />)။ အပြောင်းအလဲများ သိမ်းရန်အတွက် အတည်ပြုရန် ကို နှိပ်ပါ။ ယခင်ဆက်တင်များကို <ph name="TIMEOUT_SECONDS" /> အကြာတွင် ပြန်ထားရှိပါမည်။</translation>
+<translation id="1915307458270490472">ဖုန်းချရန်</translation>
 <translation id="1919743966458266018">တာဝန်များ မန်နေဂျာကို ဖွင့်ရန် ဖြတ်လမ်း ပြောင်းသွားပါပြီ။ ကျေးဇူးပြုပြီး<ph name="OLD_SHORTCUT" /> အစား<ph name="NEW_SHORTCUT" />ကို သုံးပါ။</translation>
 <translation id="1923539912171292317">အလိုအလျောက် နှိပ်ချက်များ</translation>
 <translation id="1928739107511554905">အပ်ဒိတ်ရယူရန်အတွက် ကီးဘုတ်ကို ချိတ်ဆက်ထားပြီး Chromebook ကို ပြန်လည်စတင်ရန် ထိတွေ့မျက်နှာပြင်ကို အသုံးပြုပါ။</translation>
@@ -1129,6 +1130,7 @@
 <translation id="925832987464884575">အစမ်းကြည့်ရှုခြင်းများ ဖျောက်ရန်</translation>
 <translation id="938963181863597773">ကျွန်ုပ်၏ ပြက္ခဒိန်မှာ ဘာတွေရှိလဲ။</translation>
 <translation id="945522503751344254">အကြံပြုချက် ပေးပို့မည်</translation>
+<translation id="951991426597076286">ပယ်ချရန်</translation>
 <translation id="98515147261107953">ဘေးတိုက်</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" /> ဝင်းဒိုးကို ပိတ်ထားသည်။</translation>
 </translationbundle>

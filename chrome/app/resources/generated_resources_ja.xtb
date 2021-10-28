@@ -1299,7 +1299,6 @@
 <translation id="2312219318583366810">ページの URL</translation>
 <translation id="2314165183524574721">現在の公開設定は非表示です</translation>
 <translation id="2314774579020744484">この言語を使用してページを翻訳します</translation>
-<translation id="2315414688463285945">[Linux ファイル] の設定中にエラーが発生しました。もう一度お試しください。</translation>
 <translation id="2315587498123194634"><ph name="DEVICE_NAME" /> にリンクを送信</translation>
 <translation id="2316129865977710310">いいえ</translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" />% 完了</translation>
@@ -2349,7 +2348,6 @@
 <translation id="3424969259347320884">タブのクラッシュ時に行っていた操作をご説明ください</translation>
 <translation id="3427092606871434483">許可（デフォルト）</translation>
 <translation id="3428419049384081277">ログインしました</translation>
-<translation id="3428747202529429621">ログイン時に、Chrome を安全に利用できるようにするほか、他の Google アプリのセキュリティ強化に使用されることがあります</translation>
 <translation id="3429086384982427336">以下のアプリはプロトコル リンクを扱いません。</translation>
 <translation id="3429160811076349561">試用版機能はオフになっています</translation>
 <translation id="3429271624041785769">ウェブ コンテンツの言語</translation>
@@ -5111,7 +5109,6 @@
 <translation id="6410328738210026208">チャンネルを変更して Powerwash</translation>
 <translation id="6410390304316730527">セーフ ブラウジングは、不正なソフトウェアのインストールや個人情報（パスワード、電話番号、クレジット カードなど）の入力といった危険な操作を行うよう誘導する悪意のあるユーザーから保護します。オフにする場合、なじみのないサイトや評判の悪いサイトを閲覧する際は十分に注意してください。</translation>
 <translation id="6410668567036790476">検索エンジンの追加</translation>
-<translation id="6412673304250309937">Chrome に保存されている安全でないサイトのリストと URL を照合します。サイトがパスワードを不正に取得しようとしている場合や、ユーザーが安全でないファイルをダウンロードしようとした場合は、URL とページ コンテンツの一部をセーフ ブラウジングに送信することがあります。</translation>
 <translation id="641469293210305670">アップデートとアプリのインストール</translation>
 <translation id="6414878884710400018">システム環境設定を開く</translation>
 <translation id="6414888972213066896">このサイトを開いてもよいかの問い合わせを保護者に送信しました</translation>
@@ -5520,7 +5517,6 @@
 <translation id="6843264316370513305">ネットワークのデバッグ</translation>
 <translation id="6843423766595476978">OK Google の設定が完了しました</translation>
 <translation id="6845038076637626672">最大化して開く</translation>
-<translation id="6845325883481699275">Chrome のセキュリティ改善に協力する</translation>
 <translation id="6846178040388691741">「<ph name="EXTENSION_NAME" />」が <ph name="PRINTER_NAME" /> での <ph name="FILE_NAME" /> の印刷をリクエストしています。</translation>
 <translation id="6847125920277401289">続行するには容量を空けてください</translation>
 <translation id="6848388270925200958">現在、このデバイスでのみ使用できるカードがいくつかあります</translation>
@@ -6971,7 +6967,6 @@
 <translation id="8324784016256120271">サイトは、Cookie を使用して別のサイトでのあなたの閲覧アクティビティを確認できます（広告のカスタマイズなどが行えます）</translation>
 <translation id="8325413836429495820">クリップボードの読み取りを許可しないサイト</translation>
 <translation id="8326478304147373412">PKCS #7、証明書チェーン</translation>
-<translation id="8327039559959785305">[Linux ファイル] のマウント中にエラーが発生しました。もう一度お試しください。</translation>
 <translation id="8327676037044516220">権限とコンテンツの設定</translation>
 <translation id="833256022891467078">Crostini の共有フォルダ</translation>
 <translation id="8335587457941836791">シェルフの固定解除</translation>

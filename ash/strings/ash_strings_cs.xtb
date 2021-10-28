@@ -131,6 +131,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1882897271359938046">Zrcadlení na displej <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Odemknutí otiskem prstu</translation>
 <translation id="1888656773939766144">Monitor <ph name="DISPLAY_NAME" /> rozlišení <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) nepodporuje. Rozlišení bylo změněno na <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Změny potvrdíte kliknutím. Předchozí nastavení bude obnoveno za <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="1915307458270490472">Zavěsit</translation>
 <translation id="1919743966458266018">Zkratka k otevření správce úloh se změnila. Namísto zkratky <ph name="OLD_SHORTCUT" /> používejte zkratku <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Automatická kliknutí</translation>
 <translation id="1928739107511554905">K získání aktualizace Chromebook pomocí dotykové obrazovky restartujte s připojenou klávesnicí.</translation>
@@ -1129,6 +1130,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="925832987464884575">Skrýt náhledy</translation>
 <translation id="938963181863597773">Co mám v kalendáři?</translation>
 <translation id="945522503751344254">Odeslat zpětnou vazbu</translation>
+<translation id="951991426597076286">Odmítnout</translation>
 <translation id="98515147261107953">Na šířku</translation>
 <translation id="990277280839877440">Okno <ph name="WINDOW_TITILE" /> bylo zavřeno.</translation>
 </translationbundle>

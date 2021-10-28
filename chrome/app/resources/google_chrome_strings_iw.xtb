@@ -97,6 +97,7 @@
 <translation id="3379938682270551431">{0,plural, =0{‏Chrome יופעל מחדש עכשיו}=1{‏Chrome יופעל מחדש בעוד שנייה}two{‏Chrome יופעל מחדש בעוד # שניות}many{‏Chrome יופעל מחדש בעוד # שניות}other{‏Chrome יופעל מחדש בעוד # שניות}}</translation>
 <translation id="3395323229510056640">‏עזרה בנושא Chrome OS</translation>
 <translation id="3396977131400919238">‏במהלך ההתקנה אירעה שגיאה של מערכת ההפעלה. יש להוריד שוב את Google Chrome.</translation>
+<translation id="3428747202529429621">‏מגן עליך ב-Chrome וייתכן שייעשה בו שימוש לשיפור האבטחה באפליקציות אחרות של Google שבהן נכנסת לחשבון</translation>
 <translation id="3434246496373299699">‏Chrome יכול לבדוק את הסיסמאות כשנכנסים באמצעות חשבון Google</translation>
 <translation id="3451115285585441894">‏הוספה ל-‏Chrome...</translation>
 <translation id="345171907106878721">‏הוספת עצמך ל-Chrome</translation>
@@ -200,6 +201,7 @@
 <translation id="6291089322031436445">‏אפליקציות לגרסת הפיתוח של Chrome</translation>
 <translation id="6291549208091401781">‏Google Chrome כבר מותקן במחשב ונגיש לכל המשתמשים.</translation>
 <translation id="6368958679917195344">‏השימוש במערכת ההפעלה של Chrome מתאפשר באמצעות <ph name="BEGIN_LINK_CROS_OSS" />תוכנת קוד פתוח<ph name="END_LINK_CROS_OSS" /> נוספת.</translation>
+<translation id="6412673304250309937">‏המערכת בודקת כתובות URL ששמורות ב-Chrome ומכילות רשימות של אתרים לא בטוחים. אם אתר מסוים מנסה לגנוב סיסמה או אם המערכת מזהה הורדה של קובץ מזיק, Chrome עשוי גם לשלוח כתובות URL לבדיקה באמצעות 'גלישה בטוחה'. הנתונים שנשלחים לבדיקה כוללים ביטים מהתוכן של הדף.</translation>
 <translation id="6418662306461808273">‏לעבור לפרופיל Chrome קיים?</translation>
 <translation id="6506909944137591434">‏נדרשת הרשאת גישה למצלמה ב-Chrome כדי ליצור מפה תלת-ממדית של הסביבה שלך</translation>
 <translation id="6515495397637126556">‏<ph name="PAGE_TITLE" /> - Google Chrome בגרסת פיתוח</translation>

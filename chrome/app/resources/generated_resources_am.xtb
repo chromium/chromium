@@ -123,6 +123,7 @@
 <translation id="1122068467107743258">ሥራ</translation>
 <translation id="1122198203221319518">&amp;መሣሪያዎች</translation>
 <translation id="1122242684574577509">ማረጋገጥ አልተሳካም። (<ph name="NETWORK_ID" />) እየተጠቀሙ ላሉበት Wi-Fi አውታረ መረብ የመግቢያ ገጽ ለመጎብኘት ጠቅ ያድርጉ።</translation>
+<translation id="1122913801042512795">የእርስዎ መለያ በመለያ መግቢያ ዝርዝሮች ጊዜ ያለፈባቸው ናቸው። እባክዎ ዘግተው ይውጡ እና እንደገና በመለያ ይግቡ።</translation>
 <translation id="1122960773616686544">የዕልባት ስም</translation>
 <translation id="1124772482545689468">ተጠቃሚ</translation>
 <translation id="1125550662859510761"><ph name="WIDTH" /> x <ph name="HEIGHT" /> ይመስላል (ቤተኛ)</translation>
@@ -1310,7 +1311,6 @@
 <translation id="2312219318583366810">የገጽ ዩ.አር.ኤል.</translation>
 <translation id="2314165183524574721">የአሁኑ የታይነት ቅንብር ተደብቋል</translation>
 <translation id="2314774579020744484">ገጾችን ሲተረጎሙ ጥቅም ላይ የዋለ ቋንቋ</translation>
-<translation id="2315414688463285945">የLinux ፋይሎችን ማዋቀር ላይ ስህተት። እባክዎ እንደገና ይሞክሩ።</translation>
 <translation id="2315587498123194634">አገናኝ ወደ <ph name="DEVICE_NAME" /> ይላኩ</translation>
 <translation id="2316129865977710310">አይ፣ አመሰግናለሁ</translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" />% ተከናውኗል</translation>
@@ -2359,7 +2359,6 @@
 <translation id="3424969259347320884">ትሩ ሲሰናከል ምን እየሰሩ እንደነበር ያብራሩ</translation>
 <translation id="3427092606871434483">ፍቀድ (ነባሪ)</translation>
 <translation id="3428419049384081277">ወደ መለያ ገብተዋል!</translation>
-<translation id="3428747202529429621">በChrome ላይ ደህንነትዎን ይጠብቃል፣ እና በመለያ በገቡባቸው ሌሎች የGoogle መተግበሪያዎች ላይ ደህንነትዎን ለማሻሻል ስራ ላይ ሊውል ይችላል።</translation>
 <translation id="3429086384982427336">ከዚህ በታች የተዘረዘሩት መተግበሪያዎች የፕሮቶኮል አገናኞችን በጭራሽ አይይዙም።</translation>
 <translation id="3429160811076349561">የሙከራ ባህሪዎች ጠፍተዋል</translation>
 <translation id="3429271624041785769">የድር ይዘት ቋንቋዎች</translation>
@@ -5121,7 +5120,6 @@
 <translation id="6410328738210026208">ሰርጥ ቀይር እና Powerwash</translation>
 <translation id="6410390304316730527">የጥንቃቄ አሰሳ እንደ ተንኮል-አዘል ሶፍትዌር መጫን ያለ አደገኛ ነገር እንዲያደርጉ ወይም እንደ የይለፍ ቃላት፣ ስልክ ቁጥሮች ወይም ክሬዲት ካርዶች ያለ የግል መረጃን እንዲገልጡ እርስዎን ሊያታልሉዎ ከሚችሉ አጥቂዎች ይጠብቀዎታል። ካጠፉት ያልተለመደ ወይም ስማቸው ጥሩ ያልሆኑ ጣቢያዎችን ሲያስሱ ይጠንቀቁ።</translation>
 <translation id="6410668567036790476">የፍለጋ ፕሮግራም ያክሉ</translation>
-<translation id="6412673304250309937">በChrome ላይ የተከማቹ ድህንነታቸው ያልተጠበቁ ጣቢያዎች ዝርዝር ጋር ዩአርኤሎችን ይፈትሻል። አንድ ጣቢያ የእርስዎን የይለፍ ቃል ለመስረቅ ከሞከረ ወይም ጎጂ ፋይል ካወረደ Chrome እንዲሁም የገጽ ይዘትን ክፍሎችም ጨምሮ ዩአርኤሎችን ወደ የጥንቃቄ አሰሳ መላክ ሊልክ ይችላል።</translation>
 <translation id="641469293210305670">ዝማኔዎችን እና መተግበሪያዎችን ይጫኑ</translation>
 <translation id="6414878884710400018">የሥርዓት ምርጫዎችን ክፈት</translation>
 <translation id="6414888972213066896">ይህን ጣቢያ መጎብኘት ችግር ካለው ወላጅዎን ጠይቀዋል</translation>
@@ -5530,7 +5528,6 @@
 <translation id="6843264316370513305">የአውታረ መረብ ስህተት ማረሚያ</translation>
 <translation id="6843423766595476978">Ok Google ሙሉ በሙሉ ተቀናብሯል</translation>
 <translation id="6845038076637626672">ሰፍቶ ክፈት</translation>
-<translation id="6845325883481699275">የChrome ደህንነት እንዲሻሻል ያግዙ</translation>
 <translation id="6846178040388691741">«<ph name="EXTENSION_NAME" />» <ph name="FILE_NAME" />ን በ<ph name="PRINTER_NAME" /> ማተም ይፈልጋል።</translation>
 <translation id="6847125920277401289">ለመቀጠል ቦታ ያስለቅቁ</translation>
 <translation id="6848388270925200958">አሁን ላይ በዚህ መሣሪያ ላይ ብቻ ጥቅም ላይ ሊውሉ የሚችሉ አንዳንድ ካርዶች አልዎት</translation>
@@ -6988,7 +6985,6 @@ nil</translation>
 <translation id="8324784016256120271">ጣቢያዎች በተለያዩ ጣቢያዎች ላይ ለምሳሌ ማስታወቂያዎችን ግላዊነት ለማላበስ የእርስዎን የአሰሳ እንቅስቃሴ ለመመልከት ኩኪዎችን መጠቀም ይችላሉ</translation>
 <translation id="8325413836429495820">ቅንጥብ ሰሌዳዎን ለማየት አልተፈቀደም</translation>
 <translation id="8326478304147373412">PKCS #7፣ የሰርቲፊኬት ሰንሰለት</translation>
-<translation id="8327039559959785305">የLinux ፋይሎችን ማፈናጠጥ ላይ ስህተት። እባክዎ እንደገና ይሞክሩ።</translation>
 <translation id="8327676037044516220">ፈቃዶች እና የይዘት ቅንብሮች</translation>
 <translation id="833256022891467078">በCrostini የተጋሩ ውሂቦች</translation>
 <translation id="8335587457941836791">ከመደርደሪያ ንቀል</translation>
@@ -7511,6 +7507,7 @@ nil</translation>
 <translation id="8879284080359814990">&amp;በትር አሳይ</translation>
 <translation id="8879921471468674457">በመለያ መግቢያ መረጃን አስታውስ</translation>
 <translation id="8880054210564666174">የእውቂያ ዝርዝር ማውረድ አልተቻለም። እባክዎ የአውታረ መረብ ግንኙነትዎን ይፈትሹ፣ ወይም <ph name="LINK_BEGIN" />እንደገና ይሞክሩ<ph name="LINK_END" />።</translation>
+<translation id="8880344290593529089"><ph name="USB_DEVICE_NAME" /> ን ከ Linux ወይም Parallels Desktop ጋር ለማገናኘት ቅንብሮችን ይክፈቱ</translation>
 <translation id="8881020143150461183">እባክዎ እንደገና ይሞክሩ። ለቴክኒካዊ ድጋፍ፣ <ph name="CARRIER_NAME" /> ን ያነጋግሩ።</translation>
 <translation id="8883273463630735858">የመዳሰሻ ሰሌዳን ማፍጠኛን ያንቁ</translation>
 <translation id="8884570509232205463">መሣሪያዎ አሁን <ph name="UNLOCK_TIME" /> ላይ ይቆለፋል።</translation>

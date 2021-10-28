@@ -131,6 +131,7 @@
 <translation id="1882897271359938046">正在镜像到<ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">使用指纹解锁</translation>
 <translation id="1888656773939766144">“<ph name="DISPLAY_NAME" />”不支持 <ph name="SPECIFIED_RESOLUTION" />（<ph name="SPECIFIED_REFRESH_RATE" /> 赫兹）。分辨率已改为 <ph name="FALLBACK_RESOLUTION" />（<ph name="FALLBACK_REFRESH_RATE" />）。点击“确认”即可保留更改。系统将在 <ph name="TIMEOUT_SECONDS" />后恢复以前的设置。</translation>
+<translation id="1915307458270490472">中止</translation>
 <translation id="1919743966458266018">用于打开任务管理器的快捷键已更改。请使用 <ph name="NEW_SHORTCUT" />，而不是 <ph name="OLD_SHORTCUT" />。</translation>
 <translation id="1923539912171292317">自动点击</translation>
 <translation id="1928739107511554905">要想获取此项更新，请在已连接该键盘的情况下使用触摸屏重新启动您的 Chromebook。</translation>
@@ -1129,6 +1130,7 @@
 <translation id="925832987464884575">隐藏预览</translation>
 <translation id="938963181863597773">我的日历中有哪些活动？</translation>
 <translation id="945522503751344254">发送反馈</translation>
+<translation id="951991426597076286">拒绝</translation>
 <translation id="98515147261107953">横向</translation>
 <translation id="990277280839877440">已关闭窗口“<ph name="WINDOW_TITILE" />”。</translation>
 </translationbundle>

@@ -131,6 +131,7 @@
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> তে প্রতিবিম্বিত হচ্ছে</translation>
 <translation id="1885785240814121742">আঙ্গুলের ছাপ দিয়ে আনলক করুন</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" />-এ <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> হার্জ) কাজ করে না। রেজোলিউশন পরিবর্তন করে <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) করা হয়েছে। পরিবর্তিত সেটিংস রেখে দিতে 'কনফার্ম করুন' বিকল্পে ক্লিক করুন। <ph name="TIMEOUT_SECONDS" />-এর মধ্যে পুরনো সেটিংসে ফিরিয়ে নিয়ে যাওয়া হবে।</translation>
+<translation id="1915307458270490472">কল নামিয়ে রাখুন</translation>
 <translation id="1919743966458266018">কার্য পরিচালক খোলার শর্টকাটটি পরিবর্তিত হয়েছে। <ph name="OLD_SHORTCUT" /> এর পরিবর্তে দয়া করে <ph name="NEW_SHORTCUT" /> ব্যবহার করুন।</translation>
 <translation id="1923539912171292317">স্বয়ংক্রিয় ক্লিকগুলি</translation>
 <translation id="1928739107511554905">আপডেট পেতে, অ্যাটাচ করা কীবোর্ডের মাধ্যমে আপনার Chromebook রিস্টার্ট করার জন্য টাচস্ক্রিন ব্যবহার করুন।</translation>
@@ -1129,6 +1130,7 @@
 <translation id="925832987464884575">প্রিভিউ লুকান</translation>
 <translation id="938963181863597773">আমার ক্যালেন্ডারে কী কী আছে?</translation>
 <translation id="945522503751344254">মতামত জানান</translation>
+<translation id="951991426597076286">প্রত্যাখ্যান</translation>
 <translation id="98515147261107953">ল্যান্ডস্কেপ</translation>
 <translation id="990277280839877440">উইন্ডো <ph name="WINDOW_TITILE" /> বন্ধ করা আছে।</translation>
 </translationbundle>

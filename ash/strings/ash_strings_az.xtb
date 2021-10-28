@@ -131,6 +131,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> əks etdirilir</translation>
 <translation id="1885785240814121742">Barmaq izi ilə kiliddən çıxarın</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> ayırdetmə dəqiqliyini dəstəkləmir (<ph name="SPECIFIED_REFRESH_RATE" /> Hs). Ayırdetmə dəqiqliyi <ph name="FALLBACK_RESOLUTION" /> ilə dəyişdirilib (<ph name="FALLBACK_REFRESH_RATE" />). Dəyişiklikləri saxlamaq üçün "Təsdiq" seçiminə toxunun. Əvvəlki ayarlar <ph name="TIMEOUT_SECONDS" /> ərzində bərpa ediləcək.</translation>
+<translation id="1915307458270490472">Dəstəyi qoyun</translation>
 <translation id="1919743966458266018">Task menecerini açmaq üçün qısayol dəyişilib. <ph name="OLD_SHORTCUT" /> əvəzinə <ph name="NEW_SHORTCUT" /> istifadə edin.</translation>
 <translation id="1923539912171292317">Avtomatik kliklər</translation>
 <translation id="1928739107511554905">Güncəlləməni əldə etmək məqsədilə əlavə edilən klavatura ilə Chromebook'u yenidən başlatmaq üçün toxunuş ekranından istifadə edin.</translation>
@@ -1129,6 +1130,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="925832987464884575">Önbaxışları gizlədin</translation>
 <translation id="938963181863597773">Təqvimdə nə var?</translation>
 <translation id="945522503751344254">Geri əlaqə göndərin</translation>
+<translation id="951991426597076286">Kənarlaşdırın</translation>
 <translation id="98515147261107953">Peyzaj</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" /> pəncərəsi bağlandı.</translation>
 </translationbundle>

@@ -100,6 +100,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3379938682270551431">{0,plural, =0{Chrome will relaunch now}=1{Chrome will relaunch in 1 second}other{Chrome will relaunch in # seconds}}</translation>
 <translation id="3395323229510056640">Get help with Chrome OS</translation>
 <translation id="3396977131400919238">An operating system error occurred during installation. Please download Google Chrome again.</translation>
+<translation id="3428747202529429621">Keeps you safe on Chrome and may be used to improve your security in other Google apps when you are signed in</translation>
 <translation id="3434246496373299699">Chrome can check your passwords when you sign in with your Google Account</translation>
 <translation id="3451115285585441894">Adding to Chrome...</translation>
 <translation id="345171907106878721">Add yourself to Chrome</translation>
@@ -207,6 +208,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6291089322031436445">Chrome Dev Apps</translation>
 <translation id="6291549208091401781">Google Chrome is already installed for all users on your computer.</translation>
 <translation id="6368958679917195344">Chrome OS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS" />open-source software<ph name="END_LINK_CROS_OSS" />.</translation>
+<translation id="6412673304250309937">Checks URLs with a list of unsafe sites stored in Chrome. If a site tries to steal your password, or when you download a harmful file, Chrome may also send URLs, including bits of page content, to Safe Browsing.</translation>
 <translation id="6418662306461808273">Switch to existing Chrome profile?</translation>
 <translation id="6506909944137591434">Chrome needs camera permission to create a 3D map of your surroundings</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>

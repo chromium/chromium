@@ -131,6 +131,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1882897271359938046">Peilataan näyttöön: <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Avaa sormenjäljellä</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> ei tue resoluutiota <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Resoluutioksi vaihdettiin <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Pidä muutokset voimassa valitsemalla Vahvista. Aiemman asetuksen palauttamiseen menee <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="1915307458270490472">Katkaise puhelu</translation>
 <translation id="1919743966458266018">Tehtävänhallinnan avaamisen pikanäppäin on muuttunut. Käytä uutta pikanäppäintä <ph name="NEW_SHORTCUT" /> vanhan (<ph name="OLD_SHORTCUT" />) sijaan.</translation>
 <translation id="1923539912171292317">Automaattiset klikkaukset</translation>
 <translation id="1928739107511554905">Voit asentaa päivityksen käynnistämällä Chromebookisi uudelleen kosketusnäytön avulla niin, että näppäimistö on kytkettynä.</translation>
@@ -1129,6 +1130,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="925832987464884575">Piilota esikatselut</translation>
 <translation id="938963181863597773">Mitä kalenterissani on?</translation>
 <translation id="945522503751344254">Lähetä palautetta</translation>
+<translation id="951991426597076286">Hylkää</translation>
 <translation id="98515147261107953">Vaakasuunta</translation>
 <translation id="990277280839877440">Ikkuna <ph name="WINDOW_TITILE" /> suljettu.</translation>
 </translationbundle>

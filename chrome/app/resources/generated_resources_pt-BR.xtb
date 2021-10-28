@@ -1317,7 +1317,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2312219318583366810">URL da página</translation>
 <translation id="2314165183524574721">A configuração de visibilidade atual é: oculto</translation>
 <translation id="2314774579020744484">Idioma usado ao traduzir páginas</translation>
-<translation id="2315414688463285945">Erro ao configurar arquivos do Linux. Tente novamente.</translation>
 <translation id="2315587498123194634">Enviar link para este dispositivo: <ph name="DEVICE_NAME" /></translation>
 <translation id="2316129865977710310">Não.</translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" />% concluída</translation>
@@ -2090,6 +2089,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="310671807099593501">O site está usando o Bluetooth</translation>
 <translation id="3108931485517391283">Não foi possível receber</translation>
 <translation id="3109724472072898302">Recolhido</translation>
+<translation id="311214366526552035">Fazer o download mesmo assim</translation>
 <translation id="311394601889664316">Não permitir que os sites editem arquivos ou pastas no seu dispositivo</translation>
 <translation id="3115147772012638511">Aguardando o cache...</translation>
 <translation id="3115580024857770654">Recolher tudo</translation>
@@ -2367,11 +2367,11 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="3424969259347320884">Descrever o que você estava fazendo quando a guia travou</translation>
 <translation id="3427092606871434483">Permitir (padrão)</translation>
 <translation id="3428419049384081277">Você está conectado</translation>
-<translation id="3428747202529429621">Protege você no Chrome e pode ser usado para melhorar a segurança em outros apps do Google quando sua conta está conectada</translation>
 <translation id="3429086384982427336">Os apps na lista abaixo nunca gerenciarão links de protocolo.</translation>
 <translation id="3429160811076349561">Os recursos de teste estão desativados</translation>
 <translation id="3429271624041785769">Idiomas de conteúdo da Web</translation>
 <translation id="3429275422858276529">Adicionar esta página aos favoritos para encontrá-la mais facilmente depois</translation>
+<translation id="343115368966109153">Fazer o download de <ph name="FILE_NAME" />? Qualquer pessoa que esteja usando o dispositivo pode ver.</translation>
 <translation id="3432227430032737297">Remover todos os cookies mostrados</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433621910545056227">Ops! O sistema falhou ao estabelecer o bloqueio de atributos da hora de instalação do dispositivo.</translation>
@@ -2713,6 +2713,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="3777806571986431400">Extensão ativada</translation>
 <translation id="3778152852029592020">O download foi cancelado.</translation>
 <translation id="3778208826288864398">A chave de segurança está bloqueada porque o PIN incorreto foi inserido muitas vezes. Redefina a chave de segurança.</translation>
+<translation id="3778369586810509692">Este arquivo será armazenado no dispositivo, e todos poderão vê-lo.</translation>
 <translation id="3778740492972734840">Ferramentas do &amp;desenvolvedor</translation>
 <translation id="3778868487658107119">Faça perguntas ou diga a ele o que fazer. É o seu Google pessoal, sempre pronto para ajudar.</translation>
 <translation id="3781742599892759500">Acesso ao microfone no Linux</translation>
@@ -5133,7 +5134,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6410328738210026208">Mudar de canal e executar PowerWash</translation>
 <translation id="6410390304316730527">O "Navegação segura" protege contra invasores que podem levar você a fazer algo perigoso, como instalar um software malicioso ou revelar informações pessoais como senhas, números de telefone ou cartões de crédito. Se desativá-lo, tenha cuidado ao navegar em sites desconhecidos ou com má reputação.</translation>
 <translation id="6410668567036790476">Adicionar mecanismo de pesquisa</translation>
-<translation id="6412673304250309937">Verifica se os URLs estão em uma lista de sites não seguros armazenada no Chrome. Se um site tentar roubar sua senha ou se você fizer o download de um arquivo nocivo, o Chrome também poderá enviar URLs, incluindo partes do conteúdo da página, para o "Navegação segura".</translation>
 <translation id="641469293210305670">Instalar atualizações e apps</translation>
 <translation id="6414878884710400018">Abrir preferências do sistema</translation>
 <translation id="6414888972213066896">Você perguntou ao seu responsável se pode visitar este site</translation>
@@ -5542,7 +5542,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6843264316370513305">Depuração de rede</translation>
 <translation id="6843423766595476978">Ok Google configurado</translation>
 <translation id="6845038076637626672">Abrir maximizado</translation>
-<translation id="6845325883481699275">Ajudar a melhorar a segurança do Chrome</translation>
 <translation id="6846178040388691741"><ph name="EXTENSION_NAME" /> quer imprimir <ph name="FILE_NAME" /> com <ph name="PRINTER_NAME" />.</translation>
 <translation id="6847125920277401289">Liberar espaço para continuar</translation>
 <translation id="6848388270925200958">No momento, você tem alguns cartões que só podem ser usados neste dispositivo</translation>
@@ -6995,7 +6994,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8324784016256120271">Os sites podem usar cookies para ver sua atividade de navegação em diferentes páginas para, por exemplo, personalizar anúncios</translation>
 <translation id="8325413836429495820">Bloquear o acesso à área de transferência</translation>
 <translation id="8326478304147373412">PKCS #7, cadeia de certificados</translation>
-<translation id="8327039559959785305">Erro ao ativar arquivos do Linux. Tente novamente.</translation>
 <translation id="8327676037044516220">Permissões e configurações de conteúdo</translation>
 <translation id="833256022891467078">Pastas compartilhadas do Crostini</translation>
 <translation id="8335587457941836791">Desafixar da estante</translation>

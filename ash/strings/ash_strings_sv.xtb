@@ -131,6 +131,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1882897271359938046">Spegling av <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Lås upp med fingeravtryck</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> har inte stöd för <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Upplösningen har ändrats till <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Klicka på bekräfta om du vill behålla ändringarna. De gamla inställningarna återställs om <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="1915307458270490472">Lägg på</translation>
 <translation id="1919743966458266018">Kortkommandot för att öppna aktivitetshanteraren har ändrats. Använd <ph name="NEW_SHORTCUT" /> i stället för <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Automatiska klick</translation>
 <translation id="1928739107511554905">Starta om Chromebook-enheten via pekskärmen med tangentbordet tillkopplat för att uppdatera.</translation>
@@ -1129,6 +1130,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="925832987464884575">Dölj förhandsgranskningar</translation>
 <translation id="938963181863597773">Vad står det i min kalender?</translation>
 <translation id="945522503751344254">Skicka feedback</translation>
+<translation id="951991426597076286">Godkänn inte</translation>
 <translation id="98515147261107953">Liggande</translation>
 <translation id="990277280839877440">Fönstret <ph name="WINDOW_TITILE" /> har stängts.</translation>
 </translationbundle>

@@ -108,6 +108,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="129863573139666797"><ph name="BEGIN_LINK" />Löschen Sie Ihre Cookies<ph name="END_LINK" /></translation>
 <translation id="1301324364792935241">Prüfen Sie die Einstellungen für sichere DNS-Abfragen</translation>
 <translation id="1307966114820526988">Eingestellte Funktionen</translation>
+<translation id="1308113895091915999">Angebot verfügbar</translation>
 <translation id="1312803275555673949">Welche Hinweise unterstützen dies?</translation>
 <translation id="131405271941274527"><ph name="URL" /> möchte Informationen senden und empfangen, wenn Sie Ihr Smartphone an NFC-Geräte halten</translation>
 <translation id="1314509827145471431">Bindung rechts</translation>
@@ -296,6 +297,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="1842969606798536927">Bezahlen</translation>
 <translation id="1856713167556118146">Was der Inkognitomodus nicht bewirkt</translation>
 <translation id="1863257867908022953">Fach 12</translation>
+<translation id="1864927262126810325">Quelle: <ph name="SOURCE_NAME" /></translation>
 <translation id="1871208020102129563">Der Proxy ist zur Verwendung von festen Proxyservern konfiguriert, nicht zur Verwendung einer PAC-Skript-URL.</translation>
 <translation id="1871284979644508959">Pflichtfeld</translation>
 <translation id="1875025161375567525">Fotofach</translation>
@@ -955,6 +957,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="4117700440116928470">Richtlinienbereich wird nicht unterstützt.</translation>
 <translation id="4121428309786185360">Gültig bis</translation>
 <translation id="4123572138124678573">Dreifache Lochung unten</translation>
+<translation id="4127575959421463246">Suchen Sie die ChromeOS-Flags? Aufrufen</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 weiterer}other{# weitere}}</translation>
 <translation id="4130226655945681476">Netzwerkkabel, Modem und Router prüfen</translation>
 <translation id="4133224101597112888">Schaltfläche „Tab teilen“ – drücken Sie die Eingabetaste, um diesen Tab über den Link, über einen QR-Code, über Streamen usw. zu teilen.</translation>
@@ -1122,6 +1125,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="4606870351894164739">Wirkungsvoll</translation>
 <translation id="4607603470419975064">Schaltfläche „Chrome-Tipps aufrufen“ – drücken Sie die Eingabetaste, um mehr über die Funktionen von Chrome zu erfahren</translation>
 <translation id="4607608436550361748">Chrome-Tipps aufrufen</translation>
+<translation id="4627675673814409125">Diese Richtlinie kann nicht auf der Chrome-Profilebene festgelegt werden und wird ignoriert.</translation>
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4631649115723685955">Cashback zugeordnet</translation>
 <translation id="4636930964841734540">Info</translation>
@@ -1753,6 +1757,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="674375294223700098">Fehler wegen unbekanntem Serverzertifikat</translation>
 <translation id="6744009308914054259">Während Sie auf eine Verbindung warten, können Sie "Downloads" aufrufen und Offline-Artikel lesen.</translation>
 <translation id="6753269504797312559">Wert der Richtlinie</translation>
+<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Ihr Gerät ist im Ruhemodus.</translation>
 <translation id="6767985426384634228">Adresse aktualisieren?</translation>
 <translation id="6768213884286397650">Hagaki (Postkarte)</translation>
@@ -1840,6 +1845,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="706295145388601875">Adressen in den Chrome-Einstellungen hinzufügen und verwalten</translation>
 <translation id="7064851114919012435">Kontaktdaten</translation>
 <translation id="7068733155164172741"><ph name="OTP_LENGTH" />-stelligen Code eingeben</translation>
+<translation id="7070090581017165256">Über diese Website</translation>
 <translation id="70705239631109039">Ihre Verbindung ist nicht uneingeschränkt sicher</translation>
 <translation id="7075452647191940183">Die Anfrage ist zu groß</translation>
 <translation id="7079718277001814089">Diese Website enthält Malware</translation>
@@ -2084,6 +2090,7 @@ Weitere Details:
 <translation id="7813600968533626083">Vorschlag für das Formular aus Chrome entfernen?</translation>
 <translation id="781440967107097262">Zwischenablage teilen?</translation>
 <translation id="7815407501681723534"><ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> für "<ph name="SEARCH_STRING" />" gefunden</translation>
+<translation id="782125616001965242">Informationen über diese Website anzeigen</translation>
 <translation id="782886543891417279">Unter Umständen müssen Sie die Anmeldeseite des verwendeten WLAN-Netzwerken (<ph name="WIFI_NAME" />) aufrufen.</translation>
 <translation id="7836231406687464395">Postfix (Umschlag)</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Keine}=1{1 App (<ph name="EXAMPLE_APP_1" />)}=2{2 Apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# Apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
@@ -2363,6 +2370,7 @@ Weitere Details:
 <translation id="8792626944327216835">Mikrofon</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> hat Chrome Enterprise Connectors für Ihren Browser aktiviert. Diese Connectors haben Zugriff auf einen Teil Ihrer Daten.</translation>
 <translation id="8798099450830957504">Standard</translation>
+<translation id="8798739476508189189">Suchen Sie Browser-Flags? Aufrufen</translation>
 <translation id="8805819170075074995">Listeneintrag "<ph name="LANGUAGE_ID" />": Der Eintrag wird ignoriert, weil er auch in der Richtlinie "SpellcheckLanguage" enthalten ist.</translation>
 <translation id="8807160976559152894">Nach jeder Seite zuschneiden</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücken Sie die Tabulatortaste und dann die Eingabetaste, um Chrome über die Chrome-Einstellungen zu aktualisieren</translation>
@@ -2469,6 +2477,7 @@ Weitere Details:
 <translation id="9157595877708044936">Einrichtung läuft...</translation>
 <translation id="9158625974267017556">C6 (Umschlag)</translation>
 <translation id="9164029392738894042">Genauigkeitsprüfung</translation>
+<translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">Websites die Abfrage gespeicherter Zahlungsmethoden erlauben</translation>
 <translation id="9169664750068251925">Auf dieser Website immer blockieren</translation>
 <translation id="9169931577761441333"><ph name="APP_NAME" /> zum Startbildschirm hinzufügen</translation>

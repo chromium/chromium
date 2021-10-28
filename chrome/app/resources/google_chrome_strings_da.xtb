@@ -97,6 +97,7 @@
 <translation id="3379938682270551431">{0,plural, =0{Chrome genstarter nu}=1{Chrome genstarter om 1 sekund}one{Chrome genstarter om # sekund}other{Chrome genstarter om # sekunder}}</translation>
 <translation id="3395323229510056640">Få hjælp til Chrome OS</translation>
 <translation id="3396977131400919238">Der opstod en fejl ved operativsystemet under installation. Download Google Chrome igen.</translation>
+<translation id="3428747202529429621">Beskytter dig i Chrome og kan bruges til at forbedre din sikkerhed i andre Google-apps, når du er logget ind</translation>
 <translation id="3434246496373299699">Chrome kan tjekke dine adgangskoder, når du er logget ind med din Google-konto</translation>
 <translation id="3451115285585441894">Føjer til Chrome...</translation>
 <translation id="345171907106878721">Tilføj dig selv i Chrome</translation>
@@ -200,6 +201,7 @@
 <translation id="6291089322031436445">Apps i udviklerversionen af Chrome</translation>
 <translation id="6291549208091401781">Google Chrome er allerede installeret for alle brugere på computeren.</translation>
 <translation id="6368958679917195344">Chrome OS er lavet ved hjælp af <ph name="BEGIN_LINK_CROS_OSS" />open source-software<ph name="END_LINK_CROS_OSS" />.</translation>
+<translation id="6412673304250309937">Tjekker webadresser ift. en liste over usikre websites, der er gemt i Chrome. Hvis et website forsøger at stjæle din adgangskode, eller når du downloader en skadelig fil, sender Chrome muligvis også webadresser, bl.a. mindre mængder sideindhold, til Beskyttet browsing.</translation>
 <translation id="6418662306461808273">Vil du skifte til den eksisterende Chrome-profil?</translation>
 <translation id="6506909944137591434">Chrome skal have adgangstilladelse til kamera for at oprette et 3D-kort over dine omgivelser</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome for udviklere</translation>

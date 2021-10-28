@@ -131,6 +131,7 @@
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> वर मिरर करत आहे</translation>
 <translation id="1885785240814121742">फिंगरप्रिंटने अनलॉक करा</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) ला सपोर्ट करत नाही. रिझोल्युशन बदलून <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) केले गेले. बदल राखण्यासाठी निश्चित करा वर क्लिक करा. मागील सेटिंग्ज <ph name="TIMEOUT_SECONDS" /> मध्ये रिस्टोअर केली जातील.</translation>
+<translation id="1915307458270490472">बंद करा</translation>
 <translation id="1919743966458266018">टास्क मॅनेजर उघडण्‍याचा शॉर्टकट बदलला आहे. कृपया <ph name="OLD_SHORTCUT" /> ऐवजी <ph name="NEW_SHORTCUT" /> वापरा.</translation>
 <translation id="1923539912171292317">स्वयंचलित क्लिक</translation>
 <translation id="1928739107511554905">अपडेट करण्यासाठी, संलग्न केलेल्या कीबोर्डसह तुमचे Chromebook रीस्टार्ट करण्यासाठी टचस्क्रीन वापरा.</translation>
@@ -1130,6 +1131,7 @@
 <translation id="925832987464884575">पूर्वावलोकने लपवा</translation>
 <translation id="938963181863597773">माझ्या कॅलेंडरमधील इव्हेंट काय आहेत?</translation>
 <translation id="945522503751344254">अभिप्राय पाठवा</translation>
+<translation id="951991426597076286">नकार द्या</translation>
 <translation id="98515147261107953">लँडस्केप</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" /> विंडो बंद केली आहे.</translation>
 </translationbundle>

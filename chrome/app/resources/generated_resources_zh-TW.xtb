@@ -1301,7 +1301,6 @@
 <translation id="2312219318583366810">網頁網址</translation>
 <translation id="2314165183524574721">目前的瀏覽權限設為「隱藏」</translation>
 <translation id="2314774579020744484">翻譯網頁內容所使用的語言</translation>
-<translation id="2315414688463285945">設定 Linux 檔案時發生錯誤，請再試一次。</translation>
 <translation id="2315587498123194634">傳送連結到「<ph name="DEVICE_NAME" />」</translation>
 <translation id="2316129865977710310">不，謝謝</translation>
 <translation id="2317842250900878657">已完成 <ph name="PROGRESS_PERCENT" />%</translation>
@@ -2351,7 +2350,6 @@
 <translation id="3424969259347320884">說明分頁當掉時你正在執行的動作</translation>
 <translation id="3427092606871434483">允許 (預設)</translation>
 <translation id="3428419049384081277">你已登入帳戶！</translation>
-<translation id="3428747202529429621">在已登入帳戶的狀態下，能確保你持續享有安全無虞的 Chrome 使用體驗，也有助於提升其他 Google 應用程式的安全機制</translation>
 <translation id="3429086384982427336">下列應用程式一律不會處理通訊協定連結。</translation>
 <translation id="3429160811076349561">試用功能已關閉</translation>
 <translation id="3429271624041785769">網路內容語言</translation>
@@ -5116,7 +5114,6 @@
 <translation id="6410328738210026208">變更版本並執行 Powerwash</translation>
 <translation id="6410390304316730527">安全瀏覽功能可保護你不受到攻擊，攻擊者可能會誘騙你從事一些危險行為，例如安裝惡意軟體或洩漏個人資訊 (例如密碼、電話號碼或信用卡資訊)。如果你停用這項功能，瀏覽不熟悉或風評不佳的網站時，請提高警覺。</translation>
 <translation id="6410668567036790476">新增搜尋引擎</translation>
-<translation id="6412673304250309937">可使用儲存在 Chrome 中的不安全網站清單檢查網址。如果有網站試圖竊取你的密碼，或當你下載有害檔案時，Chrome 可能也會將網址 (包括部分網頁內容) 傳送至安全瀏覽功能。</translation>
 <translation id="641469293210305670">安裝更新內容和應用程式</translation>
 <translation id="6414878884710400018">開啟系統偏好設定</translation>
 <translation id="6414888972213066896">你已詢問家長是否同意你造訪這個網站</translation>
@@ -5525,7 +5522,6 @@
 <translation id="6843264316370513305">網路偵錯</translation>
 <translation id="6843423766595476978">Ok Google 設定完成</translation>
 <translation id="6845038076637626672">最大化開啟</translation>
-<translation id="6845325883481699275">協助改善 Chrome 安全性</translation>
 <translation id="6846178040388691741">「<ph name="EXTENSION_NAME" />」要求使用「<ph name="PRINTER_NAME" />」列印「<ph name="FILE_NAME" />」。</translation>
 <translation id="6847125920277401289">釋出空間以便繼續操作</translation>
 <translation id="6848388270925200958">目前你有一些卡片只能在這部裝置上使用</translation>
@@ -6978,7 +6974,6 @@
 <translation id="8324784016256120271">網站可使用 Cookie 查看你在各網站的瀏覽活動，並提供個人化廣告等服務</translation>
 <translation id="8325413836429495820">不得查看剪貼簿</translation>
 <translation id="8326478304147373412">PKCS #7，憑證鏈結</translation>
-<translation id="8327039559959785305">掛接 Linux 檔案時發生錯誤，請再試一次。</translation>
 <translation id="8327676037044516220">權限和內容設定</translation>
 <translation id="833256022891467078">Crostini 共用資料夾</translation>
 <translation id="8335587457941836791">從檔案櫃中取消固定</translation>

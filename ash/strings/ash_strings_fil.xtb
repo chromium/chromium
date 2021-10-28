@@ -131,6 +131,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1882897271359938046">Nagmi-mirror sa <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">I-unlock gamit ang fingerprint</translation>
 <translation id="1888656773939766144">Hindi sinusuportahan ng <ph name="DISPLAY_NAME" /> ang <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Ginawang <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) ang resolution. I-click ang kumpirmahin para panatilihin ang mga pagbabago. Ire-restore ang mga nakaraang setting pagkalipas ng <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="1915307458270490472">Ibaba</translation>
 <translation id="1919743966458266018">Napalitan na ang shortcut para sa pagbubukas sa task manager. Mangyaring gamitin ang <ph name="NEW_SHORTCUT" /> sa halip na gamitin ang <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Mga awtomatikong pag-click</translation>
 <translation id="1928739107511554905">Para makuha ang update, gamitin ang touchscreen para i-restart ang iyong Chromebook nang nakakabit ang keyboard.</translation>
@@ -1129,6 +1130,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="925832987464884575">Itago ang mga preview</translation>
 <translation id="938963181863597773">Ano'ng nakaiskedyul sa kalendaryo ko?</translation>
 <translation id="945522503751344254">Magpadala ng feedback</translation>
+<translation id="951991426597076286">Tanggihan</translation>
 <translation id="98515147261107953">Landscape</translation>
 <translation id="990277280839877440">Isinara ang window na <ph name="WINDOW_TITILE" />.</translation>
 </translationbundle>

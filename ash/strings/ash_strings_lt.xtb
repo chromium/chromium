@@ -131,6 +131,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1882897271359938046">Dubliuojama <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Atrakinimas piršto antspaudu</translation>
 <translation id="1888656773939766144">„<ph name="DISPLAY_NAME" />“ nepalaiko <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Skyra pakeista į <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Spustelėkite patvirtinimo mygtuką, kad išsaugotumėte pakeitimus. Ankstesni nustatymai bus atkurti po <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="1915307458270490472">Baigti</translation>
 <translation id="1919743966458266018">Pakeistas užduočių tvarkytuvės atidarymo spartusis klavišas. Naudokite <ph name="NEW_SHORTCUT" /> vietoje <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Automatiniai paspaudimai</translation>
 <translation id="1928739107511554905">Kad gautumėte naujinį, naudodami jutiklinį ekraną iš naujo paleiskite „Chromebook“ su prijungta klaviatūra.</translation>
@@ -1129,6 +1130,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="925832987464884575">Peržiūrų slėpimas</translation>
 <translation id="938963181863597773">„What's on my calendar?“ (Kas mano kalendoriuje?)</translation>
 <translation id="945522503751344254">Siųsti atsiliepimą</translation>
+<translation id="951991426597076286">Atmesti</translation>
 <translation id="98515147261107953">Gulsčias</translation>
 <translation id="990277280839877440">Langas „<ph name="WINDOW_TITILE" />“ uždarytas.</translation>
 </translationbundle>

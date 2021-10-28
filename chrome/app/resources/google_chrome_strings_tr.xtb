@@ -97,6 +97,7 @@
 <translation id="3379938682270551431">{0,plural, =0{Chrome şimdi yeniden başlatılacak}=1{Chrome 1 saniye içinde yeniden başlatılacak}other{Chrome # saniye içinde yeniden başlatılacak}}</translation>
 <translation id="3395323229510056640">Chrome OS ile ilgili yardım alın</translation>
 <translation id="3396977131400919238">Yükleme sırasında bir işletim sistemi hatası oluştu. Lütfen Google Chrome'u yeniden indirin.</translation>
+<translation id="3428747202529429621">Chrome'da güvende kalmanızı sağlar ve oturum açtığınızda diğer Google uygulamalarındaki güvenliğinizi artırmak için kullanılabilir</translation>
 <translation id="3434246496373299699">Chrome, Google Hesabınızla oturum açtığınızda şifrelerinizi kontrol edebilir</translation>
 <translation id="3451115285585441894">Chrome'a ekleniyor...</translation>
 <translation id="345171907106878721">Kendinizi Chrome'a ekleyin</translation>
@@ -203,6 +204,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6291089322031436445">Chrome Dev Uygulamaları</translation>
 <translation id="6291549208091401781">Google Chrome zaten bilgisayarınızdaki tüm kullanıcılar için yüklendi.</translation>
 <translation id="6368958679917195344">Chrome OS, ek <ph name="BEGIN_LINK_CROS_OSS" />açık kaynak yazılımlardan<ph name="END_LINK_CROS_OSS" /> yararlanılarak geliştirilmiştir.</translation>
+<translation id="6412673304250309937">URL'leri, Chrome'da kayıtlı güvenli olmayan siteler listesine göre kontrol eder. Chrome, bir sitenin şifrenizi çalmaya çalışması veya zararlı bir dosya indirmeniz halinde de Güvenli Tarama'ya sayfa içeriğinden parçalarla birlikte URL'ler gönderebilir.</translation>
 <translation id="6418662306461808273">Mevcut Chrome profiline geçilsin mi?</translation>
 <translation id="6506909944137591434">Çevrenizin 3D haritasını oluşturmak için Chrome'un kamera iznine ihtiyacı var</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>

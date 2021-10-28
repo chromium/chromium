@@ -131,6 +131,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1882897271359938046">Kopia na <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Odblokuj odciskiem palca</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> nie obsługuje ustawienia <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Rozdzielczość została zmieniona na <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Kliknij, by potwierdzić i zachować zmiany. Poprzednie ustawienia zostaną przywrócone za <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="1915307458270490472">Rozłącz</translation>
 <translation id="1919743966458266018">Zmieniliśmy skrót, który otwiera menedżera zadań. Zamiast <ph name="OLD_SHORTCUT" /> używaj teraz <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Automatyczne kliknięcia</translation>
 <translation id="1928739107511554905">Aby pobrać aktualizację, użyj ekranu dotykowego, by uruchomić Chromebooka ponownie z podłączoną klawiaturą.</translation>
@@ -1129,6 +1130,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="925832987464884575">Ukryj podglądy</translation>
 <translation id="938963181863597773">Co mam w kalendarzu?</translation>
 <translation id="945522503751344254">Prześlij opinię</translation>
+<translation id="951991426597076286">Odrzuć</translation>
 <translation id="98515147261107953">Poziomo</translation>
 <translation id="990277280839877440">Okno <ph name="WINDOW_TITILE" /> zostało zamknięte.</translation>
 </translationbundle>

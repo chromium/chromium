@@ -1315,7 +1315,6 @@
 <translation id="2312219318583366810">‏כתובת ה-URL של הדף</translation>
 <translation id="2314165183524574721">הגדרת הרשאות הגישה הנוכחית מוסתרת</translation>
 <translation id="2314774579020744484">השפה שאליה דפים יתורגמו</translation>
-<translation id="2315414688463285945">‏קרתה שגיאה בקביעת ההגדרה של קובצי Linux. צריך לנסות שוב.</translation>
 <translation id="2315587498123194634">שליחת הקישור אל <ph name="DEVICE_NAME" /></translation>
 <translation id="2316129865977710310">לא, תודה</translation>
 <translation id="2317842250900878657">%<ph name="PROGRESS_PERCENT" />הושלמו</translation>
@@ -2365,7 +2364,6 @@
 <translation id="3424969259347320884">תיאור הפעולות שלך לפני קריסת הכרטיסייה</translation>
 <translation id="3427092606871434483">מותר (ברירת מחדל)</translation>
 <translation id="3428419049384081277">התחברת!</translation>
-<translation id="3428747202529429621">‏מגן עליך ב-Chrome וייתכן שייעשה בו שימוש לשיפור האבטחה באפליקציות אחרות של Google שבהן נכנסת לחשבון</translation>
 <translation id="3429086384982427336">האפליקציות שמפורטות בהמשך אף פעם לא יטפלו בקישורים של פרוטוקול.</translation>
 <translation id="3429160811076349561">התכונות הניסיוניות מושבתות</translation>
 <translation id="3429271624041785769">השפות של תוכן האינטרנט</translation>
@@ -5130,7 +5128,6 @@
 <translation id="6410328738210026208">‏מעבר לערוץ אחר וביצוע Powerwash</translation>
 <translation id="6410390304316730527">גלישה בטוחה מגינה עליך מפני תוקפים שעשויים להטעות אותך כדי לגרום לך לבצע פעולה מסוכנת. למשל, התקנה של תוכנה זדונית או חשיפת מידע אישי, כמו סיסמאות, מספרי טלפון או כרטיסי אשראי. אם תשביתו את הגלישה הבטוחה, יש לנקוט זהירות בעת הגלישה באתרים לא מוכרים או בעלי מוניטין בעייתי.</translation>
 <translation id="6410668567036790476">הוספת מנוע חיפוש</translation>
-<translation id="6412673304250309937">‏המערכת בודקת כתובות URL ששמורות ב-Chrome ומכילות רשימות של אתרים לא בטוחים. אם אתר מסוים מנסה לגנוב סיסמה או אם המערכת מזהה הורדה של קובץ מזיק, Chrome עשוי גם לשלוח כתובות URL לבדיקה באמצעות 'גלישה בטוחה'. הנתונים שנשלחים לבדיקה כוללים ביטים מהתוכן של הדף.</translation>
 <translation id="641469293210305670">התקנת עדכונים ואפליקציות</translation>
 <translation id="6414878884710400018">פתיחת התפריט 'העדפות מערכת'</translation>
 <translation id="6414888972213066896">שאלת את אחד ההורים אם מותר לך להיכנס לאתר הזה</translation>
@@ -5539,7 +5536,6 @@
 <translation id="6843264316370513305">ניפוי באגים ברשת</translation>
 <translation id="6843423766595476978">‏התכונה Ok Google מוכנה</translation>
 <translation id="6845038076637626672">פתיחה בגודל מרבי</translation>
-<translation id="6845325883481699275">‏עזרה בשיפור האבטחה של Chrome</translation>
 <translation id="6846178040388691741">"<ph name="EXTENSION_NAME" />" רוצה להדפיס את <ph name="FILE_NAME" /> באמצעות <ph name="PRINTER_NAME" />.</translation>
 <translation id="6847125920277401289">יש לפנות מקום אחסון כדי להמשיך</translation>
 <translation id="6848388270925200958">נכון לעכשיו, יש לך כרטיסים שאפשר להשתמש בהם רק במכשיר הזה.</translation>
@@ -6993,7 +6989,6 @@
 <translation id="8324784016256120271">‏אתרים יכולים להשתמש בקובצי cookie כדי לראות את פעילות הגלישה שלך באתרים שונים, למשל לצורך התאמה אישית של מודעות</translation>
 <translation id="8325413836429495820">לא מורשים לראות את הלוח</translation>
 <translation id="8326478304147373412">‏PKCS #7, שרשרת אישורים</translation>
-<translation id="8327039559959785305">‏קרתה שגיאה בטעינת קובצי ה-Linux. יש לנסות שוב.</translation>
 <translation id="8327676037044516220">הגדרות תוכן והרשאות</translation>
 <translation id="833256022891467078">‏תיקיות משותפות של Crostini</translation>
 <translation id="8335587457941836791">ביטול הצמדה למדף</translation>

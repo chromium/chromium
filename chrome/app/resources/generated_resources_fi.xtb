@@ -1315,7 +1315,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2312219318583366810">Sivun URL-osoite</translation>
 <translation id="2314165183524574721">Näkyvyysasetus on piilotettu</translation>
 <translation id="2314774579020744484">Kieli, jolle sivuja käännetään</translation>
-<translation id="2315414688463285945">Virhe Linux-tiedostojen määrittämisessä. Yritä uudelleen.</translation>
 <translation id="2315587498123194634">Lähetä linkki: <ph name="DEVICE_NAME" /></translation>
 <translation id="2316129865977710310">Ei kiitos</translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" /> % valmis</translation>
@@ -2364,7 +2363,6 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="3424969259347320884">Kerro, mitä olit tekemässä juuri ennen kaatumista</translation>
 <translation id="3427092606871434483">Salli (oletus)</translation>
 <translation id="3428419049384081277">Olet kirjautunut sisään!</translation>
-<translation id="3428747202529429621">Pitää sinut turvassa Chromessa ja voi parantaa suojaustasi muissa Google-sovelluksissa, kun olet sisäänkirjautuneena</translation>
 <translation id="3429086384982427336">Alla luetellut sovellukset eivät koskaan käsittele protokollalinkkejä.</translation>
 <translation id="3429160811076349561">Kokeiluominaisuudet ovat poissa käytöstä</translation>
 <translation id="3429271624041785769">Verkkosisällön kielet</translation>
@@ -5126,7 +5124,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6410328738210026208">Vaihda kanavaa ja tee Powerwash</translation>
 <translation id="6410390304316730527">Selaussuoja parantaa suojaustasi, jos hyökkääjä yrittää huijata sinua tekemään jotain vaarallista, kuten asentamaan haittaohjelmia tai paljastamaan henkilötietoja (esimerkiksi salasanoja, puhelinnumeroita tai credit-kortin tietoja). Jos laitat sen pois päältä, ole varovainen tuntemattomilla tai huonomaineisilla sivustoilla.</translation>
 <translation id="6410668567036790476">Lisää hakukone</translation>
-<translation id="6412673304250309937">Tarkistaa URL-osoitteet Chromeen tallennetun vaarallisten sivustojen luettelon avulla. Jos sivusto yrittää varastaa salasanaasi tai jos lataat haitallisen tiedoston, Chrome voi myös lähettää Selaussuojan tarkistettavaksi URL-osoitteita, mukaan lukien osia sivujen sisällöstä.</translation>
 <translation id="641469293210305670">Päivitysten ja sovellusten asentaminen</translation>
 <translation id="6414878884710400018">Avaa järjestelmäasetukset</translation>
 <translation id="6414888972213066896">Pyysit vanhemmiltasi lupaa käydä tällä sivustolla.</translation>
@@ -5535,7 +5532,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6843264316370513305">Verkon virheenkorjaus</translation>
 <translation id="6843423766595476978">Ok Google on valmiina</translation>
 <translation id="6845038076637626672">Avaa suuressa koossa</translation>
-<translation id="6845325883481699275">Auta parantamaan Chromen suojausta</translation>
 <translation id="6846178040388691741"><ph name="EXTENSION_NAME" /> haluaa tulostaa tiedoston <ph name="FILE_NAME" /> tulostimella <ph name="PRINTER_NAME" />.</translation>
 <translation id="6847125920277401289">Vapauta tilaa jatkaaksesi</translation>
 <translation id="6848388270925200958">Joitakin korttejasi voi juuri nyt käyttää vain tällä laitteella</translation>
@@ -6987,7 +6983,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8324784016256120271">Sivustot voivat nähdä evästeiden kautta selaustoimintasi eri sivustoilla esim. personoidakseen mainoksia</translation>
 <translation id="8325413836429495820">Leikepöydän tarkastelu kielletty</translation>
 <translation id="8326478304147373412">PKCS #7, varmenneketju</translation>
-<translation id="8327039559959785305">Virhe Linux-tiedostojen käyttöönotossa. Yritä uudelleen.</translation>
 <translation id="8327676037044516220">Luvat ja sisältöasetukset</translation>
 <translation id="833256022891467078">Crostinin jaetut kansiot</translation>
 <translation id="8335587457941836791">Poista kiinnitys hyllystä</translation>

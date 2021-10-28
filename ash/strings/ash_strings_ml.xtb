@@ -131,6 +131,7 @@
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> എന്നതിലേക്ക് മിറർ ചെയ്യുന്നു</translation>
 <translation id="1885785240814121742">ഫിംഗർപ്രിന്‍റ് ഉപയോഗിച്ച് അൺലോക്ക് ചെയ്യുക</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" />, <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) എന്ന റെസല്യൂഷൻ പിന്തുണയ്‌ക്കുന്നില്ല. <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) എന്നതിലേക്ക് റെസല്യൂഷൻ മാറ്റി. മാറ്റങ്ങൾ നിലനിർത്താൻ 'സ്ഥിരീകരിക്കുക' ക്ലിക്ക് ചെയ്യുക. മുമ്പത്തെ ക്രമീകരണം <ph name="TIMEOUT_SECONDS" />-ൽ പുനഃസ്ഥാപിക്കും.</translation>
+<translation id="1915307458270490472">ഹാംഗ് അപ്പ് ചെയ്യുക</translation>
 <translation id="1919743966458266018">ടാസ്‌ക് മാനേജർ തുറക്കാനുള്ള കുറുക്കുവഴി മാറ്റി. <ph name="OLD_SHORTCUT" /> എന്നതിന് പകരം <ph name="NEW_SHORTCUT" /> ഉപയോഗിക്കുക.</translation>
 <translation id="1923539912171292317">യാന്ത്രിക ക്ലിക്കുകൾ</translation>
 <translation id="1928739107511554905">അപ്ഡേറ്റ് നേടാൻ, അറ്റാച്ച് ചെയ്‌ത കീബോർഡിനൊപ്പം Chromebook റീസ്‌റ്റാർട്ട് ചെയ്യാൻ ടച്ച്‌സ്‌ക്രീൻ ഉപയോഗിക്കുക.</translation>
@@ -1129,6 +1130,7 @@
 <translation id="925832987464884575">പ്രിവ്യുകൾ മറയ്‌ക്കുക</translation>
 <translation id="938963181863597773">എന്റെ കലണ്ടറിൽ എന്താണുള്ളത്?</translation>
 <translation id="945522503751344254">ഫീഡ്‌ബാക്ക് അയയ്‌ക്കുക</translation>
+<translation id="951991426597076286">നിരസിക്കുക</translation>
 <translation id="98515147261107953">ലാന്‍ഡ്‌സ്‌കേപ്പ്</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" /> വിൻഡോ അടച്ചു.</translation>
 </translationbundle>

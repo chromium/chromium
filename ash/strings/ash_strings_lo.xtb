@@ -131,6 +131,7 @@
 <translation id="1882897271359938046">ການສ່ອງໜ້າຈໍໃສ່ <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">ປົດລັອກດ້ວຍລາຍນີ້ວມື</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> ບໍ່ຮອງຮັບ <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). ຄວາມລະອຽດໄດ້ຖືກປ່ຽນເປັນ <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) ແລ້ວ. ກະລຸນາຄລິກຢືນຢັນເພື່ອຮັກສາການປ່ຽນແປງ. ລະບົບຈະກູ້ຄືນການຕັ້ງຄ່າກ່ອນໜ້າໃນ <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="1915307458270490472">ວາງສາຍ</translation>
 <translation id="1919743966458266018">ປ່ຽນທາ​ງລັດ​ເພື່ອ​ເປີດ​ຕົວ​ຈັດການ​ໜ້າ​ວຽກ​ແລ້ວ. ກະລຸນາ​ໃຊ້ <ph name="NEW_SHORTCUT" /> ​ແທນ <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">ຄລິກອັດ​ຕະ​ໂນ​ມັດ</translation>
 <translation id="1928739107511554905">ເພື່ອຮັບເອົາການອັບເດດ, ກະລຸນາໃຊ້ຈໍສຳຜັດເພື່ອປິດເປີດ Chromebook ຂອງທ່ານຄືນໃໝ່ທີ່ມີແປ້ນພິມເຊື່ອມຕໍ່ແລ້ວ.</translation>
@@ -1129,6 +1130,7 @@
 <translation id="925832987464884575">ເຊື່ອງຕົວຢ່າງ</translation>
 <translation id="938963181863597773">ມີຫຍັງໃນປະຕິທິນຂອງຂ້ອຍ?</translation>
 <translation id="945522503751344254">ສົ່ງ​ຄໍາ​ຄິດ​​ເຫັນ</translation>
+<translation id="951991426597076286">ປະຕິເສດ</translation>
 <translation id="98515147261107953">ລວງຂວາງ</translation>
 <translation id="990277280839877440">ປິດໜ້າຈໍ <ph name="WINDOW_TITILE" /> ແລ້ວ.</translation>
 </translationbundle>

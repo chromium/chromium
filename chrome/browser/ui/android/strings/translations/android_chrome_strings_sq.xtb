@@ -714,7 +714,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5342314432463739672">Kërkesat për autorizim</translation>
 <translation id="5355191726083956201">"Mbrojtja e përmirësuar" është aktive</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> skedë e hapur, trokit për të ndërruar skedat}other{<ph name="OPEN_TABS_MANY" /> skeda të hapura, trokit për të ndërruar skedat}}</translation>
-<translation id="5375577065097716013">Kërko në imazh me "Lenten e Google" <ph name="BEGIN_NEW" />I ri<ph name="END_NEW" /></translation>
+<translation id="5375577065097716013">Kërko imazhin me "Lenten e Google" <ph name="BEGIN_NEW" />E re<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Lejo vetëm sajte të caktuara</translation>
 <translation id="5409881200985013443">Të dërgohet <ph name="ONE_TIME_CODE" /> te <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Po verifikon…</translation>
@@ -1091,7 +1091,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="7514365320538308">Shkarko</translation>
 <translation id="751961395872307827">Nuk mund të lidhet me sajtin</translation>
 <translation id="752220631458524187">Shkëputu kur të kesh mbaruar</translation>
-<translation id="7523960634226602883">Kërko me kamerën duke përdorur Google Lens</translation>
+<translation id="7523960634226602883">Kërko me kamerën duke përdorur "Lenten e Google"</translation>
 <translation id="753225086557513863">Planifikuar për më vonë</translation>
 <translation id="7559975015014302720">"Modaliteti i lehtë" është joaktiv</translation>
 <translation id="7560448309733608642">Pastron historikun nga të gjitha pajisjet e sinkronizuara. "Llogaria jote e Google" mund të ketë forma të tjera të historikut të shfletimit në <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>

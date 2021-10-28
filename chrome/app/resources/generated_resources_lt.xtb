@@ -1318,7 +1318,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2312219318583366810">Puslapio URL</translation>
 <translation id="2314165183524574721">Dabartinis matomumo nustatymas yra „Paslėpta“</translation>
 <translation id="2314774579020744484">Verčiant puslapius vartojama kalba</translation>
-<translation id="2315414688463285945">Konfigūruojant „Linux“ failus įvyko klaida. Bandykite dar kartą.</translation>
 <translation id="2315587498123194634">Siųsti nuorodą į „<ph name="DEVICE_NAME" />“</translation>
 <translation id="2316129865977710310">Ne, ačiū</translation>
 <translation id="2317842250900878657">Atlikta: <ph name="PROGRESS_PERCENT" /> %</translation>
@@ -2368,7 +2367,6 @@ ir „Ctrl“ + „Alt“ + šviesumo didinimo klavišus, kad tolintumėte.</tra
 <translation id="3424969259347320884">Apibūdinkite, ką darėte, kai skirtukas užstrigo</translation>
 <translation id="3427092606871434483">Leisti (numatytoji parinktis)</translation>
 <translation id="3428419049384081277">Esate prisijungę!</translation>
-<translation id="3428747202529429621">Apsaugo jus naršyklėje „Chrome“ ir gali būti naudojama apsaugai kitose „Google“ programose pagerinti, kai esate prisijungę</translation>
 <translation id="3429086384982427336">Toliau nurodytos programos niekada neapdoros protokolo nuorodų.</translation>
 <translation id="3429160811076349561">Bandomosios funkcijos išjungtos</translation>
 <translation id="3429271624041785769">Žiniatinklio turinio kalbos</translation>
@@ -5136,7 +5134,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="6410328738210026208">Pakeisti kanalą ir paleisti „Powerwash“</translation>
 <translation id="6410390304316730527">Saugaus naršymo funkcija apsaugo jus nuo atakų vykdytojų, kurie gali bandyti apgaule priversti jus atlikti pavojingus veiksmus, pvz., įdiegti kenkėjišką programinę įrangą ar atskleisti asmens informaciją (pvz., slaptažodžius, telefono numerius ar kredito kortelių duomenis). Jei ją išjungsite, būkite atsargūs naršydami nežinomose ar nepatikimose svetainėse.</translation>
 <translation id="6410668567036790476">Paieškos variklio pridėjimas</translation>
-<translation id="6412673304250309937">Tikrinami URL pagal nesaugių svetainių sąrašą, saugomą naršyklėje „Chrome“. Jei svetainė bando pavogti slaptažodį ar atsisiuntėte žalingą failą, „Chrome“ taip pat gali siųsti URL, įskaitant puslapio turinio dalis, Saugaus naršymo funkcijai.</translation>
 <translation id="641469293210305670">Naujinių ir programų diegimas</translation>
 <translation id="6414878884710400018">Atidaryti sistemos nuostatas</translation>
 <translation id="6414888972213066896">Paprašėte vieno iš tėvų leidimo apsilankyti šiame puslapyje</translation>
@@ -5545,7 +5542,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="6843264316370513305">Tinklo derinimas</translation>
 <translation id="6843423766595476978">„Ok Google“ visiškai nustatyta</translation>
 <translation id="6845038076637626672">Atidaryti padidintą</translation>
-<translation id="6845325883481699275">Padėkite tobulinti „Chrome“ saugą</translation>
 <translation id="6846178040388691741">„<ph name="EXTENSION_NAME" />“ nori spausdinti failą „<ph name="FILE_NAME" />“ spausdintuvu „<ph name="PRINTER_NAME" />“.</translation>
 <translation id="6847125920277401289">Atlaisvinkite vietos, kad galėtumėte tęsti</translation>
 <translation id="6848388270925200958">Šiuo metu turite kelias korteles, kurias galima naudoti tik šiuo įrenginiu</translation>
@@ -6997,7 +6993,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8324784016256120271">Svetainės gali naudoti slapukus, siekdamos sužinoti apie naršymo veiklą skirtingose svetainėse, pavyzdžiui, kad galėtų suasmeninti skelbimus</translation>
 <translation id="8325413836429495820">Neleidžiama peržiūrėti iškarpinės</translation>
 <translation id="8326478304147373412">PKCS Nr. 7, sertifikato grandinė</translation>
-<translation id="8327039559959785305">Įdedant „Linux“ failus įvyko klaida. Bandykite dar kartą.</translation>
 <translation id="8327676037044516220">Leidimai ir turinio nustatymai</translation>
 <translation id="833256022891467078">„Crostini“ bendrinami aplankai</translation>
 <translation id="8335587457941836791">Atsegti nuo lentynos</translation>

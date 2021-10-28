@@ -1300,7 +1300,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2312219318583366810">URL de la pàgina</translation>
 <translation id="2314165183524574721">L'opció de configuració de visibilitat actual és Amagat</translation>
 <translation id="2314774579020744484">Idioma utilitzat per traduir pàgines</translation>
-<translation id="2315414688463285945">S'ha produït un error en configurar els fitxers de Linux. Torna-ho a provar.</translation>
 <translation id="2315587498123194634">Envia l'enllaç a <ph name="DEVICE_NAME" /></translation>
 <translation id="2316129865977710310">No, gràcies</translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" />% complet</translation>
@@ -2349,7 +2348,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3424969259347320884">Descriu què feies quan la pestanya s'ha bloquejat</translation>
 <translation id="3427092606871434483">Permet (opció predeterminada)</translation>
 <translation id="3428419049384081277">Has iniciat la sessió</translation>
-<translation id="3428747202529429621">Et protegeix a Chrome i és possible que s'utilitzi per millorar la teva seguretat en altres aplicacions de Google quan tinguis la sessió iniciada</translation>
 <translation id="3429086384982427336">Les aplicacions que s'enumeren a continuació no gestionaran mai enllaços de protocol.</translation>
 <translation id="3429160811076349561">Les funcions de prova estan desactivades</translation>
 <translation id="3429271624041785769">Idiomes del contingut web</translation>
@@ -5114,7 +5112,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6410328738210026208">Canvia el canal i fes Powerwash</translation>
 <translation id="6410390304316730527">Navegació segura et protegeix contra els atacants que et poden enganyar perquè facis alguna acció perillosa, com ara instal·lar programari maliciós o revelar informació personal (per exemple, contrasenyes, números de telèfon o targetes de crèdit). Si la desactives, ves amb compte quan naveguis per llocs web desconeguts o amb mala reputació.</translation>
 <translation id="6410668567036790476">Afegeix un motor de cerca</translation>
-<translation id="6412673304250309937">Compara els URL amb una llista de llocs web no segurs emmagatzemada a Chrome. Si un lloc web prova de robar-te la contrasenya o si baixes un fitxer maliciós, és possible que Chrome també n'enviï els URL, inclosos fragments de contingut de les pàgines, a Navegació segura.</translation>
 <translation id="641469293210305670">Instal·la actualitzacions i aplicacions</translation>
 <translation id="6414878884710400018">Obre les preferències del sistema</translation>
 <translation id="6414888972213066896">Has demanat permís als teus pares per visitar aquest lloc web</translation>
@@ -5523,7 +5520,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6843264316370513305">Depuració de la xarxa</translation>
 <translation id="6843423766595476978">Ok Google ja està configurat</translation>
 <translation id="6845038076637626672">Obre-la maximitzada</translation>
-<translation id="6845325883481699275">Ajuda a millorar la seguretat de Chrome</translation>
 <translation id="6846178040388691741">"<ph name="EXTENSION_NAME" />" vol imprimir <ph name="FILE_NAME" /> amb <ph name="PRINTER_NAME" />.</translation>
 <translation id="6847125920277401289">Allibera espai per continuar</translation>
 <translation id="6848388270925200958">En aquest moment tens targetes que només es poden fer servir en aquest dispositiu</translation>
@@ -6977,7 +6973,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8324784016256120271">Els llocs web poden fer servir galetes per veure la teva activitat de navegació en diferents llocs web, per exemple, per personalitzar els anuncis</translation>
 <translation id="8325413836429495820">Sense permís per veure el porta-retalls</translation>
 <translation id="8326478304147373412">PKCS #7, cadena de certificats</translation>
-<translation id="8327039559959785305">S'ha produït un error en activar els fitxers de Linux. Torna-ho a provar.</translation>
 <translation id="8327676037044516220">Configuració dels permisos i del contingut</translation>
 <translation id="833256022891467078">Carpetes compartides de Crostini</translation>
 <translation id="8335587457941836791">Deixa de fixar al prestatge</translation>

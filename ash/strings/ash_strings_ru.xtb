@@ -78,7 +78,7 @@
 <translation id="1419738280318246476">Чтобы выполнить действие, предложенное в уведомлении, разблокируйте устройство.</translation>
 <translation id="1420408895951708260">Включить или отключить ночную подсветку (<ph name="STATE_TEXT" />)</translation>
 <translation id="1426410128494586442">Да</translation>
-<translation id="144853431011121127">Получайте уведомления с телефона на устройстве <ph name="DEVICE_TYPE" /></translation>
+<translation id="144853431011121127">Получайте уведомления с телефона на устройстве <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1455242230282523554">Показать языковые настройки</translation>
 <translation id="1460620680449458626">Сейчас звук выключен.</translation>
 <translation id="1467432559032391204">Слева</translation>
@@ -131,6 +131,7 @@
 <translation id="1882897271359938046">Дублирование экрана в <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Используйте разблокировку по отпечатку пальца</translation>
 <translation id="1888656773939766144">Экран "<ph name="DISPLAY_NAME" />" не поддерживает разрешение <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Гц). Установлено разрешение <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Гц). Чтобы сохранить изменения, нажмите "Подтвердить". Предыдущие настройки восстановятся через <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="1915307458270490472">Закрыть</translation>
 <translation id="1919743966458266018">Изменились быстрые клавиши для запуска диспетчера задач. Используйте <ph name="NEW_SHORTCUT" /> вместо <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Автоматическое нажатие</translation>
 <translation id="1928739107511554905">Чтобы выполнить обновление, перезагрузите устройство Chromebook с помощью сенсорной панели, не отключая от него клавиатуру.</translation>
@@ -1129,6 +1130,7 @@
 <translation id="925832987464884575">Отключить предпросмотр</translation>
 <translation id="938963181863597773">Что у меня запланировано?</translation>
 <translation id="945522503751344254">Отправить отзыв</translation>
+<translation id="951991426597076286">Отклонить</translation>
 <translation id="98515147261107953">Альбомная</translation>
 <translation id="990277280839877440">Окно "<ph name="WINDOW_TITILE" />" закрыто.</translation>
 </translationbundle>

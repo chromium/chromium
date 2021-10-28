@@ -131,6 +131,7 @@
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> руу тусгаж байна</translation>
 <translation id="1885785240814121742">Түгжээг хурууны хээгээр тайлах</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Гц)-г дэмждэггүй. Нягтралыг <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) болгож өөрчилсөн. Өөрчлөлтийг хадгалахын тулд баталгаажуулахыг товшино уу. Өмнөх тохиргоог <ph name="TIMEOUT_SECONDS" />-н дараа сэргээнэ.</translation>
+<translation id="1915307458270490472">Таслах</translation>
 <translation id="1919743966458266018">Ажлын менежерийг нээх товчлолын арга өөрчлөгдсөн. <ph name="OLD_SHORTCUT" />-н оронд <ph name="NEW_SHORTCUT" />-г ашиглана уу.</translation>
 <translation id="1923539912171292317">Автомат даралтууд</translation>
 <translation id="1928739107511554905">Хавсаргасан гараар Chromebook ээ дахин эхлүүлэхийн тулд мэдрэгч дэлгэцийг ашиглан шинэчлэлт авна уу.</translation>
@@ -1131,6 +1132,7 @@
 <translation id="925832987464884575">Урьдчилан үзэлтийг нуух</translation>
 <translation id="938963181863597773">Миний календарьд юу байна вэ?</translation>
 <translation id="945522503751344254">Санал хүсэлт илгээх</translation>
+<translation id="951991426597076286">Татгалзах</translation>
 <translation id="98515147261107953">Газрын гадаргуун зураг</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" /> цонх хаалттай байна.</translation>
 </translationbundle>

@@ -1300,7 +1300,6 @@ Voice Match-ekin, Google-ren Laguntzailea eginbideak <ph name="SUPERVISED_USER_N
 <translation id="2312219318583366810">Orriaren URLa</translation>
 <translation id="2314165183524574721">Oraingo ikusgaitasun-ezarpena: Ezkutatuta</translation>
 <translation id="2314774579020744484">Orrietako testua itzultzeko erabiliko den hizkuntza</translation>
-<translation id="2315414688463285945">Errore bat gertatu da Linux fitxategiak konfiguratzean. Saiatu berriro.</translation>
 <translation id="2315587498123194634">Bidali esteka <ph name="DEVICE_NAME" /> gailura</translation>
 <translation id="2316129865977710310">Ez, eskerrik asko</translation>
 <translation id="2317842250900878657">% <ph name="PROGRESS_PERCENT" /> eginda</translation>
@@ -2348,7 +2347,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3424969259347320884">Azaldu zer ari zinen egiten fitxak huts egin duenean</translation>
 <translation id="3427092606871434483">Baimendu (lehenetsia)</translation>
 <translation id="3428419049384081277">Hasi duzu saioa!</translation>
-<translation id="3428747202529429621">Babestuta mantentzen zaitu Chrome-n, eta segurtasuna hobetzeko erabil daiteke Google-ren beste aplikazio batzuetan saioa hasita daukazunean</translation>
 <translation id="3429086384982427336">Hemen behean zerrendatutako aplikazioek ez dituzte inoiz kudeatuko protokolo-estekak.</translation>
 <translation id="3429160811076349561">Probako eginbideak desaktibatuta daude</translation>
 <translation id="3429271624041785769">Web-edukien hizkuntzak</translation>
@@ -5112,7 +5110,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6410328738210026208">Aldatu kanala eta berrezarri fabrikako ezarpenak Powerwash bidez</translation>
 <translation id="6410390304316730527">Arakatze seguruaren helburua zu balizko erasotzaileen aurrean babestea da, litekeena baita halakoek, azpikeriaz, zu zerbait arriskutsua egitera bultzatzea; esate baterako, software gaiztoa instalatu edo informazio pertsonala ezagutzera eman (adibidez, pasahitzak, telefono-zenbakiak edo kreditu-txartelak). Arakatze segurua desaktibatuz gero, tentuz ibili ezagunak edo izen onekoak ez diren webguneak arakatzean.</translation>
 <translation id="6410668567036790476">Gehitu bilatzailea</translation>
-<translation id="6412673304250309937">URLak Chrome-n gordetako webgune ez-seguruen zerrendan dauden ala ez egiaztatzen du. Webguneren bat pasahitza lapurtzen saiatzen bada, edo fitxategi kaltegarriren bat deskargatzen baduzu, baliteke Chrome-k URLak ere bidaltzea (orriko edukiaren zati batzuk barne) Arakatze segurua eginbideari.</translation>
 <translation id="641469293210305670">Instalatu eguneratzeak eta aplikazioak</translation>
 <translation id="6414878884710400018">Ireki sistemaren hobespenak</translation>
 <translation id="6414888972213066896">Webgune honetan sar zaitezkeen galdetu diezu gurasoei</translation>
@@ -5521,7 +5518,6 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea eginbid
 <translation id="6843264316370513305">Sarearen arazketa</translation>
 <translation id="6843423766595476978">Hey Google prest dago</translation>
 <translation id="6845038076637626672">Ireki maximizatuta</translation>
-<translation id="6845325883481699275">Lagundu Chrome-ren segurtasuna hobetzen</translation>
 <translation id="6846178040388691741">"<ph name="EXTENSION_NAME" />" luzapenak <ph name="FILE_NAME" /> fitxategia inprimatu nahi du <ph name="PRINTER_NAME" /> inprimagailuarekin.</translation>
 <translation id="6847125920277401289">Aurrera egiteko, egin tokia</translation>
 <translation id="6848388270925200958">Une honetan, gailu honetan soilik erabil daitezkeen txartel batzuk dituzu</translation>
@@ -6971,7 +6967,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8324784016256120271">Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-jarduerak ikusteko, hala nola iragarkiak pertsonalizatzeko.</translation>
 <translation id="8325413836429495820">Ezin dute ikusi arbela</translation>
 <translation id="8326478304147373412">PKCS #7, ziurtagiri-katea</translation>
-<translation id="8327039559959785305">Errore bat gertatu da Linux fitxategiak muntatzean. Saiatu berriro.</translation>
 <translation id="8327676037044516220">Baimenak eta edukiaren ezarpenak</translation>
 <translation id="833256022891467078">Crostini-ko karpeta partekatuak</translation>
 <translation id="8335587457941836791">Desainguratu apaletik</translation>

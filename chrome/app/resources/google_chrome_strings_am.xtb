@@ -100,6 +100,7 @@
 <translation id="3379938682270551431">{0,plural, =0{Chrome አሁን ዳግም ይጀምራል}=1{Chrome በ1 ሰከንድ ውስጥ ዳግም ይጀምራል}one{Chrome በ# ሰከንዶች ውስጥ ዳግም ይጀምራል}other{Chrome በ# ሰከንዶች ውስጥ ዳግም ይጀምራል}}</translation>
 <translation id="3395323229510056640">Chrome OS ላይ እገዛ ያግኙ</translation>
 <translation id="3396977131400919238">በመጫን ጊዜ የሥርዓተ ክወና ስህተት ተፈጥሯል። እባክዎ Google Chromeን እንደገና ያውርዱ።</translation>
+<translation id="3428747202529429621">በChrome ላይ ደህንነትዎን ይጠብቃል፣ እና በመለያ በገቡባቸው ሌሎች የGoogle መተግበሪያዎች ላይ ደህንነትዎን ለማሻሻል ስራ ላይ ሊውል ይችላል።</translation>
 <translation id="3434246496373299699">Chrome በእርስዎ የGoogle መለያ በሚገቡበት ጊዜ የእርስዎን የይለፍ ቃላትን ሊፈትሽ ይችላል</translation>
 <translation id="3451115285585441894">ወድ Chrome በማከል ላይ...</translation>
 <translation id="345171907106878721">እራስዎን ወደ Chrome ያክሉ</translation>
@@ -207,6 +208,7 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="6291089322031436445">Chrome Dev መተግበሪያዎች</translation>
 <translation id="6291549208091401781">Google Chrome ቀደም ብሎ በእርስዎ ኮምፒውተር ላይ ላሉ ተጠቃሚዎች ተጭኗል።</translation>
 <translation id="6368958679917195344">Chrome ስርዓተ ክወና በተጨማሪ <ph name="BEGIN_LINK_CROS_OSS" />ክፍት ምንጭ ሶፍትዌር<ph name="END_LINK_CROS_OSS" /> እውን ሊሆን ችሏል።</translation>
+<translation id="6412673304250309937">በChrome ላይ የተከማቹ ድህንነታቸው ያልተጠበቁ ጣቢያዎች ዝርዝር ጋር ዩአርኤሎችን ይፈትሻል። አንድ ጣቢያ የእርስዎን የይለፍ ቃል ለመስረቅ ከሞከረ ወይም ጎጂ ፋይል ካወረደ Chrome እንዲሁም የገጽ ይዘትን ክፍሎችም ጨምሮ ዩአርኤሎችን ወደ የጥንቃቄ አሰሳ መላክ ሊልክ ይችላል።</translation>
 <translation id="6418662306461808273">ወደ ነባር የChrome መገለጫ ይቀየር?</translation>
 <translation id="6506909944137591434">Chrome የዙሪያዎን የ3ል ካርታ ለመፍጠር የካሜራ ፈቃድ ያስፈልገዋል</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome ግንባታ</translation>

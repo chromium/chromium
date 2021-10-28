@@ -47,6 +47,7 @@
 <translation id="2121284319307530122">重新启动以更新 Chrome(&amp;C)</translation>
 <translation id="2123055963409958220">报告<ph name="BEGIN_LINK" />当前设置<ph name="END_LINK" />，协助我们改进 Chrome</translation>
 <translation id="2151406531797534936">请立即重启 Chrome</translation>
+<translation id="2189289170880510015">自定义 Chrome 的一些最重要的隐私设置选项</translation>
 <translation id="2290014774651636340">缺少 Google API 密钥，因此 Google Chrome 的部分功能将无法使用。</translation>
 <translation id="2290095356545025170">确定要卸载 Google Chrome 浏览器吗？</translation>
 <translation id="2309047409763057870">这是 Google Chrome 的并行安装，您无法将此浏览器设为默认浏览器。</translation>
@@ -96,6 +97,7 @@
 <translation id="3379938682270551431">{0,plural, =0{Chrome 将立即重新启动}=1{Chrome 将在 1 秒后重新启动}other{Chrome 将在 # 秒后重新启动}}</translation>
 <translation id="3395323229510056640">获取有关 Chrome 操作系统的帮助</translation>
 <translation id="3396977131400919238">安装过程中出现操作系统错误。请重新下载 Google Chrome。</translation>
+<translation id="3428747202529429621">保护您在 Chrome 中免受安全威胁，登录状态下还可让您更安全地使用其他 Google 应用</translation>
 <translation id="3434246496373299699">您需要先登录 Google 帐号才能使用 Chrome 的密码检查功能。</translation>
 <translation id="3451115285585441894">正在添加到 Chrome 浏览器...</translation>
 <translation id="345171907106878721">将您自己添加到Chrome</translation>
@@ -108,6 +110,7 @@
 <translation id="3596080736082218006">{COUNT,plural, =0{您的管理员要求您重新启动 Chrome 以应用一项更新}=1{您的管理员要求您重新启动 Chrome 以应用一项更新。您的无痕式窗口不会重新打开。}other{您的管理员要求您重新启动 Chrome 以应用一项更新。您的 # 个无痕式窗口不会重新打开。}}</translation>
 <translation id="3622797965165704966">现在，无论是通过Google帐号还是在共用的计算机上，您都可以更轻松地使用Chrome。</translation>
 <translation id="3673813398384385993">Chrome 发现“<ph name="EXTENSION_NAME" />”包含恶意软件</translation>
+<translation id="3678552270983184277">默认的设置适用于大多数用户，但您可自定义这些设置以契合您偏好的 Chrome 使用方式</translation>
 <translation id="3718181793972440140">这会从这台设备上删除 1 项内容。如果日后想要检索您的数据，届时请以 <ph name="USER_EMAIL" /> 的身份登录 Chrome。</translation>
 <translation id="3735758079232443276">“<ph name="EXTENSION_NAME" />”扩展程序更改了 Chrome 启动后系统显示的页面。</translation>
 <translation id="3779473566290487688">如需接收后续的 Google Chrome 更新，您需使用 OS X 10.11 或更高版本。该计算机目前使用的是 OS X 10.10。</translation>
@@ -199,6 +202,7 @@
 <translation id="6291089322031436445">Chrome 开发者版应用</translation>
 <translation id="6291549208091401781">已为您计算机上的所有用户安装 Google Chrome。</translation>
 <translation id="6368958679917195344">Chrome 操作系统的问世还有其他<ph name="BEGIN_LINK_CROS_OSS" />开放源代码软件<ph name="END_LINK_CROS_OSS" />的一份功劳。</translation>
+<translation id="6412673304250309937">将网址与存储在 Chrome 中的不安全网站列表进行比对。如果某个网站企图窃取您的密码，或者您下载了有害的文件，Chrome 可能还会将相应网址连同少量网页内容发送给“安全浏览”功能。</translation>
 <translation id="6418662306461808273">切换到现有的 Chrome 个人资料？</translation>
 <translation id="6506909944137591434">Chrome 需要获得摄像头权限才能为您的周边环境创建 3D 地图</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome 开发者版</translation>

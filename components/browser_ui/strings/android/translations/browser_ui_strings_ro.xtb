@@ -29,6 +29,7 @@
 <translation id="1743802530341753419">Întreabă înainte de a permite site-urilor să se conecteze la un dispozitiv (recomandat)</translation>
 <translation id="1779089405699405702">Decodor de imagini</translation>
 <translation id="1818308510395330587">Pentru a permite aplicației <ph name="APP_NAME" /> să folosească RA, activează camera foto și în <ph name="BEGIN_LINK" />Setările Android<ph name="END_LINK" />.</translation>
+<translation id="1864927262126810325">De la <ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">Accesul la locație este dezactivat pentru acest dispozitiv. Activează-l în <ph name="BEGIN_LINK" />Setări Android<ph name="END_LINK" />.</translation>
 <translation id="1919345977826869612">Anunțuri</translation>
 <translation id="1919950603503897840">Selectează persoane de contact</translation>
@@ -236,6 +237,7 @@
 <translation id="7016516562562142042">Se permite pentru motorul de căutare actual</translation>
 <translation id="7053983685419859001">Blochează</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 selectat}few{# selectate}other{# selectate}}</translation>
+<translation id="7070090581017165256">Despre acest site</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> selectate.  Opțiunile sunt disponibile în partea de sus a ecranului</translation>
 <translation id="7141896414559753902">Împiedică site-urile să afișeze ferestre pop-up și redirecționări (recomandat)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>

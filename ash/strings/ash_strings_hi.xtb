@@ -131,6 +131,7 @@
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> पर स्क्रीन शेयर कर रहा है</translation>
 <translation id="1885785240814121742">फ़िंगरप्रिंट से अनलॉक करें</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" />, <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> हर्ट्ज़) के साथ काम नहीं करता है. इस रिज़ॉल्यूशन को <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) में बदला गया. बदलावों को सेव करने के लिए 'पुष्टि करें' पर क्लिक करें. सेटिंग को <ph name="TIMEOUT_SECONDS" /> में पहले जैसा किया जाएगा.</translation>
+<translation id="1915307458270490472">कॉल खत्म करें</translation>
 <translation id="1919743966458266018">काम के मैनेजर को खोलने का शॉर्टकट बदल गया है. कृपया <ph name="OLD_SHORTCUT" /> के बजाय <ph name="NEW_SHORTCUT" /> का उपयोग करें.</translation>
 <translation id="1923539912171292317">अपने-आप क्‍लिक</translation>
 <translation id="1928739107511554905">अपडेट पाने के लिए, अटैच किए गए कीबोर्ड से अपने Chromebook को रीस्टार्ट करने के लिए टचस्क्रीन का इस्तेमाल करें.</translation>
@@ -1130,6 +1131,7 @@
 <translation id="925832987464884575">झलक छिपाएं</translation>
 <translation id="938963181863597773">मेरे कैलेंडर पर आज के लिए क्या काम हैं?</translation>
 <translation id="945522503751344254">फ़ीडबैक भेजें</translation>
+<translation id="951991426597076286">अस्वीकार करें</translation>
 <translation id="98515147261107953">लैंडस्केप</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" /> विंडो बंद है.</translation>
 </translationbundle>

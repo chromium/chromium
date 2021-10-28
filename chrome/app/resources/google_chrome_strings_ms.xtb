@@ -97,6 +97,7 @@
 <translation id="3379938682270551431">{0,plural, =0{Chrome akan dilancarkan semula sekarang}=1{Chrome akan dilancarkan semula dalam masa sesaat}other{Chrome akan dilancarkan semula dalam masa # saat}}</translation>
 <translation id="3395323229510056640">Dapatkan bantuan berkenaan Chrome OS</translation>
 <translation id="3396977131400919238">Ralat sistem pengendalian berlaku semasa pemasangan. Sila muat turun Google Chrome semula.</translation>
+<translation id="3428747202529429621">Memastikan anda selamat pada Chrome dan mungkin digunakan untuk meningkatkan keselamatan anda dalam apl Google yang lain apabila anda log masuk</translation>
 <translation id="3434246496373299699">Chrome boleh menyemak kata laluan anda apabila anda log masuk menggunakan Akaun Google anda</translation>
 <translation id="3451115285585441894">Menambahkan pada Chrome...</translation>
 <translation id="345171907106878721">Tambahkan diri anda kepada Chrome</translation>
@@ -200,6 +201,7 @@ tetapan OS Chrome<ph name="LINK_END" /> anda</translation>
 <translation id="6291089322031436445">Apl Chrome Dev</translation>
 <translation id="6291549208091401781">Google Chrome telah dipasang untuk semua pengguna pada komputer anda.</translation>
 <translation id="6368958679917195344">OS Chrome menjadi kenyataan dengan <ph name="BEGIN_LINK_CROS_OSS" />perisian sumber terbuka<ph name="END_LINK_CROS_OSS" /> tambahan.</translation>
+<translation id="6412673304250309937">Semak URL melalui perbandingan dengan senarai tapak tidak selamat yang disimpan dalam Chrome. Jika tapak cuba mencuri kata laluan anda atau apabila anda memuat turun fail yang berbahaya, Chrome juga mungkin menghantar URL, termasuk sedikit kandungan halaman, kepada Penyemakan Imbas Selamat.</translation>
 <translation id="6418662306461808273">Tukar kepada profil Chrome yang sedia ada?</translation>
 <translation id="6506909944137591434">Chrome memerlukan kebenaran kamera untuk membuat peta 3D bagi persekitaran anda</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>

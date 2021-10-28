@@ -1315,7 +1315,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2312219318583366810">URL Halaman</translation>
 <translation id="2314165183524574721">Visibilitas saat ini disetel ke tersembunyi</translation>
 <translation id="2314774579020744484">Bahasa yang digunakan saat menerjemahkan halaman</translation>
-<translation id="2315414688463285945">Terjadi error saat mengonfigurasi file Linux. Harap coba lagi.</translation>
 <translation id="2315587498123194634">Kirim Link ke <ph name="DEVICE_NAME" /></translation>
 <translation id="2316129865977710310">Lain kali</translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" />% selesai</translation>
@@ -2088,6 +2087,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="310671807099593501">Situs sedang menggunakan bluetooth</translation>
 <translation id="3108931485517391283">Tidak dapat menerima</translation>
 <translation id="3109724472072898302">Diciutkan</translation>
+<translation id="311214366526552035">Tetap Download</translation>
 <translation id="311394601889664316">Jangan izinkan situs mengedit file atau folder di perangkat Anda</translation>
 <translation id="3115147772012638511">Menunggu cache...</translation>
 <translation id="3115580024857770654">Ciutkan semua</translation>
@@ -2364,11 +2364,11 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="3424969259347320884">Jelaskan yang Anda Lakukan Saat Tab Error</translation>
 <translation id="3427092606871434483">Izinkan (default)</translation>
 <translation id="3428419049384081277">Anda sudah login</translation>
-<translation id="3428747202529429621">Memastikan Anda tetap aman di Chrome dan dapat digunakan untuk menyempurnakan keamanan Anda di aplikasi Google lainnya saat login</translation>
 <translation id="3429086384982427336">Aplikasi yang tercantum di bawah tidak akan menangani link protokol.</translation>
 <translation id="3429160811076349561">Fitur uji coba nonaktif</translation>
 <translation id="3429271624041785769">Bahasan konten web</translation>
 <translation id="3429275422858276529">Bookmark halaman ini agar mudah ditemukan nanti</translation>
+<translation id="343115368966109153">Download <ph name="FILE_NAME" />? Siapa pun yang menggunakan perangkat ini dapat melihatnya.</translation>
 <translation id="3432227430032737297">Buang Semua Yang Ditampilkan</translation>
 <translation id="3432762828853624962">Pekerja Bersama</translation>
 <translation id="3433621910545056227">Ups! Sistem gagal membuat kunci atribut waktu pemasangan perangkat.</translation>
@@ -2710,6 +2710,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="3777806571986431400">Ekstensi Diaktifkan</translation>
 <translation id="3778152852029592020">Download dibatalkan.</translation>
 <translation id="3778208826288864398">Kunci keamanan dikunci karena Anda terlalu sering memasukkan PIN yang salah. Anda harus menyetel ulang kunci keamanan.</translation>
+<translation id="3778369586810509692">File ini akan disimpan di perangkat dan siapa saja akan dapat melihatnya.</translation>
 <translation id="3778740492972734840">Alat &amp;pengembang</translation>
 <translation id="3778868487658107119">Ajukan pertanyaan. Minta untuk melakukan berbagai hal. Ini adalah Google pribadi Anda yang selalu siap membantu.</translation>
 <translation id="3781742599892759500">Akses mikrofon Linux</translation>
@@ -5129,7 +5130,6 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6410328738210026208">Ganti saluran dan Powerwash</translation>
 <translation id="6410390304316730527">Safe Browsing akan melindungi Anda dari penyerang yang dapat mengelabui Anda agar melakukan sesuatu yang berbahaya, misalnya menginstal software berbahaya atau mengungkap informasi pribadi seperti sandi, nomor telepon, atau kartu kredit. Jika dinonaktifkan, harap berhati-hati saat mengakses situs tidak dikenal atau tidak tepercaya.</translation>
 <translation id="6410668567036790476">Tambahkan mesin telusur</translation>
-<translation id="6412673304250309937">Memeriksa kesesuaian URL dengan daftar situs tidak aman yang disimpan di Chrome. Jika situs berusaha mencuri sandi Anda, atau jika Anda mendownload file berbahaya, Chrome mungkin juga mengirim URL, termasuk bit konten halaman, ke Safe Browsing.</translation>
 <translation id="641469293210305670">Instal Update dan Aplikasi</translation>
 <translation id="6414878884710400018">Buka Preferensi Sistem</translation>
 <translation id="6414888972213066896">Kamu telah meminta izin kepada orang tua untuk mengunjungi situs ini</translation>
@@ -5538,7 +5538,6 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6843264316370513305">Proses Debug Jaringan</translation>
 <translation id="6843423766595476978">Ok Google sudah siap</translation>
 <translation id="6845038076637626672">Buka yang Dimaksimalkan</translation>
-<translation id="6845325883481699275">Bantu meningkatkan keamanan Chrome</translation>
 <translation id="6846178040388691741">"<ph name="EXTENSION_NAME" />" ingin mencetak <ph name="FILE_NAME" /> dengan <ph name="PRINTER_NAME" />.</translation>
 <translation id="6847125920277401289">Kosongkan ruang untuk melanjutkan</translation>
 <translation id="6848388270925200958">Sekarang, Anda memiliki beberapa kartu yang hanya dapat digunakan di perangkat ini</translation>
@@ -6990,7 +6989,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8324784016256120271">Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berbagai situs, misalnya untuk mempersonalisasi iklan</translation>
 <translation id="8325413836429495820">Tidak diizinkan melihat papan klip Anda</translation>
 <translation id="8326478304147373412">PKCS #7, rantai sertifikat</translation>
-<translation id="8327039559959785305">Terjadi error saat memasang file Linux. Harap coba lagi.</translation>
 <translation id="8327676037044516220">Izin dan setelan konten</translation>
 <translation id="833256022891467078">Folder bersama Crostini</translation>
 <translation id="8335587457941836791">Lepaskan pin dari rak</translation>

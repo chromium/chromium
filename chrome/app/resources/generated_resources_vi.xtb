@@ -1316,7 +1316,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2312219318583366810">URL của trang</translation>
 <translation id="2314165183524574721">Tùy chọn hiển thị hiện tại là ẩn</translation>
 <translation id="2314774579020744484">Ngôn ngữ được dùng khi dịch trang</translation>
-<translation id="2315414688463285945">Lỗi khi định cấu hình tệp Linux. Vui lòng thử lại.</translation>
 <translation id="2315587498123194634">Gửi đường liên kết đến <ph name="DEVICE_NAME" /></translation>
 <translation id="2316129865977710310">Không, cảm ơn</translation>
 <translation id="2317842250900878657">Đã hoàn tất <ph name="PROGRESS_PERCENT" />%</translation>
@@ -2366,7 +2365,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3424969259347320884">Mô tả những việc bạn đang làm khi thẻ gặp lỗi</translation>
 <translation id="3427092606871434483">Cho phép (mặc định)</translation>
 <translation id="3428419049384081277">Bạn đã đăng nhập!</translation>
-<translation id="3428747202529429621">Giúp bạn an toàn trên Chrome và có thể dùng để tăng cường bảo mật cho bạn trong các ứng dụng khác của Google sau khi đăng nhập</translation>
 <translation id="3429086384982427336">Những ứng dụng được liệt kê bên dưới sẽ không bao giờ xử lý các đường liên kết giao thức.</translation>
 <translation id="3429160811076349561">Các tính năng dùng thử đang tắt</translation>
 <translation id="3429271624041785769">Ngôn ngữ dùng cho nội dung web</translation>
@@ -5133,7 +5131,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6410328738210026208">Thay đổi kênh và Powerwash</translation>
 <translation id="6410390304316730527">Tính năng Duyệt web an toàn bảo vệ bạn trước những kẻ tấn công có thể đánh lừa bạn làm một việc gì đó nguy hiểm như cài đặt phần mềm độc hại hoặc tiết lộ thông tin cá nhân như mật khẩu, số điện thoại hoặc thẻ tín dụng. Nếu bạn tắt tính năng này, hãy cẩn thận khi duyệt các trang web lạ hoặc không có uy tín.</translation>
 <translation id="6410668567036790476">Thêm công cụ tìm kiếm</translation>
-<translation id="6412673304250309937">Kiểm tra đối chiếu các URL với danh sách trang web không an toàn được lưu trữ trong Chrome. Nếu một trang web cố ăn cắp mật khẩu của bạn hoặc nếu bạn tải một tệp gây hại xuống, Chrome cũng có thể gửi các URL, bao gồm cả các đoạn nội dung trên trang, đến tính năng Duyệt web an toàn.</translation>
 <translation id="641469293210305670">Cài đặt bản cập nhật và ứng dụng</translation>
 <translation id="6414878884710400018">Mở Tùy chọn hệ thống</translation>
 <translation id="6414888972213066896">Bạn đã hỏi cha mẹ mình xem có thể truy cập vào trang này hay không</translation>
@@ -5542,7 +5539,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6843264316370513305">Gỡ lỗi mạng</translation>
 <translation id="6843423766595476978">Đã thiết lập xong Ok Google</translation>
 <translation id="6845038076637626672">Mở ở dạng phóng to</translation>
-<translation id="6845325883481699275">Giúp cải thiện khả năng bảo mật của Chrome</translation>
 <translation id="6846178040388691741">"<ph name="EXTENSION_NAME" />" muốn in <ph name="FILE_NAME" /> bằng <ph name="PRINTER_NAME" />.</translation>
 <translation id="6847125920277401289">Giải phóng dung lượng để tiếp tục</translation>
 <translation id="6848388270925200958">Bạn hiện có một số thẻ chỉ dùng được trên thiết bị này</translation>
@@ -6995,7 +6991,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8324784016256120271">Các trang web có thể dùng cookie để giám sát hoạt động duyệt web của bạn trên nhiều trang web, chẳng hạn để điều chỉnh quảng cáo cho phù hợp với bạn</translation>
 <translation id="8325413836429495820">Không được phép xem bảng nhớ tạm của bạn</translation>
 <translation id="8326478304147373412">PKCS #7, chuỗi chứng chỉ</translation>
-<translation id="8327039559959785305">Lỗi khi đính kèm tệp Linux. Vui lòng thử lại.</translation>
 <translation id="8327676037044516220">Các chế độ cài đặt nội dung và quyền</translation>
 <translation id="833256022891467078">Thư mục do Crostini chia sẻ</translation>
 <translation id="8335587457941836791">Bỏ ghim khỏi kệ</translation>

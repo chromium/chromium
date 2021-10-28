@@ -131,6 +131,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1882897271359938046">Weerspieëling na <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Ontsluit met vingerafdruk</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> steun nie <ph name="SPECIFIED_RESOLUTION" /> nie (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Die resolusie is verander na <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Klik bevestig om veranderinge te hou. Die vorige instellings sal oor <ph name="TIMEOUT_SECONDS" /> teruggestel word.</translation>
+<translation id="1915307458270490472">Sit neer</translation>
 <translation id="1919743966458266018">Die kortpad om die taakbestuurder oop te maak, het verander. Gebruik asseblief <ph name="NEW_SHORTCUT" /> pleks van <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Outomatiese klikke</translation>
 <translation id="1928739107511554905">Vir 'n opdatering van jou sleutelbord moet jy die raakskerm gebruik om jou Chromebook met die sleutelbord aangeheg, te herbegin.</translation>
@@ -1130,6 +1131,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="925832987464884575">Versteek voorskoue</translation>
 <translation id="938963181863597773">Wat is op my kalender?</translation>
 <translation id="945522503751344254">Stuur terugvoer</translation>
+<translation id="951991426597076286">Weier</translation>
 <translation id="98515147261107953">Landskap</translation>
 <translation id="990277280839877440">Venster <ph name="WINDOW_TITILE" /> is gesluit.</translation>
 </translationbundle>

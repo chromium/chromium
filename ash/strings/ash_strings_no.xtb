@@ -131,6 +131,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1882897271359938046">Speiler <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Lås opp med fingeravtrykk</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> støtter ikke <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Oppløsningen ble endret til <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Klikk på Bekreft for å beholde endringene. De forrige innstillingene blir gjenopprettet om <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="1915307458270490472">Legg på</translation>
 <translation id="1919743966458266018">Snarveien for å åpne oppgavebehandlingen er endret. Bruk <ph name="NEW_SHORTCUT" /> i stedet for <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Automatiske klikk</translation>
 <translation id="1928739107511554905">For å laste ned oppdateringen, bruk berøringsskjermen til å starte Chromebooken på nytt med tastaturet tilkoblet.</translation>
@@ -1129,6 +1130,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="925832987464884575">Skjul forhåndsvisninger</translation>
 <translation id="938963181863597773">Hva er i kalenderen min?</translation>
 <translation id="945522503751344254">Send tilbakemelding</translation>
+<translation id="951991426597076286">Avvis</translation>
 <translation id="98515147261107953">Liggende</translation>
 <translation id="990277280839877440">Vinduet <ph name="WINDOW_TITILE" /> er lukket.</translation>
 </translationbundle>

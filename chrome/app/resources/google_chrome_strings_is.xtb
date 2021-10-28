@@ -100,6 +100,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="3379938682270551431">{0,plural, =0{Chrome verður endurræst núna}=1{Chrome verður endurræst eftir 1 sekúndu}one{Chrome verður endurræst eftir # sekúndu}other{Chrome verður endurræst eftir # sekúndur}}</translation>
 <translation id="3395323229510056640">Fá hjálp með Chrome OS</translation>
 <translation id="3396977131400919238">Stýrikerfisvilla kom upp við uppsetningu. Sæktu Google Chrome aftur.</translation>
+<translation id="3428747202529429621">Tryggir öryggi þitt í Chrome og kann að vera notað til að auka öryggi þitt í öðrum Google forritum þegar þú ert skráð(ur) inn</translation>
 <translation id="3434246496373299699">Chrome getur athugað aðgangsorðin þín þegar þú skráir þig inn með Google reikningnum þínum</translation>
 <translation id="3451115285585441894">Bætir við Chrome...</translation>
 <translation id="345171907106878721">Bættu þér við Chrome</translation>
@@ -207,6 +208,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6291089322031436445">Chrome Dev forrit</translation>
 <translation id="6291549208091401781">Google Chrome hefur þegar verið sett upp fyrir alla notendur í tölvunni.</translation>
 <translation id="6368958679917195344">Chrome OS á tilvist sína að þakka öðrum <ph name="BEGIN_LINK_CROS_OSS" />opnum hugbúnaði<ph name="END_LINK_CROS_OSS" />.</translation>
+<translation id="6412673304250309937">Ber vefslóðir saman við lista yfir óörugg vefsvæði sem er vistaður í Chrome. Ef vefsvæði reynir að stela aðgangsorðinu þínu, eða ef þú sækir skaðlega skrá, gæti Chrome einnig sent vefslóðir í Örugga vefskoðun, þar á meðal hluta af innihaldi síðna.</translation>
 <translation id="6418662306461808273">Skipta yfir í Chrome prófíl sem er til?</translation>
 <translation id="6506909944137591434">Chrome verður að fá leyfi fyrir myndavél til að búa til þrívíddarkort af umhverfi þínu</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>

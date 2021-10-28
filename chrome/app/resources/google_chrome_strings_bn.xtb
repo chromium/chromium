@@ -100,6 +100,7 @@
 <translation id="3379938682270551431">{0,plural, =0{Chrome এখন আবার লঞ্চ হবে}=1{Chrome ১ সেকেন্ডের মধ্যে আবার লঞ্চ হবে}one{Chrome # সেকেন্ডের মধ্যে আবার লঞ্চ হবে}other{Chrome # সেকেন্ডের মধ্যে আবার লঞ্চ হবে}}</translation>
 <translation id="3395323229510056640">Chrome OS বিষয়ে সাহায্য পান</translation>
 <translation id="3396977131400919238">ইনস্টলেশনের সময় অপারেটিং সিস্টেমে একটি ত্রুটি ঘটেছিল৷ অনুগ্রহ করে আবার Google Chrome ডাউনলোড করুন৷</translation>
+<translation id="3428747202529429621">সাইন-ইন করা অবস্থায় আপনাকে Chrome-এ নিরাপদ রাখতে এবং হয়ত অন্যান্য Google অ্যাপে নিরাপত্তা আরও ভাল করতে এই মোডটি ব্যবহার করা হয়</translation>
 <translation id="3434246496373299699">আপনি যখন নিজের Google অ্যাকাউন্টের মাধ্যমে সাইন-ইন করবেন, Chrome তখন আপনার পাসওয়ার্ড চেক করে দেখতে পারবে</translation>
 <translation id="3451115285585441894">Chrome-এ জোড়া হচ্ছে...</translation>
 <translation id="345171907106878721">Chrome এর সাথে নিজেকে যোগ করুন</translation>
@@ -206,6 +207,7 @@
 <translation id="6291089322031436445">Chrome ডেভেলপার অ্যাপ</translation>
 <translation id="6291549208091401781">Google Chrome ইতোমধ্যে আপনার কম্পিউটারের সকল ব্যবহারকারীর জন্য ইনস্টল করা হয়েছে।</translation>
 <translation id="6368958679917195344">Chrome OS সম্ভবত অতিরিক্ত <ph name="BEGIN_LINK_CROS_OSS" />ওপেন সোর্স সফ্টওয়্যার<ph name="END_LINK_CROS_OSS" /> দিয়ে তৈরি৷</translation>
+<translation id="6412673304250309937">Chrome-এ স্টোর করা নিরাপদ নয় এমন সাইটের তালিকা থেকে সাইটগুলির ইউআরএল পরীক্ষা করে দেখে। যদি কোনও সাইট আপনার পাসওয়ার্ড চুরি করার চেষ্টা করে বা আপনি কোনও ক্ষতিকারক ফাইল ডাউনলোড করলে, Safe Browsing-এ Chrome পৃষ্ঠার কিছু কন্টেন্ট সহ ইউআরএলও হয়ত পাঠাতে পারে।</translation>
 <translation id="6418662306461808273">বর্তমান Chrome প্রোফাইলে পাল্টাতে চান?</translation>
 <translation id="6506909944137591434">আপনার আশেপাশের জায়গার একটি 3D ম্যাপ তৈরি করার জন্য Chrome-এর ক্যামেরা অ্যাক্সেসের অনুমতি প্রয়োজন</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>

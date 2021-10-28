@@ -123,6 +123,7 @@
 <translation id="1122068467107743258">Posao</translation>
 <translation id="1122198203221319518">&amp;Alatke</translation>
 <translation id="1122242684574577509">Potvrda autentičnosti nije uspela. Kliknite da biste posetili stranicu za prijavljivanje za WiFi mrežu koju koristite (<ph name="NETWORK_ID" />).</translation>
+<translation id="1122913801042512795">Podaci za prijavljivanje na nalog su zastareli. Odjavite se i prijavite se ponovo.</translation>
 <translation id="1122960773616686544">Naziv obeleživača</translation>
 <translation id="1124772482545689468">Korisnik</translation>
 <translation id="1125550662859510761">Izgleda da je u pitanju <ph name="WIDTH" />×<ph name="HEIGHT" /> (osnovno)</translation>
@@ -1300,7 +1301,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2312219318583366810">URL stranice</translation>
 <translation id="2314165183524574721">Aktuelno podešavanje vidljivosti je: Skriveno</translation>
 <translation id="2314774579020744484">Jezik koji se koristi za prevođenje stranica</translation>
-<translation id="2315414688463285945">Greška pri konfigurisanju Linux datoteka. Probajte ponovo.</translation>
 <translation id="2315587498123194634">Pošalji vezu na uređaj <ph name="DEVICE_NAME" /></translation>
 <translation id="2316129865977710310">Ne, hvala</translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" />% je gotovo</translation>
@@ -2350,7 +2350,6 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="3424969259347320884">Opišite šta ste radili kada je kartica otkazala</translation>
 <translation id="3427092606871434483">Dozvoli (podrazumevano)</translation>
 <translation id="3428419049384081277">Prijavljeni ste!</translation>
-<translation id="3428747202529429621">Štiti vas u Chrome-u i može da se koristi za poboljšanje bezbednosti u drugim Google aplikacijama kada ste prijavljeni</translation>
 <translation id="3429086384982427336">Aplikacije navedene u nastavku nikada ne obrađuju i linkove protokola.</translation>
 <translation id="3429160811076349561">Probne funkcije su isključene</translation>
 <translation id="3429271624041785769">Jezici veb-sadržaja</translation>
@@ -5116,7 +5115,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6410328738210026208">Promeni kanal i obavi Powerwash</translation>
 <translation id="6410390304316730527">Bezbedno pregledanje vas štiti od napadača koji mogu da vas navedu da uradite nešto opasno, na primer, da instalirate zlonamerni softver ili otkrijete lične podatke poput lozinki, brojeva telefona ili brojeva kreditnih kartica. Ako ga isključite, budite oprezni pri pregledanju nepoznatih ili nebezbednih sajtova.</translation>
 <translation id="6410668567036790476">Dodavanje pretraživača</translation>
-<translation id="6412673304250309937">Proverava URL-ove sa listom nebezbednih sajtova koji se čuvaju u Chrome-u. Ako neki sajt pokuša da ukrade vašu lozinku ili probate da preuzmete štetnu datoteku, Chrome može da pošalje URL-ove, uključujući delove sadržaja stranice, u Bezbedno pregledanje.</translation>
 <translation id="641469293210305670">Instalirajte ažuriranja i aplikacije</translation>
 <translation id="6414878884710400018">Otvori podešavanja sistema</translation>
 <translation id="6414888972213066896">Pitao/la si roditelja da li smeš da posetiš ovaj sajt</translation>
@@ -5525,7 +5523,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6843264316370513305">Otklanjanje grešaka na mreži</translation>
 <translation id="6843423766595476978">Opcija Ok Google je spremna</translation>
 <translation id="6845038076637626672">Otvori uvećano</translation>
-<translation id="6845325883481699275">Pomozite nam da poboljšamo Chrome bezbednost</translation>
 <translation id="6846178040388691741"><ph name="EXTENSION_NAME" /> želi da štampa <ph name="FILE_NAME" /> pomoću štampača <ph name="PRINTER_NAME" />.</translation>
 <translation id="6847125920277401289">Oslobodite prostor da biste nastavili</translation>
 <translation id="6848388270925200958">Trenutno imate neke kartice koje mogu da se koriste samo na ovom uređaju</translation>
@@ -6977,7 +6974,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8324784016256120271">Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na različitim sajtovima, na primer, za personalizaciju oglasa</translation>
 <translation id="8325413836429495820">Nije im dozvoljeno da vide privremenu memoriju</translation>
 <translation id="8326478304147373412">PKCS #7, lanac sertifikata</translation>
-<translation id="8327039559959785305">Greška pri priključivanju Linux datoteka. Probajte ponovo.</translation>
 <translation id="8327676037044516220">Podešavanja dozvola i sadržaja</translation>
 <translation id="833256022891467078">Deljeni Crostini direktorijumi</translation>
 <translation id="8335587457941836791">Otkači sa police</translation>
@@ -7501,6 +7497,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8879284080359814990">&amp;Prikaži kao karticu</translation>
 <translation id="8879921471468674457">Zapamti podatke za prijavljivanje</translation>
 <translation id="8880054210564666174">Preuzimanje liste kontakata nije uspelo. Proverite mrežnu vezu ili <ph name="LINK_BEGIN" />probajte ponovo<ph name="LINK_END" />.</translation>
+<translation id="8880344290593529089">Otvorite Podešavanja da biste povezali <ph name="USB_DEVICE_NAME" /> sa Linux-om ili Parallels Desktop-om</translation>
 <translation id="8881020143150461183">Probajte ponovo. Za tehničku podršku se obratite: <ph name="CARRIER_NAME" />.</translation>
 <translation id="8883273463630735858">Omogući ubrzavanje tačpeda</translation>
 <translation id="8884570509232205463">Uređaj se sada zaključava u <ph name="UNLOCK_TIME" />.</translation>

@@ -101,6 +101,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="3379938682270551431">{0,plural, =0{Muli nang ilulunsad ang Chrome ngayon}=1{Muli nang ilulunsad ang Chrome sa loob ng 1 segundo}one{Muli nang ilulunsad ang Chrome sa loob ng # segundo}other{Muli nang ilulunsad ang Chrome sa loob ng # na segundo}}</translation>
 <translation id="3395323229510056640">Humingi ng tulong sa Chrome OS</translation>
 <translation id="3396977131400919238">Nagkaroon ng error sa operating system habang nag-i-install. Paki-download muli ang Google Chrome.</translation>
+<translation id="3428747202529429621">Pinapanatili kang ligtas sa Chrome at puwedeng gamitin para paigtingin ang iyong seguridad sa iba pang Google app kapag naka-sign in ka</translation>
 <translation id="3434246496373299699">Matitingnan ng Chrome ang iyong mga password kapag nag-sign in ka gamit ang Google Account mo</translation>
 <translation id="3451115285585441894">Idinaragdag sa Chrome...</translation>
 <translation id="345171907106878721">Idagdag ang iyong sarili sa Chrome</translation>
@@ -208,6 +209,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="6291089322031436445">Mga Chrome Dev App</translation>
 <translation id="6291549208091401781">Naka-install na ang Google Chrome para sa lahat ng user sa iyong computer.</translation>
 <translation id="6368958679917195344">Ginagawang posible ang Chrome OS ng karagdagang <ph name="BEGIN_LINK_CROS_OSS" />open source na software<ph name="END_LINK_CROS_OSS" />.</translation>
+<translation id="6412673304250309937">Sinusuri ang mga URL sa pamamagitan ng listahan ng mga hindi ligtas na site na naka-store sa Chrome. Kung susubukan ng site na nakawin ang iyong password, o kapag nag-download ka ng mapaminsalang file, posible ring magpadala ang Chrome sa Ligtas na Pag-browse ng mga URL, kabilang ang ilang content ng page</translation>
 <translation id="6418662306461808273">Lumipat sa kasalukuyang profile sa Chrome?</translation>
 <translation id="6506909944137591434">Kailangan ng Chrome ng pahintulot sa camera para makagawa ng 3D na mapa ng iyong kapaligiran</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>

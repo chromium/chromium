@@ -131,6 +131,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> pantailan islatzen</translation>
 <translation id="1885785240814121742">Desblokeatu hatz-marka bidez</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> pantailak ez du onartzen <ph name="SPECIFIED_RESOLUTION" /> bereizmena (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). <ph name="FALLBACK_RESOLUTION" /> bereizmena ezarri da pantailaren bereizmen gisa (<ph name="FALLBACK_REFRESH_RATE" />). Aldaketak gordetzeko, sakatu berresteko botoia. <ph name="TIMEOUT_SECONDS" /> barru leheneratuko dira aurreko ezarpenak.</translation>
+<translation id="1915307458270490472">Amaitu deia</translation>
 <translation id="1919743966458266018">Aldatu egin da ataza-kudeatzailea irekitzeko lasterbidea. Erabili <ph name="NEW_SHORTCUT" />, eta ez <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Klik automatikoak</translation>
 <translation id="1928739107511554905">Eguneratzea eskuratzeko, erabili ukipen-pantaila Chromebook-a berrabiarazteko teklatua konektatuta daukala.</translation>
@@ -1130,6 +1131,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="925832987464884575">Ezkutatu aurrebistak</translation>
 <translation id="938963181863597773">Zer daukat egutegian?</translation>
 <translation id="945522503751344254">Bidali oharrak</translation>
+<translation id="951991426597076286">Baztertu</translation>
 <translation id="98515147261107953">Horizontala</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" /> leihoa itxi da.</translation>
 </translationbundle>

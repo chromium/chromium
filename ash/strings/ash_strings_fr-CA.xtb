@@ -18,6 +18,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" /> : <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">Remplacer</translation>
 <translation id="1073899992769346247">Remplacez ou rechargez la pile</translation>
+<translation id="1081015718268701546">Les applications Linux ne sont pas actuellement prises en charge. D'autres applications seront enregistrées.</translation>
 <translation id="108486256082349153">Cellulaire : <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Bon après-midi <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">Je m'ennuie</translation>
@@ -44,6 +45,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1225748608451425081">Votre Chromebook est verrouillé en raison d'un problème connu. Vous pourrez vous connecter dans <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Arrêter la sélection</translation>
 <translation id="1239161794459865856">La fonctionnalité <ph name="FEATURE_NAME" /> est connectée.</translation>
+<translation id="1246890715821376239">Applications non prises en charge</translation>
 <translation id="1247372569136754018">Microphone (interne)</translation>
 <translation id="1252999807265626933">Recharge à partir de <ph name="POWER_SOURCE" /> en cours</translation>
 <translation id="1255033239764210633">Quel temps fait-il?</translation>
@@ -129,6 +131,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1882897271359938046">Mise en miroir pour <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Déverrouillage avec empreinte digitale</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> n'est pas compatible avec la résolution de <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). La résolution de <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) sera utilisée à la place. Cliquez sur Confirmer pour valider cette modification. Les paramètres précédents seront restaurés dans <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="1915307458270490472">Raccrocher</translation>
 <translation id="1919743966458266018">Le raccourci qui permet d'ouvrir le gestionnaire de tâches a changé. Veuillez utiliser <ph name="NEW_SHORTCUT" /> à la place de <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Clics automatiques</translation>
 <translation id="1928739107511554905">Pour télécharger la mise à jour, utilisez l'écran tactile pour redémarrer votre Chromebook avec le clavier associé.</translation>
@@ -169,6 +172,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2148716181193084225">Aujourd'hui</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" /> : réessayer</translation>
 <translation id="2170530631236737939">Balayez l'écran vers le bas avec trois doigts pour quitter le mode Aperçu</translation>
+<translation id="2201071101391734388">Photo récente : <ph name="INDEX" /> de <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2208323208084708176">Mode Bureau unifié</translation>
 <translation id="2220572644011485463">NIP ou mot de passe</translation>
 <translation id="2222841058024245321">Bureau 7</translation>
@@ -293,6 +297,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3151786313568798007">Orientation</translation>
 <translation id="3153444934357957346">Vous ne pouvez vous connecter qu'à <ph name="MULTI_PROFILE_USER_LIMIT" /> comptes au maximum dans le cadre de la connexion multicompte.</translation>
 <translation id="3154351730702813399">L'administrateur de l'appareil peut surveiller votre activité de navigation.</translation>
+<translation id="316086887565479535">Applications non prises en charge dans le modèle</translation>
 <translation id="3181441307743005334">Le redémarrage peut prendre un certain temps</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Connecté à un appareil}one{Connecté à # appareil}other{Connecté à # appareils}}</translation>
 <translation id="320207200541803018">Règle une minuterie</translation>
@@ -390,6 +395,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="383058930331066723">Le mode Économiseur de pile est activé</translation>
 <translation id="3835880383832568924">Pour voir les mises à jour, ouvrez l'application Raccourcis</translation>
 <translation id="383629559565718788">Afficher les paramètres du clavier</translation>
+<translation id="384082539148746321">Supprimer le modèle?</translation>
 <translation id="3846214748874656680">Quitter le mode Plein écran</translation>
 <translation id="3846575436967432996">Aucune information concernant le réseau</translation>
 <translation id="385051799172605136">Retour</translation>
@@ -824,6 +830,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="7029814467594812963">Fermer la session</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Assistant Google</translation>
 <translation id="7042322267639375032">Réduire la zone de notifications</translation>
+<translation id="7045033600005038336">Remplacer le modèle?</translation>
 <translation id="7045595904618419789">Activer la loupe</translation>
 <translation id="7055381872777910864">M</translation>
 <translation id="7055910611768509537">Le stylet n'a pas été utilisé depuis plus d'une semaine</translation>
@@ -960,6 +967,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="8036504271468642248">Phrase précédente</translation>
 <translation id="8042893070933512245">Ouvrir le menu des paramètres d'accessibilité</translation>
 <translation id="8048123526339889627">Paramètres Bluetooth</translation>
+<translation id="8051716679295756675">Le modèle intitulé <ph name="DESK_TEMPLATE_NAME" /> existe déjà</translation>
 <translation id="8052898407431791827">Copiée dans le presse-papiers</translation>
 <translation id="8054466585765276473">Calcul de l'autonomie de la batterie en cours…</translation>
 <translation id="8061464966246066292">Contraste élevé</translation>
@@ -1065,6 +1073,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="8876661425082386199">Vérifiez votre connexion</translation>
 <translation id="8877788021141246043">Créer un rappel</translation>
 <translation id="8878886163241303700">Extension de l'écran</translation>
+<translation id="8896630965521842259">Le modèle <ph name="DESK_TEMPLATE_NAME" /> sera définitivement supprimé</translation>
 <translation id="890616557918890486">Changer de source</translation>
 <translation id="8909138438987180327">Pile chargée à <ph name="PERCENTAGE" /> %.</translation>
 <translation id="8913384980486163186">Thème (par défaut)</translation>
@@ -1121,6 +1130,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="925832987464884575">Masquer les aperçus</translation>
 <translation id="938963181863597773">Qu'y a-t-il dans mon agenda?</translation>
 <translation id="945522503751344254">Envoyer un commentaire à Google</translation>
+<translation id="951991426597076286">Refuser</translation>
 <translation id="98515147261107953">Paysage</translation>
 <translation id="990277280839877440">La fenêtre <ph name="WINDOW_TITILE" /> a été fermée.</translation>
 </translationbundle>

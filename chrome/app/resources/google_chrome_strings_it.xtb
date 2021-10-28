@@ -47,6 +47,7 @@
 <translation id="2121284319307530122">Riavvia per aggiornare &amp;Chrome</translation>
 <translation id="2123055963409958220">Contribuisci a migliorare Chrome indicando le <ph name="BEGIN_LINK" />impostazioni attuali<ph name="END_LINK" /></translation>
 <translation id="2151406531797534936">Riavvia subito Chrome</translation>
+<translation id="2189289170880510015">Personalizza alcune delle opzioni relative alla privacy più importanti di Chrome</translation>
 <translation id="2290014774651636340">Mancano le chiavi dell'API di Google. Alcune funzionalità di Google Chrome verranno disattivate.</translation>
 <translation id="2290095356545025170">Sei sicuro di voler disinstallare Google Chrome?</translation>
 <translation id="2309047409763057870">Questa è un'installazione secondaria, di conseguenza Google Chrome non può essere impostato come browser predefinito.</translation>
@@ -96,6 +97,7 @@
 <translation id="3379938682270551431">{0,plural, =0{Chrome verrà riavviato ora}=1{Chrome verrà riavviato tra 1 secondo}other{Chrome verrà riavviato tra # secondi}}</translation>
 <translation id="3395323229510056640">Ricevi assistenza per Chrome OS</translation>
 <translation id="3396977131400919238">Durante l'installazione si è verificato un errore del sistema operativo. Scarica nuovamente Google Chrome.</translation>
+<translation id="3428747202529429621">Ti protegge su Chrome e potrebbe essere utilizzata per migliorare la sicurezza su altre app Google se esegui l'accesso</translation>
 <translation id="3434246496373299699">Chrome può controllare le tue password quando accedi con il tuo Account Google</translation>
 <translation id="3451115285585441894">Aggiunta a Chrome in corso...</translation>
 <translation id="345171907106878721">Aggiungiti a Chrome</translation>
@@ -108,6 +110,7 @@
 <translation id="3596080736082218006">{COUNT,plural, =0{L'amministratore richiede il riavvio di Chrome per installare un aggiornamento}=1{L'amministratore richiede il riavvio di Chrome per installare un aggiornamento. La finestra di navigazione in incognito non verrà riaperta.}other{L'amministratore richiede il riavvio di Chrome per installare un aggiornamento. Le # finestre di navigazione in incognito non verranno riaperte.}}</translation>
 <translation id="3622797965165704966">Ora è più facile utilizzare Chrome con il tuo Account Google e sui computer condivisi.</translation>
 <translation id="3673813398384385993">Chrome ha rilevato che l'estensione "<ph name="EXTENSION_NAME" />" contiene malware</translation>
+<translation id="3678552270983184277">Le impostazioni predefinite sono adatte alla maggior parte delle persone, ma puoi personalizzarle in base a come preferisci usare Chrome</translation>
 <translation id="3718181793972440140">Verrà eliminato 1 elemento da questo dispositivo. Per recuperare i dati in un secondo momento, accedi a Chrome come <ph name="USER_EMAIL" />.</translation>
 <translation id="3735758079232443276">L'estensione "<ph name="EXTENSION_NAME" />" ha cambiato la pagina mostrata all'avvio di Chrome.</translation>
 <translation id="3779473566290487688">Per ricevere aggiornamenti futuri di Google Chrome, devi avere macOS 10.11 o versioni successive. Su questo computer è installato macOS 10.10.</translation>
@@ -198,6 +201,7 @@
 <translation id="6291089322031436445">App di Chrome Dev</translation>
 <translation id="6291549208091401781">Google Chrome è già installato per tutti gli utenti sul computer.</translation>
 <translation id="6368958679917195344">Chrome OS è reso possibile da <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> aggiuntivi.</translation>
+<translation id="6412673304250309937">Verifica gli URL con un elenco di siti non sicuri archiviati in Chrome. Se un sito cerca di rubare la tua password o se scarichi un file dannoso, Chrome potrebbe inviare anche gli URL, inclusi bit e contenuti di pagina, a Navigazione sicura.</translation>
 <translation id="6418662306461808273">Vuoi passare a un profilo Chrome esistente?</translation>
 <translation id="6506909944137591434">Chrome deve avere l'autorizzazione di accesso alla fotocamera per creare una mappa 3D dell'ambiente circostante</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome per gli sviluppatori</translation>

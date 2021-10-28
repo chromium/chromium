@@ -131,6 +131,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1882897271359938046">Zrcaljenje na <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Odklepanje s prstnim odtisom</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> ne podpira <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Ločljivost je bila spremenjena na <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Kliknite »Potrdi«, če želite ohraniti spremembe. Prejšnja nastavitev bo obnovljena čez <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="1915307458270490472">Prekini</translation>
 <translation id="1919743966458266018">Bližnjica za odpiranje upravitelja opravil je spremenjena. Uporabite <ph name="NEW_SHORTCUT" /> namesto <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Samodejni kliki</translation>
 <translation id="1928739107511554905">Če želite prejeti posodobitev, uporabite zaslon na dotik, da znova zaženete Chromebook s priklopljeno tipkovnico.</translation>
@@ -1129,6 +1130,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="925832987464884575">Skrivanje predogledov</translation>
 <translation id="938963181863597773">Kaj je v mojem koledarju?</translation>
 <translation id="945522503751344254">Pošiljanje povratnih informacij</translation>
+<translation id="951991426597076286">Zavrni</translation>
 <translation id="98515147261107953">Ležeče</translation>
 <translation id="990277280839877440">Okno <ph name="WINDOW_TITILE" /> je zaprto.</translation>
 </translationbundle>
