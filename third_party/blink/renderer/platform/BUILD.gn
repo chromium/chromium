@@ -1681,6 +1681,7 @@ component("platform") {
     "//base/allocator:buildflags",
     "//build:chromecast_buildflags",
     "//build:chromeos_buildflags",
+    "//build:os_buildflags",
     "//cc/ipc",
     "//cc/mojo_embedder",
     "//components/paint_preview/common",
