@@ -92,6 +92,19 @@ MediaQuery::MediaQuery(const MediaQuery& o)
 
 MediaQuery::~MediaQuery() = default;
 
+PhysicalAxes MediaQuery::QueriedAxes() const {
+  PhysicalAxes axes(kPhysicalAxisNone);
+
+  for (const auto& expression : Expressions()) {
+    if (expression.IsWidthDependent())
+      axes |= PhysicalAxes(kPhysicalAxisHorizontal);
+    if (expression.IsHeightDependent())
+      axes |= PhysicalAxes(kPhysicalAxisVertical);
+  }
+
+  return axes;
+}
+
 // https://drafts.csswg.org/cssom/#compare-media-queries
 bool MediaQuery::operator==(const MediaQuery& other) const {
   return CssText() == other.CssText();

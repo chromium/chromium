@@ -33,6 +33,7 @@
 #include <utility>
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/geometry/axis.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
@@ -57,6 +58,7 @@ class CORE_EXPORT MediaQuery {
   ~MediaQuery();
 
   RestrictorType Restrictor() const { return restrictor_; }
+  PhysicalAxes QueriedAxes() const;
   const ExpressionHeapVector& Expressions() const { return expressions_; }
   const String& MediaType() const { return media_type_; }
   bool operator==(const MediaQuery& other) const;
