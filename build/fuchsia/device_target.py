@@ -171,21 +171,20 @@ class DeviceTarget(target.Target):
 
     dev_finder_path = GetHostToolPathFromPlatform('device-finder')
 
-    if self._node_name:
-      command = [
-          dev_finder_path,
-          'resolve',
-          '-device-limit',
-          '1',  # Exit early as soon as a host is found.
-          self._node_name
-      ]
-      proc = subprocess.Popen(command,
-                              stdout=subprocess.PIPE,
-                              stderr=subprocess.DEVNULL)
-    else:
-      proc = self.RunFFXCommand(['target', 'list', '-f', 'simple'],
-                                stdout=subprocess.PIPE,
-                                stderr=subprocess.DEVNULL)
+    with open(os.devnull, 'w') as devnull:
+      if self._node_name:
+        command = [
+            dev_finder_path,
+            'resolve',
+            '-device-limit',
+            '1',  # Exit early as soon as a host is found.
+            self._node_name
+        ]
+        proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=devnull)
+      else:
+        proc = self.RunFFXCommand(['target', 'list', '-f', 'simple'],
+                                  stdout=subprocess.PIPE,
+                                  stderr=devnull)
 
     output = set(proc.communicate()[0].strip().split('\n'))
     if proc.returncode != 0:
