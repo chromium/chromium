@@ -73,7 +73,7 @@ namespace web_app {
 
 namespace {
 
-const base::flat_map<std::string, std::string> site_mode_to_path = {
+const base::flat_map<std::string, std::string> g_site_mode_to_path = {
     {"SiteA", "site_a"},
     {"SiteB", "site_b"},
     {"SiteC", "site_c"},
@@ -122,6 +122,56 @@ Browser* GetBrowserForAppId(const AppId& app_id) {
       return browser;
   }
   return nullptr;
+}
+
+absl::optional<ProfileState> GetStateForProfile(StateSnapshot* state_snapshot,
+                                                Profile* profile) {
+  DCHECK(state_snapshot);
+  DCHECK(profile);
+  auto it = state_snapshot->profiles.find(profile);
+  return it == state_snapshot->profiles.end()
+             ? absl::nullopt
+             : absl::make_optional<ProfileState>(it->second);
+}
+
+absl::optional<BrowserState> GetStateForBrowser(StateSnapshot* state_snapshot,
+                                                Profile* profile,
+                                                Browser* browser) {
+  absl::optional<ProfileState> profile_state =
+      GetStateForProfile(state_snapshot, profile);
+  if (!profile_state) {
+    return absl::nullopt;
+  }
+
+  auto it = profile_state->browsers.find(browser);
+  return it == profile_state->browsers.end()
+             ? absl::nullopt
+             : absl::make_optional<BrowserState>(it->second);
+}
+
+absl::optional<TabState> GetStateForActiveTab(BrowserState browser_state) {
+  if (!browser_state.active_tab) {
+    return absl::nullopt;
+  }
+
+  auto it = browser_state.tabs.find(browser_state.active_tab);
+  DCHECK(it != browser_state.tabs.end());
+  return absl::make_optional<TabState>(it->second);
+}
+
+absl::optional<AppState> GetStateForAppId(StateSnapshot* state_snapshot,
+                                          Profile* profile,
+                                          web_app::AppId id) {
+  absl::optional<ProfileState> profile_state =
+      GetStateForProfile(state_snapshot, profile);
+  if (!profile_state) {
+    return absl::nullopt;
+  }
+
+  auto it = profile_state->apps.find(id);
+  return it == profile_state->apps.end()
+             ? absl::nullopt
+             : absl::make_optional<AppState>(it->second);
 }
 
 }  // anonymous namespace
@@ -254,103 +304,6 @@ WebAppIntegrationBrowserTestBase::WebAppIntegrationBrowserTestBase(
 
 WebAppIntegrationBrowserTestBase::~WebAppIntegrationBrowserTestBase() = default;
 
-void WebAppIntegrationBrowserTestBase::OnWebAppManifestUpdated(
-    const AppId& app_id,
-    base::StringPiece old_name) {
-  DCHECK_EQ(1ul, delegate_->GetAllProfiles().size())
-      << "Manifest update waiting only supported on single profile tests.";
-  bool is_waiting = app_ids_with_pending_manifest_updates_.erase(app_id);
-  ASSERT_TRUE(is_waiting) << "Received manifest update that was unexpected";
-  if (waiting_for_update_id_ && app_id == waiting_for_update_id_.value()) {
-    DCHECK(waiting_for_update_run_loop_);
-    waiting_for_update_run_loop_->Quit();
-    waiting_for_update_id_ = absl::nullopt;
-  }
-}
-
-// static
-absl::optional<AppState> WebAppIntegrationBrowserTestBase::GetAppBySiteMode(
-    StateSnapshot* state_snapshot,
-    Profile* profile,
-    const std::string& site_mode) {
-  absl::optional<ProfileState> profile_state =
-      GetStateForProfile(state_snapshot, profile);
-  if (!profile_state) {
-    return absl::nullopt;
-  }
-
-  GURL scope = GetScopeForSiteMode(site_mode);
-  auto it =
-      std::find_if(profile_state->apps.begin(), profile_state->apps.end(),
-                   [scope](std::pair<web_app::AppId, AppState>& app_entry) {
-                     return app_entry.second.scope == scope;
-                   });
-
-  return it == profile_state->apps.end()
-             ? absl::nullopt
-             : absl::make_optional<AppState>(it->second);
-}
-
-// static
-absl::optional<TabState> WebAppIntegrationBrowserTestBase::GetStateForActiveTab(
-    BrowserState browser_state) {
-  if (!browser_state.active_tab) {
-    return absl::nullopt;
-  }
-
-  auto it = browser_state.tabs.find(browser_state.active_tab);
-  DCHECK(it != browser_state.tabs.end());
-  return absl::make_optional<TabState>(it->second);
-}
-
-// static
-absl::optional<AppState> WebAppIntegrationBrowserTestBase::GetStateForAppId(
-    StateSnapshot* state_snapshot,
-    Profile* profile,
-    web_app::AppId id) {
-  absl::optional<ProfileState> profile_state =
-      GetStateForProfile(state_snapshot, profile);
-  if (!profile_state) {
-    return absl::nullopt;
-  }
-
-  auto it = profile_state->apps.find(id);
-  return it == profile_state->apps.end()
-             ? absl::nullopt
-             : absl::make_optional<AppState>(it->second);
-}
-
-// static
-absl::optional<BrowserState>
-WebAppIntegrationBrowserTestBase::GetStateForBrowser(
-    StateSnapshot* state_snapshot,
-    Profile* profile,
-    Browser* browser) {
-  absl::optional<ProfileState> profile_state =
-      GetStateForProfile(state_snapshot, profile);
-  if (!profile_state) {
-    return absl::nullopt;
-  }
-
-  auto it = profile_state->browsers.find(browser);
-  return it == profile_state->browsers.end()
-             ? absl::nullopt
-             : absl::make_optional<BrowserState>(it->second);
-}
-
-// static
-absl::optional<ProfileState>
-WebAppIntegrationBrowserTestBase::GetStateForProfile(
-    StateSnapshot* state_snapshot,
-    Profile* profile) {
-  DCHECK(state_snapshot);
-  DCHECK(profile);
-  auto it = state_snapshot->profiles.find(profile);
-  return it == state_snapshot->profiles.end()
-             ? absl::nullopt
-             : absl::make_optional<ProfileState>(it->second);
-}
-
 void WebAppIntegrationBrowserTestBase::SetUp() {
   webapps::TestAppBannerManagerDesktop::SetUp();
 }
@@ -361,7 +314,7 @@ void WebAppIntegrationBrowserTestBase::SetUpOnMainThread() {
   // Only support manifest updates on non-sync tests, as the current
   // infrastructure here only supports listening on one profile.
   if (!delegate_->IsSyncTest()) {
-    observation_.Observe(&GetProvider()->registrar());
+    observation_.Observe(&provider()->registrar());
   }
   web_app::test::WaitUntilReady(
       web_app::WebAppProvider::GetForTest(browser()->profile()));
@@ -395,28 +348,6 @@ void WebAppIntegrationBrowserTestBase::AfterStateCheckAction() {
   if (!after_state_change_action_state_)
     return;
   DCHECK_EQ(*after_state_change_action_state_, ConstructStateSnapshot());
-}
-
-// State change actions implemented before state check actions. Implemented in
-// alphabetical order.
-void WebAppIntegrationBrowserTestBase::InstallPolicyAppInternal(
-    const std::string& site_mode,
-    base::Value default_launch_container,
-    const bool create_shortcut) {
-  GURL url = GetAppStartURL(site_mode);
-  WebAppTestInstallWithOsHooksObserver observer(profile());
-  observer.BeginListening();
-  {
-    base::Value item(base::Value::Type::DICTIONARY);
-    item.SetKey(kUrlKey, base::Value(url.spec()));
-    item.SetKey(kDefaultLaunchContainerKey,
-                std::move(default_launch_container));
-    item.SetKey(kCreateDesktopShortcutKey, base::Value(create_shortcut));
-    ListPrefUpdate update(profile()->GetPrefs(),
-                          prefs::kWebAppInstallForceList);
-    update->Append(item.Clone());
-  }
-  active_app_id_ = observer.Wait();
 }
 
 void WebAppIntegrationBrowserTestBase::CloseCustomToolbar() {
@@ -476,7 +407,7 @@ void WebAppIntegrationBrowserTestBase::InstallLocally(
       browser()->tab_strip_model()->GetWebContentsAt(0);
   DCHECK(web_contents);
   test_web_ui.set_web_contents(web_contents);
-  TestAppLauncherHandler handler(/*extension_service=*/nullptr, GetProvider(),
+  TestAppLauncherHandler handler(/*extension_service=*/nullptr, provider(),
                                  &test_web_ui);
   base::ListValue web_app_ids;
   web_app_ids.Append(app_state->id);
@@ -555,8 +486,7 @@ void WebAppIntegrationBrowserTestBase::LaunchFromChromeApps(
   ASSERT_TRUE(app_state.has_value())
       << "No app installed for site: " << site_mode;
   auto app_id = app_state->id;
-  auto* web_app_provider = GetProvider();
-  WebAppRegistrar& app_registrar = web_app_provider->registrar();
+  WebAppRegistrar& app_registrar = provider()->registrar();
   DisplayMode display_mode = app_registrar.GetAppEffectiveDisplayMode(app_id);
   if (display_mode == blink::mojom::DisplayMode::kBrowser) {
     ui_test_utils::UrlLoadObserver url_observer(
@@ -628,6 +558,16 @@ void WebAppIntegrationBrowserTestBase::NavigateTabbedBrowserToSite(
   app_banner_manager->WaitForInstallableCheck();
 }
 
+void WebAppIntegrationBrowserTestBase::ManifestUpdateDisplayMinimal(
+    const std::string& site_mode) {
+  // TODO(dmurph): Create a map of supported manifest updates keyed on site
+  // mode.
+  ASSERT_EQ("SiteA", site_mode);
+  ForceUpdateManifestContents(
+      site_mode,
+      GetAppURLForManifest(site_mode, blink::mojom::DisplayMode::kMinimalUi));
+}
+
 void WebAppIntegrationBrowserTestBase::SetOpenInTab(
     const std::string& site_mode) {
   absl::optional<AppState> app_state = GetAppBySiteMode(
@@ -650,29 +590,6 @@ void WebAppIntegrationBrowserTestBase::SetOpenInWindow(
   auto& sync_bridge = WebAppProvider::GetForTest(profile())->sync_bridge();
   sync_bridge.SetAppUserDisplayMode(
       app_id, blink::mojom::DisplayMode::kStandalone, true);
-}
-
-Browser* WebAppIntegrationBrowserTestBase::GetAppBrowserForSite(
-    const std::string& site_mode,
-    bool launch_if_not_open) {
-  StateSnapshot* state = after_state_change_action_state_
-                             ? after_state_change_action_state_.get()
-                             : before_state_change_action_state_.get();
-  DCHECK(state);
-  absl::optional<AppState> app_state =
-      GetAppBySiteMode(state, profile(), site_mode);
-  DCHECK(app_state) << "Could not find installed app for site mode "
-                    << site_mode;
-
-  auto profile_state = GetStateForProfile(state, profile());
-  DCHECK(profile_state);
-  for (const auto& browser_state_pair : profile_state->browsers) {
-    if (browser_state_pair.second.app_id == app_state->id)
-      return browser_state_pair.second.browser;
-  }
-  if (!launch_if_not_open)
-    return nullptr;
-  return LaunchWebAppBrowserAndWait(profile(), app_state->id);
 }
 
 void WebAppIntegrationBrowserTestBase::SwitchProfileClients(
@@ -751,7 +668,7 @@ void WebAppIntegrationBrowserTestBase::UninstallPolicyApp(
       }));
   // If there are still install sources, the app might not be fully uninstalled,
   // so this will listen for the removal of the policy install source.
-  GetProvider()->install_finalizer().SetRemoveSourceCallbackForTesting(
+  provider()->install_finalizer().SetRemoveSourceCallbackForTesting(
       base::BindLambdaForTesting([&](const AppId& app_id) {
         if (policy_app->id == app_id)
           run_loop.Quit();
@@ -767,16 +684,6 @@ void WebAppIntegrationBrowserTestBase::UninstallPolicyApp(
     ASSERT_GT(removed_count, 0U);
   }
   run_loop.Run();
-}
-
-void WebAppIntegrationBrowserTestBase::ManifestUpdateDisplayMinimal(
-    const std::string& site_mode) {
-  // TODO(dmurph): Create a map of supported manifest updates keyed on site
-  // mode.
-  ASSERT_EQ("SiteA", site_mode);
-  ForceUpdateManifestContents(
-      site_mode,
-      GetAppURLForManifest(site_mode, blink::mojom::DisplayMode::kMinimalUi));
 }
 
 void WebAppIntegrationBrowserTestBase::CheckAppListEmpty() {
@@ -818,7 +725,7 @@ void WebAppIntegrationBrowserTestBase::CheckAppNavigationIsStartUrl() {
   ASSERT_FALSE(active_app_id_.empty());
   ASSERT_TRUE(app_browser());
   GURL url = app_browser()->tab_strip_model()->GetActiveWebContents()->GetURL();
-  EXPECT_EQ(url, GetProvider()->registrar().GetAppStartUrl(active_app_id_));
+  EXPECT_EQ(url, provider()->registrar().GetAppStartUrl(active_app_id_));
 }
 
 void WebAppIntegrationBrowserTestBase::CheckAppNotInList(
@@ -975,12 +882,48 @@ void WebAppIntegrationBrowserTestBase::CheckWindowDisplayStandalone() {
   EXPECT_EQ(window_display_mode, blink::mojom::DisplayMode::kStandalone);
 }
 
+void WebAppIntegrationBrowserTestBase::OnWebAppManifestUpdated(
+    const AppId& app_id,
+    base::StringPiece old_name) {
+  DCHECK_EQ(1ul, delegate_->GetAllProfiles().size())
+      << "Manifest update waiting only supported on single profile tests.";
+  bool is_waiting = app_ids_with_pending_manifest_updates_.erase(app_id);
+  ASSERT_TRUE(is_waiting) << "Received manifest update that was unexpected";
+  if (waiting_for_update_id_ && app_id == waiting_for_update_id_.value()) {
+    DCHECK(waiting_for_update_run_loop_);
+    waiting_for_update_run_loop_->Quit();
+    waiting_for_update_id_ = absl::nullopt;
+  }
+}
+
 GURL WebAppIntegrationBrowserTestBase::GetAppStartURL(
     const std::string& site_mode) {
-  DCHECK(site_mode_to_path.contains(site_mode));
-  auto scope_url_path = site_mode_to_path.find(site_mode)->second;
+  DCHECK(g_site_mode_to_path.contains(site_mode));
+  auto scope_url_path = g_site_mode_to_path.find(site_mode)->second;
   return embedded_test_server()->GetURL(
       base::StringPrintf("/web_apps/%s/basic.html", scope_url_path.c_str()));
+}
+
+absl::optional<AppState> WebAppIntegrationBrowserTestBase::GetAppBySiteMode(
+    StateSnapshot* state_snapshot,
+    Profile* profile,
+    const std::string& site_mode) {
+  absl::optional<ProfileState> profile_state =
+      GetStateForProfile(state_snapshot, profile);
+  if (!profile_state) {
+    return absl::nullopt;
+  }
+
+  GURL scope = GetScopeForSiteMode(site_mode);
+  auto it =
+      std::find_if(profile_state->apps.begin(), profile_state->apps.end(),
+                   [scope](std::pair<web_app::AppId, AppState>& app_entry) {
+                     return app_entry.second.scope == scope;
+                   });
+
+  return it == profile_state->apps.end()
+             ? absl::nullopt
+             : absl::make_optional<AppState>(it->second);
 }
 
 WebAppProvider* WebAppIntegrationBrowserTestBase::GetProviderForProfile(
@@ -1047,8 +990,8 @@ StateSnapshot WebAppIntegrationBrowserTestBase::ConstructStateSnapshot() {
 GURL WebAppIntegrationBrowserTestBase::GetAppURLForManifest(
     const std::string& site_mode,
     DisplayMode display_mode) {
-  DCHECK(site_mode_to_path.contains(site_mode));
-  auto scope_url_path = site_mode_to_path.find(site_mode)->second;
+  DCHECK(g_site_mode_to_path.contains(site_mode));
+  auto scope_url_path = g_site_mode_to_path.find(site_mode)->second;
   std::string str_template = "/web_apps/%s/basic.html";
   if (display_mode == blink::mojom::DisplayMode::kMinimalUi) {
     str_template += "?manifest=manifest_minimal_ui.json";
@@ -1067,14 +1010,10 @@ GURL WebAppIntegrationBrowserTestBase::GetInScopeURL(
   return GetAppStartURL(site_mode);
 }
 
-GURL WebAppIntegrationBrowserTestBase::GetNonInstallableAppURL() {
-  return embedded_test_server()->GetURL("/web_apps/site_c/basic.html");
-}
-
 GURL WebAppIntegrationBrowserTestBase::GetScopeForSiteMode(
     const std::string& site_mode) {
-  DCHECK(site_mode_to_path.contains(site_mode));
-  auto scope_url_path = site_mode_to_path.find(site_mode)->second;
+  DCHECK(g_site_mode_to_path.contains(site_mode));
+  auto scope_url_path = g_site_mode_to_path.find(site_mode)->second;
   return embedded_test_server()->GetURL(
       base::StringPrintf("/web_apps/%s/", scope_url_path.c_str()));
 }
@@ -1096,6 +1035,26 @@ void WebAppIntegrationBrowserTestBase::InstallCreateShortcut(
     app_loaded_observer.Wait();
     app_browser_ = GetBrowserForAppId(active_app_id_);
   }
+}
+
+void WebAppIntegrationBrowserTestBase::InstallPolicyAppInternal(
+    const std::string& site_mode,
+    base::Value default_launch_container,
+    const bool create_shortcut) {
+  GURL url = GetAppStartURL(site_mode);
+  WebAppTestInstallWithOsHooksObserver observer(profile());
+  observer.BeginListening();
+  {
+    base::Value item(base::Value::Type::DICTIONARY);
+    item.SetKey(kUrlKey, base::Value(url.spec()));
+    item.SetKey(kDefaultLaunchContainerKey,
+                std::move(default_launch_container));
+    item.SetKey(kCreateDesktopShortcutKey, base::Value(create_shortcut));
+    ListPrefUpdate update(profile()->GetPrefs(),
+                          prefs::kWebAppInstallForceList);
+    update->Append(item.Clone());
+  }
+  active_app_id_ = observer.Wait();
 }
 
 bool WebAppIntegrationBrowserTestBase::AreNoAppWindowsOpen(
@@ -1129,8 +1088,7 @@ void WebAppIntegrationBrowserTestBase::ForceUpdateManifestContents(
 
   // Manifest updates must occur as the first navigation after a webapp is
   // installed, otherwise the throttle is tripped.
-  ASSERT_FALSE(
-      GetProvider()->manifest_update_manager().IsUpdateConsumed(app_id));
+  ASSERT_FALSE(provider()->manifest_update_manager().IsUpdateConsumed(app_id));
   NavigateTabbedBrowserToSite(app_url_with_manifest_param);
   app_ids_with_pending_manifest_updates_.insert(app_id);
 }
@@ -1165,6 +1123,29 @@ void WebAppIntegrationBrowserTestBase::MaybeNavigateTabbedBrowserInScope(
   if (browser_url.is_empty() || browser_url != dest_url) {
     NavigateTabbedBrowserToSite(dest_url);
   }
+}
+
+Browser* WebAppIntegrationBrowserTestBase::GetAppBrowserForSite(
+    const std::string& site_mode,
+    bool launch_if_not_open) {
+  StateSnapshot* state = after_state_change_action_state_
+                             ? after_state_change_action_state_.get()
+                             : before_state_change_action_state_.get();
+  DCHECK(state);
+  absl::optional<AppState> app_state =
+      GetAppBySiteMode(state, profile(), site_mode);
+  DCHECK(app_state) << "Could not find installed app for site mode "
+                    << site_mode;
+
+  auto profile_state = GetStateForProfile(state, profile());
+  DCHECK(profile_state);
+  for (const auto& browser_state_pair : profile_state->browsers) {
+    if (browser_state_pair.second.app_id == app_state->id)
+      return browser_state_pair.second.browser;
+  }
+  if (!launch_if_not_open)
+    return nullptr;
+  return LaunchWebAppBrowserAndWait(profile(), app_state->id);
 }
 
 Browser* WebAppIntegrationBrowserTestBase::browser() {

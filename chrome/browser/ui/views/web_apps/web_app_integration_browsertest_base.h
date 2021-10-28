@@ -124,32 +124,8 @@ class WebAppIntegrationBrowserTestBase : AppRegistrarObserver {
   explicit WebAppIntegrationBrowserTestBase(TestDelegate* delegate);
   ~WebAppIntegrationBrowserTestBase() override;
 
-  void OnWebAppManifestUpdated(const AppId& app_id,
-                               base::StringPiece old_name) override;
-
-  // State snapshot helpers
-  // Supported site modes:
-  //  * SiteA
-  //  * SiteAFoo
-  //  * SiteABar
-  //  * SiteB
-  //  * SiteC
-  absl::optional<AppState> GetAppBySiteMode(StateSnapshot* state_snapshot,
-                                            Profile* profile,
-                                            const std::string& site_mode);
-
-  static absl::optional<TabState> GetStateForActiveTab(
-      BrowserState browser_state);
-  static absl::optional<AppState>
-  GetStateForAppId(StateSnapshot* state_snapshot, Profile* profile, AppId id);
-  static absl::optional<BrowserState> GetStateForBrowser(
-      StateSnapshot* state_snapshot,
-      Profile* profile,
-      Browser* browser);
-  static absl::optional<ProfileState> GetStateForProfile(
-      StateSnapshot* state_snapshot,
-      Profile* profile);
-
+  // These functions are expected to be called by any test fixtures that use
+  // this helper.
   void SetUp();
   void SetUpOnMainThread();
   void TearDownOnMainThread();
@@ -159,7 +135,7 @@ class WebAppIntegrationBrowserTestBase : AppRegistrarObserver {
   // actions, such as constructing state snapshots after state change actions.
   // Adding a before/after call around each action call may look a bit messier,
   // but this removes a burden of remembering to execute this test-framework
-  // related code for future authors of action imiplementations, allowing them
+  // related code for future authors of action implementations, allowing them
   // to focus entirely on action-related code.
   void BeforeStateChangeAction();
   void AfterStateChangeAction();
@@ -170,16 +146,8 @@ class WebAppIntegrationBrowserTestBase : AppRegistrarObserver {
   //
   // Actions are defined in the following spreadsheet:
   // https://docs.google.com/spreadsheets/d/1d3iAOAnojp4_WrPky9exz1-mjkeulOJVUav5QYG99MQ/edit#gid=2008870403
-  //
-  // Internal actions are actions that do not test the entire user-action-flow,
-  // but give partial coverage (as close to complete as possible) of said code
-  // paths.
-  //
-  // State change actions are declared (and implemented) above state check
-  // actions.
-  void InstallPolicyAppInternal(const std::string& site_mode,
-                                base::Value default_launch_container,
-                                const bool create_shortcut);
+
+  // State change actions:
   void CloseCustomToolbar();
   void ClosePwa();
   void InstallCreateShortcutTabbed(const std::string& site_mode);
@@ -206,7 +174,7 @@ class WebAppIntegrationBrowserTestBase : AppRegistrarObserver {
   void UninstallFromMenu(const std::string& site_mode);
   void UninstallPolicyApp(const std::string& site_mode);
 
-  // State Check Actions
+  // State Check Actions:
   void CheckAppListEmpty();
   void CheckAppInListNotLocallyInstalled(const std::string& site_mode);
   void CheckAppInListWindowed(const std::string& site_mode);
@@ -227,35 +195,33 @@ class WebAppIntegrationBrowserTestBase : AppRegistrarObserver {
   void CheckWindowDisplayMinimal();
   void CheckWindowDisplayStandalone();
 
+ protected:
+  // AppRegistrarObserver:
+  void OnWebAppManifestUpdated(const AppId& app_id,
+                               base::StringPiece old_name) override;
+
  private:
-  // Supported params:
-  //  * site_a
-  //  * site_a/foo
-  //  * site_a/bar
-  //  * site_b
-  //  * site_c
   GURL GetAppStartURL(const std::string& site_mode);
+  absl::optional<AppState> GetAppBySiteMode(StateSnapshot* state_snapshot,
+                                            Profile* profile,
+                                            const std::string& site_mode);
+
   WebAppProvider* GetProviderForProfile(Profile* profile);
 
   StateSnapshot ConstructStateSnapshot();
 
-  // Supported params:
-  //  * site_a
-  //  * site_a/foo
-  //  * site_a/bar
-  //  * site_b
-  //  * site_c
   GURL GetAppURLForManifest(const std::string& site_mode,
                             DisplayMode display_mode);
   content::WebContents* GetCurrentTab(Browser* browser);
   GURL GetInScopeURL(const std::string& site_mode);
   GURL GetNonInstallableAppURL();
   GURL GetOutOfScopeURL(const std::string& site_mode);
-  WebAppProvider* GetProvider() {
-    return WebAppProvider::GetForTest(profile());
-  }
   GURL GetScopeForSiteMode(const std::string& site_mode);
   void InstallCreateShortcut(bool open_in_window);
+
+  void InstallPolicyAppInternal(const std::string& site_mode,
+                                base::Value default_launch_container,
+                                const bool create_shortcut);
 
   // This action only works if no navigations to the given app_url occur
   // between app installation and calls to this action.
@@ -265,8 +231,6 @@ class WebAppIntegrationBrowserTestBase : AppRegistrarObserver {
   void MaybeWaitForManifestUpdates();
 
   void MaybeNavigateTabbedBrowserInScope(const std::string& site_mode);
-  void SetOpenInTabInternal(const std::string& site_mode);
-  void SetOpenInWindowInternal(const std::string& site_mode);
 
   // Returns an existing app browser if one exists, or launches a new one if
   // not.
@@ -282,6 +246,7 @@ class WebAppIntegrationBrowserTestBase : AppRegistrarObserver {
     return active_profile_;
   }
   Browser* app_browser() { return app_browser_; }
+  WebAppProvider* provider() { return WebAppProvider::GetForTest(profile()); }
   PageActionIconView* pwa_install_view();
   PageActionIconView* intent_picker_view();
 
