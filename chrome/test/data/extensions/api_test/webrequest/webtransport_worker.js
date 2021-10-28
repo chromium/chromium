@@ -14,6 +14,13 @@ if ('DedicatedWorkerGlobalScope' in self &&
     registerOnMessage(port);
     port.start();
   };
+} else if (
+    'ServiceWorkerGlobalScope' in self &&
+    self instanceof ServiceWorkerGlobalScope) {
+  self.onmessage = (e) => {
+    registerOnMessage(e.source);
+    e.source.onmessage(e);
+  };
 }
 
 function registerOnMessage(target) {

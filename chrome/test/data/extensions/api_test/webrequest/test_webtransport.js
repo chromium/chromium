@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 const callbackPass = chrome.test.callbackPass;
-const hasFrame = !('isSharedWorkerTest' in self);
+const hasFrame =
+    !('isSharedWorkerTest' in self) && !('isServiceWorkerTest' in self);
 
 chrome.tabs.getCurrent(function(tab) {
   runTestsForTab(
