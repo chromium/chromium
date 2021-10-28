@@ -35,12 +35,9 @@ void RecordPrerenderCancelledInterface(const std::string& interface_name) {
       "Prerender.Experimental.PrerenderCancelledInterface", interface_type);
 }
 
-void RecordPrerenderTriggered(
-    RenderFrameHostImpl& initiator_render_frame_host) {
-  ukm::builders::PrerenderPageLoad(
-      initiator_render_frame_host.GetPageUkmSourceId())
-      .SetTriggeredPrerender(true)
-      .Record(ukm::UkmRecorder::Get());
+void RecordPrerenderTriggered(ukm::SourceId ukm_id) {
+  ukm::builders::PrerenderPageLoad(ukm_id).SetTriggeredPrerender(true).Record(
+      ukm::UkmRecorder::Get());
 }
 
 }  // namespace content

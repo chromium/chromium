@@ -300,15 +300,9 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
 };
 
 PrerenderHost::PrerenderHost(const PrerenderAttributes& attributes,
-                             RenderFrameHostImpl& initiator_render_frame_host)
-    : attributes_(attributes),
-      initiator_origin_(initiator_render_frame_host.GetLastCommittedOrigin()),
-      initiator_url_(initiator_render_frame_host.GetLastCommittedURL()),
-      initiator_process_id_(initiator_render_frame_host.GetProcess()->GetID()),
-      initiator_frame_token_(initiator_render_frame_host.GetFrameToken()) {
+                             WebContents* web_contents)
+    : attributes_(attributes) {
   DCHECK(blink::features::IsPrerender2Enabled());
-  auto* web_contents =
-      WebContents::FromRenderFrameHost(&initiator_render_frame_host);
   DCHECK(web_contents);
   CreatePageHolder(*static_cast<WebContentsImpl*>(web_contents));
 }
@@ -335,10 +329,11 @@ bool PrerenderHost::StartPrerendering() {
   Observe(page_holder_->GetWebContents());
 
   // Start prerendering navigation.
-  NavigationController::LoadURLParams load_url_params(attributes_.url);
-  load_url_params.initiator_origin = initiator_origin_;
-  load_url_params.initiator_process_id = initiator_process_id_;
-  load_url_params.initiator_frame_token = initiator_frame_token_;
+  NavigationController::LoadURLParams load_url_params(
+      attributes_.prerendering_url);
+  load_url_params.initiator_origin = attributes_.initiator_origin;
+  load_url_params.initiator_process_id = attributes_.initiator_process_id;
+  load_url_params.initiator_frame_token = attributes_.initiator_frame_token;
 
   // Just use the referrer from attributes, as NoStatePrefetch does.
   // TODO(crbug.com/1176054): For cross-origin prerender, follow the spec steps
@@ -782,7 +777,7 @@ void PrerenderHost::RecordFinalStatus(FinalStatus status) {
 }
 
 const GURL& PrerenderHost::GetInitialUrl() const {
-  return attributes_.url;
+  return attributes_.prerendering_url;
 }
 
 void PrerenderHost::AddObserver(Observer* observer) {

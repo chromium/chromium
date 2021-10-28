@@ -130,10 +130,14 @@ void SpeculationHostImpl::ProcessCandidatesForPrerender(
     GetContentClient()->browser()->LogWebFeatureForCurrentPage(
         rfhi, blink::mojom::WebFeature::kSpeculationRulesPrerender);
 
-    PrerenderAttributes attributes{it->url,
-                                   PrerenderTriggerType::kSpeculationRule,
-                                   Referrer(*(it->referrer))};
-    int prerender_host_id = registry_->CreateAndStartHost(attributes, *rfhi);
+    auto* web_contents = WebContents::FromRenderFrameHost(rfhi);
+    int prerender_host_id = registry_->CreateAndStartHost(
+        PrerenderAttributes(
+            it->url, PrerenderTriggerType::kSpeculationRule,
+            Referrer(*(it->referrer)), rfhi->GetLastCommittedOrigin(),
+            rfhi->GetLastCommittedURL(), rfhi->GetProcess()->GetID(),
+            rfhi->GetFrameToken(), rfhi->GetPageUkmSourceId()),
+        web_contents);
     if (prerender_host_id != RenderFrameHost::kNoFrameTreeNodeId)
       started_prerender_host_ids_.insert(prerender_host_id);
   }
