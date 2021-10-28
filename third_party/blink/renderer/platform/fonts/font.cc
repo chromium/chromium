@@ -537,9 +537,15 @@ void Font::WillUseFontData(const String& text) const {
   const FontFamily& family = font_description.Family();
   if (UNLIKELY(family.FamilyName().IsEmpty()))
     return;
-  family.PrewarmIfNeeded(font_description);
-  if (FontSelector* font_selector = GetFontSelector())
+  if (FontSelector* font_selector = GetFontSelector()) {
     font_selector->WillUseFontData(font_description, family, text);
+    return;
+  }
+  // Non-DOM usages can't resolve generic family.
+  if (family.IsPrewarmed() || family.FamilyIsGeneric())
+    return;
+  family.SetIsPrewarmed();
+  FontCache::PrewarmFamily(family.FamilyName());
 }
 
 GlyphData Font::GetEmphasisMarkGlyphData(const AtomicString& mark) const {
