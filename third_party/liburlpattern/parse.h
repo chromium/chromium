@@ -29,10 +29,10 @@ class Pattern;
 typedef std::function<absl::StatusOr<std::string>(absl::string_view)>
     EncodeCallback;
 
-// Parse a pattern string and return the result.  The input |pattern| must
-// consist of UTF-8 characters.  Currently only group names may actually
-// contain non-ASCII characters, however.  Unicode characters in other parts
-// of the pattern will cause an error to be returned.  A |callback| must be
+// Parse a pattern string and return the result.  The parse will fail if the
+// input |pattern| is not valid UTF-8.  Currently only group names may actually
+// contain non-ASCII characters, however.  Unicode characters in other parts of
+// the pattern will cause an error to be returned.  A |callback| must be
 // provided to validate and encode plain text parts of the pattern.  An
 // |options| value may be provided to override default behavior.
 COMPONENT_EXPORT(LIBURLPATTERN)
