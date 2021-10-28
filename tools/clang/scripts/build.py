@@ -981,9 +981,7 @@ def main():
       target_triple = target_arch
       if target_arch == 'arm':
         target_triple = 'armv7'
-      api_level = '19'
-      if target_arch == 'aarch64' or target_arch == 'x86_64':
-        api_level = '21'
+      api_level = '21'
       target_triple += '-linux-android' + api_level
       cflags = [
           '--target=' + target_triple,
