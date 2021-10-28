@@ -1929,7 +1929,7 @@ base::TimeTicks MainThreadSchedulerImpl::IncrementVirtualTimePauseCount() {
   ApplyVirtualTimePolicy();
 
   if (virtual_time_domain_)
-    return virtual_time_domain_->Now();
+    return virtual_time_domain_->NowTicks();
   return tick_clock()->NowTicks();
 }
 
@@ -1969,7 +1969,8 @@ void MainThreadSchedulerImpl::ApplyVirtualTimePolicy() {
     case VirtualTimePolicy::kPause:
       if (virtual_time_domain_) {
         virtual_time_domain_->SetMaxVirtualTimeTaskStarvationCount(0);
-        virtual_time_domain_->SetVirtualTimeFence(virtual_time_domain_->Now());
+        virtual_time_domain_->SetVirtualTimeFence(
+            virtual_time_domain_->NowTicks());
       }
       SetVirtualTimeStopped(true);
       break;
@@ -2452,7 +2453,7 @@ MainThreadSchedulerImpl::PauseScheduler() {
 }
 
 base::TimeTicks MainThreadSchedulerImpl::MonotonicallyIncreasingVirtualTime() {
-  return GetActiveTimeDomain()->Now();
+  return GetActiveTimeDomain()->NowTicks();
 }
 
 WebThreadScheduler* MainThreadSchedulerImpl::GetWebMainThreadScheduler() {

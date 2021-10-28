@@ -141,8 +141,8 @@ TaskQueueImpl::~TaskQueueImpl() {
 #endif
 }
 
-TaskQueueImpl::AnyThread::AnyThread(TimeDomain* time_domain)
-    : time_domain(time_domain) {}
+TaskQueueImpl::AnyThread::AnyThread(const TickClock* tick_clock)
+    : tick_clock(tick_clock) {}
 
 TaskQueueImpl::AnyThread::~AnyThread() = default;
 
@@ -179,7 +179,7 @@ void TaskQueueImpl::UnregisterTaskQueue() {
   {
     base::internal::CheckedAutoLock lock(any_thread_lock_);
     any_thread_.unregistered = true;
-    any_thread_.time_domain = nullptr;
+    any_thread_.tick_clock = nullptr;
     immediate_incoming_queue.swap(any_thread_.immediate_incoming_queue);
   }
 
@@ -272,7 +272,7 @@ void TaskQueueImpl::PostImmediateTaskImpl(PostedTask task,
     // TODO(alexclarke): Maybe add a main thread only immediate_incoming_queue
     // See https://crbug.com/901800
     base::internal::CheckedAutoLock lock(any_thread_lock_);
-    LazyNow lazy_now = any_thread_.time_domain->CreateLazyNow();
+    LazyNow lazy_now(any_thread_.tick_clock);
     bool add_queue_time_to_tasks = sequence_manager_->GetAddQueueTimeToTasks();
     if (add_queue_time_to_tasks || delayed_fence_allowed_)
       task.queue_time = lazy_now.Now();
@@ -354,7 +354,7 @@ void TaskQueueImpl::PostDelayedTaskImpl(PostedTask posted_task,
     // Lock-free fast path for delayed tasks posted from the main thread.
     EnqueueOrder sequence_number = sequence_manager_->GetNextSequenceNumber();
 
-    TimeTicks time_domain_now = main_thread_only().time_domain->Now();
+    TimeTicks time_domain_now = main_thread_only().time_domain->NowTicks();
     TimeTicks time_domain_delayed_run_time =
         time_domain_now + posted_task.delay;
     if (sequence_manager_->GetAddQueueTimeToTasks())
@@ -374,7 +374,7 @@ void TaskQueueImpl::PostDelayedTaskImpl(PostedTask posted_task,
     TimeTicks time_domain_now;
     {
       base::internal::CheckedAutoLock lock(any_thread_lock_);
-      time_domain_now = any_thread_.time_domain->Now();
+      time_domain_now = any_thread_.tick_clock->NowTicks();
     }
     TimeTicks time_domain_delayed_run_time =
         time_domain_now + posted_task.delay;
@@ -429,7 +429,7 @@ void TaskQueueImpl::PushOntoDelayedIncomingQueue(Task pending_task) {
 void TaskQueueImpl::ScheduleDelayedWorkTask(Task pending_task) {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   TimeTicks delayed_run_time = pending_task.delayed_run_time;
-  TimeTicks time_domain_now = main_thread_only().time_domain->Now();
+  TimeTicks time_domain_now = main_thread_only().time_domain->NowTicks();
   if (delayed_run_time <= time_domain_now) {
     // If |delayed_run_time| is in the past then push it onto the work queue
     // immediately. To ensure the right task ordering we need to temporarily
@@ -525,7 +525,7 @@ bool TaskQueueImpl::HasTaskToRunImmediatelyOrReadyDelayedTask() const {
   // immediate work.
   if (!main_thread_only().delayed_incoming_queue.empty() &&
       main_thread_only().delayed_incoming_queue.top().delayed_run_time <=
-          main_thread_only().time_domain->CreateLazyNow().Now()) {
+          main_thread_only().time_domain->NowTicks()) {
     return true;
   }
 
@@ -654,7 +654,7 @@ void TaskQueueImpl::SetQueuePriority(TaskQueue::QueuePriority priority) {
 
 #if defined(OS_WIN)
   // Updating queue priority can change whether high resolution timer is needed.
-  LazyNow lazy_now = main_thread_only().time_domain->CreateLazyNow();
+  LazyNow lazy_now(main_thread_only().time_domain);
   UpdateDelayedWakeUp(&lazy_now);
 #endif
 
@@ -723,7 +723,7 @@ Value TaskQueueImpl::AsValue(TimeTicks now, bool force_verbose) const {
   if (!main_thread_only().delayed_incoming_queue.empty()) {
     TimeDelta delay_to_next_task =
         (main_thread_only().delayed_incoming_queue.top().delayed_run_time -
-         main_thread_only().time_domain->CreateLazyNow().Now());
+         main_thread_only().time_domain->NowTicks());
     state.SetDoubleKey("delay_to_next_task_ms",
                        delay_to_next_task.InMillisecondsF());
   }
@@ -793,13 +793,13 @@ void TaskQueueImpl::SetTimeDomain(TimeDomain* time_domain) {
     if (time_domain == main_thread_only().time_domain)
       return;
 
-    any_thread_.time_domain = time_domain;
+    any_thread_.tick_clock = time_domain;
   }
 
   main_thread_only().time_domain->UnregisterQueue(this);
   main_thread_only().time_domain = time_domain;
 
-  LazyNow lazy_now = time_domain->CreateLazyNow();
+  LazyNow lazy_now(time_domain);
   // Clear scheduled wake up to ensure that new notifications are issued
   // correctly.
   // TODO(altimin): Remove this when we won't have to support changing time
@@ -914,7 +914,7 @@ bool TaskQueueImpl::BlockedByFence() const {
 
 bool TaskQueueImpl::HasActiveFence() {
   if (main_thread_only().delayed_fence &&
-      main_thread_only().time_domain->Now() >
+      main_thread_only().time_domain->NowTicks() >
           main_thread_only().delayed_fence.value()) {
     return true;
   }
@@ -973,6 +973,8 @@ void TaskQueueImpl::SetQueueEnabled(bool enabled) {
   if (main_thread_only().is_enabled == enabled)
     return;
 
+  LazyNow lazy_now(main_thread_only().time_domain);
+
   // Update the |main_thread_only_| struct.
   main_thread_only().is_enabled = enabled;
   main_thread_only().disabled_time = absl::nullopt;
@@ -980,13 +982,12 @@ void TaskQueueImpl::SetQueueEnabled(bool enabled) {
     bool tracing_enabled = false;
     TRACE_EVENT_CATEGORY_GROUP_ENABLED(TRACE_DISABLED_BY_DEFAULT("lifecycles"),
                                        &tracing_enabled);
-    main_thread_only().disabled_time = main_thread_only().time_domain->Now();
+    main_thread_only().disabled_time = lazy_now.Now();
   } else {
     // Override reporting if the queue is becoming enabled again.
     main_thread_only().should_report_posted_tasks_when_disabled = false;
   }
 
-  LazyNow lazy_now = main_thread_only().time_domain->CreateLazyNow();
   // If there is a throttler, it will be notified of pending delayed and
   // immediate tasks inside UpdateDelayedWakeUp().
   UpdateDelayedWakeUp(&lazy_now);
@@ -1137,7 +1138,7 @@ void TaskQueueImpl::SetThrottler(TaskQueue::Throttler* throttler) {
 
 void TaskQueueImpl::ResetThrottler() {
   main_thread_only().throttler = nullptr;
-  LazyNow lazy_now = main_thread_only().time_domain->CreateLazyNow();
+  LazyNow lazy_now(main_thread_only().time_domain);
   // The current delayed wake up may have been determined by the Throttler.
   // Update it now that there is no Throttler.
   UpdateDelayedWakeUp(&lazy_now);
@@ -1261,7 +1262,7 @@ void TaskQueueImpl::MaybeReportIpcTaskQueuedFromMainThread(
   }
 
   base::TimeDelta time_since_disabled =
-      main_thread_only().time_domain->Now() -
+      main_thread_only().time_domain->NowTicks() -
       main_thread_only().disabled_time.value();
 
   ReportIpcTaskQueued(pending_task, task_queue_name, time_since_disabled);
@@ -1279,7 +1280,7 @@ bool TaskQueueImpl::ShouldReportIpcTaskQueuedFromAnyThreadLocked(
     return false;
   }
 
-  *time_since_disabled = any_thread_.time_domain->Now() -
+  *time_since_disabled = any_thread_.tick_clock->NowTicks() -
                          any_thread_.tracing_only.disabled_time.value();
   return true;
 }

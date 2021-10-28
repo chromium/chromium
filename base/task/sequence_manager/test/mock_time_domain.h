@@ -6,6 +6,7 @@
 #define BASE_TASK_SEQUENCE_MANAGER_TEST_MOCK_TIME_DOMAIN_H_
 
 #include "base/task/sequence_manager/time_domain.h"
+#include "base/time/tick_clock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -22,9 +23,10 @@ class MockTimeDomain : public TimeDomain {
 
   void SetNowTicks(TimeTicks now_ticks);
 
+  // TickClock implementation:
+  TimeTicks NowTicks() const override;
+
   // TimeDomain implementation:
-  LazyNow CreateLazyNow() const override;
-  TimeTicks Now() const override;
   base::TimeTicks GetNextDelayedTaskTime(
       sequence_manager::LazyNow* lazy_now) const override;
   void SetNextDelayedDoWork(LazyNow* lazy_now, TimeTicks run_time) override;

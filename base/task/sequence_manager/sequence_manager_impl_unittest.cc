@@ -4535,9 +4535,10 @@ class MockTimeDomain : public TimeDomain {
   MockTimeDomain& operator=(const MockTimeDomain&) = delete;
   ~MockTimeDomain() override = default;
 
-  LazyNow CreateLazyNow() const override { return LazyNow(now_); }
-  TimeTicks Now() const override { return now_; }
+  // TickClock:
+  TimeTicks NowTicks() const override { return now_; }
 
+  // TimeDomain:
   base::TimeTicks GetNextDelayedTaskTime(
       sequence_manager::LazyNow* lazy_now) const override {
     return TimeTicks();

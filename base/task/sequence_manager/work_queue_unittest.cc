@@ -40,11 +40,7 @@ struct Cancelable {
 
 class RealTimeDomainFake : public RealTimeDomain {
  public:
-  LazyNow CreateLazyNow() const override {
-    return LazyNow(DefaultTickClock::GetInstance());
-  }
-
-  TimeTicks Now() const override { return TimeTicks::Now(); }
+  TimeTicks NowTicks() const override { return TimeTicks::Now(); }
 };
 
 }  // namespace

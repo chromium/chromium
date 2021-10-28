@@ -65,7 +65,7 @@ class PerfTestTimeDomain : public MockTimeDomain {
     if (!wake_up)
       return base::TimeTicks::Max();
     // Check if we have a task that should be running now.
-    if (wake_up->time <= Now())
+    if (wake_up->time <= NowTicks())
       return base::TimeTicks();
 
     // Rely on MaybeFastForwardToNextTask to be called to advance

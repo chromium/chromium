@@ -20,9 +20,10 @@ class BASE_EXPORT RealTimeDomain : public TimeDomain {
   RealTimeDomain& operator=(const RealTimeDomain&) = delete;
   ~RealTimeDomain() override = default;
 
+  // TickClock implementation:
+  TimeTicks NowTicks() const override;
+
   // TimeDomain implementation:
-  LazyNow CreateLazyNow() const override;
-  TimeTicks Now() const override;
   base::TimeTicks GetNextDelayedTaskTime(
       sequence_manager::LazyNow* lazy_now) const override;
   bool MaybeFastForwardToNextTask(bool quit_when_idle_requested) override;

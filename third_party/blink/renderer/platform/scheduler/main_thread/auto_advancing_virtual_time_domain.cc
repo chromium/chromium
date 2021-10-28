@@ -51,13 +51,7 @@ AutoAdvancingVirtualTimeDomain::~AutoAdvancingVirtualTimeDomain() {
   AutoAdvancingVirtualTimeDomain::g_time_domain_ = nullptr;
 }
 
-base::sequence_manager::LazyNow AutoAdvancingVirtualTimeDomain::CreateLazyNow()
-    const {
-  base::AutoLock lock(now_ticks_lock_);
-  return base::sequence_manager::LazyNow(now_ticks_);
-}
-
-base::TimeTicks AutoAdvancingVirtualTimeDomain::Now() const {
+base::TimeTicks AutoAdvancingVirtualTimeDomain::NowTicks() const {
   base::AutoLock lock(now_ticks_lock_);
   return now_ticks_;
 }
@@ -71,7 +65,7 @@ base::TimeTicks AutoAdvancingVirtualTimeDomain::GetNextDelayedTaskTime(
 
   // We may have advanced virtual time past the next task when a
   // WebScopedVirtualTimePauser unpauses.
-  if (wake_up->time <= Now())
+  if (wake_up->time <= NowTicks())
     return base::TimeTicks();
 
   // Rely on MaybeFastForwardToNextTask to be called to advance
@@ -142,7 +136,7 @@ bool AutoAdvancingVirtualTimeDomain::MaybeAdvanceVirtualTime(
     requested_next_virtual_time_ = base::TimeTicks();
   }
 
-  if (new_virtual_time <= Now())
+  if (new_virtual_time <= NowTicks())
     return false;
 
   {
@@ -176,7 +170,7 @@ void AutoAdvancingVirtualTimeDomain::DidProcessTask(
 }
 
 base::Time AutoAdvancingVirtualTimeDomain::Date() const {
-  base::TimeDelta offset = Now() - initial_time_ticks_;
+  base::TimeDelta offset = NowTicks() - initial_time_ticks_;
   return initial_time_ + offset;
 }
 
@@ -191,7 +185,7 @@ base::TimeTicks AutoAdvancingVirtualTimeDomain::GetVirtualTimeTicks() {
   // loading |g_time_domain_|.
   std::atomic_thread_fence(std::memory_order_acquire);
   DCHECK(AutoAdvancingVirtualTimeDomain::g_time_domain_);
-  return AutoAdvancingVirtualTimeDomain::g_time_domain_->Now();
+  return AutoAdvancingVirtualTimeDomain::g_time_domain_->NowTicks();
 }
 
 // static

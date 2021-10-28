@@ -437,7 +437,7 @@ void PageSchedulerImpl::GrantVirtualTimeBudget(
   // This can shift time forwards if there's a pending MaybeAdvanceVirtualTime,
   // so it's important this is called second.
   main_thread_scheduler_->GetVirtualTimeDomain()->SetVirtualTimeFence(
-      main_thread_scheduler_->GetVirtualTimeDomain()->Now() + budget);
+      main_thread_scheduler_->GetVirtualTimeDomain()->NowTicks() + budget);
 }
 
 void PageSchedulerImpl::AudioStateChanged(bool is_audio_playing) {

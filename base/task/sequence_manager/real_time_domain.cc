@@ -18,11 +18,7 @@ void RealTimeDomain::OnRegisterWithSequenceManager(
   tick_clock_ = sequence_manager->GetTickClock();
 }
 
-LazyNow RealTimeDomain::CreateLazyNow() const {
-  return LazyNow(tick_clock_);
-}
-
-TimeTicks RealTimeDomain::Now() const {
+TimeTicks RealTimeDomain::NowTicks() const {
   return tick_clock_->NowTicks();
 }
 
