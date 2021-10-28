@@ -561,11 +561,11 @@ bool WindowPerformance::SetInteractionIdAndRecordLatency(
 
 void WindowPerformance::AddElementTiming(const AtomicString& name,
                                          const String& url,
-                                         const FloatRect& rect,
+                                         const gfx::RectF& rect,
                                          base::TimeTicks start_time,
                                          base::TimeTicks load_time,
                                          const AtomicString& identifier,
-                                         const IntSize& intrinsic_size,
+                                         const gfx::Size& intrinsic_size,
                                          const AtomicString& id,
                                          Element* element) {
   if (!DomWindow())

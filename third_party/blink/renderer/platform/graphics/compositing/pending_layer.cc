@@ -140,15 +140,15 @@ gfx::Size PendingLayer::LayerBounds() const {
   return gfx::ToEnclosingRect(bounds_).size();
 }
 
-FloatRect PendingLayer::MapRectKnownToBeOpaque(
+gfx::RectF PendingLayer::MapRectKnownToBeOpaque(
     const PropertyTreeState& new_state) const {
   if (rect_known_to_be_opaque_.IsEmpty())
-    return FloatRect();
+    return gfx::RectF();
 
   FloatClipRect float_clip_rect(rect_known_to_be_opaque_);
   GeometryMapper::LocalToAncestorVisualRect(property_tree_state_, new_state,
                                             float_clip_rect);
-  return float_clip_rect.IsTight() ? float_clip_rect.Rect() : FloatRect();
+  return float_clip_rect.IsTight() ? float_clip_rect.Rect() : gfx::RectF();
 }
 
 std::unique_ptr<JSONObject> PendingLayer::ToJSON() const {
@@ -172,7 +172,7 @@ std::unique_ptr<JSONObject> PendingLayer::ToJSON() const {
   return result;
 }
 
-FloatRect PendingLayer::VisualRectForOverlapTesting(
+gfx::RectF PendingLayer::VisualRectForOverlapTesting(
     const PropertyTreeState& ancestor_state) const {
   FloatClipRect visual_rect(bounds_);
   GeometryMapper::LocalToAncestorVisualRect(
@@ -190,9 +190,9 @@ void PendingLayer::Upcast(const PropertyTreeState& new_state) {
   FloatClipRect float_clip_rect(bounds_);
   GeometryMapper::LocalToAncestorVisualRect(property_tree_state_, new_state,
                                             float_clip_rect);
-  bounds_ = ToGfxRectF(float_clip_rect.Rect());
+  bounds_ = float_clip_rect.Rect();
 
-  rect_known_to_be_opaque_ = ToGfxRectF(MapRectKnownToBeOpaque(new_state));
+  rect_known_to_be_opaque_ = MapRectKnownToBeOpaque(new_state);
   property_tree_state_ = new_state;
 }
 
@@ -262,24 +262,24 @@ bool PendingLayer::MergeInternal(const PendingLayer& guest,
   GeometryMapper::LocalToAncestorVisualRect(GetPropertyTreeState(),
                                             *merged_state, new_home_bounds);
   if (merged_visibility_limit)
-    new_home_bounds.Rect().Intersect(FloatRect(*merged_visibility_limit));
+    new_home_bounds.Rect().Intersect(*merged_visibility_limit);
 
   FloatClipRect new_guest_bounds(guest.bounds_);
   GeometryMapper::LocalToAncestorVisualRect(guest_state, *merged_state,
                                             new_guest_bounds);
   if (merged_visibility_limit)
-    new_guest_bounds.Rect().Intersect(FloatRect(*merged_visibility_limit));
+    new_guest_bounds.Rect().Intersect(*merged_visibility_limit);
 
-  FloatRect merged_bounds =
-      UnionRects(new_home_bounds.Rect(), new_guest_bounds.Rect());
-  float sum_area = new_home_bounds.Rect().size().Area() +
-                   new_guest_bounds.Rect().size().Area();
-  if (merged_bounds.size().Area() - sum_area > kMergeSparsityAreaTolerance)
+  gfx::RectF merged_bounds =
+      gfx::UnionRects(new_home_bounds.Rect(), new_guest_bounds.Rect());
+  float sum_area = new_home_bounds.Rect().size().GetArea() +
+                   new_guest_bounds.Rect().size().GetArea();
+  if (merged_bounds.size().GetArea() - sum_area > kMergeSparsityAreaTolerance)
     return false;
 
-  FloatRect merged_rect_known_to_be_opaque =
-      MaximumCoveredRect(MapRectKnownToBeOpaque(*merged_state),
-                         guest.MapRectKnownToBeOpaque(*merged_state));
+  gfx::RectF merged_rect_known_to_be_opaque =
+      gfx::MaximumCoveredRect(MapRectKnownToBeOpaque(*merged_state),
+                              guest.MapRectKnownToBeOpaque(*merged_state));
   bool merged_text_known_to_be_on_opaque_background =
       text_known_to_be_on_opaque_background_;
   if (text_known_to_be_on_opaque_background_ !=
@@ -301,9 +301,9 @@ bool PendingLayer::MergeInternal(const PendingLayer& guest,
 
   if (!dry_run) {
     chunks_.Merge(guest.Chunks());
-    bounds_ = ToGfxRectF(merged_bounds);
+    bounds_ = merged_bounds;
     property_tree_state_ = *merged_state;
-    rect_known_to_be_opaque_ = ToGfxRectF(merged_rect_known_to_be_opaque);
+    rect_known_to_be_opaque_ = merged_rect_known_to_be_opaque;
     text_known_to_be_on_opaque_background_ =
         merged_text_known_to_be_on_opaque_background;
     has_text_ |= guest.has_text_;

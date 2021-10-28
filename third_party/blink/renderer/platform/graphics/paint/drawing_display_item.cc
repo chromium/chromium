@@ -238,8 +238,7 @@ gfx::Rect DrawingDisplayItem::CalculateRectKnownToBeOpaqueForRecord(
       }
     }
 
-    opaque_rect = ToGfxRect(
-        MaximumCoveredRect(IntRect(opaque_rect), IntRect(op_opaque_rect)));
+    opaque_rect = gfx::MaximumCoveredRect(opaque_rect, op_opaque_rect);
     opaque_rect.Intersect(clip_rect);
     if (opaque_rect == VisualRect())
       break;

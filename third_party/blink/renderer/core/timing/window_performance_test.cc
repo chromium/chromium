@@ -860,8 +860,8 @@ TEST_F(WindowPerformanceTest, ElementTimingTraceEvent) {
   trace_analyzer::Start("*");
   // |element| needs to be non-null to prevent a crash.
   performance_->AddElementTiming(
-      "image-paint", "url", FloatRect(10, 20, 30, 40), GetTimeStamp(2000),
-      GetTimeStamp(1000), "identifier", IntSize(200, 300), "id",
+      "image-paint", "url", gfx::RectF(10, 20, 30, 40), GetTimeStamp(2000),
+      GetTimeStamp(1000), "identifier", gfx::Size(200, 300), "id",
       /*element*/ page_holder_->GetDocument().documentElement());
   auto analyzer = trace_analyzer::Stop();
   trace_analyzer::TraceEventVector events;

@@ -10,6 +10,8 @@
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 
@@ -107,7 +109,19 @@ struct CORE_EXPORT PhysicalSize {
   }
   constexpr explicit operator FloatSize() const { return {width, height}; }
 
+  static PhysicalSize FromSizeFRound(const gfx::SizeF& size) {
+    return {LayoutUnit::FromFloatRound(size.width()),
+            LayoutUnit::FromFloatRound(size.height())};
+  }
+  static PhysicalSize FromSizeFFloor(const gfx::Size& size) {
+    return {LayoutUnit::FromFloatFloor(size.width()),
+            LayoutUnit::FromFloatFloor(size.height())};
+  }
+  constexpr explicit operator gfx::SizeF() const { return {width, height}; }
+
   explicit PhysicalSize(const IntSize& size)
+      : width(size.width()), height(size.height()) {}
+  explicit PhysicalSize(const gfx::Size& size)
       : width(size.width()), height(size.height()) {}
 
   String ToString() const;

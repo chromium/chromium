@@ -115,7 +115,7 @@ void PaintTimingDetector::NotifyBackgroundImagePaint(
     const Image& image,
     const StyleFetchedImage& style_image,
     const PropertyTreeStateOrAlias& current_paint_chunk_properties,
-    const IntRect& image_border) {
+    const gfx::Rect& image_border) {
   DCHECK(style_image.CachedImage());
   LayoutObject* object = node.GetLayoutObject();
   if (!object)
@@ -137,7 +137,7 @@ void PaintTimingDetector::NotifyBackgroundImagePaint(
   // TODO(yoav): |image| and |cached_image.GetImage()| are not the same here in
   // the case of SVGs. Figure out why and if we can remove this footgun.
 
-  detector->RecordImage(*object, image.Size(), *cached_image,
+  detector->RecordImage(*object, ToGfxSize(image.Size()), *cached_image,
                         current_paint_chunk_properties, &style_image,
                         image_border);
 }
@@ -145,10 +145,10 @@ void PaintTimingDetector::NotifyBackgroundImagePaint(
 // static
 void PaintTimingDetector::NotifyImagePaint(
     const LayoutObject& object,
-    const IntSize& intrinsic_size,
+    const gfx::Size& intrinsic_size,
     const ImageResourceContent& cached_image,
     const PropertyTreeStateOrAlias& current_paint_chunk_properties,
-    const IntRect& image_border) {
+    const gfx::Rect& image_border) {
   if (IgnorePaintTimingScope::ShouldIgnore())
     return;
   LocalFrameView* frame_view = object.GetFrameView();
@@ -339,24 +339,23 @@ void PaintTimingDetector::DidChangePerformanceTiming() {
   loader->DidChangePerformanceTiming();
 }
 
-FloatRect PaintTimingDetector::BlinkSpaceToDIPs(
-    const FloatRect& float_rect) const {
+gfx::RectF PaintTimingDetector::BlinkSpaceToDIPs(const gfx::RectF& rect) const {
   FrameWidget* widget = frame_view_->GetFrame().GetWidgetForLocalRoot();
   // May be nullptr in tests.
   if (!widget)
-    return float_rect;
-  return FloatRect(widget->BlinkSpaceToDIPs(ToGfxRectF(float_rect)));
+    return rect;
+  return widget->BlinkSpaceToDIPs(rect);
 }
 
-FloatRect PaintTimingDetector::CalculateVisualRect(
-    const IntRect& visual_rect,
+gfx::RectF PaintTimingDetector::CalculateVisualRect(
+    const gfx::Rect& visual_rect,
     const PropertyTreeStateOrAlias& current_paint_chunk_properties) const {
   // This case should be dealt with outside the function.
   DCHECK(!visual_rect.IsEmpty());
 
   // As Layout objects live in different transform spaces, the object's rect
   // should be projected to the viewport's transform space.
-  FloatClipRect float_clip_visual_rect(ToGfxRectF(FloatRect(visual_rect)));
+  FloatClipRect float_clip_visual_rect((gfx::RectF(visual_rect)));
   const LocalFrame& local_root = frame_view_->GetFrame().LocalFrameRoot();
   GeometryMapper::LocalToAncestorVisualRect(current_paint_chunk_properties,
                                             local_root.ContentLayoutObject()
@@ -374,7 +373,7 @@ FloatRect PaintTimingDetector::CalculateVisualRect(
       .LocalFrameRoot()
       .View()
       ->MapToVisualRectInRemoteRootFrame(layout_visual_rect);
-  return BlinkSpaceToDIPs(FloatRect(layout_visual_rect));
+  return BlinkSpaceToDIPs(gfx::RectF(layout_visual_rect));
 }
 
 void PaintTimingDetector::UpdateLargestContentfulPaintCandidate() {
@@ -498,6 +497,17 @@ void PaintTimingCallbackManagerImpl::ReportPaintTime(
 void PaintTimingCallbackManagerImpl::Trace(Visitor* visitor) const {
   visitor->Trace(frame_view_);
   PaintTimingCallbackManager::Trace(visitor);
+}
+
+void LCPRectInfo::OutputToTraceValue(TracedValue& value) const {
+  value.SetInteger("frame_x", frame_rect_info_.x());
+  value.SetInteger("frame_y", frame_rect_info_.y());
+  value.SetInteger("frame_width", frame_rect_info_.width());
+  value.SetInteger("frame_height", frame_rect_info_.height());
+  value.SetInteger("root_x", root_rect_info_.x());
+  value.SetInteger("root_y", root_rect_info_.y());
+  value.SetInteger("root_width", root_rect_info_.width());
+  value.SetInteger("root_height", root_rect_info_.height());
 }
 
 }  // namespace blink

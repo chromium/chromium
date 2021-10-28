@@ -79,9 +79,9 @@ class VisualRectMappingTest : public PaintTestConfigurations,
               .Contains(EnclosingIntRect(expected_visual_rect_in_ancestor)));
 
       if (object.FirstFragment().HasLocalBorderBoxProperties()) {
-        EXPECT_TRUE(
-            EnclosingIntRect(geometry_mapper_rect.Rect())
-                .Contains(EnclosingIntRect(expected_visual_rect_in_ancestor)));
+        EXPECT_TRUE(gfx::ToEnclosingRect(geometry_mapper_rect.Rect())
+                        .Contains(ToGfxRect(EnclosingIntRect(
+                            expected_visual_rect_in_ancestor))));
       }
     } else {
       EXPECT_EQ(expected_visual_rect_in_ancestor, slow_map_rect);

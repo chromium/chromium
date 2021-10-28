@@ -1136,7 +1136,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransform() {
     }
     if (transform->IsIdentityOr2DTranslation()) {
       context_.translation_2d_to_layout_shift_root_delta +=
-          FloatSize(transform->Translation2D());
+          transform->Translation2D();
     }
   } else if (object_.IsForElement()) {
     // 3D rendering contexts follow the DOM ancestor chain, so
@@ -1314,7 +1314,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
         OnUpdateClip(properties_->UpdateMaskClip(
             *context_.current.clip,
             ClipPaintPropertyNode::State(context_.current.transform,
-                                         FloatRect(combined_clip),
+                                         gfx::RectF(ToGfxRect(combined_clip)),
                                          FloatRoundedRect(combined_clip))));
         output_clip = properties_->MaskClip();
       } else {
@@ -1673,7 +1673,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateFragmentClip() {
       OnUpdateClip(properties_->UpdateFragmentClip(
           *context_.current.clip,
           ClipPaintPropertyNode::State(context_.current.transform,
-                                       FloatRect(clip_rect),
+                                       gfx::RectF(clip_rect),
                                        ToSnappedClipRect(clip_rect))));
     } else {
       OnClearClip(properties_->ClearFragmentClip());
@@ -1707,7 +1707,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateCssClip() {
       OnUpdateClip(properties_->UpdateCssClip(
           *context_.current.clip,
           ClipPaintPropertyNode::State(context_.current.transform,
-                                       FloatRect(clip_rect),
+                                       gfx::RectF(clip_rect),
                                        ToSnappedClipRect(clip_rect))));
     } else {
       OnClearClip(properties_->ClearCssClip());
@@ -1728,7 +1728,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateClipPathClip() {
       // coordinates.
       ClipPaintPropertyNode::State state(
           context_.current.transform,
-          FloatRect(*fragment_data_.ClipPathBoundingBox()),
+          gfx::RectF(ToGfxRect(*fragment_data_.ClipPathBoundingBox())),
           FloatRoundedRect(*fragment_data_.ClipPathBoundingBox()));
       state.clip_path = fragment_data_.ClipPathPath();
       OnUpdateClip(properties_->UpdateClipPathClip(*context_.current.clip,
@@ -1878,7 +1878,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateOverflowControlsClip() {
     OnUpdate(properties_->UpdateOverflowControlsClip(
         *context_.current.clip,
         ClipPaintPropertyNode::State(context_.current.transform,
-                                     FloatRect(clip_rect),
+                                     gfx::RectF(clip_rect),
                                      ToSnappedClipRect(clip_rect))));
   } else {
     OnClear(properties_->ClearOverflowControlsClip());
@@ -1897,8 +1897,9 @@ void FragmentPaintPropertyTreeBuilder::UpdateInnerBorderRadiusClip() {
       PhysicalRect box_rect(context_.current.paint_offset, box.Size());
       ClipPaintPropertyNode::State state(
           context_.current.transform,
-          RoundedBorderGeometry::RoundedInnerBorder(box.StyleRef(), box_rect)
-              .Rect(),
+          ToGfxRectF(RoundedBorderGeometry::RoundedInnerBorder(box.StyleRef(),
+                                                               box_rect)
+                         .Rect()),
           RoundedBorderGeometry::PixelSnappedRoundedInnerBorder(box.StyleRef(),
                                                                 box_rect));
       OnUpdateClip(properties_->UpdateInnerBorderRadiusClip(
@@ -1918,7 +1919,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateOverflowClip() {
   if (NeedsPaintPropertyUpdate()) {
     if (NeedsOverflowClip(object_)) {
       ClipPaintPropertyNode::State state(context_.current.transform,
-                                         FloatRect(), FloatRoundedRect());
+                                         gfx::RectF(), FloatRoundedRect());
 
       if (object_.IsLayoutReplaced()) {
         const auto& replaced = To<LayoutReplaced>(object_);
@@ -1951,7 +1952,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateOverflowClip() {
         }
         // TODO(crbug.com/1248598): Should we use non-snapped clip rect for
         // the first parameter?
-        state.SetClipRect(clip_rect.Rect(), clip_rect);
+        state.SetClipRect(ToGfxRectF(clip_rect.Rect()), clip_rect);
       } else if (object_.IsBox()) {
         PhysicalRect clip_rect;
         if (pre_paint_info_) {
@@ -1962,7 +1963,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateOverflowClip() {
           clip_rect = To<LayoutBox>(object_).OverflowClipRect(
               context_.current.paint_offset);
         }
-        state.SetClipRect(FloatRect(clip_rect), ToSnappedClipRect(clip_rect));
+        state.SetClipRect(gfx::RectF(clip_rect), ToSnappedClipRect(clip_rect));
 
         state.layout_clip_rect_excluding_overlay_scrollbars = FloatClipRect(
             ToGfxRectF(FloatRect(To<LayoutBox>(object_).OverflowClipRect(
@@ -1977,7 +1978,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateOverflowClip() {
                 viewport_container.Viewport());
         // TODO(crbug.com/1248598): Should we use non-snapped clip rect for
         // the first parameter?
-        state.SetClipRect(clip_rect, FloatRoundedRect(clip_rect));
+        state.SetClipRect(ToGfxRectF(clip_rect), FloatRoundedRect(clip_rect));
       }
       OnUpdateClip(properties_->UpdateOverflowClip(*context_.current.clip,
                                                    std::move(state)));
@@ -2222,8 +2223,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
                                    box.GetScrollableArea()->GetScrollOffset();
       TransformPaintPropertyNode::State state{-ToGfxVector2dF(scroll_position)};
       if (!box.GetScrollableArea()->PendingScrollAnchorAdjustment().IsZero()) {
-        context_.current.pending_scroll_anchor_adjustment +=
-            box.GetScrollableArea()->PendingScrollAnchorAdjustment();
+        context_.current.pending_scroll_anchor_adjustment += ToGfxVector2dF(
+            box.GetScrollableArea()->PendingScrollAnchorAdjustment());
         box.GetScrollableArea()->ClearPendingScrollAnchorAdjustment();
       }
       state.flags.flattens_inherited_transform =
@@ -2311,7 +2312,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
     // A scroller creates a layout shift root, so we just calculate one scroll
     // offset delta without accumulation.
     context_.current.scroll_offset_to_layout_shift_root_delta =
-        FloatSize(scroll_translation->Translation2D() - old_scroll_offset);
+        scroll_translation->Translation2D() - old_scroll_offset;
   }
 }
 
@@ -2905,8 +2906,9 @@ void FragmentPaintPropertyTreeBuilder::UpdateForSelf() {
   if (IsA<LayoutView>(object_)) {
     context_.current.additional_offset_to_layout_shift_root_delta =
         PhysicalOffset();
-    context_.translation_2d_to_layout_shift_root_delta = FloatSize();
-    context_.current.scroll_offset_to_layout_shift_root_delta = FloatSize();
+    context_.translation_2d_to_layout_shift_root_delta = gfx::Vector2dF();
+    context_.current.scroll_offset_to_layout_shift_root_delta =
+        gfx::Vector2dF();
   }
 }
 
@@ -2947,12 +2949,13 @@ void FragmentPaintPropertyTreeBuilder::UpdateForChildren() {
     // additional_offset_to_layout_shift_root_delta.
     context_.current.additional_offset_to_layout_shift_root_delta =
         context_.old_paint_offset - fragment_data_.PaintOffset();
-    context_.translation_2d_to_layout_shift_root_delta = FloatSize();
+    context_.translation_2d_to_layout_shift_root_delta = gfx::Vector2dF();
     // Don't reset scroll_offset_to_layout_shift_root_delta if this object has
     // scroll translation because we need to propagate the delta to descendants.
     if (!properties_ || !properties_->ScrollTranslation()) {
-      context_.current.scroll_offset_to_layout_shift_root_delta = FloatSize();
-      context_.current.pending_scroll_anchor_adjustment = FloatSize();
+      context_.current.scroll_offset_to_layout_shift_root_delta =
+          gfx::Vector2dF();
+      context_.current.pending_scroll_anchor_adjustment = gfx::Vector2dF();
     }
   }
 
@@ -2993,7 +2996,7 @@ void PaintPropertyTreeBuilder::InitFragmentPaintProperties(
     if (const auto* transform = properties->Transform()) {
       if (transform->IsIdentityOr2DTranslation()) {
         context.translation_2d_to_layout_shift_root_delta -=
-            FloatSize(transform->Translation2D());
+            transform->Translation2D();
       }
     }
   }

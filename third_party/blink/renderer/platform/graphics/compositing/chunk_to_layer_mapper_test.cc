@@ -101,7 +101,7 @@ TEST_F(ChunkToLayerMapperTest, TwoChunkSameState) {
   SkMatrix expected_transform = SkMatrix::Translate(-10, -20);
   expected_transform.preScale(2, 2);
   EXPECT_EQ(expected_transform, mapper.Transform());
-  EXPECT_EQ(FloatRect(0, -10, 100, 100), mapper.ClipRect().Rect());
+  EXPECT_EQ(gfx::RectF(0, -10, 100, 100), mapper.ClipRect().Rect());
   EXPECT_TRUE(mapper.ClipRect().IsTight());
   EXPECT_EQ(gfx::Rect(50, 40, 50, 50),
             mapper.MapVisualRect(gfx::Rect(30, 30, 88, 99)));
@@ -110,7 +110,7 @@ TEST_F(ChunkToLayerMapperTest, TwoChunkSameState) {
   mapper.SwitchToChunk(chunk2);
   EXPECT_FALSE(HasFilterThatMovesPixels(mapper));
   EXPECT_EQ(expected_transform, mapper.Transform());
-  EXPECT_EQ(FloatRect(0, -10, 100, 100), mapper.ClipRect().Rect());
+  EXPECT_EQ(gfx::RectF(0, -10, 100, 100), mapper.ClipRect().Rect());
   EXPECT_TRUE(mapper.ClipRect().IsTight());
   EXPECT_EQ(gfx::Rect(50, 40, 50, 50),
             mapper.MapVisualRect(gfx::Rect(30, 30, 88, 99)));
@@ -136,7 +136,7 @@ TEST_F(ChunkToLayerMapperTest, TwoChunkDifferentState) {
   SkMatrix expected_transform = SkMatrix::Translate(-10, -20);
   expected_transform.preScale(2, 2);
   EXPECT_EQ(expected_transform, mapper.Transform());
-  EXPECT_EQ(FloatRect(0, -10, 100, 100), mapper.ClipRect().Rect());
+  EXPECT_EQ(gfx::RectF(0, -10, 100, 100), mapper.ClipRect().Rect());
   EXPECT_TRUE(mapper.ClipRect().IsTight());
   EXPECT_EQ(gfx::Rect(50, 40, 50, 50),
             mapper.MapVisualRect(gfx::Rect(30, 30, 88, 99)));
@@ -146,7 +146,7 @@ TEST_F(ChunkToLayerMapperTest, TwoChunkDifferentState) {
   EXPECT_FALSE(HasFilterThatMovesPixels(mapper));
   expected_transform.preTranslate(20, 30);
   EXPECT_EQ(expected_transform, mapper.Transform());
-  EXPECT_EQ(FloatRect(30, 40, 40, 40), mapper.ClipRect().Rect());
+  EXPECT_EQ(gfx::RectF(30, 40, 40, 40), mapper.ClipRect().Rect());
   EXPECT_FALSE(mapper.ClipRect().IsTight());
   EXPECT_EQ(gfx::Rect(30, 40, 40, 40),
             mapper.MapVisualRect(gfx::Rect(0, 0, 200, 200)));

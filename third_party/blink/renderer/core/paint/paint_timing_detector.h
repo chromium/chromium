@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 
@@ -122,14 +123,14 @@ class CORE_EXPORT PaintTimingDetector
       const Image&,
       const StyleFetchedImage&,
       const PropertyTreeStateOrAlias& current_paint_chunk_properties,
-      const IntRect& image_border);
+      const gfx::Rect& image_border);
   static void NotifyImagePaint(
       const LayoutObject&,
-      const IntSize& intrinsic_size,
+      const gfx::Size& intrinsic_size,
       const ImageResourceContent& cached_image,
       const PropertyTreeStateOrAlias& current_paint_chunk_properties,
-      const IntRect& image_border);
-  inline static void NotifyTextPaint(const IntRect& text_visual_rect);
+      const gfx::Rect& image_border);
+  inline static void NotifyTextPaint(const gfx::Rect& text_visual_rect);
 
   void NotifyImageFinished(const LayoutObject&, const ImageResourceContent*);
   void LayoutObjectWillBeDestroyed(const LayoutObject&);
@@ -161,9 +162,9 @@ class CORE_EXPORT PaintTimingDetector
     return tracing_enabled;
   }
 
-  FloatRect BlinkSpaceToDIPs(const FloatRect& float_rect) const;
-  FloatRect CalculateVisualRect(const IntRect& visual_rect,
-                                const PropertyTreeStateOrAlias&) const;
+  gfx::RectF BlinkSpaceToDIPs(const gfx::RectF& float_rect) const;
+  gfx::RectF CalculateVisualRect(const gfx::Rect& visual_rect,
+                                 const PropertyTreeStateOrAlias&) const;
 
   TextPaintTimingDetector* GetTextPaintTimingDetector() const {
     DCHECK(text_paint_timing_detector_);
@@ -284,7 +285,7 @@ class ScopedPaintTimingDetectorBlockPaintHook {
 
  private:
   friend class PaintTimingDetector;
-  inline static void AggregateTextPaint(const IntRect& visual_rect) {
+  inline static void AggregateTextPaint(const gfx::Rect& visual_rect) {
     // Ideally we'd assert that |top_| exists, but there may be text nodes that
     // do not have an ancestor non-anonymous block layout objects in the layout
     // tree. An example of this is a multicol div, since the
@@ -308,7 +309,7 @@ class ScopedPaintTimingDetectorBlockPaintHook {
     const LayoutBoxModelObject& aggregator_;
     const PropertyTreeStateOrAlias& property_tree_state_;
     TextPaintTimingDetector* detector_;
-    IntRect aggregated_visual_rect_;
+    gfx::Rect aggregated_visual_rect_;
   };
   absl::optional<Data> data_;
   static ScopedPaintTimingDetectorBlockPaintHook* top_;
@@ -316,7 +317,7 @@ class ScopedPaintTimingDetectorBlockPaintHook {
 
 // static
 inline void PaintTimingDetector::NotifyTextPaint(
-    const IntRect& text_visual_rect) {
+    const gfx::Rect& text_visual_rect) {
   if (IgnorePaintTimingScope::ShouldIgnore())
     return;
   ScopedPaintTimingDetectorBlockPaintHook::AggregateTextPaint(text_visual_rect);
@@ -324,23 +325,14 @@ inline void PaintTimingDetector::NotifyTextPaint(
 
 class LCPRectInfo {
  public:
-  LCPRectInfo(IntRect frame_rect_info, IntRect root_rect_info)
+  LCPRectInfo(const gfx::Rect& frame_rect_info, const gfx::Rect& root_rect_info)
       : frame_rect_info_(frame_rect_info), root_rect_info_(root_rect_info) {}
 
-  void OutputToTraceValue(TracedValue& value) {
-    value.SetInteger("frame_x", frame_rect_info_.x());
-    value.SetInteger("frame_y", frame_rect_info_.y());
-    value.SetInteger("frame_width", frame_rect_info_.width());
-    value.SetInteger("frame_height", frame_rect_info_.height());
-    value.SetInteger("root_x", root_rect_info_.x());
-    value.SetInteger("root_y", root_rect_info_.y());
-    value.SetInteger("root_width", root_rect_info_.width());
-    value.SetInteger("root_height", root_rect_info_.height());
-  }
+  void OutputToTraceValue(TracedValue&) const;
 
  private:
-  IntRect frame_rect_info_;
-  IntRect root_rect_info_;
+  gfx::Rect frame_rect_info_;
+  gfx::Rect root_rect_info_;
 };
 
 }  // namespace blink

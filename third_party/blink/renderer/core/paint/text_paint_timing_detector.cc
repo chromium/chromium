@@ -175,17 +175,17 @@ bool TextPaintTimingDetector::ShouldWalkObject(
 
 void TextPaintTimingDetector::RecordAggregatedText(
     const LayoutBoxModelObject& aggregator,
-    const IntRect& aggregated_visual_rect,
+    const gfx::Rect& aggregated_visual_rect,
     const PropertyTreeStateOrAlias& property_tree_state) {
   DCHECK(ShouldWalkObject(aggregator));
 
   // The caller should check this.
   DCHECK(!aggregated_visual_rect.IsEmpty());
 
-  FloatRect mapped_visual_rect =
+  gfx::RectF mapped_visual_rect =
       frame_view_->GetPaintTimingDetector().CalculateVisualRect(
           aggregated_visual_rect, property_tree_state);
-  uint64_t aggregated_size = mapped_visual_rect.size().Area();
+  uint64_t aggregated_size = mapped_visual_rect.size().GetArea();
   DCHECK_LE(IgnorePaintTimingScope::IgnoreDepth(), 1);
   // Record the largest aggregated text that is hidden due to documentElement
   // being invisible but by no other reason (i.e. IgnoreDepth() needs to be 1).
@@ -239,12 +239,12 @@ LargestTextPaintManager::LargestTextPaintManager(
 void LargestTextPaintManager::MaybeUpdateLargestIgnoredText(
     const LayoutObject& object,
     const uint64_t& size,
-    const IntRect& frame_visual_rect,
-    const FloatRect& root_visual_rect) {
+    const gfx::Rect& frame_visual_rect,
+    const gfx::RectF& root_visual_rect) {
   if (size &&
       (!largest_ignored_text_ || size > largest_ignored_text_->first_size)) {
     largest_ignored_text_ =
-        MakeGarbageCollected<TextRecord>(*object.GetNode(), size, FloatRect(),
+        MakeGarbageCollected<TextRecord>(*object.GetNode(), size, gfx::RectF(),
                                          frame_visual_rect, root_visual_rect);
   }
 }
@@ -302,9 +302,9 @@ void TextRecordsManager::AssignPaintTimeToQueuedRecords(
 void TextRecordsManager::RecordVisibleObject(
     const LayoutObject& object,
     const uint64_t& visual_size,
-    const FloatRect& element_timing_rect,
-    const IntRect& frame_visual_rect,
-    const FloatRect& root_visual_rect) {
+    const gfx::RectF& element_timing_rect,
+    const gfx::Rect& frame_visual_rect,
+    const gfx::RectF& root_visual_rect) {
   DCHECK_GT(visual_size, 0u);
 
   TextRecord* record = MakeGarbageCollected<TextRecord>(
@@ -324,8 +324,8 @@ void TextRecordsManager::RecordInvisibleObject(const LayoutObject& object) {
   if (!TextElementTiming::NeededForElementTiming(*node))
     return;
   // Since it is invisible, the record will have a size of 0 and an empty rect.
-  TextRecord* record = MakeGarbageCollected<TextRecord>(*node, 0, FloatRect(),
-                                                        IntRect(), FloatRect());
+  TextRecord* record = MakeGarbageCollected<TextRecord>(
+      *node, 0, gfx::RectF(), gfx::Rect(), gfx::RectF());
   size_zero_texts_queued_for_paint_time_.insert(&object, record);
 }
 

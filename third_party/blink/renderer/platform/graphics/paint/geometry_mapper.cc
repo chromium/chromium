@@ -32,14 +32,14 @@ void ExpandFixedBoundsInScroller(const TransformPaintPropertyNode* local,
 
   // First move the rect back to the min scroll offset, by accounting for the
   // current scroll offset.
-  rect_to_map.Rect().Offset(FloatSize(node->Translation2D()));
+  rect_to_map.Rect().Offset(node->Translation2D());
 
   // Calculate the max scroll offset and expand by that amount. The max scroll
   // offset is the contents size minus one viewport's worth of space (i.e. the
   // container rect size).
-  gfx::Size contents_size = node->ScrollNode()->ContentsRect().size();
-  gfx::Size container_size = node->ScrollNode()->ContainerRect().size();
-  rect_to_map.Rect().Expand(FloatSize(contents_size - container_size));
+  gfx::Size expansion = node->ScrollNode()->ContentsRect().size() -
+                        node->ScrollNode()->ContainerRect().size();
+  rect_to_map.Rect().Outset(0, 0, expansion.width(), expansion.height());
 }
 
 }  // namespace
@@ -322,8 +322,7 @@ bool GeometryMapper::SlowLocalToAncestorVisualRectWithEffects(
       return false;
     }
 
-    mapping_rect =
-        FloatClipRect(effect->MapRect(ToGfxRectF(mapping_rect.Rect())));
+    mapping_rect = FloatClipRect(effect->MapRect(mapping_rect.Rect()));
     last_transform_and_clip_state = transform_and_clip_state;
   }
 

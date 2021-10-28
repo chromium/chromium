@@ -62,7 +62,7 @@ void ChunkToLayerMapper::SwitchToChunk(const PaintChunk& chunk) {
     clip_rect_ =
         GeometryMapper::LocalToAncestorClipRect(new_chunk_state, layer_state_);
     if (!clip_rect_.IsInfinite())
-      clip_rect_.MoveBy(FloatPoint(-layer_offset_));
+      clip_rect_.Move(-layer_offset_);
   }
 
   chunk_state_ = new_chunk_state;
@@ -79,7 +79,7 @@ gfx::Rect ChunkToLayerMapper::MapVisualRect(const gfx::Rect& rect) const {
   gfx::RectF mapped_rect(rect);
   translation_2d_or_matrix_.MapRect(mapped_rect);
   if (!mapped_rect.IsEmpty() && !clip_rect_.IsInfinite())
-    mapped_rect.Intersect(ToGfxRectF(clip_rect_.Rect()));
+    mapped_rect.Intersect(clip_rect_.Rect());
 
   gfx::Rect result;
   if (!mapped_rect.IsEmpty()) {
@@ -109,7 +109,7 @@ gfx::Rect ChunkToLayerMapper::MapUsingGeometryMapper(
   if (visual_rect.Rect().IsEmpty())
     return gfx::Rect();
 
-  gfx::RectF result = ToGfxRectF(visual_rect.Rect());
+  gfx::RectF result = visual_rect.Rect();
   result.Offset(-layer_offset_);
   InflateForRasterEffectOutset(result);
   return gfx::ToEnclosingRect(result);

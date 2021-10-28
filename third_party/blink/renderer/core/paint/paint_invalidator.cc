@@ -191,7 +191,7 @@ void PaintInvalidator::UpdateLayoutShiftTracking(
       context.old_paint_offset -
       tree_builder_context.current
           .additional_offset_to_layout_shift_root_delta -
-      PhysicalOffset::FromFloatSizeRound(
+      PhysicalOffset::FromVector2dFRound(
           tree_builder_context.translation_2d_to_layout_shift_root_delta +
           tree_builder_context.current
               .scroll_offset_to_layout_shift_root_delta);

@@ -277,12 +277,12 @@ void ImagePainter::PaintIntoRect(GraphicsContext& context,
       ImageElementTiming::From(*window).NotifyImagePainted(
           layout_image_, *image_content,
           context.GetPaintController().CurrentPaintChunkProperties(),
-          pixel_snapped_dest_rect);
+          ToGfxRect(pixel_snapped_dest_rect));
     }
     PaintTimingDetector::NotifyImagePaint(
-        layout_image_, image->Size(), *image_content,
+        layout_image_, ToGfxSize(image->Size()), *image_content,
         context.GetPaintController().CurrentPaintChunkProperties(),
-        pixel_snapped_dest_rect);
+        ToGfxRect(pixel_snapped_dest_rect));
   }
 }
 

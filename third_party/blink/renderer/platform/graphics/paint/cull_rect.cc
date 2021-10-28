@@ -118,7 +118,7 @@ bool CullRect::ApplyPaintPropertiesWithoutExpansion(
     return false;
   }
   if (!clip_rect.IsInfinite()) {
-    rect_.Intersect(gfx::ToEnclosingRect(ToGfxRectF(clip_rect.Rect())));
+    rect_.Intersect(gfx::ToEnclosingRect(clip_rect.Rect()));
     if (rect_.IsEmpty())
       return false;
   }
@@ -254,10 +254,8 @@ bool CullRect::ApplyPaintProperties(
       FloatClipRect clip_rect = GeometryMapper::LocalToAncestorClipRect(
           destination,
           PropertyTreeState(*last_transform, *last_clip, effect_root));
-      if (!clip_rect.IsInfinite()) {
-        expansion_bounds->Intersect(
-            gfx::ToEnclosingRect(ToGfxRectF(clip_rect.Rect())));
-      }
+      if (!clip_rect.IsInfinite())
+        expansion_bounds->Intersect(gfx::ToEnclosingRect(clip_rect.Rect()));
       GeometryMapper::SourceToDestinationRect(
           *last_transform, destination.Transform(), *expansion_bounds);
     }

@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/paint/paint_timing_detector.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
 
@@ -31,8 +32,8 @@ class ImageRecord : public base::SupportsWeakPtr<ImageRecord> {
   ImageRecord(DOMNodeId new_node_id,
               const ImageResourceContent* new_cached_image,
               uint64_t new_first_size,
-              const IntRect& frame_visual_rect,
-              const FloatRect& root_visual_rect)
+              const gfx::Rect& frame_visual_rect,
+              const gfx::RectF& root_visual_rect)
       : node_id(new_node_id),
         cached_image(new_cached_image),
         first_size(new_first_size) {
@@ -40,7 +41,7 @@ class ImageRecord : public base::SupportsWeakPtr<ImageRecord> {
     insertion_index = next_insertion_index_++;
     if (PaintTimingVisualizer::IsTracingEnabled()) {
       lcp_rect_info_ = std::make_unique<LCPRectInfo>(
-          frame_visual_rect, RoundedIntRect(root_visual_rect));
+          frame_visual_rect, gfx::ToRoundedRect(root_visual_rect));
     }
   }
 
@@ -121,8 +122,8 @@ class CORE_EXPORT ImageRecordsManager {
   }
   void RecordVisible(const RecordId& record_id,
                      const uint64_t& visual_size,
-                     const IntRect& frame_visual_rect,
-                     const FloatRect& root_visual_rect);
+                     const gfx::Rect& frame_visual_rect,
+                     const gfx::RectF& root_visual_rect);
   bool IsRecordedVisibleImage(const RecordId& record_id) const {
     return visible_images_.Contains(record_id);
   }
@@ -158,8 +159,8 @@ class CORE_EXPORT ImageRecordsManager {
   // larger size.
   void MaybeUpdateLargestIgnoredImage(const RecordId&,
                                       const uint64_t& visual_size,
-                                      const IntRect& frame_visual_rect,
-                                      const FloatRect& root_visual_rect);
+                                      const gfx::Rect& frame_visual_rect,
+                                      const gfx::RectF& root_visual_rect);
   void ReportLargestIgnoredImage(unsigned current_frame_index);
 
   // Compare the last frame index in queue with the last frame index that has
@@ -204,8 +205,8 @@ class CORE_EXPORT ImageRecordsManager {
       const LayoutObject& object,
       const ImageResourceContent* cached_image,
       const uint64_t& visual_size,
-      const IntRect& frame_visual_rect,
-      const FloatRect& root_visual_rect);
+      const gfx::Rect& frame_visual_rect,
+      const gfx::RectF& root_visual_rect);
   inline void QueueToMeasurePaintTime(base::WeakPtr<ImageRecord>& record,
                                       unsigned current_frame_index) {
     images_queued_for_paint_time_.push_back(record);
@@ -274,11 +275,11 @@ class CORE_EXPORT ImagePaintTimingDetector final
   // parameter is needed only for the purposes of plumbing the correct loadTime
   // value to the ImageRecord.
   void RecordImage(const LayoutObject&,
-                   const IntSize& intrinsic_size,
+                   const gfx::Size& intrinsic_size,
                    const ImageResourceContent&,
                    const PropertyTreeStateOrAlias& current_paint_properties,
                    const StyleFetchedImage*,
-                   const IntRect& image_border);
+                   const gfx::Rect& image_border);
   void NotifyImageFinished(const LayoutObject&, const ImageResourceContent*);
   void OnPaintFinished();
   void NotifyImageRemoved(const LayoutObject&, const ImageResourceContent*);
@@ -316,9 +317,9 @@ class CORE_EXPORT ImagePaintTimingDetector final
   // downsizing the size of images with low intrinsic size. Images that occupy
   // the full viewport are special-cased and this method returns 0 for them so
   // that they are not considered valid candidates.
-  uint64_t ComputeImageRectSize(const IntRect& image_border,
-                                const FloatRect& mapped_visual_rect,
-                                const IntSize&,
+  uint64_t ComputeImageRectSize(const gfx::Rect& image_border,
+                                const gfx::RectF& mapped_visual_rect,
+                                const gfx::Size&,
                                 const PropertyTreeStateOrAlias&,
                                 const LayoutObject&,
                                 const ImageResourceContent&);

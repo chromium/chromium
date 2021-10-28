@@ -872,17 +872,16 @@ static void UpdateTouchActionRegion(
   }
 
   for (const auto& touch_action_rect : hit_test_data.touch_action_rects) {
-    auto rect = FloatClipRect(gfx::RectF(touch_action_rect.rect));
+    FloatClipRect rect(gfx::RectF(touch_action_rect.rect));
     if (!GeometryMapper::LocalToAncestorVisualRect(chunk_state, layer_state,
                                                    rect)) {
       continue;
     }
-    rect.MoveBy(FloatPoint(-layer_offset));
+    rect.Move(-layer_offset);
     TouchAction touch_action = touch_action_rect.allowed_touch_action;
     if ((touch_action & TouchAction::kPanX) != TouchAction::kNone)
       touch_action |= disable_cursor_control;
-    touch_action_region.Union(touch_action,
-                              gfx::ToEnclosingRect(ToGfxRectF(rect.Rect())));
+    touch_action_region.Union(touch_action, gfx::ToEnclosingRect(rect.Rect()));
   }
 }
 
@@ -892,13 +891,13 @@ static void UpdateWheelEventRegion(const HitTestData& hit_test_data,
                                    const gfx::Vector2dF& layer_offset,
                                    cc::Region& wheel_event_region) {
   for (const auto& wheel_event_rect : hit_test_data.wheel_event_rects) {
-    auto rect = FloatClipRect(gfx::RectF(wheel_event_rect));
+    FloatClipRect rect((gfx::RectF(wheel_event_rect)));
     if (!GeometryMapper::LocalToAncestorVisualRect(chunk_state, layer_state,
                                                    rect)) {
       continue;
     }
-    rect.MoveBy(FloatPoint(-layer_offset));
-    wheel_event_region.Union(gfx::ToEnclosingRect(ToGfxRectF(rect.Rect())));
+    rect.Move(-layer_offset);
+    wheel_event_region.Union(gfx::ToEnclosingRect(rect.Rect()));
   }
 }
 
@@ -934,9 +933,8 @@ static void UpdateNonFastScrollableRegion(
                                                  rect))
     return;
 
-  rect.MoveBy(FloatPoint(-layer_offset));
-  non_fast_scrollable_region.Union(
-      gfx::ToEnclosingRect(ToGfxRectF(rect.Rect())));
+  rect.Move(-layer_offset);
+  non_fast_scrollable_region.Union(gfx::ToEnclosingRect(rect.Rect()));
 }
 
 static void UpdateTouchActionWheelEventHandlerAndNonFastScrollableRegions(
@@ -967,7 +965,7 @@ static void UpdateTouchActionWheelEventHandlerAndNonFastScrollableRegions(
 static void UpdateRegionCaptureData(cc::Layer& layer,
                                     const PropertyTreeState& layer_state,
                                     const PaintChunkSubset& chunks) {
-  const FloatPoint layer_offset(layer.offset_to_transform_parent());
+  const gfx::Vector2dF layer_offset = layer.offset_to_transform_parent();
   cc::RegionCaptureBounds capture_bounds;
   for (const PaintChunk& chunk : chunks) {
     if (!chunk.region_capture_data)
@@ -981,9 +979,8 @@ static void UpdateRegionCaptureData(cc::Layer& layer,
                                                      rect)) {
         continue;
       }
-      rect.MoveBy(-layer_offset);
-      capture_bounds.Set(pair.first.value(),
-                         ToGfxRect(EnclosingIntRect(rect.Rect())));
+      rect.Move(-layer_offset);
+      capture_bounds.Set(pair.first.value(), gfx::ToEnclosingRect(rect.Rect()));
     }
     break;
   }

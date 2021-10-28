@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/paint/text_element_timing.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
 class LayoutBoxModelObject;
@@ -26,9 +27,9 @@ class TextRecord final : public GarbageCollected<TextRecord> {
  public:
   TextRecord(Node& node,
              uint64_t new_first_size,
-             const FloatRect& element_timing_rect,
-             const IntRect& frame_visual_rect,
-             const FloatRect& root_visual_rect)
+             const gfx::RectF& element_timing_rect,
+             const gfx::Rect& frame_visual_rect,
+             const gfx::RectF& root_visual_rect)
       : node_(&node),
         first_size(new_first_size),
         element_timing_rect_(element_timing_rect) {
@@ -36,7 +37,7 @@ class TextRecord final : public GarbageCollected<TextRecord> {
     insertion_index_ = next_insertion_index_++;
     if (PaintTimingVisualizer::IsTracingEnabled()) {
       lcp_rect_info_ = std::make_unique<LCPRectInfo>(
-          frame_visual_rect, RoundedIntRect(root_visual_rect));
+          frame_visual_rect, gfx::ToRoundedRect(root_visual_rect));
     }
   }
   TextRecord(const TextRecord&) = delete;
@@ -49,7 +50,7 @@ class TextRecord final : public GarbageCollected<TextRecord> {
   // |insertion_index_| is ordered by insertion time, used as a secondary key
   // for ranking.
   unsigned insertion_index_ = 0;
-  FloatRect element_timing_rect_;
+  gfx::RectF element_timing_rect_;
   std::unique_ptr<LCPRectInfo> lcp_rect_info_;
   // The time of the first paint after fully loaded.
   base::TimeTicks paint_time = base::TimeTicks();
@@ -92,8 +93,8 @@ class CORE_EXPORT LargestTextPaintManager final
 
   void MaybeUpdateLargestIgnoredText(const LayoutObject&,
                                      const uint64_t&,
-                                     const IntRect& frame_visual_rect,
-                                     const FloatRect& root_visual_rect);
+                                     const gfx::Rect& frame_visual_rect,
+                                     const gfx::RectF& root_visual_rect);
   Member<TextRecord> PopLargestIgnoredText() {
     return std::move(largest_ignored_text_);
   }
@@ -138,9 +139,9 @@ class CORE_EXPORT TextRecordsManager {
   void RemoveInvisibleRecord(const LayoutObject&);
   void RecordVisibleObject(const LayoutObject&,
                            const uint64_t& visual_size,
-                           const FloatRect& element_timing_rect,
-                           const IntRect& frame_visual_rect,
-                           const FloatRect& root_visual_rect);
+                           const gfx::RectF& element_timing_rect,
+                           const gfx::Rect& frame_visual_rect,
+                           const gfx::RectF& root_visual_rect);
   void RecordInvisibleObject(const LayoutObject& object);
   bool NeedMeausuringPaintTime() const {
     return !texts_queued_for_paint_time_.IsEmpty() ||
@@ -178,8 +179,8 @@ class CORE_EXPORT TextRecordsManager {
   // larger size.
   void MaybeUpdateLargestIgnoredText(const LayoutObject& object,
                                      const uint64_t& size,
-                                     const IntRect& aggregated_visual_rect,
-                                     const FloatRect& mapped_visual_rect) {
+                                     const gfx::Rect& aggregated_visual_rect,
+                                     const gfx::RectF& mapped_visual_rect) {
     DCHECK(ltp_manager_);
     ltp_manager_->MaybeUpdateLargestIgnoredText(
         object, size, aggregated_visual_rect, mapped_visual_rect);
@@ -251,7 +252,7 @@ class CORE_EXPORT TextPaintTimingDetector final
 
   bool ShouldWalkObject(const LayoutBoxModelObject&) const;
   void RecordAggregatedText(const LayoutBoxModelObject& aggregator,
-                            const IntRect& aggregated_visual_rect,
+                            const gfx::Rect& aggregated_visual_rect,
                             const PropertyTreeStateOrAlias&);
   void OnPaintFinished();
   void LayoutObjectWillBeDestroyed(const LayoutObject&);

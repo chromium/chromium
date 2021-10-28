@@ -342,7 +342,7 @@ void NGTextPainter::PaintInternalFragment(unsigned from,
     graphics_context_.GetPaintController().SetTextPainted();
 
     if (!font_.ShouldSkipDrawing())
-      PaintTimingDetector::NotifyTextPaint(visual_rect_);
+      PaintTimingDetector::NotifyTextPaint(ToGfxRect(visual_rect_));
   }
 }
 

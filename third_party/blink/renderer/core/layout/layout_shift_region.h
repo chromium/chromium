@@ -6,9 +6,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_SHIFT_REGION_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 
@@ -36,19 +36,19 @@ class CORE_EXPORT LayoutShiftRegion {
   DISALLOW_NEW();
 
  public:
-  void AddRect(const IntRect& rect) {
+  void AddRect(const gfx::Rect& rect) {
     if (!rect.IsEmpty())
       rects_.push_back(rect);
   }
 
-  const Vector<IntRect>& GetRects() const { return rects_; }
+  const Vector<gfx::Rect>& GetRects() const { return rects_; }
   bool IsEmpty() const { return rects_.IsEmpty(); }
   void Reset() { rects_.clear(); }
 
   uint64_t Area() const;
 
  private:
-  Vector<IntRect> rects_;
+  Vector<gfx::Rect> rects_;
 };
 
 }  // namespace blink
