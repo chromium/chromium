@@ -163,6 +163,7 @@ static_library("test_support") {
   deps = [
     "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
+    "//build:os_buildflags",
     "//third_party/icu:icuuc",
     "//third_party/libxml:libxml_utils",
     "//third_party/libxml:xml_reader",
