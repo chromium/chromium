@@ -982,10 +982,6 @@ const base::Feature kTabMetricsLogging{"TabMetricsLogging",
                                        base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
-// Enables the teamfood flags.
-const base::Feature kTeamfoodFlags{"TeamfoodFlags",
-                                   base::FEATURE_DISABLED_BY_DEFAULT};
-
 #if defined(OS_WIN)
 // Enables the blocking of third-party modules. This feature requires Windows 8
 // or higher because it depends on the ProcessExtensionPointDisablePolicy

@@ -653,8 +653,6 @@ COMPONENT_EXPORT(CHROME_FEATURES) extern const base::Feature kTPMFirmwareUpdate;
 COMPONENT_EXPORT(CHROME_FEATURES) extern const base::Feature kTabMetricsLogging;
 #endif
 
-COMPONENT_EXPORT(CHROME_FEATURES) extern const base::Feature kTeamfoodFlags;
-
 #if defined(OS_WIN)
 // Only has an effect in branded builds.
 COMPONENT_EXPORT(CHROME_FEATURES)

@@ -7860,12 +7860,6 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
     return true;
   }
 
-#if defined(OS_ANDROID)
-  if (!strcmp("password-change-support", entry.internal_name)) {
-    return !base::FeatureList::IsEnabled(features::kTeamfoodFlags);
-  }
-#endif  // OS_ANDROID
-
   if (flags::IsFlagExpired(storage, entry.internal_name))
     return true;
 
