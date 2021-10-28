@@ -5,6 +5,8 @@
 #ifndef CC_LAYERS_MIRROR_LAYER_H_
 #define CC_LAYERS_MIRROR_LAYER_H_
 
+#include <memory>
+
 #include "base/memory/scoped_refptr.h"
 #include "cc/cc_export.h"
 #include "cc/layers/layer.h"
@@ -23,7 +25,8 @@ class CC_EXPORT MirrorLayer : public Layer {
 
   // Layer overrides.
   std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl) override;
-  void PushPropertiesTo(LayerImpl* layer) override;
+  void PushPropertiesTo(LayerImpl* layer,
+                        const CommitState& commit_state) override;
   void SetLayerTreeHost(LayerTreeHost* host) override;
 
  protected:

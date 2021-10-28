@@ -243,6 +243,7 @@ sk_sp<SkPicture> Layer::GetPicture() const {
 }
 
 void Layer::SetParent(Layer* layer) {
+  DCHECK(IsMutationAllowed());
   DCHECK(!layer || !layer->HasAncestor(this));
 
   parent_ = layer;
@@ -397,6 +398,7 @@ void Layer::RemoveAllChildren() {
 
 void Layer::SetChildLayerList(LayerList new_children) {
   DCHECK(layer_tree_host_->IsUsingLayerLists());
+  DCHECK(IsMutationAllowed());
 
   // Early out without calling |LayerTreeHost::SetNeedsFullTreeSync| if no
   // layer has changed.
@@ -507,7 +509,7 @@ void Layer::SetSafeOpaqueBackgroundColor(SkColor background_color) {
   SetNeedsPushProperties();
 }
 
-SkColor Layer::SafeOpaqueBackgroundColor() const {
+SkColor Layer::SafeOpaqueBackgroundColor(SkColor host_background_color) const {
   if (contents_opaque()) {
     if (!layer_tree_host_ || !layer_tree_host_->IsUsingLayerLists()) {
       // In layer tree mode, PropertyTreeBuilder should have calculated the safe
@@ -522,7 +524,7 @@ SkColor Layer::SafeOpaqueBackgroundColor() const {
     // background_color() if it's not transparent, or layer_tree_host_'s
     // background_color(), with the alpha channel forced to be opaque.
     SkColor color = background_color() == SK_ColorTRANSPARENT
-                        ? layer_tree_host_->background_color()
+                        ? host_background_color
                         : background_color();
     return SkColorSetA(color, SK_AlphaOPAQUE);
   }
@@ -534,6 +536,14 @@ SkColor Layer::SafeOpaqueBackgroundColor() const {
     return SK_ColorTRANSPARENT;
   }
   return background_color();
+}
+
+SkColor Layer::SafeOpaqueBackgroundColor() const {
+  SkColor host_background_color =
+      layer_tree_host_
+          ? layer_tree_host_->pending_commit_state()->background_color
+          : layer_tree_inputs()->safe_opaque_background_color;
+  return SafeOpaqueBackgroundColor(host_background_color);
 }
 
 void Layer::SetMasksToBounds(bool masks_to_bounds) {
@@ -1339,7 +1349,8 @@ bool Layer::IsSnappedToPixelGridInTarget() {
   return false;
 }
 
-void Layer::PushPropertiesTo(LayerImpl* layer) {
+void Layer::PushPropertiesTo(LayerImpl* layer,
+                             const CommitState& commit_state) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "Layer::PushPropertiesTo");
   DCHECK(layer_tree_host_);
@@ -1350,7 +1361,8 @@ void Layer::PushPropertiesTo(LayerImpl* layer) {
   layer->SetElementId(inputs_.element_id);
   layer->SetHasTransformNode(has_transform_node_);
   layer->SetBackgroundColor(inputs_.background_color);
-  layer->SetSafeOpaqueBackgroundColor(SafeOpaqueBackgroundColor());
+  layer->SetSafeOpaqueBackgroundColor(
+      SafeOpaqueBackgroundColor(commit_state.background_color));
   layer->SetBounds(inputs_.bounds);
   layer->SetTransformTreeIndex(transform_tree_index());
   layer->SetEffectTreeIndex(effect_tree_index());

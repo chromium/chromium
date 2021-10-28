@@ -87,8 +87,9 @@ bool MicroBenchmarkController::SendMessage(int id, base::Value message) {
   return (*it)->ProcessMessage(std::move(message));
 }
 
-void MicroBenchmarkController::ScheduleImplBenchmarks(
-    LayerTreeHostImpl* host_impl) {
+std::vector<std::unique_ptr<MicroBenchmarkImpl>>
+MicroBenchmarkController::CreateImplBenchmarks() const {
+  std::vector<std::unique_ptr<MicroBenchmarkImpl>> result;
   for (const auto& benchmark : benchmarks_) {
     std::unique_ptr<MicroBenchmarkImpl> benchmark_impl;
     if (!benchmark->ProcessedForBenchmarkImpl()) {
@@ -97,8 +98,9 @@ void MicroBenchmarkController::ScheduleImplBenchmarks(
     }
 
     if (benchmark_impl.get())
-      host_impl->ScheduleMicroBenchmark(std::move(benchmark_impl));
+      result.push_back(std::move(benchmark_impl));
   }
+  return result;
 }
 
 void MicroBenchmarkController::DidUpdateLayers() {

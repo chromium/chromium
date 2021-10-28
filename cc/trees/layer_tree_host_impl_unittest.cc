@@ -769,8 +769,7 @@ class LayerTreeHostImplTest : public testing::Test,
     layer_tree_impl->SetRootLayerForTesting(nullptr);
     layer_tree_impl->DetachLayers();
     layer_tree_impl->property_trees()->clear();
-    layer_tree_impl->SetViewportPropertyIds(
-        LayerTreeImpl::ViewportPropertyIds());
+    layer_tree_impl->SetViewportPropertyIds(ViewportPropertyIds());
   }
 
   void pinch_zoom_pan_viewport_forces_commit_redraw(float device_scale_factor);

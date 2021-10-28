@@ -185,10 +185,11 @@ TEST_F(SolidColorLayerImplTest, VerifyNeedsBlending) {
   EXPECT_FALSE(layer->contents_opaque());
   layer->SetBackgroundColor(SkColorSetARGB(255, 10, 20, 30));
   EXPECT_TRUE(layer->contents_opaque());
+
+  host->WillCommit(/*completion_event=*/nullptr, /*has_updates=*/true);
   {
     DebugScopedSetImplThread scoped_impl_thread(host->GetTaskRunnerProvider());
-    host->FinishCommitOnImplThread(
-        host->host_impl(), host->GetSwapPromiseManager()->TakeSwapPromises());
+    host->FinishCommitOnImplThread(host->host_impl());
     LayerImpl* layer_impl =
         host->host_impl()->active_tree()->LayerById(layer->id());
 
@@ -209,14 +210,16 @@ TEST_F(SolidColorLayerImplTest, VerifyNeedsBlending) {
     EXPECT_TRUE(
         render_pass->quad_list.front()->shared_quad_state->are_contents_opaque);
   }
+  host->CommitComplete();
 
   EXPECT_TRUE(layer->contents_opaque());
   layer->SetBackgroundColor(SkColorSetARGB(254, 10, 20, 30));
   EXPECT_FALSE(layer->contents_opaque());
+
+  host->WillCommit(/*completion_event=*/nullptr, /*has_updates=*/true);
   {
     DebugScopedSetImplThread scoped_impl_thread(host->GetTaskRunnerProvider());
-    host->FinishCommitOnImplThread(
-        host->host_impl(), host->GetSwapPromiseManager()->TakeSwapPromises());
+    host->FinishCommitOnImplThread(host->host_impl());
     LayerImpl* layer_impl =
         host->host_impl()->active_tree()->LayerById(layer->id());
 
@@ -237,6 +240,7 @@ TEST_F(SolidColorLayerImplTest, VerifyNeedsBlending) {
     EXPECT_FALSE(
         render_pass->quad_list.front()->shared_quad_state->are_contents_opaque);
   }
+  host->CommitComplete();
 }
 
 TEST_F(SolidColorLayerImplTest, Occlusion) {

@@ -294,7 +294,6 @@ class CC_EXPORT LayerTreeImpl {
   // The following viewport related property nodes will only ever be set on the
   // main-frame's renderer (i.e. OOPIF and UI compositors will not have these
   // set.
-  using ViewportPropertyIds = LayerTreeHost::ViewportPropertyIds;
   void SetViewportPropertyIds(const ViewportPropertyIds& ids);
 
   const TransformNode* OverscrollElasticityTransformNode() const;
@@ -325,7 +324,7 @@ class CC_EXPORT LayerTreeImpl {
         const_cast<const LayerTreeImpl*>(this)->OuterViewportScrollNode());
   }
 
-  LayerTreeHost::ViewportPropertyIds ViewportPropertyIdsForTesting() const {
+  ViewportPropertyIds ViewportPropertyIdsForTesting() const {
     return viewport_property_ids_;
   }
   LayerImpl* InnerViewportScrollLayerForTesting() const;
@@ -517,7 +516,7 @@ class CC_EXPORT LayerTreeImpl {
 
   void AddLayerShouldPushProperties(LayerImpl* layer);
   void ClearLayersThatShouldPushProperties();
-  const base::flat_set<LayerImpl*>& LayersThatShouldPushProperties() {
+  const base::flat_set<LayerImpl*>& LayersThatShouldPushProperties() const {
     return layers_that_should_push_properties_;
   }
 
@@ -814,7 +813,7 @@ class CC_EXPORT LayerTreeImpl {
 
   int last_scrolled_scroll_node_index_;
 
-  LayerTreeHost::ViewportPropertyIds viewport_property_ids_;
+  ViewportPropertyIds viewport_property_ids_;
 
   LayerSelection selection_;
 

@@ -70,8 +70,9 @@ void ScrollbarLayerBase::SetScrollElementId(ElementId element_id) {
   SetNeedsCommit();
 }
 
-void ScrollbarLayerBase::PushPropertiesTo(LayerImpl* layer) {
-  Layer::PushPropertiesTo(layer);
+void ScrollbarLayerBase::PushPropertiesTo(LayerImpl* layer,
+                                          const CommitState& commit_state) {
+  Layer::PushPropertiesTo(layer, commit_state);
 
   auto* scrollbar_layer_impl = static_cast<ScrollbarLayerImplBase*>(layer);
   DCHECK_EQ(scrollbar_layer_impl->orientation(), orientation_);

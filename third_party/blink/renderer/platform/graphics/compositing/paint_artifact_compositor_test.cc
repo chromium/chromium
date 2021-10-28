@@ -3716,8 +3716,12 @@ TEST_P(PaintArtifactCompositorTest, LayerRasterInvalidationWithClip) {
                                     gfx::Rect(0, 0, 400, 200), Color::kBlack)
                        .Build();
   // Simluate commit to the compositor thread.
-  layer->PushPropertiesTo(
-      layer->CreateLayerImpl(host_impl.active_tree()).get());
+  // When doing a full commit, we would call
+  // layer_tree_host_->ActivateCommitState() and the second argument would come
+  // from layer_tree_host_->active_commit_state(); we use pending_commit_state()
+  // just to keep the test code simple.
+  layer->PushPropertiesTo(layer->CreateLayerImpl(host_impl.active_tree()).get(),
+                          *GetLayerTreeHost().pending_commit_state());
   Update(artifact2);
   ASSERT_EQ(1u, LayerCount());
   ASSERT_EQ(layer, LayerAt(0));
@@ -3739,8 +3743,8 @@ TEST_P(PaintArtifactCompositorTest, LayerRasterInvalidationWithClip) {
                        Color::kBlack)
           .Build();
   // Simluate commit to the compositor thread.
-  layer->PushPropertiesTo(
-      layer->CreateLayerImpl(host_impl.active_tree()).get());
+  layer->PushPropertiesTo(layer->CreateLayerImpl(host_impl.active_tree()).get(),
+                          *GetLayerTreeHost().pending_commit_state());
   Update(artifact3);
   ASSERT_EQ(1u, LayerCount());
   ASSERT_EQ(layer, LayerAt(0));
@@ -4520,13 +4524,17 @@ TEST_P(PaintArtifactCompositorTest, DirectlySetScrollOffset) {
 
   auto& host = GetLayerTreeHost();
   host.CompositeForTest(base::TimeTicks::Now(), true);
-  ASSERT_FALSE(host.LayersThatShouldPushProperties().contains(scroll_layer));
+  ASSERT_FALSE(
+      host.pending_commit_state()->layers_that_should_push_properties.contains(
+          scroll_layer));
   ASSERT_FALSE(host.proxy()->CommitRequested());
   ASSERT_FALSE(transform_tree.needs_update());
 
   ASSERT_TRUE(GetPaintArtifactCompositor().DirectlySetScrollOffset(
       scroll_element_id, FloatPoint(-10, -20)));
-  EXPECT_TRUE(host.LayersThatShouldPushProperties().contains(scroll_layer));
+  EXPECT_TRUE(
+      host.pending_commit_state()->layers_that_should_push_properties.contains(
+          scroll_layer));
   EXPECT_TRUE(host.proxy()->CommitRequested());
   EXPECT_EQ(gfx::Vector2dF(-10, -20),
             scroll_tree.current_scroll_offset(scroll_element_id));

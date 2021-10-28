@@ -193,8 +193,19 @@ void SingleThreadProxy::DoCommit(const viz::BeginFrameArgs& commit_args) {
   TRACE_EVENT0("cc", "SingleThreadProxy::DoCommit");
   DCHECK(task_runner_provider_->IsMainThread());
 
-  int source_frame_number = layer_tree_host_->SourceFrameNumber();
-  layer_tree_host_->WillCommit(nullptr);
+  if (host_impl_->EvictedUIResourcesExist())
+    layer_tree_host_->GetUIResourceManager()->RecreateUIResources();
+
+  // Strictly speaking, it's not necessary to pass a CompletionEvent to
+  // WillCommit, since we can't have thread contention issues. The benefit to
+  // creating one here is that it simplifies LayerTreeHost::in_commit(), which
+  // useful in DCHECKs sprinkled throughout the code.
+  auto completion_event_ptr = std::make_unique<CompletionEvent>(
+      base::WaitableEvent::ResetPolicy::MANUAL);
+  auto* completion_event = completion_event_ptr.get();
+  auto* commit_state =
+      layer_tree_host_->WillCommit(std::move(completion_event_ptr),
+                                   /*has_updates=*/true);
   devtools_instrumentation::ScopedCommitTrace commit_task(
       layer_tree_host_->GetId(), commit_args.frame_id.sequence_number);
 
@@ -203,14 +214,10 @@ void SingleThreadProxy::DoCommit(const viz::BeginFrameArgs& commit_args) {
     DebugScopedSetMainThreadBlocked main_thread_blocked(task_runner_provider_);
     DebugScopedSetImplThread impl(task_runner_provider_);
 
-    host_impl_->BeginCommit(source_frame_number);
+    host_impl_->BeginCommit(commit_state->source_frame_number);
 
-    if (host_impl_->EvictedUIResourcesExist())
-      layer_tree_host_->GetUIResourceManager()->RecreateUIResources();
-
-    layer_tree_host_->FinishCommitOnImplThread(
-        host_impl_.get(),
-        layer_tree_host_->GetSwapPromiseManager()->TakeSwapPromises());
+    layer_tree_host_->FinishCommitOnImplThread(host_impl_.get());
+    completion_event->Signal();
 
     if (scheduler_on_impl_thread_) {
       scheduler_on_impl_thread_->DidCommit();
@@ -267,11 +274,6 @@ void SingleThreadProxy::SetNeedsRedraw(const gfx::Rect& damage_rect) {
   DebugScopedSetImplThread impl(task_runner_provider_);
   host_impl_->SetViewportDamage(damage_rect);
   SetNeedsRedrawOnImplThread();
-}
-
-void SingleThreadProxy::SetNextCommitWaitsForActivation() {
-  // Activation always forced in commit, so nothing to do.
-  DCHECK(task_runner_provider_->IsMainThread());
 }
 
 void SingleThreadProxy::SetTargetLocalSurfaceId(
@@ -925,7 +927,8 @@ void SingleThreadProxy::DoPainting(const viz::BeginFrameArgs& commit_args) {
   layer_tree_host_->UpdateLayers();
   update_layers_requested_ = false;
 
-  auto begin_main_frame_metrics = layer_tree_host_->begin_main_frame_metrics();
+  auto& begin_main_frame_metrics =
+      layer_tree_host_->pending_commit_state()->begin_main_frame_metrics;
   host_impl_->ReadyToCommit(commit_args, begin_main_frame_metrics.get());
 
   // TODO(enne): SingleThreadProxy does not support cancelling commits yet,

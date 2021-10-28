@@ -1351,7 +1351,7 @@ TEST_F(LayerTreeImplTest,
       gfx::Rect(scaled_bounds_for_root));
 
   host_impl().active_tree()->SetDeviceScaleFactor(device_scale_factor);
-  LayerTreeImpl::ViewportPropertyIds viewport_property_ids;
+  ViewportPropertyIds viewport_property_ids;
   viewport_property_ids.page_scale_transform =
       page_scale_layer->transform_tree_index();
   host_impl().active_tree()->SetViewportPropertyIds(viewport_property_ids);
@@ -2004,7 +2004,7 @@ TEST_F(LayerTreeImplTest, SelectionBoundsForScaledLayers) {
   gfx::Size scaled_bounds_for_root = gfx::ScaleToCeiledSize(
       root->bounds(), device_scale_factor * page_scale_factor);
 
-  LayerTreeImpl::ViewportPropertyIds viewport_property_ids;
+  ViewportPropertyIds viewport_property_ids;
   viewport_property_ids.page_scale_transform =
       page_scale_layer->transform_tree_index();
   host_impl().active_tree()->SetViewportPropertyIds(viewport_property_ids);

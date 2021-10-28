@@ -45,6 +45,8 @@ namespace cc {
 class AnimationHost;
 class Layer;
 class LayerTreeHost;
+
+struct CommitState;
 }
 
 namespace viz {
@@ -132,7 +134,7 @@ class CONTENT_EXPORT CompositorImpl
   void RequestNewLayerTreeFrameSink() override;
   void DidInitializeLayerTreeFrameSink() override;
   void DidFailToInitializeLayerTreeFrameSink() override;
-  void WillCommit() override {}
+  void WillCommit(cc::CommitState*) override {}
   void DidCommit(base::TimeTicks, base::TimeTicks) override;
   void DidCommitAndDrawFrame() override {}
   void DidReceiveCompositorFrameAck() override;

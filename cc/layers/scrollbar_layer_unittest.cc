@@ -247,7 +247,8 @@ TEST_F(ScrollbarLayerTest, SetNeedsDisplayDoesNotRequireUpdate) {
 
   // Simulate commit to compositor thread.
   scrollbar_layer->PushPropertiesTo(
-      scrollbar_layer->CreateLayerImpl(layer_tree_host_->active_tree()).get());
+      scrollbar_layer->CreateLayerImpl(layer_tree_host_->active_tree()).get(),
+      *layer_tree_host_->pending_commit_state());
   scrollbar_layer->fake_scrollbar()->set_needs_repaint_thumb(false);
   scrollbar_layer->fake_scrollbar()->set_needs_repaint_track(false);
 
@@ -354,13 +355,17 @@ TEST_F(ScrollbarLayerTest, ScrollElementIdPushedAcrossCommit) {
 
   ASSERT_TRUE(layer_tree_host_->needs_commit());
 
+  // WillCommit(_, true) here will ensure that
+  // layer_tree_host_->active_commit_state() is populated, which is required
+  // during FinishCommitOnImplThread().
+  layer_tree_host_->WillCommit(/*completion_event=*/nullptr,
+                               /*has_updates=*/true);
   {
     DebugScopedSetImplThread scoped_impl_thread(
         layer_tree_host_->GetTaskRunnerProvider());
-    layer_tree_host_->FinishCommitOnImplThread(
-        layer_tree_host_->host_impl(),
-        layer_tree_host_->GetSwapPromiseManager()->TakeSwapPromises());
+    layer_tree_host_->FinishCommitOnImplThread(layer_tree_host_->host_impl());
   }
+  layer_tree_host_->CommitComplete();
 
   EXPECT_EQ(painted_scrollbar_layer_impl->scroll_element_id_,
             layer_b->element_id());
@@ -1327,7 +1332,8 @@ TEST_F(ScrollbarLayerTestResourceCreationAndRelease, TestResourceUpdate) {
 
   // Simulate commit to compositor thread.
   scrollbar_layer->PushPropertiesTo(
-      scrollbar_layer->CreateLayerImpl(layer_tree_host_->active_tree()).get());
+      scrollbar_layer->CreateLayerImpl(layer_tree_host_->active_tree()).get(),
+      *layer_tree_host_->pending_commit_state());
   scrollbar_layer->fake_scrollbar()->set_needs_repaint_thumb(false);
   scrollbar_layer->fake_scrollbar()->set_needs_repaint_track(false);
 

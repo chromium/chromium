@@ -134,11 +134,13 @@ TEST_F(WebFrameWidgetSimTest, ForceSendMetadataOnInput) {
   cc::LayerTreeHost* layer_tree_host =
       WebView().MainFrameViewWidget()->LayerTreeHostForTesting();
   // We should not have any force send metadata requests at start.
-  EXPECT_FALSE(layer_tree_host->TakeForceSendMetadataRequest());
+  EXPECT_FALSE(
+      layer_tree_host->pending_commit_state()->force_send_metadata_request);
   // ShowVirtualKeyboard will trigger a text input state update.
   WebView().MainFrameViewWidget()->ShowVirtualKeyboard();
   // We should now have a force send metadata request.
-  EXPECT_TRUE(layer_tree_host->TakeForceSendMetadataRequest());
+  EXPECT_TRUE(
+      layer_tree_host->pending_commit_state()->force_send_metadata_request);
 }
 #endif  // defined(OS_ANDROID)
 

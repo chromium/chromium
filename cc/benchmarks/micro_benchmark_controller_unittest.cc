@@ -128,11 +128,12 @@ TEST_F(MicroBenchmarkControllerTest, BenchmarkImplRan) {
       base::BindOnce(&IncrementCallCount, base::Unretained(&run_count)));
   EXPECT_GT(id, 0);
 
-  // Schedule impl benchmarks. In production code, this is run in commit.
-  layer_tree_host_->GetMicroBenchmarkController()->ScheduleImplBenchmarks(
-      layer_tree_host_impl_.get());
-
-  // Now complete the commit (as if on the impl thread).
+  // Scheduling benchmarks on the impl thread is usually done during
+  // LayerTreeHostImpl::FinishCommit().
+  for (auto& benchmark : layer_tree_host_->GetMicroBenchmarkController()
+                             ->CreateImplBenchmarks()) {
+    layer_tree_host_impl_->ScheduleMicroBenchmark(std::move(benchmark));
+  }
   layer_tree_host_impl_->CommitComplete();
 
   // Make sure all posted messages run.
