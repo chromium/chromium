@@ -7384,6 +7384,7 @@ others/histograms.xml -->
   <int value="30" label="ContentsPreferredSizeChanged"/>
   <int value="31" label="BeginDownload"/>
   <int value="32" label="Bug1234857"/>
+  <int value="33" label="FileSystemAccessPermissionRequest"/>
 </enum>
 
 <enum name="BackForwardCacheEligibilityDuringCommit">

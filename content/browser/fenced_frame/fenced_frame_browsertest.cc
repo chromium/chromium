@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/callback.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -146,5 +147,201 @@ IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, Navigation) {
   EXPECT_EQ(url::Origin::Create(fenced_frame_url),
             inner_fenced_frame_rfh->GetLastCommittedOrigin());
 }
+
+namespace {
+
+enum class FrameType {
+  kSameOriginIframe,
+  kCrossOriginIframe,
+  kSameOriginFencedFrame,
+  kCrossOriginFencedFrame,
+};
+
+const std::vector<FrameType> kTestParameters[] = {
+    {},
+
+    {FrameType::kSameOriginIframe},
+    {FrameType::kCrossOriginIframe},
+    {FrameType::kSameOriginIframe, FrameType::kSameOriginIframe},
+    {FrameType::kSameOriginIframe, FrameType::kCrossOriginIframe},
+    {FrameType::kCrossOriginIframe, FrameType::kSameOriginIframe},
+    {FrameType::kCrossOriginIframe, FrameType::kCrossOriginIframe},
+
+    {FrameType::kSameOriginFencedFrame},
+    {FrameType::kCrossOriginFencedFrame},
+    {FrameType::kSameOriginFencedFrame, FrameType::kSameOriginIframe},
+    {FrameType::kSameOriginFencedFrame, FrameType::kCrossOriginIframe},
+    {FrameType::kCrossOriginFencedFrame, FrameType::kSameOriginIframe},
+    {FrameType::kCrossOriginFencedFrame, FrameType::kCrossOriginIframe}};
+
+static std::string TestParamToString(
+    ::testing::TestParamInfo<
+        std::tuple<std::vector<FrameType>, bool /* shadow_dom_fenced_frame */>>
+        param_info) {
+  std::string out;
+  for (const auto& frame_type : std::get<0>(param_info.param)) {
+    switch (frame_type) {
+      case FrameType::kSameOriginIframe:
+        out += "SameI_";
+        break;
+      case FrameType::kCrossOriginIframe:
+        out += "CrossI_";
+        break;
+      case FrameType::kSameOriginFencedFrame:
+        out += "SameF_";
+        break;
+      case FrameType::kCrossOriginFencedFrame:
+        out += "CrossF_";
+        break;
+    }
+  }
+  if (std::get<1>(param_info.param)) {
+    out += "ShadowDOM";
+  } else {
+    out += "MPArch";
+  }
+  return out;
+}
+
+const char* kSameOriginHostName = "a.example";
+const char* kCrossOriginHostName = "b.example";
+
+const char* GetHostNameForFrameType(FrameType type) {
+  switch (type) {
+    case FrameType::kSameOriginIframe:
+      return kSameOriginHostName;
+    case FrameType::kCrossOriginIframe:
+      return kCrossOriginHostName;
+    case FrameType::kSameOriginFencedFrame:
+      return kSameOriginHostName;
+    case FrameType::kCrossOriginFencedFrame:
+      return kCrossOriginHostName;
+  }
+}
+
+bool IsFencedFrameType(FrameType type) {
+  switch (type) {
+    case FrameType::kSameOriginIframe:
+      return false;
+    case FrameType::kCrossOriginIframe:
+      return false;
+    case FrameType::kSameOriginFencedFrame:
+      return true;
+    case FrameType::kCrossOriginFencedFrame:
+      return true;
+  }
+}
+
+}  // namespace
+
+class FencedFrameNestedFrameBrowserTest
+    : public ContentBrowserTest,
+      public testing::WithParamInterface<
+          std::tuple<std::vector<FrameType>,
+                     bool /* shadow_dom_fenced_frame */>> {
+ protected:
+  FencedFrameNestedFrameBrowserTest() {
+    if (std::get<1>(GetParam())) {
+      feature_list_.InitAndEnableFeatureWithParameters(
+          blink::features::kFencedFrames,
+          {{"implementation_type", "shadow_dom"}});
+    } else {
+      fenced_frame_helper_ = std::make_unique<test::FencedFrameTestHelper>();
+    }
+  }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ContentBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  WebContentsImpl* web_contents() {
+    return static_cast<WebContentsImpl*>(shell()->web_contents());
+  }
+
+  RenderFrameHostImpl* LoadNestedFrame() {
+    const GURL main_url =
+        embedded_test_server()->GetURL(kSameOriginHostName, "/title1.html");
+    EXPECT_TRUE(NavigateToURL(shell(), main_url));
+    RenderFrameHostImpl* frame =
+        static_cast<RenderFrameHostImpl*>(web_contents()->GetMainFrame());
+    int depth = 0;
+    for (const auto& type : std::get<0>(GetParam())) {
+      ++depth;
+      frame = CreateFrame(frame, type, depth);
+    }
+    return frame;
+  }
+
+  bool IsInFencedFrameTest() {
+    for (const auto& type : std::get<0>(GetParam())) {
+      if (IsFencedFrameType(type))
+        return true;
+    }
+    return false;
+  }
+
+ private:
+  RenderFrameHostImpl* CreateFrame(RenderFrameHostImpl* parent,
+                                   FrameType type,
+                                   int depth) {
+    const GURL url = embedded_test_server()->GetURL(
+        GetHostNameForFrameType(type),
+        "/fenced_frames/title1.html?depth=" + base::NumberToString(depth));
+
+    if (IsFencedFrameType(type)) {
+      if (fenced_frame_helper_) {
+        return static_cast<RenderFrameHostImpl*>(
+            fenced_frame_helper_->CreateFencedFrame(parent, url));
+      }
+      // FencedFrameTestHelper only supports the MPArch version of fenced
+      // frames. So need to maually create a fenced frame for the ShadowDOM
+      // version.
+      constexpr char kAddFencedFrameScript[] = R"({
+          frame = document.createElement('fencedframe');
+          document.body.appendChild(frame);
+        })";
+      EXPECT_TRUE(ExecJs(parent, kAddFencedFrameScript));
+      constexpr char kNavigateFencedFrameScript[] = R"({
+          document.body.getElementsByTagName('fencedframe')[0].src = $1;
+        })";
+      RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(
+          parent->child_at(0)->current_frame_host());
+      TestFrameNavigationObserver observer(rfh);
+      EXPECT_TRUE(ExecJs(parent, JsReplace(kNavigateFencedFrameScript, url)));
+      observer.Wait();
+      return static_cast<RenderFrameHostImpl*>(ChildFrameAt(parent, 0));
+    }
+    constexpr char kAddIframeScript[] = R"({
+        (()=>{
+            return new Promise((resolve) => {
+              const frame = document.createElement('iframe');
+              frame.addEventListener('load', () => {resolve();});
+              frame.src = $1;
+              document.body.appendChild(frame);
+            });
+        })();
+        })";
+    EXPECT_TRUE(ExecJs(parent, JsReplace(kAddIframeScript, url)));
+
+    return static_cast<RenderFrameHostImpl*>(ChildFrameAt(parent, 0));
+  }
+
+  std::unique_ptr<test::FencedFrameTestHelper> fenced_frame_helper_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(FencedFrameNestedFrameBrowserTest,
+                       IsNestedWithinFencedFrame) {
+  RenderFrameHostImpl* rfh = LoadNestedFrame();
+  EXPECT_EQ(IsInFencedFrameTest(), rfh->IsNestedWithinFencedFrame());
+}
+
+INSTANTIATE_TEST_SUITE_P(FencedFrameNestedFrameBrowserTest,
+                         FencedFrameNestedFrameBrowserTest,
+                         testing::Combine(testing::ValuesIn(kTestParameters),
+                                          testing::Bool()),
+                         TestParamToString);
 
 }  // namespace content

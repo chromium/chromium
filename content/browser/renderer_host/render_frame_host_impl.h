@@ -330,6 +330,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   bool IsInPrimaryMainFrame() override;
   RenderFrameHostImpl* GetOutermostMainFrame() override;
   bool IsFencedFrameRoot() override;
+  bool IsNestedWithinFencedFrame() override;
   void ForEachRenderFrameHost(FrameIterationCallback on_frame) override;
   void ForEachRenderFrameHost(
       FrameIterationAlwaysContinueCallback on_frame) override;
@@ -2547,6 +2548,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
   class DroppedInterfaceRequestLogger;
   class SubresourceLoaderFactoriesConfig;
 
+  enum class FencedFrameStatus {
+    kNotNestedInFencedFrame,
+    kFencedFrameRoot,
+    kIframeNestedWithinFencedFrame
+  };
+
   FrameTreeNode* GetSibling(int relative_offset) const;
 
   FrameTreeNode* FindAndVerifyChildInternal(
@@ -4060,6 +4067,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // service to set up the actual endpoint configuration once the document load
   // commits.
   base::flat_map<std::string, std::string> reporting_endpoints_;
+
+  // This indicates whether `this` is not nested in a fenced frame, or `this` is
+  // associated with a fenced frame root, or `this` is associated with an iframe
+  // nested within a fenced frame.
+  const FencedFrameStatus fenced_frame_status_;
 
   // NOTE: This must be the last member.
   base::WeakPtrFactory<RenderFrameHostImpl> weak_ptr_factory_{this};

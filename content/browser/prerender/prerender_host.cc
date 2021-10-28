@@ -205,6 +205,10 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
     DCHECK_EQ(target_frame_tree,
               navigation_request.frame_tree_node()->frame_tree());
 
+    // We support activating the prerenderd page only to the topmost
+    // RenderFrameHost.
+    CHECK(!page->render_frame_host->GetParentOrOuterDocumentOrEmbedder());
+
     page->render_frame_host->SetFrameTreeNode(*(target_frame_tree->root()));
     // Copy frame name into the replication state of the primary main frame to
     // ensure that the replication state of the primary main frame after
