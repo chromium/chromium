@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//ash/webui/eche_app_ui/eche_app_ui.gni")
 import("//ash/webui/help_app_ui/help_app_ui.gni")
 import("//ash/webui/media_app_ui/media_app_ui.gni")
 import("//ash/webui/projector_app/projector_app.gni")
@@ -10,6 +11,7 @@ import("//tools/grit/grit_rule.gni")
 assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
 
 # Convenience template for WebUIs using generate_grd.
+# TODO(calamity): Further deduplicate with non-generated grit targets.
 template("ash_generated_grit") {
   grit(target_name) {
     forward_variables_from(invoker,
@@ -304,6 +306,36 @@ grit("projector_app_bundle_resources") {
     "grit/chromeos_projector_app_bundle_resources_map.cc",
     "grit/chromeos_projector_app_bundle_resources_map.h",
     "chromeos_projector_app_bundle_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chromeos"
+}
+
+# Resources used by chrome://eche-app
+ash_generated_grit("eche_app_resources") {
+  source = "$root_gen_dir/ash/webui/eche_app_ui/ash_eche_app_resources.grd"
+  deps = [ "//ash/webui/eche_app_ui:build_grd" ]
+}
+
+# Resources automatically served by the chrome://eche-app bundle, obtained via DEPS.
+grit("eche_bundle_resources") {
+  # Obtained via an internal CIPD package in src/DEPS.
+  if (enable_cros_eche_app) {
+    # Obtained via an internal CIPD package in src/DEPS.
+    source = "//ash/webui/eche_app_ui/resources/prod/eche_bundle_resources.grd"
+  } else {
+    source =
+        "//ash/webui/eche_app_ui/resources/mock/eche_bundle_mock_resources.grd"
+  }
+
+  use_brotli = true
+
+  # TODO(https://crbug.com/1164001): Prefix of outputs should be changed to ash
+  # when .grd from internal CIPD package is updated.
+  outputs = [
+    "grit/chromeos_eche_bundle_resources.h",
+    "grit/chromeos_eche_bundle_resources_map.cc",
+    "grit/chromeos_eche_bundle_resources_map.h",
+    "chromeos_eche_bundle_resources.pak",
   ]
   output_dir = "$root_gen_dir/chromeos"
 }

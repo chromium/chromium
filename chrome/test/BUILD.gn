@@ -2324,11 +2324,11 @@ if (!is_android && !is_fuchsia) {
       ]
       if (is_chromeos_ash) {
         deps += [
+          "//ash/webui/eche_app_ui:browser_tests_js",
           "//ash/webui/help_app_ui:browser_tests_js",
           "//ash/webui/media_app_ui:browser_tests_js",
           "//ash/webui/personalization_app:browser_tests_js",
           "//chrome/browser/resources/gaia_auth_host:browser_tests",
-          "//chromeos/components/eche_app_ui:browser_tests_js",
           "//chromeos/components/system_apps:browser_tests",
         ]
 
@@ -3585,6 +3585,7 @@ if (!is_android && !is_fuchsia) {
         "//ash/keyboard/ui:test_support",
         "//ash/public/cpp/external_arc",
         "//ash/webui/diagnostics_ui",
+        "//ash/webui/eche_app_ui",
         "//ash/webui/file_manager:constants",
         "//ash/webui/firmware_update_ui",
         "//ash/webui/help_app_ui",
@@ -3625,7 +3626,6 @@ if (!is_android && !is_fuchsia) {
         "//chromeos/assistant:buildflags",
         "//chromeos/attestation",
         "//chromeos/attestation:test_support",
-        "//chromeos/components/eche_app_ui",
         "//chromeos/components/web_applications/test:test_support",
         "//chromeos/cryptohome",
         "//chromeos/dbus:test_support",

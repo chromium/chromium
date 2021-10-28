@@ -22,7 +22,6 @@ test("chromeos_components_unittests") {
     "//base/test:test_support",
     "//build:chromeos_buildflags",
     "//chromeos/components/cdm_factory_daemon:unit_tests",
-    "//chromeos/components/eche_app_ui:unit_tests",
     "//chromeos/components/feature_usage:unit_tests",
     "//chromeos/components/local_search_service:unit_tests",
     "//chromeos/components/local_search_service/public/mojom:unit_tests",
@@ -52,7 +51,6 @@ group("closure_compile") {
   # the appropriate place during the code migration project.
   deps = [
     "//chromeos/components/connectivity_diagnostics:closure_compile",
-    "//chromeos/components/eche_app_ui:closure_compile",
     "//chromeos/components/multidevice/debug_webui/resources:closure_compile",
     "//chromeos/components/system_apps:closure_compile",
   ]

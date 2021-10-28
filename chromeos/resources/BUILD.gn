@@ -7,7 +7,6 @@
 # well.
 
 import("//chromeos/assistant/assistant.gni")
-import("//chromeos/components/eche_app_ui/eche_app_ui.gni")
 import("//tools/grit/grit_rule.gni")
 
 assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
@@ -23,10 +22,7 @@ grit("resources") {
   ]
   output_dir = "$root_gen_dir/chromeos"
 
-  defines = [
-    "enable_cros_libassistant=$enable_cros_libassistant",
-    "enable_cros_eche_app=$enable_cros_eche_app",
-  ]
+  defines = [ "enable_cros_libassistant=$enable_cros_libassistant" ]
 
   grit_flags = [
     "-E",
@@ -50,34 +46,6 @@ grit("resources") {
   ]
 }
 
-# Convenience template for WebUIs using generate_grd.
-# TODO(calamity): Further deduplicate with non-generated grit targets.
-template("chromeos_generated_grit") {
-  grit(target_name) {
-    forward_variables_from(invoker,
-                           [
-                             "deps",
-                             "source",
-                           ])
-
-    # These arguments are needed since the grd is generated at build time.
-    enable_input_discovery_for_gn_analyze = false
-    outputs = [
-      "chromeos_$target_name.pak",
-      "grit/chromeos_$target_name.h",
-      "grit/chromeos_${target_name}_map.cc",
-      "grit/chromeos_${target_name}_map.h",
-    ]
-    output_dir = "$root_gen_dir/chromeos"
-  }
-}
-
-# Resources used by chrome://eche-app
-chromeos_generated_grit("eche_app_resources") {
-  source = "$root_gen_dir/chromeos/components/eche_app_ui/chromeos_eche_app_resources.grd"
-  deps = [ "//chromeos/components/eche_app_ui:build_grd" ]
-}
-
 # Resources used by chrome://connectivity-diagnostics
 grit("connectivity_diagnostics_resources") {
   # These arguments are needed since the grd is generated at build time.
@@ -96,27 +64,5 @@ grit("connectivity_diagnostics_resources") {
     "grit/connectivity_diagnostics_resources_map.h",
   ]
 
-  output_dir = "$root_gen_dir/chromeos"
-}
-
-# Resources automatically served by the chrome://eche-app bundle, obtained via DEPS.
-grit("eche_bundle_resources") {
-  # Obtained via an internal CIPD package in src/DEPS.
-  if (enable_cros_eche_app) {
-    # Obtained via an internal CIPD package in src/DEPS.
-    source =
-        "../components/eche_app_ui/resources/prod/eche_bundle_resources.grd"
-  } else {
-    source = "../components/eche_app_ui/resources/mock/eche_bundle_mock_resources.grd"
-  }
-
-  use_brotli = true
-
-  outputs = [
-    "grit/chromeos_eche_bundle_resources.h",
-    "grit/chromeos_eche_bundle_resources_map.cc",
-    "grit/chromeos_eche_bundle_resources_map.h",
-    "chromeos_eche_bundle_resources.pak",
-  ]
   output_dir = "$root_gen_dir/chromeos"
 }

@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_CHROMEOS_ECHE_APP_ECHE_APP_MANAGER_FACTORY_H_
 #define CHROME_BROWSER_CHROMEOS_ECHE_APP_ECHE_APP_MANAGER_FACTORY_H_
 
+#include "ash/webui/eche_app_ui/launch_app_helper.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/components/eche_app_ui/launch_app_helper.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

@@ -23,6 +23,7 @@ test("ash_webui_unittests") {
     "//ash/webui/common/backend:unit_tests",
     "//ash/webui/diagnostics_ui/backend:unit_tests",
     "//ash/webui/diagnostics_ui/mojom:unit_tests",
+    "//ash/webui/eche_app_ui:unit_tests",
     "//ash/webui/file_manager:unit_tests",
     "//ash/webui/help_app_ui:unit_tests",
     "//ash/webui/projector_app:unit_tests",
@@ -61,6 +62,7 @@ group("closure_compile") {
   deps = [
     "//ash/webui/camera_app_ui:closure_compile",
     "//ash/webui/diagnostics_ui:closure_compile",
+    "//ash/webui/eche_app_ui:closure_compile",
     "//ash/webui/file_manager/resources:closure_compile",
     "//ash/webui/file_manager/untrusted_resources:closure_compile",
     "//ash/webui/firmware_update_ui:closure_compile",
