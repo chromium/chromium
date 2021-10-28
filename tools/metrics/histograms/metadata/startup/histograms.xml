@@ -232,7 +232,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Startup.Android.StartupTabPreloader.TabLoaded" units="Boolean"
-    expires_after="2022-05-01">
+    expires_after="2022-09-01">
   <owner>skyostil@chromium.org</owner>
   <summary>
     Android: Whether or not creation of a profile lead to the
@@ -243,14 +243,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Startup.Android.StartupTabPreloader.TabTaken" units="Boolean"
-    expires_after="2020-11-08">
+    expires_after="2022-09-01">
   <owner>skyostil@chromium.org</owner>
   <summary>
     Android: Whether or not a tab speculatively created by the
     StartupTabPreloader was subsequently adopted by ChromeTabCreator. Recorded
     when a tab is loaded, assuming a StartupTabPreloader has been constructed
     for intents with a url for either regular Chrome or a Custom Tab will be
-    loaded.
+    loaded. Warning: this histogram was expired from 2020-11-08 through M95.
   </summary>
 </histogram>
 
