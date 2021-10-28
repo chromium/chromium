@@ -5,7 +5,7 @@ Test that back/forward navigations report the bfcache status
     notRestoredExplanations : [
         [0] : {
             reason : IdleManager
-            type : PageSupportNeeded
+            type : SupportPending
         }
     ]
 }
