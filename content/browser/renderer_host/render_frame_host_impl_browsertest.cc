@@ -1350,8 +1350,6 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBeforeUnloadBrowserTest,
                                       // Check that web_contents() were not
                                       // deleted.
                                       ASSERT_TRUE(weak_web_contents);
-                                      ASSERT_TRUE(
-                                          weak_web_contents->GetMainFrame());
                                     }));
 
   web_contents()->GetMainFrame()->RunBeforeUnloadConfirm(true,
