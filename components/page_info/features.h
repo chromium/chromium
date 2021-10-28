@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PAGE_INFO_FEATURES_H_
 #define COMPONENTS_PAGE_INFO_FEATURES_H_
 
+#include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -27,6 +28,9 @@ extern const base::Feature kPageInfoV2Desktop;
 
 // Enables the "About this site" section in Page Info.
 extern const base::Feature kPageInfoAboutThisSite;
+
+// Whether we show hard-coded content for some sites like https://example.com.
+extern const base::FeatureParam<bool> kShowSampleContent;
 
 }  // namespace page_info
 
