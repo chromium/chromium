@@ -30,7 +30,7 @@ DataSource<T>::DataSource(T* data_source,
 
 template <typename T>
 void DataSource<T>::HandleFinishEvent(bool completed) {
-  delegate_->OnDataSourceFinish(/*completed=*/false);
+  delegate_->OnDataSourceFinish(completed);
 }
 
 template <typename T>
