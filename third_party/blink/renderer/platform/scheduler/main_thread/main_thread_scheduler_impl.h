@@ -398,11 +398,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   void SetPrioritizeCompositingAfterInput(
       bool prioritize_compositing_after_input);
 
-  // Allow places in the scheduler to do some work after the current task.
-  // The primary use case here is batching – to allow updates to be processed
-  // only once per task.
-  void ExecuteAfterCurrentTask(base::OnceClosure on_completion_task);
-
   base::WeakPtr<MainThreadSchedulerImpl> GetWeakPtr();
 
   base::sequence_manager::TaskQueue::QueuePriority compositor_priority() const {
@@ -423,6 +418,9 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   }
 
  protected:
+  // ThreadSchedulerImpl implementation:
+  WTF::Vector<base::OnceClosure>& GetOnTaskCompletionCallbacks() override;
+
   scoped_refptr<MainThreadTaskQueue> ControlTaskQueue();
   scoped_refptr<MainThreadTaskQueue> DefaultTaskQueue();
   scoped_refptr<MainThreadTaskQueue> CompositorTaskQueue();
@@ -757,10 +755,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   void SetNumberOfCompositingTasksToPrioritize(int number_of_tasks);
 
   void ShutdownAllQueues();
-
-  // Dispatch the callbacks which requested to be executed after the current
-  // task.
-  void DispatchOnTaskCompletionCallbacks();
 
   bool AllPagesFrozen() const;
 

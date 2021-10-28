@@ -207,6 +207,7 @@ void WorkerThreadScheduler::OnTaskCompleted(
   PerformMicrotaskCheckpoint();
 
   task_timing->RecordTaskEnd(lazy_now);
+  DispatchOnTaskCompletionCallbacks();
   worker_metrics_helper_.RecordTaskMetrics(task, *task_timing);
 
   if (task_queue != nullptr)

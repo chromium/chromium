@@ -39,6 +39,7 @@ blink_platform_sources("scheduler") {
     "common/thread_load_tracker.cc",
     "common/thread_load_tracker.h",
     "common/thread_scheduler.cc",
+    "common/thread_scheduler_impl.cc",
     "common/thread_scheduler_impl.h",
     "common/thread_type.cc",
     "common/throttling/budget_pool.cc",

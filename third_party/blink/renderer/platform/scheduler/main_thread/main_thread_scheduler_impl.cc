@@ -2917,19 +2917,6 @@ MainThreadSchedulerImpl::ComputeCompositorPriorityFromUseCase() const {
   }
 }
 
-void MainThreadSchedulerImpl::ExecuteAfterCurrentTask(
-    base::OnceClosure on_completion_task) {
-  main_thread_only().on_task_completion_callbacks.push_back(
-      std::move(on_completion_task));
-}
-
-void MainThreadSchedulerImpl::DispatchOnTaskCompletionCallbacks() {
-  for (auto& closure : main_thread_only().on_task_completion_callbacks) {
-    std::move(closure).Run();
-  }
-  main_thread_only().on_task_completion_callbacks.clear();
-}
-
 bool MainThreadSchedulerImpl::AllPagesFrozen() const {
   if (main_thread_only().page_schedulers.IsEmpty())
     return false;
@@ -3010,6 +2997,11 @@ const char* MainThreadSchedulerImpl::VirtualTimePolicyToString(
       NOTREACHED();
       return nullptr;
   }
+}
+
+WTF::Vector<base::OnceClosure>&
+MainThreadSchedulerImpl::GetOnTaskCompletionCallbacks() {
+  return main_thread_only().on_task_completion_callbacks;
 }
 
 }  // namespace scheduler
