@@ -1,9 +1,9 @@
-# Chromium Java style guide
+# Blitz Java style guide
 
-_For other languages, please see the [Chromium style
+_For other languages, please see the [blitz style
 guides](https://chromium.googlesource.com/chromium/src/+/main/styleguide/styleguide.md)._
 
-Chromium follows the [Android Open Source style
+blitz follows the [Android Open Source style
 guide](http://source.android.com/source/code-style.html) unless an exception
 is listed below.
 
