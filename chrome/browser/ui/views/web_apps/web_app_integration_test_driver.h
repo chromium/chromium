@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_INTEGRATION_BROWSERTEST_BASE_H_
-#define CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_INTEGRATION_BROWSERTEST_BASE_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_INTEGRATION_TEST_DRIVER_H_
+#define CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_INTEGRATION_TEST_DRIVER_H_
 
 #include <iosfwd>
 #include <memory>
@@ -104,7 +104,7 @@ struct StateSnapshot {
 };
 std::ostream& operator<<(std::ostream& out, const StateSnapshot& snapshot);
 
-class WebAppIntegrationBrowserTestBase : AppRegistrarObserver {
+class WebAppIntegrationTestDriver : AppRegistrarObserver {
  public:
   struct TestDelegate {
     // Exposing normal functionality of testing::InProcBrowserTest:
@@ -121,8 +121,8 @@ class WebAppIntegrationBrowserTestBase : AppRegistrarObserver {
     virtual void AwaitWebAppQuiescence() = 0;
   };
 
-  explicit WebAppIntegrationBrowserTestBase(TestDelegate* delegate);
-  ~WebAppIntegrationBrowserTestBase() override;
+  explicit WebAppIntegrationTestDriver(TestDelegate* delegate);
+  ~WebAppIntegrationTestDriver() override;
 
   // These functions are expected to be called by any test fixtures that use
   // this helper.
@@ -214,8 +214,6 @@ class WebAppIntegrationBrowserTestBase : AppRegistrarObserver {
                             DisplayMode display_mode);
   content::WebContents* GetCurrentTab(Browser* browser);
   GURL GetInScopeURL(const std::string& site_mode);
-  GURL GetNonInstallableAppURL();
-  GURL GetOutOfScopeURL(const std::string& site_mode);
   GURL GetScopeForSiteMode(const std::string& site_mode);
   void InstallCreateShortcut(bool open_in_window);
 
@@ -282,7 +280,7 @@ class WebAppIntegrationBrowserTestBase : AppRegistrarObserver {
 // tests.
 class WebAppIntegrationBrowserTest
     : public InProcessBrowserTest,
-      public WebAppIntegrationBrowserTestBase::TestDelegate {
+      public WebAppIntegrationTestDriver::TestDelegate {
  public:
   WebAppIntegrationBrowserTest();
   ~WebAppIntegrationBrowserTest() override;
@@ -309,9 +307,9 @@ class WebAppIntegrationBrowserTest
   void AwaitWebAppQuiescence() override;
 
  protected:
-  WebAppIntegrationBrowserTestBase helper_;
+  WebAppIntegrationTestDriver helper_;
 };
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_INTEGRATION_BROWSERTEST_BASE_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_INTEGRATION_TEST_DRIVER_H_

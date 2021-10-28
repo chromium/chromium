@@ -7,7 +7,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "chrome/browser/ui/views/web_apps/web_app_integration_browsertest_base.h"
+#include "chrome/browser/ui/views/web_apps/web_app_integration_test_driver.h"
 #include "content/public/test/browser_test.h"
 
 namespace base {
@@ -18,7 +18,7 @@ namespace web_app {
 
 class TwoClientWebAppsIntegrationTestBase
     : public SyncTest,
-      public WebAppIntegrationBrowserTestBase::TestDelegate {
+      public WebAppIntegrationTestDriver::TestDelegate {
  public:
   TwoClientWebAppsIntegrationTestBase();
 
@@ -41,7 +41,7 @@ class TwoClientWebAppsIntegrationTestBase
   void TearDownOnMainThread() override;
   void SetUpCommandLine(base::CommandLine* command_line) override;
 
-  WebAppIntegrationBrowserTestBase helper_;
+  WebAppIntegrationTestDriver helper_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
