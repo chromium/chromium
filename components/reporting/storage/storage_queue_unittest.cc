@@ -14,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -21,6 +22,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/reporting/compression/compression_module.h"
 #include "components/reporting/compression/decompression.h"
 #include "components/reporting/compression/test_compression_module.h"
@@ -58,6 +60,16 @@ const CompressionInformation::CompressionAlgorithm kCompressionType =
 
 // Metadata file name prefix.
 const base::FilePath::CharType METADATA_NAME[] = FILE_PATH_LITERAL("META");
+
+// Forbidden file/folder names
+const base::FilePath::StringType kInvalidFilePrefix = FILE_PATH_LITERAL("..");
+#if defined(OS_WIN)
+const base::FilePath::StringPieceType kInvalidDirectoryPath =
+    FILE_PATH_LITERAL("o:\\some\\inaccessible\\dir");
+#else
+const base::FilePath::StringPieceType kInvalidDirectoryPath =
+    FILE_PATH_LITERAL("////////////");
+#endif
 
 class StorageQueueTest
     : public ::testing::TestWithParam<
@@ -493,12 +505,27 @@ class StorageQueueTest
 
   void CreateTestStorageQueueOrDie(const QueueOptions& options) {
     ASSERT_FALSE(storage_queue_) << "TestStorageQueue already assigned";
+    auto storage_queue_result = CreateTestStorageQueue(options);
+    ASSERT_OK(storage_queue_result)
+        << "Failed to create TestStorageQueue, error="
+        << storage_queue_result.status();
+    storage_queue_ = std::move(storage_queue_result.ValueOrDie());
+  }
+
+  void CreateTestEncryptionModuleOrDie() {
     test_encryption_module_ =
         base::MakeRefCounted<test::TestEncryptionModule>();
     test::TestEvent<Status> key_update_event;
     test_encryption_module_->UpdateAsymmetricKey("DUMMY KEY", 0,
                                                  key_update_event.cb());
     ASSERT_OK(key_update_event.result());
+  }
+
+  // Tries to create a new storage queue by building the test encryption module
+  // and returns the corresponding result of the operation.
+  StatusOr<scoped_refptr<StorageQueue>> CreateTestStorageQueue(
+      const QueueOptions& options) {
+    CreateTestEncryptionModuleOrDie();
     test::TestEvent<StatusOr<scoped_refptr<StorageQueue>>>
         storage_queue_create_event;
     StorageQueue::Create(
@@ -508,12 +535,8 @@ class StorageQueueTest
         test_encryption_module_,
         CompressionModule::Create(kCompressionThreshold, kCompressionType),
         storage_queue_create_event.cb());
-    StatusOr<scoped_refptr<StorageQueue>> storage_queue_result =
-        storage_queue_create_event.result();
-    ASSERT_OK(storage_queue_result)
-        << "Failed to create TestStorageQueue, error="
-        << storage_queue_result.status();
-    storage_queue_ = std::move(storage_queue_result.ValueOrDie());
+
+    return storage_queue_create_event.result();
   }
 
   void ResetTestStorageQueue() {
@@ -525,8 +548,10 @@ class StorageQueueTest
     task_environment_.RunUntilIdle();
   }
 
-  void InjectFailures(std::initializer_list<int64_t> sequencing_ids) {
-    storage_queue_->TestInjectBlockReadErrors(sequencing_ids);
+  void InjectFailures(const test::StorageQueueOperationKind operation_kind,
+                      std::initializer_list<int64_t> sequencing_ids) {
+    storage_queue_->TestInjectErrorsForOperation(operation_kind,
+                                                 sequencing_ids);
   }
 
   QueueOptions BuildStorageQueueOptionsImmediate(
@@ -570,8 +595,6 @@ class StorageQueueTest
   }
 
   Status WriteString(base::StringPiece data) {
-    EXPECT_TRUE(storage_queue_) << "StorageQueue not created yet";
-    test::TestEvent<Status> w;
     Record record;
     record.set_data(std::string(data));
     record.set_destination(UPLOAD_EVENTS);
@@ -579,8 +602,14 @@ class StorageQueueTest
       record.set_dm_token(dm_token_);
     }
 
-    storage_queue_->Write(std::move(record), w.cb());
-    return w.result();
+    return WriteRecord(std::move(record));
+  }
+
+  Status WriteRecord(const Record record) {
+    EXPECT_TRUE(storage_queue_) << "StorageQueue not created yet";
+    test::TestEvent<Status> write_event;
+    storage_queue_->Write(std::move(record), write_event.cb());
+    return write_event.result();
   }
 
   void WriteStringOrDie(base::StringPiece data) {
@@ -678,7 +707,7 @@ TEST_P(StorageQueueTest, WriteIntoNewStorageQueueAndUploadWithFailures) {
   WriteStringOrDie(kData[2]);
 
   // Inject simulated failures.
-  InjectFailures({1});
+  InjectFailures(test::StorageQueueOperationKind::kReadBlock, {1});
 
   // Set uploader expectations.
   test::TestCallbackAutoWaiter waiter;
@@ -1296,7 +1325,7 @@ TEST_P(StorageQueueTest,
   WriteStringOrDie(kMoreData[2]);
 
   // Inject simulated failures.
-  InjectFailures({4, 5});
+  InjectFailures(test::StorageQueueOperationKind::kReadBlock, {4, 5});
 
   {
     // Set uploader expectations.
@@ -1324,7 +1353,7 @@ TEST_P(StorageQueueTest,
   ConfirmOrDie(/*sequencing_id=*/2);
 
   // Reset simulated failures.
-  InjectFailures({});
+  InjectFailures(test::StorageQueueOperationKind::kReadBlock, {});
 
   {
     // Set uploader expectations.
@@ -1693,6 +1722,55 @@ TEST_P(StorageQueueTest, ForceConfirm) {
   }
 }
 
+TEST_P(StorageQueueTest, WriteInvalidRecord) {
+  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
+  const Record invalid_record;
+  Status write_result = WriteRecord(std::move(invalid_record));
+  EXPECT_FALSE(write_result.ok());
+  EXPECT_EQ(write_result.error_code(), error::FAILED_PRECONDITION);
+}
+
+TEST_P(StorageQueueTest, WriteRecordWithNoData) {
+  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
+  Record record;
+  record.set_destination(UPLOAD_EVENTS);
+  Status write_result = WriteRecord(std::move(record));
+  EXPECT_OK(write_result);
+}
+
+TEST_P(StorageQueueTest, WriteRecordWithWriteMetadataFailures) {
+  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
+  InjectFailures(test::StorageQueueOperationKind::kWriteMetadata, {0});
+  Status write_result = WriteString(kData[0]);
+  EXPECT_FALSE(write_result.ok());
+  EXPECT_EQ(write_result.error_code(), error::INTERNAL);
+}
+
+TEST_P(StorageQueueTest, WriteRecordWithWriteBlockFailures) {
+  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
+  InjectFailures(test::StorageQueueOperationKind::kWriteBlock, {0});
+  Status write_result = WriteString(kData[0]);
+  EXPECT_FALSE(write_result.ok());
+  EXPECT_EQ(write_result.error_code(), error::INTERNAL);
+}
+
+TEST_P(StorageQueueTest, WriteRecordWithInvalidFilePrefix) {
+  QueueOptions options = BuildStorageQueueOptionsPeriodic();
+  options.set_file_prefix(kInvalidFilePrefix);
+  CreateTestStorageQueueOrDie(options);
+  Status write_result = WriteString(kData[0]);
+  EXPECT_FALSE(write_result.ok());
+  EXPECT_EQ(write_result.error_code(), error::ALREADY_EXISTS);
+}
+
+TEST_P(StorageQueueTest, CreateStorageQueueInvalidOptionsPath) {
+  options_.set_directory(base::FilePath(kInvalidDirectoryPath));
+  StatusOr<scoped_refptr<StorageQueue>> queue_result =
+      CreateTestStorageQueue(BuildStorageQueueOptionsPeriodic());
+  EXPECT_FALSE(queue_result.ok());
+  EXPECT_EQ(queue_result.status().error_code(), error::UNAVAILABLE);
+}
+
 INSTANTIATE_TEST_SUITE_P(
     VaryingFileSize,
     StorageQueueTest,
@@ -1701,12 +1779,9 @@ INSTANTIATE_TEST_SUITE_P(
                                      1 /* single record in file */),
                      testing::Values("DM TOKEN", "")));
 
-// TODO(b/157943006): Additional tests:
-// 1) Options object with a bad path.
-// 2) Have bad prefix files in the directory.
-// 3) Attempt to create file with duplicated file extension.
-// 4) Disk and memory limit exceeded.
-// 5) Other negative tests.
+// TODO(b/202885123): Additional tests:
+// 1) Attempt to create file with duplicated file extension.
+// 2) Disk and memory limit exceeded.
 
 }  // namespace
 }  // namespace reporting

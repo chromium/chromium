@@ -488,6 +488,17 @@ Status StorageQueue::WriteHeaderAndBlock(
     base::StringPiece current_record_digest,
     scoped_refptr<StorageQueue::SingleFile> file) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(storage_queue_sequence_checker_);
+
+  // Test only: Simulate failure if requested
+  if (test_injected_failures_.count(
+          test::StorageQueueOperationKind::kWriteBlock) > 0 &&
+      test_injected_failures_[test::StorageQueueOperationKind::kWriteBlock]
+          .count(next_sequencing_id_)) {
+    return Status(error::INTERNAL,
+                  base::StrCat({"Simulated failure, seq=",
+                                base::NumberToString(next_sequencing_id_)}));
+  }
+
   // Prepare header.
   RecordHeader header;
   // Pad to the whole frame, if necessary.
@@ -544,6 +555,17 @@ Status StorageQueue::WriteHeaderAndBlock(
 
 Status StorageQueue::WriteMetadata(base::StringPiece current_record_digest) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(storage_queue_sequence_checker_);
+
+  // Test only: Simulate failure if requested
+  if (test_injected_failures_.count(
+          test::StorageQueueOperationKind::kWriteMetadata) > 0 &&
+      test_injected_failures_[test::StorageQueueOperationKind::kWriteMetadata]
+          .count(next_sequencing_id_)) {
+    return Status(error::INTERNAL,
+                  base::StrCat({"Simulated failure, seq=",
+                                base::NumberToString(next_sequencing_id_)}));
+  }
+
   // Synchronously write the metafile.
   ASSIGN_OR_RETURN(
       scoped_refptr<SingleFile> meta_file,
@@ -1060,8 +1082,12 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
     }
 
     // Test only: simulate error, if requested.
-    if (storage_queue_->test_injected_fail_sequencing_ids_.count(
-            sequencing_id) > 0) {
+    if (storage_queue_->test_injected_failures_.count(
+            test::StorageQueueOperationKind::kReadBlock) > 0 &&
+        storage_queue_
+                ->test_injected_failures_
+                    [test::StorageQueueOperationKind::kReadBlock]
+                .count(sequencing_id) > 0) {
       return Status(error::INTERNAL,
                     base::StrCat({"Simulated failure, seq=",
                                   base::NumberToString(sequencing_id)}));
@@ -1645,9 +1671,10 @@ void StorageQueue::ReleaseAllFileInstances() {
   meta_file_.reset();
 }
 
-void StorageQueue::TestInjectBlockReadErrors(
+void StorageQueue::TestInjectErrorsForOperation(
+    const test::StorageQueueOperationKind operation_kind,
     std::initializer_list<int64_t> sequencing_ids) {
-  test_injected_fail_sequencing_ids_ = sequencing_ids;
+  test_injected_failures_[operation_kind] = sequencing_ids;
 }
 
 //
