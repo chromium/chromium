@@ -1238,8 +1238,6 @@ generated_enumeration_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_type.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_push_encryption_key_name.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_push_encryption_key_name.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_push_permission_state.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_push_permission_state.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_recording_state.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_recording_state.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_red_eye_reduction.cc",
