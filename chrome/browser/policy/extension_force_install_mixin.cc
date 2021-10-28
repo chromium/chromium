@@ -384,7 +384,8 @@ void UpdatePolicyViaLocalPolicyMixin(
     ash::LocalPolicyTestServerMixin* local_policy_mixin,
     policy::UserPolicyBuilder* user_policy_builder,
     const std::string& account_id,
-    const std::string& policy_type) {
+    const std::string& policy_type,
+    bool* success) {
   user_policy_builder->payload()
       .mutable_extensioninstallforcelist()
       ->mutable_value()
@@ -392,13 +393,20 @@ void UpdatePolicyViaLocalPolicyMixin(
           MakeForceInstallPolicyItemValue(extension_id, update_manifest_url));
   user_policy_builder->Build();
 
-  ASSERT_TRUE(local_policy_mixin->server()->UpdatePolicy(
-      policy_type, account_id,
-      user_policy_builder->payload().SerializeAsString()));
+  if (!local_policy_mixin->server()->UpdatePolicy(
+          policy_type, account_id,
+          user_policy_builder->payload().SerializeAsString())) {
+    ADD_FAILURE() << "Local policy test server update failed";
+    return;
+  }
 
   base::RunLoop run_loop;
   g_browser_process->policy_service()->RefreshPolicies(run_loop.QuitClosure());
-  run_loop.Run();
+  ASSERT_NO_FATAL_FAILURE(run_loop.Run());
+
+  // Report the outcome via an output argument instead of the return value,
+  // since ASSERT_NO_FATAL_FAILURE() only works in void functions.
+  *success = true;
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -683,10 +691,11 @@ bool ExtensionForceInstallMixin::UpdatePolicy(
     return true;
   }
   if (local_policy_mixin_) {
+    bool success = false;
     UpdatePolicyViaLocalPolicyMixin(extension_id, update_manifest_url,
                                     local_policy_mixin_, user_policy_builder_,
-                                    account_id_, policy_type_);
-    return true;
+                                    account_id_, policy_type_, &success);
+    return success;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   NOTREACHED() << "Init not called";
