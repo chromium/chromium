@@ -377,7 +377,7 @@ public class BaseGifDrawable extends Drawable implements Runnable, Animatable,
     /**
      * Restarts decoding the image from the beginning.  Called from the background thread.
      */
-    private void reset() {
+    protected void reset() {
         // Return to the position of the first image frame in the stream.
         mPosition = mGifImage.mHeaderSize;
         mBackupSaved = false;
