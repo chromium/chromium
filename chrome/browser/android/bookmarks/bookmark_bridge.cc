@@ -448,6 +448,19 @@ ScopedJavaLocalRef<jobject> BookmarkBridge::GetPartnerFolderId(
   return folder_id_obj;
 }
 
+base::android::ScopedJavaLocalRef<jstring>
+BookmarkBridge::GetBookmarkGuidByIdForTesting(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& obj,
+    jlong id,
+    jint type) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  const BookmarkNode* node = GetNodeByID(id, type);
+  DCHECK(node) << "Bookmark with id " << id << " doesn't exist.";
+  return base::android::ConvertUTF8ToJavaString(
+      env, node->guid().AsLowercaseString());
+}
+
 jint BookmarkBridge::GetChildCount(JNIEnv* env,
                                     const JavaParamRef<jobject>& obj,
                                     jlong id,
