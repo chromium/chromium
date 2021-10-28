@@ -3129,6 +3129,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, ReusedMapChangeUsemap) {
   RunRegressionTest(FILE_PATH_LITERAL("reused-map-change-usemap.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilitySlotCreationCrash) {
+  RunRegressionTest(FILE_PATH_LITERAL("slot-creation-crash.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, TitleInShadow) {
   RunRegressionTest(FILE_PATH_LITERAL("title-in-shadow.html"));
 }
