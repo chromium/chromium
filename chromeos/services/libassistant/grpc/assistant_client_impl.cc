@@ -16,6 +16,7 @@
 #include "chromeos/assistant/internal/internal_constants.h"
 #include "chromeos/assistant/internal/internal_util.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/bootup_settings_interface.pb.h"
+#include "chromeos/assistant/internal/proto/shared/proto/v2/config_settings_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/display_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/query_interface.pb.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
@@ -89,6 +90,14 @@ void AssistantClientImpl::StartServices(
 
 bool AssistantClientImpl::StartGrpcServices() {
   return grpc_services_.Start();
+}
+
+void AssistantClientImpl::ResetAllDataAndShutdown() {
+  libassistant_client_.CallServiceMethod(
+      ::assistant::api::ResetAllDataAndShutdownRequest(),
+      GetLoggingCallback<::assistant::api::ResetAllDataAndShutdownResponse>(
+          /*request_name=*/__func__),
+      kDefaultStateConfig);
 }
 
 void AssistantClientImpl::SendDisplayRequest(
