@@ -49,7 +49,6 @@
 #include "url/gurl.h"
 
 #if defined(OS_ANDROID)
-#include "net/android/cellular_signal_strength.h"
 #include "net/android/network_library.h"
 #endif  // OS_ANDROID
 

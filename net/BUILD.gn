@@ -1141,8 +1141,6 @@ component("net") {
   if (is_android) {
     sources += [
       "android/android_http_util.cc",
-      "android/cellular_signal_strength.cc",
-      "android/cellular_signal_strength.h",
       "android/cert_verify_result_android.cc",
       "android/cert_verify_result_android.h",
       "android/gurl_utils.cc",
@@ -2462,7 +2460,6 @@ if (is_linux || is_chromeos) {
 if (is_android) {
   generate_jni("net_jni_headers") {
     sources = [
-      "android/java/src/org/chromium/net/AndroidCellularSignalStrength.java",
       "android/java/src/org/chromium/net/AndroidCertVerifyResult.java",
       "android/java/src/org/chromium/net/AndroidKeyStore.java",
       "android/java/src/org/chromium/net/AndroidNetworkLibrary.java",
@@ -4406,7 +4403,6 @@ test("net_unittests") {
 
   if (is_android) {
     sources += [
-      "android/cellular_signal_strength_unittest.cc",
       "android/dummy_spnego_authenticator.cc",
       "android/dummy_spnego_authenticator.h",
       "android/http_auth_negotiate_android_unittest.cc",
