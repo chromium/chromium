@@ -7,9 +7,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
-#include "components/sync/base/sync_base_switches.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
-#include "components/sync/engine/sync_engine_switches.h"
 #include "components/sync/nigori/cryptographer_impl.h"
 #include "components/sync/nigori/keystore_keys_cryptographer.h"
 #include "components/sync/nigori/nigori.h"
@@ -21,41 +19,12 @@ namespace {
 
 using sync_pb::NigoriSpecifics;
 
-// Returns the key derivation method to be used when a user sets a new
-// custom passphrase.
-KeyDerivationMethod GetDefaultKeyDerivationMethodForCustomPassphrase() {
-  if (base::FeatureList::IsEnabled(
-          switches::kSyncUseScryptForNewCustomPassphrases) &&
-      !base::FeatureList::IsEnabled(
-          switches::kSyncForceDisableScryptForCustomPassphrase)) {
-    return KeyDerivationMethod::SCRYPT_8192_8_11;
-  }
-
-  return KeyDerivationMethod::PBKDF2_HMAC_SHA1_1003;
-}
-
-KeyDerivationParams CreateKeyDerivationParamsForCustomPassphrase() {
-  KeyDerivationMethod method =
-      GetDefaultKeyDerivationMethodForCustomPassphrase();
-  switch (method) {
-    case KeyDerivationMethod::PBKDF2_HMAC_SHA1_1003:
-      return KeyDerivationParams::CreateForPbkdf2();
-    case KeyDerivationMethod::SCRYPT_8192_8_11:
-      return KeyDerivationParams::CreateForScrypt(Nigori::GenerateScryptSalt());
-    case KeyDerivationMethod::UNSUPPORTED:
-      break;
-  }
-
-  NOTREACHED();
-  return KeyDerivationParams::CreateWithUnsupportedMethod();
-}
-
 class CustomPassphraseSetter : public PendingLocalNigoriCommit {
  public:
   explicit CustomPassphraseSetter(const std::string& passphrase)
       : passphrase_(passphrase),
-        key_derivation_params_(CreateKeyDerivationParamsForCustomPassphrase()) {
-  }
+        key_derivation_params_(KeyDerivationParams::CreateForScrypt(
+            Nigori::GenerateScryptSalt())) {}
 
   CustomPassphraseSetter(const CustomPassphraseSetter&) = delete;
   CustomPassphraseSetter& operator=(const CustomPassphraseSetter&) = delete;

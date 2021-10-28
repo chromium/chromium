@@ -20,7 +20,6 @@
 #include "base/sys_byteorder.h"
 #include "base/time/default_tick_clock.h"
 #include "components/sync/base/passphrase_enums.h"
-#include "components/sync/base/sync_base_switches.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
 #include "crypto/encryptor.h"
 #include "crypto/hmac.h"
@@ -352,8 +351,6 @@ std::unique_ptr<Nigori> Nigori::CreateByDerivationImpl(
       nigori->keys_.InitByDerivationUsingPbkdf2(password);
       break;
     case KeyDerivationMethod::SCRYPT_8192_8_11:
-      DCHECK(!base::FeatureList::IsEnabled(
-          switches::kSyncForceDisableScryptForCustomPassphrase));
       nigori->keys_.InitByDerivationUsingScrypt(
           key_derivation_params.scrypt_salt(), password);
       break;
