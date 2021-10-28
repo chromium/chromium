@@ -114,7 +114,7 @@ class PLATFORM_EXPORT NonMainThreadSchedulerImpl : public ThreadSchedulerImpl {
       base::sequence_manager::SequenceManager* sequence_manager,
       TaskType default_task_type);
 
-  friend class WorkerScheduler;
+  friend class WorkerSchedulerImpl;
 
   NonMainThreadSchedulerHelper* helper() { return &helper_; }
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/scheduler/public/worker_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/worker/worker_scheduler_impl.h"
 
 #include <memory>
 #include "base/bind.h"
@@ -77,19 +77,19 @@ class WorkerThreadSchedulerForTest : public WorkerThreadScheduler {
   using WorkerThreadScheduler::SetCPUTimeBudgetPoolForTesting;
 };
 
-class WorkerSchedulerForTest : public WorkerScheduler {
+class WorkerSchedulerForTest : public WorkerSchedulerImpl {
  public:
   explicit WorkerSchedulerForTest(
       WorkerThreadSchedulerForTest* thread_scheduler)
-      : WorkerScheduler(thread_scheduler, nullptr) {}
+      : WorkerSchedulerImpl(thread_scheduler, nullptr) {}
 
-  using WorkerScheduler::ThrottleableTaskQueue;
-  using WorkerScheduler::UnpausableTaskQueue;
+  using WorkerSchedulerImpl::ThrottleableTaskQueue;
+  using WorkerSchedulerImpl::UnpausableTaskQueue;
 };
 
-class WorkerSchedulerTest : public testing::Test {
+class WorkerSchedulerImplTest : public testing::Test {
  public:
-  WorkerSchedulerTest()
+  WorkerSchedulerImplTest()
       : mock_task_runner_(new base::TestMockTimeTaskRunner()),
         sequence_manager_(
             base::sequence_manager::SequenceManagerForTest::Create(
@@ -103,9 +103,9 @@ class WorkerSchedulerTest : public testing::Test {
     start_time_ = mock_task_runner_->NowTicks();
   }
 
-  WorkerSchedulerTest(const WorkerSchedulerTest&) = delete;
-  WorkerSchedulerTest& operator=(const WorkerSchedulerTest&) = delete;
-  ~WorkerSchedulerTest() override = default;
+  WorkerSchedulerImplTest(const WorkerSchedulerImplTest&) = delete;
+  WorkerSchedulerImplTest& operator=(const WorkerSchedulerImplTest&) = delete;
+  ~WorkerSchedulerImplTest() override = default;
 
   void SetUp() override {
     scheduler_->Init();
@@ -145,7 +145,7 @@ class WorkerSchedulerTest : public testing::Test {
   base::TimeTicks start_time_;
 };
 
-TEST_F(WorkerSchedulerTest, TestPostTasks) {
+TEST_F(WorkerSchedulerImplTest, TestPostTasks) {
   Vector<String> run_order;
   PostTestTask(&run_order, "T1", TaskType::kInternalTest);
   PostTestTask(&run_order, "T2", TaskType::kInternalTest);
@@ -165,7 +165,7 @@ TEST_F(WorkerSchedulerTest, TestPostTasks) {
   worker_scheduler_.reset();
 }
 
-TEST_F(WorkerSchedulerTest, RegisterWorkerSchedulers) {
+TEST_F(WorkerSchedulerImplTest, RegisterWorkerSchedulers) {
   EXPECT_THAT(scheduler_->worker_schedulers(),
               testing::ElementsAre(worker_scheduler_.get()));
 
@@ -187,7 +187,7 @@ TEST_F(WorkerSchedulerTest, RegisterWorkerSchedulers) {
   EXPECT_THAT(scheduler_->worker_schedulers(), testing::ElementsAre());
 }
 
-TEST_F(WorkerSchedulerTest, ThrottleWorkerScheduler) {
+TEST_F(WorkerSchedulerImplTest, ThrottleWorkerScheduler) {
   scheduler_->CreateBudgetPools();
 
   EXPECT_FALSE(worker_scheduler_->ThrottleableTaskQueue()->IsThrottled());
@@ -204,7 +204,7 @@ TEST_F(WorkerSchedulerTest, ThrottleWorkerScheduler) {
   EXPECT_FALSE(worker_scheduler_->ThrottleableTaskQueue()->IsThrottled());
 }
 
-TEST_F(WorkerSchedulerTest, ThrottleWorkerScheduler_CreateThrottled) {
+TEST_F(WorkerSchedulerImplTest, ThrottleWorkerScheduler_CreateThrottled) {
   scheduler_->CreateBudgetPools();
 
   scheduler_->OnLifecycleStateChanged(SchedulingLifecycleState::kThrottled);
@@ -218,7 +218,7 @@ TEST_F(WorkerSchedulerTest, ThrottleWorkerScheduler_CreateThrottled) {
   worker_scheduler2->Dispose();
 }
 
-TEST_F(WorkerSchedulerTest, ThrottleWorkerScheduler_RunThrottledTasks) {
+TEST_F(WorkerSchedulerImplTest, ThrottleWorkerScheduler_RunThrottledTasks) {
   scheduler_->CreateBudgetPools();
   scheduler_->SetCPUTimeBudgetPoolForTesting(nullptr);
 
@@ -246,7 +246,7 @@ TEST_F(WorkerSchedulerTest, ThrottleWorkerScheduler_RunThrottledTasks) {
                                  base::TimeTicks() + base::Seconds(5)));
 }
 
-TEST_F(WorkerSchedulerTest,
+TEST_F(WorkerSchedulerImplTest,
        ThrottleWorkerScheduler_RunThrottledTasks_CPUBudget) {
   scheduler_->CreateBudgetPools();
 
@@ -277,7 +277,7 @@ TEST_F(WorkerSchedulerTest,
                                  start_time_ + base::Seconds(40)));
 }
 
-TEST_F(WorkerSchedulerTest, MAYBE_PausableTasks) {
+TEST_F(WorkerSchedulerImplTest, MAYBE_PausableTasks) {
   Vector<String> run_order;
   auto pause_handle = worker_scheduler_->Pause();
   // Tests interlacing pausable, throttable and unpausable tasks and
@@ -296,7 +296,7 @@ TEST_F(WorkerSchedulerTest, MAYBE_PausableTasks) {
   EXPECT_THAT(run_order, testing::ElementsAre("T3", "T1", "T2"));
 }
 
-TEST_F(WorkerSchedulerTest, MAYBE_NestedPauseHandlesTasks) {
+TEST_F(WorkerSchedulerImplTest, MAYBE_NestedPauseHandlesTasks) {
   Vector<String> run_order;
   auto pause_handle = worker_scheduler_->Pause();
   {
@@ -311,10 +311,10 @@ TEST_F(WorkerSchedulerTest, MAYBE_NestedPauseHandlesTasks) {
   EXPECT_THAT(run_order, testing::ElementsAre("T1", "T2"));
 }
 
-class NonMainThreadWebSchedulingTaskQueueTest : public WorkerSchedulerTest {
+class NonMainThreadWebSchedulingTaskQueueTest : public WorkerSchedulerImplTest {
  public:
   void SetUp() override {
-    WorkerSchedulerTest::SetUp();
+    WorkerSchedulerImplTest::SetUp();
 
     for (int i = 0; i <= static_cast<int>(WebSchedulingPriority::kLastPriority);
          i++) {
@@ -326,7 +326,7 @@ class NonMainThreadWebSchedulingTaskQueueTest : public WorkerSchedulerTest {
   }
 
   void TearDown() override {
-    WorkerSchedulerTest::TearDown();
+    WorkerSchedulerImplTest::TearDown();
     task_queues_.clear();
   }
 

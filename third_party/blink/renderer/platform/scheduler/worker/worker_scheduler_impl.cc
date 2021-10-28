@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/scheduler/public/worker_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/worker/worker_scheduler_impl.h"
 
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/back_forward_cache_utils.h"
@@ -16,19 +16,26 @@
 namespace blink {
 namespace scheduler {
 
-WorkerScheduler::PauseHandle::PauseHandle(
-    base::WeakPtr<WorkerScheduler> scheduler)
+std::unique_ptr<WorkerScheduler> WorkerScheduler::CreateWorkerScheduler(
+    WorkerThreadScheduler* worker_thread_scheduler,
+    WorkerSchedulerProxy* proxy) {
+  return std::make_unique<WorkerSchedulerImpl>(worker_thread_scheduler, proxy);
+}
+
+WorkerSchedulerImpl::PauseHandleImpl::PauseHandleImpl(
+    base::WeakPtr<WorkerSchedulerImpl> scheduler)
     : scheduler_(scheduler) {
   scheduler_->PauseImpl();
 }
 
-WorkerScheduler::PauseHandle::~PauseHandle() {
+WorkerSchedulerImpl::PauseHandleImpl::~PauseHandleImpl() {
   if (scheduler_)
     scheduler_->ResumeImpl();
 }
 
-WorkerScheduler::WorkerScheduler(WorkerThreadScheduler* worker_thread_scheduler,
-                                 WorkerSchedulerProxy* proxy)
+WorkerSchedulerImpl::WorkerSchedulerImpl(
+    WorkerThreadScheduler* worker_thread_scheduler,
+    WorkerSchedulerProxy* proxy)
     : throttleable_task_queue_(
           worker_thread_scheduler->CreateTaskQueue("worker_throttleable_tq",
                                                    true)),
@@ -52,23 +59,27 @@ WorkerScheduler::WorkerScheduler(WorkerThreadScheduler* worker_thread_scheduler,
     proxy->OnWorkerSchedulerCreated(GetWeakPtr());
 }
 
-base::WeakPtr<WorkerScheduler> WorkerScheduler::GetWeakPtr() {
+base::WeakPtr<WorkerSchedulerImpl> WorkerSchedulerImpl::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-WorkerScheduler::~WorkerScheduler() {
+WorkerSchedulerImpl::~WorkerSchedulerImpl() {
   DCHECK(is_disposed_);
   DCHECK_EQ(0u, paused_count_);
 }
 
-std::unique_ptr<WorkerScheduler::PauseHandle> WorkerScheduler::Pause() {
+WorkerThreadScheduler* WorkerSchedulerImpl::GetWorkerThreadScheduler() const {
+  return thread_scheduler_;
+}
+
+std::unique_ptr<WorkerSchedulerImpl::PauseHandle> WorkerSchedulerImpl::Pause() {
   thread_scheduler_->helper()->CheckOnValidThread();
   if (is_disposed_)
     return nullptr;
-  return std::make_unique<PauseHandle>(GetWeakPtr());
+  return std::make_unique<PauseHandleImpl>(GetWeakPtr());
 }
 
-void WorkerScheduler::PauseImpl() {
+void WorkerSchedulerImpl::PauseImpl() {
   thread_scheduler_->helper()->CheckOnValidThread();
   paused_count_++;
   if (paused_count_ == 1) {
@@ -80,7 +91,7 @@ void WorkerScheduler::PauseImpl() {
   }
 }
 
-void WorkerScheduler::ResumeImpl() {
+void WorkerSchedulerImpl::ResumeImpl() {
   thread_scheduler_->helper()->CheckOnValidThread();
   paused_count_--;
   if (paused_count_ == 0 && !is_disposed_) {
@@ -92,7 +103,7 @@ void WorkerScheduler::ResumeImpl() {
   }
 }
 
-void WorkerScheduler::SetUpThrottling() {
+void WorkerSchedulerImpl::SetUpThrottling() {
   if (!thread_scheduler_->wake_up_budget_pool() &&
       !thread_scheduler_->cpu_time_budget_pool()) {
     return;
@@ -112,12 +123,12 @@ void WorkerScheduler::SetUpThrottling() {
   }
 }
 
-SchedulingLifecycleState WorkerScheduler::CalculateLifecycleState(
+SchedulingLifecycleState WorkerSchedulerImpl::CalculateLifecycleState(
     ObserverType) const {
   return thread_scheduler_->lifecycle_state();
 }
 
-void WorkerScheduler::Dispose() {
+void WorkerSchedulerImpl::Dispose() {
   thread_scheduler_->UnregisterWorkerScheduler(this);
 
   for (const auto& pair : task_runners_) {
@@ -129,7 +140,7 @@ void WorkerScheduler::Dispose() {
   is_disposed_ = true;
 }
 
-scoped_refptr<base::SingleThreadTaskRunner> WorkerScheduler::GetTaskRunner(
+scoped_refptr<base::SingleThreadTaskRunner> WorkerSchedulerImpl::GetTaskRunner(
     TaskType type) const {
   switch (type) {
     case TaskType::kJavascriptTimerImmediate:
@@ -225,7 +236,7 @@ scoped_refptr<base::SingleThreadTaskRunner> WorkerScheduler::GetTaskRunner(
   return nullptr;
 }
 
-void WorkerScheduler::OnLifecycleStateChanged(
+void WorkerSchedulerImpl::OnLifecycleStateChanged(
     SchedulingLifecycleState lifecycle_state) {
   if (lifecycle_state_ == lifecycle_state)
     return;
@@ -243,26 +254,31 @@ void WorkerScheduler::OnLifecycleStateChanged(
   NotifyLifecycleObservers();
 }
 
-scoped_refptr<NonMainThreadTaskQueue> WorkerScheduler::UnpausableTaskQueue() {
+scoped_refptr<NonMainThreadTaskQueue>
+WorkerSchedulerImpl::UnpausableTaskQueue() {
   return unpausable_task_queue_.get();
 }
 
-scoped_refptr<NonMainThreadTaskQueue> WorkerScheduler::PausableTaskQueue() {
+scoped_refptr<NonMainThreadTaskQueue> WorkerSchedulerImpl::PausableTaskQueue() {
   return pausable_task_queue_.get();
 }
 
-scoped_refptr<NonMainThreadTaskQueue> WorkerScheduler::ThrottleableTaskQueue() {
+scoped_refptr<NonMainThreadTaskQueue>
+WorkerSchedulerImpl::ThrottleableTaskQueue() {
   return throttleable_task_queue_.get();
 }
 
-void WorkerScheduler::OnStartedUsingFeature(SchedulingPolicy::Feature feature,
-                                            const SchedulingPolicy& policy) {}
+void WorkerSchedulerImpl::OnStartedUsingFeature(
+    SchedulingPolicy::Feature feature,
+    const SchedulingPolicy& policy) {}
 
-void WorkerScheduler::OnStoppedUsingFeature(SchedulingPolicy::Feature feature,
-                                            const SchedulingPolicy& policy) {}
+void WorkerSchedulerImpl::OnStoppedUsingFeature(
+    SchedulingPolicy::Feature feature,
+    const SchedulingPolicy& policy) {}
 
 std::unique_ptr<WebSchedulingTaskQueue>
-WorkerScheduler::CreateWebSchedulingTaskQueue(WebSchedulingPriority priority) {
+WorkerSchedulerImpl::CreateWebSchedulingTaskQueue(
+    WebSchedulingPriority priority) {
   scoped_refptr<NonMainThreadTaskQueue> task_queue =
       thread_scheduler_->CreateTaskQueue("worker_web_scheduling_tq");
   task_queue->SetWebSchedulingPriority(priority);
