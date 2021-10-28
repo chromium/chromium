@@ -139,6 +139,21 @@ public class MerchantTrustMessageViewTest extends DummyUiChromeActivityTestCase 
         mRenderTestRule.render(mMessageBannerView, "merchant_trust_message_no_rating_reviews");
     }
 
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testRenderMessage_IntegerRatingValue() throws IOException {
+        setUseRatingBarParam("true");
+
+        MerchantTrustSignalsV2 trustSignals = MerchantTrustSignalsV2.newBuilder()
+                                                      .setMerchantStarRating(4)
+                                                      .setMerchantCountRating(1640)
+                                                      .setMerchantDetailsPageUrl("http://dummy/url")
+                                                      .build();
+        createModelAndSetView(trustSignals);
+        mRenderTestRule.render(mMessageBannerView, "merchant_trust_message_integer_rating_value");
+    }
+
     private void setUseRatingBarParam(String useRatingBar) {
         FeatureList.TestValues testValues = new FeatureList.TestValues();
         testValues.addFieldTrialParamOverride(ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
