@@ -559,6 +559,27 @@ int32_t ToAXMarkerType(DocumentMarker::MarkerType marker_type) {
   return static_cast<int32_t>(result);
 }
 
+int32_t ToAXHighlightType(const AtomicString& highlight_type) {
+  static const AtomicString type_highlight = "highlight";
+  static const AtomicString type_spelling_error = "spelling-error";
+  static const AtomicString type_grammar_error = "grammar-error";
+  ax::mojom::blink::HighlightType result =
+      ax::mojom::blink::HighlightType::kNone;
+  if (highlight_type == type_highlight)
+    result = ax::mojom::blink::HighlightType::kHighlight;
+  else if (highlight_type == type_spelling_error)
+    result = ax::mojom::blink::HighlightType::kSpellingError;
+  else if (highlight_type == type_grammar_error)
+    result = ax::mojom::blink::HighlightType::kGrammarError;
+
+  // Check that |highlight_type| is one of the static AtomicStrings defined
+  // above or "none", so if there are more HighlightTypes added, they should
+  // also be taken into account in this function.
+  DCHECK(result != ax::mojom::blink::HighlightType::kNone ||
+         highlight_type == "none");
+  return static_cast<int32_t>(result);
+}
+
 // static
 unsigned AXObject::number_of_live_ax_objects_ = 0;
 

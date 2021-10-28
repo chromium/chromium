@@ -4954,6 +4954,9 @@ HRESULT AXPlatformNodeWin::GetAnnotationTypesAttribute(
   MarkerTypeRangeResult grammar_result = MarkerTypeRangeResult::kNone;
   MarkerTypeRangeResult spelling_result = MarkerTypeRangeResult::kNone;
   MarkerTypeRangeResult highlight_result = MarkerTypeRangeResult::kNone;
+  MarkerTypeRangeResult highlight_spelling_result =
+      MarkerTypeRangeResult::kNone;
+  MarkerTypeRangeResult highlight_grammar_result = MarkerTypeRangeResult::kNone;
 
   if (IsText() || IsAtomicTextField()) {
     grammar_result = GetMarkerTypeFromRange(start_offset, end_offset,
@@ -4961,12 +4964,21 @@ HRESULT AXPlatformNodeWin::GetAnnotationTypesAttribute(
     spelling_result = GetMarkerTypeFromRange(start_offset, end_offset,
                                              ax::mojom::MarkerType::kSpelling);
     highlight_result = GetMarkerTypeFromRange(
-        start_offset, end_offset, ax::mojom::MarkerType::kHighlight);
+        start_offset, end_offset, ax::mojom::MarkerType::kHighlight,
+        ax::mojom::HighlightType::kHighlight);
+    highlight_spelling_result = GetMarkerTypeFromRange(
+        start_offset, end_offset, ax::mojom::MarkerType::kHighlight,
+        ax::mojom::HighlightType::kSpellingError);
+    highlight_grammar_result = GetMarkerTypeFromRange(
+        start_offset, end_offset, ax::mojom::MarkerType::kHighlight,
+        ax::mojom::HighlightType::kGrammarError);
   }
 
   if (grammar_result == MarkerTypeRangeResult::kMixed ||
       spelling_result == MarkerTypeRangeResult::kMixed ||
-      highlight_result == MarkerTypeRangeResult::kMixed) {
+      highlight_result == MarkerTypeRangeResult::kMixed ||
+      highlight_spelling_result == MarkerTypeRangeResult::kMixed ||
+      highlight_grammar_result == MarkerTypeRangeResult::kMixed) {
     Microsoft::WRL::ComPtr<IUnknown> mixed_attribute_value;
     HRESULT hr = ::UiaGetReservedMixedAttributeValue(&mixed_attribute_value);
     if (SUCCEEDED(hr))
@@ -4974,9 +4986,11 @@ HRESULT AXPlatformNodeWin::GetAnnotationTypesAttribute(
     return hr;
   }
 
-  if (spelling_result == MarkerTypeRangeResult::kMatch)
+  if (spelling_result == MarkerTypeRangeResult::kMatch ||
+      highlight_spelling_result == MarkerTypeRangeResult::kMatch)
     result->Insert<VT_I4>(AnnotationType_SpellingError);
-  if (grammar_result == MarkerTypeRangeResult::kMatch)
+  if (grammar_result == MarkerTypeRangeResult::kMatch ||
+      highlight_grammar_result == MarkerTypeRangeResult::kMatch)
     result->Insert<VT_I4>(AnnotationType_GrammarError);
   if (highlight_result == MarkerTypeRangeResult::kMatch)
     result->Insert<VT_I4>(AnnotationType_Highlighted);
@@ -5146,10 +5160,13 @@ void AXPlatformNodeWin::AggregateRangesForMarkerType(
     AXPlatformNodeBase* node,
     ax::mojom::MarkerType marker_type,
     int offset_ranges_amount,
-    std::vector<std::pair<int, int>>* ranges) {
+    std::vector<std::pair<int, int>>* ranges,
+    const absl::optional<ax::mojom::HighlightType>& highlight_type) {
   DCHECK(node->IsText());
   const std::vector<int32_t>& marker_types =
       node->GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerTypes);
+  const std::vector<int32_t>& highlight_types =
+      node->GetIntListAttribute(ax::mojom::IntListAttribute::kHighlightTypes);
   const std::vector<int>& marker_starts =
       node->GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerStarts);
   const std::vector<int>& marker_ends =
@@ -5158,6 +5175,12 @@ void AXPlatformNodeWin::AggregateRangesForMarkerType(
   for (size_t i = 0; i < marker_types.size(); ++i) {
     if (static_cast<ax::mojom::MarkerType>(marker_types[i]) != marker_type)
       continue;
+
+    if (marker_type == ax::mojom::MarkerType::kHighlight &&
+        highlight_type !=
+            static_cast<ax::mojom::HighlightType>(highlight_types[i])) {
+      continue;
+    }
 
     const int marker_start = marker_starts[i] + offset_ranges_amount;
     const int marker_end = marker_ends[i] + offset_ranges_amount;
@@ -5169,13 +5192,14 @@ AXPlatformNodeWin::MarkerTypeRangeResult
 AXPlatformNodeWin::GetMarkerTypeFromRange(
     const absl::optional<int>& start_offset,
     const absl::optional<int>& end_offset,
-    ax::mojom::MarkerType marker_type) {
+    ax::mojom::MarkerType marker_type,
+    const absl::optional<ax::mojom::HighlightType>& highlight_type) {
   DCHECK(IsText() || IsAtomicTextField());
   std::vector<std::pair<int, int>> relevant_ranges;
 
   if (IsText()) {
     AggregateRangesForMarkerType(this, marker_type, /*offset_ranges_amount=*/0,
-                                 &relevant_ranges);
+                                 &relevant_ranges, highlight_type);
   } else if (IsAtomicTextField()) {
     int offset_ranges_amount = 0;
     for (AXPlatformNodeBase* static_text = GetFirstTextOnlyDescendant();
@@ -5193,8 +5217,8 @@ AXPlatformNodeWin::GetMarkerTypeFromRange(
       }
 
       AggregateRangesForMarkerType(static_text, marker_type,
-                                   child_offset_ranges_amount,
-                                   &relevant_ranges);
+                                   child_offset_ranges_amount, &relevant_ranges,
+                                   highlight_type);
     }
   }
 

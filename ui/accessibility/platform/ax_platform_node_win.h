@@ -1432,7 +1432,8 @@ class AX_EXPORT __declspec(uuid("26f5641a-246d-457b-a96d-07f3fae6acf2"))
       AXPlatformNodeBase* node,
       ax::mojom::MarkerType marker_type,
       int offset_ranges_amount,
-      std::vector<std::pair<int, int>>* ranges);
+      std::vector<std::pair<int, int>>* ranges,
+      const absl::optional<ax::mojom::HighlightType>& highlight_type);
 
   enum class MarkerTypeRangeResult {
     // The MarkerType does not overlap the range.
@@ -1448,7 +1449,9 @@ class AX_EXPORT __declspec(uuid("26f5641a-246d-457b-a96d-07f3fae6acf2"))
   MarkerTypeRangeResult GetMarkerTypeFromRange(
       const absl::optional<int>& start_offset,
       const absl::optional<int>& end_offset,
-      ax::mojom::MarkerType marker_type);
+      ax::mojom::MarkerType marker_type,
+      const absl::optional<ax::mojom::HighlightType>& highlight_type =
+          absl::nullopt);
 
   bool IsAncestorComboBox();
 

@@ -3714,12 +3714,20 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   text_data.AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerTypes,
                                 {(int)ax::mojom::MarkerType::kGrammar,
                                  (int)ax::mojom::MarkerType::kSpelling,
+                                 (int)ax::mojom::MarkerType::kHighlight,
+                                 (int)ax::mojom::MarkerType::kHighlight,
                                  (int)ax::mojom::MarkerType::kHighlight});
+  text_data.AddIntListAttribute(ax::mojom::IntListAttribute::kHighlightTypes,
+                                {(int)ax::mojom::HighlightType::kNone,
+                                 (int)ax::mojom::HighlightType::kNone,
+                                 (int)ax::mojom::HighlightType::kHighlight,
+                                 (int)ax::mojom::HighlightType::kSpellingError,
+                                 (int)ax::mojom::HighlightType::kGrammarError});
   text_data.AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerStarts,
-                                {0, 5, 0});
+                                {0, 5, 0, 14, 19});
   text_data.AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerEnds,
-                                {9, 9, 4});
-  text_data.SetName("some text");
+                                {9, 9, 4, 18, 24});
+  text_data.SetName("some text and some other text");
 
   ui::AXNodeData heading_data;
   heading_data.id = 3;
@@ -4189,16 +4197,18 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   expected_variant.Reset();
 
   {
-    // |text_node| has a grammar error on the entire text, a highlight for the
-    // first word, and a spelling error for the second word, so the range has
-    // mixed annotations.
+    // |text_node| has a grammar error on "some text", a highlight for the
+    // first word, a spelling error for the second word, a "spelling-error"
+    // highlight for the fourth word, and a "grammar-error" highlight for the
+    // fifth word. So the range has mixed annotations.
     EXPECT_UIA_TEXTATTRIBUTE_MIXED(text_range_provider,
                                    UIA_AnnotationTypesAttributeId);
 
+    // Testing annotations in range [5,9)
     // start: TextPosition, anchor_id=2, text_offset=5,
-    //        annotated_text=some <t>ext
+    //        annotated_text=some <t>ext and some other text
     // end  : TextPosition, anchor_id=2, text_offset=9,
-    //        annotated_text=some text<>
+    //        annotated_text=some text<> and some other text
     AXPlatformNodeWin* owner =
         static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(text_node));
     ComPtr<AXPlatformNodeTextRangeProviderWin> range_with_annotations;
@@ -4221,10 +4231,11 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   }
 
   {
+    // Testing annotations in range [0,4)
     // start: TextPosition, anchor_id=2, text_offset=0,
-    //        annotated_text=<s>ome text
+    //        annotated_text=<s>ome text and some other text
     // end  : TextPosition, anchor_id=2, text_offset=4,
-    //        annotated_text=some<> text
+    //        annotated_text=some<> text and some other text
     AXPlatformNodeWin* owner =
         static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(text_node));
     ComPtr<AXPlatformNodeTextRangeProviderWin> range_with_annotations;
@@ -4242,6 +4253,58 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
     EXPECT_EQ(annotation_types_variant.type(), VT_ARRAY | VT_I4);
     std::vector<int> expected_annotations = {AnnotationType_GrammarError,
                                              AnnotationType_Highlighted};
+    EXPECT_UIA_SAFEARRAY_EQ(V_ARRAY(annotation_types_variant.ptr()),
+                            expected_annotations);
+  }
+
+  {
+    // Testing annotations in range [14,18)
+    // start: TextPosition, anchor_id=2, text_offset=14,
+    //        annotated_text=some text and <s>ome other text
+    // end  : TextPosition, anchor_id=2, text_offset=18,
+    //        annotated_text=some text and some<> other text
+    AXPlatformNodeWin* owner =
+        static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(text_node));
+    ComPtr<AXPlatformNodeTextRangeProviderWin> range_with_annotations;
+    CreateTextRangeProviderWin(
+        range_with_annotations, owner, tree_data.tree_id,
+        /*start_anchor_id=*/text_node->id(), /*start_offset=*/14,
+        /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
+        /*end_anchor_id=*/text_node->id(), /*end_offset=*/18,
+        /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
+
+    base::win::ScopedVariant annotation_types_variant;
+    EXPECT_HRESULT_SUCCEEDED(range_with_annotations->GetAttributeValue(
+        UIA_AnnotationTypesAttributeId, annotation_types_variant.Receive()));
+
+    EXPECT_EQ(annotation_types_variant.type(), VT_ARRAY | VT_I4);
+    std::vector<int> expected_annotations = {AnnotationType_SpellingError};
+    EXPECT_UIA_SAFEARRAY_EQ(V_ARRAY(annotation_types_variant.ptr()),
+                            expected_annotations);
+  }
+
+  {
+    // Testing annotations in range [19,24)
+    // start: TextPosition, anchor_id=2, text_offset=19,
+    //        annotated_text=some text and some <o>ther text
+    // end  : TextPosition, anchor_id=2, text_offset=24,
+    //        annotated_text=some text and some other<> text
+    AXPlatformNodeWin* owner =
+        static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(text_node));
+    ComPtr<AXPlatformNodeTextRangeProviderWin> range_with_annotations;
+    CreateTextRangeProviderWin(
+        range_with_annotations, owner, tree_data.tree_id,
+        /*start_anchor_id=*/text_node->id(), /*start_offset=*/19,
+        /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
+        /*end_anchor_id=*/text_node->id(), /*end_offset=*/24,
+        /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
+
+    base::win::ScopedVariant annotation_types_variant;
+    EXPECT_HRESULT_SUCCEEDED(range_with_annotations->GetAttributeValue(
+        UIA_AnnotationTypesAttributeId, annotation_types_variant.Receive()));
+
+    EXPECT_EQ(annotation_types_variant.type(), VT_ARRAY | VT_I4);
+    std::vector<int> expected_annotations = {AnnotationType_GrammarError};
     EXPECT_UIA_SAFEARRAY_EQ(V_ARRAY(annotation_types_variant.ptr()),
                             expected_annotations);
   }
