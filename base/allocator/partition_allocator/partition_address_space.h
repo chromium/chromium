@@ -36,12 +36,12 @@ class BASE_EXPORT PartitionAddressSpace {
  public:
   // BRP stands for BackupRefPtr. GigaCage is split into pools, one which
   // supports BackupRefPtr and one that doesn't.
-  static ALWAYS_INLINE internal::pool_handle GetNonBRPPool() {
-    return setup_.non_brp_pool_;
+  static ALWAYS_INLINE internal::pool_handle GetRegularPool() {
+    return setup_.regular_pool_;
   }
 
-  static ALWAYS_INLINE constexpr uintptr_t NonBRPPoolBaseMask() {
-    return kNonBRPPoolBaseMask;
+  static ALWAYS_INLINE constexpr uintptr_t RegularPoolBaseMask() {
+    return kRegularPoolBaseMask;
   }
 
   static ALWAYS_INLINE internal::pool_handle GetBRPPool() {
@@ -63,9 +63,9 @@ class BASE_EXPORT PartitionAddressSpace {
 #endif
     pool_handle pool = 0;
     uintptr_t base = 0;
-    if (IsInNonBRPPool(address)) {
-      pool = GetNonBRPPool();
-      base = setup_.non_brp_pool_base_address_;
+    if (IsInRegularPool(address)) {
+      pool = GetRegularPool();
+      base = setup_.regular_pool_base_address_;
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
     } else if (IsInBRPPool(address)) {
       pool = GetBRPPool();
@@ -99,9 +99,9 @@ class BASE_EXPORT PartitionAddressSpace {
   static void UninitConfigurablePoolForTesting();
 
   static ALWAYS_INLINE bool IsInitialized() {
-    // Either neither or both non-BRP and BRP pool are initialized. The
+    // Either neither or both regular and BRP pool are initialized. The
     // configurable pool is initialized separately.
-    if (setup_.non_brp_pool_) {
+    if (setup_.regular_pool_) {
       PA_DCHECK(setup_.brp_pool_ != 0);
       return true;
     }
@@ -116,13 +116,13 @@ class BASE_EXPORT PartitionAddressSpace {
   }
 
   // Returns false for nullptr.
-  static ALWAYS_INLINE bool IsInNonBRPPool(const void* address) {
-    return (reinterpret_cast<uintptr_t>(address) & kNonBRPPoolBaseMask) ==
-           setup_.non_brp_pool_base_address_;
+  static ALWAYS_INLINE bool IsInRegularPool(const void* address) {
+    return (reinterpret_cast<uintptr_t>(address) & kRegularPoolBaseMask) ==
+           setup_.regular_pool_base_address_;
   }
 
-  static ALWAYS_INLINE uintptr_t NonBRPPoolBase() {
-    return setup_.non_brp_pool_base_address_;
+  static ALWAYS_INLINE uintptr_t RegularPoolBase() {
+    return setup_.regular_pool_base_address_;
   }
 
   // Returns false for nullptr.
@@ -156,7 +156,7 @@ class BASE_EXPORT PartitionAddressSpace {
  private:
   // On 64-bit systems, GigaCage is split into disjoint pools. The BRP pool, is
   // where all allocations have a BRP ref-count, thus pointers pointing there
-  // can use a BRP protection against UaF. Allocations in the non-BRP pool don't
+  // can use a BRP protection against UaF. Allocations in the other pools don't
   // have that.
   //
   // Pool sizes have to be the power of two. Each pool will be aligned at its
@@ -173,11 +173,11 @@ class BASE_EXPORT PartitionAddressSpace {
   // This Pool can be used when certain PA allocations must be located inside a
   // given virtual address region. One use case for this Pool is V8's virtual
   // memory cage, which requires that ArrayBuffers be located inside of it.
-  static constexpr size_t kNonBRPPoolSize = kPoolMaxSize;
+  static constexpr size_t kRegularPoolSize = kPoolMaxSize;
   static constexpr size_t kBRPPoolSize = kPoolMaxSize;
   static constexpr size_t kConfigurablePoolMaxSize = kPoolMaxSize;
   static constexpr size_t kConfigurablePoolMinSize = 1 * kGiB;
-  static_assert(bits::IsPowerOfTwo(kNonBRPPoolSize) &&
+  static_assert(bits::IsPowerOfTwo(kRegularPoolSize) &&
                     bits::IsPowerOfTwo(kBRPPoolSize) &&
                     bits::IsPowerOfTwo(kConfigurablePoolMaxSize) &&
                     bits::IsPowerOfTwo(kConfigurablePoolMinSize),
@@ -189,10 +189,10 @@ class BASE_EXPORT PartitionAddressSpace {
   // tags for Arm's Memory Tagging Extension (MTE). To ensure that tagged
   // pointers are recognized as being in the pool, mask off the top byte with
   // kMemTagUnmask.
-  static constexpr uintptr_t kNonBRPPoolOffsetMask =
-      static_cast<uintptr_t>(kNonBRPPoolSize) - 1;
-  static constexpr uintptr_t kNonBRPPoolBaseMask =
-      ~kNonBRPPoolOffsetMask & kMemTagUnmask;
+  static constexpr uintptr_t kRegularPoolOffsetMask =
+      static_cast<uintptr_t>(kRegularPoolSize) - 1;
+  static constexpr uintptr_t kRegularPoolBaseMask =
+      ~kRegularPoolOffsetMask & kMemTagUnmask;
   static constexpr uintptr_t kBRPPoolOffsetMask =
       static_cast<uintptr_t>(kBRPPoolSize) - 1;
   static constexpr uintptr_t kBRPPoolBaseMask =
@@ -210,23 +210,23 @@ class BASE_EXPORT PartitionAddressSpace {
     // ConfigurablePool, so that PartitionAddressSpace::IsIn*Pool() always
     // returns false.
     constexpr GigaCageSetup()
-        : non_brp_pool_base_address_(kNonBRPPoolOffsetMask),
+        : regular_pool_base_address_(kRegularPoolOffsetMask),
           brp_pool_base_address_(kBRPPoolOffsetMask),
           configurable_pool_base_address_(kConfigurablePoolInitialBaseAddress),
           configurable_pool_base_mask_(0),
-          non_brp_pool_(0),
+          regular_pool_(0),
           brp_pool_(0),
           configurable_pool_(0) {}
 
     // Using a union to enforce padding.
     union {
       struct {
-        uintptr_t non_brp_pool_base_address_;
+        uintptr_t regular_pool_base_address_;
         uintptr_t brp_pool_base_address_;
         uintptr_t configurable_pool_base_address_;
         uintptr_t configurable_pool_base_mask_;
 
-        pool_handle non_brp_pool_;
+        pool_handle regular_pool_;
         pool_handle brp_pool_;
         pool_handle configurable_pool_;
       };
@@ -269,7 +269,7 @@ ALWAYS_INLINE bool IsManagedByPartitionAlloc(const void* address) {
 #if !BUILDFLAG(USE_BACKUP_REF_PTR)
   PA_DCHECK(!internal::PartitionAddressSpace::IsInBRPPool(address));
 #endif
-  return internal::PartitionAddressSpace::IsInNonBRPPool(address)
+  return internal::PartitionAddressSpace::IsInRegularPool(address)
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
          || internal::PartitionAddressSpace::IsInBRPPool(address)
 #endif
@@ -277,8 +277,8 @@ ALWAYS_INLINE bool IsManagedByPartitionAlloc(const void* address) {
 }
 
 // Returns false for nullptr.
-ALWAYS_INLINE bool IsManagedByPartitionAllocNonBRPPool(const void* address) {
-  return internal::PartitionAddressSpace::IsInNonBRPPool(address);
+ALWAYS_INLINE bool IsManagedByPartitionAllocRegularPool(const void* address) {
+  return internal::PartitionAddressSpace::IsInRegularPool(address);
 }
 
 // Returns false for nullptr.

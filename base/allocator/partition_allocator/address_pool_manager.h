@@ -37,7 +37,7 @@ namespace internal {
 // (32bit version)
 // AddressPoolManager wraps AllocPages and FreePages and remembers allocated
 // address regions using bitmaps. IsManagedByPartitionAllocBRPPool and
-// IsManagedByPartitionAllocNonBRPPool use the bitmaps to judge whether a given
+// IsManagedByPartitionAllocRegularPool use the bitmaps to judge whether a given
 // address is in a pool that supports BackupRefPtr or in a pool that doesn't.
 // All PartitionAlloc allocations must be in either of the pools.
 class BASE_EXPORT AddressPoolManager {
@@ -70,8 +70,8 @@ class BASE_EXPORT AddressPoolManager {
   void MarkUsed(pool_handle handle, const void* address, size_t size);
   void MarkUnused(pool_handle handle, const void* address, size_t size);
 
-  static bool IsManagedByNonBRPPool(const void* address) {
-    return AddressPoolManagerBitmap::IsManagedByNonBRPPool(address);
+  static bool IsManagedByRegularPool(const void* address) {
+    return AddressPoolManagerBitmap::IsManagedByRegularPool(address);
   }
 
   static bool IsManagedByBRPPool(const void* address) {
@@ -135,8 +135,8 @@ class BASE_EXPORT AddressPoolManager {
   friend struct base::LazyInstanceTraitsBase<AddressPoolManager>;
 };
 
-ALWAYS_INLINE pool_handle GetNonBRPPool() {
-  return kNonBRPPoolHandle;
+ALWAYS_INLINE pool_handle GetRegularPool() {
+  return kRegularPoolHandle;
 }
 
 ALWAYS_INLINE pool_handle GetBRPPool() {

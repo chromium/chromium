@@ -73,23 +73,23 @@ void PartitionAddressSpace::Init() {
   if (IsInitialized())
     return;
 
-  setup_.non_brp_pool_base_address_ = reinterpret_cast<uintptr_t>(
-      AllocPages(nullptr, kNonBRPPoolSize, kNonBRPPoolSize,
+  setup_.regular_pool_base_address_ = reinterpret_cast<uintptr_t>(
+      AllocPages(nullptr, kRegularPoolSize, kRegularPoolSize,
                  base::PageInaccessible, PageTag::kPartitionAlloc));
-  if (!setup_.non_brp_pool_base_address_)
+  if (!setup_.regular_pool_base_address_)
     HandleGigaCageAllocFailure();
-  PA_DCHECK(!(setup_.non_brp_pool_base_address_ & (kNonBRPPoolSize - 1)));
-  setup_.non_brp_pool_ = internal::AddressPoolManager::GetInstance()->Add(
-      setup_.non_brp_pool_base_address_, kNonBRPPoolSize);
-  PA_CHECK(setup_.non_brp_pool_ == kNonBRPPoolHandle);
-  PA_DCHECK(!IsInNonBRPPool(
-      reinterpret_cast<void*>(setup_.non_brp_pool_base_address_ - 1)));
-  PA_DCHECK(IsInNonBRPPool(
-      reinterpret_cast<void*>(setup_.non_brp_pool_base_address_)));
-  PA_DCHECK(IsInNonBRPPool(reinterpret_cast<void*>(
-      setup_.non_brp_pool_base_address_ + kNonBRPPoolSize - 1)));
-  PA_DCHECK(!IsInNonBRPPool(reinterpret_cast<void*>(
-      setup_.non_brp_pool_base_address_ + kNonBRPPoolSize)));
+  PA_DCHECK(!(setup_.regular_pool_base_address_ & (kRegularPoolSize - 1)));
+  setup_.regular_pool_ = internal::AddressPoolManager::GetInstance()->Add(
+      setup_.regular_pool_base_address_, kRegularPoolSize);
+  PA_CHECK(setup_.regular_pool_ == kRegularPoolHandle);
+  PA_DCHECK(!IsInRegularPool(
+      reinterpret_cast<void*>(setup_.regular_pool_base_address_ - 1)));
+  PA_DCHECK(IsInRegularPool(
+      reinterpret_cast<void*>(setup_.regular_pool_base_address_)));
+  PA_DCHECK(IsInRegularPool(reinterpret_cast<void*>(
+      setup_.regular_pool_base_address_ + kRegularPoolSize - 1)));
+  PA_DCHECK(!IsInRegularPool(reinterpret_cast<void*>(
+      setup_.regular_pool_base_address_ + kRegularPoolSize)));
 
   // Reserve an extra allocation granularity unit before the BRP pool, but keep
   // the pool aligned at kBRPPoolSize. A pointer immediately past an allocation
@@ -120,12 +120,12 @@ void PartitionAddressSpace::Init() {
 #if PA_STARSCAN_USE_CARD_TABLE
   // Reserve memory for PCScan quarantine card table.
   void* requested_address =
-      reinterpret_cast<void*>(setup_.non_brp_pool_base_address_);
+      reinterpret_cast<void*>(setup_.regular_pool_base_address_);
   char* actual_address = internal::AddressPoolManager::GetInstance()->Reserve(
-      setup_.non_brp_pool_, requested_address, kSuperPageSize);
+      setup_.regular_pool_, requested_address, kSuperPageSize);
   PA_CHECK(requested_address == actual_address)
-      << "QuarantineCardTable is required to be allocated in the beginning of "
-         "the non-BRP pool";
+      << "QuarantineCardTable is required to be allocated at the beginning of "
+         "the regular pool";
 #endif  // PA_STARSCAN_USE_CARD_TABLE
 }
 
@@ -151,8 +151,8 @@ void PartitionAddressSpace::InitConfigurablePool(void* address, size_t size) {
 }
 
 void PartitionAddressSpace::UninitForTesting() {
-  FreePages(reinterpret_cast<void*>(setup_.non_brp_pool_base_address_),
-            kNonBRPPoolSize);
+  FreePages(reinterpret_cast<void*>(setup_.regular_pool_base_address_),
+            kRegularPoolSize);
   // For BRP pool, the allocation region includes a "forbidden zone" before the
   // pool.
   const size_t kForbiddenZoneSize = PageAllocationGranularity();
@@ -161,11 +161,11 @@ void PartitionAddressSpace::UninitForTesting() {
             kBRPPoolSize + kForbiddenZoneSize);
   // Do not free pages for the configurable pool, because its memory is owned
   // by someone else, but deinitialize it nonetheless.
-  setup_.non_brp_pool_base_address_ = kNonBRPPoolOffsetMask;
+  setup_.regular_pool_base_address_ = kRegularPoolOffsetMask;
   setup_.brp_pool_base_address_ = kBRPPoolOffsetMask;
   setup_.configurable_pool_base_address_ = kConfigurablePoolInitialBaseAddress;
   setup_.configurable_pool_base_mask_ = 0;
-  setup_.non_brp_pool_ = 0;
+  setup_.regular_pool_ = 0;
   setup_.brp_pool_ = 0;
   setup_.configurable_pool_ = 0;
   internal::AddressPoolManager::GetInstance()->ResetForTesting();

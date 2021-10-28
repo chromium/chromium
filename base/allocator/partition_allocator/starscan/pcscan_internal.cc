@@ -91,17 +91,17 @@ struct [[maybe_unused]] ReentrantScannerGuard final{};
 // state while scanning. Unmarking on the step 3) ensures that unmarking
 // actually happens (and we don't hit too many false positives).
 //
-// The code here relies on the fact that |ptr| is in the non-BRP pool and that
+// The code here relies on the fact that |ptr| is in the regular pool and that
 // the card table (this object) is allocated at the very beginning of that pool.
 class QuarantineCardTable final {
  public:
-  // Avoid the load of the base of the non-BRP pool.
+  // Avoid the load of the base of the regular pool.
   ALWAYS_INLINE static QuarantineCardTable& GetFrom(uintptr_t ptr) {
     PA_SCAN_DCHECK(
-        IsManagedByPartitionAllocNonBRPPool(reinterpret_cast<void*>(ptr)));
-    constexpr uintptr_t kNonBRPPoolBaseMask =
-        PartitionAddressSpace::NonBRPPoolBaseMask();
-    return *reinterpret_cast<QuarantineCardTable*>(ptr & kNonBRPPoolBaseMask);
+        IsManagedByPartitionAllocRegularPool(reinterpret_cast<void*>(ptr)));
+    constexpr uintptr_t kRegularPoolBaseMask =
+        PartitionAddressSpace::RegularPoolBaseMask();
+    return *reinterpret_cast<QuarantineCardTable*>(ptr & kRegularPoolBaseMask);
   }
 
   ALWAYS_INLINE void Quarantine(uintptr_t begin, size_t size) {
@@ -129,9 +129,9 @@ class QuarantineCardTable final {
   QuarantineCardTable() = default;
 
   ALWAYS_INLINE static constexpr size_t Byte(uintptr_t address) {
-    constexpr uintptr_t kNonBRPPoolBaseMask =
-        PartitionAddressSpace::NonBRPPoolBaseMask();
-    return (address & ~kNonBRPPoolBaseMask) / kCardSize;
+    constexpr uintptr_t kRegularPoolBaseMask =
+        PartitionAddressSpace::RegularPoolBaseMask();
+    return (address & ~kRegularPoolBaseMask) / kCardSize;
   }
 
   ALWAYS_INLINE void SetImpl(uintptr_t begin, size_t size, bool value) {
@@ -139,7 +139,7 @@ class QuarantineCardTable final {
     const size_t need_bytes = (size + (kCardSize - 1)) / kCardSize;
     PA_SCAN_DCHECK(bytes_.size() >= byte + need_bytes);
     PA_SCAN_DCHECK(
-        IsManagedByPartitionAllocNonBRPPool(reinterpret_cast<void*>(begin)));
+        IsManagedByPartitionAllocRegularPool(reinterpret_cast<void*>(begin)));
     for (size_t i = byte; i < byte + need_bytes; ++i)
       bytes_[i] = value;
   }
@@ -251,7 +251,7 @@ SimdSupport DetectSimdSupport() {
 void CommitCardTable() {
 #if PA_STARSCAN_USE_CARD_TABLE
   RecommitSystemPages(
-      reinterpret_cast<void*>(PartitionAddressSpace::NonBRPPoolBase()),
+      reinterpret_cast<void*>(PartitionAddressSpace::RegularPoolBase()),
       sizeof(QuarantineCardTable), PageReadWrite, PageUpdatePermissions);
 #endif
 }
@@ -590,7 +590,7 @@ class PCScanTask final : public base::RefCountedThreadSafe<PCScanTask>,
 ALWAYS_INLINE AllocationStateMap* PCScanTask::TryFindScannerBitmapForPointer(
     uintptr_t maybe_ptr) const {
   PA_SCAN_DCHECK(
-      IsManagedByPartitionAllocNonBRPPool(reinterpret_cast<void*>(maybe_ptr)));
+      IsManagedByPartitionAllocRegularPool(reinterpret_cast<void*>(maybe_ptr)));
   // First, check if |maybe_ptr| points to a valid super page or a quarantined
   // card.
 #if defined(PA_HAS_64_BITS_POINTERS)
@@ -603,16 +603,16 @@ ALWAYS_INLINE AllocationStateMap* PCScanTask::TryFindScannerBitmapForPointer(
   // |maybe_ptr| points to a valid super-page. It's not as precise (meaning that
   // we may have hit the slow path more frequently), but reduces the memory
   // overhead.  Since we are certain here, that |maybe_ptr| refers to the
-  // non-BRP pool, it's okay to use non-checking version of
+  // regular pool, it's okay to use non-checking version of
   // ReservationOffsetPointer().
   const uintptr_t offset =
-      maybe_ptr & ~PartitionAddressSpace::NonBRPPoolBaseMask();
-  if (LIKELY(*ReservationOffsetPointer(kNonBRPPoolHandle, offset) !=
+      maybe_ptr & ~PartitionAddressSpace::RegularPoolBaseMask();
+  if (LIKELY(*ReservationOffsetPointer(kRegularPoolHandle, offset) !=
              kOffsetTagNormalBuckets))
     return nullptr;
 #endif
 #else   // defined(PA_HAS_64_BITS_POINTERS)
-  if (LIKELY(!IsManagedByPartitionAllocNonBRPPool(
+  if (LIKELY(!IsManagedByPartitionAllocRegularPool(
           reinterpret_cast<void*>(maybe_ptr))))
     return nullptr;
 #endif  // defined(PA_HAS_64_BITS_POINTERS)
@@ -744,7 +744,7 @@ class PCScanScanLoop final : public ScanLoop<PCScanScanLoop> {
   explicit PCScanScanLoop(const PCScanTask& task)
       : ScanLoop(PCScanInternal::Instance().simd_support()),
 #if defined(PA_HAS_64_BITS_POINTERS)
-        giga_cage_base_(PartitionAddressSpace::NonBRPPoolBase()),
+        giga_cage_base_(PartitionAddressSpace::RegularPoolBase()),
 #endif
         task_(task) {
   }
@@ -755,7 +755,7 @@ class PCScanScanLoop final : public ScanLoop<PCScanScanLoop> {
   ALWAYS_INLINE uintptr_t CageBase() const { return giga_cage_base_; }
   ALWAYS_INLINE static constexpr uintptr_t CageMask() {
 #if defined(PA_HAS_64_BITS_POINTERS)
-    return PartitionAddressSpace::NonBRPPoolBaseMask();
+    return PartitionAddressSpace::RegularPoolBaseMask();
 #else
     return 0;
 #endif

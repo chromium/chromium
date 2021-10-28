@@ -219,7 +219,7 @@ constexpr size_t kPoolMaxSize = 4 * kGiB;
 #endif
 constexpr size_t kMaxSuperPagesInPool = kPoolMaxSize / kSuperPageSize;
 
-static constexpr internal::pool_handle kNonBRPPoolHandle = 1;
+static constexpr internal::pool_handle kRegularPoolHandle = 1;
 static constexpr internal::pool_handle kBRPPoolHandle = 2;
 static constexpr internal::pool_handle kConfigurablePoolHandle = 3;
 

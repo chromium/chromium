@@ -360,13 +360,14 @@ void AddressPoolManager::MarkUsed(pool_handle handle,
   } else
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
   {
-    PA_DCHECK(handle == kNonBRPPoolHandle);
-    PA_DCHECK((length %
-               AddressPoolManagerBitmap::kBytesPer1BitOfNonBRPPoolBitmap) == 0);
-    SetBitmap(
-        AddressPoolManagerBitmap::non_brp_pool_bits_,
-        ptr_as_uintptr >> AddressPoolManagerBitmap::kBitShiftOfNonBRPPoolBitmap,
-        length >> AddressPoolManagerBitmap::kBitShiftOfNonBRPPoolBitmap);
+    PA_DCHECK(handle == kRegularPoolHandle);
+    PA_DCHECK(
+        (length % AddressPoolManagerBitmap::kBytesPer1BitOfRegularPoolBitmap) ==
+        0);
+    SetBitmap(AddressPoolManagerBitmap::regular_pool_bits_,
+              ptr_as_uintptr >>
+                  AddressPoolManagerBitmap::kBitShiftOfRegularPoolBitmap,
+              length >> AddressPoolManagerBitmap::kBitShiftOfRegularPoolBitmap);
   }
 }
 
@@ -398,19 +399,21 @@ void AddressPoolManager::MarkUnused(pool_handle handle,
   } else
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
   {
-    PA_DCHECK(handle == kNonBRPPoolHandle);
-    PA_DCHECK((length %
-               AddressPoolManagerBitmap::kBytesPer1BitOfNonBRPPoolBitmap) == 0);
+    PA_DCHECK(handle == kRegularPoolHandle);
+    PA_DCHECK(
+        (length % AddressPoolManagerBitmap::kBytesPer1BitOfRegularPoolBitmap) ==
+        0);
     ResetBitmap(
-        AddressPoolManagerBitmap::non_brp_pool_bits_,
-        ptr_as_uintptr >> AddressPoolManagerBitmap::kBitShiftOfNonBRPPoolBitmap,
-        length >> AddressPoolManagerBitmap::kBitShiftOfNonBRPPoolBitmap);
+        AddressPoolManagerBitmap::regular_pool_bits_,
+        ptr_as_uintptr >>
+            AddressPoolManagerBitmap::kBitShiftOfRegularPoolBitmap,
+        length >> AddressPoolManagerBitmap::kBitShiftOfRegularPoolBitmap);
   }
 }
 
 void AddressPoolManager::ResetForTesting() {
   PartitionAutoLock guard(AddressPoolManagerBitmap::GetLock());
-  AddressPoolManagerBitmap::non_brp_pool_bits_.reset();
+  AddressPoolManagerBitmap::regular_pool_bits_.reset();
   AddressPoolManagerBitmap::brp_pool_bits_.reset();
 }
 
