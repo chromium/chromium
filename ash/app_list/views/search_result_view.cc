@@ -298,8 +298,8 @@ void SearchResultView::StyleDetailsLabel() {
 
 void SearchResultView::OnQueryRemovalAccepted(bool accepted) {
   if (accepted) {
-    list_view_->SearchResultActionActivated(
-        this, OmniBoxZeroStateAction::kRemoveSuggestion);
+    list_view_->SearchResultActionActivated(this,
+                                            SearchResultActionType::kRemove);
   }
 
   if (confirm_remove_by_long_press_) {
@@ -436,7 +436,7 @@ bool SearchResultView::OnKeyPressed(const ui::KeyEvent& event) {
   switch (event.key_code()) {
     case ui::VKEY_RETURN:
       if (actions_view()->HasSelectedAction()) {
-        OnSearchResultActionActivated(static_cast<OmniBoxZeroStateAction>(
+        OnSearchResultActionActivated(static_cast<SearchResultActionType>(
             actions_view()->GetSelectedAction()));
       } else {
         list_view_->SearchResultActivated(this, event.flags(),
@@ -446,7 +446,7 @@ bool SearchResultView::OnKeyPressed(const ui::KeyEvent& event) {
     case ui::VKEY_DELETE:
     case ui::VKEY_BROWSER_BACK:
       // Allows alt+(back or delete) to trigger the 'remove result' dialog.
-      OnSearchResultActionActivated(OmniBoxZeroStateAction::kRemoveSuggestion);
+      OnSearchResultActionActivated(SearchResultActionType::kRemove);
       return true;
     default:
       return false;
@@ -514,13 +514,11 @@ void SearchResultView::OnThemeChanged() {
 void SearchResultView::OnGestureEvent(ui::GestureEvent* event) {
   switch (event->type()) {
     case ui::ET_GESTURE_LONG_PRESS:
-      if (actions_view()->IsValidActionIndex(
-              OmniBoxZeroStateAction::kRemoveSuggestion)) {
+      if (actions_view()->IsValidActionIndex(SearchResultActionType::kRemove)) {
         ScrollRectToVisible(GetLocalBounds());
         SetSelected(true, absl::nullopt);
         confirm_remove_by_long_press_ = true;
-        OnSearchResultActionActivated(
-            OmniBoxZeroStateAction::kRemoveSuggestion);
+        OnSearchResultActionActivated(SearchResultActionType::kRemove);
         event->SetHandled();
       }
       break;
@@ -602,9 +600,9 @@ void SearchResultView::OnSearchResultActionActivated(size_t index) {
   DCHECK_LT(index, result()->actions().size());
 
   if (result()->is_omnibox_search()) {
-    OmniBoxZeroStateAction button_action = GetOmniBoxZeroStateAction(index);
+    SearchResultActionType button_action = GetSearchResultActionType(index);
 
-    if (button_action == OmniBoxZeroStateAction::kRemoveSuggestion) {
+    if (button_action == SearchResultActionType::kRemove) {
       RecordZeroStateSearchResultUserActionHistogram(
           ZeroStateSearchResultUserActionType::kRemoveResult);
       auto dialog = std::make_unique<RemoveQueryConfirmationDialog>(
@@ -615,7 +613,7 @@ void SearchResultView::OnSearchResultActionActivated(size_t index) {
           ->contents_view()
           ->search_result_page_view()
           ->ShowAnchoredDialog(std::move(dialog));
-    } else if (button_action == OmniBoxZeroStateAction::kAppendSuggestion) {
+    } else if (button_action == SearchResultActionType::kAppend) {
       RecordZeroStateSearchResultUserActionHistogram(
           ZeroStateSearchResultUserActionType::kAppendResult);
       list_view_->SearchResultActionActivated(this, index);

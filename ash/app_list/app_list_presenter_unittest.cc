@@ -759,7 +759,7 @@ TEST_P(AppListPresenterTest, RemoveSuggestionShowsConfirmDialog) {
             result_selection_controller->selected_location_details());
 
   std::vector<TestAppListClient::SearchResultActionId> expected_actions = {
-      {kTestResultId, OmniBoxZeroStateAction::kRemoveSuggestion}};
+      {kTestResultId, SearchResultActionType::kRemove}};
   std::vector<TestAppListClient::SearchResultActionId> invoked_actions =
       GetAppListTestHelper()
           ->app_list_client()
@@ -826,7 +826,7 @@ TEST_P(AppListPresenterTest, RemoveSuggestionUsingLongTap) {
   EXPECT_FALSE(result_view->selected());
 
   std::vector<TestAppListClient::SearchResultActionId> expected_actions = {
-      {kTestResultId, OmniBoxZeroStateAction::kRemoveSuggestion}};
+      {kTestResultId, SearchResultActionType::kRemove}};
 
   std::vector<TestAppListClient::SearchResultActionId> invoked_actions =
       GetAppListTestHelper()
