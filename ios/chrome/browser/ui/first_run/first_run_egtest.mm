@@ -18,6 +18,7 @@
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
@@ -276,8 +277,7 @@ GREYLayoutConstraint* BelowConstraint() {
 
 // Tests that the forced sign-in screen replaces the regular sign-in screen
 // in the FRE when the policy is enabled.
-// Flaky under simulator: https://crbug.com/1263623
-- (void)DISABLED_testSignInScreenUIWhenForcedByPolicy {
+- (void)testSignInScreenUIWhenForcedByPolicy {
   AppLaunchConfiguration config = self.appConfigurationForTestCase;
 
   // Configure the policy to force sign-in.
@@ -336,6 +336,19 @@ GREYLayoutConstraint* BelowConstraint() {
 
   // Make sure that the next screen can be successfully displayed.
   [self verifySyncScreenIsDisplayed];
+
+  // Sign out then wait for the sign-in screen to reappear if not already
+  // displayed. This is to avoid a conflict between the dismiss animation and
+  // the presentation animation of the sign-in screen UI which can be triggered
+  // simultaneously when tearing down the test case. The sign-in UI may be
+  // triggered again when tearing down because the browser is signed out. Making
+  // sure that sign-out is done and that the sign-in screen animation is done
+  // before tearing down avoids the conflict.
+  [ChromeEarlGreyAppInterface signOutAndClearIdentities];
+  [ChromeEarlGrey
+      waitForMatcher:
+          grey_accessibilityID(
+              first_run::kFirstRunSignInScreenAccessibilityIdentifier)];
 }
 
 // Checks that the default browser screen is displayed correctly.
