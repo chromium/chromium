@@ -53,7 +53,7 @@ class BASE_EXPORT AddressPoolManager {
 
   // Populate a |used| bitset of superpages currently in use.
   void GetPoolUsedSuperPages(pool_handle handle,
-                             std::bitset<kMaxSuperPages>& used);
+                             std::bitset<kMaxSuperPagesInPool>& used);
 
   // Return the base address of a pool.
   uintptr_t GetPoolBaseAddress(pool_handle handle);
@@ -100,7 +100,7 @@ class BASE_EXPORT AddressPoolManager {
 
     bool TryReserveChunk(uintptr_t address, size_t size);
 
-    void GetUsedSuperPages(std::bitset<kMaxSuperPages>& used);
+    void GetUsedSuperPages(std::bitset<kMaxSuperPagesInPool>& used);
     uintptr_t GetBaseAddress();
 
    private:
@@ -108,7 +108,7 @@ class BASE_EXPORT AddressPoolManager {
 
     // The bitset stores the allocation state of the address pool. 1 bit per
     // super-page: 1 = allocated, 0 = free.
-    std::bitset<kMaxSuperPages> alloc_bitset_ GUARDED_BY(lock_);
+    std::bitset<kMaxSuperPagesInPool> alloc_bitset_ GUARDED_BY(lock_);
 
     // An index of a bit in the bitset before which we know for sure there all
     // 1s. This is a best-effort hint in the sense that there still may be lots

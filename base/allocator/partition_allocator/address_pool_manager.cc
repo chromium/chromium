@@ -67,7 +67,7 @@ pool_handle AddressPoolManager::Add(uintptr_t ptr, size_t length) {
 
 void AddressPoolManager::GetPoolUsedSuperPages(
     pool_handle handle,
-    std::bitset<kMaxSuperPages>& used) {
+    std::bitset<kMaxSuperPagesInPool>& used) {
   Pool* pool = GetPool(handle);
   if (!pool)
     return;
@@ -128,7 +128,7 @@ void AddressPoolManager::Pool::Initialize(uintptr_t ptr, size_t length) {
 #endif
 
   total_bits_ = length / kSuperPageSize;
-  PA_CHECK(total_bits_ <= kMaxSuperPages);
+  PA_CHECK(total_bits_ <= kMaxSuperPagesInPool);
 
   PartitionAutoLock scoped_lock(lock_);
   alloc_bitset_.reset();
@@ -144,7 +144,7 @@ void AddressPoolManager::Pool::Reset() {
 }
 
 void AddressPoolManager::Pool::GetUsedSuperPages(
-    std::bitset<kMaxSuperPages>& used) {
+    std::bitset<kMaxSuperPagesInPool>& used) {
   PartitionAutoLock scoped_lock(lock_);
 
   PA_DCHECK(IsInitialized());

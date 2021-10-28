@@ -508,7 +508,7 @@ CHROMEOS_EXPORT bool GetPartitionAllocSuperPagesInUse(
     uintptr_t current_area = 0;
     uint64_t current_area_length = 0;
 
-    std::bitset<base::kMaxSuperPages> alloc_bitset;
+    std::bitset<base::kMaxSuperPagesInPool> alloc_bitset;
     pool_manager->GetPoolUsedSuperPages(ph, alloc_bitset);
 
     for (size_t i = 0; i < alloc_bitset.size() && superpages_remaining; ++i) {

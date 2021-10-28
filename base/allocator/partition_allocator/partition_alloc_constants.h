@@ -217,7 +217,7 @@ constexpr size_t kPoolMaxSize = 8 * kGiB;
 constexpr size_t kNumPools = 2;
 constexpr size_t kPoolMaxSize = 4 * kGiB;
 #endif
-constexpr size_t kMaxSuperPages = kPoolMaxSize / kSuperPageSize;
+constexpr size_t kMaxSuperPagesInPool = kPoolMaxSize / kSuperPageSize;
 
 static constexpr internal::pool_handle kNonBRPPoolHandle = 1;
 static constexpr internal::pool_handle kBRPPoolHandle = 2;
@@ -236,13 +236,13 @@ NumPartitionPagesPerSuperPage() {
   return kSuperPageSize >> PartitionPageShift();
 }
 
-constexpr ALWAYS_INLINE size_t MaxSuperPages() {
-  return kMaxSuperPages;
+constexpr ALWAYS_INLINE size_t MaxSuperPagesInPool() {
+  return kMaxSuperPagesInPool;
 }
 
 #if defined(PA_HAS_64_BITS_POINTERS)
 // In 64-bit mode, the direct map allocation granularity is super page size,
-// because this is the reservation granularit of the GigaCage.
+// because this is the reservation granularity of the GigaCage.
 constexpr ALWAYS_INLINE size_t DirectMapAllocationGranularity() {
   return kSuperPageSize;
 }

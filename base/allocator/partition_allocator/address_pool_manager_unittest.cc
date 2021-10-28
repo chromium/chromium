@@ -120,7 +120,7 @@ TEST_F(PartitionAllocAddressPoolManagerTest, GetUsedSuperpages) {
   EXPECT_EQ(GetAddressPoolManager()->Reserve(pool_, nullptr, kSuperPageSize),
             nullptr);
 
-  std::bitset<base::kMaxSuperPages> used_super_pages;
+  std::bitset<base::kMaxSuperPagesInPool> used_super_pages;
   GetAddressPoolManager()->GetPoolUsedSuperPages(pool_, used_super_pages);
 
   // We expect every bit to be set.
