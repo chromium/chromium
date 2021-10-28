@@ -1466,11 +1466,6 @@ void AXObject::SerializeOtherScreenReaderAttributes(
 
   if (GetInvalidState() != ax::mojom::blink::InvalidState::kNone)
     node_data->SetInvalidState(GetInvalidState());
-  if (GetInvalidState() == ax::mojom::blink::InvalidState::kOther) {
-    TruncateAndAddStringAttribute(
-        node_data, ax::mojom::blink::StringAttribute::kAriaInvalidValue,
-        AriaInvalidValue());
-  }
 
   if (CheckedState() != ax::mojom::blink::CheckedState::kNone) {
     node_data->SetCheckedState(CheckedState());

@@ -411,9 +411,6 @@ void AXEventGenerator::OnStringAttributeChanged(AXTree* tree,
     case ax::mojom::StringAttribute::kAccessKey:
       AddEvent(node, Event::ACCESS_KEY_CHANGED);
       break;
-    case ax::mojom::StringAttribute::kAriaInvalidValue:
-      AddEvent(node, Event::INVALID_STATUS_CHANGED);
-      break;
     case ax::mojom::StringAttribute::kAutoComplete:
       AddEvent(node, Event::AUTO_COMPLETE_CHANGED);
       break;

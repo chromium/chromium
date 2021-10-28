@@ -547,7 +547,8 @@ enum StringAttribute {
   [Default]kNone = 0,
   kAccessKey = 1,
   kAppId = 2,
-  // Only used when invalid_state == invalid_state_other.
+  // AriaInvalidValue is deprecated. Spelling and Grammar errors are stored
+  // using markers and invalid state in general is stored using invalidState.
   kAriaInvalidValue = 3,
   kAutoComplete = 4,
   kCheckedStateDescription = 5,
@@ -1131,7 +1132,6 @@ enum InvalidState {
   kNone,
   kFalse,
   kTrue,
-  kOther,
 };
 
 // Input restriction associated with an object.

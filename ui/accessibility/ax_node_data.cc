@@ -1414,9 +1414,6 @@ std::string AXNodeData::ToString() const {
           case ax::mojom::InvalidState::kTrue:
             result += " invalid_state=true";
             break;
-          case ax::mojom::InvalidState::kOther:
-            result += " invalid_state=other";
-            break;
           default:
             break;
         }

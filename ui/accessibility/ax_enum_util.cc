@@ -1483,8 +1483,6 @@ const char* ToString(ax::mojom::InvalidState invalid_state) {
       return "false";
     case ax::mojom::InvalidState::kTrue:
       return "true";
-    case ax::mojom::InvalidState::kOther:
-      return "other";
   }
 
   return "";

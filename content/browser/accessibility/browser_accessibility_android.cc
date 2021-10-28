@@ -2480,16 +2480,31 @@ std::u16string BrowserAccessibilityAndroid::GetContentInvalidErrorMessage()
 
     case ax::mojom::InvalidState::kTrue:
       message_id = CONTENT_INVALID_TRUE;
-      break;
-    case ax::mojom::InvalidState::kOther:
-      std::string ariaInvalid = GetData().GetStringAttribute(
-          ax::mojom::StringAttribute::kAriaInvalidValue);
-      if (ariaInvalid == "spelling")
-        message_id = CONTENT_INVALID_SPELLING;
-      else if (ariaInvalid == "grammar")
-        message_id = CONTENT_INVALID_GRAMMAR;
-      else
-        message_id = CONTENT_INVALID_TRUE;
+      // Handle Grammar or Spelling errors.
+      // TODO(accessibility): using FindTextOnlyObjectsInRange or
+      // NextInTreeOrder doesn't work because Android's IsLeaf implementation
+      // deliberately excludes a lot of nodes.
+      for (auto it = InternalChildrenBegin(); it != InternalChildrenEnd();
+           ++it) {
+        BrowserAccessibilityAndroid* child =
+            static_cast<BrowserAccessibilityAndroid*>(it.get());
+        if (child->IsText()) {
+          const std::vector<int32_t>& marker_types = child->GetIntListAttribute(
+              ax::mojom::IntListAttribute::kMarkerTypes);
+
+          for (size_t i = 0; i < marker_types.size(); ++i) {
+            if (marker_types[i] &
+                static_cast<int32_t>(ax::mojom::MarkerType::kSpelling)) {
+              message_id = CONTENT_INVALID_SPELLING;
+              break;
+            } else if (marker_types[i] &
+                       static_cast<int32_t>(ax::mojom::MarkerType::kGrammar)) {
+              message_id = CONTENT_INVALID_GRAMMAR;
+              break;
+            }
+          }
+        }
+      }
       break;
   }
 

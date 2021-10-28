@@ -2075,6 +2075,7 @@ TEST_F('ChromeVoxBackgroundTest', 'InvalidItemNavigation', function() {
     <h3><a href="#a">inner</a></h3>
     <p aria-invalid="spelling">some txet</p>
     <button>button A</button>
+    <p aria-invalid="true">some other reason</p>
     <p>no error text 1</P>
     <p aria-invalid=false>no error text 2</P>
     <p aria-invalid="grammar">this are a text</p>
@@ -2090,7 +2091,9 @@ TEST_F('ChromeVoxBackgroundTest', 'InvalidItemNavigation', function() {
     mockFeedback.call(doCmd('nextInvalidItem'))
         .expectSpeech('some txet', 'misspelled')
         .call(doCmd('nextInvalidItem'))
-        .expectSpeech('this are a text', 'grammatical mistake')
+        .expectSpeech('some other reason')
+        .call(doCmd('nextInvalidItem'))
+        .expectSpeech('this are a text', 'grammar error')
         .call(doCmd('nextInvalidItem'))
         .expectSpeech('error is this')
         // Ensure wrap.
@@ -2100,40 +2103,11 @@ TEST_F('ChromeVoxBackgroundTest', 'InvalidItemNavigation', function() {
         .call(doCmd('previousInvalidItem'))
         .expectSpeech('error is this')
         .call(doCmd('previousInvalidItem'))
-        .expectSpeech('this are a text', 'grammatical mistake');
+        .expectSpeech('this are a text', 'grammar error');
 
     mockFeedback.replay();
   });
 });
-
-// TODO(https://crbug.com/1259555): aria-invalid = true is not correctly
-// processed. Update this test after it's fixed.
-TEST_F(
-    'ChromeVoxBackgroundTest', 'InvalidItemNavigationAriaInvalidTrue',
-    function() {
-      const mockFeedback = this.createMockFeedback();
-      const site = `
-    <h3><a href="#a">inner</a></h3>
-    <p aria-invalid="true">some txet</p>
-    <button>button A</button>
-    <p>no error text 1</P>
-    <p aria-invalid=false>no error text 2</P>
-    <a href="#b">outer1</a>
-    <h3>outer2</h3>
-  `;
-
-      this.runWithLoadedTree(site, function(root) {
-        assertEquals(
-            RoleType.LINK,
-            ChromeVoxState.instance.currentRange.start.node.role);
-        assertEquals(
-            'inner', ChromeVoxState.instance.currentRange.start.node.name);
-        mockFeedback.call(doCmd('nextInvalidItem'))
-            .expectSpeech('No invalid item');
-
-        mockFeedback.replay();
-      });
-    });
 
 TEST_F('ChromeVoxBackgroundTest', 'InvalidItemNavigationNoItem', function() {
   const mockFeedback = this.createMockFeedback();

@@ -7,7 +7,7 @@ rootWebArea
 ++++++textField multiline value='An error via invalid=spelling'
 ++++++++staticText name='An '
 ++++++++++inlineTextBox name='An '
-++++++++genericContainer ariaInvalidValue='spelling' invalidState=other
+++++++++genericContainer invalidState=true
 ++++++++++staticText name='error' markerTypes=1 markerStarts=0 markerEnds=5
 ++++++++++++inlineTextBox name='error' markerTypes=1 markerStarts=0 markerEnds=5
 ++++++++staticText name=' via invalid=spelling'
@@ -15,7 +15,7 @@ rootWebArea
 ++++++textField multiline value='An error via invalid=grammar'
 ++++++++staticText name='An '
 ++++++++++inlineTextBox name='An '
-++++++++genericContainer ariaInvalidValue='grammar' invalidState=other
+++++++++genericContainer invalidState=true
 ++++++++++staticText name='error' markerTypes=2 markerStarts=0 markerEnds=5
 ++++++++++++inlineTextBox name='error' markerTypes=2 markerStarts=0 markerEnds=5
 ++++++++staticText name=' via invalid=grammar'
@@ -29,7 +29,7 @@ rootWebArea
 ++++++genericContainer
 ++++++++staticText name='invalid=<default>'
 ++++++++++inlineTextBox name='invalid=<default>'
-++++++genericContainer ariaInvalidValue='unknown' invalidState=other
+++++++genericContainer invalidState=true
 ++++++++staticText name='invalid=unknown'
 ++++++++++inlineTextBox name='invalid=unknown'
 ++++++section

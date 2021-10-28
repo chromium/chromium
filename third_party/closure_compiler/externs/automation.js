@@ -1929,13 +1929,6 @@ chrome.automation.AutomationNode.prototype.inputType;
 chrome.automation.AutomationNode.prototype.accessKey;
 
 /**
- * The value of the aria-invalid attribute, indicating the error type.
- * @type {(string|undefined)}
- * @see https://developer.chrome.com/extensions/automation#type-ariaInvalidValue
- */
-chrome.automation.AutomationNode.prototype.ariaInvalidValue;
-
-/**
  * The CSS display attribute for this node, if applicable.
  * @type {(string|undefined)}
  * @see https://developer.chrome.com/extensions/automation#type-display

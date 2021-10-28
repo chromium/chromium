@@ -1256,7 +1256,7 @@
     Grammatical mistake detected
   </message>
   <message desc="Describes a spoken hint when aria-invalid=grammar." name="IDS_CHROMEVOX_HINT_INVALID_GRAMMAR">
-    grammatical mistake
+    grammar error
   </message>
   <message desc="Shown on a braille display as a suffix to text fields that are marked as containing a grammatical mistake. When translating, stick to lowercase." name="IDS_CHROMEVOX_ARIA_INVALID_GRAMMAR_BRL">
     grammatical mistake

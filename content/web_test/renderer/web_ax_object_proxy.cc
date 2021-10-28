@@ -989,8 +989,6 @@ std::string WebAXObjectProxy::Invalid() {
       return "false";
     case ax::mojom::InvalidState::kTrue:
       return "true";
-    case ax::mojom::InvalidState::kOther:
-      return "other";
     default:
       return std::string();
   }

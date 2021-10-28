@@ -2552,15 +2552,10 @@ ax::mojom::blink::InvalidState AXNodeObject::GetInvalidState() const {
       GetAOMPropertyOrARIAAttribute(AOMStringProperty::kInvalid);
   if (EqualIgnoringASCIICase(attribute_value, "false"))
     return ax::mojom::blink::InvalidState::kFalse;
-  if (EqualIgnoringASCIICase(attribute_value, "true"))
-    return ax::mojom::blink::InvalidState::kTrue;
-  // "spelling" and "grammar" are also invalid values: they are exposed via
-  // Markers() as if they are native errors, but also use the invalid entry
-  // state on the node itself, therefore they are treated like "true".
-  // in terms of the node's invalid state
-  // A yet unknown value.
+  // "spelling" and "grammar" are exposed via Markers() as if they are native
+  // errors. Any non-empty, and non-false value is considered True.
   if (!attribute_value.IsEmpty())
-    return ax::mojom::blink::InvalidState::kOther;
+    return ax::mojom::blink::InvalidState::kTrue;
 
   if (GetElement()) {
     ListedElement* form_control = ListedElement::From(*GetElement());
@@ -2602,13 +2597,6 @@ int AXNodeObject::SetSize() const {
       return set_size;
   }
   return 0;
-}
-
-String AXNodeObject::AriaInvalidValue() const {
-  if (GetInvalidState() == ax::mojom::blink::InvalidState::kOther)
-    return GetAOMPropertyOrARIAAttribute(AOMStringProperty::kInvalid);
-
-  return String();
 }
 
 bool AXNodeObject::ValueForRange(float* out_value) const {
