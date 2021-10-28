@@ -230,7 +230,7 @@ Status StorageQueue::Init() {
   // This is especially imporant for non-periodic queues, but won't harm
   // others either.
   if (first_sequencing_id_ < next_sequencing_id_) {
-    Start<ReadContext>(UploaderInterface::INIT_RESUME, this);
+    Start<ReadContext>(UploaderInterface::UploadReason::INIT_RESUME, this);
   }
   return Status::StatusOK();
 }
@@ -813,7 +813,9 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
         storage_queue_(storage_queue->weakptr_factory_.GetWeakPtr()) {
     DCHECK(storage_queue.get());
     DCHECK(async_start_upload_cb_);
-    DCHECK_LT(reason, UploaderInterface::MAX_REASON);
+    DCHECK_LT(
+        static_cast<uint32_t>(reason),
+        static_cast<uint32_t>(UploaderInterface::UploadReason::MAX_REASON));
     DETACH_FROM_SEQUENCE(read_sequence_checker_);
   }
 
@@ -1294,7 +1296,8 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
     // Otherwise initiate Upload right after writing
     // finished and respond back when reading Upload is done.
     // Note: new uploader created synchronously before scheduling Upload.
-    Start<ReadContext>(UploaderInterface::IMMEDIATE_FLUSH, storage_queue_);
+    Start<ReadContext>(UploaderInterface::UploadReason::IMMEDIATE_FLUSH,
+                       storage_queue_);
   }
 
   void OnStart() override {
@@ -1644,14 +1647,14 @@ void StorageQueue::CheckBackUpload(Status status, int64_t next_sequencing_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(storage_queue_sequence_checker_);
   if (!status.ok()) {
     // Previous upload failed, retry.
-    Start<ReadContext>(UploaderInterface::FAILURE_RETRY, this);
+    Start<ReadContext>(UploaderInterface::UploadReason::FAILURE_RETRY, this);
     return;
   }
 
   if (!first_unconfirmed_sequencing_id_.has_value() ||
       first_unconfirmed_sequencing_id_.value() < next_sequencing_id) {
     // Not all uploaded events were confirmed after upload, retry.
-    Start<ReadContext>(UploaderInterface::INCOMPLETE_RETRY, this);
+    Start<ReadContext>(UploaderInterface::UploadReason::INCOMPLETE_RETRY, this);
     return;
   }
 
@@ -1659,11 +1662,11 @@ void StorageQueue::CheckBackUpload(Status status, int64_t next_sequencing_id) {
 }
 
 void StorageQueue::PeriodicUpload() {
-  Start<ReadContext>(UploaderInterface::PERIODIC, this);
+  Start<ReadContext>(UploaderInterface::UploadReason::PERIODIC, this);
 }
 
 void StorageQueue::Flush() {
-  Start<ReadContext>(UploaderInterface::MANUAL, this);
+  Start<ReadContext>(UploaderInterface::UploadReason::MANUAL, this);
 }
 
 void StorageQueue::ReleaseAllFileInstances() {
