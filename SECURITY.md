@@ -15,9 +15,5 @@ Because I am gonna adopt a Software as a Service system, I will be updating vers
 | 1.4     | :white_check_mark: | 28 Oct 2021     |
 
 ## Reporting a Vulnerability
-
-Use this section to tell people how to report a vulnerability.
-
-Tell them where to go, how often they can expect to get an update on a
-reported vulnerability, what to expect if the vulnerability is accepted or
-declined, etc.
+email me at buttertheidiot@gmail.com for answers on vulnerabilities 
+or use github issues
