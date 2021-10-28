@@ -312,7 +312,10 @@ APIBinding::APIBinding(const std::string& api_name,
           get_values("conditions", &rule_conditions);
         }
 
-        options->GetInteger("maxListeners", &max_listeners);
+        absl::optional<int> max_listeners_option =
+            options->FindIntKey("maxListeners");
+        if (max_listeners_option)
+          max_listeners = *max_listeners_option;
         absl::optional<bool> unmanaged = options->FindBoolKey("unmanaged");
         if (unmanaged)
           notify_on_change = !*unmanaged;
@@ -487,9 +490,9 @@ void APIBinding::DecorateTemplateWithProperties(
       continue;
     }
     if (type == "integer") {
-      int val = 0;
-      CHECK(dict->GetInteger(kValueKey, &val));
-      object_template->Set(v8_key, v8::Integer::New(isolate, val));
+      absl::optional<int> val = dict->FindIntKey(kValueKey);
+      CHECK(val);
+      object_template->Set(v8_key, v8::Integer::New(isolate, *val));
     } else if (type == "boolean") {
       absl::optional<bool> val = dict->FindBoolKey(kValueKey);
       CHECK(val);

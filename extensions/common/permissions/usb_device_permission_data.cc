@@ -31,16 +31,16 @@ bool ExtractFromDict(const std::string& key,
                      const base::DictionaryValue* dict_value,
                      int max,
                      int* value) {
-  int temp;
-  if (!dict_value->GetInteger(key, &temp)) {
+  absl::optional<int> temp = dict_value->FindIntKey(key);
+  if (!temp) {
     *value = UsbDevicePermissionData::SPECIAL_VALUE_ANY;
     return true;
   }
 
-  if (temp < UsbDevicePermissionData::SPECIAL_VALUE_ANY || temp > max)
+  if (*temp < UsbDevicePermissionData::SPECIAL_VALUE_ANY || *temp > max)
     return false;
 
-  *value = temp;
+  *value = *temp;
   return true;
 }
 
