@@ -47,19 +47,20 @@ class Tutorial {
   // parameters of the Description will be needed to create the bubble or build
   // the interaction sequence step. In order to use the The StepBuilder should
   // only be used by Tutorial::Builder to construct the steps in the tutorial.
-  class StepBuilder : public TutorialDescription::Step {
+  class StepBuilder {
    public:
     StepBuilder();
-    ~StepBuilder();
+    explicit StepBuilder(const TutorialDescription::Step& step);
     StepBuilder(const StepBuilder&) = delete;
     StepBuilder& operator=(const StepBuilder&) = delete;
+    ~StepBuilder();
 
     // Constructs the InteractionSequenceStepDirectly from the
     // TutorialDescriptionStep. This method is used by
     // Tutorial::Builder::BuildFromDescription to create tutorials.
     static std::unique_ptr<ui::InteractionSequence::Step>
     BuildFromDescriptionStep(
-        TutorialDescription::Step step,
+        const TutorialDescription::Step& step,
         absl::optional<std::pair<int, int>> progress,
         bool is_last_step,
         TutorialService* tutorial_service,
@@ -72,6 +73,7 @@ class Tutorial {
     StepBuilder& SetArrow(TutorialDescription::Step::Arrow arrow_);
     StepBuilder& SetProgress(absl::optional<std::pair<int, int>> progress_);
     StepBuilder& SetIsLastStep(bool is_last_step_);
+    StepBuilder& SetMustRemainVisible(bool must_remain_visible_);
 
     std::unique_ptr<ui::InteractionSequence::Step> Build(
         TutorialService* tutorial_service,
@@ -86,8 +88,7 @@ class Tutorial {
         TutorialBubbleFactoryRegistry* bubble_factory_registry);
     ui::InteractionSequence::StepEndCallback BuildHideBubbleCallback(
         TutorialService* tutorial_service);
-
-    std::unique_ptr<ui::InteractionSequence::StepBuilder> step_builder_;
+    TutorialDescription::Step step_;
   };
 
   class Builder {
