@@ -7,9 +7,11 @@
 #include <memory>
 #include <string>
 
+#include "base/bind.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
@@ -67,15 +69,14 @@ class Clipboard {
 template <typename Manager,
           typename DataSource = typename Manager::DataSource,
           typename DataDevice = typename Manager::DataDevice>
-class ClipboardImpl final : public Clipboard,
-                            public DataSource::Delegate,
-                            public DataDevice::SelectionDelegate {
+class ClipboardImpl final : public Clipboard, public DataSource::Delegate {
  public:
   explicit ClipboardImpl(Manager* manager, ui::ClipboardBuffer buffer)
       : manager_(manager), buffer_(buffer) {
-    GetDevice()->set_selection_delegate(this);
+    GetDevice()->set_selection_offer_callback(base::BindRepeating(
+        &ClipboardImpl::HandleNewSelectionOffer, weak_factory_.GetWeakPtr()));
   }
-  ~ClipboardImpl() final { GetDevice()->set_selection_delegate(nullptr); }
+  ~ClipboardImpl() final = default;
 
   ClipboardImpl(const ClipboardImpl&) = delete;
   ClipboardImpl& operator=(const ClipboardImpl&) = delete;
@@ -144,8 +145,7 @@ class ClipboardImpl final : public Clipboard,
     return mime_type;
   }
 
-  // WaylandDataDeviceBase::SelectionDelegate:
-  void OnSelectionOffer(ui::WaylandDataOfferBase* offer) final {
+  void HandleNewSelectionOffer(ui::WaylandDataOfferBase* offer) const {
     if (IsSelectionOwner())
       return;
 
@@ -183,6 +183,8 @@ class ClipboardImpl final : public Clipboard,
 
   // Notifies when clipboard data changes. Can be empty if not set.
   ClipboardDataChangedCallback clipboard_changed_callback_;
+
+  base::WeakPtrFactory<ClipboardImpl> weak_factory_{this};
 };
 
 }  // namespace wl

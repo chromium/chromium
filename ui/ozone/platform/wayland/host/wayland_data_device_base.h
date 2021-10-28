@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/callback_forward.h"
 #include "base/files/scoped_file.h"
 #include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -26,13 +27,8 @@ class WaylandConnection;
 // Implements high level (protocol-agnostic) interface to a Wayland data device.
 class WaylandDataDeviceBase {
  public:
-  class SelectionDelegate {
-   public:
-    virtual void OnSelectionOffer(WaylandDataOfferBase* offer) = 0;
-
-   protected:
-    virtual ~SelectionDelegate() = default;
-  };
+  using SelectionOfferCallback =
+      base::RepeatingCallback<void(WaylandDataOfferBase*)>;
 
   explicit WaylandDataDeviceBase(WaylandConnection* connection);
 
@@ -41,10 +37,10 @@ class WaylandDataDeviceBase {
 
   virtual ~WaylandDataDeviceBase();
 
-  // Sets the delegate instance responsible for handling section events.
-  void set_selection_delegate(SelectionDelegate* selection_delegate) {
-    DCHECK(!selection_delegate_ || !selection_delegate);
-    selection_delegate_ = selection_delegate;
+  // Sets the callback responsible for handling selection events.
+  void set_selection_offer_callback(SelectionOfferCallback callback) {
+    DCHECK(!selection_offer_callback_ || !callback);
+    selection_offer_callback_ = callback;
   }
 
   // Returns MIME types given by the current data offer.
@@ -76,7 +72,7 @@ class WaylandDataDeviceBase {
 
   void RegisterDeferredReadClosure(base::OnceClosure closure);
 
-  SelectionDelegate* selection_delegate() { return selection_delegate_; }
+  void NotifySelectionOffer(WaylandDataOfferBase* offer) const;
 
   absl::optional<wl::Serial> GetSerialForSelection() const;
 
@@ -88,7 +84,7 @@ class WaylandDataDeviceBase {
 
   void DeferredReadCallbackInternal(struct wl_callback* cb, uint32_t time);
 
-  SelectionDelegate* selection_delegate_ = nullptr;
+  SelectionOfferCallback selection_offer_callback_;
 
   // Used to call out to WaylandConnection once clipboard data has been
   // successfully read.

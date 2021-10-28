@@ -12,6 +12,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_data_offer_base.h"
 #include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 
 namespace ui {
@@ -108,6 +109,12 @@ void WaylandDataDeviceBase::DeferredReadCallbackInternal(struct wl_callback* cb,
   deferred_read_callback_.reset();
 
   std::move(deferred_read_closure_).Run();
+}
+
+void WaylandDataDeviceBase::NotifySelectionOffer(
+    WaylandDataOfferBase* offer) const {
+  if (selection_offer_callback_)
+    selection_offer_callback_.Run(offer);
 }
 
 absl::optional<wl::Serial> WaylandDataDeviceBase::GetSerialForSelection()
