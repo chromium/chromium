@@ -219774,6 +219774,10 @@
       []
      ],
      "support": {
+      "executor.html": [
+       "4ab5745905b9bd5dd6419be039068aa19f3f9dd8",
+       []
+      ],
       "frame.html": [
        "50be42958744b8a9213d84847fbf0413ae20f3b6",
        []
@@ -333379,6 +333383,28 @@
        {}
       ]
      ],
+     "frame-src-cross-origin-same-document-navigation.window.js": [
+      "a03a3108b16f67eec18d36e24c0b1df0d131268b",
+      [
+       "content-security-policy/frame-src/frame-src-cross-origin-same-document-navigation.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ]
+        ]
+       }
+      ]
+     ],
      "frame-src-redirect.html": [
       "f5ac88b0524229a080043cc011ee762b632bbafe",
       [
@@ -343851,6 +343877,13 @@
      ],
      "layer-scroll-timeline-override.html": [
       "59b8590b5f19277acc719600c99136aef2e532ca",
+      [
+       null,
+       {}
+      ]
+     ],
+     "layer-statement-before-import.html": [
+      "5c3abe55188c37069bee695a0f3eadb247d12e07",
       [
        null,
        {}
