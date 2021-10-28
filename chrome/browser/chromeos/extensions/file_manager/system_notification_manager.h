@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
+#include "chrome/browser/ash/file_manager/io_task_controller.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
@@ -147,6 +148,24 @@ class SystemNotificationManager {
       int progress);
 
   /**
+   * Returns an instance of an 'ash' Notification with progress value and Cancel
+   * button bound to CancelTaskId(task_id, ...);
+   */
+  std::unique_ptr<message_center::Notification>
+  CreateIOTaskProgressNotification(file_manager::io_task::IOTaskId task_id,
+                                   const std::string& notification_id,
+                                   const std::u16string& title,
+                                   const std::u16string& message,
+                                   int progress);
+
+  /**
+   * Click handler for the IO Task progress notification. Cancels the IO Task.
+   */
+  void CancelTaskId(file_manager::io_task::IOTaskId task_id,
+                    const std::string& notification_id,
+                    absl::optional<int> button_index);
+
+  /**
    *  Returns an instance of an 'ash' Notification with title and message
    *  specified by string ID values (for 110n).
    */
@@ -202,6 +221,13 @@ class SystemNotificationManager {
    * Stores a reference to the DriveFS event router instance.
    */
   void SetDriveFSEventRouter(DriveFsEventRouter* drivefs_event_router);
+
+  /**
+   * Stores a pointer to the IOTaskController instance to be able to cancel
+   * tasks.
+   */
+  void SetIOTaskController(
+      file_manager::io_task::IOTaskController* io_task_controller);
 
  private:
   /**
@@ -287,6 +313,9 @@ class SystemNotificationManager {
   Profile* const profile_;
   // Reference to non-owned DriveFS event router.
   DriveFsEventRouter* drivefs_event_router_;
+
+  // IOTaskController is owned by VolumeManager.
+  file_manager::io_task::IOTaskController* io_task_controller_;
 
   // Cache the application name (used for notification display source).
   std::u16string app_name_;

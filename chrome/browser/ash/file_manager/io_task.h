@@ -90,13 +90,13 @@ struct ProgressStatus {
   storage::FileSystemURL destination_folder;
 
   // ProgressStatus over all |sources|.
-  int64_t bytes_transferred;
+  int64_t bytes_transferred = 0;
 
   // Total size of all |sources|.
-  int64_t total_bytes;
+  int64_t total_bytes = 0;
 
   // The task id for this progress status.
-  IOTaskId task_id;
+  IOTaskId task_id = 0;
 };
 
 // An IOTask represents an I/O operation over multiple files, and is responsible

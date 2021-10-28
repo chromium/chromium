@@ -565,8 +565,10 @@ void EventRouter::ObserveEvents() {
     volume_manager->AddObserver(this);
     volume_manager->AddObserver(device_event_router_.get());
     auto* io_task_controller = volume_manager->io_task_controller();
-    if (io_task_controller)
+    if (io_task_controller) {
       io_task_controller->AddObserver(this);
+      notification_manager_->SetIOTaskController(io_task_controller);
+    }
   }
 
   chromeos::PowerManagerClient* const power_manager_client =
