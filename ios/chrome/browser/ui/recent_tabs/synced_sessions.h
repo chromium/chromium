@@ -61,8 +61,11 @@ class DistantSession {
   DistantSession& operator=(const DistantSession&) = delete;
 
   ~DistantSession();
-  void InitWithSyncedSession(const sync_sessions::SyncedSession* synced_session,
-                             sync_sessions::OpenTabsUIDelegate* open_tabs);
+
+  void InitWithSyncedSession(
+      const sync_sessions::SyncedSession* synced_session,
+      sync_sessions::OpenTabsUIDelegate* open_tabs_delegate);
+
   std::string tag;
   std::string name;
   base::Time modified_time;

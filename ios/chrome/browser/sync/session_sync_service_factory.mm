@@ -44,6 +44,12 @@ using sync_sessions::SessionSyncService;
 
 namespace {
 
+// Note: iOS doesn't use the "chrome-native://" scheme, but in some
+// circumstances, such URLs can get synced from other platforms. Marking them as
+// "non-syncable" here means they'll be filtered out from UIs such as Recent
+// Tabs.
+const char kChromeNativeScheme[] = "chrome-native";
+
 bool ShouldSyncURLImpl(const GURL& url) {
   if (url == kChromeUIHistoryURL) {
     // Allow the chrome history page, home for "Tabs from other devices",
@@ -51,7 +57,7 @@ bool ShouldSyncURLImpl(const GURL& url) {
     return true;
   }
   return url.is_valid() && !url.SchemeIs(kChromeUIScheme) &&
-         !url.SchemeIsFile() &&
+         !url.SchemeIs(kChromeNativeScheme) && !url.SchemeIsFile() &&
          !url.SchemeIs(dom_distiller::kDomDistillerScheme);
 }
 
