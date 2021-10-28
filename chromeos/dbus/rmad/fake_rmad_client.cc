@@ -318,6 +318,16 @@ void FakeRmadClient::TriggerHardwareVerificationResultObservation(
     observer.HardwareVerificationResult(verificationStatus);
 }
 
+void FakeRmadClient::TriggerFinalizationProgressObservation(
+    rmad::FinalizeStatus::Status status,
+    double progress) {
+  rmad::FinalizeStatus finalizationStatus;
+  finalizationStatus.set_status(status);
+  finalizationStatus.set_progress(progress);
+  for (auto& observer : observers_)
+    observer.FinalizationProgress(finalizationStatus);
+}
+
 const rmad::GetStateReply& FakeRmadClient::GetStateReply() const {
   return state_replies_[state_index_];
 }

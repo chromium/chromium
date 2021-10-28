@@ -57,6 +57,7 @@ class RmadClientImpl : public RmadClient {
   void PowerCableStateReceived(dbus::Signal* signal);
   void ProvisioningProgressReceived(dbus::Signal* signal);
   void HardwareVerificationResultReceived(dbus::Signal* signal);
+  void FinalizationProgressReceived(dbus::Signal* signal);
 
   void SignalConnected(const std::string& interface_name,
                        const std::string& signal_name,
@@ -89,6 +90,8 @@ void RmadClientImpl::Init(dbus::Bus* bus) {
        &RmadClientImpl::ProvisioningProgressReceived},
       {rmad::kHardwareVerificationResultSignal,
        &RmadClientImpl::HardwareVerificationResultReceived},
+      {rmad::kFinalizeProgressSignal,
+       &RmadClientImpl::FinalizationProgressReceived},
   };
   auto on_connected_callback = base::BindRepeating(
       &RmadClientImpl::SignalConnected, weak_ptr_factory_.GetWeakPtr());
@@ -114,7 +117,10 @@ void RmadClientImpl::CalibrationProgressReceived(dbus::Signal* signal) {
   dbus::MessageReader reader(signal);
   // Read proto message
   dbus::MessageReader sub_reader(nullptr);
-  reader.PopStruct(&sub_reader);
+  if (!reader.PopStruct(&sub_reader)) {
+    LOG(ERROR) << "Unable to decode signal for " << signal->GetMember();
+    return;
+  }
   DCHECK(!reader.HasMoreData());
   int32_t component;
   int32_t status;
@@ -224,7 +230,10 @@ void RmadClientImpl::HardwareVerificationResultReceived(dbus::Signal* signal) {
   dbus::MessageReader reader(signal);
   // Read message
   dbus::MessageReader sub_reader(nullptr);
-  reader.PopStruct(&sub_reader);
+  if (!reader.PopStruct(&sub_reader)) {
+    LOG(ERROR) << "Unable to decode signal for " << signal->GetMember();
+    return;
+  }
   DCHECK(!reader.HasMoreData());
   bool is_compliant = true;
   std::string error_str = "";
@@ -238,6 +247,30 @@ void RmadClientImpl::HardwareVerificationResultReceived(dbus::Signal* signal) {
   signal_proto.set_error_str(error_str);
   for (auto& observer : observers_) {
     observer.HardwareVerificationResult(signal_proto);
+  }
+}
+
+void RmadClientImpl::FinalizationProgressReceived(dbus::Signal* signal) {
+  DCHECK_EQ(signal->GetMember(), rmad::kFinalizeProgressSignal);
+  dbus::MessageReader reader(signal);
+  // Read message
+  dbus::MessageReader sub_reader(nullptr);
+  if (!reader.PopStruct(&sub_reader)) {
+    LOG(ERROR) << "Unable to decode signal for " << signal->GetMember();
+    return;
+  }
+  DCHECK(!reader.HasMoreData());
+  int32_t status;
+  double progress;
+  if (!sub_reader.PopInt32(&status) || !sub_reader.PopDouble(&progress)) {
+    LOG(ERROR) << "Unable to decode signal for " << signal->GetMember();
+    return;
+  }
+  rmad::FinalizeStatus signal_proto;
+  signal_proto.set_status(static_cast<rmad::FinalizeStatus::Status>(status));
+  signal_proto.set_progress(progress);
+  for (auto& observer : observers_) {
+    observer.FinalizationProgress(signal_proto);
   }
 }
 
