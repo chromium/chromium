@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_coordinator.h"
 
 #import "base/metrics/histogram_functions.h"
+#import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/application_delegate/app_state_observer.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/first_run/first_run_metrics.h"
 #include "ios/chrome/browser/main/browser.h"
@@ -29,6 +31,8 @@
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_consumer.h"
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_mediator.h"
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_view_controller.h"
+#import "ios/chrome/browser/ui/main/scene_state.h"
+#import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/unified_consent/unified_consent_service_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -66,6 +70,8 @@
     UserPolicySignoutCoordinator* policySignoutPromptCoordinator;
 // Account manager service to retrieve Chrome identities.
 @property(nonatomic, assign) ChromeAccountManagerService* accountManagerService;
+// YES if this coordinator is currently used in First Run.
+@property(nonatomic, readonly) BOOL firstRun;
 
 @end
 
@@ -86,6 +92,12 @@
     _delegate = delegate;
     _policyWatcherObserverBridge =
         std::make_unique<PolicyWatcherBrowserAgentObserverBridge>(self);
+
+    // Determine if the sign-in screen is used in First Run.
+    SceneState* sceneState =
+        SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+    AppState* appState = sceneState.appState;
+    _firstRun = appState.initStage == InitStageFirstRun;
   }
   return self;
 }
@@ -136,8 +148,10 @@
                                            animated:animated];
   self.viewController.modalInPresentation = YES;
 
-  base::UmaHistogramEnumeration("FirstRun.Stage",
-                                first_run::kSignInScreenStart);
+  if (self.firstRun) {
+    base::UmaHistogramEnumeration("FirstRun.Stage",
+                                  first_run::kSignInScreenStart);
+  }
 }
 
 - (void)stop {
@@ -187,8 +201,10 @@
 
 - (void)didTapSecondaryActionButton {
   [self finishPresentingAndSkipRemainingScreens:NO];
-  base::UmaHistogramEnumeration(
-      "FirstRun.Stage", first_run::kSignInScreenCompletionWithoutSignIn);
+  if (self.firstRun) {
+    base::UmaHistogramEnumeration(
+        "FirstRun.Stage", first_run::kSignInScreenCompletionWithoutSignIn);
+  }
 }
 
 #pragma mark - IdentityChooserCoordinatorDelegate
@@ -329,10 +345,12 @@
                              completion:^() {
                                [weakSelf
                                    finishPresentingAndSkipRemainingScreens:NO];
-                               base::UmaHistogramEnumeration(
-                                   "FirstRun.Stage",
-                                   first_run::
-                                       kSignInScreenCompletionWithSignIn);
+                               if (self.firstRun) {
+                                 base::UmaHistogramEnumeration(
+                                     "FirstRun.Stage",
+                                     first_run::
+                                         kSignInScreenCompletionWithSignIn);
+                               }
                              }];
 }
 
