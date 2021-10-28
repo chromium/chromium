@@ -1063,14 +1063,9 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
                        last_used_profile, last_opened_profiles);
 #endif
 
-  // At this point we've decided to open an app. As a temporary fix for
-  // https://crbug.com/1199203, if this startup is also from an unclean exit
-  // we also need to open a blank browser window so that users have the
-  // opportunity to restore, but also to prevent a potential crash loop.
-  // To achieve that, stop this from returning here, and allow it to continue
-  // to hit a standard crash reopen codepath and show an empty browser window
-  // with the restore dialog.
-  if (handled_as_app && !HasPendingUncleanExit(privacy_safe_profile))
+  // If the app launch succeeded, we don't need to continue with a browser
+  // launch.
+  if (handled_as_app)
     return true;
 
   return LaunchBrowserForLastProfiles(command_line, cur_dir, process_startup,
