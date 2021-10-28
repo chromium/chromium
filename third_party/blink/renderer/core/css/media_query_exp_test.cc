@@ -205,6 +205,25 @@ TEST(MediaQueryExpTest, Serialize) {
       PairExp("width", GtCmp(PxValue(20.0)), GeCmp(PxValue(10.0))).Serialize());
 }
 
+TEST(MediaQueryExpTest, Copy) {
+  // (width < 10px)
+  MediaQueryExp width_lt10 = RightExp("width", LtCmp(PxValue(10)));
+  // (height < 10px)
+  MediaQueryExp height_lt10 = RightExp("height", LtCmp(PxValue(10)));
+
+  Vector<std::unique_ptr<MediaQueryExpNode>> nodes;
+  nodes.push_back(FeatureNode(width_lt10));
+  nodes.push_back(NotNode(FeatureNode(width_lt10)));
+  nodes.push_back(NestedNode(FeatureNode(width_lt10)));
+  nodes.push_back(AndNode(FeatureNode(width_lt10), FeatureNode(height_lt10)));
+  nodes.push_back(OrNode(FeatureNode(width_lt10), FeatureNode(height_lt10)));
+
+  for (const auto& node : nodes) {
+    EXPECT_EQ(node->GetType(), node->Copy()->GetType());
+    EXPECT_EQ(node->Serialize(), node->Copy()->Serialize());
+  }
+}
+
 TEST(MediaQueryExpTest, SerializeNode) {
   EXPECT_EQ("(width < 10px)",
             FeatureNode(RightExp("width", LtCmp(PxValue(10))))->Serialize());

@@ -565,7 +565,7 @@ void MediaQueryNotExpNode::SerializeTo(StringBuilder& builder) const {
 }
 
 std::unique_ptr<MediaQueryExpNode> MediaQueryNotExpNode::Copy() const {
-  return std::make_unique<MediaQueryNestedExpNode>(operand_->Copy());
+  return std::make_unique<MediaQueryNotExpNode>(operand_->Copy());
 }
 
 void MediaQueryAndExpNode::SerializeTo(StringBuilder& builder) const {
