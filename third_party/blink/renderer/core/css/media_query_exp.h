@@ -291,42 +291,43 @@ class CORE_EXPORT MediaQueryFeatureExpNode : public MediaQueryExpNode {
   MediaQueryExp exp_;
 };
 
-class CORE_EXPORT MediaQueryNestedExpNode : public MediaQueryExpNode {
-  USING_FAST_MALLOC(MediaQueryNestedExpNode);
+class CORE_EXPORT MediaQueryUnaryExpNode : public MediaQueryExpNode {
+  USING_FAST_MALLOC(MediaQueryUnaryExpNode);
 
  public:
-  explicit MediaQueryNestedExpNode(std::unique_ptr<MediaQueryExpNode> child)
-      : child_(std::move(child)) {
-    DCHECK(child_);
-  }
-
-  const MediaQueryExpNode& Child() const { return *child_; }
-
-  Type GetType() const override { return Type::kNested; }
-  void SerializeTo(StringBuilder&) const override;
-  std::unique_ptr<MediaQueryExpNode> Copy() const override;
-
- private:
-  std::unique_ptr<MediaQueryExpNode> child_;
-};
-
-class CORE_EXPORT MediaQueryNotExpNode : public MediaQueryExpNode {
-  USING_FAST_MALLOC(MediaQueryNotExpNode);
-
- public:
-  explicit MediaQueryNotExpNode(std::unique_ptr<MediaQueryExpNode> operand)
+  explicit MediaQueryUnaryExpNode(std::unique_ptr<MediaQueryExpNode> operand)
       : operand_(std::move(operand)) {
     DCHECK(operand_);
   }
 
   const MediaQueryExpNode& Operand() const { return *operand_; }
 
+ private:
+  std::unique_ptr<MediaQueryExpNode> operand_;
+};
+
+class CORE_EXPORT MediaQueryNestedExpNode : public MediaQueryUnaryExpNode {
+  USING_FAST_MALLOC(MediaQueryNestedExpNode);
+
+ public:
+  explicit MediaQueryNestedExpNode(std::unique_ptr<MediaQueryExpNode> operand)
+      : MediaQueryUnaryExpNode(std::move(operand)) {}
+
+  Type GetType() const override { return Type::kNested; }
+  void SerializeTo(StringBuilder&) const override;
+  std::unique_ptr<MediaQueryExpNode> Copy() const override;
+};
+
+class CORE_EXPORT MediaQueryNotExpNode : public MediaQueryUnaryExpNode {
+  USING_FAST_MALLOC(MediaQueryNotExpNode);
+
+ public:
+  explicit MediaQueryNotExpNode(std::unique_ptr<MediaQueryExpNode> operand)
+      : MediaQueryUnaryExpNode(std::move(operand)) {}
+
   Type GetType() const override { return Type::kNot; }
   void SerializeTo(StringBuilder&) const override;
   std::unique_ptr<MediaQueryExpNode> Copy() const override;
-
- private:
-  std::unique_ptr<MediaQueryExpNode> operand_;
 };
 
 class CORE_EXPORT MediaQueryCompoundExpNode : public MediaQueryExpNode {
