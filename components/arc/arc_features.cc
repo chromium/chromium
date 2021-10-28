@@ -167,7 +167,7 @@ const base::FeatureParam<int> kVmMemorySizeMaxMiB{&kVmMemorySize, "max_mib",
 // ARCVM never has it's kernel page cache drop below the level that LMKD will
 // start killing.
 const base::Feature kVmBalloonPolicy{"ArcVmBalloonPolicy",
-                                     base::FEATURE_ENABLED_BY_DEFAULT};
+                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
 // The maximum amount of kernel page cache ARCVM can have when ChromeOS is under
 // moderate memory pressure. 0 for no limit.
