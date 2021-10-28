@@ -56,7 +56,7 @@ class AndroidNotificationHandler : public ReceivingUiHandler {
 
   Profile* profile_;
 
-  content::WebContents* web_contents_;
+  base::WeakPtr<content::WebContents> web_contents_;
 };
 
 }  // namespace send_tab_to_self
