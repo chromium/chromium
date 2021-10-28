@@ -5206,6 +5206,28 @@ TEST_P(SequenceManagerTest, TaskObserverBlockedOrLowPriority_Mix) {
   sequence_manager()->RemoveTaskObserver(&observer);
 }
 
+TEST_P(SequenceManagerTest, DelayedTaskOrderFromMultipleQueues) {
+  // Regression test for crbug.com/1249857. The 4th task posted below should run
+  // 4th despite being in queues[0].
+  std::vector<EnqueueOrder> run_order;
+  auto queues = CreateTaskQueues(3u);
+
+  queues[0]->task_runner()->PostDelayedTask(
+      FROM_HERE, BindOnce(&TestTask, 1, &run_order), Milliseconds(9));
+  queues[1]->task_runner()->PostDelayedTask(
+      FROM_HERE, BindOnce(&TestTask, 2, &run_order), Milliseconds(10));
+  queues[2]->task_runner()->PostDelayedTask(
+      FROM_HERE, BindOnce(&TestTask, 3, &run_order), Milliseconds(10));
+  queues[0]->task_runner()->PostDelayedTask(
+      FROM_HERE, BindOnce(&TestTask, 4, &run_order), Milliseconds(100));
+
+  // All delayed tasks are now ready, but none have run.
+  AdvanceMockTickClock(Milliseconds(100));
+  RunLoop().RunUntilIdle();
+
+  EXPECT_THAT(run_order, ElementsAre(1u, 2u, 3u, 4u));
+}
+
 }  // namespace internal
 }  // namespace sequence_manager
 }  // namespace base

@@ -36,6 +36,9 @@ struct BASE_EXPORT PendingTask {
   // Used for a min-heap.
   bool operator>(const PendingTask& other) const;
 
+  // Used for sorting.
+  bool operator<(const PendingTask& other) const;
+
   // Returns the time at which this task should run. This is |delayed_run_time|
   // for a delayed task, |queue_time| otherwise.
   base::TimeTicks GetDesiredExecutionTime() const;
