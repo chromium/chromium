@@ -29,6 +29,7 @@
 #include "base/test/test_timeouts.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_process_information.h"
+#include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "sandbox/win/src/app_container_base.h"
 #include "sandbox/win/src/sandbox_factory.h"
@@ -47,14 +48,18 @@ const wchar_t kAppContainerSid[] =
     L"924012148-2839372144";
 
 // Some tests depend on a timeout happening (e.g. to detect if firewall blocks a
-// TCP/UDP connection from App Container). However, if process startup time is
-// too slow (which can happen on slower bots with a high degree of test
-// concurrency) then tiny_timeout is not long enough, so a slightly longer
-// timeout is used here to avoid having to retry flaky tests.
-DWORD test_timeout() {
-  const static DWORD kMillisTimeout =
-      TestTimeouts::tiny_timeout().InMilliseconds() * 2;
-  return kMillisTimeout;
+// TCP/UDP connection from App Container). This does timeout intentionally for
+// some tests, so can't be too long or test execution takes too long, but needs
+// to be long enough to verify that the connection really did fail.
+DWORD network_timeout() {
+  return base::Seconds(1).InMilliseconds();
+}
+
+// Timeout on waiting for a process to start. Since this should always succeed,
+// this can be longer than the network timeout above without unnecessarily
+// slowing down the test execution time.
+DWORD process_start_timeout() {
+  return base::Seconds(10).InMilliseconds();
 }
 
 std::wstring GenerateRandomPackageName() {
@@ -342,12 +347,17 @@ class UDPEchoServer {
   bool Start();
   // Get the listening port. Must be called after Start().
   int GetPort();
+  // Gets the event that the child process should signal before trying to
+  // connect to the server. This handle is only valid for the lifetime of the
+  // UDPEchoServer. Must be called after Start().
+  HANDLE GetProcessSignalEvent();
 
  private:
   void RecvTask();
   ScopedSocketHandle socket_;
   int port_;
   base::test::TaskEnvironment environment_;
+  base::win::ScopedHandle trigger_event_;
 };
 
 UDPEchoServer::~UDPEchoServer() {
@@ -380,6 +390,8 @@ bool UDPEchoServer::Start() {
   if (ret == SOCKET_ERROR)
     return false;
   port_ = ntohs(bound_server.sin_port);
+  trigger_event_.Set(::CreateEvent(nullptr, /*bManualReset=*/TRUE,
+                                   /*bInitialState=*/FALSE, nullptr));
   return base::ThreadPool::PostTask(
       FROM_HERE,
       base::BindOnce(&UDPEchoServer::RecvTask, base::Unretained(this)));
@@ -409,8 +421,12 @@ void UDPEchoServer::RecvTask() {
   // Operation should be pending.
   ASSERT_EQ(WSA_IO_PENDING, ::WSAGetLastError());
 
-  // Wait to receive data from the child process. Only wait 1 second.
-  DWORD wait = WaitForSingleObject(recv_event.Get(), test_timeout());
+  // Wait for the target process to have certainly started.
+  DWORD wait =
+      WaitForSingleObject(trigger_event_.Get(), process_start_timeout());
+
+  // Wait to receive data from the child process.
+  wait = WaitForSingleObject(recv_event.Get(), network_timeout());
 
   if (wait != WAIT_OBJECT_0)
     return;  // No connections. Expected for certain types of tests.
@@ -438,14 +454,18 @@ void UDPEchoServer::RecvTask() {
     return;
   // If not, the operation should be pending.
   ASSERT_EQ(WSA_IO_PENDING, ::WSAGetLastError());
-  // Wait for send. Only wait 1 second.
-  wait = WaitForSingleObject(send_event.Get(), test_timeout());
+  // Wait for send.
+  wait = WaitForSingleObject(send_event.Get(), network_timeout());
   // Send should always succeed in a timely manner.
   EXPECT_EQ(wait, WAIT_OBJECT_0);
 }
 
 int UDPEchoServer::GetPort() {
   return port_;
+}
+
+HANDLE UDPEchoServer::GetProcessSignalEvent() {
+  return trigger_event_.Get();
 }
 
 }  // namespace
@@ -683,7 +703,7 @@ SBOX_TESTS_COMMAND int Socket_CreateTCP(int argc, wchar_t** argv) {
   // Non-blocking socket, always returns SOCKET_ERROR and sets WSAlastError to
   // WSAEWOULDBLOCK.
   // Wait for the connect to succeed.
-  DWORD wait = WaitForSingleObject(connect_event.Get(), test_timeout());
+  DWORD wait = WaitForSingleObject(connect_event.Get(), network_timeout());
 
   if (wait != WAIT_OBJECT_0)
     return SBOX_TEST_TIMED_OUT;
@@ -695,8 +715,10 @@ SBOX_TESTS_COMMAND int Socket_CreateTCP(int argc, wchar_t** argv) {
 // port, and transmit/receive data.
 //
 // First parameter should contain the host. Second parameter should contain the
-// port to connect to. Third parameter indicates whether the socket should be
-// brokered (1) or created in-process (0).
+// port to connect to. Third parameter contains an event that should be
+// signalled when the process is about to make the connection. Fourth parameter
+// indicates whether the socket should be brokered (1) or created in-process
+// (0).
 //
 // Returns:
 //
@@ -718,10 +740,13 @@ SBOX_TESTS_COMMAND int Socket_CreateUDP(int argc, wchar_t** argv) {
   InitWinsock();
   SOCKET socket_handle = INVALID_SOCKET;
 
-  if (argc < 3)
+  if (argc < 4)
     return SBOX_TEST_FAILED_TO_RUN_TEST;
 
-  if (::_wtoi(argv[2]) == 1) {
+  // Set the event that the UDP server is waiting for.
+  ::SetEvent(base::win::Uint32ToHandle(::_wtoi(argv[2])));
+
+  if (::_wtoi(argv[3]) == 1) {
     TargetServices* target_services = SandboxFactory::GetTargetServices();
     if (!target_services)
       return SBOX_TEST_FAILED_TO_RUN_TEST;
@@ -762,7 +787,7 @@ SBOX_TESTS_COMMAND int Socket_CreateUDP(int argc, wchar_t** argv) {
     // Winsock should return WSA_IO_PENDING and we wait on the event.
     if (WSAGetLastError() != WSA_IO_PENDING)
       return SBOX_TEST_THIRD_ERROR;
-    DWORD wait = WaitForSingleObject(send_event.Get(), test_timeout());
+    DWORD wait = WaitForSingleObject(send_event.Get(), network_timeout());
 
     if (wait != WAIT_OBJECT_0)
       return SBOX_TEST_TIMED_OUT;
@@ -789,7 +814,7 @@ SBOX_TESTS_COMMAND int Socket_CreateUDP(int argc, wchar_t** argv) {
     if (WSAGetLastError() != WSA_IO_PENDING) {
       return SBOX_TEST_FOURTH_ERROR;
     }
-    DWORD wait = WaitForSingleObject(read_event.Get(), test_timeout());
+    DWORD wait = WaitForSingleObject(read_event.Get(), network_timeout());
 
     if (wait != WAIT_OBJECT_0)
       return SBOX_TEST_TIMED_OUT;
@@ -929,10 +954,12 @@ TEST_P(SocketBrokerTest, SocketBrokerTestUDP) {
 
   std::wstring hostname = GetTestHostName();
   ASSERT_TRUE(!hostname.empty());
+  runner_.GetPolicy()->AddHandleToShare(server.GetProcessSignalEvent());
   EXPECT_EQ(
       GetExpectedTestResult(),
-      runner_.RunTest(base::StringPrintf(L"Socket_CreateUDP %ls %d %d",
+      runner_.RunTest(base::StringPrintf(L"Socket_CreateUDP %ls %d %d %d",
                                          hostname.c_str(), server.GetPort(),
+                                         server.GetProcessSignalEvent(),
                                          IsTestUsingBrokeredSockets() ? 1 : 0)
                           .c_str()));
 }
