@@ -776,10 +776,6 @@ try_.chromium_chromiumos_builder(
 )
 
 try_.chromium_chromiumos_builder(
-    name = "chromeos-amd64-generic-rel-dchecks",
-)
-
-try_.chromium_chromiumos_builder(
     name = "chromeos-arm-generic-dbg",
 )
 
