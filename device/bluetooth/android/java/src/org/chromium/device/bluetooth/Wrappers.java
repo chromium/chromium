@@ -48,7 +48,7 @@ import java.util.UUID;
 @JNINamespace("device")
 @TargetApi(Build.VERSION_CODES.M)
 class Wrappers {
-    private static final String TAG = "Bluetooth File Sharing";
+    private static final String TAG = "Bluetooth File Sender";
 
     public static final int DEVICE_CLASS_UNSPECIFIED = 0x1F00;
 
@@ -116,7 +116,7 @@ class Wrappers {
         public static BluetoothAdapterWrapper createWithDefaultAdapter() {
             final boolean hasMinAPI = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
             if (!hasMinAPI) {
-                Log.i(TAG, "Bluetooth Adapter creation failed: SDK version (%d) too small.",
+                Log.i(TAG, "the system failed to create Bluetooth Adapter: SDK version (%d) too small.",
                         Build.VERSION.SDK_INT);
                 return null;
             }
@@ -136,7 +136,7 @@ class Wrappers {
 
                 if (!hasPermission) {
                     Log.w(TAG,
-                            "BluetoothAdapterWrapper.create failed: Lacking Bluetooth Transfer permissions.");
+                            "BluetoothAdapterWrapper.create failed: Lacking Bluetooth Transfer permissions. Give one now!");
                     return null;
                 }
             }
