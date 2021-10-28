@@ -5,30 +5,37 @@
 #include "chrome/browser/ui/ash/window_pin_util.h"
 
 #include "ash/wm/window_state.h"
+#include "ash/wm/window_util.h"
 #include "chromeos/ui/base/window_pin_type.h"
-#include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/window.h"
 
 void PinWindow(aura::Window* window, bool trusted) {
   DCHECK(window);
-  // TODO(crbug.com/1249678): Transition away from property once callers are
-  // consolidated.
-  window->SetProperty(chromeos::kWindowPinTypeKey,
-                      trusted ? chromeos::WindowPinType::kTrustedPinned
-                              : chromeos::WindowPinType::kPinned);
+  ash::window_util::PinWindow(window, trusted);
 }
 
 void UnpinWindow(aura::Window* window) {
   DCHECK(window);
-  // TODO(crbug.com/1249678): Transition away from property once callers are
-  // consolidated.
-  window->SetProperty(chromeos::kWindowPinTypeKey,
-                      chromeos::WindowPinType::kNone);
+  ash::WindowState::Get(window)->Restore();
 }
 
 chromeos::WindowPinType GetWindowPinType(const aura::Window* window) {
   DCHECK(window);
-  return window->GetProperty(chromeos::kWindowPinTypeKey);
+
+  const ash::WindowState* window_state = ash::WindowState::Get(window);
+  if (!window_state) {
+    return chromeos::WindowPinType::kNone;
+  }
+
+  if (window_state->IsTrustedPinned()) {
+    return chromeos::WindowPinType::kTrustedPinned;
+  }
+
+  if (window_state->IsPinned()) {
+    return chromeos::WindowPinType::kPinned;
+  }
+
+  return chromeos::WindowPinType::kNone;
 }
 
 bool IsWindowPinned(const aura::Window* window) {
