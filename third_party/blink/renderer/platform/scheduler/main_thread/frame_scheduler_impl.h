@@ -20,6 +20,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/scheduler/common/back_forward_cache_disabling_feature_tracker.h"
 #include "third_party/blink/renderer/platform/scheduler/common/tracing_helper.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/agent_group_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/frame_origin_type.h"
@@ -269,9 +270,6 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   void OnAddedAggressiveThrottlingOptOut();
   void OnRemovedAggressiveThrottlingOptOut();
 
-  void OnAddedBackForwardCacheOptOut(SchedulingPolicy::Feature feature);
-  void OnRemovedBackForwardCacheOptOut(SchedulingPolicy::Feature feature);
-
   std::unique_ptr<ResourceLoadingTaskRunnerHandleImpl>
   CreateResourceLoadingTaskRunnerHandleImpl();
 
@@ -351,12 +349,10 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   TraceableState<bool, TracingCategoryName::kInfo>
       opted_out_from_aggressive_throttling_;
   size_t subresource_loading_pause_count_;
-  base::flat_map<SchedulingPolicy::Feature, int>
-      back_forward_cache_opt_out_counts_;
-  std::bitset<static_cast<size_t>(SchedulingPolicy::Feature::kMaxValue) + 1>
-      back_forward_cache_opt_outs_;
-  TraceableState<bool, TracingCategoryName::kInfo>
-      opted_out_from_back_forward_cache_;
+
+  BackForwardCacheDisablingFeatureTracker
+      back_forward_cache_disabling_feature_tracker_;
+
   // The last set of features passed to
   // Delegate::UpdateActiveSchedulerTrackedFeatures.
   uint64_t last_uploaded_active_features_ = 0;

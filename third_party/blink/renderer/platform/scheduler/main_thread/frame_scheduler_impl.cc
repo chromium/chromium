@@ -157,11 +157,7 @@ FrameSchedulerImpl::FrameSchedulerImpl(
           &tracing_controller_,
           YesNoStateToString),
       subresource_loading_pause_count_(0u),
-      opted_out_from_back_forward_cache_(
-          false,
-          "FrameScheduler.OptedOutFromBackForwardCache",
-          &tracing_controller_,
-          YesNoStateToString),
+      back_forward_cache_disabling_feature_tracker_(&tracing_controller_),
       page_frozen_for_tracing_(
           parent_page_scheduler_ ? parent_page_scheduler_->IsFrozen() : true,
           "FrameScheduler.PageFrozen",
@@ -676,16 +672,7 @@ WebScopedVirtualTimePauser FrameSchedulerImpl::CreateWebScopedVirtualTimePauser(
 
 void FrameSchedulerImpl::ResetForNavigation() {
   document_bound_weak_factory_.InvalidateWeakPtrs();
-
-  for (const auto& it : back_forward_cache_opt_out_counts_) {
-    TRACE_EVENT_NESTABLE_ASYNC_END0(
-        "renderer.scheduler", "ActiveSchedulerTrackedFeature",
-        TRACE_ID_LOCAL(reinterpret_cast<intptr_t>(this) ^
-                       static_cast<int>(it.first)));
-  }
-
-  back_forward_cache_opt_out_counts_.clear();
-  back_forward_cache_opt_outs_.reset();
+  back_forward_cache_disabling_feature_tracker_.Reset();
   last_uploaded_active_features_ = 0;
 }
 
@@ -696,9 +683,8 @@ void FrameSchedulerImpl::OnStartedUsingFeature(
 
   if (policy.disable_aggressive_throttling)
     OnAddedAggressiveThrottlingOptOut();
-  if (policy.disable_back_forward_cache) {
-    OnAddedBackForwardCacheOptOut(feature);
-  }
+  if (policy.disable_back_forward_cache)
+    back_forward_cache_disabling_feature_tracker_.Add(feature);
 
   uint64_t new_mask = GetActiveFeaturesTrackedForBackForwardCacheMetricsMask();
 
@@ -720,7 +706,7 @@ void FrameSchedulerImpl::OnStoppedUsingFeature(
   if (policy.disable_aggressive_throttling)
     OnRemovedAggressiveThrottlingOptOut();
   if (policy.disable_back_forward_cache)
-    OnRemovedBackForwardCacheOptOut(feature);
+    back_forward_cache_disabling_feature_tracker_.Remove(feature);
 
   uint64_t new_mask = GetActiveFeaturesTrackedForBackForwardCacheMetricsMask();
 
@@ -788,27 +774,6 @@ void FrameSchedulerImpl::OnRemovedAggressiveThrottlingOptOut() {
       static_cast<bool>(aggressive_throttling_opt_out_count_);
   if (parent_page_scheduler_)
     parent_page_scheduler_->OnThrottlingStatusUpdated();
-}
-
-void FrameSchedulerImpl::OnAddedBackForwardCacheOptOut(
-    SchedulingPolicy::Feature feature) {
-  ++back_forward_cache_opt_out_counts_[feature];
-  back_forward_cache_opt_outs_.set(static_cast<size_t>(feature));
-  opted_out_from_back_forward_cache_ = true;
-}
-
-void FrameSchedulerImpl::OnRemovedBackForwardCacheOptOut(
-    SchedulingPolicy::Feature feature) {
-  DCHECK_GT(back_forward_cache_opt_out_counts_[feature], 0);
-  auto it = back_forward_cache_opt_out_counts_.find(feature);
-  if (it->second == 1) {
-    back_forward_cache_opt_out_counts_.erase(it);
-    back_forward_cache_opt_outs_.reset(static_cast<size_t>(feature));
-  } else {
-    --it->second;
-  }
-  opted_out_from_back_forward_cache_ =
-      !back_forward_cache_opt_out_counts_.empty();
 }
 
 void FrameSchedulerImpl::WriteIntoTrace(perfetto::TracedValue context) const {
@@ -1338,21 +1303,15 @@ void FrameSchedulerImpl::OnIPCTaskPostedWhileInBackForwardCache(
 
 WTF::HashSet<SchedulingPolicy::Feature>
 FrameSchedulerImpl::GetActiveFeaturesTrackedForBackForwardCacheMetrics() {
-  WTF::HashSet<SchedulingPolicy::Feature> result;
-  for (const auto& it : back_forward_cache_opt_out_counts_)
-    result.insert(it.first);
-  return result;
+  return back_forward_cache_disabling_feature_tracker_
+      .GetActiveFeaturesTrackedForBackForwardCacheMetrics();
 }
 
 uint64_t
 FrameSchedulerImpl::GetActiveFeaturesTrackedForBackForwardCacheMetricsMask()
     const {
-  auto result = back_forward_cache_opt_outs_.to_ullong();
-  static_assert(static_cast<size_t>(SchedulingPolicy::Feature::kMaxValue) <
-                    sizeof(result) * 8,
-                "Number of the features should allow a bitmask to fit into "
-                "64-bit integer");
-  return result;
+  return back_forward_cache_disabling_feature_tracker_
+      .GetActiveFeaturesTrackedForBackForwardCacheMetricsMask();
 }
 
 base::WeakPtr<FrameOrWorkerScheduler>

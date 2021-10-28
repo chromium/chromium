@@ -8,6 +8,8 @@ import("//third_party/protobuf/proto_library.gni")
 
 blink_platform_sources("scheduler") {
   sources = [
+    "common/back_forward_cache_disabling_feature_tracker.cc",
+    "common/back_forward_cache_disabling_feature_tracker.h",
     "common/cancelable_closure_holder.cc",
     "common/cancelable_closure_holder.h",
     "common/cooperative_scheduling_manager.cc",
@@ -214,6 +216,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "common/back_forward_cache_disabling_feature_tracker_unittest.cc",
     "common/cooperative_scheduling_manager_unittest.cc",
     "common/idle_helper_unittest.cc",
     "common/metrics_helper_unittest.cc",
