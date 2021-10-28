@@ -57,10 +57,7 @@ class ImageRecord : public base::SupportsWeakPtr<ImageRecord> {
   // The time of the first paint after fully loaded. 0 means not painted yet.
   base::TimeTicks paint_time = base::TimeTicks();
   base::TimeTicks load_time = base::TimeTicks();
-  base::TimeTicks first_animated_frame_time = base::TimeTicks();
   bool loaded = false;
-  // An animated frame is queued for paint timing.
-  bool queue_animated_paint = false;
   // LCP rect information, only populated when tracing is enabled.
   std::unique_ptr<LCPRectInfo> lcp_rect_info_;
 };
@@ -92,7 +89,7 @@ class CORE_EXPORT ImageRecordsManager {
     invisible_images_.erase(record_id);
   }
 
-  inline void RemoveImageTimeRecords(const RecordId& record_id) {
+  inline void RemoveImageFinishedRecord(const RecordId& record_id) {
     image_finished_times_.erase(record_id);
   }
 
@@ -137,17 +134,14 @@ class CORE_EXPORT ImageRecordsManager {
     // not currently the case. If we plumb some information from
     // ImageResourceContent we may be able to ensure that this call does not
     // require the Contains() check, which would save time.
-    if (!image_finished_times_.Contains(record_id)) {
+    if (!image_finished_times_.Contains(record_id))
       image_finished_times_.insert(record_id, base::TimeTicks::Now());
-    }
   }
 
   inline bool IsVisibleImageLoaded(const RecordId& record_id) const {
     DCHECK(visible_images_.Contains(record_id));
     return visible_images_.at(record_id)->loaded;
   }
-  bool OnFirstAnimatedFramePainted(const RecordId&,
-                                   unsigned current_frame_index);
   void OnImageLoaded(const RecordId&,
                      unsigned current_frame_index,
                      const StyleFetchedImage*);

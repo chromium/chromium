@@ -1101,10 +1101,5 @@ const base::Feature kDeprecationWillLogToConsole{
 const base::Feature kDeprecationWillLogToDevToolsIssue{
     "DeprecationWillLogToDevToolsIssue", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables reporting and web-exposure (respectively) of the time the first frame
-// of an animated image was painted.
-const base::Feature kLCPAnimatedImagesReporting{
-    "LCPAnimatedImagesReporting", base::FEATURE_DISABLED_BY_DEFAULT};
-
 }  // namespace features
 }  // namespace blink

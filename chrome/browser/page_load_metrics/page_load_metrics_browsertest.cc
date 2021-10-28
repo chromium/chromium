@@ -12,7 +12,6 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
@@ -77,8 +76,6 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/common/content_features.h"
-#include "content/public/common/content_paths.h"
-#include "content/public/common/content_switches.h"
 #include "content/public/common/referrer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -377,147 +374,6 @@ class PageLoadMetricsBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
-};
-
-class PageLoadMetricsBrowserTestAnimatedLCP
-    : public PageLoadMetricsBrowserTest {
- protected:
-  void test_animated_image_lcp(bool smaller, bool animated) {
-    // Waiter to ensure main content is loaded.
-    auto waiter = CreatePageLoadMetricsTestWaiter();
-    waiter->AddPageExpectation(TimingField::kLoadEvent);
-    waiter->AddPageExpectation(TimingField::kFirstContentfulPaint);
-    waiter->AddPageExpectation(TimingField::kLargestContentfulPaint);
-
-    const char kHtmlHttpResponseHeader[] =
-        "HTTP/1.1 200 OK\r\n"
-        "Content-Type: text/html; charset=utf-8\r\n"
-        "\r\n";
-    const char kImgHttpResponseHeader[] =
-        "HTTP/1.1 200 OK\r\n"
-        "Content-Type: image/png\r\n"
-        "\r\n";
-    auto main_html_response =
-        std::make_unique<net::test_server::ControllableHttpResponse>(
-            embedded_test_server(), "/mock_page.html",
-            false /*relative_url_is_prefix*/);
-    auto img_response =
-        std::make_unique<net::test_server::ControllableHttpResponse>(
-            embedded_test_server(),
-            animated ? "/images/animated-delayed.png" : "/images/delayed.jpg",
-            false /*relative_url_is_prefix*/);
-
-    ASSERT_TRUE(embedded_test_server()->Start());
-
-    // File is under content/test/data/
-    const std::string file_name_string =
-        animated ? "animated.png" : "single_face.jpg";
-    std::string file_contents;
-    // The first_frame_size number for the animated case (262), represents the
-    // first frame of the animated PNG + an extra chunk enabling the decoder to
-    // understand the first frame is done and decode it.
-    // For the non-animated case (5000), it's an arbitrary number that
-    // represents a part of the JPEG's frame.
-    const unsigned first_frame_size = animated ? 262 : 5000;
-
-    // Read the animated image into two frames.
-    {
-      base::ScopedAllowBlockingForTesting allow_io;
-      base::FilePath test_dir;
-      ASSERT_TRUE(base::PathService::Get(content::DIR_TEST_DATA, &test_dir));
-      base::FilePath file_name = test_dir.AppendASCII(file_name_string);
-      ASSERT_TRUE(base::ReadFileToString(file_name, &file_contents));
-    }
-    // Split the contents into 2 frames
-    std::string first_frame = file_contents.substr(0, first_frame_size);
-    std::string second_frame = file_contents.substr(first_frame_size);
-
-    browser()->OpenURL(content::OpenURLParams(
-        embedded_test_server()->GetURL("/mock_page.html"), content::Referrer(),
-        WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED, false));
-
-    main_html_response->WaitForRequest();
-    main_html_response->Send(kHtmlHttpResponseHeader);
-    main_html_response->Send(
-        animated ? "<html><body></body><img "
-                   "src=\"/images/animated-delayed.png\"></script></html>"
-                 : "<html><body></body><img "
-                   "src=\"/images/delayed.jpg\"></script></html>");
-    main_html_response->Done();
-
-    img_response->WaitForRequest();
-    img_response->Send(kImgHttpResponseHeader);
-    img_response->Send(first_frame);
-
-    // Trigger a double rAF and take a timestamp afterwards.
-    content::EvalJsResult result =
-        EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
-               "(async () => {"
-               "const double_raf = () => {"
-               "return new Promise(r => {"
-               "requestAnimationFrame(()=>requestAnimationFrame(r))})};"
-               "await double_raf();})()");
-    EXPECT_EQ("", result.error);
-    content::EvalJsResult result2 =
-        EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
-               "performance.now()");
-    EXPECT_EQ("", result2.error);
-    double timestamp = result2.ExtractDouble();
-
-    img_response->Send(second_frame);
-    img_response->Done();
-
-    content::EvalJsResult result3 =
-        EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
-               "(async () => {"
-               "await new Promise(resolve => {"
-               "(new PerformanceObserver(list => {"
-               "const entries = list.getEntries();"
-               "for (let entry of entries) {"
-               "if (entry.url.includes('images')) {resolve()}"
-               "}"
-               "}))"
-               ".observe({type: 'largest-contentful-paint', buffered: true});"
-               "})})()");
-    EXPECT_EQ("", result3.error);
-    waiter->Wait();
-
-    // LCP is collected only at the end of the page lifecycle. Navigate to
-    // flush.
-    NavigateToUntrackedUrl();
-
-    histogram_tester_->ExpectTotalCount(
-        internal::kHistogramLargestContentfulPaint, 1);
-    auto value =
-        histogram_tester_
-            ->GetAllSamples(internal::kHistogramLargestContentfulPaint)[0]
-            .min;
-
-    if (smaller) {
-      ASSERT_LT(value, timestamp);
-    } else {
-      ASSERT_GT(value, timestamp);
-    }
-  }
-};
-
-class PageLoadMetricsBrowserTestWithAnimatedLCPFlag
-    : public PageLoadMetricsBrowserTestAnimatedLCP {
- public:
-  PageLoadMetricsBrowserTestWithAnimatedLCPFlag() {
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitWithFeatures(
-        {blink::features::kLCPAnimatedImagesReporting}, {});
-  }
-};
-
-class PageLoadMetricsBrowserTestWithRuntimeAnimatedLCPFlag
-    : public PageLoadMetricsBrowserTestAnimatedLCP {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "LCPAnimatedImagesWebExposed");
-  }
 };
 
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, NoNavigation) {
@@ -3131,27 +2987,6 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, PageLCPStopsUponInput) {
   // should match the main frame value because the iframe content was created
   // after input in the main frame.
   ASSERT_EQ(all_frames_value, main_frame_value);
-}
-
-// Tests that an animated image's reported LCP values are smaller than its load
-// times, when the feature flag for animated image reporting is enabled.
-IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestWithAnimatedLCPFlag,
-                       PageLCPAnimatedImage) {
-  test_animated_image_lcp(/*smaller=*/true, /*animated=*/true);
-}
-
-// Tests that an animated image's reported LCP values are larger than its load
-// times, when only the feature flag for animated image web exposure is enabled.
-IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestWithRuntimeAnimatedLCPFlag,
-                       PageLCPAnimatedImageOnlyRuntimeFlag) {
-  test_animated_image_lcp(/*smaller=*/false, /*animated=*/true);
-}
-
-// Tests that a non-animated image's reported LCP values are larger than its
-// load times, when the feature flag for animated image reporting is enabled.
-IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestWithAnimatedLCPFlag,
-                       PageLCPNonAnimatedImage) {
-  test_animated_image_lcp(/*smaller=*/false, /*animated=*/false);
 }
 
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, FirstInputDelayFromClick) {

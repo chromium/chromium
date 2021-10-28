@@ -144,14 +144,12 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   // PageVisibilityObserver
   void PageVisibilityChanged() override;
 
-  void OnLargestContentfulPaintUpdated(
-      base::TimeTicks paint_time,
-      uint64_t paint_size,
-      base::TimeTicks load_time,
-      base::TimeTicks first_animated_frame_time,
-      const AtomicString& id,
-      const String& url,
-      Element*);
+  void OnLargestContentfulPaintUpdated(base::TimeTicks paint_time,
+                                       uint64_t paint_size,
+                                       base::TimeTicks load_time,
+                                       const AtomicString& id,
+                                       const String& url,
+                                       Element*);
 
   void Trace(Visitor*) const override;
 
