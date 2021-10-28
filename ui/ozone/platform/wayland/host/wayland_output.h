@@ -15,6 +15,7 @@
 namespace ui {
 
 class XDGOutput;
+class WaylandConnection;
 
 // WaylandOutput objects keep track of the current output of display
 // that are available to the application.
@@ -39,7 +40,9 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
     virtual ~Delegate() = default;
   };
 
-  WaylandOutput(uint32_t output_id, wl_output* output);
+  WaylandOutput(uint32_t output_id,
+                wl_output* output,
+                WaylandConnection* connection);
 
   WaylandOutput(const WaylandOutput&) = delete;
   WaylandOutput& operator=(const WaylandOutput&) = delete;
@@ -97,6 +100,7 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
   gfx::Rect rect_in_physical_pixels_;
 
   Delegate* delegate_ = nullptr;
+  WaylandConnection* connection_ = nullptr;
 };
 
 }  // namespace ui

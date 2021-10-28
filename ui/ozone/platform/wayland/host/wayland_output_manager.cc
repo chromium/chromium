@@ -36,7 +36,8 @@ void WaylandOutputManager::AddWaylandOutput(uint32_t output_id,
   // unlikely to happen, unless a compositor has a bug in the numeric names
   // representation of global objects.
   DCHECK(!GetOutput(output_id));
-  auto wayland_output = std::make_unique<WaylandOutput>(output_id, output);
+  auto wayland_output =
+      std::make_unique<WaylandOutput>(output_id, output, connection_);
 
   // Even if WaylandScreen has not been created, the output still must be
   // initialized, which results in setting up a wl_listener and getting the

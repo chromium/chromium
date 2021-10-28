@@ -25,11 +25,6 @@ const base::Feature kWaylandSurfaceSubmissionInPixelCoordinates{
     "WaylandSurfaceSubmissionInPixelCoordinates",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// This feature flag is used for fractional display scale factor development for
-// LaCros. When enabled, the wayland client would use the xdg output protocol to
-// receive extra output metrics (logical size) to calculate the scale factor.
-const base::Feature kXdgOutputProtocolSupport{
-    "XdgOutputProtocolSupport", base::FEATURE_DISABLED_BY_DEFAULT};
 
 bool IsWaylandSurfaceSubmissionInPixelCoordinatesEnabled() {
   return base::FeatureList::IsEnabled(
@@ -38,10 +33,6 @@ bool IsWaylandSurfaceSubmissionInPixelCoordinatesEnabled() {
 
 bool IsWaylandOverlayDelegationEnabled() {
   return base::FeatureList::IsEnabled(kWaylandOverlayDelegation);
-}
-
-bool IsXdgOutputProtocolSupportEnabled() {
-  return base::FeatureList::IsEnabled(kXdgOutputProtocolSupport);
 }
 
 }  // namespace ui
