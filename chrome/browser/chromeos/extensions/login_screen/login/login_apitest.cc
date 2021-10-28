@@ -99,7 +99,7 @@ namespace chromeos {
 
 class LoginApitest : public LoginScreenApitestBase {
  public:
-  LoginApitest() : LoginScreenApitestBase(version_info::Channel::STABLE) {}
+  LoginApitest() : LoginScreenApitestBase(version_info::Channel::CANARY) {}
 
   LoginApitest(const LoginApitest&) = delete;
 
