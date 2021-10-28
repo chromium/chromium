@@ -115,7 +115,6 @@ class WebStateImpl;
 - (BOOL)isViewAlive;
 
 // Returns YES if the current live view is a web view with HTML.
-// TODO(crbug.com/949651): Remove once JSFindInPageManager is removed.
 - (BOOL)contentIsHTML;
 
 // Returns the CRWWebController's view of the current URL. Moreover, this method
