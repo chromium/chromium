@@ -8,9 +8,9 @@
 #include "base/task/single_thread_task_executor.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "tools/mac/power/power_sampler/backlight_level_sampler.h"
 #include "tools/mac/power/power_sampler/battery_sampler.h"
 #include "tools/mac/power/power_sampler/csv_exporter.h"
+#include "tools/mac/power/power_sampler/main_display_sampler.h"
 #include "tools/mac/power/power_sampler/sampler.h"
 #include "tools/mac/power/power_sampler/sampling_controller.h"
 #include "tools/mac/power/power_sampler/user_idle_level_sampler.h"
@@ -20,7 +20,7 @@ int main(int argc, char** argv) {
   power_sampler::SamplingController controller;
 
   std::unique_ptr<power_sampler::Sampler> sampler =
-      power_sampler::BacklightLevelSampler::Create();
+      power_sampler::MainDisplaySampler::Create();
   if (sampler)
     controller.AddSampler(std::move(sampler));
 

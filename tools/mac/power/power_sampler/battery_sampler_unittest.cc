@@ -91,7 +91,7 @@ TEST_F(BatterySamplerTest, NameAndGetDatumNameUnits) {
       TestBatterySampler::CreateForTesting());
   ASSERT_NE(nullptr, sampler.get());
 
-  EXPECT_EQ("Battery", sampler->GetName());
+  EXPECT_EQ("battery", sampler->GetName());
 
   auto datum_name_units = sampler->GetDatumNameUnits();
   EXPECT_THAT(datum_name_units,
