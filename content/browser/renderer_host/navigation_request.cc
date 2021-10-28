@@ -4738,6 +4738,9 @@ net::Error NavigationRequest::CheckContentSecurityPolicy(
   if (common_params_->url.SchemeIs(url::kAboutScheme))
     return net::OK;
 
+  if (IsSameDocument())
+    return net::OK;
+
   if (common_params_->should_check_main_world_csp ==
       network::mojom::CSPDisposition::DO_NOT_CHECK) {
     return net::OK;
