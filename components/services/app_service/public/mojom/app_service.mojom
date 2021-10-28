@@ -39,7 +39,10 @@ interface AppService {
       LaunchSource launch_source,
       WindowInfo? window_info);
 
-  // Launches an app with |app_id| and |file_path|
+  // Launches an app with |app_id| and |file_path|.
+  // DEPRECATED. Prefer passing the files in an Intent through
+  // LaunchAppWithIntent.
+  // TODO(crbug.com/1264164): Remove this method.
   LaunchAppWithFiles(
       AppType app_type,
       string app_id,

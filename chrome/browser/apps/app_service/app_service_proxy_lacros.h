@@ -101,10 +101,9 @@ class AppServiceProxyLacros : public KeyedService,
               apps::mojom::WindowInfoPtr window_info = nullptr);
 
   // Launches the app for the given |app_id| with files from |file_paths|.
-  // |event_flags| provides additional context about the action which launches
-  // the app (e.g. a middle click indicating opening a background tab).
-  // |launch_source| is the possible app launch sources, e.g. from Shelf, from
-  // the search box, etc.
+  // DEPRECATED. Prefer passing the files in an Intent through
+  // LaunchAppWithIntent.
+  // TODO(crbug.com/1264164): Remove this method.
   void LaunchAppWithFiles(const std::string& app_id,
                           int32_t event_flags,
                           apps::mojom::LaunchSource launch_source,
