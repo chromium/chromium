@@ -36481,6 +36481,12 @@ Called by update_permissions_policy_enum.py.-->
   <int value="3" label="NTFS"/>
 </enum>
 
+<enum name="FileManagerGlitch">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Unhandled Error"/>
+  <int value="2" label="Unhandled Rejection"/>
+</enum>
+
 <enum name="FileManagerListType">
   <int value="0" label="Uninitialized"/>
   <int value="1" label="List view (detail)"/>

@@ -32,6 +32,7 @@ group("js_modules") {
     ":file_type",
     ":files_app_entry_types",
     ":filtered_volume_manager",
+    ":glitch",
     ":importer_common",
     ":lru_cache",
     ":mediasession_types",
@@ -59,6 +60,7 @@ js_type_check("closure_compile_jsmodules") {
     ":file_type",
     ":files_app_entry_types",
     ":filtered_volume_manager",
+    ":glitch",
     ":importer_common",
     ":lru_cache",
     ":metrics",
@@ -117,6 +119,11 @@ js_library("async_util") {
 }
 
 js_library("error_counter") {
+  deps = [ ":glitch" ]
+}
+
+js_library("glitch") {
+  deps = [ ":metrics" ]
 }
 
 js_library("dialog_type") {
