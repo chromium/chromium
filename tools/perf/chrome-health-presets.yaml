@@ -167,7 +167,7 @@ presets:
           - Wikipedia
           - YahooNews
           - Youtube
-      - benchmark: speedometer2
+      - benchmark: speedometer2-chrome-health
         configs:
           - mac-10_12_laptop_low_end-perf
           - linux-perf
@@ -216,7 +216,7 @@ presets:
           - LocalMoxie
           - SlideShare
           - Youtube
-      - benchmark: speedometer2
+      - benchmark: speedometer2-chrome-health
         configs:
           - mac-10_12_laptop_low_end-perf
           - linux-perf
