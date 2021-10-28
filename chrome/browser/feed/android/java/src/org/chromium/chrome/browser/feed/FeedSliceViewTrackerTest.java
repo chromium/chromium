@@ -4,7 +4,11 @@
 
 package org.chromium.chrome.browser.feed;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.AdditionalMatchers.leq;
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyFloat;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
@@ -30,6 +34,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
@@ -58,8 +63,15 @@ public class FeedSliceViewTrackerTest {
     @Mock
     View mChildB;
 
+    boolean mChildAVisibleRunnable1Called;
+    boolean mChildAVisibleRunnable2Called;
+    boolean mChildAVisibleRunnable3Called;
+    boolean mChildBVisibleRunnable1Called;
+    boolean mChildBVisibleRunnable2Called;
+
     @Before
     public void setUp() {
+        ShadowLog.stream = System.out;
         MockitoAnnotations.initMocks(this);
         mContentManager = new NtpListContentManager();
         doReturn(mLayoutManager).when(mParentView).getLayoutManager();
@@ -72,7 +84,7 @@ public class FeedSliceViewTrackerTest {
     public void testIsItemVisible_JustEnoughnViewport() {
         mockViewDimensions(mChildA, 10, 10);
         mockGetChildVisibleRect(mChildA, 0, 7);
-        Assert.assertTrue(mTracker.isViewVisible(mChildA));
+        Assert.assertTrue(mTracker.isViewVisible(mChildA, 0.66f));
     }
 
     @Test
@@ -80,7 +92,7 @@ public class FeedSliceViewTrackerTest {
     public void testIsItemVisible_NotEnoughnViewport() {
         mockViewDimensions(mChildA, 10, 10);
         mockGetChildVisibleRect(mChildA, 0, 6);
-        Assert.assertFalse(mTracker.isViewVisible(mChildA));
+        Assert.assertFalse(mTracker.isViewVisible(mChildA, 0.66f));
     }
 
     @Test
@@ -88,7 +100,7 @@ public class FeedSliceViewTrackerTest {
     public void testIsItemVisible_ZeroAreaInViewport() {
         mockViewDimensions(mChildA, 10, 10);
         mockGetChildVisibleRect(mChildA, 0, 0);
-        Assert.assertFalse(mTracker.isViewVisible(mChildA));
+        Assert.assertFalse(mTracker.isViewVisible(mChildA, 0.66f));
     }
 
     @Test
@@ -96,7 +108,7 @@ public class FeedSliceViewTrackerTest {
     public void testIsItemVisible_getChildVisibleRectReturnsFalse() {
         mockViewDimensions(mChildA, 10, 10);
         mockGetChildVisibleRectIsEmpty(mChildA);
-        Assert.assertFalse(mTracker.isViewVisible(mChildA));
+        Assert.assertFalse(mTracker.isViewVisible(mChildA, 0.66f));
     }
 
     @Test
@@ -104,7 +116,7 @@ public class FeedSliceViewTrackerTest {
     public void testIsItemVisible_ZeroArea() {
         mockViewDimensions(mChildA, 0, 0);
         mockGetChildVisibleRect(mChildA, 0, 0);
-        Assert.assertFalse(mTracker.isViewVisible(mChildA));
+        Assert.assertFalse(mTracker.isViewVisible(mChildA, 0.66f));
     }
 
     @Test
@@ -120,8 +132,8 @@ public class FeedSliceViewTrackerTest {
         doReturn(mChildA).when(mLayoutManager).findViewByPosition(eq(0));
         doReturn(mChildB).when(mLayoutManager).findViewByPosition(eq(1));
 
-        doReturn(true).when(mTracker).isViewVisible(mChildA);
-        doReturn(true).when(mTracker).isViewVisible(mChildB);
+        doReturn(true).when(mTracker).isViewVisible(eq(mChildA), anyFloat());
+        doReturn(true).when(mTracker).isViewVisible(eq(mChildB), anyFloat());
 
         mTracker.onPreDraw();
 
@@ -145,8 +157,8 @@ public class FeedSliceViewTrackerTest {
         doReturn(mChildA).when(mLayoutManager).findViewByPosition(eq(0));
         doReturn(mChildB).when(mLayoutManager).findViewByPosition(eq(1));
 
-        doReturn(true).when(mTracker).isViewVisible(mChildA);
-        doReturn(true).when(mTracker).isViewVisible(mChildB);
+        doReturn(true).when(mTracker).isViewVisible(eq(mChildA), anyFloat());
+        doReturn(true).when(mTracker).isViewVisible(eq(mChildB), anyFloat());
 
         mTracker.onPreDraw();
         mTracker.clear();
@@ -170,8 +182,8 @@ public class FeedSliceViewTrackerTest {
         doReturn(mChildA).when(mLayoutManager).findViewByPosition(eq(0));
         doReturn(mChildB).when(mLayoutManager).findViewByPosition(eq(1));
 
-        doReturn(true).when(mTracker).isViewVisible(mChildA);
-        doReturn(true).when(mTracker).isViewVisible(mChildB);
+        doReturn(true).when(mTracker).isViewVisible(eq(mChildA), anyFloat());
+        doReturn(true).when(mTracker).isViewVisible(eq(mChildB), anyFloat());
 
         mTracker.onPreDraw();
 
@@ -194,8 +206,8 @@ public class FeedSliceViewTrackerTest {
         doReturn(mChildA).when(mLayoutManager).findViewByPosition(eq(0));
         doReturn(mChildB).when(mLayoutManager).findViewByPosition(eq(1));
 
-        doReturn(false).when(mTracker).isViewVisible(mChildA);
-        doReturn(true).when(mTracker).isViewVisible(mChildB);
+        doReturn(false).when(mTracker).isViewVisible(eq(mChildA), anyFloat());
+        doReturn(true).when(mTracker).isViewVisible(eq(mChildB), anyFloat());
 
         mTracker.onPreDraw();
 
@@ -226,6 +238,69 @@ public class FeedSliceViewTrackerTest {
         mTracker.destroy(); // A second destroy() does nothing.
     }
 
+    @Test
+    @SmallTest
+    public void testWatchForFirstVisible() {
+        mContentManager.addContents(0,
+                Arrays.asList(new NtpListContentManager.FeedContent[] {
+                        new NtpListContentManager.NativeViewContent(0, "c/key1", mChildA),
+                        new NtpListContentManager.NativeViewContent(0, "c/key2", mChildB),
+                }));
+        doReturn(0).when(mLayoutManager).findFirstVisibleItemPosition();
+        doReturn(1).when(mLayoutManager).findLastVisibleItemPosition();
+        doReturn(mChildA).when(mLayoutManager).findViewByPosition(eq(0));
+        doReturn(mChildB).when(mLayoutManager).findViewByPosition(eq(1));
+
+        // Associates 3 observers with one content key.
+        mTracker.watchForFirstVisible(
+                "c/key1", 0.5f, () -> { mChildAVisibleRunnable1Called = true; });
+        mTracker.watchForFirstVisible(
+                "c/key1", 0.7f, () -> { mChildAVisibleRunnable2Called = true; });
+        mTracker.watchForFirstVisible(
+                "c/key1", 0.4f, () -> { mChildAVisibleRunnable3Called = true; });
+
+        // Associates 2 observers with another content key.
+        Runnable mChildBVisibleRunnable1 = () -> {
+            mChildBVisibleRunnable1Called = true;
+        };
+        mTracker.watchForFirstVisible("c/key2", 0.6f, mChildBVisibleRunnable1);
+        mTracker.watchForFirstVisible(
+                "c/key2", 0.7f, () -> { mChildBVisibleRunnable2Called = true; });
+
+        // Expects that 2 observers associated with same content key get invoked.
+        doReturn(true).when(mTracker).isViewVisible(eq(mChildA), leq(0.5f));
+        doReturn(false).when(mTracker).isViewVisible(eq(mChildB), leq(0.5f));
+        clearVisibleRunnableCalledStates();
+        mTracker.onPreDraw();
+        assertTrue(mChildAVisibleRunnable1Called);
+        assertFalse(mChildAVisibleRunnable2Called);
+        assertTrue(mChildAVisibleRunnable3Called);
+        assertFalse(mChildBVisibleRunnable1Called);
+        assertFalse(mChildBVisibleRunnable2Called);
+
+        // Raises the threshold. Exepcts that 2 observers notified last time will not get notified
+        // this time, while another observer is notified due to the raised threshold.
+        doReturn(true).when(mTracker).isViewVisible(eq(mChildA), leq(0.7f));
+        clearVisibleRunnableCalledStates();
+        mTracker.onPreDraw();
+        assertFalse(mChildAVisibleRunnable1Called);
+        assertTrue(mChildAVisibleRunnable2Called);
+        assertFalse(mChildAVisibleRunnable3Called);
+        assertFalse(mChildBVisibleRunnable1Called);
+        assertFalse(mChildBVisibleRunnable2Called);
+
+        // Stops watching an observer. Expects that this observe will not get notified.
+        mTracker.stopWatchingForFirstVisible("c/key2", mChildBVisibleRunnable1);
+        doReturn(true).when(mTracker).isViewVisible(eq(mChildB), leq(0.7f));
+        clearVisibleRunnableCalledStates();
+        mTracker.onPreDraw();
+        assertFalse(mChildAVisibleRunnable1Called);
+        assertFalse(mChildAVisibleRunnable2Called);
+        assertFalse(mChildAVisibleRunnable3Called);
+        assertFalse(mChildBVisibleRunnable1Called);
+        assertTrue(mChildBVisibleRunnable2Called);
+    }
+
     void mockViewDimensions(View view, int width, int height) {
         when(view.getWidth()).thenReturn(10);
         when(view.getHeight()).thenReturn(10);
@@ -254,5 +329,13 @@ public class FeedSliceViewTrackerTest {
         })
                 .when(mParentView)
                 .getChildVisibleRect(eq(child), any(), any());
+    }
+
+    void clearVisibleRunnableCalledStates() {
+        mChildAVisibleRunnable1Called = false;
+        mChildAVisibleRunnable2Called = false;
+        mChildAVisibleRunnable3Called = false;
+        mChildBVisibleRunnable1Called = false;
+        mChildBVisibleRunnable2Called = false;
     }
 }

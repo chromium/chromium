@@ -19,6 +19,7 @@
 #include "components/feed/core/common/pref_names.h"
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/proto/v2/ui.pb.h"
+#include "components/feed/core/proto/v2/wire/content_id.pb.h"
 #include "components/feed/core/proto/v2/wire/reliability_logging_enums.pb.h"
 #include "components/feed/core/proto/v2/wire/there_and_back_again_data.pb.h"
 #include "components/feed/core/shared_prefs/pref_names.h"
@@ -40,6 +41,7 @@
 #include "components/feed/core/v2/public/types.h"
 #include "components/feed/core/v2/public/unread_content_observer.h"
 #include "components/feed/core/v2/scheduling.h"
+#include "components/feed/core/v2/stream/notice_card_tracker.h"
 #include "components/feed/core/v2/stream/unread_content_notifier.h"
 #include "components/feed/core/v2/stream_model.h"
 #include "components/feed/core/v2/surface_updater.h"
@@ -131,7 +133,7 @@ FeedStream::FeedStream(RefreshTaskScheduler* refresh_task_scheduler,
       task_queue_(this),
       request_throttler_(profile_prefs),
       upload_criteria_(profile_prefs),
-      notice_card_tracker_(profile_prefs) {
+      privacy_notice_card_tracker_(profile_prefs) {
   DCHECK(persistent_key_value_store_);
   DCHECK(feed_network_);
   DCHECK(profile_prefs_);
@@ -887,8 +889,10 @@ RequestMetadata FeedStream::GetRequestMetadata(const StreamType& stream_type,
   result.display_metrics = delegate_->GetDisplayMetrics();
   result.language_tag = delegate_->GetLanguageTag();
   result.notice_card_acknowledged =
-      notice_card_tracker_.HasAcknowledgedNoticeCard();
+      privacy_notice_card_tracker_.HasAcknowledgedNoticeCard();
   result.autoplay_enabled = delegate_->IsAutoplayEnabled();
+  result.acknowledged_notice_keys =
+      NoticeCardTracker::GetAllAckowledgedKeys(profile_prefs_);
   if (stream_type.IsWebFeed()) {
     result.content_order = GetValidWebFeedContentOrder(*profile_prefs_);
   }
@@ -1185,7 +1189,7 @@ void FeedStream::ReportOpenAction(const GURL& url,
   metrics_reporter_->OpenAction(stream_type, index);
 
   if (stream.model) {
-    notice_card_tracker_.OnOpenAction(
+    privacy_notice_card_tracker_.OnOpenAction(
         stream.model->FindContentId(ToContentRevision(slice_id)));
   }
 }
@@ -1206,7 +1210,7 @@ void FeedStream::ReportOpenInNewTabAction(const GURL& url,
   metrics_reporter_->OpenInNewTabAction(stream_type, index);
 
   if (stream.model) {
-    notice_card_tracker_.OnOpenAction(
+    privacy_notice_card_tracker_.OnOpenAction(
         stream.model->FindContentId(ToContentRevision(slice_id)));
   }
 }
@@ -1219,15 +1223,15 @@ void FeedStream::ReportSliceViewed(SurfaceId surface_id,
   if (index < 0)
     return;
 
-  if (stream.model) {
-    metrics_reporter_->ContentSliceViewed(
-        stream_type, index, stream.model->GetContentList().size());
-  }
-  if (stream.model) {
-    notice_card_tracker_.OnCardViewed(
-        stream.model->signed_in(),
-        stream.model->FindContentId(ToContentRevision(slice_id)));
-  }
+  if (!stream.model)
+    return;
+
+  metrics_reporter_->ContentSliceViewed(stream_type, index,
+                                        stream.model->GetContentList().size());
+
+  privacy_notice_card_tracker_.OnCardViewed(
+      stream.model->signed_in(),
+      stream.model->FindContentId(ToContentRevision(slice_id)));
 }
 
 // TODO(crbug/1147237): Rename this method and related members?
@@ -1279,6 +1283,29 @@ void FeedStream::ReportStreamScrollStart() {
 void FeedStream::ReportOtherUserAction(const StreamType& stream_type,
                                        FeedUserActionType action_type) {
   metrics_reporter_->OtherUserAction(stream_type, action_type);
+}
+
+void FeedStream::ReportNoticeViewed(const std::string& key) {
+  GetNoticeCardTracker(key).OnViewed();
+}
+
+void FeedStream::ReportNoticeOpenAction(const std::string& key) {
+  GetNoticeCardTracker(key).OnOpenAction();
+}
+
+void FeedStream::ReportNoticeDismissed(const std::string& key) {
+  GetNoticeCardTracker(key).OnDismissed();
+}
+
+NoticeCardTracker& FeedStream::GetNoticeCardTracker(const std::string& key) {
+  const auto iter = notice_card_trackers_.find(key);
+  if (iter != notice_card_trackers_.end())
+    return iter->second;
+
+  return notice_card_trackers_
+      .emplace(std::piecewise_construct, std::forward_as_tuple(key),
+               std::forward_as_tuple(profile_prefs_, key))
+      .first->second;
 }
 
 void FeedStream::SetContentOrder(const StreamType& stream_type,
