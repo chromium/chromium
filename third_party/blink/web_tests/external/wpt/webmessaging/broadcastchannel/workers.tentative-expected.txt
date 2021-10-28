@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+PASS BroadcastChannel created after a worker self.close()
+FAIL BroadcastChannel messages from closed worker to parent should be ignored (BC created before closing) assert_equals: BroadcastChannel message should only be received from the second worker expected "done-worker done" but got "close-after-create-worker done"
+FAIL BroadcastChannel messages from closed worker to parent should be ignored (BC created after closing) assert_equals: BroadcastChannel message should only be received from the second worker expected "done-worker done" but got "close-before-create-worker done"
+PASS BroadcastChannel messages from parent to closed worker should be ignored (BC created before closing)
+PASS BroadcastChannel messages from parent to closed worker should be ignored (BC created after closing)
+PASS BroadcastChannel messages within closed worker should be ignored (BCs created before closing)
+PASS BroadcastChannel messages within closed worker should be ignored (BCs created after closing)
+Harness: the test ran to completion.
+

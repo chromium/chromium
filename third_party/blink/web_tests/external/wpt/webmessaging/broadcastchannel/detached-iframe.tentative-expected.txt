@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+FAIL BroadcastChannel messages from detached iframe to parent should be ignored (BC created before detaching) promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'postMessage' on 'BroadcastChannel': Channel is closed"
+FAIL BroadcastChannel messages from detached iframe to parent should be ignored (BC created after detaching) assert_equals: expected 1 but got 2
+PASS BroadcastChannel messages from parent to detached iframe should be ignored (BC created before detaching)
+PASS BroadcastChannel messages from parent to detached iframe should be ignored (BC created after detaching)
+FAIL BroadcastChannel messages within detached iframe should be ignored (BCs created before detaching) promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'postMessage' on 'BroadcastChannel': Channel is closed"
+PASS BroadcastChannel messages within detached iframe should be ignored (BCs created after detaching)
+Harness: the test ran to completion.
+

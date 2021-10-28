@@ -9,6 +9,7 @@ bc3.onmessage = e => {
 };
 bc3.postMessage('from worker');
 
+// Ensure that the worker stays alive for the duration of the test
 self.addEventListener('install', evt => {
   evt.waitUntil(promise);
 });
