@@ -3374,6 +3374,20 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         in <ph name="PRODUCT_NAME">%1$s<ex>Chrome</ex></ph>
       </message>
 
+      <!-- Power bookmarks strings-->
+      <message name="IDS_PRICE_TRACKING_SAVE_FLOW_TITLE" desc="The title when a user chooses to track the price of a product.">
+        Tracking
+      </message>
+      <message name="IDS_PRICE_TRACKING_SAVE_FLOW_SUBTITLE" desc="The subtitle when a user chooses to track the price of a product.">
+        You will be notified if the price drops on any site
+      </message>
+      <message name="IDS_PRICE_TRACKING_SAVE_FLOW_NOTIFICATION_SWITCH_TITLE" desc="The title of an optional switch to track the price for product pages added as bookmarks.">
+        Track price
+      </message>
+      <message name="IDS_PRICE_TRACKING_SAVE_FLOW_NOTIFICATION_SWITCH_SUBTITLE" desc="The subtitle of an optional switch to track the price for product pages added as bookmarks.">
+        Get price drop notifications
+      </message>
+
       <!-- Read later strings -->
       <message name="IDS_READING_LIST_TITLE_NEW" desc="The title for the reading list with a new text.">
         Reading list <ph name="BEGIN_NEW">&lt;new&gt;</ph>New<ph name="END_NEW">&lt;/new&gt;</ph>

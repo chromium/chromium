@@ -41,9 +41,12 @@ import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkMeta;
+import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -145,8 +148,11 @@ public class BookmarkUtils {
         // TODO(crbug.com/1252228): Reading list support needs some tests.
         bookmarkId = addBookmarkInternal(activity, bookmarkModel, tab, bookmarkType);
         BookmarkSaveFlowCoordinator bookmarkSaveFlowCoordinator =
-                new BookmarkSaveFlowCoordinator(activity, bottomSheetController);
-        bookmarkSaveFlowCoordinator.show(bookmarkId);
+                new BookmarkSaveFlowCoordinator(activity, bottomSheetController,
+                        new CommerceSubscriptionsServiceFactory()
+                                .getForLastUsedProfile()
+                                .getSubscriptionsManager());
+        bookmarkSaveFlowCoordinator.show(bookmarkId, /*fromExplicitTrackUi=*/false);
 
         return bookmarkId;
     }
@@ -512,19 +518,26 @@ public class BookmarkUtils {
      * @param bookmarkId The {@link BookmarkId} to get the title for.
      * @return The title associated with the given bookmarkId.
      */
-    public static String getSaveFlowTitleForBookmark(Context context, BookmarkId bookmarkId) {
-        // TODO(crbug.com/1243383): Add title for price tracking.
+    public static String getSaveFlowTitleForBookmark(
+            Context context, BookmarkId bookmarkId, @Nullable PowerBookmarkMeta meta) {
+        if (meta != null && meta.getType() == PowerBookmarkType.SHOPPING) {
+            return context.getResources().getString(R.string.price_tracking_save_flow_title);
+        }
         return context.getResources().getString(R.string.bookmark_page_saved_default);
     }
 
     /**
      * Retrieve the save flow subtitle for the given bookmark.
      *
+     * @param context The current Android {@link Context}.
      * @param bookmarkId The {@link BookmarkId} to get the subtitle for.
      * @return The subtitle associated with the given bookmarkId.
      */
-    public static String getSaveFlowSubtitleForBookmark(BookmarkId bookmarkId) {
-        // TODO(crbug.com/1243383): Add subtitle for price tracking.
+    public static String getSaveFlowSubtitleForBookmark(
+            Context context, BookmarkId bookmarkId, @Nullable PowerBookmarkMeta meta) {
+        if (meta != null && meta.getType() == PowerBookmarkType.SHOPPING) {
+            return context.getResources().getString(R.string.price_tracking_save_flow_subtitle);
+        }
         return null;
     }
 

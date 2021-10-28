@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -33,6 +35,29 @@ public class BookmarkSaveFlowViewBinder
             view.findViewById(R.id.bookmark_select_folder)
                     .setOnClickListener(
                             model.get(BookmarkSaveFlowProperties.FOLDER_SELECT_ONCLICK_LISTENER));
+        } else if (propertyKey == BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_START_ICON) {
+            ((ImageView) view.findViewById(R.id.notification_switch_start_icon))
+                    .setImageDrawable(
+                            model.get(BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_START_ICON));
+        } else if (propertyKey == BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_SUBTITLE) {
+            ((TextView) view.findViewById(R.id.notification_switch_subtitle))
+                    .setText(model.get(BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_SUBTITLE));
+        } else if (propertyKey == BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_TITLE) {
+            ((TextView) view.findViewById(R.id.notification_switch_title))
+                    .setText(model.get(BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_TITLE));
+        } else if (propertyKey == BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_TOGGLE_LISTENER) {
+            ((CompoundButton) view.findViewById(R.id.notification_switch))
+                    .setOnCheckedChangeListener(model.get(
+                            BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_TOGGLE_LISTENER));
+        } else if (propertyKey == BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_VISIBLE) {
+            view.findViewById(R.id.notification_switch_divider)
+                    .setVisibility(model.get(BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_VISIBLE)
+                                    ? View.VISIBLE
+                                    : View.GONE);
+            view.findViewById(R.id.notification_switch_container)
+                    .setVisibility(model.get(BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_VISIBLE)
+                                    ? View.VISIBLE
+                                    : View.GONE);
         } else if (propertyKey == BookmarkSaveFlowProperties.SUBTITLE_TEXT) {
             ((TextView) view.findViewById(R.id.subtitle_text))
                     .setText(model.get(BookmarkSaveFlowProperties.SUBTITLE_TEXT));
