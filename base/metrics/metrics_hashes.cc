@@ -33,6 +33,12 @@ inline uint32_t DigestToUInt32(const base::MD5Digest& digest) {
 }  // namespace
 
 uint64_t HashMetricName(base::StringPiece name) {
+  // Corresponding Python code for quick look up:
+  //
+  //   import struct
+  //   import hashlib
+  //   struct.unpack('>Q', hashlib.md5(name.encode('utf-8')).digest()[:8])[0]
+  //
   base::MD5Digest digest;
   base::MD5Sum(name.data(), name.size(), &digest);
   return DigestToUInt64(digest);
