@@ -334,8 +334,9 @@ def bind_callback_local_vars(code_node, cg_context):
                                "V8PerIsolateData::From(${isolate});")),
         S("property_name",
           "const char* const ${property_name} = \"${property.identifier}\";"),
-        S("receiver_context", ("v8::Local<v8::Context> ${receiver_context} = "
-                               "${v8_receiver}->CreationContext();")),
+        S("receiver_context",
+          ("v8::Local<v8::Context> ${receiver_context} = "
+           "${v8_receiver}->GetCreationContextChecked();")),
         S("receiver_script_state",
           ("ScriptState* ${receiver_script_state} = "
            "ScriptState::From(${receiver_context});")),
