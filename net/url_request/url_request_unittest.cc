@@ -151,6 +151,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/url_constants.h"
 #include "url/url_util.h"
 
 #if defined(OS_WIN)
@@ -1338,9 +1339,9 @@ TEST_F(URLRequestTest, NetworkDelegateProxyError) {
   EXPECT_EQ(1, network_delegate.completed_requests());
 }
 
-// Test that requests with "http" scheme are upgraded to "https" when DNS
-// indicates that the name is HTTPS-only.
-TEST_F(URLRequestTest, DnsHttpsRecordPresentCausesSchemeUpgrade) {
+// Test that when host resolution fails with `ERR_DNS_NAME_HTTPS_ONLY` for
+// "http://" requests, scheme is upgraded to "https://".
+TEST_F(URLRequestTest, DnsNameHttpsOnlyErrorCausesSchemeUpgrade) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb, {{"UseDnsHttpsSvcbHttpUpgrade", "true"}});
@@ -1357,11 +1358,20 @@ TEST_F(URLRequestTest, DnsHttpsRecordPresentCausesSchemeUpgrade) {
   replacements.SetSchemeStr(url::kHttpScheme);
   const GURL http_url = https_url.ReplaceComponents(replacements);
 
-  // Build a mocked resolver that returns ERR_DNS_NAME_HTTPS_ONLY for the
-  // first lookup, regardless of the request scheme. Real resolvers should
-  // only return this error when the scheme is "http" or "ws".
+  // Return `ERR_DNS_NAME_HTTPS_ONLY` for "http://" requests and an address for
+  // "https://" requests. This simulates the HostResolver behavior for a domain
+  // with an HTTPS DNS record.
   MockHostResolver host_resolver;
-  host_resolver.rules()->AddSimulatedHTTPSServiceFormRecord("*");
+  MockHostResolverBase::RuleResolver::RuleKey unencrypted_resolve_key;
+  unencrypted_resolve_key.scheme = url::kHttpScheme;
+  unencrypted_resolve_key.hostname_pattern = kHost;
+  host_resolver.rules()->AddRule(std::move(unencrypted_resolve_key),
+                                 ERR_DNS_NAME_HTTPS_ONLY);
+  MockHostResolverBase::RuleResolver::RuleKey encrypted_resolve_key;
+  encrypted_resolve_key.scheme = url::kHttpsScheme;
+  encrypted_resolve_key.hostname_pattern = kHost;
+  host_resolver.rules()->AddRule(std::move(encrypted_resolve_key),
+                                 https_server.GetIPLiteralString());
 
   TestNetworkDelegate network_delegate;  // Must outlive URLRequest.
   TestURLRequestContext context(true);
@@ -1392,7 +1402,7 @@ TEST_F(URLRequestTest, DnsHttpsRecordPresentCausesSchemeUpgrade) {
 }
 
 // Test that DNS-based scheme upgrade supports deferred redirect.
-TEST_F(URLRequestTest, DnsHttpsRecordPresentCausesSchemeUpgradeDeferred) {
+TEST_F(URLRequestTest, DnsNameHttpsOnlyErrorCausesSchemeUpgradeDeferred) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb, {{"UseDnsHttpsSvcbHttpUpgrade", "true"}});
@@ -1409,11 +1419,20 @@ TEST_F(URLRequestTest, DnsHttpsRecordPresentCausesSchemeUpgradeDeferred) {
   replacements.SetSchemeStr(url::kHttpScheme);
   const GURL http_url = https_url.ReplaceComponents(replacements);
 
-  // Build a mocked resolver that returns ERR_DNS_NAME_HTTPS_ONLY for the
-  // first lookup, regardless of the request scheme. Real resolvers should
-  // only return this error when the scheme is "http" or "ws".
+  // Return `ERR_DNS_NAME_HTTPS_ONLY` for "http://" requests and an address for
+  // "https://" requests. This simulates the HostResolver behavior for a domain
+  // with an HTTPS DNS record.
   MockHostResolver host_resolver;
-  host_resolver.rules()->AddSimulatedHTTPSServiceFormRecord("*");
+  MockHostResolverBase::RuleResolver::RuleKey unencrypted_resolve_key;
+  unencrypted_resolve_key.scheme = url::kHttpScheme;
+  unencrypted_resolve_key.hostname_pattern = kHost;
+  host_resolver.rules()->AddRule(std::move(unencrypted_resolve_key),
+                                 ERR_DNS_NAME_HTTPS_ONLY);
+  MockHostResolverBase::RuleResolver::RuleKey encrypted_resolve_key;
+  encrypted_resolve_key.scheme = url::kHttpsScheme;
+  encrypted_resolve_key.hostname_pattern = kHost;
+  host_resolver.rules()->AddRule(std::move(encrypted_resolve_key),
+                                 https_server.GetIPLiteralString());
 
   TestNetworkDelegate network_delegate;  // Must outlive URLRequest.
   TestURLRequestContext context(true);
@@ -1467,11 +1486,17 @@ TEST_F(URLRequestTest, DnsHttpsRecordPresentCausesWsSchemeUpgrade) {
   replacements.SetSchemeStr(url::kWsScheme);
   const GURL ws_url = https_url.ReplaceComponents(replacements);
 
-  // Build a mocked resolver that returns ERR_DNS_NAME_HTTPS_ONLY for the
-  // first lookup, regardless of the request scheme. Real resolvers should
-  // only return this error when the scheme is "http" or "ws".
   MockHostResolver host_resolver;
-  host_resolver.rules()->AddSimulatedHTTPSServiceFormRecord("*");
+  MockHostResolverBase::RuleResolver::RuleKey unencrypted_resolve_key;
+  unencrypted_resolve_key.scheme = url::kHttpScheme;
+  unencrypted_resolve_key.hostname_pattern = kHost;
+  host_resolver.rules()->AddRule(std::move(unencrypted_resolve_key),
+                                 ERR_DNS_NAME_HTTPS_ONLY);
+  MockHostResolverBase::RuleResolver::RuleKey encrypted_resolve_key;
+  encrypted_resolve_key.scheme = url::kHttpsScheme;
+  encrypted_resolve_key.hostname_pattern = kHost;
+  host_resolver.rules()->AddRule(std::move(encrypted_resolve_key),
+                                 https_server.GetIPLiteralString());
 
   TestNetworkDelegate network_delegate;  // Must outlive URLRequest.
   TestURLRequestContext context(true);
@@ -1525,6 +1550,7 @@ TEST_F(URLRequestTest, DnsHttpsRecordAbsentNoSchemeUpgrade) {
   const GURL http_url = http_server.GetURL(kHost, "/defaultresponse");
 
   MockHostResolver host_resolver;
+  host_resolver.rules()->AddRule(kHost, http_server.GetIPLiteralString());
   TestNetworkDelegate network_delegate;  // Must outlive URLRequest.
   TestURLRequestContext context(true);
   context.set_network_delegate(&network_delegate);
@@ -1554,6 +1580,7 @@ TEST_F(URLRequestTest, DnsHttpsRecordAbsentNoSchemeUpgrade) {
 
 TEST_F(URLRequestTest, SkipSecureDnsDisabledByDefault) {
   MockHostResolver host_resolver;
+  host_resolver.rules()->AddRule("example.com", "127.0.0.1");
   TestNetworkDelegate network_delegate;  // Must outlive URLRequest.
   TestURLRequestContext context(true);
   context.set_network_delegate(&network_delegate);
@@ -1572,6 +1599,7 @@ TEST_F(URLRequestTest, SkipSecureDnsDisabledByDefault) {
 
 TEST_F(URLRequestTest, SkipSecureDnsEnabled) {
   MockHostResolver host_resolver;
+  host_resolver.rules()->AddRule("example.com", "127.0.0.1");
   TestNetworkDelegate network_delegate;  // Must outlive URLRequest.
   TestURLRequestContext context(true);
   context.set_network_delegate(&network_delegate);
@@ -6346,10 +6374,11 @@ TEST_F(URLRequestTestHTTP, PreloadExpectCTHeader) {
       ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS);
 
   TestNetworkDelegate network_delegate;
-  // Use a MockHostResolver (which by default maps all hosts to
-  // 127.0.0.1) so that the request can be sent to a site on the Expect
-  // CT preload list.
+  // Use a MockHostResolver, so that the request can be sent to a site on the
+  // Expect CT preload list.
   MockHostResolver host_resolver;
+  host_resolver.rules()->AddRule(kExpectCTStaticHostname,
+                                 https_test_server.GetIPLiteralString());
   TestURLRequestContext context(true);
   context.set_host_resolver(&host_resolver);
   context.set_transport_security_state(&transport_security_state);
@@ -9653,10 +9682,11 @@ TEST_F(HTTPSRequestTest, HTTPSPreloadedHSTSTest) {
   // We require that the URL be hsts-hpkp-preloaded.test. This is a test domain
   // that has a preloaded HSTS+HPKP entry in the TransportSecurityState. This
   // means that we have to use a MockHostResolver in order to direct
-  // hsts-hpkp-preloaded.test to the testserver. By default, MockHostResolver
-  // maps all hosts to 127.0.0.1.
+  // hsts-hpkp-preloaded.test to the testserver.
 
   MockHostResolver host_resolver;
+  host_resolver.rules()->AddRule("hsts-hpkp-preloaded.test",
+                                 test_server.GetIPLiteralString());
   TestNetworkDelegate network_delegate;  // Must outlive URLRequest.
   TestURLRequestContext context(true);
   context.set_network_delegate(&network_delegate);
@@ -9697,10 +9727,11 @@ TEST_F(HTTPSRequestTest, HTTPSErrorsNoClobberTSSTest) {
   // We require that the URL be hsts-hpkp-preloaded.test. This is a test domain
   // that has a preloaded HSTS+HPKP entry in the TransportSecurityState. This
   // means that we have to use a MockHostResolver in order to direct
-  // hsts-hpkp-preloaded.test to the testserver. By default, MockHostResolver
-  // maps all hosts to 127.0.0.1.
+  // hsts-hpkp-preloaded.test to the testserver.
 
   MockHostResolver host_resolver;
+  host_resolver.rules()->AddRule("hsts-hpkp-preloaded.test",
+                                 test_server.GetIPLiteralString());
   TestNetworkDelegate network_delegate;  // Must outlive URLRequest.
   TestURLRequestContext context(true);
   context.set_network_delegate(&network_delegate);
@@ -9770,9 +9801,10 @@ TEST_F(HTTPSRequestTest, HSTSPreservesPosts) {
 
   // Per spec, TransportSecurityState expects a domain name, rather than an IP
   // address, so a MockHostResolver is needed to redirect www.somewhere.com to
-  // the EmbeddedTestServer.  By default, MockHostResolver maps all hosts
-  // to 127.0.0.1.
+  // the EmbeddedTestServer.
   MockHostResolver host_resolver;
+  host_resolver.rules()->AddRule("www.somewhere.com",
+                                 test_server.GetIPLiteralString());
 
   // Force https for www.somewhere.com.
   TransportSecurityState transport_security_state;

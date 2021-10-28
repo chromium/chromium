@@ -4,6 +4,7 @@
 
 #include "net/socket/websocket_transport_client_socket_pool.h"
 
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -78,7 +79,10 @@ class WebSocketTransportClientSocketPoolTest : public TestWithTaskEnvironment {
                   NetworkIsolationKey(),
                   SecureDnsPolicy::kAllow),
         params_(ClientSocketPool::SocketParams::CreateForHttpForTesting()),
-        host_resolver_(new MockHostResolver),
+        host_resolver_(std::make_unique<
+                       MockHostResolver>(/*default_result=*/
+                                         MockHostResolverBase::RuleResolver::
+                                             GetLocalhostResult())),
         client_socket_factory_(NetLog::Get()),
         common_connect_job_params_(
             &client_socket_factory_,

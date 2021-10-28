@@ -79,7 +79,9 @@ class RequestContext : public URLRequestContext {
  public:
   RequestContext() : storage_(this) {
     ProxyConfig no_proxy;
-    storage_.set_host_resolver(std::make_unique<MockCachingHostResolver>());
+    storage_.set_host_resolver(std::make_unique<MockCachingHostResolver>(
+        /*cache_invalidation_num=*/0, /*default_result=*/
+        MockHostResolverBase::RuleResolver::GetLocalhostResult()));
     storage_.set_cert_verifier(std::make_unique<MockCertVerifier>());
     storage_.set_transport_security_state(
         std::make_unique<TransportSecurityState>());
@@ -303,13 +305,12 @@ TEST_F(PacFileFetcherImplTest, IsolationInfo) {
 
   // Check that the URL in kDestination is in the HostCache, with
   // the fetcher's IsolationInfo / NetworkIsolationKey, and no others.
-  const net::HostPortPair kHostPortPair =
-      net::HostPortPair(kHost, 0 /* port */);
   net::HostResolver::ResolveHostParameters params;
   params.source = net::HostResolverSource::LOCAL_ONLY;
   std::unique_ptr<net::HostResolver::ResolveHostRequest> host_request =
       context_.host_resolver()->CreateRequest(
-          kHostPortPair, pac_fetcher->isolation_info().network_isolation_key(),
+          url::SchemeHostPort(url),
+          pac_fetcher->isolation_info().network_isolation_key(),
           net::NetLogWithSource(), params);
   net::TestCompletionCallback callback2;
   result = host_request->Start(callback2.callback());
@@ -322,7 +323,8 @@ TEST_F(PacFileFetcherImplTest, IsolationInfo) {
   // Make sure the cache is actually returning different results based on
   // NetworkIsolationKey.
   host_request = context_.host_resolver()->CreateRequest(
-      kHostPortPair, NetworkIsolationKey(), net::NetLogWithSource(), params);
+      url::SchemeHostPort(url), NetworkIsolationKey(), net::NetLogWithSource(),
+      params);
   net::TestCompletionCallback callback3;
   result = host_request->Start(callback3.callback());
   EXPECT_EQ(net::ERR_NAME_NOT_RESOLVED, callback3.GetResult(result));

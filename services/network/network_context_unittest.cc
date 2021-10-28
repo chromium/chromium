@@ -3306,6 +3306,7 @@ class TestResolveHostClient : public ResolveHostClientBase {
 
 TEST_F(NetworkContextTest, ResolveHost_Sync) {
   auto resolver = std::make_unique<net::MockHostResolver>();
+  resolver->rules()->AddRule("sync.test", "1.2.3.4");
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
 
@@ -3322,7 +3323,7 @@ TEST_F(NetworkContextTest, ResolveHost_Sync) {
   TestResolveHostClient response_client(&pending_response_client, &run_loop);
 
   network_context->ResolveHost(
-      net::HostPortPair("localhost", 160), net::NetworkIsolationKey(),
+      net::HostPortPair("sync.test", 160), net::NetworkIsolationKey(),
       std::move(optional_parameters), std::move(pending_response_client));
   run_loop.Run();
 
@@ -3330,13 +3331,14 @@ TEST_F(NetworkContextTest, ResolveHost_Sync) {
   EXPECT_EQ(net::OK, response_client.result_error());
   EXPECT_THAT(
       response_client.result_addresses().value().endpoints(),
-      testing::UnorderedElementsAre(CreateExpectedEndPoint("127.0.0.1", 160)));
+      testing::UnorderedElementsAre(CreateExpectedEndPoint("1.2.3.4", 160)));
   EXPECT_EQ(0u,
             network_context->GetNumOutstandingResolveHostRequestsForTesting());
 }
 
 TEST_F(NetworkContextTest, ResolveHost_Async) {
   auto resolver = std::make_unique<net::MockHostResolver>();
+  resolver->rules()->AddRule("async.test", "1.2.3.4");
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
 
@@ -3353,7 +3355,7 @@ TEST_F(NetworkContextTest, ResolveHost_Async) {
   TestResolveHostClient response_client(&pending_response_client, &run_loop);
 
   network_context->ResolveHost(
-      net::HostPortPair("localhost", 160), net::NetworkIsolationKey(),
+      net::HostPortPair("async.test", 160), net::NetworkIsolationKey(),
       std::move(optional_parameters), std::move(pending_response_client));
 
   bool control_handle_closed = false;
@@ -3366,7 +3368,7 @@ TEST_F(NetworkContextTest, ResolveHost_Async) {
   EXPECT_EQ(net::OK, response_client.result_error());
   EXPECT_THAT(
       response_client.result_addresses().value().endpoints(),
-      testing::UnorderedElementsAre(CreateExpectedEndPoint("127.0.0.1", 160)));
+      testing::UnorderedElementsAre(CreateExpectedEndPoint("1.2.3.4", 160)));
   EXPECT_TRUE(control_handle_closed);
   EXPECT_EQ(0u,
             network_context->GetNumOutstandingResolveHostRequestsForTesting());
@@ -3445,6 +3447,7 @@ TEST_F(NetworkContextTest, ResolveHost_NetworkIsolationKey) {
   const net::NetworkIsolationKey kNetworkIsolationKey(kOrigin, kOrigin);
 
   net::MockHostResolver resolver;
+  resolver.rules()->AddRule("nik.test", "1.2.3.4");
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
 
@@ -3460,14 +3463,14 @@ TEST_F(NetworkContextTest, ResolveHost_NetworkIsolationKey) {
   TestResolveHostClient response_client(&pending_response_client, &run_loop);
 
   network_context->ResolveHost(
-      net::HostPortPair("localhost", 160), kNetworkIsolationKey,
+      net::HostPortPair("nik.test", 160), kNetworkIsolationKey,
       std::move(optional_parameters), std::move(pending_response_client));
   run_loop.Run();
 
   EXPECT_EQ(net::OK, response_client.result_error());
   EXPECT_THAT(
       response_client.result_addresses().value().endpoints(),
-      testing::UnorderedElementsAre(CreateExpectedEndPoint("127.0.0.1", 160)));
+      testing::UnorderedElementsAre(CreateExpectedEndPoint("1.2.3.4", 160)));
   EXPECT_EQ(0u,
             network_context->GetNumOutstandingResolveHostRequestsForTesting());
   EXPECT_EQ(kNetworkIsolationKey,
@@ -4612,8 +4615,14 @@ TEST_F(NetworkContextTest, TrustedParams) {
 // Test that the disable_secure_dns trusted param is passed through to the
 // host resolver.
 TEST_F(NetworkContextTest, TrustedParams_DisableSecureDns) {
+  net::EmbeddedTestServer test_server;
+  test_server.AddDefaultHandlers(
+      base::FilePath(FILE_PATH_LITERAL("services/test/data")));
+  ASSERT_TRUE(test_server.Start());
+
   std::unique_ptr<net::MockHostResolver> resolver =
       std::make_unique<net::MockHostResolver>();
+  resolver->rules()->AddRule("example.test", test_server.GetIPLiteralString());
   std::unique_ptr<net::TestURLRequestContext> url_request_context =
       std::make_unique<net::TestURLRequestContext>(
           true /* delay_initialization */);
@@ -4639,7 +4648,7 @@ TEST_F(NetworkContextTest, TrustedParams_DisableSecureDns) {
 
   for (bool disable_secure_dns : {false, true}) {
     ResourceRequest request;
-    request.url = GURL("http://example.test");
+    request.url = GURL("http://example.test/echo");
     request.load_flags = net::LOAD_BYPASS_CACHE;
     request.trusted_params = ResourceRequest::TrustedParams();
     request.trusted_params->disable_secure_dns = disable_secure_dns;
@@ -4664,7 +4673,13 @@ TEST_F(NetworkContextTest, TrustedParams_DisableSecureDns) {
 // Test that the disable_secure_dns factory param is passed through to the
 // host resolver.
 TEST_F(NetworkContextTest, FactoryParams_DisableSecureDns) {
+  net::EmbeddedTestServer test_server;
+  test_server.AddDefaultHandlers(
+      base::FilePath(FILE_PATH_LITERAL("services/test/data")));
+  ASSERT_TRUE(test_server.Start());
+
   net::MockHostResolver resolver;
+  resolver.rules()->AddRule("example.test", test_server.GetIPLiteralString());
   net::TestURLRequestContext url_request_context(
       true /* delay_initialization */);
   url_request_context.set_host_resolver(&resolver);
@@ -4688,7 +4703,7 @@ TEST_F(NetworkContextTest, FactoryParams_DisableSecureDns) {
         loader_factory.BindNewPipeAndPassReceiver(), std::move(params));
 
     ResourceRequest request;
-    request.url = GURL("http://example.test");
+    request.url = GURL("http://example.test/echo");
     request.load_flags = net::LOAD_BYPASS_CACHE;
     auto client = std::make_unique<TestURLLoaderClient>();
     mojo::Remote<mojom::URLLoader> loader;
@@ -5816,9 +5831,8 @@ TEST_F(NetworkContextTest, HangingHeaderClientAbortDuringOnHeadersReceived) {
 class NetworkContextMockHostTest : public NetworkContextTest {
  public:
   NetworkContextMockHostTest() {
-    scoped_refptr<net::RuleBasedHostResolverProc> rules =
-        net::CreateCatchAllHostResolverProc();
-    rules->AddRule(kMockHost, "127.0.0.1");
+    net::MockHostResolverBase::RuleResolver rules;
+    rules.AddRule(kMockHost, "127.0.0.1");
 
     network_service_->set_host_resolver_factory_for_testing(
         std::make_unique<net::MockHostResolverFactory>(std::move(rules)));

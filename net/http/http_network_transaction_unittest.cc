@@ -17152,6 +17152,8 @@ TEST_F(HttpNetworkTransactionTest, CertificateRequestInRenego) {
 TEST_F(HttpNetworkTransactionTest, UseIPConnectionPooling) {
   // Set up a special HttpNetworkSession with a MockCachingHostResolver.
   session_deps_.host_resolver = std::make_unique<MockCachingHostResolver>();
+  session_deps_.host_resolver->rules()->AddRule("www.example.org", "1.2.3.4");
+  session_deps_.host_resolver->rules()->AddRule("mail.example.com", "1.2.3.4");
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
   AddSSLSocketData();
@@ -17236,6 +17238,8 @@ TEST_F(HttpNetworkTransactionTest, UseIPConnectionPooling) {
 TEST_F(HttpNetworkTransactionTest, UseIPConnectionPoolingAfterResolution) {
   // Set up a special HttpNetworkSession with a MockCachingHostResolver.
   session_deps_.host_resolver = std::make_unique<MockCachingHostResolver>();
+  session_deps_.host_resolver->rules()->AddRule("www.example.org", "1.2.3.4");
+  session_deps_.host_resolver->rules()->AddRule("mail.example.com", "1.2.3.4");
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
   AddSSLSocketData();
@@ -17380,7 +17384,7 @@ TEST_F(HttpNetworkTransactionTest, RetryWithoutConnectionPooling) {
 
   // Preload mail.example.org into HostCache.
   int rv = session_deps_.host_resolver->LoadIntoCache(
-      HostPortPair("mail.example.com", 443), NetworkIsolationKey(),
+      HostPortPair("mail.example.org", 443), NetworkIsolationKey(),
       absl::nullopt);
   EXPECT_THAT(rv, IsOk());
 
@@ -17507,7 +17511,7 @@ TEST_F(HttpNetworkTransactionTest, ReturnHTTP421OnRetry) {
 
   // Preload mail.example.org into HostCache.
   int rv = session_deps_.host_resolver->LoadIntoCache(
-      HostPortPair("mail.example.com", 443), NetworkIsolationKey(),
+      HostPortPair("mail.example.org", 443), NetworkIsolationKey(),
       absl::nullopt);
   EXPECT_THAT(rv, IsOk());
 
@@ -17567,6 +17571,8 @@ TEST_F(HttpNetworkTransactionTest,
   // Set up HostResolver to invalidate cached entries after 1 cached resolve.
   session_deps_.host_resolver =
       std::make_unique<MockCachingHostResolver>(1 /* cache_invalidation_num */);
+  session_deps_.host_resolver->rules()->AddRule("www.example.org", "1.2.3.4");
+  session_deps_.host_resolver->rules()->AddRule("mail.example.com", "1.2.3.4");
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
   AddSSLSocketData();
@@ -20837,7 +20843,7 @@ TEST_F(HttpNetworkTransactionNetworkErrorLoggingTest,
 
   // Preload mail.example.org into HostCache.
   int rv = session_deps_.host_resolver->LoadIntoCache(
-      HostPortPair("mail.example.com", 443), NetworkIsolationKey(),
+      HostPortPair("mail.example.org", 443), NetworkIsolationKey(),
       absl::nullopt);
   EXPECT_THAT(rv, IsOk());
 
@@ -23540,10 +23546,8 @@ TEST_F(HttpNetworkTransactionTest, RequestWithDnsAliases) {
 
   // Add a rule with DNS aliases to the host resolver.
   std::vector<std::string> aliases({"alias1", "alias2", "www.example.org"});
-  auto* rules = session_deps_.host_resolver->rules();
-  rules->AddIPLiteralRuleWithDnsAliases("www.example.org", "127.0.0.1",
-                                        std::move(aliases));
-  session_deps_.host_resolver->set_rules(rules);
+  session_deps_.host_resolver->rules()->AddIPLiteralRuleWithDnsAliases(
+      "www.example.org", "127.0.0.1", std::move(aliases));
 
   // Create a HttpNetworkSession.
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
@@ -23596,13 +23600,8 @@ TEST_F(HttpNetworkTransactionTest, RequestWithNoAdditionalDnsAliases) {
   request.traffic_annotation =
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
-  // Add a rule without DNS aliases to the host resolver. The parameter is an
-  // empty vector.
-  std::vector<std::string> aliases;
-  auto* rules = session_deps_.host_resolver->rules();
-  rules->AddIPLiteralRuleWithDnsAliases("www.example.org", "127.0.0.1",
-                                        std::move(aliases));
-  session_deps_.host_resolver->set_rules(rules);
+  // Add a rule without DNS aliases to the host resolver.
+  session_deps_.host_resolver->rules()->AddRule("www.example.org", "127.0.0.1");
 
   // Create a HttpNetworkSession.
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));

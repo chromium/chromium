@@ -204,7 +204,9 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
  protected:
   QuicStreamFactoryTestBase(quic::ParsedQuicVersion version,
                             bool client_headers_include_h2_stream_dependency)
-      : host_resolver_(new MockHostResolver),
+      : host_resolver_(
+            new MockHostResolver(/*default_result=*/MockHostResolverBase::
+                                     RuleResolver::GetLocalhostResult())),
         ssl_config_service_(new SSLConfigServiceDefaults),
         socket_factory_(new MockClientSocketFactory),
         runner_(new TestTaskRunner(context_.mock_clock())),
@@ -802,6 +804,7 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
       socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
     socket_data2.AddSocketDataToFactory(socket_factory_.get());
 
+    host_resolver_->rules()->ClearRules();
     host_resolver_->rules()->AddIPLiteralRule(scheme_host_port_.host(),
                                               "192.168.0.2", "");
 
@@ -13827,22 +13830,21 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceAndHostResolutionSync) {
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
-  // Set an address in resolver for synchronous return.
+  // Set up an address in stale resolver cache.
   host_resolver_->set_synchronous_mode(true);
-  host_resolver_->rules()->AddIPLiteralRule(scheme_host_port_.host(),
-                                            kNonCachedIPAddress, "");
+  host_resolver_->rules()->AddRule(
+      scheme_host_port_.host(),
+      AddressList::CreateFromIPAddress(kCachedIPAddress, 0));
+  host_resolver_->LoadIntoCache(scheme_host_port_, NetworkIsolationKey(),
+                                /*optional_parameters=*/absl::nullopt);
 
-  // Set up a different address in stale resolver cache.
-  HostCache::Key key(scheme_host_port_.host(), DnsQueryType::UNSPECIFIED, 0,
-                     HostResolverSource::ANY, NetworkIsolationKey());
-  HostCache::Entry entry(OK,
-                         AddressList::CreateFromIPAddress(kCachedIPAddress, 0),
-                         HostCache::Entry::SOURCE_DNS);
-  base::TimeDelta zero;
-  HostCache* cache = host_resolver_->GetHostCache();
-  cache->Set(key, entry, base::TimeTicks::Now(), zero);
   // Expire the cache
-  cache->Invalidate();
+  host_resolver_->GetHostCache()->Invalidate();
+
+  // Change to different address for fresh host resolutions.
+  host_resolver_->rules()->ClearRules();
+  host_resolver_->rules()->AddRule(scheme_host_port_.host(),
+                                   kNonCachedIPAddress);
 
   MockQuicData quic_data(version_);
   quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
@@ -13925,22 +13927,16 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceHostResolveAsyncStaleMatch) {
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
-  // Set an address in resolver for asynchronous return.
+  // Set up an address in stale resolver cache.
   host_resolver_->set_ondemand_mode(true);
-  host_resolver_->rules()->AddIPLiteralRule(scheme_host_port_.host(),
-                                            kCachedIPAddress.ToString(), "");
+  host_resolver_->rules()->AddRule(
+      scheme_host_port_.host(),
+      AddressList::CreateFromIPAddress(kCachedIPAddress, 0));
+  host_resolver_->LoadIntoCache(scheme_host_port_, NetworkIsolationKey(),
+                                /*optional_parameters=*/absl::nullopt);
 
-  // Set up the same address in the stale resolver cache.
-  HostCache::Key key(scheme_host_port_.host(), DnsQueryType::UNSPECIFIED, 0,
-                     HostResolverSource::ANY, NetworkIsolationKey());
-  HostCache::Entry entry(OK,
-                         AddressList::CreateFromIPAddress(kCachedIPAddress, 0),
-                         HostCache::Entry::SOURCE_DNS);
-  base::TimeDelta zero;
-  HostCache* cache = host_resolver_->GetHostCache();
-  cache->Set(key, entry, base::TimeTicks::Now(), zero);
   // Expire the cache
-  cache->Invalidate();
+  host_resolver_->GetHostCache()->Invalidate();
 
   MockQuicData quic_data(version_);
   quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
@@ -13986,25 +13982,20 @@ TEST_P(QuicStreamFactoryTest,
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
-  // Set an address in resolver for asynchronous return.
+  // Set up an address in stale resolver cache.
   host_resolver_->set_ondemand_mode(true);
+  host_resolver_->rules()->AddRule(
+      scheme_host_port_.host(),
+      AddressList::CreateFromIPAddress(kCachedIPAddress, 0));
+  host_resolver_->LoadIntoCache(scheme_host_port_, NetworkIsolationKey(),
+                                /*optional_parameters=*/absl::nullopt);
+
+  // Expire the cache
+  host_resolver_->GetHostCache()->Invalidate();
+
   factory_->set_is_quic_known_to_work_on_current_network(false);
   crypto_client_stream_factory_.set_handshake_mode(
       MockCryptoClientStream::ZERO_RTT);
-  host_resolver_->rules()->AddIPLiteralRule(scheme_host_port_.host(),
-                                            kCachedIPAddress.ToString(), "");
-
-  // Set up the same address in the stale resolver cache.
-  HostCache::Key key(scheme_host_port_.host(), DnsQueryType::UNSPECIFIED, 0,
-                     HostResolverSource::ANY, NetworkIsolationKey());
-  HostCache::Entry entry(OK,
-                         AddressList::CreateFromIPAddress(kCachedIPAddress, 0),
-                         HostCache::Entry::SOURCE_DNS);
-  base::TimeDelta zero;
-  HostCache* cache = host_resolver_->GetHostCache();
-  cache->Set(key, entry, base::TimeTicks::Now(), zero);
-  // Expire the cache
-  cache->Invalidate();
 
   MockQuicData quic_data(version_);
   quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
@@ -14057,25 +14048,20 @@ TEST_P(QuicStreamFactoryTest,
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
-  // Set an address in resolver for asynchronous return.
+  // Set up an address in stale resolver cache.
   host_resolver_->set_ondemand_mode(true);
+  host_resolver_->rules()->AddRule(
+      scheme_host_port_.host(),
+      AddressList::CreateFromIPAddress(kCachedIPAddress, 0));
+  host_resolver_->LoadIntoCache(scheme_host_port_, NetworkIsolationKey(),
+                                /*optional_parameters=*/absl::nullopt);
+
+  // Expire the cache
+  host_resolver_->GetHostCache()->Invalidate();
+
   factory_->set_is_quic_known_to_work_on_current_network(false);
   crypto_client_stream_factory_.set_handshake_mode(
       MockCryptoClientStream::ZERO_RTT);
-  host_resolver_->rules()->AddIPLiteralRule(scheme_host_port_.host(),
-                                            kCachedIPAddress.ToString(), "");
-
-  // Set up the same address in the stale resolver cache.
-  HostCache::Key key(scheme_host_port_.host(), DnsQueryType::UNSPECIFIED, 0,
-                     HostResolverSource::ANY, NetworkIsolationKey());
-  HostCache::Entry entry(OK,
-                         AddressList::CreateFromIPAddress(kCachedIPAddress, 0),
-                         HostCache::Entry::SOURCE_DNS);
-  base::TimeDelta zero;
-  HostCache* cache = host_resolver_->GetHostCache();
-  cache->Set(key, entry, base::TimeTicks::Now(), zero);
-  // Expire the cache
-  cache->Invalidate();
 
   MockQuicData quic_data(version_);
   quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
@@ -14124,22 +14110,21 @@ TEST_P(QuicStreamFactoryTest,
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
-  // Set an address in resolver for asynchronous return.
+  // Set up an address in stale resolver cache.
   host_resolver_->set_ondemand_mode(true);
-  host_resolver_->rules()->AddIPLiteralRule(scheme_host_port_.host(),
-                                            kNonCachedIPAddress, "");
+  host_resolver_->rules()->AddRule(
+      scheme_host_port_.host(),
+      AddressList::CreateFromIPAddress(kCachedIPAddress, 0));
+  host_resolver_->LoadIntoCache(scheme_host_port_, NetworkIsolationKey(),
+                                /*optional_parameters=*/absl::nullopt);
 
-  // Set up a different address in the stale resolver cache.
-  HostCache::Key key(scheme_host_port_.host(), DnsQueryType::UNSPECIFIED, 0,
-                     HostResolverSource::ANY, NetworkIsolationKey());
-  HostCache::Entry entry(OK,
-                         AddressList::CreateFromIPAddress(kCachedIPAddress, 0),
-                         HostCache::Entry::SOURCE_DNS);
-  base::TimeDelta zero;
-  HostCache* cache = host_resolver_->GetHostCache();
-  cache->Set(key, entry, base::TimeTicks::Now(), zero);
   // Expire the cache
-  cache->Invalidate();
+  host_resolver_->GetHostCache()->Invalidate();
+
+  // Change to different address for fresh host resolutions.
+  host_resolver_->rules()->ClearRules();
+  host_resolver_->rules()->AddRule(scheme_host_port_.host(),
+                                   kNonCachedIPAddress);
 
   // Socket for the stale connection which will invoke connection closure.
   MockQuicData quic_data(version_);
@@ -14202,25 +14187,25 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceStaleAsyncResolveAsyncNoMatch) {
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
-  // Set an address in resolver for asynchronous return.
+  // Set up an address in stale resolver cache.
   host_resolver_->set_ondemand_mode(true);
+  host_resolver_->rules()->AddRule(
+      scheme_host_port_.host(),
+      AddressList::CreateFromIPAddress(kCachedIPAddress, 0));
+  host_resolver_->LoadIntoCache(scheme_host_port_, NetworkIsolationKey(),
+                                /*optional_parameters=*/absl::nullopt);
+
+  // Expire the cache
+  host_resolver_->GetHostCache()->Invalidate();
+
+  // Change to different address for fresh host resolutions.
+  host_resolver_->rules()->ClearRules();
+  host_resolver_->rules()->AddRule(scheme_host_port_.host(),
+                                   kNonCachedIPAddress);
+
   factory_->set_is_quic_known_to_work_on_current_network(false);
   crypto_client_stream_factory_.set_handshake_mode(
       MockCryptoClientStream::ZERO_RTT);
-  host_resolver_->rules()->AddIPLiteralRule(scheme_host_port_.host(),
-                                            kNonCachedIPAddress, "");
-
-  // Set up a different address in the stale resolver cache.
-  HostCache::Key key(scheme_host_port_.host(), DnsQueryType::UNSPECIFIED, 0,
-                     HostResolverSource::ANY, NetworkIsolationKey());
-  HostCache::Entry entry(OK,
-                         AddressList::CreateFromIPAddress(kCachedIPAddress, 0),
-                         HostCache::Entry::SOURCE_DNS);
-  base::TimeDelta zero;
-  HostCache* cache = host_resolver_->GetHostCache();
-  cache->Set(key, entry, base::TimeTicks::Now(), zero);
-  // Expire the cache
-  cache->Invalidate();
 
   MockQuicData quic_data(version_);
   quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
@@ -14287,25 +14272,25 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceResolveAsyncStaleAsyncNoMatch) {
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
-  // Set an address in resolver for asynchronous return.
+  // Set up an address in stale resolver cache.
   host_resolver_->set_ondemand_mode(true);
+  host_resolver_->rules()->AddRule(
+      scheme_host_port_.host(),
+      AddressList::CreateFromIPAddress(kCachedIPAddress, 0));
+  host_resolver_->LoadIntoCache(scheme_host_port_, NetworkIsolationKey(),
+                                /*optional_parameters=*/absl::nullopt);
+
+  // Expire the cache
+  host_resolver_->GetHostCache()->Invalidate();
+
+  // Change to different address for fresh host resolutions.
+  host_resolver_->rules()->ClearRules();
+  host_resolver_->rules()->AddRule(scheme_host_port_.host(),
+                                   kNonCachedIPAddress);
+
   factory_->set_is_quic_known_to_work_on_current_network(false);
   crypto_client_stream_factory_.set_handshake_mode(
       MockCryptoClientStream::ZERO_RTT);
-  host_resolver_->rules()->AddIPLiteralRule(scheme_host_port_.host(),
-                                            kNonCachedIPAddress, "");
-
-  // Set up a different address in the stale resolver cache.
-  HostCache::Key key(scheme_host_port_.host(), DnsQueryType::UNSPECIFIED, 0,
-                     HostResolverSource::ANY, NetworkIsolationKey());
-  HostCache::Entry entry(OK,
-                         AddressList::CreateFromIPAddress(kCachedIPAddress, 0),
-                         HostCache::Entry::SOURCE_DNS);
-  base::TimeDelta zero;
-  HostCache* cache = host_resolver_->GetHostCache();
-  cache->Set(key, entry, base::TimeTicks::Now(), zero);
-  // Expire the cache
-  cache->Invalidate();
 
   MockQuicData quic_data(version_);
   quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
@@ -14419,21 +14404,21 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceStaleSyncHostResolveError) {
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
-  // Set asynchronous failure in resolver.
+  // Set up an address in stale resolver cache.
   host_resolver_->set_ondemand_mode(true);
-  host_resolver_->rules()->AddSimulatedFailure(scheme_host_port_.host());
+  host_resolver_->rules()->AddRule(
+      scheme_host_port_.host(),
+      AddressList::CreateFromIPAddress(kCachedIPAddress, 0));
+  host_resolver_->LoadIntoCache(scheme_host_port_, NetworkIsolationKey(),
+                                /*optional_parameters=*/absl::nullopt);
 
-  // Set up an address in the stale cache.
-  HostCache::Key key(scheme_host_port_.host(), DnsQueryType::UNSPECIFIED, 0,
-                     HostResolverSource::ANY, NetworkIsolationKey());
-  HostCache::Entry entry(OK,
-                         AddressList::CreateFromIPAddress(kCachedIPAddress, 0),
-                         HostCache::Entry::SOURCE_DNS);
-  base::TimeDelta zero;
-  HostCache* cache = host_resolver_->GetHostCache();
-  cache->Set(key, entry, base::TimeTicks::Now(), zero);
   // Expire the cache
-  cache->Invalidate();
+  host_resolver_->GetHostCache()->Invalidate();
+
+  // Change to failure for fresh host resolutions.
+  host_resolver_->rules()->ClearRules();
+  host_resolver_->rules()->AddRule(scheme_host_port_.host(),
+                                   ERR_NAME_NOT_RESOLVED);
 
   // Socket for the stale connection which is supposed to disconnect.
   MockQuicData quic_data(version_);
@@ -14480,22 +14465,16 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceStaleErrorDNSMatches) {
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
-  // Set an address in host resolver for asynchronous return.
+  // Set up an address in stale resolver cache.
   host_resolver_->set_ondemand_mode(true);
-  host_resolver_->rules()->AddIPLiteralRule(scheme_host_port_.host(),
-                                            kCachedIPAddress.ToString(), "");
+  host_resolver_->rules()->AddRule(
+      scheme_host_port_.host(),
+      AddressList::CreateFromIPAddress(kCachedIPAddress, 0));
+  host_resolver_->LoadIntoCache(scheme_host_port_, NetworkIsolationKey(),
+                                /*optional_parameters=*/absl::nullopt);
 
-  // Set up the same address in the stale resolver cache.
-  HostCache::Key key(scheme_host_port_.host(), DnsQueryType::UNSPECIFIED, 0,
-                     HostResolverSource::ANY, NetworkIsolationKey());
-  HostCache::Entry entry(OK,
-                         AddressList::CreateFromIPAddress(kCachedIPAddress, 0),
-                         HostCache::Entry::SOURCE_DNS);
-  base::TimeDelta zero;
-  HostCache* cache = host_resolver_->GetHostCache();
-  cache->Set(key, entry, base::TimeTicks::Now(), zero);
   // Expire the cache
-  cache->Invalidate();
+  host_resolver_->GetHostCache()->Invalidate();
 
   // Simulate synchronous connect failure.
   MockQuicData quic_data(version_);
@@ -14530,22 +14509,21 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceStaleErrorDNSNoMatch) {
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
-  // Set an address in host resolver.
+  // Set up an address in stale resolver cache.
   host_resolver_->set_ondemand_mode(true);
-  host_resolver_->rules()->AddIPLiteralRule(scheme_host_port_.host(),
-                                            kNonCachedIPAddress, "");
+  host_resolver_->rules()->AddRule(
+      scheme_host_port_.host(),
+      AddressList::CreateFromIPAddress(kCachedIPAddress, 0));
+  host_resolver_->LoadIntoCache(scheme_host_port_, NetworkIsolationKey(),
+                                /*optional_parameters=*/absl::nullopt);
 
-  // Set up a different address in stale resolver cache.
-  HostCache::Key key(scheme_host_port_.host(), DnsQueryType::UNSPECIFIED, 0,
-                     HostResolverSource::ANY, NetworkIsolationKey());
-  HostCache::Entry entry(OK,
-                         AddressList::CreateFromIPAddress(kCachedIPAddress, 0),
-                         HostCache::Entry::SOURCE_DNS);
-  base::TimeDelta zero;
-  HostCache* cache = host_resolver_->GetHostCache();
-  cache->Set(key, entry, base::TimeTicks::Now(), zero);
   // Expire the cache
-  cache->Invalidate();
+  host_resolver_->GetHostCache()->Invalidate();
+
+  // Change to different address for fresh host resolutions.
+  host_resolver_->rules()->ClearRules();
+  host_resolver_->rules()->AddRule(scheme_host_port_.host(),
+                                   kNonCachedIPAddress);
 
   // Add failure for the stale connection.
   MockQuicData quic_data(version_);
@@ -14596,22 +14574,21 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceStaleErrorDNSNoMatchError) {
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
-  // Set an address in host resolver asynchronously.
+  // Set up an address in stale resolver cache.
   host_resolver_->set_ondemand_mode(true);
-  host_resolver_->rules()->AddIPLiteralRule(scheme_host_port_.host(),
-                                            kNonCachedIPAddress, "");
+  host_resolver_->rules()->AddRule(
+      scheme_host_port_.host(),
+      AddressList::CreateFromIPAddress(kCachedIPAddress, 0));
+  host_resolver_->LoadIntoCache(scheme_host_port_, NetworkIsolationKey(),
+                                /*optional_parameters=*/absl::nullopt);
 
-  // Set up a different address in the stale cache.
-  HostCache::Key key(scheme_host_port_.host(), DnsQueryType::UNSPECIFIED, 0,
-                     HostResolverSource::ANY, NetworkIsolationKey());
-  HostCache::Entry entry(OK,
-                         AddressList::CreateFromIPAddress(kCachedIPAddress, 0),
-                         HostCache::Entry::SOURCE_DNS);
-  base::TimeDelta zero;
-  HostCache* cache = host_resolver_->GetHostCache();
-  cache->Set(key, entry, base::TimeTicks::Now(), zero);
   // Expire the cache
-  cache->Invalidate();
+  host_resolver_->GetHostCache()->Invalidate();
+
+  // Change to different address for fresh host resolutions.
+  host_resolver_->rules()->ClearRules();
+  host_resolver_->rules()->AddRule(scheme_host_port_.host(),
+                                   kNonCachedIPAddress);
 
   // Add failure for stale connection.
   MockQuicData quic_data(version_);
@@ -14650,22 +14627,23 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceResolveAsyncErrorStaleAsync) {
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
-  // Add asynchronous failure in host resolver.
-  host_resolver_->set_ondemand_mode(true);
-  host_resolver_->rules()->AddSimulatedFailure(scheme_host_port_.host());
-  factory_->set_is_quic_known_to_work_on_current_network(false);
-
   // Set up an address in stale resolver cache.
-  HostCache::Key key(scheme_host_port_.host(), DnsQueryType::UNSPECIFIED, 0,
-                     HostResolverSource::ANY, NetworkIsolationKey());
-  HostCache::Entry entry(OK,
-                         AddressList::CreateFromIPAddress(kCachedIPAddress, 0),
-                         HostCache::Entry::SOURCE_DNS);
-  base::TimeDelta zero;
-  HostCache* cache = host_resolver_->GetHostCache();
-  cache->Set(key, entry, base::TimeTicks::Now(), zero);
+  host_resolver_->set_ondemand_mode(true);
+  host_resolver_->rules()->AddRule(
+      scheme_host_port_.host(),
+      AddressList::CreateFromIPAddress(kCachedIPAddress, 0));
+  host_resolver_->LoadIntoCache(scheme_host_port_, NetworkIsolationKey(),
+                                /*optional_parameters=*/absl::nullopt);
+
   // Expire the cache
-  cache->Invalidate();
+  host_resolver_->GetHostCache()->Invalidate();
+
+  // Change to error for fresh host resolutions.
+  host_resolver_->rules()->ClearRules();
+  host_resolver_->rules()->AddRule(scheme_host_port_.host(),
+                                   ERR_NAME_NOT_RESOLVED);
+
+  factory_->set_is_quic_known_to_work_on_current_network(false);
 
   // Socket data for stale connection which is supposed to disconnect.
   MockQuicData quic_data(version_);
@@ -14708,22 +14686,23 @@ TEST_P(QuicStreamFactoryTest,
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
-  // Add asynchronous failure to host resolver.
-  host_resolver_->set_ondemand_mode(true);
-  factory_->set_is_quic_known_to_work_on_current_network(false);
-  host_resolver_->rules()->AddSimulatedFailure(scheme_host_port_.host());
-
   // Set up an address in stale resolver cache.
-  HostCache::Key key(scheme_host_port_.host(), DnsQueryType::UNSPECIFIED, 0,
-                     HostResolverSource::ANY, NetworkIsolationKey());
-  HostCache::Entry entry(OK,
-                         AddressList::CreateFromIPAddress(kCachedIPAddress, 0),
-                         HostCache::Entry::SOURCE_DNS);
-  base::TimeDelta zero;
-  HostCache* cache = host_resolver_->GetHostCache();
-  cache->Set(key, entry, base::TimeTicks::Now(), zero);
+  host_resolver_->set_ondemand_mode(true);
+  host_resolver_->rules()->AddRule(
+      scheme_host_port_.host(),
+      AddressList::CreateFromIPAddress(kCachedIPAddress, 0));
+  host_resolver_->LoadIntoCache(scheme_host_port_, NetworkIsolationKey(),
+                                /*optional_parameters=*/absl::nullopt);
+
   // Expire the cache
-  cache->Invalidate();
+  host_resolver_->GetHostCache()->Invalidate();
+
+  // Change to different address for fresh host resolutions.
+  host_resolver_->rules()->ClearRules();
+  host_resolver_->rules()->AddRule(scheme_host_port_.host(),
+                                   ERR_NAME_NOT_RESOLVED);
+
+  factory_->set_is_quic_known_to_work_on_current_network(false);
 
   MockQuicData quic_data(version_);
   quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
@@ -14813,22 +14792,21 @@ TEST_P(QuicStreamFactoryTest, StaleNetworkFailedAfterHandshake) {
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
-  // Set an address in resolver for asynchronous return.
+  // Set up an address in stale resolver cache.
   host_resolver_->set_ondemand_mode(true);
-  host_resolver_->rules()->AddIPLiteralRule(scheme_host_port_.host(),
-                                            kNonCachedIPAddress, "");
+  host_resolver_->rules()->AddRule(
+      scheme_host_port_.host(),
+      AddressList::CreateFromIPAddress(kCachedIPAddress, 0));
+  host_resolver_->LoadIntoCache(scheme_host_port_, NetworkIsolationKey(),
+                                /*optional_parameters=*/absl::nullopt);
 
-  // Set up the same address in the stale resolver cache.
-  HostCache::Key key(scheme_host_port_.host(), DnsQueryType::UNSPECIFIED, 0,
-                     HostResolverSource::ANY, NetworkIsolationKey());
-  HostCache::Entry entry(OK,
-                         AddressList::CreateFromIPAddress(kCachedIPAddress, 0),
-                         HostCache::Entry::SOURCE_DNS);
-  base::TimeDelta zero;
-  HostCache* cache = host_resolver_->GetHostCache();
-  cache->Set(key, entry, base::TimeTicks::Now(), zero);
   // Expire the cache
-  cache->Invalidate();
+  host_resolver_->GetHostCache()->Invalidate();
+
+  // Change to different address for fresh host resolutions.
+  host_resolver_->rules()->ClearRules();
+  host_resolver_->rules()->AddRule(scheme_host_port_.host(),
+                                   kNonCachedIPAddress);
 
   MockQuicData quic_data(version_);
   quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
@@ -14887,25 +14865,25 @@ TEST_P(QuicStreamFactoryTest, StaleNetworkFailedBeforeHandshake) {
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
-  // Set an address in resolver for asynchronous return.
+  // Set up an address in stale resolver cache.
   host_resolver_->set_ondemand_mode(true);
+  host_resolver_->rules()->AddRule(
+      scheme_host_port_.host(),
+      AddressList::CreateFromIPAddress(kCachedIPAddress, 0));
+  host_resolver_->LoadIntoCache(scheme_host_port_, NetworkIsolationKey(),
+                                /*optional_parameters=*/absl::nullopt);
+
+  // Expire the cache
+  host_resolver_->GetHostCache()->Invalidate();
+
+  // Change to different address for fresh host resolutions.
+  host_resolver_->rules()->ClearRules();
+  host_resolver_->rules()->AddRule(scheme_host_port_.host(),
+                                   kNonCachedIPAddress);
+
   factory_->set_is_quic_known_to_work_on_current_network(false);
   crypto_client_stream_factory_.set_handshake_mode(
       MockCryptoClientStream::ZERO_RTT);
-  host_resolver_->rules()->AddIPLiteralRule(scheme_host_port_.host(),
-                                            kNonCachedIPAddress, "");
-
-  // Set up a different address in the stale resolvercache.
-  HostCache::Key key(scheme_host_port_.host(), DnsQueryType::UNSPECIFIED, 0,
-                     HostResolverSource::ANY, NetworkIsolationKey());
-  HostCache::Entry entry(OK,
-                         AddressList::CreateFromIPAddress(kCachedIPAddress, 0),
-                         HostCache::Entry::SOURCE_DNS);
-  base::TimeDelta zero;
-  HostCache* cache = host_resolver_->GetHostCache();
-  cache->Set(key, entry, base::TimeTicks::Now(), zero);
-  // Expire the cache
-  cache->Invalidate();
 
   MockQuicData quic_data(version_);
   quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);

@@ -61,7 +61,9 @@ class HttpProxyConnectJobTest : public ::testing::TestWithParam<HttpProxyType>,
       : WithTaskEnvironment(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     // Used a mock HostResolver that does not have a cache.
-    session_deps_.host_resolver = std::make_unique<MockHostResolver>();
+    session_deps_.host_resolver = std::make_unique<MockHostResolver>(
+        /*default_result=*/MockHostResolverBase::RuleResolver::
+            GetLocalhostResult());
 
     network_quality_estimator_ =
         std::make_unique<TestNetworkQualityEstimator>();
