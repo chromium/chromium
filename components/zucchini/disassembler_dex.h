@@ -24,6 +24,7 @@ namespace zucchini {
 
 class DisassemblerDex : public Disassembler {
  public:
+  static constexpr uint16_t kVersion = 1;
   // Pools follow canonical order.
   enum ReferencePool : uint8_t {
     kStringId,

@@ -51,6 +51,11 @@ zucchini::status::Code MainApply(MainParams params) {
                          params.command_line.HasSwitch(kSwitchKeep));
 }
 
+zucchini::status::Code MainVerify(MainParams params) {
+  CHECK_EQ(1U, params.file_paths.size());
+  return zucchini::VerifyPatch(params.file_paths[0]);
+}
+
 zucchini::status::Code MainRead(MainParams params) {
   CHECK_EQ(1U, params.file_paths.size());
   base::File input_file(params.file_paths[0],

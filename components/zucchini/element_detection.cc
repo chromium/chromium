@@ -9,6 +9,7 @@
 #include "components/zucchini/buildflags.h"
 #include "components/zucchini/disassembler.h"
 #include "components/zucchini/disassembler_no_op.h"
+#include "components/zucchini/patch_utils.h"
 
 #if BUILDFLAG(ENABLE_DEX)
 #include "components/zucchini/disassembler_dex.h"
@@ -131,6 +132,40 @@ std::unique_ptr<Disassembler> MakeDisassemblerOfType(ConstBufferView image,
     default:
       // If an architecture is disabled then null is handled gracefully.
       return nullptr;
+  }
+}
+
+uint16_t DisassemblerVersionOfType(ExecutableType exe_type) {
+  switch (exe_type) {
+#if BUILDFLAG(ENABLE_WIN)
+    case kExeTypeWin32X86:
+      return DisassemblerWin32X86::kVersion;
+    case kExeTypeWin32X64:
+      return DisassemblerWin32X64::kVersion;
+#endif  // BUILDFLAG(ENABLE_WIN)
+#if BUILDFLAG(ENABLE_ELF)
+    case kExeTypeElfX86:
+      return DisassemblerElfX86::kVersion;
+    case kExeTypeElfX64:
+      return DisassemblerElfX64::kVersion;
+    case kExeTypeElfAArch32:
+      return DisassemblerElfAArch32::kVersion;
+    case kExeTypeElfAArch64:
+      return DisassemblerElfAArch64::kVersion;
+#endif  // BUILDFLAG(ENABLE_ELF)
+#if BUILDFLAG(ENABLE_DEX)
+    case kExeTypeDex:
+      return DisassemblerDex::kVersion;
+#endif  // BUILDFLAG(ENABLE_DEX)
+#if BUILDFLAG(ENABLE_ZTF)
+    case kExeTypeZtf:
+      return DisassemblerZtf::kVersion;
+#endif  // BUILDFLAG(ENABLE_ZTF)
+    case kExeTypeNoOp:
+      return DisassemblerNoOp::kVersion;
+    default:
+      // If an architecture is disabled then null is handled gracefully.
+      return kInvalidVersion;
   }
 }
 

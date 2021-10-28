@@ -28,6 +28,9 @@ std::unique_ptr<Disassembler> MakeDisassemblerWithoutFallback(
 std::unique_ptr<Disassembler> MakeDisassemblerOfType(ConstBufferView image,
                                                      ExecutableType exe_type);
 
+// Returns the version associated with disassembler of type |exe_type|.
+uint16_t DisassemblerVersionOfType(ExecutableType exe_type);
+
 // Attempts to detect an element associated with |image| and returns it, or
 // returns nullopt if no element is detected.
 using ElementDetector =
