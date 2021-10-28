@@ -86753,7 +86753,7 @@ Full version information for the fingerprint enum values:
 
 <enum name="VariationsSeedStoreResult">
   <int value="0" label="Success"/>
-  <int value="1" label="Failed - Empty Seed"/>
+  <int value="1" label="Failed - Empty Seed (obsolete)"/>
   <int value="2" label="Failed - Parse Error"/>
   <int value="3" label="Failed - Signature Mismatch"/>
   <int value="4" label="Failed - Gzip Compress Error"/>
