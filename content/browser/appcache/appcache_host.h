@@ -93,6 +93,10 @@ class CONTENT_EXPORT AppCacheHost : public blink::mojom::AppCacheHost,
       SecurityPolicyHandle security_policy_handle,
       mojo::PendingRemote<blink::mojom::AppCacheFrontend> frontend_remote,
       AppCacheServiceImpl* service);
+
+  AppCacheHost(const AppCacheHost&) = delete;
+  AppCacheHost& operator=(const AppCacheHost&) = delete;
+
   ~AppCacheHost() override;
 
   void BindReceiver(mojo::PendingReceiver<blink::mojom::AppCacheHost> receiver);
@@ -436,8 +440,6 @@ class CONTENT_EXPORT AppCacheHost : public blink::mojom::AppCacheHost,
   mojo::Receiver<blink::mojom::AppCacheHost> receiver_{this};
 
   base::WeakPtrFactory<AppCacheHost> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AppCacheHost);
 };
 
 }  // namespace content

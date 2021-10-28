@@ -46,6 +46,11 @@ class ServiceWorkerDevToolsAgentHost : public DevToolsAgentHostImpl,
           coep_reporter,
       const base::UnguessableToken& devtools_worker_token);
 
+  ServiceWorkerDevToolsAgentHost(const ServiceWorkerDevToolsAgentHost&) =
+      delete;
+  ServiceWorkerDevToolsAgentHost& operator=(
+      const ServiceWorkerDevToolsAgentHost&) = delete;
+
   // DevToolsAgentHost overrides.
   BrowserContext* GetBrowserContext() override;
   std::string GetType() override;
@@ -147,8 +152,6 @@ class ServiceWorkerDevToolsAgentHost : public DevToolsAgentHostImpl,
       coep_reporter_;
   base::ScopedObservation<RenderProcessHost, RenderProcessHostObserver>
       process_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerDevToolsAgentHost);
 };
 
 }  // namespace content

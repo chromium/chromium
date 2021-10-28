@@ -81,6 +81,9 @@ class ManifestBrowserTest : public ContentBrowserTest,
         GetTestDataFilePath());
   }
 
+  ManifestBrowserTest(const ManifestBrowserTest&) = delete;
+  ManifestBrowserTest& operator=(const ManifestBrowserTest&) = delete;
+
   ~ManifestBrowserTest() override {}
 
   void SetUpOnMainThread() override {
@@ -181,8 +184,6 @@ class ManifestBrowserTest : public ContentBrowserTest,
   std::vector<std::string> console_errors_;
   std::vector<GURL> reported_manifest_urls_;
   std::vector<size_t> manifests_reported_when_favicon_url_updated_;
-
-  DISALLOW_COPY_AND_ASSIGN(ManifestBrowserTest);
 };
 
 // The implementation of DidAddMessageToConsole isn't inlined because it needs

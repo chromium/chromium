@@ -26,6 +26,9 @@ class MediaInternalsProxy
  public:
   MediaInternalsProxy();
 
+  MediaInternalsProxy(const MediaInternalsProxy&) = delete;
+  MediaInternalsProxy& operator=(const MediaInternalsProxy&) = delete;
+
   // Register a Handler and start receiving callbacks from MediaInternals.
   void Attach(MediaInternalsMessageHandler* handler);
 
@@ -47,8 +50,6 @@ class MediaInternalsProxy
                                  const std::u16string& update);
 
   MediaInternals::UpdateCallback update_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaInternalsProxy);
 };
 
 }  // namespace content

@@ -49,9 +49,16 @@ class PpapiThread : public ChildThreadImpl,
                     public ppapi::proxy::PluginDispatcher::PluginDelegate,
                     public ppapi::proxy::PluginProxyDelegate {
  public:
+  PpapiThread() = delete;
+
   PpapiThread(base::RepeatingClosure quit_closure,
               const base::CommandLine& command_line);
+
+  PpapiThread(const PpapiThread&) = delete;
+  PpapiThread& operator=(const PpapiThread&) = delete;
+
   ~PpapiThread() override;
+
   void Shutdown() override;
 
  private:
@@ -138,8 +145,6 @@ class PpapiThread : public ChildThreadImpl,
 
   scoped_refptr<discardable_memory::ClientDiscardableSharedMemoryManager>
       discardable_shared_memory_manager_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(PpapiThread);
 };
 
 }  // namespace content

@@ -194,6 +194,11 @@ class MultiThreadFileSystemOperationRunnerTest : public testing::Test {
   MultiThreadFileSystemOperationRunnerTest()
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
 
+  MultiThreadFileSystemOperationRunnerTest(
+      const MultiThreadFileSystemOperationRunnerTest&) = delete;
+  MultiThreadFileSystemOperationRunnerTest& operator=(
+      const MultiThreadFileSystemOperationRunnerTest&) = delete;
+
   void SetUp() override {
     ASSERT_TRUE(base_.CreateUniqueTempDir());
 
@@ -232,8 +237,6 @@ class MultiThreadFileSystemOperationRunnerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   absl::optional<base::ScopedDisallowBlocking> disallow_blocking_;
   scoped_refptr<FileSystemContext> file_system_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiThreadFileSystemOperationRunnerTest);
 };
 
 TEST_F(MultiThreadFileSystemOperationRunnerTest, OpenAndShutdown) {

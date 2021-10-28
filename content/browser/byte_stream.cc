@@ -32,14 +32,15 @@ class ByteStreamReaderImpl;
 struct LifetimeFlag : public base::RefCountedThreadSafe<LifetimeFlag> {
  public:
   LifetimeFlag() : is_alive(true) { }
+
+  LifetimeFlag(const LifetimeFlag&) = delete;
+  LifetimeFlag& operator=(const LifetimeFlag&) = delete;
+
   bool is_alive;
 
  protected:
   friend class base::RefCountedThreadSafe<LifetimeFlag>;
-  virtual ~LifetimeFlag() { }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LifetimeFlag);
+  virtual ~LifetimeFlag() {}
 };
 
 // For both ByteStreamWriterImpl and ByteStreamReaderImpl, Construction and

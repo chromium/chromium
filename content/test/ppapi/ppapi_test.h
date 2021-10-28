@@ -27,6 +27,9 @@ class PPAPITestMessageHandler : public content::TestMessageHandler {
  public:
   PPAPITestMessageHandler();
 
+  PPAPITestMessageHandler(const PPAPITestMessageHandler&) = delete;
+  PPAPITestMessageHandler& operator=(const PPAPITestMessageHandler&) = delete;
+
   MessageResponse HandleMessage(const std::string& json) override;
   void Reset() override;
 
@@ -36,8 +39,6 @@ class PPAPITestMessageHandler : public content::TestMessageHandler {
 
  private:
   std::string message_;
-
-  DISALLOW_COPY_AND_ASSIGN(PPAPITestMessageHandler);
 };
 
 class PPAPITestBase : public ContentBrowserTest {

@@ -95,6 +95,10 @@ class CONTENT_EXPORT AppCacheServiceImpl : public AppCacheService {
   AppCacheServiceImpl(
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
       base::WeakPtr<StoragePartitionImpl> partition);
+
+  AppCacheServiceImpl(const AppCacheServiceImpl&) = delete;
+  AppCacheServiceImpl& operator=(const AppCacheServiceImpl&) = delete;
+
   ~AppCacheServiceImpl() override;
 
   void Initialize(const base::FilePath& cache_directory);
@@ -218,8 +222,6 @@ class CONTENT_EXPORT AppCacheServiceImpl : public AppCacheService {
   const scoped_refptr<QuotaClientHolder> quota_client_holder_;
 
   base::WeakPtrFactory<AppCacheServiceImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AppCacheServiceImpl);
 };
 
 }  // namespace content

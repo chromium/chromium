@@ -24,6 +24,9 @@ class SharedWorkerFactoryImpl : public blink::mojom::SharedWorkerFactory {
   static void Create(
       mojo::PendingReceiver<blink::mojom::SharedWorkerFactory> receiver);
 
+  SharedWorkerFactoryImpl(const SharedWorkerFactoryImpl&) = delete;
+  SharedWorkerFactoryImpl& operator=(const SharedWorkerFactoryImpl&) = delete;
+
  private:
   SharedWorkerFactoryImpl();
 
@@ -53,8 +56,6 @@ class SharedWorkerFactoryImpl : public blink::mojom::SharedWorkerFactory {
       mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
           browser_interface_broker,
       ukm::SourceId ukm_source_id) override;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedWorkerFactoryImpl);
 };
 
 }  // namespace content

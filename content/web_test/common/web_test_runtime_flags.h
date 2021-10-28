@@ -21,6 +21,9 @@ class WebTestRuntimeFlags {
   // Creates default flags (see also the Reset method).
   WebTestRuntimeFlags();
 
+  WebTestRuntimeFlags(const WebTestRuntimeFlags&) = delete;
+  WebTestRuntimeFlags& operator=(const WebTestRuntimeFlags&) = delete;
+
   // Resets all the values to their defaults.
   void Reset();
 
@@ -166,8 +169,6 @@ class WebTestRuntimeFlags {
 
  private:
   TrackedDictionary dict_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebTestRuntimeFlags);
 };
 
 }  // namespace content

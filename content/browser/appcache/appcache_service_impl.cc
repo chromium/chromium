@@ -95,6 +95,9 @@ class AppCacheServiceImpl::DeleteHelper : public AsyncHelper {
       : AsyncHelper(service, std::move(callback)),
         manifest_url_(manifest_url) {}
 
+  DeleteHelper(const DeleteHelper&) = delete;
+  DeleteHelper& operator=(const DeleteHelper&) = delete;
+
   void Start() override {
     service_->storage()->LoadOrCreateGroup(manifest_url_, this);
   }
@@ -107,7 +110,6 @@ class AppCacheServiceImpl::DeleteHelper : public AsyncHelper {
                            int response_code) override;
 
   GURL manifest_url_;
-  DISALLOW_COPY_AND_ASSIGN(DeleteHelper);
 };
 
 void AppCacheServiceImpl::DeleteHelper::OnGroupLoaded(
@@ -143,6 +145,9 @@ class AppCacheServiceImpl::DeleteOriginHelper : public AsyncHelper {
         successes_(0),
         failures_(0) {}
 
+  DeleteOriginHelper(const DeleteOriginHelper&) = delete;
+  DeleteOriginHelper& operator=(const DeleteOriginHelper&) = delete;
+
   void Start() override {
     // We start by listing all caches, continues in OnAllInfo().
     service_->storage()->GetAllInfo(this);
@@ -162,8 +167,6 @@ class AppCacheServiceImpl::DeleteOriginHelper : public AsyncHelper {
   int num_caches_to_delete_;
   int successes_;
   int failures_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeleteOriginHelper);
 };
 
 void AppCacheServiceImpl::DeleteOriginHelper::OnAllInfo(
@@ -234,6 +237,9 @@ class AppCacheServiceImpl::GetInfoHelper : AsyncHelper {
                 net::CompletionOnceCallback callback)
       : AsyncHelper(service, std::move(callback)), collection_(collection) {}
 
+  GetInfoHelper(const GetInfoHelper&) = delete;
+  GetInfoHelper& operator=(const GetInfoHelper&) = delete;
+
   void Start() override { service_->storage()->GetAllInfo(this); }
 
  private:
@@ -241,8 +247,6 @@ class AppCacheServiceImpl::GetInfoHelper : AsyncHelper {
   void OnAllInfo(AppCacheInfoCollection* collection) override;
 
   scoped_refptr<AppCacheInfoCollection> collection_;
-
-  DISALLOW_COPY_AND_ASSIGN(GetInfoHelper);
 };
 
 void AppCacheServiceImpl::GetInfoHelper::OnAllInfo(
@@ -269,6 +273,9 @@ class AppCacheServiceImpl::CheckResponseHelper : AsyncHelper {
         expected_total_size_(0),
         amount_headers_read_(0),
         amount_data_read_(0) {}
+
+  CheckResponseHelper(const CheckResponseHelper&) = delete;
+  CheckResponseHelper& operator=(const CheckResponseHelper&) = delete;
 
   void Start() override {
     service_->storage()->LoadOrCreateGroup(manifest_url_, this);
@@ -298,7 +305,6 @@ class AppCacheServiceImpl::CheckResponseHelper : AsyncHelper {
   int64_t expected_total_size_;
   int amount_headers_read_;
   int amount_data_read_;
-  DISALLOW_COPY_AND_ASSIGN(CheckResponseHelper);
 };
 
 void AppCacheServiceImpl::CheckResponseHelper::OnGroupLoaded(

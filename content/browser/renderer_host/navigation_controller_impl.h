@@ -87,6 +87,10 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   NavigationControllerImpl(BrowserContext* browser_context,
                            FrameTree& frame_tree,
                            NavigationControllerDelegate* delegate);
+
+  NavigationControllerImpl(const NavigationControllerImpl&) = delete;
+  NavigationControllerImpl& operator=(const NavigationControllerImpl&) = delete;
+
   ~NavigationControllerImpl() override;
 
   // NavigationController implementation:
@@ -839,8 +843,6 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
 
   // NOTE: This must be the last member.
   base::WeakPtrFactory<NavigationControllerImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NavigationControllerImpl);
 };
 
 }  // namespace content

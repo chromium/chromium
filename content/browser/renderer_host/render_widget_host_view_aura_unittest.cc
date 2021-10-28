@@ -486,6 +486,10 @@ class RenderWidgetHostViewAuraTest : public testing::Test {
         0);
   }
 
+  RenderWidgetHostViewAuraTest(const RenderWidgetHostViewAuraTest&) = delete;
+  RenderWidgetHostViewAuraTest& operator=(const RenderWidgetHostViewAuraTest&) =
+      delete;
+
   static void InstallDelegatedFrameHostClient(RenderWidgetHostViewAura* view) {
     // Follow RWHVAura code that does not create DelegateFrameHost when there is
     // no valid frame sink id.
@@ -722,9 +726,6 @@ class RenderWidgetHostViewAuraTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
 
   viz::ParentLocalSurfaceIdAllocator parent_local_surface_id_allocator_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostViewAuraTest);
 };
 
 void InstallDelegatedFrameHostClient(
@@ -739,6 +740,11 @@ class RenderWidgetHostViewAuraOverscrollTest
     : public RenderWidgetHostViewAuraTest {
  public:
   RenderWidgetHostViewAuraOverscrollTest() : RenderWidgetHostViewAuraTest() {}
+
+  RenderWidgetHostViewAuraOverscrollTest(
+      const RenderWidgetHostViewAuraOverscrollTest&) = delete;
+  RenderWidgetHostViewAuraOverscrollTest& operator=(
+      const RenderWidgetHostViewAuraOverscrollTest&) = delete;
 
   // We explicitly invoke SetUp to allow gesture debounce customization.
   void SetUp() override {}
@@ -1059,8 +1065,6 @@ class RenderWidgetHostViewAuraOverscrollTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostViewAuraOverscrollTest);
 };
 
 class RenderWidgetHostViewAuraShutdownTest
@@ -1068,12 +1072,14 @@ class RenderWidgetHostViewAuraShutdownTest
  public:
   RenderWidgetHostViewAuraShutdownTest() {}
 
+  RenderWidgetHostViewAuraShutdownTest(
+      const RenderWidgetHostViewAuraShutdownTest&) = delete;
+  RenderWidgetHostViewAuraShutdownTest& operator=(
+      const RenderWidgetHostViewAuraShutdownTest&) = delete;
+
   void TearDown() override {
     // No TearDownEnvironment here, we do this explicitly during the test.
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostViewAuraShutdownTest);
 };
 
 // Checks that a popup is positioned correctly relative to its parent using
@@ -5353,6 +5359,9 @@ class MockWindowEventTarget : public ui::WindowEventTarget {
  public:
   MockWindowEventTarget() = default;
 
+  MockWindowEventTarget(const MockWindowEventTarget&) = delete;
+  MockWindowEventTarget& operator=(const MockWindowEventTarget&) = delete;
+
   LRESULT HandleMouseMessage(unsigned int message,
                              WPARAM w_param,
                              LPARAM l_param,
@@ -5412,9 +5421,6 @@ class MockWindowEventTarget : public ui::WindowEventTarget {
   void ApplyPanGestureFlingBegin() override {}
   void ApplyPanGestureFlingEnd() override {}
   void ApplyPanGestureScrollEnd(bool tranisitioning_to_pinch) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockWindowEventTarget);
 };
 
 // On Windows, a native HWND (Chrome_RenderWidgetHostHWND) forwards mouse events
@@ -6703,6 +6709,11 @@ class MockVirtualKeyboardController final
     : public ui::VirtualKeyboardController {
  public:
   MockVirtualKeyboardController() = default;
+
+  MockVirtualKeyboardController(const MockVirtualKeyboardController&) = delete;
+  MockVirtualKeyboardController& operator=(
+      const MockVirtualKeyboardController&) = delete;
+
   bool DisplayVirtualKeyboard() override {
     virtual_keyboard_requested_ = true;
     return virtual_keyboard_requested_;
@@ -6728,8 +6739,6 @@ class MockVirtualKeyboardController final
  private:
   size_t observer_count_ = 0;
   bool virtual_keyboard_requested_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MockVirtualKeyboardController);
 };
 
 class RenderWidgetHostViewAuraKeyboardMockInputMethod
@@ -6737,6 +6746,12 @@ class RenderWidgetHostViewAuraKeyboardMockInputMethod
  public:
   RenderWidgetHostViewAuraKeyboardMockInputMethod()
       : MockInputMethod(nullptr) {}
+
+  RenderWidgetHostViewAuraKeyboardMockInputMethod(
+      const RenderWidgetHostViewAuraKeyboardMockInputMethod&) = delete;
+  RenderWidgetHostViewAuraKeyboardMockInputMethod& operator=(
+      const RenderWidgetHostViewAuraKeyboardMockInputMethod&) = delete;
+
   ui::VirtualKeyboardController* GetVirtualKeyboardController() override {
     return &keyboard_controller_;
   }
@@ -6757,7 +6772,6 @@ class RenderWidgetHostViewAuraKeyboardMockInputMethod
 
  private:
   MockVirtualKeyboardController keyboard_controller_;
-  DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostViewAuraKeyboardMockInputMethod);
 };
 
 class RenderWidgetHostViewAuraKeyboardTest

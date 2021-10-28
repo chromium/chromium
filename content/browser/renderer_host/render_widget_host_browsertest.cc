@@ -512,6 +512,9 @@ class DocumentLoadObserver : WebContentsObserver {
   DocumentLoadObserver(WebContents* contents, const GURL& url)
       : WebContentsObserver(contents), document_origin_(url) {}
 
+  DocumentLoadObserver(const DocumentLoadObserver&) = delete;
+  DocumentLoadObserver& operator=(const DocumentLoadObserver&) = delete;
+
   void Wait() {
     if (loaded_)
       return;
@@ -529,8 +532,6 @@ class DocumentLoadObserver : WebContentsObserver {
   bool loaded_ = false;
   const GURL document_origin_;
   std::unique_ptr<base::RunLoop> run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(DocumentLoadObserver);
 };
 
 // This test verifies that when a cross-process child frame loads, the initial

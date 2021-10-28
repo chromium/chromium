@@ -18,6 +18,10 @@ class DesktopMediaWindowRegistryMac final : public DesktopMediaWindowRegistry {
 
   DesktopMediaWindowRegistryMac() = default;
 
+  DesktopMediaWindowRegistryMac(const DesktopMediaWindowRegistryMac&) = delete;
+  DesktopMediaWindowRegistryMac& operator=(
+      const DesktopMediaWindowRegistryMac&) = delete;
+
   Id RegisterWindow(gfx::NativeWindow window) override {
     // Note that DesktopMediaPickerViews in //chrome depends on the fact that
     // the Id returned from this function is the NSWindow's windowNumber, but
@@ -31,8 +35,6 @@ class DesktopMediaWindowRegistryMac final : public DesktopMediaWindowRegistry {
 
  private:
   ~DesktopMediaWindowRegistryMac() override = default;
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopMediaWindowRegistryMac);
 };
 
 // static

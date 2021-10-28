@@ -16,6 +16,10 @@ class TestBackgroundSyncContext : public BackgroundSyncContextImpl {
  public:
   TestBackgroundSyncContext() = default;
 
+  TestBackgroundSyncContext(const TestBackgroundSyncContext&) = delete;
+  TestBackgroundSyncContext& operator=(const TestBackgroundSyncContext&) =
+      delete;
+
  protected:
   ~TestBackgroundSyncContext() override = default;
 
@@ -24,9 +28,6 @@ class TestBackgroundSyncContext : public BackgroundSyncContextImpl {
       scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
       scoped_refptr<DevToolsBackgroundServicesContextImpl> devtools_context)
       override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestBackgroundSyncContext);
 };
 
 }  // namespace content

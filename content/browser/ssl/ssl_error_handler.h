@@ -51,6 +51,9 @@ class SSLErrorHandler {
                   const net::SSLInfo& ssl_info,
                   bool fatal);
 
+  SSLErrorHandler(const SSLErrorHandler&) = delete;
+  SSLErrorHandler& operator=(const SSLErrorHandler&) = delete;
+
   virtual ~SSLErrorHandler();
 
   const net::SSLInfo& ssl_info() const { return ssl_info_; }
@@ -99,8 +102,6 @@ class SSLErrorHandler {
 
   // The WebContents associated with the request that generated the error.
   WebContents* web_contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(SSLErrorHandler);
 };
 
 }  // namespace content

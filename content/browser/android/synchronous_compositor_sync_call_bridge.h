@@ -73,6 +73,11 @@ class SynchronousCompositorSyncCallBridge
  public:
   explicit SynchronousCompositorSyncCallBridge(SynchronousCompositorHost* host);
 
+  SynchronousCompositorSyncCallBridge(
+      const SynchronousCompositorSyncCallBridge&) = delete;
+  SynchronousCompositorSyncCallBridge& operator=(
+      const SynchronousCompositorSyncCallBridge&) = delete;
+
   // Indicatation that the remote is now ready to process requests. Called
   // on either UI or IO thread.
   void RemoteReady();
@@ -154,8 +159,6 @@ class SynchronousCompositorSyncCallBridge
       GUARDED_BY(lock_);
   base::ConditionVariable begin_frame_condition_ GUARDED_BY(lock_);
   RemoteState remote_state_ GUARDED_BY(lock_) = RemoteState::INIT;
-
-  DISALLOW_COPY_AND_ASSIGN(SynchronousCompositorSyncCallBridge);
 };
 
 }  // namespace content

@@ -76,6 +76,9 @@ class IndexedDBBrowserTest : public ContentBrowserTest,
  public:
   IndexedDBBrowserTest() = default;
 
+  IndexedDBBrowserTest(const IndexedDBBrowserTest&) = delete;
+  IndexedDBBrowserTest& operator=(const IndexedDBBrowserTest&) = delete;
+
   void SetUpOnMainThread() override {
     // Some tests need more space than the default used for browser tests.
     static storage::QuotaSettings quota_settings =
@@ -281,8 +284,6 @@ class IndexedDBBrowserTest : public ContentBrowserTest,
 
  private:
   mojo::Remote<storage::mojom::MockFailureInjector> failure_injector_;
-
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, CursorTest) {
@@ -428,13 +429,15 @@ class IndexedDBBrowserTestWithLowQuota : public IndexedDBBrowserTest {
  public:
   IndexedDBBrowserTestWithLowQuota() = default;
 
+  IndexedDBBrowserTestWithLowQuota(const IndexedDBBrowserTestWithLowQuota&) =
+      delete;
+  IndexedDBBrowserTestWithLowQuota& operator=(
+      const IndexedDBBrowserTestWithLowQuota&) = delete;
+
   void SetUpOnMainThread() override {
     const int kInitialQuotaKilobytes = 5000;
     SetQuota(kInitialQuotaKilobytes);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBBrowserTestWithLowQuota);
 };
 
 IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestWithLowQuota, QuotaTest) {
@@ -449,13 +452,15 @@ class IndexedDBBrowserTestWithGCExposed : public IndexedDBBrowserTest {
  public:
   IndexedDBBrowserTestWithGCExposed() = default;
 
+  IndexedDBBrowserTestWithGCExposed(const IndexedDBBrowserTestWithGCExposed&) =
+      delete;
+  IndexedDBBrowserTestWithGCExposed& operator=(
+      const IndexedDBBrowserTestWithGCExposed&) = delete;
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitchASCII(blink::switches::kJavaScriptFlags,
                                     "--expose-gc");
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBBrowserTestWithGCExposed);
 };
 
 IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestWithGCExposed,
@@ -509,6 +514,12 @@ static void CopyLevelDBToProfile(
 class IndexedDBBrowserTestWithPreexistingLevelDB : public IndexedDBBrowserTest {
  public:
   IndexedDBBrowserTestWithPreexistingLevelDB() = default;
+
+  IndexedDBBrowserTestWithPreexistingLevelDB(
+      const IndexedDBBrowserTestWithPreexistingLevelDB&) = delete;
+  IndexedDBBrowserTestWithPreexistingLevelDB& operator=(
+      const IndexedDBBrowserTestWithPreexistingLevelDB&) = delete;
+
   void SetUpOnMainThread() override {
     base::RunLoop loop;
     auto control_test = GetControlTest();
@@ -526,9 +537,6 @@ class IndexedDBBrowserTestWithPreexistingLevelDB : public IndexedDBBrowserTest {
   virtual std::vector<BlobModificationTime> CustomModificationTimes() {
     return std::vector<BlobModificationTime>();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBBrowserTestWithPreexistingLevelDB);
 };
 
 class IndexedDBBrowserTestWithVersion0Schema : public

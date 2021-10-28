@@ -2114,6 +2114,10 @@ class ContentsZoomChangedDelegate : public WebContentsDelegate {
     last_zoom_in_(false) {
   }
 
+  ContentsZoomChangedDelegate(const ContentsZoomChangedDelegate&) = delete;
+  ContentsZoomChangedDelegate& operator=(const ContentsZoomChangedDelegate&) =
+      delete;
+
   int GetAndResetContentsZoomChangedCallCount() {
     int count = contents_zoom_changed_call_count_;
     contents_zoom_changed_call_count_ = 0;
@@ -2133,8 +2137,6 @@ class ContentsZoomChangedDelegate : public WebContentsDelegate {
  private:
   int contents_zoom_changed_call_count_;
   bool last_zoom_in_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentsZoomChangedDelegate);
 };
 
 // Tests that some mouseehweel events get turned into browser zoom requests.

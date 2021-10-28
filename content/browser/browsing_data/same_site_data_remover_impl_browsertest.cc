@@ -34,6 +34,11 @@ class SameSiteDataRemoverBrowserTest : public ContentBrowserTest {
  public:
   SameSiteDataRemoverBrowserTest() {}
 
+  SameSiteDataRemoverBrowserTest(const SameSiteDataRemoverBrowserTest&) =
+      delete;
+  SameSiteDataRemoverBrowserTest& operator=(
+      const SameSiteDataRemoverBrowserTest&) = delete;
+
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
 
@@ -103,8 +108,6 @@ class SameSiteDataRemoverBrowserTest : public ContentBrowserTest {
   }
 
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
-
-  DISALLOW_COPY_AND_ASSIGN(SameSiteDataRemoverBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(SameSiteDataRemoverBrowserTest, TestClearData) {

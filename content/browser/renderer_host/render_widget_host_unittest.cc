@@ -135,6 +135,9 @@ class TestView : public TestRenderWidgetHostView {
     local_surface_id_allocator_.GenerateId();
   }
 
+  TestView(const TestView&) = delete;
+  TestView& operator=(const TestView&) = delete;
+
   // Sets the bounds returned by GetViewBounds.
   void SetBounds(const gfx::Rect& bounds) override {
     if (bounds_ == bounds)
@@ -244,9 +247,6 @@ class TestView : public TestRenderWidgetHostView {
   viz::ParentLocalSurfaceIdAllocator local_surface_id_allocator_;
   display::ScreenInfo screen_info_;
   gfx::Insets insets_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestView);
 };
 
 // MockRenderViewHostDelegateView ------------------------------------------

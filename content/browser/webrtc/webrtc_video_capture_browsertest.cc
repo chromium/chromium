@@ -37,6 +37,11 @@ static const char kVerifyHasReceivedTrackEndedEvent[] =
 // Integration test that exercises video capture functionality from the
 // JavaScript level.
 class WebRtcVideoCaptureBrowserTest : public ContentBrowserTest {
+ public:
+  WebRtcVideoCaptureBrowserTest(const WebRtcVideoCaptureBrowserTest&) = delete;
+  WebRtcVideoCaptureBrowserTest& operator=(
+      const WebRtcVideoCaptureBrowserTest&) = delete;
+
  protected:
   WebRtcVideoCaptureBrowserTest() {
     scoped_feature_list_.InitAndEnableFeature(features::kMojoVideoCapture);
@@ -59,8 +64,6 @@ class WebRtcVideoCaptureBrowserTest : public ContentBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebRtcVideoCaptureBrowserTest);
 };
 
 #if defined(OS_MAC)

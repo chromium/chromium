@@ -24,6 +24,9 @@ class FakeFlingScheduler : public FlingScheduler {
  public:
   FakeFlingScheduler(RenderWidgetHostImpl* host) : FlingScheduler(host) {}
 
+  FakeFlingScheduler(const FakeFlingScheduler&) = delete;
+  FakeFlingScheduler& operator=(const FakeFlingScheduler&) = delete;
+
   void ScheduleFlingProgress(
       base::WeakPtr<FlingController> fling_controller) override {
     FlingScheduler::ScheduleFlingProgress(fling_controller);
@@ -47,14 +50,16 @@ class FakeFlingScheduler : public FlingScheduler {
 
  private:
   bool fling_in_progress_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeFlingScheduler);
 };
 
 class FlingSchedulerTest : public testing::Test,
                            public FlingControllerEventSenderClient {
  public:
   FlingSchedulerTest() {}
+
+  FlingSchedulerTest(const FlingSchedulerTest&) = delete;
+  FlingSchedulerTest& operator=(const FlingSchedulerTest&) = delete;
+
   void SetUp() override {
     view_ = CreateView();
     widget_host_->SetView(view_.get());
@@ -136,8 +141,6 @@ class FlingSchedulerTest : public testing::Test,
 #if defined(OS_WIN)
   display::win::test::ScopedScreenWin scoped_screen_win_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(FlingSchedulerTest);
 };
 
 TEST_F(FlingSchedulerTest, ScheduleNextFlingProgress) {

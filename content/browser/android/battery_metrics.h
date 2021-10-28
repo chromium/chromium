@@ -24,6 +24,9 @@ class AndroidBatteryMetrics
  public:
   static AndroidBatteryMetrics* GetInstance();
 
+  AndroidBatteryMetrics(const AndroidBatteryMetrics&) = delete;
+  AndroidBatteryMetrics& operator=(const AndroidBatteryMetrics&) = delete;
+
   // ProcessVisibilityTracker::ProcessVisibilityObserver implementation:
   void OnVisibilityChanged(bool visible) override;
 
@@ -68,8 +71,6 @@ class AndroidBatteryMetrics
   int observed_capacity_drops_ = 0;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(AndroidBatteryMetrics);
 };
 
 }  // namespace content

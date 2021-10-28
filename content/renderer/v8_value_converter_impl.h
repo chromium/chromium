@@ -24,6 +24,9 @@ class CONTENT_EXPORT V8ValueConverterImpl : public V8ValueConverter {
  public:
   V8ValueConverterImpl();
 
+  V8ValueConverterImpl(const V8ValueConverterImpl&) = delete;
+  V8ValueConverterImpl& operator=(const V8ValueConverterImpl&) = delete;
+
   // V8ValueConverter implementation.
   void SetDateAllowed(bool val) override;
   void SetRegExpAllowed(bool val) override;
@@ -93,8 +96,6 @@ class CONTENT_EXPORT V8ValueConverterImpl : public V8ValueConverter {
 
   // Strategy object that changes the converter's behavior.
   Strategy* strategy_;
-
-  DISALLOW_COPY_AND_ASSIGN(V8ValueConverterImpl);
 };
 
 }  // namespace content

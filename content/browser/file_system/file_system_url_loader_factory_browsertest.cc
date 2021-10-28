@@ -165,6 +165,12 @@ bool IsDirectoryListingTitle(const std::string& line) {
 class FileSystemURLLoaderFactoryTest
     : public ContentBrowserTest,
       public ::testing::WithParamInterface<TestMode> {
+ public:
+  FileSystemURLLoaderFactoryTest(const FileSystemURLLoaderFactoryTest&) =
+      delete;
+  FileSystemURLLoaderFactoryTest& operator=(
+      const FileSystemURLLoaderFactoryTest&) = delete;
+
  protected:
   FileSystemURLLoaderFactoryTest() : file_util_(nullptr) {}
   ~FileSystemURLLoaderFactoryTest() override = default;
@@ -490,8 +496,6 @@ class FileSystemURLLoaderFactoryTest
   scoped_refptr<FileSystemContext> file_system_context_;
   // Owned by |file_system_context_| and only usable on |blocking_task_runner_|.
   storage::FileSystemFileUtil* file_util_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileSystemURLLoaderFactoryTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

@@ -17,6 +17,11 @@ class MockIndexedDBDatabaseCallbacks : public IndexedDBDatabaseCallbacks {
  public:
   MockIndexedDBDatabaseCallbacks();
 
+  MockIndexedDBDatabaseCallbacks(const MockIndexedDBDatabaseCallbacks&) =
+      delete;
+  MockIndexedDBDatabaseCallbacks& operator=(
+      const MockIndexedDBDatabaseCallbacks&) = delete;
+
   void OnVersionChange(int64_t old_version, int64_t new_version) override;
   void OnForcedClose() override;
   void OnAbort(const IndexedDBTransaction& transaction,
@@ -31,8 +36,6 @@ class MockIndexedDBDatabaseCallbacks : public IndexedDBDatabaseCallbacks {
 
   bool abort_called_;
   bool forced_close_called_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockIndexedDBDatabaseCallbacks);
 };
 
 }  // namespace content

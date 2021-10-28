@@ -32,7 +32,14 @@ namespace background_fetch {
 // after start-up.
 struct CONTENT_EXPORT BackgroundFetchInitializationData {
   BackgroundFetchInitializationData();
+
+  BackgroundFetchInitializationData(const BackgroundFetchInitializationData&) =
+      delete;
+  BackgroundFetchInitializationData& operator=(
+      const BackgroundFetchInitializationData&) = delete;
+
   BackgroundFetchInitializationData(BackgroundFetchInitializationData&&);
+
   ~BackgroundFetchInitializationData();
 
   BackgroundFetchRegistrationId registration_id;
@@ -51,8 +58,6 @@ struct CONTENT_EXPORT BackgroundFetchInitializationData {
       blink::mojom::BackgroundFetchError::NONE;
 
   absl::optional<net::IsolationInfo> isolation_info;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundFetchInitializationData);
 };
 
 using GetInitializationDataCallback =

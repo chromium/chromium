@@ -23,6 +23,9 @@ class CONTENT_EXPORT BrowserURLHandlerImpl : public BrowserURLHandler {
   // Returns the singleton instance.
   static BrowserURLHandlerImpl* GetInstance();
 
+  BrowserURLHandlerImpl(const BrowserURLHandlerImpl&) = delete;
+  BrowserURLHandlerImpl& operator=(const BrowserURLHandlerImpl&) = delete;
+
   // BrowserURLHandler implementation:
   void RewriteURLIfNecessary(GURL* url,
                              BrowserContext* browser_context) override;
@@ -59,8 +62,6 @@ class CONTENT_EXPORT BrowserURLHandlerImpl : public BrowserURLHandler {
   FRIEND_TEST_ALL_PREFIXES(BrowserURLHandlerImplTest, NullHandlerReverse);
   FRIEND_TEST_ALL_PREFIXES(BrowserURLHandlerImplTest, ViewSourceReverse);
   FRIEND_TEST_ALL_PREFIXES(BrowserURLHandlerImplTest, GetPossibleRewrites);
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserURLHandlerImpl);
 };
 
 }  // namespace content

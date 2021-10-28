@@ -70,6 +70,9 @@ class SubresourceLoader : public network::mojom::URLLoader,
         base::BindOnce(&SubresourceLoader::Start, weak_factory_.GetWeakPtr()));
   }
 
+  SubresourceLoader(const SubresourceLoader&) = delete;
+  SubresourceLoader& operator=(const SubresourceLoader&) = delete;
+
  private:
   ~SubresourceLoader() override = default;
 
@@ -316,7 +319,6 @@ class SubresourceLoader : public network::mojom::URLLoader,
   base::WeakPtr<AppCacheHost> host_;
 
   base::WeakPtrFactory<SubresourceLoader> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(SubresourceLoader);
 };
 
 }  // namespace

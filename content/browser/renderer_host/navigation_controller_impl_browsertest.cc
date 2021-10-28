@@ -1006,13 +1006,15 @@ class BlockAllCommitContentBrowserClient : public TestContentBrowserClient {
   // the checks are skipped (e.g. loadDataWithBaseURL).
   BlockAllCommitContentBrowserClient() = default;
 
+  BlockAllCommitContentBrowserClient(
+      const BlockAllCommitContentBrowserClient&) = delete;
+  BlockAllCommitContentBrowserClient& operator=(
+      const BlockAllCommitContentBrowserClient&) = delete;
+
   bool CanCommitURL(RenderProcessHost* process_host,
                     const GURL& site_url) override {
     return false;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BlockAllCommitContentBrowserClient);
 };
 
 // Tests that navigating with LoadDataWithBaseURL succeeds when the data URL is

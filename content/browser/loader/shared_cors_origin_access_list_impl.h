@@ -16,6 +16,11 @@ class SharedCorsOriginAccessListImpl final : public SharedCorsOriginAccessList {
  public:
   SharedCorsOriginAccessListImpl();
 
+  SharedCorsOriginAccessListImpl(const SharedCorsOriginAccessListImpl&) =
+      delete;
+  SharedCorsOriginAccessListImpl& operator=(
+      const SharedCorsOriginAccessListImpl&) = delete;
+
   // SharedCorsOriginAccessList interface.
   void SetForOrigin(
       const url::Origin& source_origin,
@@ -28,10 +33,7 @@ class SharedCorsOriginAccessListImpl final : public SharedCorsOriginAccessList {
   ~SharedCorsOriginAccessListImpl() override;
 
  private:
-
   network::cors::OriginAccessList origin_access_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedCorsOriginAccessListImpl);
 };
 
 }  // namespace content

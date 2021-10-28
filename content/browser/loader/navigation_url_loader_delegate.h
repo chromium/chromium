@@ -56,6 +56,10 @@ class CONTENT_EXPORT NavigationURLLoaderDelegate {
     std::unique_ptr<NavigationEarlyHintsManager> manager;
   };
 
+  NavigationURLLoaderDelegate(const NavigationURLLoaderDelegate&) = delete;
+  NavigationURLLoaderDelegate& operator=(const NavigationURLLoaderDelegate&) =
+      delete;
+
   // Called when the request is redirected. Call FollowRedirect to continue
   // processing the request.
   //
@@ -112,9 +116,6 @@ class CONTENT_EXPORT NavigationURLLoaderDelegate {
  protected:
   NavigationURLLoaderDelegate() {}
   virtual ~NavigationURLLoaderDelegate() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NavigationURLLoaderDelegate);
 };
 
 }  // namespace content

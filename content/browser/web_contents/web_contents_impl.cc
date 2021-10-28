@@ -686,6 +686,11 @@ class WebContentsImpl::WebContentsDestructionObserver
                                  WebContents* watched_contents)
       : WebContentsObserver(watched_contents), owner_(owner) {}
 
+  WebContentsDestructionObserver(const WebContentsDestructionObserver&) =
+      delete;
+  WebContentsDestructionObserver& operator=(
+      const WebContentsDestructionObserver&) = delete;
+
   // WebContentsObserver:
   void WebContentsDestroyed() override {
     owner_->OnWebContentsDestroyed(
@@ -694,8 +699,6 @@ class WebContentsImpl::WebContentsDestructionObserver
 
  private:
   WebContentsImpl* owner_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsDestructionObserver);
 };
 
 #if defined(OS_ANDROID)

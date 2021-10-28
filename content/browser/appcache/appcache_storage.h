@@ -97,6 +97,10 @@ class CONTENT_EXPORT AppCacheStorage {
   };
 
   explicit AppCacheStorage(AppCacheServiceImpl* service);
+
+  AppCacheStorage(const AppCacheStorage&) = delete;
+  AppCacheStorage& operator=(const AppCacheStorage&) = delete;
+
   virtual ~AppCacheStorage();
 
   // Schedules a task to retrieve basic info about all groups and caches
@@ -352,8 +356,6 @@ class CONTENT_EXPORT AppCacheStorage {
   // The WeakPtrFactory below must occur last in the class definition so they
   // get destroyed last.
   base::WeakPtrFactory<AppCacheStorage> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AppCacheStorage);
 };
 
 }  // namespace content

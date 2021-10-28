@@ -125,6 +125,9 @@ class CONTENT_EXPORT RenderViewHostImpl
                      bool swapped_out,
                      bool has_initialized_audio_host);
 
+  RenderViewHostImpl(const RenderViewHostImpl&) = delete;
+  RenderViewHostImpl& operator=(const RenderViewHostImpl&) = delete;
+
   // RenderViewHost implementation.
   RenderWidgetHostImpl* GetWidget() override;
   RenderProcessHost* GetProcess() override;
@@ -432,8 +435,6 @@ class CONTENT_EXPORT RenderViewHostImpl
   FrameTree* frame_tree_;
 
   base::WeakPtrFactory<RenderViewHostImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RenderViewHostImpl);
 };
 
 }  // namespace content

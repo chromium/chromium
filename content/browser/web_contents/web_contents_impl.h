@@ -2275,6 +2275,9 @@ class CONTENT_EXPORT WebContentsImpl::FriendWrapper {
  public:
   using CreatedCallback = base::RepeatingCallback<void(WebContents*)>;
 
+  FriendWrapper(const FriendWrapper&) = delete;
+  FriendWrapper& operator=(const FriendWrapper&) = delete;
+
  private:
   friend class TestNavigationObserver;
   friend class WebContentsAddedObserver;
@@ -2285,8 +2288,6 @@ class CONTENT_EXPORT WebContentsImpl::FriendWrapper {
   // Adds/removes a callback called on creation of each new WebContents.
   static void AddCreatedCallbackForTesting(const CreatedCallback& callback);
   static void RemoveCreatedCallbackForTesting(const CreatedCallback& callback);
-
-  DISALLOW_COPY_AND_ASSIGN(FriendWrapper);
 };
 
 }  // namespace content

@@ -14,7 +14,9 @@ class FakeUkmEvent {
 class SessionTrackerTest : public testing::Test {
  public:
   SessionTrackerTest() {}
-  DISALLOW_COPY_AND_ASSIGN(SessionTrackerTest);
+
+  SessionTrackerTest(const SessionTrackerTest&) = delete;
+  SessionTrackerTest& operator=(const SessionTrackerTest&) = delete;
 };
 
 TEST_F(SessionTrackerTest, SessionTrackerGetRoundedDurationInSeconds) {

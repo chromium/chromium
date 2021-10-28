@@ -15,6 +15,10 @@ class ShellQuotaPermissionContext : public QuotaPermissionContext {
  public:
   ShellQuotaPermissionContext();
 
+  ShellQuotaPermissionContext(const ShellQuotaPermissionContext&) = delete;
+  ShellQuotaPermissionContext& operator=(const ShellQuotaPermissionContext&) =
+      delete;
+
   // The callback will be dispatched on the IO thread.
   void RequestQuotaPermission(const StorageQuotaParams& params,
                               int render_process_id,
@@ -22,8 +26,6 @@ class ShellQuotaPermissionContext : public QuotaPermissionContext {
 
  private:
   ~ShellQuotaPermissionContext() override;
-
-  DISALLOW_COPY_AND_ASSIGN(ShellQuotaPermissionContext);
 };
 
 }  // namespace content

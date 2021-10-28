@@ -35,6 +35,11 @@ class StoragePartitionCodeCacheDataRemover {
       base::Time begin_time,
       base::Time end_time);
 
+  StoragePartitionCodeCacheDataRemover(
+      const StoragePartitionCodeCacheDataRemover&) = delete;
+  StoragePartitionCodeCacheDataRemover& operator=(
+      const StoragePartitionCodeCacheDataRemover&) = delete;
+
   // Calls |done_callback| on UI thread upon completion and also destroys
   // itself on UI thread.
   // This expects that either storage_partition with which this object was
@@ -75,8 +80,6 @@ class StoragePartitionCodeCacheDataRemover {
   base::Time begin_time_;
   base::Time end_time_;
   base::RepeatingCallback<bool(const GURL&)> url_predicate_;
-
-  DISALLOW_COPY_AND_ASSIGN(StoragePartitionCodeCacheDataRemover);
 };
 
 }  // namespace content

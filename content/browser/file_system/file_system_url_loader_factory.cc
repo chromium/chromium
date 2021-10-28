@@ -107,6 +107,9 @@ class FileSystemEntryURLLoader
   explicit FileSystemEntryURLLoader(FactoryParams params)
       : params_(std::move(params)) {}
 
+  FileSystemEntryURLLoader(const FileSystemEntryURLLoader&) = delete;
+  FileSystemEntryURLLoader& operator=(const FileSystemEntryURLLoader&) = delete;
+
   // network::mojom::URLLoader:
   void FollowRedirect(
       const std::vector<std::string>& removed_headers,
@@ -238,8 +241,6 @@ class FileSystemEntryURLLoader
     receiver_.reset();
     MaybeDeleteSelf();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(FileSystemEntryURLLoader);
 };
 
 class FileSystemDirectoryURLLoader : public FileSystemEntryURLLoader {
@@ -258,6 +259,10 @@ class FileSystemDirectoryURLLoader : public FileSystemEntryURLLoader {
     filesystem_loader->Start(request, std::move(loader),
                              std::move(client_remote), io_task_runner);
   }
+
+  FileSystemDirectoryURLLoader(const FileSystemDirectoryURLLoader&) = delete;
+  FileSystemDirectoryURLLoader& operator=(const FileSystemDirectoryURLLoader&) =
+      delete;
 
  private:
   explicit FileSystemDirectoryURLLoader(FactoryParams params)
@@ -400,8 +405,6 @@ class FileSystemDirectoryURLLoader : public FileSystemEntryURLLoader {
   std::string data_;
   std::vector<DirectoryEntry> entries_;
   scoped_refptr<net::IOBuffer> directory_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileSystemDirectoryURLLoader);
 };
 
 class FileSystemFileURLLoader : public FileSystemEntryURLLoader {
@@ -421,6 +424,9 @@ class FileSystemFileURLLoader : public FileSystemEntryURLLoader {
     filesystem_loader->Start(request, std::move(loader),
                              std::move(client_remote), io_task_runner);
   }
+
+  FileSystemFileURLLoader(const FileSystemFileURLLoader&) = delete;
+  FileSystemFileURLLoader& operator=(const FileSystemFileURLLoader&) = delete;
 
  private:
   FileSystemFileURLLoader(
@@ -603,8 +609,6 @@ class FileSystemFileURLLoader : public FileSystemEntryURLLoader {
       network::mojom::URLResponseHead::New();
   const network::ResourceRequest original_request_;
   scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileSystemFileURLLoader);
 };
 
 // A URLLoaderFactory used for the filesystem:// scheme used when the Network

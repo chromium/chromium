@@ -16,8 +16,8 @@ class HistogramsInternalsUI : public WebUIController {
  public:
   explicit HistogramsInternalsUI(WebUI* web_ui);
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(HistogramsInternalsUI);
+  HistogramsInternalsUI(const HistogramsInternalsUI&) = delete;
+  HistogramsInternalsUI& operator=(const HistogramsInternalsUI&) = delete;
 };
 
 }  // namespace content

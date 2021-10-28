@@ -203,6 +203,11 @@ class RequestBlockingNavigationThrottle : public NavigationThrottle {
   explicit RequestBlockingNavigationThrottle(NavigationHandle* handle)
       : NavigationThrottle(handle) {}
 
+  RequestBlockingNavigationThrottle(const RequestBlockingNavigationThrottle&) =
+      delete;
+  RequestBlockingNavigationThrottle& operator=(
+      const RequestBlockingNavigationThrottle&) = delete;
+
   static std::unique_ptr<NavigationThrottle> Create(NavigationHandle* handle) {
     return std::make_unique<RequestBlockingNavigationThrottle>(handle);
   }
@@ -215,8 +220,6 @@ class RequestBlockingNavigationThrottle : public NavigationThrottle {
   const char* GetNameForLogging() override {
     return "RequestBlockingNavigationThrottle";
   }
-
-  DISALLOW_COPY_AND_ASSIGN(RequestBlockingNavigationThrottle);
 };
 
 // Helper function for error page navigations that makes sure that the last
@@ -5585,6 +5588,11 @@ class BrowsingInstanceSwapContentBrowserClient
  public:
   BrowsingInstanceSwapContentBrowserClient() = default;
 
+  BrowsingInstanceSwapContentBrowserClient(
+      const BrowsingInstanceSwapContentBrowserClient&) = delete;
+  BrowsingInstanceSwapContentBrowserClient& operator=(
+      const BrowsingInstanceSwapContentBrowserClient&) = delete;
+
   bool ShouldIsolateErrorPage(bool in_main_frame) override {
     return in_main_frame;
   }
@@ -5595,9 +5603,6 @@ class BrowsingInstanceSwapContentBrowserClient
       const GURL& destination_effective_url) override {
     return true;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowsingInstanceSwapContentBrowserClient);
 };
 
 // Test to verify that reloading of an error page which resulted from a
@@ -5913,6 +5918,11 @@ class ProcessPerSiteContentBrowserClient : public TestContentBrowserClient {
  public:
   ProcessPerSiteContentBrowserClient() = default;
 
+  ProcessPerSiteContentBrowserClient(
+      const ProcessPerSiteContentBrowserClient&) = delete;
+  ProcessPerSiteContentBrowserClient& operator=(
+      const ProcessPerSiteContentBrowserClient&) = delete;
+
   void SetShouldUseProcessPerSite(bool should_use_process_per_site) {
     should_use_process_per_site_ = should_use_process_per_site;
   }
@@ -5924,7 +5934,6 @@ class ProcessPerSiteContentBrowserClient : public TestContentBrowserClient {
 
  private:
   bool should_use_process_per_site_ = false;
-  DISALLOW_COPY_AND_ASSIGN(ProcessPerSiteContentBrowserClient);
 };
 
 // We should not reuse the current process on renderer-initiated navigations to
@@ -7778,6 +7787,11 @@ class RenderFrameHostManagerUnloadBrowserTest
  public:
   RenderFrameHostManagerUnloadBrowserTest() = default;
 
+  RenderFrameHostManagerUnloadBrowserTest(
+      const RenderFrameHostManagerUnloadBrowserTest&) = delete;
+  RenderFrameHostManagerUnloadBrowserTest& operator=(
+      const RenderFrameHostManagerUnloadBrowserTest&) = delete;
+
   // Starts monitoring requests made to the embedded_test_server() looking for
   // one made to |url|.  To be used together with WaitForMonitoredRequest().
   void StartMonitoringRequestsFor(const GURL& url) {
@@ -7888,8 +7902,6 @@ class RenderFrameHostManagerUnloadBrowserTest
   std::string request_content_ GUARDED_BY(lock_);
   bool saw_request_url_ GUARDED_BY(lock_) = false;
   std::unique_ptr<base::RunLoop> run_loop_ GUARDED_BY(lock_);
-
-  DISALLOW_COPY_AND_ASSIGN(RenderFrameHostManagerUnloadBrowserTest);
 };
 
 // Ensure that after a main frame with a cross-site iframe is itself navigated
@@ -8160,6 +8172,9 @@ class AssertForegroundHelper {
  public:
   AssertForegroundHelper() = default;
 
+  AssertForegroundHelper(const AssertForegroundHelper&) = delete;
+  AssertForegroundHelper& operator=(const AssertForegroundHelper&) = delete;
+
 #if defined(OS_MAC)
   // Asserts that |renderer_process| isn't backgrounded and reposts self to
   // check again shortly. |renderer_process| must outlive this
@@ -8189,8 +8204,6 @@ class AssertForegroundHelper {
 
  private:
   base::WeakPtrFactory<AssertForegroundHelper> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AssertForegroundHelper);
 };
 
 }  // namespace
@@ -8374,6 +8387,11 @@ class DontAssignSiteContentBrowserClient : public TestContentBrowserClient {
   explicit DontAssignSiteContentBrowserClient(const GURL& url_to_skip)
       : url_to_skip_(url_to_skip) {}
 
+  DontAssignSiteContentBrowserClient(
+      const DontAssignSiteContentBrowserClient&) = delete;
+  DontAssignSiteContentBrowserClient& operator=(
+      const DontAssignSiteContentBrowserClient&) = delete;
+
   bool ShouldAssignSiteForURL(const GURL& url) override {
     return url.host() != url_to_skip_.host() ||
            url.scheme() != url_to_skip_.scheme();
@@ -8381,8 +8399,6 @@ class DontAssignSiteContentBrowserClient : public TestContentBrowserClient {
 
  private:
   GURL url_to_skip_;
-
-  DISALLOW_COPY_AND_ASSIGN(DontAssignSiteContentBrowserClient);
 };
 
 }  // namespace

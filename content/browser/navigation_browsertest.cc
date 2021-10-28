@@ -2084,6 +2084,11 @@ class CreateWebContentsOnCrashObserver : public NotificationObserver {
                                    WebContents* first_web_contents)
       : url_(url), first_web_contents_(first_web_contents) {}
 
+  CreateWebContentsOnCrashObserver(const CreateWebContentsOnCrashObserver&) =
+      delete;
+  CreateWebContentsOnCrashObserver& operator=(
+      const CreateWebContentsOnCrashObserver&) = delete;
+
   void Observe(int type,
                const NotificationSource& source,
                const NotificationDetails& details) override {
@@ -2114,8 +2119,6 @@ class CreateWebContentsOnCrashObserver : public NotificationObserver {
   WebContents* first_web_contents_;
 
   ScopedAllowRendererCrashes scoped_allow_renderer_crashes_;
-
-  DISALLOW_COPY_AND_ASSIGN(CreateWebContentsOnCrashObserver);
 };
 
 // This test simulates android webview's behavior in apps that handle

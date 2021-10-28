@@ -102,6 +102,9 @@ class FakeGdiObject : public base::RefCountedThreadSafe<FakeGdiObject> {
   FakeGdiObject(uint32_t magic, void* handle)
       : handle_(handle), magic_(magic) {}
 
+  FakeGdiObject(const FakeGdiObject&) = delete;
+  FakeGdiObject& operator=(const FakeGdiObject&) = delete;
+
   void set_typeface(sk_sp<SkTypeface> typeface) {
     typeface_ = std::move(typeface);
   }
@@ -117,8 +120,6 @@ class FakeGdiObject : public base::RefCountedThreadSafe<FakeGdiObject> {
   void* handle_;
   uint32_t magic_;
   sk_sp<SkTypeface> typeface_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeGdiObject);
 };
 
 // This class acts as a factory for creating new fake GDI objects. It also maps
@@ -130,6 +131,9 @@ class FakeGdiObject : public base::RefCountedThreadSafe<FakeGdiObject> {
 class FakeGdiObjectFactory {
  public:
   FakeGdiObjectFactory() : curr_handle_(0) {}
+
+  FakeGdiObjectFactory(const FakeGdiObjectFactory&) = delete;
+  FakeGdiObjectFactory& operator=(const FakeGdiObjectFactory&) = delete;
 
   // Find a corresponding fake GDI object and verify its magic value.
   // The returned value is either nullptr or the validated object.
@@ -182,8 +186,6 @@ class FakeGdiObjectFactory {
   base::CheckedNumeric<uintptr_t> curr_handle_;
   std::map<void*, scoped_refptr<FakeGdiObject>> objects_;
   base::Lock objects_lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeGdiObjectFactory);
 };
 
 base::LazyInstance<FakeGdiObjectFactory>::Leaky g_fake_gdi_object_factory =

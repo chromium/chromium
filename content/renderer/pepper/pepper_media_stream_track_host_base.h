@@ -20,6 +20,12 @@ class RendererPpapiHost;
 class PepperMediaStreamTrackHostBase
     : public ppapi::host::ResourceHost,
       public ppapi::MediaStreamBufferManager::Delegate {
+ public:
+  PepperMediaStreamTrackHostBase(const PepperMediaStreamTrackHostBase&) =
+      delete;
+  PepperMediaStreamTrackHostBase& operator=(
+      const PepperMediaStreamTrackHostBase&) = delete;
+
  protected:
   PepperMediaStreamTrackHostBase(RendererPpapiHost* host,
                                  PP_Instance instance,
@@ -67,8 +73,6 @@ class PepperMediaStreamTrackHostBase
   RendererPpapiHost* host_;
 
   ppapi::MediaStreamBufferManager buffer_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperMediaStreamTrackHostBase);
 };
 
 }  // namespace content

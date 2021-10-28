@@ -28,6 +28,9 @@ class ContentUiEventHandler {
                         const base::android::JavaRef<jobject>& obj,
                         WebContentsImpl* web_contents);
 
+  ContentUiEventHandler(const ContentUiEventHandler&) = delete;
+  ContentUiEventHandler& operator=(const ContentUiEventHandler&) = delete;
+
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
   bool OnGenericMotionEvent(const ui::MotionEventAndroid& event);
@@ -73,8 +76,6 @@ class ContentUiEventHandler {
   JavaObjectWeakGlobalRef java_ref_;
 
   WebContentsImpl* const web_contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentUiEventHandler);
 };
 
 }  // namespace content

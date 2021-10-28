@@ -32,6 +32,9 @@ class PPB_VideoDecoder_Impl : public ppapi::PPB_VideoDecoder_Shared,
                             PP_Resource graphics_context,
                             PP_VideoDecoder_Profile profile);
 
+  PPB_VideoDecoder_Impl(const PPB_VideoDecoder_Impl&) = delete;
+  PPB_VideoDecoder_Impl& operator=(const PPB_VideoDecoder_Impl&) = delete;
+
   // PPB_VideoDecoder_Dev_API implementation.
   int32_t Decode(const PP_VideoBitstreamBuffer_Dev* bitstream_buffer,
                  scoped_refptr<ppapi::TrackedCallback> callback) override;
@@ -78,8 +81,6 @@ class PPB_VideoDecoder_Impl : public ppapi::PPB_VideoDecoder_Shared,
   // The interface to use when making calls on the plugin. For the most part,
   // methods should not use this directly but should call GetPPP() instead.
   const PPP_VideoDecoder_Dev* ppp_videodecoder_;
-
-  DISALLOW_COPY_AND_ASSIGN(PPB_VideoDecoder_Impl);
 };
 
 }  // namespace content

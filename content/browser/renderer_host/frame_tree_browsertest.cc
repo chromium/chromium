@@ -58,14 +58,14 @@ class FrameTreeBrowserTest : public ContentBrowserTest {
  public:
   FrameTreeBrowserTest() = default;
 
+  FrameTreeBrowserTest(const FrameTreeBrowserTest&) = delete;
+  FrameTreeBrowserTest& operator=(const FrameTreeBrowserTest&) = delete;
+
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     SetupCrossSiteRedirector(embedded_test_server());
     ASSERT_TRUE(embedded_test_server()->Start());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FrameTreeBrowserTest);
 };
 
 // Ensures FrameTree correctly reflects page structure during navigations.
@@ -1533,6 +1533,11 @@ class CrossProcessFrameTreeBrowserTest : public ContentBrowserTest {
  public:
   CrossProcessFrameTreeBrowserTest() = default;
 
+  CrossProcessFrameTreeBrowserTest(const CrossProcessFrameTreeBrowserTest&) =
+      delete;
+  CrossProcessFrameTreeBrowserTest& operator=(
+      const CrossProcessFrameTreeBrowserTest&) = delete;
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     IsolateAllSitesForTesting(command_line);
   }
@@ -1542,9 +1547,6 @@ class CrossProcessFrameTreeBrowserTest : public ContentBrowserTest {
     SetupCrossSiteRedirector(embedded_test_server());
     ASSERT_TRUE(embedded_test_server()->Start());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CrossProcessFrameTreeBrowserTest);
 };
 
 // Ensure that we can complete a cross-process subframe navigation.
@@ -1972,6 +1974,11 @@ class IsolateIcelandFrameTreeBrowserTest : public ContentBrowserTest {
  public:
   IsolateIcelandFrameTreeBrowserTest() = default;
 
+  IsolateIcelandFrameTreeBrowserTest(
+      const IsolateIcelandFrameTreeBrowserTest&) = delete;
+  IsolateIcelandFrameTreeBrowserTest& operator=(
+      const IsolateIcelandFrameTreeBrowserTest&) = delete;
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Blink suppresses navigations to blob URLs of origins different from the
     // frame initiating the navigation. We disable those checks for this test,
@@ -1988,9 +1995,6 @@ class IsolateIcelandFrameTreeBrowserTest : public ContentBrowserTest {
     SetupCrossSiteRedirector(embedded_test_server());
     ASSERT_TRUE(embedded_test_server()->Start());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IsolateIcelandFrameTreeBrowserTest);
 };
 
 // Regression test for https://crbug.com/644966

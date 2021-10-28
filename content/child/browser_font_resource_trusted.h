@@ -32,6 +32,10 @@ class BrowserFontResource_Trusted
                               const PP_BrowserFont_Trusted_Description& desc,
                               const ppapi::Preferences& prefs);
 
+  BrowserFontResource_Trusted(const BrowserFontResource_Trusted&) = delete;
+  BrowserFontResource_Trusted& operator=(const BrowserFontResource_Trusted&) =
+      delete;
+
   // Validates the parameters in thee description. Can be called on any thread.
   static bool IsPPFontDescriptionValid(
       const PP_BrowserFont_Trusted_Description& desc);
@@ -67,8 +71,6 @@ class BrowserFontResource_Trusted
 
  private:
   std::unique_ptr<blink::WebFont> font_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserFontResource_Trusted);
 };
 
 }  // namespace content

@@ -140,6 +140,10 @@ class ServiceWorkerMetrics {
     kMaxValue = kRedirect,
   };
 
+  ServiceWorkerMetrics() = delete;
+  ServiceWorkerMetrics(const ServiceWorkerMetrics&) = delete;
+  ServiceWorkerMetrics& operator=(const ServiceWorkerMetrics&) = delete;
+
   // Converts an event type to a string. Used for tracing.
   static const char* EventTypeToString(EventType event_type);
 
@@ -194,9 +198,6 @@ class ServiceWorkerMetrics {
   // check timed out.
   static void RecordOfflineCapableReason(blink::ServiceWorkerStatusCode status,
                                          int status_code);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ServiceWorkerMetrics);
 };
 
 }  // namespace content

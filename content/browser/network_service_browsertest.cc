@@ -186,6 +186,10 @@ class NetworkServiceBrowserTest : public ContentBrowserTest {
     WebUIControllerFactory::RegisterFactory(&factory_);
   }
 
+  NetworkServiceBrowserTest(const NetworkServiceBrowserTest&) = delete;
+  NetworkServiceBrowserTest& operator=(const NetworkServiceBrowserTest&) =
+      delete;
+
   bool ExecuteScript(const std::string& script) {
     bool xhr_result = false;
     // The JS call will fail if disallowed because the process will be killed.
@@ -265,8 +269,6 @@ class NetworkServiceBrowserTest : public ContentBrowserTest {
  private:
   WebUITestWebUIControllerFactory factory_;
   base::ScopedTempDir temp_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkServiceBrowserTest);
 };
 
 // Verifies that WebUI pages with WebUI bindings can't make network requests.
@@ -1507,6 +1509,11 @@ class NetworkServiceInProcessBrowserTest : public ContentBrowserTest {
                                           std::vector<base::Feature>());
   }
 
+  NetworkServiceInProcessBrowserTest(
+      const NetworkServiceInProcessBrowserTest&) = delete;
+  NetworkServiceInProcessBrowserTest& operator=(
+      const NetworkServiceInProcessBrowserTest&) = delete;
+
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     EXPECT_TRUE(embedded_test_server()->Start());
@@ -1514,8 +1521,6 @@ class NetworkServiceInProcessBrowserTest : public ContentBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkServiceInProcessBrowserTest);
 };
 
 // Verifies that in-process network service works.
@@ -1535,6 +1540,11 @@ class NetworkServiceInvalidLogBrowserTest : public ContentBrowserTest {
  public:
   NetworkServiceInvalidLogBrowserTest() = default;
 
+  NetworkServiceInvalidLogBrowserTest(
+      const NetworkServiceInvalidLogBrowserTest&) = delete;
+  NetworkServiceInvalidLogBrowserTest& operator=(
+      const NetworkServiceInvalidLogBrowserTest&) = delete;
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitchASCII(network::switches::kLogNetLog, "/abc/def");
   }
@@ -1543,9 +1553,6 @@ class NetworkServiceInvalidLogBrowserTest : public ContentBrowserTest {
     host_resolver()->AddRule("*", "127.0.0.1");
     EXPECT_TRUE(embedded_test_server()->Start());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkServiceInvalidLogBrowserTest);
 };
 
 // Verifies that an invalid --log-net-log flag won't crash the browser.

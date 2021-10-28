@@ -25,12 +25,15 @@ const void* const kSmartSelectionClientUDKey = &kSmartSelectionClientUDKey;
 // This class deletes SmartSelectionClient when WebContents is destroyed.
 class UserData : public base::SupportsUserData::Data {
  public:
+  UserData() = delete;
+
   explicit UserData(SmartSelectionClient* client) : client_(client) {}
+
+  UserData(const UserData&) = delete;
+  UserData& operator=(const UserData&) = delete;
 
  private:
   std::unique_ptr<SmartSelectionClient> client_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(UserData);
 };
 }
 

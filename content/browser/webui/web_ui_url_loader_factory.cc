@@ -276,6 +276,9 @@ class WebUIURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
     return pending_remote;
   }
 
+  WebUIURLLoaderFactory(const WebUIURLLoaderFactory&) = delete;
+  WebUIURLLoaderFactory& operator=(const WebUIURLLoaderFactory&) = delete;
+
  private:
   ~WebUIURLLoaderFactory() override = default;
 
@@ -361,8 +364,6 @@ class WebUIURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
   int const frame_tree_node_id_;
   const std::string scheme_;
   const base::flat_set<std::string> allowed_hosts_;  // if empty all allowed.
-
-  DISALLOW_COPY_AND_ASSIGN(WebUIURLLoaderFactory);
 };
 
 }  // namespace

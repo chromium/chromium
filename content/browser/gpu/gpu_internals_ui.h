@@ -14,8 +14,8 @@ class GpuInternalsUI : public WebUIController {
  public:
   explicit GpuInternalsUI(WebUI* web_ui);
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(GpuInternalsUI);
+  GpuInternalsUI(const GpuInternalsUI&) = delete;
+  GpuInternalsUI& operator=(const GpuInternalsUI&) = delete;
 };
 
 }  // namespace content

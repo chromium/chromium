@@ -40,6 +40,9 @@ class MojoSandboxTest : public ContentBrowserTest {
  public:
   MojoSandboxTest() = default;
 
+  MojoSandboxTest(const MojoSandboxTest&) = delete;
+  MojoSandboxTest& operator=(const MojoSandboxTest&) = delete;
+
   using BeforeStartCallback = base::OnceCallback<void(UtilityProcessHost*)>;
 
   void StartProcess(BeforeStartCallback callback = BeforeStartCallback()) {
@@ -61,10 +64,6 @@ class MojoSandboxTest : public ContentBrowserTest {
 
  protected:
   std::unique_ptr<UtilityProcessHost> host_;
-
- private:
-
-  DISALLOW_COPY_AND_ASSIGN(MojoSandboxTest);
 };
 
 // Ensures that a read-only shared memory region can be created within a

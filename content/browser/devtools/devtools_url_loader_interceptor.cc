@@ -280,6 +280,9 @@ class InterceptionJob : public network::mojom::URLLoaderClient,
       mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory,
       mojo::PendingRemote<network::mojom::CookieManager> cookie_manager);
 
+  InterceptionJob(const InterceptionJob&) = delete;
+  InterceptionJob& operator=(const InterceptionJob&) = delete;
+
   void GetResponseBody(std::unique_ptr<GetResponseBodyCallback> callback);
   void TakeResponseBodyPipe(TakeResponseBodyPipeCallback callback);
   void ContinueInterceptedRequest(
@@ -430,8 +433,6 @@ class InterceptionJob : public network::mojom::URLLoaderClient,
   // current request URL. Tracked for the purpose of computing the proper
   // SameSite cookies to return, which depends on the redirect chain.
   std::vector<GURL> url_chain_;
-
-  DISALLOW_COPY_AND_ASSIGN(InterceptionJob);
 };
 
 void DevToolsURLLoaderInterceptor::CreateJob(

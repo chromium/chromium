@@ -65,6 +65,9 @@ class TracingControllerImpl : public TracingController,
   // Should be called on the UI thread.
   CONTENT_EXPORT TracingControllerImpl();
 
+  TracingControllerImpl(const TracingControllerImpl&) = delete;
+  TracingControllerImpl& operator=(const TracingControllerImpl&) = delete;
+
   // TracingController implementation.
   bool GetCategories(GetCategoriesDoneCallback callback) override;
   bool StartTracing(const base::trace_event::TraceConfig& trace_config,
@@ -128,8 +131,6 @@ class TracingControllerImpl : public TracingController,
   std::string hardware_class_;
   base::WeakPtrFactory<TracingControllerImpl> weak_ptr_factory_{this};
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(TracingControllerImpl);
 };
 
 }  // namespace content

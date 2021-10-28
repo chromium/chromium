@@ -68,6 +68,9 @@ class CONTENT_EXPORT ClearSiteDataHandler {
     OutputFormattedMessageFunction output_formatted_message_function_;
   };
 
+  ClearSiteDataHandler(const ClearSiteDataHandler&) = delete;
+  ClearSiteDataHandler& operator=(const ClearSiteDataHandler&) = delete;
+
   // |header_value| is the string value of the 'Clear-Site-Data' header. This
   // method calls ParseHeader() to parse it, and then ExecuteClearingTask() if
   // applicable.
@@ -161,8 +164,6 @@ class CONTENT_EXPORT ClearSiteDataHandler {
 
   // The delegate that stores and outputs console messages.
   std::unique_ptr<ConsoleMessagesDelegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClearSiteDataHandler);
 };
 
 }  // namespace content

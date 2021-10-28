@@ -90,6 +90,9 @@ class CONTENT_EXPORT BrowserTaskExecutor : public BaseBrowserTaskExecutor {
   // do so.
   static void Create();
 
+  BrowserTaskExecutor(const BrowserTaskExecutor&) = delete;
+  BrowserTaskExecutor& operator=(const BrowserTaskExecutor&) = delete;
+
   // Creates the IO thread using the scheduling infrastructure set up in the
   // Create() method. That means that clients have access to TaskRunners
   // associated with the IO thread before that thread is even created. In order
@@ -255,8 +258,6 @@ class CONTENT_EXPORT BrowserTaskExecutor : public BaseBrowserTaskExecutor {
 
   std::unique_ptr<UIThreadExecutor> ui_thread_executor_;
   std::unique_ptr<IOThreadExecutor> io_thread_executor_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserTaskExecutor);
 };
 
 }  // namespace content

@@ -73,6 +73,9 @@ class TextCallbackWaiter {
  public:
   TextCallbackWaiter() {}
 
+  TextCallbackWaiter(const TextCallbackWaiter&) = delete;
+  TextCallbackWaiter& operator=(const TextCallbackWaiter&) = delete;
+
   void Wait() { run_loop_.Run(); }
 
   const std::u16string& text() const { return text_; }
@@ -85,8 +88,6 @@ class TextCallbackWaiter {
  private:
   std::u16string text_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextCallbackWaiter);
 };
 
 class TextSelectionWaiter : public TextInputManager::Observer {

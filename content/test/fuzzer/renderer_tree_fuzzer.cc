@@ -107,6 +107,9 @@ class NodeList : public std::vector<std::unique_ptr<Node>> {
 
   NodeList() {}
 
+  NodeList(const NodeList&) = delete;
+  NodeList& operator=(const NodeList&) = delete;
+
   static std::unique_ptr<NodeList> ParseJsonString(const uint8_t* data,
                                                    size_t size) {
     auto nodes = std::make_unique<NodeList>();
@@ -165,8 +168,6 @@ class NodeList : public std::vector<std::unique_ptr<Node>> {
 
  private:
   friend class Element;
-
-  DISALLOW_COPY_AND_ASSIGN(NodeList);
 };
 
 class Element : public Node {
@@ -203,6 +204,9 @@ class Element : public Node {
     return std::unique_ptr<Element>(
         new Element(tagNames[(*rnd)() % tagNames.size()]));
   }
+
+  Element(const Element&) = delete;
+  Element& operator=(const Element&) = delete;
 
   bool IsElement() const override { return true; }
 
@@ -275,8 +279,6 @@ class Element : public Node {
   std::string tag_name_;
   NodeList children_;
   Attrs attrs_;
-
-  DISALLOW_COPY_AND_ASSIGN(Element);
 };
 
 class Text : public Node {
@@ -284,6 +286,9 @@ class Text : public Node {
   static std::unique_ptr<Node> CreateRandom(Random* rnd) {
     return std::unique_ptr<Node>(new Text);
   }
+
+  Text(const Text&) = delete;
+  Text& operator=(const Text&) = delete;
 
   size_t MutateText() {
     // TODO(aizatsky): constant?
@@ -312,8 +317,6 @@ class Text : public Node {
   explicit Text(std::string text) : text_(text) {}
 
   std::string text_;
-
-  DISALLOW_COPY_AND_ASSIGN(Text);
 };
 
 template <typename Fn>

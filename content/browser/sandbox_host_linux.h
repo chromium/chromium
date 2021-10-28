@@ -23,6 +23,9 @@ class CONTENT_EXPORT SandboxHostLinux {
   // Returns the singleton instance.
   static SandboxHostLinux* GetInstance();
 
+  SandboxHostLinux(const SandboxHostLinux&) = delete;
+  SandboxHostLinux& operator=(const SandboxHostLinux&) = delete;
+
   // Get the file descriptor which sandboxed processes should be given in order
   // to communicate with the browser. This is used for things like communicating
   // renderer crashes to the browser, as well as requesting fonts from sandboxed
@@ -51,8 +54,6 @@ class CONTENT_EXPORT SandboxHostLinux {
 
   std::unique_ptr<SandboxIPCHandler> ipc_handler_;
   std::unique_ptr<base::DelegateSimpleThread> ipc_thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(SandboxHostLinux);
 };
 
 }  // namespace content

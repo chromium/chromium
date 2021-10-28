@@ -53,6 +53,9 @@ class CONTENT_EXPORT VideoCaptureController
       std::unique_ptr<VideoCaptureDeviceLauncher> device_launcher,
       base::RepeatingCallback<void(const std::string&)> emit_log_message_cb);
 
+  VideoCaptureController(const VideoCaptureController&) = delete;
+  VideoCaptureController& operator=(const VideoCaptureController&) = delete;
+
   // Warning: This value should not be changed, because doing so would change
   // the meaning of logged UMA events for histograms Media.VideoCapture.Error
   // and Media.VideoCapture.MaxFrameDropExceeded.
@@ -296,8 +299,6 @@ class CONTENT_EXPORT VideoCaptureController
   absl::optional<media::VideoCaptureFormat> video_capture_format_;
 
   base::WeakPtrFactory<VideoCaptureController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VideoCaptureController);
 };
 
 }  // namespace content

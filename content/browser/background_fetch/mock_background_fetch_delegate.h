@@ -68,6 +68,11 @@ class MockBackgroundFetchDelegate : public BackgroundFetchDelegate {
   };
 
   MockBackgroundFetchDelegate();
+
+  MockBackgroundFetchDelegate(const MockBackgroundFetchDelegate&) = delete;
+  MockBackgroundFetchDelegate& operator=(const MockBackgroundFetchDelegate&) =
+      delete;
+
   ~MockBackgroundFetchDelegate() override;
 
   // BackgroundFetchDelegate implementation:
@@ -128,8 +133,6 @@ class MockBackgroundFetchDelegate : public BackgroundFetchDelegate {
 
   // Map from job GUIDs to Clients.
   std::map<std::string, base::WeakPtr<Client>> job_id_to_client_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockBackgroundFetchDelegate);
 };
 
 }  // namespace content

@@ -35,6 +35,10 @@ class TestInitializationListener : public testing::EmptyTestEventListener {
  public:
   TestInitializationListener() : test_content_client_initializer_(nullptr) {}
 
+  TestInitializationListener(const TestInitializationListener&) = delete;
+  TestInitializationListener& operator=(const TestInitializationListener&) =
+      delete;
+
   void OnTestStart(const testing::TestInfo& test_info) override {
     test_content_client_initializer_ =
         new content::TestContentClientInitializer();
@@ -46,8 +50,6 @@ class TestInitializationListener : public testing::EmptyTestEventListener {
 
  private:
   content::TestContentClientInitializer* test_content_client_initializer_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestInitializationListener);
 };
 
 }  // namespace

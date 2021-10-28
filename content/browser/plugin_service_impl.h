@@ -44,6 +44,9 @@ class CONTENT_EXPORT PluginServiceImpl : public PluginService {
   // Returns the PluginServiceImpl singleton.
   static PluginServiceImpl* GetInstance();
 
+  PluginServiceImpl(const PluginServiceImpl&) = delete;
+  PluginServiceImpl& operator=(const PluginServiceImpl&) = delete;
+
   // PluginService implementation:
   void Init() override;
   bool GetPluginInfoArray(const GURL& url,
@@ -145,9 +148,7 @@ class CONTENT_EXPORT PluginServiceImpl : public PluginService {
   base::SequenceChecker plugin_list_sequence_checker_;
 
   // Used to detect if a given plugin is crashing over and over.
-  std::map<base::FilePath, std::vector<base::Time> > crash_times_;
-
-  DISALLOW_COPY_AND_ASSIGN(PluginServiceImpl);
+  std::map<base::FilePath, std::vector<base::Time>> crash_times_;
 };
 
 }  // namespace content

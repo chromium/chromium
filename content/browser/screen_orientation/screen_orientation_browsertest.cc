@@ -40,6 +40,10 @@ class ScreenOrientationBrowserTest : public ContentBrowserTest  {
  public:
   ScreenOrientationBrowserTest() = default;
 
+  ScreenOrientationBrowserTest(const ScreenOrientationBrowserTest&) = delete;
+  ScreenOrientationBrowserTest& operator=(const ScreenOrientationBrowserTest&) =
+      delete;
+
   // ContentBrowserTest:
   void SetUpOnMainThread() override {
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -111,14 +115,16 @@ class ScreenOrientationBrowserTest : public ContentBrowserTest  {
             .GetInt();
     return angle;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScreenOrientationBrowserTest);
 };
 
 class ScreenOrientationOOPIFBrowserTest : public ScreenOrientationBrowserTest {
  public:
   ScreenOrientationOOPIFBrowserTest() {}
+
+  ScreenOrientationOOPIFBrowserTest(const ScreenOrientationOOPIFBrowserTest&) =
+      delete;
+  ScreenOrientationOOPIFBrowserTest& operator=(
+      const ScreenOrientationOOPIFBrowserTest&) = delete;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     IsolateAllSitesForTesting(command_line);
@@ -129,9 +135,6 @@ class ScreenOrientationOOPIFBrowserTest : public ScreenOrientationBrowserTest {
     SetupCrossSiteRedirector(embedded_test_server());
     ScreenOrientationBrowserTest::SetUpOnMainThread();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScreenOrientationOOPIFBrowserTest);
 };
 
 // This test doesn't work on MacOS X but the reason is mostly because it is not

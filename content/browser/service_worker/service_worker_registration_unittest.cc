@@ -382,6 +382,10 @@ class ServiceWorkerActivationTest : public ServiceWorkerRegistrationTest,
  public:
   ServiceWorkerActivationTest() : ServiceWorkerRegistrationTest() {}
 
+  ServiceWorkerActivationTest(const ServiceWorkerActivationTest&) = delete;
+  ServiceWorkerActivationTest& operator=(const ServiceWorkerActivationTest&) =
+      delete;
+
   void SetUp() override {
     ServiceWorkerRegistrationTest::SetUp();
 
@@ -561,8 +565,6 @@ class ServiceWorkerActivationTest : public ServiceWorkerRegistrationTest,
   base::WeakPtr<ServiceWorkerContainerHost> container_host_;
   ServiceWorkerRemoteContainerEndpoint remote_endpoint_;
   int inflight_request_id_ = -1;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerActivationTest);
 };
 
 // Test activation triggered by finishing all requests.

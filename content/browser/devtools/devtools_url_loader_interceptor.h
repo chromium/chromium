@@ -80,10 +80,11 @@ class DevToolsURLLoaderInterceptor {
     AuthChallengeResponse(const std::u16string& username,
                           const std::u16string& password);
 
+    AuthChallengeResponse(const AuthChallengeResponse&) = delete;
+    AuthChallengeResponse& operator=(const AuthChallengeResponse&) = delete;
+
     const ResponseType response_type;
     const net::AuthCredentials credentials;
-
-    DISALLOW_COPY_AND_ASSIGN(AuthChallengeResponse);
   };
 
   struct Modifications {

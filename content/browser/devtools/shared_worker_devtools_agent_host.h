@@ -31,6 +31,10 @@ class SharedWorkerDevToolsAgentHost : public DevToolsAgentHostImpl {
       SharedWorkerHost* worker_host,
       const base::UnguessableToken& devtools_worker_token);
 
+  SharedWorkerDevToolsAgentHost(const SharedWorkerDevToolsAgentHost&) = delete;
+  SharedWorkerDevToolsAgentHost& operator=(
+      const SharedWorkerDevToolsAgentHost&) = delete;
+
   // DevToolsAgentHost override.
   BrowserContext* GetBrowserContext() override;
   std::string GetType() override;
@@ -77,8 +81,6 @@ class SharedWorkerDevToolsAgentHost : public DevToolsAgentHostImpl {
   SharedWorkerHost* worker_host_;
   base::UnguessableToken devtools_worker_token_;
   SharedWorkerInstance instance_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedWorkerDevToolsAgentHost);
 };
 
 }  // namespace content

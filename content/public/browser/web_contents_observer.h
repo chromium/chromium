@@ -95,6 +95,9 @@ struct Referrer;
 // from the WebContentsObserver API. http://crbug.com/173325
 class CONTENT_EXPORT WebContentsObserver {
  public:
+  WebContentsObserver(const WebContentsObserver&) = delete;
+  WebContentsObserver& operator=(const WebContentsObserver&) = delete;
+
   // Frames and Views ----------------------------------------------------------
 
   // Called when a RenderFrame for |render_frame_host| is created in the
@@ -777,8 +780,6 @@ class CONTENT_EXPORT WebContentsObserver {
   void ResetWebContents();
 
   WebContents* web_contents_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsObserver);
 };
 
 }  // namespace content

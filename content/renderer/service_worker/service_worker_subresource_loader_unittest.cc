@@ -524,6 +524,12 @@ const char kHistogramSubresourceFetchEvent[] =
     "ServiceWorker.FetchEvent.Subresource.Status";
 
 class ServiceWorkerSubresourceLoaderTest : public ::testing::Test {
+ public:
+  ServiceWorkerSubresourceLoaderTest(
+      const ServiceWorkerSubresourceLoaderTest&) = delete;
+  ServiceWorkerSubresourceLoaderTest& operator=(
+      const ServiceWorkerSubresourceLoaderTest&) = delete;
+
  protected:
   ServiceWorkerSubresourceLoaderTest()
       : fake_container_host_(&fake_controller_) {}
@@ -680,8 +686,6 @@ class ServiceWorkerSubresourceLoaderTest : public ::testing::Test {
   scoped_refptr<ControllerServiceWorkerConnector> connector_;
   FakeServiceWorkerContainerHost fake_container_host_;
   FakeControllerServiceWorker fake_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerSubresourceLoaderTest);
 };
 
 TEST_F(ServiceWorkerSubresourceLoaderTest, Basic) {

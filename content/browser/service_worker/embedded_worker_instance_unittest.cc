@@ -60,6 +60,11 @@ EmbeddedWorkerInstance::StatusCallback ReceiveStatus(
 
 class EmbeddedWorkerInstanceTest : public testing::Test,
                                    public EmbeddedWorkerInstance::Listener {
+ public:
+  EmbeddedWorkerInstanceTest(const EmbeddedWorkerInstanceTest&) = delete;
+  EmbeddedWorkerInstanceTest& operator=(const EmbeddedWorkerInstanceTest&) =
+      delete;
+
  protected:
   EmbeddedWorkerInstanceTest()
       : task_environment_(BrowserTaskEnvironment::IO_MAINLOOP) {}
@@ -221,9 +226,6 @@ class EmbeddedWorkerInstanceTest : public testing::Test,
   std::vector<EventLog> events_;
   base::test::ScopedFeatureList scoped_feature_list_;
   bool has_fetch_handler_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EmbeddedWorkerInstanceTest);
 };
 
 TEST_F(EmbeddedWorkerInstanceTest, StartAndStop) {

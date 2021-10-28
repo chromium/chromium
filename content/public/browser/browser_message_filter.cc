@@ -30,6 +30,9 @@ class BrowserMessageFilter::Internal : public IPC::MessageFilter {
  public:
   explicit Internal(BrowserMessageFilter* filter) : filter_(filter) {}
 
+  Internal(const Internal&) = delete;
+  Internal& operator=(const Internal&) = delete;
+
  private:
   ~Internal() override {}
 
@@ -103,8 +106,6 @@ class BrowserMessageFilter::Internal : public IPC::MessageFilter {
   }
 
   scoped_refptr<BrowserMessageFilter> filter_;
-
-  DISALLOW_COPY_AND_ASSIGN(Internal);
 };
 
 BrowserMessageFilter::BrowserMessageFilter() = default;

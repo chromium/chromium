@@ -22,6 +22,10 @@ namespace content {
 class GCController : public gin::Wrappable<GCController> {
  public:
   static gin::WrapperInfo kWrapperInfo;
+
+  GCController(const GCController&) = delete;
+  GCController& operator=(const GCController&) = delete;
+
   static void Install(blink::WebLocalFrame* frame);
 
  private:
@@ -50,8 +54,6 @@ class GCController : public gin::Wrappable<GCController> {
 
   blink::WebLocalFrame* const frame_;
   base::WeakPtrFactory<GCController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GCController);
 };
 
 }  // namespace content

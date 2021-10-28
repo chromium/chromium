@@ -803,6 +803,11 @@ class ReadyToCommitNavigationCallback : public WebContentsObserver {
       base::OnceCallback<void(NavigationHandle*)> callback)
       : WebContentsObserver(content), callback_(std::move(callback)) {}
 
+  ReadyToCommitNavigationCallback(const ReadyToCommitNavigationCallback&) =
+      delete;
+  ReadyToCommitNavigationCallback& operator=(
+      const ReadyToCommitNavigationCallback&) = delete;
+
  private:
   // WebContentsObserver:
   void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override {
@@ -811,8 +816,6 @@ class ReadyToCommitNavigationCallback : public WebContentsObserver {
   }
 
   base::OnceCallback<void(NavigationHandle*)> callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReadyToCommitNavigationCallback);
 };
 
 class FirstVisuallyNonEmptyPaintObserver : public WebContentsObserver {

@@ -268,12 +268,14 @@ class RenderWidgetHostViewChildFrameZoomForDSFTest
  public:
   RenderWidgetHostViewChildFrameZoomForDSFTest() {}
 
+  RenderWidgetHostViewChildFrameZoomForDSFTest(
+      const RenderWidgetHostViewChildFrameZoomForDSFTest&) = delete;
+  RenderWidgetHostViewChildFrameZoomForDSFTest& operator=(
+      const RenderWidgetHostViewChildFrameZoomForDSFTest&) = delete;
+
   void SetUp() override {
     SetUpEnvironment(true /* use_zoom_for_device_scale_factor */);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostViewChildFrameZoomForDSFTest);
 };
 
 // Tests that moving the child around does not affect the physical backing size.

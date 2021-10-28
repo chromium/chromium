@@ -100,6 +100,11 @@ class RenderWidgetHostLatencyTrackerTest
     ResetHistograms();
   }
 
+  RenderWidgetHostLatencyTrackerTest(
+      const RenderWidgetHostLatencyTrackerTest&) = delete;
+  RenderWidgetHostLatencyTrackerTest& operator=(
+      const RenderWidgetHostLatencyTrackerTest&) = delete;
+
   void ExpectUkmReported(ukm::SourceId source_id,
                          const char* event_name,
                          const std::vector<std::string>& metric_names,
@@ -159,7 +164,6 @@ class RenderWidgetHostLatencyTrackerTest
   ui::LatencyTracker viz_tracker_;
   RenderWidgetHostLatencyTrackerTestBrowserClient test_browser_client_;
   ContentBrowserClient* old_browser_client_;
-  DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostLatencyTrackerTest);
 };
 
 TEST_F(RenderWidgetHostLatencyTrackerTest, TestValidEventTiming) {

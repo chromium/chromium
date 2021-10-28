@@ -30,6 +30,10 @@ class Page;
 // An interface consisting of methods that can be called to use Message ports.
 class CONTENT_EXPORT MessagePortProvider {
  public:
+  MessagePortProvider() = delete;
+  MessagePortProvider(const MessagePortProvider&) = delete;
+  MessagePortProvider& operator=(const MessagePortProvider&) = delete;
+
   // Posts a MessageEvent to the main frame using the given source and target
   // origins and data.
   // See https://html.spec.whatwg.org/multipage/comms.html#messageevent for
@@ -59,9 +63,6 @@ class CONTENT_EXPORT MessagePortProvider {
       const std::u16string& data,
       std::vector<blink::WebMessagePort> ports);
 #endif  // OS_FUCHSIA || BUILDFLAG(IS_CHROMECAST)
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(MessagePortProvider);
 };
 
 }  // namespace content

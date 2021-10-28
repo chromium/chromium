@@ -42,6 +42,12 @@ const char kTestSubdomainHost[] = "subdomain.crossorigin.example.com";
 
 // Tests end to end functionality of CORS access origin allow lists.
 class CorsOriginPatternSetterBrowserTest : public ContentBrowserTest {
+ public:
+  CorsOriginPatternSetterBrowserTest(
+      const CorsOriginPatternSetterBrowserTest&) = delete;
+  CorsOriginPatternSetterBrowserTest& operator=(
+      const CorsOriginPatternSetterBrowserTest&) = delete;
+
  protected:
   CorsOriginPatternSetterBrowserTest() = default;
 
@@ -134,8 +140,6 @@ class CorsOriginPatternSetterBrowserTest : public ContentBrowserTest {
   const std::u16string pass_string_ = u"PASS";
   const std::u16string fail_string_ = u"FAIL";
   const std::u16string script_ = u"reason";
-
-  DISALLOW_COPY_AND_ASSIGN(CorsOriginPatternSetterBrowserTest);
 };
 
 // Tests if specifying only protocol allows all hosts to pass.

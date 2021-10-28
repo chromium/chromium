@@ -55,6 +55,10 @@ class CONTENT_EXPORT LegacyCacheStorageManager : public CacheStorageManager {
   static scoped_refptr<LegacyCacheStorageManager> CreateForTesting(
       LegacyCacheStorageManager* old_manager);
 
+  LegacyCacheStorageManager(const LegacyCacheStorageManager&) = delete;
+  LegacyCacheStorageManager& operator=(const LegacyCacheStorageManager&) =
+      delete;
+
   // Map a database identifier (computed from a storage key) to the path.
   static base::FilePath ConstructStorageKeyPath(
       const base::FilePath& root_path,
@@ -168,8 +172,6 @@ class CONTENT_EXPORT LegacyCacheStorageManager : public CacheStorageManager {
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(LegacyCacheStorageManager);
 };
 
 }  // namespace content

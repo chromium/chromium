@@ -237,6 +237,9 @@ class CacheStorageManagerTest : public testing::Test {
         storage_key2_(blink::StorageKey(
             url::Origin::Create(GURL("http://example2.com")))) {}
 
+  CacheStorageManagerTest(const CacheStorageManagerTest&) = delete;
+  CacheStorageManagerTest& operator=(const CacheStorageManagerTest&) = delete;
+
   void SetUp() override {
     base::FilePath temp_dir_path;
     if (!MemoryOnly())
@@ -795,9 +798,6 @@ class CacheStorageManagerTest : public testing::Test {
   const blink::StorageKey storage_key2_;
 
   int64_t callback_usage_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CacheStorageManagerTest);
 };
 
 class CacheStorageManagerMemoryOnlyTest : public CacheStorageManagerTest {
@@ -2343,6 +2343,11 @@ TEST_P(CacheStorageManagerTestP, StoragePutPartialContentForBackgroundFetch) {
 }
 
 class CacheStorageQuotaClientTest : public CacheStorageManagerTest {
+ public:
+  CacheStorageQuotaClientTest(const CacheStorageQuotaClientTest&) = delete;
+  CacheStorageQuotaClientTest& operator=(const CacheStorageQuotaClientTest&) =
+      delete;
+
  protected:
   CacheStorageQuotaClientTest() = default;
 
@@ -2414,9 +2419,6 @@ class CacheStorageQuotaClientTest : public CacheStorageManagerTest {
   blink::mojom::QuotaStatusCode callback_status_;
   int64_t callback_quota_usage_ = 0;
   std::vector<blink::StorageKey> callback_storage_keys_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CacheStorageQuotaClientTest);
 };
 
 class CacheStorageQuotaClientDiskOnlyTest : public CacheStorageQuotaClientTest {

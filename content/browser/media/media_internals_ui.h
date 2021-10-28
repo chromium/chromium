@@ -15,8 +15,8 @@ class MediaInternalsUI : public WebUIController {
  public:
   explicit MediaInternalsUI(WebUI* web_ui);
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(MediaInternalsUI);
+  MediaInternalsUI(const MediaInternalsUI&) = delete;
+  MediaInternalsUI& operator=(const MediaInternalsUI&) = delete;
 };
 
 }  // namespace content

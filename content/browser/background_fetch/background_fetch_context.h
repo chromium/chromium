@@ -57,6 +57,9 @@ class CONTENT_EXPORT BackgroundFetchContext
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
       scoped_refptr<DevToolsBackgroundServicesContextImpl> devtools_context);
 
+  BackgroundFetchContext(const BackgroundFetchContext&) = delete;
+  BackgroundFetchContext& operator=(const BackgroundFetchContext&) = delete;
+
   void Initialize();
 
   // Called by the StoragePartitionImpl destructor.
@@ -214,8 +217,6 @@ class CONTENT_EXPORT BackgroundFetchContext
 
   base::WeakPtrFactory<BackgroundFetchContext> weak_factory_{
       this};  // Must be last.
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundFetchContext);
 };
 
 }  // namespace content

@@ -42,6 +42,9 @@ class WebTestDevToolsBindings::SecondaryObserver : public WebContentsObserver {
       : WebContentsObserver(bindings->inspected_contents()),
         bindings_(bindings) {}
 
+  SecondaryObserver(const SecondaryObserver&) = delete;
+  SecondaryObserver& operator=(const SecondaryObserver&) = delete;
+
   // WebContentsObserver implementation.
   void DocumentAvailableInMainFrame(
       RenderFrameHost* render_frame_host) override {
@@ -52,7 +55,6 @@ class WebTestDevToolsBindings::SecondaryObserver : public WebContentsObserver {
 
  private:
   WebTestDevToolsBindings* bindings_;
-  DISALLOW_COPY_AND_ASSIGN(SecondaryObserver);
 };
 
 // static.

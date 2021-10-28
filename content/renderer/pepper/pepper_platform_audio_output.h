@@ -36,6 +36,10 @@ class PepperPlatformAudioOutput
       const blink::LocalFrameToken& source_frame_token,
       AudioHelper* client);
 
+  PepperPlatformAudioOutput(const PepperPlatformAudioOutput&) = delete;
+  PepperPlatformAudioOutput& operator=(const PepperPlatformAudioOutput&) =
+      delete;
+
   // The following three methods are all called on main thread.
 
   // Starts the playback. Returns false on error or if called before the
@@ -94,8 +98,6 @@ class PepperPlatformAudioOutput
 
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperPlatformAudioOutput);
 };
 
 }  // namespace content

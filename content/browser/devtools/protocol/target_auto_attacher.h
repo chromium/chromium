@@ -44,6 +44,9 @@ class TargetAutoAttacher {
     ~Client() override = default;
   };
 
+  TargetAutoAttacher(const TargetAutoAttacher&) = delete;
+  TargetAutoAttacher& operator=(const TargetAutoAttacher&) = delete;
+
   virtual ~TargetAutoAttacher();
 
   void AddClient(Client* client,
@@ -80,8 +83,6 @@ class TargetAutoAttacher {
  private:
   base::ObserverList<Client, false, true> clients_;
   base::flat_set<Client*> clients_requesting_wait_for_debugger_;
-
-  DISALLOW_COPY_AND_ASSIGN(TargetAutoAttacher);
 };
 
 class RendererAutoAttacherBase : public TargetAutoAttacher {

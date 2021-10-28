@@ -62,6 +62,9 @@ class PpapiPluginProcessHost : public BrowserChildProcessHostDelegate,
     ~PluginClient() override {}
   };
 
+  PpapiPluginProcessHost(const PpapiPluginProcessHost&) = delete;
+  PpapiPluginProcessHost& operator=(const PpapiPluginProcessHost&) = delete;
+
   ~PpapiPluginProcessHost() override;
 
   static PpapiPluginProcessHost* CreatePluginHost(
@@ -159,8 +162,6 @@ class PpapiPluginProcessHost : public BrowserChildProcessHostDelegate,
   const absl::optional<url::Origin> origin_lock_;
 
   std::unique_ptr<BrowserChildProcessHostImpl> process_;
-
-  DISALLOW_COPY_AND_ASSIGN(PpapiPluginProcessHost);
 };
 
 class PpapiPluginProcessHostIterator

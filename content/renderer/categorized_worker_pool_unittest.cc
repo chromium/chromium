@@ -109,6 +109,9 @@ class ClosureTask : public cc::Task {
   explicit ClosureTask(base::OnceClosure closure)
       : closure_(std::move(closure)) {}
 
+  ClosureTask(const ClosureTask&) = delete;
+  ClosureTask& operator=(const ClosureTask&) = delete;
+
   // Overridden from cc::Task:
   void RunOnWorkerThread() override { std::move(closure_).Run(); }
 
@@ -117,8 +120,6 @@ class ClosureTask : public cc::Task {
 
  private:
   base::OnceClosure closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClosureTask);
 };
 
 }  // namespace

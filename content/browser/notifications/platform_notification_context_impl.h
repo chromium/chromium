@@ -63,6 +63,11 @@ class CONTENT_EXPORT PlatformNotificationContextImpl
       BrowserContext* browser_context,
       const scoped_refptr<ServiceWorkerContextWrapper>& service_worker_context);
 
+  PlatformNotificationContextImpl(const PlatformNotificationContextImpl&) =
+      delete;
+  PlatformNotificationContextImpl& operator=(
+      const PlatformNotificationContextImpl&) = delete;
+
   // To be called to initialize the instance.
   void Initialize();
 
@@ -349,8 +354,6 @@ class CONTENT_EXPORT PlatformNotificationContextImpl
 
   // Flag if the |browser_context_| has been shutdown already.
   bool has_shutdown_;
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformNotificationContextImpl);
 };
 
 }  // namespace content

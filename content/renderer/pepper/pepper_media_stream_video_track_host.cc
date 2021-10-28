@@ -170,6 +170,9 @@ class PepperMediaStreamVideoTrackHost::FrameDeliverer
   FrameDeliverer(scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
                  const blink::VideoCaptureDeliverFrameCB& new_frame_callback);
 
+  FrameDeliverer(const FrameDeliverer&) = delete;
+  FrameDeliverer& operator=(const FrameDeliverer&) = delete;
+
   void DeliverVideoFrame(scoped_refptr<media::VideoFrame> frame);
 
  private:
@@ -180,8 +183,6 @@ class PepperMediaStreamVideoTrackHost::FrameDeliverer
 
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
   blink::VideoCaptureDeliverFrameCB new_frame_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameDeliverer);
 };
 
 PepperMediaStreamVideoTrackHost::FrameDeliverer::FrameDeliverer(

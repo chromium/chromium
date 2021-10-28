@@ -72,6 +72,11 @@ class CONTENT_EXPORT ControllerServiceWorkerConnector
           remote_controller,
       const std::string& client_id);
 
+  ControllerServiceWorkerConnector(const ControllerServiceWorkerConnector&) =
+      delete;
+  ControllerServiceWorkerConnector& operator=(
+      const ControllerServiceWorkerConnector&) = delete;
+
   // This may return nullptr if the connection to the ContainerHost (in the
   // browser process) is already terminated.
   blink::mojom::ControllerServiceWorker* GetControllerServiceWorker(
@@ -123,8 +128,6 @@ class CONTENT_EXPORT ControllerServiceWorkerConnector
   // The web-exposed client id, used for FetchEvent#clientId (i.e.,
   // ServiceWorkerContainerHost::client_uuid).
   std::string client_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ControllerServiceWorkerConnector);
 };
 
 }  // namespace content

@@ -18,11 +18,13 @@ class SpeechRecognitionEventListener;
 class CONTENT_EXPORT SpeechRecognizer
     : public base::RefCountedThreadSafe<SpeechRecognizer> {
  public:
-
   SpeechRecognizer(SpeechRecognitionEventListener* listener, int session_id)
       : listener_(listener), session_id_(session_id) {
     DCHECK(listener_);
   }
+
+  SpeechRecognizer(const SpeechRecognizer&) = delete;
+  SpeechRecognizer& operator=(const SpeechRecognizer&) = delete;
 
   virtual void StartRecognition(const std::string& device_id) = 0;
   virtual void AbortRecognition() = 0;
@@ -40,8 +42,6 @@ class CONTENT_EXPORT SpeechRecognizer
  private:
   SpeechRecognitionEventListener* listener_;
   int session_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(SpeechRecognizer);
 };
 
 }  // namespace content

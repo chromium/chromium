@@ -25,6 +25,9 @@ namespace {
 
 class StoppedObserver : public base::RefCountedThreadSafe<StoppedObserver> {
  public:
+  StoppedObserver(const StoppedObserver&) = delete;
+  StoppedObserver& operator=(const StoppedObserver&) = delete;
+
   static void StartObserving(ServiceWorkerContextWrapper* context,
                              int64_t service_worker_version_id,
                              base::OnceClosure completion_callback_ui) {
@@ -81,8 +84,6 @@ class StoppedObserver : public base::RefCountedThreadSafe<StoppedObserver> {
 
   std::unique_ptr<Observer> inner_observer_;
   base::OnceClosure completion_callback_ui_;
-
-  DISALLOW_COPY_AND_ASSIGN(StoppedObserver);
 };
 
 void StopServiceWorkerForRegistration(

@@ -20,6 +20,9 @@ class ThemeHelper : public ui::NativeThemeObserver {
  public:
   static ThemeHelper* GetInstance();
 
+  ThemeHelper(const ThemeHelper&) = delete;
+  ThemeHelper& operator=(const ThemeHelper&) = delete;
+
   void SendSystemColorInfo(mojom::Renderer* renderer) const;
 
  private:
@@ -32,8 +35,6 @@ class ThemeHelper : public ui::NativeThemeObserver {
 
   base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
       theme_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ThemeHelper);
 };
 
 }  // namespace content

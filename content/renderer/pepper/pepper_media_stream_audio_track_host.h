@@ -33,6 +33,11 @@ class PepperMediaStreamAudioTrackHost : public PepperMediaStreamTrackHostBase {
                                   PP_Resource resource,
                                   const blink::WebMediaStreamTrack& track);
 
+  PepperMediaStreamAudioTrackHost(const PepperMediaStreamAudioTrackHost&) =
+      delete;
+  PepperMediaStreamAudioTrackHost& operator=(
+      const PepperMediaStreamAudioTrackHost&) = delete;
+
  private:
   // A helper class for receiving audio samples in the audio thread.
   // This class is created and destroyed on the renderer main thread.
@@ -169,8 +174,6 @@ class PepperMediaStreamAudioTrackHost : public PepperMediaStreamTrackHostBase {
   bool connected_;
 
   AudioSink audio_sink_;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperMediaStreamAudioTrackHost);
 };
 
 }  // namespace content

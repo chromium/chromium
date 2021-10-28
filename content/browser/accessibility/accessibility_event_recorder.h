@@ -46,11 +46,12 @@ class CONTENT_EXPORT AccessibilityEventRecorder : public ui::AXEventRecorder {
 
   AccessibilityEventRecorder(BrowserAccessibilityManager* manager);
 
+  AccessibilityEventRecorder(const AccessibilityEventRecorder&) = delete;
+  AccessibilityEventRecorder& operator=(const AccessibilityEventRecorder&) =
+      delete;
+
  protected:
   BrowserAccessibilityManager* const manager_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityEventRecorder);
 };
 
 }  // namespace content

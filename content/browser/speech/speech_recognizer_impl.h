@@ -53,6 +53,9 @@ class CONTENT_EXPORT SpeechRecognizerImpl
                        bool provisional_results,
                        SpeechRecognitionEngine* engine);
 
+  SpeechRecognizerImpl(const SpeechRecognizerImpl&) = delete;
+  SpeechRecognizerImpl& operator=(const SpeechRecognizerImpl&) = delete;
+
   // SpeechRecognizer methods.
   void StartRecognition(const std::string& device_id) override;
   void AbortRecognition() override;
@@ -186,7 +189,6 @@ class CONTENT_EXPORT SpeechRecognizerImpl
   std::unique_ptr<SpeechRecognizerImpl::OnDataConverter> audio_converter_;
 
   base::WeakPtrFactory<SpeechRecognizerImpl> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(SpeechRecognizerImpl);
 };
 
 }  // namespace content

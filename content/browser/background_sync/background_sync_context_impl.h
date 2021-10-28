@@ -42,6 +42,10 @@ class CONTENT_EXPORT BackgroundSyncContextImpl
 
   BackgroundSyncContextImpl();
 
+  BackgroundSyncContextImpl(const BackgroundSyncContextImpl&) = delete;
+  BackgroundSyncContextImpl& operator=(const BackgroundSyncContextImpl&) =
+      delete;
+
   // Called when StoragePartition is being setup.
   void Init(
       const scoped_refptr<ServiceWorkerContextWrapper>& service_worker_context,
@@ -118,8 +122,6 @@ class CONTENT_EXPORT BackgroundSyncContextImpl
       test_wakeup_delta_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundSyncContextImpl);
 };
 
 }  // namespace content

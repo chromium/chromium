@@ -34,6 +34,9 @@ class CONTENT_EXPORT PaymentAppContextImpl
  public:
   PaymentAppContextImpl();
 
+  PaymentAppContextImpl(const PaymentAppContextImpl&) = delete;
+  PaymentAppContextImpl& operator=(const PaymentAppContextImpl&) = delete;
+
   // Init() must be called before using this. It is separate from the
   // constructor for tests that want to inject a `service_worker_context`.
   void Init(scoped_refptr<ServiceWorkerContextWrapper> service_worker_context);
@@ -59,8 +62,6 @@ class CONTENT_EXPORT PaymentAppContextImpl
   // destructor or when the channel is closed via
   // PaymentManagerHadConnectionError.
   std::map<PaymentManager*, std::unique_ptr<PaymentManager>> payment_managers_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentAppContextImpl);
 };
 
 }  // namespace content

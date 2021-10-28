@@ -182,6 +182,10 @@ class CONTENT_EXPORT ForwardingAudioStreamFactory final
       media::UserInputMonitorBase* user_input_monitor,
       std::unique_ptr<AudioStreamBrokerFactory> factory);
 
+  ForwardingAudioStreamFactory(const ForwardingAudioStreamFactory&) = delete;
+  ForwardingAudioStreamFactory& operator=(const ForwardingAudioStreamFactory&) =
+      delete;
+
   ~ForwardingAudioStreamFactory() final;
 
   const base::UnguessableToken& group_id() const {
@@ -219,8 +223,6 @@ class CONTENT_EXPORT ForwardingAudioStreamFactory final
   base::ScopedClosureRunner capture_handle_;
 
   base::WeakPtrFactory<ForwardingAudioStreamFactory> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ForwardingAudioStreamFactory);
 };
 
 }  // namespace content

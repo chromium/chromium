@@ -72,6 +72,9 @@ class MediaSessionData : public base::SupportsUserData::Data {
  public:
   MediaSessionData() = default;
 
+  MediaSessionData(const MediaSessionData&) = delete;
+  MediaSessionData& operator=(const MediaSessionData&) = delete;
+
   static MediaSessionData* GetOrCreate(BrowserContext* context) {
     auto* data = static_cast<MediaSessionData*>(
         context->GetUserData(kMediaSessionDataName));
@@ -89,8 +92,6 @@ class MediaSessionData : public base::SupportsUserData::Data {
 
  private:
   base::UnguessableToken source_id_ = base::UnguessableToken::Create();
-
-  DISALLOW_COPY_AND_ASSIGN(MediaSessionData);
 };
 
 size_t ComputeFrameDepth(RenderFrameHost* rfh,

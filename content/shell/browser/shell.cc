@@ -65,6 +65,10 @@ class Shell::DevToolsWebContentsObserver : public WebContentsObserver {
   DevToolsWebContentsObserver(Shell* shell, WebContents* web_contents)
       : WebContentsObserver(web_contents), shell_(shell) {}
 
+  DevToolsWebContentsObserver(const DevToolsWebContentsObserver&) = delete;
+  DevToolsWebContentsObserver& operator=(const DevToolsWebContentsObserver&) =
+      delete;
+
   // WebContentsObserver
   void WebContentsDestroyed() override {
     shell_->OnDevToolsWebContentsDestroyed();
@@ -72,8 +76,6 @@ class Shell::DevToolsWebContentsObserver : public WebContentsObserver {
 
  private:
   Shell* shell_;
-
-  DISALLOW_COPY_AND_ASSIGN(DevToolsWebContentsObserver);
 };
 
 Shell::Shell(std::unique_ptr<WebContents> web_contents,

@@ -76,6 +76,9 @@ class CONTENT_EXPORT AppCacheGroup
                 const GURL& manifest_url,
                 int64_t group_id);
 
+  AppCacheGroup(const AppCacheGroup&) = delete;
+  AppCacheGroup& operator=(const AppCacheGroup&) = delete;
+
   // Adds/removes an update observer, the AppCacheGroup does not take
   // ownership of the observer.
   void AddUpdateObserver(UpdateObserver* observer);
@@ -213,8 +216,6 @@ class CONTENT_EXPORT AppCacheGroup
   FRIEND_TEST_ALL_PREFIXES(
       content::appcache_cache_helper_unittest::AppCacheCacheHelperTest,
       IfModifiedSinceUpgradeParserVersion0);
-
-  DISALLOW_COPY_AND_ASSIGN(AppCacheGroup);
 };
 
 }  // namespace content

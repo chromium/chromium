@@ -57,6 +57,9 @@ class CONTENT_EXPORT PPB_ImageData_Impl
   PPB_ImageData_Impl(PP_Instance instance,
                      PPB_ImageData_Shared::ImageDataType type);
 
+  PPB_ImageData_Impl(const PPB_ImageData_Impl&) = delete;
+  PPB_ImageData_Impl& operator=(const PPB_ImageData_Impl&) = delete;
+
   // Constructor used for unittests. The ImageData is always allocated locally.
   struct ForTest {};
   PPB_ImageData_Impl(PP_Instance instance, ForTest);
@@ -108,8 +111,6 @@ class CONTENT_EXPORT PPB_ImageData_Impl
   int width_;
   int height_;
   std::unique_ptr<Backend> backend_;
-
-  DISALLOW_COPY_AND_ASSIGN(PPB_ImageData_Impl);
 };
 
 class ImageDataPlatformBackend : public PPB_ImageData_Impl::Backend {

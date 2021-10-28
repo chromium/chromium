@@ -65,6 +65,11 @@ class IndexedDBActiveBlobRegistryTest : public testing::Test {
                                 &report_outstanding_state_),
             base::BindRepeating(&ReportUnusedBlob, &unused_blobs_))) {}
 
+  IndexedDBActiveBlobRegistryTest(const IndexedDBActiveBlobRegistryTest&) =
+      delete;
+  IndexedDBActiveBlobRegistryTest& operator=(
+      const IndexedDBActiveBlobRegistryTest&) = delete;
+
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
   IndexedDBActiveBlobRegistry* registry() const { return registry_.get(); }
 
@@ -76,8 +81,6 @@ class IndexedDBActiveBlobRegistryTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<IndexedDBActiveBlobRegistry> registry_;
-
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBActiveBlobRegistryTest);
 };
 
 TEST_F(IndexedDBActiveBlobRegistryTest, DeleteUnused) {

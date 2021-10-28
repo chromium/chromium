@@ -34,6 +34,9 @@ class PepperWebPluginImpl : public blink::WebPlugin {
                       const blink::WebPluginParams& params,
                       RenderFrameImpl* render_frame);
 
+  PepperWebPluginImpl(const PepperWebPluginImpl&) = delete;
+  PepperWebPluginImpl& operator=(const PepperWebPluginImpl&) = delete;
+
   PepperPluginInstanceImpl* instance() { return instance_.get(); }
 
   // blink::WebPlugin implementation.
@@ -120,8 +123,6 @@ class PepperWebPluginImpl : public blink::WebPlugin {
   gfx::Rect plugin_rect_;
   PP_Var instance_object_;
   blink::WebPluginContainer* container_;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperWebPluginImpl);
 };
 
 }  // namespace content

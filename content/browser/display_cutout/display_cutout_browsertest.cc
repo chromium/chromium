@@ -55,6 +55,9 @@ class TestWebContentsObserver : public WebContentsObserver {
   explicit TestWebContentsObserver(content::WebContents* web_contents)
       : WebContentsObserver(web_contents) {}
 
+  TestWebContentsObserver(const TestWebContentsObserver&) = delete;
+  TestWebContentsObserver& operator=(const TestWebContentsObserver&) = delete;
+
   // WebContentsObserver override.
   void ViewportFitChanged(blink::mojom::ViewportFit value) override {
     value_ = value;
@@ -79,8 +82,6 @@ class TestWebContentsObserver : public WebContentsObserver {
   base::RunLoop run_loop_;
   absl::optional<blink::mojom::ViewportFit> value_;
   blink::mojom::ViewportFit wanted_value_ = blink::mojom::ViewportFit::kAuto;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWebContentsObserver);
 };
 
 // Used for forcing a specific |blink::mojom::DisplayMode| during a test.
@@ -116,6 +117,9 @@ const char kTestHTML[] =
 class DisplayCutoutBrowserTest : public ContentBrowserTest {
  public:
   DisplayCutoutBrowserTest() = default;
+
+  DisplayCutoutBrowserTest(const DisplayCutoutBrowserTest&) = delete;
+  DisplayCutoutBrowserTest& operator=(const DisplayCutoutBrowserTest&) = delete;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
@@ -216,8 +220,6 @@ class DisplayCutoutBrowserTest : public ContentBrowserTest {
 
  private:
   base::ScopedTempDir temp_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayCutoutBrowserTest);
 };
 
 // The viewport meta tag is only enabled on Android.

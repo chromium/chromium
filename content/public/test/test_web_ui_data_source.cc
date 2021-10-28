@@ -17,6 +17,11 @@ class WebUIDataSourceImplWithPublicData : public WebUIDataSourceImpl {
     return new WebUIDataSourceImplWithPublicData(source_name);
   }
 
+  WebUIDataSourceImplWithPublicData(const WebUIDataSourceImplWithPublicData&) =
+      delete;
+  WebUIDataSourceImplWithPublicData& operator=(
+      const WebUIDataSourceImplWithPublicData&) = delete;
+
   using WebUIDataSourceImpl::GetLocalizedStrings;
   using WebUIDataSourceImpl::PathToIdrOrDefault;
 
@@ -24,9 +29,6 @@ class WebUIDataSourceImplWithPublicData : public WebUIDataSourceImpl {
   explicit WebUIDataSourceImplWithPublicData(const std::string& source_name)
       : WebUIDataSourceImpl(source_name) {}
   ~WebUIDataSourceImplWithPublicData() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebUIDataSourceImplWithPublicData);
 };
 
 class TestWebUIDataSourceImpl : public TestWebUIDataSource {

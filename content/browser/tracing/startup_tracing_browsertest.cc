@@ -192,6 +192,9 @@ class StartupTracingTest
  public:
   StartupTracingTest() = default;
 
+  StartupTracingTest(const StartupTracingTest&) = delete;
+  StartupTracingTest& operator=(const StartupTracingTest&) = delete;
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kTraceStartup);
     if (GetFinishType() == FinishType::kWaitForTimeout) {
@@ -301,8 +304,6 @@ class StartupTracingTest
  private:
   base::test::ScopedRunLoopTimeout increased_timeout_{
       FROM_HERE, TestTimeouts::test_launcher_timeout()};
-
-  DISALLOW_COPY_AND_ASSIGN(StartupTracingTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(

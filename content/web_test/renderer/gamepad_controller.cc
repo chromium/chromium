@@ -42,6 +42,10 @@ class GamepadControllerBindings
  public:
   static gin::WrapperInfo kWrapperInfo;
 
+  GamepadControllerBindings(const GamepadControllerBindings&) = delete;
+  GamepadControllerBindings& operator=(const GamepadControllerBindings&) =
+      delete;
+
   static void Install(base::WeakPtr<GamepadController> controller,
                       blink::WebLocalFrame* frame);
 
@@ -65,8 +69,6 @@ class GamepadControllerBindings
   void SetDualRumbleVibrationActuator(int index, bool enabled);
 
   base::WeakPtr<GamepadController> controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(GamepadControllerBindings);
 };
 
 gin::WrapperInfo GamepadControllerBindings::kWrapperInfo = {

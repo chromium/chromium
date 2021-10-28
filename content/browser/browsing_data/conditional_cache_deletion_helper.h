@@ -29,6 +29,11 @@ class CONTENT_EXPORT ConditionalCacheDeletionHelper {
       disk_cache::Backend* cache,
       base::RepeatingCallback<bool(const disk_cache::Entry*)> condition);
 
+  ConditionalCacheDeletionHelper(const ConditionalCacheDeletionHelper&) =
+      delete;
+  ConditionalCacheDeletionHelper& operator=(
+      const ConditionalCacheDeletionHelper&) = delete;
+
   // A convenience method to create a condition matching cache entries whose
   // last modified time is between |begin_time| (inclusively), |end_time|
   // (exclusively) and whose URL obtained by passing the key to the
@@ -66,8 +71,6 @@ class CONTENT_EXPORT ConditionalCacheDeletionHelper {
 
   std::unique_ptr<disk_cache::Backend::Iterator> iterator_;
   disk_cache::Entry* previous_entry_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConditionalCacheDeletionHelper);
 };
 
 }  // namespace content

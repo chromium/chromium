@@ -17,6 +17,9 @@ class WakeLockServiceImpl final
   static void Create(RenderFrameHost*,
                      mojo::PendingReceiver<blink::mojom::WakeLockService>);
 
+  WakeLockServiceImpl(const WakeLockServiceImpl&) = delete;
+  WakeLockServiceImpl& operator=(const WakeLockServiceImpl&) = delete;
+
   // WakeLockService implementation.
   void GetWakeLock(device::mojom::WakeLockType,
                    device::mojom::WakeLockReason,
@@ -26,8 +29,6 @@ class WakeLockServiceImpl final
  private:
   WakeLockServiceImpl(RenderFrameHost*,
                       mojo::PendingReceiver<blink::mojom::WakeLockService>);
-
-  DISALLOW_COPY_AND_ASSIGN(WakeLockServiceImpl);
 };
 
 }  // namespace content

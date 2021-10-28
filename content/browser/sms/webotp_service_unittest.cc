@@ -132,6 +132,10 @@ class Service {
 };
 
 class WebOTPServiceTest : public RenderViewHostTestHarness {
+ public:
+  WebOTPServiceTest(const WebOTPServiceTest&) = delete;
+  WebOTPServiceTest& operator=(const WebOTPServiceTest&) = delete;
+
  protected:
   WebOTPServiceTest() {
     ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
@@ -285,8 +289,6 @@ class WebOTPServiceTest : public RenderViewHostTestHarness {
  private:
   base::HistogramTester histogram_tester_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebOTPServiceTest);
 };
 
 }  // namespace

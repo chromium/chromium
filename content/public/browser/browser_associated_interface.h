@@ -74,6 +74,9 @@ class BrowserAssociatedInterface : public Interface {
     explicit InternalState(Interface* impl)
         : impl_(impl), receivers_(absl::in_place) {}
 
+    InternalState(const InternalState&) = delete;
+    InternalState& operator=(const InternalState&) = delete;
+
     void ClearReceivers() {
       if (!BrowserThread::CurrentlyOn(BrowserThread::IO)) {
         GetIOThreadTaskRunner({})->PostTask(
@@ -100,8 +103,6 @@ class BrowserAssociatedInterface : public Interface {
 
     Interface* impl_;
     absl::optional<mojo::AssociatedReceiverSet<Interface>> receivers_;
-
-    DISALLOW_COPY_AND_ASSIGN(InternalState);
   };
 
   scoped_refptr<InternalState> internal_state_;

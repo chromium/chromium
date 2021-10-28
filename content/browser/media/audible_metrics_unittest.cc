@@ -30,6 +30,9 @@ class AudibleMetricsTest : public RenderViewHostTestHarness {
  public:
   AudibleMetricsTest() = default;
 
+  AudibleMetricsTest(const AudibleMetricsTest&) = delete;
+  AudibleMetricsTest& operator=(const AudibleMetricsTest&) = delete;
+
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
     audible_metrics_ = std::make_unique<AudibleMetrics>();
@@ -76,8 +79,6 @@ class AudibleMetricsTest : public RenderViewHostTestHarness {
   base::SimpleTestTickClock clock_;
   base::HistogramTester histogram_tester_;
   base::UserActionTester user_action_tester_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudibleMetricsTest);
 };
 
 }  // anonymous namespace

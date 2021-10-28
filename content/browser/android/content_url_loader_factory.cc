@@ -110,6 +110,9 @@ class ContentURLLoader : public network::mojom::URLLoader {
                               std::move(client_remote));
   }
 
+  ContentURLLoader(const ContentURLLoader&) = delete;
+  ContentURLLoader& operator=(const ContentURLLoader&) = delete;
+
   // network::mojom::URLLoader:
   void FollowRedirect(
       const std::vector<std::string>& removed_headers,
@@ -292,8 +295,6 @@ class ContentURLLoader : public network::mojom::URLLoader {
   // It is used to set some of the URLLoaderCompletionStatus data passed back
   // to the URLLoaderClients (eg SimpleURLLoader).
   size_t total_bytes_written_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentURLLoader);
 };
 
 }  // namespace

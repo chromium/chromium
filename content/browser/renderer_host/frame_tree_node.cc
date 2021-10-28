@@ -52,6 +52,9 @@ class FrameTreeNode::OpenerDestroyedObserver : public FrameTreeNode::Observer {
   OpenerDestroyedObserver(FrameTreeNode* owner, bool observing_original_opener)
       : owner_(owner), observing_original_opener_(observing_original_opener) {}
 
+  OpenerDestroyedObserver(const OpenerDestroyedObserver&) = delete;
+  OpenerDestroyedObserver& operator=(const OpenerDestroyedObserver&) = delete;
+
   // FrameTreeNode::Observer
   void OnFrameTreeNodeDestroyed(FrameTreeNode* node) override {
     if (observing_original_opener_) {
@@ -72,8 +75,6 @@ class FrameTreeNode::OpenerDestroyedObserver : public FrameTreeNode::Observer {
  private:
   FrameTreeNode* owner_;
   bool observing_original_opener_;
-
-  DISALLOW_COPY_AND_ASSIGN(OpenerDestroyedObserver);
 };
 
 const int FrameTreeNode::kFrameTreeNodeInvalidId = -1;

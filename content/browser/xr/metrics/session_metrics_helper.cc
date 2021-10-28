@@ -30,9 +30,14 @@ constexpr base::TimeDelta kMaximumHeadsetSessionGap(base::Seconds(0));
 // Handles the lifetime of the helper which is attached to a WebContents.
 class SessionMetricsHelperData : public base::SupportsUserData::Data {
  public:
+  SessionMetricsHelperData() = delete;
+
   explicit SessionMetricsHelperData(
       SessionMetricsHelper* session_metrics_helper)
       : session_metrics_helper_(session_metrics_helper) {}
+
+  SessionMetricsHelperData(const SessionMetricsHelperData&) = delete;
+  SessionMetricsHelperData& operator=(const SessionMetricsHelperData&) = delete;
 
   ~SessionMetricsHelperData() override { delete session_metrics_helper_; }
 
@@ -40,8 +45,6 @@ class SessionMetricsHelperData : public base::SupportsUserData::Data {
 
  private:
   SessionMetricsHelper* session_metrics_helper_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(SessionMetricsHelperData);
 };
 
 // Helper method to log out both the mode and the initially requested features
