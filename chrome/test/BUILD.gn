@@ -9302,6 +9302,7 @@ if (!is_android && !is_fuchsia) {
       configs += [ "//build/config:precompiled_headers" ]
 
       data = [
+        "//chrome/test/data/enterprise/connectors/file_system/captured_sites/",
         "//chrome/test/data/enterprise/connectors/file_system/captures/",
         "//chrome/test/data/enterprise/connectors/file_system/downloads/",
         "//chrome/test/data/web_page_replay_go_helper_scripts/automation_helper.js",
