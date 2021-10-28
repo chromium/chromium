@@ -13,6 +13,10 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
+namespace views {
+class BoxLayout;
+}
+
 namespace ash {
 
 class AppListModel;
@@ -65,6 +69,7 @@ class ASH_EXPORT RecentAppsView : public views::View {
 
   // views::View:
   bool OnKeyPressed(const ui::KeyEvent& event) override;
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
  private:
   // Requests that focus move up and out (usually to the continue tasks).
@@ -76,9 +81,13 @@ class ASH_EXPORT RecentAppsView : public views::View {
   // Returns the visual column of the child with focus, or -1 if there is none.
   int GetColumnOfFocusedChild() const;
 
+  // Calculates how much padding is assigned to the AppListItemView.
+  int CalculateTilePadding() const;
+
   Delegate* const delegate_;
   AppListViewDelegate* const view_delegate_;
   const AppListConfig* app_list_config_ = nullptr;
+  views::BoxLayout* layout_ = nullptr;
 
   // The grid delegate for each AppListItemView.
   class GridDelegateImpl;

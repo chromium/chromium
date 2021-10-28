@@ -123,7 +123,7 @@ TEST_F(PagedAppsGridViewTest, PageMaxAppCounts) {
 
   // Add some recent apps and re-layout so the first page of the apps grid has
   // less rows to accommodate.
-  GetAppListTestHelper()->AddRecentApps(2);
+  GetAppListTestHelper()->AddRecentApps(4);
   GetAppListTestHelper()->GetAppsContainerView()->UpdateRecentApps();
   UpdateLayout();
 
@@ -146,8 +146,8 @@ TEST_F(PagedAppsGridViewTest, PageMaxAppCounts) {
 // apps.
 TEST_F(PagedAppsGridViewTest, GridDimensionsChangesWithDisplaySize) {
   // Add some recent apps to take up space on the first page.
-  GetAppListTestHelper()->AddAppItems(2);
-  GetAppListTestHelper()->AddRecentApps(2);
+  GetAppListTestHelper()->AddAppItems(4);
+  GetAppListTestHelper()->AddRecentApps(4);
   GetAppListTestHelper()->GetAppsContainerView()->UpdateRecentApps();
 
   // Test with a display in landscape mode.
