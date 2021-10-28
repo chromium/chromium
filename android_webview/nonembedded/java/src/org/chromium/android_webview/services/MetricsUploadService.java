@@ -21,7 +21,8 @@ public class MetricsUploadService extends Service {
     private final IMetricsUploadService.Stub mBinder = new IMetricsUploadService.Stub() {
         @Override
         public void uploadMetricsLog(byte[] serializedLog) {
-            PlatformServiceBridge.getInstance().logMetrics(serializedLog);
+            // TODO(crbug.com/1264425): return the status code.
+            PlatformServiceBridge.getInstance().logMetricsBlocking(serializedLog);
         }
     };
 
