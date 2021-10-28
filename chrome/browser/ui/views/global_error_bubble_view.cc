@@ -33,7 +33,7 @@
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/box_layout.h"
 
 // GlobalErrorBubbleViewBase ---------------------------------------------------
 
@@ -100,39 +100,24 @@ GlobalErrorBubbleView::GlobalErrorBubbleView(
 GlobalErrorBubbleView::~GlobalErrorBubbleView() = default;
 
 void GlobalErrorBubbleView::Init() {
-  const int kMaxBubbleViewWidth = 362;
-  // |error_| is assumed to be valid, and stay valid, at least until Init()
-  // returns.
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
+      ChromeLayoutProvider::Get()->GetDistanceMetric(
+          views::DISTANCE_RELATED_CONTROL_VERTICAL)));
 
-  std::vector<std::u16string> message_strings(error_->GetBubbleViewMessages());
-  std::vector<std::unique_ptr<views::Label>> message_labels;
-  for (const auto& message_string : message_strings) {
-    auto message_label = std::make_unique<views::Label>(message_string);
+  for (const auto& message_string : error_->GetBubbleViewMessages()) {
+    auto* message_label =
+        AddChildView(std::make_unique<views::Label>(message_string));
     message_label->SetMultiLine(true);
     message_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    message_labels.push_back(std::move(message_label));
-  }
-
-  views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
-
-  // First row, message labels.
-  views::ColumnSet* cs = layout->AddColumnSet(0);
-  cs->AddColumn(views::GridLayout::FILL, views::GridLayout::FILL, 1.0,
-                views::GridLayout::ColumnSize::kFixed, kMaxBubbleViewWidth, 0);
-
-  for (size_t i = 0; i < message_labels.size(); ++i) {
-    layout->StartRow(1.0, 0);
-    layout->AddView(std::move(message_labels[i]));
-    if (i < message_labels.size() - 1)
-      layout->AddPaddingRow(views::GridLayout::kFixedSize,
-                            ChromeLayoutProvider::Get()->GetDistanceMetric(
-                                views::DISTANCE_RELATED_CONTROL_VERTICAL));
+    message_label->SetMaximumWidth(362);
   }
 
   // These bubbles show at times where activation is sporadic (like at startup,
   // or a new window opening). Make sure the bubble doesn't disappear before the
   // user sees it, if the bubble needs to be acknowledged.
+  // |error_| is assumed to be valid, and stay valid, at least until Init()
+  // returns.
   set_close_on_deactivate(error_->ShouldCloseOnDeactivate());
 }
 
