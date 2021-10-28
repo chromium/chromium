@@ -94,7 +94,7 @@
     },
     bg_color_dropped_elevation_1: {
       light: "$google_grey_50",
-      dark: "#1a1b1d", /* google_grey_900 + black 20% */
+      dark: "#1a1a1d", /* google_grey_900 + black 20% */
     },
     bg_color_dropped_elevation_2: {
       light: "$google_grey_200",
