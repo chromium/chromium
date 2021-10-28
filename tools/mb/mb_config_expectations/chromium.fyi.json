@@ -325,7 +325,7 @@
       "use_goma": true
     }
   },
-  "Mojo Linux": {
+  "Mojo Linux (reclient shadow)": {
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
