@@ -6,7 +6,7 @@ import {NativeLayerCrosImpl, PrinterStatusReason, PrinterStatusSeverity} from 'c
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 
-import {TestBrowserProxy} from '../test_browser_proxy.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 /** @return {!NativeLayerCrosStub} */
 export function setNativeLayerCrosInstance() {

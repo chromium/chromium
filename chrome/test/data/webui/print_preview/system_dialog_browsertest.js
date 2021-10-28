@@ -5,10 +5,10 @@
 import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, NativeLayerImpl, PluginProxyImpl, PrintPreviewLinkContainerElement, PrintPreviewSidebarElement, whenReady} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {isWindows} from 'chrome://resources/js/cr.m.js';
-import {NativeLayerStub} from 'chrome://test/print_preview/native_layer_stub.js';
-import {getCddTemplate, getDefaultInitialSettings, selectOption} from 'chrome://test/print_preview/print_preview_test_utils.js';
-import {TestPluginProxy} from 'chrome://test/print_preview/test_plugin_proxy.js';
-import {eventToPromise, waitBeforeNextRender} from 'chrome://test/test_util.js';
+import {eventToPromise, waitBeforeNextRender} from 'chrome://webui-test/test_util.js';
+import {NativeLayerStub} from './native_layer_stub.js';
+import {getCddTemplate, getDefaultInitialSettings, selectOption} from './print_preview_test_utils.js';
+import {TestPluginProxy} from './test_plugin_proxy.js';
 
 window.system_dialog_browsertest = {};
 system_dialog_browsertest.suiteName = 'SystemDialogBrowserTest';

@@ -111,7 +111,7 @@ export const InputMixin = dedupingMixin(
       return InputMixin;
     });
 
-interface InputMixinInterface {
+export interface InputMixinInterface {
   /**
    * @return The cr-input or input element the behavior should use. Should be
    *     overridden by elements using this behavior.

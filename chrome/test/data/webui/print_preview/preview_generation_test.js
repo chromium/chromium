@@ -4,13 +4,14 @@
 
 import {ColorMode, Destination, DestinationConnectionStatus, DestinationOrigin, DestinationState, DestinationType, Margins, MarginsType, NativeLayerImpl, PluginProxyImpl, PrintPreviewAppElement, ScalingType} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {NativeLayerStub} from 'chrome://test/print_preview/native_layer_stub.js';
-import {getCddTemplate, getDefaultInitialSettings} from 'chrome://test/print_preview/print_preview_test_utils.js';
-import {TestPluginProxy} from 'chrome://test/print_preview/test_plugin_proxy.js';
 
 // <if expr="chromeos or lacros">
 import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
 // </if>
+
+import {NativeLayerStub} from './native_layer_stub.js';
+import {getCddTemplate, getDefaultInitialSettings} from './print_preview_test_utils.js';
+import {TestPluginProxy} from './test_plugin_proxy.js';
 
 window.preview_generation_test = {};
 preview_generation_test.suiteName = 'PreviewGenerationTest';
