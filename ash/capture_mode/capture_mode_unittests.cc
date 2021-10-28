@@ -161,6 +161,21 @@ void ClickNotification(absl::optional<int> button_index) {
   notification->delegate()->Click(button_index, absl::nullopt);
 }
 
+// Sets up a callback that will be triggered when a capture file (image or
+// video) is deleted as a result of a user action. The callback will verify the
+// successful deletion of the file, and will quit the given `loop`.
+void SetUpFileDeletionVerifier(base::RunLoop* loop) {
+  DCHECK(loop);
+  CaptureModeTestApi().SetOnCaptureFileDeletedCallback(
+      base::BindLambdaForTesting(
+          [loop](const base::FilePath& path, bool delete_successful) {
+            EXPECT_TRUE(delete_successful);
+            base::ScopedAllowBlockingForTesting allow_blocking;
+            EXPECT_FALSE(base::PathExists(path));
+            loop->Quit();
+          }));
+}
+
 // Moves the mouse and updates the cursor's display manually to imitate what a
 // real mouse move event does in shell.
 // TODO(crbug.com/990589): Unit tests should be able to simulate mouse input
@@ -3917,8 +3932,11 @@ TEST_F(CaptureModeTest, QuickActionHistograms) {
     waiter.Wait();
   }
   // Verify clicking delete on screenshot notification.
+  base::RunLoop loop;
+  SetUpFileDeletionVerifier(&loop);
   const int delete_button = 1;
   ClickNotification(delete_button);
+  loop.Run();
   EXPECT_FALSE(GetPreviewNotification());
   histogram_tester.ExpectBucketCount(kQuickActionHistogramName,
                                      CaptureQuickAction::kDelete, 1);
@@ -4223,6 +4241,29 @@ TEST_F(CaptureModeTest, CaptureFolderSetToEmptyPath) {
   capture_folder = controller->GetCurrentCaptureFolder();
   EXPECT_EQ(capture_folder.path, default_downloads_folder);
   EXPECT_TRUE(capture_folder.is_default_downloads_folder);
+}
+
+TEST_F(CaptureModeTest, SimulateUserCancelingDlpWarningDialog) {
+  auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
+                                         CaptureModeType::kVideo);
+  StartVideoRecordingImmediately();
+  EXPECT_TRUE(controller->is_recording_in_progress());
+
+  // Simulate the user canceling the DLP warning dialog at the end of the
+  // recording which is shown to the user to alert about restricted content
+  // showing up on the screen during the recording. In this case, the user
+  // requests the deletion of the file.
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  test_delegate->set_should_save_after_dlp_check(false);
+  base::RunLoop loop;
+  SetUpFileDeletionVerifier(&loop);
+  controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
+  loop.Run();
+  // No notification should show in this case, nor any thing on Tote.
+  EXPECT_FALSE(GetPreviewNotification());
+  ash::HoldingSpaceTestApi holding_space_api;
+  EXPECT_TRUE(holding_space_api.GetScreenCaptureViews().empty());
 }
 
 namespace {

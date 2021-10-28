@@ -130,7 +130,7 @@ bool DlpContentManager::IsScreenshotApiRestricted(const ScreenshotArea& area) {
 
 void DlpContentManager::CheckScreenshotRestriction(
     const ScreenshotArea& area,
-    OnDlpRestrictionChecked callback) {
+    ash::OnCaptureModeDlpRestrictionChecked callback) {
   const ConfidentialContentsInfo info =
       GetAreaConfidentialContentsInfo(area, DlpContentRestriction::kScreenshot);
   MaybeReportEvent(info.restriction_info,
@@ -152,7 +152,7 @@ bool DlpContentManager::IsVideoCaptureRestricted(const ScreenshotArea& area) {
 
 void DlpContentManager::CheckVideoCaptureRestriction(
     const ScreenshotArea& area,
-    OnDlpRestrictionChecked callback) {
+    ash::OnCaptureModeDlpRestrictionChecked callback) {
   const ConfidentialContentsInfo info = GetAreaConfidentialContentsInfo(
       area, DlpContentRestriction::kVideoCapture);
   MaybeReportEvent(info.restriction_info,
@@ -198,18 +198,19 @@ void DlpContentManager::OnVideoCaptureStarted(const ScreenshotArea& area) {
 }
 
 void DlpContentManager::CheckStoppedVideoCapture(
-    OnDlpRestrictionChecked callback) {
-  if (!running_video_capture_info_.has_value())
-    return;
-
+    ash::OnCaptureModeDlpRestrictionChecked callback) {
   // If some confidential content was shown during the recording, but not
   // before, warn the user before saving the file.
   if (!user_allowed_screen_capture_ &&
+      running_video_capture_info_.has_value() &&
       !running_video_capture_info_->confidential_contents.IsEmpty()) {
     DlpWarnDialog::ShowDlpVideoCaptureWarningDialog(
         std::move(callback),
         running_video_capture_info_->confidential_contents);
+  } else {
+    std::move(callback).Run(/*proceed=*/true);
   }
+
   running_video_capture_info_.reset();
 }
 
@@ -231,7 +232,7 @@ bool DlpContentManager::IsCaptureModeInitRestricted() {
 }
 
 void DlpContentManager::CheckCaptureModeInitRestriction(
-    OnDlpRestrictionChecked callback) {
+    ash::OnCaptureModeDlpRestrictionChecked callback) {
   const ConfidentialContentsInfo screenshot_info =
       GetConfidentialContentsOnScreen(DlpContentRestriction::kScreenshot);
   const ConfidentialContentsInfo videocapture_info =
@@ -677,7 +678,7 @@ RestrictionLevelAndUrl DlpContentManager::GetPrintingRestrictionInfo(
 
 void DlpContentManager::CheckScreenCaptureRestriction(
     ConfidentialContentsInfo info,
-    OnDlpRestrictionChecked callback) {
+    ash::OnCaptureModeDlpRestrictionChecked callback) {
   if (IsBlocked(info.restriction_info)) {
     ShowDlpScreenCaptureDisabledNotification();
     std::move(callback).Run(false);
@@ -715,10 +716,11 @@ void DlpContentManager::MaybeReportWarnEvent(
   }
 }
 
-void DlpContentManager::OnScreenCaptureReply(OnDlpRestrictionChecked callback,
-                                             bool should_proceed) {
-  user_allowed_screen_capture_ = should_proceed;
-  std::move(callback).Run(should_proceed);
+void DlpContentManager::OnScreenCaptureReply(
+    ash::OnCaptureModeDlpRestrictionChecked callback,
+    bool proceed) {
+  user_allowed_screen_capture_ = proceed;
+  std::move(callback).Run(proceed);
 }
 
 // ScopedDlpContentManagerForTesting

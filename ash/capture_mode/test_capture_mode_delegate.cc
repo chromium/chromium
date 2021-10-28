@@ -108,7 +108,11 @@ void TestCaptureModeDelegate::StartObservingRestrictedContent(
     std::move(on_recording_started_callback_).Run();
 }
 
-void TestCaptureModeDelegate::StopObservingRestrictedContent() {}
+void TestCaptureModeDelegate::StopObservingRestrictedContent(
+    OnCaptureModeDlpRestrictionChecked callback) {
+  DCHECK(callback);
+  std::move(callback).Run(should_save_after_dlp_check_);
+}
 
 mojo::Remote<recording::mojom::RecordingService>
 TestCaptureModeDelegate::LaunchRecordingService() {

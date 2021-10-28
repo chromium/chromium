@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/public/cpp/capture_mode/capture_mode_delegate.h"
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
@@ -32,8 +33,6 @@ class WebContents;
 }  // namespace content
 
 namespace policy {
-
-using OnDlpRestrictionChecked = base::OnceCallback<void(bool should_proceed)>;
 
 class DlpReportingManager;
 
@@ -70,8 +69,9 @@ class DlpContentManager : public DlpContentObserver,
   // Checks whether screenshots of |area| are restricted or not advised.
   // Depending on the result, calls |callback| and passes an indicator whether
   // to proceed or not.
-  void CheckScreenshotRestriction(const ScreenshotArea& area,
-                                  OnDlpRestrictionChecked callback);
+  void CheckScreenshotRestriction(
+      const ScreenshotArea& area,
+      ash::OnCaptureModeDlpRestrictionChecked callback);
 
   // Returns whether video capture should be restricted.
   // TODO(crbug.com/1257493): Remove when it won't be used anymore
@@ -80,8 +80,9 @@ class DlpContentManager : public DlpContentObserver,
   // Checks whether video capture of |area| is restricted or not advised.
   // Depending on the result, calls |callback| and passes an indicator whether
   // to proceed or not.
-  void CheckVideoCaptureRestriction(const ScreenshotArea& area,
-                                    OnDlpRestrictionChecked callback);
+  void CheckVideoCaptureRestriction(
+      const ScreenshotArea& area,
+      ash::OnCaptureModeDlpRestrictionChecked callback);
 
   // Returns whether printing should be restricted.
   bool IsPrintingRestricted(content::WebContents* web_contents);
@@ -99,7 +100,8 @@ class DlpContentManager : public DlpContentObserver,
   // Called when video capturing is stopped. Calls |callback| with an indicator
   // whether to proceed or not, based on DLP restrictions and potentially
   // confidential content captured.
-  void CheckStoppedVideoCapture(OnDlpRestrictionChecked callback);
+  void CheckStoppedVideoCapture(
+      ash::OnCaptureModeDlpRestrictionChecked callback);
 
   // Returns whether initiation of capture mode should be restricted because
   // any restricted content is currently visible.
@@ -109,7 +111,8 @@ class DlpContentManager : public DlpContentObserver,
   // Checks whether initiation of capture mode is restricted or not advised
   // based on the currently visible content. Depending on the result, calls
   // |callback| and passes an indicator whether to proceed or not.
-  void CheckCaptureModeInitRestriction(OnDlpRestrictionChecked callback);
+  void CheckCaptureModeInitRestriction(
+      ash::OnCaptureModeDlpRestrictionChecked callback);
 
   // Called when screen capture is started.
   // |state_change_callback| will be called when restricted content will appear
@@ -251,8 +254,9 @@ class DlpContentManager : public DlpContentObserver,
 
   // Helper method for async check of the restriction level, based on which
   // calls |callback| with an indicator whether to proceed or not.
-  void CheckScreenCaptureRestriction(ConfidentialContentsInfo info,
-                                     OnDlpRestrictionChecked callback);
+  void CheckScreenCaptureRestriction(
+      ConfidentialContentsInfo info,
+      ash::OnCaptureModeDlpRestrictionChecked callback);
 
   // Reports events if required by the |restriction_info| and
   // `reporting_manager` is configured.
@@ -267,8 +271,8 @@ class DlpContentManager : public DlpContentObserver,
   // Called back from Screen Capture warning dialogs. Saves the user's response
   // and passes it along to |callback| which handles continuing or cancelling
   // the action based on this response.
-  void OnScreenCaptureReply(OnDlpRestrictionChecked callback,
-                            bool should_proceed);
+  void OnScreenCaptureReply(ash::OnCaptureModeDlpRestrictionChecked callback,
+                            bool proceed);
 
   // Map from currently known confidential WebContents to the restrictions.
   base::flat_map<content::WebContents*, DlpContentRestrictionSet>

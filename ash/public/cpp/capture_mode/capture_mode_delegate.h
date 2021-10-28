@@ -39,6 +39,16 @@ namespace ash {
 
 class RecordingOverlayView;
 
+// Defines the type of the callback that will be invoked when the DLP (Data Leak
+// Prevention) manager is checked for any restricted content related to screen
+// capture. DLP is checked multiple times (before entering a capture session,
+// when performing the capture, during video recording, and at the end when
+// video recording ends). If the callback was invoked with `proceed` set to
+// true, then capture mode will proceed with any operation that triggered the
+// check. Otherwise, capture mode will abort the operation.
+using OnCaptureModeDlpRestrictionChecked =
+    base::OnceCallback<void(bool proceed)>;
+
 // Defines the interface for the delegate of CaptureModeController, that can be
 // implemented by an ash client (e.g. Chrome). The CaptureModeController owns
 // the instance of this delegate.
@@ -84,8 +94,15 @@ class ASH_PUBLIC_EXPORT CaptureModeDelegate {
       const gfx::Rect& bounds,
       base::OnceClosure on_area_restricted_callback) = 0;
 
-  // Called when the running video capture is stopped.
-  virtual void StopObservingRestrictedContent() = 0;
+  // Called when the running video capture is stopped. DLP will be checked to
+  // determine if there were any restricted content warnings during the
+  // recording, which didn't merit force-stopping it via the above
+  // `on_area_restricted_callback`. In this case, DLP shows a warning dialog and
+  // delegates the decision to the user to decide whether to keep the video (if
+  // `proceed` is set to true), or delete it (if `proceed` is set
+  // to false).
+  virtual void StopObservingRestrictedContent(
+      OnCaptureModeDlpRestrictionChecked callback) = 0;
 
   // Launches the Recording Service into a separate utility process.
   virtual mojo::Remote<recording::mojom::RecordingService>
