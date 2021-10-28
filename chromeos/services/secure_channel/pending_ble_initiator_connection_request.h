@@ -45,6 +45,11 @@ class PendingBleInitiatorConnectionRequest
     static Factory* test_factory_;
   };
 
+  PendingBleInitiatorConnectionRequest(
+      const PendingBleInitiatorConnectionRequest&) = delete;
+  PendingBleInitiatorConnectionRequest& operator=(
+      const PendingBleInitiatorConnectionRequest&) = delete;
+
   ~PendingBleInitiatorConnectionRequest() override;
 
  private:
@@ -62,8 +67,6 @@ class PendingBleInitiatorConnectionRequest
 
   size_t num_empty_scan_failures_ = 0u;
   size_t num_gatt_failures_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(PendingBleInitiatorConnectionRequest);
 };
 
 }  // namespace secure_channel

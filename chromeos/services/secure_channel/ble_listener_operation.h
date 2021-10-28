@@ -57,6 +57,9 @@ class BleListenerOperation
     static Factory* test_factory_;
   };
 
+  BleListenerOperation(const BleListenerOperation&) = delete;
+  BleListenerOperation& operator=(const BleListenerOperation&) = delete;
+
   ~BleListenerOperation() override;
 
  private:
@@ -85,8 +88,6 @@ class BleListenerOperation
 
   bool is_attempt_active_ = false;
   base::WeakPtrFactory<BleListenerOperation> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BleListenerOperation);
 };
 
 }  // namespace secure_channel

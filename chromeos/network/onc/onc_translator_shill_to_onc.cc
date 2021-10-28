@@ -110,6 +110,9 @@ class ShillToONCTranslator {
         field_translation_table_(field_translation_table),
         network_state_(network_state) {}
 
+  ShillToONCTranslator(const ShillToONCTranslator&) = delete;
+  ShillToONCTranslator& operator=(const ShillToONCTranslator&) = delete;
+
   // Translates the associated Shill dictionary and creates an ONC object of the
   // given signature.
   std::unique_ptr<base::DictionaryValue> CreateTranslatedONCObject();
@@ -193,8 +196,6 @@ class ShillToONCTranslator {
   const FieldTranslationEntry* field_translation_table_;
   std::unique_ptr<base::Value> onc_object_;
   const NetworkState* network_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShillToONCTranslator);
 };
 
 std::unique_ptr<base::DictionaryValue>

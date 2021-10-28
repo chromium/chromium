@@ -102,6 +102,9 @@ class DeviceSyncImpl : public DeviceSyncBase,
     static Factory* custom_factory_instance_;
   };
 
+  DeviceSyncImpl(const DeviceSyncImpl&) = delete;
+  DeviceSyncImpl& operator=(const DeviceSyncImpl&) = delete;
+
   ~DeviceSyncImpl() override;
 
  protected:
@@ -322,8 +325,6 @@ class DeviceSyncImpl : public DeviceSyncBase,
       cryptauth_device_activity_getter_;
 
   base::WeakPtrFactory<DeviceSyncImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceSyncImpl);
 };
 
 }  // namespace device_sync

@@ -24,8 +24,8 @@ class DeviceStatusUtilTest : public testing::Test {
  public:
   DeviceStatusUtilTest() = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeviceStatusUtilTest);
+  DeviceStatusUtilTest(const DeviceStatusUtilTest&) = delete;
+  DeviceStatusUtilTest& operator=(const DeviceStatusUtilTest&) = delete;
 };
 
 TEST_F(DeviceStatusUtilTest, TestNotPresent) {

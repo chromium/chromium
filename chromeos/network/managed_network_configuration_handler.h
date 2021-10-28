@@ -59,6 +59,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandler {
   using GuidToPolicyMap =
       std::map<std::string, std::unique_ptr<base::DictionaryValue>>;
 
+  ManagedNetworkConfigurationHandler& operator=(
+      const ManagedNetworkConfigurationHandler&) = delete;
+
   virtual ~ManagedNetworkConfigurationHandler();
 
   virtual void AddObserver(NetworkPolicyObserver* observer) = 0;
@@ -210,9 +213,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandler {
       NetworkDeviceHandler* network_device_handler,
       NetworkConfigurationHandler* network_configuration_handler,
       UIProxyConfigService* ui_proxy_config_service);
-
- private:
-  DISALLOW_ASSIGN(ManagedNetworkConfigurationHandler);
 };
 
 }  // namespace chromeos

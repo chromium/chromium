@@ -227,6 +227,12 @@ class FakeAuthenticatedChannelFactory
 }  // namespace
 
 class SecureChannelBleConnectionManagerImplTest : public testing::Test {
+ public:
+  SecureChannelBleConnectionManagerImplTest(
+      const SecureChannelBleConnectionManagerImplTest&) = delete;
+  SecureChannelBleConnectionManagerImplTest& operator=(
+      const SecureChannelBleConnectionManagerImplTest&) = delete;
+
  protected:
   SecureChannelBleConnectionManagerImplTest()
       : task_environment_(
@@ -777,8 +783,6 @@ class SecureChannelBleConnectionManagerImplTest : public testing::Test {
   std::unique_ptr<base::SimpleTestClock> test_clock_;
 
   std::unique_ptr<BleConnectionManager> manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelBleConnectionManagerImplTest);
 };
 
 TEST_F(SecureChannelBleConnectionManagerImplTest,

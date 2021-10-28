@@ -53,6 +53,9 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ModemMessagingClient {
   // Returns the global instance if initialized. May return null.
   static ModemMessagingClient* Get();
 
+  ModemMessagingClient(const ModemMessagingClient&) = delete;
+  ModemMessagingClient& operator=(const ModemMessagingClient&) = delete;
+
   // Sets SmsReceived signal handler.
   virtual void SetSmsReceivedHandler(const std::string& service_name,
                                      const dbus::ObjectPath& object_path,
@@ -83,9 +86,6 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ModemMessagingClient {
   // Initialize/Shutdown should be used instead.
   ModemMessagingClient();
   virtual ~ModemMessagingClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ModemMessagingClient);
 };
 
 }  // namespace chromeos

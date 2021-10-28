@@ -35,6 +35,9 @@ class TimerFactoryImpl : public TimerFactory {
     static Factory* test_factory_;
   };
 
+  TimerFactoryImpl(const TimerFactoryImpl&) = delete;
+  TimerFactoryImpl& operator=(const TimerFactoryImpl&) = delete;
+
   ~TimerFactoryImpl() override;
 
  private:
@@ -42,8 +45,6 @@ class TimerFactoryImpl : public TimerFactory {
 
   // TimerFactory:
   std::unique_ptr<base::OneShotTimer> CreateOneShotTimer() override;
-
-  DISALLOW_COPY_AND_ASSIGN(TimerFactoryImpl);
 };
 
 }  // namespace secure_channel

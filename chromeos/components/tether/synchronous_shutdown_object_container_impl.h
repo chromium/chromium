@@ -96,6 +96,11 @@ class SynchronousShutdownObjectContainerImpl
     static Factory* factory_instance_;
   };
 
+  SynchronousShutdownObjectContainerImpl(
+      const SynchronousShutdownObjectContainerImpl&) = delete;
+  SynchronousShutdownObjectContainerImpl& operator=(
+      const SynchronousShutdownObjectContainerImpl&) = delete;
+
   ~SynchronousShutdownObjectContainerImpl() override;
 
   // SynchronousShutdownObjectContainer:
@@ -148,8 +153,6 @@ class SynchronousShutdownObjectContainerImpl
       tether_network_disconnection_handler_;
   std::unique_ptr<NetworkConnectionHandlerTetherDelegate>
       network_connection_handler_tether_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(SynchronousShutdownObjectContainerImpl);
 };
 
 }  // namespace tether

@@ -108,6 +108,12 @@ absl::optional<multidevice::RemoteDevice> GetRemoteDeviceFromRef(
 }  // namespace
 
 class MultiDeviceSetupClientImplTest : public testing::Test {
+ public:
+  MultiDeviceSetupClientImplTest(const MultiDeviceSetupClientImplTest&) =
+      delete;
+  MultiDeviceSetupClientImplTest& operator=(
+      const MultiDeviceSetupClientImplTest&) = delete;
+
  protected:
   MultiDeviceSetupClientImplTest()
       : test_remote_device_list_(
@@ -425,8 +431,6 @@ class MultiDeviceSetupClientImplTest : public testing::Test {
       get_feature_states_result_;
   absl::optional<bool> retry_set_host_now_success_;
   absl::optional<bool> trigger_event_for_debugging_success_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiDeviceSetupClientImplTest);
 };
 
 TEST_F(MultiDeviceSetupClientImplTest, GetHostStatus) {

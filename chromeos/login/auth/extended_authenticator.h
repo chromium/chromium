@@ -43,6 +43,9 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) ExtendedAuthenticator
   static scoped_refptr<ExtendedAuthenticator> Create(
       AuthStatusConsumer* consumer);
 
+  ExtendedAuthenticator(const ExtendedAuthenticator&) = delete;
+  ExtendedAuthenticator& operator=(const ExtendedAuthenticator&) = delete;
+
   // Updates consumer of the class.
   virtual void SetConsumer(AuthStatusConsumer* consumer) = 0;
 
@@ -100,8 +103,6 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) ExtendedAuthenticator
 
  private:
   friend class base::RefCountedThreadSafe<ExtendedAuthenticator>;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtendedAuthenticator);
 };
 
 }  // namespace chromeos

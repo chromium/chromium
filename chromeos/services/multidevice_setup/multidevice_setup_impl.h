@@ -76,6 +76,9 @@ class MultiDeviceSetupImpl : public MultiDeviceSetupBase,
     static Factory* test_factory_;
   };
 
+  MultiDeviceSetupImpl(const MultiDeviceSetupImpl&) = delete;
+  MultiDeviceSetupImpl& operator=(const MultiDeviceSetupImpl&) = delete;
+
   ~MultiDeviceSetupImpl() override;
 
  private:
@@ -155,8 +158,6 @@ class MultiDeviceSetupImpl : public MultiDeviceSetupBase,
 
   mojo::RemoteSet<mojom::HostStatusObserver> host_status_observers_;
   mojo::RemoteSet<mojom::FeatureStateObserver> feature_state_observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiDeviceSetupImpl);
 };
 
 }  // namespace multidevice_setup

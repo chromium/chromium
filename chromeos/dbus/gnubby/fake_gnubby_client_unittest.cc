@@ -18,12 +18,14 @@ class TestObserver : public GnubbyClient::Observer {
  public:
   TestObserver() = default;
 
+  TestObserver(const TestObserver&) = delete;
+  TestObserver& operator=(const TestObserver&) = delete;
+
   void PromptUserAuth() override { calls_++; }
   int calls() { return calls_; }
 
  private:
   int calls_ = 0;
-  DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };
 
 }  // namespace
@@ -32,12 +34,12 @@ class FakeGnubbyClientTest : public testing::Test {
  public:
   FakeGnubbyClientTest() = default;
 
+  FakeGnubbyClientTest(const FakeGnubbyClientTest&) = delete;
+  FakeGnubbyClientTest& operator=(const FakeGnubbyClientTest&) = delete;
+
  protected:
   base::test::TaskEnvironment task_environment_;
   FakeGnubbyClient fake_gnubby_client_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeGnubbyClientTest);
 };
 
 TEST_F(FakeGnubbyClientTest, NotificationSent) {

@@ -83,6 +83,9 @@ class CryptAuthSchedulerImpl : public CryptAuthScheduler,
   // Registers the prefs used by this class to the given |registry|.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
+  CryptAuthSchedulerImpl(const CryptAuthSchedulerImpl&) = delete;
+  CryptAuthSchedulerImpl& operator=(const CryptAuthSchedulerImpl&) = delete;
+
   ~CryptAuthSchedulerImpl() override;
 
  private:
@@ -179,8 +182,6 @@ class CryptAuthSchedulerImpl : public CryptAuthScheduler,
   base::flat_map<RequestType, absl::optional<cryptauthv2::ClientMetadata>>
       current_requests_{{RequestType::kEnrollment, absl::nullopt},
                         {RequestType::kDeviceSync, absl::nullopt}};
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthSchedulerImpl);
 };
 
 }  // namespace device_sync

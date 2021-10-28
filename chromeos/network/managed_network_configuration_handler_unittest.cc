@@ -101,13 +101,18 @@ class TestNetworkProfileHandler : public NetworkProfileHandler {
  public:
   TestNetworkProfileHandler() { Init(); }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestNetworkProfileHandler);
+  TestNetworkProfileHandler(const TestNetworkProfileHandler&) = delete;
+  TestNetworkProfileHandler& operator=(const TestNetworkProfileHandler&) =
+      delete;
 };
 
 class TestNetworkPolicyObserver : public NetworkPolicyObserver {
  public:
   TestNetworkPolicyObserver() = default;
+
+  TestNetworkPolicyObserver(const TestNetworkPolicyObserver&) = delete;
+  TestNetworkPolicyObserver& operator=(const TestNetworkPolicyObserver&) =
+      delete;
 
   void PoliciesApplied(const std::string& userhash) override {
     policies_applied_count_++;
@@ -121,8 +126,6 @@ class TestNetworkPolicyObserver : public NetworkPolicyObserver {
 
  private:
   int policies_applied_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestNetworkPolicyObserver);
 };
 
 }  // namespace

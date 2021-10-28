@@ -33,6 +33,10 @@ class CryptAuthKeyProofComputerImpl : public CryptAuthKeyProofComputer {
     static Factory* test_factory_;
   };
 
+  CryptAuthKeyProofComputerImpl(const CryptAuthKeyProofComputerImpl&) = delete;
+  CryptAuthKeyProofComputerImpl& operator=(
+      const CryptAuthKeyProofComputerImpl&) = delete;
+
   ~CryptAuthKeyProofComputerImpl() override;
 
   // CryptAuthKeyProofComputer:
@@ -54,8 +58,6 @@ class CryptAuthKeyProofComputerImpl : public CryptAuthKeyProofComputer {
       const CryptAuthKey& asymmetric_key,
       const std::string& payload,
       const std::string& salt);
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthKeyProofComputerImpl);
 };
 
 }  // namespace device_sync

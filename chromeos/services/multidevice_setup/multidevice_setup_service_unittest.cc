@@ -111,6 +111,11 @@ class FakeMultiDeviceSetupFactory : public MultiDeviceSetupImpl::Factory {
 }  // namespace
 
 class MultiDeviceSetupServiceTest : public testing::Test {
+ public:
+  MultiDeviceSetupServiceTest(const MultiDeviceSetupServiceTest&) = delete;
+  MultiDeviceSetupServiceTest& operator=(const MultiDeviceSetupServiceTest&) =
+      delete;
+
  protected:
   MultiDeviceSetupServiceTest()
       : test_devices_(
@@ -227,8 +232,6 @@ class MultiDeviceSetupServiceTest : public testing::Test {
   mojo::Remote<mojom::MultiDeviceSetup> multidevice_setup_remote_;
   mojo::Remote<mojom::PrivilegedHostDeviceSetter>
       privileged_host_device_setter_remote_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiDeviceSetupServiceTest);
 };
 
 TEST_F(MultiDeviceSetupServiceTest,

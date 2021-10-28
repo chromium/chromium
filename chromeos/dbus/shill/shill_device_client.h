@@ -85,6 +85,9 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillDeviceClient {
   // Returns the global instance if initialized. May return null.
   static ShillDeviceClient* Get();
 
+  ShillDeviceClient(const ShillDeviceClient&) = delete;
+  ShillDeviceClient& operator=(const ShillDeviceClient&) = delete;
+
   // Adds a property changed |observer| for the device at |device_path|.
   virtual void AddPropertyChangedObserver(
       const dbus::ObjectPath& device_path,
@@ -177,9 +180,6 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillDeviceClient {
   // Initialize/Shutdown should be used instead.
   ShillDeviceClient();
   virtual ~ShillDeviceClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShillDeviceClient);
 };
 
 }  // namespace chromeos

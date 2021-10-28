@@ -56,6 +56,10 @@ class CryptAuthDeviceNotifierImpl : public CryptAuthDeviceNotifier {
     static Factory* test_factory_;
   };
 
+  CryptAuthDeviceNotifierImpl(const CryptAuthDeviceNotifierImpl&) = delete;
+  CryptAuthDeviceNotifierImpl& operator=(const CryptAuthDeviceNotifierImpl&) =
+      delete;
+
   ~CryptAuthDeviceNotifierImpl() override;
 
  private:
@@ -115,8 +119,6 @@ class CryptAuthDeviceNotifierImpl : public CryptAuthDeviceNotifier {
   std::unique_ptr<CryptAuthClient> cryptauth_client_;
   std::unique_ptr<base::OneShotTimer> timer_;
   base::WeakPtrFactory<CryptAuthDeviceNotifierImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthDeviceNotifierImpl);
 };
 
 }  // namespace device_sync

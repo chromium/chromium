@@ -45,6 +45,11 @@ class ErrorTolerantBleAdvertisementImpl
     static Factory* test_factory_;
   };
 
+  ErrorTolerantBleAdvertisementImpl(const ErrorTolerantBleAdvertisementImpl&) =
+      delete;
+  ErrorTolerantBleAdvertisementImpl& operator=(
+      const ErrorTolerantBleAdvertisementImpl&) = delete;
+
   ~ErrorTolerantBleAdvertisementImpl() override;
 
  private:
@@ -98,8 +103,6 @@ class ErrorTolerantBleAdvertisementImpl
 
   base::WeakPtrFactory<ErrorTolerantBleAdvertisementImpl> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(ErrorTolerantBleAdvertisementImpl);
 };
 
 }  // namespace secure_channel

@@ -135,6 +135,9 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillServiceClient {
   // Returns the global instance if initialized. May return null.
   static ShillServiceClient* Get();
 
+  ShillServiceClient(const ShillServiceClient&) = delete;
+  ShillServiceClient& operator=(const ShillServiceClient&) = delete;
+
   // Adds a property changed |observer| to the service at |service_path|.
   virtual void AddPropertyChangedObserver(
       const dbus::ObjectPath& service_path,
@@ -242,9 +245,6 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillServiceClient {
   // Initialize/Shutdown should be used instead.
   ShillServiceClient();
   virtual ~ShillServiceClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShillServiceClient);
 };
 
 }  // namespace chromeos

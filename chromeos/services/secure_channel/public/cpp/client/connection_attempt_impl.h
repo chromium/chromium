@@ -33,6 +33,9 @@ class ConnectionAttemptImpl : public ConnectionAttempt,
     static Factory* test_factory_;
   };
 
+  ConnectionAttemptImpl(const ConnectionAttemptImpl&) = delete;
+  ConnectionAttemptImpl& operator=(const ConnectionAttemptImpl&) = delete;
+
   ~ConnectionAttemptImpl() override;
 
   mojo::PendingRemote<mojom::ConnectionDelegate> GenerateRemote();
@@ -51,8 +54,6 @@ class ConnectionAttemptImpl : public ConnectionAttempt,
   mojo::Receiver<mojom::ConnectionDelegate> receiver_{this};
 
   base::WeakPtrFactory<ConnectionAttemptImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectionAttemptImpl);
 };
 
 }  // namespace secure_channel

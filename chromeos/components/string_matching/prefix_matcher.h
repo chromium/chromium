@@ -17,7 +17,11 @@ namespace string_matching {
 class PrefixMatcher {
  public:
   typedef std::vector<gfx::Range> Hits;
+
   PrefixMatcher(const TokenizedString& query, const TokenizedString& text);
+
+  PrefixMatcher(const PrefixMatcher&) = delete;
+  PrefixMatcher& operator=(const PrefixMatcher&) = delete;
 
   // Invokes RunMatch to perform prefix match. Use |states_| as a stack to
   // perform DFS (depth first search) so that all possible matches are
@@ -77,8 +81,6 @@ class PrefixMatcher {
 
   double current_relevance_;
   Hits current_hits_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefixMatcher);
 };
 
 }  // namespace string_matching

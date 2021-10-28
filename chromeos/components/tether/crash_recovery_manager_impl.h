@@ -44,6 +44,9 @@ class CrashRecoveryManagerImpl : public CrashRecoveryManager {
     static Factory* factory_instance_;
   };
 
+  CrashRecoveryManagerImpl(const CrashRecoveryManagerImpl&) = delete;
+  CrashRecoveryManagerImpl& operator=(const CrashRecoveryManagerImpl&) = delete;
+
   ~CrashRecoveryManagerImpl() override;
 
   // CrashRecoveryManager:
@@ -72,8 +75,6 @@ class CrashRecoveryManagerImpl : public CrashRecoveryManager {
   HostScanCache* host_scan_cache_;
 
   base::WeakPtrFactory<CrashRecoveryManagerImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CrashRecoveryManagerImpl);
 };
 
 }  // namespace tether

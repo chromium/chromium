@@ -115,6 +115,12 @@ cryptauthv2::BatchSetFeatureStatusesRequest InstantTetherClientDisabledRequest(
 class DeviceSyncCryptAuthFeatureStatusSetterImplTest
     : public testing::Test,
       public MockCryptAuthClientFactory::Observer {
+ public:
+  DeviceSyncCryptAuthFeatureStatusSetterImplTest(
+      const DeviceSyncCryptAuthFeatureStatusSetterImplTest&) = delete;
+  DeviceSyncCryptAuthFeatureStatusSetterImplTest& operator=(
+      const DeviceSyncCryptAuthFeatureStatusSetterImplTest&) = delete;
+
  protected:
   enum class RequestAction { kSucceed, kFail, kTimeout };
 
@@ -240,8 +246,6 @@ class DeviceSyncCryptAuthFeatureStatusSetterImplTest
   base::MockOneShotTimer* mock_timer_ = nullptr;
 
   std::unique_ptr<CryptAuthFeatureStatusSetter> feature_status_setter_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceSyncCryptAuthFeatureStatusSetterImplTest);
 };
 
 TEST_F(DeviceSyncCryptAuthFeatureStatusSetterImplTest, Test) {

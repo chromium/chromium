@@ -113,6 +113,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) CiceroneClient : public DBusClient {
     virtual ~Observer() = default;
   };
 
+  CiceroneClient(const CiceroneClient&) = delete;
+  CiceroneClient& operator=(const CiceroneClient&) = delete;
+
   ~CiceroneClient() override;
 
   // Adds an observer.
@@ -363,9 +366,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) CiceroneClient : public DBusClient {
  protected:
   // Initialize() should be used instead.
   CiceroneClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CiceroneClient);
 };
 
 }  // namespace chromeos

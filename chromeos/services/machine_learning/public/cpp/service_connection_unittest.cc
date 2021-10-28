@@ -36,6 +36,9 @@ class ServiceConnectionTest : public testing::Test {
  public:
   ServiceConnectionTest() = default;
 
+  ServiceConnectionTest(const ServiceConnectionTest&) = delete;
+  ServiceConnectionTest& operator=(const ServiceConnectionTest&) = delete;
+
   void SetUp() override { MachineLearningClient::InitializeFake(); }
 
   void TearDown() override { MachineLearningClient::Shutdown(); }
@@ -61,8 +64,6 @@ class ServiceConnectionTest : public testing::Test {
 
  private:
   static base::test::TaskEnvironment* task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceConnectionTest);
 };
 
 base::test::TaskEnvironment* ServiceConnectionTest::task_environment_;

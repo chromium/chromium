@@ -118,6 +118,9 @@ class NetworkConfigurationHandler::ProfileEntryDeleter {
         callback_(std::move(callback)),
         error_callback_(std::move(error_callback)) {}
 
+  ProfileEntryDeleter(const ProfileEntryDeleter&) = delete;
+  ProfileEntryDeleter& operator=(const ProfileEntryDeleter&) = delete;
+
   void RestrictToProfilePath(const std::string& profile_path) {
     restrict_to_profile_path_ = profile_path;
   }
@@ -240,8 +243,6 @@ class NetworkConfigurationHandler::ProfileEntryDeleter {
   std::map<std::string, std::string> profile_delete_entries_;
 
   base::WeakPtrFactory<ProfileEntryDeleter> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileEntryDeleter);
 };
 
 // NetworkConfigurationHandler

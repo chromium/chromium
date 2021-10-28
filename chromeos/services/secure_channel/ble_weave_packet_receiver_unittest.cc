@@ -43,12 +43,14 @@ const uint8_t kControlResponseHeader = 0x81;
 
 class SecureChannelBluetoothLowEnergyWeavePacketReceiverTest
     : public testing::Test {
+ public:
+  SecureChannelBluetoothLowEnergyWeavePacketReceiverTest(
+      const SecureChannelBluetoothLowEnergyWeavePacketReceiverTest&) = delete;
+  SecureChannelBluetoothLowEnergyWeavePacketReceiverTest& operator=(
+      const SecureChannelBluetoothLowEnergyWeavePacketReceiverTest&) = delete;
+
  protected:
   SecureChannelBluetoothLowEnergyWeavePacketReceiverTest() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(
-      SecureChannelBluetoothLowEnergyWeavePacketReceiverTest);
 };
 
 TEST_F(SecureChannelBluetoothLowEnergyWeavePacketReceiverTest,

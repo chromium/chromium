@@ -32,6 +32,8 @@ class PolicyApplicator {
  public:
   class ConfigurationHandler {
    public:
+    ConfigurationHandler& operator=(const ConfigurationHandler&) = delete;
+
     virtual ~ConfigurationHandler() {}
     // Write the new configuration with the properties |shill_properties| to
     // Shill. This configuration comes from a policy. Any conflicting or
@@ -52,9 +54,6 @@ class PolicyApplicator {
     // Called after all policies for |profile| were applied. At this point, the
     // list of networks should be updated.
     virtual void OnPoliciesApplied(const NetworkProfile& profile) = 0;
-
-   private:
-    DISALLOW_ASSIGN(ConfigurationHandler);
   };
 
   using GuidToPolicyMap =
@@ -68,6 +67,9 @@ class PolicyApplicator {
                    ConfigurationHandler* handler,
                    CellularPolicyHandler* cellular_policy_handler,
                    std::set<std::string>* modified_policy_guids);
+
+  PolicyApplicator(const PolicyApplicator&) = delete;
+  PolicyApplicator& operator=(const PolicyApplicator&) = delete;
 
   ~PolicyApplicator();
 
@@ -153,8 +155,6 @@ class PolicyApplicator {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<PolicyApplicator> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PolicyApplicator);
 };
 
 }  // namespace chromeos

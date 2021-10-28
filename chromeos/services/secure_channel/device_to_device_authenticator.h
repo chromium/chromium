@@ -77,6 +77,10 @@ class DeviceToDeviceAuthenticator : public Authenticator,
       std::unique_ptr<multidevice::SecureMessageDelegate>
           secure_message_delegate);
 
+  DeviceToDeviceAuthenticator(const DeviceToDeviceAuthenticator&) = delete;
+  DeviceToDeviceAuthenticator& operator=(const DeviceToDeviceAuthenticator&) =
+      delete;
+
   ~DeviceToDeviceAuthenticator() override;
 
   // Authenticator:
@@ -172,8 +176,6 @@ class DeviceToDeviceAuthenticator : public Authenticator,
   SessionKeys session_keys_;
 
   base::WeakPtrFactory<DeviceToDeviceAuthenticator> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceToDeviceAuthenticator);
 };
 
 }  // namespace secure_channel

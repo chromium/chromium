@@ -63,6 +63,9 @@ class RemoteDeviceLoader {
       std::unique_ptr<multidevice::SecureMessageDelegate>
           secure_message_delegate);
 
+  RemoteDeviceLoader(const RemoteDeviceLoader&) = delete;
+  RemoteDeviceLoader& operator=(const RemoteDeviceLoader&) = delete;
+
   virtual ~RemoteDeviceLoader();
 
   // Loads the RemoteDevice objects. |callback| will be invoked upon completion.
@@ -95,8 +98,6 @@ class RemoteDeviceLoader {
   multidevice::RemoteDeviceList remote_devices_;
 
   base::WeakPtrFactory<RemoteDeviceLoader> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteDeviceLoader);
 };
 
 }  // namespace device_sync

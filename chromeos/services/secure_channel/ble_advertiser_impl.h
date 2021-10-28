@@ -76,6 +76,9 @@ class BleAdvertiserImpl : public BleAdvertiser {
     static Factory* test_factory_;
   };
 
+  BleAdvertiserImpl(const BleAdvertiserImpl&) = delete;
+  BleAdvertiserImpl& operator=(const BleAdvertiserImpl&) = delete;
+
   ~BleAdvertiserImpl() override;
 
  private:
@@ -85,13 +88,16 @@ class BleAdvertiserImpl : public BleAdvertiser {
     ActiveAdvertisementRequest(DeviceIdPair device_id_pair,
                                ConnectionPriority connection_priority,
                                std::unique_ptr<base::OneShotTimer> timer);
+
+    ActiveAdvertisementRequest(const ActiveAdvertisementRequest&) = delete;
+    ActiveAdvertisementRequest& operator=(const ActiveAdvertisementRequest&) =
+        delete;
+
     virtual ~ActiveAdvertisementRequest();
 
     DeviceIdPair device_id_pair;
     ConnectionPriority connection_priority;
     std::unique_ptr<base::OneShotTimer> timer;
-
-    DISALLOW_COPY_AND_ASSIGN(ActiveAdvertisementRequest);
   };
 
   static const int64_t kNumSecondsPerAdvertisementTimeslot;
@@ -165,8 +171,6 @@ class BleAdvertiserImpl : public BleAdvertiser {
       requests_already_removed_due_to_failed_advertisement_;
 
   base::WeakPtrFactory<BleAdvertiserImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BleAdvertiserImpl);
 };
 
 }  // namespace secure_channel

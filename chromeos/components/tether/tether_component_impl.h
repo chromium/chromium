@@ -94,6 +94,9 @@ class TetherComponentImpl : public TetherComponent {
     static Factory* factory_instance_;
   };
 
+  TetherComponentImpl(const TetherComponentImpl&) = delete;
+  TetherComponentImpl& operator=(const TetherComponentImpl&) = delete;
+
   ~TetherComponentImpl() override;
 
   // TetherComponent:
@@ -130,8 +133,6 @@ class TetherComponentImpl : public TetherComponent {
   ShutdownReason shutdown_reason_;
 
   base::WeakPtrFactory<TetherComponentImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TetherComponentImpl);
 };
 
 }  // namespace tether

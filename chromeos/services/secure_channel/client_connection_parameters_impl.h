@@ -39,6 +39,11 @@ class ClientConnectionParametersImpl : public ClientConnectionParameters {
     static Factory* test_factory_;
   };
 
+  ClientConnectionParametersImpl(const ClientConnectionParametersImpl&) =
+      delete;
+  ClientConnectionParametersImpl& operator=(
+      const ClientConnectionParametersImpl&) = delete;
+
   ~ClientConnectionParametersImpl() override;
 
  private:
@@ -58,8 +63,6 @@ class ClientConnectionParametersImpl : public ClientConnectionParameters {
   void OnConnectionDelegateRemoteDisconnected();
 
   mojo::Remote<mojom::ConnectionDelegate> connection_delegate_remote_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientConnectionParametersImpl);
 };
 
 }  // namespace secure_channel

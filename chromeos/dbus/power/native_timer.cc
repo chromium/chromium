@@ -76,14 +76,17 @@ struct NativeTimer::StartTimerParams {
       : absolute_expiration_time(absolute_expiration_time),
         timer_expiration_callback(std::move(timer_expiration_callback)),
         result_callback(std::move(result_callback)) {}
+
+  StartTimerParams(const StartTimerParams&) = delete;
+  StartTimerParams& operator=(const StartTimerParams&) = delete;
+
   StartTimerParams(StartTimerParams&&) = default;
+
   ~StartTimerParams() = default;
 
   base::TimeTicks absolute_expiration_time;
   base::OnceClosure timer_expiration_callback;
   OnStartNativeTimerCallback result_callback;
-
-  DISALLOW_COPY_AND_ASSIGN(StartTimerParams);
 };
 
 void NativeTimer::Start(base::TimeTicks absolute_expiration_time,

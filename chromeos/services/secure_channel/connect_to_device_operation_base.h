@@ -28,6 +28,11 @@ namespace secure_channel {
 template <typename FailureDetailType>
 class ConnectToDeviceOperationBase
     : public ConnectToDeviceOperation<FailureDetailType> {
+ public:
+  ConnectToDeviceOperationBase(const ConnectToDeviceOperationBase&) = delete;
+  ConnectToDeviceOperationBase& operator=(const ConnectToDeviceOperationBase&) =
+      delete;
+
  protected:
   ConnectToDeviceOperationBase(
       typename ConnectToDeviceOperation<
@@ -108,8 +113,6 @@ class ConnectToDeviceOperationBase
   scoped_refptr<base::TaskRunner> task_runner_;
   absl::optional<ConnectionPriority> pending_connection_attempt_priority_;
   base::WeakPtrFactory<ConnectToDeviceOperationBase> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectToDeviceOperationBase);
 };
 
 }  // namespace secure_channel

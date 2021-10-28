@@ -101,6 +101,12 @@ class FakeSingleClientProxyImplFactory : public SingleClientProxyImpl::Factory {
 }  // namespace
 
 class SecureChannelMultiplexedChannelImplTest : public testing::Test {
+ public:
+  SecureChannelMultiplexedChannelImplTest(
+      const SecureChannelMultiplexedChannelImplTest&) = delete;
+  SecureChannelMultiplexedChannelImplTest& operator=(
+      const SecureChannelMultiplexedChannelImplTest&) = delete;
+
  protected:
   SecureChannelMultiplexedChannelImplTest() = default;
   ~SecureChannelMultiplexedChannelImplTest() override = default;
@@ -311,8 +317,6 @@ class SecureChannelMultiplexedChannelImplTest : public testing::Test {
   std::unique_ptr<FakeMultiplexedChannelDelegate> fake_delegate_;
 
   std::unique_ptr<MultiplexedChannel> multiplexed_channel_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelMultiplexedChannelImplTest);
 };
 
 TEST_F(SecureChannelMultiplexedChannelImplTest, ConnectionMetadata) {

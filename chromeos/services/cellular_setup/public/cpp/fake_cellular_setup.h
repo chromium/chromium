@@ -53,6 +53,10 @@ class FakeCellularSetup : public CellularSetupBase {
   };
 
   FakeCellularSetup();
+
+  FakeCellularSetup(const FakeCellularSetup&) = delete;
+  FakeCellularSetup& operator=(const FakeCellularSetup&) = delete;
+
   ~FakeCellularSetup() override;
 
   std::vector<std::unique_ptr<StartActivationInvocation>>&
@@ -68,8 +72,6 @@ class FakeCellularSetup : public CellularSetupBase {
 
   std::vector<std::unique_ptr<StartActivationInvocation>>
       start_activation_invocations_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCellularSetup);
 };
 
 }  // namespace cellular_setup

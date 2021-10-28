@@ -16,6 +16,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ARC) FakeArcCameraClient
   // Returns the fake global instance if initialized. May return null.
   static FakeArcCameraClient* Get();
 
+  FakeArcCameraClient(const FakeArcCameraClient&) = delete;
+  FakeArcCameraClient& operator=(const FakeArcCameraClient&) = delete;
+
   // ArcCameraClient override:
   void StartService(int fd,
                     const std::string& token,
@@ -26,8 +29,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ARC) FakeArcCameraClient
 
   FakeArcCameraClient();
   ~FakeArcCameraClient() override;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeArcCameraClient);
 };
 
 }  // namespace chromeos

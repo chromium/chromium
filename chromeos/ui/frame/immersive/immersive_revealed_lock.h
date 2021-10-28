@@ -31,12 +31,14 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) ImmersiveRevealedLock {
 
   ImmersiveRevealedLock(const base::WeakPtr<Delegate>& delegate,
                         Delegate::AnimateReveal animate_reveal);
+
+  ImmersiveRevealedLock(const ImmersiveRevealedLock&) = delete;
+  ImmersiveRevealedLock& operator=(const ImmersiveRevealedLock&) = delete;
+
   ~ImmersiveRevealedLock();
 
  private:
   base::WeakPtr<Delegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImmersiveRevealedLock);
 };
 
 }  // namespace chromeos

@@ -52,6 +52,10 @@ class MultiDeviceSetupClient {
   static FeatureStatesMap GenerateDefaultFeatureStatesMap();
 
   MultiDeviceSetupClient();
+
+  MultiDeviceSetupClient(const MultiDeviceSetupClient&) = delete;
+  MultiDeviceSetupClient& operator=(const MultiDeviceSetupClient&) = delete;
+
   virtual ~MultiDeviceSetupClient();
 
   void AddObserver(Observer* observer);
@@ -87,8 +91,6 @@ class MultiDeviceSetupClient {
   friend class MultiDeviceSetupClientImplTest;
 
   base::ObserverList<Observer>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiDeviceSetupClient);
 };
 
 std::string FeatureStatesMapToString(

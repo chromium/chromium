@@ -103,6 +103,11 @@ class BluetoothLowEnergyWeaveClientConnection
       const std::string& device_address,
       bool should_set_low_connection_latency);
 
+  BluetoothLowEnergyWeaveClientConnection(
+      const BluetoothLowEnergyWeaveClientConnection&) = delete;
+  BluetoothLowEnergyWeaveClientConnection& operator=(
+      const BluetoothLowEnergyWeaveClientConnection&) = delete;
+
   ~BluetoothLowEnergyWeaveClientConnection() override;
 
   // Connection:
@@ -446,8 +451,6 @@ class BluetoothLowEnergyWeaveClientConnection
 
   base::WeakPtrFactory<BluetoothLowEnergyWeaveClientConnection>
       weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothLowEnergyWeaveClientConnection);
 };
 
 }  // namespace weave

@@ -103,6 +103,12 @@ std::vector<base::UnguessableToken> ClientListToIdList(
 }  // namespace
 
 class SecureChannelActiveConnectionManagerImplTest : public testing::Test {
+ public:
+  SecureChannelActiveConnectionManagerImplTest(
+      const SecureChannelActiveConnectionManagerImplTest&) = delete;
+  SecureChannelActiveConnectionManagerImplTest& operator=(
+      const SecureChannelActiveConnectionManagerImplTest&) = delete;
+
  protected:
   SecureChannelActiveConnectionManagerImplTest() = default;
   ~SecureChannelActiveConnectionManagerImplTest() override = default;
@@ -229,8 +235,6 @@ class SecureChannelActiveConnectionManagerImplTest : public testing::Test {
   std::unique_ptr<FakeActiveConnectionManagerDelegate> fake_delegate_;
 
   std::unique_ptr<ActiveConnectionManager> manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelActiveConnectionManagerImplTest);
 };
 
 TEST_F(SecureChannelActiveConnectionManagerImplTest, EdgeCases) {

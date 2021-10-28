@@ -29,6 +29,10 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) ExtendedAuthenticatorImpl
   static scoped_refptr<ExtendedAuthenticatorImpl> Create(
       AuthStatusConsumer* consumer);
 
+  ExtendedAuthenticatorImpl(const ExtendedAuthenticatorImpl&) = delete;
+  ExtendedAuthenticatorImpl& operator=(const ExtendedAuthenticatorImpl&) =
+      delete;
+
   // ExtendedAuthenticator:
   void SetConsumer(AuthStatusConsumer* consumer) override;
   void AuthenticateToCheck(const UserContext& context,
@@ -88,8 +92,6 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) ExtendedAuthenticatorImpl
   std::vector<base::OnceClosure> system_salt_callbacks_;
 
   AuthStatusConsumer* consumer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtendedAuthenticatorImpl);
 };
 
 }  // namespace chromeos

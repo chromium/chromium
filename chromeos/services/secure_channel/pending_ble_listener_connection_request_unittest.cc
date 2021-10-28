@@ -26,6 +26,12 @@ const char kTestFeature[] = "testFeature";
 
 class SecureChannelPendingBleListenerConnectionRequestTest
     : public testing::Test {
+ public:
+  SecureChannelPendingBleListenerConnectionRequestTest(
+      const SecureChannelPendingBleListenerConnectionRequestTest&) = delete;
+  SecureChannelPendingBleListenerConnectionRequestTest& operator=(
+      const SecureChannelPendingBleListenerConnectionRequestTest&) = delete;
+
  protected:
   SecureChannelPendingBleListenerConnectionRequestTest() = default;
   ~SecureChannelPendingBleListenerConnectionRequestTest() override = default;
@@ -75,9 +81,6 @@ class SecureChannelPendingBleListenerConnectionRequestTest
 
   std::unique_ptr<PendingConnectionRequest<BleListenerFailureType>>
       pending_ble_listener_request_;
-
-  DISALLOW_COPY_AND_ASSIGN(
-      SecureChannelPendingBleListenerConnectionRequestTest);
 };
 
 TEST_F(SecureChannelPendingBleListenerConnectionRequestTest,

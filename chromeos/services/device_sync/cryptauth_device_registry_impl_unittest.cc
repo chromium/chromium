@@ -35,6 +35,12 @@ const char kInstanceId1[] = "instance_id_1";
 }  // namespace
 
 class DeviceSyncCryptAuthDeviceRegistryImplTest : public testing::Test {
+ public:
+  DeviceSyncCryptAuthDeviceRegistryImplTest(
+      const DeviceSyncCryptAuthDeviceRegistryImplTest&) = delete;
+  DeviceSyncCryptAuthDeviceRegistryImplTest& operator=(
+      const DeviceSyncCryptAuthDeviceRegistryImplTest&) = delete;
+
  protected:
   DeviceSyncCryptAuthDeviceRegistryImplTest() = default;
 
@@ -114,8 +120,6 @@ class DeviceSyncCryptAuthDeviceRegistryImplTest : public testing::Test {
   TestingPrefServiceSimple pref_service_;
 
   std::unique_ptr<CryptAuthDeviceRegistry> device_registry_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceSyncCryptAuthDeviceRegistryImplTest);
 };
 
 TEST_F(DeviceSyncCryptAuthDeviceRegistryImplTest, AddAndGetDevices) {

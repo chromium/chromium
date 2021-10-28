@@ -23,6 +23,12 @@ const base::Time kLaterTime = kTestTime + base::Milliseconds(123456789);
 }  // namespace
 
 class HostDeviceTimestampManagerImplTest : public testing::Test {
+ public:
+  HostDeviceTimestampManagerImplTest(
+      const HostDeviceTimestampManagerImplTest&) = delete;
+  HostDeviceTimestampManagerImplTest& operator=(
+      const HostDeviceTimestampManagerImplTest&) = delete;
+
  protected:
   HostDeviceTimestampManagerImplTest() = default;
   ~HostDeviceTimestampManagerImplTest() override = default;
@@ -69,8 +75,6 @@ class HostDeviceTimestampManagerImplTest : public testing::Test {
   std::unique_ptr<base::SimpleTestClock> test_clock_;
 
   std::unique_ptr<HostDeviceTimestampManager> manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(HostDeviceTimestampManagerImplTest);
 };
 
 TEST_F(HostDeviceTimestampManagerImplTest,

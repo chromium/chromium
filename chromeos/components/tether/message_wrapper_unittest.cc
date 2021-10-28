@@ -46,11 +46,12 @@ void VerifyProtoConversion(const google::protobuf::MessageLite* proto,
 }  // namespace
 
 class MessageWrapperTest : public testing::Test {
+ public:
+  MessageWrapperTest(const MessageWrapperTest&) = delete;
+  MessageWrapperTest& operator=(const MessageWrapperTest&) = delete;
+
  protected:
   MessageWrapperTest() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MessageWrapperTest);
 };
 
 TEST_F(MessageWrapperTest, TestToAndFromRawMessage_ConnectTetheringRequest) {

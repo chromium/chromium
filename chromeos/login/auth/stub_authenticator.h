@@ -37,6 +37,9 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) StubAuthenticator
   StubAuthenticator(AuthStatusConsumer* consumer,
                     const UserContext& expected_user_context);
 
+  StubAuthenticator(const StubAuthenticator&) = delete;
+  StubAuthenticator& operator=(const StubAuthenticator&) = delete;
+
   // Authenticator:
   void CompleteLogin(const UserContext& user_context) override;
   void AuthenticateToLogin(const UserContext& user_context) override;
@@ -90,8 +93,6 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) StubAuthenticator
 
   // For requests that report auth failure, the reason for the failure.
   AuthFailure::FailureReason failure_reason_ = AuthFailure::NONE;
-
-  DISALLOW_COPY_AND_ASSIGN(StubAuthenticator);
 };
 
 }  // namespace chromeos

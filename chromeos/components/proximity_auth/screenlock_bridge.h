@@ -165,6 +165,9 @@ class ScreenlockBridge {
 
   static ScreenlockBridge* Get();
 
+  ScreenlockBridge(const ScreenlockBridge&) = delete;
+  ScreenlockBridge& operator=(const ScreenlockBridge&) = delete;
+
   void SetLockHandler(LockHandler* lock_handler);
   void SetFocusedUser(const AccountId& account_id);
 
@@ -193,8 +196,6 @@ class ScreenlockBridge {
   // The last focused user's id.
   AccountId focused_account_id_;
   base::ObserverList<Observer, true>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenlockBridge);
 };
 
 }  // namespace proximity_auth

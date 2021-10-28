@@ -47,6 +47,9 @@ class RemoteDeviceCache {
     static Factory* test_factory_;
   };
 
+  RemoteDeviceCache(const RemoteDeviceCache&) = delete;
+  RemoteDeviceCache& operator=(const RemoteDeviceCache&) = delete;
+
   virtual ~RemoteDeviceCache();
 
   void SetRemoteDevices(const RemoteDeviceList& remote_devices);
@@ -71,8 +74,6 @@ class RemoteDeviceCache {
       const absl::optional<std::string>& legacy_device_id) const;
 
   std::vector<std::shared_ptr<RemoteDevice>> cached_remote_devices_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteDeviceCache);
 };
 
 }  // namespace multidevice

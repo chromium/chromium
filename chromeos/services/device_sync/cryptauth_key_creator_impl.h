@@ -42,6 +42,9 @@ class CryptAuthKeyCreatorImpl : public CryptAuthKeyCreator {
     static Factory* test_factory_;
   };
 
+  CryptAuthKeyCreatorImpl(const CryptAuthKeyCreatorImpl&) = delete;
+  CryptAuthKeyCreatorImpl& operator=(const CryptAuthKeyCreatorImpl&) = delete;
+
   ~CryptAuthKeyCreatorImpl() override;
 
   // CryptAuthKeyCreator:
@@ -78,8 +81,6 @@ class CryptAuthKeyCreatorImpl : public CryptAuthKeyCreator {
   CreateKeysCallback create_keys_callback_;
 
   std::unique_ptr<multidevice::SecureMessageDelegate> secure_message_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthKeyCreatorImpl);
 };
 
 }  // namespace device_sync

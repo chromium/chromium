@@ -93,12 +93,16 @@ void CheckSerializedSecureMessage(
 }  // namespace
 
 class CryptAuthFakeSecureMessageDelegateTest : public testing::Test {
+ public:
+  CryptAuthFakeSecureMessageDelegateTest(
+      const CryptAuthFakeSecureMessageDelegateTest&) = delete;
+  CryptAuthFakeSecureMessageDelegateTest& operator=(
+      const CryptAuthFakeSecureMessageDelegateTest&) = delete;
+
  protected:
   CryptAuthFakeSecureMessageDelegateTest() {}
 
   FakeSecureMessageDelegate delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthFakeSecureMessageDelegateTest);
 };
 
 TEST_F(CryptAuthFakeSecureMessageDelegateTest, GenerateKeyPair) {

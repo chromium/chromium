@@ -45,6 +45,11 @@ class PendingBleListenerConnectionRequest
     static Factory* test_factory_;
   };
 
+  PendingBleListenerConnectionRequest(
+      const PendingBleListenerConnectionRequest&) = delete;
+  PendingBleListenerConnectionRequest& operator=(
+      const PendingBleListenerConnectionRequest&) = delete;
+
   ~PendingBleListenerConnectionRequest() override;
 
  private:
@@ -56,8 +61,6 @@ class PendingBleListenerConnectionRequest
 
   // PendingConnectionRequest<BleListenerFailureType>:
   void HandleConnectionFailure(BleListenerFailureType failure_detail) override;
-
-  DISALLOW_COPY_AND_ASSIGN(PendingBleListenerConnectionRequest);
 };
 
 }  // namespace secure_channel

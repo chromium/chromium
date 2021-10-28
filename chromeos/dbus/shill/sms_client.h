@@ -48,6 +48,9 @@ class COMPONENT_EXPORT(SHILL_CLIENT) SMSClient {
   // Returns the global instance if initialized. May return null.
   static SMSClient* Get();
 
+  SMSClient(const SMSClient&) = delete;
+  SMSClient& operator=(const SMSClient&) = delete;
+
   // Calls GetAll method.  |callback| is called after the method call succeeds.
   virtual void GetAll(const std::string& service_name,
                       const dbus::ObjectPath& object_path,
@@ -57,9 +60,6 @@ class COMPONENT_EXPORT(SHILL_CLIENT) SMSClient {
   // Initialize/Shutdown should be used instead.
   SMSClient();
   virtual ~SMSClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SMSClient);
 };
 
 }  // namespace chromeos

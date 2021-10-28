@@ -51,6 +51,11 @@ class CryptAuthGroupPrivateKeySharerImpl
     static Factory* test_factory_;
   };
 
+  CryptAuthGroupPrivateKeySharerImpl(
+      const CryptAuthGroupPrivateKeySharerImpl&) = delete;
+  CryptAuthGroupPrivateKeySharerImpl& operator=(
+      const CryptAuthGroupPrivateKeySharerImpl&) = delete;
+
   ~CryptAuthGroupPrivateKeySharerImpl() override;
 
  private:
@@ -103,8 +108,6 @@ class CryptAuthGroupPrivateKeySharerImpl
   State state_ = State::kNotStarted;
   CryptAuthClientFactory* client_factory_ = nullptr;
   std::unique_ptr<base::OneShotTimer> timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthGroupPrivateKeySharerImpl);
 };
 
 }  // namespace device_sync

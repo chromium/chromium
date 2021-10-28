@@ -71,6 +71,10 @@ class CryptAuthV2DeviceManagerImpl
     static Factory* test_factory_;
   };
 
+  CryptAuthV2DeviceManagerImpl(const CryptAuthV2DeviceManagerImpl&) = delete;
+  CryptAuthV2DeviceManagerImpl& operator=(const CryptAuthV2DeviceManagerImpl&) =
+      delete;
+
   ~CryptAuthV2DeviceManagerImpl() override;
 
  protected:
@@ -124,8 +128,6 @@ class CryptAuthV2DeviceManagerImpl
   // CryptAuthV2DeviceManagerImpl.
   base::WeakPtrFactory<CryptAuthV2DeviceManagerImpl>
       scheduler_weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthV2DeviceManagerImpl);
 };
 
 }  // namespace device_sync

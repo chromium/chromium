@@ -342,6 +342,12 @@ class SecureChannelBluetoothLowEnergyWeaveClientConnectionTest
         service_uuid_(device::BluetoothUUID(kServiceUUID)),
         tx_characteristic_uuid_(device::BluetoothUUID(kTXCharacteristicUUID)),
         rx_characteristic_uuid_(device::BluetoothUUID(kRXCharacteristicUUID)) {}
+
+  SecureChannelBluetoothLowEnergyWeaveClientConnectionTest(
+      const SecureChannelBluetoothLowEnergyWeaveClientConnectionTest&) = delete;
+  SecureChannelBluetoothLowEnergyWeaveClientConnectionTest& operator=(
+      const SecureChannelBluetoothLowEnergyWeaveClientConnectionTest&) = delete;
+
   ~SecureChannelBluetoothLowEnergyWeaveClientConnectionTest() override {}
 
   void SetUp() override {
@@ -712,9 +718,6 @@ class SecureChannelBluetoothLowEnergyWeaveClientConnectionTest
   void OnConnectionRssi(absl::optional<int32_t> rssi) { rssi_ = rssi; }
 
   absl::optional<int32_t> rssi_;
-
-  DISALLOW_COPY_AND_ASSIGN(
-      SecureChannelBluetoothLowEnergyWeaveClientConnectionTest);
 };
 
 TEST_F(SecureChannelBluetoothLowEnergyWeaveClientConnectionTest,

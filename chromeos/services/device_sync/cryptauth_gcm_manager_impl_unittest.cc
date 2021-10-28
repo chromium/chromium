@@ -63,6 +63,12 @@ class MockGCMDriver : public gcm::FakeGCMDriver {
 class DeviceSyncCryptAuthGCMManagerImplTest
     : public testing::Test,
       public CryptAuthGCMManager::Observer {
+ public:
+  DeviceSyncCryptAuthGCMManagerImplTest(
+      const DeviceSyncCryptAuthGCMManagerImplTest&) = delete;
+  DeviceSyncCryptAuthGCMManagerImplTest& operator=(
+      const DeviceSyncCryptAuthGCMManagerImplTest&) = delete;
+
  protected:
   DeviceSyncCryptAuthGCMManagerImplTest()
       : gcm_manager_(&gcm_driver_, &pref_service_) {}
@@ -122,8 +128,6 @@ class DeviceSyncCryptAuthGCMManagerImplTest
   TestingPrefServiceSimple pref_service_;
 
   CryptAuthGCMManagerImpl gcm_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceSyncCryptAuthGCMManagerImplTest);
 };
 
 TEST_F(DeviceSyncCryptAuthGCMManagerImplTest, RegisterPrefs) {

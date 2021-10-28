@@ -69,6 +69,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkCertificateHandler
   };
 
   NetworkCertificateHandler();
+
+  NetworkCertificateHandler(const NetworkCertificateHandler&) = delete;
+  NetworkCertificateHandler& operator=(const NetworkCertificateHandler&) =
+      delete;
+
   ~NetworkCertificateHandler() override;
 
   void AddObserver(Observer* observer);
@@ -99,8 +104,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkCertificateHandler
 
   std::vector<Certificate> server_ca_certificates_;
   std::vector<Certificate> client_certificates_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkCertificateHandler);
 };
 
 }  // namespace chromeos

@@ -67,6 +67,10 @@ class CryptAuthEciesEncryptorImpl : public CryptAuthEciesEncryptor {
     static Factory* test_factory_;
   };
 
+  CryptAuthEciesEncryptorImpl(const CryptAuthEciesEncryptorImpl&) = delete;
+  CryptAuthEciesEncryptorImpl& operator=(const CryptAuthEciesEncryptorImpl&) =
+      delete;
+
   ~CryptAuthEciesEncryptorImpl() override;
 
  private:
@@ -99,8 +103,6 @@ class CryptAuthEciesEncryptorImpl : public CryptAuthEciesEncryptor {
   size_t remaining_batch_size_ = 0;
   IdToOutputMap id_to_output_map_;
   std::unique_ptr<multidevice::SecureMessageDelegate> secure_message_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthEciesEncryptorImpl);
 };
 
 }  // namespace device_sync
