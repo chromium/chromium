@@ -275,7 +275,11 @@
           'win10',
         ],
         'test_suites': {
-          'isolated_scripts': 'chrome_sizes',
+          'isolated_scripts': 'chrome_isolated_script_tests',
+          # TODO(crbug.com/1233603): This is a fake finch smoke test for
+          # prototyping purpose, remove and switch to use the real one once the
+          # pipeline is ready for production integration.
+          'gtest_tests': 'finch_smoke_tests',
         },
       },
       'win64-chrome': {
