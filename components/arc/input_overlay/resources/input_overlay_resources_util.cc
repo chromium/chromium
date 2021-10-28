@@ -17,6 +17,7 @@ absl::optional<int> GetInputOverlayResourceId(const std::string& package_name) {
   static std::map<std::string, int> resource_id_map = {
       {"org.chromium.arc.testapp.inputoverlay",
        IDR_IO_ORG_CHROMIUM_ARC_TESTAPP_INPUTOVERLAY},
+      {"com.blackpanther.ninjaarashi2", IDR_IO_COM_BLACKPANTHER_NINJAARASHI2},
   };
 
   auto it = resource_id_map.find(package_name);
