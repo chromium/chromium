@@ -419,11 +419,11 @@ reach out to infra-dev@chromium.org or [file a bug][19]!
 [5]: https://chromium.googlesource.com/chromium/tools/build/+/HEAD/recipes/recipe_modules/chromium_tests_builder_config
 [6]: /infra/config
 [7]: https://luci-config.appspot.com/schemas/projects:cr-buildbucket.cfg
-[8]: /infra/config/generated/cr-buildbucket.cfg
+[8]: /infra/config/generated/luci/cr-buildbucket.cfg
 [9]: http://luci-config.appspot.com/schemas/projects:luci-milo.cfg
-[10]: /infra/config/generated/luci-milo.cfg
+[10]: /infra/config/generated/luci/luci-milo.cfg
 [11]: https://chromium.googlesource.com/infra/luci/luci-go/+/HEAD/scheduler/appengine/messages/config.proto
-[12]: /infra/config/generated/luci-scheduler.cfg
+[12]: /infra/config/generated/luci/luci-scheduler.cfg
 [13]: /tools/mb/README.md
 [14]: /tools/mb/docs/user_guide.md#the-mb_config_pyl-config-file
 [15]: /testing/buildbot/README.md
@@ -431,10 +431,8 @@ reach out to infra-dev@chromium.org or [file a bug][19]!
 [17]: https://chromium.googlesource.com/chromium/tools/build
 [18]: /
 [19]: https://g.co/bugatrooper
-[20]: https://chromium.googlesource.com/infra/luci/luci-py/+/HEAD/appengine/swarming/proto/bots.proto
 [21]: https://chromium.googlesource.com/chromium/tools/build/+/HEAD/recipes/recipe_modules/chromium_tests_builder_config/trybots.py
 [22]: /infra/config/main.star
 [23]: /infra/config/subprojects/chromium
 [24]: /infra/config/lib/builders.star
 [25]: https://source.chromium.org/chromium/chromium/tools/build/+/main:recipes/recipe_modules/chromium_tests_builder_config/trybots.py
-[26]: /infra/config/generated/cq-builders.md
