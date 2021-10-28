@@ -244,6 +244,8 @@ source_set("quiche") {
     "src/quic/core/crypto/chacha_base_encrypter.h",
     "src/quic/core/crypto/channel_id.cc",
     "src/quic/core/crypto/channel_id.h",
+    "src/quic/core/crypto/client_proof_source.cc",
+    "src/quic/core/crypto/client_proof_source.h",
     "src/quic/core/crypto/common_cert_set.cc",
     "src/quic/core/crypto/common_cert_set.h",
     "src/quic/core/crypto/crypto_framer.cc",
