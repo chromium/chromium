@@ -110,11 +110,6 @@ crbug.com/1254932 http/tests/preload/meta-csp.html [ Failure ]
 # Extra box in the output:
 crbug.com/1254933 css3/filters/filterRegions.html [ Failure ]
 
-# More line messages added and removed:
-crbug.com/1254937 http/tests/devtools/oopif/oopif-presentation-console-messages.js [ Failure ]
-crbug.com/1254937 http/tests/devtools/resource-tree/resource-tree-frame-add.js [ Failure ]
-crbug.com/1254937 http/tests/inspector-protocol/issues/content-security-policy-issue-creation-img.js [ Failure ]
-crbug.com/1254937 http/tests/inspector-protocol/runtime/eval-await-navigation-paused-message-order.js [ Failure Timeout ]
 crbug.com/1256612 plugins/focus-change-3-change-blur.html [ Failure Pass ]
 crbug.com/1235685 plugins/focus-change-4-change-focus-and-blur.html [ Failure Pass ]
 
