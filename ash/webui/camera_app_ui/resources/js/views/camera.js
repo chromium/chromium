@@ -898,7 +898,7 @@ export class Camera extends View {
     };
 
     let result = false;
-    this.prepareReview_(async () => {
+    await this.prepareReview_(async () => {
       await this.review_.setReviewPhoto(blob);
       const positive = new review.Options(
           new review.Option(I18nString.LABEL_SAVE, {exitValue: true}),
