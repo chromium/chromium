@@ -95,8 +95,10 @@ class ExtensionForceInstallMixin final : public InProcessBrowserTestMixin {
       delete;
   ~ExtensionForceInstallMixin() override;
 
-  // Use one of the Init*() methods to initialize the object before calling any
-  // other method:
+  // Use one of the Init*() methods below to initialize the object before
+  // calling any other method.
+  // Note: The |profile| argument is optional; if it's null, only the `kNone`
+  // waiting mode is allowed, and Get...Extension() methods are fobidden.
 
   void InitWithMockPolicyProvider(
       Profile* profile,
@@ -190,6 +192,7 @@ class ExtensionForceInstallMixin final : public InProcessBrowserTestMixin {
 
   base::ScopedTempDir temp_dir_;
   net::EmbeddedTestServer embedded_test_server_;
+  bool initialized_ = false;
   Profile* profile_ = nullptr;
   policy::MockConfigurationPolicyProvider* mock_policy_provider_ = nullptr;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
