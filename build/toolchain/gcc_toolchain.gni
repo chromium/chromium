@@ -462,10 +462,6 @@ template("gcc_toolchain") {
       solink_wrapper =
           rebase_path("//build/toolchain/gcc_solink_wrapper.py", root_build_dir)
       solink_extra_flags = ""
-      if (current_os == "aix") {
-        # to be intercepted by solink_wrapper
-        solink_extra_flags = "--link-only"
-      }
       command = "$python_path \"$solink_wrapper\" --readelf=\"$readelf\" --nm=\"$nm\" $strip_switch$dwp_switch --sofile=\"$unstripped_sofile\" --tocfile=\"$tocfile\"$map_switch --output=\"$sofile\" -- $link_command $solink_extra_flags"
 
       if (target_cpu == "mipsel" && is_component_build && is_android) {
