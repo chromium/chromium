@@ -5,7 +5,6 @@
 #include "ash/shelf/launcher_nudge_controller.h"
 
 #include "ash/app_list/app_list_controller_impl.h"
-#include "ash/app_list/views/app_list_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
@@ -87,13 +86,6 @@ class LauncherNudgeControllerTest : public AshTestBase {
     nudge_controller_->SetClockForTesting(
         task_environment()->GetMockClock(),
         task_environment()->GetMockTickClock());
-
-    // After the app list is toggled and ExpandArrowView is shown, running the
-    // ExpandArrowView animation with the clock advanced will lead to msan
-    // crash. As a workaround, set the `short_animation_for_testing` in
-    // AppListView to true in order to disable the ExpandArrowView animation.
-    // See crbug.com/926038 for similar issue and fix.
-    AppListView::SetShortAnimationForTesting(true);
   }
 
   // Advances the mock clock in the task environment and wait until it is idle.
@@ -171,10 +163,14 @@ TEST_F(LauncherNudgeControllerTest, StopShowingNudgeAfterLauncherIsOpened) {
   AdvanceClock(nudge_controller_->GetNudgeInterval(/*is_first_time=*/true));
   EXPECT_EQ(1, GetNudgeShownCount());
 
-  // Toggle the app list to show.
+  // Toggle the app list to show. Open fullscreen to avoid showing the expand
+  // arrow button, because the animation for that button causes an MSAN
+  // use-of-uninitialized-value. This workaround can be removed when
+  // ProductivityLauncher is the default, since it does not have an expand
+  // button. See https://crbug.com/926038.
   Shell::Get()->app_list_controller()->ToggleAppList(
       display::Screen::GetScreen()->GetPrimaryDisplay().id(),
-      AppListShowSource::kShelfButton, base::TimeTicks());
+      AppListShowSource::kShelfButtonFullscreen, base::TimeTicks());
   ASSERT_TRUE(Shell::Get()->app_list_controller()->IsVisible());
   AdvanceClock(nudge_controller_->GetNudgeInterval(/*is_first_time=*/false));
 

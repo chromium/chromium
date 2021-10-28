@@ -228,7 +228,6 @@ class AppsGridViewTest : public AshTestBase {
 
   // testing::Test overrides:
   void SetUp() override {
-    AppListView::SetShortAnimationForTesting(true);
     if (is_rtl_)
       base::i18n::SetICUDefaultLocale("he");
     feature_list_.InitWithFeatureState(features::kProductivityLauncher,
@@ -302,7 +301,6 @@ class AppsGridViewTest : public AshTestBase {
     PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
         false);
     AshTestBase::TearDown();
-    AppListView::SetShortAnimationForTesting(false);
   }
 
  protected:

@@ -77,6 +77,10 @@ class TestSystemTrayClient;
 class UnifiedSystemTray;
 class WorkAreaInsets;
 
+// Base class for most tests in //ash. Constructs ash::Shell and all its
+// dependencies. Provides a user login session (use NoSessionAshTestBase for
+// tests that start at the login screen or need unusual user types). Sets
+// animation durations to zero via AshTestHelper/AuraTestHelper.
 class AshTestBase : public testing::Test {
  public:
   // Constructs an AshTestBase with |traits| being forwarded to its

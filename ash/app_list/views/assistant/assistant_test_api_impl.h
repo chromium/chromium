@@ -61,8 +61,6 @@ class AssistantTestApiImpl : public AssistantTestApi {
   aura::Window* root_window() override;
 
  private:
-  void EnableAnimations();
-
   bool AppListViewsHaveBeenCreated() const;
   ContentsView* contents_view();
   ContentsView* contents_view_or_null() const;

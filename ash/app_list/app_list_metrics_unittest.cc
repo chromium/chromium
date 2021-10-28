@@ -90,18 +90,12 @@ class AppListAppLaunchedMetricTest : public AshTestBase {
   ~AppListAppLaunchedMetricTest() override = default;
 
   void SetUp() override {
-    AppListView::SetShortAnimationForTesting(true);
     AshTestBase::SetUp();
 
     search_model_ = Shell::Get()->app_list_controller()->GetSearchModel();
 
     shelf_test_api_ = std::make_unique<ShelfViewTestAPI>(
         GetPrimaryShelf()->GetShelfViewForTesting());
-  }
-
-  void TearDown() override {
-    AshTestBase::TearDown();
-    AppListView::SetShortAnimationForTesting(false);
   }
 
  protected:

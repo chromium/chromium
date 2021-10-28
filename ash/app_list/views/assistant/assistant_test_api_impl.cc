@@ -46,13 +46,9 @@ std::unique_ptr<AssistantTestApi> AssistantTestApi::Create() {
 
 AssistantTestApiImpl::AssistantTestApiImpl() = default;
 
-AssistantTestApiImpl::~AssistantTestApiImpl() {
-  EnableAnimations();
-}
+AssistantTestApiImpl::~AssistantTestApiImpl() = default;
 
 void AssistantTestApiImpl::DisableAnimations() {
-  AppListView::SetShortAnimationForTesting(true);
-
   scoped_animation_duration_ =
       std::make_unique<ui::ScopedAnimationDurationScaleMode>(
           ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
@@ -229,11 +225,6 @@ AssistantState* AssistantTestApiImpl::GetAssistantState() {
 
 void AssistantTestApiImpl::WaitUntilIdle() {
   base::RunLoop().RunUntilIdle();
-}
-
-void AssistantTestApiImpl::EnableAnimations() {
-  scoped_animation_duration_ = nullptr;
-  AppListView::SetShortAnimationForTesting(false);
 }
 
 bool AssistantTestApiImpl::AppListViewsHaveBeenCreated() const {

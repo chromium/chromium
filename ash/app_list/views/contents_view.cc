@@ -31,6 +31,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -296,10 +297,9 @@ void ContentsView::SetActiveStateInternal(int page_index, bool animate) {
 
   app_list_pages_[GetActivePageIndex()]->OnWillBeHidden();
 
-  // Start animating to the new page.
-  bool should_animate = animate && !set_active_state_without_animation_;
-  // Disable animating for testing.
-  should_animate = should_animate && !AppListView::ShortAnimationsForTesting();
+  // Start animating to the new page. Disable animation for tests.
+  bool should_animate = animate && !set_active_state_without_animation_ &&
+                        !ui::ScopedAnimationDurationScaleMode::is_zero();
 
   // There's a chance of selecting page during the transition animation. To
   // reschedule the new animation from the beginning, |pagination_model_| needs
@@ -612,8 +612,8 @@ bool ContentsView::Back() {
       } else if (app_list_view_->is_tablet_mode() &&
                  pagination_model->total_pages() > 0 &&
                  pagination_model->selected_page() > 0) {
-        pagination_model->SelectPage(
-            0, !app_list_view_->ShortAnimationsForTesting());
+        bool animate = !ui::ScopedAnimationDurationScaleMode::is_zero();
+        pagination_model->SelectPage(0, animate);
       } else {
         // Close the app list when Back() is called from the apps page.
         return false;

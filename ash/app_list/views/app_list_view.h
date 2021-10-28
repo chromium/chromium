@@ -167,9 +167,6 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   // app list.
   static void ExcludeWindowFromEventHandling(aura::Window* window);
 
-  static void SetShortAnimationForTesting(bool enabled);
-  static bool ShortAnimationsForTesting();
-
   // Used for testing, allows the page reset timer to be fired immediately
   // after starting.
   static void SetSkipPageResetTimerForTesting(bool enabled);
