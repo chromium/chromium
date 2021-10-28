@@ -71,10 +71,16 @@ class StorageHandler : public ::settings::SettingsPageUIHandler,
   // chromeos::settings::calculator::SizeCalculator::Observer:
   void OnSizeCalculated(
       const calculator::SizeCalculator::CalculationType& calculation_type,
-      int64_t total_bytes) override;
+      int64_t total_bytes,
+      const absl::optional<int64_t>& available_bytes = absl::nullopt) override;
 
-  // Removes the handler from the list of observers of every observed instances.
+  // Remove the handler from the list of observers of every observed instances.
   void StopObservingEvents();
+
+ protected:
+  // Round a given number of bytes up to the next power of 2.
+  // Ex: 14 => 16, 150 => 256.
+  int64_t RoundByteSize(int64_t bytes);
 
  private:
   // Handlers of JS messages.
@@ -84,16 +90,20 @@ class StorageHandler : public ::settings::SettingsPageUIHandler,
   void HandleOpenArcStorage(const base::ListValue* unused_args);
   void HandleUpdateExternalStorages(const base::ListValue* unused_args);
 
-  // Updates storage row on the UI.
+  // Update storage sizes on the UI.
   void UpdateStorageItem(
-      const calculator::SizeCalculator::CalculationType& calculation_type);
+      const calculator::SizeCalculator::CalculationType& calculation_type,
+      int64_t total_bytes);
+  void UpdateSizeStat(
+      const calculator::SizeCalculator::CalculationType& calculation_type,
+      int64_t total_bytes,
+      int64_t available_bytes);
 
-  // Updates global storage statistics: total, in use and available space.
-  void UpdateOverallStatistics();
-
-  // Checks whether all storage items have been calculated. If so, calculates
-  // and updates the "System" size.
-  void UpdateSystemSizeItem();
+  // Marks the size of |item| as calculated. When all storage items have been
+  // calculated, then "System" size can be calculated.
+  void UpdateSystemSize(
+      const calculator::SizeCalculator::CalculationType& calculation_type,
+      int64_t total_bytes);
 
   // Updates list of external storages.
   void UpdateExternalStorages();
@@ -103,8 +113,7 @@ class StorageHandler : public ::settings::SettingsPageUIHandler,
   bool IsEligibleForAndroidStorage(std::string source_path);
 
   // Instances calculating the size of each storage items.
-  calculator::TotalDiskSpaceCalculator total_disk_space_calculator_;
-  calculator::FreeDiskSpaceCalculator free_disk_space_calculator_;
+  calculator::SizeStatCalculator size_stat_calculator_;
   calculator::MyFilesSizeCalculator my_files_size_calculator_;
   calculator::BrowsingDataSizeCalculator browsing_data_size_calculator_;
   calculator::AppsSizeCalculator apps_size_calculator_;

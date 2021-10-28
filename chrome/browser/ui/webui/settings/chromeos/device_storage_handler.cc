@@ -10,7 +10,6 @@
 #include <string>
 #include <utility>
 
-#include "base/notreached.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/platform_util.h"
@@ -38,7 +37,9 @@ constexpr char kDummyUuid[] = "00000000000000000000000000000000DEADBEEF";
 const char* CalculationTypeToEventName(
     calculator::SizeCalculator::CalculationType x) {
   switch (x) {
-    case calculator::SizeCalculator::CalculationType::kTotal:
+    case calculator::SizeCalculator::CalculationType::kSystem:
+      return "storage-system-size-changed";
+    case calculator::SizeCalculator::CalculationType::kInUse:
       return "storage-size-stat-changed";
     case calculator::SizeCalculator::CalculationType::kMyFiles:
       return "storage-my-files-size-changed";
@@ -50,20 +51,16 @@ const char* CalculationTypeToEventName(
       return "storage-crostini-size-changed";
     case calculator::SizeCalculator::CalculationType::kOtherUsers:
       return "storage-other-users-size-changed";
-    case calculator::SizeCalculator::CalculationType::kSystem:
-      return "storage-system-size-changed";
-    default:
-      NOTREACHED();
-      return "";
   }
+  NOTREACHED();
+  return "";
 }
 
 }  // namespace
 
 StorageHandler::StorageHandler(Profile* profile,
                                content::WebUIDataSource* html_source)
-    : total_disk_space_calculator_(profile),
-      free_disk_space_calculator_(profile),
+    : size_stat_calculator_(profile),
       my_files_size_calculator_(profile),
       browsing_data_size_calculator_(profile),
       apps_size_calculator_(profile),
@@ -114,8 +111,7 @@ void StorageHandler::OnJavascriptAllowed() {
   DiskMountManager::GetInstance()->AddObserver(this);
 
   // Start observing calculators.
-  total_disk_space_calculator_.AddObserver(this);
-  free_disk_space_calculator_.AddObserver(this);
+  size_stat_calculator_.AddObserver(this);
   my_files_size_calculator_.AddObserver(this);
   browsing_data_size_calculator_.AddObserver(this);
   apps_size_calculator_.AddObserver(this);
@@ -135,6 +131,31 @@ void StorageHandler::OnJavascriptDisallowed() {
   StopObservingEvents();
 }
 
+int64_t StorageHandler::RoundByteSize(int64_t bytes) {
+  if (bytes < 0) {
+    NOTREACHED() << "Negative bytes value";
+    return -1;
+  }
+
+  if (bytes == 0)
+    return 0;
+
+  // Subtract one to the original number of bytes.
+  bytes--;
+  // Set all the lower bits to 1.
+  bytes |= bytes >> 1;
+  bytes |= bytes >> 2;
+  bytes |= bytes >> 4;
+  bytes |= bytes >> 8;
+  bytes |= bytes >> 16;
+  bytes |= bytes >> 32;
+  // Add one. The one bit beyond the highest set bit is set to 1. All the lower
+  // bits are set to 0.
+  bytes++;
+
+  return bytes;
+}
+
 void StorageHandler::HandleUpdateAndroidEnabled(
     const base::ListValue* unused_args) {
   // OnJavascriptAllowed() calls ArcSessionManager::AddObserver() later.
@@ -143,8 +164,8 @@ void StorageHandler::HandleUpdateAndroidEnabled(
 
 void StorageHandler::HandleUpdateStorageInfo(const base::ListValue* args) {
   AllowJavascript();
-  total_disk_space_calculator_.StartCalculation();
-  free_disk_space_calculator_.StartCalculation();
+
+  size_stat_calculator_.StartCalculation();
   my_files_size_calculator_.StartCalculation();
   browsing_data_size_calculator_.StartCalculation();
   apps_size_calculator_.StartCalculation();
@@ -225,31 +246,13 @@ void StorageHandler::OnMountEvent(
 
 void StorageHandler::OnSizeCalculated(
     const calculator::SizeCalculator::CalculationType& calculation_type,
-    int64_t total_bytes) {
-  // Store calculated item's size.
-  const int item_index = static_cast<int>(calculation_type);
-  storage_items_total_bytes_[item_index] = total_bytes;
-
-  // Mark item as calculated.
-  calculation_state_.set(item_index);
-
-  // Update proper UI item on the storage page.
-  switch (calculation_type) {
-    case calculator::SizeCalculator::CalculationType::kTotal:
-    case calculator::SizeCalculator::CalculationType::kAvailable:
-      UpdateOverallStatistics();
-      break;
-    case calculator::SizeCalculator::CalculationType::kMyFiles:
-    case calculator::SizeCalculator::CalculationType::kBrowsingData:
-    case calculator::SizeCalculator::CalculationType::kAppsExtensions:
-    case calculator::SizeCalculator::CalculationType::kCrostini:
-    case calculator::SizeCalculator::CalculationType::kOtherUsers:
-      UpdateStorageItem(calculation_type);
-      break;
-    default:
-      NOTREACHED() << "Unexpected calculation type: " << item_index;
+    int64_t total_bytes,
+    const absl::optional<int64_t>& available_bytes) {
+  if (available_bytes) {
+    UpdateSizeStat(calculation_type, total_bytes, available_bytes.value());
+  } else {
+    UpdateStorageItem(calculation_type, total_bytes);
   }
-  UpdateSystemSizeItem();
 }
 
 void StorageHandler::StopObservingEvents() {
@@ -257,8 +260,7 @@ void StorageHandler::StopObservingEvents() {
   DiskMountManager::GetInstance()->RemoveObserver(this);
 
   // Stop observing calculators.
-  total_disk_space_calculator_.RemoveObserver(this);
-  free_disk_space_calculator_.RemoveObserver(this);
+  size_stat_calculator_.RemoveObserver(this);
   my_files_size_calculator_.RemoveObserver(this);
   browsing_data_size_calculator_.RemoveObserver(this);
   apps_size_calculator_.RemoveObserver(this);
@@ -267,9 +269,13 @@ void StorageHandler::StopObservingEvents() {
 }
 
 void StorageHandler::UpdateStorageItem(
-    const calculator::SizeCalculator::CalculationType& calculation_type) {
-  const int item_index = static_cast<int>(calculation_type);
-  const int64_t total_bytes = storage_items_total_bytes_[item_index];
+    const calculator::SizeCalculator::CalculationType& calculation_type,
+    int64_t total_bytes) {
+  // When the system size has been calculated, UpdateSystemSize calls this
+  // method with the calculation type kSystem. This check prevents an infinite
+  // loop.
+  if (calculation_type != calculator::SizeCalculator::CalculationType::kSystem)
+    UpdateSystemSize(calculation_type, total_bytes);
 
   std::u16string message;
   if (total_bytes < 0) {
@@ -289,33 +295,20 @@ void StorageHandler::UpdateStorageItem(
   }
 }
 
-void StorageHandler::UpdateOverallStatistics() {
-  const int total_space_index =
-      static_cast<int>(calculator::SizeCalculator::CalculationType::kTotal);
-  const int free_disk_space_index =
-      static_cast<int>(calculator::SizeCalculator::CalculationType::kAvailable);
+void StorageHandler::UpdateSizeStat(
+    const calculator::SizeCalculator::CalculationType& calculation_type,
+    int64_t total_bytes,
+    int64_t available_bytes) {
+  int64_t rounded_total_bytes = RoundByteSize(total_bytes);
+  int64_t in_use_total_bytes_ = rounded_total_bytes - available_bytes;
 
-  if (!calculation_state_.test(total_space_index) ||
-      !calculation_state_.test(free_disk_space_index)) {
-    return;
-  }
-
-  int64_t total_bytes = storage_items_total_bytes_[total_space_index];
-  int64_t available_bytes = storage_items_total_bytes_[free_disk_space_index];
-  int64_t in_use_bytes = total_bytes - available_bytes;
-
-  if (total_bytes <= 0 || available_bytes < 0) {
-    // We can't get useful information from the storage page if total_bytes <= 0
-    // or available_bytes is less than 0. This is not expected to happen.
-    NOTREACHED() << "Unable to retrieve total or available disk space";
-    return;
-  }
+  UpdateSystemSize(calculation_type, in_use_total_bytes_);
 
   base::DictionaryValue size_stat;
   size_stat.SetString("availableSize", ui::FormatBytes(available_bytes));
-  size_stat.SetString("usedSize", ui::FormatBytes(in_use_bytes));
-  size_stat.SetDoubleKey("usedRatio",
-                         static_cast<double>(in_use_bytes) / total_bytes);
+  size_stat.SetString("usedSize", ui::FormatBytes(in_use_total_bytes_));
+  size_stat.SetDoubleKey("usedRatio", static_cast<double>(in_use_total_bytes_) /
+                                          rounded_total_bytes);
   int storage_space_state =
       static_cast<int>(StorageSpaceState::kStorageSpaceNormal);
   if (available_bytes < kSpaceCriticallyLowBytes)
@@ -325,47 +318,38 @@ void StorageHandler::UpdateOverallStatistics() {
     storage_space_state = static_cast<int>(StorageSpaceState::kStorageSpaceLow);
   size_stat.SetInteger("spaceState", storage_space_state);
 
-  FireWebUIListener(CalculationTypeToEventName(
-                        calculator::SizeCalculator::CalculationType::kTotal),
-                    size_stat);
+  FireWebUIListener(CalculationTypeToEventName(calculation_type), size_stat);
 }
 
-void StorageHandler::UpdateSystemSizeItem() {
-  // If some size calculations are pending, return early and wait for all
-  // calculations to complete.
+void StorageHandler::UpdateSystemSize(
+    const calculator::SizeCalculator::CalculationType& calculation_type,
+    int64_t total_bytes) {
+  const int item_index = static_cast<int>(calculation_type);
+  storage_items_total_bytes_[item_index] = total_bytes > 0 ? total_bytes : 0;
+  calculation_state_.set(item_index);
+
+  // Update system size. We only display the total system size when the size of
+  // all categories has been updated. If some size calculations are pending,
+  // return early and wait for all calculations to complete.
   if (!calculation_state_.all())
     return;
 
   int64_t system_bytes = 0;
   for (int i = 0; i < calculator::SizeCalculator::kCalculationTypeCount; ++i) {
-    const int64_t total_bytes_for_current_item =
-        std::max(storage_items_total_bytes_[i], static_cast<int64_t>(0));
-    // The total amount of disk space counts positively towards system's size.
+    int64_t total_bytes_for_current_item = storage_items_total_bytes_[i];
+    // If the storage is in use, add to the system's total storage.
     if (i ==
-        static_cast<int>(calculator::SizeCalculator::CalculationType::kTotal)) {
-      if (total_bytes_for_current_item <= 0)
-        return;
+        static_cast<int>(calculator::SizeCalculator::CalculationType::kInUse)) {
       system_bytes += total_bytes_for_current_item;
       continue;
     }
-    // All other items are subtracted from the total amount of disk space.
-    if (i == static_cast<int>(
-                 calculator::SizeCalculator::CalculationType::kAvailable) &&
-        total_bytes_for_current_item < 0)
-      return;
+    // Otherwise, this storage amount counts against the total storage
+    // amount.
     system_bytes -= total_bytes_for_current_item;
   }
 
-  // Update UI.
-  std::u16string message;
-  if (system_bytes < 0) {
-    message = l10n_util::GetStringUTF16(IDS_SETTINGS_STORAGE_SIZE_UNKNOWN);
-  } else {
-    message = ui::FormatBytes(system_bytes);
-  }
-  FireWebUIListener(CalculationTypeToEventName(
-                        calculator::SizeCalculator::CalculationType::kSystem),
-                    base::Value(message));
+  OnSizeCalculated(calculator::SizeCalculator::CalculationType::kSystem,
+                   system_bytes);
 }
 
 bool StorageHandler::IsEligibleForAndroidStorage(std::string source_path) {
