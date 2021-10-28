@@ -1,31 +1,14 @@
 Tests that Page.addScriptToEvaluateOnNewDocument is executed in the given world
 Adding scripts
-<main world> in main frame
-<main world> in main frame
-world#0 in main frame
+world#0
 message from 0
-world#1 in main frame
+world#1
 message from 1
-world#2 in main frame
+world#2
 message from 2
-world#3 in main frame
+world#3
 message from 3
-world#4 in main frame
+world#4
 message from 4
-added iframe
-<main world> in subframe
-world#0 in subframe
-message from 0
-world#1 in subframe
-message from 1
-world#2 in subframe
-message from 2
-world#3 in subframe
-message from 3
-world#4 in subframe
-message from 4
-written to iframe <head></head><body>hello</body>
 Removing scripts
-Navigating cross-process
-<main world> in main frame
 
