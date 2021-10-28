@@ -10,7 +10,12 @@ import subprocess
 from typing import Optional, Sequence
 
 
-def run_command(command: Sequence[str], cwd: Optional[str] = None) -> str:
+def run_command(
+        command: Sequence[str],
+        *,  # Ensures that the rest of the args are passed explicitly.
+        cwd: Optional[str] = None,
+        cmd_input: Optional[str] = None,
+        exitcode_only: bool = False) -> str:
     """Runs a command and returns the output as a string.
 
   For example, run_command(['echo', ' Hello, world!\n']) returns the string
@@ -24,9 +29,15 @@ def run_command(command: Sequence[str], cwd: Optional[str] = None) -> str:
     cwd:
       The working directory in which to run the command; if not specified,
       defaults to the current working directory.
+    cmd_input:
+      Input text that should be automatically passed to the process's stdin.
+    exitcode_only:
+      Avoid re-raising any errors or logging any output for errors. Useful for
+      commands that are expected to return a non-zero exit status.
 
   Returns:
-    The output (stdout) of the command as a string. Leading and trailing
+    If |exitcode_only| is True, then only the exitcode is returned.
+    Otherwise, output (stdout) of the command as a string. Leading and trailing
     whitespace are stripped from the output.
 
   Raises
@@ -38,7 +49,12 @@ def run_command(command: Sequence[str], cwd: Optional[str] = None) -> str:
   """
     try:
         run_result: subprocess.CompletedProcess = subprocess.run(
-            command, capture_output=True, text=True, check=True, cwd=cwd)
+            command,
+            capture_output=True,
+            text=True,
+            check=not exitcode_only,
+            cwd=cwd,
+            input=cmd_input)
     except subprocess.CalledProcessError as e:
         command_str = ' '.join(command)
         error_msg = f'Command "{command_str}" failed with code {e.returncode}.'
@@ -46,8 +62,10 @@ def run_command(command: Sequence[str], cwd: Optional[str] = None) -> str:
             error_msg += f'\nSTDERR: {e.stderr}'
         if e.stdout:
             error_msg += f'\nSTDOUT: {e.stdout}'
-        logging.error(error_msg)
 
+        logging.error(error_msg)
         raise
 
+    if exitcode_only:
+        return run_result.returncode
     return str(run_result.stdout).strip()

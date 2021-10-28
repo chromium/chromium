@@ -47,6 +47,22 @@ class TestRunCommand(unittest.TestCase):
 
         self.assertEqual(expected_output, command_output)
 
+    def test_run_command_exitcode_only_returns_zero_on_success(self):
+        expected_output = 0
+
+        command_output = subprocess_utils.run_command(
+            ['echo', '\t Hello, world! \n'], exitcode_only=True)
+
+        self.assertEqual(expected_output, command_output)
+
+    def test_run_command_exitcode_only_returns_exitcode_on_failure(self):
+        expected_output = 1
+
+        command_output = subprocess_utils.run_command(['git', 'foo'],
+                                                      exitcode_only=True)
+
+        self.assertEqual(expected_output, command_output)
+
     def test_run_command_process_error_no_output(self):
         with self.assertRaises(
                 subprocess.CalledProcessError) as error_cm, self.assertLogs(
