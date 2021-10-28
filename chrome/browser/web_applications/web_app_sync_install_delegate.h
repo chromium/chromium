@@ -33,21 +33,25 @@ class SyncInstallDelegate {
                                        RepeatingInstallCallback callback) = 0;
 
   // Sync-initiated uninstall.
-  // Called before the web apps are removed from the registry. Begins process of
-  // uninstalling OS hooks, which initially requires the registrar to still
-  // contain the web app data. Also notify observers of WebAppWillBeUninstalled.
-  // TODO(dmurph): After migration to WebApp* from the registry, this could
-  // potentially just be done in one step, after removal from registry, as os
-  // hooks information could be passed.
-  virtual void UninstallFromSyncBeforeRegistryUpdate(
-      std::vector<AppId> web_apps) = 0;
-  // Delete non-database app data from disk (icon .png files). |app_id| must be
-  // unregistered. Observers are notified of WebAppUninstalled and the
-  // |callback| is called after the app data is fully deleted & os hooks
-  // uninstalled.
-  virtual void UninstallFromSyncAfterRegistryUpdate(
-      std::vector<std::unique_ptr<WebApp>> web_apps,
+  // Called before the web apps are removed from the registry by sync. This:
+  // * Begins process of uninstalling OS hooks, which initially requires the
+  //   registrar to still contain the web app data.
+  // * Notifies observers of WebAppWillBeUninstalled.
+  // After the app data is fully deleted & os hooks uninstalled:
+  // * Notifies observers of WebAppUninstalled.
+  // * `callback` is called.
+  // The registrar is expected to be synchronously updated after this function
+  // call to remove the given `web_apps`.
+  virtual void UninstallWithoutRegistryUpdateFromSync(
+      const std::vector<AppId>& web_apps,
       RepeatingUninstallCallback callback) = 0;
+
+  // Uninstall the given web app ids that were found on startup as partially
+  // uninstalled. `apps_to_uninstall` are in the registrar with
+  // `is_uninstalling()` set to true. They are expected to be eventually deleted
+  // by this call.
+  virtual void RetryIncompleteUninstalls(
+      const std::vector<AppId>& apps_to_uninstall) = 0;
 };
 
 }  // namespace web_app

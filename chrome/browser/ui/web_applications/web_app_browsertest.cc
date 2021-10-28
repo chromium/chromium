@@ -61,6 +61,7 @@
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/common/chrome_features.h"
@@ -1862,4 +1863,60 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler, WebAppFileHandler) {
 #endif
 }
 #endif
+
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, PRE_UninstallIncompleteUninstall) {
+  auto* provider = WebAppProvider::GetForTest(profile());
+
+  NavigateToURLAndWait(browser(), GetInstallableAppURL());
+
+  // Wait for OS hooks and installation to complete and the app to launch.
+  base::RunLoop run_loop_install;
+  WebAppTestRegistryObserverAdapter observer(profile());
+  observer.SetWebAppInstalledWithOsHooksDelegate(base::BindLambdaForTesting(
+      [&](const AppId& installed_app_id) { run_loop_install.Quit(); }));
+  const AppId app_id = InstallPwaForCurrentUrl();
+  run_loop_install.Run();
+
+  EXPECT_TRUE(provider->registrar().IsInstalled(app_id));
+  EXPECT_EQ(provider->registrar().GetAppShortName(app_id),
+            GetInstallableAppName());
+  // This does NOT uninstall the web app, it just flags it for uninstall on
+  // startup.
+  {
+    ScopedRegistryUpdate update(&provider->sync_bridge());
+    WebApp* web_app = update->UpdateApp(app_id);
+    ASSERT_TRUE(web_app);
+    web_app->SetIsUninstalling(true);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, UninstallIncompleteUninstall) {
+  auto* provider = WebAppProvider::GetForTest(profile());
+  // The uninstall-on-startup code schedules tasks to uninstall flagged apps on
+  // startup. For this test, either:
+  // 1) The webapp was uninstalled during test startup, when it is waiting for
+  //    the WebAppProvider to be ready, or
+  // 2) It hasn't been uninstalled yet.
+  // The test body here handles both cases, and ensures that the app has been
+  // uninstalled.
+  std::set<AppId> apps;
+  for (const auto& web_app : provider->registrar().GetAppsIncludingStubs()) {
+    EXPECT_TRUE(web_app.is_uninstalling());
+    apps.insert(web_app.app_id());
+  }
+  EXPECT_TRUE(apps.size() == 0 || apps.size() == 1);
+  if (apps.size() != 0) {
+    WebAppTestUninstallObserver observer(profile());
+    observer.BeginListeningAndWait(apps);
+  }
+  // TODO(dmurph): Remove AppSet, it's too hard to use.
+  int app_count = 0;
+  const web_app::WebAppRegistrar::AppSet& app_set =
+      provider->registrar().GetAppsIncludingStubs();
+  for (auto it = app_set.begin(); it != app_set.end(); ++it) {
+    ++app_count;
+  }
+  EXPECT_EQ(app_count, 0);
+}
+
 }  // namespace web_app

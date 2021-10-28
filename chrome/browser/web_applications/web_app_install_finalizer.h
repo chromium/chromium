@@ -15,6 +15,7 @@
 #include "chrome/browser/web_applications/web_app_chromeos_data.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_system_web_app_data.h"
+#include "chrome/browser/web_applications/web_app_uninstall_job.h"
 #include "chrome/browser/web_applications/web_application_info.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -34,8 +35,8 @@ class WebApp;
 class WebAppIconManager;
 class WebAppPolicyManager;
 class WebAppRegistrar;
-class WebAppUninstallCommitTask;
-enum class WebAppUninstallCommitTaskResult;
+class WebAppUninstallJob;
+enum class WebAppUninstallJobResult;
 
 // An finalizer for the installation process, represents the last step.
 // Takes WebApplicationInfo as input, writes data to disk (e.g icons, shortcuts)
@@ -104,17 +105,21 @@ class WebAppInstallFinalizer {
       webapps::WebappUninstallSource external_install_source,
       UninstallWebAppCallback callback);
 
+  virtual void RetryIncompleteUninstalls(
+      const std::vector<AppId>& apps_to_uninstall);
+
   // Sync-initiated uninstall. Copied from WebAppInstallSyncInstallDelegate.
-  // Called before the web apps are removed from the registry. Begins process of
-  // uninstalling OS hooks, which initially requires the registrar to still
-  // contain the web app data. Also notify observers of WebAppWillBeUninstalled.
-  // TODO(dmurph): After migration to WebApp* from the registry, this could
-  // potentially just be done in one step, after removal from registry, as os
-  // hooks information could be passed.
-  virtual void UninstallFromSyncBeforeRegistryUpdate(
-      std::vector<AppId> web_apps);
-  virtual void UninstallFromSyncAfterRegistryUpdate(
-      std::vector<std::unique_ptr<WebApp>> web_apps,
+  // Called before the web apps are removed from the registry by sync. This:
+  // * Begins process of uninstalling OS hooks, which initially requires the
+  //   registrar to still contain the web app data.
+  // * Notifies observers of WebAppWillBeUninstalled.
+  // After the app data is fully deleted & os hooks uninstalled:
+  // * Notifies observers of WebAppUninstalled.
+  // * `callback` is called.
+  // The registrar is expected to be synchronously updated after this function
+  // call to remove the given `web_apps`.
+  virtual void UninstallWithoutRegistryUpdateFromSync(
+      const std::vector<AppId>& web_apps,
       RepeatingUninstallCallback callback);
 
   virtual bool CanUserUninstallWebApp(const AppId& app_id) const;
@@ -158,21 +163,13 @@ class WebAppInstallFinalizer {
   void UninstallWebAppInternal(const AppId& app_id,
                                webapps::WebappUninstallSource uninstall_source,
                                UninstallWebAppCallback callback);
+  void OnUninstallComplete(AppId app_id,
+                           webapps::WebappUninstallSource uninstall_source,
+                           UninstallWebAppCallback callback,
+                           WebAppUninstallJobResult result);
   void UninstallExternalWebAppOrRemoveSource(const AppId& app_id,
                                              Source::Type source,
                                              UninstallWebAppCallback callback);
-
-  void OnSyncUninstallOsHooksUninstall(AppId app_id, OsHooksErrors);
-  void OnSyncUninstallAppDataDeleted(AppId app_id, bool success);
-  // Sync uninstall only finishes once both the hooks are uninstalled
-  // (OnSyncUninstallOsHooksUninstall) and app data is deleted
-  // (OnSyncUninstallAppDataDeleted).
-  void MaybeFinishSyncUninstall(AppId app_id);
-  void OnNonSyncUninstallComplete(
-      AppId app_id,
-      webapps::WebappUninstallSource uninstall_source,
-      UninstallWebAppCallback callback,
-      WebAppUninstallCommitTaskResult result);
 
   void SetWebAppManifestFieldsAndWriteData(
       const WebApplicationInfo& web_app_info,
@@ -209,20 +206,8 @@ class WebAppInstallFinalizer {
   WebAppPolicyManager* policy_manager_;
   bool started_ = false;
 
-  struct SyncUninstallState {
-    SyncUninstallState();
-    ~SyncUninstallState();
-    std::unique_ptr<WebApp> web_app;
-    UninstallWebAppCallback callback;
-    bool hooks_uninstalled = false;
-    bool app_data_deleted = false;
-    bool success = true;
-  };
-  base::flat_map<AppId, std::unique_ptr<SyncUninstallState>>
-      pending_sync_uninstalls_;
-
-  base::flat_map<AppId, std::unique_ptr<WebAppUninstallCommitTask>>
-      pending_non_sync_uninstalls_;
+  base::flat_map<AppId, std::unique_ptr<WebAppUninstallJob>>
+      pending_uninstalls_;
 
   base::RepeatingCallback<void(const AppId& app_id)>
       install_source_removed_callback_for_testing_;

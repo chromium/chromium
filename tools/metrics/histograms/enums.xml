@@ -88832,6 +88832,8 @@ others/histograms.xml -->
   <int value="12" label="System app management on ChromeOS"/>
   <int value="13" label="Placeholder app management for preinstalled apps"/>
   <int value="14" label="Externally managed Arc apps"/>
+  <int value="15" label="SubApps API"/>
+  <int value="16" label="Incomplete unisntall cleanup on startup."/>
 </enum>
 
 <enum name="WebAppUrlHandlingDialogState">

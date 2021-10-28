@@ -175,12 +175,8 @@ class TestExternallyManagedAppInstallFinalizer : public WebAppInstallFinalizer {
             }));
   }
 
-  void UninstallFromSyncBeforeRegistryUpdate(
-      std::vector<AppId> web_apps) override {
-    NOTREACHED();
-  }
-  void UninstallFromSyncAfterRegistryUpdate(
-      std::vector<std::unique_ptr<WebApp>> web_apps,
+  void UninstallWithoutRegistryUpdateFromSync(
+      const std::vector<AppId>& web_apps,
       RepeatingUninstallCallback callback) override {
     NOTREACHED();
   }
@@ -221,6 +217,11 @@ class TestExternallyManagedAppInstallFinalizer : public WebAppInstallFinalizer {
                 UnregisterApp(app_id);
               std::move(callback).Run(uninstalled);
             }));
+  }
+
+  void RetryIncompleteUninstalls(
+      const std::vector<AppId>& apps_to_uninstall) override {
+    NOTREACHED();
   }
 
   bool CanUserUninstallWebApp(const AppId& app_id) const override {

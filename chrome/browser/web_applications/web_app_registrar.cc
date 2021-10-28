@@ -761,7 +761,8 @@ const WebAppRegistrar::AppSet WebAppRegistrar::GetAppsIncludingStubs() const {
 const WebAppRegistrar::AppSet WebAppRegistrar::GetApps() const {
   return AppSet(this, [](const WebApp& web_app) {
     return WebAppExposed(web_app) &&
-           !web_app.is_from_sync_and_pending_installation();
+           !web_app.is_from_sync_and_pending_installation() &&
+           !web_app.is_uninstalling();
   });
 }
 
@@ -805,7 +806,8 @@ WebAppRegistrar::AppSet WebAppRegistrarMutable::GetAppsIncludingStubsMutable() {
 WebAppRegistrar::AppSet WebAppRegistrarMutable::GetAppsMutable() {
   return AppSet(this, [](const WebApp& web_app) {
     return WebAppExposed(web_app) &&
-           !web_app.is_from_sync_and_pending_installation();
+           !web_app.is_from_sync_and_pending_installation() &&
+           !web_app.is_uninstalling();
   });
 }
 

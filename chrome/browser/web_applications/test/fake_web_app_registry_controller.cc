@@ -70,15 +70,14 @@ void FakeWebAppRegistryController::SetInstallWebAppsAfterSyncDelegate(
 }
 
 void FakeWebAppRegistryController::
-    SetUninstallFromSyncBeforeRegistryUpdateDelegate(
-        UninstallFromSyncBeforeRegistryUpdateDelegate delegate) {
+    SetUninstallWithoutRegistryUpdateFromSyncDelegate(
+        UninstallWithoutRegistryUpdateFromSyncDelegate delegate) {
   uninstall_from_sync_before_registry_update_delegate_ = delegate;
 }
 
-void FakeWebAppRegistryController::
-    SetUninstallFromSyncAfterRegistryUpdateDelegate(
-        UninstallFromSyncAfterRegistryUpdateDelegate delegate) {
-  uninstall_from_sync_after_registry_update_delegate_ = delegate;
+void FakeWebAppRegistryController::SetRetryIncompleteUninstallsDelegate(
+    RetryIncompleteUninstallsDelegate delegate) {
+  retry_incomplete_uninstalls_delegate_ = delegate;
 }
 
 void FakeWebAppRegistryController::InstallWebAppsAfterSync(
@@ -92,24 +91,23 @@ void FakeWebAppRegistryController::InstallWebAppsAfterSync(
   }
 }
 
-void FakeWebAppRegistryController::UninstallFromSyncBeforeRegistryUpdate(
-    std::vector<AppId> web_apps) {
+void FakeWebAppRegistryController::UninstallWithoutRegistryUpdateFromSync(
+    const std::vector<AppId>& web_apps,
+    RepeatingUninstallCallback callback) {
   if (uninstall_from_sync_before_registry_update_delegate_) {
-    uninstall_from_sync_before_registry_update_delegate_.Run(
-        std::move(web_apps));
+    uninstall_from_sync_before_registry_update_delegate_.Run(web_apps,
+                                                             callback);
+  } else {
+    for (const AppId& web_app : web_apps) {
+      callback.Run(web_app, /*uninstalled=*/true);
+    }
   }
 }
 
-void FakeWebAppRegistryController::UninstallFromSyncAfterRegistryUpdate(
-    std::vector<std::unique_ptr<WebApp>> web_apps,
-    RepeatingUninstallCallback callback) {
-  if (uninstall_from_sync_after_registry_update_delegate_) {
-    uninstall_from_sync_after_registry_update_delegate_.Run(std::move(web_apps),
-                                                            callback);
-  } else {
-    for (const std::unique_ptr<WebApp>& web_app : web_apps)
-      callback.Run(web_app->app_id(), /*uninstalled=*/true);
-  }
+void FakeWebAppRegistryController::RetryIncompleteUninstalls(
+    const std::vector<AppId>& apps_to_uninstall) {
+  if (retry_incomplete_uninstalls_delegate_)
+    retry_incomplete_uninstalls_delegate_.Run(apps_to_uninstall);
 }
 
 void FakeWebAppRegistryController::DestroySubsystems() {
