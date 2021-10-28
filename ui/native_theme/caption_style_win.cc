@@ -58,7 +58,7 @@ void GetFontFamilyString(CC::ClosedCaptionStyle closed_caption_style,
       *css_font_family = "Segoe Print";
       break;
     case CC::ClosedCaptionStyle_Cursive:
-      *css_font_family = "Segoe Script";
+      *css_font_family = "Calibri";
       break;
     case CC::ClosedCaptionStyle_SmallCapitals:
       *css_font_family = "Tahoma";
