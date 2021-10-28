@@ -38,6 +38,8 @@ class InputSyncWriter final : public InputController::SyncWriter {
   // media::AudioBuses.
   enum { kMaxOverflowBusesSize = 100 };
 
+  InputSyncWriter() = delete;
+
   // Create() automatically initializes the InputSyncWriter correctly,
   // and should be strongly preferred over calling the constructor directly!
   InputSyncWriter(
@@ -46,6 +48,9 @@ class InputSyncWriter final : public InputController::SyncWriter {
       std::unique_ptr<base::CancelableSyncSocket> socket,
       uint32_t shared_memory_segment_count,
       const media::AudioParameters& params);
+
+  InputSyncWriter(const InputSyncWriter&) = delete;
+  InputSyncWriter& operator=(const InputSyncWriter&) = delete;
 
   ~InputSyncWriter() final;
 
@@ -170,21 +175,22 @@ class InputSyncWriter final : public InputController::SyncWriter {
                  bool key_pressed,
                  base::TimeTicks capture_time,
                  std::unique_ptr<media::AudioBus> audio_bus);
-    ~OverflowData();
+
+    OverflowData(const OverflowData&) = delete;
+    OverflowData& operator=(const OverflowData&) = delete;
+
     OverflowData(OverflowData&&);
     OverflowData& operator=(OverflowData&& other);
+
+    ~OverflowData();
+
     double volume_;
     bool key_pressed_;
     base::TimeTicks capture_time_;
     std::unique_ptr<media::AudioBus> audio_bus_;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(OverflowData);
   };
 
   std::vector<OverflowData> overflow_data_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(InputSyncWriter);
 };
 
 }  // namespace audio

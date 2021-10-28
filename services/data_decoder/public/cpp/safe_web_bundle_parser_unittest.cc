@@ -43,6 +43,9 @@ class MockFactory final : public web_package::mojom::WebBundleParserFactory {
         mojo::PendingReceiver<web_package::mojom::WebBundleParser> receiver)
         : receiver_(this, std::move(receiver)) {}
 
+    MockParser(const MockParser&) = delete;
+    MockParser& operator=(const MockParser&) = delete;
+
     bool IsParseMetadataCalled() { return !metadata_callback_.is_null(); }
     bool IsParseResponseCalled() { return !response_callback_.is_null(); }
 
@@ -62,11 +65,13 @@ class MockFactory final : public web_package::mojom::WebBundleParserFactory {
     ParseMetadataCallback metadata_callback_;
     ParseResponseCallback response_callback_;
     mojo::Receiver<web_package::mojom::WebBundleParser> receiver_;
-
-    DISALLOW_COPY_AND_ASSIGN(MockParser);
   };
 
   MockFactory() {}
+
+  MockFactory(const MockFactory&) = delete;
+  MockFactory& operator=(const MockFactory&) = delete;
+
   void AddReceiver(
       mojo::PendingReceiver<web_package::mojom::WebBundleParserFactory>
           receiver) {
@@ -94,8 +99,6 @@ class MockFactory final : public web_package::mojom::WebBundleParserFactory {
 
   std::unique_ptr<MockParser> parser_;
   mojo::ReceiverSet<web_package::mojom::WebBundleParserFactory> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockFactory);
 };
 
 class MockDataSource final : public web_package::mojom::BundleDataSource {
@@ -104,13 +107,14 @@ class MockDataSource final : public web_package::mojom::BundleDataSource {
       mojo::PendingReceiver<web_package::mojom::BundleDataSource> receiver)
       : receiver_(this, std::move(receiver)) {}
 
+  MockDataSource(const MockDataSource&) = delete;
+  MockDataSource& operator=(const MockDataSource&) = delete;
+
  private:
   // Implements web_package::mojom::BundledDataSource.
   void Read(uint64_t offset, uint64_t length, ReadCallback callback) override {}
 
   mojo::Receiver<web_package::mojom::BundleDataSource> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockDataSource);
 };
 
 }  // namespace

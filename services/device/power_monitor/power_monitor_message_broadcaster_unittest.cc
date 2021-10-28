@@ -45,6 +45,12 @@ class MockClient : public PowerMonitorBroadcastSource::Client {
 };
 
 class PowerMonitorMessageBroadcasterTest : public DeviceServiceTestBase {
+ public:
+  PowerMonitorMessageBroadcasterTest(
+      const PowerMonitorMessageBroadcasterTest&) = delete;
+  PowerMonitorMessageBroadcasterTest& operator=(
+      const PowerMonitorMessageBroadcasterTest&) = delete;
+
  protected:
   PowerMonitorMessageBroadcasterTest() = default;
   ~PowerMonitorMessageBroadcasterTest() override = default;
@@ -59,9 +65,6 @@ class PowerMonitorMessageBroadcasterTest : public DeviceServiceTestBase {
 
  protected:
   base::test::ScopedPowerMonitorTestSource power_monitor_source_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PowerMonitorMessageBroadcasterTest);
 };
 
 TEST_F(PowerMonitorMessageBroadcasterTest, PowerMessageBroadcast) {

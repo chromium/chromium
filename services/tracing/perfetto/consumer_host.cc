@@ -137,13 +137,14 @@ class ConsumerHost::StreamWriter {
     }
   }
 
+  StreamWriter(const StreamWriter&) = delete;
+  StreamWriter& operator=(const StreamWriter&) = delete;
+
  private:
   mojo::ScopedDataPipeProducerHandle stream_;
   TracingSession::ReadBuffersCallback read_buffers_callback_;
   base::OnceClosure disconnect_callback_;
   scoped_refptr<base::SequencedTaskRunner> callback_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(StreamWriter);
 };
 
 ConsumerHost::TracingSession::TracingSession(

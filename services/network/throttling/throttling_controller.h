@@ -25,6 +25,9 @@ class ThrottlingNetworkInterceptor;
 // profile ID and their throttling conditions.
 class COMPONENT_EXPORT(NETWORK_SERVICE) ThrottlingController {
  public:
+  ThrottlingController(const ThrottlingController&) = delete;
+  ThrottlingController& operator=(const ThrottlingController&) = delete;
+
   // Applies network emulation configuration.
   static void SetConditions(const base::UnguessableToken& throttling_profile_id,
                             std::unique_ptr<NetworkConditions>);
@@ -78,8 +81,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ThrottlingController {
   InterceptorMap interceptors_;
   NetLogSourceProfileMap net_log_source_profile_map_;
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ThrottlingController);
 };
 
 }  // namespace network

@@ -99,6 +99,11 @@ class V8ExternalStringFromScriptData
       const scoped_refptr<net::PacFileData>& script_data)
       : script_data_(script_data) {}
 
+  V8ExternalStringFromScriptData(const V8ExternalStringFromScriptData&) =
+      delete;
+  V8ExternalStringFromScriptData& operator=(
+      const V8ExternalStringFromScriptData&) = delete;
+
   const uint16_t* data() const override {
     return reinterpret_cast<const uint16_t*>(script_data_->utf16().data());
   }
@@ -107,7 +112,6 @@ class V8ExternalStringFromScriptData
 
  private:
   const scoped_refptr<net::PacFileData> script_data_;
-  DISALLOW_COPY_AND_ASSIGN(V8ExternalStringFromScriptData);
 };
 
 // External string wrapper so V8 can access a string literal.
@@ -121,6 +125,9 @@ class V8ExternalASCIILiteral
     DCHECK(base::IsStringASCII(ascii));
   }
 
+  V8ExternalASCIILiteral(const V8ExternalASCIILiteral&) = delete;
+  V8ExternalASCIILiteral& operator=(const V8ExternalASCIILiteral&) = delete;
+
   const char* data() const override { return ascii_; }
 
   size_t length() const override { return length_; }
@@ -128,7 +135,6 @@ class V8ExternalASCIILiteral
  private:
   const char* ascii_;
   size_t length_;
-  DISALLOW_COPY_AND_ASSIGN(V8ExternalASCIILiteral);
 };
 
 // When creating a v8::String from a C++ string we have two choices: create
@@ -365,6 +371,9 @@ class SharedIsolateFactory {
  public:
   SharedIsolateFactory() : has_initialized_v8_(false) {}
 
+  SharedIsolateFactory(const SharedIsolateFactory&) = delete;
+  SharedIsolateFactory& operator=(const SharedIsolateFactory&) = delete;
+
   // Lazily creates a v8::Isolate, or returns the already created instance.
   v8::Isolate* GetSharedIsolate() {
     base::AutoLock lock(lock_);
@@ -420,8 +429,6 @@ class SharedIsolateFactory {
   base::Lock lock_;
   std::unique_ptr<gin::IsolateHolder> holder_;
   bool has_initialized_v8_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedIsolateFactory);
 };
 
 base::LazyInstance<SharedIsolateFactory>::Leaky g_isolate_factory =

@@ -35,6 +35,10 @@ void DetectTextCallback(base::OnceClosure quit_closure,
 }  // namespace
 
 class TextDetectionImplWinTest : public testing::Test {
+ public:
+  TextDetectionImplWinTest(const TextDetectionImplWinTest&) = delete;
+  TextDetectionImplWinTest& operator=(const TextDetectionImplWinTest&) = delete;
+
  protected:
   TextDetectionImplWinTest() = default;
   ~TextDetectionImplWinTest() override = default;
@@ -49,8 +53,6 @@ class TextDetectionImplWinTest : public testing::Test {
   std::unique_ptr<base::win::ScopedCOMInitializer> scoped_com_initializer_;
 
   base::test::TaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextDetectionImplWinTest);
 };
 
 TEST_F(TextDetectionImplWinTest, ScanOnce) {

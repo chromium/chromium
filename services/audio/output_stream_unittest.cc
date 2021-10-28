@@ -44,6 +44,9 @@ class MockStream : public media::AudioOutputStream {
  public:
   MockStream() {}
 
+  MockStream(const MockStream&) = delete;
+  MockStream& operator=(const MockStream&) = delete;
+
   MOCK_METHOD0(Open, bool());
   MOCK_METHOD1(Start, void(AudioSourceCallback* callback));
   MOCK_METHOD0(Stop, void());
@@ -51,9 +54,6 @@ class MockStream : public media::AudioOutputStream {
   MOCK_METHOD1(GetVolume, void(double* volume));
   MOCK_METHOD0(Close, void());
   MOCK_METHOD0(Flush, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockStream);
 };
 
 const uint32_t kPlatformErrorDisconnectReason = static_cast<uint32_t>(
@@ -65,6 +65,9 @@ const uint32_t kTerminatedByClientDisconnectReason =
 class MockObserver : public media::mojom::AudioOutputStreamObserver {
  public:
   MockObserver() = default;
+
+  MockObserver(const MockObserver&) = delete;
+  MockObserver& operator=(const MockObserver&) = delete;
 
   mojo::PendingAssociatedRemote<media::mojom::AudioOutputStreamObserver>
   MakeRemote() {
@@ -89,13 +92,14 @@ class MockObserver : public media::mojom::AudioOutputStreamObserver {
  private:
   mojo::AssociatedReceiver<media::mojom::AudioOutputStreamObserver> receiver_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(MockObserver);
 };
 
 class MockCreatedCallback {
  public:
   MockCreatedCallback() {}
+
+  MockCreatedCallback(const MockCreatedCallback&) = delete;
+  MockCreatedCallback& operator=(const MockCreatedCallback&) = delete;
 
   MOCK_METHOD1(Created, void(bool /*valid*/));
 
@@ -107,9 +111,6 @@ class MockCreatedCallback {
     return base::BindOnce(&MockCreatedCallback::OnCreated,
                           base::Unretained(this));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockCreatedCallback);
 };
 
 }  // namespace

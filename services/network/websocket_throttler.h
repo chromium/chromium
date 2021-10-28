@@ -47,6 +47,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocketPerProcessThrottler final {
   };
 
   WebSocketPerProcessThrottler();
+
+  WebSocketPerProcessThrottler(const WebSocketPerProcessThrottler&) = delete;
+  WebSocketPerProcessThrottler& operator=(const WebSocketPerProcessThrottler&) =
+      delete;
+
   ~WebSocketPerProcessThrottler();
 
   // Returns if there are too many pending connections.
@@ -100,8 +105,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocketPerProcessThrottler final {
   static constexpr int kMaxPendingWebSocketConnections = 255;
 
   base::WeakPtrFactory<WebSocketPerProcessThrottler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebSocketPerProcessThrottler);
 };
 
 // This class is for throttling WebSocket connections. WebSocketThrottler is

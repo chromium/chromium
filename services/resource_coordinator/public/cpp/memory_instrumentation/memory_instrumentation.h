@@ -38,6 +38,9 @@ class COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION)
       bool is_browser_process);
   static MemoryInstrumentation* GetInstance();
 
+  MemoryInstrumentation(const MemoryInstrumentation&) = delete;
+  MemoryInstrumentation& operator=(const MemoryInstrumentation&) = delete;
+
   // Retrieves a Coordinator interface to communicate with the service. This is
   // safe to call from any thread.
   memory_instrumentation::mojom::Coordinator* GetCoordinator() const {
@@ -110,8 +113,6 @@ class COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION)
 
   // Only browser process is allowed to request memory dumps.
   const bool is_browser_process_;
-
-  DISALLOW_COPY_AND_ASSIGN(MemoryInstrumentation);
 };
 
 }  // namespace memory_instrumentation

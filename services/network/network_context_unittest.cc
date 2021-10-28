@@ -2879,6 +2879,9 @@ class MockMojoProxyResolver : public proxy_resolver::mojom::ProxyResolver {
  public:
   MockMojoProxyResolver() {}
 
+  MockMojoProxyResolver(const MockMojoProxyResolver&) = delete;
+  MockMojoProxyResolver& operator=(const MockMojoProxyResolver&) = delete;
+
  private:
   // Overridden from proxy_resolver::mojom::ProxyResolver:
   void GetProxyForUrl(
@@ -2897,8 +2900,6 @@ class MockMojoProxyResolver : public proxy_resolver::mojom::ProxyResolver {
 
     client->ReportResult(net::OK, result);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(MockMojoProxyResolver);
 };
 
 // Test mojom::ProxyResolverFactory implementation that successfully completes
@@ -2908,6 +2909,10 @@ class MockMojoProxyResolverFactory
     : public proxy_resolver::mojom::ProxyResolverFactory {
  public:
   MockMojoProxyResolverFactory() {}
+
+  MockMojoProxyResolverFactory(const MockMojoProxyResolverFactory&) = delete;
+  MockMojoProxyResolverFactory& operator=(const MockMojoProxyResolverFactory&) =
+      delete;
 
   // Binds and returns a mock ProxyResolverFactory whose lifetime is bound to
   // the message pipe.
@@ -2935,8 +2940,6 @@ class MockMojoProxyResolverFactory
         client(std::move(pending_client));
     client->ReportResult(net::OK);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(MockMojoProxyResolverFactory);
 };
 
 TEST_F(NetworkContextTest, PacQuickCheck) {
@@ -5372,6 +5375,9 @@ class TestURLLoaderHeaderClient : public mojom::TrustedURLLoaderHeaderClient {
    public:
     TestHeaderClient() {}
 
+    TestHeaderClient(const TestHeaderClient&) = delete;
+    TestHeaderClient& operator=(const TestHeaderClient&) = delete;
+
     // network::mojom::TrustedHeaderClient:
     void OnBeforeSendHeaders(const net::HttpRequestHeaders& headers,
                              OnBeforeSendHeadersCallback callback) override {
@@ -5408,13 +5414,15 @@ class TestURLLoaderHeaderClient : public mojom::TrustedURLLoaderHeaderClient {
     int on_before_send_headers_result_ = net::OK;
     int on_headers_received_result_ = net::OK;
     mojo::Receiver<mojom::TrustedHeaderClient> receiver_{this};
-
-    DISALLOW_COPY_AND_ASSIGN(TestHeaderClient);
   };
 
   explicit TestURLLoaderHeaderClient(
       mojo::PendingReceiver<mojom::TrustedURLLoaderHeaderClient> receiver)
       : receiver_(this, std::move(receiver)) {}
+
+  TestURLLoaderHeaderClient(const TestURLLoaderHeaderClient&) = delete;
+  TestURLLoaderHeaderClient& operator=(const TestURLLoaderHeaderClient&) =
+      delete;
 
   // network::mojom::TrustedURLLoaderHeaderClient:
   void OnLoaderCreated(
@@ -5440,8 +5448,6 @@ class TestURLLoaderHeaderClient : public mojom::TrustedURLLoaderHeaderClient {
  private:
   TestHeaderClient header_client_;
   mojo::Receiver<mojom::TrustedURLLoaderHeaderClient> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestURLLoaderHeaderClient);
 };
 
 TEST_F(NetworkContextTest, HeaderClientModifiesHeaders) {
@@ -5568,6 +5574,9 @@ class HangingTestURLLoaderHeaderClient
    public:
     TestHeaderClient() {}
 
+    TestHeaderClient(const TestHeaderClient&) = delete;
+    TestHeaderClient& operator=(const TestHeaderClient&) = delete;
+
     // network::mojom::TrustedHeaderClient:
     void OnBeforeSendHeaders(const net::HttpRequestHeaders& headers,
                              OnBeforeSendHeadersCallback callback) override {
@@ -5617,13 +5626,16 @@ class HangingTestURLLoaderHeaderClient
     std::string saved_received_headers_;
     OnHeadersReceivedCallback saved_on_headers_received_callback_;
     mojo::Receiver<mojom::TrustedHeaderClient> receiver_{this};
-
-    DISALLOW_COPY_AND_ASSIGN(TestHeaderClient);
   };
 
   explicit HangingTestURLLoaderHeaderClient(
       mojo::PendingReceiver<mojom::TrustedURLLoaderHeaderClient> receiver)
       : receiver_(this, std::move(receiver)) {}
+
+  HangingTestURLLoaderHeaderClient(const HangingTestURLLoaderHeaderClient&) =
+      delete;
+  HangingTestURLLoaderHeaderClient& operator=(
+      const HangingTestURLLoaderHeaderClient&) = delete;
 
   // network::mojom::TrustedURLLoaderHeaderClient:
   void OnLoaderCreated(
@@ -5655,8 +5667,6 @@ class HangingTestURLLoaderHeaderClient
  private:
   TestHeaderClient header_client_;
   mojo::Receiver<mojom::TrustedURLLoaderHeaderClient> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(HangingTestURLLoaderHeaderClient);
 };
 
 // Test waiting on the OnHeadersReceived event, then proceeding to call the

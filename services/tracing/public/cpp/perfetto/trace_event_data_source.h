@@ -56,6 +56,9 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceEventMetadataSource
  public:
   static TraceEventMetadataSource* GetInstance();
 
+  TraceEventMetadataSource(const TraceEventMetadataSource&) = delete;
+  TraceEventMetadataSource& operator=(const TraceEventMetadataSource&) = delete;
+
   using JsonMetadataGeneratorFunction =
       base::RepeatingCallback<absl::optional<base::Value>()>;
 
@@ -141,8 +144,6 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceEventMetadataSource
   std::unique_ptr<base::trace_event::TraceConfig> parsed_chrome_config_
       GUARDED_BY(lock_);
   bool emit_metadata_at_start_ GUARDED_BY(lock_) = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TraceEventMetadataSource);
 };
 
 // This class acts as a bridge between the TraceLog and
@@ -166,6 +167,9 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceEventDataSource :
   };
 
   static TraceEventDataSource* GetInstance();
+
+  TraceEventDataSource(const TraceEventDataSource&) = delete;
+  TraceEventDataSource& operator=(const TraceEventDataSource&) = delete;
 
   // Destroys and recreates the global instance for testing.
   static void ResetForTesting();
@@ -304,8 +308,6 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceEventDataSource :
   int process_id_ = base::kNullProcessId;
   base::ActionCallback user_action_callback_ =
       base::BindRepeating(&TraceEventDataSource::OnUserActionSampleCallback);
-
-  DISALLOW_COPY_AND_ASSIGN(TraceEventDataSource);
 };
 
 }  // namespace tracing

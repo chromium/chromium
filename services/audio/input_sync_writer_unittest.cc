@@ -49,6 +49,9 @@ class MockCancelableSyncSocket : public base::CancelableSyncSocket {
         buffer_size_(buffer_size),
         read_buffer_index_(0) {}
 
+  MockCancelableSyncSocket(const MockCancelableSyncSocket&) = delete;
+  MockCancelableSyncSocket& operator=(const MockCancelableSyncSocket&) = delete;
+
   size_t Send(const void* buffer, size_t length) override {
     EXPECT_EQ(length, sizeof(uint32_t));
 
@@ -98,8 +101,6 @@ class MockCancelableSyncSocket : public base::CancelableSyncSocket {
   int receives_;
   int buffer_size_;
   uint32_t read_buffer_index_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockCancelableSyncSocket);
 };
 
 class InputSyncWriterTest : public testing::Test {

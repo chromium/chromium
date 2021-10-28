@@ -166,6 +166,9 @@ class PowerSaveBlocker::Delegate
            scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
            scoped_refptr<base::SingleThreadTaskRunner> blocking_task_runner);
 
+  Delegate(const Delegate&) = delete;
+  Delegate& operator=(const Delegate&) = delete;
+
   // Post a task to initialize the delegate on the UI thread, which will itself
   // then post a task to apply the power save block on the blocking task runner.
   void Init();
@@ -211,8 +214,6 @@ class PowerSaveBlocker::Delegate
 
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> blocking_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(Delegate);
 };
 
 PowerSaveBlocker::Delegate::Delegate(

@@ -21,6 +21,10 @@ namespace device {
 enum class ErrorDetectState { NO_ERROR, MARK_377_SEEN, MARK_0_SEEN };
 
 class SerialIoHandlerPosix : public SerialIoHandler {
+ public:
+  SerialIoHandlerPosix(const SerialIoHandlerPosix&) = delete;
+  SerialIoHandlerPosix& operator=(const SerialIoHandlerPosix&) = delete;
+
  protected:
   // SerialIoHandler impl.
   void ReadImpl() override;
@@ -68,8 +72,6 @@ class SerialIoHandlerPosix : public SerialIoHandler {
   bool parity_check_enabled_;
   uint8_t chars_stashed_[2];
   int num_chars_stashed_;
-
-  DISALLOW_COPY_AND_ASSIGN(SerialIoHandlerPosix);
 };
 
 }  // namespace device

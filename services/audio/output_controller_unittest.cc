@@ -75,18 +75,25 @@ class MockOutputControllerEventHandler : public OutputController::EventHandler {
  public:
   MockOutputControllerEventHandler() = default;
 
+  MockOutputControllerEventHandler(const MockOutputControllerEventHandler&) =
+      delete;
+  MockOutputControllerEventHandler& operator=(
+      const MockOutputControllerEventHandler&) = delete;
+
   MOCK_METHOD0(OnControllerPlaying, void());
   MOCK_METHOD0(OnControllerPaused, void());
   MOCK_METHOD0(OnControllerError, void());
   void OnLog(base::StringPiece) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockOutputControllerEventHandler);
 };
 
 class MockOutputControllerSyncReader : public OutputController::SyncReader {
  public:
   MockOutputControllerSyncReader() = default;
+
+  MockOutputControllerSyncReader(const MockOutputControllerSyncReader&) =
+      delete;
+  MockOutputControllerSyncReader& operator=(
+      const MockOutputControllerSyncReader&) = delete;
 
   MOCK_METHOD3(RequestMoreData,
                void(base::TimeDelta delay,
@@ -94,20 +101,19 @@ class MockOutputControllerSyncReader : public OutputController::SyncReader {
                     int prior_frames_skipped));
   MOCK_METHOD1(Read, void(AudioBus* dest));
   MOCK_METHOD0(Close, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockOutputControllerSyncReader);
 };
 
 class MockOutputStreamActivityMonitor : public OutputStreamActivityMonitor {
  public:
   MockOutputStreamActivityMonitor() = default;
 
+  MockOutputStreamActivityMonitor(const MockOutputStreamActivityMonitor&) =
+      delete;
+  MockOutputStreamActivityMonitor& operator=(
+      const MockOutputStreamActivityMonitor&) = delete;
+
   MOCK_METHOD0(OnOutputStreamActive, void());
   MOCK_METHOD0(OnOutputStreamInactive, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockOutputStreamActivityMonitor);
 };
 
 // Wraps an AudioOutputStream instance, calling DidXYZ() mock methods for test
@@ -120,6 +126,9 @@ class MockAudioOutputStream : public AudioOutputStream,
  public:
   MockAudioOutputStream(AudioOutputStream* impl, AudioParameters::Format format)
       : impl_(impl), format_(format) {}
+
+  MockAudioOutputStream(const MockAudioOutputStream&) = delete;
+  MockAudioOutputStream& operator=(const MockAudioOutputStream&) = delete;
 
   AudioParameters::Format format() const { return format_; }
 
@@ -232,8 +241,6 @@ class MockAudioOutputStream : public AudioOutputStream,
   AudioOutputStream::AudioSourceCallback* callback_ = nullptr;
   double volume_ = 1.0;
   std::unique_ptr<base::Thread> data_thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockAudioOutputStream);
 };
 
 class MockSnooper : public Snoopable::Snooper {

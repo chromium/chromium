@@ -344,6 +344,9 @@ class PreflightController::PreflightLoader final {
     loader_->SetURLLoaderFactoryOptions(options);
   }
 
+  PreflightLoader(const PreflightLoader&) = delete;
+  PreflightLoader& operator=(const PreflightLoader&) = delete;
+
   void Request(mojom::URLLoaderFactory* loader_factory) {
     DCHECK(loader_);
 
@@ -460,8 +463,6 @@ class PreflightController::PreflightLoader final {
   const net::NetworkIsolationKey network_isolation_key_;
   mojo::Remote<mojom::DevToolsObserver> devtools_observer_;
   const net::NetLogWithSource net_log_;
-
-  DISALLOW_COPY_AND_ASSIGN(PreflightLoader);
 };
 
 // static

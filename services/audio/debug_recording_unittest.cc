@@ -41,6 +41,9 @@ class MockFileProvider : public mojom::DebugRecordingFileProvider {
       const base::FilePath& file_name_base)
       : receiver_(this, std::move(receiver)) {}
 
+  MockFileProvider(const MockFileProvider&) = delete;
+  MockFileProvider& operator=(const MockFileProvider&) = delete;
+
   MOCK_METHOD2(DoCreateWavFile,
                void(media::AudioDebugRecordingStreamType stream_type,
                     uint32_t id));
@@ -53,8 +56,6 @@ class MockFileProvider : public mojom::DebugRecordingFileProvider {
 
  private:
   mojo::Receiver<mojom::DebugRecordingFileProvider> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockFileProvider);
 };
 
 class DebugRecordingTest : public media::AudioDebugRecordingTest {

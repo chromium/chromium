@@ -243,6 +243,9 @@ class TestImageProcessor : public mojom::ImageProcessor {
  public:
   TestImageProcessor() = default;
 
+  TestImageProcessor(const TestImageProcessor&) = delete;
+  TestImageProcessor& operator=(const TestImageProcessor&) = delete;
+
   mojo::PendingRemote<mojom::ImageProcessor> GetPendingRemote() {
     mojo::PendingRemote<mojom::ImageProcessor> remote;
     receivers_.Add(this, remote.InitWithNewPipeAndPassReceiver());
@@ -264,8 +267,6 @@ class TestImageProcessor : public mojom::ImageProcessor {
   std::vector<GetJpgImageDataCallback> callbacks_;
 
   mojo::ReceiverSet<mojom::ImageProcessor> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestImageProcessor);
 };
 
 // A class that supports test URL loading for the "server" use case: where
@@ -278,6 +279,10 @@ class TestServerURLLoaderFactory {
         shared_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &loader_factory_)) {}
+
+  TestServerURLLoaderFactory(const TestServerURLLoaderFactory&) = delete;
+  TestServerURLLoaderFactory& operator=(const TestServerURLLoaderFactory&) =
+      delete;
 
   const std::vector<network::TestURLLoaderFactory::PendingRequest>& requests() {
     return *loader_factory_.pending_requests();
@@ -353,8 +358,6 @@ class TestServerURLLoaderFactory {
   const std::string server_url_prefix_;
   network::TestURLLoaderFactory loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_loader_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestServerURLLoaderFactory);
 };
 
 // Returns a "canonically" formatted version of a JSON string by parsing and

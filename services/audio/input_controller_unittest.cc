@@ -52,14 +52,16 @@ class MockInputControllerEventHandler : public InputController::EventHandler {
  public:
   MockInputControllerEventHandler() = default;
 
+  MockInputControllerEventHandler(const MockInputControllerEventHandler&) =
+      delete;
+  MockInputControllerEventHandler& operator=(
+      const MockInputControllerEventHandler&) = delete;
+
   void OnLog(base::StringPiece) override {}
 
   MOCK_METHOD1(OnCreated, void(bool initially_muted));
   MOCK_METHOD1(OnError, void(InputController::ErrorCode error_code));
   MOCK_METHOD1(OnMuted, void(bool is_muted));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockInputControllerEventHandler);
 };
 
 class MockSyncWriter : public InputController::SyncWriter {

@@ -24,6 +24,10 @@ class PlatformSensorAmbientLightMac : public PlatformSensor {
   PlatformSensorAmbientLightMac(SensorReadingSharedBuffer* reading_buffer,
                                 PlatformSensorProvider* provider);
 
+  PlatformSensorAmbientLightMac(const PlatformSensorAmbientLightMac&) = delete;
+  PlatformSensorAmbientLightMac& operator=(
+      const PlatformSensorAmbientLightMac&) = delete;
+
   mojom::ReportingMode GetReportingMode() override;
   // Can only be called once, the first time or after a StopSensor call.
   bool StartSensor(const PlatformSensorConfiguration& configuration) override;
@@ -54,8 +58,6 @@ class PlatformSensorAmbientLightMac : public PlatformSensor {
   // sensor is busy.
   base::mac::ScopedIOObject<io_object_t> light_sensor_busy_notification_;
   double current_lux_;
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformSensorAmbientLightMac);
 };
 
 }  // namespace device

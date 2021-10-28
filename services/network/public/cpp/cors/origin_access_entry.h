@@ -51,6 +51,10 @@ class COMPONENT_EXPORT(NETWORK_CPP) OriginAccessEntry final {
                     const mojom::CorsPortMatchMode port_match_mode,
                     const mojom::CorsOriginAccessMatchPriority priority =
                         mojom::CorsOriginAccessMatchPriority::kDefaultPriority);
+
+  OriginAccessEntry(const OriginAccessEntry&) = delete;
+  OriginAccessEntry& operator=(const OriginAccessEntry&) = delete;
+
   OriginAccessEntry(OriginAccessEntry&& from);
 
   // MatchesOrigin requires a protocol match (e.g. 'http' != 'https'), and a
@@ -78,8 +82,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) OriginAccessEntry final {
 
   std::string registrable_domain_;
   bool host_is_public_suffix_;
-
-  DISALLOW_COPY_AND_ASSIGN(OriginAccessEntry);
 };
 
 }  // namespace cors

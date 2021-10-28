@@ -21,6 +21,9 @@ namespace network {
 // https://wicg.github.io/origin-policy/#parsing
 class COMPONENT_EXPORT(NETWORK_SERVICE) OriginPolicyParser {
  public:
+  OriginPolicyParser(const OriginPolicyParser&) = delete;
+  OriginPolicyParser& operator=(const OriginPolicyParser&) = delete;
+
   // Parse the given origin policy. Returns an empty policy if parsing is not
   // successful.
   static OriginPolicyContentsPtr Parse(base::StringPiece);
@@ -42,8 +45,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) OriginPolicyParser {
   static bool IsValidOriginPolicyId(const std::string&);
 
   OriginPolicyContentsPtr policy_contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(OriginPolicyParser);
 };
 
 }  // namespace network

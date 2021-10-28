@@ -37,6 +37,9 @@ class COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION)
       mojo::PendingRemote<mojom::Coordinator> coordinator,
       bool is_browser_process = false);
 
+  ClientProcessImpl(const ClientProcessImpl&) = delete;
+  ClientProcessImpl& operator=(const ClientProcessImpl&) = delete;
+
  private:
   friend std::default_delete<ClientProcessImpl>;  // For testing
   friend class MemoryTracingIntegrationTest;
@@ -103,8 +106,6 @@ class COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION)
   // MemoryDumpManager in each process. Setting up MemoryDumpManager should
   // be moved away from TracingObserver.
   std::unique_ptr<TracingObserver> tracing_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientProcessImpl);
 };
 
 }  // namespace memory_instrumentation

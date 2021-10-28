@@ -68,6 +68,9 @@ class FakeUsbDeviceInfo : public base::RefCounted<FakeUsbDeviceInfo> {
                     uint8_t device_class,
                     std::vector<mojom::UsbConfigurationInfoPtr> configurations);
 
+  FakeUsbDeviceInfo(const FakeUsbDeviceInfo&) = delete;
+  FakeUsbDeviceInfo& operator=(const FakeUsbDeviceInfo&) = delete;
+
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
   void NotifyDeviceRemoved();
@@ -94,7 +97,6 @@ class FakeUsbDeviceInfo : public base::RefCounted<FakeUsbDeviceInfo> {
   mojom::UsbDeviceInfo device_info_;
   base::ObserverList<Observer> observer_list_;
   MockUsbMojoDevice* mock_device_ = nullptr;
-  DISALLOW_COPY_AND_ASSIGN(FakeUsbDeviceInfo);
 };
 
 }  // namespace device

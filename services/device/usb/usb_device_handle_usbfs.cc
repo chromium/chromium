@@ -180,6 +180,10 @@ struct UsbDeviceHandleUsbfs::Transfer final {
            TransferCallback callback);
   Transfer(scoped_refptr<base::RefCountedBytes> buffer,
            IsochronousTransferCallback callback);
+
+  Transfer(const Transfer&) = delete;
+  Transfer& operator=(const Transfer&) = delete;
+
   ~Transfer();
 
   void* operator new(std::size_t size, size_t number_of_iso_packets);
@@ -199,9 +203,6 @@ struct UsbDeviceHandleUsbfs::Transfer final {
 
   TransferCallback callback;
   IsochronousTransferCallback isoc_callback;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Transfer);
 
  public:
   // The |urb| field must be the last in the struct so that the extra space

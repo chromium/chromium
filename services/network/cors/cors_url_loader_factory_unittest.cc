@@ -48,6 +48,9 @@ class CorsURLLoaderFactoryTest : public testing::Test {
     url_request_context_ = context_builder.Build();
   }
 
+  CorsURLLoaderFactoryTest(const CorsURLLoaderFactoryTest&) = delete;
+  CorsURLLoaderFactoryTest& operator=(const CorsURLLoaderFactoryTest&) = delete;
+
  protected:
   // testing::Test implementation.
   void SetUp() override {
@@ -128,8 +131,6 @@ class CorsURLLoaderFactoryTest : public testing::Test {
 
   // Holds for allowed origin access lists.
   OriginAccessList origin_access_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(CorsURLLoaderFactoryTest);
 };
 
 // Regression test for https://crbug.com/906305.

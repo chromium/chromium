@@ -24,6 +24,9 @@ class MediaImageManagerTest : public testing::Test {
  public:
   MediaImageManagerTest() = default;
 
+  MediaImageManagerTest(const MediaImageManagerTest&) = delete;
+  MediaImageManagerTest& operator=(const MediaImageManagerTest&) = delete;
+
   void SetUp() override {
     manager_ = std::make_unique<MediaImageManager>(kMinSize, kIdealSize);
   }
@@ -32,8 +35,6 @@ class MediaImageManagerTest : public testing::Test {
 
  private:
   std::unique_ptr<MediaImageManager> manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaImageManagerTest);
 };
 
 TEST_F(MediaImageManagerTest, CheckExpectedImageExtensionHashes) {

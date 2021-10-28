@@ -286,12 +286,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
    public:
     explicit UnownedPointer(URLLoader* pointer) : pointer_(pointer) {}
 
+    UnownedPointer(const UnownedPointer&) = delete;
+    UnownedPointer& operator=(const UnownedPointer&) = delete;
+
     URLLoader* get() const { return pointer_; }
 
    private:
     URLLoader* const pointer_;
-
-    DISALLOW_COPY_AND_ASSIGN(UnownedPointer);
   };
 
   class FileOpenerForUpload;

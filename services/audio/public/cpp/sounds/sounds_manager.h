@@ -33,6 +33,9 @@ class SoundsManager {
   // Returns a pointer to a singleton instance of the SoundsManager.
   static SoundsManager* Get();
 
+  SoundsManager(const SoundsManager&) = delete;
+  SoundsManager& operator=(const SoundsManager&) = delete;
+
   // Initializes sounds manager for testing. The |manager| will be owned
   // by the internal pointer and will be deleted by Shutdown().
   static void InitializeForTesting(SoundsManager* manager);
@@ -60,9 +63,6 @@ class SoundsManager {
   virtual ~SoundsManager();
 
   SEQUENCE_CHECKER(sequence_checker_);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SoundsManager);
 };
 
 }  // namespace audio

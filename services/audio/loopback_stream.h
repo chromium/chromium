@@ -116,6 +116,9 @@ class LoopbackStream final : public media::mojom::AudioInputStream,
                 const media::AudioParameters& output_params,
                 std::unique_ptr<InputSyncWriter> writer);
 
+    FlowNetwork(const FlowNetwork&) = delete;
+    FlowNetwork& operator=(const FlowNetwork&) = delete;
+
     // These must be called to override the Clock/SyncWriter before Start().
     void set_clock_for_testing(const base::TickClock* clock) { clock_ = clock; }
     void set_writer_for_testing(
@@ -210,8 +213,6 @@ class LoopbackStream final : public media::mojom::AudioInputStream,
     const std::unique_ptr<media::AudioBus> mix_bus_;
 
     SEQUENCE_CHECKER(control_sequence_);
-
-    DISALLOW_COPY_AND_ASSIGN(FlowNetwork);
   };
 
   // Reports a fatal error to the client, and then runs the BindingLostCallback.

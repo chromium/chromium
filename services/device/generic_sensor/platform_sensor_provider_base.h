@@ -20,6 +20,10 @@ class PlatformSensorProviderBase {
   using CreateSensorCallback =
       base::OnceCallback<void(scoped_refptr<PlatformSensor>)>;
 
+  PlatformSensorProviderBase(const PlatformSensorProviderBase&) = delete;
+  PlatformSensorProviderBase& operator=(const PlatformSensorProviderBase&) =
+      delete;
+
   // Creates new instance of PlatformSensor.
   void CreateSensor(mojom::SensorType type, CreateSensorCallback callback);
 
@@ -71,8 +75,6 @@ class PlatformSensorProviderBase {
   std::map<mojom::SensorType, CallbackQueue> requests_map_;
   mojo::ScopedSharedBufferHandle shared_buffer_handle_;
   mojo::ScopedSharedBufferMapping shared_buffer_mapping_;
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformSensorProviderBase);
 };
 
 }  // namespace device
