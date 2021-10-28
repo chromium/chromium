@@ -154,6 +154,18 @@ const GpuFeatureData GetGpuFeatureData(
          "Accelerated video decode has been disabled, either via blocklist, "
          "about:flags or the command line."),
      true},
+    {"video_encode",
+     SafeGetFeatureStatus(gpu_feature_info,
+                          gpu::GPU_FEATURE_TYPE_ACCELERATED_VIDEO_ENCODE),
+#if defined(OS_LINUX)
+     !base::FeatureList::IsEnabled(media::kVaapiVideoEncodeLinux),
+#else
+     command_line.HasSwitch(switches::kDisableAcceleratedVideoEncode),
+#endif  // defined(OS_LINUX)
+     DisableInfo::Problem(
+         "Accelerated video encode has been disabled, either via blocklist, "
+         "about:flags or the command line."),
+     true},
     {"rasterization",
      SafeGetFeatureStatus(gpu_feature_info,
                           gpu::GPU_FEATURE_TYPE_GPU_RASTERIZATION),
