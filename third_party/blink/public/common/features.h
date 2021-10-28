@@ -17,6 +17,7 @@ namespace features {
 
 BLINK_COMMON_EXPORT extern const base::Feature
     kAutomaticLazyFrameLoadingToEmbeds;
+BLINK_COMMON_EXPORT extern const base::Feature kBackForwardCacheDedicatedWorker;
 BLINK_COMMON_EXPORT extern const base::Feature
     kBlockingDownloadsInAdFrameWithoutUserActivation;
 BLINK_COMMON_EXPORT extern const base::Feature kCOEPForSharedWorker;

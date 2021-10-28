@@ -2229,6 +2229,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
       shell(),
       embedded_test_server()->GetURL(
           "a.com", "/back_forward_cache/page_with_dedicated_worker.html")));
+  EXPECT_EQ(42, EvalJs(current_frame_host(), "window.receivedMessagePromise"));
   RenderFrameDeletedObserver delete_observer_rfh_a(current_frame_host());
 
   // Navigate away.
@@ -2237,6 +2238,36 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // The page with the unsupported feature should be deleted (not cached).
   delete_observer_rfh_a.WaitUntilDeleted();
+}
+
+class BackForwardCacheWithDedicatedWorkerBrowserTest
+    : public BackForwardCacheBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    EnableFeatureAndSetParams(blink::features::kBackForwardCacheDedicatedWorker,
+                              "", "");
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(BackForwardCacheWithDedicatedWorkerBrowserTest,
+                       CacheWithDedicatedWorker) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  EXPECT_TRUE(NavigateToURL(
+      shell(),
+      embedded_test_server()->GetURL(
+          "a.test", "/back_forward_cache/page_with_dedicated_worker.html")));
+  EXPECT_EQ(42, EvalJs(current_frame_host(), "window.receivedMessagePromise"));
+
+  // Navigate away.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("b.test", "/title1.html")));
+
+  // Go back to the original page.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ExpectRestored(FROM_HERE);
 }
 
 // TODO(https://crbug.com/154571): Shared workers are not available on Android.
