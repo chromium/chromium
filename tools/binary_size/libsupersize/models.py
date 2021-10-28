@@ -723,9 +723,11 @@ class DeltaSymbol(BaseSymbol):
 
   @property
   def flags(self):
+    # Compute the union of flags (|) instead of symmetric difference (^), as
+    # that is more useful when querying for symbols with flags.
     before_flags = self.before_symbol.flags if self.before_symbol else 0
     after_flags = self.after_symbol.flags if self.after_symbol else 0
-    return before_flags ^ after_flags
+    return before_flags | after_flags
 
   @property
   def object_path(self):
