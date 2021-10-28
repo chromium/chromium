@@ -74,7 +74,7 @@ Polymer({
   /** @private */
   getShowFeedbackBtn_() {
     sendWithPromise('getShowFeedbackButton').then(result => {
-      this.set('showFeedbackBtn_', result[0])
+      this.set('showFeedbackBtn_', result[0]);
     });
   }
 });
