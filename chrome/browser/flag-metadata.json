@@ -4640,11 +4640,10 @@
   {
     "name": "safe-browsing-password-protection-for-signed-in-users",
     "owners": [
-      "bdea",
       "xinghuilu",
       "chrome-safebrowsing-core@google.com"
     ],
-    "expiry_milestone": 96
+    "expiry_milestone": 99
   },
   {
     "name": "safety-tips",
