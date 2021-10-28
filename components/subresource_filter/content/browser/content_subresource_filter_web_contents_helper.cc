@@ -129,11 +129,8 @@ ContentSubresourceFilterWebContentsHelper::GetThrottleManager(
   // not a same document navigation, it must be happening in a subframe.  Use
   // the subframe's parent RFH in this case since the navigation will not be
   // associated with a RFH until it commits.
-  // NOTE: We don't directly use GetRenderFrameHost() in the subframe
-  // same-document navigation case due to an edge case where the navigation
-  // doesn't commit (see crbug.com/1237874).
   DCHECK(handle.IsSameDocument() || !handle.IsInMainFrame());
-  content::RenderFrameHost* rfh = handle.IsInMainFrame()
+  content::RenderFrameHost* rfh = handle.IsSameDocument()
                                       ? handle.GetRenderFrameHost()
                                       : handle.GetParentFrame();
   DCHECK(rfh);
