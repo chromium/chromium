@@ -223,9 +223,8 @@ public class ReturnToChromeTest {
         Assert.assertEquals("single", StartSurfaceConfiguration.START_SURFACE_VARIATION.getValue());
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
-                        -> Assert.assertTrue(ReturnToChromeExperimentsUtil
-                                                     .shouldShowStartSurfaceAsTheHomePageNoTabs(
-                                                             mActivityTestRule.getActivity())));
+                        -> Assert.assertTrue(ReturnToChromeExperimentsUtil.isStartSurfaceEnabled(
+                                mActivityTestRule.getActivity())));
 
         if (!mActivityTestRule.getActivity().isTablet()) {
             Assert.assertTrue(mActivityTestRule.getActivity().getLayoutManager().overviewVisible());

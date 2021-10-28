@@ -152,7 +152,7 @@ public class StartSurfaceConfiguration {
     /**
      * @return Whether the Start Surface feature flag is enabled.
      * @Deprecated Use {@link
-     * org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil#isStartSurfaceEnabled()}
+     * org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil#isStartSurfaceEnabled}
      * instead.
      */
     public static boolean isStartSurfaceFlagEnabled() {
