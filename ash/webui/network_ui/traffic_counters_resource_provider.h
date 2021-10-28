@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_NETWORK_UI_TRAFFIC_COUNTERS_RESOURCE_PROVIDER_H_
-#define CHROMEOS_COMPONENTS_NETWORK_UI_TRAFFIC_COUNTERS_RESOURCE_PROVIDER_H_
+#ifndef ASH_WEBUI_NETWORK_UI_TRAFFIC_COUNTERS_RESOURCE_PROVIDER_H_
+#define ASH_WEBUI_NETWORK_UI_TRAFFIC_COUNTERS_RESOURCE_PROVIDER_H_
 
 namespace content {
 class WebUIDataSource;
 }  // namespace content
 
-namespace chromeos {
+namespace ash {
 namespace traffic_counters {
 
 // Adds the strings and resource paths needed for traffic counters elements
@@ -17,6 +17,13 @@ namespace traffic_counters {
 void AddResources(content::WebUIDataSource* html_source);
 
 }  // namespace traffic_counters
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+namespace traffic_counters {
+using ::ash::traffic_counters::AddResources;
+}  // namespace traffic_counters
 }  // namespace chromeos
 
-#endif  // CHROMEOS_COMPONENTS_NETWORK_UI_TRAFFIC_COUNTERS_RESOURCE_PROVIDER_H_
+#endif  // ASH_WEBUI_NETWORK_UI_TRAFFIC_COUNTERS_RESOURCE_PROVIDER_H_

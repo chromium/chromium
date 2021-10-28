@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/network_ui/traffic_counters_resource_provider.h"
+#include "ash/webui/network_ui/traffic_counters_resource_provider.h"
 
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/resources/grit/webui_generated_resources.h"
 
-namespace chromeos {
+namespace ash {
 namespace traffic_counters {
 
 namespace {
@@ -41,4 +41,4 @@ void AddResources(content::WebUIDataSource* html_source) {
 }
 
 }  // namespace traffic_counters
-}  // namespace chromeos
+}  // namespace ash

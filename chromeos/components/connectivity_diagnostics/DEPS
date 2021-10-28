@@ -5,4 +5,7 @@ include_rules = [
   "+ui/base",
   "+ui/resources",
   "+ui/webui",
+
+  # TODO(https://crbug.com/1164001): Remove when migrates to ash.
+  "+ash/webui/network_ui",
 ]

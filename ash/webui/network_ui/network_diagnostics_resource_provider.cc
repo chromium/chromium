@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/network_ui/network_diagnostics_resource_provider.h"
+#include "ash/webui/network_ui/network_diagnostics_resource_provider.h"
 
 #include "ash/constants/ash_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -10,7 +10,7 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/resources/grit/webui_generated_resources.h"
 
-namespace chromeos {
+namespace ash {
 namespace network_diagnostics {
 
 namespace {
@@ -170,4 +170,4 @@ void AddResources(content::WebUIDataSource* html_source) {
 }
 
 }  // namespace network_diagnostics
-}  // namespace chromeos
+}  // namespace ash
