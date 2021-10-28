@@ -3086,8 +3086,8 @@
             ],
             "experiments": [
                 {
-                    "name": "Disabled",
-                    "disable_features": [
+                    "name": "Enabled_20211027",
+                    "enable_features": [
                         "EnableDiscoverFeedAppFlows"
                     ]
                 }
