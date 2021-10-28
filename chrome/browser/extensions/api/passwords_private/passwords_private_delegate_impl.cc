@@ -221,6 +221,15 @@ PasswordsPrivateDelegateImpl::GetUrlCollection(const std::string& url) {
           password_manager_util::StripAuthAndParams(url_with_scheme)));
 }
 
+bool PasswordsPrivateDelegateImpl::IsAccountStoreDefault(
+    content::WebContents* web_contents) {
+  auto* client = ChromePasswordManagerClient::FromWebContents(web_contents);
+  DCHECK(client);
+  DCHECK(client->GetPasswordFeatureManager()->IsOptedInForAccountStorage());
+  return client->GetPasswordFeatureManager()->GetDefaultPasswordStore() ==
+         password_manager::PasswordForm::Store::kAccountStore;
+}
+
 bool PasswordsPrivateDelegateImpl::AddPassword(const std::string& url,
                                                const std::u16string& username,
                                                const std::u16string& password,
