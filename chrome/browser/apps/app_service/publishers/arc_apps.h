@@ -42,6 +42,7 @@ class Profile;
 namespace apps {
 
 class AppServiceProxyChromeOs;
+class PublisherTest;
 class WebApkManager;
 
 // An app publisher (in the App Service sense) of ARC++ apps,
@@ -76,6 +77,8 @@ class ArcApps : public KeyedService,
   }
 
  private:
+  friend class PublisherTest;
+
   using AppIdToTaskIds = std::map<std::string, std::set<int>>;
   using TaskIdToAppId = std::map<int, std::string>;
 
