@@ -18,5 +18,4 @@ TEST(ChromeOSSystemExtensionInfo, GoogleExtension) {
       chromeos::GetChromeOSExtensionInfoForId(google_extension_id);
   EXPECT_EQ("HP", extension_info.manufacturer);
   EXPECT_EQ("*://www.google.com/*", extension_info.pwa_origin);
-  EXPECT_EQ("www.google.com", extension_info.host);
 }
