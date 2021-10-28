@@ -49,10 +49,6 @@
 // Navigation controller for the consistency promo.
 @property(nonatomic, strong)
     ConsistencySheetNavigationController* navigationController;
-// Interaction transition to swipe from left to right to pop a view controller
-// from |self.navigationController|.
-@property(nonatomic, strong)
-    UIPercentDrivenInteractiveTransition* interactionTransition;
 // Coordinator for the first screen.
 @property(nonatomic, strong)
     ConsistencyDefaultAccountCoordinator* defaultAccountCoordinator;
@@ -118,12 +114,6 @@
   self.navigationController = [[ConsistencySheetNavigationController alloc]
       initWithRootViewController:self.defaultAccountCoordinator.viewController];
   self.navigationController.delegate = self;
-  UIScreenEdgePanGestureRecognizer* edgeSwipeGesture =
-      [[UIScreenEdgePanGestureRecognizer alloc]
-          initWithTarget:self
-                  action:@selector(swipeAction:)];
-  edgeSwipeGesture.edges = UIRectEdgeLeft;
-  [self.navigationController.view addGestureRecognizer:edgeSwipeGesture];
   self.navigationController.modalPresentationStyle = UIModalPresentationCustom;
   self.navigationController.transitioningDelegate = self;
   [self.baseViewController presentViewController:self.navigationController
@@ -305,44 +295,6 @@
   self.addAccountCoordinator = nil;
 }
 
-#pragma mark - SwipeGesture
-
-// Called when the swipe gesture is active. This method controls the sliding
-// between two view controls in |self.navigationController|.
-- (void)swipeAction:(UIScreenEdgePanGestureRecognizer*)gestureRecognizer {
-  if (!gestureRecognizer.view) {
-    self.interactionTransition = nil;
-    return;
-  }
-  UIView* view = gestureRecognizer.view;
-  CGFloat percentage =
-      [gestureRecognizer translationInView:view].x / view.bounds.size.width;
-  switch (gestureRecognizer.state) {
-    case UIGestureRecognizerStateBegan:
-      self.interactionTransition =
-          [[UIPercentDrivenInteractiveTransition alloc] init];
-      [self.navigationController popViewControllerAnimated:YES];
-      [self.interactionTransition updateInteractiveTransition:percentage];
-      break;
-    case UIGestureRecognizerStateChanged:
-      [self.interactionTransition updateInteractiveTransition:percentage];
-      break;
-    case UIGestureRecognizerStateEnded:
-      if (percentage > .5 &&
-          gestureRecognizer.state != UIGestureRecognizerStateCancelled) {
-        [self.interactionTransition finishInteractiveTransition];
-      } else {
-        [self.interactionTransition cancelInteractiveTransition];
-      }
-      self.interactionTransition = nil;
-      break;
-    case UIGestureRecognizerStatePossible:
-    case UIGestureRecognizerStateCancelled:
-    case UIGestureRecognizerStateFailed:
-      break;
-  }
-}
-
 - (void)signinWithIdentity:(ChromeIdentity*)identity {
   DCHECK([self.selectedIdentity isEqual:identity]);
   // Reset dismissal count if the user wants to sign-in.
@@ -518,7 +470,7 @@
                                (UINavigationController*)navigationController
     interactionControllerForAnimationController:
         (id<UIViewControllerAnimatedTransitioning>)animationController {
-  return self.interactionTransition;
+  return self.navigationController.interactionTransition;
 }
 
 - (void)navigationController:(UINavigationController*)navigationController
