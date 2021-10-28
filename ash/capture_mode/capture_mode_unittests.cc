@@ -488,16 +488,19 @@ class CaptureModeTest : public AshTestBase {
     EXPECT_EQ(region, controller->user_capture_region());
   }
 
-  void WaitForCountDownToFinish() {
+  void WaitForSessionToEnd() {
     auto* controller = CaptureModeController::Get();
-    DCHECK_EQ(controller->type(), CaptureModeType::kVideo);
-    while (controller->IsActive() &&
-           controller->capture_mode_session()->IsInCountDownAnimation()) {
-      base::RunLoop run_loop;
-      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-          FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(100));
-      run_loop.Run();
-    }
+    if (!controller->IsActive())
+      return;
+
+    auto* test_delegate = static_cast<TestCaptureModeDelegate*>(
+        controller->delegate_for_testing());
+    ASSERT_TRUE(test_delegate);
+    base::RunLoop run_loop;
+    test_delegate->set_on_session_state_changed_callback(
+        run_loop.QuitClosure());
+    run_loop.Run();
+    ASSERT_FALSE(controller->IsActive());
   }
 
   void RemoveSecondaryDisplay() {
@@ -523,8 +526,7 @@ class CaptureModeTest : public AshTestBase {
   void WaitForSeconds(int seconds) {
     base::RunLoop loop;
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, base::BindLambdaForTesting([&]() { loop.Quit(); }),
-        base::Seconds(seconds));
+        FROM_HERE, loop.QuitClosure(), base::Seconds(seconds));
     loop.Run();
   }
 
@@ -548,8 +550,7 @@ class CaptureModeTest : public AshTestBase {
         controller->delegate_for_testing());
     ASSERT_TRUE(test_delegate);
     base::RunLoop run_loop;
-    test_delegate->set_on_recording_started_callback(
-        base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); }));
+    test_delegate->set_on_recording_started_callback(run_loop.QuitClosure());
     run_loop.Run();
     ASSERT_TRUE(controller->is_recording_in_progress());
   }
@@ -752,7 +753,7 @@ TEST_F(CaptureModeTest, VideoRecordingUiBehavior) {
   SendKey(ui::VKEY_RETURN, event_generator);
   EXPECT_EQ(ui::mojom::CursorType::kPointer,
             Shell::Get()->cursor_manager()->GetCursor().type());
-  WaitForCountDownToFinish();
+  WaitForRecordingToStart();
   EXPECT_FALSE(controller->IsActive());
   EXPECT_TRUE(controller->is_recording_in_progress());
 
@@ -1825,7 +1826,7 @@ TEST_F(CaptureModeTest, DoNotHandleEventDuringCountDown) {
   EXPECT_EQ(capture_mode_session->GetSelectedWindow(), window1.get());
   EXPECT_NE(capture_mode_session->GetSelectedWindow(), window2.get());
 
-  WaitForCountDownToFinish();
+  WaitForRecordingToStart();
 }
 
 // Test that during countdown, window changes or crashes are handled.
@@ -1870,7 +1871,7 @@ TEST_F(CaptureModeTest, WindowChangesDuringCountdown) {
   EXPECT_FALSE(controller->is_recording_in_progress());
 
   // Wait for countdown to finish and check that recording starts.
-  WaitForCountDownToFinish();
+  WaitForRecordingToStart();
   EXPECT_FALSE(controller->IsActive());
   EXPECT_TRUE(controller->is_recording_in_progress());
 }
@@ -3200,7 +3201,7 @@ TEST_F(CaptureModeTest, FullscreenCapture) {
   EXPECT_TRUE(controller->IsActive());
   // Press anywhere to capture video.
   event_generator->ClickLeftButton();
-  WaitForCountDownToFinish();
+  WaitForRecordingToStart();
   EXPECT_FALSE(controller->IsActive());
 }
 
@@ -4825,7 +4826,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests, StartEndRecording) {
   // projector.
   PressAndReleaseKey(ui::VKEY_RETURN);
   EXPECT_CALL(projector_client_, StartSpeechRecognition());
-  WaitForCountDownToFinish();
+  WaitForRecordingToStart();
 
   EXPECT_FALSE(controller->IsActive());
   EXPECT_TRUE(controller->is_recording_in_progress());
@@ -4932,7 +4933,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests,
         break;
     }
 
-    WaitForCountDownToFinish();
+    WaitForSessionToEnd();
     EXPECT_FALSE(ProjectorSession::Get()->is_active());
     EXPECT_FALSE(controller->is_recording_in_progress());
 
@@ -4948,7 +4949,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests, RecordingOverlayWidget) {
   EXPECT_TRUE(controller->IsActive());
 
   PressAndReleaseKey(ui::VKEY_RETURN);
-  WaitForCountDownToFinish();
+  WaitForRecordingToStart();
   CaptureModeTestApi test_api;
   RecordingOverlayController* overlay_controller =
       test_api.GetRecordingOverlayController();
@@ -4973,7 +4974,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests, RecordingOverlayDockedMagnifier) {
   EXPECT_TRUE(controller->IsActive());
 
   PressAndReleaseKey(ui::VKEY_RETURN);
-  WaitForCountDownToFinish();
+  WaitForRecordingToStart();
   CaptureModeTestApi test_api;
   RecordingOverlayController* overlay_controller =
       test_api.GetRecordingOverlayController();

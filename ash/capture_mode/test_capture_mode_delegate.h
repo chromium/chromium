@@ -31,6 +31,9 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   recording::RecordingServiceTestApi* recording_service() const {
     return recording_service_.get();
   }
+  void set_on_session_state_changed_callback(base::OnceClosure callback) {
+    on_session_state_changed_callback_ = std::move(callback);
+  }
   void set_on_recording_started_callback(base::OnceClosure callback) {
     on_recording_started_callback_ = std::move(callback);
   }
@@ -89,6 +92,7 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
  private:
   std::unique_ptr<recording::RecordingServiceTestApi> recording_service_;
   base::FilePath fake_downloads_dir_;
+  base::OnceClosure on_session_state_changed_callback_;
   base::OnceClosure on_recording_started_callback_;
   bool is_allowed_by_dlp_ = true;
   bool is_allowed_by_policy_ = true;
