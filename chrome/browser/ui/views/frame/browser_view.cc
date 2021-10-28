@@ -705,7 +705,7 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   set_contents_view(contents_container_);
 
   if (base::FeatureList::IsEnabled(features::kSidePanel)) {
-    right_aligned_side_panel_ = AddChildView(std::make_unique<SidePanel>());
+    right_aligned_side_panel_ = AddChildView(std::make_unique<SidePanel>(this));
     right_aligned_side_panel_separator_ =
         AddChildView(std::make_unique<ContentsSeparator>());
   }
@@ -715,7 +715,7 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
        lens::features::kEnableSidePanelForLensImageSearch.Get()) ||
       (base::FeatureList::IsEnabled(lens::features::kLensRegionSearch) &&
        lens::features::kEnableSidePanelForLensRegionSearch.Get())) {
-    lens_side_panel_ = AddChildView(std::make_unique<SidePanel>());
+    lens_side_panel_ = AddChildView(std::make_unique<SidePanel>(this));
     // If the separator was not already created, create one.
     if (!right_aligned_side_panel_separator_)
       right_aligned_side_panel_separator_ =
@@ -735,7 +735,7 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   if (browser_->is_type_normal() &&
       (side_search_enabled ||
        base::FeatureList::IsEnabled(features::kExtensionsSidePanel))) {
-    left_aligned_side_panel_ = AddChildView(std::make_unique<SidePanel>());
+    left_aligned_side_panel_ = AddChildView(std::make_unique<SidePanel>(this));
     left_aligned_side_panel_separator_ =
         AddChildView(std::make_unique<ContentsSeparator>());
 
