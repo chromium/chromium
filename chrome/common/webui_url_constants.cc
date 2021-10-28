@@ -674,8 +674,6 @@ const char* const kChromeDebugURLs[] = {
     blink::kChromeUIMemoryExhaustURL,
     blink::kChromeUIMemoryPressureCriticalURL,
     blink::kChromeUIMemoryPressureModerateURL,
-    blink::kChromeUIPpapiFlashCrashURL,
-    blink::kChromeUIPpapiFlashHangURL,
 #if defined(OS_WIN)
     blink::kChromeUIBrowserHeapCorruptionURL,
     blink::kChromeUIHeapCorruptionCrashURL,

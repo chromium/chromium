@@ -43,8 +43,6 @@ const char kChromeUIMemoryPressureModerateURL[] =
     "chrome://memory-pressure-moderate/";
 const char kChromeUINetworkErrorURL[] = "chrome://network-error/";
 const char kChromeUINetworkErrorsListingURL[] = "chrome://network-errors/";
-const char kChromeUIPpapiFlashCrashURL[] = "chrome://ppapiflashcrash/";
-const char kChromeUIPpapiFlashHangURL[] = "chrome://ppapiflashhang/";
 const char kChromeUIProcessInternalsURL[] = "chrome://process-internals";
 #if defined(OS_ANDROID)
 const char kChromeUIGpuJavaCrashURL[] = "chrome://gpu-java-crash/";

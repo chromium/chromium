@@ -29,6 +29,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Plugin.FlashUsage" enum="FlashUsage"
     expires_after="2022-04-24">
+  <obsolete>
+    Removed Oct 2021.
+  </obsolete>
   <owner>yzshen@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>Collects Flash usage data.</summary>

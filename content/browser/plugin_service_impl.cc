@@ -15,7 +15,6 @@
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -50,16 +49,6 @@
 namespace content {
 namespace {
 
-// This enum is used to collect Flash usage data.
-enum FlashUsage {
-  // Number of browser processes that have started at least one PPAPI Flash
-  // process during their lifetime.
-  START_PPAPI_FLASH_AT_LEAST_ONCE = 1,
-  // Total number of browser processes.
-  TOTAL_BROWSER_PROCESSES,
-  FLASH_USAGE_ENUM_COUNT
-};
-
 // Callback set on the PluginList to assert that plugin loading happens on the
 // correct thread.
 void WillLoadPluginsCallback(base::SequenceChecker* sequence_checker) {
@@ -88,20 +77,9 @@ PluginServiceImpl* PluginServiceImpl::GetInstance() {
   return base::Singleton<PluginServiceImpl>::get();
 }
 
-PluginServiceImpl::PluginServiceImpl() : filter_(nullptr) {
-  // Collect the total number of browser processes (which create
-  // PluginServiceImpl objects, to be precise). The number is used to normalize
-  // the number of processes which start at least one NPAPI/PPAPI Flash process.
-  static bool counted = false;
-  if (!counted) {
-    counted = true;
-    UMA_HISTOGRAM_ENUMERATION("Plugin.FlashUsage", TOTAL_BROWSER_PROCESSES,
-                              FLASH_USAGE_ENUM_COUNT);
-  }
-}
+PluginServiceImpl::PluginServiceImpl() = default;
 
-PluginServiceImpl::~PluginServiceImpl() {
-}
+PluginServiceImpl::~PluginServiceImpl() = default;
 
 void PluginServiceImpl::Init() {
   plugin_list_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
@@ -207,15 +185,6 @@ PpapiPluginProcessHost* PluginServiceImpl::FindOrStartPpapiPluginProcess(
       FindPpapiPluginProcess(plugin_path, profile_data_directory, origin_lock);
   if (plugin_host)
     return plugin_host;
-
-  // Record when PPAPI Flash process is started for the first time.
-  static bool counted = false;
-  if (!counted && info->name == kFlashPluginName) {
-    counted = true;
-    UMA_HISTOGRAM_ENUMERATION("Plugin.FlashUsage",
-                              START_PPAPI_FLASH_AT_LEAST_ONCE,
-                              FLASH_USAGE_ENUM_COUNT);
-  }
 
   // Avoid fork bomb.
   if (origin_lock.has_value() && CountPpapiPluginProcessesForProfile(

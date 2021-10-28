@@ -95,8 +95,6 @@ class PpapiThread : public ChildThreadImpl,
                        int renderer_child_id,
                        bool incognito);
   void OnSetNetworkState(bool online);
-  void OnCrash();
-  void OnHang();
 
   // Sets up the channel to the given renderer. If |renderer_pid| is
   // base::kNullProcessId, the channel is set up to the browser. On success,

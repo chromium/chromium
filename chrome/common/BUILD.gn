@@ -461,8 +461,6 @@ static_library("common") {
 
   if (enable_plugins) {
     sources += [
-      "plugin_utils.cc",
-      "plugin_utils.h",
       "ppapi_utils.cc",
       "ppapi_utils.h",
     ]

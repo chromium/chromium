@@ -38,8 +38,6 @@ BLINK_COMMON_EXPORT extern const char kChromeUIMemoryPressureCriticalURL[];
 BLINK_COMMON_EXPORT extern const char kChromeUIMemoryPressureModerateURL[];
 BLINK_COMMON_EXPORT extern const char kChromeUINetworkErrorsListingURL[];
 BLINK_COMMON_EXPORT extern const char kChromeUINetworkErrorURL[];
-BLINK_COMMON_EXPORT extern const char kChromeUIPpapiFlashCrashURL[];
-BLINK_COMMON_EXPORT extern const char kChromeUIPpapiFlashHangURL[];
 BLINK_COMMON_EXPORT extern const char kChromeUIProcessInternalsURL[];
 #if defined(OS_ANDROID)
 BLINK_COMMON_EXPORT extern const char kChromeUIGpuJavaCrashURL[];
