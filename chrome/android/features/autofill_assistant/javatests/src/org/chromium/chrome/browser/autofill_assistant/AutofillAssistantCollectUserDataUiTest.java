@@ -837,17 +837,18 @@ public class AutofillAssistantCollectUserDataUiTest {
         testContact("Maggie Simpson\nmaggie@simpson.com\n555 123-4567",
                 "Maggie Simpson\n555 123-4567\nmaggie@simpson.com",
                 viewHolder.mContactSection.getCollapsedView(), viewHolder.mContactList.getItem(0),
-                /* isComplete = */ true);
+                /* isComplete= */ true);
 
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> model.set(AssistantCollectUserDataModel.SELECTED_CONTACT_DETAILS,
                                 new ContactModel(contactWithoutEmail,
-                                        Collections.singletonList("Missing email"))));
+                                        Collections.singletonList("Missing email"),
+                                        /* canEdit= */ true)));
 
         testContact("John Simpson\n555 123-4567", "John Simpson\n555 123-4567",
                 viewHolder.mContactSection.getCollapsedView(), viewHolder.mContactList.getItem(0),
-                /* isComplete = */ false);
+                /* isComplete= */ false);
     }
 
     @Test

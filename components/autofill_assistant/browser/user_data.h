@@ -212,6 +212,7 @@ struct CollectUserDataOptions {
   std::vector<RequiredDataPiece> required_billing_address_data_pieces;
 
   bool should_store_data_changes = false;
+  bool can_edit_contacts = true;
 
   // If empty, terms and conditions should not be shown.
   std::string accept_terms_and_conditions_text;

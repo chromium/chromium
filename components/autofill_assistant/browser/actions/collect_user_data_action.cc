@@ -818,10 +818,11 @@ bool CollectUserDataAction::CreateOptionsFromProto() {
             collect_user_data.required_shipping_address_data_piece().end());
   }
 
-  if (!delegate_->GetWebContents()->GetBrowserContext()->IsOffTheRecord() &&
-      !collect_user_data.has_user_data()) {
-    collect_user_data_options_->should_store_data_changes = true;
-  }
+  collect_user_data_options_->should_store_data_changes =
+      !delegate_->GetWebContents()->GetBrowserContext()->IsOffTheRecord() &&
+      !collect_user_data.has_user_data();
+  collect_user_data_options_->can_edit_contacts =
+      !collect_user_data.has_user_data();
 
   collect_user_data_options_->request_login_choice =
       collect_user_data.has_login_details();
@@ -1302,6 +1303,11 @@ void CollectUserDataAction::UpdateUserDataFromProto(
       AddProtoDataToAutofillDataModel(profile_data.values(),
                                       proto_data.locale(), profile.get());
       profile->FinalizeAfterImport();
+      if (!user_data::GetContactValidationErrors(profile.get(),
+                                                 *collect_user_data_options_)
+               .empty()) {
+        continue;
+      }
       user_data->available_contacts_.emplace_back(std::move(profile));
     }
     UpdateSelectedContact(user_data);
