@@ -144,7 +144,6 @@ constexpr gfx::Insets kUnifiedTopShortcutPadding(0, 16);
 constexpr gfx::Insets kUnifiedNotificationHiddenPadding(6, 16);
 constexpr gfx::Insets kUnifiedCircularButtonFocusPadding(4);
 constexpr gfx::Insets kTrayBackgroundFocusPadding(1);
-constexpr gfx::Insets kStackingNotificationClearAllButtonPadding(8, 16);
 
 // Size of an icon drawn inside top shortcut buttons.
 // A dark disc with |kTrayItemSize| diameter is drawn in the background.

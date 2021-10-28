@@ -4,6 +4,8 @@
 
 #include "ash/style/button_style.h"
 
+#include "ash/constants/ash_features.h"
+#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/style/ash_color_provider.h"
 #include "base/bind.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -145,8 +147,15 @@ void PillButton::ConfigureInkDrop(views::Button* button,
 PillButton::PillButton(PressedCallback callback,
                        const std::u16string& text,
                        PillButton::Type type,
-                       const gfx::VectorIcon* icon)
-    : views::LabelButton(std::move(callback), text), type_(type), icon_(icon) {
+                       const gfx::VectorIcon* icon,
+                       bool use_light_colors,
+                       bool rounded_highlight_path)
+    : views::LabelButton(std::move(callback), text),
+      type_(type),
+      icon_(icon),
+      use_light_colors_(use_light_colors) {
+  SetPaintToLayer();
+  layer()->SetFillsBoundsOpaquely(false);
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
   const int vertical_spacing =
       std::max(kPillButtonHeight - GetPreferredSize().height() / 2, 0);
@@ -158,8 +167,10 @@ PillButton::PillButton(PressedCallback callback,
       1, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
   ConfigureInkDrop(this, TrayPopupInkDropStyle::FILL_BOUNDS,
                    /*highlight_on_hover=*/false, /*highlight_on_focus=*/false);
-  views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
-                                                kPillButtonHeight / 2.f);
+  if (rounded_highlight_path) {
+    views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
+                                                  kPillButtonHeight / 2.f);
+  }
   if (!IsFloatingPillButton(type_)) {
     SetBackground(views::CreateRoundedRectBackground(
         GetPillButtonBackgroundColor(type), kPillButtonHeight / 2.f));
@@ -185,10 +196,30 @@ void PillButton::OnThemeChanged() {
   views::LabelButton::OnThemeChanged();
 
   auto* color_provider = AshColorProvider::Get();
+
+  SkColor enabled_icon_color = color_provider->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kButtonIconColor);
+  SkColor enabled_text_color = GetPillButtonTextColor(type_);
+  views::FocusRing::Get(this)->SetColor(color_provider->GetControlsLayerColor(
+      AshColorProvider::ControlsLayerType::kFocusRingColor));
+  if (!IsFloatingPillButton(type_))
+    background()->SetNativeControlColor(GetPillButtonBackgroundColor(type_));
+
+  // Override the colors to light mode if `use_light_colors_` is true when D/L
+  // is not enabled.
+  if (use_light_colors_ && !features::IsDarkLightModeEnabled()) {
+    ScopedLightModeAsDefault scoped_light_mode_as_default;
+    enabled_icon_color = color_provider->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kButtonIconColor);
+    enabled_text_color = GetPillButtonTextColor(type_);
+    views::FocusRing::Get(this)->SetColor(color_provider->GetControlsLayerColor(
+        AshColorProvider::ControlsLayerType::kFocusRingColor));
+    if (!IsFloatingPillButton(type_))
+      background()->SetNativeControlColor(GetPillButtonBackgroundColor(type_));
+  }
+
   if (type_ == PillButton::Type::kIcon) {
     DCHECK(icon_);
-    const SkColor enabled_icon_color = color_provider->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kButtonIconColor);
     SetImage(views::Button::STATE_NORMAL,
              gfx::CreateVectorIcon(*icon_, kIconSize, enabled_icon_color));
     SetImage(views::Button::STATE_DISABLED,
@@ -198,14 +229,9 @@ void PillButton::OnThemeChanged() {
     SetImageLabelSpacing(kIconPillButtonImageLabelSpacingDp);
   }
 
-  const SkColor enabled_text_color = GetPillButtonTextColor(type_);
   SetEnabledTextColors(enabled_text_color);
   SetTextColor(views::Button::STATE_DISABLED,
                AshColorProvider::GetDisabledColor(enabled_text_color));
-  views::FocusRing::Get(this)->SetColor(color_provider->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kFocusRingColor));
-  if (!IsFloatingPillButton(type_))
-    background()->SetNativeControlColor(GetPillButtonBackgroundColor(type_));
 }
 
 BEGIN_METADATA(PillButton, views::LabelButton)

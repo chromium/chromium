@@ -8,16 +8,16 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/button_style.h"
-#include "ash/style/element_style.h"
 #include "ash/system/message_center/message_center_constants.h"
 #include "ash/system/message_center/message_center_style.h"
-#include "ash/system/message_center/unified_message_center_view.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/bind.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -26,8 +26,6 @@
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/vector_icons.h"
-#include "ui/views/border.h"
-#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 
@@ -37,31 +35,26 @@ namespace {
 
 // The label button in the stacked notification bar, can be either a "Clear all"
 // or "See all notifications" button.
-class StackingBarLabelButton : public views::LabelButton {
+class StackingBarLabelButton : public PillButton {
  public:
+  METADATA_HEADER(StackingBarLabelButton);
+
   StackingBarLabelButton(PressedCallback callback,
                          const std::u16string& text,
                          UnifiedMessageCenterView* message_center_view)
-      : views::LabelButton(std::move(callback), text),
+      : PillButton(
+            std::move(callback),
+            text,
+            PillButton::Type::kIconlessAccentFloating,
+            /*icon=*/nullptr,
+            /*use_light_colors=*/!features::IsNotificationsRefreshEnabled(),
+            /*rounded_highlight_path=*/
+            features::IsNotificationsRefreshEnabled()),
         message_center_view_(message_center_view) {
-    SetHorizontalAlignment(gfx::ALIGN_CENTER);
-    SetBorder(views::CreateEmptyBorder(gfx::Insets()));
-    label()->SetSubpixelRenderingEnabled(false);
-    label()->SetFontList(views::Label::GetDefaultFontList().Derive(
-        1, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
-
-    SkColor bg_color = gfx::kPlaceholderColor;
-    if (features::IsNotificationsRefreshEnabled()) {
-      // Need a textured layer here since the parent uses a solid color layer.
-      SetPaintToLayer();
-      layer()->SetFillsBoundsOpaquely(false);
-
-      views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
-                                                    kTrayItemSize / 2.f);
-    } else {
-      bg_color = message_center_style::kNotificationBackgroundColor;
-      SetEnabledTextColors(message_center_style::kUnifiedMenuButtonColorActive);
-    }
+    const SkColor bg_color =
+        features::IsNotificationsRefreshEnabled()
+            ? gfx::kPlaceholderColor
+            : message_center_style::kUnifiedMenuButtonColorActive;
     PillButton::ConfigureInkDrop(this, TrayPopupInkDropStyle::FILL_BOUNDS,
                                  /*highlight_on_hover=*/true,
                                  /*highlight_on_focus=*/true, bg_color);
@@ -72,43 +65,18 @@ class StackingBarLabelButton : public views::LabelButton {
 
   ~StackingBarLabelButton() override = default;
 
-  // views::LabelButton:
+  // PillButton:
   void AboutToRequestFocusFromTabTraversal(bool reverse) override {
     if (message_center_view_->collapsed() && HasFocus())
       message_center_view_->FocusOut(reverse);
   }
 
-  gfx::Size CalculatePreferredSize() const override {
-    return gfx::Size(label()->GetPreferredSize().width() +
-                         kStackingNotificationClearAllButtonPadding.width(),
-                     label()->GetPreferredSize().height() +
-                         kStackingNotificationClearAllButtonPadding.height());
-  }
-
-  const char* GetClassName() const override { return "StackingBarLabelButton"; }
-
-  int GetHeightForWidth(int width) const override {
-    return label()->GetPreferredSize().height() +
-           kStackingNotificationClearAllButtonPadding.height();
-  }
-
-  void PaintButtonContents(gfx::Canvas* canvas) override {
-    views::LabelButton::PaintButtonContents(canvas);
-  }
-
-  void OnThemeChanged() override {
-    views::LabelButton::OnThemeChanged();
-    if (features::IsNotificationsRefreshEnabled()) {
-      views::FocusRing::Get(this)->SetColor(
-          AshColorProvider::Get()->GetControlsLayerColor(
-              AshColorProvider::ControlsLayerType::kFocusRingColor));
-      element_style::DecorateIconlessFloatingPillButton(this);
-    }
-  }
-
  private:
   UnifiedMessageCenterView* message_center_view_;
 };
+
+BEGIN_METADATA(StackingBarLabelButton, PillButton)
+END_METADATA
 
 }  // namespace
 
