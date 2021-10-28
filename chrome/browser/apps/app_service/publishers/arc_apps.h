@@ -23,6 +23,7 @@
 #include "chrome/browser/apps/app_service/app_notifications.h"
 #include "chrome/browser/apps/app_service/app_shortcut_item.h"
 #include "chrome/browser/apps/app_service/paused_apps.h"
+#include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/ash/arc/app_shortcuts/arc_app_shortcuts_request.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
@@ -46,8 +47,13 @@ class WebApkManager;
 // An app publisher (in the App Service sense) of ARC++ apps,
 //
 // See components/services/app_service/README.md.
+//
+// TODO(crbug.com/1253250):
+// 1. Remove the parent class apps::PublisherBase.
+// 2. Remove all apps::mojom related code.
 class ArcApps : public KeyedService,
                 public apps::PublisherBase,
+                public AppPublisher,
                 public ArcAppListPrefs::Observer,
                 public arc::ArcIntentHelperObserver,
                 public ash::ArcNotificationManagerBase::Observer,
@@ -75,8 +81,18 @@ class ArcApps : public KeyedService,
 
   ArcApps(Profile* profile, apps::AppServiceProxyChromeOs* proxy);
 
+  void Init();
+
   // KeyedService overrides.
   void Shutdown() override;
+
+  // apps::AppPublisher overrides.
+  void LoadIcon(const std::string& app_id,
+                const IconKey& icon_key,
+                IconType icon_type,
+                int32_t size_hint_in_dip,
+                bool allow_placeholder_icon,
+                apps::LoadIconCallback callback) override;
 
   // apps::mojom::Publisher overrides.
   void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
@@ -175,6 +191,10 @@ class ArcApps : public KeyedService,
                          IconEffects icon_effects,
                          LoadIconCallback callback);
 
+  std::unique_ptr<App> CreateApp(ArcAppListPrefs* prefs,
+                                 const std::string& app_id,
+                                 const ArcAppListPrefs::AppInfo& app_info,
+                                 bool update_icon = true);
   apps::mojom::AppPtr Convert(ArcAppListPrefs* prefs,
                               const std::string& app_id,
                               const ArcAppListPrefs::AppInfo& app_info,

@@ -20,6 +20,9 @@ bool IconKey::operator==(const IconKey& other) const {
          icon_effects == other.icon_effects;
 }
 
+constexpr uint64_t IconKey::kDoesNotChangeOverTime = 0;
+constexpr int32_t IconKey::kInvalidResourceId = 0;
+
 IconValue::IconValue() = default;
 IconValue::~IconValue() = default;
 
