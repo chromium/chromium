@@ -378,6 +378,10 @@ struct URLRequest {
   // Spec: https://wicg.github.io/origin-policy/
   bool obey_origin_policy;
 
+  // The original destination of a request that was passed through by a service
+  // worker.
+  RequestDestination original_destination;
+
   // Params intended to be set by a trusted requestor which sends the request
   // to a trusted URLLoaderFactory. Note that the main implementation of
   // URLLoaderFactory is the one created in the network service via

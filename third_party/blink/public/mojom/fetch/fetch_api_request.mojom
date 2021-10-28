@@ -14,6 +14,7 @@ import "services/network/public/mojom/url_request.mojom";
 import "third_party/blink/public/mojom/blob/serialized_blob.mojom";
 import "third_party/blink/public/mojom/loader/request_context_frame_type.mojom";
 import "third_party/blink/public/mojom/loader/referrer.mojom";
+import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
 
@@ -161,6 +162,14 @@ struct FetchAPIRequest {
   // TODO(crbug.com/911930): Remove |blob| and use |body| instead everywhere.
   SerializedBlob? blob;
   FetchAPIRequestBody? body;
+
+  // `request_initiator` indicates the origin that initiated the request.  See
+  // also `network::ResourceRequest::request_initiator`, and the doc comment
+  // for `request_initiator` in services/network/public/mojom/url_request.mojom.
+  //
+  // Note that the origin may be missing for browser-initiated navigations
+  // (e.g. ones initiated from the Omnibox).
+  url.mojom.Origin? request_initiator;
 
   Referrer? referrer;
   network.mojom.CredentialsMode credentials_mode =

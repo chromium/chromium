@@ -70,7 +70,8 @@ FetchRequestData* CreateCopyOfFetchRequestDataForFetch(
   request->SetURL(original->Url());
   request->SetMethod(original->Method());
   request->SetHeaderList(original->HeaderList()->Clone());
-  request->SetOrigin(context->GetSecurityOrigin());
+  request->SetOrigin(original->Origin() ? original->Origin()
+                                        : context->GetSecurityOrigin());
   // FIXME: Set client.
   DOMWrapperWorld& world = script_state->World();
   if (world.IsIsolatedWorld()) {
@@ -97,6 +98,18 @@ FetchRequestData* CreateCopyOfFetchRequestDataForFetch(
   }
   request->SetWindowId(original->WindowId());
   request->SetTrustTokenParams(original->TrustTokenParams());
+
+  // When a new request is created from another the destination is always reset
+  // to be `kEmpty`.  In order to facilitate some later checks when a service
+  // worker forwards a navigation request we want to keep track of the
+  // destination of the original request.  Therefore record the original
+  // request's destination if its non-empty, otherwise just carry forward
+  // whatever "original destination" value was already set.
+  if (original->Destination() != network::mojom::RequestDestination::kEmpty)
+    request->SetOriginalDestination(original->Destination());
+  else
+    request->SetOriginalDestination(original->OriginalDestination());
+
   return request;
 }
 
@@ -319,6 +332,9 @@ Request* Request::CreateRequestWithRequestOrString(
 
   // "If any of |init|'s members are present, then:"
   if (AreAnyMembersPresent(init)) {
+    request->SetOrigin(execution_context->GetSecurityOrigin());
+    request->SetOriginalDestination(network::mojom::RequestDestination::kEmpty);
+
     // "If |request|'s |mode| is "navigate", then set it to "same-origin".
     if (request->Mode() == network::mojom::RequestMode::kNavigate)
       request->SetMode(network::mojom::RequestMode::kSameOrigin);
@@ -982,6 +998,7 @@ mojom::blink::FetchAPIRequestPtr Request::CreateFetchAPIRequest() const {
   fetch_api_request->integrity = request_->Integrity();
   fetch_api_request->is_history_navigation = request_->IsHistoryNavigation();
   fetch_api_request->destination = request_->Destination();
+  fetch_api_request->request_initiator = request_->Origin();
 
   // Strip off the fragment part of URL. So far, all callers expect the fragment
   // to be excluded.
