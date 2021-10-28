@@ -95,7 +95,7 @@ if (is_fuchsia) {
 }
 
 config("memory_tagging") {
-  if (current_cpu == "arm64" &&
+  if (current_cpu == "arm64" && is_clang &&
       (is_linux || is_chromeos || is_android || is_fuchsia)) {
     # base/ has access to the MTE intrinsics because it needs to use them,
     # but they're not backwards compatible. Use base::CPU::has_mte()
