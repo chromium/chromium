@@ -78,6 +78,9 @@ SharingHubBubbleController::~SharingHubBubbleController() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (base::FeatureList::IsEnabled(features::kChromeOSSharingHub) &&
       sharesheet_controller_) {
+    // We must deselect the icon manually since the Sharesheet should not be
+    // able to invoke OnSharesheetClosed() at this point.
+    DeselectIcon();
     sharesheet_controller_->CloseBubble(sharesheet::SharesheetResult::kCancel);
   }
 #endif
@@ -246,9 +249,9 @@ void SharingHubBubbleController::ShowSharesheet(
       web_contents_, std::move(intent),
       sharesheet::SharesheetMetrics::LaunchSource::kOmniboxShare,
       base::BindOnce(&SharingHubBubbleController::OnShareDelivered,
-                     base::Unretained(this)),
+                     weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&SharingHubBubbleController::OnSharesheetClosed,
-                     base::Unretained(this)));
+                     weak_ptr_factory_.GetWeakPtr()));
 
   // Save the controller in order to close the sharesheet if the tab is closed.
   sharesheet_controller_ = sharesheet_service->GetSharesheetController(
@@ -263,12 +266,18 @@ void SharingHubBubbleController::OnShareDelivered(
 void SharingHubBubbleController::OnSharesheetClosed(
     views::Widget::ClosedReason reason) {
   // Deselect the omnibox icon now that the sharesheet is closed.
+  DeselectIcon();
+  sharesheet_controller_ = nullptr;
+}
+
+void SharingHubBubbleController::DeselectIcon() {
+  if (!highlighted_button_tracker_.view())
+    return;
+
   views::Button* button =
       views::Button::AsButton(highlighted_button_tracker_.view());
   if (button)
     button->SetHighlighted(false);
-
-  sharesheet_controller_ = nullptr;
 }
 #endif
 
