@@ -11239,7 +11239,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NCN.NetworkOperatorMCCMNC" units="units"
-    expires_after="2022-05-01">
+    expires_after="2021-10-27">
+  <obsolete>
+    Deprecated in 10/2021 because the location permission protected API is
+    required to get this information and this isn't a must-have histogram.
+  </obsolete>
   <owner>tbansal@chromium.org</owner>
   <owner>bengr@google.com</owner>
   <summary>
