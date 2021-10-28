@@ -15,6 +15,7 @@
 #include "base/test/test_file_util.h"
 #include "base/test/test_shortcut_win.h"
 #include "base/win/scoped_com_initializer.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -196,7 +197,14 @@ TEST_F(ShortcutTest, UpdateShortcutVerifyProperties) {
   ValidateShortcut(link_file_, link_properties_2_);
 }
 
-TEST_F(ShortcutTest, UpdateShortcutUpdateOnlyTargetAndResolve) {
+#if defined(OS_WIN)
+#define MAYBE_UpdateShortcutUpdateOnlyTargetAndResolve \
+  DISABLED_UpdateShortcutUpdateOnlyTargetAndResolve
+#else
+#define MAYBE_UpdateShortcutUpdateOnlyTargetAndResolve \
+  UpdateShortcutUpdateOnlyTargetAndResolve
+#endif
+TEST_F(ShortcutTest, MAYBE_UpdateShortcutUpdateOnlyTargetAndResolve) {
   ASSERT_TRUE(CreateOrUpdateShortcutLink(link_file_, link_properties_,
                                          SHORTCUT_CREATE_ALWAYS));
 
@@ -233,7 +241,12 @@ TEST_F(ShortcutTest, UpdateShortcutMakeDualMode) {
   ValidateShortcut(link_file_, expected_properties);
 }
 
-TEST_F(ShortcutTest, UpdateShortcutRemoveDualMode) {
+#if defined(OS_WIN)
+#define MAYBE_UpdateShortcutRemoveDualMode DISABLED_UpdateShortcutRemoveDualMode
+#else
+#define MAYBE_UpdateShortcutRemoveDualMode UpdateShortcutRemoveDualMode
+#endif
+TEST_F(ShortcutTest, MAYBE_UpdateShortcutRemoveDualMode) {
   ASSERT_TRUE(CreateOrUpdateShortcutLink(link_file_, link_properties_2_,
                                          SHORTCUT_CREATE_ALWAYS));
 
@@ -248,7 +261,12 @@ TEST_F(ShortcutTest, UpdateShortcutRemoveDualMode) {
   ValidateShortcut(link_file_, expected_properties);
 }
 
-TEST_F(ShortcutTest, UpdateShortcutClearArguments) {
+#if defined(OS_WIN)
+#define MAYBE_UpdateShortcutClearArguments DISABLED_UpdateShortcutClearArguments
+#else
+#define MAYBE_UpdateShortcutClearArguments UpdateShortcutClearArguments
+#endif
+TEST_F(ShortcutTest, MAYBE_UpdateShortcutClearArguments) {
   ASSERT_TRUE(CreateOrUpdateShortcutLink(link_file_, link_properties_,
                                          SHORTCUT_CREATE_ALWAYS));
 
@@ -269,7 +287,12 @@ TEST_F(ShortcutTest, FailUpdateShortcutThatDoesNotExist) {
   ASSERT_FALSE(PathExists(link_file_));
 }
 
-TEST_F(ShortcutTest, ReplaceShortcutAllProperties) {
+#if defined(OS_WIN)
+#define MAYBE_ReplaceShortcutAllProperties DISABLED_ReplaceShortcutAllProperties
+#else
+#define MAYBE_ReplaceShortcutAllProperties ReplaceShortcutAllProperties
+#endif
+TEST_F(ShortcutTest, MAYBE_ReplaceShortcutAllProperties) {
   ASSERT_TRUE(CreateOrUpdateShortcutLink(link_file_, link_properties_,
                                          SHORTCUT_CREATE_ALWAYS));
 
@@ -279,7 +302,13 @@ TEST_F(ShortcutTest, ReplaceShortcutAllProperties) {
   ValidateShortcut(link_file_, link_properties_2_);
 }
 
-TEST_F(ShortcutTest, ReplaceShortcutSomeProperties) {
+#if defined(OS_WIN)
+#define MAYBE_ReplaceShortcutSomeProperties \
+  DISABLED_ReplaceShortcutSomeProperties
+#else
+#define MAYBE_ReplaceShortcutSomeProperties ReplaceShortcutSomeProperties
+#endif
+TEST_F(ShortcutTest, MAYBE_ReplaceShortcutSomeProperties) {
   ASSERT_TRUE(CreateOrUpdateShortcutLink(link_file_, link_properties_,
                                          SHORTCUT_CREATE_ALWAYS));
 
@@ -306,9 +335,15 @@ TEST_F(ShortcutTest, FailReplaceShortcutThatDoesNotExist) {
   ASSERT_FALSE(PathExists(link_file_));
 }
 
+#if defined(OS_WIN)
+#define MAYBE_ReplaceShortcutKeepOldArguments \
+  DISABLED_ReplaceShortcutKeepOldArguments
+#else
+#define MAYBE_ReplaceShortcutKeepOldArguments ReplaceShortcutKeepOldArguments
+#endif
 // Test that the old arguments remain on the replaced shortcut when not
 // otherwise specified.
-TEST_F(ShortcutTest, ReplaceShortcutKeepOldArguments) {
+TEST_F(ShortcutTest, MAYBE_ReplaceShortcutKeepOldArguments) {
   ASSERT_TRUE(CreateOrUpdateShortcutLink(link_file_, link_properties_,
                                          SHORTCUT_CREATE_ALWAYS));
 
