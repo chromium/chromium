@@ -258,13 +258,6 @@ int RendererWebAudioDeviceImpl::Render(base::TimeDelta delay,
   for (int i = 0; i < dest->channels(); ++i)
     web_audio_dest_data_[i] = dest->channel(i);
 
-  if (!delay.is_zero()) {  // Zero values are send at the first call.
-    // Substruct the bus duration to get hardware delay.
-    delay -=
-        media::AudioTimestampHelper::FramesToTime(dest->frames(), SampleRate());
-  }
-  DCHECK_GE(delay, base::TimeDelta());
-
   client_callback_->Render(
       web_audio_dest_data_, dest->frames(), delay.InSecondsF(),
       (delay_timestamp - base::TimeTicks()).InSecondsF(), prior_frames_skipped);
