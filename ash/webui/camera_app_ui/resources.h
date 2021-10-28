@@ -119,6 +119,8 @@ const struct {
     {"record_video_resume_button", IDS_RECORD_VIDEO_RESUME_BUTTON},
     {"record_video_start_button", IDS_RECORD_VIDEO_START_BUTTON},
     {"record_video_stop_button", IDS_RECORD_VIDEO_STOP_BUTTON},
+    {"rotate_clockwise_button", IDS_ROTATE_CLOCKWISE_BUTTON},
+    {"rotate_counterclockwise_button", IDS_ROTATE_COUNTERCLOCKWISE_BUTTON},
     {"scan_document_option", IDS_SCAN_DOCUMENT_OPTION},
     {"scan_qrcode_option", IDS_SCAN_QRCODE_OPTION},
     {"settings_button", IDS_SETTINGS_BUTTON},
