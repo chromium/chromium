@@ -43,6 +43,7 @@ static_library("power_sampler_lib") {
   ]
   deps = [ "//base" ]
   frameworks = [
+    "CoreGraphics.framework",
     "Foundation.framework",
 
     # Used by the backlight sampler.
