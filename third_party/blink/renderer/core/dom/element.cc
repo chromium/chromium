@@ -210,13 +210,16 @@ class DisplayLockStyleScope {
   }
   void DidUpdateChildStyle() { did_update_children_ = true; }
   // Returns true if the element was force unlocked due to missing requirements.
-  bool DidUpdateSelfStyle() {
+  StyleRecalcChange DidUpdateSelfStyle(StyleRecalcChange change) {
     if (auto* context = element_->GetDisplayLockContext()) {
-      bool was_locked = context->IsLocked();
       context->DidStyleSelf();
-      return was_locked && !context->IsLocked();
+      // After we notified context that we styled self, it may cause an unlock /
+      // modification to the blocked style change, so accumulate the change here
+      // again. Note that if the context is locked we will restore it as the
+      // blocked style change in RecalcStyle.
+      return change.Combine(context->TakeBlockedStyleRecalcChange());
     }
-    return false;
+    return change;
   }
 
   void NotifyChildStyleRecalcWasBlocked(const StyleRecalcChange& change) {
@@ -225,15 +228,6 @@ class DisplayLockStyleScope {
     DCHECK(element_->GetDisplayLockContext());
 
     element_->GetDisplayLockContext()->NotifyChildStyleRecalcWasBlocked(change);
-  }
-
-  StyleRecalcChange AdjustStyleRecalcChangeForChildren(
-      StyleRecalcChange change) {
-    if (auto* context = element_->GetDisplayLockContext()) {
-      DCHECK(context->ShouldStyleChildren());
-      return context->AdjustStyleRecalcChangeForChildren(change);
-    }
-    return change;
   }
 
  private:
@@ -2984,15 +2978,13 @@ void Element::RecalcStyle(const StyleRecalcChange change,
   }
 
   // We're done with self style, notify the display lock.
-  display_lock_style_scope.DidUpdateSelfStyle();
+  child_change = display_lock_style_scope.DidUpdateSelfStyle(child_change);
   if (!display_lock_style_scope.ShouldUpdateChildStyle()) {
     display_lock_style_scope.NotifyChildStyleRecalcWasBlocked(child_change);
     if (HasCustomStyleCallbacks())
       DidRecalcStyle(child_change);
     return;
   }
-  child_change =
-      display_lock_style_scope.AdjustStyleRecalcChangeForChildren(child_change);
 
   if (!child_change.ReattachLayoutTree()) {
     if (LayoutObject* layout_object = GetLayoutObject()) {
@@ -3281,13 +3273,11 @@ StyleRecalcChange Element::RecalcOwnStyle(
   }
 
   if (auto* context = GetDisplayLockContext()) {
-    // If the context is unlocked, then we should ensure to adjust the child
-    // change for children, since this could be the first time we unlocked the
-    // context and as a result need to process more of the subtree than we would
-    // normally. Note that if this is not the first time, then
-    // AdjustStyleRecalcChangeForChildren() won't do any adjustments.
-    if (context->ShouldStyleChildren())
-      child_change = context->AdjustStyleRecalcChangeForChildren(child_change);
+    // Combine the change from the display lock context. If the context is
+    // locked and is preventing child update, we'll store this style recalc
+    // change again from Element::RecalcStyle.
+    child_change =
+        child_change.Combine(context->TakeBlockedStyleRecalcChange());
   }
 
   if (new_style) {

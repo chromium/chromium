@@ -383,8 +383,6 @@ void DisplayLockContext::DidStyleChildren() {
   // TODO(vmpstr): Is this needed here?
   if (element_->ChildNeedsReattachLayoutTree())
     element_->MarkAncestorsWithChildNeedsReattachLayoutTree();
-
-  blocked_child_recalc_change_ = StyleRecalcChange();
 }
 
 bool DisplayLockContext::ShouldLayoutChildren() const {
@@ -526,8 +524,8 @@ void DisplayLockContext::NotifyForcedUpdateScopeStarted(ForcedPhase phase) {
     // of this, since |forced_info_| doesn't force paint to happen. See
     // ShouldPaint(). Also, we could have forced a lock from SetRequestedState
     // during a style update. If that's the case, don't mark style as dirty
-    // from within style recalc. We rely on `AdjustStyleRecalcChangeForChildren`
-    // instead.
+    // from within style recalc. We rely on `TakeBlockedStyleRecalcChange`
+    // to be called from self style recalc.
     if (CanDirtyStyle() &&
         forced_info_.is_forced(ForcedPhase::kStyleAndLayoutTree)) {
       MarkForStyleRecalcIfNeeded();
@@ -569,7 +567,7 @@ void DisplayLockContext::Unlock() {
 
     // Also propagate any dirty bits that we have previously blocked.
     // If we're in style recalc, this will be handled by
-    // `AdjustStyleRecalcChangeForChildren()`.
+    // `TakeBlockedStyleRecalcChange()` call from self style recalc.
     MarkForStyleRecalcIfNeeded();
   } else if (SubtreeHasTopLayerElement()) {
     // TODO(vmpstr): This seems like a big hammer, but it's unclear to me how we
@@ -596,11 +594,6 @@ void DisplayLockContext::Unlock() {
   MarkAncestorsForPrePaintIfNeeded();
   MarkNeedsRepaintAndPaintArtifactCompositorUpdate();
   MarkNeedsCullRectUpdate();
-}
-
-StyleRecalcChange DisplayLockContext::AdjustStyleRecalcChangeForChildren(
-    StyleRecalcChange change) {
-  return change.Combine(blocked_child_recalc_change_);
 }
 
 bool DisplayLockContext::CanDirtyStyle() const {
