@@ -438,7 +438,8 @@ export class ShimlessRmaElement extends PolymerElement {
     this.allButtonsDisabled_ = true;
     page.onNextButtonClick()
         .then((stateResult) => this.processStateResult_(stateResult))
-        .catch((err) => void 0);
+        // TODO(gavindodd): Better error handling.
+        .catch((err) => this.allButtonsDisabled_ = false);
   }
 
   /** @protected */
