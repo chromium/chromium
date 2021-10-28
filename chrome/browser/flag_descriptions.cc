@@ -685,11 +685,6 @@ const char kDocumentTransitionSlowdownFactorDescription[] =
     "Slows down animations triggered by documentTransition JavaScript API for "
     "debugging.";
 
-const char kEnableAudioFocusEnforcementName[] = "Audio Focus Enforcement";
-const char kEnableAudioFocusEnforcementDescription[] =
-    "Enables enforcement of a single media session having audio focus at "
-    "any one time. Requires #enable-media-session-service to be enabled too.";
-
 const char kEnableAutofillAccountWalletStorageName[] =
     "Enable the account data storage for autofill";
 const char kEnableAutofillAccountWalletStorageDescription[] =
@@ -1023,11 +1018,6 @@ const char kEnableLazyImageLoadingName[] = "Enable lazy image loading";
 const char kEnableLazyImageLoadingDescription[] =
     "Defers the loading of images marked with the attribute 'loading=lazy' "
     "until the page is scrolled down near them.";
-
-const char kEnableMediaSessionServiceName[] = "Media Session Service";
-const char kEnableMediaSessionServiceDescription[] =
-    "Enables the media session mojo service and internal media session "
-    "support.";
 
 const char kEnableNetworkLoggingToFileName[] = "Enable network logging to file";
 const char kEnableNetworkLoggingToFileDescription[] =
@@ -1378,29 +1368,6 @@ const char kForceUiDirectionDescription[] =
     "Explicitly force the UI to left-to-right (LTR) or right-to-left (RTL) "
     "mode, overriding the default direction of the UI language.";
 
-const char kGlobalMediaControlsName[] = "Global Media Controls";
-const char kGlobalMediaControlsDescription[] =
-    "Enables the Global Media Controls UI in the toolbar.";
-
-const char kGlobalMediaControlsForChromeOSName[] =
-    "Global Media Controls for ChromeOS";
-const char kGlobalMediaControlsForChromeOSDescription[] =
-    "Enable Global Media Controls UI in shelf and quick settings.";
-
-const char kGlobalMediaControlsPictureInPictureName[] =
-    "Global Media Controls Picture-in-Picture";
-const char kGlobalMediaControlsPictureInPictureDescription[] =
-    "Enables Picture-in-Picture controls in the Global Media Controls UI. "
-    "Requires "
-    "#global-media-controls to also be enabled.";
-
-const char kGlobalMediaControlsSeamlessTransferName[] =
-    "Global Media Controls Seamless Transfer";
-const char kGlobalMediaControlsSeamlessTransferDescription[] =
-    "Enables selection of audio output device to play media through in "
-    "the Global Media Controls UI. Requires #global-media-controls to "
-    "also be enabled.";
-
 const char kGlobalMediaControlsModernUIName[] =
     "Global Media Controls Modern UI";
 
@@ -1613,11 +1580,6 @@ const char kLogJsConsoleMessagesName[] =
 const char kLogJsConsoleMessagesDescription[] =
     "Enable logging JS console messages in system logs, please note that they "
     "may contain PII.";
-
-const char kMediaHistoryName[] = "Enable Media History";
-const char kMediaHistoryDescription[] =
-    "Enables Media History which records data around media playbacks on "
-    "websites.";
 
 const char kMediaRouterCastAllowAllIPsName[] =
     "Connect to Cast devices on all IP addresses";
@@ -4379,12 +4341,6 @@ const char kEnableAppReinstallZeroStateDescription[] =
     "Enable Zero State App Reinstall Suggestions feature in launcher, which "
     "will show app reinstall recommendations at end of zero state list.";
 
-const char kEnableArcUnifiedAudioFocusName[] =
-    "Enable unified audio focus on ARC";
-const char kEnableArcUnifiedAudioFocusDescription[] =
-    "If audio focus is enabled in Chrome then this will delegate audio focus "
-    "control in Android apps to Chrome.";
-
 const char kEnableAssistantAppSupportName[] = "Enable Assistant App Support";
 const char kEnableAssistantAppSupportDescription[] =
     "Enable the Assistant App Support feature";
@@ -4742,11 +4698,6 @@ const char kHelpAppSearchServiceIntegrationDescription[] =
     "Enables the integration between the help app and the local search"
     " service. Includes using the search service for in app search.";
 
-const char kHideArcMediaNotificationsName[] = "Hide ARC media notifications";
-const char kHideArcMediaNotificationsDescription[] =
-    "Hides media notifications for ARC apps. Requires "
-    "#enable-media-session-notifications to be enabled.";
-
 const char kHoldingSpaceInProgressDownloadsIntegrationName[] =
     "Enable showing in-progress downloads in Tote.";
 const char kHoldingSpaceInProgressDownloadsIntegrationDescription[] =
@@ -4864,10 +4815,6 @@ const char kLocalWebApprovalsDescription[] =
 const char kEnableHardwareMirrorModeName[] = "Enable Hardware Mirror Mode";
 const char kEnableHardwareMirrorModeDescription[] =
     "Enables hardware support when multiple displays are set to mirror mode.";
-
-const char kLockScreenMediaControlsName[] = "Lock screen media controls";
-const char kLockScreenMediaControlsDescription[] =
-    "Enable media controls on the lock screen.";
 
 const char kLockScreenNotificationName[] = "Lock screen notification";
 const char kLockScreenNotificationDescription[] =

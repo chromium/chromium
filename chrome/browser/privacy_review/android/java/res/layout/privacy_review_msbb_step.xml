@@ -5,6 +5,7 @@
 
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/scroll_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -19,11 +20,29 @@
 
         <ImageView
             android:id="@+id/image"
-            android:layout_marginVertical="32dp"
+            android:layout_marginVertical="16dp"
             android:layout_height="@dimen/privacy_review_illustration_height"
             android:layout_width="@dimen/privacy_review_illustration_width"
             android:src="@drawable/privacy_review_msbb_image"
             android:importantForAccessibility="no" />
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/msbb_switch"
+            android:layout_marginHorizontal="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:showText="false"
+            android:text="@string/url_keyed_anonymized_data_title" />
+
+        <org.chromium.chrome.browser.privacy_review.PrivacyReviewExplanationHeading
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:titleText="@string/privacy_review_what_you_get" />
+
+        <org.chromium.chrome.browser.privacy_review.PrivacyReviewExplanationHeading
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:titleText="@string/privacy_review_what_you_share" />
 
     </LinearLayout>
 

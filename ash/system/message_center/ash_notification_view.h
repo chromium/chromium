@@ -20,6 +20,7 @@ namespace views {
 class BoxLayout;
 class ImageView;
 class LabelButton;
+class View;
 }  // namespace views
 
 namespace ash {
@@ -38,12 +39,6 @@ class ASH_EXPORT AshNotificationView
   AshNotificationView(const AshNotificationView&) = delete;
   AshNotificationView& operator=(const AshNotificationView&) = delete;
   ~AshNotificationView() override;
-
-  // Create a view containing the title and message for the notification in a
-  // single line. This is used when a grouped child notification is in a
-  // collapsed parent notification.
-  std::unique_ptr<views::View> CreateCollapsedSummaryView(
-      const message_center::Notification& notification);
 
   // Update the expanded state for grouped child notification.
   void SetGroupedChildExpanded(bool expanded);

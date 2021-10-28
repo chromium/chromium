@@ -19,7 +19,7 @@ namespace webshare {
 
 TEST(FakeUriRuntimeClassFactoryTest, CreateUri) {
   if (!base::win::ScopedHString::ResolveCoreWinRTStringDelayload())
-    return;
+    GTEST_SKIP();
 
   auto factory = Make<FakeUriRuntimeClassFactory>();
 
@@ -35,7 +35,7 @@ TEST(FakeUriRuntimeClassFactoryTest, CreateUri) {
 
 TEST(FakeUriRuntimeClassFactoryTest, CreateUri_Invalid) {
   if (!base::win::ScopedHString::ResolveCoreWinRTStringDelayload())
-    return;
+    GTEST_SKIP();
 
   auto factory = Make<FakeUriRuntimeClassFactory>();
 

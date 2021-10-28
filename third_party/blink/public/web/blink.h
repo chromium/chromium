@@ -95,8 +95,8 @@ BLINK_EXPORT void DecommitFreeableMemory();
 BLINK_EXPORT void MemoryPressureNotificationToWorkerThreadIsolates(
     v8::MemoryPressureLevel);
 
-// Logs Runtime Call Stats table for Blink.
-BLINK_EXPORT void LogRuntimeCallStats();
+// Logs stats. Intended to be called during shutdown.
+BLINK_EXPORT void LogStatsDuringShutdown();
 
 // Allows disabling domain relaxation.
 BLINK_EXPORT void SetDomainRelaxationForbiddenForTest(bool forbidden,

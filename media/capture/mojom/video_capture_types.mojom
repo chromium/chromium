@@ -352,3 +352,14 @@ struct VideoCaptureDeviceInfo {
   VideoCaptureDeviceDescriptor descriptor;
   array<VideoCaptureFormat> supported_formats;
 };
+
+// The result of an attempt by the client to start/stop cropping.
+// TODO(crbug.com/1247761):
+// 1. Add kSuccess.
+// 2. Add additional specific values.
+// 3. Remove kNotImplemented.
+enum CropRequestResult {
+  kErrorGeneric,
+  kErrorUnknownDeviceId,
+  kNotImplemented,
+};

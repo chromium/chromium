@@ -566,8 +566,8 @@ NotificationViewBase::CreateControlButtonsBuilder() {
       .SetMessageView(this);
 }
 
-std::unique_ptr<NotificationHeaderView>
-NotificationViewBase::CreateHeaderRow() {
+views::Builder<NotificationHeaderView>
+NotificationViewBase::CreateHeaderRowBuilder() {
   DCHECK(!header_row_);
   header_view_in_ash_notification_ = false;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -575,15 +575,11 @@ NotificationViewBase::CreateHeaderRow() {
     header_view_in_ash_notification_ = true;
 #endif
 
-  // TODO(crbug/1241602): Consider using views::Builder<T>.
-
-  auto header_row = std::make_unique<NotificationHeaderView>(
-      base::BindRepeating(&NotificationViewBase::HeaderRowPressed,
-                          base::Unretained(this)),
-      header_view_in_ash_notification_);
-  header_row->SetID(kHeaderRow);
-  header_row_ = header_row.get();
-  return header_row;
+  return views::Builder<NotificationHeaderView>()
+      .SetID(kHeaderRow)
+      .CopyAddressTo(&header_row_)
+      .SetCallback(base::BindRepeating(&NotificationViewBase::HeaderRowPressed,
+                                       base::Unretained(this)));
 }
 
 views::Builder<views::BoxLayoutView>
@@ -601,35 +597,30 @@ views::Builder<views::View> NotificationViewBase::CreateRightContentBuilder() {
       .SetUseDefaultFillLayout(true);
 }
 
-std::unique_ptr<views::View> NotificationViewBase::CreateContentRow() {
+views::Builder<views::View> NotificationViewBase::CreateContentRowBuilder() {
   DCHECK(!content_row_);
-  auto content_row = std::make_unique<views::View>();
-  auto* content_row_layout =
-      content_row->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal));
-  content_row_layout->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kStart);
-  content_row->SetID(kContentRow);
-  content_row_ = content_row.get();
-  return content_row;
+  return views::Builder<views::View>()
+      .SetID(kContentRow)
+      .CopyAddressTo(&content_row_);
 }
 
-std::unique_ptr<views::View> NotificationViewBase::CreateInlineSettingsView() {
+views::Builder<views::BoxLayoutView>
+NotificationViewBase::CreateInlineSettingsBuilder() {
   DCHECK(!settings_row_);
-  auto settings_row = std::make_unique<views::View>();
-  settings_row->SetVisible(false);
-  settings_row_ = settings_row.get();
-  return settings_row;
+  return views::Builder<views::BoxLayoutView>()
+      .CopyAddressTo(&settings_row_)
+      .SetOrientation(views::BoxLayout::Orientation::kVertical)
+      .SetInsideBorderInsets(kSettingsRowPadding)
+      .SetVisible(false);
 }
 
-std::unique_ptr<views::View> NotificationViewBase::CreateImageContainerView() {
+views::Builder<views::View>
+NotificationViewBase::CreateImageContainerBuilder() {
   DCHECK(!image_container_view_);
-  auto image_container_view = std::make_unique<views::View>();
-  image_container_view->SetLayoutManager(std::make_unique<views::FillLayout>());
-  image_container_view->SetBorder(
-      views::CreateEmptyBorder(kLargeImageContainerPadding));
-  image_container_view_ = image_container_view.get();
-  return image_container_view;
+  return views::Builder<views::View>()
+      .CopyAddressTo(&image_container_view_)
+      .SetUseDefaultFillLayout(true)
+      .SetBorder(views::CreateEmptyBorder(kLargeImageContainerPadding));
 }
 
 std::unique_ptr<views::View> NotificationViewBase::CreateActionsRow() {

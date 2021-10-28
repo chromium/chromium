@@ -950,20 +950,6 @@
       "use_static_angle": true
     }
   },
-  "gpu-fyi-try-android-l-nexus-6-32": {
-    "gn_args": {
-      "blink_enable_generated_code_formatting": false,
-      "dcheck_always_on": true,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "target_os": "android",
-      "use_goma": true,
-      "use_static_angle": true
-    }
-  },
   "gpu-fyi-try-android-m-nexus-5x-64": {
     "gn_args": {
       "blink_enable_generated_code_formatting": false,

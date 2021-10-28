@@ -26,6 +26,8 @@ class OobeTestAPIHandler : public BaseWebUIHandler {
 
  private:
   void LoginWithPin(const std::string& username, const std::string& pin);
+  void AdvanceToScreen(const std::string& screen);
+  void SkipPostLoginScreens();
 };
 
 }  // namespace chromeos

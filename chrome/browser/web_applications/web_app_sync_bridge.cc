@@ -453,8 +453,7 @@ std::vector<std::unique_ptr<WebApp>> WebAppSyncBridge::UpdateRegistrar(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // We do not install non-system web apps in Ash when Lacros web apps are
     // enabled.
-    DCHECK(web_app->IsSystemApp() ||
-           !base::FeatureList::IsEnabled(features::kWebAppsCrosapi));
+    DCHECK(web_app->IsSystemApp() || !IsWebAppsCrosapiEnabled());
 #endif
     registrar_->registry().emplace(std::move(app_id), std::move(web_app));
   }

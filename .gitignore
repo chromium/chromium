@@ -73,6 +73,8 @@ vs-chromium-project.txt
 /_out
 /android_emulator_sdk
 /ash/ash_unittests_run.xml
+/ash/webui/eche_app_ui/resources/app
+/ash/webui/eche_app_ui/resources/prod
 /ash/webui/help_app_ui/resources/prod
 /ash/webui/media_app_ui/resources/prod
 /ash/webui/media_app_ui/resources/app
@@ -177,8 +179,6 @@ vs-chromium-project.txt
 /chrome/web_ui_mojo_bindings.xml
 /chromecast/internal
 /chromeos/assistant/internal
-/chromeos/components/eche_app_ui/resources/app
-/chromeos/components/eche_app_ui/resources/prod
 /chromeos/components/help_app_ui/resources/app
 /chromeos/components/help_app_ui/resources/prod
 /chromeos/profiles/chromeos.orderfile.txt

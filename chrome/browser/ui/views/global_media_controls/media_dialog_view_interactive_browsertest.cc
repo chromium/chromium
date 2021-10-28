@@ -1147,7 +1147,7 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewWithBackForwardCacheBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(MediaDialogViewWithBackForwardCacheBrowserTest,
-                       PauseAndCache) {
+                       DISABLED_PauseAndCache) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url1(embedded_test_server()->GetURL(
       "a.test", "/media/session/video-with-metadata.html"));

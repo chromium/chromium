@@ -28,7 +28,7 @@
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 
 #if BUILDFLAG(ENABLE_REPORTING)
-#include "services/network/public/mojom/reporting_report.mojom.h"
+#include "services/network/public/mojom/reporting_service.mojom.h"
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
 namespace net {

@@ -44,12 +44,11 @@ public class MixedContentDownloadDialog {
      * @param modalDialogManager Manager for managing the modal dialog.
      * @param fileName Name of the download file.
      * @param totalBytes Total bytes of the file.
-     * @param fillNegatieButton Whether to fill the negative button.
      * @param callback Callback to run when confirming the download, true for accept the download,
      *         false otherwise.
      */
     public void show(Context context, ModalDialogManager modalDialogManager, String fileName,
-            long totalBytes, boolean fillNegatieButton, Callback<Boolean> callback) {
+            long totalBytes, Callback<Boolean> callback) {
         String message = totalBytes > 0
                 ? fileName + " (" + DownloadUtils.getStringForBytes(context, totalBytes) + ")"
                 : fileName;
@@ -100,10 +99,7 @@ public class MixedContentDownloadDialog {
                                 context.getResources().getString(
                                         R.string.mixed_content_download_dialog_discard_text))
                         .with(ModalDialogProperties.BUTTON_STYLES,
-                                fillNegatieButton ? ModalDialogProperties.ButtonStyles
-                                                            .PRIMARY_OUTLINE_NEGATIVE_FILLED
-                                                  : ModalDialogProperties.ButtonStyles
-                                                            .PRIMARY_OUTLINE_NEGATIVE_OUTLINE)
+                                ModalDialogProperties.ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_OUTLINE)
                         .build();
 
         modalDialogManager.showDialog(propertyModel, ModalDialogManager.ModalDialogType.TAB);

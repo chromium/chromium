@@ -92,6 +92,8 @@ std::string ProtocolSerializerJSON::Serialize(
     Value app_node(Value::Type::DICTIONARY);
     app_node.SetKey("appid", Value(app.app_id));
     app_node.SetKey("version", Value(app.version));
+    if (!app.ap.empty())
+      app_node.SetKey("ap", Value(app.ap));
     if (!app.brand_code.empty())
       app_node.SetKey("brand", Value(app.brand_code));
     if (!app.install_source.empty())

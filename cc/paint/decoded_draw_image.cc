@@ -8,7 +8,7 @@
 
 namespace cc {
 
-DecodedDrawImage::DecodedDrawImage(sk_sp<const SkImage> image,
+DecodedDrawImage::DecodedDrawImage(sk_sp<SkImage> image,
                                    sk_sp<SkColorFilter> dark_mode_color_filter,
                                    const SkSize& src_rect_offset,
                                    const SkSize& scale_adjustment,

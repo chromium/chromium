@@ -121,6 +121,7 @@ DWriteFontCollectionProxy::~DWriteFontCollectionProxy() = default;
 
 DWriteFontFamilyProxy* DWriteFontCollectionProxy::GetFamily(
     UINT32 family_index) {
+  base::AutoLock families_lock(families_lock_);
   if (family_index < families_.size())
     return families_[family_index].Get();
   return nullptr;
@@ -142,6 +143,7 @@ HRESULT DWriteFontCollectionProxy::FindFamilyName(
   DCHECK(index);
   DCHECK(exists);
   TRACE_EVENT0("dwrite,fonts", "FontProxy::FindFamilyName");
+  base::AutoLock families_lock(families_lock_);
 
   auto iter = family_names_.find(family_name);
   if (iter != family_names_.end()) {
@@ -165,7 +167,7 @@ HRESULT DWriteFontCollectionProxy::FindFamilyName(
   }
 
   if (family_index != UINT32_MAX) {
-    DWriteFontFamilyProxy* family = CreateFamily(family_index);
+    DWriteFontFamilyProxy* family = GetOrCreateFamilyLockRequired(family_index);
     if (!family)
       return E_FAIL;
     family->SetName(family_name);
@@ -184,13 +186,14 @@ HRESULT DWriteFontCollectionProxy::GetFontFamily(
     UINT32 index,
     IDWriteFontFamily** font_family) {
   DCHECK(font_family);
+  base::AutoLock families_lock(families_lock_);
 
   if (index < families_.size() && families_[index]) {
     families_[index].CopyTo(font_family);
     return S_OK;
   }
 
-  if (DWriteFontFamilyProxy* family = CreateFamily(index)) {
+  if (DWriteFontFamilyProxy* family = GetOrCreateFamilyLockRequired(index)) {
     const mswr::ComPtr<DWriteFontFamilyProxy> family_ptr = family;
     family_ptr.CopyTo(font_family);
     return S_OK;
@@ -199,6 +202,13 @@ HRESULT DWriteFontCollectionProxy::GetFontFamily(
 }
 
 UINT32 DWriteFontCollectionProxy::GetFontFamilyCount() {
+  base::AutoLock families_lock(families_lock_);
+  return GetFontFamilyCountLockRequired();
+}
+
+UINT32 DWriteFontCollectionProxy::GetFontFamilyCountLockRequired() {
+  families_lock_.AssertAcquired();
+
   if (family_count_ != UINT_MAX)
     return family_count_;
 
@@ -220,6 +230,7 @@ HRESULT DWriteFontCollectionProxy::GetFontFromFontFace(
     IDWriteFont** font) {
   DCHECK(font_face);
   DCHECK(font);
+  base::AutoLock families_lock(families_lock_);
 
   for (const auto& family : families_) {
     if (family && family->GetFontFromFontFace(font_face, font)) {
@@ -232,6 +243,12 @@ HRESULT DWriteFontCollectionProxy::GetFontFromFontFace(
   return E_FAIL;
 }
 
+// Code downstream from DWrite's |CreateCustomFontCollection| calls this
+// function back.
+//
+// |families_[family_index]| should be locked, but |families_| may or may not be
+// locked. This function is so expensive that reading, writing, or locking
+// |families_| should be avoided.
 HRESULT DWriteFontCollectionProxy::CreateEnumeratorFromKey(
     IDWriteFactory* factory,
     const void* collection_key,
@@ -246,14 +263,6 @@ HRESULT DWriteFontCollectionProxy::CreateEnumeratorFromKey(
 
   const uint32_t* family_index =
       reinterpret_cast<const uint32_t*>(collection_key);
-
-  if (*family_index >= GetFontFamilyCount()) {
-    LogFontProxyError(FAMILY_INDEX_OUT_OF_RANGE);
-    return E_INVALIDARG;
-  }
-
-  // If we already loaded the family we should reuse the existing collection.
-  DCHECK(!GetFamily(*family_index)->IsLoaded());
 
   std::vector<base::FilePath> file_names;
   std::vector<base::File> file_handles;
@@ -321,6 +330,7 @@ HRESULT DWriteFontCollectionProxy::RuntimeClassInitialize(
     IDWriteFactory* factory,
     mojo::PendingRemote<blink::mojom::DWriteFontProxy> proxy) {
   DCHECK(factory);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   factory_ = factory;
   if (proxy)
@@ -339,6 +349,9 @@ void DWriteFontCollectionProxy::Unregister() {
   factory_->UnregisterFontFileLoader(this);
 }
 
+// |families_[family_index]| should be locked, but |families_| may or may not be
+// locked. This function is so expensive that reading, writing, or locking
+// |families_| should be avoided.
 bool DWriteFontCollectionProxy::LoadFamily(
     UINT32 family_index,
     IDWriteFontCollection** containing_collection) {
@@ -359,13 +372,13 @@ bool DWriteFontCollectionProxy::GetFontFamily(UINT32 family_index,
                                               IDWriteFontFamily** font_family) {
   DCHECK(font_family);
   DCHECK(!family_name.empty());
+  base::AutoLock families_lock(families_lock_);
 
-  DWriteFontFamilyProxy* family = CreateFamily(family_index);
+  DWriteFontFamilyProxy* family = GetOrCreateFamilyLockRequired(family_index);
   if (!family)
     return false;
 
-  if (!family->IsLoaded() || family->GetName().empty())
-    family->SetName(family_name);
+  family->SetNameIfNotLoaded(family_name);
 
   const mswr::ComPtr<DWriteFontFamilyProxy> family_ptr = family;
   family_ptr.CopyTo(font_family);
@@ -392,17 +405,16 @@ bool DWriteFontCollectionProxy::LoadFamilyNames(
   return SUCCEEDED(hr);
 }
 
-DWriteFontFamilyProxy* DWriteFontCollectionProxy::CreateFamily(
+DWriteFontFamilyProxy* DWriteFontCollectionProxy::GetOrCreateFamilyLockRequired(
     UINT32 family_index) {
   if (family_index < families_.size()) {
     if (DWriteFontFamilyProxy* family = families_[family_index].Get())
       return family;
   }
 
-  UINT32 family_count = GetFontFamilyCount();
-  if (family_index >= family_count) {
+  const UINT32 family_count = GetFontFamilyCountLockRequired();
+  if (family_index >= family_count)
     return nullptr;
-  }
 
   if (families_.size() < family_count)
     families_.resize(family_count);
@@ -466,6 +478,7 @@ HRESULT DWriteFontFamilyProxy::GetFont(UINT32 index, IDWriteFont** font) {
 
 HRESULT DWriteFontFamilyProxy::GetFamilyNames(IDWriteLocalizedStrings** names) {
   DCHECK(names);
+  base::AutoLock family_lock(family_lock_);
 
   // Prefer the real thing, if available.
   if (family_) {
@@ -517,6 +530,7 @@ HRESULT DWriteFontFamilyProxy::RuntimeClassInitialize(
     DWriteFontCollectionProxy* collection,
     UINT32 index) {
   DCHECK(collection);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   proxy_collection_ = collection;
   family_index_ = index;
@@ -527,6 +541,7 @@ bool DWriteFontFamilyProxy::GetFontFromFontFace(IDWriteFontFace* font_face,
                                                 IDWriteFont** font) {
   DCHECK(font_face);
   DCHECK(font);
+  base::AutoLock family_lock(family_lock_);
 
   if (!family_)
     return false;
@@ -540,23 +555,32 @@ bool DWriteFontFamilyProxy::GetFontFromFontFace(IDWriteFontFace* font_face,
 }
 
 void DWriteFontFamilyProxy::SetName(const std::u16string& family_name) {
+  base::AutoLock family_lock(family_lock_);
   family_name_.assign(family_name);
 }
 
+void DWriteFontFamilyProxy::SetNameIfNotLoaded(
+    const std::u16string& family_name) {
+  base::AutoLock family_lock(family_lock_);
+  if (!family_ || family_name_.empty())
+    family_name_.assign(family_name);
+}
+
 const std::u16string& DWriteFontFamilyProxy::GetName() {
+  base::AutoLock family_lock(family_lock_);
   return family_name_;
 }
 
-bool DWriteFontFamilyProxy::IsLoaded() {
-  return family_ != nullptr;
-}
-
 IDWriteFontFamily* DWriteFontFamilyProxy::LoadFamily() {
-  if (family_)
-    return family_.Get();
-
+  // The time needed to lock should be included in the reports. They metrics may
+  // include entries of almost zero time when |this| is already loaded though.
   SCOPED_UMA_HISTOGRAM_TIMER("DirectWrite.Fonts.Proxy.LoadFamilyTime");
   TRACE_EVENT0("dwrite,fonts", "DWriteFontFamilyProxy::LoadFamily");
+
+  base::AutoLock family_lock(family_lock_);
+
+  if (family_)
+    return family_.Get();
 
   // TODO(dcheng): Is this crash key still used? There does not appear to be
   // anything obvious below that would trigger a crash report.

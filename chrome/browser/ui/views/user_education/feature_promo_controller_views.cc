@@ -383,17 +383,7 @@ FeaturePromoControllerViews::GetBaseCreateParams(
   create_params.arrow = MapToBubbleBorderArrow(params.arrow);
   create_params.preferred_width = params.preferred_width;
 
-  if (params.allow_snooze) {
-    create_params.timeout_no_interaction =
-        params.timeout_no_interaction.value_or(
-            FeaturePromoSnoozeService::kTimeoutNoInteraction);
-    create_params.timeout_after_interaction =
-        params.timeout_after_interaction.value_or(
-            FeaturePromoSnoozeService::kTimeoutAfterInteraction);
-  } else {
-    create_params.timeout_no_interaction = params.timeout_no_interaction;
-    create_params.timeout_after_interaction = params.timeout_after_interaction;
-  }
+  create_params.timeout = params.timeout;
 
   return create_params;
 }
@@ -450,7 +440,7 @@ bool FeaturePromoControllerViews::ShowPromoBubbleImpl(
       NOTREACHED();
     }
 
-    if (!params.focus_on_create && !params.timeout_no_interaction.has_value()) {
+    if (!params.focus_on_create && !params.timeout.has_value()) {
       // No message is required as this is a background bubble with a
       // screen reader-specific prompt and will dismiss itself.
       LOG_IF(WARNING, !params.screenreader_string_specifier)

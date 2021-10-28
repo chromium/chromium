@@ -1518,8 +1518,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
   ASSERT_EQ(1u, chrome::GetBrowserCount(profile2));
 }
 
-#if BUILDFLAG(ENABLE_APP_SESSION_SERVICE) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
-    !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 web_app::AppId InstallPWA(Profile* profile, const GURL& start_url) {
   auto web_app_info = std::make_unique<WebApplicationInfo>();
   web_app_info->start_url = start_url;
@@ -1648,7 +1647,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorRestartTest,
     }
   }
 }
-#endif  //  BUILDFLAG(ENABLE_APP_SESSION_SERVICE) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // An observer that returns back to test code after a new browser is added to
 // the BrowserList.
@@ -1835,7 +1834,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                          StartupBrowserWithWebAppTest,
                          ::testing::Values(true, false));
 
-#if BUILDFLAG(ENABLE_APP_SESSION_SERVICE) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 class StartupBrowserWithRealWebAppTest : public StartupBrowserCreatorTest {
  protected:
   StartupBrowserWithRealWebAppTest() = default;
@@ -2012,7 +2011,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithRealWebAppTest,
   new_browser = FindOneOtherBrowserForProfile(profile1, new_browser);
   ASSERT_EQ(new_browser->type(), Browser::Type::TYPE_APP);
 }
-#endif  // BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // URL Handling tests.

@@ -10,9 +10,6 @@
 // Feature flag for supporting the URLBlocklist enterprise policy on iOS.
 extern const base::Feature kURLBlocklistIOS;
 
-// Returns true if the Chrome Browser Cloud Management flow is enabled.
-bool IsChromeBrowserCloudManagementEnabled();
-
 // Returns true if the core enterprise policy infrastructure is enabled. Does
 // not control whether policy data is parsed and made user visible; that is
 // controlled by |ShouldInstallEnterprisePolicyHandlers()| below.

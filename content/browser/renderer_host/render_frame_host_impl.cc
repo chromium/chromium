@@ -2541,10 +2541,7 @@ gfx::Rect RenderFrameHostImpl::AccessibilityGetViewBounds() {
 }
 
 float RenderFrameHostImpl::AccessibilityGetDeviceScaleFactor() {
-  RenderWidgetHostView* view = render_view_host_->GetWidget()->GetView();
-  if (view)
-    return GetScaleFactorForView(view);
-  return 1.0f;
+  return GetScaleFactorForView(GetView());
 }
 
 void RenderFrameHostImpl::AccessibilityReset() {
@@ -4813,6 +4810,23 @@ void RenderFrameHostImpl::FocusPage() {
 }
 
 void RenderFrameHostImpl::TakeFocus(bool reverse) {
+  // TODO(crbug.com/1225366): Consider moving this to PageImpl.
+  DCHECK(is_main_frame());
+  // If we are representing an inner frame tree call advance on our outer
+  // delegate's parent's RenderFrameHost.
+  RenderFrameHostImpl* parent_or_outer_document =
+      GetParentOrOuterDocumentOrEmbedder();
+  if (parent_or_outer_document) {
+    RenderFrameProxyHost* proxy_host =
+        frame_tree_node()->render_manager()->GetProxyToOuterDelegate();
+    DCHECK(proxy_host);
+    parent_or_outer_document->AdvanceFocus(
+        reverse ? blink::mojom::FocusType::kBackward
+                : blink::mojom::FocusType::kForward,
+        proxy_host);
+    return;
+  }
+
   render_view_host_->OnTakeFocus(reverse);
 }
 

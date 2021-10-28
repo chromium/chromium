@@ -34,6 +34,9 @@ constexpr char kReportedBlockLevelRestriction[] =
     "ReportedBlockLevelRestriction";
 constexpr char kReportedReportLevelRestriction[] =
     "ReportedReportLevelRestriction";
+constexpr char kReportedWarnLevelRestriction[] = "ReportedWarnLevelRestriction";
+constexpr char kReportedWarnProceedLevelRestriction[] =
+    "ReportedWarnProceedLevelRestriction";
 constexpr char kReportedEventStatus[] = "ReportedEventStatus";
 
 }  // namespace dlp

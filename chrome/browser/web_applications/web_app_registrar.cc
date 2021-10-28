@@ -36,8 +36,7 @@ namespace {
 // With Lacros, only system web apps are exposed using the Ash browser.
 bool WebAppExposed(const WebApp& web_app) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (base::FeatureList::IsEnabled(features::kWebAppsCrosapi) &&
-      !web_app.IsSystemApp()) {
+  if (IsWebAppsCrosapiEnabled() && !web_app.IsSystemApp()) {
     return false;
   }
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)

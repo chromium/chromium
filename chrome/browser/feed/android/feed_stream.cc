@@ -272,5 +272,32 @@ jlong FeedStream::GetLastFetchTimeMs(
   return feed_stream_api_->GetLastFetchTime(GetStreamType()).ToDoubleT() * 1000;
 }
 
+void FeedStream::ReportNoticeViewed(JNIEnv* env,
+                                    const JavaParamRef<jobject>& obj,
+                                    const JavaParamRef<jstring>& key) {
+  if (!feed_stream_api_)
+    return;
+  feed_stream_api_->ReportNoticeViewed(
+      base::android::ConvertJavaStringToUTF8(env, key));
+}
+
+void FeedStream::ReportNoticeOpenAction(JNIEnv* env,
+                                        const JavaParamRef<jobject>& obj,
+                                        const JavaParamRef<jstring>& key) {
+  if (!feed_stream_api_)
+    return;
+  feed_stream_api_->ReportNoticeOpenAction(
+      base::android::ConvertJavaStringToUTF8(env, key));
+}
+
+void FeedStream::ReportNoticeDismissed(JNIEnv* env,
+                                       const JavaParamRef<jobject>& obj,
+                                       const JavaParamRef<jstring>& key) {
+  if (!feed_stream_api_)
+    return;
+  feed_stream_api_->ReportNoticeDismissed(
+      base::android::ConvertJavaStringToUTF8(env, key));
+}
+
 }  // namespace android
 }  // namespace feed

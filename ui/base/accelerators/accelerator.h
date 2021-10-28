@@ -131,6 +131,7 @@ class COMPONENT_EXPORT(UI_BASE) Accelerator {
   }
 
  private:
+  friend class AcceleratorTestMac;
   std::u16string ApplyLongFormModifiers(const std::u16string& shortcut) const;
   std::u16string ApplyShortFormModifiers(const std::u16string& shortcut) const;
 

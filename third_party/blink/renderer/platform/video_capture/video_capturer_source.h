@@ -11,6 +11,8 @@
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
+#include "base/token.h"
+#include "media/capture/mojom/video_capture_types.mojom-blink.h"
 #include "media/capture/video/video_capture_feedback.h"
 #include "media/capture/video_capture_types.h"
 #include "third_party/blink/public/common/media/video_capture.h"
@@ -82,6 +84,14 @@ class PLATFORM_EXPORT VideoCapturerSource {
   // Note: This should only be called after StartCapture() and before
   // StopCapture(). Otherwise, its behavior is undefined.
   virtual void Resume() {}
+
+  // Start/stop cropping a video track.
+  // Non-empty |crop_id| sets (or changes) the crop-target.
+  // Empty |crop_id| reverts the capture to its original, uncropped state.
+  // The callback reports success/failure.
+  virtual void Crop(
+      const base::Token& crop_id,
+      base::OnceCallback<void(media::mojom::CropRequestResult)> callback) {}
 
   // Stops capturing frames and clears all callbacks including the
   // SupportedFormatsCallback callback. Note that queued frame callbacks

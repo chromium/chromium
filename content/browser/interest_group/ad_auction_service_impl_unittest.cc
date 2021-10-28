@@ -428,6 +428,20 @@ TEST_F(AdAuctionServiceImplTest, JoinInterestGroupCrossSiteUrls) {
   EXPECT_EQ(0, GetJoinCount(kOriginA, kInterestGroupName));
 }
 
+// Attempt to join an interest group whose size is very large. No join should
+// happen -- it should silently fail.
+TEST_F(AdAuctionServiceImplTest, JoinMassiveInterestGroupFails) {
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  // 1 MiB of '5' characters is over the size limit.
+  interest_group.user_bidding_signals = std::string(1024 * 1024, '5');
+  JoinInterestGroupAndFlush(interest_group);
+
+  EXPECT_EQ(0, GetJoinCount(kOriginA, kInterestGroupName));
+  std::vector<StorageInterestGroup> groups =
+      GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups.size(), 0u);
+}
+
 // Check that cross-origin leave interest group operations don't work.
 TEST_F(AdAuctionServiceImplTest, LeaveInterestGroupWrongOwnerOrigin) {
   // https://a.test/ joins an interest group.

@@ -107,8 +107,7 @@ TEST_F(FeaturePromoBubbleViewTest, TimeoutCallback) {
 
   FeaturePromoBubbleView::CreateParams params =
       GetBubbleParams(base::RepeatingClosure());
-  params.timeout_no_interaction = base::Seconds(10);
-  params.timeout_after_interaction = base::Seconds(10);
+  params.timeout = base::Seconds(10);
   params.timeout_callback = timeout_callback.Get();
 
   FeaturePromoBubbleView::Create(std::move(params));
@@ -122,8 +121,7 @@ TEST_F(FeaturePromoBubbleViewTest, NoTimeoutIfSetToZero) {
 
   FeaturePromoBubbleView::CreateParams params =
       GetBubbleParams(base::RepeatingClosure());
-  params.timeout_no_interaction = base::TimeDelta();
-  params.timeout_after_interaction = base::TimeDelta();
+  params.timeout = base::TimeDelta();
   params.timeout_callback = timeout_callback.Get();
 
   FeaturePromoBubbleView::Create(std::move(params));
@@ -134,13 +132,12 @@ TEST_F(FeaturePromoBubbleViewTest, NoTimeoutIfSetToZero) {
   task_environment()->FastForwardBy(base::Hours(1));
 }
 
-TEST_F(FeaturePromoBubbleViewTest, RespectsProvidedTimeoutBeforeHover) {
+TEST_F(FeaturePromoBubbleViewTest, RespectsProvidedTimeoutBeforeActivate) {
   base::MockRepeatingClosure timeout_callback;
 
   FeaturePromoBubbleView::CreateParams params =
       GetBubbleParams(base::RepeatingClosure());
-  params.timeout_no_interaction = base::Seconds(20);
-  params.timeout_after_interaction = base::Seconds(5);
+  params.timeout = base::Seconds(20);
   params.timeout_callback = timeout_callback.Get();
 
   FeaturePromoBubbleView::Create(std::move(params));
@@ -152,33 +149,38 @@ TEST_F(FeaturePromoBubbleViewTest, RespectsProvidedTimeoutBeforeHover) {
   task_environment()->FastForwardBy(base::Seconds(1));
 }
 
-TEST_F(FeaturePromoBubbleViewTest, RespectsProvidedTimeoutAfterHover) {
+TEST_F(FeaturePromoBubbleViewTest, RespectsProvidedTimeoutAfterActivate) {
   base::MockRepeatingClosure timeout_callback;
 
   FeaturePromoBubbleView::CreateParams params =
       GetBubbleParams(base::RepeatingClosure());
-  params.timeout_no_interaction = base::Seconds(20);
-  params.timeout_after_interaction = base::Seconds(5);
+  params.timeout = base::Seconds(10);
   params.timeout_callback = timeout_callback.Get();
+  params.focus_on_create = false;
+  params.persist_on_blur = true;
+
+  EXPECT_CALL(timeout_callback, Run()).Times(0);
 
   FeaturePromoBubbleView* bubble =
       FeaturePromoBubbleView::Create(std::move(params));
 
-  task_environment()->FastForwardBy(base::Seconds(19));
+  task_environment()->FastForwardBy(base::Seconds(9));
 
-  // Simulate mouse hovering and leaving bubble.
-  ui::MouseEvent mouse_enter(ui::ET_MOUSE_ENTERED, gfx::Point(), gfx::Point(),
-                             ui::EventTimeForNow(), 0, 0);
-  static_cast<views::View*>(bubble)->OnMouseEntered(mouse_enter);
+  // Simulate bubble activation. We won't actually activate the bubble since
+  // bubble visibility and activation don't work well in this mock environment.
+  bubble->OnWidgetActivationChanged(bubble->GetWidget(), true);
 
-  ui::MouseEvent mouse_exit(ui::ET_MOUSE_EXITED, gfx::Point(), gfx::Point(),
-                            ui::EventTimeForNow(), 0, 0);
-  static_cast<views::View*>(bubble)->OnMouseExited(mouse_exit);
-
-  // The bubble should time out with the shorter interval.
-  EXPECT_CALL(timeout_callback, Run()).Times(0);
+  // The bubble should not time out since it is active.
   task_environment()->FastForwardBy(base::Seconds(4));
 
+  // Deactivating the widget should restart the timer.
+  bubble->OnWidgetActivationChanged(bubble->GetWidget(), false);
+
+  // Wait most of the timeout, but not all of it.
+  task_environment()->FastForwardBy(base::Seconds(9));
+
   EXPECT_CALL(timeout_callback, Run()).Times(1);
+
+  // Finishing the timeout should dismiss the bubble.
   task_environment()->FastForwardBy(base::Seconds(1));
 }

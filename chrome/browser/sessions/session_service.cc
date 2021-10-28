@@ -211,10 +211,6 @@ bool SessionService::ShouldRestore(Browser* browser) {
 
 bool SessionService::RestoreIfNecessary(const std::vector<GURL>& urls_to_open,
                                         bool restore_apps) {
-// Passing this does not make sense unless app_session_service is enabled.
-#if !BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
-  DCHECK(!restore_apps);
-#endif  // !BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
   return RestoreIfNecessary(urls_to_open, nullptr, restore_apps);
 }
 

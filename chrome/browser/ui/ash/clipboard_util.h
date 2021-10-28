@@ -23,6 +23,7 @@ namespace clipboard_util {
 void ReadFileAndCopyToClipboardLocal(const base::FilePath& local_file);
 
 // Takes an image file as a string and copies it to the system clipboard.
+// May decode the image into a bitmap, or skip decoding when possible.
 //
 // `clipboard_sequence` - Clipboard version to determine whether the clipboard
 // state has changed. An empty token is used to specify an invalid sequence.
@@ -33,7 +34,7 @@ void ReadFileAndCopyToClipboardLocal(const base::FilePath& local_file);
 // `callback` - Reports if the copy was successful. Reasons that this could
 // return false include that the sequence numbers do not match and when
 // `maintain_clipboard` is true.
-void DecodeImageFileAndCopyToClipboard(
+void MaybeDecodeImageFileAndCopyToClipboard(
     ui::ClipboardSequenceNumberToken clipboard_sequence,
     bool maintain_clipboard,
     scoped_refptr<base::RefCountedString> png_data,

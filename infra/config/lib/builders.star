@@ -195,6 +195,16 @@ xcode = struct(
 # orchestrators to use
 compilator_watcher_git_revision = "d5bee0e7798a40c3c6261c3dbc14becf1fbb693f"
 
+def builder_url(bucket, builder, project = None):
+    """A simple utility for constructing the milo URL for a builder."""
+    project = project or settings.project
+    url = "https://ci.chromium.org/p/%s/builders/%s/%s" % (
+        project,
+        bucket,
+        builder,
+    )
+    return url
+
 ################################################################################
 # Implementation details                                                       #
 ################################################################################

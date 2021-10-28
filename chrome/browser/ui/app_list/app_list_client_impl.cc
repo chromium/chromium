@@ -598,6 +598,31 @@ void AppListClientImpl::OnSetPositionRequested(
   requested_model_updater->HandleSetPosition(std::move(id), new_position);
 }
 
+void AppListClientImpl::OnMoveItemToFolderRequested(
+    int profile_id,
+    std::string id,
+    const std::string& folder_id) {
+  auto* requested_model_updater = profile_model_mappings_[profile_id];
+  if (requested_model_updater != current_model_updater_ ||
+      !requested_model_updater) {
+    return;
+  }
+  requested_model_updater->HandleMoveItemToFolder(std::move(id), folder_id);
+}
+
+void AppListClientImpl::OnMoveItemToRootRequested(
+    int profile_id,
+    std::string id,
+    syncer::StringOrdinal target_position) {
+  auto* requested_model_updater = profile_model_mappings_[profile_id];
+  if (requested_model_updater != current_model_updater_ ||
+      !requested_model_updater) {
+    return;
+  }
+  requested_model_updater->HandleMoveItemToRoot(std::move(id),
+                                                std::move(target_position));
+}
+
 void AppListClientImpl::MaybeRecordViewShown() {
   // Record the time duration between session activation and the first launcher
   // showing if the current user is new.

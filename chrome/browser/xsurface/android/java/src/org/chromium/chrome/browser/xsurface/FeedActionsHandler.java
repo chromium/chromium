@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.xsurface;
 
+import android.view.View;
+
 import java.util.Map;
 
 /**
@@ -99,9 +101,33 @@ public interface FeedActionsHandler {
     default void openAutoplaySettings() {}
 
     /**
-     * Tracks the interaction, i.e. viewed/clicked, state of a card specific notice.
-     * @param key Key to identify the type of the notice.
-     * @param data A serialized ContentId protobuf message.
+     * Watches a view to get notified when the first time it has the visible area percentage not
+     * less than the given threshold. The watch is based on the visibility of full
+     * ListContentManager item containing the view.
+     * @param view The view to watch for.
+     * @param viewedThreshold The threshold of the percentage of the visible area on screen.
+     * @param runnable The runnable to get notified.
      */
-    default void trackInteractionForNotice(String key, byte[] data) {}
+    default void watchForViewFirstVisible(View view, float viewedThreshold, Runnable runnable) {}
+
+    /**
+     * Reports that the notice identified by the given key is viewed, fully visible in the viewport.
+     * @param key Key to identify the type of the notice. This interaction info can be used to
+     * determine if it is necessary to show the notice to the user again.
+     */
+    default void reportNoticeViewed(String key) {}
+
+    /**
+     * Reports that the user has clicked/tapped the notice identified by the given key to perform
+     * an open action. This interaction info can be used to determine if it is necessary to show
+     * the notice to the user again.
+     * @param key Key to identify the type of the notice.
+     */
+    default void reportNoticeOpenAction(String key) {}
+
+    /**
+     * Reports that the notice identified by the given key is dismissed by the user.
+     * @param key Key to identify the type of the notice.
+     */
+    default void reportNoticeDismissed(String key) {}
 }

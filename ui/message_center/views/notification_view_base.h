@@ -101,6 +101,10 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
     kContentRow,
     kActionButtonsRow,
     kInlineReply,
+    kMainRightView,
+    kHeaderLeftContent,
+    kCollapsedSummaryView,
+    kAppIconViewContainer,
   };
 
   NotificationViewBase(const NotificationViewBase&) = delete;
@@ -147,7 +151,7 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   views::Builder<NotificationControlButtonsView> CreateControlButtonsBuilder();
 
   // Header row contains app_icon, app_name, control buttons, etc.
-  std::unique_ptr<NotificationHeaderView> CreateHeaderRow();
+  views::Builder<NotificationHeaderView> CreateHeaderRowBuilder();
 
   // Left content view contains most of the contents, including title, message,
   // compacted title and message, progress bar and status for progress
@@ -159,13 +163,13 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
 
   // Content row contains all the main content in a notification. This view will
   // be hidden when settings are shown.
-  std::unique_ptr<views::View> CreateContentRow();
+  views::Builder<views::View> CreateContentRowBuilder();
 
   // Image container view contains the expanded notification image.
-  std::unique_ptr<views::View> CreateImageContainerView();
+  views::Builder<views::View> CreateImageContainerBuilder();
 
   // Inline settings view contains inline settings.
-  std::unique_ptr<views::View> CreateInlineSettingsView();
+  views::Builder<views::BoxLayoutView> CreateInlineSettingsBuilder();
 
   // Actions row contains inline action buttons and inline textfield.
   std::unique_ptr<views::View> CreateActionsRow();

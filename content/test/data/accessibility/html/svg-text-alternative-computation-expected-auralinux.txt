@@ -1,7 +1,7 @@
 [document web] tag:#document
 ++[section] tag:body
 ++++[document frame] class:name-aria-labelledby tag:svg
-++++++[link] name='Link (from aria-labelledby)' description='Link (from title)' labelled-by description-from:tooltip tag:a
+++++++[link] name='Link (from aria-labelledby)' description='Link (from title)' description-from:tooltip tag:a
 ++++[document frame] class:name-aria-label tag:svg
 ++++++[link] name='Link (from aria-label)' description='Link (from title)' description-from:tooltip tag:a
 ++++[document frame] class:name-title tag:svg
@@ -9,7 +9,7 @@
 ++++[document frame] class:name-xlink-title tag:svg
 ++++++[link] name='Link (from xlink:title)' tag:a
 ++++[document frame] class:name-aria-labelledby tag:svg
-++++++[image] name='Circle (from aria-labelledby)' labelled-by tag:circle
+++++++[image] name='Circle (from aria-labelledby)' tag:circle
 ++++[document frame] class:name-aria-label tag:svg
 ++++++[image] name='Circle (from aria-label)' tag:circle
 ++++[document frame] class:name-title tag:svg
@@ -21,7 +21,7 @@
 ++++++[panel] name='Rectangle Symbol (From symbol's title)' id:myRect tag:svg
 ++++++[panel] name='Rectangle Symbol (From symbol's title)' id:myRect tag:svg
 ++++[document frame] class:description-aria-describedby tag:svg
-++++++[link] name='Link (from title)' description='Link (from aria-describedby)' described-by description-from:aria-describedby tag:a
+++++++[link] name='Link (from title)' description='Link (from aria-describedby)' description-from:aria-describedby tag:a
 ++++[document frame] class:description-aria-description tag:svg
 ++++++[link] name='Link (from title)' description='Link (from aria-description)' description:Link (from aria-description) description-from:aria-description tag:a
 ++++[document frame] class:description-desc tag:svg

@@ -292,9 +292,10 @@ IN_PROC_BROWSER_TEST_F(ArcSessionManagerTest, ArcDisabledInLockedFullscreen) {
           .Build());
   function->set_extension(extension.get());
 
-  extension_function_test_utils::RunFunctionAndReturnSingleResult(
-      function.get(), base::StringPrintf(kStateLockedFullscreen, window_id),
-      browser());
+  std::unique_ptr<base::Value> value(
+      extension_function_test_utils::RunFunctionAndReturnSingleResult(
+          function.get(), base::StringPrintf(kStateLockedFullscreen, window_id),
+          browser()));
 
   ASSERT_EQ(ArcSessionManager::State::STOPPED,
             ArcSessionManager::Get()->state());

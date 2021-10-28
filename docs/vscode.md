@@ -163,10 +163,20 @@ marketplace](https://marketplace.visualstudio.com/search?target=VSCode&category=
     the line.
 
 ### Java/Android Support
-To get Java support in VS Code, you'll need to install the
-'Java Extension Pack' extension, but you'll want to immediately uninstall or
-disable the Maven for Java extension so it stops nagging you as we won't need
-it.
+
+*Before anything*, add these to your settings.json.
+```
+// LightWeight is the language support, the feature we care about. The other
+// modes include build functionality with Maven and Gradle. They try to build
+// on their own and end up showing thousands of errors.
+"java.server.launchMode": "LightWeight",
+// Avoids overwriting the custom .classpath file (c.f. next section).
+"java.configuration.updateBuildConfiguration": "disabled",
+```
+Then install the "Language Support for Java" extension. If you installed it
+before setting the configs above, uninstall, delete the <project> folder (c.f.
+next section) and reinstall. You also don't need any of the remaining extensions
+in "Extension Pack for Java".
 
 #### Setting up code completion/reference finding/etc.
 You'll need to generate a placeholder .classpath file and locate it. In order

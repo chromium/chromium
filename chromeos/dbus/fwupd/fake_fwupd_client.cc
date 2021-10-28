@@ -13,9 +13,9 @@ namespace chromeos {
 FakeFwupdClient::FakeFwupdClient() = default;
 FakeFwupdClient::~FakeFwupdClient() = default;
 void FakeFwupdClient::Init(dbus::Bus* bus) {}
-void FakeFwupdClient::GetUpgrades(std::string device_id) {}
+void FakeFwupdClient::RequestUpgrades(std::string device_id) {}
 
-void FakeFwupdClient::GetDevices() {
+void FakeFwupdClient::RequestDevices() {
   // TODO(swifton): This is a stub.
   auto devices = std::make_unique<FwupdDeviceList>();
   for (auto& observer : observers_)

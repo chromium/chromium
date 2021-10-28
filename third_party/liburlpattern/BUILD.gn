@@ -2,6 +2,7 @@
 # Use of this source code is governed by an MIT-style license that can be
 # found in the LICENSE file or at https://opensource.org/licenses/MIT.
 
+import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 
 component("liburlpattern") {
@@ -42,4 +43,13 @@ test("liburlpattern_unittests") {
     "utils_unittest.cc",
   ]
   testonly = true
+}
+
+fuzzer_test("liburlpattern_fuzzer") {
+  sources = [ "parse_fuzzer.cc" ]
+  deps = [
+    ":liburlpattern",
+    "//base",
+    "//third_party/abseil-cpp:absl",
+  ]
 }

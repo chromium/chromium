@@ -963,7 +963,7 @@ void AutofillAgent::ProcessForms() {
       form_cache_.ExtractNewForms(field_data_manager_.get());
 
   // Always communicate to browser process for topmost frame.
-  if (!cache.updated_forms.empty() ||
+  if (!cache.updated_forms.empty() || !cache.removed_forms.empty() ||
       !render_frame()->GetWebFrame()->Parent()) {
     GetAutofillDriver().FormsSeen(cache.updated_forms,
                                   std::move(cache.removed_forms).extract());

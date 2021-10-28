@@ -476,6 +476,32 @@ TEST_F(AffiliatedInvalidationServiceProviderImplTest,
   LogInAsAffiliatedUserAndConnectInvalidationService();
 }
 
+// Verifies that every InvalidationService state except
+// |invalidation::INVALIDATIONS_ENABLED| are treated as disconnected.
+TEST_F(AffiliatedInvalidationServiceProviderImplTest,
+       FlipInvalidationServiceState) {
+  consumer_ = std::make_unique<FakeConsumer>(provider_.get());
+
+  // Create and make |profile_invalidation_service_| enabled.
+  LogInAsAffiliatedUserAndConnectInvalidationService();
+
+  for (const auto disconnect_state :
+       {invalidation::TRANSIENT_INVALIDATION_ERROR,
+        invalidation::DEFAULT_INVALIDATION_ERROR,
+        invalidation::INVALIDATION_CREDENTIALS_REJECTED,
+        invalidation::INVALIDATOR_SHUTTING_DOWN, invalidation::STOPPED}) {
+    profile_invalidation_service_->SetInvalidatorState(disconnect_state);
+    EXPECT_EQ(1, consumer_->GetAndClearInvalidationServiceSetCount());
+    EXPECT_FALSE(consumer_->GetInvalidationService());
+
+    profile_invalidation_service_->SetInvalidatorState(
+        invalidation::INVALIDATIONS_ENABLED);
+    EXPECT_EQ(1, consumer_->GetAndClearInvalidationServiceSetCount());
+    EXPECT_EQ(profile_invalidation_service_,
+              consumer_->GetInvalidationService());
+  }
+}
+
 // A consumer is registered with the AffiliatedInvalidationServiceProviderImpl.
 // A device-global invalidation service exists, is connected and is made
 // available to the consumer. Verifies that when a per-profile invalidation

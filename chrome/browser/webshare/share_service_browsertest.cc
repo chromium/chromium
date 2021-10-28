@@ -36,6 +36,14 @@ class ShareServiceBrowserTest : public InProcessBrowserTest {
     feature_list_.InitAndEnableFeature(features::kWebShare);
   }
 
+  void SetUp() override {
+#if defined(OS_WIN)
+    if (!webshare::ScopedShareOperationFakeComponents::IsSupportedEnvironment())
+      GTEST_SKIP();
+#endif
+    InProcessBrowserTest::SetUp();
+  }
+
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
 #if defined(OS_CHROMEOS)
@@ -43,9 +51,6 @@ class ShareServiceBrowserTest : public InProcessBrowserTest {
         base::BindRepeating(&ShareServiceBrowserTest::AcceptShareRequest));
 #endif
 #if defined(OS_WIN)
-    if (!IsSupportedEnvironment())
-      return;
-
     ASSERT_NO_FATAL_FAILURE(scoped_fake_components_.SetUp());
 #endif
 #if defined(OS_MAC)
@@ -79,14 +84,6 @@ class ShareServiceBrowserTest : public InProcessBrowserTest {
   }
 #endif
 
- protected:
-#if defined(OS_WIN)
-  bool IsSupportedEnvironment() {
-    return webshare::ScopedShareOperationFakeComponents::
-        IsSupportedEnvironment();
-  }
-#endif
-
  private:
   base::test::ScopedFeatureList feature_list_;
 #if defined(OS_WIN)
@@ -95,11 +92,6 @@ class ShareServiceBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(ShareServiceBrowserTest, Text) {
-#if defined(OS_WIN)
-  if (!IsSupportedEnvironment())
-    return;
-#endif
-
   const int kRepeats = 4;
 
   base::HistogramTester histogram_tester;
@@ -159,11 +151,6 @@ class SafeBrowsingShareServiceBrowserTest : public ShareServiceBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(SafeBrowsingShareServiceBrowserTest,
                        PortableDocumentFile) {
-#if defined(OS_WIN)
-  if (!IsSupportedEnvironment())
-    return;
-#endif
-
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/webshare/index.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));

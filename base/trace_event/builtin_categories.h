@@ -138,17 +138,18 @@
   X("renderer_host")                                                     \
   X("renderer.scheduler")                                                \
   X("RLZ")                                                               \
+  X("ServiceWorker")                                                     \
+  X("SiteEngagement")                                                    \
   X("safe_browsing")                                                     \
+  X("scheduler")                                                         \
   X("screenlock_monitor")                                                \
   X("segmentation_platform")                                             \
   X("sequence_manager")                                                  \
   X("service_manager")                                                   \
-  X("ServiceWorker")                                                     \
   X("sharing")                                                           \
   X("shell")                                                             \
   X("shortcut_viewer")                                                   \
   X("shutdown")                                                          \
-  X("SiteEngagement")                                                    \
   X("skia")                                                              \
   X("sql")                                                               \
   X("stadia_media")                                                      \
@@ -157,7 +158,6 @@
   X("sync")                                                              \
   X("system_apps")                                                       \
   X("test_gpu")                                                          \
-  X("thread_pool")                                                       \
   X("toplevel")                                                          \
   X("toplevel.flow")                                                     \
   X("ui")                                                                \

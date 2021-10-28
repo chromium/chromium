@@ -19,7 +19,7 @@ to set the default value. Can also be accessed through `try_.defaults`.
 
 load("./args.star", "args")
 load("./branches.star", "branches")
-load("./builders.star", "builders", "compilator_watcher_git_revision", "os", "os_category")
+load("./builders.star", "builder_url", "builders", "compilator_watcher_git_revision", "os", "os_category")
 
 DEFAULT_EXCLUDE_REGEXPS = [
     # Contains documentation that doesn't affect the outputs
@@ -554,6 +554,26 @@ def orchestrator_pair_builders(
         compilator_name,
         compilator_os,
         **common_kwargs):
+    common_description = common_kwargs.pop("description_html", "")
+    if common_description:
+        common_description += "<br>"
+    orchestrator_url = builder_url("try", name)
+    compilator_url = builder_url("try", compilator_name)
+    orchestrator_description = common_description + (
+        "This is the orchestrator half of an orchestrator + compilator pair of " +
+        "builders. The compilator is <a href=\"{}\">{}</a>.".format(
+            compilator_url,
+            compilator_name,
+        )
+    )
+    compilator_description = common_description + (
+        "This is the compilator half of an orchestrator + compilator pair of " +
+        "builders. The orchestrator is <a href=\"{}\">{}</a>.".format(
+            orchestrator_url,
+            name,
+        )
+    )
+
     orchestrator_builder = builder_group_func(
         name = name,
         executable = "recipe:chromium/orchestrator",
@@ -568,6 +588,7 @@ def orchestrator_pair_builders(
         tryjob = orchestrator_tryjob,
         service_account = "chromium-orchestrator@chops-service-accounts.iam.gserviceaccount.com",
         os = os.LINUX_BIONIC,
+        description_html = orchestrator_description,
         **common_kwargs
     )
     compilator_builder = builder_group_func(
@@ -584,9 +605,19 @@ def orchestrator_pair_builders(
             },
         },
         os = compilator_os,
+        description_html = compilator_description,
         **common_kwargs
     )
     return orchestrator_builder, compilator_builder
+
+def chromium_chromiumos_orchestrator_pair(
+        **kwargs):
+    return orchestrator_pair_builders(
+        builder_group_func = chromium_chromiumos_builder,
+        orchestrator_builder_group = "tryserver.chromium.chromiumos",
+        compilator_os = os.LINUX_BIONIC,
+        **kwargs
+    )
 
 def chromium_linux_orchestrator_pair(
         **kwargs):
@@ -603,6 +634,15 @@ def chromium_win_orchestrator_pair(
         builder_group_func = chromium_win_builder,
         orchestrator_builder_group = "tryserver.chromium.win",
         compilator_os = os.WINDOWS_10,
+        **kwargs
+    )
+
+def chromium_android_orchestrator_pair(
+        **kwargs):
+    return orchestrator_pair_builders(
+        builder_group_func = chromium_android_builder,
+        orchestrator_builder_group = "tryserver.chromium.android",
+        compilator_os = os.LINUX_BIONIC,
         **kwargs
     )
 
@@ -646,11 +686,13 @@ try_ = struct(
     blink_mac_builder = blink_mac_builder,
     chromium_builder = chromium_builder,
     chromium_android_builder = chromium_android_builder,
+    chromium_android_orchestrator_pair = chromium_android_orchestrator_pair,
     chromium_angle_builder = chromium_angle_builder,
     chromium_angle_ios_builder = chromium_angle_ios_builder,
     chromium_angle_mac_builder = chromium_angle_mac_builder,
     chromium_angle_pinned_builder = chromium_angle_pinned_builder,
     chromium_chromiumos_builder = chromium_chromiumos_builder,
+    chromium_chromiumos_orchestrator_pair = chromium_chromiumos_orchestrator_pair,
     chromium_dawn_builder = chromium_dawn_builder,
     chromium_dawn_builderless_builder = chromium_dawn_builderless_builder,
     chromium_linux_builder = chromium_linux_builder,

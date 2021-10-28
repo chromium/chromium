@@ -72,7 +72,6 @@
     'remove_from': [
       # TODO(ynovikov) Investigate why the test breaks on older devices.
       'Android FYI Release (Nexus 5)',
-      'Android FYI Release (Nexus 6)',
       'Android FYI Release (Nexus 9)',
       # Temporarily disabled due to bad NVIDIA driver upgrade crbug.com/950542
       'Linux FYI Debug (NVIDIA)',
@@ -309,6 +308,18 @@
           'shards': 20,
         },
       },
+      'WebKit Linux ASAN (reclient shadow)': {
+        'args': [
+          '--additional-expectations',
+          '../../third_party/blink/web_tests/ASANExpectations',
+          '--time-out-ms',
+          '48000',
+          '--enable-sanitizer',
+        ],
+        'swarming': {
+          'shards': 20,
+        },
+      },
       'WebKit Linux Leak': {
         'args': [
           '--additional-expectations',
@@ -321,7 +332,34 @@
           'shards': 10,
         },
       },
+      'WebKit Linux Leak (reclient shadow)': {
+        'args': [
+          '--additional-expectations',
+          '../../third_party/blink/web_tests/LeakExpectations',
+          '--time-out-ms',
+          '48000',
+          '--enable-leak-detection',
+        ],
+        'swarming': {
+          'shards': 10,
+        },
+      },
       'WebKit Linux MSAN': {
+        'args': [
+          '--additional-expectations',
+          '../../third_party/blink/web_tests/MSANExpectations',
+          '--time-out-ms',
+          '66000',
+          '--enable-sanitizer',
+        ],
+        'swarming': {
+          'expiration': 36000,
+          'hard_timeout': 10800,
+          'io_timeout': 3600,
+          'shards': 20,
+        },
+      },
+      'WebKit Linux MSAN (reclient shadow)': {
         'args': [
           '--additional-expectations',
           '../../third_party/blink/web_tests/MSANExpectations',
@@ -740,6 +778,10 @@
       },
       'mac11-arm64-rel-tests': {
         'ci_only': False,  # https://crbug.com/1234525
+        'args': [
+          # crbug.com/1262402
+          '--test-launcher-filter-file=../../testing/buildbot/filters/mac.mac11-arm64-rel.browser_tests.filter',
+        ]
       },
       'win-asan': {
         # These are very slow on the ASAN trybot for some reason.
@@ -1427,6 +1469,7 @@
       'ToTLinuxTSan',
       # https://crbug.com/crashpad/306
       'Linux CFI',
+      'Linux CFI (reclient shadow)',
       'CFI Linux ToT',
     ],
     'modifications': {
@@ -3221,7 +3264,7 @@
     'replacements': {
       'Dawn Mac x64 Experimental Release (Intel)': {
         'args': {
-          '--platform': 'mac-mac11.5',
+          '--platform': 'mac-mac11',
         },
       }
     },
@@ -3230,7 +3273,7 @@
     'replacements': {
       'Dawn Mac x64 Experimental Release (Intel)': {
         'args': {
-          '--platform': 'mac-mac11.5',
+          '--platform': 'mac-mac11',
         },
       },
     },

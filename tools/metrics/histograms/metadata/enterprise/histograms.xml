@@ -849,6 +849,27 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.Dlp.ReportedWarnLevelRestriction"
+    enum="EnterpriseDlpPolicyRestriction" expires_after="2022-05-01">
+  <owner>jkopanski@chromium.org</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Recorded when Data Leak Prevention event with &quot;warn&quot; level was
+    reported. Identifies which restriction was reported.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Dlp.ReportedWarnProceedLevelRestriction"
+    enum="EnterpriseDlpPolicyRestriction" expires_after="2022-05-01">
+  <owner>jkopanski@chromium.org</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Recorded when Data Leak Prevention event with &quot;warn&quot; level was
+    reported after a user proceeded with a restricted action. Identifies which
+    restriction was reported.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.Dlp.RestrictionConfigured"
     enum="EnterpriseDlpPolicyRestriction" expires_after="2022-05-01">
   <owner>poromov@chromium.org</owner>

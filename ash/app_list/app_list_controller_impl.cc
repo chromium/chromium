@@ -407,40 +407,7 @@ void AppListControllerImpl::PublishSearchResults(
 void AppListControllerImpl::SetItemMetadata(
     const std::string& id,
     std::unique_ptr<AppListItemMetadata> data) {
-  AppListItem* item = model_->FindItem(id);
-  if (!item)
-    return;
-
-  // TODO(https://crbug.com/1252433): refactor this function because the current
-  // implementation is bug prone.
-
-  // data may not contain valid position or icon. Preserve it in this case.
-  if (!data->position.IsValid())
-    data->position = item->position();
-
-  // Update the item's position and name based on the metadata.
-  if (!data->position.Equals(item->position()))
-    model_->SetItemPosition(item, data->position);
-
-  if (data->short_name.empty()) {
-    if (data->name != item->name()) {
-      model_->SetItemName(item, data->name);
-    }
-  } else {
-    if (data->name != item->name() || data->short_name != item->short_name()) {
-      model_->SetItemNameAndShortName(item, data->name, data->short_name);
-    }
-  }
-
-  // Folder icon is generated on ash side and chrome side passes a null
-  // icon here. Skip it.
-  if (data->icon.isNull())
-    data->icon = item->GetDefaultIcon();
-
-  if (data->folder_id != item->folder_id())
-    model_->MoveItemToFolder(item, data->folder_id);
-
-  item->SetMetadata(std::move(data));
+  model_->SetItemMetadata(id, std::move(data));
 }
 
 void AppListControllerImpl::SetItemIconVersion(const std::string& id,
@@ -1199,6 +1166,21 @@ void AppListControllerImpl::RequestPositionUpdate(
     const syncer::StringOrdinal& new_position) {
   if (client_)
     client_->OnSetPositionRequested(profile_id_, std::move(id), new_position);
+}
+
+void AppListControllerImpl::RequestMoveItemToFolder(
+    std::string id,
+    const std::string& folder_id) {
+  if (client_)
+    client_->OnMoveItemToFolderRequested(profile_id_, std::move(id), folder_id);
+}
+
+void AppListControllerImpl::RequestMoveItemToRoot(
+    std::string id,
+    syncer::StringOrdinal position_after_move) {
+  if (client_)
+    client_->OnMoveItemToRootRequested(profile_id_, std::move(id),
+                                       std::move(position_after_move));
 }
 
 base::ScopedClosureRunner

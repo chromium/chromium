@@ -205,5 +205,7 @@ public final class ProductionSupportedFlagList {
                     "Force the Chrome major version number to 100 in the User-Agent string."),
             Flag.baseFeature(NetworkServiceFeatures.URL_LOADER_SYNC_CLIENT,
                     "Optimizes communication between URLLoader and CorsURLLoader."),
+            Flag.baseFeature(BlinkFeatures.SET_TIMEOUT_WITHOUT_CLAMP,
+                    "Enables faster setTimeout(,0) by removing the 1 ms clamping."),
     };
 }

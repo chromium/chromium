@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<title>Tab focus</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/common/utils.js"></script>
+<script src="resources/utils.js"></script>
+
+<body>
+
+  <input id="input"></input>
+  <fencedframe src="resources/tab-focus-inner.html"></fencedframe>
+  <select id="select">
+    <option>A</option>
+    <option>B</option>
+  </select>
+
+<script>
+  var events = [];
+  var combined_events = [];
+  function addEventListeners(element, name) {
+    element.addEventListener('focus', () => {
+      events.push(name + '/focus');
+    });
+    element.addEventListener('blur', () => {
+      events.push(name + '/blur');
+    });
+  }
+  addEventListeners(document.getElementById('input'), "input");
+  addEventListeners(document.getElementById('select'), "select");
+
+  document.body.addEventListener('focusout', () => {
+    combined_events.push(...events);
+    events = [];
+  });
+
+  promise_test(async () => {
+
+    document.getElementById('input').focus();
+    testRunner.setBrowserHandlesFocus(true);
+
+    await nextValueFromServer(KEYS["focus-ready"]);
+
+    // Move focus away from input
+    test_driver.send_keys(document.documentElement, '\uE004');
+
+    var focus_result = await nextValueFromServer(KEYS["focus-changed"]);
+    combined_events.push(...focus_result.split(','));
+
+    // Now send focus in reverse. Use eventSender as test_driver doesn't
+    // support key modifiers nor does TestDriver::Actions support key events
+    // yet.
+    eventSender.keyDown('Tab', ['shiftKey']);
+
+    focus_result = await nextValueFromServer(KEYS["focus-changed"]);
+    combined_events.push(...focus_result.split(','));
+    combined_events.push(...events);
+
+    var expected_events = [
+        "input/focus",
+        "input/blur",
+        "fencedframe_input/focus",
+        "fencedframe_input/blur",
+        "fencedframe_select/focus",
+        "fencedframe_select/blur",
+        "select/focus",
+        "select/blur",
+        "fencedframe_select/focus",
+        "fencedframe_select/blur",
+        "fencedframe_input/focus",
+        "fencedframe_input/blur",
+        "input/focus"
+    ];
+    assert_array_equals(combined_events, expected_events, "events do not match");
+  });
+</script>

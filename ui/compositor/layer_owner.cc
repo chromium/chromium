@@ -9,10 +9,10 @@
 // https://chromium.googlesource.com/chromium/src/+/HEAD/docs/wmax_tokens.md
 #pragma clang max_tokens_here 480000
 
-#include "ui/compositor/layer.h"
-
 #include <utility>
 
+#include "ui/compositor/compositor.h"
+#include "ui/compositor/layer.h"
 
 namespace ui {
 

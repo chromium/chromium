@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "third_party/blink/renderer/bindings/core/v8/local_window_proxy.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -346,6 +347,10 @@ V8MetricsRecorder::GetUkmRecorderAndSourceId(
     return absl::optional<UkmRecorderAndSourceId>();
   return absl::optional<UkmRecorderAndSourceId>(absl::in_place, ukm_recorder,
                                                 context->UkmSourceID());
+}
+
+int TotalNumberV8ContextsCreatedOfWindow() {
+  return LocalWindowProxy::TotalNumberV8ContextsCreated();
 }
 
 }  // namespace blink

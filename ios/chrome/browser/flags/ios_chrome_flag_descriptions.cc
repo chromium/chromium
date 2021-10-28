@@ -494,6 +494,11 @@ const char kTabsBulkActionsDescription[] =
     "Enables the selection mode in the Tab grid where users can perform "
     "actions on multiple tabs at once for iOS 13 and above.";
 
+extern const char kTabsSearchName[] = "Enable Tabs Search";
+extern const char kTabsSearchDescription[] =
+    "Enables the search mode in the Tab grid where users can search open tabs "
+    "or recent tabs.";
+
 const char kToolbarContainerName[] = "Use Toolbar Containers";
 const char kToolbarContainerDescription[] =
     "When enabled, the toolbars and their fullscreen animations will be "

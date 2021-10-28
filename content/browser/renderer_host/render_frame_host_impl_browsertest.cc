@@ -1334,11 +1334,13 @@ class OnDidStartNavigation : public WebContentsObserver {
 // doesn't crash with a UAF while loading the second page.
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBeforeUnloadBrowserTest,
                        DidStartNavigationClosesDialog) {
-  GURL url1 = embedded_test_server()->GetURL("a.com", "/title1.html");
+  GURL url1 = embedded_test_server()->GetURL(
+      "a.com", "/render_frame_host/beforeunload.html");
   GURL url2 = embedded_test_server()->GetURL("b.com", "/title1.html");
 
   EXPECT_TRUE(NavigateToURL(shell(), url1));
 
+  auto weak_web_contents = web_contents()->GetWeakPtr();
   // This matches the behaviour of TabModalDialogManager in
   // components/javascript_dialogs.
   OnDidStartNavigation close_dialog(web_contents(),
@@ -1347,7 +1349,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBeforeUnloadBrowserTest,
 
                                       // Check that web_contents() were not
                                       // deleted.
-                                      DCHECK(web_contents()->GetMainFrame());
+                                      ASSERT_TRUE(weak_web_contents);
                                     }));
 
   web_contents()->GetMainFrame()->RunBeforeUnloadConfirm(true,

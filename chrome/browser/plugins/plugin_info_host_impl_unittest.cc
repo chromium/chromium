@@ -39,14 +39,11 @@ void PluginsLoaded(base::OnceClosure callback,
 
 class FakePluginServiceFilter : public content::PluginServiceFilter {
  public:
-  FakePluginServiceFilter() {}
-  ~FakePluginServiceFilter() override {}
+  FakePluginServiceFilter() = default;
+  ~FakePluginServiceFilter() override = default;
 
   bool IsPluginAvailable(int render_process_id,
-                         int render_view_id,
-                         const GURL& url,
-                         const url::Origin& main_frame_origin,
-                         content::WebPluginInfo* plugin) override;
+                         const content::WebPluginInfo& plugin) override;
 
   bool CanLoadPlugin(int render_process_id,
                      const base::FilePath& path) override;
@@ -61,13 +58,10 @@ class FakePluginServiceFilter : public content::PluginServiceFilter {
 
 bool FakePluginServiceFilter::IsPluginAvailable(
     int render_process_id,
-    int render_view_id,
-    const GURL& url,
-    const url::Origin& main_frame_origin,
-    content::WebPluginInfo* plugin) {
-  auto it = plugin_state_.find(plugin->path);
+    const content::WebPluginInfo& plugin) {
+  auto it = plugin_state_.find(plugin.path);
   if (it == plugin_state_.end()) {
-    ADD_FAILURE() << "No plugin state for '" << plugin->path.value() << "'";
+    ADD_FAILURE() << "No plugin state for '" << plugin.path.value() << "'";
     return false;
   }
   return it->second;
@@ -162,7 +156,7 @@ TEST_F(PluginInfoHostImplTest, FindEnabledPlugin) {
     std::string actual_mime_type;
     EXPECT_TRUE(context()->FindEnabledPlugin(0, GURL(), url::Origin(),
                                              "foo/bar", &status, &plugin,
-                                             &actual_mime_type, NULL));
+                                             &actual_mime_type, nullptr));
     EXPECT_EQ(chrome::mojom::PluginStatus::kAllowed, status);
     EXPECT_EQ(foo_plugin_path_.value(), plugin.path.value());
   }
@@ -174,7 +168,7 @@ TEST_F(PluginInfoHostImplTest, FindEnabledPlugin) {
     std::string actual_mime_type;
     EXPECT_TRUE(context()->FindEnabledPlugin(0, GURL(), url::Origin(),
                                              "foo/bar", &status, &plugin,
-                                             &actual_mime_type, NULL));
+                                             &actual_mime_type, nullptr));
     EXPECT_EQ(chrome::mojom::PluginStatus::kAllowed, status);
     EXPECT_EQ(bar_plugin_path_.value(), plugin.path.value());
   }
@@ -188,7 +182,7 @@ TEST_F(PluginInfoHostImplTest, FindEnabledPlugin) {
     std::u16string plugin_name;
     EXPECT_FALSE(context()->FindEnabledPlugin(0, GURL(), url::Origin(),
                                               "foo/bar", &status, &plugin,
-                                              &actual_mime_type, NULL));
+                                              &actual_mime_type, nullptr));
     EXPECT_EQ(chrome::mojom::PluginStatus::kDisabled, status);
     EXPECT_EQ(foo_plugin_path_.value(), plugin.path.value());
   }
@@ -198,7 +192,7 @@ TEST_F(PluginInfoHostImplTest, FindEnabledPlugin) {
     std::string actual_mime_type;
     EXPECT_FALSE(context()->FindEnabledPlugin(0, GURL(), url::Origin(),
                                               "baz/blurp", &status, &plugin,
-                                              &actual_mime_type, NULL));
+                                              &actual_mime_type, nullptr));
     EXPECT_EQ(chrome::mojom::PluginStatus::kNotFound, status);
     EXPECT_EQ(FILE_PATH_LITERAL(""), plugin.path.value());
   }

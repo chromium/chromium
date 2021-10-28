@@ -46,6 +46,11 @@ class AssistantClientImpl : public AssistantClientV1,
   void RegisterActionModule(
       assistant_client::ActionModule* action_module) override;
 
+  // Settings-related setters:
+  void SetAuthenticationInfo(const AuthTokens& tokens) override;
+  void SetInternalOptions(const std::string& locale,
+                          bool spoken_feedback_enabled) override;
+
   // ServicesStatusObserver overrides:
   void OnServicesStatusChanged(ServicesStatus status) override;
 
@@ -54,7 +59,7 @@ class AssistantClientImpl : public AssistantClientV1,
 
   // Entry point for Libassistant V2 APIs, through which V2 methods can be
   // invoked. Created and owned by |GrpcServicesInitializer|.
-  chromeos::libassistant::GrpcLibassistantClient& client_;
+  chromeos::libassistant::GrpcLibassistantClient& libassistant_client_;
 
   // Invoked when all LibAssistant services are ready to query.
   base::OnceClosure services_ready_callback_;

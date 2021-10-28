@@ -263,6 +263,19 @@ class Target(object):
                                           remote_cmd.COPY_FROM_TARGET,
                                           recursive)
 
+  def GetFileAsString(self, source):
+    """Reads a file on the device and returns it as a string.
+
+    source: The remote file path to read.
+    """
+    cat_proc = self.RunCommandPiped(['cat', source],
+                                    stdout=subprocess.PIPE,
+                                    stderr=subprocess.STDOUT)
+    stdout, _ = cat_proc.communicate()
+    if cat_proc.return_code != 0:
+      raise Exception('Could not read file %s on device.', source)
+    return stdout
+
   def _GetEndpoint(self):
     """Returns a (host, port) tuple for the SSH connection to the target."""
     raise NotImplementedError()

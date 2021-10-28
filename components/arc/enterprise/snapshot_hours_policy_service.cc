@@ -4,6 +4,7 @@
 
 #include "components/arc/enterprise/snapshot_hours_policy_service.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -96,7 +97,7 @@ void SnapshotHoursPolicyService::UpdatePolicy() {
   const auto* timezone = dict->FindStringKey("timezone");
   std::string timezone_str = "";
   if (!timezone || *timezone == "UNSET") {
-    const icu::TimeZone* const zone = icu::TimeZone::detectHostTimeZone();
+    std::unique_ptr<icu::TimeZone> zone(icu::TimeZone::detectHostTimeZone());
     icu::UnicodeString zone_id;
     zone->getID(zone_id).toUTF8String(timezone_str);
     VLOG(2) << "Local timezone detected: " << timezone_str;

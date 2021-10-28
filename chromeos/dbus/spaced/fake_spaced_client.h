@@ -7,7 +7,6 @@
 
 #include "base/component_export.h"
 #include "base/files/file_path.h"
-#include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/spaced/spaced_client.h"
 
 namespace chromeos {
@@ -30,8 +29,6 @@ class COMPONENT_EXPORT(SPACED_CLIENT) FakeSpacedClient : public SpacedClient {
                          GetSizeCallback callback) override;
 
   void GetRootDeviceSize(GetSizeCallback callback) override;
-
-  base::WeakPtrFactory<FakeSpacedClient> weak_ptr_factory_{this};
 };
 
 }  // namespace chromeos

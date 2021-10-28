@@ -14,9 +14,9 @@ namespace content {
 
 class WebUI;
 
-// Implements the mojo endpoint for the Conversion WebUI which proxies calls to
-// the AttributionManager to get information about stored conversion data. Owned
-// by AttributionInternalsUI.
+// Implements the mojo endpoint for the attribution internals WebUI which
+// proxies calls to the `AttributionManager` to get information about stored
+// attribution data. Owned by `AttributionInternalsUI`.
 class AttributionInternalsHandlerImpl
     : public mojom::AttributionInternalsHandler {
  public:
@@ -33,12 +33,12 @@ class AttributionInternalsHandlerImpl
       AttributionInternalsHandlerImpl&& other) = delete;
   ~AttributionInternalsHandlerImpl() override;
 
-  // mojom::AttributionInternalsHandler overrides:
-  void IsMeasurementEnabled(
-      mojom::AttributionInternalsHandler::IsMeasurementEnabledCallback callback)
-      override;
-  void GetActiveImpressions(
-      mojom::AttributionInternalsHandler::GetActiveImpressionsCallback callback)
+  // mojom::AttributionInternalsHandler:
+  void IsAttributionReportingEnabled(
+      mojom::AttributionInternalsHandler::IsAttributionReportingEnabledCallback
+          callback) override;
+  void GetActiveSources(
+      mojom::AttributionInternalsHandler::GetActiveSourcesCallback callback)
       override;
   void GetReports(
       mojom::AttributionInternalsHandler::GetReportsCallback callback) override;

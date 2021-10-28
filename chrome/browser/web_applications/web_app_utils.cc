@@ -24,6 +24,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/common/chrome_features.h"
@@ -69,7 +70,7 @@ bool AreWebAppsEnabled(const Profile* profile) {
 bool AreWebAppsUserInstallable(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // With Lacros, web apps are not installed using the Ash browser.
-  if (base::FeatureList::IsEnabled(features::kWebAppsCrosapi))
+  if (IsWebAppsCrosapiEnabled())
     return false;
 #endif
   return AreWebAppsEnabled(profile) && !profile->IsGuestSession() &&
@@ -167,7 +168,7 @@ bool AreAppsLocallyInstalledBySync() {
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   // With Crosapi, Ash no longer participates in sync.
   // On Chrome OS before Crosapi, sync always locally installs an app.
-  return !base::FeatureList::IsEnabled(features::kWebAppsCrosapi);
+  return !IsWebAppsCrosapiEnabled();
 #else
   return false;
 #endif
@@ -261,6 +262,13 @@ std::u16string GetFileTypeAssociationsHandledByWebAppsForDisplay(
       associations,
       l10n_util::GetStringUTF8(IDS_WEB_APP_FILE_HANDLING_LIST_SEPARATOR)));
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+bool IsWebAppsCrosapiEnabled() {
+  return base::FeatureList::IsEnabled(features::kWebAppsCrosapi) ||
+         base::FeatureList::IsEnabled(chromeos::features::kLacrosPrimary);
+}
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 void EnableSystemWebAppsInLacrosForTesting() {

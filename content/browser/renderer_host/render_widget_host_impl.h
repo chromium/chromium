@@ -443,9 +443,10 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // but it failed, thus HasFocus() returns false.
   bool is_focused() const { return is_focused_; }
 
-  // Support for focus tracking on multi-WebContents cases. This will notify all
-  // renderers involved in a page about a page-level focus update. Users other
-  // than WebContents and RenderWidgetHost should use Focus()/Blur().
+  // Support for focus tracking on multi-FrameTree cases. This will notify all
+  // descendants (including nested FrameTrees) to distribute a "page focus"
+  // update. Users other than WebContents and RenderWidgetHost should use
+  // Focus()/Blur().
   void SetPageFocus(bool focused);
 
   // Called to notify the RenderWidget that it has lost the mouse lock.
@@ -928,7 +929,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
                            InputRouterReceivesHasTouchEventHandlers);
   FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostTest, EventDispatchPostDetach);
   FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostTest, InputEventRWHLatencyComponent);
-  FRIEND_TEST_ALL_PREFIXES(DevToolsManagerTest,
+  FRIEND_TEST_ALL_PREFIXES(DevToolsAgentHostImplTest,
                            NoUnresponsiveDialogInInspectedContents);
   FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostViewMacTest,
                            ConflictingAllocationsResolve);

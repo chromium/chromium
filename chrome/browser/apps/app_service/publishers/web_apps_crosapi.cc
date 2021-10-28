@@ -19,6 +19,7 @@
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/services/app_service/public/cpp/crosapi_utils.h"
@@ -31,7 +32,7 @@ namespace apps {
 WebAppsCrosapi::WebAppsCrosapi(Profile* profile) : profile_(profile) {
   // This object may be created when the flag is on or off, but only register
   // the publisher if the flag is on.
-  if (base::FeatureList::IsEnabled(features::kWebAppsCrosapi)) {
+  if (web_app::IsWebAppsCrosapiEnabled()) {
     apps::AppServiceProxyChromeOs* proxy =
         apps::AppServiceProxyFactory::GetForProfile(profile);
     mojo::Remote<apps::mojom::AppService>& app_service = proxy->AppService();
@@ -186,7 +187,7 @@ void WebAppsCrosapi::GetMenuModel(const std::string& app_id,
     // need to check BrowserAppInstanceRegistry directly. Remove this when
     // InstanceRegistry updates are implemented.
     bool app_running =
-        base::FeatureList::IsEnabled(features::kWebAppsCrosapi)
+        web_app::IsWebAppsCrosapiEnabled()
             ? proxy->BrowserAppInstanceRegistry()->IsAppRunning(app_id)
             : proxy->InstanceRegistry().ContainsAppId(app_id);
     if (app_running) {
@@ -317,7 +318,7 @@ void WebAppsCrosapi::SetPermission(const std::string& app_id,
 }
 
 void WebAppsCrosapi::OnApps(std::vector<apps::mojom::AppPtr> deltas) {
-  if (!base::FeatureList::IsEnabled(features::kWebAppsCrosapi))
+  if (!web_app::IsWebAppsCrosapiEnabled())
     return;
   for (auto& subscriber : subscribers_) {
     subscriber->OnApps(apps_util::CloneStructPtrVector(deltas),
@@ -338,7 +339,7 @@ void WebAppsCrosapi::RegisterAppController(
 
 void WebAppsCrosapi::OnCapabilityAccesses(
     std::vector<apps::mojom::CapabilityAccessPtr> deltas) {
-  if (!base::FeatureList::IsEnabled(features::kWebAppsCrosapi))
+  if (!web_app::IsWebAppsCrosapiEnabled())
     return;
   for (auto& subscriber : subscribers_) {
     subscriber->OnCapabilityAccesses(apps_util::CloneStructPtrVector(deltas));

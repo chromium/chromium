@@ -137,12 +137,19 @@ bool ExtensionMayAttachToWebContents(const Extension& extension,
     return false;
   }
 
-  for (content::RenderFrameHost* rfh : web_contents.GetAllFrames()) {
-    if (!ExtensionMayAttachToURL(extension, rfh->GetLastCommittedURL(), profile,
-                                 error))
-      return false;
-  }
-  return true;
+  bool result = true;
+  web_contents.GetMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
+      [](const Extension& extension, Profile* profile, std::string* error,
+         bool& result, content::RenderFrameHost* rfh) {
+        if (!ExtensionMayAttachToURL(extension, rfh->GetLastCommittedURL(),
+                                     profile, error)) {
+          result = false;
+          return content::RenderFrameHost::FrameIterationAction::kStop;
+        }
+        return content::RenderFrameHost::FrameIterationAction::kContinue;
+      },
+      std::ref(extension), profile, error, std::ref(result)));
+  return result;
 }
 
 bool ExtensionMayAttachToAgentHost(const Extension& extension,

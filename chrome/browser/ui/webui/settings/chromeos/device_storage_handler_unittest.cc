@@ -25,7 +25,6 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/spaced/spaced_client.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/test/fake_arc_session.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -47,6 +46,7 @@ class TestStorageHandler : public StorageHandler {
       : StorageHandler(profile, html_source) {}
 
   // Pull WebUIMessageHandler::set_web_ui() into public so tests can call it.
+  using StorageHandler::RoundByteSize;
   using StorageHandler::set_web_ui;
 };
 
@@ -63,10 +63,7 @@ class StorageHandlerTest : public testing::Test {
     // Need to initialize DBusThreadManager before ArcSessionManager's
     // constructor calls DBusThreadManager::Get().
     chromeos::DBusThreadManager::Initialize();
-
-    // Initialize fake DBus clients.
     chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
-    chromeos::SpacedClient::InitializeFake();
 
     // The storage handler requires an instance of DiskMountManager,
     // ArcServiceManager and ArcSessionManager.
@@ -91,12 +88,8 @@ class StorageHandlerTest : public testing::Test {
     handler_->AllowJavascriptForTesting();
 
     // Initialize tests APIs.
-    total_disk_space_test_api_ =
-        std::make_unique<calculator::TotalDiskSpaceTestAPI>(
-            handler_.get(), new calculator::TotalDiskSpaceCalculator(profile_));
-    free_disk_space_test_api_ =
-        std::make_unique<calculator::FreeDiskSpaceTestAPI>(
-            handler_.get(), new calculator::FreeDiskSpaceCalculator(profile_));
+    size_stat_test_api_ = std::make_unique<calculator::SizeStatTestAPI>(
+        handler_.get(), new calculator::SizeStatCalculator(profile_));
     my_files_size_test_api_ = std::make_unique<calculator::MyFilesSizeTestAPI>(
         handler_.get(), new calculator::MyFilesSizeCalculator(profile_));
     browsing_data_size_test_api_ =
@@ -126,8 +119,7 @@ class StorageHandlerTest : public testing::Test {
 
   void TearDown() override {
     handler_.reset();
-    total_disk_space_test_api_.reset();
-    free_disk_space_test_api_.reset();
+    size_stat_test_api_.reset();
     my_files_size_test_api_.reset();
     browsing_data_size_test_api_.reset();
     apps_size_test_api_.reset();
@@ -137,7 +129,6 @@ class StorageHandlerTest : public testing::Test {
     arc_service_manager_.reset();
     chromeos::disks::DiskMountManager::Shutdown();
     storage::ExternalMountPoints::GetSystemInstance()->RevokeAllFileSystems();
-    chromeos::SpacedClient::Shutdown();
     chromeos::ConciergeClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
@@ -145,9 +136,8 @@ class StorageHandlerTest : public testing::Test {
  protected:
   // From a given amount of total size and available size as input, returns the
   // space state determined by the OnGetSizeState function.
-  int GetSpaceState(int64_t total_size, int64_t available_size) {
-    total_disk_space_test_api_->SimulateOnGetRootDeviceSize(total_size);
-    free_disk_space_test_api_->SimulateOnGetFreeDiskSpace(&available_size);
+  int GetSpaceState(int64_t* total_size, int64_t* available_size) {
+    size_stat_test_api_->SimulateOnGetSizeStat(total_size, available_size);
     task_environment_.RunUntilIdle();
     const base::Value* dictionary =
         GetWebUICallbackMessage("storage-size-stat-changed");
@@ -210,8 +200,7 @@ class StorageHandlerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   Profile* profile_;
-  std::unique_ptr<calculator::TotalDiskSpaceTestAPI> total_disk_space_test_api_;
-  std::unique_ptr<calculator::FreeDiskSpaceTestAPI> free_disk_space_test_api_;
+  std::unique_ptr<calculator::SizeStatTestAPI> size_stat_test_api_;
   std::unique_ptr<calculator::MyFilesSizeTestAPI> my_files_size_test_api_;
   std::unique_ptr<calculator::BrowsingDataSizeTestAPI>
       browsing_data_size_test_api_;
@@ -224,18 +213,49 @@ class StorageHandlerTest : public testing::Test {
   std::unique_ptr<arc::ArcSessionManager> arc_session_manager_;
 };
 
+TEST_F(StorageHandlerTest, RoundByteSize) {
+  static const struct {
+    int64_t bytes;
+    const char* expected;
+  } cases[] = {
+      {0, "0 B"},
+      {3, "4 B"},
+      {4, "4 B"},
+      {5, "8 B"},
+      {8 * 1024 - 1, "8.0 KB"},
+      {8 * 1024, "8.0 KB"},
+      {8 * 1024 + 1, "16.0 KB"},
+      {31 * 1024 * 1024, "32.0 MB"},
+      {32 * 1024 * 1024, "32.0 MB"},
+      {50 * 1024 * 1024, "64.0 MB"},
+      {65LL * 1024 * 1024 * 1024, "128 GB"},
+      {130LL * 1024 * 1024 * 1024, "256 GB"},
+      {130LL * 1024 * 1024 * 1024, "256 GB"},
+      {1LL * 1024 * 1024 * 1024 * 1024, "1.0 TB"},
+      {1LL * 1024 * 1024 * 1024 * 1024 + 1, "2.0 TB"},
+      {(1LL << 61) + 1, "4,096 PB"},
+  };
+
+  for (auto& c : cases) {
+    int64_t rounded_bytes = handler_->RoundByteSize(c.bytes);
+    EXPECT_EQ(base::ASCIIToUTF16(c.expected), ui::FormatBytes(rounded_bytes));
+  }
+}
+
 TEST_F(StorageHandlerTest, GlobalSizeStat) {
   // Get local filesystem storage statistics.
   const base::FilePath mount_path =
       file_manager::util::GetMyFilesFolderForProfile(profile_);
   int64_t total_size = base::SysInfo::AmountOfTotalDiskSpace(mount_path);
   int64_t available_size = base::SysInfo::AmountOfFreeDiskSpace(mount_path);
-  int64_t used_size = total_size - available_size;
-  double used_ratio = static_cast<double>(used_size) / total_size;
+
+  // Round the total size.
+  int64_t rounded_total_size = handler_->RoundByteSize(total_size);
+  int64_t used_size = rounded_total_size - available_size;
+  double used_ratio = static_cast<double>(used_size) / rounded_total_size;
 
   // Get statistics from storage handler's UpdateSizeStat.
-  total_disk_space_test_api_->StartCalculation();
-  free_disk_space_test_api_->StartCalculation();
+  size_stat_test_api_->StartCalculation();
   task_environment_.RunUntilIdle();
 
   const base::Value* dictionary =
@@ -256,33 +276,32 @@ TEST_F(StorageHandlerTest, GlobalSizeStat) {
   double diff = used_ratio > storage_handler_used_ratio
                     ? used_ratio - storage_handler_used_ratio
                     : storage_handler_used_ratio - used_ratio;
-  // Running the test while writing data on disk (~400MB/s, situation where the
-  // used ratio is the most likely to change between the start and the end of
-  // the test), the difference between the values returned by the two
-  // AmountOfFreeDiskSpace calls is never more than 100KB. By expecting diff to
-  // be less than 100KB / total_size, the test is very unlikely to be flaky.
-  EXPECT_LE(diff, static_cast<double>(100 * 1024) / total_size);
+  // Running the test while writing data on disk (~400MB/s), the difference
+  // between the values returned by the two AmountOfFreeDiskSpace calls is never
+  // more than 100KB. By expecting diff to be less than 100KB /
+  // rounded_total_size, the test is very unlikely to be flaky.
+  EXPECT_LE(diff, static_cast<double>(100 * 1024) / rounded_total_size);
 }
 
 TEST_F(StorageHandlerTest, StorageSpaceState) {
   // Less than 512 MB available, space state is critically low.
   int64_t total_size = 1024 * 1024 * 1024;
   int64_t available_size = 512 * 1024 * 1024 - 1;
-  int space_state = GetSpaceState(total_size, available_size);
+  int space_state = GetSpaceState(&total_size, &available_size);
   EXPECT_EQ(static_cast<int>(StorageSpaceState::kStorageSpaceCriticallyLow),
             space_state);
 
   // Less than 1GB available, space state is low.
   available_size = 512 * 1024 * 1024;
-  space_state = GetSpaceState(total_size, available_size);
+  space_state = GetSpaceState(&total_size, &available_size);
   EXPECT_EQ(static_cast<int>(StorageSpaceState::kStorageSpaceLow), space_state);
   available_size = 1024 * 1024 * 1024 - 1;
-  space_state = GetSpaceState(total_size, available_size);
+  space_state = GetSpaceState(&total_size, &available_size);
   EXPECT_EQ(static_cast<int>(StorageSpaceState::kStorageSpaceLow), space_state);
 
   // From 1GB, normal space state.
   available_size = 1024 * 1024 * 1024;
-  space_state = GetSpaceState(total_size, available_size);
+  space_state = GetSpaceState(&total_size, &available_size);
   EXPECT_EQ(static_cast<int>(StorageSpaceState::kStorageSpaceNormal),
             space_state);
 }
@@ -394,8 +413,7 @@ TEST_F(StorageHandlerTest, SystemSize) {
   // Simulate size stat callback.
   int64_t total_size = TB;
   int64_t available_size = 100 * GB;
-  total_disk_space_test_api_->SimulateOnGetRootDeviceSize(total_size);
-  free_disk_space_test_api_->SimulateOnGetFreeDiskSpace(&available_size);
+  size_stat_test_api_->SimulateOnGetSizeStat(&total_size, &available_size);
   const base::Value* callback =
       GetWebUICallbackMessage("storage-size-stat-changed");
   ASSERT_TRUE(callback) << "No 'storage-size-stat-changed' callback";

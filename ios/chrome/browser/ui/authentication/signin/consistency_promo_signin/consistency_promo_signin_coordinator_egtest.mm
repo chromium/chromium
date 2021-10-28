@@ -2,14 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/authentication/signin_matchers.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
+#import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 
@@ -76,6 +79,30 @@
       kDefaultWebSignInDismissalCount,
       [ChromeEarlGrey userIntegerPref:prefs::kSigninWebSignDismissalCount],
       @"Dismissal count should be at the max value");
+}
+
+// Removes the only identity while the error dialog is opened. Once the identity
+// is removed, the web sign-in dialog is removed.
+- (void)testRemoveLastIdentityWithSigninErrorDialog {
+  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  [SigninEarlGreyAppInterface triggerConsistencyPromoSigninDialog];
+  [SigninEarlGreyUI verifyWebSigninIsVisible:YES];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          WebSigninContinueButtonMatcher()]
+      performAction:grey_tap()];
+  // Wait for the error dialog (sign-in fails since the sign-in is done with a
+  // fake identity).
+  [ChromeEarlGreyUI waitForAppToIdle];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          chrome_test_util::StaticTextWithAccessibilityLabelId(
+              IDS_IOS_SIGN_IN_AUTH_FAILURE)
+                                  timeout:base::test::ios::
+                                              kWaitForDownloadTimeout];
+  [SigninEarlGrey forgetFakeIdentity:fakeIdentity];
+  [ChromeEarlGreyUI waitForAppToIdle];
+  [SigninEarlGreyUI verifyWebSigninIsVisible:NO];
 }
 
 @end

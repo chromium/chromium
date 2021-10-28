@@ -33,6 +33,8 @@ namespace libassistant {
 struct StateConfig {
   StateConfig() = default;
   ~StateConfig() = default;
+  StateConfig(int32_t retries, int64_t timeout_in_ms)
+      : max_retries(retries), timeout_in_ms(timeout_in_ms) {}
 
   // The maximum retry attempts for the client call if it failed.
   int32_t max_retries = 0;

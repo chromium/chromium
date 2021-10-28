@@ -463,6 +463,16 @@ void RenderFrameProxyHost::DidFocusFrame() {
               ChromeTrackEvent::kFrameTreeNodeInfo, *frame_tree_node_,
               ChromeTrackEvent::kSiteInstance,
               *static_cast<SiteInstanceImpl*>(GetSiteInstance()));
+  // If a fenced frame has requested focus something wrong has gone on. We do
+  // not support programmatic focus between the embedder and embeddee because
+  // that could be a side channel.
+  if (frame_tree_node_->frame_tree()->type() == FrameTree::Type::kFencedFrame &&
+      frame_tree_node_->render_manager()->GetProxyToOuterDelegate() == this) {
+    bad_message::ReceivedBadMessage(GetProcess(),
+                                    bad_message::RFPH_FOCUSED_FENCED_FRAME);
+    return;
+  }
+
   RenderFrameHostImpl* render_frame_host =
       frame_tree_node_->current_frame_host();
   // Do not focus inactive RenderFrameHost.

@@ -26,7 +26,7 @@ EnterpriseManagementAuthority
 BrowserCloudManagementStatusProvider::GetAuthority() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return EnterpriseManagementAuthority::NONE;
-#elif !defined(OS_ANDROID)
+#else
   // A machine level user cloud policy manager is only created if the browser is
   // managed by CBCM.
   if (g_browser_process->browser_policy_connector()
@@ -34,9 +34,7 @@ BrowserCloudManagementStatusProvider::GetAuthority() {
     return EnterpriseManagementAuthority::CLOUD_DOMAIN;
   }
   return EnterpriseManagementAuthority::NONE;
-#else
-  return EnterpriseManagementAuthority::NONE;
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 LocalBrowserManagementStatusProvider::LocalBrowserManagementStatusProvider() =

@@ -31,6 +31,7 @@ import ar
 import data_quality
 import demangle
 import describe
+import dir_metadata
 import dwarfdump
 import file_format
 import function_signature
@@ -48,22 +49,6 @@ import zip_util
 
 sys.path.insert(1, os.path.join(path_util.TOOLS_SRC_ROOT, 'tools', 'grit'))
 from grit.format import data_pack
-
-_METADATA_FILENAME = 'DIR_METADATA'
-_METADATA_COMPONENT_REGEX = re.compile(r'^\s*component:\s*"(.*?)"',
-                                       re.MULTILINE)
-_OWNERS_FILENAME = 'OWNERS'
-_OWNERS_COMPONENT_REGEX = re.compile(r'^\s*#\s*COMPONENT:\s*(\S+)',
-                                     re.MULTILINE)
-_OWNERS_FILE_PATH_REGEX = re.compile(r'^\s*file://(\S+)', re.MULTILINE)
-# Paths that are missing metadata, and where it's hard to add (e.g. code in
-# other repositories.
-_COMPONENT_DEFAULTS = {
-    os.path.join('third_party', 'webrtc'): 'Blink>WebRTC',
-    os.path.join('logging', 'rtc_event_log'): 'Blink>WebRTC',
-    os.path.join('modules', 'audio_codec'): 'Blink>WebRTC',
-    os.path.join('modules', 'audio_processing'): 'Blink>WebRTC',
-}
 
 _UNCOMPRESSED_COMPRESSION_RATIO_THRESHOLD = 0.9
 
@@ -574,107 +559,6 @@ def _CreateMergeStringsReplacements(merge_string_syms,
       'Removed %d overlapping string literals (%d bytes) & created %d aliases',
                 num_removed, size_removed, num_aliases)
   return ret
-
-
-def _ParseComponentFromMetadata(path):
-  """Extracts Component from DIR_METADATA."""
-  try:
-    with open(path) as f:
-      data = f.read()
-
-    m = _METADATA_COMPONENT_REGEX.search(data)
-    if m:
-      return m.group(1)
-  except IOError:
-    # Need to catch both FileNotFoundError and NotADirectoryError since
-    # source_paths for .aar files look like: /path/to/lib.aar/path/within/zip
-    pass
-  return ''
-
-
-def _ParseComponentFromOwners(path):
-  """Extracts COMPONENT and file:// from an OWNERS file.
-
-  Args:
-    path: Path to the file to parse.
-
-  Returns:
-    (component, None) if COMPONENT: line was found.
-    ('', path) if a single file:// was found.
-    ('', None) if neither was found.
-  """
-  try:
-    with open(path) as f:
-      data = f.read()
-
-    m = _OWNERS_COMPONENT_REGEX.search(data)
-    if m:
-      return m.group(1), None
-    aliases = _OWNERS_FILE_PATH_REGEX.findall(data)
-    if len(aliases) == 1:
-      return '', aliases[0]
-  except IOError:
-    # Need to catch both FileNotFoundError and NotADirectoryError since
-    # source_paths for .aar files look like: /path/to/lib.aar/path/within/zip
-    pass
-  return '', None
-
-
-def _FindComponentRoot(path, cache, source_directory):
-  """Searches all parent directories for COMPONENT in OWNERS files.
-
-  Args:
-    path: Path of directory to start searching from. Must be relative to
-      |source_directory|.
-    cache: Dict of OWNERS paths. Used instead of filesystem if paths are present
-      in the dict.
-    source_directory: Directory to use as the root.
-
-  Returns:
-    COMPONENT belonging to |path|, or empty string if not found.
-  """
-  assert not os.path.isabs(path)
-  component = cache.get(path)
-  if component is not None:
-    return component
-
-  metadata_path = os.path.join(source_directory, path, _METADATA_FILENAME)
-  component = _ParseComponentFromMetadata(metadata_path)
-  if not component:
-    owners_path = os.path.join(source_directory, path, _OWNERS_FILENAME)
-    component, path_alias = _ParseComponentFromOwners(owners_path)
-
-  if not component:
-    # Store in cache before recursing to prevent cycles.
-    cache[path] = ''
-    if path_alias:
-      alias_dir = os.path.dirname(path_alias)
-      component = _FindComponentRoot(alias_dir, cache, source_directory)
-
-  if not component:
-    parent_path = os.path.dirname(path)
-    if parent_path:
-      component = _FindComponentRoot(parent_path, cache, source_directory)
-
-  cache[path] = component
-  return component
-
-
-def _PopulateComponents(raw_symbols, source_directory):
-  """Populates the |component| field based on |source_path|.
-
-  Symbols without a |source_path| are skipped.
-
-  Args:
-    raw_symbols: list of Symbol objects.
-    source_directory: Directory to use as the root.
-  """
-  seen_paths = _COMPONENT_DEFAULTS.copy()
-  for symbol in raw_symbols:
-    if symbol.source_path:
-      folder_path = os.path.dirname(symbol.source_path)
-      symbol.component = _FindComponentRoot(folder_path, seen_paths,
-                                            source_directory)
 
 
 def _UpdateSymbolNamesFromNm(raw_symbols, names_by_address):
@@ -1746,7 +1630,7 @@ def CreateContainerAndSymbols(knobs=None,
 
   _ExtractSourcePathsAndNormalizeObjectPaths(raw_symbols, object_source_mapper,
                                              address_source_mapper)
-  _PopulateComponents(raw_symbols, source_directory)
+  dir_metadata.PopulateComponents(raw_symbols, source_directory)
   logging.info('Converting excessive aliases into shared-path symbols')
   _CompactLargeAliasesIntoSharedSymbols(raw_symbols, knobs)
   logging.debug('Connecting nm aliases')

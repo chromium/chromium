@@ -14,6 +14,8 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chromeos/assistant/internal/grpc_transport/request_utils.h"
 #include "chromeos/assistant/internal/internal_constants.h"
+#include "chromeos/assistant/internal/internal_util.h"
+#include "chromeos/assistant/internal/proto/shared/proto/v2/bootup_settings_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/query_interface.pb.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/libassistant/callback_utils.h"
@@ -26,6 +28,37 @@
 namespace chromeos {
 namespace libassistant {
 
+namespace {
+
+// Rpc call config constants.
+constexpr int kMaxRpcRetries = 5;
+constexpr int kAssistantInteractionDefaultTimeoutMs = 20000;
+const chromeos::libassistant::StateConfig kDefaultStateConfig =
+    chromeos::libassistant::StateConfig{kMaxRpcRetries,
+                                        kAssistantInteractionDefaultTimeoutMs};
+
+// Creates a callback for logging the request status. The callback will
+// ignore the returned response as it either doesn't contain any information
+// we need or is empty.
+template <typename Response>
+base::OnceCallback<void(const grpc::Status& status, const Response&)>
+PrintLogCallback(const std::string& request_name) {
+  return base::BindOnce(
+      [](const std::string& request_name, const grpc::Status& status,
+         const Response& ignored) {
+        if (status.ok()) {
+          DVLOG(2) << request_name << " succeed with ok status.";
+        } else {
+          LOG(ERROR) << request_name << " failed with a non-ok status.";
+          LOG(ERROR) << "Error code: " << status.error_code()
+                     << ", error message: " << status.error_message();
+        }
+      },
+      request_name);
+}
+
+}  // namespace
+
 AssistantClientImpl::AssistantClientImpl(
     std::unique_ptr<assistant_client::AssistantManager> assistant_manager,
     assistant_client::AssistantManagerInternal* assistant_manager_internal,
@@ -34,7 +67,7 @@ AssistantClientImpl::AssistantClientImpl(
     : AssistantClientV1(std::move(assistant_manager),
                         assistant_manager_internal),
       grpc_services_(libassistant_service_address, assistant_service_address),
-      client_(grpc_services_.GrpcLibassistantClient()) {
+      libassistant_client_(grpc_services_.GrpcLibassistantClient()) {
   services_status_observation_.Observe(
       &grpc_services_.GetServicesStatusProvider());
 }
@@ -67,16 +100,10 @@ void AssistantClientImpl::SendVoicelessInteraction(
     const std::string& description,
     const ::assistant::api::VoicelessOptions& options,
     base::OnceCallback<void(bool)> on_done) {
-  constexpr int kMaxRPCRetries = 5;
-  constexpr int kAssistantInteractionDefaultTimeoutMs = 20000;
-  StateConfig state_config;
-  state_config.max_retries = kMaxRPCRetries;
-  state_config.timeout_in_ms = kAssistantInteractionDefaultTimeoutMs;
-
   ::assistant::api::SendQueryRequest request;
   PopulateSendQueryRequest(interaction, description, options, &request);
 
-  client_.CallServiceMethod(
+  libassistant_client_.CallServiceMethod(
       request,
       base::BindOnce(
           [](base::OnceCallback<void(bool)> on_done, const grpc::Status& status,
@@ -84,12 +111,43 @@ void AssistantClientImpl::SendVoicelessInteraction(
             std::move(on_done).Run(response.success());
           },
           std::move(on_done)),
-      state_config);
+      kDefaultStateConfig);
 }
 
 void AssistantClientImpl::RegisterActionModule(
     assistant_client::ActionModule* action_module) {
   grpc_services_.GetActionService()->RegisterActionModule(action_module);
+}
+
+void AssistantClientImpl::SetAuthenticationInfo(const AuthTokens& tokens) {
+  ::assistant::api::SetAuthInfoRequest request;
+  // Each token exists of a [gaia_id, auth_token] tuple.
+  for (const auto& token : tokens) {
+    auto* proto = request.add_tokens();
+    proto->set_user_id(token.first);
+    proto->set_auth_token(token.second);
+  }
+
+  libassistant_client_.CallServiceMethod(
+      request,
+      PrintLogCallback<::assistant::api::SetAuthInfoResponse>(
+          /*request_name=*/__func__),
+      kDefaultStateConfig);
+}
+
+void AssistantClientImpl::SetInternalOptions(const std::string& locale,
+                                             bool spoken_feedback_enabled) {
+  auto internal_options = chromeos::assistant::CreateInternalOptionsProto(
+      locale, spoken_feedback_enabled);
+
+  ::assistant::api::SetInternalOptionsRequest request;
+  *request.mutable_internal_options() = std::move(internal_options);
+
+  libassistant_client_.CallServiceMethod(
+      request,
+      PrintLogCallback<::assistant::api::SetInternalOptionsResponse>(
+          /*request_name=*/__func__),
+      kDefaultStateConfig);
 }
 
 void AssistantClientImpl::OnServicesStatusChanged(ServicesStatus status) {

@@ -83,14 +83,16 @@ class MockUpdateClient : public UpdateClient {
                      bool(const std::string& id, CrxUpdateItem* update_item));
   MOCK_CONST_METHOD1(IsUpdating, bool(const std::string& id));
   MOCK_METHOD0(Stop, void());
-  MOCK_METHOD4(SendUninstallPing,
+  MOCK_METHOD5(SendUninstallPing,
                void(const std::string& id,
                     const base::Version& version,
                     int reason,
+                    bool requires_network_encryption,
                     Callback callback));
-  MOCK_METHOD3(SendRegistrationPing,
+  MOCK_METHOD4(SendRegistrationPing,
                void(const std::string& id,
                     const base::Version& version,
+                    bool requires_network_encryption,
                     Callback callback));
 
  private:

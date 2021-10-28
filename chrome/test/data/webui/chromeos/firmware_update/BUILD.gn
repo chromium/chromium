@@ -15,6 +15,8 @@ js_type_check("closure_compile") {
     ":fake_update_provider_test",
     ":firmware_update_test",
     ":firmware_update_unified_test",
+    ":peripheral_updates_list_test",
+    ":update_card_test",
   ]
 }
 
@@ -35,6 +37,24 @@ js_library("firmware_update_test") {
     "//ash/webui/firmware_update_ui/resources:firmware_update_app",
     "//ash/webui/firmware_update_ui/resources:firmware_update_types",
     "//ash/webui/firmware_update_ui/resources:mojo_interface_provider",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("peripheral_updates_list_test") {
+  deps = [
+    "../..:chai_assert",
+    "../..:test_util",
+    "//ash/webui/firmware_update_ui/resources:peripheral_updates_list",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("update_card_test") {
+  deps = [
+    "../..:chai_assert",
+    "../..:test_util",
+    "//ash/webui/firmware_update_ui/resources:update_card",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

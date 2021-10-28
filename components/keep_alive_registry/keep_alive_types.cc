@@ -48,6 +48,8 @@ std::ostream& operator<<(std::ostream& out, const KeepAliveOrigin& origin) {
       return out << "APP_LIST_SERVICE_VIEWS";
     case KeepAliveOrigin::APP_LIST_SHOWER:
       return out << "APP_LIST_SHOWER";
+    case KeepAliveOrigin::APP_MANIFEST_UPDATE:
+      return out << "APP_MANIFEST_UPDATE";
     case KeepAliveOrigin::APP_START_URL_MIGRATION:
       return out << "APP_START_URL_MIGRATION";
     case KeepAliveOrigin::CHROME_APP_DELEGATE:

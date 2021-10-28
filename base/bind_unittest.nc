@@ -196,7 +196,7 @@ void WontCompile() {
   auto cb = BindOnce(&TakesIntRef, base::OwnedRef(f));
 }
 
-#elif defined(NCTEST_NO_IMPLICIT_ARRAY_PTR_CONVERSION)  // [r"fatal error: static_assert failed due to requirement '!std::is_array<base::HasRef \[10\]>::value' \"First bound argument to a method cannot be an array.\""]
+#elif defined(NCTEST_NO_IMPLICIT_ARRAY_PTR_CONVERSION)  // [r"fatal error: static_assert failed due to requirement '!std::is_array<base::HasRef\[10\]>::value' \"First bound argument to a method cannot be an array.\""]
 
 // A method should not be bindable with an array of objects.
 //

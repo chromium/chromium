@@ -101,6 +101,7 @@ struct App {
 
   std::string app_id;
   std::string version;
+  std::string ap;
   base::flat_map<std::string, std::string> installer_attributes;
   std::string lang;
   std::string brand_code;

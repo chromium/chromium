@@ -421,11 +421,6 @@ class WebContents : public PageNavigator,
       const base::RepeatingCallback<void(RenderFrameHost*)>& on_frame) = 0;
 
   // TODO(1208438): Migrate to |ForEachRenderFrameHost|.
-  // Returns a vector of all RenderFrameHosts in the currently active view in
-  // breadth-first traversal order.
-  virtual std::vector<RenderFrameHost*> GetAllFrames() = 0;
-
-  // TODO(1208438): Migrate to |ForEachRenderFrameHost|.
   // Sends the given IPC to all live frames in this WebContents and returns the
   // number of sent messages (i.e. the number of processed frames).
   virtual int SendToAllFrames(IPC::Message* message) = 0;

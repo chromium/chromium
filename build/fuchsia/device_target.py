@@ -13,7 +13,8 @@ import subprocess
 import target
 import time
 
-from common import EnsurePathExists, GetHostToolPathFromPlatform
+from common import EnsurePathExists, GetHostToolPathFromPlatform, \
+                   RunGnSdkFunction, SubprocessCallWithTimeout
 
 # The maximum times to attempt mDNS resolution when connecting to a freshly
 # booted Fuchsia instance before aborting.
@@ -28,6 +29,15 @@ BOOT_DISCOVERY_DELAY_SECS = 4
 # Time between a reboot command is issued and when connection attempts from the
 # host begin.
 _REBOOT_SLEEP_PERIOD = 20
+
+# File indicating version of an image downloaded to the host
+_BUILD_ARGS = "buildargs.gn"
+
+# File on device that indicates Fuchsia version.
+_ON_DEVICE_VERSION_FILE = '/config/build-info/version'
+
+# File on device that indicates Fuchsia product.
+_ON_DEVICE_PRODUCT_FILE = '/config/build-info/product'
 
 
 def GetTargetType():
@@ -53,7 +63,7 @@ class DeviceTarget(target.Target):
     Deploy to a device at the host IP address as-is."""
 
   def __init__(self, out_dir, target_cpu, host, node_name, port, ssh_config,
-               fuchsia_out_dir, os_check, logs_dir):
+               fuchsia_out_dir, os_check, logs_dir, system_image_dir):
     """out_dir: The directory which will contain the files that are
                    generated to support the deployment.
     target_cpu: The CPU architecture of the deployment target. Can be
@@ -67,16 +77,21 @@ class DeviceTarget(target.Target):
     os_check: If 'check', the target's SDK version must match.
               If 'update', the target will be repaved if the SDK versions
                   mismatch.
-              If 'ignore', the target's SDK version is ignored."""
+              If 'ignore', the target's SDK version is ignored.
+    system_image_dir: The directory which contains the files used to pave the
+                      device."""
 
     super(DeviceTarget, self).__init__(out_dir, target_cpu, logs_dir)
 
     self._host = host
     self._port = port
     self._fuchsia_out_dir = None
-    self._node_name = node_name
+    self._node_name = node_name or os.environ.get('FUCHSIA_NODENAME')
+    self._system_image_dir = system_image_dir
     self._os_check = os_check
     self._pkg_repo = None
+    if not self._system_image_dir and self._os_check != 'ignore':
+      raise Exception("Image directory must be provided if a repave is needed.")
 
     if self._host and self._node_name:
       raise Exception('Only one of "--host" or "--name" can be specified.')
@@ -97,15 +112,18 @@ class DeviceTarget(target.Target):
       self._ssh_config_path = os.path.expanduser(ssh_config)
 
     else:
-      # Default to using an automatically generated SSH config and keys.
-      boot_data.ProvisionSSH()
-      self._ssh_config_path = boot_data.GetSSHConfigPath()
+      return_code, ssh_config_raw, _ = RunGnSdkFunction(
+          'fuchsia-common.sh', 'get-fuchsia-sshconfig-file')
+      if return_code != 0:
+        raise Exception('Could not get Fuchsia ssh config file.')
+      self._ssh_config_path = os.path.expanduser(ssh_config_raw.strip())
 
   @staticmethod
   def CreateFromArgs(args):
     return DeviceTarget(args.out_dir, args.target_cpu, args.host,
                         args.node_name, args.port, args.ssh_config,
-                        args.fuchsia_out_dir, args.os_check, args.logs_dir)
+                        args.fuchsia_out_dir, args.os_check, args.logs_dir,
+                        args.system_image_dir)
 
   @staticmethod
   def RegisterArgs(arg_parser):
@@ -130,19 +148,16 @@ class DeviceTarget(target.Target):
     device_args.add_argument(
         '--os-check',
         choices=['check', 'update', 'ignore'],
-        default='update',
+        default='ignore',
         help="Sets the OS version enforcement policy. If 'check', then the "
         "deployment process will halt if the target\'s version doesn\'t "
         "match. If 'update', then the target device will automatically "
         "be repaved. If 'ignore', then the OS version won\'t be checked.")
-
-  def _ProvisionDeviceIfNecessary(self):
-    if self._Discover():
-      self._WaitUntilReady()
-    else:
-      raise Exception('Could not find device. If the device is connected '
-                      'to the host remotely, make sure that --host flag is '
-                      'set and that remote serving is set up.')
+    device_args.add_argument('--system-image-dir',
+                             help="Specify the directory that contains the "
+                             "Fuchsia image used to pave the device. Only "
+                             "needs to be specified if 'os_check' is not "
+                             "'ignore'.")
 
   def _Discover(self):
     """Queries mDNS for the IP address of a booted Fuchsia instance whose name
@@ -166,11 +181,11 @@ class DeviceTarget(target.Target):
       ]
       proc = subprocess.Popen(command,
                               stdout=subprocess.PIPE,
-                              stderr=open(os.devnull, 'w'))
+                              stderr=subprocess.DEVNULL)
     else:
       proc = self.RunFFXCommand(['target', 'list', '-f', 'simple'],
                                 stdout=subprocess.PIPE,
-                                stderr=open(os.devnull, 'w'))
+                                stderr=subprocess.DEVNULL)
 
     output = set(proc.communicate()[0].strip().split('\n'))
     if proc.returncode != 0:
@@ -183,11 +198,9 @@ class DeviceTarget(target.Target):
       name_host_pairs = [x.strip().split(' ') for x in output]
 
       if len(name_host_pairs) > 1:
-        logging.warning('More than one device was discovered on the network. '
-                        'Use --node-name <name> to specify the device to use.')
-        logging.warning('List of devices:')
-        logging.warning(output)
-        raise Exception('Ambiguous target device specification.')
+        raise Exception('More than one device was discovered on the network. '
+                        'Use --node-name <name> to specify the device to use.'
+                        'List of devices: {}'.format(output))
       assert len(name_host_pairs) == 1
       # Check if device has both address and name.
       if len(name_host_pairs[0]) < 2:
@@ -203,7 +216,80 @@ class DeviceTarget(target.Target):
     if self._host:
       self._WaitUntilReady()
     else:
-      self._ProvisionDeviceIfNecessary()
+      try:
+        device_found = self._Discover()
+      except target.FuchsiaTargetException:
+        logging.info('Could not detect device.')
+        if self._node_name and self._os_check == 'update':
+          logging.info('Assuming it is in zedboot. Continuing with paving...')
+          self._ProvisionDevice()
+          return
+        else:
+          raise
+
+      if device_found:
+        self._WaitUntilReady()
+        if self._os_check == 'ignore':
+          return
+
+        # If accessible, check version.
+        new_version = self._GetSdkHash()
+        installed_version = self._GetInstalledSdkVersion()
+        if new_version == installed_version:
+          logging.info('Fuchsia version installed on device matches Chromium '
+                       'SDK version. Skipping pave.')
+        else:
+          if self._os_check == 'check':
+            raise Exception('Image and Fuchsia version installed on device '
+                            'does not match. Abort.')
+          logging.info('Putting device in recovery mode')
+          self.RunCommandPiped(['dm', 'reboot-recovery'],
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.STDOUT)
+          self._ProvisionDevice()
+      else:
+        raise Exception('Could not find device. If the device is connected '
+                        'to the host remotely, make sure that --host flag '
+                        'is set and that remote serving is set up.')
+
+  def _GetInstalledSdkVersion(self):
+    """Retrieves installed OS version from device.
+
+    Returns:
+      Tuple of strings, containing (product, version number)
+    """
+    return (self.GetFileAsString(_ON_DEVICE_PRODUCT_FILE).strip(),
+            self.GetFileAsString(_ON_DEVICE_VERSION_FILE).strip())
+
+  def _GetSdkHash():
+    """Read version of hash in pre-installed package directory.
+    Returns:
+      Tuple of (product, version) of image to be installed.
+    Raises:
+      VersionNotFoundError: if contents of buildargs.gn cannot be found or the
+      version number cannot be extracted.
+    """
+
+    # TODO(crbug.com/1261961): Stop processing buildargs.gn directly.
+    with open(os.path.join(self._system_image_dir, _BUILD_ARGS)) as f:
+      contents = f.readlines()
+    if not contents:
+      raise VersionNotFoundError('Could not retrieve %s' % _BUILD_ARGS)
+    version_key = 'build_info_version'
+    product_key = 'build_info_product'
+    info_keys = [product_key, version_key]
+    version_info = {}
+    for line in contents:
+      for k in info_keys:
+        match = re.match(r'%s = "(.*)"' % k, line)
+        if match:
+          version_info[k] = match.group(1)
+    if not (version_key in version_info and product_key in version_info):
+      raise VersionNotFoundError(
+          'Could not extract version info from %s. Contents: %s' %
+          (_BUILD_ARGS, contents))
+
+    return (version_info[product_key], version_info[version_key])
 
   def GetPkgRepo(self):
     if not self._pkg_repo:
@@ -248,6 +334,22 @@ class DeviceTarget(target.Target):
 
   def _GetSshConfigPath(self):
     return self._ssh_config_path
+
+  def _ProvisionDevice(self):
+    _, auth_keys, _ = RunGnSdkFunction('fuchsia-common.sh',
+                                       'get-fuchsia-auth-keys-file')
+    pave_command = [
+        os.path.join(self._system_image_dir, 'pave.sh'), '--authorized-keys',
+        auth_keys.strip()
+    ]
+    if self._node_name:
+      pave_command.extend(['-n', self._node_name, '-1'])
+    logging.warning(' '.join(pave_command))
+    return_code, stdout, stderr = SubprocessCallWithTimeout(pave_command,
+                                                            timeout_secs=300)
+    if return_code != 0:
+      raise Exception('Could not pave device.')
+    self._ParseNodename(stderr)
 
   def Restart(self):
     """Restart the device."""

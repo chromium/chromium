@@ -7,6 +7,10 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
+#include "ash/webui/eche_app_ui/apps_access_manager_impl.h"
+#include "ash/webui/eche_app_ui/eche_app_manager.h"
+#include "ash/webui/eche_app_ui/eche_uid_provider.h"
+#include "ash/webui/eche_app_ui/system_info.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -25,10 +29,6 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
-#include "chromeos/components/eche_app_ui/apps_access_manager_impl.h"
-#include "chromeos/components/eche_app_ui/eche_app_manager.h"
-#include "chromeos/components/eche_app_ui/eche_uid_provider.h"
-#include "chromeos/components/eche_app_ui/system_info.h"
 #include "chromeos/components/phonehub/phone_hub_manager.h"
 #include "chromeos/services/secure_channel/presence_monitor_impl.h"
 #include "chromeos/services/secure_channel/public/cpp/client/presence_monitor_client_impl.h"

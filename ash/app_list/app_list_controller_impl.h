@@ -300,6 +300,11 @@ class ASH_EXPORT AppListControllerImpl
   void RequestPositionUpdate(
       std::string id,
       const syncer::StringOrdinal& new_position) override;
+  void RequestMoveItemToFolder(std::string id,
+                               const std::string& folder_id) override;
+  void RequestMoveItemToRoot(
+      std::string id,
+      syncer::StringOrdinal position_after_move) override;
 
   // Gets the home screen window, if available, or null if the home screen
   // window is being hidden for effects (e.g. when dragging windows or

@@ -453,7 +453,7 @@ GEN('#endif');
 var CrSettingsPrivacyPageTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/privacy_page_test.js';
+    return 'chrome://settings/test_loader.html?module=settings/privacy_page_test.js&host=webui-test';
   }
 
   /** @override */
@@ -523,7 +523,7 @@ TEST_F(
 var CrSettingsRouteTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/route_tests.js';
+    return 'chrome://settings/test_loader.html?module=settings/route_tests.js&host=webui-test';
   }
 };
 
@@ -616,7 +616,7 @@ TEST_F('CrSettingsAdvancedPageTest', 'MAYBE_Load', function() {
  ['Subpage', 'settings_subpage_test.js'],
  ['SyncAccountControl', 'sync_account_control_test.js'],
  ['Textarea', 'settings_textarea_tests.js'],
- ['ToggleButton', 'settings_toggle_button_tests.js'],
+ ['ToggleButton', 'settings_toggle_button_tests.js', undefined, true],
  ['ZoomLevels', 'zoom_levels_tests.js'],
 ].forEach(test => registerTest(...test));
 
@@ -672,12 +672,13 @@ registerTest('MetricsReporting', 'metrics_reporting_tests.js');
 GEN('#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) ' +
     '&& !BUILDFLAG(IS_CHROMEOS_ASH)');
 
-function registerTest(testName, module, caseName) {
+function registerTest(testName, module, caseName, useNewTestHost = false) {
   const className = `CrSettings${testName}Test`;
+  const testHostParam = useNewTestHost ? '&host=webui-test' : '';
   this[className] = class extends CrSettingsBrowserTest {
     /** @override */
     get browsePreload() {
-      return `chrome://settings/test_loader.html?module=settings/${module}`;
+      return `chrome://settings/test_loader.html?module=settings/${module}${testHostParam}`;
     }
   };
 

@@ -70,6 +70,7 @@
 #include "chrome/browser/speech/tts_ash.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chromeos/components/cdm_factory_daemon/cdm_factory_daemon_proxy_ash.h"
 #include "chromeos/components/sensors/ash/sensor_hal_dispatcher.h"
@@ -223,7 +224,7 @@ void CrosapiAsh::BindAppServiceProxy(
 
 void CrosapiAsh::BindBrowserAppInstanceRegistry(
     mojo::PendingReceiver<mojom::BrowserAppInstanceRegistry> receiver) {
-  if (!base::FeatureList::IsEnabled(features::kWebAppsCrosapi)) {
+  if (!web_app::IsWebAppsCrosapiEnabled()) {
     return;
   }
   Profile* profile = ProfileManager::GetPrimaryUserProfile();

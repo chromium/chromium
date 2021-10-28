@@ -7,7 +7,7 @@ import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {$, getRequiredElement} from 'chrome://resources/js/util.m.js';
 import {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 
-import {AttributionInternalsHandler, AttributionInternalsHandlerRemote, SourceType, WebUIConversionReport, WebUIConversionReport_Status, WebUIImpression,} from './attribution_internals.mojom-webui.js';
+import {AttributionInternalsHandler, AttributionInternalsHandlerRemote, SourceType, WebUIAttributionReport, WebUIAttributionReport_Status, WebUIAttributionSource} from './attribution_internals.mojom-webui.js';
 
 /**
  * @template T
@@ -298,7 +298,7 @@ Table.prototype.__proto__ = HTMLDivElement.prototype;
 
 class Source {
   /**
-   * @param {!WebUIImpression} mojo
+   * @param {!WebUIAttributionSource} mojo
    */
   constructor(mojo) {
     this.sourceEventId = mojo.sourceEventId;
@@ -338,7 +338,7 @@ class SourceTableModel extends TableModel {
 
 class Report {
   /**
-   * @param {!WebUIConversionReport} mojo
+   * @param {!WebUIAttributionReport} mojo
    */
   constructor(mojo) {
     this.reportBody = mojo.reportBody;
@@ -350,17 +350,17 @@ class Report {
     this.attributedTruthfully = mojo.attributedTruthfully;
 
     switch (mojo.status) {
-      case WebUIConversionReport_Status.kSent:
+      case WebUIAttributionReport_Status.kSent:
         this.status = `Sent: HTTP ${mojo.httpResponseCode}`;
         this.httpResponseCode = mojo.httpResponseCode;
         break;
-      case WebUIConversionReport_Status.kPending:
+      case WebUIAttributionReport_Status.kPending:
         this.status = 'Pending';
         break;
-      case WebUIConversionReport_Status.kDroppedDueToLowPriority:
+      case WebUIAttributionReport_Status.kDroppedDueToLowPriority:
         this.status = 'Dropped due to low priority';
         break;
-      case WebUIConversionReport_Status.kDroppedForNoise:
+      case WebUIAttributionReport_Status.kDroppedForNoise:
         this.status = 'Dropped for noise';
         break;
     }
@@ -440,8 +440,8 @@ function SourceTypeToText(sourceType) {
  * backend and populate the tables. Also update measurement enabled status.
  */
 function updatePageData() {
-  // Get the feature status for ConversionMeasurement and populate it.
-  pageHandler.isMeasurementEnabled().then((response) => {
+  // Get the feature status for Attribution Reporting and populate it.
+  pageHandler.isAttributionReportingEnabled().then((response) => {
     $('feature-status-content').innerText =
         response.enabled ? 'enabled' : 'disabled';
     $('feature-status-content').classList.toggle('disabled', !response.enabled);
@@ -455,9 +455,9 @@ function updatePageData() {
     }
   });
 
-  pageHandler.getActiveImpressions().then((response) => {
+  pageHandler.getActiveSources().then((response) => {
     $('source-table-wrapper')
-        .setRows(response.impressions.map((mojo) => new Source(mojo)));
+        .setRows(response.sources.map((mojo) => new Source(mojo)));
   });
 
   pageHandler.getReports().then((response) => {

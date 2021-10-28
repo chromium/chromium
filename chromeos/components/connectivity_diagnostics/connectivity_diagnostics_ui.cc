@@ -6,9 +6,9 @@
 
 #include <utility>
 
+#include "ash/webui/network_ui/network_diagnostics_resource_provider.h"
+#include "ash/webui/network_ui/network_health_resource_provider.h"
 #include "chromeos/components/connectivity_diagnostics/url_constants.h"
-#include "chromeos/components/network_ui/network_diagnostics_resource_provider.h"
-#include "chromeos/components/network_ui/network_health_resource_provider.h"
 #include "chromeos/grit/connectivity_diagnostics_resources.h"
 #include "chromeos/grit/connectivity_diagnostics_resources_map.h"
 #include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"

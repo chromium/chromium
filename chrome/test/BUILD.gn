@@ -2324,11 +2324,11 @@ if (!is_android && !is_fuchsia) {
       ]
       if (is_chromeos_ash) {
         deps += [
+          "//ash/webui/eche_app_ui:browser_tests_js",
           "//ash/webui/help_app_ui:browser_tests_js",
           "//ash/webui/media_app_ui:browser_tests_js",
           "//ash/webui/personalization_app:browser_tests_js",
           "//chrome/browser/resources/gaia_auth_host:browser_tests",
-          "//chromeos/components/eche_app_ui:browser_tests_js",
           "//chromeos/components/system_apps:browser_tests",
         ]
 
@@ -2680,6 +2680,7 @@ if (!is_android && !is_fuchsia) {
         "../browser/ui/views/extensions/extension_dialog_browsertest.cc",
         "../browser/ui/views/web_apps/pwa_confirmation_bubble_view_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_confirmation_view_browsertest.cc",
+        "../browser/ui/views/web_apps/web_app_identity_update_confirmation_view_browsertest.cc",
         "../browser/ui/web_applications/test/web_app_navigation_browsertest.cc",
         "../browser/ui/web_applications/test/web_app_navigation_browsertest.h",
       ]
@@ -3584,6 +3585,7 @@ if (!is_android && !is_fuchsia) {
         "//ash/keyboard/ui:test_support",
         "//ash/public/cpp/external_arc",
         "//ash/webui/diagnostics_ui",
+        "//ash/webui/eche_app_ui",
         "//ash/webui/file_manager:constants",
         "//ash/webui/firmware_update_ui",
         "//ash/webui/help_app_ui",
@@ -3624,7 +3626,6 @@ if (!is_android && !is_fuchsia) {
         "//chromeos/assistant:buildflags",
         "//chromeos/attestation",
         "//chromeos/attestation:test_support",
-        "//chromeos/components/eche_app_ui",
         "//chromeos/components/web_applications/test:test_support",
         "//chromeos/cryptohome",
         "//chromeos/dbus:test_support",
@@ -3696,6 +3697,7 @@ if (!is_android && !is_fuchsia) {
         "//services/audio/public/cpp",
         "//services/audio/public/cpp:test_support",
         "//services/device/public/cpp/hid",
+        "//services/media_session/public/mojom",
         "//services/network/public/mojom",
         "//services/preferences/public/cpp",
         "//services/preferences/public/mojom",
@@ -6461,6 +6463,7 @@ test("unit_tests") {
       "../browser/ui/app_list/arc/arc_vpn_provider_unittest.cc",
       "../browser/ui/app_list/arc/mock_arc_app_list_prefs_observer.cc",
       "../browser/ui/app_list/arc/mock_arc_app_list_prefs_observer.h",
+      "../browser/ui/app_list/chrome_app_list_item_manager_unittest.cc",
       "../browser/ui/app_list/md_icon_normalizer_unittest.cc",
       "../browser/ui/app_list/search/app_search_provider_unittest.cc",
       "../browser/ui/app_list/search/arc/arc_app_reinstall_search_provider_unittest.cc",
@@ -7413,6 +7416,7 @@ test("unit_tests") {
 
   if (enable_session_service) {
     sources += [
+      "../browser/sessions/app_session_service_unittest.cc",
       "../browser/sessions/exit_type_service_unittest.cc",
       "../browser/sessions/session_data_service_unittest.cc",
       "../browser/sessions/session_restore_observer_unittest.cc",
@@ -7421,9 +7425,6 @@ test("unit_tests") {
       "../browser/sessions/session_service_unittest.cc",
       "../browser/sessions/tab_loader_unittest.cc",
     ]
-  }
-  if (enable_session_service && enable_app_session_service) {
-    sources += [ "../browser/sessions/app_session_service_unittest.cc" ]
   }
 
   if (is_chromeos_ash) {

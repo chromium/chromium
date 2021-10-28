@@ -108,7 +108,7 @@ public class LogoBridge {
     }
 
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         long init(LogoBridge caller, Profile profile);
         void getCurrentLogo(long nativeLogoBridge, LogoBridge caller, LogoObserver logoObserver);
         void destroy(long nativeLogoBridge, LogoBridge caller);

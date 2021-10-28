@@ -30,6 +30,7 @@ using ::testing::ByMove;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Field;
+using ::testing::Optional;
 using ::testing::Return;
 using ::testing::StrictMock;
 
@@ -47,7 +48,7 @@ struct TestLeakDetectionRequest : public LeakDetectionRequestInterface {
   ~TestLeakDetectionRequest() override = default;
   // LeakDetectionRequestInterface:
   void LookupSingleLeak(network::mojom::URLLoaderFactory* url_loader_factory,
-                        const std::string& access_token,
+                        const absl::optional<std::string>& access_token,
                         LookupSingleLeakPayload payload,
                         LookupSingleLeakCallback callback) override {
     encrypted_payload_ = std::move(payload.encrypted_payload);
@@ -64,18 +65,10 @@ struct PayloadAndCallback {
   LeakDetectionRequestInterface::LookupSingleLeakCallback callback;
 };
 
-class LeakDetectionCheckImplTest : public testing::Test {
+// The test parameter controls whether the leak detection is done for a
+// signed-in user.
+class LeakDetectionCheckImplTest : public testing::TestWithParam<bool> {
  public:
-  LeakDetectionCheckImplTest()
-      : leak_check_(
-            &delegate_,
-            identity_test_env_.identity_manager(),
-            base::MakeRefCounted<network::TestSharedURLLoaderFactory>()) {
-    auto mock_request_factory =
-        std::make_unique<StrictMock<MockLeakDetectionRequestFactory>>();
-    request_factory_ = mock_request_factory.get();
-    leak_check_.set_network_factory(std::move(mock_request_factory));
-  }
   ~LeakDetectionCheckImplTest() override = default;
 
   base::test::TaskEnvironment& task_env() { return task_env_; }
@@ -85,12 +78,29 @@ class LeakDetectionCheckImplTest : public testing::Test {
     return request_factory_;
   }
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
-  LeakDetectionCheckImpl& leak_check() { return leak_check_; }
+  LeakDetectionCheckImpl* leak_check() { return leak_check_.get(); }
+
+  // Initializes |leak_check_| with the appropriate identity environment based
+  // on the provided |user_signed_in| parameter.
+  void InitializeLeakCheck(bool user_signed_in) {
+    if (user_signed_in) {
+      AccountInfo info = identity_env().MakeAccountAvailable(kTestEmail);
+      identity_env().SetCookieAccounts({{info.email, info.gaia}});
+      identity_env().SetRefreshTokenForAccount(info.account_id);
+    }
+    leak_check_ = absl::make_unique<LeakDetectionCheckImpl>(
+        &delegate_, identity_test_env_.identity_manager(),
+        base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
+    auto mock_request_factory =
+        std::make_unique<StrictMock<MockLeakDetectionRequestFactory>>();
+    request_factory_ = mock_request_factory.get();
+    leak_check_->set_network_factory(std::move(mock_request_factory));
+  }
 
   // Brings |leak_check_| to the state right after the network request.
   // The check is done for |kUsername|/|kPassword| credential on |kExampleCom|.
   // Returns |encrypted_payload| and |callback| arguments of LookupSingleLeak().
-  PayloadAndCallback ImitateNetworkRequest();
+  PayloadAndCallback ImitateNetworkRequest(bool user_signed_in);
 
  private:
   base::test::TaskEnvironment task_env_;
@@ -99,15 +109,29 @@ class LeakDetectionCheckImplTest : public testing::Test {
   MockLeakDetectionRequestFactory* request_factory_;
   base::HistogramTester histogram_tester_;
   base::ScopedMockElapsedTimersForTest mock_elapsed_timers_;
-  LeakDetectionCheckImpl leak_check_;
+  std::unique_ptr<LeakDetectionCheckImpl> leak_check_;
 };
 
-PayloadAndCallback LeakDetectionCheckImplTest::ImitateNetworkRequest() {
-  AccountInfo info = identity_env().MakeAccountAvailable(kTestEmail);
-  identity_env().SetCookieAccounts({{info.email, info.gaia}});
-  identity_env().SetRefreshTokenForAccount(info.account_id);
+PayloadAndCallback LeakDetectionCheckImplTest::ImitateNetworkRequest(
+    bool user_signed_in) {
+  InitializeLeakCheck(user_signed_in);
+  leak_check()->Start(GURL(kExampleCom), kUsername16, kPassword16);
 
-  leak_check().Start(GURL(kExampleCom), kUsername16, kPassword16);
+  auto network_request = std::make_unique<TestLeakDetectionRequest>();
+  TestLeakDetectionRequest* raw_request = network_request.get();
+  EXPECT_CALL(*request_factory(), CreateNetworkRequest)
+      .WillOnce(Return(ByMove(std::move(network_request))));
+
+  // Return the access token. This is skipped for signed-out users.
+  if (user_signed_in) {
+    static constexpr char access_token[] = "access_token";
+    identity_env().WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+        access_token, base::Time::Max());
+    histogram_tester().ExpectUniqueSample(
+        "PasswordManager.LeakDetection.ObtainAccessTokenTime", kMockElapsedTime,
+        1);
+  }
+
   // Crypto stuff is done here.
   task_env().RunUntilIdle();
 
@@ -115,53 +139,41 @@ PayloadAndCallback LeakDetectionCheckImplTest::ImitateNetworkRequest() {
       "PasswordManager.LeakDetection.PrepareSingleLeakRequestTime",
       kMockElapsedTime, 1);
 
-  static constexpr char access_token[] = "access_token";
-  auto network_request = std::make_unique<TestLeakDetectionRequest>();
-  TestLeakDetectionRequest* raw_request = network_request.get();
-  EXPECT_CALL(*request_factory(), CreateNetworkRequest)
-      .WillOnce(Return(ByMove(std::move(network_request))));
-
-  // Return the access token.
-  identity_env().WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      access_token, base::Time::Max());
-
-  histogram_tester().ExpectUniqueSample(
-      "PasswordManager.LeakDetection.ObtainAccessTokenTime", kMockElapsedTime,
-      1);
-
   return {std::move(raw_request->encrypted_payload_),
           std::move(raw_request->callback_)};
 }
 
 }  // namespace
 
-TEST_F(LeakDetectionCheckImplTest, Create) {
+TEST_P(LeakDetectionCheckImplTest, Create) {
+  InitializeLeakCheck(/*user_signed_in=*/GetParam());
   EXPECT_CALL(delegate(), OnLeakDetectionDone).Times(0);
   EXPECT_CALL(delegate(), OnError).Times(0);
   // Destroying |leak_check_| doesn't trigger anything.
 }
 
-TEST_F(LeakDetectionCheckImplTest, HasAccountForRequest_SignedIn) {
-  AccountInfo info = identity_env().MakeAccountAvailable(kTestEmail);
-  identity_env().SetCookieAccounts({{info.email, info.gaia}});
-  identity_env().SetRefreshTokenForAccount(info.account_id);
+TEST_P(LeakDetectionCheckImplTest, HasAccountForRequest_SignedIn) {
+  InitializeLeakCheck(/*user_signed_in=*/true);
   EXPECT_TRUE(LeakDetectionCheckImpl::HasAccountForRequest(
       identity_env().identity_manager()));
 }
 
-TEST_F(LeakDetectionCheckImplTest, HasAccountForRequest_Syncing) {
+TEST_P(LeakDetectionCheckImplTest, HasAccountForRequest_Syncing) {
   identity_env().SetPrimaryAccount(kTestEmail, signin::ConsentLevel::kSync);
   EXPECT_TRUE(LeakDetectionCheckImpl::HasAccountForRequest(
       identity_env().identity_manager()));
 }
 
-TEST_F(LeakDetectionCheckImplTest, GetAccessTokenBeforeEncryption) {
-  AccountInfo info = identity_env().MakeAccountAvailable(kTestEmail);
-  identity_env().SetCookieAccounts({{info.email, info.gaia}});
-  identity_env().SetRefreshTokenForAccount(info.account_id);
+TEST_P(LeakDetectionCheckImplTest, GetAccessTokenBeforeEncryption) {
+  // For signed-out users the access token is not requested.
+  if (GetParam() == false) {
+    return;
+  }
+
+  InitializeLeakCheck(/*user_signed_in=*/GetParam());
   const std::string access_token = "access_token";
 
-  leak_check().Start(GURL(kExampleCom), kUsername16, kPassword16);
+  leak_check()->Start(GURL(kExampleCom), kUsername16, kPassword16);
   // Return the access token before the crypto stuff is done.
   identity_env().WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       access_token, base::Time::Max());
@@ -173,7 +185,7 @@ TEST_F(LeakDetectionCheckImplTest, GetAccessTokenBeforeEncryption) {
   auto network_request = std::make_unique<MockLeakDetectionRequest>();
   EXPECT_CALL(*network_request,
               LookupSingleLeak(
-                  _, access_token,
+                  _, Optional(access_token),
                   AllOf(Field(&LookupSingleLeakPayload::username_hash_prefix,
                               ElementsAre(0xBD, 0x74, 0xA9, 0x00)),
                         Field(&LookupSingleLeakPayload::encrypted_payload,
@@ -189,12 +201,15 @@ TEST_F(LeakDetectionCheckImplTest, GetAccessTokenBeforeEncryption) {
       kMockElapsedTime, 1);
 }
 
-TEST_F(LeakDetectionCheckImplTest, GetAccessTokenAfterEncryption) {
-  AccountInfo info = identity_env().MakeAccountAvailable(kTestEmail);
-  identity_env().SetCookieAccounts({{info.email, info.gaia}});
-  identity_env().SetRefreshTokenForAccount(info.account_id);
+TEST_P(LeakDetectionCheckImplTest, GetAccessTokenAfterEncryption) {
+  // For signed-out users the access token is not requested.
+  if (GetParam() == false) {
+    return;
+  }
 
-  leak_check().Start(GURL(kExampleCom), kUsername16, kPassword16);
+  InitializeLeakCheck(/*user_signed_in=*/GetParam());
+
+  leak_check()->Start(GURL(kExampleCom), kUsername16, kPassword16);
   // crypto stuff is done here.
   task_env().RunUntilIdle();
 
@@ -206,7 +221,7 @@ TEST_F(LeakDetectionCheckImplTest, GetAccessTokenAfterEncryption) {
   auto network_request = std::make_unique<MockLeakDetectionRequest>();
   EXPECT_CALL(*network_request,
               LookupSingleLeak(
-                  _, access_token,
+                  _, Optional(access_token),
                   AllOf(Field(&LookupSingleLeakPayload::username_hash_prefix,
                               ElementsAre(0xBD, 0x74, 0xA9, 0x00)),
                         Field(&LookupSingleLeakPayload::encrypted_payload,
@@ -224,12 +239,14 @@ TEST_F(LeakDetectionCheckImplTest, GetAccessTokenAfterEncryption) {
       1);
 }
 
-TEST_F(LeakDetectionCheckImplTest, GetAccessTokenFailure) {
-  AccountInfo info = identity_env().MakeAccountAvailable(kTestEmail);
-  identity_env().SetCookieAccounts({{info.email, info.gaia}});
-  identity_env().SetRefreshTokenForAccount(info.account_id);
+TEST_P(LeakDetectionCheckImplTest, GetAccessTokenFailure) {
+  // For signed-out users the access token is not requested.
+  if (GetParam() == false) {
+    return;
+  }
 
-  leak_check().Start(GURL(kExampleCom), kUsername16, kPassword16);
+  InitializeLeakCheck(/*user_signed_in=*/GetParam());
+  leak_check()->Start(GURL(kExampleCom), kUsername16, kPassword16);
 
   EXPECT_CALL(delegate(), OnError(LeakDetectionError::kTokenRequestFailure));
   identity_env().WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
@@ -242,8 +259,9 @@ TEST_F(LeakDetectionCheckImplTest, GetAccessTokenFailure) {
 
 // Perform the whole cycle of a leak check. The server returns data that
 // can't be decrypted.
-TEST_F(LeakDetectionCheckImplTest, ParseResponse_DecryptionError) {
-  PayloadAndCallback payload_and_callback = ImitateNetworkRequest();
+TEST_P(LeakDetectionCheckImplTest, ParseResponse_DecryptionError) {
+  PayloadAndCallback payload_and_callback =
+      ImitateNetworkRequest(/*user_signed_in=*/GetParam());
   ASSERT_TRUE(!payload_and_callback.payload.empty());
 
   auto response = std::make_unique<SingleLookupResponse>();
@@ -272,10 +290,12 @@ TEST_F(LeakDetectionCheckImplTest, ParseResponse_DecryptionError) {
       "PasswordManager.LeakDetection.ReceiveSingleLeakResponseTime",
       kMockElapsedTime, 1);
 }
+
 // Perform the whole cycle of a leak check. The server returns data signalling
 // that the password wasn't leaked.
-TEST_F(LeakDetectionCheckImplTest, ParseResponse_NoLeak) {
-  PayloadAndCallback payload_and_callback = ImitateNetworkRequest();
+TEST_P(LeakDetectionCheckImplTest, ParseResponse_NoLeak) {
+  PayloadAndCallback payload_and_callback =
+      ImitateNetworkRequest(/*user_signed_in=*/GetParam());
   ASSERT_TRUE(!payload_and_callback.payload.empty());
 
   auto response = std::make_unique<SingleLookupResponse>();
@@ -305,8 +325,9 @@ TEST_F(LeakDetectionCheckImplTest, ParseResponse_NoLeak) {
 
 // Perform the whole cycle of a leak check. The server returns data signalling
 // that the password was leaked.
-TEST_F(LeakDetectionCheckImplTest, ParseResponse_Leak) {
-  PayloadAndCallback payload_and_callback = ImitateNetworkRequest();
+TEST_P(LeakDetectionCheckImplTest, ParseResponse_Leak) {
+  PayloadAndCallback payload_and_callback =
+      ImitateNetworkRequest(/*user_signed_in=*/GetParam());
   ASSERT_TRUE(!payload_and_callback.payload.empty());
 
   // |canonicalized_username| is passed to ScryptHashUsernameAndPassword() to
@@ -339,5 +360,7 @@ TEST_F(LeakDetectionCheckImplTest, ParseResponse_Leak) {
       "PasswordManager.LeakDetection.ReceiveSingleLeakResponseTime",
       kMockElapsedTime, 1);
 }
+
+INSTANTIATE_TEST_SUITE_P(, LeakDetectionCheckImplTest, testing::Bool());
 
 }  // namespace password_manager

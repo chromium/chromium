@@ -71,6 +71,9 @@
 
 namespace blink {
 
+// static
+int LocalWindowProxy::v8_context_count_ = 0;
+
 void LocalWindowProxy::Trace(Visitor* visitor) const {
   visitor->Trace(script_state_);
   WindowProxy::Trace(visitor);
@@ -219,6 +222,7 @@ void LocalWindowProxy::CreateContext() {
   v8::ExtensionConfiguration extension_configuration =
       ScriptController::ExtensionsFor(GetFrame()->DomWindow());
 
+  ++v8_context_count_;
   v8::Local<v8::Context> context;
   {
     DEFINE_STATIC_LOCAL(

@@ -22,6 +22,17 @@ To get Chrome OS System Colors, an element must:
             var(--cros-radio-button-ripple-color-unchecked);
       }
 
+      :host-context([cros]) cr-toast {
+        --cr-toast-background-color: var(--cros-toast-background-color);
+        --cr-toast-background: var(--cros-toast-background-color);
+        --cr-toast-text-color: var(--cros-toast-text-color);
+        --iron-icon-fill-color: var(--cros-toast-icon-color);
+      }
+
+      :host-context([cros]) cr-toast .error-message {
+        color: var(--cros-toast-text-color);
+      }
+
       :host-context([cros]) cr-toggle {
         --cr-toggle-checked-bar-color: var(--cros-toggle-color);
         --cr-toggle-checked-button-color: var(--cros-toggle-color);

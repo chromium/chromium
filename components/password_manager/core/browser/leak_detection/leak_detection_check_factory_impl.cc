@@ -9,6 +9,7 @@
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check_impl.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check_impl.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_delegate_interface.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace password_manager {
@@ -21,7 +22,8 @@ LeakDetectionCheckFactoryImpl::TryCreateLeakCheck(
     LeakDetectionDelegateInterface* delegate,
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) const {
-  if (!LeakDetectionCheckImpl::HasAccountForRequest(identity_manager)) {
+  if (!LeakDetectionCheckImpl::HasAccountForRequest(identity_manager) &&
+      !base::FeatureList::IsEnabled(features::kLeakDetectionUnauthenticated)) {
     delegate->OnError(LeakDetectionError::kNotSignIn);
     return nullptr;
   }

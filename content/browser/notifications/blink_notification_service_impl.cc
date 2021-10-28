@@ -39,6 +39,8 @@ const char kBadMessageInvalidNotificationTriggerTimestamp[] =
 const char kBadMessageInvalidNotificationActionButtons[] =
     "Received a notification with a number of action images that does not "
     "match the number of actions.";
+const char kBadMessageInvalidServiceWorkerRegistration[] =
+    "Received an invalid Service Worker Registration ID.";
 
 bool FilterByTag(const std::string& filter_tag,
                  const NotificationDatabaseData& database_data) {
@@ -211,6 +213,21 @@ bool BlinkNotificationServiceImpl::ValidateNotificationDataAndResources(
   return true;
 }
 
+bool BlinkNotificationServiceImpl::ValidateServiceWorkerRegistrationID(
+    int64_t service_worker_registration_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  scoped_refptr<ServiceWorkerRegistration> service_worker_registration =
+      service_worker_context_->GetLiveRegistration(
+          service_worker_registration_id);
+  bool valid =
+      service_worker_registration &&
+      service_worker_registration->key().origin().IsSameOriginWith(origin_);
+  if (!valid)
+    receiver_.ReportBadMessage(kBadMessageInvalidServiceWorkerRegistration);
+  return valid;
+}
+
 void BlinkNotificationServiceImpl::DisplayPersistentNotification(
     int64_t service_worker_registration_id,
     const blink::PlatformNotificationData& platform_notification_data,
@@ -220,6 +237,10 @@ void BlinkNotificationServiceImpl::DisplayPersistentNotification(
   if (!ValidateNotificationDataAndResources(platform_notification_data,
                                             notification_resources))
     return;
+
+  if (!ValidateServiceWorkerRegistrationID(service_worker_registration_id)) {
+    return;
+  }
 
   if (!browser_context_->GetPlatformNotificationService()) {
     std::move(callback).Run(PersistentNotificationError::INTERNAL_ERROR);
@@ -281,6 +302,10 @@ void BlinkNotificationServiceImpl::GetNotifications(
     bool include_triggered,
     GetNotificationsCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!ValidateServiceWorkerRegistrationID(service_worker_registration_id)) {
+    return;
+  }
+
   if (!browser_context_->GetPlatformNotificationService() ||
       CheckPermissionStatus() != blink::mojom::PermissionStatus::GRANTED) {
     // No permission has been granted for the given origin. It is harmless to

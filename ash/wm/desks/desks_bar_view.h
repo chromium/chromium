@@ -190,6 +190,11 @@ class ASH_EXPORT DesksBarView : public views::View,
   // and the `zero_state_default_desk_button_`.
   void UpdateButtonsForDesksTemplatesGrid();
 
+  // Updates the visibility of the desks templates button based on whether the
+  // desks templates feature is enabled, the user has any desks templates and
+  // the state of the desks bar.
+  void UpdateDesksTemplatesButtonVisibility();
+
   // Returns the mini_view associated with `desk` or nullptr if no mini_view
   // has been created for it yet.
   DeskMiniView* FindMiniViewForDesk(const Desk* desk) const;

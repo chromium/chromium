@@ -26,6 +26,7 @@
 #include "ash/accessibility/ui/accessibility_focus_ring_controller_impl.h"
 #include "ash/ambient/ambient_controller.h"
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/app_list/app_list_feature_usage_metrics.h"
 #include "ash/assistant/assistant_controller_impl.h"
 #include "ash/calendar/calendar_controller.h"
 #include "ash/capture_mode/capture_mode_controller.h"
@@ -667,6 +668,9 @@ Shell::~Shell() {
   // `tablet_mode_controller_`, `desks_controller_` and
   // `app_list_controller_` that it observes.
   persistent_desks_bar_controller_.reset();
+
+  // Depends on `app_list_controller_` and `tablet_mode_controller_`.
+  app_list_feature_usage_metrics_.reset();
 
   // Destroy |app_list_controller_| earlier than |tablet_mode_controller_| since
   // the former may use the latter before destruction.
@@ -1461,6 +1465,11 @@ void Shell::OnFirstSessionStarted() {
   // Reset user prefs related to contextual tooltips.
   if (switches::ContextualNudgesResetShownCount())
     contextual_tooltip::ClearPrefs();
+
+  // The launcher is not available before login, so start tracking usage after
+  // the session starts.
+  app_list_feature_usage_metrics_ =
+      std::make_unique<AppListFeatureUsageMetrics>();
 }
 
 void Shell::OnSessionStateChanged(session_manager::SessionState state) {

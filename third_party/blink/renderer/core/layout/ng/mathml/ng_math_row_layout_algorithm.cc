@@ -51,7 +51,7 @@ void NGMathRowLayoutAlgorithm::LayoutRowItems(
     LogicalSize* row_total_size) {
   const bool should_add_space =
       Node().IsMathRoot() || !GetMathMLEmbellishedOperatorProperties(Node());
-  LayoutUnit inline_offset, max_row_ascent, max_row_descent;
+  const auto baseline_type = Style().GetFontBaseline();
 
   // https://w3c.github.io/mathml-core/#dfn-algorithm-for-stretching-operators-along-the-block-axis
   const bool inherits_block_stretch_size_constraint =
@@ -68,7 +68,7 @@ void NGMathRowLayoutAlgorithm::LayoutRowItems(
           NGBoxFragment fragment(
               ConstraintSpace().GetWritingDirection(),
               To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
-          LayoutUnit ascent = fragment.BaselineOrSynthesize();
+          LayoutUnit ascent = fragment.BaselineOrSynthesize(baseline_type);
           stretch_sizes.ascent = std::max(stretch_sizes.ascent, ascent),
           stretch_sizes.descent =
               std::max(stretch_sizes.descent, fragment.BlockSize() - ascent);
@@ -111,6 +111,7 @@ void NGMathRowLayoutAlgorithm::LayoutRowItems(
   }
 
   // Layout in-flow children in a row.
+  LayoutUnit inline_offset, max_row_ascent, max_row_descent;
   for (NGLayoutInputNode child = Node().FirstChild(); child;
        child = child.NextSibling()) {
     if (child.IsOutOfFlowPositioned()) {
@@ -157,7 +158,8 @@ void NGMathRowLayoutAlgorithm::LayoutRowItems(
                                            child.Style(), ConstraintSpace());
     inline_offset += margins.inline_start;
 
-    LayoutUnit ascent = margins.block_start + fragment.BaselineOrSynthesize();
+    LayoutUnit ascent =
+        margins.block_start + fragment.BaselineOrSynthesize(baseline_type);
     *max_row_block_baseline = std::max(*max_row_block_baseline, ascent);
 
     // TODO(crbug.com/1125136): take into account italic correction.

@@ -34,6 +34,9 @@ class MockMediaStreamVideoSource : public blink::MediaStreamVideoSource {
   MOCK_CONST_METHOD0(SupportsEncodedOutput, bool());
   MOCK_METHOD1(OnFrameDropped, void(media::VideoCaptureFrameDropReason));
   MOCK_CONST_METHOD1(OnFrameFeedback, void(const media::VideoCaptureFeedback&));
+  MOCK_METHOD2(Crop,
+               void(const base::Token&,
+                    base::OnceCallback<void(media::mojom::CropRequestResult)>));
 
   // Simulate that the underlying source start successfully.
   void StartMockedSource();

@@ -42,7 +42,8 @@ bool ActionTapKey::ParseFromJson(const base::Value& value) {
 }
 
 bool ActionTapKey::RewriteEvent(const ui::Event& origin,
-                                std::list<ui::TouchEvent>& touch_events) {
+                                std::list<ui::TouchEvent>& touch_events,
+                                const gfx::RectF& content_bounds) {
   if (!origin.IsKeyEvent())
     return false;
   const ui::KeyEvent& key_event = static_cast<const ui::KeyEvent&>(origin);
@@ -52,7 +53,7 @@ bool ActionTapKey::RewriteEvent(const ui::Event& origin,
           << ui::KeycodeConverter::DomCodeToCodeString(key_event.code())
           << "}. Type{" << key_event.type() << "}. Flags {" << key_event.flags()
           << "}. Time stamp {" << key_event.time_stamp() << "}.";
-  bool rewritten = RewriteKeyEvent(key_event, touch_events);
+  bool rewritten = RewriteKeyEvent(key_event, touch_events, content_bounds);
   for (auto& touch : touch_events) {
     VLOG(0) << "Final touch event {" << touch.ToString()
             << "}. Pointer detail {" << touch.pointer_details().ToString()
@@ -65,9 +66,9 @@ void ActionTapKey::OnTouchCancelled() {
   keys_pressed_.erase(key_);
 }
 
-bool ActionTapKey::RewriteKeyEvent(
-    const ui::KeyEvent& key_event,
-    std::list<ui::TouchEvent>& rewritten_events) {
+bool ActionTapKey::RewriteKeyEvent(const ui::KeyEvent& key_event,
+                                   std::list<ui::TouchEvent>& rewritten_events,
+                                   const gfx::RectF& content_bounds) {
   if (key_event.source_device_id() == ui::ED_UNKNOWN_DEVICE ||
       key_event.code() != key_) {
     return false;
@@ -93,7 +94,7 @@ bool ActionTapKey::RewriteKeyEvent(
     }
 
     touch_id_ = TouchIdManager::GetInstance()->ObtainTouchID();
-    auto pos = CalculateTouchPosition();
+    auto pos = CalculateTouchPosition(content_bounds);
     if (!pos)
       return false;
     last_touch_root_location_ = *pos;

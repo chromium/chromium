@@ -490,6 +490,16 @@ std::u16string Accelerator::ApplyShortFormModifiers(
     result.push_back(u'⇧');  // U+21E7, UPWARDS WHITE ARROW
   if (IsCmdDown())
     result.push_back(u'⌘');  // U+2318, PLACE OF INTEREST SIGN
+  if (IsFunctionDown()) {
+    // There's no Unicode symbol for the function key so fake it with
+    // characters. It's likely a special character in a special Apple
+    // font. Also on newer Macs the function key has a globe symbol, and a
+    // globe appears as the modifier key in the menus. Unfortunately it's not
+    // clear how to determine if a Mac has one of these newer keyboards. See
+    // https://crbug.com/1263737 which tracks finding and displaying these
+    // glyphs.
+    result.append(u"fn ");
+  }
 
   result.append(shortcut);
 

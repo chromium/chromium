@@ -444,10 +444,6 @@ BLINK_COMMON_EXPORT extern const base::Feature kThirdPartyStoragePartitioning;
 
 BLINK_COMMON_EXPORT extern const base::Feature kDesktopPWAsSubApps;
 
-// When enabled, we report all JavaScript frameworks via a manual traversal to
-// detect the properties and attributes required.
-BLINK_COMMON_EXPORT extern const base::Feature kReportAllJavaScriptFrameworks;
-
 // Suppresses console errors for CORS problems which report an associated
 // inspector issue anyway.
 BLINK_COMMON_EXPORT extern const base::Feature kCORSErrorsIssueOnly;
@@ -521,6 +517,8 @@ BLINK_COMMON_EXPORT bool IsSetTimeoutWithoutClampEnabled();
 BLINK_COMMON_EXPORT extern const base::Feature kDeprecationWillLogToConsole;
 BLINK_COMMON_EXPORT extern const base::Feature
     kDeprecationWillLogToDevToolsIssue;
+
+BLINK_COMMON_EXPORT extern const base::Feature kLCPAnimatedImagesReporting;
 
 }  // namespace features
 }  // namespace blink

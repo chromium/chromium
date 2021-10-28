@@ -5,23 +5,18 @@
 #ifndef ASH_SYSTEM_MESSAGE_CENTER_STACKED_NOTIFICATION_BAR_H_
 #define ASH_SYSTEM_MESSAGE_CENTER_STACKED_NOTIFICATION_BAR_H_
 
-#include "ash/ash_export.h"
-#include "ash/system/message_center/message_center_scroll_bar.h"
 #include "ash/system/message_center/unified_message_center_view.h"
-#include "ash/system/message_center/unified_message_list_view.h"
 #include "base/memory/weak_ptr.h"
-#include "ui/compositor/layer_animation_observer.h"
-#include "ui/gfx/animation/animation_delegate.h"
 #include "ui/message_center/message_center_observer.h"
-#include "ui/views/background.h"
-#include "ui/views/controls/image_view.h"
-#include "ui/views/controls/label.h"
-#include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
 
 namespace message_center {
 class Notification;
 }  // namespace message_center
+
+namespace views {
+class Label;
+}  // namespace views
 
 namespace ash {
 

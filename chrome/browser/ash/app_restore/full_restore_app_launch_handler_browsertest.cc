@@ -43,6 +43,7 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -2566,7 +2567,7 @@ class FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest
   void ModifyAppReadiness(apps::mojom::Readiness readiness) {
     apps::mojom::AppType app_type = apps::mojom::AppType::kWeb;
     if (crosapi::browser_util::IsLacrosEnabled() &&
-        base::FeatureList::IsEnabled(features::kWebAppsCrosapi)) {
+        web_app::IsWebAppsCrosapiEnabled()) {
       app_type = apps::mojom::AppType::kSystemWeb;
     }
 

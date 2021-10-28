@@ -436,6 +436,9 @@ as required builders.
 * [android-marshmallow-arm64-rel-rts](https://ci.chromium.org/p/chromium/builders/try/android-marshmallow-arm64-rel-rts) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""android-marshmallow-arm64-rel-rts"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-marshmallow-arm64-rel-rts""))
   * Experiment percentage: 5.0
 
+* [android-marshmallow-x86-rel-orchestrator](https://ci.chromium.org/p/chromium/builders/try/android-marshmallow-x86-rel-orchestrator) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""android-marshmallow-x86-rel-orchestrator"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-marshmallow-x86-rel-orchestrator""))
+  * Experiment percentage: 10.0
+
 * [android-marshmallow-x86-rel-rts](https://ci.chromium.org/p/chromium/builders/try/android-marshmallow-x86-rel-rts) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""android-marshmallow-x86-rel-rts"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-marshmallow-x86-rel-rts""))
   * Experiment percentage: 5.0
 

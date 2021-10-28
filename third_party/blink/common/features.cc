@@ -910,7 +910,7 @@ const base::FeatureParam<std::string>
 
 // New compositing algorithm. See renderer/core/paint/README.md.
 const base::Feature kCompositeAfterPaint{"CompositeAfterPaint",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
+                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether the Sanitizer API is available.
 const base::Feature kSanitizerAPI{"SanitizerAPI",
@@ -1011,11 +1011,6 @@ const base::Feature kThirdPartyStoragePartitioning{
 const base::Feature kDesktopPWAsSubApps{"DesktopPWAsSubApps",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables reporting all JavaScript frameworks via a manual traversal to detect
-// the properties and attributes required.
-const base::Feature kReportAllJavaScriptFrameworks{
-    "ReportAllJavaScriptFrameworks", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Suppresses console errors for CORS problems which report an associated
 // inspector issue anyway.
 const base::Feature kCORSErrorsIssueOnly{"CORSErrorsIssueOnly",
@@ -1105,6 +1100,11 @@ const base::Feature kDeprecationWillLogToConsole{
     "DeprecationWillLogToConsole", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kDeprecationWillLogToDevToolsIssue{
     "DeprecationWillLogToDevToolsIssue", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables reporting and web-exposure (respectively) of the time the first frame
+// of an animated image was painted.
+const base::Feature kLCPAnimatedImagesReporting{
+    "LCPAnimatedImagesReporting", base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace features
 }  // namespace blink

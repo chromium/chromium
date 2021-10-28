@@ -46,12 +46,20 @@ class PillButton : public views::LabelButton {
   static void ConfigureInkDrop(views::Button* button,
                                TrayPopupInkDropStyle style,
                                bool highlight_on_hover,
-                               bool highlight_on_focus);
+                               bool highlight_on_focus,
+                               SkColor bg_color = gfx::kPlaceholderColor);
 
+  // Keeps the button in light mode if `use_light_colors` is true.
+  // InstallRoundRectHighlightPathGenerator for the button only if
+  // `rounded_highlight_path` is true. This is special handlings for buttons
+  // inside the old notifications UI, might can be removed once
+  // `kNotificationsRefresh` is fully launched.
   PillButton(PressedCallback callback,
              const std::u16string& text,
              Type type,
-             const gfx::VectorIcon* icon);
+             const gfx::VectorIcon* icon,
+             bool use_light_colors = false,
+             bool rounded_highlight_path = true);
   PillButton(const PillButton&) = delete;
   PillButton& operator=(const PillButton&) = delete;
   ~PillButton() override;
@@ -64,6 +72,10 @@ class PillButton : public views::LabelButton {
  private:
   const Type type_;
   const gfx::VectorIcon* const icon_;
+
+  // True if the button wants use light colors when the D/L mode feature is not
+  // enabled.
+  bool use_light_colors_;
 };
 
 }  // namespace ash

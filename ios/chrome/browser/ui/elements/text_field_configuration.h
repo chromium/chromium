@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_ELEMENTS_TEXT_FIELD_CONFIGURATION_H_
 #define IOS_CHROME_BROWSER_UI_ELEMENTS_TEXT_FIELD_CONFIGURATION_H_
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 // Holds the configurable options for a UITextField.
 //
@@ -16,6 +16,8 @@
 @property(nonatomic, copy, readonly) NSString* text;
 @property(nonatomic, copy, readonly) NSString* placeholder;
 @property(nonatomic, copy, readonly) NSString* accessibilityIdentifier;
+@property(nonatomic, assign, readonly)
+    UITextAutocapitalizationType autocapitalizationType;
 @property(nonatomic, readonly, getter=isSecureTextEntry) BOOL secureTextEntry;
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -23,6 +25,8 @@
 - (instancetype)initWithText:(NSString*)text
                  placeholder:(NSString*)placeholder
      accessibilityIdentifier:(NSString*)accessibilityIdentifier
+      autocapitalizationType:
+          (UITextAutocapitalizationType)autocapitalizationType
              secureTextEntry:(BOOL)secureTextEntry NS_DESIGNATED_INITIALIZER;
 
 @end

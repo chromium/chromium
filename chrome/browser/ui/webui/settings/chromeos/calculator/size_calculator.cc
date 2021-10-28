@@ -18,7 +18,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/cryptohome/cryptohome_util.h"
 #include "chromeos/cryptohome/userdataauth_util.h"
-#include "chromeos/dbus/spaced/spaced_client.h"
 #include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/session/arc_bridge_service.h"
@@ -40,18 +39,15 @@ namespace calculator {
 
 namespace {
 
-void GetTotalDiskSpaceBlocking(const base::FilePath& mount_path,
-                               int64_t* total_bytes) {
+void GetSizeStatBlocking(const base::FilePath& mount_path,
+                         int64_t* total_size,
+                         int64_t* available_size) {
   int64_t size = base::SysInfo::AmountOfTotalDiskSpace(mount_path);
   if (size >= 0)
-    *total_bytes = size;
-}
-
-void GetFreeDiskSpaceBlocking(const base::FilePath& mount_path,
-                              int64_t* available_bytes) {
-  int64_t size = base::SysInfo::AmountOfFreeDiskSpace(mount_path);
+    *total_size = size;
+  size = base::SysInfo::AmountOfFreeDiskSpace(mount_path);
   if (size >= 0)
-    *available_bytes = size;
+    *available_size = size;
 }
 
 }  // namespace
@@ -76,83 +72,37 @@ void SizeCalculator::RemoveObserver(SizeCalculator::Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void SizeCalculator::NotifySizeCalculated(int64_t total_bytes) {
+void SizeCalculator::NotifySizeCalculated(
+    int64_t total_bytes,
+    const absl::optional<int64_t>& available_bytes) {
   calculating_ = false;
   for (SizeCalculator::Observer& observer : observers_) {
-    observer.OnSizeCalculated(calculation_type_, total_bytes);
+    observer.OnSizeCalculated(calculation_type_, total_bytes, available_bytes);
   }
 }
 
-TotalDiskSpaceCalculator::TotalDiskSpaceCalculator(Profile* profile)
-    : SizeCalculator(CalculationType::kTotal), profile_(profile) {}
+SizeStatCalculator::SizeStatCalculator(Profile* profile)
+    : SizeCalculator(CalculationType::kInUse), profile_(profile) {}
 
-TotalDiskSpaceCalculator::~TotalDiskSpaceCalculator() = default;
-
-void TotalDiskSpaceCalculator::PerformCalculation() {
-  if (profile_->IsGuestSession()) {
-    GetTotalDiskSpace();
-    return;
-  }
-  GetRootDeviceSize();
-}
-
-void TotalDiskSpaceCalculator::GetRootDeviceSize() {
-  SpacedClient::Get()->GetRootDeviceSize(
-      base::BindOnce(&TotalDiskSpaceCalculator::OnGetRootDeviceSize,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void TotalDiskSpaceCalculator::OnGetRootDeviceSize(
-    absl::optional<uint64_t> reply) {
-  if (reply.has_value()) {
-    NotifySizeCalculated(static_cast<int64_t>(reply.value()));
-    return;
-  }
-
-  // FakeSpacedClient does not have a proper implementation of
-  // GetRootDeviceSize. If SpacedClient::GetRootDeviceSize does not return a
-  // value, use GetTotalDiskSpace as a fallback.
-  LOG(ERROR) << "OnGetRootDeviceSize: Empty reply. Using GetTotalDiskSpace as "
-                "fallback.";
-  GetTotalDiskSpace();
-}
-
-void TotalDiskSpaceCalculator::GetTotalDiskSpace() {
+SizeStatCalculator::~SizeStatCalculator() = default;
+void SizeStatCalculator::PerformCalculation() {
   const base::FilePath my_files_path =
       file_manager::util::GetMyFilesFolderForProfile(profile_);
 
-  int64_t* total_bytes = new int64_t(-1);
+  int64_t* total_size = new int64_t(0);
+  int64_t* available_size = new int64_t(0);
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-      base::BindOnce(&GetTotalDiskSpaceBlocking, my_files_path, total_bytes),
-      base::BindOnce(&TotalDiskSpaceCalculator::OnGetTotalDiskSpace,
-                     weak_ptr_factory_.GetWeakPtr(), base::Owned(total_bytes)));
+      base::BindOnce(&GetSizeStatBlocking, my_files_path, total_size,
+                     available_size),
+      base::BindOnce(&SizeStatCalculator::OnGetSizeStat,
+                     weak_ptr_factory_.GetWeakPtr(), base::Owned(total_size),
+                     base::Owned(available_size)));
 }
 
-void TotalDiskSpaceCalculator::OnGetTotalDiskSpace(int64_t* total_bytes) {
-  NotifySizeCalculated(*total_bytes);
-}
-
-FreeDiskSpaceCalculator::FreeDiskSpaceCalculator(Profile* profile)
-    : SizeCalculator(CalculationType::kAvailable), profile_(profile) {}
-
-FreeDiskSpaceCalculator::~FreeDiskSpaceCalculator() = default;
-
-void FreeDiskSpaceCalculator::PerformCalculation() {
-  const base::FilePath my_files_path =
-      file_manager::util::GetMyFilesFolderForProfile(profile_);
-
-  int64_t* available_bytes = new int64_t(-1);
-  base::ThreadPool::PostTaskAndReply(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-      base::BindOnce(&GetFreeDiskSpaceBlocking, my_files_path, available_bytes),
-      base::BindOnce(&FreeDiskSpaceCalculator::OnGetFreeDiskSpace,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     base::Owned(available_bytes)));
-}
-
-void FreeDiskSpaceCalculator::OnGetFreeDiskSpace(int64_t* available_bytes) {
-  NotifySizeCalculated(*available_bytes);
+void SizeStatCalculator::OnGetSizeStat(int64_t* total_bytes,
+                                       int64_t* available_bytes) {
+  NotifySizeCalculated(*total_bytes, *available_bytes);
 }
 
 MyFilesSizeCalculator::MyFilesSizeCalculator(Profile* profile)

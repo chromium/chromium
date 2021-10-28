@@ -280,6 +280,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     private StartSurface mStartSurface;
     private StartSurface.StateObserver mStartSurfaceStateObserver;
     private AppBarLayout.OnOffsetChangedListener mStartSurfaceHeaderOffsetChangeListener;
+    private LogoLoadHelper mLogoLoadHelper;
 
     private OneshotSupplier<ToolbarIntentMetadata> mIntentMetadataOneshotSupplier;
     private OneshotSupplier<Boolean> mPromoShownOneshotSupplier;
@@ -572,7 +573,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             ChromePageInfo toolbarPageInfo = new ChromePageInfo(modalDialogManagerSupplier, null,
                     OpenedFromSource.TOOLBAR, merchantTrustSignalsCoordinatorSupplier::get);
             ExploreIconProvider exploreIconProvider = (pixelSize, callback) -> {
-                if (profileSupplier.get() != null) {
+                if (profileSupplier.hasValue()) {
                     ExploreSitesBridge.getSummaryImage(profileSupplier.get(), pixelSize, callback);
                 } else {
                     callback.onResult(null);
@@ -924,6 +925,11 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 assert ReturnToChromeExperimentsUtil.isStartSurfaceHomepageEnabled();
                 mStartSurfaceState = newState;
                 mToolbar.updateStartSurfaceToolbarState(newState, shouldShowToolbar, toolbarHeight);
+
+                if (mLogoLoadHelper == null) {
+                    mLogoLoadHelper = new LogoLoadHelper(profileSupplier, mToolbar, mActivity);
+                }
+                mLogoLoadHelper.maybeLoadSearchProviderLogoOnHomepage(mStartSurfaceState);
             };
             mStartSurface.addStateChangeObserver(mStartSurfaceStateObserver);
 
@@ -1473,6 +1479,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             mStartSurfaceHeaderOffsetChangeListener = null;
         }
 
+        if (mLogoLoadHelper != null) mLogoLoadHelper.destroy();
+
         mActivity.unregisterComponentCallbacks(mComponentCallbacks);
         mComponentCallbacks = null;
         ChromeAccessibilityUtil.get().removeObserver(this);
@@ -1521,6 +1529,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
                 mSearchEngine = searchEngine;
                 mToolbar.onDefaultSearchEngineChanged();
+
+                if (mLogoLoadHelper != null) mLogoLoadHelper.onDefaultSearchEngineChanged();
             }
         };
         templateUrlService.addObserver(mTemplateUrlObserver);

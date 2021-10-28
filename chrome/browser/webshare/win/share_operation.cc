@@ -371,12 +371,16 @@ void ShareOperation::Run(blink::mojom::ShareService::ShareCallback callback) {
   DCHECK(!callback_);
   callback_ = std::move(callback);
 
-  // If the required WinRT functionality is not available, or the corresponding
-  // web_contents have already been cleaned up, cancel the operation
-  const bool winrt_environment_ok =
-      base::win::ResolveCoreWinRTDelayload() &&
-      base::win::ScopedHString::ResolveCoreWinRTStringDelayload();
-  if (!winrt_environment_ok || !web_contents()) {
+  // Ensure that the required WinRT functionality is available/loaded.
+  if (!base::win::ResolveCoreWinRTDelayload() ||
+      !base::win::ScopedHString::ResolveCoreWinRTStringDelayload()) {
+    Complete(blink::mojom::ShareError::INTERNAL_ERROR);
+    return;
+  }
+
+  // If the corresponding web_contents have already been cleaned up, cancel
+  // the operation.
+  if (!web_contents()) {
     Complete(blink::mojom::ShareError::CANCELED);
     return;
   }

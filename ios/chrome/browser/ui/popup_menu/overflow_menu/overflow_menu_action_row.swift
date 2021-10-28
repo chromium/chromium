@@ -12,10 +12,16 @@ struct OverflowMenuActionRow: View {
   var body: some View {
     HStack {
       Text(action.name)
+        .opacity(action.enabled ? 1 : 0.5)
       Spacer()
       action.image
+        .opacity(action.enabled ? 1 : 0.5)
     }
     .contentShape(Rectangle())
-    .onTapGesture(perform: action.handler)
+    .onTapGesture {
+      if action.enabled {
+        action.handler()
+      }
+    }
   }
 }

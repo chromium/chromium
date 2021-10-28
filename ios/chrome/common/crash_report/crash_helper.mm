@@ -23,6 +23,8 @@ const char kCrashReportsUploadingEnabledKey[] = "CrashReportsUploadingEnabled";
 
 const char kCrashpadStartOnNextRun[] = "CrashpadStartOnNextRun";
 
+const char kCrashpadNoAppGroupFolder[] = "Crashpad";
+
 bool UserEnabledUploading() {
   return [app_group::GetGroupUserDefaults()
       boolForKey:base::SysUTF8ToNSString(kCrashReportsUploadingEnabledKey)];
@@ -35,8 +37,15 @@ bool CanCrashpadStart() {
 }
 
 base::FilePath CrashpadDumpLocation() {
-  return base::FilePath(
-      base::SysNSStringToUTF8([app_group::CrashpadFolder() path]));
+  NSString* path = [app_group::CrashpadFolder() path];
+  if (![path length]) {
+    NSArray* cachesDirectories = NSSearchPathForDirectoriesInDomains(
+        NSCachesDirectory, NSUserDomainMask, YES);
+    NSString* cachePath = [cachesDirectories objectAtIndex:0];
+    return base::FilePath(base::SysNSStringToUTF8(cachePath))
+        .Append(kCrashpadNoAppGroupFolder);
+  }
+  return base::FilePath(base::SysNSStringToUTF8(path));
 }
 
 void StartCrashpad() {

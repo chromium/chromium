@@ -11,12 +11,22 @@
 #include "base/strings/sys_string_conversions.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
+#include "components/language/ios/browser/ios_language_detection_tab_helper.h"
+#import "components/language/ios/browser/ios_language_detection_tab_helper_observer_bridge.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
+#include "components/translate/core/browser/translate_manager.h"
+#include "components/translate/core/browser/translate_prefs.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
+#import "ios/chrome/browser/find_in_page/find_tab_helper.h"
+#import "ios/chrome/browser/overlays/public/overlay_presenter.h"
+#import "ios/chrome/browser/overlays/public/overlay_presenter_observer_bridge.h"
+#import "ios/chrome/browser/overlays/public/overlay_request.h"
 #include "ios/chrome/browser/policy/browser_policy_connector_ios.h"
+#include "ios/chrome/browser/reading_list/offline_url_utils.h"
+#import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/ui/activity_services/canonical_url_retriever.h"
 #include "ios/chrome/browser/ui/bookmarks/bookmark_model_bridge_observer.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
@@ -28,6 +38,7 @@
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/web/font_size/font_size_tab_helper.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
@@ -36,6 +47,7 @@
 #include "ios/web/common/user_agent.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
+#include "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -76,13 +88,22 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
 
 @interface OverflowMenuMediator () <BookmarkModelBridgeObserver,
                                     CRWWebStateObserver,
+                                    IOSLanguageDetectionTabHelperObserving,
+                                    OverlayPresenterObserving,
                                     PrefObserverDelegate,
                                     WebStateListObserving> {
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserver;
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserver;
 
+  // Observer for the content area overlay events
+  std::unique_ptr<OverlayPresenterObserver> _overlayPresenterObserver;
+
   // Bridge to register for bookmark changes.
   std::unique_ptr<bookmarks::BookmarkModelBridge> _bookmarkModelBridge;
+
+  // Bridge to get notified of the language detection event.
+  std::unique_ptr<language::IOSLanguageDetectionTabHelperObserverBridge>
+      _iOSLanguageDetectionTabHelperObserverBridge;
 
   // Pref observer to track changes to prefs.
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
@@ -92,6 +113,12 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
 
 // The current web state.
 @property(nonatomic, assign) web::WebState* webState;
+
+// Whether an overlay is currently presented over the web content area.
+@property(nonatomic, assign) BOOL webContentAreaShowingOverlay;
+
+// Whether the web content is currently being blocked.
+@property(nonatomic, assign) BOOL contentBlocked;
 
 @property(nonatomic, strong) OverflowMenuDestination* bookmarksDestination;
 @property(nonatomic, strong) OverflowMenuDestination* downloadsDestination;
@@ -134,6 +161,8 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
   if (self) {
     _webStateObserver = std::make_unique<web::WebStateObserverBridge>(self);
     _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
+    _overlayPresenterObserver =
+        std::make_unique<OverlayPresenterObserverBridge>(self);
   }
   return self;
 }
@@ -176,6 +205,8 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
 - (void)setWebStateList:(WebStateList*)webStateList {
   if (_webStateList) {
     _webStateList->RemoveObserver(_webStateListObserver.get());
+
+    _iOSLanguageDetectionTabHelperObserverBridge.reset();
   }
 
   _webStateList = webStateList;
@@ -184,6 +215,12 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
 
   if (_webStateList) {
     _webStateList->AddObserver(_webStateListObserver.get());
+
+    // Observe the language::IOSLanguageDetectionTabHelper for |_webState|.
+    _iOSLanguageDetectionTabHelperObserverBridge =
+        std::make_unique<language::IOSLanguageDetectionTabHelperObserverBridge>(
+            language::IOSLanguageDetectionTabHelper::FromWebState(_webState),
+            self);
   }
 }
 
@@ -213,6 +250,31 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
     _prefObserverBridge->ObserveChangesForPreference(
         bookmarks::prefs::kEditBookmarksEnabled, _prefChangeRegistrar.get());
   }
+}
+
+- (void)setWebContentAreaOverlayPresenter:
+    (OverlayPresenter*)webContentAreaOverlayPresenter {
+  if (_webContentAreaOverlayPresenter) {
+    _webContentAreaOverlayPresenter->RemoveObserver(
+        _overlayPresenterObserver.get());
+    self.webContentAreaShowingOverlay = NO;
+  }
+
+  _webContentAreaOverlayPresenter = webContentAreaOverlayPresenter;
+
+  if (_webContentAreaOverlayPresenter) {
+    _webContentAreaOverlayPresenter->AddObserver(
+        _overlayPresenterObserver.get());
+    self.webContentAreaShowingOverlay =
+        _webContentAreaOverlayPresenter->IsShowingOverlayUI();
+  }
+}
+
+- (void)setWebContentAreaShowingOverlay:(BOOL)webContentAreaShowingOverlay {
+  if (_webContentAreaShowingOverlay == webContentAreaShowingOverlay)
+    return;
+  _webContentAreaShowingOverlay = webContentAreaShowingOverlay;
+  [self updateModel];
 }
 
 #pragma mark - Model Creation
@@ -300,6 +362,7 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
                                @"overflow_menu_action_read_later", ^{
                                  [weakSelf addToReadingList];
                                });
+  [self logTranslateAvailability];
   self.translateAction = CreateOverflowMenuAction(
       IDS_IOS_TOOLS_MENU_TRANSLATE, @"overflow_menu_action_translate", ^{
         [weakSelf translatePage];
@@ -403,23 +466,140 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
         : self.requestMobileAction,
     self.findInPageAction, self.textZoomAction
   ];
+
+  // Enable/disable items based on page state.
+
+  // The "Add to Reading List" functionality requires JavaScript execution,
+  // which is paused while overlays are displayed over the web content area.
+  self.readLaterAction.enabled =
+      !self.webContentAreaShowingOverlay && [self isCurrentURLWebURL];
+
+  BOOL bookmarkEnabled =
+      [self isCurrentURLWebURL] && [self isEditBookmarksEnabled];
+  self.addBookmarkAction.enabled = bookmarkEnabled;
+  self.editBookmarkAction.enabled = bookmarkEnabled;
+  self.translateAction.enabled = [self isTranslateEnabled];
+  self.findInPageAction.enabled = [self isFindInPageEnabled];
+  self.textZoomAction.enabled = [self isTextZoomEnabled];
+  self.requestDesktopAction.enabled =
+      [self userAgentType] == web::UserAgentType::MOBILE;
+  self.requestMobileAction.enabled =
+      [self userAgentType] == web::UserAgentType::DESKTOP;
+}
+
+// Returns whether the page can be manually translated. If |forceMenuLogging| is
+// true the translate client will log this result.
+- (BOOL)canManuallyTranslate:(BOOL)forceMenuLogging {
+  if (!self.webState) {
+    return NO;
+  }
+
+  auto* translate_client =
+      ChromeIOSTranslateClient::FromWebState(self.webState);
+  if (!translate_client) {
+    return NO;
+  }
+
+  translate::TranslateManager* translate_manager =
+      translate_client->GetTranslateManager();
+  DCHECK(translate_manager);
+  return translate_manager->CanManuallyTranslate(forceMenuLogging);
+}
+
+// Returns whether translate is enabled on the current page.
+- (BOOL)isTranslateEnabled {
+  return [self canManuallyTranslate:NO];
+}
+
+// Determines whether or not translate is available on the page and logs the
+// result. This method should only be called once per popup menu shown.
+- (void)logTranslateAvailability {
+  [self canManuallyTranslate:YES];
+}
+
+// Whether find in page is enabled.
+- (BOOL)isFindInPageEnabled {
+  if (!self.webState) {
+    return NO;
+  }
+
+  auto* helper = FindTabHelper::FromWebState(self.webState);
+  return (helper && helper->CurrentPageSupportsFindInPage() &&
+          !helper->IsFindUIActive());
+}
+
+// Whether or not text zoom is enabled for this page.
+- (BOOL)isTextZoomEnabled {
+  if (self.webContentAreaShowingOverlay) {
+    return NO;
+  }
+
+  if (!self.webState) {
+    return NO;
+  }
+  FontSizeTabHelper* helper = FontSizeTabHelper::FromWebState(self.webState);
+  return helper && helper->CurrentPageSupportsTextZoom() &&
+         !helper->IsTextZoomUIActive();
+}
+
+// Returns YES if user is allowed to edit any bookmarks.
+- (BOOL)isEditBookmarksEnabled {
+  return self.prefService->GetBoolean(bookmarks::prefs::kEditBookmarksEnabled);
 }
 
 // Whether the page is currently loading.
 - (BOOL)isPageLoading {
-  if (!self.webState)
+  return (self.webState) ? self.webState->IsLoading() : NO;
+}
+
+// Whether the current page is a web page.
+- (BOOL)isCurrentURLWebURL {
+  if (!self.webState) {
     return NO;
-  return self.webState->IsLoading();
+  }
+
+  const GURL& URL = self.webState->GetLastCommittedURL();
+  return URL.is_valid() && !web::GetWebClient()->IsAppSpecificURL(URL);
+}
+
+// Whether the current web page has available site info.
+- (BOOL)currentWebPageSupportsSiteInfo {
+  if (!self.webState) {
+    return NO;
+  }
+  web::NavigationItem* navItem =
+      self.webState->GetNavigationManager()->GetVisibleItem();
+  if (!navItem) {
+    return NO;
+  }
+  const GURL& URL = navItem->GetURL();
+  // Show site info for offline pages.
+  if (reading_list::IsOfflineURL(URL)) {
+    return YES;
+  }
+  // Do not show site info for NTP.
+  if (URL.spec() == kChromeUIAboutNewTabURL ||
+      URL.spec() == kChromeUINewTabURL) {
+    return NO;
+  }
+
+  if (self.contentBlocked) {
+    return NO;
+  }
+
+  return navItem->GetVirtualURL().is_valid();
 }
 
 // Returns the UserAgentType currently in use.
 - (web::UserAgentType)userAgentType {
-  if (!self.webState)
+  if (!self.webState) {
     return web::UserAgentType::NONE;
+  }
   web::NavigationItem* visibleItem =
       self.webState->GetNavigationManager()->GetVisibleItem();
-  if (!visibleItem)
+  if (!visibleItem) {
     return web::UserAgentType::NONE;
+  }
 
   return visibleItem->GetUserAgentType();
 }
@@ -507,11 +687,43 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
   [self updateModel];
 }
 
+#pragma mark - BrowserContainerConsumer
+
+- (void)setContentBlocked:(BOOL)contentBlocked {
+  if (_contentBlocked == contentBlocked) {
+    return;
+  }
+  _contentBlocked = contentBlocked;
+  [self updateModel];
+}
+
 #pragma mark - PrefObserverDelegate
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
   if (preferenceName == bookmarks::prefs::kEditBookmarksEnabled)
     [self updateModel];
+}
+
+#pragma mark - IOSLanguageDetectionTabHelperObserving
+
+- (void)iOSLanguageDetectionTabHelper:
+            (language::IOSLanguageDetectionTabHelper*)tabHelper
+                 didDetermineLanguage:
+                     (const translate::LanguageDetectionDetails&)details {
+  [self updateModel];
+}
+
+#pragma mark - OverlayPresenterObserving
+
+- (void)overlayPresenter:(OverlayPresenter*)presenter
+    willShowOverlayForRequest:(OverlayRequest*)request
+          initialPresentation:(BOOL)initialPresentation {
+  self.webContentAreaShowingOverlay = YES;
+}
+
+- (void)overlayPresenter:(OverlayPresenter*)presenter
+    didHideOverlayForRequest:(OverlayRequest*)request {
+  self.webContentAreaShowingOverlay = NO;
 }
 
 #pragma mark - Action handlers
@@ -568,8 +780,9 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
   RecordAction(UserMetricsAction("MobileMenuReadLater"));
   [self.dispatcher dismissPopupMenuAnimated:YES];
 
-  if (!self.webState)
+  if (!self.webState) {
     return;
+  }
   // The mediator can be destroyed when this callback is executed. So it is not
   // possible to use a weak self.
   __weak id<BrowserCommands> weakDispatcher = self.dispatcher;
@@ -577,8 +790,9 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
   NSString* title = base::SysUTF16ToNSString(self.webState->GetTitle());
   activity_services::RetrieveCanonicalUrl(self.webState, ^(const GURL& URL) {
     const GURL& pageURL = !URL.is_empty() ? URL : visibleURL;
-    if (!pageURL.is_valid() || !pageURL.SchemeIsHTTPOrHTTPS())
+    if (!pageURL.is_valid() || !pageURL.SchemeIsHTTPOrHTTPS()) {
       return;
+    }
 
     ReadingListAddCommand* command =
         [[ReadingListAddCommand alloc] initWithURL:pageURL title:title];

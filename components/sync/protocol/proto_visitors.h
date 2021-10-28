@@ -1226,7 +1226,8 @@ VISIT_PROTO_FIELDS(const sync_pb::WifiConfigurationSpecifics& proto) {
 VISIT_PROTO_FIELDS(const sync_pb::WorkspaceDeskSpecifics& proto) {
   VISIT(uuid);
   VISIT(name);
-  VISIT(created_time_usec);
+  VISIT(created_time_windows_epoch_micros);
+  VISIT(updated_time_windows_epoch_micros);
   VISIT(desk);
 }
 

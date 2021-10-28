@@ -578,6 +578,7 @@
           'expiration': 18000,
           'hard_timeout': 14400,
         },
+        'experiment_percentage': 100,
         'merge': {
           'args': [
             '--verbose',
@@ -635,7 +636,6 @@
           'oreo_fleet',
           'pie_fleet',
           'sailfish',
-          'shamu',
           'walleye',
         ],
       },
@@ -3994,7 +3994,7 @@
         ],
         'win64_args': [ '--target=Release_x64' ],
         'mac_args': [
-          '--platform=mac-mac11.5'
+          '--platform=mac-mac11'
         ],
         'linux_args': [
           '--no-xvfb',
@@ -4026,7 +4026,7 @@
         ],
         'win64_args': [ '--target=Release_x64' ],
         'mac_args': [
-          '--platform=mac-mac11.5'
+          '--platform=mac-mac11'
         ],
         'linux_args': [
           '--no-xvfb',
@@ -4062,7 +4062,7 @@
         ],
         'win64_args': [ '--target=Release_x64' ],
         'mac_args': [
-          '--platform=mac-mac11.5'
+          '--platform=mac-mac11'
         ],
         'linux_args': [
           '--no-xvfb',
@@ -5048,6 +5048,7 @@
           'expiration': 18000,
           'hard_timeout': 14400,
         },
+        'experiment_percentage': 100,
         'merge': {
           'args': [
             '--verbose',
@@ -5336,6 +5337,7 @@
           'expiration': 18000,
           'hard_timeout': 14400,
         },
+        'experiment_percentage': 100,
         'merge': {
           'args': [
             '--verbose',
@@ -5666,6 +5668,7 @@
         'swarming': {
           'shards': 15,
         },
+        'experiment_percentage': 100,
       },
     },
 
@@ -5708,6 +5711,7 @@
         'swarming': {
           'shards': 1,
         },
+        'experiment_percentage': 100,
       },
     },
   },

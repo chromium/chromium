@@ -6,6 +6,8 @@
 
 #include "components/arc/input_overlay/actions/action.h"
 #include "components/arc/input_overlay/resources/input_overlay_resources_util.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/window/non_client_view.h"
 
 namespace arc {
 
@@ -64,9 +66,18 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
   continuation_ = continuation;
   if (text_input_active_)
     return SendEvent(continuation, &event);
+
+  auto* widget = views::Widget::GetWidgetForNativeView(target_window_);
+  DCHECK(widget->non_client_view());
+  auto* frame_view = widget->non_client_view()->frame_view();
+  DCHECK(frame_view);
+  int height = frame_view->GetWindowBoundsForClientBounds(gfx::Rect()).y();
+  auto bounds = gfx::RectF(target_window_->bounds());
+  bounds.Offset(0, -height);
+
   std::list<ui::TouchEvent> touch_events;
   for (auto& action : actions_) {
-    bool rewritten = action->RewriteEvent(event, touch_events);
+    bool rewritten = action->RewriteEvent(event, touch_events, bounds);
     if (!rewritten)
       continue;
     if (touch_events.empty())

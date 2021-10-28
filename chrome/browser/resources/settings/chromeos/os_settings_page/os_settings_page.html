@@ -17,9 +17,11 @@
 
   .eol-warning-icon {
     align-items: center;
-    background: var(--google-yellow-50);
+    background:
+      rgba(var(--cros-icon-color-warning-rgb), var(--cros-second-tone-opacity));
     border-radius: 50%;
     display: flex;
+    flex: 0 0 auto;
     height: 40px;
     justify-content: center;
     margin-inline-end: var(--cr-section-padding);
@@ -27,6 +29,7 @@
   }
 
   .eol-warning-icon iron-icon {
+    --iron-icon-fill-color: var(--cros-icon-color-warning);
     margin: 0;
   }
 
@@ -55,13 +58,21 @@
   }
 
   #secondaryUserIcon {
-    background-color : var(--google-grey-300);
-    background-image: url(chrome://theme/IDR_SECONDARY_USER_SETTINGS);
-    background-position: center;
-    background-repeat: no-repeat;
-    height: 55px;
-    margin: 18px;
-    width: 58px;
+    align-items: center;
+    background: rgba(
+      var(--cros-icon-color-prominent-rgb), var(--cros-second-tone-opacity));
+    border-radius: 50%;
+    display: flex;
+    flex: 0 0 auto;
+    height: 40px;
+    justify-content: center;
+    margin-inline-end: var(--cr-section-padding);
+    width: 40px;
+  }
+
+  #secondaryUserIcon iron-icon {
+    --iron-icon-fill-color: var(--cros-icon-color-prominent);
+    margin: 0;
   }
 
   #toggleContainer {
@@ -102,9 +113,11 @@
         </cr-icon-button>
       </div>
     </template>
-    <div id="secondaryUserBanner" class="banner"
+    <div id="secondaryUserBanner" class="settings-box two-line banner"
         hidden="[[!showSecondaryUserBanner_]]">
-      <div id="secondaryUserIcon"></div>
+      <div id="secondaryUserIcon">
+        <iron-icon icon="os-settings:social-group"></iron-icon>
+      </div>
       <div class="flex">$i18n{secondaryUserBannerText}</div>
     </div>
     <settings-section page-title="$i18n{internetPageTitle}"

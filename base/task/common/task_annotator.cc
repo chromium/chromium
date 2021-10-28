@@ -75,19 +75,16 @@ const PendingTask* TaskAnnotator::CurrentTaskForThread() {
 }
 
 TaskAnnotator::TaskAnnotator() = default;
-
 TaskAnnotator::~TaskAnnotator() = default;
 
-void TaskAnnotator::WillQueueTask(const char* trace_event_name,
+void TaskAnnotator::WillQueueTask(perfetto::StaticString trace_event_name,
                                   PendingTask* pending_task,
                                   const char* task_queue_name) {
-  DCHECK(trace_event_name);
   DCHECK(pending_task);
   DCHECK(task_queue_name);
-  TRACE_EVENT_WITH_FLOW1("toplevel.flow", trace_event_name,
-                         TRACE_ID_LOCAL(GetTaskTraceID(*pending_task)),
-                         TRACE_EVENT_FLAG_FLOW_OUT, "task_queue_name",
-                         task_queue_name);
+  TRACE_EVENT_INSTANT(
+      "toplevel.flow", trace_event_name,
+      perfetto::Flow::ProcessScoped(GetTaskTraceID(*pending_task)));
 
   DCHECK(!pending_task->task_backtrace[0])
       << "Task backtrace was already set, task posted twice??";
@@ -115,29 +112,11 @@ void TaskAnnotator::WillQueueTask(const char* trace_event_name,
       parent_task->task_backtrace.back() != nullptr;
 }
 
-void TaskAnnotator::RunTask(const char* trace_event_name,
-                            PendingTask* pending_task) {
-  DCHECK(trace_event_name);
-  DCHECK(pending_task);
+void TaskAnnotator::RunTaskImpl(PendingTask& pending_task) {
+  debug::ScopedTaskRunActivity task_activity(pending_task);
 
-  debug::ScopedTaskRunActivity task_activity(*pending_task);
-
-  TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("toplevel.ipc"),
-              "TaskAnnotator::RunTask", [&](perfetto::EventContext ctx) {
-                auto* event =
-                    ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
-                auto* annotator = event->set_chrome_task_annotator();
-                annotator->set_ipc_hash(pending_task->ipc_hash);
-                if (!pending_task->delayed_run_time.is_null()) {
-                  annotator->set_task_delay_us((pending_task->delayed_run_time -
-                                                pending_task->queue_time)
-                                                   .InMicroseconds());
-                }
-              });
-
-  TRACE_EVENT_WITH_FLOW0("toplevel.flow", trace_event_name,
-                         TRACE_ID_LOCAL(GetTaskTraceID(*pending_task)),
-                         TRACE_EVENT_FLAG_FLOW_IN);
+  TRACE_HEAP_PROFILER_API_SCOPED_TASK_EXECUTION(
+      pending_task.posted_from.file_name());
 
   // Before running the task, store the IPC context and the task backtrace with
   // the chain of PostTasks that resulted in this call and deliberately alias it
@@ -163,19 +142,19 @@ void TaskAnnotator::RunTask(const char* trace_event_name,
   task_backtrace.front() = reinterpret_cast<void*>(0xc001c0ded017d00d);
   task_backtrace.back() = reinterpret_cast<void*>(0x0d00d1d1d178119);
 
-  task_backtrace[1] = pending_task->posted_from.program_counter();
-  ranges::copy(pending_task->task_backtrace, task_backtrace.begin() + 2);
+  task_backtrace[1] = pending_task.posted_from.program_counter();
+  ranges::copy(pending_task.task_backtrace, task_backtrace.begin() + 2);
   task_backtrace[kStackTaskTraceSnapshotSize - 2] =
-      reinterpret_cast<void*>(pending_task->ipc_hash);
+      reinterpret_cast<void*>(pending_task.ipc_hash);
   debug::Alias(&task_backtrace);
 
   auto* tls = GetTLSForCurrentPendingTask();
   auto* previous_pending_task = tls->Get();
-  tls->Set(pending_task);
+  tls->Set(&pending_task);
 
   if (g_task_annotator_observer)
-    g_task_annotator_observer->BeforeRunTask(pending_task);
-  std::move(pending_task->task).Run();
+    g_task_annotator_observer->BeforeRunTask(&pending_task);
+  std::move(pending_task.task).Run();
 
   tls->Set(previous_pending_task);
 

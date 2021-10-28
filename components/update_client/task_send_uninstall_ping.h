@@ -38,6 +38,7 @@ class TaskSendUninstallPing : public Task {
                         const std::string& id,
                         const base::Version& version,
                         int reason,
+                        bool requires_network_encryption,
                         Callback callback);
 
   TaskSendUninstallPing(const TaskSendUninstallPing&) = delete;
@@ -60,7 +61,8 @@ class TaskSendUninstallPing : public Task {
   scoped_refptr<UpdateEngine> update_engine_;
   const std::string id_;
   const base::Version version_;
-  int reason_;
+  const int reason_;
+  const bool requires_network_encryption_;
   Callback callback_;
 };
 

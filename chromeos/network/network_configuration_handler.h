@@ -136,7 +136,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConfigurationHandler
   void OnShuttingDown() override;
 
   // Construct and initialize an instance for testing.
-  static NetworkConfigurationHandler* InitializeForTest(
+  static std::unique_ptr<NetworkConfigurationHandler> InitializeForTest(
       NetworkStateHandler* network_state_handler,
       NetworkDeviceHandler* network_device_handler);
 

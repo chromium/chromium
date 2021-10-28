@@ -38,6 +38,7 @@ class TaskSendRegistrationPing : public Task {
   TaskSendRegistrationPing(scoped_refptr<UpdateEngine> update_engine,
                            const std::string& id,
                            const base::Version& version,
+                           bool requires_network_encryption,
                            Callback callback);
 
   void Run() override;
@@ -60,6 +61,7 @@ class TaskSendRegistrationPing : public Task {
   scoped_refptr<UpdateEngine> update_engine_;
   const std::string id_;
   const base::Version version_;
+  const bool requires_network_encryption_;
   Callback callback_;
 };
 

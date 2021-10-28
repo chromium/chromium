@@ -41,6 +41,12 @@ message DlpPolicyEvent {
     UNDEFINED_MODE = 0;
     BLOCK = 1;
     REPORT = 2;
+    // WARN event is reported when a user either receives a warning dialog
+    // or repeats an action that was previously accepted.
+    WARN = 3;
+    // WARN_PROCEED event is only reported when a user selects to proceed with
+    // an action in a warn dialog.
+    WARN_PROCEED = 4;
   }
 
   // Type of user session from which the event is reported.

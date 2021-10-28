@@ -27,6 +27,7 @@ import '../internet_page/internet_page.js';
 import '../kerberos_page/kerberos_page.js';
 import '../multidevice_page/multidevice_page.m.js';
 import '../os_bluetooth_page/os_bluetooth_page.js';
+import '../os_icons.m.js';
 
 import {assert} from '//resources/js/assert.m.js';
 import {loadTimeData} from '//resources/js/load_time_data.m.js';

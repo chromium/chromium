@@ -6,14 +6,14 @@
                 {"from_dir": ".", "to_dir": "chrome-mac"}
             ],
             "gcs_bucket": "chromium-browser-snapshots",
-            "gcs_path": "experimental/Mac/{%position%}/chrome-mac.zip",
+            "gcs_path": "Mac/{%position%}/chrome-mac.zip",
             "archive_type": "ARCHIVE_TYPE_ZIP",
             "latest_upload": {
-                "gcs_path": "experimental/Mac/LAST_CHANGE",
+                "gcs_path": "Mac/LAST_CHANGE",
                 "gcs_file_content": "{%position%}"
             },
             "revisions_file": {
-                "gcs_path": "experimental/Mac/{%position%}/REVISIONS"
+                "gcs_path": "Mac/{%position%}/REVISIONS"
             }
         },
         {
@@ -24,7 +24,7 @@
                 {"from_dir": ".", "to_dir": "chromedriver_mac64"}
             ],
             "gcs_bucket": "chromium-browser-snapshots",
-            "gcs_path": "experimental/Mac/{%position%}/chromedriver_mac64.zip",
+            "gcs_path": "Mac/{%position%}/chromedriver_mac64.zip",
             "archive_type": "ARCHIVE_TYPE_ZIP"
         },
         {
@@ -42,7 +42,7 @@
                 {"from_dir": ".", "to_dir": "content-shell"}
             ],
             "gcs_bucket": "chromium-browser-snapshots",
-            "gcs_path": "experimental/Mac/{%position%}/content-shell.zip",
+            "gcs_path": "Mac/{%position%}/content-shell.zip",
             "archive_type": "ARCHIVE_TYPE_ZIP"
         },
         {
@@ -51,7 +51,7 @@
                 {"from_dir": ".", "to_dir": "devtools-frontend"}
             ],
             "gcs_bucket": "chromium-browser-snapshots",
-            "gcs_path": "experimental/Mac/{%position%}/devtools-frontend.zip",
+            "gcs_path": "Mac/{%position%}/devtools-frontend.zip",
             "archive_type": "ARCHIVE_TYPE_ZIP"
         },
         {
@@ -60,7 +60,7 @@
                 {"from_dir": ".", "to_dir": "pnacl"}
             ],
             "gcs_bucket": "chromium-browser-snapshots",
-            "gcs_path": "experimental/Mac/{%position%}/pncal.zip",
+            "gcs_path": "Mac/{%position%}/pncal.zip",
             "archive_type": "ARCHIVE_TYPE_ZIP"
         },
         {
@@ -68,7 +68,7 @@
                 "remoting-me2me-host-mac.zip"
             ],
             "gcs_bucket": "chromium-browser-snapshots",
-            "gcs_path": "experimental/Mac/{%position%}",
+            "gcs_path": "Mac/{%position%}",
             "archive_type": "ARCHIVE_TYPE_FILES"
         },
         {
@@ -80,7 +80,7 @@
                 {"from_dir": ".", "to_dir": "updater"}
             ],
             "gcs_bucket": "chromium-browser-snapshots",
-            "gcs_path": "experimental/Mac/{%position%}/updater.zip",
+            "gcs_path": "Mac/{%position%}/updater.zip",
             "archive_type": "ARCHIVE_TYPE_ZIP"
         }
     ]

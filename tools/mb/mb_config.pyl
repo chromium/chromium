@@ -267,8 +267,7 @@
 
     'chromium.fyi': {
       'Afl Upload Linux ASan': 'afl_asan_shared_release_bot',
-      'ASAN Debug (reclient)': 'asan_lsan_debug_bot_reclient',
-      'ASAN Release Media (reclient shadow)': 'asan_lsan_fuzzer_v8_heap_chromeos_codecs_release_bot_reclient',
+      'CFI Linux CF (reclient shadow)': 'cfi_full_cfi_icall_cfi_diag_recover_release_static_reclient',
       'Comparison Linux': {
         'goma': 'gpu_tests_release_bot',
         'reclient': 'gpu_tests_release_bot_reclient',
@@ -281,11 +280,13 @@
       'Libfuzzer Upload Linux UBSan': 'libfuzzer_ubsan_release_bot',
       'Libfuzzer Upload Mac ASan': 'libfuzzer_mac_asan_shared_release_bot',
       'Libfuzzer Upload Windows ASan': 'libfuzzer_windows_asan_release_bot',
-      'Linux Builder (deps-cache) (reclient)': 'gpu_tests_release_bot_reclient',
-      'Linux Builder (j-500) (g-ip) (reclient)': 'gpu_tests_release_bot_reclient',
+      'Linux ASan LSan Builder (reclient shadow)': 'asan_lsan_release_trybot_reclient',
+      'Linux Builder (dbg) (reclient shadow)': 'gpu_tests_debug_bot_reclient',
+      'Linux Builder (dbg)(32) (reclient shadow)': 'gpu_tests_debug_bot_x86_reclient',
       'Linux Builder (j-500) (reclient)': 'gpu_tests_release_bot_reclient',
-      'Linux Builder (j-500) (n2) (reclient)': 'gpu_tests_release_bot_reclient',
-      'Linux TSan Builder (goma cache silo)': 'tsan_disable_nacl_release_bot',
+      'Linux CFI (reclient shadow)': 'cfi_full_cfi_icall_cfi_diag_thin_lto_release_static_dcheck_always_on_reclient',
+      'Linux MSan Builder (reclient shadow)': 'msan_release_bot_reclient',
+      'Linux Builder (j-500) (reclient)': 'gpu_tests_release_bot_reclient',
       'Linux TSan Builder (reclient)': 'tsan_disable_nacl_release_bot_reclient',
       'Linux Viz': 'release_trybot_minimal_symbols',
       'lacros-amd64-generic-rel-fyi': 'chromeos_amd64-generic_lacros_rel',
@@ -301,14 +302,13 @@
       'Mac Builder Next': 'gpu_tests_release_bot_minimal_symbols',
       'Mac deterministic': 'release_bot_mac_strip_minimal_symbols',
       'Mac deterministic (dbg)': 'debug_bot',
-      'MSAN Release (chained origins) (reclient shadow)': 'msan_release_bot_reclient',
-      'MSAN Release (no origins) (reclient shadow)': 'msan_no_origins_release_bot_reclient',
+      'Mojo Linux': 'release_trybot_minimal_symbols_reclient',
       'Site Isolation Android': 'android_release_bot_minimal_symbols_arm64',
-      'TSAN Debug (reclient)': 'tsan_disable_nacl_debug_bot_reclient',
-      'UBSan Release (reclient)': 'ubsan_release_bot_reclient',
-      'UBSan vptr Release (reclient shadow)': 'ubsan_vptr_release_bot_reclient',
       'VR Linux': 'vr_release_bot',
       'VR Linux (reclient)': 'vr_release_bot_reclient',
+      'WebKit Linux ASAN (reclient shadow)': 'asan_lsan_release_bot_blink_reclient',
+      'WebKit Linux Leak (reclient shadow)': 'release_bot_blink_reclient',
+      'WebKit Linux MSAN (reclient shadow)': 'msan_release_bot_blink_reclient',
       'Win 10 Fast Ring': 'release_trybot_minimal_symbols',
       'Win x64 Builder (reclient)': 'gpu_tests_release_bot_minimal_symbols_reclient',
       'Win x64 Builder (reclient)(cross)': 'gpu_tests_release_bot_minimal_symbols_reclient_win_cross',
@@ -467,7 +467,6 @@
       'Android FYI dEQP Release (Nexus 5X)': 'angle_deqp_android_release_trybot_arm64',
       'Android FYI Release (Nexus 5)': 'gpu_tests_android_release_trybot',
       'Android FYI Release (Nexus 5X)': 'gpu_tests_android_release_trybot_arm64',
-      'Android FYI Release (Nexus 6)': 'gpu_tests_android_release_trybot',
       'Android FYI Release (Nexus 9)': 'gpu_tests_android_release_trybot_arm64',
       'Android FYI Release (NVIDIA Shield TV)': 'gpu_tests_android_release_trybot_arm64',
       'Android FYI Release (Pixel 2)': 'gpu_tests_android_release_trybot',
@@ -855,7 +854,6 @@
       'android-deterministic-rel': 'android_without_codecs_release_trybot',
       'cast_shell_android': 'android_cast_debug_static_bot_compile_only',
       'gpu-fyi-try-android-l-nexus-5-32': 'gpu_tests_android_release_trybot',
-      'gpu-fyi-try-android-l-nexus-6-32': 'gpu_tests_android_release_trybot',
       'gpu-fyi-try-android-m-nexus-5x-64': 'gpu_tests_android_release_trybot_arm64',
       'gpu-fyi-try-android-m-nexus-5x-deqp-64': 'angle_deqp_android_release_trybot_arm64',
       'gpu-fyi-try-android-m-nexus-5x-skgl-64': 'gpu_tests_android_release_trybot_arm64',
@@ -904,6 +902,7 @@
       'lacros-amd64-generic-chrome': 'chromeos_amd64-generic_lacros_official',
       'lacros-amd64-generic-chrome-skylab': 'chromeos_amd64-generic_lacros_official_skylab',
       'lacros-arm-generic-chrome': 'chromeos_arm-generic_lacros_official',
+      'lacros-arm-generic-chrome-skylab': 'chromeos_arm-generic_lacros_official_skylab',
       'linux-chrome': 'official_goma',
       'linux-chrome-beta': 'official_goma',
       'linux-chrome-stable': 'official_goma',
@@ -1735,8 +1734,16 @@
       'asan', 'lsan', 'release_bot_blink',
     ],
 
+    'asan_lsan_release_bot_blink_reclient': [
+      'asan', 'lsan', 'release_bot_blink_reclient',
+    ],
+
     'asan_lsan_release_trybot': [
       'asan', 'lsan', 'release_trybot_minimal_symbols',
+    ],
+
+    'asan_lsan_release_trybot_reclient': [
+      'asan', 'lsan', 'release_trybot_reclient',
     ],
 
     'autofill_assistant_release_trybot': [
@@ -1777,8 +1784,16 @@
       'cfi_full', 'cfi_icall', 'cfi_diag', 'cfi_recover', 'thin_lto', 'release', 'static', 'goma',
     ],
 
+    'cfi_full_cfi_icall_cfi_diag_recover_release_static_reclient': [
+      'cfi_full', 'cfi_icall', 'cfi_diag', 'cfi_recover', 'thin_lto', 'release', 'static', 'reclient',
+    ],
+
     'cfi_full_cfi_icall_cfi_diag_thin_lto_release_static_dcheck_always_on_goma': [
       'cfi_full', 'cfi_icall', 'cfi_diag', 'thin_lto', 'release', 'static', 'dcheck_always_on', 'goma',
+    ],
+
+    'cfi_full_cfi_icall_cfi_diag_thin_lto_release_static_dcheck_always_on_reclient': [
+      'cfi_full', 'cfi_icall', 'cfi_diag', 'thin_lto', 'release', 'static', 'dcheck_always_on', 'reclient',
     ],
 
     'chromeos_amd64-generic_asan': [
@@ -1938,7 +1953,7 @@
 
     # Keep in sync with chromeos_with_codecs_release_trybot.
     'chromeos_with_codecs_release_trybot_code_coverage': [
-      'chromeos_with_codecs', 'release_trybot', 'no_symbols', 'also_build_lacros_chrome',
+      'chromeos_with_codecs', 'release_trybot', 'no_symbols',
       'use_clang_coverage', 'partial_code_coverage_instrumentation',
     ],
 
@@ -2249,7 +2264,7 @@
     ],
 
     'gpu_tests_chromeos_amd64_release_trybot_dcheck_off_no_symbols': [
-      'gpu_tests', 'chromeos_amd64-generic', 'release_trybot_dcheck_off',
+      'gpu_tests', 'chromeos_amd64-generic-vm', 'release_trybot_dcheck_off',
       'no_symbols',
     ],
 
@@ -2261,12 +2276,20 @@
       'gpu_tests', 'debug_bot',
     ],
 
+    'gpu_tests_debug_bot_reclient': [
+      'gpu_tests', 'debug_bot_reclient',
+    ],
+
     'gpu_tests_debug_bot_arm64': [
       'gpu_tests', 'debug_bot', 'arm64',
     ],
 
     'gpu_tests_debug_bot_x86': [
       'gpu_tests', 'debug_bot', 'x86',
+    ],
+
+    'gpu_tests_debug_bot_x86_reclient': [
+      'gpu_tests', 'debug_bot_reclient', 'x86',
     ],
 
     'gpu_tests_debug_bot_x86_no_symbols': [
@@ -2605,6 +2628,10 @@
       'msan', 'release_bot_blink',
     ],
 
+    'msan_release_bot_blink_reclient': [
+      'msan', 'release_bot_blink_reclient',
+    ],
+
     'official_celab_release_bot': [
       'official', 'release_bot', 'minimal_symbols',
     ],
@@ -2760,6 +2787,10 @@
 
     'release_bot_blink': [
       'release_bot_blink',
+    ],
+
+    'release_bot_blink_reclient': [
+      'release_bot_blink_reclient',
     ],
 
     'release_bot_blink_minimal_symbols': [
@@ -2920,6 +2951,10 @@
 
     'release_trybot_minimal_symbols': [
       'release_trybot_minimal_symbols',
+    ],
+
+    'release_trybot_minimal_symbols_reclient': [
+      'release_trybot_minimal_symbols_reclient',
     ],
 
     'release_trybot_minimal_symbols_tsan': [
@@ -3738,6 +3773,10 @@
       'mixins': ['release', 'static', 'goma', 'chrome_with_codecs'],
     },
 
+    'release_bot_blink_reclient': {
+      'mixins': ['release', 'static', 'reclient', 'chrome_with_codecs'],
+    },
+
     'release_bot_reclient': {
       'mixins': ['release', 'static', 'reclient'],
     },
@@ -3766,6 +3805,11 @@
 
     'release_trybot_minimal_symbols': {
       'mixins': ['release_bot', 'minimal_symbols', 'dcheck_always_on',
+                 'blink_disable_generated_code_formatting'],
+    },
+
+    'release_trybot_minimal_symbols_reclient': {
+      'mixins': ['release_bot_reclient', 'minimal_symbols', 'dcheck_always_on',
                  'blink_disable_generated_code_formatting'],
     },
 

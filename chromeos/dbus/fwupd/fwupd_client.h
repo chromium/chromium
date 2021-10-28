@@ -39,10 +39,10 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_FUWPD) FwupdClient : public DBusClient {
   static FwupdClient* Get();
 
   // Query fwupd for upgrades that are available for a particular device.
-  virtual void GetUpgrades(std::string device_id) = 0;
+  virtual void RequestUpgrades(std::string device_id) = 0;
 
   // Query fwupd for devices that are currently connected.
-  virtual void GetDevices() = 0;
+  virtual void RequestDevices() = 0;
 
  protected:
   friend class FwupdClientTest;
@@ -51,7 +51,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_FUWPD) FwupdClient : public DBusClient {
   // TODO(swifton): Replace this with an observer.
   bool client_is_in_testing_mode_ = false;
   int device_signal_call_count_for_testing_ = 0;
-  int get_upgrades_callback_call_count_for_testing_ = 0;
+  int request_upgrades_callback_call_count_for_testing_ = 0;
 
   base::ObserverList<Observer> observers_;
 };

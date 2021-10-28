@@ -233,6 +233,14 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
     public Collection<PageInfoSubpageController> createAdditionalRowViews(
             PageInfoMainController mainController, ViewGroup rowWrapper) {
         Collection<PageInfoSubpageController> controllers = new ArrayList<>();
+        if (PageInfoFeatures.PAGE_INFO_HISTORY.isEnabled()) {
+            final Tab tab = TabUtils.fromWebContents(mWebContents);
+            final PageInfoRowView historyRow = new PageInfoRowView(rowWrapper.getContext(), null);
+            historyRow.setId(PageInfoHistoryController.HISTORY_ROW_ID);
+            rowWrapper.addView(historyRow);
+            controllers.add(new PageInfoHistoryController(
+                    mainController, historyRow, this, () -> { return tab; }));
+        }
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE)) {
             Tab tab = TabUtils.fromWebContents(mWebContents);
             final PageInfoRowView aboutThisSiteRow =
@@ -241,14 +249,6 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
             rowWrapper.addView(aboutThisSiteRow);
             controllers.add(new PageInfoAboutThisSiteController(
                     mainController, aboutThisSiteRow, this, tab));
-        }
-        if (PageInfoFeatures.PAGE_INFO_HISTORY.isEnabled()) {
-            final Tab tab = TabUtils.fromWebContents(mWebContents);
-            final PageInfoRowView historyRow = new PageInfoRowView(rowWrapper.getContext(), null);
-            historyRow.setId(PageInfoHistoryController.HISTORY_ROW_ID);
-            rowWrapper.addView(historyRow);
-            controllers.add(new PageInfoHistoryController(
-                    mainController, historyRow, this, () -> { return tab; }));
         }
         if (PageInfoFeatures.PAGE_INFO_STORE_INFO.isEnabled() && !isIncognito()) {
             final PageInfoRowView storeInfoRow = new PageInfoRowView(rowWrapper.getContext(), null);

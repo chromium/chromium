@@ -995,15 +995,6 @@
       },
     },
   },
-  'shamu': {
-    # Nexus 6
-    'swarming': {
-      'dimensions': {
-        'device_type': 'shamu',
-        'os': 'Android',
-      },
-    },
-  },
   'skia_gold_test': {
     '$mixin_append': {
       'args': [

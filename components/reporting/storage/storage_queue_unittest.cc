@@ -40,7 +40,6 @@ using ::testing::_;
 using ::testing::Between;
 using ::testing::Eq;
 using ::testing::Invoke;
-using ::testing::NotNull;
 using ::testing::Return;
 using ::testing::Sequence;
 using ::testing::StrEq;
@@ -60,412 +59,17 @@ const CompressionInformation::CompressionAlgorithm kCompressionType =
 // Metadata file name prefix.
 const base::FilePath::CharType METADATA_NAME[] = FILE_PATH_LITERAL("META");
 
-class MockUpload
-    : public base::RefCountedDeleteOnSequence<::testing::NiceMock<MockUpload>> {
- public:
-  explicit MockUpload(
-      scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner)
-      : base::RefCountedDeleteOnSequence<::testing::NiceMock<MockUpload>>(
-            sequenced_task_runner) {
-    DETACH_FROM_SEQUENCE(mock_uploader_checker_);
-    upload_progress_.assign("Start\n");
-  }
-  MockUpload(const MockUpload& other) = delete;
-  MockUpload& operator=(const MockUpload& other) = delete;
-
-  void DoEncounterSeqId(int64_t uploader_id, int64_t sequence_id) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(mock_uploader_checker_);
-    upload_progress_.append("SeqId: ")
-        .append(base::NumberToString(sequence_id))
-        .append("\n");
-    EncounterSeqId(uploader_id, sequence_id);
-  }
-  bool DoUploadRecord(int64_t uploader_id,
-                      int64_t sequence_id,
-                      base::StringPiece data) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(mock_uploader_checker_);
-    upload_progress_.append("Record: ")
-        .append(base::NumberToString(sequence_id))
-        .append(" '")
-        .append(data.data(), data.size())
-        .append("'\n");
-    return UploadRecord(uploader_id, sequence_id, data);
-  }
-  bool DoUploadRecordFailure(int64_t uploader_id,
-                             int64_t sequence_id,
-                             Status status) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(mock_uploader_checker_);
-    upload_progress_.append("Failure: ")
-        .append(base::NumberToString(sequence_id))
-        .append(" '")
-        .append(status.ToString())
-        .append("'\n");
-    return UploadRecordFailure(uploader_id, sequence_id, status);
-  }
-  bool DoUploadGap(int64_t uploader_id, int64_t sequence_id, uint64_t count) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(mock_uploader_checker_);
-    upload_progress_.append("Gap: ")
-        .append(base::NumberToString(sequence_id))
-        .append("(")
-        .append(base::NumberToString(count))
-        .append(")\n");
-    return UploadGap(uploader_id, sequence_id, count);
-  }
-  void DoUploadComplete(int64_t uploader_id, Status status) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(mock_uploader_checker_);
-    upload_progress_.append("Complete: ")
-        .append(status.ToString())
-        .append("\n");
-    UploadComplete(uploader_id, status);
-  }
-
-  MOCK_METHOD(void,
-              EncounterSeqId,
-              (int64_t /*uploader_id*/, int64_t),
-              (const));
-  MOCK_METHOD(bool,
-              UploadRecord,
-              (int64_t /*uploader_id*/, int64_t, base::StringPiece),
-              (const));
-  MOCK_METHOD(bool,
-              UploadRecordFailure,
-              (int64_t /*uploader_id*/, int64_t, Status),
-              (const));
-  MOCK_METHOD(bool,
-              UploadGap,
-              (int64_t /*uploader_id*/, int64_t, uint64_t),
-              (const));
-  MOCK_METHOD(void, UploadComplete, (int64_t /*uploader_id*/, Status), (const));
-
- protected:
-  virtual ~MockUpload() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(mock_uploader_checker_);
-    LOG(ERROR) << "TestUploader: " << upload_progress_ << "End\n";
-  }
-
- private:
-  friend class base::RefCountedDeleteOnSequence<
-      ::testing::NiceMock<MockUpload>>;
-
-  SEQUENCE_CHECKER(mock_uploader_checker_);
-
-  // Snapshot of data received in this upload (for debug purposes).
-  std::string upload_progress_;
-};
-
-class TestUploader : public UploaderInterface {
- public:
-  // Mapping of <generation id, sequencing id> to matching record digest.
-  // Whenever a record is uploaded and includes last record digest, this map
-  // should have that digest already recorded. Only the first record in a
-  // generation is uploaded without last record digest. "Optional" is set to
-  // no-value if there was a gap record instead of a real one.
-  using LastRecordDigestMap = base::flat_map<
-      std::pair<int64_t /*generation id */, int64_t /*sequencing id*/>,
-      absl::optional<std::string /*digest*/>>;
-
-  TestUploader(LastRecordDigestMap* last_record_digest_map,
-               scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner)
-      : uploader_id_(next_uploader_id.fetch_add(1)),
-        last_record_digest_map_(last_record_digest_map),
-        sequenced_task_runner_(sequenced_task_runner),
-        mock_upload_(base::MakeRefCounted<::testing::NiceMock<MockUpload>>(
-            sequenced_task_runner)) {
-    DETACH_FROM_SEQUENCE(test_uploader_checker_);
-  }
-
-  ~TestUploader() override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(test_uploader_checker_);
-  }
-
-  void ProcessRecord(EncryptedRecord encrypted_record,
-                     base::OnceCallback<void(bool)> processed_cb) override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(test_uploader_checker_);
-    auto sequencing_information = encrypted_record.sequencing_information();
-    // Decompress encrypted_wrapped_record if is was compressed.
-    WrappedRecord wrapped_record;
-    if (encrypted_record.has_compression_information()) {
-      std::string decompressed_record = Decompression::DecompressRecord(
-          encrypted_record.encrypted_wrapped_record(),
-          encrypted_record.compression_information());
-      encrypted_record.set_encrypted_wrapped_record(decompressed_record);
-    }
-    ASSERT_TRUE(wrapped_record.ParseFromString(
-        encrypted_record.encrypted_wrapped_record()));
-
-    // Verify compression information is enabled or disabled.
-    if (CompressionModule::is_enabled()) {
-      EXPECT_TRUE(encrypted_record.has_compression_information());
-    } else {
-      EXPECT_FALSE(encrypted_record.has_compression_information());
-    }
-
-    ScheduleVerifyRecord(std::move(sequencing_information),
-                         std::move(wrapped_record), std::move(processed_cb));
-  }
-
-  void ProcessGap(SequencingInformation sequencing_information,
-                  uint64_t count,
-                  base::OnceCallback<void(bool)> processed_cb) override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(test_uploader_checker_);
-    // Verify generation match.
-    if (generation_id_.has_value() &&
-        generation_id_.value() != sequencing_information.generation_id()) {
-      sequenced_task_runner_->PostTask(
-          FROM_HERE,
-          base::BindOnce(
-              [](SequencingInformation sequencing_information,
-                 int64_t uploader_id, int64_t generation_id,
-                 scoped_refptr<MockUpload> mock_upload,
-                 base::OnceCallback<void(bool)> processed_cb) {
-                std::move(processed_cb)
-                    .Run(mock_upload->DoUploadRecordFailure(
-                        uploader_id, sequencing_information.sequencing_id(),
-                        Status(
-                            error::DATA_LOSS,
-                            base::StrCat({"Generation id mismatch, expected=",
-                                          base::NumberToString(generation_id),
-                                          " actual=",
-                                          base::NumberToString(
-                                              sequencing_information
-                                                  .generation_id())}))));
-                return;
-              },
-              std::move(sequencing_information), uploader_id_,
-              generation_id_.value(), mock_upload_, std::move(processed_cb)));
-      return;
-    }
-    if (!generation_id_.has_value()) {
-      generation_id_ = sequencing_information.generation_id();
-    }
-
-    last_record_digest_map_->emplace(
-        std::make_pair(sequencing_information.sequencing_id(),
-                       sequencing_information.generation_id()),
-        absl::nullopt);
-
-    sequenced_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            [](uint64_t count, SequencingInformation sequencing_information,
-               int64_t uploader_id, scoped_refptr<MockUpload> mock_upload,
-               base::OnceCallback<void(bool)> processed_cb) {
-              for (uint64_t c = 0; c < count; ++c) {
-                mock_upload->DoEncounterSeqId(
-                    uploader_id, sequencing_information.sequencing_id() +
-                                     static_cast<int64_t>(c));
-              }
-              std::move(processed_cb)
-                  .Run(mock_upload->DoUploadGap(
-                      uploader_id, sequencing_information.sequencing_id(),
-                      count));
-            },
-            count, std::move(sequencing_information), uploader_id_,
-            mock_upload_, std::move(processed_cb)));
-  }
-
-  void Completed(Status status) override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(test_uploader_checker_);
-    sequenced_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&MockUpload::DoUploadComplete, mock_upload_,
-                                  uploader_id_, status));
-  }
-
-  // Helper class for setting up mock uploader expectations of a successful
-  // completion.
-  class SetUp {
-   public:
-    SetUp(TestUploader* uploader, test::TestCallbackWaiter* waiter)
-        : uploader_(uploader), waiter_(waiter) {}
-    ~SetUp() {
-      EXPECT_CALL(
-          *uploader_->mock_upload_,
-          UploadComplete(Eq(uploader_->uploader_id_), Eq(Status::StatusOK())))
-          .InSequence(uploader_->test_upload_sequence_,
-                      uploader_->test_encounter_sequence_)
-          .WillOnce(
-              WithoutArgs(Invoke(waiter_, &test::TestCallbackWaiter::Signal)));
-    }
-
-    SetUp& Required(int64_t sequence_number, base::StringPiece value) {
-      EXPECT_CALL(*uploader_->mock_upload_,
-                  UploadRecord(Eq(uploader_->uploader_id_), Eq(sequence_number),
-                               StrEq(std::string(value))))
-          .InSequence(uploader_->test_upload_sequence_)
-          .WillOnce(Return(true));
-      return *this;
-    }
-
-    SetUp& Possible(int64_t sequence_number, base::StringPiece value) {
-      EXPECT_CALL(*uploader_->mock_upload_,
-                  UploadRecord(Eq(uploader_->uploader_id_), Eq(sequence_number),
-                               StrEq(std::string(value))))
-          .Times(Between(0, 1))
-          .InSequence(uploader_->test_upload_sequence_)
-          .WillRepeatedly(Return(true));
-      return *this;
-    }
-
-    SetUp& RequiredGap(int64_t sequence_number, uint64_t count) {
-      EXPECT_CALL(*uploader_->mock_upload_,
-                  UploadGap(Eq(uploader_->uploader_id_), Eq(sequence_number),
-                            Eq(count)))
-          .InSequence(uploader_->test_upload_sequence_)
-          .WillOnce(Return(true));
-      return *this;
-    }
-
-    SetUp& PossibleGap(int64_t sequence_number, uint64_t count) {
-      EXPECT_CALL(*uploader_->mock_upload_,
-                  UploadGap(Eq(uploader_->uploader_id_), Eq(sequence_number),
-                            Eq(count)))
-          .Times(Between(0, 1))
-          .InSequence(uploader_->test_upload_sequence_)
-          .WillRepeatedly(Return(true));
-      return *this;
-    }
-
-    SetUp& Failure(int64_t sequence_number, Status error) {
-      EXPECT_CALL(*uploader_->mock_upload_,
-                  UploadRecordFailure(Eq(uploader_->uploader_id_),
-                                      Eq(sequence_number), Eq(error)))
-          .InSequence(uploader_->test_upload_sequence_)
-          .WillOnce(Return(true));
-      return *this;
-    }
-
-    // The following two expectations refer to the fact that specific
-    // sequencing ids have been encountered, regardless of whether they
-    // belonged to records or gaps. The expectations are set on a separate
-    // test sequence.
-    SetUp& RequiredSeqId(int64_t sequence_number) {
-      EXPECT_CALL(
-          *uploader_->mock_upload_,
-          EncounterSeqId(Eq(uploader_->uploader_id_), Eq(sequence_number)))
-          .Times(1)
-          .InSequence(uploader_->test_encounter_sequence_);
-      return *this;
-    }
-
-    SetUp& PossibleSeqId(int64_t sequence_number) {
-      EXPECT_CALL(
-          *uploader_->mock_upload_,
-          EncounterSeqId(Eq(uploader_->uploader_id_), Eq(sequence_number)))
-          .Times(Between(0, 1))
-          .InSequence(uploader_->test_encounter_sequence_);
-      return *this;
-    }
-
-   private:
-    TestUploader* const uploader_;
-    test::TestCallbackWaiter* const waiter_;
-  };
-
- private:
-  void ScheduleVerifyRecord(SequencingInformation sequencing_information,
-                            WrappedRecord wrapped_record,
-                            base::OnceCallback<void(bool)> processed_cb) {
-    sequenced_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&TestUploader::VerifyRecord, base::Unretained(this),
-                       std::move(sequencing_information),
-                       std::move(wrapped_record), std::move(processed_cb)));
-  }
-
-  void VerifyRecord(SequencingInformation sequencing_information,
-                    WrappedRecord wrapped_record,
-                    base::OnceCallback<void(bool)> processed_cb) {
-    // Verify generation match.
-    if (generation_id_.has_value() &&
-        generation_id_.value() != sequencing_information.generation_id()) {
-      std::move(processed_cb)
-          .Run(mock_upload_->DoUploadRecordFailure(
-              uploader_id_, sequencing_information.sequencing_id(),
-              Status(
-                  error::DATA_LOSS,
-                  base::StrCat(
-                      {"Generation id mismatch, expected=",
-                       base::NumberToString(generation_id_.value()), " actual=",
-                       base::NumberToString(
-                           sequencing_information.generation_id())}))));
-      return;
-    }
-    if (!generation_id_.has_value()) {
-      generation_id_ = sequencing_information.generation_id();
-    }
-
-    // Verify digest and its match.
-    {
-      std::string serialized_record;
-      wrapped_record.record().SerializeToString(&serialized_record);
-      const auto record_digest = crypto::SHA256HashString(serialized_record);
-      DCHECK_EQ(record_digest.size(), crypto::kSHA256Length);
-      if (record_digest != wrapped_record.record_digest()) {
-        std::move(processed_cb)
-            .Run(mock_upload_->DoUploadRecordFailure(
-                uploader_id_, sequencing_information.sequencing_id(),
-                Status(error::DATA_LOSS, "Record digest mismatch")));
-        return;
-      }
-      // Store record digest for the next record in sequence to
-      // verify.
-      last_record_digest_map_->emplace(
-          std::make_pair(sequencing_information.sequencing_id(),
-                         sequencing_information.generation_id()),
-          record_digest);
-      // If last record digest is present, match it and validate,
-      // unless previous record was a gap.
-      if (wrapped_record.has_last_record_digest()) {
-        auto it = last_record_digest_map_->find(
-            std::make_pair(sequencing_information.sequencing_id() - 1,
-                           sequencing_information.generation_id()));
-        if (it == last_record_digest_map_->end() ||
-            (it->second.has_value() &&
-             it->second.value() != wrapped_record.last_record_digest())) {
-          std::move(processed_cb)
-              .Run(mock_upload_->DoUploadRecordFailure(
-                  uploader_id_, sequencing_information.sequencing_id(),
-                  Status(error::DATA_LOSS, "Last record digest mismatch")));
-          return;
-        }
-      }
-    }
-
-    mock_upload_->DoEncounterSeqId(uploader_id_,
-                                   sequencing_information.sequencing_id());
-    std::move(processed_cb)
-        .Run(mock_upload_->DoUploadRecord(
-            uploader_id_, sequencing_information.sequencing_id(),
-            wrapped_record.record().data()));
-  }
-
-  SEQUENCE_CHECKER(test_uploader_checker_);
-
-  // Unique ID of the uploader - even if the uploader is allocated
-  // on the same address as an earlier one (already released),
-  // it will get a new id and thus will ensure the expectations
-  // match the expected uploader.
-  const int64_t uploader_id_;
-
-  absl::optional<int64_t> generation_id_;
-  LastRecordDigestMap* const last_record_digest_map_;
-
-  scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
-
-  scoped_refptr<::testing::NiceMock<MockUpload>> mock_upload_;
-
-  Sequence test_encounter_sequence_;
-  Sequence test_upload_sequence_;
-};
-
-class StorageQueueTest : public ::testing::TestWithParam<size_t> {
+class StorageQueueTest
+    : public ::testing::TestWithParam<
+          testing::tuple<size_t /*file_size*/, std::string /*dm_token*/>> {
  protected:
   void SetUp() override {
     ASSERT_TRUE(location_.CreateUniqueTempDir());
+    dm_token_ = testing::get<1>(GetParam());
     options_.set_directory(base::FilePath(location_.GetPath()));
-    EXPECT_CALL(set_mock_uploader_expectations_, Call(_, NotNull()))
-        .WillRepeatedly(Invoke([](UploaderInterface::UploadReason reason,
-                                  TestUploader* test_uploader) {
+    EXPECT_CALL(set_mock_uploader_expectations_, Call(_))
+        .WillRepeatedly(Invoke([](UploaderInterface::UploadReason reason)
+                                   -> StatusOr<std::unique_ptr<TestUploader>> {
           return Status(
               error::UNAVAILABLE,
               base::StrCat({"Test uploader not provided by the test, reason=",
@@ -483,6 +87,409 @@ class StorageQueueTest : public ::testing::TestWithParam<size_t> {
     // Log next uploader id for possible verification.
     LOG(ERROR) << "Next uploader id=" << next_uploader_id.load();
   }
+
+  class MockUpload : public base::RefCountedDeleteOnSequence<
+                         ::testing::NiceMock<MockUpload>> {
+   public:
+    explicit MockUpload(
+        scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner)
+        : base::RefCountedDeleteOnSequence<::testing::NiceMock<MockUpload>>(
+              sequenced_task_runner) {
+      DETACH_FROM_SEQUENCE(mock_uploader_checker_);
+      upload_progress_.assign("Start\n");
+    }
+    MockUpload(const MockUpload& other) = delete;
+    MockUpload& operator=(const MockUpload& other) = delete;
+
+    void DoEncounterSeqId(int64_t uploader_id, int64_t sequence_id) {
+      DCHECK_CALLED_ON_VALID_SEQUENCE(mock_uploader_checker_);
+      upload_progress_.append("SeqId: ")
+          .append(base::NumberToString(sequence_id))
+          .append("\n");
+      EncounterSeqId(uploader_id, sequence_id);
+    }
+    bool DoUploadRecord(int64_t uploader_id,
+                        int64_t sequence_id,
+                        base::StringPiece data) {
+      DCHECK_CALLED_ON_VALID_SEQUENCE(mock_uploader_checker_);
+      upload_progress_.append("Record: ")
+          .append(base::NumberToString(sequence_id))
+          .append(" '")
+          .append(data.data(), data.size())
+          .append("'\n");
+      return UploadRecord(uploader_id, sequence_id, data);
+    }
+    bool DoUploadRecordFailure(int64_t uploader_id,
+                               int64_t sequence_id,
+                               Status status) {
+      DCHECK_CALLED_ON_VALID_SEQUENCE(mock_uploader_checker_);
+      upload_progress_.append("Failure: ")
+          .append(base::NumberToString(sequence_id))
+          .append(" '")
+          .append(status.ToString())
+          .append("'\n");
+      return UploadRecordFailure(uploader_id, sequence_id, status);
+    }
+    bool DoUploadGap(int64_t uploader_id, int64_t sequence_id, uint64_t count) {
+      DCHECK_CALLED_ON_VALID_SEQUENCE(mock_uploader_checker_);
+      upload_progress_.append("Gap: ")
+          .append(base::NumberToString(sequence_id))
+          .append("(")
+          .append(base::NumberToString(count))
+          .append(")\n");
+      return UploadGap(uploader_id, sequence_id, count);
+    }
+    void DoUploadComplete(int64_t uploader_id, Status status) {
+      DCHECK_CALLED_ON_VALID_SEQUENCE(mock_uploader_checker_);
+      upload_progress_.append("Complete: ")
+          .append(status.ToString())
+          .append("\n");
+      UploadComplete(uploader_id, status);
+    }
+
+    MOCK_METHOD(void,
+                EncounterSeqId,
+                (int64_t /*uploader_id*/, int64_t),
+                (const));
+    MOCK_METHOD(bool,
+                UploadRecord,
+                (int64_t /*uploader_id*/, int64_t, base::StringPiece),
+                (const));
+    MOCK_METHOD(bool,
+                UploadRecordFailure,
+                (int64_t /*uploader_id*/, int64_t, Status),
+                (const));
+    MOCK_METHOD(bool,
+                UploadGap,
+                (int64_t /*uploader_id*/, int64_t, uint64_t),
+                (const));
+    MOCK_METHOD(void,
+                UploadComplete,
+                (int64_t /*uploader_id*/, Status),
+                (const));
+
+   protected:
+    virtual ~MockUpload() {
+      DCHECK_CALLED_ON_VALID_SEQUENCE(mock_uploader_checker_);
+      LOG(ERROR) << "TestUploader: " << upload_progress_ << "End\n";
+    }
+
+   private:
+    friend class base::RefCountedDeleteOnSequence<
+        ::testing::NiceMock<MockUpload>>;
+
+    SEQUENCE_CHECKER(mock_uploader_checker_);
+
+    // Snapshot of data received in this upload (for debug purposes).
+    std::string upload_progress_;
+  };
+
+  class TestUploader : public UploaderInterface {
+   public:
+    // Mapping of <generation id, sequencing id> to matching record digest.
+    // Whenever a record is uploaded and includes last record digest, this map
+    // should have that digest already recorded. Only the first record in a
+    // generation is uploaded without last record digest. "Optional" is set to
+    // no-value if there was a gap record instead of a real one.
+    using LastRecordDigestMap = base::flat_map<
+        std::pair<int64_t /*generation id */, int64_t /*sequencing id*/>,
+        absl::optional<std::string /*digest*/>>;
+
+    explicit TestUploader(StorageQueueTest* self)
+        : uploader_id_(next_uploader_id.fetch_add(1)),
+          last_record_digest_map_(&self->last_record_digest_map_),
+          sequenced_task_runner_(self->sequenced_task_runner_),
+          mock_upload_(base::MakeRefCounted<::testing::NiceMock<MockUpload>>(
+              sequenced_task_runner_)) {
+      DETACH_FROM_SEQUENCE(test_uploader_checker_);
+    }
+
+    ~TestUploader() override {
+      DCHECK_CALLED_ON_VALID_SEQUENCE(test_uploader_checker_);
+    }
+
+    void ProcessRecord(EncryptedRecord encrypted_record,
+                       base::OnceCallback<void(bool)> processed_cb) override {
+      DCHECK_CALLED_ON_VALID_SEQUENCE(test_uploader_checker_);
+      auto sequencing_information = encrypted_record.sequencing_information();
+      // Decompress encrypted_wrapped_record if is was compressed.
+      WrappedRecord wrapped_record;
+      if (encrypted_record.has_compression_information()) {
+        std::string decompressed_record = Decompression::DecompressRecord(
+            encrypted_record.encrypted_wrapped_record(),
+            encrypted_record.compression_information());
+        encrypted_record.set_encrypted_wrapped_record(decompressed_record);
+      }
+      ASSERT_TRUE(wrapped_record.ParseFromString(
+          encrypted_record.encrypted_wrapped_record()));
+
+      // Verify compression information is enabled or disabled.
+      if (CompressionModule::is_enabled()) {
+        EXPECT_TRUE(encrypted_record.has_compression_information());
+      } else {
+        EXPECT_FALSE(encrypted_record.has_compression_information());
+      }
+
+      ScheduleVerifyRecord(std::move(sequencing_information),
+                           std::move(wrapped_record), std::move(processed_cb));
+    }
+
+    void ProcessGap(SequencingInformation sequencing_information,
+                    uint64_t count,
+                    base::OnceCallback<void(bool)> processed_cb) override {
+      DCHECK_CALLED_ON_VALID_SEQUENCE(test_uploader_checker_);
+      // Verify generation match.
+      if (generation_id_.has_value() &&
+          generation_id_.value() != sequencing_information.generation_id()) {
+        sequenced_task_runner_->PostTask(
+            FROM_HERE,
+            base::BindOnce(
+                [](SequencingInformation sequencing_information,
+                   int64_t uploader_id, int64_t generation_id,
+                   scoped_refptr<MockUpload> mock_upload,
+                   base::OnceCallback<void(bool)> processed_cb) {
+                  std::move(processed_cb)
+                      .Run(mock_upload->DoUploadRecordFailure(
+                          uploader_id, sequencing_information.sequencing_id(),
+                          Status(
+                              error::DATA_LOSS,
+                              base::StrCat({"Generation id mismatch, expected=",
+                                            base::NumberToString(generation_id),
+                                            " actual=",
+                                            base::NumberToString(
+                                                sequencing_information
+                                                    .generation_id())}))));
+                },
+                std::move(sequencing_information), uploader_id_,
+                generation_id_.value(), mock_upload_, std::move(processed_cb)));
+        return;
+      }
+      if (!generation_id_.has_value()) {
+        generation_id_ = sequencing_information.generation_id();
+      }
+
+      last_record_digest_map_->emplace(
+          std::make_pair(sequencing_information.sequencing_id(),
+                         sequencing_information.generation_id()),
+          absl::nullopt);
+
+      sequenced_task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              [](uint64_t count, SequencingInformation sequencing_information,
+                 int64_t uploader_id, scoped_refptr<MockUpload> mock_upload,
+                 base::OnceCallback<void(bool)> processed_cb) {
+                for (uint64_t c = 0; c < count; ++c) {
+                  mock_upload->DoEncounterSeqId(
+                      uploader_id, sequencing_information.sequencing_id() +
+                                       static_cast<int64_t>(c));
+                }
+                std::move(processed_cb)
+                    .Run(mock_upload->DoUploadGap(
+                        uploader_id, sequencing_information.sequencing_id(),
+                        count));
+              },
+              count, std::move(sequencing_information), uploader_id_,
+              mock_upload_, std::move(processed_cb)));
+    }
+
+    void Completed(Status status) override {
+      DCHECK_CALLED_ON_VALID_SEQUENCE(test_uploader_checker_);
+      sequenced_task_runner_->PostTask(
+          FROM_HERE, base::BindOnce(&MockUpload::DoUploadComplete, mock_upload_,
+                                    uploader_id_, status));
+    }
+
+    // Helper class for setting up mock uploader expectations of a successful
+    // completion.
+    class SetUp {
+     public:
+      SetUp(test::TestCallbackWaiter* waiter, StorageQueueTest* self)
+          : uploader_(std::make_unique<TestUploader>(self)),
+            uploader_id_(uploader_->uploader_id_),
+            waiter_(waiter) {}
+      SetUp(const SetUp& other) = delete;
+      SetUp& operator=(const SetUp& other) = delete;
+      ~SetUp() = default;
+
+      std::unique_ptr<TestUploader> Complete(
+          Status status = Status::StatusOK()) {
+        EXPECT_CALL(*uploader_->mock_upload_,
+                    UploadComplete(Eq(uploader_id_), Eq(status)))
+            .InSequence(uploader_->test_upload_sequence_,
+                        uploader_->test_encounter_sequence_)
+            .WillOnce(WithoutArgs(
+                Invoke(waiter_, &test::TestCallbackWaiter::Signal)));
+        return std::move(uploader_);
+      }
+
+      SetUp& Required(int64_t sequence_number, base::StringPiece value) {
+        EXPECT_CALL(*uploader_->mock_upload_,
+                    UploadRecord(Eq(uploader_id_), Eq(sequence_number),
+                                 StrEq(std::string(value))))
+            .InSequence(uploader_->test_upload_sequence_)
+            .WillOnce(Return(true));
+        return *this;
+      }
+
+      SetUp& Possible(int64_t sequence_number, base::StringPiece value) {
+        EXPECT_CALL(*uploader_->mock_upload_,
+                    UploadRecord(Eq(uploader_id_), Eq(sequence_number),
+                                 StrEq(std::string(value))))
+            .Times(Between(0, 1))
+            .InSequence(uploader_->test_upload_sequence_)
+            .WillRepeatedly(Return(true));
+        return *this;
+      }
+
+      SetUp& RequiredGap(int64_t sequence_number, uint64_t count) {
+        EXPECT_CALL(*uploader_->mock_upload_,
+                    UploadGap(Eq(uploader_id_), Eq(sequence_number), Eq(count)))
+            .InSequence(uploader_->test_upload_sequence_)
+            .WillOnce(Return(true));
+        return *this;
+      }
+
+      SetUp& PossibleGap(int64_t sequence_number, uint64_t count) {
+        EXPECT_CALL(*uploader_->mock_upload_,
+                    UploadGap(Eq(uploader_id_), Eq(sequence_number), Eq(count)))
+            .Times(Between(0, 1))
+            .InSequence(uploader_->test_upload_sequence_)
+            .WillRepeatedly(Return(true));
+        return *this;
+      }
+
+      SetUp& Failure(int64_t sequence_number, Status error) {
+        EXPECT_CALL(*uploader_->mock_upload_,
+                    UploadRecordFailure(Eq(uploader_id_), Eq(sequence_number),
+                                        Eq(error)))
+            .InSequence(uploader_->test_upload_sequence_)
+            .WillOnce(Return(true));
+        return *this;
+      }
+
+      // The following two expectations refer to the fact that specific
+      // sequencing ids have been encountered, regardless of whether they
+      // belonged to records or gaps. The expectations are set on a separate
+      // test sequence.
+      SetUp& RequiredSeqId(int64_t sequence_number) {
+        EXPECT_CALL(*uploader_->mock_upload_,
+                    EncounterSeqId(Eq(uploader_id_), Eq(sequence_number)))
+            .Times(1)
+            .InSequence(uploader_->test_encounter_sequence_);
+        return *this;
+      }
+
+      SetUp& PossibleSeqId(int64_t sequence_number) {
+        EXPECT_CALL(*uploader_->mock_upload_,
+                    EncounterSeqId(Eq(uploader_id_), Eq(sequence_number)))
+            .Times(Between(0, 1))
+            .InSequence(uploader_->test_encounter_sequence_);
+        return *this;
+      }
+
+     private:
+      std::unique_ptr<TestUploader> uploader_;
+      const int64_t uploader_id_;
+      test::TestCallbackWaiter* const waiter_;
+    };
+
+   private:
+    void ScheduleVerifyRecord(SequencingInformation sequencing_information,
+                              WrappedRecord wrapped_record,
+                              base::OnceCallback<void(bool)> processed_cb) {
+      sequenced_task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(&TestUploader::VerifyRecord, base::Unretained(this),
+                         std::move(sequencing_information),
+                         std::move(wrapped_record), std::move(processed_cb)));
+    }
+
+    void VerifyRecord(SequencingInformation sequencing_information,
+                      WrappedRecord wrapped_record,
+                      base::OnceCallback<void(bool)> processed_cb) {
+      // Verify generation match.
+      if (generation_id_.has_value() &&
+          generation_id_.value() != sequencing_information.generation_id()) {
+        std::move(processed_cb)
+            .Run(mock_upload_->DoUploadRecordFailure(
+                uploader_id_, sequencing_information.sequencing_id(),
+                Status(error::DATA_LOSS,
+                       base::StrCat(
+                           {"Generation id mismatch, expected=",
+                            base::NumberToString(generation_id_.value()),
+                            " actual=",
+                            base::NumberToString(
+                                sequencing_information.generation_id())}))));
+        return;
+      }
+      if (!generation_id_.has_value()) {
+        generation_id_ = sequencing_information.generation_id();
+      }
+
+      // Verify digest and its match.
+      {
+        std::string serialized_record;
+        wrapped_record.record().SerializeToString(&serialized_record);
+        const auto record_digest = crypto::SHA256HashString(serialized_record);
+        DCHECK_EQ(record_digest.size(), crypto::kSHA256Length);
+        if (record_digest != wrapped_record.record_digest()) {
+          std::move(processed_cb)
+              .Run(mock_upload_->DoUploadRecordFailure(
+                  uploader_id_, sequencing_information.sequencing_id(),
+                  Status(error::DATA_LOSS, "Record digest mismatch")));
+          return;
+        }
+        // Store record digest for the next record in sequence to
+        // verify.
+        last_record_digest_map_->emplace(
+            std::make_pair(sequencing_information.sequencing_id(),
+                           sequencing_information.generation_id()),
+            record_digest);
+        // If last record digest is present, match it and validate,
+        // unless previous record was a gap.
+        if (wrapped_record.has_last_record_digest()) {
+          auto it = last_record_digest_map_->find(
+              std::make_pair(sequencing_information.sequencing_id() - 1,
+                             sequencing_information.generation_id()));
+          if (it == last_record_digest_map_->end() ||
+              (it->second.has_value() &&
+               it->second.value() != wrapped_record.last_record_digest())) {
+            std::move(processed_cb)
+                .Run(mock_upload_->DoUploadRecordFailure(
+                    uploader_id_, sequencing_information.sequencing_id(),
+                    Status(error::DATA_LOSS, "Last record digest mismatch")));
+            return;
+          }
+        }
+      }
+
+      mock_upload_->DoEncounterSeqId(uploader_id_,
+                                     sequencing_information.sequencing_id());
+      std::move(processed_cb)
+          .Run(mock_upload_->DoUploadRecord(
+              uploader_id_, sequencing_information.sequencing_id(),
+              wrapped_record.record().data()));
+    }
+
+    SEQUENCE_CHECKER(test_uploader_checker_);
+
+    // Unique ID of the uploader - even if the uploader is allocated
+    // on the same address as an earlier one (already released),
+    // it will get a new id and thus will ensure the expectations
+    // match the expected uploader.
+    const int64_t uploader_id_;
+
+    absl::optional<int64_t> generation_id_;
+    LastRecordDigestMap* const last_record_digest_map_;
+
+    scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
+
+    scoped_refptr<::testing::NiceMock<MockUpload>> mock_upload_;
+
+    Sequence test_encounter_sequence_;
+    Sequence test_upload_sequence_;
+  };
 
   void CreateTestStorageQueueOrDie(const QueueOptions& options) {
     ASSERT_FALSE(storage_queue_) << "TestStorageQueue already assigned";
@@ -528,7 +535,7 @@ class StorageQueueTest : public ::testing::TestWithParam<size_t> {
         .set_subdirectory(FILE_PATH_LITERAL("D1"))
         .set_file_prefix(FILE_PATH_LITERAL("F0001"))
         .set_upload_retry_delay(upload_retry_delay)
-        .set_max_single_file_size(GetParam());
+        .set_max_single_file_size(testing::get<0>(GetParam()));
   }
 
   QueueOptions BuildStorageQueueOptionsPeriodic(
@@ -543,26 +550,23 @@ class StorageQueueTest : public ::testing::TestWithParam<size_t> {
   void AsyncStartMockUploader(
       UploaderInterface::UploadReason reason,
       UploaderInterface::UploaderInterfaceResultCb start_uploader_cb) {
-    auto uploader = std::make_unique<TestUploader>(&last_record_digest_map_,
-                                                   sequenced_task_runner_);
     sequenced_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(
             [](UploaderInterface::UploadReason reason,
-               std::unique_ptr<TestUploader> uploader,
                UploaderInterface::UploaderInterfaceResultCb start_uploader_cb,
                StorageQueueTest* self) {
-              const auto status = self->set_mock_uploader_expectations_.Call(
-                  reason, uploader.get());
-              LOG(ERROR) << "Upload reason=" << reason << " " << status;
-              if (!status.ok()) {
-                std::move(start_uploader_cb).Run(status);
+              auto result = self->set_mock_uploader_expectations_.Call(reason);
+              LOG(ERROR) << "Upload reason=" << reason << " "
+                         << result.status();
+              if (!result.ok()) {
+                std::move(start_uploader_cb).Run(result.status());
                 return;
               }
+              auto uploader = std::move(result.ValueOrDie());
               std::move(start_uploader_cb).Run(std::move(uploader));
             },
-            reason, std::move(uploader), std::move(start_uploader_cb),
-            base::Unretained(this)));
+            reason, std::move(start_uploader_cb), base::Unretained(this)));
   }
 
   Status WriteString(base::StringPiece data) {
@@ -571,7 +575,10 @@ class StorageQueueTest : public ::testing::TestWithParam<size_t> {
     Record record;
     record.set_data(std::string(data));
     record.set_destination(UPLOAD_EVENTS);
-    record.set_dm_token("DM TOKEN");
+    if (!dm_token_.empty()) {
+      record.set_dm_token(dm_token_);
+    }
+
     storage_queue_->Write(std::move(record), w.cb());
     return w.result();
   }
@@ -589,6 +596,7 @@ class StorageQueueTest : public ::testing::TestWithParam<size_t> {
     ASSERT_OK(c_result) << c_result;
   }
 
+  std::string dm_token_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   const scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_{
@@ -606,8 +614,8 @@ class StorageQueueTest : public ::testing::TestWithParam<size_t> {
   // digest. Serves all TestUploaders created by test fixture.
   TestUploader::LastRecordDigestMap last_record_digest_map_;
 
-  ::testing::MockFunction<Status(UploaderInterface::UploadReason,
-                                 TestUploader*)>
+  ::testing::MockFunction<StatusOr<std::unique_ptr<TestUploader>>(
+      UploaderInterface::UploadReason)>
       set_mock_uploader_expectations_;
 };
 
@@ -649,14 +657,13 @@ TEST_P(StorageQueueTest, WriteIntoNewStorageQueueAndUpload) {
   // Set uploader expectations.
   test::TestCallbackAutoWaiter waiter;
   EXPECT_CALL(set_mock_uploader_expectations_,
-              Call(Eq(UploaderInterface::PERIODIC), NotNull()))
-      .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason,
-                                 TestUploader* test_uploader) {
-        TestUploader::SetUp(test_uploader, &waiter)
+              Call(Eq(UploaderInterface::PERIODIC)))
+      .WillOnce(Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+        return TestUploader::SetUp(&waiter, this)
             .Required(0, kData[0])
             .Required(1, kData[1])
-            .Required(2, kData[2]);
-        return Status::StatusOK();
+            .Required(2, kData[2])
+            .Complete();
       }))
       .RetiresOnSaturation();
 
@@ -676,14 +683,13 @@ TEST_P(StorageQueueTest, WriteIntoNewStorageQueueAndUploadWithFailures) {
   // Set uploader expectations.
   test::TestCallbackAutoWaiter waiter;
   EXPECT_CALL(set_mock_uploader_expectations_,
-              Call(Eq(UploaderInterface::PERIODIC), NotNull()))
-      .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason,
-                                 TestUploader* test_uploader) {
-        TestUploader::SetUp(test_uploader, &waiter)
+              Call(Eq(UploaderInterface::PERIODIC)))
+      .WillOnce(Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+        return TestUploader::SetUp(&waiter, this)
             .Required(0, kData[0])
             .RequiredGap(1, 1)
-            .Possible(2, kData[2]);  // Depending on records binpacking
-        return Status::StatusOK();
+            .Possible(2, kData[2])  // Depending on records binpacking
+            .Complete();
       }))
       .RetiresOnSaturation();
 
@@ -708,17 +714,16 @@ TEST_P(StorageQueueTest, WriteIntoNewStorageQueueReopenWriteMoreAndUpload) {
   // Set uploader expectations.
   test::TestCallbackAutoWaiter waiter;
   EXPECT_CALL(set_mock_uploader_expectations_,
-              Call(Eq(UploaderInterface::PERIODIC), NotNull()))
-      .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason,
-                                 TestUploader* test_uploader) {
-        TestUploader::SetUp(test_uploader, &waiter)
+              Call(Eq(UploaderInterface::PERIODIC)))
+      .WillOnce(Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+        return TestUploader::SetUp(&waiter, this)
             .Required(0, kData[0])
             .Required(1, kData[1])
             .Required(2, kData[2])
             .Required(3, kMoreData[0])
             .Required(4, kMoreData[1])
-            .Required(5, kMoreData[2]);
-        return Status::StatusOK();
+            .Required(5, kMoreData[2])
+            .Complete();
       }))
       .RetiresOnSaturation();
 
@@ -757,17 +762,16 @@ TEST_P(StorageQueueTest,
   // Set uploader expectations. Previous data is all lost.
   test::TestCallbackAutoWaiter waiter;
   EXPECT_CALL(set_mock_uploader_expectations_,
-              Call(Eq(UploaderInterface::PERIODIC), NotNull()))
-      .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason,
-                                 TestUploader* test_uploader) {
-        TestUploader::SetUp(test_uploader, &waiter)
+              Call(Eq(UploaderInterface::PERIODIC)))
+      .WillOnce(Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+        return TestUploader::SetUp(&waiter, this)
             .Required(0, kData[0])
             .Required(1, kData[1])
             .Required(2, kData[2])
             .Required(3, kMoreData[0])
             .Required(4, kMoreData[1])
-            .Required(5, kMoreData[2]);
-        return Status::StatusOK();
+            .Required(5, kMoreData[2])
+            .Complete();
       }))
       .RetiresOnSaturation();
 
@@ -807,17 +811,16 @@ TEST_P(
   // Set uploader expectations. Previous data is all lost.
   test::TestCallbackAutoWaiter waiter;
   EXPECT_CALL(set_mock_uploader_expectations_,
-              Call(Eq(UploaderInterface::PERIODIC), NotNull()))
-      .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason,
-                                 TestUploader* test_uploader) {
-        TestUploader::SetUp(test_uploader, &waiter)
+              Call(Eq(UploaderInterface::PERIODIC)))
+      .WillOnce(Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+        return TestUploader::SetUp(&waiter, this)
             .Required(0, kData[0])
             .Required(1, kData[1])
             .Required(2, kData[2])
             .Required(3, kMoreData[0])
             .Required(4, kMoreData[1])
-            .Required(5, kMoreData[2]);
-        return Status::StatusOK();
+            .Required(5, kMoreData[2])
+            .Complete();
       }))
       .RetiresOnSaturation();
 
@@ -863,54 +866,54 @@ TEST_P(StorageQueueTest,
   switch (options.max_single_file_size()) {
     case 1:  // single record in file - deletion killed the first record
       EXPECT_CALL(set_mock_uploader_expectations_,
-                  Call(Eq(UploaderInterface::PERIODIC), NotNull()))
-          .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason,
-                                     TestUploader* test_uploader) {
-            TestUploader::SetUp(test_uploader, &waiter)
-                .PossibleGap(0, 1)
-                .Required(1, kData[1])
-                .Required(2, kData[2])
-                .Required(3, kMoreData[0])
-                .Required(4, kMoreData[1])
-                .Required(5, kMoreData[2]);
-            return Status::StatusOK();
-          }))
+                  Call(Eq(UploaderInterface::PERIODIC)))
+          .WillOnce(
+              Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+                return TestUploader::SetUp(&waiter, this)
+                    .PossibleGap(0, 1)
+                    .Required(1, kData[1])
+                    .Required(2, kData[2])
+                    .Required(3, kMoreData[0])
+                    .Required(4, kMoreData[1])
+                    .Required(5, kMoreData[2])
+                    .Complete();
+              }))
           .RetiresOnSaturation();
       break;
     case 256:  // two records in file - deletion killed the first two records.
                // Can bring gap of 2 records or 2 gaps 1 record each.
       EXPECT_CALL(set_mock_uploader_expectations_,
-                  Call(Eq(UploaderInterface::PERIODIC), NotNull()))
-          .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason,
-                                     TestUploader* test_uploader) {
-            TestUploader::SetUp(test_uploader, &waiter)
-                .PossibleGap(0, 1)
-                .PossibleGap(1, 1)
-                .PossibleGap(0, 2)
-                .Failure(
-                    2, Status(error::DATA_LOSS, "Last record digest mismatch"))
-                .Required(3, kMoreData[0])
-                .Required(4, kMoreData[1])
-                .Required(5, kMoreData[2]);
-            return Status::StatusOK();
-          }))
+                  Call(Eq(UploaderInterface::PERIODIC)))
+          .WillOnce(
+              Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+                return TestUploader::SetUp(&waiter, this)
+                    .PossibleGap(0, 1)
+                    .PossibleGap(1, 1)
+                    .PossibleGap(0, 2)
+                    .Failure(2, Status(error::DATA_LOSS,
+                                       "Last record digest mismatch"))
+                    .Required(3, kMoreData[0])
+                    .Required(4, kMoreData[1])
+                    .Required(5, kMoreData[2])
+                    .Complete();
+              }))
           .RetiresOnSaturation();
       break;
     default:  // Unlimited file size - deletion above killed all the data. Can
               // bring gap of 1-6 records.
       EXPECT_CALL(set_mock_uploader_expectations_,
-                  Call(Eq(UploaderInterface::PERIODIC), NotNull()))
-          .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason,
-                                     TestUploader* test_uploader) {
-            TestUploader::SetUp(test_uploader, &waiter)
-                .PossibleGap(0, 1)
-                .PossibleGap(0, 2)
-                .PossibleGap(0, 3)
-                .PossibleGap(0, 4)
-                .PossibleGap(0, 5)
-                .PossibleGap(0, 6);
-            return Status::StatusOK();
-          }))
+                  Call(Eq(UploaderInterface::PERIODIC)))
+          .WillOnce(
+              Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+                return TestUploader::SetUp(&waiter, this)
+                    .PossibleGap(0, 1)
+                    .PossibleGap(0, 2)
+                    .PossibleGap(0, 3)
+                    .PossibleGap(0, 4)
+                    .PossibleGap(0, 5)
+                    .PossibleGap(0, 6)
+                    .Complete();
+              }))
           .RetiresOnSaturation();
   }
 
@@ -927,14 +930,13 @@ TEST_P(StorageQueueTest, WriteIntoNewStorageQueueAndFlush) {
   // Set uploader expectations.
   test::TestCallbackAutoWaiter waiter;
   EXPECT_CALL(set_mock_uploader_expectations_,
-              Call(Eq(UploaderInterface::MANUAL), NotNull()))
-      .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason,
-                                 TestUploader* test_uploader) {
-        TestUploader::SetUp(test_uploader, &waiter)
+              Call(Eq(UploaderInterface::MANUAL)))
+      .WillOnce(Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+        return TestUploader::SetUp(&waiter, this)
             .Required(0, kData[0])
             .Required(1, kData[1])
-            .Required(2, kData[2]);
-        return Status::StatusOK();
+            .Required(2, kData[2])
+            .Complete();
       }))
       .RetiresOnSaturation();
 
@@ -958,17 +960,16 @@ TEST_P(StorageQueueTest, WriteIntoNewStorageQueueReopenWriteMoreAndFlush) {
   // Set uploader expectations.
   test::TestCallbackAutoWaiter waiter;
   EXPECT_CALL(set_mock_uploader_expectations_,
-              Call(Eq(UploaderInterface::MANUAL), NotNull()))
-      .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason,
-                                 TestUploader* test_uploader) {
-        TestUploader::SetUp(test_uploader, &waiter)
+              Call(Eq(UploaderInterface::MANUAL)))
+      .WillOnce(Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+        return TestUploader::SetUp(&waiter, this)
             .Required(0, kData[0])
             .Required(1, kData[1])
             .Required(2, kData[2])
             .Required(3, kMoreData[0])
             .Required(4, kMoreData[1])
-            .Required(5, kMoreData[2]);
-        return Status::StatusOK();
+            .Required(5, kMoreData[2])
+            .Complete();
       }))
       .RetiresOnSaturation();
 
@@ -989,15 +990,15 @@ TEST_P(StorageQueueTest, ValidateVariousRecordSizes) {
   // Set uploader expectations.
   test::TestCallbackAutoWaiter waiter;
   EXPECT_CALL(set_mock_uploader_expectations_,
-              Call(Eq(UploaderInterface::MANUAL), NotNull()))
-      .WillOnce(Invoke([data, &waiter](UploaderInterface::UploadReason reason,
-                                       TestUploader* test_uploader) {
-        TestUploader::SetUp uploader_setup(test_uploader, &waiter);
-        for (size_t i = 0; i < data.size(); ++i) {
-          uploader_setup.Required(i, data[i]);
-        }
-        return Status::StatusOK();
-      }))
+              Call(Eq(UploaderInterface::MANUAL)))
+      .WillOnce(Invoke(
+          [&waiter, &data, this](UploaderInterface::UploadReason reason) {
+            TestUploader::SetUp uploader_setup(&waiter, this);
+            for (size_t i = 0; i < data.size(); ++i) {
+              uploader_setup.Required(i, data[i]);
+            }
+            return uploader_setup.Complete();
+          }))
       .RetiresOnSaturation();
 
   // Flush manually.
@@ -1015,15 +1016,15 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmations) {
     // Set uploader expectations.
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::PERIODIC), NotNull()))
-        .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason,
-                                   TestUploader* test_uploader) {
-          TestUploader::SetUp(test_uploader, &waiter)
-              .Required(0, kData[0])
-              .Required(1, kData[1])
-              .Required(2, kData[2]);
-          return Status::StatusOK();
-        }))
+                Call(Eq(UploaderInterface::PERIODIC)))
+        .WillOnce(
+            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+              return TestUploader::SetUp(&waiter, this)
+                  .Required(0, kData[0])
+                  .Required(1, kData[1])
+                  .Required(2, kData[2])
+                  .Complete();
+            }))
         .RetiresOnSaturation();
 
     // Forward time to trigger upload
@@ -1035,14 +1036,14 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmations) {
     // Set uploader expectations.
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::PERIODIC), NotNull()))
-        .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason,
-                                   TestUploader* test_uploader) {
-          TestUploader::SetUp(test_uploader, &waiter)
-              .Required(1, kData[1])
-              .Required(2, kData[2]);
-          return Status::StatusOK();
-        }))
+                Call(Eq(UploaderInterface::PERIODIC)))
+        .WillOnce(
+            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+              return TestUploader::SetUp(&waiter, this)
+                  .Required(1, kData[1])
+                  .Required(2, kData[2])
+                  .Complete();
+            }))
         .RetiresOnSaturation();
     // Forward time to trigger upload
     task_environment_.FastForwardBy(base::Seconds(1));
@@ -1054,12 +1055,13 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmations) {
     // Set uploader expectations.
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::PERIODIC), NotNull()))
-        .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason,
-                                   TestUploader* test_uploader) {
-          TestUploader::SetUp(test_uploader, &waiter).Required(2, kData[2]);
-          return Status::StatusOK();
-        }))
+                Call(Eq(UploaderInterface::PERIODIC)))
+        .WillOnce(
+            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+              return TestUploader::SetUp(&waiter, this)
+                  .Required(2, kData[2])
+                  .Complete();
+            }))
         .RetiresOnSaturation();
     // Forward time to trigger upload
     task_environment_.FastForwardBy(base::Seconds(1));
@@ -1074,16 +1076,16 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmations) {
     // Set uploader expectations.
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::PERIODIC), NotNull()))
-        .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason,
-                                   TestUploader* test_uploader) {
-          TestUploader::SetUp(test_uploader, &waiter)
-              .Required(2, kData[2])
-              .Required(3, kMoreData[0])
-              .Required(4, kMoreData[1])
-              .Required(5, kMoreData[2]);
-          return Status::StatusOK();
-        }))
+                Call(Eq(UploaderInterface::PERIODIC)))
+        .WillOnce(
+            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+              return TestUploader::SetUp(&waiter, this)
+                  .Required(2, kData[2])
+                  .Required(3, kMoreData[0])
+                  .Required(4, kMoreData[1])
+                  .Required(5, kMoreData[2])
+                  .Complete();
+            }))
         .RetiresOnSaturation();
     task_environment_.FastForwardBy(base::Seconds(1));
   }
@@ -1095,15 +1097,15 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmations) {
     // Set uploader expectations.
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::PERIODIC), NotNull()))
-        .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason,
-                                   TestUploader* test_uploader) {
-          TestUploader::SetUp(test_uploader, &waiter)
-              .Required(3, kMoreData[0])
-              .Required(4, kMoreData[1])
-              .Required(5, kMoreData[2]);
-          return Status::StatusOK();
-        }))
+                Call(Eq(UploaderInterface::PERIODIC)))
+        .WillOnce(
+            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+              return TestUploader::SetUp(&waiter, this)
+                  .Required(3, kMoreData[0])
+                  .Required(4, kMoreData[1])
+                  .Required(5, kMoreData[2])
+                  .Complete();
+            }))
         .RetiresOnSaturation();
     task_environment_.FastForwardBy(base::Seconds(1));
   }
@@ -1120,15 +1122,15 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmationsAndReopen) {
     // Set uploader expectations.
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::PERIODIC), NotNull()))
-        .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason,
-                                   TestUploader* test_uploader) {
-          TestUploader::SetUp(test_uploader, &waiter)
-              .Required(0, kData[0])
-              .Required(1, kData[1])
-              .Required(2, kData[2]);
-          return Status::StatusOK();
-        }))
+                Call(Eq(UploaderInterface::PERIODIC)))
+        .WillOnce(
+            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+              return TestUploader::SetUp(&waiter, this)
+                  .Required(0, kData[0])
+                  .Required(1, kData[1])
+                  .Required(2, kData[2])
+                  .Complete();
+            }))
         .RetiresOnSaturation();
 
     // Forward time to trigger upload
@@ -1141,14 +1143,14 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmationsAndReopen) {
     // Set uploader expectations.
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::PERIODIC), NotNull()))
-        .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason,
-                                   TestUploader* test_uploader) {
-          TestUploader::SetUp(test_uploader, &waiter)
-              .Required(1, kData[1])
-              .Required(2, kData[2]);
-          return Status::StatusOK();
-        }))
+                Call(Eq(UploaderInterface::PERIODIC)))
+        .WillOnce(
+            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+              return TestUploader::SetUp(&waiter, this)
+                  .Required(1, kData[1])
+                  .Required(2, kData[2])
+                  .Complete();
+            }))
         .RetiresOnSaturation();
     // Forward time to trigger upload
     task_environment_.FastForwardBy(base::Seconds(1));
@@ -1160,12 +1162,13 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmationsAndReopen) {
     // Set uploader expectations.
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::PERIODIC), NotNull()))
-        .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason,
-                                   TestUploader* test_uploader) {
-          TestUploader::SetUp(test_uploader, &waiter).Required(2, kData[2]);
-          return Status::StatusOK();
-        }))
+                Call(Eq(UploaderInterface::PERIODIC)))
+        .WillOnce(
+            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+              return TestUploader::SetUp(&waiter, this)
+                  .Required(2, kData[2])
+                  .Complete();
+            }))
         .RetiresOnSaturation();
     // Forward time to trigger upload
     task_environment_.FastForwardBy(base::Seconds(1));
@@ -1183,18 +1186,18 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmationsAndReopen) {
     // Set uploader expectations.
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::PERIODIC), NotNull()))
-        .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason,
-                                   TestUploader* test_uploader) {
-          TestUploader::SetUp(test_uploader, &waiter)
-              .Possible(0, kData[0])
-              .Possible(1, kData[1])
-              .Required(2, kData[2])
-              .Required(3, kMoreData[0])
-              .Required(4, kMoreData[1])
-              .Required(5, kMoreData[2]);
-          return Status::StatusOK();
-        }))
+                Call(Eq(UploaderInterface::PERIODIC)))
+        .WillOnce(
+            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+              return TestUploader::SetUp(&waiter, this)
+                  .Possible(0, kData[0])
+                  .Possible(1, kData[1])
+                  .Required(2, kData[2])
+                  .Required(3, kMoreData[0])
+                  .Required(4, kMoreData[1])
+                  .Required(5, kMoreData[2])
+                  .Complete();
+            }))
         .RetiresOnSaturation();
     task_environment_.FastForwardBy(base::Seconds(1));
   }
@@ -1206,15 +1209,15 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmationsAndReopen) {
     test::TestCallbackAutoWaiter waiter;
     // Set uploader expectations.
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::PERIODIC), NotNull()))
-        .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason,
-                                   TestUploader* test_uploader) {
-          TestUploader::SetUp(test_uploader, &waiter)
-              .Required(3, kMoreData[0])
-              .Required(4, kMoreData[1])
-              .Required(5, kMoreData[2]);
-          return Status::StatusOK();
-        }))
+                Call(Eq(UploaderInterface::PERIODIC)))
+        .WillOnce(
+            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+              return TestUploader::SetUp(&waiter, this)
+                  .Required(3, kMoreData[0])
+                  .Required(4, kMoreData[1])
+                  .Required(5, kMoreData[2])
+                  .Complete();
+            }))
         .RetiresOnSaturation();
     task_environment_.FastForwardBy(base::Seconds(1));
   }
@@ -1232,15 +1235,15 @@ TEST_P(StorageQueueTest,
     // Set uploader expectations.
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::PERIODIC), NotNull()))
-        .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason,
-                                   TestUploader* test_uploader) {
-          TestUploader::SetUp(test_uploader, &waiter)
-              .Required(0, kData[0])
-              .Required(1, kData[1])
-              .Required(2, kData[2]);
-          return Status::StatusOK();
-        }))
+                Call(Eq(UploaderInterface::PERIODIC)))
+        .WillOnce(
+            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+              return TestUploader::SetUp(&waiter, this)
+                  .Required(0, kData[0])
+                  .Required(1, kData[1])
+                  .Required(2, kData[2])
+                  .Complete();
+            }))
         .RetiresOnSaturation();
 
     // Forward time to trigger upload
@@ -1253,14 +1256,14 @@ TEST_P(StorageQueueTest,
     // Set uploader expectations.
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::PERIODIC), NotNull()))
-        .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason,
-                                   TestUploader* test_uploader) {
-          TestUploader::SetUp(test_uploader, &waiter)
-              .Required(1, kData[1])
-              .Required(2, kData[2]);
-          return Status::StatusOK();
-        }))
+                Call(Eq(UploaderInterface::PERIODIC)))
+        .WillOnce(
+            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+              return TestUploader::SetUp(&waiter, this)
+                  .Required(1, kData[1])
+                  .Required(2, kData[2])
+                  .Complete();
+            }))
         .RetiresOnSaturation();
     // Forward time to trigger upload
     task_environment_.FastForwardBy(base::Seconds(1));
@@ -1272,12 +1275,13 @@ TEST_P(StorageQueueTest,
     // Set uploader expectations.
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::PERIODIC), NotNull()))
-        .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason,
-                                   TestUploader* test_uploader) {
-          TestUploader::SetUp(test_uploader, &waiter).Required(2, kData[2]);
-          return Status::StatusOK();
-        }))
+                Call(Eq(UploaderInterface::PERIODIC)))
+        .WillOnce(
+            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+              return TestUploader::SetUp(&waiter, this)
+                  .Required(2, kData[2])
+                  .Complete();
+            }))
         .RetiresOnSaturation();
     // Forward time to trigger upload
     task_environment_.FastForwardBy(base::Seconds(1));
@@ -1298,20 +1302,20 @@ TEST_P(StorageQueueTest,
     // Set uploader expectations.
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::PERIODIC), NotNull()))
-        .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason,
-                                   TestUploader* test_uploader) {
-          TestUploader::SetUp(test_uploader, &waiter)
-              .Possible(0, kData[0])
-              .Possible(1, kData[1])
-              .Required(2, kData[2])
-              .Required(3, kMoreData[0])
-              // Gap may be 2 records at once or 2 gaps 1 record each.
-              .PossibleGap(4, 2)
-              .PossibleGap(4, 1)
-              .PossibleGap(5, 1);
-          return Status::StatusOK();
-        }))
+                Call(Eq(UploaderInterface::PERIODIC)))
+        .WillOnce(
+            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+              return TestUploader::SetUp(&waiter, this)
+                  .Possible(0, kData[0])
+                  .Possible(1, kData[1])
+                  .Required(2, kData[2])
+                  .Required(3, kMoreData[0])
+                  // Gap may be 2 records at once or 2 gaps 1 record each.
+                  .PossibleGap(4, 2)
+                  .PossibleGap(4, 1)
+                  .PossibleGap(5, 1)
+                  .Complete();
+            }))
         .RetiresOnSaturation();
     task_environment_.FastForwardBy(base::Seconds(1));
   }
@@ -1326,15 +1330,15 @@ TEST_P(StorageQueueTest,
     // Set uploader expectations.
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::PERIODIC), NotNull()))
-        .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason,
-                                   TestUploader* test_uploader) {
-          TestUploader::SetUp(test_uploader, &waiter)
-              .Required(3, kMoreData[0])
-              .Required(4, kMoreData[1])
-              .Required(5, kMoreData[2]);
-          return Status::StatusOK();
-        }))
+                Call(Eq(UploaderInterface::PERIODIC)))
+        .WillOnce(
+            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+              return TestUploader::SetUp(&waiter, this)
+                  .Required(3, kMoreData[0])
+                  .Required(4, kMoreData[1])
+                  .Required(5, kMoreData[2])
+                  .Complete();
+            }))
         .RetiresOnSaturation();
     task_environment_.FastForwardBy(base::Seconds(1));
   }
@@ -1349,15 +1353,15 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyImmediateUpload) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::IMMEDIATE_FLUSH), NotNull()))
-        .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason,
-                                   TestUploader* test_uploader) {
-          TestUploader::SetUp(test_uploader, &waiter)
-              .Required(0, kData[0])
-              .Possible(1, kData[1])
-              .Possible(2, kData[2]);
-          return Status::StatusOK();
-        }))
+                Call(Eq(UploaderInterface::IMMEDIATE_FLUSH)))
+        .WillOnce(
+            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+              return TestUploader::SetUp(&waiter, this)
+                  .Required(0, kData[0])
+                  .Possible(1, kData[1])
+                  .Possible(2, kData[2])
+                  .Complete();
+            }))
         .RetiresOnSaturation();
     WriteStringOrDie(kData[0]);
   }
@@ -1365,15 +1369,15 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyImmediateUpload) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::IMMEDIATE_FLUSH), NotNull()))
-        .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason,
-                                   TestUploader* test_uploader) {
-          TestUploader::SetUp(test_uploader, &waiter)
-              .Required(0, kData[0])
-              .Required(1, kData[1])
-              .Possible(2, kData[2]);
-          return Status::StatusOK();
-        }))
+                Call(Eq(UploaderInterface::IMMEDIATE_FLUSH)))
+        .WillOnce(
+            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+              return TestUploader::SetUp(&waiter, this)
+                  .Required(0, kData[0])
+                  .Required(1, kData[1])
+                  .Possible(2, kData[2])
+                  .Complete();
+            }))
         .RetiresOnSaturation();
     WriteStringOrDie(kData[1]);
   }
@@ -1381,15 +1385,15 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyImmediateUpload) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::IMMEDIATE_FLUSH), NotNull()))
-        .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason,
-                                   TestUploader* test_uploader) {
-          TestUploader::SetUp(test_uploader, &waiter)
-              .Required(0, kData[0])
-              .Required(1, kData[1])
-              .Required(2, kData[2]);
-          return Status::StatusOK();
-        }))
+                Call(Eq(UploaderInterface::IMMEDIATE_FLUSH)))
+        .WillOnce(
+            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+              return TestUploader::SetUp(&waiter, this)
+                  .Required(0, kData[0])
+                  .Required(1, kData[1])
+                  .Required(2, kData[2])
+                  .Complete();
+            }))
         .RetiresOnSaturation();
     WriteStringOrDie(kData[2]);
   }
@@ -1405,12 +1409,13 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::IMMEDIATE_FLUSH), NotNull()))
-        .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason,
-                                   TestUploader* test_uploader) {
-          TestUploader::SetUp(test_uploader, &waiter).Required(0, kData[0]);
-          return Status::StatusOK();
-        }))
+                Call(Eq(UploaderInterface::IMMEDIATE_FLUSH)))
+        .WillOnce(
+            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+              return TestUploader::SetUp(&waiter, this)
+                  .Required(0, kData[0])
+                  .Complete();
+            }))
         .RetiresOnSaturation();
     WriteStringOrDie(kData[0]);
   }
@@ -1418,14 +1423,14 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::IMMEDIATE_FLUSH), NotNull()))
-        .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason,
-                                   TestUploader* test_uploader) {
-          TestUploader::SetUp(test_uploader, &waiter)
-              .Required(0, kData[0])
-              .Required(1, kData[1]);
-          return Status::StatusOK();
-        }))
+                Call(Eq(UploaderInterface::IMMEDIATE_FLUSH)))
+        .WillOnce(
+            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+              return TestUploader::SetUp(&waiter, this)
+                  .Required(0, kData[0])
+                  .Required(1, kData[1])
+                  .Complete();
+            }))
         .RetiresOnSaturation();
     WriteStringOrDie(kData[1]);
   }
@@ -1433,15 +1438,15 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::IMMEDIATE_FLUSH), NotNull()))
-        .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason,
-                                   TestUploader* test_uploader) {
-          TestUploader::SetUp(test_uploader, &waiter)
-              .Required(0, kData[0])
-              .Required(1, kData[1])
-              .Required(2, kData[2]);
-          return Status::StatusOK();
-        }))
+                Call(Eq(UploaderInterface::IMMEDIATE_FLUSH)))
+        .WillOnce(
+            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+              return TestUploader::SetUp(&waiter, this)
+                  .Required(0, kData[0])
+                  .Required(1, kData[1])
+                  .Required(2, kData[2])
+                  .Complete();
+            }))
         .RetiresOnSaturation();
     WriteStringOrDie(kData[2]);
   }
@@ -1456,14 +1461,14 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::IMMEDIATE_FLUSH), NotNull()))
-        .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason,
-                                   TestUploader* test_uploader) {
-          TestUploader::SetUp(test_uploader, &waiter)
-              .Required(2, kData[2])
-              .Required(3, kMoreData[0]);
-          return Status::StatusOK();
-        }))
+                Call(Eq(UploaderInterface::IMMEDIATE_FLUSH)))
+        .WillOnce(
+            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+              return TestUploader::SetUp(&waiter, this)
+                  .Required(2, kData[2])
+                  .Required(3, kMoreData[0])
+                  .Complete();
+            }))
         .RetiresOnSaturation();
     WriteStringOrDie(kMoreData[0]);
   }
@@ -1471,15 +1476,15 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::IMMEDIATE_FLUSH), NotNull()))
-        .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason,
-                                   TestUploader* test_uploader) {
-          TestUploader::SetUp(test_uploader, &waiter)
-              .Required(2, kData[2])
-              .Required(3, kMoreData[0])
-              .Required(4, kMoreData[1]);
-          return Status::StatusOK();
-        }))
+                Call(Eq(UploaderInterface::IMMEDIATE_FLUSH)))
+        .WillOnce(
+            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+              return TestUploader::SetUp(&waiter, this)
+                  .Required(2, kData[2])
+                  .Required(3, kMoreData[0])
+                  .Required(4, kMoreData[1])
+                  .Complete();
+            }))
         .RetiresOnSaturation();
     WriteStringOrDie(kMoreData[1]);
   }
@@ -1487,16 +1492,16 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::IMMEDIATE_FLUSH), NotNull()))
-        .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason,
-                                   TestUploader* test_uploader) {
-          TestUploader::SetUp(test_uploader, &waiter)
-              .Required(2, kData[2])
-              .Required(3, kMoreData[0])
-              .Required(4, kMoreData[1])
-              .Required(5, kMoreData[2]);
-          return Status::StatusOK();
-        }))
+                Call(Eq(UploaderInterface::IMMEDIATE_FLUSH)))
+        .WillOnce(
+            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+              return TestUploader::SetUp(&waiter, this)
+                  .Required(2, kData[2])
+                  .Required(3, kMoreData[0])
+                  .Required(4, kMoreData[1])
+                  .Required(5, kMoreData[2])
+                  .Complete();
+            }))
         .RetiresOnSaturation();
     WriteStringOrDie(kMoreData[2]);
   }
@@ -1510,19 +1515,19 @@ TEST_P(StorageQueueTest, WriteAndImmediateUploadWithFailure) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::IMMEDIATE_FLUSH), NotNull()))
-        .WillOnce(Invoke([](UploaderInterface::UploadReason reason,
-                            TestUploader* test_uploader) {
+                Call(Eq(UploaderInterface::IMMEDIATE_FLUSH)))
+        .WillOnce(Invoke([](UploaderInterface::UploadReason reason) {
           return Status(error::UNAVAILABLE, "Test uploader unavailable");
         }))
         .RetiresOnSaturation();
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::FAILURE_RETRY), NotNull()))
-        .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason,
-                                   TestUploader* test_uploader) {
-          TestUploader::SetUp(test_uploader, &waiter).Required(0, kData[0]);
-          return Status::StatusOK();
-        }))
+                Call(Eq(UploaderInterface::FAILURE_RETRY)))
+        .WillOnce(
+            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+              return TestUploader::SetUp(&waiter, this)
+                  .Required(0, kData[0])
+                  .Complete();
+            }))
         .RetiresOnSaturation();
     WriteStringOrDie(kData[0]);  // Immediately uploads and fails.
 
@@ -1539,12 +1544,13 @@ TEST_P(StorageQueueTest, WriteAndImmediateUploadWithoutConfirmation) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::IMMEDIATE_FLUSH), NotNull()))
-        .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason,
-                                   TestUploader* test_uploader) {
-          TestUploader::SetUp(test_uploader, &waiter).Required(0, kData[0]);
-          return Status::StatusOK();
-        }))
+                Call(Eq(UploaderInterface::IMMEDIATE_FLUSH)))
+        .WillOnce(
+            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+              return TestUploader::SetUp(&waiter, this)
+                  .Required(0, kData[0])
+                  .Complete();
+            }))
         .RetiresOnSaturation();
     WriteStringOrDie(kData[0]);  // Immediately uploads and does not confirm.
   }
@@ -1553,19 +1559,20 @@ TEST_P(StorageQueueTest, WriteAndImmediateUploadWithoutConfirmation) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::INCOMPLETE_RETRY), NotNull()))
-        .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason,
-                                   TestUploader* test_uploader) {
-          TestUploader::SetUp(test_uploader, &waiter).Required(0, kData[0]);
-          return Status::StatusOK();
-        }))
+                Call(Eq(UploaderInterface::INCOMPLETE_RETRY)))
+        .WillOnce(
+            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+              return TestUploader::SetUp(&waiter, this)
+                  .Required(0, kData[0])
+                  .Complete();
+            }))
         .RetiresOnSaturation();
     task_environment_.FastForwardBy(base::Seconds(1));
   }
 
   // Confirm 0 and make sure no retry happens (since everything is confirmed).
   EXPECT_CALL(set_mock_uploader_expectations_,
-              Call(Eq(UploaderInterface::INCOMPLETE_RETRY), NotNull()))
+              Call(Eq(UploaderInterface::INCOMPLETE_RETRY)))
       .Times(0);
 
   ConfirmOrDie(/*sequencing_id=*/0);
@@ -1596,15 +1603,15 @@ TEST_P(StorageQueueTest, ForceConfirm) {
     // Set uploader expectations.
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::PERIODIC), NotNull()))
-        .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason,
-                                   TestUploader* test_uploader) {
-          TestUploader::SetUp(test_uploader, &waiter)
-              .Required(0, kData[0])
-              .Required(1, kData[1])
-              .Required(2, kData[2]);
-          return Status::StatusOK();
-        }))
+                Call(Eq(UploaderInterface::PERIODIC)))
+        .WillOnce(
+            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+              return TestUploader::SetUp(&waiter, this)
+                  .Required(0, kData[0])
+                  .Required(1, kData[1])
+                  .Required(2, kData[2])
+                  .Complete();
+            }))
         .RetiresOnSaturation();
 
     // Forward time to trigger upload
@@ -1618,12 +1625,13 @@ TEST_P(StorageQueueTest, ForceConfirm) {
     // Set uploader expectations.
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::PERIODIC), NotNull()))
-        .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason,
-                                   TestUploader* test_uploader) {
-          TestUploader::SetUp(test_uploader, &waiter).Required(2, kData[2]);
-          return Status::StatusOK();
-        }))
+                Call(Eq(UploaderInterface::PERIODIC)))
+        .WillOnce(
+            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+              return TestUploader::SetUp(&waiter, this)
+                  .Required(2, kData[2])
+                  .Complete();
+            }))
         .RetiresOnSaturation();
     // Forward time to trigger upload
     task_environment_.FastForwardBy(base::Seconds(1));
@@ -1637,22 +1645,22 @@ TEST_P(StorageQueueTest, ForceConfirm) {
     // #0 and #1 could be returned as Gaps
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::PERIODIC), NotNull()))
-        .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason,
-                                   TestUploader* test_uploader) {
-          TestUploader::SetUp(test_uploader, &waiter)
-              .RequiredSeqId(0)
-              .RequiredSeqId(1)
-              .RequiredSeqId(2)
-              // 0-2 must have been encountered, but actual contents
-              // can be different:
-              .Possible(0, kData[0])
-              .PossibleGap(0, 1)
-              .PossibleGap(0, 2)
-              .Possible(1, kData[1])
-              .Required(2, kData[2]);
-          return Status::StatusOK();
-        }))
+                Call(Eq(UploaderInterface::PERIODIC)))
+        .WillOnce(
+            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+              return TestUploader::SetUp(&waiter, this)
+                  .RequiredSeqId(0)
+                  .RequiredSeqId(1)
+                  .RequiredSeqId(2)
+                  // 0-2 must have been encountered, but actual contents
+                  // can be different:
+                  .Possible(0, kData[0])
+                  .PossibleGap(0, 1)
+                  .PossibleGap(0, 2)
+                  .Possible(1, kData[1])
+                  .Required(2, kData[2])
+                  .Complete();
+            }))
         .RetiresOnSaturation();
     // Forward time to trigger upload
     task_environment_.FastForwardBy(base::Seconds(1));
@@ -1666,30 +1674,32 @@ TEST_P(StorageQueueTest, ForceConfirm) {
     // #0 and #1 could be returned as Gaps
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::PERIODIC), NotNull()))
-        .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason,
-                                   TestUploader* test_uploader) {
-          TestUploader::SetUp(test_uploader, &waiter)
-              .RequiredSeqId(1)
-              .RequiredSeqId(2)
-              // 0-2 must have been encountered, but actual contents
-              // can be different:
-              .PossibleGap(1, 1)
-              .Possible(1, kData[1])
-              .Required(2, kData[2]);
-          return Status::StatusOK();
-        }))
+                Call(Eq(UploaderInterface::PERIODIC)))
+        .WillOnce(
+            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+              return TestUploader::SetUp(&waiter, this)
+                  .RequiredSeqId(1)
+                  .RequiredSeqId(2)
+                  // 0-2 must have been encountered, but actual contents
+                  // can be different:
+                  .PossibleGap(1, 1)
+                  .Possible(1, kData[1])
+                  .Required(2, kData[2])
+                  .Complete();
+            }))
         .RetiresOnSaturation();
     // Forward time to trigger upload
     task_environment_.FastForwardBy(base::Seconds(1));
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(VaryingFileSize,
-                         StorageQueueTest,
-                         testing::Values(128 * 1024LL * 1024LL,
-                                         256 /* two records in file */,
-                                         1 /* single record in file */));
+INSTANTIATE_TEST_SUITE_P(
+    VaryingFileSize,
+    StorageQueueTest,
+    testing::Combine(testing::Values(128 * 1024LL * 1024LL,
+                                     256 /* two records in file */,
+                                     1 /* single record in file */),
+                     testing::Values("DM TOKEN", "")));
 
 // TODO(b/157943006): Additional tests:
 // 1) Options object with a bad path.

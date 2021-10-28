@@ -77,7 +77,55 @@ AppListItem* AppListTestModel::AddItem(AppListItem* item) {
 void AppListTestModel::RequestPositionUpdate(
     std::string id,
     const syncer::StringOrdinal& new_position) {
-  SetItemPosition(FindItem(id), new_position);
+  // Copy the logic of `ChromeAppListModelUpdater::HandleSetPosition()`.
+  auto metadata = FindItem(id)->CloneMetadata();
+  metadata->position = new_position;
+  SetItemMetadata(id, std::move(metadata));
+}
+
+void AppListTestModel::RequestMoveItemToFolder(std::string id,
+                                               const std::string& folder_id) {
+  // Copy the logic of `ChromeAppListModelUpdater::HandleMoveItemToFolder()`.
+
+  AppListFolderItem* dest_folder = FindOrCreateFolderItem(folder_id);
+  const syncer::StringOrdinal target_position =
+      dest_folder->item_list()->CreatePositionBefore(syncer::StringOrdinal());
+
+  // Do not combine two callings on `SetItemMetaData()` into a single one
+  // because this method should use exactly the same logic of
+  // `ChromeAppListModelUpdater::HandleMoveItemToFolder()` for testing.
+  {
+    auto metadata = FindItem(id)->CloneMetadata();
+    metadata->folder_id = folder_id;
+    SetItemMetadata(id, std::move(metadata));
+  }
+
+  {
+    auto metadata = FindItem(id)->CloneMetadata();
+    metadata->position = target_position;
+    SetItemMetadata(id, std::move(metadata));
+  }
+}
+
+void AppListTestModel::RequestMoveItemToRoot(
+    std::string id,
+    syncer::StringOrdinal target_position) {
+  // Copy the logic of `ChromeAppListModelUpdater::HandleMoveItemToRoot()`.
+
+  // Do not combine two callings on `SetItemMetadata()` into a single one
+  // because this method should use exactly the same logic of
+  // `ChromeAppListModelUpdater::HandleMoveItemToRoot()` for testing.
+  {
+    auto metadata = FindItem(id)->CloneMetadata();
+    metadata->folder_id = "";
+    SetItemMetadata(id, std::move(metadata));
+  }
+
+  {
+    auto metadata = FindItem(id)->CloneMetadata();
+    metadata->position = target_position;
+    SetItemMetadata(id, std::move(metadata));
+  }
 }
 
 AppListItem* AppListTestModel::AddItemToFolder(AppListItem* item,

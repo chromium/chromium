@@ -65,6 +65,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/data_decoder/public/cpp/decode_image.h"
 #include "third_party/icu/source/i18n/unicode/gregocal.h"
+#include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"
@@ -1523,6 +1524,13 @@ void WallpaperControllerImpl::OnColorCalculationComplete() {
     CacheProminentColors(colors, current_wallpaper_->wallpaper_info().location);
   }
   SetProminentColors(colors);
+}
+
+void WallpaperControllerImpl::OnActiveUserSessionChanged(
+    const AccountId& account_id) {
+  // It is possible to switch to another user when preview is on. In this case,
+  // we should close the preview and show the user's actual wallpaper.
+  MaybeClosePreviewWallpaper();
 }
 
 void WallpaperControllerImpl::OnSessionStateChanged(

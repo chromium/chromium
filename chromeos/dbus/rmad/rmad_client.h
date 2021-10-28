@@ -51,7 +51,7 @@ class COMPONENT_EXPORT(RMAD) RmadClient {
 
     // Called when hardware verification completes.
     virtual void HardwareVerificationResult(
-        const rmad::HardwareVerificationResult& hardware_verification_result) {}
+        const rmad::HardwareVerificationResult& result) {}
   };
 
   // Creates and initializes a global instance. |bus| must not be null.

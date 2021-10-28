@@ -41,15 +41,15 @@ class ASH_PUBLIC_EXPORT DeskTemplate {
   DeskTemplate& operator=(const DeskTemplate&) = delete;
   ~DeskTemplate();
 
-  // Used in cases where copies of a DeskTemplate are needed to be made.
-  // This specifically used in the DeskSyncBridge which requires a map
-  // of DeskTemplate unique pointers to be valid and needs to pass
-  // that information in DeskModel callbacks.
-  std::unique_ptr<DeskTemplate> Clone();
-
   base::GUID uuid() const { return uuid_; }
   DeskTemplateSource source() const { return source_; }
   base::Time created_time() const { return created_time_; }
+
+  void set_updated_time(base::Time updated_time) {
+    updated_time_ = updated_time;
+  }
+  void clear_updated_time() { updated_time_ = base::Time(); }
+
   const std::u16string& template_name() const { return template_name_; }
   void set_template_name(const std::u16string& template_name) {
     template_name_ = template_name;
@@ -64,6 +64,22 @@ class ASH_PUBLIC_EXPORT DeskTemplate {
     desk_restore_data_ = std::move(restore_data);
   }
 
+  // Used in cases where copies of a DeskTemplate are needed to be made.
+  // This specifically used in the DeskSyncBridge which requires a map
+  // of DeskTemplate unique pointers to be valid and needs to pass
+  // that information in DeskModel callbacks.
+  std::unique_ptr<DeskTemplate> Clone();
+
+  // Indicates the last time the user created or updated this template.
+  // If this desk template was never updated since creation, its creation time
+  // will be returned.
+  base::Time GetLastUpdatedTime() const {
+    return updated_time_.is_null() ? created_time_ : updated_time_;
+  }
+
+  // Indicates whether this template has been updated since creation.
+  bool WasUpdatedSinceCreation() const { return !updated_time_.is_null(); }
+
  private:
   DeskTemplate();
 
@@ -73,8 +89,13 @@ class ASH_PUBLIC_EXPORT DeskTemplate {
   // Indicates the source where this desk template originates from.
   const DeskTemplateSource source_;
 
-  const base::Time created_time_;  // We'll use the current time in seconds
-                                   // since the Windows epoch.
+  const base::Time created_time_;  // Template creation time.
+
+  // Indicates the last time the user updated this template.
+  // If this desk template was never updated since creation, this field will
+  // have null value.
+  base::Time updated_time_;
+
   std::u16string template_name_;
 
   // Contains the app launching and window information that can be used to

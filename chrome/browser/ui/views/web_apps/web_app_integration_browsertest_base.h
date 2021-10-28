@@ -48,7 +48,7 @@ struct BrowserState {
   BrowserState(Browser* browser_ptr,
                base::flat_map<content::WebContents*, TabState> tab_state,
                content::WebContents* active_web_contents,
-               bool is_an_app_browser,
+               const AppId& app_id,
                bool install_icon_visible,
                bool launch_icon_visible);
   ~BrowserState();
@@ -58,7 +58,8 @@ struct BrowserState {
   Browser* browser;
   base::flat_map<content::WebContents*, TabState> tabs;
   content::WebContents* active_tab;
-  bool is_app_browser;
+  // If this isn't an app browser, `app_id` is empty.
+  AppId app_id;
   bool install_icon_shown;
   bool launch_icon_shown;
 };
@@ -179,6 +180,7 @@ class WebAppIntegrationBrowserTestBase : AppRegistrarObserver {
   void InstallPolicyAppInternal(const std::string& site_mode,
                                 base::Value default_launch_container,
                                 const bool create_shortcut);
+  void CloseCustomToolbar();
   void ClosePwa();
   void InstallCreateShortcutTabbed(const std::string& site_mode);
   void InstallCreateShortcutWindowed(const std::string& site_mode);
@@ -190,8 +192,11 @@ class WebAppIntegrationBrowserTestBase : AppRegistrarObserver {
   void InstallPolicyAppWindowedNoShortcut(const std::string& site_mode);
   void InstallPolicyAppWindowedShortcut(const std::string& site_mode);
   void LaunchFromChromeApps(const std::string& site_mode);
-  void NavigateTabbedBrowserToSite(const GURL& url);
+  void LaunchFromLaunchIcon(const std::string& site_mode);
   void NavigateBrowser(const std::string& site_mode);
+  void NavigatePwaSiteATo(const std::string& site_mode);
+  void NavigateNotfoundUrl();
+  void NavigateTabbedBrowserToSite(const GURL& url);
   void ManifestUpdateDisplayMinimal(const std::string& site_mode);
   void SetOpenInTab(const std::string& site_mode);
   void SetOpenInWindow(const std::string& site_mode);
@@ -206,6 +211,7 @@ class WebAppIntegrationBrowserTestBase : AppRegistrarObserver {
   void CheckAppInListNotLocallyInstalled(const std::string& site_mode);
   void CheckAppInListWindowed(const std::string& site_mode);
   void CheckAppInListTabbed(const std::string& site_mode);
+  void CheckAppNavigationIsStartUrl();
   void CheckAppNotInList(const std::string& site_mode);
   void CheckInstallable();
   void CheckInstallIconShown();
@@ -214,22 +220,23 @@ class WebAppIntegrationBrowserTestBase : AppRegistrarObserver {
   void CheckLaunchIconNotShown();
   void CheckManifestDisplayModeInternal(DisplayMode display_mode);
   void CheckTabCreated();
+  void CheckCustomToolbar();
   void CheckUserDisplayModeInternal(DisplayMode display_mode);
   void CheckWindowClosed();
   void CheckWindowCreated();
   void CheckWindowDisplayMinimal();
   void CheckWindowDisplayStandalone();
 
+ private:
   // Supported params:
   //  * site_a
   //  * site_a/foo
   //  * site_a/bar
   //  * site_b
   //  * site_c
-  GURL GetInstallableAppURL(const std::string& site_mode);
+  GURL GetAppStartURL(const std::string& site_mode);
   WebAppProvider* GetProviderForProfile(Profile* profile);
 
- private:
   StateSnapshot ConstructStateSnapshot();
 
   // Supported params:
@@ -247,7 +254,7 @@ class WebAppIntegrationBrowserTestBase : AppRegistrarObserver {
   WebAppProvider* GetProvider() {
     return WebAppProvider::GetForTest(profile());
   }
-  GURL GetURLForSiteMode(const std::string& site_mode);
+  GURL GetScopeForSiteMode(const std::string& site_mode);
   void InstallCreateShortcut(bool open_in_window);
 
   // This action only works if no navigations to the given app_url occur
@@ -260,6 +267,11 @@ class WebAppIntegrationBrowserTestBase : AppRegistrarObserver {
   void MaybeNavigateTabbedBrowserInScope(const std::string& site_mode);
   void SetOpenInTabInternal(const std::string& site_mode);
   void SetOpenInWindowInternal(const std::string& site_mode);
+
+  // Returns an existing app browser if one exists, or launches a new one if
+  // not.
+  Browser* GetAppBrowserForSite(const std::string& site_mode,
+                                bool launch_if_not_open = true);
 
   Browser* browser();
   const net::EmbeddedTestServer* embedded_test_server();
@@ -291,11 +303,10 @@ class WebAppIntegrationBrowserTestBase : AppRegistrarObserver {
   std::unique_ptr<StateSnapshot> before_state_change_action_state_;
   std::unique_ptr<StateSnapshot> after_state_change_action_state_;
   base::flat_map<std::string, bool> site_installability_map_;
-  Browser* app_browser_ = nullptr;
   Browser* active_browser_ = nullptr;
   Profile* active_profile_ = nullptr;
-  std::vector<AppId> app_ids_;
   AppId active_app_id_;
+  Browser* app_browser_ = nullptr;
 
   base::ScopedObservation<web_app::WebAppRegistrar,
                           web_app::AppRegistrarObserver>

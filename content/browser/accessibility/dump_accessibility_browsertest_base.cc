@@ -257,14 +257,15 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
 
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
-  std::string html_contents;
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    if (!base::ReadFileToString(file_path, &html_contents)) {
-      ADD_FAILURE() << "File not found: " << file_path.LossyDisplayName();
-      return;
-    }
+  absl::optional<ui::AXInspectScenario> scenario =
+      test_helper_.ParseScenario(file_path, DefaultFilters());
+  if (!scenario) {
+    ADD_FAILURE()
+        << "Failed to process a testing file. The file might not exist: "
+        << file_path.LossyDisplayName();
+    return;
   }
+  scenario_ = std::move(*scenario);
 
   // Exit without running the test if we can't find an expectation file.
   // This is used to skip certain tests on certain platforms.
@@ -285,23 +286,6 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
     LOG(INFO) << "Skipping this test on this platform.";
     return;
   }
-
-  // Parse the test html file and parse special directives, usually
-  // beginning with an '@' and inside an HTML comment, that control how the
-  // test is run and how the results are interpreted.
-  std::vector<std::string> lines;
-
-  size_t scenario_start = html_contents.find("<!--");
-  size_t scenario_end = html_contents.find("-->", scenario_start);
-  if (scenario_start != std::string::npos &&
-      scenario_end != std::string::npos) {
-    auto start = html_contents.begin() + scenario_start;
-    auto end = start + (scenario_end - scenario_start);
-    lines = base::SplitString(base::MakeStringPiece(start, end), "\n",
-                              base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  }
-
-  scenario_ = test_helper_.ParseScenario(lines, DefaultFilters());
 
   // Get the test URL.
   GURL url(embedded_test_server()->GetURL("/" + std::string(file_dir) + "/" +

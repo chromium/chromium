@@ -19,18 +19,20 @@ DeskTemplate::DeskTemplate(const std::string& uuid,
 
 DeskTemplate::~DeskTemplate() = default;
 
-std::unique_ptr<DeskTemplate> DeskTemplate::Clone() {
-  std::unique_ptr<DeskTemplate> desk_template = std::make_unique<DeskTemplate>(
-      uuid_.AsLowercaseString(), source_, base::UTF16ToUTF8(template_name_),
-      created_time_);
-  if (desk_restore_data_)
-    desk_template->set_desk_restore_data(desk_restore_data_->Clone());
-  return desk_template;
-}
-
 DeskTemplate::DeskTemplate()
     : uuid_(base::GUID::GenerateRandomV4()),
       source_(DeskTemplateSource::kUnknownSource),
       created_time_(base::Time::Now()) {}
+
+std::unique_ptr<DeskTemplate> DeskTemplate::Clone() {
+  std::unique_ptr<DeskTemplate> desk_template = std::make_unique<DeskTemplate>(
+      uuid_.AsLowercaseString(), source_, base::UTF16ToUTF8(template_name_),
+      created_time_);
+  if (WasUpdatedSinceCreation())
+    desk_template->set_updated_time(updated_time_);
+  if (desk_restore_data_)
+    desk_template->set_desk_restore_data(desk_restore_data_->Clone());
+  return desk_template;
+}
 
 }  // namespace ash

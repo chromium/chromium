@@ -13,6 +13,7 @@
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "content/public/browser/browser_thread.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace {
@@ -111,8 +112,9 @@ void TranslateModelService::OnModelUpdated(
 void TranslateModelService::OnModelFileLoaded(base::File model_file) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   ScopedModelLoadingResultRecorder result_recorder;
-  if (!model_file.IsValid())
+  if (!model_file.IsValid()) {
     return;
+  }
 
   if (language_detection_model_file_) {
     // If the model file is already loaded, it should be closed on a
@@ -127,6 +129,9 @@ void TranslateModelService::OnModelFileLoaded(base::File model_file) {
       "TranslateModelService.LanguageDetectionModel.PendingRequestCallbacks",
       pending_model_requests_.size());
   for (auto& pending_request : pending_model_requests_) {
+    if (pending_request.is_null()) {
+      continue;
+    }
     std::move(pending_request).Run(language_detection_model_file_->Duplicate());
   }
   pending_model_requests_.clear();
@@ -136,7 +141,9 @@ void TranslateModelService::GetLanguageDetectionModelFile(
     GetModelCallback callback) {
   if (!language_detection_model_file_) {
     if (pending_model_requests_.size() < kMaxPendingRequestsAllowed) {
-      pending_model_requests_.emplace_back(std::move(callback));
+      pending_model_requests_.emplace_back(
+          mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback),
+                                                      base::File()));
       return;
     }
     std::move(callback).Run(base::File());

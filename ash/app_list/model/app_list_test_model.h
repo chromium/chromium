@@ -57,6 +57,10 @@ class AppListTestModel : public AppListModel, public AppListModelDelegate {
   void RequestPositionUpdate(
       std::string id,
       const syncer::StringOrdinal& new_position) override;
+  void RequestMoveItemToFolder(std::string id,
+                               const std::string& folder_id) override;
+  void RequestMoveItemToRoot(std::string id,
+                             syncer::StringOrdinal target_position) override;
 
   // Raw pointer version convenience versions of AppListModel methods.
   AppListItem* AddItem(AppListItem* item);

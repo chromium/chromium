@@ -2,4 +2,4 @@
 ++[entry] description='Your username should be your email id' selectable-text described-by description-from:tooltip
 ++[tool tip] description-for xml-roles:tooltip
 ++++[static]
-++[entry] description='mmddyy' selectable-text described-by description-from:aria-describedby
+++[entry] description='mmddyy' selectable-text description-from:aria-describedby

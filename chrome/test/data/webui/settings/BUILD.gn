@@ -3,13 +3,43 @@
 # found in the LICENSE file.
 
 import("//tools/grit/preprocess_if_expr.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+preprocess_manifest = "preprocessed_manifest.json"
+
+# Test files that contain // <if expr> and therefore require preprocessing.
+preprocessed_files = [
+  "privacy_page_test.js",
+  "route_tests.js",
+  "settings_toggle_button_tests.js",
+]
+
+# Test files that do not require preprocessing. If adding // <if expr> to any
+# file below, move it to the list above.
+non_preprocessed_files = [
+  "test_clear_browsing_data_browser_proxy.js",
+  "test_hats_browser_proxy.js",
+  "test_metrics_browser_proxy.js",
+  "test_privacy_page_browser_proxy.js",
+  "test_site_settings_prefs_browser_proxy.js",
+  "test_util.js",
+]
 
 preprocess_if_expr("preprocess") {
   in_folder = "./"
-  out_folder = "$target_gen_dir"
-  in_files = [
-    "privacy_page_test.js",
-    "route_tests.js",
-    "settings_toggle_button_tests.js",
-  ]
+  out_folder = "$target_gen_dir/preprocessed"
+  out_manifest = "$target_gen_dir/$preprocess_manifest"
+  in_files = preprocessed_files
+}
+
+generate_grd("build_grdp") {
+  grd_prefix = "webui_settings"
+  out_grd = "$target_gen_dir/resources.grdp"
+  deps = [ ":preprocess" ]
+
+  input_files = non_preprocessed_files
+  input_files_base_dir = rebase_path(".", "//")
+
+  manifest_files = [ "$target_gen_dir/$preprocess_manifest" ]
+  resource_path_prefix = "settings"
 }

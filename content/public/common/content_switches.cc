@@ -315,10 +315,6 @@ const char kDisable2dCanvasClipAntialiasing[] = "disable-2d-canvas-clip-aa";
 // Has no effect unless GPU rasterization is enabled.
 const char kDisableYUVImageDecoding[] = "disable-yuv-image-decoding";
 
-// Logs Runtime Call Stats for Blink. --single-process also needs to be
-// used along with this for the stats to be logged.
-const char kDumpBlinkRuntimeCallStats[] = "dump-blink-runtime-call-stats";
-
 // Enables LCD text.
 const char kEnableLCDText[]                 = "enable-lcd-text";
 
@@ -490,6 +486,9 @@ const char kDisableOopRasterization[] = "disable-oop-rasterization";
 // Turns on out of process raster for the renderer whenever gpu raster
 // would have been used.  Enables the chromium_raster_transport extension.
 const char kEnableOopRasterization[] = "enable-oop-rasterization";
+
+// Forces the Chrome major version to 100 in the User-Agent string.
+const char kForceMajorVersionTo100[] = "force-major-version-to-100";
 
 // Forces use of hardware overlay for fullscreen video playback. Useful for
 // testing the Android overlay fullscreen functionality on other platforms.

@@ -11,7 +11,11 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 preprocessed_dir = "preprocessed"
 preprocessed_gen_manifest = "preprocessed_gen_manifest.json"
 
-polymer_element_files = [ "firmware_update_app.js" ]
+polymer_element_files = [
+  "firmware_update_app.js",
+  "peripheral_updates_list.js",
+  "update_card.js",
+]
 
 generate_grd("build_grd") {
   input_files = [
@@ -38,6 +42,8 @@ js_type_check("closure_compile") {
     ":firmware_update_app",
     ":firmware_update_types",
     ":mojo_interface_provider",
+    ":peripheral_updates_list",
+    ":update_card",
   ]
 }
 
@@ -63,6 +69,18 @@ js_library("firmware_update_types") {
 
 js_library("mojo_interface_provider") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
+}
+
+js_library("peripheral_updates_list") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("update_card") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
 }
 
 preprocess_if_expr("preprocess_generated") {

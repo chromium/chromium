@@ -7987,6 +7987,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="252" label="RFH_POPUP_REQUEST_WHILE_PRERENDERING"/>
   <int value="253" label="RFH_INTERECEPT_DOWNLOAD_WHILE_INACTIVE"/>
   <int value="254" label="RFH_CREATE_CHILD_FRAME_SANDBOX_FLAGS"/>
+  <int value="255" label="RFPH_FOCUSED_FENCED_FRAME"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">
@@ -10950,15 +10951,41 @@ Called by update_bad_message_reasons.py.-->
   <int value="0" label="None (should have 0 counts)"/>
   <int value="1" label="Total ops"/>
   <int value="2" label="ClearRect op"/>
-  <int value="3" label="FillRect op"/>
-  <int value="4" label="PutImageData op"/>
+  <int value="3" label="FillRect op (Obsolete)">
+    <obsolete>
+      Deprecated as of 2021-10.
+    </obsolete>
+  </int>
+  <int value="4" label="PutImageData op (Obsolete)">
+    <obsolete>
+      Deprecated as of 2021-10.
+    </obsolete>
+  </int>
   <int value="5" label="DrawImage op"/>
   <int value="6" label="ContextReset op"/>
-  <int value="7" label="ClearForSrcBlendMode op"/>
-  <int value="8" label="Has opaque shader"/>
+  <int value="7" label="ClearForSrcBlendMode op (Obsolete)">
+    <obsolete>
+      Deprecated as of 2021-10.
+    </obsolete>
+  </int>
+  <int value="8" label="Has opaque shader (Obsolete)">
+    <obsolete>
+      Deprecated as of 2021-10.
+    </obsolete>
+  </int>
   <int value="9" label="Has transform"/>
-  <int value="10" label="Has source-over blend mode"/>
-  <int value="11" label="Has clear blend mode"/>
+  <int value="10" label="Has source-over blend mode (Obsolete)">
+    <obsolete>
+      Deprecated as of 2021-10.
+    </obsolete>
+  </int>
+  <int value="11" label="Has clear blend mode (Obsolete)">
+    <obsolete>
+      Deprecated as of 2021-10.
+    </obsolete>
+  </int>
+  <int value="13" label="Has clip"/>
+  <int value="14" label="Has transform and clip"/>
 </enum>
 
 <enum name="CanvasRenderingAPI">
@@ -49403,6 +49430,7 @@ from previous Chrome versions.
   <int value="-1103099187" label="NotificationStackingBarRedesign:disabled"/>
   <int value="-1102212525" label="enable-tcp-fastopen"/>
   <int value="-1101334831" label="SyncSupportTrustedVaultPassphrase:disabled"/>
+  <int value="-1101036307" label="SetTimeoutWithoutClamp:enabled"/>
   <int value="-1099618411" label="UpdatedCellularActivationUi:enabled"/>
   <int value="-1099142083" label="V8Ignition:disabled"/>
   <int value="-1099135056" label="AsyncDns:enabled"/>
@@ -52678,6 +52706,7 @@ from previous Chrome versions.
       label="DesktopPWAsFlashAppNameInsteadOfOrigin:enabled"/>
   <int value="1420007919" label="SyncTrustedVaultPassphrasePromo:disabled"/>
   <int value="1421620678" label="simple-clear-browsing-data-support-string"/>
+  <int value="1422421509" label="SetTimeoutWithoutClamp:disabled"/>
   <int value="1422462035" label="PaymentRequestBasicCard:disabled"/>
   <int value="1424775876" label="ToolbarIphAndroid:enabled"/>
   <int value="1425103276" label="SharedHighlightingV2:enabled"/>
@@ -66131,17 +66160,6 @@ Called by update_net_trust_anchors.py.-->
   <int value="5" label="Invalid JSON (either syntactically or structurally)"/>
 </enum>
 
-<enum name="PasswordStoreAndroidBackendError">
-  <int value="0" label="Error can't be categorized."/>
-  <int value="1" label="API was called without a context."/>
-  <int value="2" label="API was called without an account."/>
-  <int value="3" label="Profile isn't initialized yet."/>
-  <int value="4" label="Sync service isn't available yet."/>
-  <int value="5" label="API was called with passphrase."/>
-  <int value="6" label="GMS Core version is not supported."/>
-  <int value="7" label="API was successfully called, but returned an error."/>
-</enum>
-
 <enum name="PasswordStoreChange">
   <int value="0" label="Add - If the PasswordForm login was added."/>
   <int value="1" label="Update - If the PasswordForm login was updated."/>
@@ -69862,6 +69880,7 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="19" label="kProfileCreationFlow"/>
   <int value="20" label="kPendingNotificationCloseEvent"/>
   <int value="21" label="kFeedbackDialog"/>
+  <int value="22" label="kWebAppUpdate"/>
 </enum>
 
 <enum name="ProfileMenuActionableItem">

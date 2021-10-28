@@ -684,7 +684,6 @@ void ManagedNetworkConfigurationHandlerImpl::OnPoliciesApplied(
     const NetworkProfile& profile) {
   const std::string& userhash = profile.userhash;
   VLOG(1) << "Policy application for user '" << userhash << "' finished.";
-
   base::ThreadTaskRunnerHandle::Get()->DeleteSoon(
       FROM_HERE, policy_applicators_[userhash].release());
   policy_applicators_.erase(userhash);

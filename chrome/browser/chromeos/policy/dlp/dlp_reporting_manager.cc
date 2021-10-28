@@ -29,7 +29,7 @@ DlpPolicyEvent_Mode DlpRulesManagerLevel2DlpEventMode(
     case DlpRulesManager::Level::kBlock:
       return DlpPolicyEvent_Mode_BLOCK;
     case DlpRulesManager::Level::kWarn:
-      return DlpPolicyEvent_Mode_BLOCK;
+      return DlpPolicyEvent_Mode_WARN;
     case DlpRulesManager::Level::kReport:
       return DlpPolicyEvent_Mode_REPORT;
     case DlpRulesManager::Level::kNotSet:
@@ -102,8 +102,7 @@ DlpPolicyEvent_UserType GetCurrentUserType() {
 }
 
 DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_pattern,
-                                    DlpRulesManager::Restriction restriction,
-                                    DlpRulesManager::Level level) {
+                                    DlpRulesManager::Restriction restriction) {
   DlpPolicyEvent event;
 
   DlpPolicyEventSource* event_source = new DlpPolicyEventSource;
@@ -112,10 +111,17 @@ DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_pattern,
 
   event.set_restriction(
       DlpRulesManagerRestriction2DlpEventRestriction(restriction));
-  event.set_mode(DlpRulesManagerLevel2DlpEventMode(level));
   event.set_timestamp_micro(base::Time::Now().ToTimeT());
   event.set_user_type(GetCurrentUserType());
 
+  return event;
+}
+
+DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_pattern,
+                                    DlpRulesManager::Restriction restriction,
+                                    DlpRulesManager::Level level) {
+  auto event = CreateDlpPolicyEvent(src_pattern, restriction);
+  event.set_mode(DlpRulesManagerLevel2DlpEventMode(level));
   return event;
 }
 
@@ -201,6 +207,14 @@ void DlpReportingManager::ReportEvent(
   ReportEvent(std::move(event));
 }
 
+void DlpReportingManager::ReportWarningProceededEvent(
+    const std::string& src_pattern,
+    DlpRulesManager::Restriction restriction) {
+  auto event = CreateDlpPolicyEvent(src_pattern, restriction);
+  event.set_mode(DlpPolicyEvent_Mode_WARN_PROCEED);
+  ReportEvent(std::move(event));
+}
+
 void DlpReportingManager::OnEventEnqueued(reporting::Status status) {
   if (!status.ok()) {
     VLOG(1) << "Could not enqueue event to DLP reporting queue because of "
@@ -234,6 +248,16 @@ void DlpReportingManager::ReportEvent(DlpPolicyEvent event) {
     case DlpPolicyEvent_Mode_REPORT:
       base::UmaHistogramEnumeration(
           GetDlpHistogramPrefix() + dlp::kReportedReportLevelRestriction,
+          DlpEventRestriction2DlpRulesManagerRestriction(event.restriction()));
+      break;
+    case DlpPolicyEvent_Mode_WARN:
+      base::UmaHistogramEnumeration(
+          GetDlpHistogramPrefix() + dlp::kReportedWarnLevelRestriction,
+          DlpEventRestriction2DlpRulesManagerRestriction(event.restriction()));
+      break;
+    case DlpPolicyEvent_Mode_WARN_PROCEED:
+      base::UmaHistogramEnumeration(
+          GetDlpHistogramPrefix() + dlp::kReportedWarnProceedLevelRestriction,
           DlpEventRestriction2DlpRulesManagerRestriction(event.restriction()));
       break;
     case DlpPolicyEvent_Mode_UNDEFINED_MODE:

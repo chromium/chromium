@@ -34,6 +34,8 @@ class ASH_EXPORT DesksTemplatesPresenter : desks_storage::DeskModelObserver {
   // owned by `OverviewSession`.
   static DesksTemplatesPresenter* Get();
 
+  bool should_show_templates_ui() { return should_show_templates_ui_; }
+
   // Calls the DeskModel to get all the template entries, with a callback to
   // `OnGetAllEntries`.
   void GetAllEntries();
@@ -79,6 +81,10 @@ class ASH_EXPORT DesksTemplatesPresenter : desks_storage::DeskModelObserver {
   base::ScopedObservation<desks_storage::DeskModel,
                           desks_storage::DeskModelObserver>
       desk_model_observation_{this};
+
+  // If the user has at least one template entry, the desk templates ui should
+  // be shown. Otherwise, it should be invisible.
+  bool should_show_templates_ui_ = false;
 
   // Test closure that runs after the UI has been updated async after a call to
   // the model.

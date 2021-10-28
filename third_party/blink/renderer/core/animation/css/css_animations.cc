@@ -1183,6 +1183,19 @@ void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
   ClearPendingUpdate();
 }
 
+bool CSSAnimations::PreviousActiveInterpolationsForAnimationsWillChange(
+    const CSSAnimationUpdate& update) const {
+  const auto& previous = previous_active_interpolations_for_animations_;
+  const auto& current = update.ActiveInterpolationsForAnimations();
+  if (previous.size() != current.size())
+    return true;
+  for (const PropertyHandle& key : current.Keys()) {
+    if (!previous.Contains(key))
+      return true;
+  }
+  return false;
+}
+
 HeapHashSet<Member<const Animation>>
 CSSAnimations::CreateCancelledTransitionsSet(
     ElementAnimations* element_animations,

@@ -161,8 +161,7 @@ class PasswordStoreAndroidBackend
   // Implements PasswordStoreAndroidBackendBridge::Consumer interface.
   void OnCompleteWithLogins(PasswordStoreAndroidBackendBridge::JobId job_id,
                             std::vector<PasswordForm> passwords) override;
-  void OnError(PasswordStoreAndroidBackendBridge::JobId job_id,
-               AndroidBackendErrorType error) override;
+  void OnError(PasswordStoreAndroidBackendBridge::JobId job_id) override;
 
   base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetSyncControllerDelegate();

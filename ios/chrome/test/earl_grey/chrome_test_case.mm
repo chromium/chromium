@@ -312,8 +312,6 @@ void ResetAuthentication() {
   [ChromeEarlGrey tearDownFakeSyncServer];
   // Switch from FakeChromeIdentityService to ChromeIdentityServiceImpl.
   TearDownMockAuthentication();
-  // Remove all identities in ChromeIdentityServiceImpl.
-  [ChromeEarlGrey signOutAndClearIdentities];
 }
 
 + (void)enableMockAuthentication {

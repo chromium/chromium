@@ -11,7 +11,7 @@
 #include "mojo/public/cpp/base/values_mojom_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "net/reporting/reporting_report.h"
-#include "services/network/public/mojom/reporting_report.mojom-shared.h"
+#include "services/network/public/mojom/reporting_service.mojom-shared.h"
 #include "url/mojom/url_gurl_mojom_traits.h"
 
 namespace mojo {

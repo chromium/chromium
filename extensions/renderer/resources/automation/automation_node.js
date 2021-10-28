@@ -2013,6 +2013,16 @@ AutomationRootNodeImpl.prototype = {
         const appNode = findApp(result);
         if (appNode) {
           delete AutomationRootNodeImpl.actionRequestIDToCallback[requestID];
+
+          const relativeWindow = appNode.parent;
+          if (!relativeWindow) {
+            return false;
+          }
+
+          // The hit test needs to be relative to the container of the app node.
+          data.opt_args.x -= relativeWindow.location.left;
+          data.opt_args.y -= relativeWindow.location.top;
+
           privates(appNode).impl.performAction_(
               data.actionType, data.opt_args, data.callback);
           return true;

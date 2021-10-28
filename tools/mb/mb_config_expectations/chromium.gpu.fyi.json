@@ -58,20 +58,6 @@
       "use_static_angle": true
     }
   },
-  "Android FYI Release (Nexus 6)": {
-    "gn_args": {
-      "blink_enable_generated_code_formatting": false,
-      "dcheck_always_on": true,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "target_os": "android",
-      "use_goma": true,
-      "use_static_angle": true
-    }
-  },
   "Android FYI Release (Nexus 9)": {
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
@@ -159,7 +145,7 @@
     }
   },
   "ChromeOS FYI Release (amd64-generic)": {
-    "args_file": "//build/args/chromeos/amd64-generic.gni",
+    "args_file": "//build/args/chromeos/amd64-generic-vm.gni",
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": false,

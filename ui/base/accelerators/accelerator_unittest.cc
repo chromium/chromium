@@ -87,6 +87,41 @@ TEST(AcceleratorTest, ConversionFromKeyEvent) {
             ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_FUNCTION_DOWN);
 }
 
+#if defined(OS_MAC)
+class AcceleratorTestMac : public testing::Test {
+ public:
+  AcceleratorTestMac() = default;
+  ~AcceleratorTestMac() override = default;
+
+  // Returns a "short" string representation of the modifier flags in
+  // |modifier_mask|.
+  std::u16string ShortFormStringForModifiers(int modifier_flags) {
+    ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_F, modifier_flags);
+    Accelerator accelerator(key_event);
+
+    // Passing the empty string causes the method to return just the string
+    // representation of the modifier flags.
+    return accelerator.ApplyShortFormModifiers(std::u16string());
+  }
+};
+
+// Checks that a string representation exists for all modifier masks that make
+// sense on the Mac.
+TEST_F(AcceleratorTestMac, ModifierFlagsShortFormRepresentation) {
+  int modifier_flag = 1 << 0;
+  while (modifier_flag) {
+    // If |modifier_flag| is a valid modifier flag and it's not EF_ALTGR_DOWN
+    // (the Linux Alt key on the right side of the keyboard), confirm that
+    // a string representation for the modifier flag exists.
+    if (Accelerator::MaskOutKeyEventFlags(modifier_flag) &&
+        modifier_flag != EF_ALTGR_DOWN) {
+      EXPECT_GT(this->ShortFormStringForModifiers(modifier_flag).size(), 0UL);
+    }
+    modifier_flag <<= 1;
+  }
+}
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST(AcceleratorTest, ConversionFromKeyEvent_Ash) {
   base::test::ScopedFeatureList scoped_feature_list;

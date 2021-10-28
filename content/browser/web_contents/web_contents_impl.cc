@@ -64,6 +64,7 @@
 #include "content/browser/dom_storage/session_storage_namespace_impl.h"
 #include "content/browser/download/mhtml_generation_manager.h"
 #include "content/browser/download/save_package.h"
+#include "content/browser/fenced_frame/fenced_frame.h"
 #include "content/browser/find_request_manager.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/host_zoom_map_impl.h"
@@ -1330,14 +1331,6 @@ void WebContentsImpl::ForEachFrame(
   for (FrameTreeNode* node : frame_tree_.Nodes()) {
     on_frame.Run(node->current_frame_host());
   }
-}
-
-std::vector<RenderFrameHost*> WebContentsImpl::GetAllFrames() {
-  return GetAllFramesImpl(frame_tree_, /*include_pending=*/false);
-}
-
-std::vector<RenderFrameHost*> WebContentsImpl::GetAllFramesIncludingPending() {
-  return GetAllFramesImpl(frame_tree_, /*include_pending=*/true);
 }
 
 int WebContentsImpl::SendToAllFrames(IPC::Message* message) {
@@ -3272,9 +3265,10 @@ RenderWidgetHostImpl* WebContentsImpl::GetFocusedRenderWidgetHost(
 }
 
 RenderWidgetHostImpl* WebContentsImpl::GetRenderWidgetHostWithPageFocus() {
-  WebContentsImpl* focused_web_contents = GetFocusedWebContents();
-
-  return focused_web_contents->GetMainFrame()->GetRenderWidgetHost();
+  FrameTree* focused_frame_tree = GetFocusedFrameTree();
+  return focused_frame_tree->root()
+      ->current_frame_host()
+      ->GetRenderWidgetHost();
 }
 
 bool WebContentsImpl::CanEnterFullscreenMode() {
@@ -6994,32 +6988,6 @@ WebContentsImpl* WebContentsImpl::GetOutermostWebContents() {
   return root;
 }
 
-void WebContentsImpl::FocusOuterAttachmentFrameChain() {
-  OPTIONAL_TRACE_EVENT0("content",
-                        "WebContentsImpl::FocusOuterAttachmentFrameChain");
-  WebContentsImpl* outer_contents = GetOuterWebContents();
-  if (!outer_contents)
-    return;
-
-  FrameTreeNode* outer_node =
-      FrameTreeNode::GloballyFindByID(GetOuterDelegateFrameTreeNodeId());
-  if (!outer_node->current_frame_host()->IsActive()) {
-    // Don't set focus on an inactive FrameTreeNode.
-    return;
-  }
-  outer_node->frame_tree()->SetFocusedFrame(outer_node, nullptr);
-
-  // For a browser initiated focus change, let embedding renderer know of the
-  // change. Otherwise, if the currently focused element is just across a
-  // process boundary in focus order, it will not be possible to move across
-  // that boundary. This is because the target element will already be focused
-  // (that renderer was not notified) and drop the event.
-  if (GetRenderManager()->GetProxyToOuterDelegate())
-    GetRenderManager()->GetProxyToOuterDelegate()->SetFocusedFrame();
-
-  outer_contents->FocusOuterAttachmentFrameChain();
-}
-
 void WebContentsImpl::InnerWebContentsCreated(WebContents* inner_web_contents) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::InnerWebContentsCreated");
   observers_.NotifyObservers(&WebContentsObserver::InnerWebContentsCreated,
@@ -7517,27 +7485,39 @@ void WebContentsImpl::EnsureOpenerProxiesExist(
 }
 
 void WebContentsImpl::SetAsFocusedWebContentsIfNecessary() {
-  OPTIONAL_TRACE_EVENT0("content",
-                        "WebContentsImpl::SetAsFocusedWebContentsIfNecessary");
+  SetFocusedFrameTree(GetFrameTree());
+}
+
+void WebContentsImpl::SetFocusedFrameTree(FrameTree* frame_tree_to_focus) {
+  OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::SetFocusedFrameTree");
   DCHECK(!GetOuterWebContents() || !IsPortal());
+  DCHECK(frame_tree_to_focus);
+
   // Only change focus if we are not currently focused.
-  WebContentsImpl* old_contents = GetFocusedWebContents();
-  if (old_contents == this)
+  FrameTree* old_focused_frame_tree = GetFocusedFrameTree();
+  if (old_focused_frame_tree == frame_tree_to_focus)
     return;
 
-  GetOutermostWebContents()->node_.SetFocusedFrameTree(GetFrameTree());
+  GetOutermostWebContents()->node_.SetFocusedFrameTree(frame_tree_to_focus);
 
-  // Send a page level blur to the old contents so that it displays inactive UI
-  // and focus this contents to activate it.
-  if (old_contents)
-    old_contents->GetMainFrame()->GetRenderWidgetHost()->SetPageFocus(false);
+  // Send a page level blur to the `old_focused_frame_tree` so that it displays
+  // inactive UI and focus `frame_tree_to_focus` to activate it.
+  if (old_focused_frame_tree) {
+    old_focused_frame_tree->root()
+        ->current_frame_host()
+        ->GetRenderWidgetHost()
+        ->SetPageFocus(false);
+  }
 
-  // Make sure the outer web contents knows our frame is focused. Otherwise, the
+  // Make sure the outer frame trees knows our frame is focused. Otherwise, the
   // outer renderer could have the element before or after the frame element
   // focused which would return early without actually advancing focus.
-  FocusOuterAttachmentFrameChain();
+  frame_tree_to_focus->FocusOuterFrameTrees();
 
-  GetMainFrame()->GetRenderWidgetHost()->SetPageFocus(true);
+  frame_tree_to_focus->root()
+      ->current_frame_host()
+      ->GetRenderWidgetHost()
+      ->SetPageFocus(true);
 }
 
 void WebContentsImpl::SetFocusedFrame(FrameTreeNode* node,
@@ -7545,9 +7525,25 @@ void WebContentsImpl::SetFocusedFrame(FrameTreeNode* node,
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::SetFocusedFrame",
                         "frame_tree_node", node, "source_site_instance",
                         source);
-  frame_tree_.SetFocusedFrame(node, source);
+  node->frame_tree()->SetFocusedFrame(node, source);
 
-  if (auto* inner_contents = node_.GetInnerWebContentsInFrame(node)) {
+  auto* inner_contents = node_.GetInnerWebContentsInFrame(node);
+
+  // We currently do not need to descend into inner frame trees that
+  // are not an inner WebContents for focus. If `inner_contents` is null,
+  // then the only supported inner frame tree type would be fenced frames.
+  // An embedding frame focusing a fenced frame is not allowed since that would
+  // be an information leak.  If a renderer attempts to do that, that should be
+  // blocked by `RenderFrameProxyHost::DidFocusFrame()`.
+  DCHECK(inner_contents ||
+         node->current_frame_host()->inner_tree_main_frame_tree_node_id() ==
+             FrameTreeNode::kFrameTreeNodeInvalidId);
+
+  if (inner_contents) {
+    // An inner WebContents is not created from Fenced Frames so we
+    // shouldn't end up in this branch.
+    DCHECK_NE(FrameTree::Type::kFencedFrame, node->frame_tree()->type());
+
     // |this| is an outer WebContents and |node| represents an inner
     // WebContents. Transfer the focus to the inner contents if |this| is
     // focused.
@@ -7558,6 +7554,11 @@ void WebContentsImpl::SetFocusedFrame(FrameTreeNode* node,
              node_.OuterContentsFrameTreeNode()
                      ->current_frame_host()
                      ->GetSiteInstance() == source) {
+    // A GuestView embedding a fenced frame will have an
+    // OuterContentsFrameTreeNode. However, it will not have the same site
+    // instance because a FencedFrame creates a new BrowsingInstance.
+    DCHECK_NE(FrameTree::Type::kFencedFrame, node->frame_tree()->type());
+
     // |this| is an inner WebContents, |node| is its main FrameTreeNode and
     // the outer WebContents FrameTreeNode is at |source|'s SiteInstance.
     // Transfer the focus to the inner WebContents if the outer WebContents is
@@ -7565,10 +7566,14 @@ void WebContentsImpl::SetFocusedFrame(FrameTreeNode* node,
     // its RenderFrameProxyHost (via FrameFocused mojo call, used to
     // implement the window.focus() API).
     if (GetFocusedWebContents() == GetOuterWebContents())
-      SetAsFocusedWebContentsIfNecessary();
-  } else if (!GetOuterWebContents()) {
-    // This is an outermost WebContents.
-    SetAsFocusedWebContentsIfNecessary();
+      SetFocusedFrameTree(node->frame_tree());
+  } else if (!GetOuterWebContents() || GetFocusedWebContents() == this) {
+    // This is an outermost WebContents or we are currently focused so allow
+    // the requested node's frame tree to be focused. The
+    // (GetFocusedWebContents() == this) is needed when there are multiple
+    // frame trees within an inner WebContents (ie. a GuestView with fenced
+    // frames).
+    SetFocusedFrameTree(node->frame_tree());
   }
 }
 
@@ -8161,6 +8166,16 @@ gfx::Size WebContentsImpl::GetSizeForMainFrame() {
 void WebContentsImpl::OnFrameTreeNodeDestroyed(FrameTreeNode* node) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::OnFrameTreeNodeDestroyed",
                         "node", node);
+  // If we are the focused frame tree and are destroying the root node
+  // reassign the focused frame tree node.
+  if (!node->parent() && GetFocusedFrameTree() == node->frame_tree() &&
+      node->frame_tree() != &frame_tree_) {
+    FrameTreeNode* frame_in_embedder =
+        node->render_manager()->GetOuterDelegateNode();
+    SetFocusedFrameTree(frame_in_embedder ? frame_in_embedder->frame_tree()
+                                          : &frame_tree_);
+  }
+
   observers_.NotifyObservers(&WebContentsObserver::FrameDeleted,
                              node->frame_tree_node_id());
 }

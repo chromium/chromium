@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/attestation/attestation_key_payload.pb.h"
 #include "chrome/browser/ash/attestation/fake_certificate.h"
 #include "chrome/browser/ash/attestation/machine_certificate_uploader_impl.h"
@@ -181,7 +182,7 @@ class MachineCertificateUploaderTestBase : public ::testing::Test {
     MachineCertificateUploaderImpl uploader(&policy_client_,
                                             &attestation_flow_);
     uploader.set_retry_limit_for_testing(kRetryLimit);
-    uploader.set_retry_delay_for_testing(0);
+    uploader.set_retry_delay_for_testing(base::TimeDelta());
     if (GetShouldRefreshCert())
       uploader.RefreshAndUploadCertificate(base::DoNothing());
     else

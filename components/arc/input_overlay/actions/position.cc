@@ -69,9 +69,9 @@ bool Position::ParseFromJson(const base::Value& value) {
   return true;
 }
 
-gfx::PointF Position::CalculatePosition(const gfx::RectF& window_bounds) {
+gfx::PointF Position::CalculatePosition(const gfx::RectF& content_bounds) {
   gfx::PointF res = anchor_ + anchor_to_target_;
-  res.Scale(window_bounds.width(), window_bounds.height());
+  res.Scale(content_bounds.width(), content_bounds.height());
   return res;
 }
 

@@ -438,6 +438,10 @@ extern const char kSyncTrustedVaultPassphraseRecoveryDescription[];
 extern const char kTabsBulkActionsName[];
 extern const char kTabsBulkActionsDescription[];
 
+// Title and description for the flag to enable tabs search feature.
+extern const char kTabsSearchName[];
+extern const char kTabsSearchDescription[];
+
 // Title and description for the flag to enable the toolbar container
 // implementation.
 extern const char kToolbarContainerName[];

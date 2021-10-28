@@ -3,7 +3,13 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 <resources>
+    <!-- TODO(crbug.com/1263053): Route into ?attrs instead of @colors when
+         ready to fully land dynamic colors. -->
+    <!-- Icon colors -->
     <macro name="default_icon_color_accent1">?attr/colorPrimary</macro>
     <macro name="default_text_color">?attr/colorOnSurface</macro>
+    <!-- Text colors-->
     <macro name="default_text_color_accent1">?attr/colorPrimary</macro>
+    <!-- Divider colors -->
+    <macro name="hairline_stroke_color">@color/hairline_stroke_color_baseline</macro>
 </resources>

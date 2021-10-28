@@ -1,0 +1,6 @@
+# crbug.com/1262402 Test filter for browser_tests on mac11-arm64-rel
+
+-SavePageOriginalVsSavedComparisonTest.AboutBlank/0
+-SavePageOriginalVsSavedComparisonTest.CrossSiteObject/0
+-EncryptedMediaTest.Playback_VideoOnly_WebM_VP9Profile2/0
+-MseEncryptedMediaTest.Playback_VideoOnly_MP4_VP9Profile2/0

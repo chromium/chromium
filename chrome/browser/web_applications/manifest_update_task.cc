@@ -11,8 +11,13 @@
 
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_features.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -27,6 +32,7 @@
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/common/chrome_features.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
@@ -35,6 +41,13 @@
 namespace web_app {
 
 namespace {
+
+// Returns a shared instance of UpdatePendingCallback.
+ManifestUpdateTask::UpdatePendingCallback* GetUpdatePendingCallbackMutable() {
+  static base::NoDestructor<ManifestUpdateTask::UpdatePendingCallback>
+      g_update_pending_callback;
+  return g_update_pending_callback.get();
+}
 
 void HaveIconContentsChanged(
     const std::map<SquareSizePx, SkBitmap>& disk_icon_bitmaps,
@@ -187,6 +200,12 @@ IconDiff HaveIconBitmapsChanged(
       downloaded_sizes[apps::IconInfo::Purpose::kMonochrome],
       end_when_mismatch_detected);
   return icon_diff;
+}
+
+// static
+void ManifestUpdateTask::SetUpdatePendingCallbackForTesting(
+    UpdatePendingCallback callback) {
+  *GetUpdatePendingCallbackMutable() = std::move(callback);
 }
 
 ManifestUpdateTask::ManifestUpdateTask(
@@ -393,11 +412,22 @@ void ManifestUpdateTask::UpdateAfterWindowsClose() {
   DCHECK(stage_ == Stage::kPendingInstallableData ||
          stage_ == Stage::kPendingAppIdentityCheck);
   stage_ = Stage::kPendingWindowsClosed;
+
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  keep_alive_ = std::make_unique<ScopedKeepAlive>(
+      KeepAliveOrigin::APP_MANIFEST_UPDATE, KeepAliveRestartOption::DISABLED);
+  profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
+      profile, ProfileKeepAliveOrigin::kWebAppUpdate);
+
   Observe(nullptr);
 
   ui_manager_.NotifyOnAllAppWindowsClosed(
       app_id_,
       base::BindOnce(&ManifestUpdateTask::OnAllAppWindowsClosed, AsWeakPtr()));
+  UpdatePendingCallback* callback = GetUpdatePendingCallbackMutable();
+  if (!callback->is_null())
+    std::move(*callback).Run(url_);
 }
 
 void ManifestUpdateTask::LoadAndCheckIconContents() {
@@ -530,7 +560,7 @@ void ManifestUpdateTask::OnAllIconsRead(IconsMap downloaded_icons_map,
 void ManifestUpdateTask::OnPostAppIdentityUpdateCheck(
     AppIdentityUpdate app_identity_update_allowed) {
   DCHECK_EQ(stage_, Stage::kPendingAppIdentityCheck);
-  Observe(nullptr);
+
   app_identity_update_allowed_ =
       app_identity_update_allowed == AppIdentityUpdate::kAllowed;
   if (app_identity_update_allowed_) {
@@ -613,6 +643,9 @@ bool ManifestUpdateTask::IsUpdateNeededForWebAppOriginAssociations() const {
 void ManifestUpdateTask::NoManifestUpdateRequired() {
   DCHECK_EQ(stage_, Stage::kPendingAppIdentityCheck);
   stage_ = Stage::kPendingAssociationsUpdate;
+
+  Observe(nullptr);
+
   if (!IsUpdateNeededForWebAppOriginAssociations()) {
     DestroySelf(ManifestUpdateResult::kAppUpToDate);
     return;

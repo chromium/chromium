@@ -82,6 +82,8 @@
 #include "chrome/browser/resource_coordinator/tab_load_tracker.h"
 #include "chrome/browser/resource_coordinator/tab_manager_web_contents_data.h"
 #include "chrome/browser/search/search.h"
+#include "chrome/browser/sessions/app_session_service.h"
+#include "chrome/browser/sessions/app_session_service_factory.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sessions/session_service.h"
 #include "chrome/browser/sessions/session_service_factory.h"
@@ -281,11 +283,6 @@
 
 #if BUILDFLAG(ENABLE_PAINT_PREVIEW)
 #include "components/paint_preview/browser/paint_preview_client.h"  // nogncheck
-#endif
-
-#if BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
-#include "chrome/browser/sessions/app_session_service.h"
-#include "chrome/browser/sessions/app_session_service_factory.h"
 #endif
 
 using base::UserMetricsAction;
@@ -883,10 +880,8 @@ bool Browser::RunUnloadListenerBeforeClosing(
 void Browser::SetWindowUserTitle(const std::string& user_title) {
   user_title_ = user_title;
   window_->UpdateTitleBar();
-#if BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
   // See comment in Browser::OnTabGroupChanged
   DCHECK(!IsRelevantToAppSessionService(type_));
-#endif
   SessionService* const session_service =
       SessionServiceFactory::GetForProfile(profile_);
   if (session_service)
@@ -1192,14 +1187,12 @@ void Browser::OnTabStripModelChanged(TabStripModel* tab_strip_model,
 }
 
 void Browser::OnTabGroupChanged(const TabGroupChange& change) {
-#if BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
   // If apps ever get tab grouping, this function needs to be updated to
   // retrieve AppSessionService from the correct factory. Additionally,
   // AppSessionService doesn't support SetTabGroupMetadata, so some
   // work to refactor the code to support that into SessionServiceBase
   // would be the best way to achieve that.
   DCHECK(!IsRelevantToAppSessionService(type_));
-#endif
   if (change.type == TabGroupChange::kVisualsChanged) {
     SessionService* const session_service =
         SessionServiceFactory::GetForProfile(profile_);
@@ -1222,10 +1215,8 @@ void Browser::OnTabGroupChanged(const TabGroupChange& change) {
 void Browser::TabPinnedStateChanged(TabStripModel* tab_strip_model,
                                     WebContents* contents,
                                     int index) {
-#if BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
   // See comment in Browser::OnTabGroupChanged
   DCHECK(!IsRelevantToAppSessionService(type_));
-#endif
   SessionService* session_service =
       SessionServiceFactory::GetForProfileIfExisting(profile());
   if (session_service) {
@@ -1241,10 +1232,8 @@ void Browser::TabGroupedStateChanged(
     absl::optional<tab_groups::TabGroupId> group,
     content::WebContents* contents,
     int index) {
-#if BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
   // See comment in Browser::OnTabGroupChanged
   DCHECK(!IsRelevantToAppSessionService(type_));
-#endif
   SessionService* const session_service =
       SessionServiceFactory::GetForProfile(profile_);
   if (!session_service)
@@ -2636,12 +2625,10 @@ StatusBubble* Browser::GetStatusBubble() {
 // Browser, Session restore functions (private):
 
 void Browser::SyncHistoryWithTabs(int index) {
-#if BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
   // Apps don't need to do this. Skip.
   if (IsRelevantToAppSessionService(type_)) {
     return;
   }
-#endif
 
   SessionService* session_service =
       SessionServiceFactory::GetForProfileIfExisting(profile());

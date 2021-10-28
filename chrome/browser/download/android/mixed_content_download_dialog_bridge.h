@@ -32,12 +32,10 @@ class MixedContentDownloadDialogBridge
   ~MixedContentDownloadDialogBridge() override;
 
   // Called to create and show a dialog for a mixed-content download.
-  void CreateDialog(
-      download::DownloadItem* download,
-      const base::FilePath& base_name,
-      download::DownloadItem::MixedContentStatus mixed_content_status,
-      ui::WindowAndroid* window_android,
-      MixedContentDialogCallback callback);
+  void CreateDialog(download::DownloadItem* download,
+                    const base::FilePath& base_name,
+                    ui::WindowAndroid* window_android,
+                    MixedContentDialogCallback callback);
 
   // Called from Java via JNI.
   void OnConfirmed(JNIEnv* env, jlong callback_id, jboolean accepted);

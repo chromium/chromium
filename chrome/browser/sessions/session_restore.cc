@@ -39,6 +39,8 @@
 #include "chrome/browser/profiles/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/search/search.h"
+#include "chrome/browser/sessions/app_session_service.h"
+#include "chrome/browser/sessions/app_session_service_factory.h"
 #include "chrome/browser/sessions/session_restore_delegate.h"
 #include "chrome/browser/sessions/session_service.h"
 #include "chrome/browser/sessions/session_service_factory.h"
@@ -82,11 +84,6 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/boot_times_recorder.h"
 #include "components/app_restore/features.h"
-#endif
-
-#if BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
-#include "chrome/browser/sessions/app_session_service.h"
-#include "chrome/browser/sessions/app_session_service_factory.h"
 #endif
 
 using content::NavigationController;
@@ -172,7 +169,6 @@ class SessionRestoreImpl : public BrowserListObserver {
                                              /* for_apps */ false));
     }
 
-#if BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
     if (restore_apps_) {
       SessionServiceBase* app_service =
           AppSessionServiceFactory::GetForProfileForSessionRestore(profile_);
@@ -192,7 +188,6 @@ class SessionRestoreImpl : public BrowserListObserver {
           FROM_HERE, base::BindOnce(&SessionRestoreImpl::WebAppRegistryReady,
                                     weak_factory_.GetWeakPtr()));
     }
-#endif
 
     if (synchronous_) {
       {
@@ -1028,7 +1023,6 @@ void SessionRestore::RestoreSessionAfterCrash(Browser* browser) {
            ? SessionRestore::CLOBBER_CURRENT_TAB
            : 0);
 
-#if BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // In Chrome OS, apps are restored by full restore only. This function is
   // called when the chrome browser is launched after crash, so only browser
@@ -1038,7 +1032,6 @@ void SessionRestore::RestoreSessionAfterCrash(Browser* browser) {
 #else
   // Apps should always be restored on crash restore.
   behavior |= SessionRestore::RESTORE_APPS;
-#endif
 #endif
   SessionRestore::RestoreSession(profile, browser, behavior,
                                  std::vector<GURL>());

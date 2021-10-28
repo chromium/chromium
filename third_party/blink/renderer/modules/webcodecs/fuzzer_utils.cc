@@ -46,6 +46,9 @@ namespace {
 // 16 MiB ought to be enough for anybody.
 constexpr size_t kMaxBufferLength = 16 * 1024 * 1024;
 
+// Override for maximum frame dimensions to avoid huge allocations.
+constexpr uint32_t kMaxVideoFrameDimension = 1024;
+
 }  // namespace
 
 // static
@@ -323,8 +326,10 @@ VideoFrame* MakeVideoFrame(
   if (proto.init().has_duration())
     init->setDuration(proto.init().duration());
 
-  init->setCodedWidth(proto.init().coded_width());
-  init->setCodedHeight(proto.init().coded_height());
+  init->setCodedWidth(
+      std::min(proto.init().coded_width(), kMaxVideoFrameDimension));
+  init->setCodedHeight(
+      std::min(proto.init().coded_height(), kMaxVideoFrameDimension));
 
   if (proto.init().has_visible_rect())
     init->setVisibleRect(MakeDOMRectInit(proto.init().visible_rect()));

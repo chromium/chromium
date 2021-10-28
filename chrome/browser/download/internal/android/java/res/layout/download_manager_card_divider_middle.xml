@@ -17,5 +17,5 @@
         android:layout_height="1dp"
         android:layout_centerVertical="true"
         tools:ignore="ContentDescription"
-        android:background="@color/hairline_stroke_color"/>
+        android:background="@macro/hairline_stroke_color"/>
 </RelativeLayout>

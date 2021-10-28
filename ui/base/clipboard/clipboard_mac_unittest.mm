@@ -4,10 +4,11 @@
 
 #import "ui/base/clipboard/clipboard_mac.h"
 
-#include <vector>
-
 #import <AppKit/AppKit.h>
 
+#include <vector>
+
+#include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/memory/free_deleter.h"
@@ -42,7 +43,7 @@ void CreateImageBufferReleaser(void* info, const void* data, size_t size) {
 
 class ClipboardMacTest : public PlatformTest {
  public:
-  ClipboardMacTest() { }
+  ClipboardMacTest() = default;
 
   base::scoped_nsobject<NSImage> CreateImage(int32_t width,
                                              int32_t height,
@@ -73,6 +74,11 @@ class ClipboardMacTest : public PlatformTest {
 };
 
 TEST_F(ClipboardMacTest, ReadImageRetina) {
+  if (base::mac::IsAtMostOS10_11()) {
+    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
+                    "code. https://crbug.com/1232472";
+  }
+
   int32_t width = 99;
   int32_t height = 101;
   scoped_refptr<UniquePasteboard> pasteboard = new UniquePasteboard;
@@ -91,6 +97,11 @@ TEST_F(ClipboardMacTest, ReadImageRetina) {
 }
 
 TEST_F(ClipboardMacTest, ReadImageNonRetina) {
+  if (base::mac::IsAtMostOS10_11()) {
+    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
+                    "code. https://crbug.com/1232472";
+  }
+
   int32_t width = 99;
   int32_t height = 101;
   scoped_refptr<UniquePasteboard> pasteboard = new UniquePasteboard;
@@ -109,6 +120,11 @@ TEST_F(ClipboardMacTest, ReadImageNonRetina) {
 }
 
 TEST_F(ClipboardMacTest, EmptyImage) {
+  if (base::mac::IsAtMostOS10_11()) {
+    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
+                    "code. https://crbug.com/1232472";
+  }
+
   base::scoped_nsobject<NSImage> image([[NSImage alloc] init]);
   scoped_refptr<UniquePasteboard> pasteboard = new UniquePasteboard;
   [pasteboard->get() writeObjects:@[ image.get() ]];
@@ -125,6 +141,11 @@ TEST_F(ClipboardMacTest, EmptyImage) {
 }
 
 TEST_F(ClipboardMacTest, PDFImage) {
+  if (base::mac::IsAtMostOS10_11()) {
+    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
+                    "code. https://crbug.com/1232472";
+  }
+
   int32_t width = 99;
   int32_t height = 101;
   NSRect frame = NSMakeRect(0, 0, width, height);

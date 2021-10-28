@@ -641,6 +641,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     public boolean shouldCheckBookmarkStar(@NonNull Tab currentTab) {
         if (sItemBookmarkedForTesting != null) return sItemBookmarkedForTesting;
 
+        if (!mBookmarkBridgeSupplier.hasValue()) return false;
         BookmarkId existingBookmark =
                 mBookmarkBridgeSupplier.get().getUserBookmarkIdForTab(currentTab);
         return existingBookmark != null && existingBookmark.getType() == BookmarkType.NORMAL;
@@ -655,6 +656,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     public boolean shouldHighlightReadingList(@NonNull Tab currentTab) {
         if (sItemInReadingListForTesting != null) return sItemInReadingListForTesting;
 
+        if (!mBookmarkBridgeSupplier.hasValue()) return false;
         BookmarkId existingBookmark =
                 mBookmarkBridgeSupplier.get().getUserBookmarkIdForTab(currentTab);
         return existingBookmark != null && existingBookmark.getType() == BookmarkType.READING_LIST;
@@ -995,15 +997,19 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
      */
     protected void updateBookmarkMenuItemShortcut(
             MenuItem bookmarkMenuItemShortcut, @Nullable Tab currentTab) {
-        // If the menu item row is enabled, then disable the shortcut.
         if (BookmarkFeatures.isBookmarkMenuItemAsDedicatedRowEnabled()) {
             bookmarkMenuItemShortcut.setVisible(false);
             return;
         }
 
-        boolean editEnabled = mBookmarkBridgeSupplier.hasValue()
-                && mBookmarkBridgeSupplier.get().isEditBookmarksEnabled();
-        bookmarkMenuItemShortcut.setEnabled(editEnabled);
+        if (!mBookmarkBridgeSupplier.hasValue() || currentTab == null) {
+            // If the BookmarkBridge still isn't available, assume the bookmark menu item is not
+            // editable.
+            bookmarkMenuItemShortcut.setEnabled(false);
+        } else {
+            bookmarkMenuItemShortcut.setEnabled(
+                    mBookmarkBridgeSupplier.get().isEditBookmarksEnabled());
+        }
 
         if (currentTab != null && shouldCheckBookmarkStar(currentTab)) {
             bookmarkMenuItemShortcut.setIcon(R.drawable.btn_star_filled);
@@ -1026,20 +1032,14 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     protected void updateBookmarkMenuItemRow(
             MenuItem bookmarkMenuItemAdd, MenuItem bookmarkMenuItemEdit, @Nullable Tab currentTab) {
         // If the bookmark menu item row is disabled, then hide both item.
-        if (!BookmarkFeatures.isBookmarkMenuItemAsDedicatedRowEnabled()) {
+        if (!BookmarkFeatures.isBookmarkMenuItemAsDedicatedRowEnabled()
+                || !mBookmarkBridgeSupplier.hasValue() || currentTab == null) {
             bookmarkMenuItemAdd.setVisible(false);
             bookmarkMenuItemEdit.setVisible(false);
             return;
         }
 
-        // If the bookmark bridge or tab isn't available, then default to add.
-        if (!mBookmarkBridgeSupplier.hasValue() || currentTab == null) {
-            bookmarkMenuItemAdd.setVisible(true);
-            bookmarkMenuItemEdit.setVisible(false);
-        }
-
-        boolean editEnabled = mBookmarkBridgeSupplier.hasValue()
-                && mBookmarkBridgeSupplier.get().isEditBookmarksEnabled();
+        boolean editEnabled = mBookmarkBridgeSupplier.get().isEditBookmarksEnabled();
         bookmarkMenuItemAdd.setEnabled(editEnabled);
         bookmarkMenuItemEdit.setEnabled(editEnabled);
 
@@ -1149,7 +1149,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     }
 
     @VisibleForTesting
-    public static void setPageBookmarkedForTesting(Boolean bookmarked) {
+    static void setPageBookmarkedForTesting(Boolean bookmarked) {
         sItemBookmarkedForTesting = bookmarked;
     }
 

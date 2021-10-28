@@ -59,6 +59,7 @@ static_library("renderer") {
 static_library("test_support") {
   testonly = true
   sources = [
+    "autofill_agent_test_api.h",
     "focus_test_utils.cc",
     "focus_test_utils.h",
     "form_cache_test_api.h",

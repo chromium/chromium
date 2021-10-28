@@ -124,7 +124,6 @@ if (include_js_tests) {
     deps = [
       ":modulize",
       "net_internals:preprocess",
-      "settings:preprocess",
       "signin:preprocess",
       "//build:branding_buildflags",
       "//chrome/browser/ui",
@@ -207,9 +206,6 @@ if (include_js_tests) {
       "$root_gen_dir/chrome/test/data/webui/mock_timer.m.js",
       "$root_gen_dir/chrome/test/data/webui/net_internals/main_test.js",
       "$root_gen_dir/chrome/test/data/webui/net_internals/test_util.js",
-      "$root_gen_dir/chrome/test/data/webui/settings/privacy_page_test.js",
-      "$root_gen_dir/chrome/test/data/webui/settings/settings_toggle_button_tests.js",
-      "$root_gen_dir/chrome/test/data/webui/settings/route_tests.js",
       "$root_gen_dir/chrome/test/data/webui/signin/profile_card_menu_test.js",
       "$root_gen_dir/chrome/test/data/webui/signin/profile_picker_app_test.js",
       "$root_gen_dir/chrome/test/data/webui/signin/test_manage_profiles_browser_proxy.js",
@@ -653,12 +649,14 @@ generate_grd("build_grd") {
     ":build_web_ui_test_mojo_grdp",
     "bookmarks:build_grdp",
     "downloads:build_grdp",
+    "settings:build_grdp",
   ]
 
   grdp_files = [
     "$target_gen_dir/bookmarks/resources.grdp",
     "$target_gen_dir/chai_resources.grdp",
     "$target_gen_dir/downloads/resources.grdp",
+    "$target_gen_dir/settings/resources.grdp",
     "$target_gen_dir/web_ui_test_mojo_resources.grdp",
   ]
 

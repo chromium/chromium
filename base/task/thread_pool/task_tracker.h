@@ -189,11 +189,27 @@ class BASE_EXPORT TaskTracker {
   void CallFlushCallbackForTesting();
 
   // Dummy frames to allow identification of shutdown behavior in a stack trace.
-  void RunContinueOnShutdown(Task* task);
-  void RunSkipOnShutdown(Task* task);
-  void RunBlockShutdown(Task* task);
-  void RunTaskWithShutdownBehavior(TaskShutdownBehavior shutdown_behavior,
-                                   Task* task);
+  void RunContinueOnShutdown(Task& task,
+                             const TaskTraits& traits,
+                             TaskSource* task_source,
+                             const SequenceToken& token);
+  void RunSkipOnShutdown(Task& task,
+                         const TaskTraits& traits,
+                         TaskSource* task_source,
+                         const SequenceToken& token);
+  void RunBlockShutdown(Task& task,
+                        const TaskTraits& traits,
+                        TaskSource* task_source,
+                        const SequenceToken& token);
+  void RunTaskWithShutdownBehavior(Task& task,
+                                   const TaskTraits& traits,
+                                   TaskSource* task_source,
+                                   const SequenceToken& token);
+
+  void NOT_TAIL_CALLED RunTaskImpl(Task& task,
+                                   const TaskTraits& traits,
+                                   TaskSource* task_source,
+                                   const SequenceToken& token);
 
   TaskAnnotator task_annotator_;
 

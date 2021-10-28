@@ -348,17 +348,16 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
   is_math_fraction_ = builder->is_math_fraction_;
   is_math_operator_ = builder->is_math_operator_;
 
-  // TODO(ikilpatrick): Investigate if new table-cells should always produce a
-  // baseline.
-  bool has_layout_containment = layout_object_->ShouldApplyLayoutContainment();
-  if (builder->baseline_.has_value() && !has_layout_containment) {
+  const bool allow_baseline = !layout_object_->ShouldApplyLayoutContainment() ||
+                              layout_object_->IsTableCell();
+  if (allow_baseline && builder->baseline_.has_value()) {
     has_baseline_ = true;
     baseline_ = *builder->baseline_;
   } else {
     has_baseline_ = false;
     baseline_ = LayoutUnit::Min();
   }
-  if (builder->last_baseline_.has_value() && !has_layout_containment) {
+  if (allow_baseline && builder->last_baseline_.has_value()) {
     has_last_baseline_ = true;
     last_baseline_ = *builder->last_baseline_;
   } else {

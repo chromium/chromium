@@ -688,10 +688,10 @@ void NGRowBaselineTabulator::ProcessCell(
     const bool is_rowspanned,
     const bool descendant_depends_on_percentage_block_size) {
   if (is_parallel && is_baseline_aligned &&
-      fragment.HasDescendantsForTablePart()) {
+      fragment.HasDescendantsForTablePart() && fragment.FirstBaseline()) {
     max_cell_baseline_depends_on_percentage_block_descendant_ |=
         descendant_depends_on_percentage_block_size;
-    const LayoutUnit cell_baseline = fragment.FirstBaselineOrSynthesize();
+    const LayoutUnit cell_baseline = *fragment.FirstBaseline();
     max_cell_ascent_ =
         std::max(max_cell_ascent_.value_or(LayoutUnit::Min()), cell_baseline);
     if (is_rowspanned) {

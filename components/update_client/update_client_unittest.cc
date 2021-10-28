@@ -3245,7 +3245,7 @@ TEST_F(UpdateClientTest, SendUninstallPing) {
           &MockUpdateChecker::Create);
 
   update_client->SendUninstallPing(
-      "jebgalgnebhfojomionfpkfelancnnkf", base::Version("1.2.3.4"), 10,
+      "jebgalgnebhfojomionfpkfelancnnkf", base::Version("1.2.3.4"), 10, true,
       base::BindOnce(&CompletionCallbackMock::Callback, quit_closure()));
 
   RunThreads();
@@ -3308,7 +3308,7 @@ TEST_F(UpdateClientTest, SendRegistrationPing) {
           &MockUpdateChecker::Create);
 
   update_client->SendRegistrationPing(
-      "jebgalgnebhfojomionfpkfelancnnkf", base::Version("1.2.3.4"),
+      "jebgalgnebhfojomionfpkfelancnnkf", base::Version("1.2.3.4"), true,
       base::BindOnce(&CompletionCallbackMock::Callback, quit_closure()));
 
   RunThreads();

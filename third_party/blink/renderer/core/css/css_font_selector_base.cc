@@ -32,8 +32,15 @@ void CSSFontSelectorBase::WillUseFontData(
     const FontFamily& family,
     const String& text) {
   if (CSSSegmentedFontFace* face =
-          font_face_cache_->Get(font_description, family.FamilyName()))
+          font_face_cache_->Get(font_description, family.FamilyName())) {
     face->WillUseFontData(font_description, text);
+    return;
+  }
+
+  if (family.IsPrewarmed())
+    return;
+  family.SetIsPrewarmed();
+  FontCache::PrewarmFamily(family.FamilyName());
 }
 
 void CSSFontSelectorBase::WillUseRange(const FontDescription& font_description,

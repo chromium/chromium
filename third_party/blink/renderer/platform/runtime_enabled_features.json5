@@ -412,7 +412,7 @@
     },
     {
       name: "CompositeAfterPaint",
-      status: "test",
+      status: "stable",
     },
     {
       name: "CompositeBGColorAnimation",
@@ -1335,6 +1335,10 @@
     {
       name: "LazyInitializeMediaControls",
       // This is enabled by features::kLazyInitializeMediaControls.
+    },
+    {
+      name: "LCPAnimatedImagesWebExposed",
+      status: "test",
     },
     {
       name: "LegacyWindowsDWriteFontFallback",

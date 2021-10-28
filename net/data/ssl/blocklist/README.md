@@ -313,7 +313,7 @@ For details, see <https://security.googleblog.com/2019/08/protecting-chrome-user
 
 ### revoked.badssl.com
 
-  * [c6910d0ba9eddf593334149fedfe87385f37b625354bb4395c0ae2c8df48e17c.pem](c6910d0ba9eddf593334149fedfe87385f37b625354bb4395c0ae2c8df48e17c.pem)
+  * [29abf614b2870ed70df11225e9ae2068e3074eb9845ae252c2064e31ce9fe8a1.pem](29abf614b2870ed70df11225e9ae2068e3074eb9845ae252c2064e31ce9fe8a1.pem)
 
 ### blocked-interception.badssl.com
 

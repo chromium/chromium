@@ -12,7 +12,9 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
+#include "base/token.h"
 #include "base/unguessable_token.h"
+#include "media/capture/mojom/video_capture_types.mojom-blink.h"
 #include "media/capture/video_capture_types.h"
 #include "third_party/blink/public/common/media/video_capture.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -58,6 +60,9 @@ class MODULES_EXPORT LocalVideoCapturerSource : public VideoCapturerSource {
   void RequestRefreshFrame() override;
   void MaybeSuspend() override;
   void Resume() override;
+  void Crop(const base::Token& crop_id,
+            base::OnceCallback<void(media::mojom::CropRequestResult)> callback)
+      override;
   void StopCapture() override;
   void OnFrameDropped(media::VideoCaptureFrameDropReason reason) override;
   void OnLog(const std::string& message) override;

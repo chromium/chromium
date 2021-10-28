@@ -216,6 +216,11 @@ class AppServiceProxyBase : public KeyedService,
   void SetWindowMode(const std::string& app_id,
                      apps::mojom::WindowMode window_mode);
 
+  // Called by an app publisher to inform the proxy of a change in app state.
+  void OnApps(std::vector<std::unique_ptr<apps::App>> deltas,
+              apps::AppType app_type,
+              bool should_notify_initialized);
+
  protected:
   // An adapter, presenting an IconLoader interface based on the underlying
   // Mojo service (or on a fake implementation for testing).

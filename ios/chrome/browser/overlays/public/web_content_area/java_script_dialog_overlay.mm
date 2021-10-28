@@ -119,6 +119,7 @@ void JavaScriptDialogRequest::CreateAuxiliaryData(
                    initWithText:default_text_field_value()
                     placeholder:nil
         accessibilityIdentifier:text_field_identifier
+         autocapitalizationType:UITextAutocapitalizationTypeSentences
                 secureTextEntry:NO] ];
   }
 

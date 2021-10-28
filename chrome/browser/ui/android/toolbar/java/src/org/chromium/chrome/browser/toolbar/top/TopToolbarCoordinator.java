@@ -234,7 +234,6 @@ public class TopToolbarCoordinator implements Toolbar {
             mStartSurfaceToolbarCoordinator.setTabSwitcherListener(tabSwitcherClickHandler);
             mStartSurfaceToolbarCoordinator.setOnTabSwitcherLongClickHandler(
                     tabSwitcherLongClickHandler);
-            mStartSurfaceToolbarCoordinator.onNativeLibraryReady();
         }
 
         mToolbarLayout.setTabModelSelector(mTabModelSelectorSupplier.get());
@@ -677,6 +676,18 @@ public class TopToolbarCoordinator implements Toolbar {
         mToolbarLayout.onStartSurfaceStateChanged(
                 mStartSurfaceToolbarCoordinator.shouldShowRealSearchBox(toolbarHeight),
                 mStartSurfaceToolbarCoordinator.isOnHomepage());
+    }
+
+    /**
+     * This method should be called when there is a possibility that logo became available or
+     * was changed.
+     * @param logoImage The logo image.
+     * @param contentDescription The accessibility text describing the logo.
+     */
+    public void onLogoAvailable(Drawable logoImage, String contentDescription) {
+        if (mStartSurfaceToolbarCoordinator != null) {
+            mStartSurfaceToolbarCoordinator.onLogoImageAvailable(logoImage, contentDescription);
+        }
     }
 
     @Override

@@ -43,8 +43,8 @@ class PLATFORM_EXPORT WebGraphicsContext3DVideoFramePool {
 
   // On success, this function will issue return true and will call the
   // specified FrameCallback with the resulting VideoFrame when the frame
-  // is ready. On failure this will return false and not issue the specified
-  // callback. The resulting VideoFrame will always be NV12.
+  // is ready. On failure this will issue `callback` with a nullptr VideoFrame
+  // and then return false. The resulting VideoFrame will always be NV12.
   // Note: In some paths `src_color_space` is ignored in favor of the
   // SharedImage color space associated with `src_mailbox_holder`.
   // Note: If the YUV to RGB matrix of `dst_color_space` is not Rec601, then

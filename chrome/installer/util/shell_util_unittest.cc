@@ -1212,19 +1212,14 @@ TEST_F(ShellUtilRegistryTest, DeleteFileAssociations) {
 }
 
 TEST_F(ShellUtilRegistryTest, RegisterFileHandlerProgIds) {
-  std::vector<std::wstring> file_handler_prog_ids(
+  const std::vector<std::wstring> file_handler_prog_ids(
       {std::wstring(kFileHandler1ProgId), std::wstring(kFileHandler2ProgId)});
   ShellUtil::RegisterFileHandlerProgIdsForAppId(std::wstring(kTestProgId),
                                                 file_handler_prog_ids);
-  // Test that registry entry contains file handler prog ids.
-  base::win::RegKey key;
-  std::wstring value;
-  ASSERT_EQ(ERROR_SUCCESS, key.Open(HKEY_CURRENT_USER,
-                                    L"Software\\Classes\\TestApp", KEY_READ));
-  EXPECT_EQ(ERROR_SUCCESS, key.ReadValue(L"FileHandlerProgIds", &value));
-  EXPECT_EQ(std::wstring(kFileHandler1ProgId) + std::wstring(L";") +
-                std::wstring(kFileHandler2ProgId),
-            value);
+  // Test that the registry contains the file handler prog ids.
+  const std::vector<std::wstring> retrieved_file_handler_prog_ids =
+      ShellUtil::GetFileHandlerProgIdsForAppId(std::wstring(kTestProgId));
+  EXPECT_EQ(file_handler_prog_ids, retrieved_file_handler_prog_ids);
 }
 
 TEST_F(ShellUtilRegistryTest, AddApplicationClass) {

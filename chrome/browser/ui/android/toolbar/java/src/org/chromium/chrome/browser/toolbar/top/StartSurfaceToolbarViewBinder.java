@@ -23,6 +23,8 @@ import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarPropert
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IN_START_SURFACE_MODE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IS_INCOGNITO;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IS_VISIBLE;
+import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.LOGO_CONTENT_DESCRIPTION;
+import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.LOGO_IMAGE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.LOGO_IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.MENU_IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.NEW_TAB_BUTTON_HIGHLIGHT;
@@ -71,6 +73,10 @@ class StartSurfaceToolbarViewBinder {
             view.setShowAnimation(model.get(SHOW_ANIMATION));
         } else if (propertyKey == LOGO_IS_VISIBLE) {
             view.setLogoVisibility(model.get(LOGO_IS_VISIBLE));
+        } else if (propertyKey == LOGO_IMAGE) {
+            view.setLogoImage(model.get(LOGO_IMAGE));
+        } else if (propertyKey == LOGO_CONTENT_DESCRIPTION) {
+            view.setLogoContentDescription(model.get(LOGO_CONTENT_DESCRIPTION));
         } else if (propertyKey == MENU_IS_VISIBLE) {
             view.setMenuButtonVisibility(model.get(MENU_IS_VISIBLE));
         } else if (propertyKey == NEW_TAB_CLICK_HANDLER) {

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_VIZ_COMMON_SHARED_ELEMENT_RESOURCE_ID_H_
 #define COMPONENTS_VIZ_COMMON_SHARED_ELEMENT_RESOURCE_ID_H_
 
+#include <string>
 #include <vector>
 
 #include "components/viz/common/viz_common_export.h"

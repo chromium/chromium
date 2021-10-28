@@ -284,6 +284,11 @@ struct CrxComponent {
   // the CRX is installed.
   base::Version version;
 
+  // Optional. This additional parameter ("ap") is sent to the server, which
+  // often uses it to distinguish between variants of the software that were
+  // chosen at install time.
+  std::string ap;
+
   std::string fingerprint;  // Optional.
   std::string name;         // Optional.
 
@@ -464,6 +469,7 @@ class UpdateClient : public base::RefCountedThreadSafe<UpdateClient> {
   virtual void SendUninstallPing(const std::string& id,
                                  const base::Version& version,
                                  int reason,
+                                 bool requires_network_encryption,
                                  Callback callback) = 0;
 
   // Sends a registration ping for the CRX identified by |id| and |version|.
@@ -472,6 +478,7 @@ class UpdateClient : public base::RefCountedThreadSafe<UpdateClient> {
   // instance of this class.
   virtual void SendRegistrationPing(const std::string& id,
                                     const base::Version& version,
+                                    bool requires_network_encryption,
                                     Callback callback) = 0;
 
   // Returns status details about a CRX update. The function returns true in

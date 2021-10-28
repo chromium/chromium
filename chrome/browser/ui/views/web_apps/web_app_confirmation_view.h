@@ -12,6 +12,7 @@
 #include "chrome/browser/web_applications/web_application_info.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace views {
@@ -67,5 +68,10 @@ class WebAppConfirmationView : public views::DialogDelegateView,
   // Textfield showing the title of the app.
   views::Textfield* title_tf_ = nullptr;
 };
+
+BEGIN_VIEW_BUILDER(, WebAppConfirmationView, views::DialogDelegateView)
+END_VIEW_BUILDER
+
+DEFINE_VIEW_BUILDER(, WebAppConfirmationView)
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_CONFIRMATION_VIEW_H_

@@ -88,6 +88,7 @@ class AccessibilityDelegate;
 class AccessibilityFocusRingControllerImpl;
 class AmbientController;
 class AppListControllerImpl;
+class AppListFeatureUsageMetrics;
 class AshColorProvider;
 class AshDBusServices;
 class AshFocusRules;
@@ -712,6 +713,7 @@ class ASH_EXPORT Shell : public SessionObserver,
       accessibility_focus_ring_controller_;
   std::unique_ptr<AmbientController> ambient_controller_;
   std::unique_ptr<AppListControllerImpl> app_list_controller_;
+  std::unique_ptr<AppListFeatureUsageMetrics> app_list_feature_usage_metrics_;
   // May be null in tests or when running on linux-chromeos.
   scoped_refptr<dbus::Bus> dbus_bus_;
   std::unique_ptr<AshDBusServices> ash_dbus_services_;

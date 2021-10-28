@@ -11,6 +11,13 @@
 const base::Feature kTabsBulkActions{"TabsBulkActions",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kTabsSearch{"TabsSearch",
+                                base::FEATURE_DISABLED_BY_DEFAULT};
+
 bool IsTabsBulkActionsEnabled() {
   return base::FeatureList::IsEnabled(kTabsBulkActions);
+}
+
+bool IsTabsSearchEnabled() {
+  return base::FeatureList::IsEnabled(kTabsSearch);
 }

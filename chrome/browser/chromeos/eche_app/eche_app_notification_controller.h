@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_CHROMEOS_ECHE_APP_ECHE_APP_NOTIFICATION_CONTROLLER_H_
 #define CHROME_BROWSER_CHROMEOS_ECHE_APP_ECHE_APP_NOTIFICATION_CONTROLLER_H_
 
+#include "ash/webui/eche_app_ui/launch_app_helper.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/components/eche_app_ui/launch_app_helper.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"

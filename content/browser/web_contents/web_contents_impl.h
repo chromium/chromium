@@ -350,7 +350,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       int frame_tree_node_id) override;
   void ForEachFrame(
       const base::RepeatingCallback<void(RenderFrameHost*)>& on_frame) override;
-  std::vector<RenderFrameHost*> GetAllFrames() override;
   int SendToAllFrames(IPC::Message* message) override;
   void ForEachRenderFrameHost(
       RenderFrameHost::FrameIterationCallback on_frame) override;
@@ -1130,13 +1129,17 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // |IsFullscreen| must return |true| when this method is called.
   bool IsPictureInPictureAllowedForFullscreenVideo() const;
 
-  // When inner or outer WebContents are present, become the focused
-  // WebContentsImpl. This will activate this content's main frame RenderWidget
-  // and indirectly all its subframe widgets.  GetFocusedRenderWidgetHost will
-  // search this WebContentsImpl for a focused RenderWidgetHost. The previously
-  // focused WebContentsImpl, if any, will have its RenderWidgetHosts
-  // deactivated.
+  // Set this WebContents's `frame_tree_` as the focused frame tree.
+  // `frame_tree_`'s main frame RenderWidget (and all of its
+  // subframe widgets) will be activated. GetFocusedRenderWidgetHost will search
+  // this WebContentsImpl for a focused RenderWidgetHost. The previously focused
+  // WebContentsImpl, if any, will have its RenderWidgetHosts deactivated.
   void SetAsFocusedWebContentsIfNecessary();
+
+  // Sets the focused frame tree to be the `frame_tree_to_focus`.
+  // `frame_tree_to_focus` must be either this WebContents's frame tree or
+  // contained within it (but not owned by another WebContents).
+  void SetFocusedFrameTree(FrameTree* frame_tree_to_focus);
 
   // Called by this WebContents's BrowserPluginGuest (if one exists) to indicate
   // that the guest will be detached.
@@ -1247,10 +1250,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // WebContentsDelegate.
   void SystemDragEnded(RenderWidgetHost* source_rwh);
 
-  // They are similar to functions GetAllFrames() and SendToAllFrames() in
-  // WebContents interface, but also include pendings frames. See bug:
-  // http://crbug.com/1087806
-  std::vector<RenderFrameHost*> GetAllFramesIncludingPending();
+  // This is similar to SendToAllFrames() in WebContents interface, but also
+  // include pendings frames. See bug: http://crbug.com/1087806
   int SendToAllFramesIncludingPending(IPC::Message* message);
 
   // These are the content internal equivalents of
@@ -1620,10 +1621,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // Returns true if |this| is the focused WebContents or an ancestor of the
   // focused WebContents.
   bool ContainsOrIsFocusedWebContents();
-
-  // Walks up the outer WebContents chain and focuses the FrameTreeNode where
-  // each inner WebContents is attached.
-  void FocusOuterAttachmentFrameChain();
 
   // Called just after an inner web contents is attached.
   void InnerWebContentsAttached(WebContents* inner_web_contents);

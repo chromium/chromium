@@ -19,11 +19,13 @@ TaskSendUninstallPing::TaskSendUninstallPing(
     const std::string& id,
     const base::Version& version,
     int reason,
+    bool requires_network_encryption,
     Callback callback)
     : update_engine_(update_engine),
       id_(id),
       version_(version),
       reason_(reason),
+      requires_network_encryption_(requires_network_encryption),
       callback_(std::move(callback)) {}
 
 TaskSendUninstallPing::~TaskSendUninstallPing() {
@@ -39,7 +41,7 @@ void TaskSendUninstallPing::Run() {
   }
 
   update_engine_->SendUninstallPing(
-      id_, version_, reason_,
+      id_, version_, reason_, requires_network_encryption_,
       base::BindOnce(&TaskSendUninstallPing::TaskComplete, this));
 }
 

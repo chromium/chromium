@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar.top;
 
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
@@ -80,6 +81,7 @@ public class StartSurfaceToolbarCoordinator {
                         .with(StartSurfaceToolbarProperties.IS_VISIBLE, true)
                         .with(StartSurfaceToolbarProperties.GRID_TAB_SWITCHER_ENABLED,
                                 isGridTabSwitcherEnabled)
+                        .with(StartSurfaceToolbarProperties.LOGO_IMAGE, null)
                         .build();
 
         mToolbarMediator = new StartSurfaceToolbarMediator(mPropertyModel,
@@ -232,6 +234,16 @@ public class StartSurfaceToolbarCoordinator {
     }
 
     /**
+     * This method should be called when there is a possibility that logo image became available or
+     * was changed.
+     * @param logoImage The logo image.
+     * @param contentDescription The accessibility text describing the logo.
+     */
+    void onLogoImageAvailable(Drawable logoImage, String contentDescription) {
+        mToolbarMediator.onLogoImageAvailable(logoImage, contentDescription);
+    }
+
+    /**
      * @param toolbarHeight The height of start surface toolbar.
      * @return Whether or not toolbar phone layout view should be shown.
      */
@@ -242,10 +254,6 @@ public class StartSurfaceToolbarCoordinator {
     /** Returns whether it's on the start surface homepage.*/
     boolean isOnHomepage() {
         return mToolbarMediator.isOnHomepage();
-    }
-
-    void onNativeLibraryReady() {
-        mToolbarMediator.onNativeLibraryReady();
     }
 
     /**

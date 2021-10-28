@@ -141,7 +141,7 @@ NotificationView::NotificationView(
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(), 0));
 
-  auto header_row = CreateHeaderRow();
+  auto header_row = CreateHeaderRowBuilder().Build();
   // Font list for text views.
   const gfx::FontList& font_list = GetHeaderTextFontList();
   const int font_list_height = font_list.GetHeight();
@@ -151,10 +151,15 @@ NotificationView::NotificationView(
                                gfx::Size(GetInsets().width(), 0));
   header_row->AddChildView(CreateControlButtonsBuilder().Build());
 
-  auto content_row = CreateContentRow();
+  auto content_row = CreateContentRowBuilder()
+                         .SetLayoutManager(std::make_unique<views::BoxLayout>(
+                             views::BoxLayout::Orientation::kHorizontal))
+                         .Build();
   auto* content_row_layout =
       static_cast<views::BoxLayout*>(content_row->GetLayoutManager());
   content_row_layout->set_inside_border_insets(kContentRowPadding);
+  content_row_layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kStart);
 
   auto* left_content_ptr =
       content_row->AddChildView(CreateLeftContentBuilder().Build());
@@ -164,8 +169,8 @@ NotificationView::NotificationView(
 
   AddChildView(std::move(header_row));
   AddChildView(std::move(content_row));
-  AddChildView(CreateImageContainerView());
-  AddChildView(CreateInlineSettingsView());
+  AddChildView(CreateImageContainerBuilder().Build());
+  AddChildView(CreateInlineSettingsBuilder().Build());
   AddChildView(CreateActionsRow());
 
   CreateOrUpdateViews(notification);

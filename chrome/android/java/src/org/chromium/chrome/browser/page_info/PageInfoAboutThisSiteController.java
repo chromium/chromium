@@ -63,10 +63,10 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
         // is populated.
         assert mSiteInfo != null;
         assert mSiteInfo.hasDescription();
+        assert !mDelegate.isIncognito();
         AboutThisSiteView view = new AboutThisSiteView(parent.getContext(), null);
-
         view.setSiteInfo(mSiteInfo, () -> {
-            new TabDelegate(mDelegate.isIncognito())
+            new TabDelegate(/*incognito=*/false)
                     .createNewTab(
                             new LoadUrlParams(mSiteInfo.getDescription().getSource().getUrl()),
                             TabLaunchType.FROM_CHROME_UI, mTab);
@@ -84,7 +84,6 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
             subtitle = mSiteInfo.getDescription().getDescription();
         }
 
-        // TODO(crbug.com/1250653): Add translated string.
         rowParams.title = mRowView.getContext().getResources().getString(
                 R.string.page_info_about_this_site_title);
         rowParams.subtitle = subtitle;

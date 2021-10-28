@@ -195,6 +195,23 @@
         },
         'os_type': 'chromeos',
       },
+      'lacros-arm-generic-chrome-skylab': {
+        'additional_compile_targets': [
+          'chrome',
+          'lacros_version_metadata',
+          'linux_symbols',
+          'symupload',
+          'strip_chrome_binary'
+        ],
+        'mixins': [
+          'chrome-swarming-pool',
+          'has_native_resultdb_integration',
+        ],
+        'test_suites': {
+          'skylab_tests': 'lacros_skylab_arm',
+        },
+        'os_type': 'chromeos',
+      },
       'linux-chrome': {
         'additional_compile_targets': [
           'chrome',
@@ -2487,16 +2504,6 @@
     'name': 'chromium.fyi',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
-      'ASAN Debug (reclient)': {
-        'additional_compile_targets': [
-          'chromium_builder_asan',
-        ],
-      },
-      'ASAN Release Media (reclient shadow)': {
-        'additional_compile_targets': [
-          'chromium_builder_asan',
-        ],
-      },
       'Comparison Linux': {
         'mixins': [
           'isolate_profile_data',
@@ -2505,38 +2512,16 @@
           'all'
         ],
       },
-      'Linux Builder (deps-cache) (reclient)': {
-        # Copied from
-        # https://source.chromium.org/chromium/chromium/src/+/main:testing/buildbot/waterfalls.pyl;l=4844-4854;drc=75f767e92e86611728189739fb26f4e2cdf212d9
-        'mixins': [
-          'isolate_profile_data',
-        ],
+      'Linux Builder (dbg) (reclient shadow)': {
         'additional_compile_targets': [
           'all'
-        ],
-        'test_suites': {
-          'scripts': 'chromium_linux_scripts',
-        }
+        ]
       },
-      'Linux Builder (j-500) (g-ip) (reclient)': {
-        # Copied from
-        # https://source.chromium.org/chromium/chromium/src/+/main:testing/buildbot/waterfalls.pyl;l=4844-4854;drc=75f767e92e86611728189739fb26f4e2cdf212d9
-        'mixins': [
-          'isolate_profile_data',
-        ],
+      'Linux Builder (dbg)(32) (reclient shadow)': {
         'additional_compile_targets': [
-          'all'
-        ],
-      },
-      'Linux Builder (j-500) (n2) (reclient)': {
-        # Copied from
-        # https://source.chromium.org/chromium/chromium/src/+/main:testing/buildbot/waterfalls.pyl;l=4844-4854;drc=75f767e92e86611728189739fb26f4e2cdf212d9
-        'mixins': [
-          'isolate_profile_data',
-        ],
-        'additional_compile_targets': [
-          'all'
-        ],
+          'google_apis_unittests',
+          'sync_integration_tests'
+        ]
       },
       'Linux Builder (j-500) (reclient)': {
         # Copied from
@@ -2547,6 +2532,14 @@
         'additional_compile_targets': [
           'all'
         ],
+      },
+      'Linux CFI (reclient shadow)': {
+        'mixins': [
+          'linux-bionic',
+        ],
+        'test_suites': {
+          'gtest_tests': 'chromium_linux_and_gl_gtests',
+        },
       },
       'Linux Viz': {
         'mixins': [
@@ -2559,16 +2552,6 @@
           'gtest_tests': 'linux_viz_gtests',
           'isolated_scripts': 'vulkan_swiftshader_isolated_scripts',
         },
-      },
-      'MSAN Release (chained origins) (reclient shadow)': {
-        'additional_compile_targets': [
-          'chromium_builder_asan',
-        ],
-      },
-      'MSAN Release (no origins) (reclient shadow)': {
-        'additional_compile_targets': [
-          'chromium_builder_asan',
-        ],
       },
       # TODO(crbug.com/1260232): remove this after the migration.
       'Mac Builder (reclient compare)': {
@@ -2599,6 +2582,14 @@
           'scripts': 'chromium_mac_scripts',
         }
       },
+      'Mojo Linux (reclient shadow)': {
+        'mixins': [
+          'linux-bionic',
+        ],
+        'test_suites': {
+          'gtest_tests': 'mojo_linux_gtests',
+        },
+      },
       'Site Isolation Android': {
         'additional_compile_targets': [
           'content_browsertests',
@@ -2618,21 +2609,6 @@
         },
         'mixins': [
           'has_native_resultdb_integration'
-        ],
-      },
-      'TSAN Debug (reclient)': {
-        'additional_compile_targets': [
-          'chromium_builder_asan',
-        ],
-      },
-      'UBSan Release (reclient)': {
-        'additional_compile_targets': [
-          'chromium_builder_asan',
-        ],
-      },
-      'UBSan vptr Release (reclient shadow)': {
-        'additional_compile_targets': [
-          'chromium_builder_asan',
         ],
       },
       'VR Linux': {
@@ -2657,6 +2633,33 @@
         ],
         'test_suites': {
           'gtest_tests': 'vr_platform_specific_chromium_gtests',
+        },
+      },
+      'WebKit Linux ASAN (reclient shadow)': {
+        'mixins': [
+          'linux-xenial',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'chromium_webkit_isolated_scripts',
+        },
+      },
+      'WebKit Linux Leak (reclient shadow)': {
+        'mixins': [
+          'linux-bionic',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'chromium_webkit_isolated_scripts',
+        },
+        'additional_compile_targets': [
+          'blink_tests',
+        ],
+      },
+      'WebKit Linux MSAN (reclient shadow)': {
+        'mixins': [
+          'linux-bionic',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'chromium_webkit_isolated_scripts',
         },
       },
       'WebKit Linux composite_after_paint Dummy Builder': {
@@ -4040,21 +4043,6 @@
           'isolated_scripts': 'gpu_mobile_representative_perf_fyi_isolated_scripts',
           'gpu_telemetry_tests': 'gpu_nexus5x_telemetry_tests',
           'android_webview_gpu_telemetry_tests': 'android_webview_gpu_telemetry_tests',
-        },
-      },
-      'Android FYI Release (Nexus 6)': {
-        'browser_config': 'android-chromium',
-        'os_type': 'android',
-        'skip_merge_script': True,
-        'mixins': [
-          'has_native_resultdb_integration',
-          'gpu-swarming-pool',
-          'lollipop_generic',
-          'shamu',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_fyi_android_gtests',
-          'gpu_telemetry_tests': 'gpu_common_telemetry_tests',
         },
       },
       'Android FYI Release (Nexus 9)': {

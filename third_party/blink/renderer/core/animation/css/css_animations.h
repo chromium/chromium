@@ -112,9 +112,8 @@ class CORE_EXPORT CSSAnimations final {
   }
   void ClearPendingUpdate() { pending_update_.Clear(); }
   void MaybeApplyPendingUpdate(Element*);
-  bool HasPreviousActiveInterpolationsForAnimations() const {
-    return !previous_active_interpolations_for_animations_.IsEmpty();
-  }
+  bool PreviousActiveInterpolationsForAnimationsWillChange(
+      const CSSAnimationUpdate&) const;
   bool IsEmpty() const {
     return running_animations_.IsEmpty() && transitions_.IsEmpty() &&
            pending_update_.IsEmpty();
@@ -179,6 +178,10 @@ class CORE_EXPORT CSSAnimations final {
 
   CSSAnimationUpdate pending_update_;
 
+  // Note that we only update this map if the *keys* change, hence the values
+  // (which we are anyway not interested in) may be stale.
+  //
+  // See PreviousActiveInterpolationsForAnimationsWillChange and its call site.
   ActiveInterpolationsMap previous_active_interpolations_for_animations_;
 
   struct TransitionUpdateState {

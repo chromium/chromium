@@ -293,7 +293,7 @@ TEST_P(PingManagerTest, SendPing) {
     // are serialized correctly under <event...> for uninstall.
     Component component(*update_context, "abc");
     component.crx_component_ = CrxComponent();
-    component.Uninstall(base::Version("1.2.3.4"), 0);
+    component.Uninstall(base::Version("1.2.3.4"), 0, true);
     component.AppendEvent(component.MakeEventUninstalled());
 
     EXPECT_TRUE(interceptor->ExpectRequest(std::make_unique<AnyMatch>()));
@@ -320,7 +320,7 @@ TEST_P(PingManagerTest, SendPing) {
     // Test registrationEvent.
     Component component(*update_context, "abc");
     component.crx_component_ = CrxComponent();
-    component.Registration(base::Version("1.2.3.4"));
+    component.Registration(base::Version("1.2.3.4"), true);
     component.AppendEvent(component.MakeEventRegistration());
 
     EXPECT_TRUE(interceptor->ExpectRequest(std::make_unique<AnyMatch>()));

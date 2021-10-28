@@ -603,6 +603,7 @@ component("skia") {
     sources += skia_gpu_sources
     sources += skia_null_gpu_sources
     sources += skia_sksl_gpu_sources
+    sources += skia_shared_gpu_sources
     if (skia_use_gl) {
       sources += skia_gl_gpu_sources
     }

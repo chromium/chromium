@@ -42,12 +42,14 @@ rootWebArea
 ++++++++legend
 ++++++++++staticText name='Cake'
 ++++++++++++inlineTextBox name='Cake'
-++++++++radioButton name='Chiffon cakes' setSize=2 posInSet=1 checkedState=true
-++++++++staticText ignored name='Chiffon cakes'
+++++++++labelText ignored
+++++++++++radioButton name='Chiffon cakes' setSize=2 posInSet=1 checkedState=true
+++++++++++staticText ignored name='Chiffon cakes'
 ++++++++lineBreak name='<newline>'
 ++++++++++inlineTextBox name='<newline>'
-++++++++radioButton name='Chocolate cakes' setSize=2 posInSet=2 checkedState=false
-++++++++staticText ignored name='Chocolate cakes'
+++++++++labelText ignored
+++++++++++radioButton name='Chocolate cakes' setSize=2 posInSet=2 checkedState=false
+++++++++++staticText ignored name='Chocolate cakes'
 ++++++section
 ++++++++paragraph
 ++++++++++button name='changedFromRadio'
@@ -58,8 +60,9 @@ rootWebArea
 ++++++++++++++inlineTextBox name='red'
 ++++++++++lineBreak name='<newline>'
 ++++++++++++inlineTextBox name='<newline>'
-++++++++++radioButton name='blue' setSize=1 posInSet=1 checkedState=false
-++++++++++staticText ignored name='blue'
+++++++++++labelText ignored
+++++++++++++radioButton name='blue' setSize=1 posInSet=1 checkedState=false
+++++++++++++staticText ignored name='blue'
 ++++++treeGrid
 ++++++++row setSize=100 posInSet=2
 ++++++++++cell name='content'

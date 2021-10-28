@@ -616,10 +616,12 @@ def FindThirdPartyDeps(gn_out_dir, gn_target, target_os):
   try:
     tmp_dir = tempfile.mkdtemp(dir=gn_out_dir)
     shutil.copy(os.path.join(gn_out_dir, "args.gn"), tmp_dir)
-    subprocess.check_output([_GnBinary(), "gen", tmp_dir])
+    subprocess.check_output([
+        _GnBinary(), "gen", "--root=%s" % _REPOSITORY_ROOT, tmp_dir
+    ])
     gn_deps = subprocess.check_output([
-        _GnBinary(), "desc", tmp_dir, gn_target, "deps", "--as=buildfile",
-        "--all"
+        _GnBinary(), "desc", "--root=%s" % _REPOSITORY_ROOT, tmp_dir,
+        gn_target, "deps", "--as=buildfile", "--all"
     ])
     if isinstance(gn_deps, bytes):
       gn_deps = gn_deps.decode("utf-8")

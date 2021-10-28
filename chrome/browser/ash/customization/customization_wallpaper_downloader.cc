@@ -32,6 +32,35 @@ const unsigned kRetrySleepSeconds = 10;
 // longer than maximum (kMaxRetrySleepSeconds) it is set to the maximum.
 const double kMaxRetrySleepSeconds = 6 * 3600;  // 6 hours
 
+constexpr net::NetworkTrafficAnnotationTag
+    kCustomizationWallPaperDownloaderNetworkTag =
+        net::DefineNetworkTrafficAnnotation(
+            "customization_wallpaper_downloader",
+            R"(
+        semantics {
+          sender: "Customization wallpaper"
+          description:
+            "Download wallpaper from OEM custom url to the wallpaper directory "
+            "during OOBE. Admin/user can override the OEM wallpaper to have a "
+            "custom wallpaper. If the admin/user set a custom wallpaper, after "
+            "user sign in, the user will see their preferred wallpaper."
+          trigger:
+            "Triggered to get the OEM's custom wallpaper on device bootup."
+            "The downloaded custom wallpaper is stored until powerwash."
+          data: "None."
+          destination: WEBSITE
+        }
+        policy {
+         cookies_allowed: NO
+         setting:
+           "This feature is set by OEMs and can be overridden by users "
+           "after sign in."
+         policy_exception_justification:
+           "This request is made based on OEM customization and does not "
+           "send/store any sensitive data."
+         }
+        })");
+
 void CreateWallpaperDirectory(const base::FilePath& wallpaper_dir,
                               bool* success) {
   DCHECK(success);
@@ -91,9 +120,8 @@ void CustomizationWallpaperDownloader::StartRequest() {
   resource_request->load_flags =
       net::LOAD_BYPASS_CACHE | net::LOAD_DISABLE_CACHE;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-  // TODO(crbug.com/833390): Add a real traffic annotation here.
-  simple_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
-                                                    MISSING_TRAFFIC_ANNOTATION);
+  simple_loader_ = network::SimpleURLLoader::Create(
+      std::move(resource_request), kCustomizationWallPaperDownloaderNetworkTag);
 
   SystemNetworkContextManager* system_network_context_manager =
       g_browser_process->system_network_context_manager();

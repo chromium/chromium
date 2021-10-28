@@ -74,7 +74,7 @@ class AutofillAgent : public content::RenderFrameObserver,
   // PasswordGenerationAgent and AutofillAssistantAgent may be nullptr. If they
   // are not, then they are also guaranteed to outlive AutofillAgent.
   AutofillAgent(content::RenderFrame* render_frame,
-                PasswordAutofillAgent* password_autofill_manager,
+                PasswordAutofillAgent* password_autofill_agent,
                 PasswordGenerationAgent* password_generation_agent,
                 AutofillAssistantAgent* autofill_assistant_agent,
                 blink::AssociatedInterfaceRegistry* registry);
@@ -161,6 +161,7 @@ class AutofillAgent : public content::RenderFrameObserver,
  private:
   class DeferringAutofillDriver;
   friend class FormControlClickDetectionTest;
+  friend class AutofillAgentTestApi;
 
   // Flags passed to ShowSuggestions.
   struct ShowSuggestionsOptions {

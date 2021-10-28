@@ -9,8 +9,8 @@
 #             sierra
 #         win win7 win8 win10 ]
 # Devices
-# tags: [ android-nexus-5 android-nexus-5x android-nexus-6 android-nexus-9
-#             android-pixel-2 android-pixel-4 android-shield-android-tv
+# tags: [ android-nexus-5 android-nexus-5x android-nexus-9 android-pixel-2
+#             android-pixel-4 android-shield-android-tv
 #         chromeos-board-amd64-generic chromeos-board-kevin chromeos-board-eve
 #         fuchsia-board-astro fuchsia-board-qemu-x64 ]
 # Platform
@@ -55,6 +55,8 @@
 # tags: [ asan no-asan ]
 # Display Server
 # tags: [ display-server-wayland display-server-x ]
+# OOP-Canvas
+# tags: [ oop-c no-oop-c ]
 # results: [ Failure RetryOnFailure Skip ]
 # END TAG HEADER
 
@@ -160,9 +162,8 @@ crbug.com/575305 [ fuchsia ] Pixel_WebGLSadCanvas [ Skip ]
 # float16 is not yet supported for accelerated canvases
 crbug.com/948141 Pixel_CanvasDisplaySRGBAccelerated2D [ Skip ]
 
-# Fails on Nexus 5 and 6
+# Fails on Nexus 5
 crbug.com/883500 [ android android-nexus-5 ] Pixel_BackgroundImage [ Skip ]
-crbug.com/883500 [ android android-nexus-6 ] Pixel_BackgroundImage [ Skip ]
 crbug.com/1029389 [ android android-nexus-5 ] Pixel_PrecisionRoundedCorner [ Skip ]
 
 # Flakes on Nexus 5X.

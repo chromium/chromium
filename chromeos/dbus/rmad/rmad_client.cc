@@ -113,11 +113,22 @@ void RmadClientImpl::CalibrationProgressReceived(dbus::Signal* signal) {
   DCHECK_EQ(signal->GetMember(), rmad::kCalibrationProgressSignal);
   dbus::MessageReader reader(signal);
   // Read proto message
-  rmad::CalibrationComponentStatus signal_proto;
-  if (!reader.PopArrayOfBytesAsProto(&signal_proto)) {
+  dbus::MessageReader sub_reader(nullptr);
+  reader.PopStruct(&sub_reader);
+  DCHECK(!reader.HasMoreData());
+  int32_t component;
+  int32_t status;
+  double progress;
+  if (!sub_reader.PopInt32(&component) || !sub_reader.PopInt32(&status) ||
+      !sub_reader.PopDouble(&progress)) {
     LOG(ERROR) << "Unable to decode signal for " << signal->GetMember();
     return;
   }
+  rmad::CalibrationComponentStatus signal_proto;
+  signal_proto.set_component(static_cast<rmad::RmadComponent>(component));
+  signal_proto.set_status(
+      static_cast<rmad::CalibrationComponentStatus::CalibrationStatus>(status));
+  signal_proto.set_progress(progress);
   for (auto& observer : observers_) {
     observer.CalibrationProgress(signal_proto);
   }
@@ -132,6 +143,7 @@ void RmadClientImpl::CalibrationOverallProgressReceived(dbus::Signal* signal) {
                << signal->GetMember() << " signal";
     return;
   }
+  DCHECK(!reader.HasMoreData());
   for (auto& observer : observers_) {
     observer.CalibrationOverallProgress(
         static_cast<rmad::CalibrationOverallStatus>(overall_progress));
@@ -147,6 +159,7 @@ void RmadClientImpl::ErrorReceived(dbus::Signal* signal) {
                << " signal";
     return;
   }
+  DCHECK(!reader.HasMoreData());
   for (auto& observer : observers_) {
     observer.Error(static_cast<rmad::RmadErrorCode>(error));
   }
@@ -162,6 +175,7 @@ void RmadClientImpl::HardwareWriteProtectionStateReceived(
                << " signal";
     return;
   }
+  DCHECK(!reader.HasMoreData());
   for (auto& observer : observers_) {
     observer.HardwareWriteProtectionState(enabled);
   }
@@ -176,6 +190,7 @@ void RmadClientImpl::PowerCableStateReceived(dbus::Signal* signal) {
                << signal->GetMember() << " signal";
     return;
   }
+  DCHECK(!reader.HasMoreData());
   for (auto& observer : observers_) {
     observer.PowerCableState(plugged_in);
   }
@@ -196,6 +211,7 @@ void RmadClientImpl::ProvisioningProgressReceived(dbus::Signal* signal) {
                << signal->GetMember() << " signal";
     return;
   }
+  DCHECK(!reader.HasMoreData());
   for (auto& observer : observers_) {
     observer.ProvisioningProgress(
         static_cast<rmad::ProvisionDeviceState::ProvisioningStep>(step),
@@ -206,12 +222,20 @@ void RmadClientImpl::ProvisioningProgressReceived(dbus::Signal* signal) {
 void RmadClientImpl::HardwareVerificationResultReceived(dbus::Signal* signal) {
   DCHECK_EQ(signal->GetMember(), rmad::kHardwareVerificationResultSignal);
   dbus::MessageReader reader(signal);
-  // Read proto message
-  rmad::HardwareVerificationResult signal_proto;
-  if (!reader.PopArrayOfBytesAsProto(&signal_proto)) {
+  // Read message
+  dbus::MessageReader sub_reader(nullptr);
+  reader.PopStruct(&sub_reader);
+  DCHECK(!reader.HasMoreData());
+  bool is_compliant = true;
+  std::string error_str = "";
+  if (!sub_reader.PopBool(&is_compliant) || !sub_reader.PopString(&error_str)) {
     LOG(ERROR) << "Unable to decode signal for " << signal->GetMember();
     return;
   }
+  DCHECK(!reader.HasMoreData());
+  rmad::HardwareVerificationResult signal_proto;
+  signal_proto.set_is_compliant(is_compliant);
+  signal_proto.set_error_str(error_str);
   for (auto& observer : observers_) {
     observer.HardwareVerificationResult(signal_proto);
   }
@@ -311,6 +335,7 @@ void RmadClientImpl::OnProtoReply(DBusMethodCallback<T> callback,
     std::move(callback).Run(absl::nullopt);
     return;
   }
+  DCHECK(!reader.HasMoreData());
 
   std::move(callback).Run(std::move(response_proto));
 }
@@ -330,6 +355,7 @@ void RmadClientImpl::OnGetLogPathReply(DBusMethodCallback<std::string> callback,
     std::move(callback).Run(absl::nullopt);
     return;
   }
+  DCHECK(!reader.HasMoreData());
 
   std::move(callback).Run(std::move(log_path));
 }

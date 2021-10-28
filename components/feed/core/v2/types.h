@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <iosfwd>
 #include <string>
+#include <vector>
 
 #include "base/containers/flat_set.h"
 #include "base/time/time.h"
@@ -53,6 +54,7 @@ struct RequestMetadata {
   ContentOrder content_order = ContentOrder::kUnspecified;
   bool notice_card_acknowledged = false;
   bool autoplay_enabled = false;
+  std::vector<std::string> acknowledged_notice_keys;
 };
 
 // Data internal to MetricsReporter which is persisted to Prefs.

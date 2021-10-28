@@ -6,7 +6,7 @@ rootWebArea
 ++++++++++genericContainer ignored invisible
 ++++++++++genericContainer ignored invisible
 ++++++++++++genericContainer ignored invisible
-++++++++genericContainer description='span-1' name='span-A' descriptionFrom=relatedElement describedbyIds=genericContainer
-++++++++genericContainer description='span-2' name='span-B' descriptionFrom=relatedElement describedbyIds=genericContainer
-++++++++genericContainer description='span-3' name='span-C' descriptionFrom=relatedElement describedbyIds=genericContainer
-++++++++genericContainer description='span-4' name='span-D' descriptionFrom=relatedElement describedbyIds=genericContainer
+++++++++genericContainer description='span-1' name='span-A' descriptionFrom=relatedElement
+++++++++genericContainer description='span-2' name='span-B' descriptionFrom=relatedElement
+++++++++genericContainer description='span-3' name='span-C' descriptionFrom=relatedElement
+++++++++genericContainer description='span-4' name='span-D' descriptionFrom=relatedElement

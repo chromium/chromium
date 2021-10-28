@@ -125,6 +125,69 @@ class CanvasVideoCapturerSource : public VideoCapturerSource {
   base::WeakPtr<CanvasCaptureHandler> canvas_handler_;
 };
 
+class StaticBitmapImageToVideoFrameCopier {
+ public:
+  using FrameReadyCallback =
+      base::OnceCallback<void(scoped_refptr<media::VideoFrame>)>;
+
+  StaticBitmapImageToVideoFrameCopier();
+  ~StaticBitmapImageToVideoFrameCopier();
+
+  void Convert(scoped_refptr<StaticBitmapImage> image,
+               bool can_discard_alpha,
+               base::WeakPtr<blink::WebGraphicsContext3DProviderWrapper>
+                   context_provider,
+               FrameReadyCallback callback);
+
+  bool HasOngoingAsyncPixelReadouts() const;
+
+ private:
+  // Helper functions to read pixel content.
+  void ReadARGBPixelsSync(scoped_refptr<StaticBitmapImage> image,
+                          FrameReadyCallback callback);
+  void ReadARGBPixelsAsync(
+      scoped_refptr<StaticBitmapImage> image,
+      blink::WebGraphicsContext3DProvider* context_provider,
+      FrameReadyCallback callback);
+  void ReadYUVPixelsAsync(scoped_refptr<StaticBitmapImage> image,
+                          blink::WebGraphicsContext3DProvider* context_provider,
+                          FrameReadyCallback callback);
+  void OnARGBPixelsReadAsync(scoped_refptr<StaticBitmapImage> image,
+                             scoped_refptr<media::VideoFrame> temp_argb_frame,
+                             FrameReadyCallback callback,
+                             GrSurfaceOrigin result_origin,
+                             bool success);
+  void OnYUVPixelsReadAsync(scoped_refptr<media::VideoFrame> yuv_frame,
+                            FrameReadyCallback callback,
+                            bool success);
+  void OnReleaseMailbox(scoped_refptr<StaticBitmapImage> image);
+
+  scoped_refptr<media::VideoFrame> ConvertToYUVFrame(
+      scoped_refptr<media::VideoFrame> argb_video_frame,
+      bool flip);
+
+  // Helper methods to increment/decrement the number of ongoing async pixel
+  // readouts currently happening.
+  void IncrementOngoingAsyncPixelReadouts();
+  void DecrementOngoingAsyncPixelReadouts();
+
+  media::VideoFramePool frame_pool_;
+  std::unique_ptr<WebGraphicsContext3DVideoFramePool> accelerated_frame_pool_;
+  int num_ongoing_async_pixel_readouts_ = 0;
+  bool can_discard_alpha_ = false;
+
+  // Bound to Main Render thread.
+  THREAD_CHECKER(main_render_thread_checker_);
+  base::WeakPtrFactory<StaticBitmapImageToVideoFrameCopier> weak_ptr_factory_{
+      this};
+};
+
+StaticBitmapImageToVideoFrameCopier::StaticBitmapImageToVideoFrameCopier()
+    : weak_ptr_factory_(this) {}
+
+StaticBitmapImageToVideoFrameCopier::~StaticBitmapImageToVideoFrameCopier() =
+    default;
+
 class CanvasCaptureHandler::CanvasCaptureHandlerDelegate {
  public:
   explicit CanvasCaptureHandlerDelegate(
@@ -164,7 +227,8 @@ CanvasCaptureHandler::CanvasCaptureHandler(
     double frame_rate,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     MediaStreamComponent** component)
-    : ask_for_new_frame_(false), io_task_runner_(std::move(io_task_runner)) {
+    : io_task_runner_(std::move(io_task_runner)) {
+  converter_ = std::make_unique<StaticBitmapImageToVideoFrameCopier>();
   std::unique_ptr<VideoCapturerSource> video_source(
       new CanvasVideoCapturerSource(weak_ptr_factory_.GetWeakPtr(), size,
                                     frame_rate));
@@ -199,6 +263,19 @@ void CanvasCaptureHandler::SendNewFrame(
         context_provider) {
   DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
   TRACE_EVENT0("webrtc", "CanvasCaptureHandler::SendNewFrame");
+  converter_->Convert(
+      image, can_discard_alpha_, context_provider,
+      WTF::Bind(&CanvasCaptureHandler::SendFrame,
+                weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now(),
+                GetImageYUVColorSpace(image)));
+}
+
+void StaticBitmapImageToVideoFrameCopier::Convert(
+    scoped_refptr<StaticBitmapImage> image,
+    bool can_discard_alpha,
+    base::WeakPtr<blink::WebGraphicsContext3DProviderWrapper> context_provider,
+    FrameReadyCallback callback) {
+  can_discard_alpha_ = can_discard_alpha;
   if (!image)
     return;
 
@@ -218,17 +295,16 @@ void CanvasCaptureHandler::SendNewFrame(
           std::move(sk_image), gfx::Rect(sk_image_size), sk_image_size,
           base::TimeDelta());
       if (sk_image_video_frame) {
-        const base::TimeTicks timestamp = base::TimeTicks::Now();
-        SendFrame(ConvertToYUVFrame(std::move(sk_image_video_frame),
-                                    /* flip = */ false),
-                  timestamp, GetImageYUVColorSpace(image));
+        std::move(callback).Run(
+            ConvertToYUVFrame(std::move(sk_image_video_frame),
+                              /* flip = */ false));
         return;
       }
     }
 
     // Copy the pixels into memory synchronously. This call may block the main
     // render thread.
-    ReadARGBPixelsSync(image);
+    ReadARGBPixelsSync(image, std::move(callback));
     return;
   }
 
@@ -245,33 +321,47 @@ void CanvasCaptureHandler::SendNewFrame(
             std::make_unique<WebGraphicsContext3DVideoFramePool>(
                 context_provider);
       }
-      auto blit_done_lambda = [](base::WeakPtr<CanvasCaptureHandler> handler,
-                                 base::TimeTicks timestamp,
-                                 scoped_refptr<media::VideoFrame> video_frame) {
-        if (handler)
-          handler->OnYUVPixelsReadAsync(video_frame, timestamp, true);
-      };
+      auto blit_done_lambda =
+          [](base::WeakPtr<StaticBitmapImageToVideoFrameCopier> converter,
+             base::WeakPtr<blink::WebGraphicsContext3DProviderWrapper>
+                 context_provider,
+             scoped_refptr<StaticBitmapImage> image,
+             FrameReadyCallback callback,
+             scoped_refptr<media::VideoFrame> video_frame) {
+            if (!converter)
+              return;
+            if (video_frame) {
+              converter->OnYUVPixelsReadAsync(video_frame, std::move(callback),
+                                              true);
+            } else if (context_provider) {
+              converter->ReadYUVPixelsAsync(image,
+                                            context_provider->ContextProvider(),
+                                            std::move(callback));
+            }
+          };
       auto blit_done_callback =
           WTF::Bind(blit_done_lambda, weak_ptr_factory_.GetWeakPtr(),
-                    base::TimeTicks::Now());
+                    context_provider, image, std::move(callback));
+
       // TODO(https://crbug.com/1224279): This assumes that all
       // StaticBitmapImages are 8-bit sRGB. Expose the color space and pixel
       // format that is backing `image->GetMailboxHolder()`, or, alternatively,
       // expose an accelerated SkImage.
-      if (accelerated_frame_pool_->CopyRGBATextureToVideoFrame(
-              viz::SkColorTypeToResourceFormat(kRGBA_8888_SkColorType),
-              gfx::Size(image->width(), image->height()),
-              gfx::ColorSpace::CreateSRGB(),
-              image->IsOriginTopLeft() ? kTopLeft_GrSurfaceOrigin
-                                       : kBottomLeft_GrSurfaceOrigin,
-              image->GetMailboxHolder(), gfx::ColorSpace::CreateREC709(),
-              std::move(blit_done_callback))) {
-        return;
-      }
+      accelerated_frame_pool_->CopyRGBATextureToVideoFrame(
+          viz::SkColorTypeToResourceFormat(kRGBA_8888_SkColorType),
+          gfx::Size(image->width(), image->height()),
+          gfx::ColorSpace::CreateSRGB(),
+          image->IsOriginTopLeft() ? kTopLeft_GrSurfaceOrigin
+                                   : kBottomLeft_GrSurfaceOrigin,
+          image->GetMailboxHolder(), gfx::ColorSpace::CreateREC709(),
+          std::move(blit_done_callback));
+      return;
     }
-    ReadYUVPixelsAsync(image, context_provider);
+    ReadYUVPixelsAsync(image, context_provider->ContextProvider(),
+                       std::move(callback));
   } else {
-    ReadARGBPixelsAsync(image, context_provider->ContextProvider());
+    ReadARGBPixelsAsync(image, context_provider->ContextProvider(),
+                        std::move(callback));
   }
 }
 
@@ -304,7 +394,7 @@ void CanvasCaptureHandler::RequestRefreshFrame() {
     // emitting frames with non-incrementally increasing timestamps.
     // Defer sending the refresh frame until we have completed those async
     // reads.
-    if (num_ongoing_async_pixel_readouts_ > 0) {
+    if (converter_->HasOngoingAsyncPixelReadouts()) {
       deferred_request_refresh_frame_ = true;
       return;
     }
@@ -319,12 +409,12 @@ void CanvasCaptureHandler::StopVideoCapture() {
   io_task_runner_->DeleteSoon(FROM_HERE, delegate_.release());
 }
 
-void CanvasCaptureHandler::ReadARGBPixelsSync(
-    scoped_refptr<StaticBitmapImage> image) {
+void StaticBitmapImageToVideoFrameCopier::ReadARGBPixelsSync(
+    scoped_refptr<StaticBitmapImage> image,
+    FrameReadyCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
 
   PaintImage paint_image = image->PaintImageForCurrentFrame();
-  const base::TimeTicks timestamp = base::TimeTicks::Now();
   const gfx::Size image_size(paint_image.width(), paint_image.height());
   const bool is_opaque = paint_image.IsOpaque();
   const media::VideoPixelFormat temp_argb_pixel_format =
@@ -347,18 +437,18 @@ void CanvasCaptureHandler::ReadARGBPixelsSync(
     DLOG(ERROR) << "Couldn't read pixels from PaintImage";
     return;
   }
-  SendFrame(ConvertToYUVFrame(std::move(temp_argb_frame), /* flip = */ false),
-            timestamp, GetImageYUVColorSpace(image));
+  std::move(callback).Run(
+      ConvertToYUVFrame(std::move(temp_argb_frame), /* flip = */ false));
 }
 
-void CanvasCaptureHandler::ReadARGBPixelsAsync(
+void StaticBitmapImageToVideoFrameCopier::ReadARGBPixelsAsync(
     scoped_refptr<StaticBitmapImage> image,
-    blink::WebGraphicsContext3DProvider* context_provider) {
+    blink::WebGraphicsContext3DProvider* context_provider,
+    FrameReadyCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
   DCHECK(context_provider);
   DCHECK(!image->CurrentFrameKnownToBeOpaque());
 
-  const base::TimeTicks timestamp = base::TimeTicks::Now();
   const media::VideoPixelFormat temp_argb_pixel_format =
       media::VideoPixelFormatFromSkColorType(kN32_SkColorType,
                                              /*is_opaque = */ false);
@@ -397,19 +487,18 @@ void CanvasCaptureHandler::ReadARGBPixelsAsync(
   context_provider->RasterInterface()->ReadbackARGBPixelsAsync(
       mailbox_holder.mailbox, mailbox_holder.texture_target, image_origin, info,
       row_bytes, temp_argb_frame->visible_data(media::VideoFrame::kARGBPlane),
-      WTF::Bind(&CanvasCaptureHandler::OnARGBPixelsReadAsync,
+      WTF::Bind(&StaticBitmapImageToVideoFrameCopier::OnARGBPixelsReadAsync,
                 weak_ptr_factory_.GetWeakPtr(), image, temp_argb_frame,
-                timestamp));
+                std::move(callback)));
 }
 
-void CanvasCaptureHandler::ReadYUVPixelsAsync(
+void StaticBitmapImageToVideoFrameCopier::ReadYUVPixelsAsync(
     scoped_refptr<StaticBitmapImage> image,
-    base::WeakPtr<blink::WebGraphicsContext3DProviderWrapper>
-        context_provider) {
+    blink::WebGraphicsContext3DProvider* context_provider,
+    FrameReadyCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
   DCHECK(context_provider);
 
-  const base::TimeTicks timestamp = base::TimeTicks::Now();
   const gfx::Size image_size(image->width(), image->height());
   scoped_refptr<media::VideoFrame> output_frame = frame_pool_.CreateFrame(
       media::PIXEL_FORMAT_I420, image_size, gfx::Rect(image_size), image_size,
@@ -420,30 +509,28 @@ void CanvasCaptureHandler::ReadYUVPixelsAsync(
   }
 
   gpu::MailboxHolder mailbox_holder = image->GetMailboxHolder();
-  context_provider->ContextProvider()->RasterInterface()->WaitSyncTokenCHROMIUM(
+  context_provider->RasterInterface()->WaitSyncTokenCHROMIUM(
       mailbox_holder.sync_token.GetConstData());
-  context_provider->ContextProvider()
-      ->RasterInterface()
-      ->ReadbackYUVPixelsAsync(
-          mailbox_holder.mailbox, mailbox_holder.texture_target, image_size,
-          gfx::Rect(image_size), !image->IsOriginTopLeft(),
-          output_frame->stride(media::VideoFrame::kYPlane),
-          output_frame->visible_data(media::VideoFrame::kYPlane),
-          output_frame->stride(media::VideoFrame::kUPlane),
-          output_frame->visible_data(media::VideoFrame::kUPlane),
-          output_frame->stride(media::VideoFrame::kVPlane),
-          output_frame->visible_data(media::VideoFrame::kVPlane),
-          gfx::Point(0, 0),
-          WTF::Bind(&CanvasCaptureHandler::OnReleaseMailbox,
-                    weak_ptr_factory_.GetWeakPtr(), image),
-          WTF::Bind(&CanvasCaptureHandler::OnYUVPixelsReadAsync,
-                    weak_ptr_factory_.GetWeakPtr(), output_frame, timestamp));
+  context_provider->RasterInterface()->ReadbackYUVPixelsAsync(
+      mailbox_holder.mailbox, mailbox_holder.texture_target, image_size,
+      gfx::Rect(image_size), !image->IsOriginTopLeft(),
+      output_frame->stride(media::VideoFrame::kYPlane),
+      output_frame->visible_data(media::VideoFrame::kYPlane),
+      output_frame->stride(media::VideoFrame::kUPlane),
+      output_frame->visible_data(media::VideoFrame::kUPlane),
+      output_frame->stride(media::VideoFrame::kVPlane),
+      output_frame->visible_data(media::VideoFrame::kVPlane), gfx::Point(0, 0),
+      WTF::Bind(&StaticBitmapImageToVideoFrameCopier::OnReleaseMailbox,
+                weak_ptr_factory_.GetWeakPtr(), image),
+      WTF::Bind(&StaticBitmapImageToVideoFrameCopier::OnYUVPixelsReadAsync,
+                weak_ptr_factory_.GetWeakPtr(), output_frame,
+                std::move(callback)));
 }
 
-void CanvasCaptureHandler::OnARGBPixelsReadAsync(
+void StaticBitmapImageToVideoFrameCopier::OnARGBPixelsReadAsync(
     scoped_refptr<StaticBitmapImage> image,
     scoped_refptr<media::VideoFrame> temp_argb_frame,
-    base::TimeTicks this_frame_ticks,
+    FrameReadyCallback callback,
     GrSurfaceOrigin result_origin,
     bool success) {
   DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
@@ -452,22 +539,17 @@ void CanvasCaptureHandler::OnARGBPixelsReadAsync(
     DLOG(ERROR) << "Couldn't read SkImage using async callback";
     // Async reading is not supported on some platforms, see
     // http://crbug.com/788386.
-    ReadARGBPixelsSync(image);
+    ReadARGBPixelsSync(image, std::move(callback));
     return;
   }
-  // Let |image| fall out of scope after we are done reading.
-  const auto color_space = GetImageYUVColorSpace(image);
 
   bool flip = result_origin == kBottomLeft_GrSurfaceOrigin;
-  SendFrame(ConvertToYUVFrame(std::move(temp_argb_frame), flip),
-            this_frame_ticks, color_space);
-  if (num_ongoing_async_pixel_readouts_ == 0 && deferred_request_refresh_frame_)
-    SendRefreshFrame();
+  std::move(callback).Run(ConvertToYUVFrame(std::move(temp_argb_frame), flip));
 }
 
-void CanvasCaptureHandler::OnYUVPixelsReadAsync(
+void StaticBitmapImageToVideoFrameCopier::OnYUVPixelsReadAsync(
     scoped_refptr<media::VideoFrame> yuv_frame,
-    base::TimeTicks this_frame_ticks,
+    FrameReadyCallback callback,
     bool success) {
   DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
 
@@ -475,16 +557,17 @@ void CanvasCaptureHandler::OnYUVPixelsReadAsync(
     DLOG(ERROR) << "Couldn't read SkImage using async callback";
     return;
   }
-  SendFrame(yuv_frame, this_frame_ticks, gfx::ColorSpace());
+  std::move(callback).Run(yuv_frame);
 }
 
-void CanvasCaptureHandler::OnReleaseMailbox(
+void StaticBitmapImageToVideoFrameCopier::OnReleaseMailbox(
     scoped_refptr<StaticBitmapImage> image) {
   // All shared image operations have been completed, stop holding the ref.
   image = nullptr;
 }
 
-scoped_refptr<media::VideoFrame> CanvasCaptureHandler::ConvertToYUVFrame(
+scoped_refptr<media::VideoFrame>
+StaticBitmapImageToVideoFrameCopier::ConvertToYUVFrame(
     scoped_refptr<media::VideoFrame> temp_argb_frame,
     bool flip) {
   DVLOG(4) << __func__;
@@ -550,9 +633,9 @@ scoped_refptr<media::VideoFrame> CanvasCaptureHandler::ConvertToYUVFrame(
 }
 
 void CanvasCaptureHandler::SendFrame(
-    scoped_refptr<media::VideoFrame> video_frame,
     base::TimeTicks this_frame_ticks,
-    const gfx::ColorSpace& color_space) {
+    const gfx::ColorSpace& color_space,
+    scoped_refptr<media::VideoFrame> video_frame) {
   DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
 
   // If this function is called asynchronously, |delegate_| might have been
@@ -573,6 +656,11 @@ void CanvasCaptureHandler::SendFrame(
                          SendNewFrameOnIOThread,
                      delegate_->GetWeakPtrForIOThread(), std::move(video_frame),
                      this_frame_ticks));
+
+  if (!converter_->HasOngoingAsyncPixelReadouts() &&
+      deferred_request_refresh_frame_) {
+    SendRefreshFrame();
+  }
 }
 
 void CanvasCaptureHandler::AddVideoCapturerSourceToVideoTrack(
@@ -601,20 +689,24 @@ void CanvasCaptureHandler::AddVideoCapturerSourceToVideoTrack(
           MediaStreamVideoSource::ConstraintsOnceCallback(), true));
 }
 
-void CanvasCaptureHandler::IncrementOngoingAsyncPixelReadouts() {
+void StaticBitmapImageToVideoFrameCopier::IncrementOngoingAsyncPixelReadouts() {
   DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
   ++num_ongoing_async_pixel_readouts_;
 }
 
-void CanvasCaptureHandler::DecrementOngoingAsyncPixelReadouts() {
+void StaticBitmapImageToVideoFrameCopier::DecrementOngoingAsyncPixelReadouts() {
   DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
   --num_ongoing_async_pixel_readouts_;
   DCHECK_GE(num_ongoing_async_pixel_readouts_, 0);
 }
 
+bool StaticBitmapImageToVideoFrameCopier::HasOngoingAsyncPixelReadouts() const {
+  return num_ongoing_async_pixel_readouts_ > 0;
+}
+
 void CanvasCaptureHandler::SendRefreshFrame() {
   DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
-  DCHECK_EQ(num_ongoing_async_pixel_readouts_, 0);
+  DCHECK(!converter_->HasOngoingAsyncPixelReadouts());
   if (last_frame_ && delegate_) {
     io_task_runner_->PostTask(
         FROM_HERE,

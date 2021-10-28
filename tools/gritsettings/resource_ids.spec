@@ -501,18 +501,18 @@
   "chromeos/resources/chromeos_resources.grd": {
     "includes": [3280],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chromeos/components/eche_app_ui/chromeos_eche_app_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/eche_app_ui/ash_eche_app_resources.grd": {
     "META": {"sizes": {"includes": [50],}},
     "includes": [3300],
   },
   # Both eche_bundle_resources.grd and eche_bundle_mock_resources.grd
   # start with the same id because only one of them is built depending on if
   # src_internal is available.
-  "chromeos/components/eche_app_ui/resources/prod/eche_bundle_resources.grd": {
+  "ash/webui/eche_app_ui/resources/prod/eche_bundle_resources.grd": {
     "META": {"sizes": {"includes": [120],}},
     "includes": [3320],
   },
-  "chromeos/components/eche_app_ui/resources/mock/eche_bundle_mock_resources.grd": {
+  "ash/webui/eche_app_ui/resources/mock/eche_bundle_mock_resources.grd": {
     "META": {"sizes": {"includes": [120],}},
     "includes": [3320],
   },

@@ -80,11 +80,14 @@ async_test(t => {
 
     let worker = new Worker('resources/worker.js');
     worker.onmessage = t.step_func(e => {
-        assert_array_equals(events, ['c1: from worker', 'c2: echo'],
+        assert_array_equals(events,
+                            ['c1: from worker', 'c2: ready', 'c2: echo'],
                             'messages in document');
         assert_array_equals(e.data, ['done'], 'messages in worker');
         t.done();
       });
+    worker.onmessagerror =
+        t.unreached_func('Worker\'s onmessageerror handler called');
 
     c.addEventListener('message', e => {
         if (e.data == 'from worker') {
@@ -94,48 +97,30 @@ async_test(t => {
               let c2 = new BroadcastChannel('worker-close');
               c2.onmessage = e => {
                   events.push('c2: ' + e.data);
-                  c2.postMessage('done');
+                  if (e.data === 'ready') {
+                    worker.postMessage({ping: 'echo'});
+                  } else {
+                    c2.postMessage('done');
+                    c2.close();
+                  }
                 };
-              worker.postMessage({ping: 'echo'});
+              // For some implementations there may be a race condition between
+              // when the BroadcastChannel instance above is created / ready to
+              // receive messages and when the worker calls postMessage on it's
+              // BroadcastChannel instance. To avoid this, confirm that our
+              // instance can receive a message before indicating to the other
+              // thread that we are ready. For more details, see:
+              // https://github.com/whatwg/html/issues/7267
+              let c3 = new BroadcastChannel('worker-close');
+              c3.postMessage('ready');
+              c3.close();
             }, 1);
         }
       });
 
     worker.postMessage({channel: 'worker-close'});
+    t.add_cleanup(() => worker.terminate());
 
   }, 'Closing and re-opening a channel works.');
-
-async_test(t => {
-  function workerCode() {
-    close();
-    var bc = new BroadcastChannel('worker-test');
-    postMessage(true);
-  }
-
-  var workerBlob = new Blob([workerCode.toString() + ";workerCode();"], {type:"application/javascript"});
-
-  var w = new Worker(URL.createObjectURL(workerBlob));
-  w.onmessage = function(e) {
-    assert_true(e.data, "BroadcastChannel created on worker shutdown.");
-    t.done();
-  }
-}, 'BroadcastChannel created after a worker self.close()');
-
-async_test(t => {
-  function workerCode() {
-    close();
-    var bc = new BroadcastChannel('worker-test-after-close');
-    bc.postMessage(true);
-  }
-
-  var bc = new BroadcastChannel('worker-test-after-close');
-  bc.onmessage = function(e) {
-    assert_true(e.data, "BroadcastChannel created on worker shutdown.");
-    t.done();
-  }
-
-  var workerBlob = new Blob([workerCode.toString() + ";workerCode();"], {type:"application/javascript"});
-  new Worker(URL.createObjectURL(workerBlob));
-}, 'BroadcastChannel used after a worker self.close()');
 
 </script>

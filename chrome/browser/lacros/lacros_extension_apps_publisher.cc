@@ -6,7 +6,9 @@
 
 #include <utility>
 
+#include "base/containers/extend.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_ui_util.h"
 #include "chrome/browser/lacros/lacros_extension_apps_utility.h"
@@ -283,6 +285,10 @@ class LacrosExtensionAppsPublisher::ProfileTracker
     app->show_in_shelf = show;
     app->show_in_search = show;
     app->show_in_management = show;
+
+    // Add file_handlers.
+    base::Extend(app->intent_filters,
+                 apps_util::CreateChromeAppIntentFilters(extension));
 
     return app;
   }

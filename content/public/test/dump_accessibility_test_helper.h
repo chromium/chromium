@@ -53,6 +53,13 @@ class DumpAccessibilityTestHelper {
       const std::vector<std::string>& lines,
       const std::vector<ui::AXPropertyFilter>& default_filters = {});
 
+  // Parses a given testing scenario from a file. Prepends default property
+  // filters if any so the test file filters will take precedence over default
+  // filters in case of conflict.
+  absl::optional<ui::AXInspectScenario> ParseScenario(
+      const base::FilePath& scenario_path,
+      const std::vector<ui::AXPropertyFilter>& default_filters = {});
+
   // Returns a platform-dependent list of inspect types used in dump tree
   // testing.
   static std::vector<AXInspectFactory::Type> TreeTestPasses();

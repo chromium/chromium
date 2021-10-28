@@ -27,6 +27,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/grit/supervised_user_unscaled_resources.h"
 #include "chrome/browser/web_applications/app_service/web_apps.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "components/account_id/account_id.h"
 #include "components/app_restore/features.h"
@@ -51,7 +52,7 @@ bool g_omit_plugin_vm_apps_for_testing_ = false;
 
 AppServiceProxyChromeOs::AppServiceProxyChromeOs(Profile* profile)
     : AppServiceProxyBase(profile) {
-  if (base::FeatureList::IsEnabled(features::kWebAppsCrosapi)) {
+  if (web_app::IsWebAppsCrosapiEnabled()) {
     browser_app_instance_tracker_ =
         std::make_unique<apps::BrowserAppInstanceTracker>(profile_,
                                                           app_registry_cache_);

@@ -96,7 +96,6 @@ buildflag_header("buildflags") {
   flags = [
     "USE_MINIKIN_HYPHENATION=$use_minikin_hyphenation",
     "ENABLE_CHROMIUM_UPDATER=$enable_chromium_updater",
-    "ENABLE_APP_SESSION_SERVICE=$enable_app_session_service",
     "USE_THIN_LTO=$use_thin_lto",
   ]
   if (is_win) {
@@ -2435,6 +2434,8 @@ static_library("browser") {
       "//ash/webui/camera_app_ui:mojo_bindings",
       "//ash/webui/diagnostics_ui",
       "//ash/webui/diagnostics_ui/mojom",
+      "//ash/webui/eche_app_ui",
+      "//ash/webui/eche_app_ui/mojom",
       "//ash/webui/file_manager:file_manager_ui",
       "//ash/webui/file_manager/mojom",
       "//ash/webui/help_app_ui",
@@ -2466,8 +2467,6 @@ static_library("browser") {
       "//chrome/browser/ui/webui/settings/chromeos/search:mojo_bindings",
       "//chromeos/components/chromebox_for_meetings/buildflags",
       "//chromeos/components/connectivity_diagnostics",
-      "//chromeos/components/eche_app_ui",
-      "//chromeos/components/eche_app_ui/mojom",
       "//chromeos/components/local_search_service",
       "//chromeos/components/local_search_service/public/cpp:cpp",
       "//chromeos/components/local_search_service/public/mojom",
@@ -6808,6 +6807,10 @@ static_library("browser") {
 
   if (enable_session_service) {
     sources += [
+      "sessions/app_session_service.cc",
+      "sessions/app_session_service.h",
+      "sessions/app_session_service_factory.cc",
+      "sessions/app_session_service_factory.h",
       "sessions/exit_type_service.cc",
       "sessions/exit_type_service.h",
       "sessions/exit_type_service_factory.cc",
@@ -6845,15 +6848,6 @@ static_library("browser") {
       "sessions/tab_loader_delegate.h",
     ]
     deps += [ "//components/tab_groups" ]
-  }
-
-  if (enable_session_service && enable_app_session_service) {
-    sources += [
-      "sessions/app_session_service.cc",
-      "sessions/app_session_service.h",
-      "sessions/app_session_service_factory.cc",
-      "sessions/app_session_service_factory.h",
-    ]
   }
 
   if (enable_spellcheck) {

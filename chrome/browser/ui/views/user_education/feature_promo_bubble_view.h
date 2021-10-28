@@ -84,13 +84,9 @@ class FeaturePromoBubbleView : public views::BubbleDialogDelegateView {
     absl::optional<int> tutorial_progress_current;
     absl::optional<int> tutorial_progress_max;
 
-    // Changes the bubble timeout before and after hovering the bubble,
-    // respectively. If a timeout is not provided a default will be used. If
-    // |timeout_after_interaction| is 0, |timeout_no_interaction| is used in
-    // both cases. If both are 0, the bubble never times out. A bubble with
-    // buttons never times out regardless of the values.
-    absl::optional<base::TimeDelta> timeout_no_interaction;
-    absl::optional<base::TimeDelta> timeout_after_interaction;
+    // Sets the bubble timeout. If a timeout is not provided a default will
+    // be used. If the timeout is 0, the bubble never times out.
+    absl::optional<base::TimeDelta> timeout;
 
     // Used to call feature specific logic on dismiss.
     // (TODO) dpenning: move to using a OnceClosure.
@@ -114,16 +110,16 @@ class FeaturePromoBubbleView : public views::BubbleDialogDelegateView {
   views::Button* GetButtonForTesting(int index) const;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(FeaturePromoBubbleViewTest,
+                           RespectsProvidedTimeoutAfterActivate);
   explicit FeaturePromoBubbleView(CreateParams params);
 
-  void StartAutoCloseTimer(base::TimeDelta auto_close_duration);
+  void MaybeStartAutoCloseTimer();
 
   void OnTimeout();
 
   // BubbleDialogDelegateView:
   bool OnMousePressed(const ui::MouseEvent& event) override;
-  void OnMouseEntered(const ui::MouseEvent& event) override;
-  void OnMouseExited(const ui::MouseEvent& event) override;
   std::u16string GetAccessibleWindowTitle() const override;
   void UpdateHighlightedButton(bool highlighted) override {
     // Do nothing: the anchor for promo bubbles should not highlight.
@@ -146,12 +142,9 @@ class FeaturePromoBubbleView : public views::BubbleDialogDelegateView {
 
   absl::optional<int> preferred_width_;
 
-  // Auto close timeouts for before and after the bubble is hovered. If the
-  // latter is 0, only the former is used. If both are 0, the bubble never times
+  // Auto close timeout. If the value is 0 (default), the bubble never times
   // out.
-  base::TimeDelta timeout_no_interaction_;
-  base::TimeDelta timeout_after_interaction_;
-
+  base::TimeDelta timeout_;
   base::OneShotTimer auto_close_timer_;
 
   // (TODO) dpenning: move to using a OnceClosure.

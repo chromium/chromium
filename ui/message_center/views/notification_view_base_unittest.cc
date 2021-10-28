@@ -63,13 +63,13 @@ class TestNotificationView : public NotificationViewBase {
     // memory leak.
     SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical, gfx::Insets(), 0));
-    AddChildView(CreateHeaderRow());
+    AddChildView(CreateHeaderRowBuilder().Build());
     AddChildView(CreateControlButtonsBuilder().Build());
-    AddChildView(CreateContentRow());
+    AddChildView(CreateContentRowBuilder().Build());
     AddChildView(CreateLeftContentBuilder().Build());
     AddChildView(CreateRightContentBuilder().Build());
-    AddChildView(CreateImageContainerView());
-    AddChildView(CreateInlineSettingsView());
+    AddChildView(CreateImageContainerBuilder().Build());
+    AddChildView(CreateInlineSettingsBuilder().Build());
     AddChildView(CreateActionsRow());
 
     CreateOrUpdateViews(notification);

@@ -21,7 +21,23 @@ TEST(RectFTest, FromRect) {
   EXPECT_EQ(b, c);
 }
 
-TEST(RectFTest, Contains) {
+TEST(RectFTest, ContainsPointF) {
+  EXPECT_FALSE(RectF().Contains(PointF()));
+  RectF r(10, 20, 30, 40);
+  EXPECT_FALSE(r.Contains(PointF(0, 0)));
+  EXPECT_FALSE(r.Contains(PointF(9.9999f, 20)));
+  EXPECT_FALSE(r.Contains(PointF(10, 19.9999f)));
+  EXPECT_TRUE(r.Contains(PointF(10, 20)));
+  EXPECT_TRUE(r.Contains(PointF(39.9999f, 20)));
+  EXPECT_FALSE(r.Contains(PointF(40, 20)));
+  EXPECT_TRUE(r.Contains(PointF(10, 59.9999f)));
+  EXPECT_FALSE(r.Contains(PointF(10, 60)));
+  EXPECT_TRUE(r.Contains(PointF(39.9999f, 59.9999f)));
+  EXPECT_FALSE(r.Contains(PointF(40, 60)));
+  EXPECT_FALSE(r.Contains(PointF(100, 100)));
+}
+
+TEST(RectFTest, ContainsXY) {
   EXPECT_FALSE(RectF().Contains(0, 0));
   RectF r(10, 20, 30, 40);
   EXPECT_FALSE(r.Contains(0, 0));
@@ -37,7 +53,23 @@ TEST(RectFTest, Contains) {
   EXPECT_FALSE(r.Contains(100, 100));
 }
 
-TEST(RectFTest, InclusiveContains) {
+TEST(RectFTest, InclusiveContainsPointF) {
+  EXPECT_TRUE(RectF().InclusiveContains(PointF()));
+  EXPECT_FALSE(RectF().InclusiveContains(PointF(0.0001f, 0)));
+  RectF r(10, 20, 30, 40);
+  EXPECT_FALSE(r.InclusiveContains(PointF(0, 0)));
+  EXPECT_FALSE(r.InclusiveContains(PointF(9.9999f, 20)));
+  EXPECT_FALSE(r.InclusiveContains(PointF(10, 19.9999f)));
+  EXPECT_TRUE(r.InclusiveContains(PointF(10, 20)));
+  EXPECT_TRUE(r.InclusiveContains(PointF(40, 20)));
+  EXPECT_FALSE(r.InclusiveContains(PointF(40.0001f, 20)));
+  EXPECT_TRUE(r.InclusiveContains(PointF(10, 60)));
+  EXPECT_FALSE(r.InclusiveContains(PointF(10, 60.0001f)));
+  EXPECT_TRUE(r.InclusiveContains(PointF(40, 60)));
+  EXPECT_FALSE(r.InclusiveContains(PointF(100, 100)));
+}
+
+TEST(RectFTest, InclusiveContainsXY) {
   EXPECT_TRUE(RectF().InclusiveContains(0, 0));
   EXPECT_FALSE(RectF().InclusiveContains(0.0001f, 0));
   RectF r(10, 20, 30, 40);

@@ -4,8 +4,9 @@
 
 #include "ash/projector/projector_metadata_controller.h"
 
-#include "ash/projector/projector_controller_impl.h"
+#include "ash/projector/projector_ui_controller.h"
 #include "ash/public/cpp/projector/projector_controller.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -39,10 +40,7 @@ bool SaveFile(const std::string& content, const base::FilePath& path) {
 
 }  // namespace
 
-ProjectorMetadataController::ProjectorMetadataController()
-    : blocking_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {}
+ProjectorMetadataController::ProjectorMetadataController() = default;
 
 ProjectorMetadataController::~ProjectorMetadataController() = default;
 
@@ -80,13 +78,15 @@ void ProjectorMetadataController::SaveMetadata(
   auto metadata_str = metadata_->Serialize();
 
   // TODO(b/203000496): Update after finalizing on the storage strategy.
-  blocking_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&SaveFile, metadata_str, path),
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&SaveFile, metadata_str, path),
       base::BindOnce(
           [](const base::FilePath& path, bool success) {
             if (!success) {
               LOG(ERROR) << "Failed to save the metadata file: " << path;
-              // TODO(b/200846160): notify user with the failure.
+              ProjectorUiController::ShowFailureNotification(
+                  IDS_ASH_PROJECTOR_FAILURE_MESSAGE_SAVE_SCREENCAST);
               return;
             }
           },

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.toolbar.top;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.AdditionalMatchers.not;
 import static org.mockito.ArgumentMatchers.eq;
@@ -26,6 +27,7 @@ import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarPropert
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.INCOGNITO_SWITCHER_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IN_START_SURFACE_MODE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IS_VISIBLE;
+import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.LOGO_IMAGE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.LOGO_IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.MENU_IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.NEW_TAB_VIEW_AT_START;
@@ -40,6 +42,7 @@ import android.view.View;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -51,12 +54,14 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.identity_disc.IdentityDiscController;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactoryJni;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -70,8 +75,6 @@ import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.components.search_engines.TemplateUrlService;
-import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Tests for {@link StartSurfaceToolbarMediator}. */
@@ -80,10 +83,10 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class StartSurfaceToolbarMediatorUnitTest {
     private PropertyModel mPropertyModel;
     private StartSurfaceToolbarMediator mMediator;
+    @Rule
+    public JniMocker mJniMocker = new JniMocker();
     @Mock
     private LayoutStateProvider mLayoutStateProvider;
-    @Mock
-    TemplateUrlService mTemplateUrlService;
     @Mock
     private TabModelSelector mTabModelSelector;
     @Mock
@@ -116,12 +119,12 @@ public class StartSurfaceToolbarMediatorUnitTest {
     private Profile mProfile;
     @Mock
     Tracker mTracker;
+    @Mock
+    private TemplateUrlServiceFactory.Natives mTemplateUrlServiceFactory;
     @Captor
     private ArgumentCaptor<LayoutStateProvider.LayoutStateObserver> mLayoutStateObserverCaptor;
     @Captor
     private ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserver;
-    @Captor
-    private ArgumentCaptor<TemplateUrlServiceObserver> mTemplateUrlServiceObserver;
 
     private ButtonDataImpl mButtonData;
     private ButtonDataImpl mDisabledButtonData;
@@ -168,8 +171,8 @@ public class StartSurfaceToolbarMediatorUnitTest {
         doReturn(mMockConstantState).when(mDrawable).getConstantState();
         doReturn(mDrawable).when(mMockConstantState).newDrawable();
 
-        TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
-        doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
+        mJniMocker.mock(TemplateUrlServiceFactoryJni.TEST_HOOKS, mTemplateUrlServiceFactory);
+        when(mTemplateUrlServiceFactory.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
 
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
         doReturn(mIncognitoTabModel).when(mTabModelSelector).getModel(true);
@@ -227,9 +230,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
         mMediator.setTabModelSelector(mTabModelSelector);
         doReturn(0).when(mIncognitoTabModel).getCount();
 
-        doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
-        mMediator.onNativeLibraryReady();
-        verify(mTemplateUrlService).addObserver(mTemplateUrlServiceObserver.capture());
+        when(mTemplateUrlServiceFactory.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
         assertFalse(mPropertyModel.get(LOGO_IS_VISIBLE));
         assertFalse(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE));
         assertFalse(mPropertyModel.get(IDENTITY_DISC_AT_START));
@@ -254,6 +255,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
         mLayoutStateObserverCaptor.getValue().onStartedShowing(LayoutType.TAB_SWITCHER, false);
         mLayoutStateObserverCaptor.getValue().onFinishedShowing(LayoutType.TAB_SWITCHER);
         mMediator.onStartSurfaceStateChanged(StartSurfaceState.SHOWN_HOMEPAGE, true);
+        mMediator.onLogoImageAvailable(mDrawable, null);
         assertTrue(mPropertyModel.get(LOGO_IS_VISIBLE));
         assertFalse(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE));
         assertFalse(mPropertyModel.get(IDENTITY_DISC_AT_START));
@@ -287,8 +289,6 @@ public class StartSurfaceToolbarMediatorUnitTest {
         createMediator(false);
         mMediator.setTabModelSelector(mTabModelSelector);
         doReturn(0).when(mIncognitoTabModel).getCount();
-        mMediator.onNativeLibraryReady();
-        verify(mTemplateUrlService).addObserver(mTemplateUrlServiceObserver.capture());
 
         assertFalse(mPropertyModel.get(LOGO_IS_VISIBLE));
         assertFalse(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE));
@@ -348,12 +348,11 @@ public class StartSurfaceToolbarMediatorUnitTest {
         createMediator(false);
         mMediator.setTabModelSelector(mTabModelSelector);
 
-        mMediator.onNativeLibraryReady();
-        verify(mTemplateUrlService).addObserver(mTemplateUrlServiceObserver.capture());
         mButtonData.setCanShow(true);
         mMediator.updateIdentityDisc(mButtonData);
         mMediator.setStartSurfaceMode(true);
         mMediator.onStartSurfaceStateChanged(StartSurfaceState.SHOWN_HOMEPAGE, true);
+        mMediator.onLogoImageAvailable(mDrawable, null);
         assertTrue(mPropertyModel.get(LOGO_IS_VISIBLE));
         assertTrue(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE));
         assertFalse(mPropertyModel.get(IDENTITY_DISC_AT_START));
@@ -424,35 +423,25 @@ public class StartSurfaceToolbarMediatorUnitTest {
     }
 
     @Test
-    public void hideLogoWhenGoogleIsNotDSE() {
+    public void enableDisableSearchEngineHaveLogo() {
         createMediator(false);
         mMediator.setTabModelSelector(mTabModelSelector);
+        when(mTemplateUrlServiceFactory.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
 
-        doReturn(false).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
-        mMediator.onNativeLibraryReady();
-        verify(mTemplateUrlService).addObserver(mTemplateUrlServiceObserver.capture());
-
-        mMediator.onStartSurfaceStateChanged(StartSurfaceState.SHOWN_HOMEPAGE, true);
-        assertFalse(mPropertyModel.get(LOGO_IS_VISIBLE));
-    }
-
-    @Test
-    public void enableDisableLogo() {
-        createMediator(false);
-        doReturn(false).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
-        mMediator.onNativeLibraryReady();
-        verify(mTemplateUrlService).addObserver(mTemplateUrlServiceObserver.capture());
-        mMediator.onStartSurfaceStateChanged(StartSurfaceState.SHOWN_HOMEPAGE, true);
         mMediator.setStartSurfaceMode(true);
-        assertFalse(mPropertyModel.get(LOGO_IS_VISIBLE));
+        mMediator.onStartSurfaceStateChanged(StartSurfaceState.SHOWN_HOMEPAGE, true);
 
-        doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
-        mTemplateUrlServiceObserver.getValue().onTemplateURLServiceChanged();
+        // If default search engine doesn't have logo, logo shouldn't be visible.
+        when(mTemplateUrlServiceFactory.doesDefaultSearchEngineHaveLogo()).thenReturn(false);
+        mMediator.onLogoImageAvailable(null, null);
+        assertFalse(mPropertyModel.get(LOGO_IS_VISIBLE));
+        assertNull(mPropertyModel.get(LOGO_IMAGE));
+
+        // If default search engine has logo, logo should be visible.
+        when(mTemplateUrlServiceFactory.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
+        mMediator.onLogoImageAvailable(mDrawable, null);
         assertTrue(mPropertyModel.get(LOGO_IS_VISIBLE));
-
-        doReturn(false).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
-        mTemplateUrlServiceObserver.getValue().onTemplateURLServiceChanged();
-        assertFalse(mPropertyModel.get(LOGO_IS_VISIBLE));
+        assertEquals(mDrawable, mPropertyModel.get(LOGO_IMAGE));
     }
 
     @Test

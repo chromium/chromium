@@ -174,7 +174,7 @@ void SavePasswordMessageDelegate::CreateMessage(bool update_password) {
 
   if (!update_password) {
     message_->SetSecondaryIconResourceId(
-        ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_AUTOFILL_SETTINGS));
+        ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_MESSAGE_SETTINGS));
     message_->SetSecondaryButtonMenuText(
         l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_BLOCKLIST_BUTTON));
     message_->SetSecondaryActionCallback(

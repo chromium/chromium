@@ -9,6 +9,8 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
+#include "base/token.h"
+#include "base/unguessable_token.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/media/video_capture_manager.h"
@@ -281,6 +283,25 @@ void VideoCaptureHost::Resume(const base::UnguessableToken& device_id,
     device_id_to_observer_map_[device_id]->OnStateChanged(
         media::mojom::VideoCaptureState::RESUMED);
   }
+}
+
+void VideoCaptureHost::Crop(const base::UnguessableToken& device_id,
+                            const base::Token& crop_id,
+                            CropCallback callback) {
+  DVLOG(1) << __func__ << " " << device_id;
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  const VideoCaptureControllerID& controller_id(device_id);
+  const auto it = controllers_.find(controller_id);
+  if (it == controllers_.end() || !it->second) {
+    std::move(callback).Run(
+        media::mojom::CropRequestResult::kErrorUnknownDeviceId);
+    return;
+  }
+
+  // TODO(crbug.com/1247761): Implement by forwarding this message to
+  // media_stream_manager_->video_capture_manager()->CropCaptureForClient().
+  std::move(callback).Run(media::mojom::CropRequestResult::kNotImplemented);
 }
 
 void VideoCaptureHost::RequestRefreshFrame(

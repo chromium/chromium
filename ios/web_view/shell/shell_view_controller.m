@@ -5,6 +5,7 @@
 #import "ios/web_view/shell/shell_view_controller.h"
 
 #import <MobileCoreServices/MobileCoreServices.h>
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 #import "ios/web_view/shell/shell_auth_service.h"
 #import "ios/web_view/shell/shell_autofill_delegate.h"
@@ -836,8 +837,8 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
                                            completionHandler {
   void (^copyHandler)(UIAction*) = ^(UIAction* action) {
     NSDictionary* item = @{
-      (NSString*)(kUTTypeURL) : element.hyperlink.absoluteString,
-      (NSString*)(kUTTypeUTF8PlainText) : [element.hyperlink.absoluteString
+      (NSString*)(UTTypeURL) : element.hyperlink.absoluteString,
+      (NSString*)(UTTypeUTF8PlainText) : [element.hyperlink.absoluteString
           dataUsingEncoding:NSUTF8StringEncoding],
     };
     [[UIPasteboard generalPasteboard] setItems:@[ item ]];

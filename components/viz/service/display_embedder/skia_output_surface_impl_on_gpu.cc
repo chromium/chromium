@@ -1248,53 +1248,57 @@ void SkiaOutputSurfaceImplOnGpu::ScheduleOverlays(
   if (context_is_lost_)
     return;
 
-  if (!image_contexts.empty()) {
+  bool have_image_contexts = !image_contexts.empty();
+  if (have_image_contexts) {
     DCHECK(context_state_->GrContextIsGL());
 
     // GL doesn't use semaphores.
     promise_image_access_helper_.BeginAccess(std::move(image_contexts),
                                              /*begin_semaphores=*/nullptr,
                                              /*end_semaphores=*/nullptr);
-    using ScopedWriteAccess =
-        std::unique_ptr<gpu::SharedImageRepresentationSkia::ScopedWriteAccess>;
-    std::vector<ScopedWriteAccess> scoped_write_accesses;
-    for (auto& overlay : overlays) {
-      if (!overlay.ddl)
-        continue;
-      const auto& characterization = overlay.ddl->characterization();
-      auto backing = GetOrCreateRenderPassOverlayBacking(characterization);
-      if (!backing)
-        break;
-      DCHECK(overlay.mailbox.IsZero());
-      overlay.mailbox = backing->mailbox();
-      auto scoped_access = backing->BeginScopedWriteAccess(
-          /*final_msaa_count=*/0, characterization.surfaceProps(),
-          /*begin_semaphores=*/nullptr,
-          /*end_semaphores=*/nullptr,
-          gpu::SharedImageRepresentation::AllowUnclearedAccess::kYes);
-      bool result = scoped_access->surface()->draw(overlay.ddl);
-      DCHECK(result);
-      scoped_write_accesses.push_back(std::move(scoped_access));
-      backing->SetCleared();
-      in_flight_render_pass_overlay_backings_.insert(std::move(backing));
-    }
-
-    if (!scoped_write_accesses.empty()) {
-      absl::optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
-      if (dependency_->GetGrShaderCache()) {
-        cache_use.emplace(dependency_->GetGrShaderCache(),
-                          gpu::kDisplayCompositorClientId);
-      }
-
-      GrFlushInfo flush_info = {};
-      if (on_finished)
-        gpu::AddCleanupTaskForSkiaFlush(std::move(on_finished), &flush_info);
-      context_state_->gr_context()->flush(flush_info);
-      context_state_->gr_context()->submit();
-      scoped_write_accesses.clear();
-    }
-    promise_image_access_helper_.EndAccess();
   }
+
+  using ScopedWriteAccess =
+      std::unique_ptr<gpu::SharedImageRepresentationSkia::ScopedWriteAccess>;
+  std::vector<ScopedWriteAccess> scoped_write_accesses;
+  for (auto& overlay : overlays) {
+    if (!overlay.ddl)
+      continue;
+    const auto& characterization = overlay.ddl->characterization();
+    auto backing = GetOrCreateRenderPassOverlayBacking(characterization);
+    if (!backing)
+      break;
+    DCHECK(overlay.mailbox.IsZero());
+    overlay.mailbox = backing->mailbox();
+    auto scoped_access = backing->BeginScopedWriteAccess(
+        /*final_msaa_count=*/0, characterization.surfaceProps(),
+        /*begin_semaphores=*/nullptr,
+        /*end_semaphores=*/nullptr,
+        gpu::SharedImageRepresentation::AllowUnclearedAccess::kYes);
+    bool result = scoped_access->surface()->draw(overlay.ddl);
+    DCHECK(result);
+    scoped_write_accesses.push_back(std::move(scoped_access));
+    backing->SetCleared();
+    in_flight_render_pass_overlay_backings_.insert(std::move(backing));
+  }
+
+  if (!scoped_write_accesses.empty()) {
+    absl::optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
+    if (dependency_->GetGrShaderCache()) {
+      cache_use.emplace(dependency_->GetGrShaderCache(),
+                        gpu::kDisplayCompositorClientId);
+    }
+
+    GrFlushInfo flush_info = {};
+    if (on_finished)
+      gpu::AddCleanupTaskForSkiaFlush(std::move(on_finished), &flush_info);
+    context_state_->gr_context()->flush(flush_info);
+    context_state_->gr_context()->submit();
+    scoped_write_accesses.clear();
+  }
+
+  if (have_image_contexts)
+    promise_image_access_helper_.EndAccess();
 
   output_device_->ScheduleOverlays(std::move(overlays));
 #else

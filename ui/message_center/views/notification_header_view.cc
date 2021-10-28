@@ -138,10 +138,8 @@ END_METADATA
 
 }  // namespace
 
-NotificationHeaderView::NotificationHeaderView(PressedCallback callback,
-                                               bool is_in_ash_notification)
-    : views::Button(std::move(callback)),
-      is_in_ash_notification_(is_in_ash_notification) {
+NotificationHeaderView::NotificationHeaderView(PressedCallback callback)
+    : views::Button(std::move(callback)) {
   const views::FlexSpecification kAppNameFlex =
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kPreferred)
@@ -160,18 +158,14 @@ NotificationHeaderView::NotificationHeaderView(PressedCallback callback,
   // TODO(crbug/1241602): std::unique_ptr can be used in multiple places here.
   // Also, consider using views::Builder<T>.
 
-  if (!is_in_ash_notification_) {
-    // App icon view
-    app_icon_view_ = new views::ImageView();
-    app_icon_view_->SetImageSize(
-        gfx::Size(kSmallImageSizeMD, kSmallImageSizeMD));
-    app_icon_view_->SetBorder(views::CreateEmptyBorder(kAppIconPadding));
-    app_icon_view_->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
-    app_icon_view_->SetHorizontalAlignment(
-        views::ImageView::Alignment::kLeading);
-    DCHECK_EQ(kInnerHeaderHeight, app_icon_view_->GetPreferredSize().height());
-    AddChildView(app_icon_view_);
-  }
+  // App icon view
+  app_icon_view_ = new views::ImageView();
+  app_icon_view_->SetImageSize(gfx::Size(kSmallImageSizeMD, kSmallImageSizeMD));
+  app_icon_view_->SetBorder(views::CreateEmptyBorder(kAppIconPadding));
+  app_icon_view_->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
+  app_icon_view_->SetHorizontalAlignment(views::ImageView::Alignment::kLeading);
+  DCHECK_EQ(kInnerHeaderHeight, app_icon_view_->GetPreferredSize().height());
+  AddChildView(app_icon_view_);
 
   // App name view
   auto app_name_view = std::make_unique<views::Label>();
@@ -216,25 +210,22 @@ NotificationHeaderView::NotificationHeaderView(PressedCallback callback,
   timestamp_view->SetVisible(false);
   timestamp_view_ = detail_views_->AddChildView(std::move(timestamp_view));
 
-  if (!is_in_ash_notification_) {
-    expand_button_ = new ExpandButton();
-    expand_button_->SetBorder(views::CreateEmptyBorder(kExpandIconViewPadding));
-    expand_button_->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
-    expand_button_->SetHorizontalAlignment(
-        views::ImageView::Alignment::kLeading);
-    expand_button_->SetImageSize(gfx::Size(kExpandIconSize, kExpandIconSize));
-    DCHECK_EQ(kInnerHeaderHeight, expand_button_->GetPreferredSize().height());
-    detail_views_->AddChildView(expand_button_);
+  expand_button_ = new ExpandButton();
+  expand_button_->SetBorder(views::CreateEmptyBorder(kExpandIconViewPadding));
+  expand_button_->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
+  expand_button_->SetHorizontalAlignment(views::ImageView::Alignment::kLeading);
+  expand_button_->SetImageSize(gfx::Size(kExpandIconSize, kExpandIconSize));
+  DCHECK_EQ(kInnerHeaderHeight, expand_button_->GetPreferredSize().height());
+  detail_views_->AddChildView(expand_button_);
 
-    // Spacer between left-aligned views and right-aligned views
-    auto spacer = std::make_unique<views::View>();
-    spacer->SetPreferredSize(
-        gfx::Size(kControlButtonSpacing, kInnerHeaderHeight));
-    spacer->SetProperty(views::kFlexBehaviorKey, kSpacerFlex);
-    AddChildView(std::move(spacer));
+  // Spacer between left-aligned views and right-aligned views
+  auto spacer = std::make_unique<views::View>();
+  spacer->SetPreferredSize(
+      gfx::Size(kControlButtonSpacing, kInnerHeaderHeight));
+  spacer->SetProperty(views::kFlexBehaviorKey, kSpacerFlex);
+  AddChildView(std::move(spacer));
 
-    SetPreferredSize(gfx::Size(kNotificationWidth, kHeaderHeight));
-  }
+  SetPreferredSize(gfx::Size(kNotificationWidth, kHeaderHeight));
 
   // Not focusable by default, only for accessibility.
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
@@ -383,6 +374,13 @@ void NotificationHeaderView::SetSubpixelRenderingEnabled(bool enabled) {
 
 void NotificationHeaderView::SetAppIconVisible(bool visible) {
   app_icon_view_->SetVisible(visible);
+}
+
+void NotificationHeaderView::SetIsInAshNotificationView(
+    bool is_in_ash_notification) {
+  is_in_ash_notification_ = is_in_ash_notification;
+  app_icon_view_->SetVisible(!is_in_ash_notification_);
+  expand_button_->SetVisible(!is_in_ash_notification_);
 }
 
 const std::u16string& NotificationHeaderView::app_name_for_testing() const {

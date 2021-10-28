@@ -2815,7 +2815,7 @@
             ],
             "experiments": [
                 {
-                    "name": "RecipeTasksRuleBasedDiscountDrive_Enabled",
+                    "name": "RecipeTasksRuleBasedDiscountDrivePhotos_Enabled",
                     "params": {
                         "NtpChromeCartModuleAbandonedCartDiscountParam": "true",
                         "NtpChromeCartModuleAbandonedCartDiscountUseUtmParam": "true",
@@ -2826,6 +2826,7 @@
                         "NtpChromeCartModule",
                         "NtpDriveModule",
                         "NtpModules",
+                        "NtpPhotosModule",
                         "NtpRecipeTasksModule"
                     ],
                     "disable_features": [
@@ -3457,9 +3458,9 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledFilledNegativeButton",
+                    "name": "EnabledNoFilledButton",
                     "params": {
-                        "filled_negative_button": "true"
+                        "filled_negative_button": "false"
                     },
                     "enable_features": [
                         "EnableDangerousDownloadDialog"
@@ -5369,17 +5370,12 @@
                 {
                     "name": "AndroidExperiments",
                     "params": {
-                        "OmniboxMaxURLMatches": "3",
-                        "OmniboxMaxZeroSuggestMatches": "15",
-                        "UIMaxAutocompleteMatches": "8"
+                        "OmniboxMaxZeroSuggestMatches": "15"
                     },
                     "enable_features": [
-                        "OmniboxAdaptiveSuggestionsCount",
                         "OmniboxDynamicMaxAutocomplete",
-                        "OmniboxMaxURLMatches",
                         "OmniboxMaxZeroSuggestMatches",
                         "OmniboxOnFocusSuggestionsContextualWebAllowSRP",
-                        "OmniboxUIExperimentMaxAutocompleteMatches",
                         "QuickActionSearchWidgetAndroid",
                         "QuickActionSearchWidgetAndroidDinoVariant"
                     ]
@@ -6761,6 +6757,23 @@
             ]
         }
     ],
+    "RetailCoupons": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Experiment_20211021",
+                    "enable_features": [
+                        "RetailCoupons"
+                    ]
+                }
+            ]
+        }
+    ],
     "RevertDSEAutomaticPermissions": [
         {
             "platforms": [
@@ -7172,26 +7185,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ShareUsageRanking"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SharedHighlightingAmp": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SharedHighlightingAmp"
                     ]
                 }
             ]

@@ -105,6 +105,7 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
         int offsetPx = ViewUtils.dpToPx(mActivity, REACTION_OFFSET_DP);
         newLayoutParams.leftMargin = oldLayoutParams.leftMargin + offsetPx;
         newLayoutParams.topMargin = oldLayoutParams.topMargin + offsetPx;
+        newReactionLayout.setRotation(reactionLayout.getRotation());
 
         addReaction(newReactionLayout, newLayoutParams);
     }

@@ -38,7 +38,7 @@ FirmwareUpdateManager* FirmwareUpdateManager::Get() {
 }
 
 void FirmwareUpdateManager::RequestDevices() {
-  chromeos::FwupdClient::Get()->GetDevices();
+  chromeos::FwupdClient::Get()->RequestDevices();
 }
 
 void FirmwareUpdateManager::OnDeviceListResponse(

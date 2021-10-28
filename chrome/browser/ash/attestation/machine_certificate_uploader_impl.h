@@ -6,9 +6,11 @@
 #define CHROME_BROWSER_ASH_ATTESTATION_MACHINE_CERTIFICATE_UPLOADER_IMPL_H_
 
 #include <string>
+#include <utility>
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/attestation/machine_certificate_uploader.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 // TODO(https://crbug.com/1164001): forward declare AttestationFlow
@@ -44,9 +46,9 @@ class MachineCertificateUploaderImpl : public MachineCertificateUploader {
 
   // Sets the retry limit in number of tries; useful in testing.
   void set_retry_limit_for_testing(int limit) { retry_limit_ = limit; }
-  // Sets the retry delay in seconds; useful in testing.
-  void set_retry_delay_for_testing(int retry_delay) {
-    retry_delay_ = retry_delay;
+  // Sets the retry delay; useful in testing.
+  void set_retry_delay_for_testing(base::TimeDelta retry_delay) {
+    retry_delay_ = std::move(retry_delay);
   }
 
   using UploadCallback =
@@ -111,9 +113,9 @@ class MachineCertificateUploaderImpl : public MachineCertificateUploader {
   std::unique_ptr<AttestationFlow> default_attestation_flow_;
   bool refresh_certificate_ = false;
   std::vector<UploadCallback> callbacks_;
-  int num_retries_ = {};
-  int retry_limit_ = {};
-  int retry_delay_ = {};
+  int num_retries_ = 0;
+  int retry_limit_ = 0;
+  base::TimeDelta retry_delay_;
   absl::optional<bool> certificate_uploaded_;
 
   // Note: This should remain the last member so it'll be destroyed and

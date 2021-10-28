@@ -78,6 +78,10 @@ const base::Feature kFillOnAccountSelect = {"fill-on-account-select",
 const base::Feature kInferConfirmationPasswordField = {
     "InferConfirmationPasswordField", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables password leak detection for unauthenticated users.
+const base::Feature kLeakDetectionUnauthenticated = {
+    "LeakDetectionUnauthenticated", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables password change flow from leaked password dialog.
 const base::Feature kPasswordChange = {"PasswordChange",
                                        base::FEATURE_DISABLED_BY_DEFAULT};

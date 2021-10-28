@@ -381,6 +381,7 @@ bool UpdateEngine::IsThrottled(bool is_foreground) const {
 void UpdateEngine::SendUninstallPing(const std::string& id,
                                      const base::Version& version,
                                      int reason,
+                                     bool requires_network_encryption,
                                      Callback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
@@ -400,7 +401,7 @@ void UpdateEngine::SendUninstallPing(const std::string& id,
   DCHECK_EQ(1u, update_context->components.count(id));
   const auto& component = update_context->components.at(id);
 
-  component->Uninstall(version, reason);
+  component->Uninstall(version, reason, requires_network_encryption);
 
   update_context->component_queue.push(id);
 
@@ -411,6 +412,7 @@ void UpdateEngine::SendUninstallPing(const std::string& id,
 
 void UpdateEngine::SendRegistrationPing(const std::string& id,
                                         const base::Version& version,
+                                        bool requires_network_encryption,
                                         Callback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
@@ -430,7 +432,7 @@ void UpdateEngine::SendRegistrationPing(const std::string& id,
   DCHECK_EQ(1u, update_context->components.count(id));
   const auto& component = update_context->components.at(id);
 
-  component->Registration(version);
+  component->Registration(version, requires_network_encryption);
 
   update_context->component_queue.push(id);
 

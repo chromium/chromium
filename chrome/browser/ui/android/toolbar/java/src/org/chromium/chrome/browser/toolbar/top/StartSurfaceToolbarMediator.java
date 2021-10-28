@@ -22,6 +22,8 @@ import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarPropert
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IN_START_SURFACE_MODE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IS_INCOGNITO;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IS_VISIBLE;
+import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.LOGO_CONTENT_DESCRIPTION;
+import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.LOGO_IMAGE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.LOGO_IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.NEW_TAB_BUTTON_HIGHLIGHT;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.NEW_TAB_CLICK_HANDLER;
@@ -32,6 +34,7 @@ import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarPropert
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.TAB_SWITCHER_BUTTON_IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.TRANSLATION_Y;
 
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -45,7 +48,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
-import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -58,7 +60,6 @@ import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
-import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** The mediator implements interacts between the views and the caller. */
@@ -74,7 +75,6 @@ class StartSurfaceToolbarMediator {
 
     private TabModelSelector mTabModelSelector;
     private TabCountProvider mTabCountProvider;
-    private TemplateUrlServiceObserver mTemplateUrlObserver;
     private TabModelSelectorObserver mTabModelSelectorObserver;
     private LayoutStateProvider mLayoutStateProvider;
     private LayoutStateProvider.LayoutStateObserver mLayoutStateObserver;
@@ -82,7 +82,7 @@ class StartSurfaceToolbarMediator {
     @StartSurfaceState
     private int mStartSurfaceState;
     private boolean mIsAnimationEnabled;
-    private boolean mIsGoogleSearchEngine;
+    private boolean mDefaultSearchEngineHasLogo;
     private boolean mShouldShowStartSurfaceAsHomepage;
     private boolean mHomepageEnabled;
 
@@ -149,25 +149,7 @@ class StartSurfaceToolbarMediator {
         mIsAnimationEnabled = isAnimationEnabled;
     }
 
-    void onNativeLibraryReady() {
-        assert mTemplateUrlObserver == null;
-
-        mTemplateUrlObserver = new TemplateUrlServiceObserver() {
-            @Override
-            public void onTemplateURLServiceChanged() {
-                updateLogoVisibility(TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle());
-            }
-        };
-
-        TemplateUrlServiceFactory.get().addObserver(mTemplateUrlObserver);
-        mIsGoogleSearchEngine = TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle();
-        updateLogoVisibility(TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle());
-    }
-
     void destroy() {
-        if (mTemplateUrlObserver != null) {
-            TemplateUrlServiceFactory.get().removeObserver(mTemplateUrlObserver);
-        }
         if (mTabModelSelectorObserver != null) {
             mTabModelSelector.removeObserver(mTabModelSelectorObserver);
         }
@@ -184,7 +166,7 @@ class StartSurfaceToolbarMediator {
             @StartSurfaceState int newState, boolean shouldShowStartSurfaceToolbar) {
         updateShowAnimation(newState, shouldShowStartSurfaceToolbar);
         mStartSurfaceState = newState;
-        updateLogoVisibility(mIsGoogleSearchEngine);
+        updateLogoVisibility();
         updateTabSwitcherButtonVisibility();
         updateIncognitoToggleTabVisibility();
         updateNewTabViewVisibility();
@@ -385,10 +367,22 @@ class StartSurfaceToolbarMediator {
         mHomeButtonView = homeButtonView;
     }
 
-    private void updateLogoVisibility(boolean isGoogleSearchEngine) {
-        mIsGoogleSearchEngine = isGoogleSearchEngine;
-        boolean shouldShowLogo =
-                mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE && mIsGoogleSearchEngine;
+    /**
+     * This method should be called when there is a possibility that logo image became available or
+     * was changed.
+     * @param logoImage The logo image in drawable format.
+     * @param contentDescription The accessibility text describing the logo.
+     */
+    void onLogoImageAvailable(Drawable logoImage, String contentDescription) {
+        mDefaultSearchEngineHasLogo = logoImage != null;
+        updateLogoVisibility();
+        mPropertyModel.set(LOGO_IMAGE, logoImage);
+        mPropertyModel.set(LOGO_CONTENT_DESCRIPTION, contentDescription);
+    }
+
+    private void updateLogoVisibility() {
+        boolean shouldShowLogo = mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE
+                && mDefaultSearchEngineHasLogo;
         mPropertyModel.set(LOGO_IS_VISIBLE, shouldShowLogo);
     }
 
@@ -523,10 +517,5 @@ class StartSurfaceToolbarMediator {
     void setStartSurfaceHomeButtonIPHControllerForTesting(
             StartSurfaceHomeButtonIPHController startSurfaceHomeButtonIPHController) {
         mStartSurfaceHomeButtonIPHController = startSurfaceHomeButtonIPHController;
-    }
-
-    @VisibleForTesting
-    void setHomeButtonViewForTesting(View homeButtonView) {
-        mHomeButtonView = homeButtonView;
     }
 }

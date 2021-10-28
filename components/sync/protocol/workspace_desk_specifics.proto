@@ -19,14 +19,18 @@ package sync_pb;
 // A workspace desk entry. This proto contains the fields synced to represent
 // a saved desk in user's workspace.
 message WorkspaceDeskSpecifics {
+  reserved "created_time_usec";
+
   // A random unique identifier for each desk.
   // Required.
   optional string uuid = 1;
   // The name of the desk being saved.
   optional string name = 2;
-  // The time this snapshot of desk was created, in microseconds since the
-  // Windows epoch.
-  optional int64 created_time_usec = 3;
+  // The time this snapshot of desk was created.
+  optional int64 created_time_windows_epoch_micros = 3;
+
+  // The time this snapshot of desk was updated.
+  optional int64 updated_time_windows_epoch_micros = 5;
 
   optional Desk desk = 4;
 

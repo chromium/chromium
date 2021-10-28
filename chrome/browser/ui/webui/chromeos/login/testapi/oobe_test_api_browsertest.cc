@@ -10,9 +10,13 @@
 #include "chrome/browser/ash/login/test/local_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
+#include "chrome/browser/ash/login/test/oobe_screen_exit_waiter.h"
+#include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/test_condition_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
+#include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/marketing_opt_in_screen_handler.h"
 #include "content/public/test/browser_test.h"
 
 namespace chromeos {
@@ -25,12 +29,6 @@ class OobeTestApiTest : public OobeBaseTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kEnableOobeTestAPI);
     OobeBaseTest::SetUpCommandLine(command_line);
-  }
-
-  void SetUpOnMainThread() override {
-    OobeBaseTest::SetUpOnMainThread();
-    // Ensure WebUI is loaded to allow Javascript execution.
-    LoginDisplayHost::default_host()->GetWizardController();
   }
 };
 
@@ -122,6 +120,30 @@ IN_PROC_BROWSER_TEST_F(OobeTestApiLoginPinTest, Success) {
       login_mixin_.users()[0].account_id.GetUserEmail();
   test::OobeJS().ExecuteAsync(base::StringPrintf(
       "OobeAPI.loginWithPin('%s', '123456')", username.c_str()));
+  login_mixin_.WaitForActiveSession();
+}
+
+class OobeTestApiWizardControllerTest : public OobeTestApiTest {
+ public:
+  OobeTestApiWizardControllerTest() = default;
+
+ protected:
+  ash::LoginManagerMixin login_mixin_{&mixin_host_};
+};
+
+IN_PROC_BROWSER_TEST_F(OobeTestApiWizardControllerTest, AdvanceToScreen) {
+  login_mixin_.LoginAsNewRegularUser();
+  ash::OobeScreenExitWaiter(ash::GaiaView::kScreenId).Wait();
+  test::OobeJS().ExecuteAsync(
+      base::StringPrintf("OobeAPI.advanceToScreen('%s'",
+                         ash::MarketingOptInScreenView::kScreenId.name));
+  ash::OobeScreenWaiter(ash::MarketingOptInScreenView::kScreenId).Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(OobeTestApiWizardControllerTest, SkipPostLoginScreens) {
+  login_mixin_.LoginAsNewRegularUser();
+  ash::OobeScreenExitWaiter(ash::GaiaView::kScreenId).Wait();
+  test::OobeJS().ExecuteAsync("OobeAPI.skipPostLoginScreens()");
   login_mixin_.WaitForActiveSession();
 }
 

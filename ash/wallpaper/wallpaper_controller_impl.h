@@ -321,6 +321,7 @@ class ASH_EXPORT WallpaperControllerImpl
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
+  void OnActiveUserSessionChanged(const AccountId& account_id) override;
 
   // TabletModeObserver:
   void OnTabletModeStarted() override;

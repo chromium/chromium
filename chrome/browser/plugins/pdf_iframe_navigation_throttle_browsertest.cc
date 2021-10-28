@@ -32,10 +32,7 @@ using content::test::PrerenderHostRegistryObserver;
 class BlockAllPluginServiceFilter : public content::PluginServiceFilter {
  public:
   bool IsPluginAvailable(int render_process_id,
-                         int render_view_id,
-                         const GURL& url,
-                         const url::Origin& main_frame_origin,
-                         content::WebPluginInfo* plugin) override {
+                         const content::WebPluginInfo& plugin) override {
     return false;
   }
 

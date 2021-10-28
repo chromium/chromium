@@ -37,6 +37,9 @@
 #include "chrome/browser/resource_coordinator/session_restore_policy.h"
 #include "chrome/browser/resource_coordinator/tab_manager_features.h"
 #include "chrome/browser/scoped_disable_client_side_decorations_for_test.h"
+#include "chrome/browser/sessions/app_session_service.h"
+#include "chrome/browser/sessions/app_session_service_factory.h"
+#include "chrome/browser/sessions/app_session_service_test_helper.h"
 #include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/browser/sessions/session_restore_test_helper.h"
 #include "chrome/browser/sessions/session_restore_test_utils.h"
@@ -106,12 +109,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/app_restore/features.h"
-#endif
-
-#if BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
-#include "chrome/browser/sessions/app_session_service.h"
-#include "chrome/browser/sessions/app_session_service_factory.h"
-#include "chrome/browser/sessions/app_session_service_test_helper.h"
 #endif
 
 #if defined(OS_MAC)
@@ -3141,7 +3138,6 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreSilentLaunchTest, SilentLaunchAfterCrash) {
 }
 #endif
 
-#if BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
 class AppSessionRestoreTest : public SessionRestoreTest {
  public:
   AppSessionRestoreTest() = default;
@@ -3764,4 +3760,3 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, InvokeTwoAppsThenRestore) {
   keep_alive.reset();
   profile_keep_alive.reset();
 }
-#endif  //  BUILDFLAG(ENABLE_APP_SESSION_SERVICE)

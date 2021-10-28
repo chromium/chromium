@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/time/time.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/user_education/feature_promo_bubble_params.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -60,13 +61,9 @@
 
 namespace {
 
-// The amount of time the promo should stay onscreen if the user
-// never hovers over it.
-constexpr base::TimeDelta kDelayDefault = base::Seconds(10);
-
-// The amount of time the promo should stay onscreen after the
-// user stops hovering over it.
-constexpr base::TimeDelta kDelayShort = base::Seconds(3);
+// The amount of time the promo should stay onscreen.
+constexpr base::TimeDelta kDefaultTimeoutWithoutButtons = base::Seconds(10);
+constexpr base::TimeDelta kDefaultTimeoutWithButtons = base::Seconds(0);
 
 // Maximum width of the bubble. Longer strings will cause wrapping.
 constexpr int kBubbleMaxWidthDip = 340;
@@ -247,14 +244,12 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(CreateParams params)
       << "A bubble that closes on blur must be initially focused.";
   UseCompactMargins();
 
-  // Bubble will not auto-dismiss if there's buttons.
-  if (params.buttons.empty()) {
-    timeout_no_interaction_ =
-        params.timeout_no_interaction.value_or(kDelayDefault);
-    timeout_after_interaction_ =
-        params.timeout_after_interaction.value_or(kDelayShort);
+  // Default timeout depends on whether non-close buttons are present.
+  timeout_ = params.timeout.value_or(params.buttons.empty()
+                                         ? kDefaultTimeoutWithoutButtons
+                                         : kDefaultTimeoutWithButtons);
+  if (!timeout_.is_zero())
     timeout_callback_ = std::move(params.timeout_callback);
-  }
 
   accessible_name_ = params.screenreader_text.empty()
                          ? params.body_text
@@ -518,14 +513,12 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(CreateParams params)
   frame_view->SetDisplayVisibleArrow(true);
   SizeToContents();
 
-  if (params.focus_on_create)
+  if (params.focus_on_create) {
     widget->Show();
-  else
+  } else {
     widget->ShowInactive();
-
-  // Start auto close timer if a timeout is enabled.
-  if (!timeout_no_interaction_.is_zero())
-    StartAutoCloseTimer(timeout_no_interaction_);
+    MaybeStartAutoCloseTimer();
+  }
 }
 
 FeaturePromoBubbleView::~FeaturePromoBubbleView() = default;
@@ -551,9 +544,11 @@ FeaturePromoBubbleView* FeaturePromoBubbleView::Create(CreateParams params) {
   return new FeaturePromoBubbleView(std::move(params));
 }
 
-void FeaturePromoBubbleView::StartAutoCloseTimer(
-    base::TimeDelta auto_close_duration) {
-  auto_close_timer_.Start(FROM_HERE, auto_close_duration, this,
+void FeaturePromoBubbleView::MaybeStartAutoCloseTimer() {
+  if (timeout_.is_zero())
+    return;
+
+  auto_close_timer_.Start(FROM_HERE, timeout_, this,
                           &FeaturePromoBubbleView::OnTimeout);
 }
 
@@ -573,20 +568,6 @@ bool FeaturePromoBubbleView::OnMousePressed(const ui::MouseEvent& event) {
   return false;
 }
 
-void FeaturePromoBubbleView::OnMouseEntered(const ui::MouseEvent& event) {
-  // While user is hovering the bubble, do not autoclose.
-  auto_close_timer_.Stop();
-}
-
-void FeaturePromoBubbleView::OnMouseExited(const ui::MouseEvent& event) {
-  if (timeout_after_interaction_.is_zero() && timeout_no_interaction_.is_zero())
-    return;
-
-  StartAutoCloseTimer(timeout_after_interaction_.is_zero()
-                          ? timeout_no_interaction_
-                          : timeout_after_interaction_);
-}
-
 std::u16string FeaturePromoBubbleView::GetAccessibleWindowTitle() const {
   std::u16string result = accessible_name_;
 
@@ -599,8 +580,14 @@ std::u16string FeaturePromoBubbleView::GetAccessibleWindowTitle() const {
 
 void FeaturePromoBubbleView::OnWidgetActivationChanged(views::Widget* widget,
                                                        bool active) {
-  if (widget == GetWidget() && active)
-    ++activate_count_;
+  if (widget == GetWidget()) {
+    if (active) {
+      ++activate_count_;
+      auto_close_timer_.AbandonAndStop();
+    } else {
+      MaybeStartAutoCloseTimer();
+    }
+  }
 }
 
 gfx::Size FeaturePromoBubbleView::CalculatePreferredSize() const {

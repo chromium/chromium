@@ -57,8 +57,7 @@ apps::mojom::AppType GetWebAppType() {
 // to kSystemWeb for this case and the kWeb app type will be published from
 // the publisher for Lacros web apps.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (crosapi::browser_util::IsLacrosEnabled() &&
-      base::FeatureList::IsEnabled(features::kWebAppsCrosapi)) {
+  if (crosapi::browser_util::IsLacrosEnabled() && IsWebAppsCrosapiEnabled()) {
     return apps::mojom::AppType::kSystemWeb;
   }
 #endif
