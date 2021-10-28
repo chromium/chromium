@@ -10,6 +10,7 @@
 
 #include "base/memory/safe_ref.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/navigation_controller_delegate.h"
 #include "content/common/content_export.h"
 #include "content/common/frame.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -30,7 +31,8 @@ class WebContentsImpl;
 // on `RenderFrameHostImpl`.
 class CONTENT_EXPORT FencedFrame : public blink::mojom::FencedFrameOwnerHost,
                                    public FrameTree::Delegate,
-                                   public FrameTreeNode::Observer {
+                                   public FrameTreeNode::Observer,
+                                   public NavigationControllerDelegate {
  public:
   explicit FencedFrame(
       base::SafeRef<RenderFrameHostImpl> owner_render_frame_host);
@@ -77,6 +79,20 @@ class CONTENT_EXPORT FencedFrame : public blink::mojom::FencedFrameOwnerHost,
   RenderFrameHostImpl* GetInnerRoot() { return frame_tree_->GetMainFrame(); }
 
  private:
+  // NavigationControllerDelegate
+  void NotifyNavigationStateChanged(InvalidateTypes changed_flags) override;
+  void NotifyBeforeFormRepostWarningShow() override;
+  void NotifyNavigationEntryCommitted(
+      const LoadCommittedDetails& load_details) override;
+  void NotifyNavigationEntryChanged(
+      const EntryChangedDetails& change_details) override;
+  void NotifyNavigationListPruned(const PrunedDetails& pruned_details) override;
+  void NotifyNavigationEntriesDeleted() override;
+  void ActivateAndShowRepostFormWarningDialog() override;
+  bool ShouldPreserveAbortedURLs() override;
+  WebContents* DeprecatedGetWebContents() override;
+  void UpdateOverridingUserAgent() override;
+
   // Called when a fenced frame is created from a synchronous IPC from the
   // renderer. This creates a proxy to the main frame of the inner `FrameTree`,
   // for use by the embedding RenderFrameHostImpl.
