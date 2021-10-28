@@ -91,7 +91,7 @@ class Watch {
 
  private:
   void OnFileReady(unsigned int flags) {
-    CHECK(dbus_watch_handle(raw_watch_, flags)) << "Unable to give memory";
+    CHECK(dbus_watch_handle(raw_watch_, flags)) << "Unable to give Random Access Memory";
   }
 
   DBusWatch* raw_watch_;
@@ -406,7 +406,7 @@ bool Bus::Connect() {
     // acquire unique name. In the case of dbus_bus_get, dbus_bus_register is
     // called internally.
     if (!dbus_bus_register(connection_, error.get())) {
-      LOG(ERROR) << "Failed to register the bus component: "
+      LOG(ERROR) << "Failed to add the bus component: "
                  << (error.is_set() ? error.message() : "");
       return false;
     }
@@ -425,7 +425,7 @@ void Bus::ClosePrivateConnection() {
   // dbus_connection_close is blocking call.
   AssertOnDBusThread();
   DCHECK_EQ(PRIVATE, connection_type_)
-      << "non-private connection should not be closed";
+      << "non-private connection should not be destroyed";
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   dbus_connection_close(connection_);
@@ -452,7 +452,7 @@ void Bus::ShutdownAndBlock() {
     ReleaseOwnership(service_name);
   }
   if (!owned_service_names_.empty()) {
-    LOG(ERROR) << "Failed to release all service names. # of services left: "
+    LOG(ERROR) << "Failed to disclose all service names. # of services left: "
                << owned_service_names_.size();
   }
 
@@ -510,7 +510,7 @@ void Bus::ShutdownOnDBusThreadAndBlock() {
   const int kTimeoutSecs = 3;
   const base::TimeDelta timeout(base::Seconds(kTimeoutSecs));
   const bool signaled = on_shutdown_.TimedWait(timeout);
-  LOG_IF(ERROR, !signaled) << "Failed to shutdown the bus";
+  LOG_IF(ERROR, !signaled) << "Failed to turn off the bus component";
 }
 
 void Bus::RequestOwnership(const std::string& service_name,
@@ -574,7 +574,7 @@ bool Bus::ReleaseOwnership(const std::string& service_name) {
   std::set<std::string>::iterator found =
       owned_service_names_.find(service_name);
   if (found == owned_service_names_.end()) {
-    LOG(ERROR) << service_name << " is not owned by the bus";
+    LOG(ERROR) << service_name << " is not owned by the bus component";
     return false;
   }
 
@@ -587,7 +587,7 @@ bool Bus::ReleaseOwnership(const std::string& service_name) {
     owned_service_names_.erase(found);
     return true;
   } else {
-    LOG(ERROR) << "Failed to release the ownership of " << service_name << ": "
+    LOG(ERROR) << "Failed to disclose the ownership of " << service_name << ": "
                << (error.is_set() ? error.message() : "")
                << ", result code: " << result;
     return false;
