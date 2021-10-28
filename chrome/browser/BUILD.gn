@@ -3595,6 +3595,8 @@ static_library("browser") {
       "apps/app_service/metrics/app_service_metrics.h",
       "apps/app_service/paused_apps.cc",
       "apps/app_service/paused_apps.h",
+      "apps/app_service/publishers/app_publisher.cc",
+      "apps/app_service/publishers/app_publisher.h",
       "apps/app_service/publishers/extension_apps.cc",
       "apps/app_service/publishers/extension_apps.h",
       "apps/app_service/publishers/extension_apps_base.cc",
