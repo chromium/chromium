@@ -28,6 +28,7 @@ class ASH_EXPORT CalendarClient {
   virtual base::OnceClosure GetEventList(
       google_apis::calendar::CalendarEventListCallback callback,
       const base::Time& start_time,
+   // end time
       const base::Time& end_time) = 0;
 
  protected:
