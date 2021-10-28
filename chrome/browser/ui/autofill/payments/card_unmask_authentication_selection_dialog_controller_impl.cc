@@ -72,7 +72,7 @@ ui::ImageModel CardUnmaskAuthenticationSelectionDialogControllerImpl::
     case CardUnmaskChallengeOptionType::kUnknownType:
       NOTREACHED();
       return ui::ImageModel();
-  };
+  }
 }
 
 std::u16string CardUnmaskAuthenticationSelectionDialogControllerImpl::
@@ -100,6 +100,13 @@ CardUnmaskAuthenticationSelectionDialogControllerImpl::GetOkButtonLabel()
     const {
   return l10n_util::GetStringUTF16(
       IDS_AUTOFILL_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_OK_BUTTON_LABEL);
+}
+
+std::u16string
+CardUnmaskAuthenticationSelectionDialogControllerImpl::GetProgressLabel()
+    const {
+  return l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_CARD_UNMASK_PROGRESS_BAR_MESSAGE);
 }
 
 #if defined(UNIT_TEST)

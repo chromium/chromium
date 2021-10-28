@@ -32,6 +32,7 @@ class CardUnmaskAuthenticationSelectionDialogViews
   void OnControllerDestroying() override;
 
   // views::DialogDelegateView:
+  bool Accept() override;
   std::u16string GetWindowTitle() const override;
   void AddedToWidget() override;
 
@@ -47,6 +48,10 @@ class CardUnmaskAuthenticationSelectionDialogViews
   void AddChallengeOptionsViews();
 
   void AddFooterText();
+
+  // Replace the contents with a progress throbber. Invoked whenever the OK
+  // button is clicked.
+  void ReplaceContentWithProgressThrobber();
 
   CardUnmaskAuthenticationSelectionDialogController* controller_ = nullptr;
 };

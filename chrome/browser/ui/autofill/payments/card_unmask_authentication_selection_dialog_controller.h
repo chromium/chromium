@@ -56,6 +56,9 @@ class CardUnmaskAuthenticationSelectionDialogController {
   virtual std::u16string GetContentFooterText() const = 0;
 
   virtual std::u16string GetOkButtonLabel() const = 0;
+
+  // Return the text shown along with the progress throbber.
+  virtual std::u16string GetProgressLabel() const = 0;
 };
 
 }  // namespace autofill

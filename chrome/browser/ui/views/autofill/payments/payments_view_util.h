@@ -19,7 +19,9 @@
 #include "url/gurl.h"
 
 namespace views {
+class Label;
 class Textfield;
+class Throbber;
 }  // namespace views
 
 namespace autofill {
@@ -65,6 +67,24 @@ class LegalMessageView : public views::View {
 
 PaymentsBubbleClosedReason GetPaymentsBubbleClosedReasonFromWidgetClosedReason(
     views::Widget::ClosedReason reason);
+
+// TODO(crbug.com/1249665): Replace all payments' progress bar usages with this.
+// Creates a progress bar with an explanatory text below.
+class ProgressBarWithTextView : public views::View {
+ public:
+  METADATA_HEADER(ProgressBarWithTextView);
+
+  explicit ProgressBarWithTextView(const std::u16string& progress_bar_text);
+  ~ProgressBarWithTextView() override;
+
+ private:
+  // views::View:
+  void OnThemeChanged() override;
+  void AddedToWidget() override;
+
+  views::Label* progress_label_ = nullptr;
+  views::Throbber* progress_throbber_ = nullptr;
+};
 
 }  // namespace autofill
 
