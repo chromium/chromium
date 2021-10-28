@@ -1540,6 +1540,13 @@ void AutomationInternalCustomBindings::AddRoutes() {
             v8::String::NewFromUtf8(isolate, invalid_state_string.c_str())
                 .ToLocalChecked());
       });
+  RouteNodeIDFunction(
+      "GetIsButton",
+      [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
+         AutomationAXTreeWrapper* tree_wrapper, ui::AXNode* node) {
+        bool value = ui::IsButton(node->GetRole());
+        result.Set(v8::Boolean::New(isolate, value));
+      });
   RouteNodeIDPlusStringBoolFunction(
       "GetNextTextMatch",
       [this](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,

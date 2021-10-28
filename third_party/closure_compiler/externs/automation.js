@@ -270,9 +270,11 @@ chrome.automation.RoleType = {
   MATH_MLIDENTIFIER: 'mathMLIdentifier',
   MATH_MLMATH: 'mathMLMath',
   MATH_MLMULTISCRIPTS: 'mathMLMultiscripts',
+  MATH_MLNONE_SCRIPT: 'mathMLNoneScript',
   MATH_MLNUMBER: 'mathMLNumber',
   MATH_MLOPERATOR: 'mathMLOperator',
   MATH_MLOVER: 'mathMLOver',
+  MATH_MLPRESCRIPT_DELIMITER: 'mathMLPrescriptDelimiter',
   MATH_MLROOT: 'mathMLRoot',
   MATH_MLROW: 'mathMLRow',
   MATH_MLSQUARE_ROOT: 'mathMLSquareRoot',
@@ -286,8 +288,6 @@ chrome.automation.RoleType = {
   MATH_MLTEXT: 'mathMLText',
   MATH_MLUNDER: 'mathMLUnder',
   MATH_MLUNDER_OVER: 'mathMLUnderOver',
-  MATH_MLPRESCRIPT_DELIMITER: 'mathMLPrescriptDelimiter',
-  MATH_MLNONE_SCRIPT: 'mathMLNoneScript',
   MENU: 'menu',
   MENU_BAR: 'menuBar',
   MENU_ITEM: 'menuItem',
@@ -1885,6 +1885,13 @@ chrome.automation.AutomationNode.prototype.containerLiveAtomic;
  * @see https://developer.chrome.com/extensions/automation#type-containerLiveBusy
  */
 chrome.automation.AutomationNode.prototype.containerLiveBusy;
+
+/**
+ * Whether or not this node is a button.
+ * @type {boolean}
+ * @see https://developer.chrome.com/extensions/automation#type-isButton
+ */
+chrome.automation.AutomationNode.prototype.isButton;
 
 /**
  * Aria auto complete.

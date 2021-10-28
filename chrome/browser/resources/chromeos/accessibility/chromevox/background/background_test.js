@@ -2510,6 +2510,29 @@ TEST_F('ChromeVoxBackgroundTest', 'MenuItemRadio', function() {
 });
 
 TEST_F(
+    'ChromeVoxBackgroundTest', 'ButtonNavigationIgnoresRadioButtons',
+    function() {
+      const mockFeedback = this.createMockFeedback();
+      const site = `
+        <button>Action 1</button>
+        <fieldset>
+          <p><label> <input type=radio>Radio 1</label></p>
+          <p><label> <input type=radio>Radio 2</label></p>
+        </fieldset>
+        <button>Action 2</button>
+      `;
+
+      this.runWithLoadedTree(site, function(root) {
+        mockFeedback.call(doCmd('nextButton'))
+            .expectSpeech('Action 1', 'Button')
+            .call(doCmd('nextButton'))
+            .expectSpeech('Action 2', 'Button');
+
+        mockFeedback.replay();
+      });
+    });
+
+TEST_F(
     'ChromeVoxBackgroundTest', 'FocusableNamedDivIsNotContainer', function() {
       const site = `
         <div aria-label="hello world" tabindex="0">hello world</div>
