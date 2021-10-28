@@ -9,8 +9,8 @@
 #             sierra
 #         win win7 win8 win10 ]
 # Devices
-# tags: [ android-nexus-5 android-nexus-5x android-nexus-6 android-nexus-9
-#             android-pixel-2 android-pixel-4 android-shield-android-tv
+# tags: [ android-nexus-5 android-nexus-5x android-nexus-9 android-pixel-2
+#             android-pixel-4 android-shield-android-tv
 #         chromeos-board-amd64-generic chromeos-board-kevin chromeos-board-eve
 #         fuchsia-board-astro fuchsia-board-qemu-x64 ]
 # Platform
@@ -55,9 +55,9 @@
 # tags: [ asan no-asan ]
 # Display Server
 # tags: [ display-server-wayland display-server-x ]
-# results: [ Failure RetryOnFailure Skip ]
 # OOP-Canvas
-# tags: [ oop-c no-oop-c]
+# tags: [ oop-c no-oop-c ]
+# results: [ Failure RetryOnFailure Skip ]
 # END TAG HEADER
 
 
@@ -143,7 +143,6 @@ crbug.com/867718 [ win angle-d3d9 ] WebglExtension_EXT_disjoint_timer_query [ Sk
 [ android android-nexus-5 ] WebglExtension_WEBGL_compressed_texture_astc [ Skip ]
 [ android android-nexus-5x ] WebglExtension_WEBGL_depth_texture [ Skip ]
 [ android android-nexus-5x no-swiftshader-gl ] WebglExtension_EXT_sRGB [ Skip ]
-[ android android-nexus-6 no-swiftshader-gl ] WebglExtension_EXT_sRGB [ Skip ]
 
 # Fails on Android Nvidia Tegra driver version 343, passes on 361
 # We don't have tags for specific driver version so just skip all
@@ -616,12 +615,6 @@ crbug.com/733599 [ android angle-disabled ] conformance/textures/video/tex-2d-lu
 crbug.com/834933 [ android android-chromium ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_byte.html [ RetryOnFailure ]
 crbug.com/891456 [ android ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ RetryOnFailure ]
 
-# This crashes in Android WebView on the Nexus 6, preventing the
-# suite from running further. Rather than add multiple
-# suppressions, skip it until it's passing at least in content
-# shell.
-crbug.com/499555 [ android android-nexus-6 ] conformance/extensions/oes-texture-float-with-video.html [ Skip ]
-
 # The test that runs after conformance/state/gl-object-get-calls.html is failing
 # on Nexus 5/6 consistently and other Android bots (eg. Nexus 5X) sometimes.
 crbug.com/1052790 [ android ] conformance/state/gl-object-get-calls.html [ Skip ]
@@ -668,41 +661,6 @@ crbug.com/1122644 [ android android-nexus-5x ] conformance/textures/misc/texture
 crbug.com/1163306 [ android android-nexus-5x ] conformance/textures/image_bitmap_from_video/* [ RetryOnFailure ]
 crbug.com/1203167 [ android android-nexus-5x ] conformance/extensions/oes-texture-float-with-video.html [ RetryOnFailure ]
 
-# Nexus 6 (Adreno 420)
-crbug.com/499555 [ android android-nexus-6 ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
-crbug.com/611945 [ android angle-disabled android-nexus-6 ] conformance/context/context-size-change.html [ Failure ]
-crbug.com/499555 [ android android-nexus-6 ] conformance/context/premultiplyalpha-test.html [ Failure ]
-crbug.com/611945 [ android android-nexus-6 ] conformance/glsl/bugs/gl-fragcoord-multisampling-bug.html [ Failure ]
-crbug.com/611945 [ android android-nexus-6 ] conformance/glsl/bugs/qualcomm-crash.html [ Failure ]
-crbug.com/611945 [ android-nexus-6 android ] conformance/glsl/bugs/sampler-struct-function-arg.html [ Failure ]
-crbug.com/951628 [ android android-nexus-6 no-passthrough no-swiftshader-gl ] conformance/rendering/blending.html [ Failure ]
-crbug.com/1083320 [ android android-nexus-6 ] conformance/misc/uninitialized-test.html [ Skip ]
-crbug.com/1056830 [ android android-nexus-6 ] conformance/extensions/webgl-compressed-texture-astc.html [ Failure ]
-crbug.com/1122644 [ android android-nexus-6 ] conformance/textures/misc/texture-upload-size.html [ Skip ]
-crbug.com/1127140 [ android android-nexus-6 ] conformance/extensions/webgl-draw-buffers-framebuffer-unsupported.html [ Skip ]
-crbug.com/1180267 [ android android-nexus-6 ] conformance/extensions/webgl-multi-draw.html [ RetryOnFailure ]
-
-# This test is skipped because running it causes a future test to fail.
-# The list of tests which may be that future test is very long. It is
-# almost (but not quite) every webgl conformance test.
-crbug.com/614550 [ android android-nexus-6 ] conformance/glsl/misc/shader-struct-scope.html [ Skip ]
-
-# bindBufferBadArgs is causing the GPU thread to crash, taking
-# down the WebView shell, causing the next test to fail and
-# subsequent tests to be aborted.
-crbug.com/499874 [ android android-webview-instrumentation android-nexus-6 ] conformance/more/functions/bindBufferBadArgs.html [ Skip ]
-crbug.com/899754 [ android android-nexus-6 ] conformance/reading/fbo-remains-unchanged-after-read-pixels.html [ Failure ]
-crbug.com/899754 [ android android-nexus-6 ] conformance/reading/read-pixels-pack-alignment.html [ Failure ]
-crbug.com/899754 [ android android-nexus-6 ] conformance/reading/read-pixels-test.html [ Failure ]
-crbug.com/737002 [ android android-nexus-6 ] conformance/rendering/clear-after-copyTexImage2D.html [ Failure ]
-crbug.com/911918 [ android android-nexus-6 ] conformance/rendering/color-mask-preserved-during-implicit-clears.html [ Failure ]
-crbug.com/499555 [ android android-nexus-6 ] conformance/rendering/gl-scissor-test.html [ Failure ]
-crbug.com/611945 [ android android-nexus-6 ] conformance/rendering/gl-viewport-test.html [ Failure ]
-crbug.com/847222 [ android android-nexus-6 ] conformance/rendering/line-rendering-quality.html [ Failure ]
-crbug.com/499555 [ android android-nexus-6 no-passthrough ] conformance/textures/misc/copy-tex-image-and-sub-image-2d.html [ Failure ]
-crbug.com/693135 [ android android-nexus-6 ] conformance/offscreencanvas/context-attribute-preserve-drawing-buffer.html [ Failure ]
-crbug.com/angleproject/5015 [ android android-nexus-6 ] conformance/glsl/misc/uninitialized-local-global-variables.html [ Failure ]
-
 # Android NVIDIA: Nexus 9 and/or Shield TV
 crbug.com/798117 [ android android-nexus-9 ] conformance/glsl/bugs/assign-to-swizzled-twice-in-function.html [ Failure ]
 crbug.com/606096 [ android android-nexus-9 ] conformance/glsl/bugs/multiplication-assignment.html [ Failure ]
@@ -719,14 +677,10 @@ crbug.com/1090407 [ android android-shield-android-tv ] conformance/textures/* [
 crbug.com/906724 [ android angle-opengles ] conformance/textures/video/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ RetryOnFailure ]
 crbug.com/906724 [ android angle-opengles ] conformance/textures/video/tex-2d-luminance-luminance-unsigned_byte.html [ RetryOnFailure ]
 
-# Failing webgl video tests on nexus 5 and nexus 6.
+# Failing webgl video tests on nexus 5.
 crbug.com/1178518 [ android android-nexus-5 android-chromium ] conformance/textures/video/tex-2d-rgb-rgb-unsigned_byte.html [ Failure ]
 crbug.com/1178518 [ android android-nexus-5 android-chromium ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Failure ]
 crbug.com/1178518 [ android android-nexus-5 android-chromium ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
-
-crbug.com/1178518 [ android android-nexus-6 android-chromium ] conformance/textures/video/tex-2d-rgb-rgb-unsigned_byte.html [ Failure ]
-crbug.com/1178518 [ android android-nexus-6 android-chromium ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Failure ]
-crbug.com/1178518 [ android android-nexus-6 android-chromium ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
 
 # Pixel 4
 crbug.com/1175223 [ android android-pixel-4 angle-opengles passthrough ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
