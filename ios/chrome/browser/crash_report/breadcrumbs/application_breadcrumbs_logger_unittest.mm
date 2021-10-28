@@ -21,13 +21,13 @@
 // Test fixture for testing ApplicationBreadcrumbsLogger class.
 class ApplicationBreadcrumbsLoggerTest : public PlatformTest {
  protected:
-  ApplicationBreadcrumbsLoggerTest()
-      : logger_(std::make_unique<ApplicationBreadcrumbsLogger>(
-            &breadcrumb_manager_)) {}
+  ApplicationBreadcrumbsLoggerTest() : logger_(&breadcrumb_manager_) {}
 
   breadcrumbs::BreadcrumbManager breadcrumb_manager_{
       breadcrumbs::GetStartTime()};
-  std::unique_ptr<ApplicationBreadcrumbsLogger> logger_;
+
+  // Observes orientation events and logs them to `breadcrumb_manager_`.
+  ApplicationBreadcrumbsLogger logger_;
 };
 
 // Tests logging device orientation.
