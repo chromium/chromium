@@ -46,6 +46,7 @@
 #include "base/time/time.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user_type.h"
 #include "components/vector_icons/vector_icons.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -553,7 +554,32 @@ void CaptureModeController::SetUserCaptureRegion(const gfx::Rect& region,
 }
 
 bool CaptureModeController::CanShowFolderSelectionNudge() const {
-  return GetActiveUserPrefService()->GetBoolean(kCanShowFolderSelectionNudge);
+  auto* session_controller = Shell::Get()->session_controller();
+  DCHECK(session_controller->IsActiveUserSessionStarted());
+
+  absl::optional<user_manager::UserType> user_type =
+      session_controller->GetUserType();
+  // This can only be called while a user is logged in, so `user_type` should
+  // never be empty.
+  DCHECK(user_type);
+  switch (*user_type) {
+    case user_manager::USER_TYPE_REGULAR:
+    case user_manager::USER_TYPE_CHILD:
+      // We only allow regular and child accounts to see the nudge.
+      break;
+    case user_manager::USER_TYPE_GUEST:
+    case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
+    case user_manager::USER_TYPE_KIOSK_APP:
+    case user_manager::USER_TYPE_ARC_KIOSK_APP:
+    case user_manager::USER_TYPE_WEB_KIOSK_APP:
+    case user_manager::USER_TYPE_ACTIVE_DIRECTORY:
+    case user_manager::NUM_USER_TYPES:
+      return false;
+  }
+
+  auto* pref_service = session_controller->GetActivePrefService();
+  DCHECK(pref_service);
+  return pref_service->GetBoolean(kCanShowFolderSelectionNudge);
 }
 
 void CaptureModeController::DisableFolderSelectionNudgeForever() {

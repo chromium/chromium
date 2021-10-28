@@ -71,6 +71,7 @@
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
 #include "components/account_id/account_id.h"
+#include "components/user_manager/user_type.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -5212,6 +5213,38 @@ TEST_F(CaptureModeAdvancedSettingsTest, NudgeBehaviorWhenSelectingRegion) {
   EXPECT_EQ(
       nudge_controller->toast_widget()->GetNativeWindow()->GetRootWindow(),
       session->current_root());
+}
+
+TEST_F(CaptureModeAdvancedSettingsTest, NudgeDoesNotShowForAllUserTypes) {
+  struct {
+    std::string trace;
+    user_manager::UserType user_type;
+    bool can_see_nudge;
+  } kTestCases[] = {
+      {"regular user", user_manager::USER_TYPE_REGULAR, true},
+      {"child", user_manager::USER_TYPE_CHILD, true},
+      {"guest", user_manager::USER_TYPE_GUEST, false},
+      {"public account", user_manager::USER_TYPE_PUBLIC_ACCOUNT, false},
+      {"kiosk app", user_manager::USER_TYPE_KIOSK_APP, false},
+      {"arc kiosk app", user_manager::USER_TYPE_ARC_KIOSK_APP, false},
+      {"web kiosk app", user_manager::USER_TYPE_WEB_KIOSK_APP, false},
+      {"active dir", user_manager::USER_TYPE_ACTIVE_DIRECTORY, false},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.trace);
+    ClearLogin();
+    SimulateUserLogin("example@gmail.com", test_case.user_type);
+
+    auto* controller = StartImageRegionCapture();
+    EXPECT_EQ(test_case.can_see_nudge,
+              controller->CanShowFolderSelectionNudge());
+
+    auto* nudge_controller = GetUserNudgeController();
+    EXPECT_EQ(test_case.can_see_nudge, !!nudge_controller);
+
+    controller->Stop();
+  }
 }
 
 // Tests that clicking on audio input buttons updates the state in the
