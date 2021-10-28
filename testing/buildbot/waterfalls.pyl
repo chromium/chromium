@@ -195,6 +195,23 @@
         },
         'os_type': 'chromeos',
       },
+      'lacros-arm-generic-chrome-skylab': {
+        'additional_compile_targets': [
+          'chrome',
+          'lacros_version_metadata',
+          'linux_symbols',
+          'symupload',
+          'strip_chrome_binary'
+        ],
+        'mixins': [
+          'chrome-swarming-pool',
+          'has_native_resultdb_integration',
+        ],
+        'test_suites': {
+          'skylab_tests': 'lacros_skylab_arm',
+        },
+        'os_type': 'chromeos',
+      },
       'linux-chrome': {
         'additional_compile_targets': [
           'chrome',
