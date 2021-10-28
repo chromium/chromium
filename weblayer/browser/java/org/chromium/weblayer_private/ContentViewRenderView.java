@@ -159,6 +159,7 @@ public class ContentViewRenderView
                 mSurfaceData.setSurfaceDataNeedsDestroy(ContentViewRenderView.this.mCurrent);
             }
             ContentViewRenderView.this.mCurrent = mSurfaceData;
+            updateNeedsDidSwapBuffersCallback();
             ContentViewRenderViewJni.get().surfaceCreated(mNativeContentViewRenderView);
         }
 
@@ -493,6 +494,12 @@ public class ContentViewRenderView
             for (Runnable r : callbacks) {
                 r.run();
             }
+            updateNeedsDidSwapBuffersCallback();
+        }
+
+        public boolean hasSurfaceRedrawNeededCallbacks() {
+            return mSurfaceRedrawNeededCallbacks != null
+                    && !mSurfaceRedrawNeededCallbacks.isEmpty();
         }
 
         public View getView() {
@@ -558,6 +565,7 @@ public class ContentViewRenderView
                 mSurfaceRedrawNeededCallbacks = new ArrayList<>();
             }
             mSurfaceRedrawNeededCallbacks.add(drawingFinished);
+            updateNeedsDidSwapBuffersCallback();
             ContentViewRenderViewJni.get().setNeedsRedraw(mNativeContentViewRenderView);
         }
 
@@ -1012,6 +1020,14 @@ public class ContentViewRenderView
         mCurrent.runSurfaceRedrawNeededCallbacks();
     }
 
+    // Should be called any time inputs used to compute `needsDidSwapBuffersCallback` change.
+    private void updateNeedsDidSwapBuffersCallback() {
+        boolean needsDidSwapBuffersCallback =
+                mCurrent != null && mCurrent.hasSurfaceRedrawNeededCallbacks();
+        ContentViewRenderViewJni.get().setDidSwapBuffersCallbackEnabled(
+                mNativeContentViewRenderView, needsDidSwapBuffersCallback);
+    }
+
     private void evictCachedSurface() {
         if (mNativeContentViewRenderView == 0) return;
         ContentViewRenderViewJni.get().evictCachedSurface(mNativeContentViewRenderView);
@@ -1087,5 +1103,6 @@ public class ContentViewRenderView
         void updateBackgroundColor(long nativeContentViewRenderView);
         void setRequiresAlphaChannel(
                 long nativeContentViewRenderView, boolean requiresAlphaChannel);
+        void setDidSwapBuffersCallbackEnabled(long nativeContentViewRenderView, boolean enabled);
     }
 }

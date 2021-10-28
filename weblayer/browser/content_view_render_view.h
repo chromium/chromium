@@ -68,6 +68,7 @@ class ContentViewRenderView : public content::CompositorClient {
   base::android::ScopedJavaLocalRef<jobject> GetResourceManager(JNIEnv* env);
   void UpdateBackgroundColor(JNIEnv* env);
   void SetRequiresAlphaChannel(JNIEnv* env, jboolean requires_alpha_channel);
+  void SetDidSwapBuffersCallbackEnabled(JNIEnv* env, jboolean enable);
 
   // CompositorClient implementation
   void UpdateLayerTreeHost() override;

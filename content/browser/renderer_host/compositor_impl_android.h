@@ -112,6 +112,7 @@ class CONTENT_EXPORT CompositorImpl
   void PreserveChildSurfaceControls() override;
   void RequestPresentationTimeForNextFrame(
       PresentationTimeCallback callback) override;
+  void SetDidSwapBuffersCallbackEnabled(bool enable) override;
 
   // LayerTreeHostClient implementation.
   void WillBeginMainFrame() override {}
@@ -277,6 +278,8 @@ class CONTENT_EXPORT CompositorImpl
   base::TimeTicks latest_frame_time_;
 
   uint32_t pending_readbacks_ = 0u;
+
+  bool enable_swap_completion_callbacks_ = false;
 
   // Listen to display density change events and update painted device scale
   // factor accordingly.
