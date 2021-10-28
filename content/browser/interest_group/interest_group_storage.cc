@@ -175,7 +175,7 @@ absl::optional<std::vector<std::string>> DeserializeStringVector(
 
 // Initializes the tables, returning true on success.
 // The tables cannot exist when calling this function.
-bool CreateV4Schema(sql::Database& db) {
+bool CreateV5Schema(sql::Database& db) {
   DCHECK(!db.DoesTableExist("interest_groups"));
   static const char kInterestGroupTableSql[] =
       // clang-format off
@@ -1518,7 +1518,7 @@ bool InterestGroupStorage::InitializeSchema() {
     return false;
 
   if (new_db)
-    return CreateV4Schema(*db_);
+    return CreateV5Schema(*db_);
 
   const int db_version = meta_table.GetVersionNumber();
 
