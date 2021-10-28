@@ -240,9 +240,9 @@ AppBannerManager::~AppBannerManager() = default;
 
 bool AppBannerManager::ShouldIgnore(content::RenderFrameHost* render_frame_host,
                                     const GURL& url) {
-  // Don't start the banner flow unless the main frame has finished loading.
-  // |render_frame_host| can be null during retry attempts.
-  if (render_frame_host && render_frame_host->GetParent())
+  // Don't start the banner flow unless the primary main frame has finished
+  // loading. |render_frame_host| can be null during retry attempts.
+  if (render_frame_host && !render_frame_host->IsInPrimaryMainFrame())
     return true;
 
   // There is never a need to trigger a banner for a WebUI page.
