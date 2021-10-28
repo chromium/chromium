@@ -131,13 +131,6 @@ class CableAuthenticator {
         mUi.onStatus(code);
     }
 
-    // Called when the native code wishes to log a protobuf event.
-    @CalledByNative
-    public static void logEvent(byte[] event) {
-        // Logging disabled for now.
-        // CableEventLogger.log(event);
-    }
-
     @CalledByNative
     public static BLEAdvert newBLEAdvert(byte[] payload) {
         return new BLEAdvert(payload);
