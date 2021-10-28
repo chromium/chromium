@@ -65,17 +65,16 @@ class AssistantSystemProviderImplTest : public testing::Test {
         false /* charging */, 0 /* charging_time */, 0 /* discharging_time */,
         0 /* level */));
 
-    AssistantSystemProviderImplTest(const AssistantSystemProviderImplTest&) =
-        delete;
-    AssistantSystemProviderImplTest& operator=(
-        const AssistantSystemProviderImplTest&) = delete;
-
     system_provider_impl_ = std::make_unique<SystemProviderImpl>(
         std::make_unique<PowerManagerProviderImpl>());
     system_provider_impl_->Initialize(&platform_delegate_);
     battery_monitor_.Bind(platform_delegate_.battery_monitor_receiver());
     FlushForTesting();
   }
+  AssistantSystemProviderImplTest(const AssistantSystemProviderImplTest&) =
+      delete;
+  AssistantSystemProviderImplTest& operator=(
+      const AssistantSystemProviderImplTest&) = delete;
 
   SystemProviderImpl* system_provider() { return system_provider_impl_.get(); }
 
