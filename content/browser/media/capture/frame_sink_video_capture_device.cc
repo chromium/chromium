@@ -16,6 +16,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "base/token.h"
 #include "build/build_config.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/host/host_frame_sink_manager.h"
@@ -176,6 +177,16 @@ void FrameSinkVideoCaptureDevice::Resume() {
 
   suspend_requested_ = false;
   MaybeStartConsuming();
+}
+
+void FrameSinkVideoCaptureDevice::Crop(
+    const base::Token& crop_id,
+    base::OnceCallback<void(media::mojom::CropRequestResult)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(callback);
+
+  // TODO(crbug.com/1247761): Forward this onwards to Viz.
+  std::move(callback).Run(media::mojom::CropRequestResult::kNotImplemented);
 }
 
 void FrameSinkVideoCaptureDevice::StopAndDeAllocate() {

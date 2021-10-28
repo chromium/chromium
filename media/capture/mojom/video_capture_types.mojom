@@ -360,6 +360,7 @@ struct VideoCaptureDeviceInfo {
 // 3. Remove kNotImplemented.
 enum CropRequestResult {
   kErrorGeneric,
+  kUnsupportedCaptureDevice,
   kErrorUnknownDeviceId,
   kNotImplemented,
 };
