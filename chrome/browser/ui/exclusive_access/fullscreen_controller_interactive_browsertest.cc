@@ -1067,11 +1067,7 @@ IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
 // where the window server's async handling of the fullscreen window state may
 // transition the window into fullscreen on the actual (non-mocked) display
 // bounds before or after the window bounds checks, yielding flaky results.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_SwapWithoutUserActivation DISABLED_SwapWithoutUserActivation
-#else
-#define MAYBE_SwapWithoutUserActivation SwapWithoutUserActivation
-#endif
 // Test swapping fullscreen to another display without user activation.
 IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
                        MAYBE_SwapWithoutUserActivation) {
@@ -1105,11 +1101,7 @@ IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
 // where the window server's async handling of the fullscreen window state may
 // transition the window into fullscreen on the actual (non-mocked) display
 // bounds before or after the window bounds checks, yielding flaky results.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_SwapActivatesWindow DISABLED_SwapActivatesWindow
-#else
-#define MAYBE_SwapActivatesWindow SwapActivatesWindow
-#endif
 // Test that swapping an inactive fullscreen window to another display activates
 // the window (and raises it above the last active window in the z-order).
 IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
