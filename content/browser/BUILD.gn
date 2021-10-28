@@ -2411,6 +2411,14 @@ source_set("browser") {
 
   if (is_fuchsia) {
     sources += [
+      "accessibility/accessibility_event_recorder_fuchsia.cc",
+      "accessibility/accessibility_event_recorder_fuchsia.h",
+      "accessibility/accessibility_tree_formatter_fuchsia.cc",
+      "accessibility/accessibility_tree_formatter_fuchsia.h",
+      "accessibility/browser_accessibility_fuchsia.cc",
+      "accessibility/browser_accessibility_fuchsia.h",
+      "accessibility/browser_accessibility_manager_fuchsia.cc",
+      "accessibility/browser_accessibility_manager_fuchsia.h",
       "child_process_launcher_helper_fuchsia.cc",
       "memory/swap_metrics_driver_impl_fuchsia.cc",
       "speech/tts_fuchsia.cc",
