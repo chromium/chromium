@@ -373,8 +373,13 @@ class BottomSheet extends FrameLayout
                     if (mGestureDetector.isScrolling() && keyboardDelegate != null) {
                         keyboardDelegate.hideKeyboard(BottomSheet.this);
                     } else {
-                        cancelAnimation();
-                        setSheetState(mCurrentState, false);
+                        if (mTargetState != SheetState.NONE) {
+                            cancelAnimation();
+                            createSettleAnimation(mTargetState, StateChangeReason.NONE);
+                        } else {
+                            endAnimations();
+                            setSheetState(mCurrentState, false);
+                        }
                     }
                 }
 
