@@ -1466,6 +1466,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Android.IncognitoNotification.FileNotDeleted" enum="Boolean"
+    expires_after="2022-04-10">
+  <owner>roagarwal@chromium.org</owner>
+  <owner>chrome-incognito@google.com</owner>
+  <summary>
+    Records the count of any cases when clicking on the &quot;Close all
+    Incognito tabs&quot; notification may not delete any files which were opened
+    in the Incognito session. True value denotes file was not deleted and false
+    otherwise.
+  </summary>
+</histogram>
+
 <histogram name="Android.Input.EditableContentTypes" enum="EditableContentType"
     expires_after="2022-04-09">
   <owner>alexmitra@chromium.org</owner>

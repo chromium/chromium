@@ -17,6 +17,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
@@ -51,6 +52,8 @@ public class IncognitoNotificationServiceImpl extends IncognitoNotificationServi
                 UiThreadTaskTraits.DEFAULT, IncognitoTabHostUtils::closeAllIncognitoTabs);
 
         boolean clearedIncognito = IncognitoTabPersistence.deleteIncognitoStateFiles();
+        RecordHistogram.recordBooleanHistogram(
+                "Android.IncognitoNotification.FileNotDeleted", !clearedIncognito);
 
         // If we failed clearing all of the incognito tabs, then do not dismiss the notification.
         if (!clearedIncognito) return;
