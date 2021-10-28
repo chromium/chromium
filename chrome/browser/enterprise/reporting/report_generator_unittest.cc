@@ -244,7 +244,7 @@ class ReportGeneratorTest : public ::testing::Test {
               run_loop.Quit();
             }));
     run_loop.Run();
-    if (report_type == kFull)
+    if (report_type == ReportType::kFull)
       VerifyMetrics(rets);  // Only generated for reports with profiles.
     return rets;
   }

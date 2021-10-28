@@ -112,7 +112,7 @@ void ReportGenerator::OnBrowserReportReady(
     std::unique_ptr<em::BrowserReport> browser_report) {
   basic_request->set_allocated_browser_report(browser_report.release());
 
-  if (report_type != kBrowserVersion) {
+  if (report_type != ReportType::kBrowserVersion) {
     // Generate a queue of requests containing detailed profile information.
     std::move(callback).Run(
         report_request_queue_generator_.Generate(*basic_request));
