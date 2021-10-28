@@ -545,6 +545,7 @@ static void AdjustStyleForDisplay(ComputedStyle& style,
       style.Display() == EDisplay::kTableRow ||
       style.Display() == EDisplay::kTableRowGroup) {
     style.SetWritingMode(layout_parent_style.GetWritingMode());
+    style.SetTextOrientation(layout_parent_style.GetTextOrientation());
     style.UpdateFontOrientation();
   }
 

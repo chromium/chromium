@@ -65,7 +65,10 @@ scoped_refptr<const NGLayoutResult> NGMathRadicalLayoutAlgorithm::Layout() {
   DCHECK(!BreakToken());
   DCHECK(IsValidMathMLRadical(Node()));
 
-  auto vertical = GetRadicalVerticalParameters(Style(), Node().HasIndex());
+  const auto baseline_type = Style().GetFontBaseline();
+  const auto vertical =
+      GetRadicalVerticalParameters(Style(), Node().HasIndex());
+
   LayoutUnit index_inline_size, index_ascent, index_descent, base_ascent,
       base_descent;
   RadicalHorizontalParameters horizontal;
@@ -88,7 +91,8 @@ scoped_refptr<const NGLayoutResult> NGMathRadicalLayoutAlgorithm::Layout() {
         ComputeMarginsFor(constraint_space, base.Style(), ConstraintSpace());
     NGBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
                            base_fragment);
-    base_ascent = base_margins.block_start + fragment.BaselineOrSynthesize();
+    base_ascent =
+        base_margins.block_start + fragment.BaselineOrSynthesize(baseline_type);
     base_descent = fragment.BlockSize() + base_margins.BlockSum() - base_ascent;
   }
   if (index) {
@@ -104,7 +108,8 @@ scoped_refptr<const NGLayoutResult> NGMathRadicalLayoutAlgorithm::Layout() {
     NGBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
                            index_fragment);
     index_inline_size = fragment.InlineSize() + index_margins.InlineSum();
-    index_ascent = index_margins.block_start + fragment.BaselineOrSynthesize();
+    index_ascent = index_margins.block_start +
+                   fragment.BaselineOrSynthesize(baseline_type);
     index_descent =
         fragment.BlockSize() + index_margins.BlockSum() - index_ascent;
     horizontal = GetRadicalHorizontalParameters(Style());

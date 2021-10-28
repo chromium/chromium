@@ -289,6 +289,7 @@ scoped_refptr<const NGLayoutResult> NGMathUnderOverLayoutAlgorithm::Layout() {
 
   // TODO(crbug.com/1125136): take into account italic correction.
 
+  const auto baseline_type = Style().GetFontBaseline();
   const auto base_space = CreateConstraintSpaceForUnderOverChild(base);
   auto base_layout_result = base.Layout(base_space);
   auto base_margins =
@@ -297,7 +298,7 @@ scoped_refptr<const NGLayoutResult> NGMathUnderOverLayoutAlgorithm::Layout() {
   NGBoxFragment base_fragment(
       ConstraintSpace().GetWritingDirection(),
       To<NGPhysicalBoxFragment>(base_layout_result->PhysicalFragment()));
-  LayoutUnit base_ascent = base_fragment.BaselineOrSynthesize();
+  LayoutUnit base_ascent = base_fragment.BaselineOrSynthesize(baseline_type);
 
   // All children are positioned centered relative to the container (and
   // therefore centered relative to themselves).
@@ -328,7 +329,8 @@ scoped_refptr<const NGLayoutResult> NGMathUnderOverLayoutAlgorithm::Layout() {
         block_offset += parameters.over_gap_min;
       }
     } else {
-      LayoutUnit over_ascent = over_fragment.BaselineOrSynthesize();
+      LayoutUnit over_ascent =
+          over_fragment.BaselineOrSynthesize(baseline_type);
       block_offset +=
           std::max(over_fragment.BlockSize() + parameters.over_gap_min,
                    over_ascent + parameters.over_shift_min);
@@ -361,7 +363,8 @@ scoped_refptr<const NGLayoutResult> NGMathUnderOverLayoutAlgorithm::Layout() {
       if (!HasAccent(Node(), true))
         block_offset += parameters.under_gap_min;
     } else {
-      LayoutUnit under_ascent = under_fragment.BaselineOrSynthesize();
+      LayoutUnit under_ascent =
+          under_fragment.BaselineOrSynthesize(baseline_type);
       block_offset += std::max(parameters.under_gap_min,
                                parameters.under_shift_min - under_ascent);
     }

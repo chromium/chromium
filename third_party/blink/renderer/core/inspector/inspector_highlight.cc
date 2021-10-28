@@ -1078,9 +1078,9 @@ Vector<Vector<std::pair<PhysicalRect, float>>> GetFlexLinesAndItems(
       const auto* box = To<LayoutBox>(object);
 
       LayoutUnit baseline =
-          NGBoxFragment(box->StyleRef().GetWritingDirection(),
+          NGBoxFragment(layout_box->StyleRef().GetWritingDirection(),
                         *To<NGPhysicalBoxFragment>(child_fragment))
-              .BaselineOrSynthesize();
+              .BaselineOrSynthesize(layout_box->StyleRef().GetFontBaseline());
       float adjusted_baseline = AdjustForAbsoluteZoom::AdjustFloat(
           baseline + box->MarginTop(), box->StyleRef());
 
