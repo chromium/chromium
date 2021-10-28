@@ -291,6 +291,8 @@ public abstract class ChromeFeatureList {
     public static final String LENS_CAMERA_ASSISTED_SEARCH = "LensCameraAssistedSearch";
     /** Used only in native code. */
     public static final String CONTEXTUAL_SEARCH_DEBUG = "ContextualSearchDebug";
+    public static final String CONTEXTUAL_SEARCH_DELAYED_INTELLIGENCE =
+            "ContextualSearchDelayedIntelligence";
     public static final String CONTEXTUAL_SEARCH_FORCE_CAPTION = "ContextualSearchForceCaption";
     public static final String CONTEXTUAL_SEARCH_LEGACY_HTTP_POLICY =
             "ContextualSearchLegacyHttpPolicy";

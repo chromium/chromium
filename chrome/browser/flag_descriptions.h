@@ -1731,6 +1731,9 @@ extern const char kContextMenuPopupStyleDescription[];
 extern const char kContextualSearchDebugName[];
 extern const char kContextualSearchDebugDescription[];
 
+extern const char kContextualSearchDelayedIntelligenceName[];
+extern const char kContextualSearchDelayedIntelligenceDescription[];
+
 extern const char kContextualSearchForceCaptionName[];
 extern const char kContextualSearchForceCaptionDescription[];
 

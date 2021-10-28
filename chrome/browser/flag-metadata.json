@@ -833,6 +833,11 @@
     "expiry_milestone": 99
   },
   {
+    "name": "contextual-search-delayed-intelligence",
+    "owners": [ "//chrome/android/java/src/org/chromium/chrome/browser/contextualsearch/OWNERS" ],
+    "expiry_milestone": 102
+  },
+  {
     "name": "contextual-search-force-caption",
     "owners": [ "//chrome/android/java/src/org/chromium/chrome/browser/contextualsearch/OWNERS", "contextual-search-eng@google.com" ],
     "expiry_milestone": 99

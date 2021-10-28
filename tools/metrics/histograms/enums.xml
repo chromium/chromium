@@ -50304,6 +50304,7 @@ from previous Chrome versions.
   <int value="-420956156" label="WebApkGenerator:disabled"/>
   <int value="-420347911" label="MobileIdentityConsistencyFRE:disabled"/>
   <int value="-419733676" label="IsolatePrerendersMustProbeOrigin:disabled"/>
+  <int value="-419659180" label="ContextualSearchDelayedIntelligence:disabled"/>
   <int value="-418868128" label="enable-experimental-web-platform-features"/>
   <int value="-418676305" label="ScanningUI:enabled"/>
   <int value="-417633330" label="MessagesForAndroidInfrastructure:enabled"/>
@@ -50522,6 +50523,7 @@ from previous Chrome versions.
   <int value="-254158542" label="SubresourceRedirectPreviews:enabled"/>
   <int value="-253619457" label="ChromeSharingHubLaunchAdjacent:enabled"/>
   <int value="-252258023" label="ShimlessRMAFlow:enabled"/>
+  <int value="-252128826" label="ContextualSearchDelayedIntelligence:enabled"/>
   <int value="-250822813" label="PwaImprovedSplashScreen:enabled"/>
   <int value="-250721831" label="AndroidAutofillAccessibility:disabled"/>
   <int value="-250543540" label="DeferAllScript:enabled"/>

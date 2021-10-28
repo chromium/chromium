@@ -3026,6 +3026,12 @@ const char kContextualSearchDebugDescription[] =
     "Enables internal debugging of Contextual Search behavior on the client "
     "and server.";
 
+const char kContextualSearchDelayedIntelligenceName[] =
+    "Contextual Search Delayed Intelligence";
+const char kContextualSearchDelayedIntelligenceDescription[] =
+    "Enables an intelligent search for default-enabled users when they open "
+    "the bottom sheet.";
+
 const char kContextualSearchForceCaptionName[] =
     "Contextual Search force a caption";
 const char kContextualSearchForceCaptionDescription[] =
