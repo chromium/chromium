@@ -52,7 +52,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="2121284319307530122">Opnieuw starten om &amp;Chrome te updaten</translation>
 <translation id="2123055963409958220">Help Chrome beter te maken door de <ph name="BEGIN_LINK" />huidige instellingen<ph name="END_LINK" /> te melden</translation>
 <translation id="2151406531797534936">Chrome nu opnieuw opstarten</translation>
-<translation id="2246246234298806438">Google Chrome kan het afdrukvoorbeeld niet tonen wanneer de ingebouwde pdf-viewer ontbreekt.</translation>
+<translation id="2246246234298806438">Google Chrome kan het afdrukvoorbeeld niet bekijken wanneer de ingebouwde pdf-viewer ontbreekt.</translation>
 <translation id="2290014774651636340">Google API-sleutels ontbreken. Sommige functies van Google Chrome worden uitgezet.</translation>
 <translation id="2290095356545025170">Weet je zeker dat je Google Chrome wilt verwijderen?</translation>
 <translation id="2309047409763057870">Dit is een tweede installatie van Google Chrome en kan niet als standaardbrowser worden ingesteld.</translation>
@@ -188,7 +188,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
           <ph name="BEGIN_PARAGRAPH3" />Meer informatie over de installatie van Chrome OS en het wissen van gegevens: [TBD URL]<ph name="END_PARAGRAPH3" />
 <ph name="BEGIN_PARAGRAPH4" />Als je wilt doorgaan, klik je op Chrome OS installeren. We leiden je in een paar makkelijke stappen door de installatie. Je krijgt nog een kans om te bevestigen voordat we wijzigingen aanbrengen op je computer.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5486618155264784386">Chrome OS installeren</translation>
-<translation id="556024056938947818">Google Chrome probeert wachtwoorden te tonen.</translation>
+<translation id="556024056938947818">Google Chrome probeert wachtwoorden te bekijken.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5657226924540934362">Als je een instelling niet ziet op deze pagina, kijk je in de <ph name="LINK_BEGIN" />Chrome OS-instellingen<ph name="LINK_END" /></translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> kan gevaarlijk zijn en is daarom door Chrome geblokkeerd.</translation>
@@ -276,7 +276,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="8129812357326543296">Over &amp;Google Chrome</translation>
 <translation id="822971176939352383">De volgende accounts zijn niet ingelogd bij Chrome-profielen. Als je een account wilt gebruiken in een ander profiel, verwijder je eerst dat profiel.</translation>
 <translation id="8255190535488645436">Google Chrome gebruikt je camera en microfoon.</translation>
-<translation id="8286862437124483331">Google Chrome probeert wachtwoorden te tonen. Geef je Windows-wachtwoord op om dit toe te staan.</translation>
+<translation id="8286862437124483331">Google Chrome probeert wachtwoorden te bekijken. Geef je Windows-wachtwoord op om dit toe te staan.</translation>
 <translation id="828798499196665338">Je ouder heeft 'Rechten voor sites, apps en extensies' uitgezet voor Chrome. Je mag deze <ph name="EXTENSION_TYPE_PARAMETER" /> niet aanzetten.</translation>
 <translation id="8290100596633877290">Oeps! Google Chrome is vastgelopen. Nu opnieuw starten?</translation>
 <translation id="8342675569599923794">Dit bestand is gevaarlijk en is daarom door Chrome geblokkeerd.</translation>

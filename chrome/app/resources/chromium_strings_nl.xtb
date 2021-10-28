@@ -10,7 +10,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="1131805035311359397">Als je wilt checken of je wachtwoorden zijn beveiligd tegen gegevenslekken en andere beveiligingsproblemen, <ph name="BEGIN_LINK" />log je in bij Chromium<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">Over Chromium</translation>
 <translation id="1315551408014407711">Je nieuwe Chromium-profiel instellen</translation>
-<translation id="1396446129537741364">Chromium probeert wachtwoorden te tonen.</translation>
+<translation id="1396446129537741364">Chromium probeert wachtwoorden te bekijken.</translation>
 <translation id="1414495520565016063">Je bent ingelogd bij Chromium.</translation>
 <translation id="151962892725702025">Chromium OS kan je gegevens niet synchroniseren omdat synchronisatie niet beschikbaar is voor je domein.</translation>
 <translation id="1524282610922162960">Een Chromium-tabblad delen</translation>
@@ -136,7 +136,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="5386450000063123300">Chromium updaten (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Inloggen bij Chromium toestaan</translation>
 <translation id="5398878173008909840">Er is een nieuwe versie van Chromium beschikbaar.</translation>
-<translation id="5416696090975899932">Chromium kan het afdrukvoorbeeld niet tonen wanneer de ingebouwde pdf-viewer ontbreekt.</translation>
+<translation id="5416696090975899932">Chromium kan het afdrukvoorbeeld niet bekijken wanneer de ingebouwde pdf-viewer ontbreekt.</translation>
 <translation id="5427571867875391349">Chromium instellen als je standaardbrowser</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium bèta</translation>
 <translation id="5479196819031988440">Chromium OS kan deze pagina niet openen.</translation>
@@ -281,7 +281,7 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="8862326446509486874">Je hebt geen rechten om op systeemniveau te installeren. Meld je aan als beheerder en voer het installatieprogramma opnieuw uit.</translation>
 <translation id="8880203542552872219">Als dit het geval is, bewerk je het opgeslagen wachtwoord in Chromium, zodat het overeenkomt met je nieuwe wachtwoord.</translation>
 <translation id="8897323336392112261">Hiermee wordt ook gecontroleerd welke pagina wordt getoond wanneer je Chromium start of op de Homepage-knop klikt.</translation>
-<translation id="8907580949721785412">Chromium probeert wachtwoorden te tonen. Geef je Windows-wachtwoord op om dit toe te staan.</translation>
+<translation id="8907580949721785412">Chromium probeert wachtwoorden te bekijken. Geef je Windows-wachtwoord op om dit toe te staan.</translation>
 <translation id="8941642502866065432">Kan Chromium niet updaten</translation>
 <translation id="8974095189086268230">Chromium OS wordt mogelijk gemaakt door aanvullende <ph name="BEGIN_LINK_CROS_OSS" />opensource-software<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="8986207147630327271">Je voegt een werkprofiel toe aan deze browser en geeft je beheerder alleen de controle over het werkprofiel.</translation>

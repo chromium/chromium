@@ -31,7 +31,7 @@
 <translation id="3996880007329611795">Meldingen krijgen</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> tabbladen lijken gerelateerd. Wil je deze groeperen?</translation>
 <translation id="4212246570487010370">Verder browsen</translation>
-<translation id="4450893287417543264">Niet meer tonen</translation>
+<translation id="4450893287417543264">Niet meer bekijken</translation>
 <translation id="4648718555153979859">Je tabbladen zijn hier gegroepeerd</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> review)}other{(<ph name="REVIEWS_COUNT_MANY" /> reviews)}}</translation>
 <translation id="4850886885716139402">Weergave</translation>
@@ -40,7 +40,7 @@
 <translation id="5073204694187207510">Raster op volledig scherm verbergen</translation>
 <translation id="5082793167783849073">Vergelijk pagina's snel door een groep te maken. Tik op een link en houd deze vast om te beginnen.</translation>
 <translation id="5490235265819901748">Tabbladgroep uitgevouwen</translation>
-<translation id="5533021382642990449">Later tonen</translation>
+<translation id="5533021382642990449">Later bekijken</translation>
 <translation id="5556417849629758491">Winkelinformatie bekijken, optie beschikbaar bovenaan het scherm</translation>
 <translation id="5558362125926932819">Tabbladgroep met <ph name="NUMBER_OF_TABS" /> tabbladen sluiten</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> tabbladen gegroepeerd</translation>
@@ -59,7 +59,7 @@
 <translation id="7204204600596740190">Optie om meerdere tabbladen te selecteren</translation>
 <translation id="7352298686197644113">Bekijk welk item op je geopende tabbladen een lagere prijs heeft</translation>
 <translation id="753732157349120914">Tabbladschakelaar</translation>
-<translation id="7559245342362162951">Tabbladen van groep tonen in raster op volledig scherm</translation>
+<translation id="7559245342362162951">Tabbladen van groep bekijken in raster op volledig scherm</translation>
 <translation id="7792771145871471484">Bekijk de suggesties.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> geselecteerd tabblad groeperen}other{<ph name="TABS_COUNT_MANY" /> geselecteerde tabbladen groeperen}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> beoordeling, <ph name="REVIEWS_COUNT_ONE" /> review}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> beoordeling, <ph name="REVIEWS_COUNT_MANY" /> reviews}}</translation>
@@ -67,7 +67,7 @@
 <translation id="7966321538264951561">Sluit de suggesties.</translation>
 <translation id="814503310257431685">Alles bekijken</translation>
 <translation id="8205266828577616993">Tabblad omhoog verplaatsen</translation>
-<translation id="8304833501377495048">Tabbladstrook niet meer tonen?</translation>
+<translation id="8304833501377495048">Tabbladstrook niet meer bekijken?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> geselecteerd tabblad sluiten}other{<ph name="TABS_COUNT_MANY" /> geselecteerde tabbladen sluiten}}</translation>
 <translation id="8557923272772633250">Tabbladgroep met <ph name="NUMBER_OF_TABS" /> tabbladen uitvouwen</translation>
 <translation id="860282621117673749">Meldingen over prijsdalingen</translation>

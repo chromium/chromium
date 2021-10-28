@@ -3502,7 +3502,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4699172675775169585">Imazhet dhe skedarët në memorien specifike</translation>
 <translation id="4699357559218762027">(nisur automatikisht)</translation>
 <translation id="4701025263201366865">Identifikimi i prindit</translation>
-<translation id="4707582759326616943">Zvarrit për të kërkuar tek imazhet me "Lenten e Google"</translation>
+<translation id="4707582759326616943">Zvarrit për të kërkuar imazhe me "Lenten e Google"</translation>
 <translation id="4708794300267213770">Shfaq ekranin e kyçjes kur zgjohet nga gjumi</translation>
 <translation id="4708849949179781599">Dil nga <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Restauro cilësimet</translation>
@@ -5143,7 +5143,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="6532663472409656417">E regjistruar për ndërmarrjen</translation>
 <translation id="6535331821390304775">Lejo gjithmonë që <ph name="ORIGIN" /> të hapë lidhjet e këtij lloji në aplikacionin përkatës</translation>
 <translation id="653659894138286600">Skano dokumentet dhe imazhet</translation>
-<translation id="6537016096312202316">Zvarrit imazhet për të kërkuar me "Lenten e Google"</translation>
+<translation id="6537016096312202316">Zvarrit mbi imazhe për të kërkuar me "Lenten e Google"</translation>
 <translation id="6537613839935722475">Emri mund të përdorë shkronja, numra dhe viza ndarëse (-)</translation>
 <translation id="6537880577641744343">Commander</translation>
 <translation id="6538098297809675636">Gabim në zbulimin e kodit</translation>
@@ -7384,7 +7384,7 @@ Shtyp një çelës të caktuar për të hequr caktimin</translation>
 <translation id="8907787635362884532">Publikuesi: <ph name="APP_ORIGIN" /></translation>
 <translation id="8907906903932240086">Chrome mund ta kontrollojë kompjuterin tënd për softuerë të dëmshëm</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> është çinstaluar</translation>
-<translation id="8909782404367982052">Zvarrit për të kërkuar tek imazhet me "Lenten e Google"</translation>
+<translation id="8909782404367982052">Zvarrit për të kërkuar imazhe me "Lenten e Google"</translation>
 <translation id="8909833622202089127">Sajti po gjurmon vendndodhjen tënde</translation>
 <translation id="8910222113987937043">Ndryshimet te faqeshënuesit, historiku, fjalëkalimet dhe cilësimet e tjera nuk do të sinkronizohen më te llogaria jote e Google. Sidoqoftë, të dhënat e tua ekzistuese do të qëndrojnë të ruajtura te llogaria jote e Google dhe mund të menaxhohen në <ph name="BEGIN_LINK" />Panelin analitik të Google.<ph name="END_LINK" /></translation>
 <translation id="8910987510378294980">Fshih listën e pajisjeve</translation>
@@ -7526,7 +7526,7 @@ Shtyp një çelës të caktuar për të hequr caktimin</translation>
 <translation id="9055636786322918818">Zbato enkriptimin RC4. Përdorimi i këtij opsioni rrit rrezikun për ty, pasi shifrat RC4 nuk janë të sigurta.</translation>
 <translation id="9056810968620647706">Nuk u gjet asnjë përputhje.</translation>
 <translation id="9057354806206861646">Përditëso orarin</translation>
-<translation id="9057599413476594385">Zvarrit imazhet për të kërkuar me "Lenten e Google"</translation>
+<translation id="9057599413476594385">Zvarrit mbi imazhe për të kërkuar me "Lenten e Google"</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Gabim nga rreshti <ph name="ERROR_LINE_START" /> deri në <ph name="ERROR_LINE_END" /></translation>
 <translation id="9063800855227801443">Nuk mund të regjistrojë përmbajtje konfidenciale</translation>

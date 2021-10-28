@@ -82,7 +82,7 @@
 <translation id="3008272652534848354">Rechten resetten</translation>
 <translation id="301521992641321250">Automatisch geblokkeerd</translation>
 <translation id="3114012059975132928">Videospeler</translation>
-<translation id="3115898365077584848">Informatie tonen</translation>
+<translation id="3115898365077584848">Informatie bekijken</translation>
 <translation id="3123473560110926937">Geblokkeerd op bepaalde sites</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> opgeslagen gegevens</translation>
 <translation id="321187648315454507">Als je wilt dat <ph name="APP_NAME" /> je meldingen stuurt, moet je meldingen ook aanzetten via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
@@ -161,7 +161,7 @@
 <translation id="5403592356182871684">Namen</translation>
 <translation id="5438097262470833822">Met deze keuze reset je de rechten voor <ph name="WEBSITE" /></translation>
 <translation id="5489227211564503167">De verstreken tijd is <ph name="ELAPSED_TIME" /> van <ph name="TOTAL_TIME" />.</translation>
-<translation id="5494752089476963479">Advertenties blokkeren op sites die opdringerige of misleidende advertenties tonen</translation>
+<translation id="5494752089476963479">Advertenties blokkeren op sites die opdringerige of misleidende advertenties bekijken</translation>
 <translation id="5502860503640766021"><ph name="PERMISSION_1" /> toegestaan, <ph name="PERMISSION_2" /> geblokkeerd</translation>
 <translation id="5505264765875738116">Sites kunnen niet vragen of ze je meldingen mogen sturen</translation>
 <translation id="5516455585884385570">Instellingen voor meldingen openen</translation>
@@ -231,7 +231,7 @@
 <translation id="7053983685419859001">Blokkeren</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 geselecteerd}other{# geselecteerd}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> geselecteerd. Opties beschikbaar bovenaan het scherm.</translation>
-<translation id="7141896414559753902">Sites niet toestaan pop-ups te tonen en omleidingen uit te voeren (aanbevolen)</translation>
+<translation id="7141896414559753902">Sites niet toestaan pop-ups te bekijken en omleidingen uit te voeren (aanbevolen)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="723171743924126238">Afbeeldingen selecteren</translation>
 <translation id="7243308994586599757">Opties beschikbaar onder aan het scherm</translation>
