@@ -4,7 +4,7 @@
 
 import {assert, assertInstanceof} from '../chrome_util.js';
 import * as dom from '../dom.js';
-import {Box, Line, Point, Size, vectorFromPoints} from '../geometry.js';
+import {Box, Line, Point, Size, Vector, vectorFromPoints} from '../geometry.js';
 import {I18nString} from '../i18n_string.js';
 import {Rotation, ViewName} from '../type.js';
 import * as util from '../util.js';
@@ -27,7 +27,7 @@ const ROTATIONS = [
 
 /**
  * @typedef {{
- *   el: !HTMLDivElement,
+ *   el: !HTMLButtonElement,
  *   pt: !Point,
  *   pointerId: ?number,
  * }}
@@ -108,7 +108,7 @@ export class CropDocument extends Review {
       for (let i = 0; i < 4; i++) {
         const tpl = util.instantiateTemplate('#document-drag-point-template');
         ret.push({
-          el: dom.getFrom(tpl, `.dot`, HTMLDivElement),
+          el: dom.getFrom(tpl, `.dot`, HTMLButtonElement),
           pt: new Point(0, 0),
           pointerId: null,
         });
@@ -141,12 +141,79 @@ export class CropDocument extends Review {
       return new Size(width, height);
     })();
 
-    // Start dragging on one corner.
     this.corners_.forEach((corn) => {
+      // Start dragging on one corner.
       corn.el.addEventListener('pointerdown', (e) => {
         e.preventDefault();
         assert(e.target === corn.el);
         this.setDragging_(corn, assertInstanceof(e, PointerEvent).pointerId);
+      });
+
+      // Use arrow key to move corner.
+      const KEYS = ['ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight'];
+      const getKeyIndex = (e) =>
+          KEYS.indexOf(assertInstanceof(e, KeyboardEvent).key);
+      const KEY_MOVEMENTS = [
+        new Vector(0, -1),
+        new Vector(-1, 0),
+        new Vector(0, 1),
+        new Vector(1, 0),
+      ];
+      /**
+       * Maps from key index in |KEYS| to corresponding movement handler.
+       * @type {!Map<number, function()>}
+       */
+      const keyHandlers = new Map();
+      let keyInterval = null;
+      const clearKeydown = () => {
+        if (keyInterval !== null) {
+          keyInterval.stop();
+          keyInterval = null;
+        }
+        keyHandlers.clear();
+      };
+
+      corn.el.addEventListener('blur', (e) => {
+        clearKeydown();
+      });
+
+      corn.el.addEventListener('keydown', (e) => {
+        const keyIdx = getKeyIndex(e);
+        if (keyIdx === -1 || keyHandlers.has(keyIdx)) {
+          return;
+        }
+        const movement = KEY_MOVEMENTS[(keyIdx + this.rotation_) % 4];
+        const move = () => {
+          const {x: curX, y: curY} = corn.pt;
+          const nextPt = new Point(curX + movement.x, curY + movement.y);
+          const validPt = this.mapToValidArea_(corn, nextPt);
+          if (validPt === null) {
+            return;
+          }
+          corn.pt = validPt;
+          this.updateCornerEl_();
+        };
+        move();
+        keyHandlers.set(keyIdx, move);
+
+        if (keyInterval === null) {
+          const PRESS_TIMEOUT = 500;
+          const HOLD_INTERVAL = 100;
+          keyInterval = new util.DelayInterval(() => {
+            keyHandlers.forEach((handler) => handler());
+          }, PRESS_TIMEOUT, HOLD_INTERVAL);
+        }
+      });
+
+      corn.el.addEventListener('keyup', (e) => {
+        const keyIdx = getKeyIndex(e);
+        if (keyIdx === -1) {
+          return;
+        }
+        keyHandlers.delete(keyIdx);
+        if (keyHandlers.size === 0) {
+          clearKeydown();
+        }
       });
     });
 
