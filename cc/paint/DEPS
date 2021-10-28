@@ -5,6 +5,7 @@ include_rules = [
   "+cc/base",
   "+cc/debug",
   "+cc/paint",
+  "+skia/buildflags.h",
 ]
 
 specific_include_rules = {

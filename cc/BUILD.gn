@@ -746,9 +746,6 @@ cc_test("cc_unittests") {
     "paint/paint_worklet_input_unittest.cc",
     "paint/scoped_raster_flags_unittest.cc",
     "paint/skia_paint_canvas_unittest.cc",
-    "paint/skottie_mru_resource_provider_unittest.cc",
-    "paint/skottie_resource_metadata_unittest.cc",
-    "paint/skottie_wrapper_unittest.cc",
     "paint/solid_color_analyzer_unittest.cc",
     "paint/transfer_cache_unittest.cc",
     "raster/playback_image_provider_unittest.cc",
@@ -831,9 +828,14 @@ cc_test("cc_unittests") {
     "test/run_all_unittests.cc",
   ]
 
-  if (!is_android) {
+  if (skia_support_skottie) {
     data = [ "//components/viz/test/data/" ]
-    sources += [ "paint/skottie_transfer_cache_entry_unittest.cc" ]
+    sources += [
+      "paint/skottie_mru_resource_provider_unittest.cc",
+      "paint/skottie_resource_metadata_unittest.cc",
+      "paint/skottie_transfer_cache_entry_unittest.cc",
+      "paint/skottie_wrapper_unittest.cc",
+    ]
   }
 
   deps = [
@@ -860,6 +862,7 @@ cc_test("cc_unittests") {
     "//media",
     "//mojo/core/embedder",
     "//mojo/public/cpp/bindings",
+    "//skia:buildflags",
     "//skia:skcms",
     "//testing/gmock",
     "//testing/gtest",

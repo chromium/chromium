@@ -10,7 +10,6 @@
 #include "base/cxx17_backports.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
-#include "build/build_config.h"
 #include "cc/paint/decoded_draw_image.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/image_provider.h"
@@ -29,6 +28,7 @@
 #include "cc/test/test_paint_worklet_input.h"
 #include "cc/test/test_skcanvas.h"
 #include "cc/test/transfer_cache_test_helper.h"
+#include "skia/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkMaskFilter.h"
 #include "third_party/skia/include/effects/SkColorMatrixFilter.h"
@@ -1223,21 +1223,23 @@ std::vector<PaintImage> test_images = {
     CreateDiscardablePaintImage(gfx::Size(50, 50)),
 };
 
-#if defined(OS_ANDROID)
-bool kIsSkottieSupported = false;
-#else
+#if BUILDFLAG(SKIA_SUPPORT_SKOTTIE)
 bool kIsSkottieSupported = true;
-#endif
 
 std::vector<scoped_refptr<SkottieWrapper>> test_skotties = {
     CreateSkottie(gfx::Size(10, 20), 4), CreateSkottie(gfx::Size(100, 40), 5),
     CreateSkottie(gfx::Size(80, 70), 6)};
-
 std::vector<float> test_skottie_floats = {0, 0.1f, 1.f};
-
 std::vector<SkRect> test_skottie_rects = {SkRect::MakeXYWH(10, 20, 30, 40),
                                           SkRect::MakeXYWH(0, 5, 10, 20),
                                           SkRect::MakeXYWH(6, 0, 3, 50)};
+#else
+bool kIsSkottieSupported = false;
+
+std::vector<scoped_refptr<SkottieWrapper>> test_skotties;
+std::vector<float> test_skottie_floats;
+std::vector<SkRect> test_skottie_rects;
+#endif
 
 // Writes as many ops in |buffer| as can fit in |output_size| to |output|.
 // Records the numbers of bytes written for each op.
@@ -2768,19 +2770,6 @@ TEST(PaintOpBufferTest, BoundingRect_DrawDRRectOp) {
   }
 }
 
-TEST(PaintOpBufferTest, BoundingRect_DrawSkottieOp) {
-  PaintOpBuffer buffer;
-  PushDrawSkottieOps(&buffer);
-
-  SkRect rect;
-  for (auto* base_op : PaintOpBuffer::Iterator(&buffer)) {
-    auto* op = static_cast<DrawSkottieOp*>(base_op);
-
-    ASSERT_TRUE(PaintOp::GetBounds(op, &rect));
-    EXPECT_EQ(rect, op->dst.makeSorted());
-  }
-}
-
 TEST(PaintOpBufferTest, BoundingRect_DrawTextBlobOp) {
   PaintOpBuffer buffer;
   PushDrawTextBlobOps(&buffer);
@@ -3422,7 +3411,20 @@ TEST(PaintOpBufferTest, PaintRecordShaderSerialization) {
   EXPECT_TRUE(*rect_op->flags.getShader() == *flags.getShader());
 }
 
-#if !defined(OS_ANDROID)
+#if BUILDFLAG(SKIA_SUPPORT_SKOTTIE)
+TEST(PaintOpBufferTest, BoundingRect_DrawSkottieOp) {
+  PaintOpBuffer buffer;
+  PushDrawSkottieOps(&buffer);
+
+  SkRect rect;
+  for (auto* base_op : PaintOpBuffer::Iterator(&buffer)) {
+    auto* op = static_cast<DrawSkottieOp*>(base_op);
+
+    ASSERT_TRUE(PaintOp::GetBounds(op, &rect));
+    EXPECT_EQ(rect, op->dst.makeSorted());
+  }
+}
+
 // Skottie-specific deserialization failure case.
 TEST(PaintOpBufferTest,
      DrawSkottieOpSerializationFailureFromUnPrivilegedProcess) {
@@ -3458,7 +3460,7 @@ TEST(PaintOpBufferTest,
       memory.get(), serializer.written(), d_options);
   ASSERT_FALSE(deserialized_buffer);
 }
-#endif  // !defined(OS_ANDROID
+#endif  // BUILDFLAG(SKIA_SUPPORT_SKOTTIE)
 
 TEST(PaintOpBufferTest, CustomData) {
   // Basic tests: size, move, comparison.

@@ -6,7 +6,6 @@
 #define CC_PAINT_PAINT_OP_READER_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "build/build_config.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_filter.h"
 #include "cc/paint/paint_op_writer.h"
@@ -79,9 +78,7 @@ class CC_PAINT_EXPORT PaintOpReader {
   void Read(SkYUVAInfo::Subsampling* subsampling);
   void Read(gpu::Mailbox* mailbox);
 
-#if !defined(OS_ANDROID)
   void Read(scoped_refptr<SkottieWrapper>* skottie);
-#endif
 
   void Read(SkClipOp* op) { ReadEnum<SkClipOp, SkClipOp::kMax_EnumValue>(op); }
   void Read(PaintCanvas::AnnotationType* type) {

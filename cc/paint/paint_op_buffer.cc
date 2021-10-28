@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/stl_util.h"
-#include "build/build_config.h"
 #include "cc/paint/decoded_draw_image.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/image_provider.h"
@@ -691,19 +690,12 @@ size_t DrawSkottieOp::Serialize(const PaintOp* base_op,
                                 const PaintFlags* flags_to_serialize,
                                 const SkM44& current_ctm,
                                 const SkM44& original_ctm) {
-#if defined(OS_ANDROID)
-  // Skottie is not used in android, so to keep apk size small it is excluded
-  // from the build.
-  NOTREACHED();
-  return 0u;
-#else
   auto* op = static_cast<const DrawSkottieOp*>(base_op);
   PaintOpWriter helper(memory, size, options);
   helper.Write(op->dst);
   helper.Write(SkFloatToScalar(op->t));
   helper.Write(op->skottie);
   return helper.size();
-#endif  // OS_ANDROID
 }
 
 size_t DrawTextBlobOp::Serialize(const PaintOp* base_op,
@@ -1214,11 +1206,6 @@ PaintOp* DrawSkottieOp::Deserialize(const volatile void* input,
                                     void* output,
                                     size_t output_size,
                                     const DeserializeOptions& options) {
-#if defined(OS_ANDROID)
-  // Skottie is not used on Android. To keep apk size small the skottie library
-  // is excluded from the binary.
-  return nullptr;
-#else
   DCHECK_GE(output_size, sizeof(DrawSkottieOp));
   DrawSkottieOp* op = new (output) DrawSkottieOp;
 
@@ -1237,7 +1224,6 @@ PaintOp* DrawSkottieOp::Deserialize(const volatile void* input,
   }
   UpdateTypeAndSkip(op);
   return op;
-#endif  // OS_ANDROID
 }
 
 PaintOp* DrawTextBlobOp::Deserialize(const volatile void* input,

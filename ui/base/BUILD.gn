@@ -13,6 +13,7 @@ import("//build/config/ozone.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/ui.gni")
 import("//build/util/branding.gni")
+import("//skia/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 import("//tools/grit/grit_rule.gni")
@@ -1181,7 +1182,7 @@ test("ui_base_unittests") {
     data += [ "$root_out_dir/ui_unittests Framework.framework/" ]
   }
 
-  if (!is_ios) {
+  if (skia_support_skottie && !is_ios) {
     sources += [ "//ui/lottie/animation_unittest.cc" ]
     deps += [ "//ui/lottie" ]
   }

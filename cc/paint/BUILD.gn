@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//cc/cc.gni")
+import("//skia/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
 cc_component("paint") {
@@ -81,11 +82,10 @@ cc_component("paint") {
     "skia_paint_canvas.h",
     "skia_paint_image_generator.cc",
     "skia_paint_image_generator.h",
-    "skottie_mru_resource_provider.cc",
-    "skottie_mru_resource_provider.h",
     "skottie_resource_metadata.cc",
     "skottie_resource_metadata.h",
-    "skottie_wrapper.cc",
+    "skottie_transfer_cache_entry.cc",
+    "skottie_transfer_cache_entry.h",
     "skottie_wrapper.h",
     "solid_color_analyzer.cc",
     "solid_color_analyzer.h",
@@ -120,11 +120,20 @@ cc_component("paint") {
     "//ui/gfx/ipc/color",
   ]
 
-  if (!is_android) {
+  if (skia_support_skottie) {
+    # All source files that depend on the actual Skottie module within Skia
+    # should go here. If a source file is Skottie-related but depends only on
+    # Chromium and/or "common" Skia dependencies, it is fine to include that
+    # in the main "sources" list. Note that ultimately, all dependencies on
+    # the Skottie library should be contained in some way/shape/form within
+    # skottie_wrapper_impl.cc
     sources += [
-      "skottie_transfer_cache_entry.cc",
-      "skottie_transfer_cache_entry.h",
+      "skottie_mru_resource_provider.cc",
+      "skottie_mru_resource_provider.h",
+      "skottie_wrapper_impl.cc",
     ]
+  } else {
+    sources += [ "skottie_wrapper_stub.cc" ]
   }
 }
 
