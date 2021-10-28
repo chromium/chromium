@@ -57,6 +57,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.profile_metrics.BrowserProfileType;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
@@ -146,7 +147,8 @@ public class BookmarkUtils {
             @BookmarkType int bookmarkType) {
         BookmarkId bookmarkId;
         // TODO(crbug.com/1252228): Reading list support needs some tests.
-        bookmarkId = addBookmarkInternal(activity, bookmarkModel, tab, bookmarkType);
+        bookmarkId = addBookmarkInternal(activity, bookmarkModel, tab.getTitle(),
+                tab.getOriginalUrl(), tab.getWebContents(), /*parent=*/null, bookmarkType);
         BookmarkSaveFlowCoordinator bookmarkSaveFlowCoordinator =
                 new BookmarkSaveFlowCoordinator(activity, bottomSheetController,
                         new CommerceSubscriptionsServiceFactory()
@@ -166,8 +168,8 @@ public class BookmarkUtils {
             return addToReadingList(
                     tab.getOriginalUrl(), tab.getTitle(), snackbarManager, bookmarkModel, activity);
         }
-        BookmarkId bookmarkId =
-                addBookmarkInternal(activity, bookmarkModel, tab, BookmarkType.NORMAL);
+        BookmarkId bookmarkId = addBookmarkInternal(activity, bookmarkModel, tab.getTitle(),
+                tab.getOriginalUrl(), tab.getWebContents(), /*parent=*/null, BookmarkType.NORMAL);
 
         if (bookmarkId != null && bookmarkId.getType() == BookmarkType.NORMAL) {
             @BrowserProfileType
@@ -194,7 +196,7 @@ public class BookmarkUtils {
                     bookmarkModel.getBookmarkById(bookmarkId).getParentId());
             SnackbarController snackbarController =
                     createSnackbarControllerForEditButton(activity, bookmarkId);
-            if (getLastUsedParent(activity) == null) {
+            if (getLastUsedParent(activity, bookmarkModel) == null) {
                 if (fromCustomTab) {
                     String packageLabel = BuildInfo.getInstance().hostPackageLabel;
                     snackbar = Snackbar.make(
@@ -254,13 +256,10 @@ public class BookmarkUtils {
      * @param tab The current {@link Tab} which bookmark properties are pulled.
      * @param bookmarkType The {@link BookmarkType} of the bookmark.
      */
-    private static BookmarkId addBookmarkInternal(
-            Context context, BookmarkModel bookmarkModel, Tab tab, @BookmarkType int bookmarkType) {
-        if (ReadingListFeatures.isReadingListEnabled()
-                && bookmarkType == BookmarkType.READING_LIST) {
-            return bookmarkModel.addToReadingList(tab.getTitle(), tab.getOriginalUrl());
-        }
-        BookmarkId parent = getLastUsedParent(context);
+    static BookmarkId addBookmarkInternal(Context context, BookmarkModel bookmarkModel,
+            String title, GURL url, WebContents webContents, @Nullable BookmarkId parent,
+            @BookmarkType int bookmarkType) {
+        parent = parent == null ? getLastUsedParent(context, bookmarkModel) : parent;
         BookmarkItem parentItem = null;
         if (parent != null) {
             parentItem = bookmarkModel.getBookmarkById(parent);
@@ -270,20 +269,28 @@ public class BookmarkUtils {
             parent = bookmarkModel.getDefaultFolder();
         }
 
+        // Reading list items will be added when either one of the 2 conditions is met:
+        // 1. The bookmark type explicitly specifies READING_LIST.
+        // 2. The last used parent implicitly specifies READING_LIST.
+        if (ReadingListFeatures.isReadingListEnabled()
+                && (bookmarkType == BookmarkType.READING_LIST
+                        || parent.getType() == BookmarkType.READING_LIST)) {
+            return bookmarkModel.addToReadingList(title, url);
+        }
+
         BookmarkId bookmarkId = null;
         // Use "New tab" as title for both incognito and regular NTP.
-        String title = tab.getTitle();
-        if (tab.getUrl().getSpec().equals(UrlConstants.NTP_URL)) {
+        if (url.getSpec().equals(UrlConstants.NTP_URL)) {
             title = context.getResources().getString(R.string.new_tab_title);
         }
         // The shopping list experiment saves extra metadata along with the bookmark.
         if (ChromeFeatureList.isInitialized()
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.SHOPPING_LIST)) {
-            bookmarkId = bookmarkModel.addPowerBookmark(tab.getWebContents(), parent,
-                    bookmarkModel.getChildCount(parent), title, tab.getUrl());
+            bookmarkId = bookmarkModel.addPowerBookmark(
+                    webContents, parent, bookmarkModel.getChildCount(parent), title, url);
         } else {
             bookmarkId = bookmarkModel.addBookmark(
-                    parent, bookmarkModel.getChildCount(parent), title, tab.getUrl());
+                    parent, bookmarkModel.getChildCount(parent), title, url);
         }
         // TODO(lazzzis): remove log after bookmark sync is fixed, crbug.com/986978
         if (bookmarkId == null) {
@@ -412,15 +419,27 @@ public class BookmarkUtils {
     }
 
     /**
+     * @param context The current android {@link Context}.
+     * @param bookmarkModel The bookmark model used to reset the last used parent for type swapping
+     *         edge cases.
      * @return The parent {@link BookmarkId} that the user used the last time or null if the user
      *         has never selected a parent folder to use.
      */
-    static BookmarkId getLastUsedParent(Context context) {
+    static BookmarkId getLastUsedParent(Context context, BookmarkModel bookmarkModel) {
         SharedPreferencesManager preferences = SharedPreferencesManager.getInstance();
         if (!preferences.contains(ChromePreferenceKeys.BOOKMARKS_LAST_USED_PARENT)) return null;
 
-        return BookmarkId.getBookmarkIdFromString(
+        BookmarkId parent = BookmarkId.getBookmarkIdFromString(
                 preferences.readString(ChromePreferenceKeys.BOOKMARKS_LAST_USED_PARENT, null));
+
+        // We need to reset the last used parent to support toggling reading list type-swapping.
+        if (parent.getType() == BookmarkType.READING_LIST
+                && !ReadingListFeatures.shouldAllowBookmarkTypeSwapping()) {
+            setLastUsedParent(context, bookmarkModel.getDefaultFolder());
+            return null;
+        }
+
+        return parent;
     }
 
     /** Starts an {@link BookmarkEditActivity} for the given {@link BookmarkId}. */

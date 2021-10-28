@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksShim;
 import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkType;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.read_later.ReadingListUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkType;
@@ -244,6 +245,9 @@ public class BookmarkBridge {
 
         /**@return Whether this bookmark can be moved */
         public boolean isMovable() {
+            if (ReadingListUtils.isSwappableReadingListItem(mId)) {
+                return true;
+            }
             return isEditable() && mId.getType() == BookmarkType.NORMAL;
         }
 
@@ -441,6 +445,14 @@ public class BookmarkBridge {
         BookmarkBridgeJni.get().getTopLevelFolderIDs(
                 mNativeBookmarkBridge, BookmarkBridge.this, getSpecial, getNormal, result);
         return result;
+    }
+
+    /** Returns the synthetic reading list folder. */
+    public BookmarkId getReadingListFolder() {
+        ThreadUtils.assertOnUiThread();
+        assert mIsNativeBookmarkModelLoaded;
+        return BookmarkBridgeJni.get().getReadingListFolder(
+                mNativeBookmarkBridge, BookmarkBridge.this);
     }
 
     /**
@@ -749,6 +761,9 @@ public class BookmarkBridge {
     public boolean isFolderVisible(BookmarkId id) {
         ThreadUtils.assertOnUiThread();
         assert mIsNativeBookmarkModelLoaded;
+        if (ReadingListUtils.isSwappableReadingListItem(id)) {
+            return true;
+        }
         return BookmarkBridgeJni.get().isFolderVisible(
                 mNativeBookmarkBridge, BookmarkBridge.this, id.getId(), id.getType());
     }
@@ -1180,6 +1195,7 @@ public class BookmarkBridge {
                 long nativeBookmarkBridge, BookmarkBridge caller, List<BookmarkId> bookmarksList);
         void getTopLevelFolderIDs(long nativeBookmarkBridge, BookmarkBridge caller,
                 boolean getSpecial, boolean getNormal, List<BookmarkId> bookmarksList);
+        BookmarkId getReadingListFolder(long nativeBookmarkBridge, BookmarkBridge caller);
         void getAllFoldersWithDepths(long nativeBookmarkBridge, BookmarkBridge caller,
                 List<BookmarkId> folderList, List<Integer> depthList);
         BookmarkId getRootFolderId(long nativeBookmarkBridge, BookmarkBridge caller);

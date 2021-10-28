@@ -2659,12 +2659,17 @@ const FeatureEntry::FeatureParam kReadLaterUseRootBookmarkAsDefault[] = {
 const FeatureEntry::FeatureParam kReadLaterInAppMenu[] = {
     {"use_root_bookmark_as_default", "true"},
     {"reading_list_in_app_menu", "true"}};
+const FeatureEntry::FeatureParam kReadLaterAllowTypeSwapping[] = {
+    {"use_root_bookmark_as_default", "true"},
+    {"allow_bookmark_type_swapping", "true"}};
 
 const FeatureEntry::FeatureVariation kReadLaterVariations[] = {
     {"(use root bookmark as default)", kReadLaterUseRootBookmarkAsDefault,
      base::size(kReadLaterUseRootBookmarkAsDefault), nullptr},
     {"(with app menu item)", kReadLaterInAppMenu,
-     base::size(kReadLaterInAppMenu), nullptr}};
+     base::size(kReadLaterInAppMenu), nullptr},
+    {"(allow type swapping)", kReadLaterAllowTypeSwapping,
+     base::size(kReadLaterAllowTypeSwapping), nullptr}};
 
 const FeatureEntry::FeatureParam kBookmarksRefreshVisuals[] = {
     {"bookmark_visuals_enabled", "true"}};

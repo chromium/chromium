@@ -89,6 +89,10 @@ class BookmarkBridge : public bookmarks::BaseBookmarkModelObserver,
       jboolean get_normal,
       const base::android::JavaParamRef<jobject>& j_result_obj);
 
+  base::android::ScopedJavaLocalRef<jobject> GetReadingListFolder(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj);
+
   void GetAllFoldersWithDepths(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,

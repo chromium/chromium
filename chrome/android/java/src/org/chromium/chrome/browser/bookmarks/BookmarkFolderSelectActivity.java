@@ -29,8 +29,8 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.SynchronousInitializationActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkModelObserver;
+import org.chromium.chrome.browser.read_later.ReadingListUtils;
 import org.chromium.components.bookmarks.BookmarkId;
-import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemView;
 
 import java.util.ArrayList;
@@ -185,6 +185,10 @@ public class BookmarkFolderSelectActivity extends SynchronousInitializationActiv
         List<BookmarkId> folderList = new ArrayList<>();
         List<Integer> depthList = new ArrayList<>();
         mModel.getMoveDestinations(folderList, depthList, mBookmarksToMove);
+        if (ReadingListFeatures.shouldAllowBookmarkTypeSwapping()) {
+            folderList.add(mModel.getReadingListFolder());
+            depthList.add(0);
+        }
         List<FolderListEntry> entryList = new ArrayList<>(folderList.size() + 3);
 
         if (!mIsCreatingFolder) {
@@ -244,6 +248,8 @@ public class BookmarkFolderSelectActivity extends SynchronousInitializationActiv
         } else if (entry.mType == FolderListEntry.TYPE_NEW_FOLDER) {
             BookmarkAddEditFolderActivity.startAddFolderActivity(this, mBookmarksToMove);
         } else if (entry.mType == FolderListEntry.TYPE_NORMAL) {
+            mBookmarksToMove = ReadingListUtils.typeSwapBookmarksIfNecessary(
+                    mModel, mBookmarksToMove, entry.mId);
             mModel.moveBookmarks(mBookmarksToMove, entry.mId);
             BookmarkUtils.setLastUsedParent(this, entry.mId);
             finish();
@@ -366,7 +372,7 @@ public class BookmarkFolderSelectActivity extends SynchronousInitializationActiv
 
             Drawable iconDrawable;
             if (entry.mType == FolderListEntry.TYPE_NORMAL) {
-                iconDrawable = BookmarkUtils.getFolderIcon(view.getContext(), BookmarkType.NORMAL);
+                iconDrawable = BookmarkUtils.getFolderIcon(view.getContext(), entry.mId.getType());
             } else {
                 // For new folder, start_icon is different.
                 VectorDrawableCompat vectorDrawable = VectorDrawableCompat.create(
