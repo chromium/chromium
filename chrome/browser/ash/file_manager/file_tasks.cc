@@ -593,7 +593,10 @@ bool ExecuteFileTask(Profile* profile,
 
   // ARC apps and web apps need mime types for launching. Retrieve them first.
   if (task.task_type == TASK_TYPE_ARC_APP ||
-      task.task_type == TASK_TYPE_WEB_APP) {
+      task.task_type == TASK_TYPE_WEB_APP ||
+      task.task_type == TASK_TYPE_FILE_HANDLER) {
+    // TODO(petermarshall): Implement GetProfileForExtensionTask in Lacros if
+    // necessary, for Chrome Apps.
     extensions::app_file_handler_util::MimeTypeCollector* mime_collector =
         new extensions::app_file_handler_util::MimeTypeCollector(profile);
     mime_collector->CollectForURLs(
@@ -610,30 +613,20 @@ bool ExecuteFileTask(Profile* profile,
     return true;
   }
 
-  // Get the extension.
-  const Extension* extension = extensions::ExtensionRegistry::Get(
-      profile)->enabled_extensions().GetByID(task.app_id);
-  if (!extension)
-    return false;
-
-  Profile* extension_task_profile =
-      GetProfileForExtensionTask(profile, *extension);
-
-  // Execute the task.
+  // Execute a file_browser_handler task in an Extension.
   if (task.task_type == TASK_TYPE_FILE_BROWSER_HANDLER) {
+    // Get the extension.
+    const Extension* extension = extensions::ExtensionRegistry::Get(profile)
+                                     ->enabled_extensions()
+                                     .GetByID(task.app_id);
+    if (!extension)
+      return false;
+
+    Profile* extension_task_profile =
+        GetProfileForExtensionTask(profile, *extension);
     return file_browser_handlers::ExecuteFileBrowserHandler(
         extension_task_profile, extension, task.action_id, file_urls,
         std::move(done));
-  } else if (task.task_type == TASK_TYPE_FILE_HANDLER) {
-    extensions::app_file_handler_util::MimeTypeCollector* mime_collector =
-        new extensions::app_file_handler_util::MimeTypeCollector(
-            extension_task_profile);
-    mime_collector->CollectForURLs(
-        file_urls,
-        base::BindOnce(&ExecuteTaskAfterMimeTypesCollected,
-                       extension_task_profile, task, file_urls, std::move(done),
-                       base::Owned(mime_collector)));
-    return true;
   }
   NOTREACHED();
   return false;

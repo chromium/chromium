@@ -61,6 +61,7 @@ TaskType GetTaskType(apps::mojom::AppType app_type) {
     case apps::mojom::AppType::kSystemWeb:
       return TASK_TYPE_WEB_APP;
     case apps::mojom::AppType::kExtension:
+    case apps::mojom::AppType::kStandaloneBrowserExtension:
       // TODO(petermarshall): Distinguish Chrome apps from Extensions.
       return TASK_TYPE_FILE_HANDLER;
     case apps::mojom::AppType::kUnknown:
@@ -71,7 +72,6 @@ TaskType GetTaskType(apps::mojom::AppType app_type) {
     case apps::mojom::AppType::kStandaloneBrowser:
     case apps::mojom::AppType::kRemote:
     case apps::mojom::AppType::kBorealis:
-    case apps::mojom::AppType::kStandaloneBrowserExtension:
       return TASK_TYPE_UNKNOWN;
   }
 }
@@ -170,7 +170,8 @@ void FindAppServiceTasks(Profile* profile,
     if (!(app_type == apps::mojom::AppType::kArc ||
           app_type == apps::mojom::AppType::kWeb ||
           app_type == apps::mojom::AppType::kSystemWeb ||
-          app_type == apps::mojom::AppType::kExtension))
+          app_type == apps::mojom::AppType::kExtension ||
+          app_type == apps::mojom::AppType::kStandaloneBrowserExtension))
       continue;
 
     if (app_type == apps::mojom::AppType::kWeb ||
