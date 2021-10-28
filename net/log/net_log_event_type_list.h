@@ -4019,6 +4019,10 @@ EVENT_TYPE(CHECK_CORS_PREFLIGHT_CACHE)
 //  }
 EVENT_TYPE(CORS_PREFLIGHT_RESULT)
 
+// This event identifies the NetLogSource() for a URLRequest of the preflight
+// request.
+EVENT_TYPE(CORS_PREFLIGHT_URL_REQUEST)
+
 // This event is logged when PreflightController gets CORS preflight result
 // from preflight cache.
 // The parameters are the same as for CORS_PREFLIGHT_RESULT.

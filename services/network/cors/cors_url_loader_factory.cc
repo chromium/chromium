@@ -515,18 +515,25 @@ bool CorsURLLoaderFactory::IsValidRequest(const ResourceRequest& request,
     return false;
   }
 
-  // `net_log_create_info` field is expected to be used within network
-  // service.
-  if (request.net_log_create_info) {
-    mojo::ReportBadMessage(
-        "CorsURLLoaderFactory: net_log_create_info field is not expected.");
-  }
+  // Check only when `disable_web_security_` is false because
+  // PreflightControllerTest use CorsURLLoaderFactory with this flag true
+  // instead of network::URLLoaderFactory.
+  // TODO(https://crbug.com/1264298): consider if we can remove this exemption.
+  if (!disable_web_security_) {
+    // `net_log_create_info` field is expected to be used within network
+    // service.
+    if (request.net_log_create_info) {
+      mojo::ReportBadMessage(
+          "CorsURLLoaderFactory: net_log_create_info field is not expected.");
+    }
 
-  // `net_log_reference_info` field is expected to be used within network
-  // service.
-  if (request.net_log_reference_info) {
-    mojo::ReportBadMessage(
-        "CorsURLLoaderFactory: net_log_reference_info field is not expected.");
+    // `net_log_reference_info` field is expected to be used within network
+    // service.
+    if (request.net_log_reference_info) {
+      mojo::ReportBadMessage(
+          "CorsURLLoaderFactory: net_log_reference_info field is not "
+          "expected.");
+    }
   }
 
   if (request.target_ip_address_space != mojom::IPAddressSpace::kUnknown) {
