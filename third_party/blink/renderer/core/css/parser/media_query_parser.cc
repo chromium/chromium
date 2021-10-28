@@ -6,9 +6,13 @@
 
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
+#include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/media_type_names.h"
 
 namespace blink {
+
+using css_parsing_utils::AtIdent;
+using css_parsing_utils::ConsumeIfIdent;
 
 scoped_refptr<MediaQuerySet> MediaQueryParser::ParseMediaQuerySet(
     const String& query_string,
@@ -71,6 +75,27 @@ MediaQueryParser::MediaQueryParser(ParserType parser_type,
 
 MediaQueryParser::~MediaQueryParser() = default;
 
+namespace {
+
+bool IsRestrictorOrLogicalOperator(const CSSParserToken& token) {
+  // FIXME: it would be more efficient to use lower-case always for tokenValue.
+  return EqualIgnoringASCIICase(token.Value(), "not") ||
+         EqualIgnoringASCIICase(token.Value(), "and") ||
+         EqualIgnoringASCIICase(token.Value(), "or") ||
+         EqualIgnoringASCIICase(token.Value(), "only");
+}
+
+}  // namespace
+
+MediaQuery::RestrictorType MediaQueryParser::ConsumeRestrictor(
+    CSSParserTokenRange& range) {
+  if (ConsumeIfIdent(range, "not"))
+    return MediaQuery::kNot;
+  if (ConsumeIfIdent(range, "only"))
+    return MediaQuery::kOnly;
+  return MediaQuery::kNone;
+}
+
 bool MediaQueryParser::ConsumeFeature(CSSParserTokenRange& range) {
   if (range.Peek().GetType() != kLeftParenthesisToken)
     return false;
@@ -124,15 +149,7 @@ void MediaQueryParser::ReadRestrictor(CSSParserTokenRange& range) {
     else
       state_ = kReadFeatureStart;
   } else if (range.Peek().GetType() == kIdentToken) {
-    if (EqualIgnoringASCIICase(range.Peek().Value(), "not")) {
-      ConsumeToken(range);
-      SetStateAndRestrict(kReadMediaType, MediaQuery::kNot);
-    } else if (EqualIgnoringASCIICase(range.Peek().Value(), "only")) {
-      ConsumeToken(range);
-      SetStateAndRestrict(kReadMediaType, MediaQuery::kOnly);
-    } else {
-      state_ = kReadMediaType;
-    }
+    SetStateAndRestrict(kReadMediaType, ConsumeRestrictor(range));
   } else if (range.AtEnd() && !query_set_->QueryVector().size()) {
     state_ = kDone;
   } else {
@@ -148,14 +165,6 @@ void MediaQueryParser::ReadMediaNot(CSSParserTokenRange& range) {
   } else {
     ReadFeatureStart(range);
   }
-}
-
-static bool IsRestrictorOrLogicalOperator(const CSSParserToken& token) {
-  // FIXME: it would be more efficient to use lower-case always for tokenValue.
-  return EqualIgnoringASCIICase(token.Value(), "not") ||
-         EqualIgnoringASCIICase(token.Value(), "and") ||
-         EqualIgnoringASCIICase(token.Value(), "or") ||
-         EqualIgnoringASCIICase(token.Value(), "only");
 }
 
 void MediaQueryParser::ReadMediaType(CSSParserTokenRange& range) {

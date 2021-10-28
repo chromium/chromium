@@ -86,6 +86,9 @@ class CORE_EXPORT MediaQueryParser {
   MediaQueryParser& operator=(const MediaQueryParser&) = delete;
   virtual ~MediaQueryParser();
 
+  // [ not | only ]
+  static MediaQuery::RestrictorType ConsumeRestrictor(CSSParserTokenRange&);
+
   // https://drafts.csswg.org/mediaqueries-4/#typedef-media-feature
   //
   // Currently, only <mf-boolean> and <mf-plain> productions are supported.

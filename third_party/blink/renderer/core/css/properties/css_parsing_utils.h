@@ -549,6 +549,19 @@ CSSValue* ConsumePositionLonghand(CSSParserTokenRange& range,
                                 CSSPrimitiveValue::ValueRange::kAll);
 }
 
+inline bool AtIdent(const CSSParserToken& token, const char* ident) {
+  return token.GetType() == kIdentToken &&
+         EqualIgnoringASCIICase(token.Value(), ident);
+}
+
+template <typename T>
+bool ConsumeIfIdent(T& range_or_stream, const char* ident) {
+  if (!AtIdent(range_or_stream.Peek(), ident))
+    return false;
+  range_or_stream.ConsumeIncludingWhitespace();
+  return true;
+}
+
 }  // namespace css_parsing_utils
 }  // namespace blink
 
