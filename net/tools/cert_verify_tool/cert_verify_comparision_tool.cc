@@ -25,6 +25,7 @@
 #include "net/cert/cert_verify_proc_builtin.h"
 #include "net/cert/crl_set.h"
 #include "net/cert/internal/system_trust_store.h"
+#include "net/cert/trial_comparison_cert_verifier_util.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert_net/cert_net_fetcher_url_request.h"
 #include "net/tools/cert_verify_tool/cert_verify_tool_util.h"
@@ -142,15 +143,6 @@ std::unique_ptr<CertVerifyImpl> CreateCertVerifyImplFromName(
   return nullptr;
 }
 
-bool CertVerifyResultEqual(const net::CertVerifyResult& a,
-                           const net::CertVerifyResult& b) {
-  return std::tie(a.cert_status, a.is_issued_by_known_root) ==
-             std::tie(b.cert_status, b.is_issued_by_known_root) &&
-         (!!a.verified_cert == !!b.verified_cert) &&
-         (!a.verified_cert ||
-          a.verified_cert->EqualsIncludingChain(b.verified_cert.get()));
-}
-
 const char kUsage[] =
     " --input=<file>\n"
     "\n"
@@ -225,19 +217,57 @@ int RunCert(base::File* input_file,
   net::CertVerifyResult builtin_result;
   int builtin_error;
 
-  // TODO(mattm,hchao): Explore calling TrialComparisonCertVerifier directly
-  // to have the extra comparison logic built into both places directly.
   platform_proc->VerifyCert(*x509_target_and_intermediates, cert_chain.host(),
                             &platform_result, &platform_error);
   builtin_proc->VerifyCert(*x509_target_and_intermediates, cert_chain.host(),
                            &builtin_result, &builtin_error);
 
-  if (CertVerifyResultEqual(platform_result, builtin_result) &&
+  if (net::CertVerifyResultEqual(platform_result, builtin_result) &&
       platform_error == builtin_error) {
     std::cerr << "Host " << cert_chain.host() << " has equal verify results!\n";
   } else {
+    // Much of the below code is lifted from
+    // TrialComparisonCertVerifier::Job::OnTrialJobCompleted as it wasn't
+    // obvious how to easily refactor the code here to prevent copying this
+    // section of code.
+    const bool chains_equal =
+        platform_result.verified_cert->EqualsIncludingChain(
+            builtin_result.verified_cert.get());
+
+    // Chains built were different with either builtin being OK or both not OK.
+    // Pass builtin chain to platform, see if platform comes back the same.
+    if (!chains_equal &&
+        (builtin_error == net::OK || platform_error != net::OK)) {
+      net::CertVerifyResult platform_reverification_result;
+      int platform_reverification_error;
+
+      platform_proc->VerifyCert(
+          *builtin_result.verified_cert, cert_chain.host(),
+          &platform_reverification_result, &platform_reverification_error);
+      if (net::CertVerifyResultEqual(platform_reverification_result,
+                                     builtin_result) &&
+          platform_reverification_error == builtin_error) {
+        std::cerr << "Host " << cert_chain.host()
+                  << " has equal reverify results!\n";
+        return 0;
+      }
+    }
+
+    net::TrialComparisonResult result = net::IsSynchronouslyIgnorableDifference(
+        platform_error, platform_result, builtin_error, builtin_result);
+
+    // TODO(hchao): gather stats on result values.
+
+    if (result != net::TrialComparisonResult::kInvalid) {
+      std::cerr << "Host " << cert_chain.host()
+                << " has ignorable verify results!";
+      return 0;
+    }
+
     std::cerr << "Host " << cert_chain.host()
               << " has different verify results!\n";
+
+    // TODO(hchao): print input chain.
 
     std::cerr << "Platform: (error = "
               << net::ErrorToShortString(platform_error) << ")\n";
