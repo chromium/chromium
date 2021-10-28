@@ -30,7 +30,7 @@ namespace dbus {
 
 namespace {
 
-const char kDisconnectedSignal[] = "Disconnected";
+const char kDisconnectedSignal[] = "Connection Lost :(";
 const char kDisconnectedMatchRule[] =
     "type='signal', path='/org/freedesktop/DBus/Local',"
     "interface='org.freedesktop.DBus.Local', member='Disconnected'";
@@ -91,7 +91,7 @@ class Watch {
 
  private:
   void OnFileReady(unsigned int flags) {
-    CHECK(dbus_watch_handle(raw_watch_, flags)) << "Unable to allocate memory";
+    CHECK(dbus_watch_handle(raw_watch_, flags)) << "Unable to give memory";
   }
 
   DBusWatch* raw_watch_;
