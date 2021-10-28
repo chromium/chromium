@@ -9,11 +9,13 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/message_center/message_center.h"
+#include "ui/message_center/message_center_observer.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/views/notification_control_buttons_view.h"
 #include "ui/message_center/views/notification_header_view.h"
@@ -22,7 +24,9 @@
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/animation/ink_drop_observer.h"
 #include "ui/views/animation/test/ink_drop_impl_test_api.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/radio_button.h"
+#include "ui/views/test/button_test_api.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget_utils.h"
@@ -101,7 +105,9 @@ class DummyEvent : public ui::Event {
 }  // namespace
 
 class NotificationViewTest : public views::ViewObserver,
-                             public views::ViewsTestBase {
+                             public views::ViewsTestBase,
+                             public message_center::MessageCenterObserver,
+                             public views::InkDropObserver {
  public:
   NotificationViewTest() = default;
   NotificationViewTest(const NotificationViewTest&) = delete;
@@ -115,9 +121,13 @@ class NotificationViewTest : public views::ViewObserver,
     delegate_ = new NotificationTestDelegate();
     std::unique_ptr<Notification> notification = CreateSimpleNotification();
     UpdateNotificationViews(*notification);
+
+    MessageCenter::Get()->AddObserver(this);
   }
 
   void TearDown() override {
+    MessageCenter::Get()->RemoveObserver(this);
+
     if (notification_view_) {
       static_cast<views::View*>(notification_view_)->RemoveObserver(this);
       notification_view_->GetWidget()->Close();
@@ -221,6 +231,21 @@ class NotificationViewTest : public views::ViewObserver,
   views::View* left_content() { return notification_view_->left_content(); }
   views::Label* title_view() { return notification_view_->title_view_; }
   views::Label* message_view() { return notification_view_->message_view(); }
+  views::View* inline_settings_row() {
+    return notification_view_->inline_settings_row();
+  }
+  views::RadioButton* block_all_button() {
+    return notification_view_->block_all_button_;
+  }
+  views::LabelButton* settings_done_button() {
+    return notification_view_->settings_done_button_;
+  }
+
+  bool ink_drop_stopped() const { return ink_drop_stopped_; }
+
+  void set_delete_on_notification_removed(bool delete_on_notification_removed) {
+    delete_on_notification_removed_ = delete_on_notification_removed;
+  }
 
   scoped_refptr<NotificationTestDelegate> delegate_;
 
@@ -236,7 +261,28 @@ class NotificationViewTest : public views::ViewObserver,
         notification_view()->GetPreferredSize());
   }
 
+  void OnNotificationRemoved(const std::string& notification_id,
+                             bool by_user) override {
+    if (delete_on_notification_removed_) {
+      views::InkDrop::Get(notification_view_)
+          ->SetMode(views::InkDropHost::InkDropMode::OFF);
+      notification_view_->GetWidget()->CloseNow();
+      notification_view_ = nullptr;
+      return;
+    }
+  }
+
+  // views::InkDropObserver:
+  void InkDropAnimationStarted() override {}
+
+  void InkDropRippleAnimationEnded(
+      views::InkDropState ink_drop_state) override {
+    ink_drop_stopped_ = true;
+  }
+
   NotificationView* notification_view_ = nullptr;
+  bool delete_on_notification_removed_ = false;
+  bool ink_drop_stopped_ = false;
 };
 
 TEST_F(NotificationViewTest, UpdateViewsOrderingTest) {
@@ -350,9 +396,7 @@ TEST_F(NotificationViewTest, InlineSettingsNotBlock) {
 
   // Construct a mouse click event over the done button.
   gfx::Point done_cursor_location =
-      notification_view()
-          ->settings_done_button_->GetBoundsInScreen()
-          .CenterPoint();
+      settings_done_button()->GetBoundsInScreen().CenterPoint();
   generator.MoveMouseTo(done_cursor_location);
 
   generator.ClickLeftButton();
@@ -378,11 +422,9 @@ TEST_F(NotificationViewTest, InlineSettingsBlockAll) {
   generator.ClickLeftButton();
 
   gfx::Point block_cursor_location =
-      notification_view()->block_all_button_->GetBoundsInScreen().CenterPoint();
+      block_all_button()->GetBoundsInScreen().CenterPoint();
   gfx::Point done_cursor_location =
-      notification_view()
-          ->settings_done_button_->GetBoundsInScreen()
-          .CenterPoint();
+      settings_done_button()->GetBoundsInScreen().CenterPoint();
 
   // Construct a mouse click event inside the block all button.
   generator.MoveMouseTo(block_cursor_location);
@@ -595,6 +637,46 @@ TEST_F(NotificationViewTest, UpdateType) {
   notification->set_type(NOTIFICATION_TYPE_SIMPLE);
   UpdateNotificationViews(*notification);
   EXPECT_FALSE(header_row()->summary_text_for_testing()->GetVisible());
+}
+
+TEST_F(NotificationViewTest, InlineSettingsInkDropAnimation) {
+  // TODO(crbug/1264498): This test is currently broken.
+  ui::ScopedAnimationDurationScaleMode zero_duration_scope(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  std::unique_ptr<Notification> notification = CreateSimpleNotification();
+  notification->set_type(NOTIFICATION_TYPE_SIMPLE);
+  UpdateNotificationViews(*notification);
+
+  ui::test::EventGenerator generator(
+      GetRootWindow(notification_view()->GetWidget()));
+
+  ToggleInlineSettings();
+
+  views::InkDrop::Get(notification_view())->GetInkDrop()->AddObserver(this);
+
+  // Resize the widget by 1px to simulate the expand animation.
+  gfx::Rect size = notification_view()->GetWidget()->GetWindowBoundsInScreen();
+  size.Inset(0, 0, 0, 1);
+  notification_view()->GetWidget()->SetBounds(size);
+
+  views::InkDrop::Get(notification_view())->GetInkDrop()->RemoveObserver(this);
+
+  // The ink drop animation should still be running.
+  EXPECT_FALSE(ink_drop_stopped());
+}
+
+TEST_F(NotificationViewTest, TestDeleteOnDisableNotification) {
+  std::unique_ptr<Notification> notification = CreateSimpleNotification();
+  notification->set_type(NOTIFICATION_TYPE_SIMPLE);
+  UpdateNotificationViews(*notification);
+
+  notification_view()->OnSettingsButtonPressed(DummyEvent());
+  block_all_button()->NotifyClick(DummyEvent());
+
+  // After DisableNotification() is called, |notification_view| can be deleted.
+  // https://crbug.com/924922
+  set_delete_on_notification_removed(true);
+  views::test::ButtonTestApi(settings_done_button()).NotifyClick(DummyEvent());
 }
 
 }  // namespace message_center
