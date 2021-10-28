@@ -35071,6 +35071,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4063" label="HttpRefreshWhenScriptingDisabled"/>
   <int value="4064" label="V8FragmentDirective_Items_AttributeGetter"/>
   <int value="4065" label="V8FragmentDirective_CreateSelectorDirective_Method"/>
+  <int value="4066" label="CSSTransitionBlockedByAnimation"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
