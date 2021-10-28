@@ -182,16 +182,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="PasswordGeneration.FieldNameCollisionInVotes" enum="Boolean"
-    expires_after="2022-04-20">
-  <owner>kolos@chromium.org</owner>
-  <owner>koerber@google.com</owner>
-  <summary>
-    Measures whether a password vote had a field name collision, i.e. multiple
-    fields that should have an Autofill type uploaded have the same name.
-  </summary>
-</histogram>
-
 <histogram name="PasswordGeneration.GeneratedPasswordWasEdited"
     enum="BooleanGeneratedPasswordWasEdited" expires_after="2022-04-24">
   <owner>kolos@chromium.org</owner>
@@ -1319,6 +1309,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Records number of rows in FieldInfoTable, which contains locally learned
     predictions about field types. Recorded once for the profile on startup.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.FieldNameCollisionInVotes" enum="Boolean"
+    expires_after="2022-04-20">
+  <owner>kolos@chromium.org</owner>
+  <owner>koerber@google.com</owner>
+  <summary>
+    Measures whether a password vote had a field name collision, i.e. multiple
+    fields that should have an Autofill type uploaded have the same name.
   </summary>
 </histogram>
 
