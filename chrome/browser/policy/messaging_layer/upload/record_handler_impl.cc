@@ -179,8 +179,8 @@ void RecordHandlerImpl::ReportUploader::StartUpload() {
                      base::Unretained(this));
 
   UploadEncryptedReportingRequestBuilder request_builder{need_encryption_key_};
-  for (const auto& record : *records_) {
-    request_builder.AddRecord(record);
+  for (auto record : *records_) {
+    request_builder.AddRecord((std::move(record)));
   }
   auto request_result = request_builder.Build();
   if (!request_result.has_value()) {

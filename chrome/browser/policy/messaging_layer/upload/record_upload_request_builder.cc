@@ -77,8 +77,7 @@ UploadEncryptedReportingRequestBuilder::
     ~UploadEncryptedReportingRequestBuilder() = default;
 
 UploadEncryptedReportingRequestBuilder&
-UploadEncryptedReportingRequestBuilder::AddRecord(
-    const EncryptedRecord& record) {
+UploadEncryptedReportingRequestBuilder::AddRecord(EncryptedRecord record) {
   if (!result_.has_value()) {
     // Some errors were already detected.
     return *this;
@@ -94,7 +93,8 @@ UploadEncryptedReportingRequestBuilder::AddRecord(
     return *this;
   }
 
-  auto record_result = EncryptedRecordDictionaryBuilder(record).Build();
+  auto record_result =
+      EncryptedRecordDictionaryBuilder(std::move(record)).Build();
   if (!record_result.has_value()) {
     // Record has errors. Stop here.
     result_ = absl::nullopt;
@@ -122,7 +122,7 @@ UploadEncryptedReportingRequestBuilder::GetAttachEncryptionSettingsPath() {
 }
 
 EncryptedRecordDictionaryBuilder::EncryptedRecordDictionaryBuilder(
-    const EncryptedRecord& record) {
+    EncryptedRecord record) {
   base::Value record_dictionary{base::Value::Type::DICTIONARY};
 
   // A record without sequencing information cannot be uploaded - deny it.
