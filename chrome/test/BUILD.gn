@@ -2680,6 +2680,7 @@ if (!is_android && !is_fuchsia) {
         "../browser/ui/views/extensions/extension_dialog_browsertest.cc",
         "../browser/ui/views/web_apps/pwa_confirmation_bubble_view_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_confirmation_view_browsertest.cc",
+        "../browser/ui/views/web_apps/web_app_identity_update_confirmation_view_browsertest.cc",
         "../browser/ui/web_applications/test/web_app_navigation_browsertest.cc",
         "../browser/ui/web_applications/test/web_app_navigation_browsertest.h",
       ]
