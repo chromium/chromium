@@ -274,6 +274,13 @@
        {}
       ]
      ],
+     "fragmented-empty-contenteditable-crash.html": [
+      "c2149c77d709bd9abf3e990e44e2a937ac1b1280",
+      [
+       null,
+       {}
+      ]
+     ],
      "fragmented-float-in-inline-crash.html": [
       "0d84b95988e2e5fbfcbee9fad53b58ac82464b73",
       [
@@ -2487,6 +2494,20 @@
    },
    "scroll-animations": {
     "scroll-timelines": {
+     "animation-with-delay-crash.html": [
+      "9d821f9e20f58eef9ff5aa0706fa528f3250935f",
+      [
+       null,
+       {}
+      ]
+     ],
+     "animation-with-offsets-crash.html": [
+      "bf07c9c84edd305fac69bf334f53bd8a18537cc1",
+      [
+       null,
+       {}
+      ]
+     ],
      "null-scroll-source-crash.html": [
       "53ad0d92850992ca00b157f83b7d45c867c3f475",
       [
@@ -83005,19 +83026,6 @@
          ],
          {}
         ]
-       ],
-       "svg-as-image.html": [
-        "c2475f3afbf3795ead6e6a94e3299209484865d2",
-        [
-         null,
-         [
-          [
-           "/css/css-layout-api/green-square-ref.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
        ]
       }
      }
@@ -93711,6 +93719,32 @@
        [
         [
          "/css/css-flexbox/reference/auto-margins-003-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "baseline-synthesis-001.html": [
+      "b1fa84c94caef8a350391c011c45a0431aedf1c6",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "baseline-synthesis-002.html": [
+      "7cb1709fb3160da06e5f115f5d5aab1a901e86a4",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
          "=="
         ]
        ],
@@ -173640,7 +173674,7 @@
       ]
      ],
      "transform3d-sorting-006.html": [
-      "bea736fa6710eafac35d472936732b7f45547e35",
+      "acc478079e713044958958d5f02bf92bd00aa35f",
       [
        null,
        [
@@ -173656,11 +173690,11 @@
           [
            [
             0,
-            100
+            179
            ],
            [
             0,
-            500
+            544
            ]
           ]
          ]
@@ -232150,10 +232184,6 @@
         ],
         "dark-frame.html": [
          "11f88db4a0b3e94d620b5a92314c88040210cfae",
-         []
-        ],
-        "prefers-color-scheme.svg": [
-         "3afcac70fe9b561280f32d53420404a3cf23e1cf",
          []
         ]
        }
@@ -305751,6 +305781,10 @@
      []
     ],
     "broadcastchannel": {
+     "detached-iframe.tentative-expected.txt": [
+      "8bd3b3a2e93068de8177f1c193d98d77dc57f0c1",
+      []
+     ],
      "resources": {
       "cross-origin.html": [
        "5078b6fc8e46f556fe1b86c7e1aa5a141c132be1",
@@ -305769,14 +305803,18 @@
        []
       ],
       "service-worker.js": [
-       "fc37aede84586e235464dbfd3517ebbd899047d8",
+       "a3d17b9c650adb5f889a51f1e73a4537a282161f",
        []
       ],
       "worker.js": [
-       "9364c602756385cd4e0f8ece267b447620591c94",
+       "df23072bc99f95d09f7cd1a6550595e43039e7b8",
        []
       ]
-     }
+     },
+     "workers.tentative-expected.txt": [
+      "8629e0db82950840b253b000fbcc31ccae7d8ace",
+      []
+     ]
     },
     "message-channels": {
      "close-expected.txt": [
@@ -508281,6 +508319,13 @@
        {}
       ]
      ],
+     "detached-iframe.tentative.html": [
+      "b9b06c3a46463bf50a88ebc545f1ad9ed6ac496a",
+      [
+       null,
+       {}
+      ]
+     ],
      "interface.any.js": [
       "35e09d34b418d3c6d2a574bfdedc9e6632a6c09f",
       [
@@ -508321,7 +508366,14 @@
       ]
      ],
      "workers.html": [
-      "1d05feb7edbf0e9fc148d2136bb5a5a1ffeb56a6",
+      "16fea069309f5738e51305a0bd53bd1413e86f11",
+      [
+       null,
+       {}
+      ]
+     ],
+     "workers.tentative.html": [
+      "e72fa365fd78613cd40069da5101334b91f45365",
       [
        null,
        {}
