@@ -1569,7 +1569,7 @@
       // TODO(crbug.com/920069): Remove OffsetParentNewSpecBehavior after the
       // feature is in stable with no issues.
       name: "OffsetParentNewSpecBehavior",
-      status: "experimental"
+      status: "stable"
     },
     {
       name: "OnDeviceChange",
