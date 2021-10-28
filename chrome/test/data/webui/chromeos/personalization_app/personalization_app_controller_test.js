@@ -6,7 +6,7 @@ import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
 import 'chrome://personalization/trusted/file_path.mojom-lite.js';
 import 'chrome://personalization/trusted/personalization_app.mojom-lite.js';
-import {fetchLocalData, initializeBackdropData, selectWallpaper} from 'chrome://personalization/trusted/personalization_controller.js';
+import {fetchLocalData, initializeBackdropData, initializeGooglePhotosData, selectWallpaper} from 'chrome://personalization/trusted/personalization_controller.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {TestWallpaperProvider} from './test_mojo_interface_provider.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
@@ -47,6 +47,120 @@ suite('Updating local images', () => {
     wallpaperProvider = new TestWallpaperProvider();
     personalizationStore = new TestPersonalizationStore({});
     personalizationStore.setReducersEnabled(true);
+  });
+
+  test('Initializes Google Photos data in store', async () => {
+    await initializeGooglePhotosData(wallpaperProvider, personalizationStore);
+
+    assertDeepEquals(
+        [
+          {
+            name: 'begin_load_google_photos_count',
+          },
+          {
+            name: 'set_google_photos_count',
+            count: 0,
+          },
+          {
+            name: 'begin_load_google_photos_albums',
+          },
+          {
+            name: 'set_google_photos_albums',
+            albums: [],
+          },
+          {
+            name: 'begin_load_google_photos_photos',
+          },
+          {
+            name: 'set_google_photos_photos',
+            photos: [],
+          },
+        ],
+        personalizationStore.actions);
+
+    assertDeepEquals(
+        [
+          // BEGIN_LOAD_GOOGLE_PHOTOS_COUNT.
+          {
+            'loading.googlePhotos': {
+              count: true,
+              albums: false,
+              photos: false,
+            },
+            googlePhotos: {
+              count: undefined,
+              albums: undefined,
+              photos: undefined,
+            },
+          },
+          // SET_GOOGLE_PHOTOS_COUNT.
+          {
+            'loading.googlePhotos': {
+              count: false,
+              albums: false,
+              photos: false,
+            },
+            googlePhotos: {
+              count: 0,
+              albums: undefined,
+              photos: undefined,
+            },
+          },
+          // BEGIN_LOAD_GOOGLE_PHOTOS_ALBUMS.
+          {
+            'loading.googlePhotos': {
+              count: false,
+              albums: true,
+              photos: false,
+            },
+            googlePhotos: {
+              count: 0,
+              albums: undefined,
+              photos: undefined,
+            },
+          },
+          // SET_GOOGLE_PHOTOS_ALBUMS.
+          {
+            'loading.googlePhotos': {
+              count: false,
+              albums: false,
+              photos: false,
+            },
+            googlePhotos: {
+              count: 0,
+              albums: [],
+              photos: undefined,
+            },
+          },
+          // BEGIN_LOAD_GOOGLE_PHOTOS_PHOTOS.
+          {
+            'loading.googlePhotos': {
+              count: false,
+              albums: false,
+              photos: true,
+            },
+            googlePhotos: {
+              count: 0,
+              albums: [],
+              photos: undefined,
+            },
+          },
+          // SET_GOOGLE_PHOTOS_PHOTOS.
+          {
+            'loading.googlePhotos': {
+              count: false,
+              albums: false,
+              photos: false,
+            },
+            googlePhotos: {
+              count: 0,
+              albums: [],
+              photos: [],
+            },
+          },
+        ],
+        personalizationStore.states.map(
+            filterAndFlattenState(['googlePhotos', 'loading.googlePhotos'])));
   });
 
   test('sets local images in store', async () => {
