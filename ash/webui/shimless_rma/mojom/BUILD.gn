@@ -54,6 +54,10 @@ mojom("mojom") {
           cpp = "::rmad::CalibrationComponentStatus"
         },
         {
+          mojom = "ash.shimless_rma.mojom.FinalizationStatus"
+          cpp = "::rmad::FinalizeStatus_Status"
+        },
+        {
           mojom = "media.mojom.CdmKeyInformation"
           cpp = "::std::unique_ptr<::media::CdmKeyInformation>"
           move_only = true

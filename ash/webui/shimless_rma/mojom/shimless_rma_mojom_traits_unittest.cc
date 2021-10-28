@@ -286,5 +286,21 @@ TEST_F(ShimlessRmaMojoToProtoTest, ProvisioningStepsMatch) {
   TestMojoToProto(enums);
 }
 
+TEST_F(ShimlessRmaMojoToProtoTest, FinalizationStatusMatch) {
+  constexpr auto enums = base::MakeFixedFlatMap<mojom::FinalizationStatus,
+                                                rmad::FinalizeStatus::Status>(
+      {{mojom::FinalizationStatus::kInProgress,
+        rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_IN_PROGRESS},
+       {mojom::FinalizationStatus::kComplete,
+        rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_COMPLETE},
+       {mojom::FinalizationStatus::kFailedBlocking,
+        rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_FAILED_BLOCKING},
+       {mojom::FinalizationStatus::kFailedNonBlocking,
+        rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_FAILED_NON_BLOCKING}});
+
+  TestProtoToMojo(enums);
+  TestMojoToProto(enums);
+}
+
 }  // namespace shimless_rma
 }  // namespace ash
