@@ -40,6 +40,14 @@ std::vector<std::unique_ptr<PasswordForm>> CreateTestLogins() {
   return forms;
 }
 
+PasswordForm CreateTestLogin() {
+  PasswordForm form;
+  form.username_value = u"Todd Tester";
+  form.password_value = u"S3cr3t";
+  form.url = GURL(u"https://example.com");
+  return form;
+}
+
 std::vector<PasswordForm> UnwrapForms(
     std::vector<std::unique_ptr<PasswordForm>> password_ptrs) {
   std::vector<PasswordForm> forms;
@@ -55,6 +63,7 @@ class MockPasswordStoreAndroidBackendBridge
  public:
   MOCK_METHOD(void, SetConsumer, (base::WeakPtr<Consumer>), (override));
   MOCK_METHOD(JobId, GetAllLogins, (), (override));
+  MOCK_METHOD(JobId, RemoveLogin, (const PasswordForm&), (override));
 };
 
 }  // namespace
@@ -112,6 +121,24 @@ TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForLogins) {
   EXPECT_CALL(mock_reply,
               Run(UnorderedPasswordFormElementsAre(&expected_logins)));
   consumer().OnCompleteWithLogins(kJobId, UnwrapForms(CreateTestLogins()));
+  RunUntilIdle();
+}
+
+TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForRemoveLogin) {
+  backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
+                        base::RepeatingClosure(), base::DoNothing());
+  const JobId kJobId{13388};
+  base::MockCallback<PasswordStoreChangeListReply> mock_reply;
+
+  PasswordForm form = CreateTestLogin();
+  EXPECT_CALL(*bridge(), RemoveLogin(form)).WillOnce(Return(kJobId));
+  backend().RemoveLoginAsync(form, mock_reply.Get());
+
+  PasswordStoreChangeList expected_changes;
+  expected_changes.emplace_back(
+      PasswordStoreChange(PasswordStoreChange::REMOVE, form));
+  EXPECT_CALL(mock_reply, Run(expected_changes));
+  consumer().OnLoginsChanged(kJobId, expected_changes);
   RunUntilIdle();
 }
 

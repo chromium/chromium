@@ -35,6 +35,12 @@ class PasswordStoreAndroidBackendBridgeImpl
       jint job_id,
       const base::android::JavaParamRef<jbyteArray>& passwords);
 
+  // Called via JNI. Called when the api call with `job_id` finished and
+  // provides the deleted 'login'.
+  void OnLoginDeleted(JNIEnv* env,
+                      jint job_id,
+                      const base::android::JavaParamRef<jbyteArray>& login);
+
   // Called via JNI. Called when the api call with `job_id` finished with
   // an exception.
   void OnError(JNIEnv* env, jint job_id, jint error);
@@ -43,6 +49,8 @@ class PasswordStoreAndroidBackendBridgeImpl
   // Implements PasswordStoreAndroidBackendBridge interface.
   void SetConsumer(base::WeakPtr<Consumer> consumer) override;
   JobId GetAllLogins() override WARN_UNUSED_RESULT;
+  JobId RemoveLogin(const password_manager::PasswordForm& form) override
+      WARN_UNUSED_RESULT;
 
   JobId GetNextJobId() WARN_UNUSED_RESULT;
 

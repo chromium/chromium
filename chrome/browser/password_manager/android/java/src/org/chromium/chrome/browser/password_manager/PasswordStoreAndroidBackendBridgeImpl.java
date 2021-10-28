@@ -57,6 +57,15 @@ class PasswordStoreAndroidBackendBridgeImpl {
         }, exception -> handleAndroidBackendException(jobId, exception));
     }
 
+    @CalledByNative
+    void removeLogin(@JobId int jobId, byte[] pwdSpecificsData) {
+        mBackend.removeLogin(pwdSpecificsData, () -> {
+            if (mNativeBackendBridge == 0) return;
+            PasswordStoreAndroidBackendBridgeImplJni.get().onLoginDeleted(
+                    mNativeBackendBridge, jobId, pwdSpecificsData);
+        }, exception -> handleAndroidBackendException(jobId, exception));
+    }
+
     private void handleAndroidBackendException(@JobId int jobId, Exception exception) {
         if (mNativeBackendBridge == 0) return;
 
@@ -83,6 +92,8 @@ class PasswordStoreAndroidBackendBridgeImpl {
     interface Natives {
         void onCompleteWithLogins(long nativePasswordStoreAndroidBackendBridgeImpl,
                 @JobId int jobId, byte[] passwords);
+        void onLoginDeleted(long nativePasswordStoreAndroidBackendBridgeImpl, @JobId int jobId,
+                byte[] pwdSpecificsData);
         void onError(long nativePasswordStoreAndroidBackendBridgeImpl, @JobId int jobId, int error);
     }
 }

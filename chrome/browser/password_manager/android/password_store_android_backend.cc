@@ -210,7 +210,10 @@ void PasswordStoreAndroidBackend::UpdateLoginAsync(
 void PasswordStoreAndroidBackend::RemoveLoginAsync(
     const PasswordForm& form,
     PasswordStoreChangeListReply callback) {
-  // TODO(https://crbug.com/1229655):Implement.
+  JobId job_id = bridge_->RemoveLogin(form);
+  QueueNewJob(job_id, JobReturnHandler(
+                          std::move(callback),
+                          JobReturnHandler::MetricInfix("RemoveLoginAsync")));
 }
 
 void PasswordStoreAndroidBackend::RemoveLoginsByURLAndTimeAsync(
@@ -268,6 +271,18 @@ void PasswordStoreAndroidBackend::OnCompleteWithLogins(
       FROM_HERE,
       base::BindOnce(std::move(reply).Get<LoginsReply>(),
                      WrapPasswordsIntoPointers(std::move(passwords))));
+}
+
+void PasswordStoreAndroidBackend::OnLoginsChanged(
+    JobId job_id,
+    const PasswordStoreChangeList& changes) {
+  JobReturnHandler reply = GetAndEraseJob(job_id);
+  DCHECK(reply.Holds<PasswordStoreChangeListReply>());
+
+  main_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(reply).Get<PasswordStoreChangeListReply>(),
+                     changes));
 }
 
 void PasswordStoreAndroidBackend::OnError(JobId job_id,
