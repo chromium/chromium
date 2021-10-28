@@ -43,13 +43,6 @@ class AppsNavigationThrottle : public content::NavigationThrottle {
   ThrottleCheckResult WillRedirectRequest() override;
 
  protected:
-  // Overrides for Chrome OS to allow ARC handling.
-  virtual void MaybeRemoveComingFromArcFlag(content::WebContents* web_contents,
-                                            const GURL& previous_url,
-                                            const GURL& current_url) {}
-
-  virtual bool ShouldDeferNavigation(content::NavigationHandle* handle);
-
   virtual bool ShouldCancelNavigation(content::NavigationHandle* handle);
 
   virtual bool ShouldShowDisablePage(content::NavigationHandle* handle);
@@ -57,15 +50,6 @@ class AppsNavigationThrottle : public content::NavigationThrottle {
   virtual ThrottleCheckResult MaybeShowCustomResult();
 
   bool navigate_from_link() const;
-
-  // Keeps track of whether we already shown the UI or preferred app. Since
-  // AppsNavigationThrottle cannot wait for the user (due to the non-blocking
-  // nature of the feature) the best we can do is check if we launched a
-  // preferred app or asked the UI to be shown, this flag ensures we never
-  // trigger the UI twice for the same throttle.
-  // TODO(crbug.com/824598): This is no longer needed after removing
-  // ChromeOsAppsNavigationThrottle.
-  bool ui_displayed_ = false;
 
   GURL starting_url_;
 

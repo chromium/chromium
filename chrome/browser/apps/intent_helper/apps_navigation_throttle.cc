@@ -73,20 +73,10 @@ ThrottleCheckResult AppsNavigationThrottle::WillStartRequest() {
 
 ThrottleCheckResult AppsNavigationThrottle::WillRedirectRequest() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  // TODO(crbug.com/824598): This is no longer needed after removing
-  // ChromeOsAppsNavigationThrottle.
-  if (ui_displayed_)
-    return content::NavigationThrottle::PROCEED;
   return HandleRequest();
 }
 
 bool AppsNavigationThrottle::ShouldCancelNavigation(
-    content::NavigationHandle* handle) {
-  return false;
-}
-
-bool AppsNavigationThrottle::ShouldDeferNavigation(
     content::NavigationHandle* handle) {
   return false;
 }
@@ -111,13 +101,9 @@ ThrottleCheckResult AppsNavigationThrottle::HandleRequest() {
   if (handle->IsSameDocument())
     return content::NavigationThrottle::PROCEED;
 
-  DCHECK(!ui_displayed_);
-
   content::WebContents* web_contents = handle->GetWebContents();
   const GURL& url = handle->GetURL();
   navigate_from_link_ = IsNavigateFromLink(handle);
-
-  MaybeRemoveComingFromArcFlag(web_contents, starting_url_, url);
 
   // Do not pop up the intent picker bubble or automatically launch the app if
   // we shouldn't override url loading, or if we don't have a browser, or we are
@@ -138,17 +124,6 @@ ThrottleCheckResult AppsNavigationThrottle::HandleRequest() {
         CaptureWebAppScopeNavigations(web_contents, handle);
     if (web_app_capture.has_value())
       return web_app_capture.value();
-
-    if (ShouldDeferNavigation(handle)) {
-      // Handling is now deferred to ArcIntentPickerAppFetcher, which
-      // asynchronously queries ARC for apps, and runs
-      // OnDeferredNavigationProcessed() with an action based on whether an
-      // acceptable app was found and user consent to open received. We assume
-      // the UI is shown or a preferred app was found; reset to false if we
-      // resume the navigation.
-      ui_displayed_ = true;
-      return content::NavigationThrottle::DEFER;
-    }
 
     if (ShouldShowDisablePage(handle))
       return MaybeShowCustomResult();
