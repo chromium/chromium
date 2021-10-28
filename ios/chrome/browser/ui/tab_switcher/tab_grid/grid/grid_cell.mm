@@ -125,6 +125,7 @@ void PositionView(UIView* view, CGPoint point) {
     self.titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
     self.closeIconView.tintColor = [UIColor colorNamed:kCloseButtonColor];
 
+    self.layer.cornerRadius = kGridCellCornerRadius;
     self.layer.shadowColor = [UIColor blackColor].CGColor;
     self.layer.shadowOffset = CGSizeMake(0, 0);
     self.layer.shadowRadius = 4.0f;
