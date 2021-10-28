@@ -714,13 +714,13 @@ void GuestOsRegistryService::LoadIcon(
     int fallback_icon_resource_id,
     apps::mojom::Publisher::LoadIconCallback callback) {
   if (icon_key) {
-    // Add container-badging to all apps except the terminal, which is shared
-    // between containers. This is part of the multi-container UI, so is guarded
-    // by a flag.
+    // Add container-badging to all crostini apps except the terminal, which is
+    // shared between containers. This is part of the multi-container UI, so is
+    // guarded by a flag.
     if (app_id != crostini::kCrostiniTerminalSystemAppId &&
         crostini::CrostiniFeatures::Get()->IsMultiContainerAllowed(profile_)) {
       auto reg = GetRegistration(app_id);
-      if (reg) {
+      if (reg && reg->VmType() == VmType::ApplicationList_VmType_TERMINA) {
         callback = base::BindOnce(
             &GuestOsRegistryService::ApplyContainerBadge,
             weak_ptr_factory_.GetWeakPtr(),
