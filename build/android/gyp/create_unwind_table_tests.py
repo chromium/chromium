@@ -15,8 +15,9 @@ import unittest
 from create_unwind_table import (
     AddressCfi, AddressUnwind, FilterToNonTombstoneCfi, FunctionCfi,
     FunctionUnwind, EncodeAddressUnwind, EncodeAsCUbytes,
-    EncodeStackPointerUpdate, EncodePop, NullParser, PushOrSubSpParser,
-    ReadFunctionCfi, StoreSpParser, Uleb128Encode, UnwindType, VPushParser)
+    EncodeStackPointerUpdate, EncodePop, EncodeUnwindInstructionTable,
+    NullParser, PushOrSubSpParser, ReadFunctionCfi, StoreSpParser,
+    Uleb128Encode, UnwindType, VPushParser)
 
 
 class _TestReadFunctionCfi(unittest.TestCase):
@@ -481,3 +482,48 @@ class _TestStoreSpParser(unittest.TestCase):
                       unwind_type=UnwindType.RESTORE_SP_FROM_REGISTER,
                       sp_offset=-4,
                       registers=(7, )), address_unwind)
+
+
+class _TestEncodeUnwindInstructionTable(unittest.TestCase):
+  def testSingleEntry(self):
+    table, offsets = EncodeUnwindInstructionTable([bytes([3])])
+
+    self.assertEqual(bytes([3]), table)
+    self.assertDictEqual({
+        bytes([3]): 0,
+    }, offsets)
+
+  def testMultipleEntries(self):
+    self.maxDiff = None
+    # Result should be sorted by score descending.
+    table, offsets = EncodeUnwindInstructionTable([
+        bytes([1, 2, 3]),
+        bytes([0, 3]),
+        bytes([3]),
+    ])
+    self.assertEqual(bytes([3, 0, 3, 1, 2, 3]), table)
+    self.assertDictEqual(
+        {
+            bytes([1, 2, 3]): 3,  # score = 1 / 3 = 0.67
+            bytes([0, 3]): 1,  # score = 1 / 2 = 0.5
+            bytes([3]): 0,  # score = 1 / 1 = 1
+        },
+        offsets)
+
+    # When scores are same, sort by sequence descending.
+    table, offsets = EncodeUnwindInstructionTable([
+        bytes([3]),
+        bytes([0, 3]),
+        bytes([0, 3]),
+        bytes([1, 2, 3]),
+        bytes([1, 2, 3]),
+        bytes([1, 2, 3]),
+    ])
+    self.assertEqual(bytes([3, 1, 2, 3, 0, 3]), table)
+    self.assertDictEqual(
+        {
+            bytes([3]): 0,  # score = 1 / 1 = 1
+            bytes([1, 2, 3]): 1,  # score = 3 / 3 = 1
+            bytes([0, 3]): 4,  # score = 2 / 2 = 1
+        },
+        offsets)

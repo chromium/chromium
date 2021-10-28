@@ -8,8 +8,8 @@ import abc
 import ctypes
 import enum
 import re
-from typing import Iterable, List, NamedTuple, Sequence, TextIO, Tuple
-
+import collections
+from typing import Dict, Iterable, List, NamedTuple, Sequence, TextIO, Tuple
 
 _STACK_CFI_INIT_REGEX = re.compile(
     r'^STACK CFI INIT ([0-9a-f]+) ([0-9a-f]+) (.+)$')
@@ -453,3 +453,56 @@ class StoreSpParser(UnwindInstructionsParser):
     assert sp_offset % 4 == 0
     return AddressUnwind(address_offset, UnwindType.RESTORE_SP_FROM_REGISTER,
                          sp_offset, (register, )), new_cfa_sp_offset
+
+
+def EncodeUnwindInstructionTable(complete_instruction_sequences: Iterable[bytes]
+                                 ) -> Tuple[bytes, Dict[bytes, int]]:
+  """Encodes the unwind instruction table.
+
+  Deduplicates the encoded unwind instruction sequences. Generates the table and
+  a dictionary mapping a function to its starting index in the table.
+
+  The instruction table is used by the unwinder to provide the sequence of
+  unwind instructions to execute for each function, separated by offset
+  into the function.
+
+  Argument:
+    complete_instruction_sequences: An iterable of encoded unwind instruction
+      sequences. The sequences represent the series of unwind instructions to
+      execute corresponding to offsets within each function.
+
+  Returns:
+    A tuple containing:
+    - The unwind instruction table in bytes format.
+    - The mapping from the instruction sequence to the offset in the unwind
+      instruction table. This mapping is used to construct the function offset
+      table, which references entries in the unwind instruction table.
+  """
+  # As the function offset table uses variable length number encoding (uleb128),
+  # which means smaller number uses fewer bytes to represent, we should sort
+  # the unwind instruction table by number of references from the function
+  # offset table in order to minimize the size of the function offset table.
+  ref_counts: Dict[bytes, int] = collections.defaultdict(int)
+  for sequence in complete_instruction_sequences:
+    ref_counts[sequence] += 1
+
+  def ComputeScore(sequence):
+    """ Score for each sequence is computed as  ref_count / size_of_sequence.
+
+    According to greedy algorithm, items with higher value / space cost ratio
+    should be prioritized. Here value is bytes saved in the function offset
+    table, represetned by ref_count. Space cost is the space taken in the
+    unwind instruction table, represented by size_of_sequence.
+
+    Note: In order to ensure build-time determinism, `sequence` is also returned
+    to resolve sorting order when scores are the same.
+    """
+    return ref_counts[sequence] / len(sequence), sequence
+
+  ordered_sequences = sorted(ref_counts.keys(), key=ComputeScore, reverse=True)
+  offsets: Dict[bytes, int] = {}
+  current_offset = 0
+  for sequence in ordered_sequences:
+    offsets[sequence] = current_offset
+    current_offset += len(sequence)
+  return b''.join(ordered_sequences), offsets
