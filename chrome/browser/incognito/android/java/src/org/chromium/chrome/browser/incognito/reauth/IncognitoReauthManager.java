@@ -56,10 +56,12 @@ public class IncognitoReauthManager {
      */
     public void startReauthenticationFlow(
             @NonNull IncognitoReauthCallback incognitoReauthCallback) {
-        if (!isIncognitoReauthFeatureAvailable()
-                || !mReauthenticatorBridge.canUseAuthentication()) {
+        if (!mReauthenticatorBridge.canUseAuthentication()
+                || !isIncognitoReauthFeatureAvailable()) {
             incognitoReauthCallback.onIncognitoReauthNotPossible();
+            return;
         }
+
         mReauthenticatorBridge.reauthenticate(success -> {
             if (success) {
                 incognitoReauthCallback.onIncognitoReauthSuccess();
@@ -75,10 +77,11 @@ public class IncognitoReauthManager {
         if (sIsIncognitoReauthFeatureAvailableForTesting != null) {
             return sIsIncognitoReauthFeatureAvailableForTesting;
         }
-        // The current phase relies on using the {@link BiometricManager} API which was added in
-        // Android Version 29.
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.INCOGNITO_REAUTHENTICATION_FOR_ANDROID)
-                && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q);
+        // The implementation relies on {@link BiometricManager} which was introduced in API
+        // level 29. Android Q is not supported due to a potential bug in BiometricPrompt.
+        return (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.INCOGNITO_REAUTHENTICATION_FOR_ANDROID);
     }
 
     @VisibleForTesting
