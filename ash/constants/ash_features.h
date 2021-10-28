@@ -87,6 +87,8 @@ extern const base::Feature kBluetoothPhoneFilter;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kBluetoothRevamp;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kBluetoothWbsDogfood;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kBorealisBigGl;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kBorealisDiskManagement;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kButtonARCNetworkDiagnostics;

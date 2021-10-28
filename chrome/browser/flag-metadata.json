@@ -574,9 +574,14 @@
     "expiry_milestone": 100
   },
   {
+    "name": "borealis-big-gl",
+    "owners": [ "danielng" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "borealis-disk-management",
     "owners": [ "danielng" ],
-    "expiry_milestone": 96
+    "expiry_milestone": 100
   },
   {
     "name": "button-arc-network-diagnostics",

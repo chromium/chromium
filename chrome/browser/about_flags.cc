@@ -2648,6 +2648,7 @@ const FeatureEntry::FeatureVariation kPaintPreviewStartupVariations[] = {
 #endif  // BUILDFLAG(ENABLE_PAINT_PREVIEW) && defined(OS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+constexpr char kBorealisBigGlInternalName[] = "borealis-big-gl";
 constexpr char kBorealisDiskManagementInternalName[] =
     "borealis-disk-management";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -7459,6 +7460,9 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(net::features::kPartitionedCookies)},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    {kBorealisBigGlInternalName, flag_descriptions::kBorealisBigGlName,
+     flag_descriptions::kBorealisBigGlDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kBorealisBigGl)},
     {kBorealisDiskManagementInternalName,
      flag_descriptions::kBorealisDiskManagementName,
      flag_descriptions::kBorealisDiskManagementDescription, kOsCrOS,
@@ -7803,6 +7807,10 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
   }
 
   // Only show Borealis flags on enabled devices.
+  if (!strcmp(kBorealisBigGlInternalName, entry.internal_name)) {
+    return !base::FeatureList::IsEnabled(features::kBorealis);
+  }
+
   if (!strcmp(kBorealisDiskManagementInternalName, entry.internal_name)) {
     return !base::FeatureList::IsEnabled(features::kBorealis);
   }

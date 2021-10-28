@@ -463,6 +463,9 @@ const char kBiometricReauthForPasswordFillingDescription[] =
     "Enables biometric"
     "re-authentication before password filling";
 
+const char kBorealisBigGlName[] = "Borealis Big GL";
+const char kBorealisBigGlDescription[] = "Enable Big GL when running Borealis.";
+
 const char kBorealisDiskManagementName[] = "Borealis Disk management";
 const char kBorealisDiskManagementDescription[] =
     "Enable experimental disk management settings.";

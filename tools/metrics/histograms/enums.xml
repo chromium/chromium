@@ -49371,6 +49371,7 @@ from previous Chrome versions.
   <int value="-1153892430"
       label="AlignFontDisplayAutoTimeoutWithLCPGoal:enabled"/>
   <int value="-1151766565" label="enable-fullscreen-tab-detaching"/>
+  <int value="-1151615978" label="BorealisBigGl:disabled"/>
   <int value="-1151014496" label="NearbySharingDeviceContacts:disabled"/>
   <int value="-1150881704"
       label="ArcNativeBridge64BitSupportExperiment:enabled"/>
@@ -50010,6 +50011,7 @@ from previous Chrome versions.
   <int value="-654705905" label="ShortcutCustomizationApp:enabled"/>
   <int value="-654196854" label="PasswordsKeyboardAccessory:enabled"/>
   <int value="-653616608" label="MacSyscallSandbox:disabled"/>
+  <int value="-652144124" label="BorealisBigGl:enabled"/>
   <int value="-650504533" label="enable-speculative-launch-service-worker"/>
   <int value="-650388312" label="ClipboardHistoryScreenshotNudge:enabled"/>
   <int value="-650213879" label="OmniboxZeroSuggestionsOnNTP:disabled"/>
