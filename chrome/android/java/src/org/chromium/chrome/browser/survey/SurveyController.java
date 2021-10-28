@@ -58,4 +58,13 @@ public class SurveyController {
      */
     public void showSurveyIfAvailable(Activity activity, String siteId, boolean showAsBottomSheet,
             int displayLogoResId, @Nullable ActivityLifecycleDispatcher lifecycleDispatcher) {}
+
+    /**
+     * Check if a survey is valid or expired.
+     * @param triggerId  The ID used to fetch the data for the surveys.
+     * @return true if the survey has expired, false if the survey is valid.
+     */
+    public boolean isSurveyExpired(String triggerId) {
+        return false;
+    }
 }
