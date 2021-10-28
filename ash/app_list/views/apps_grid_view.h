@@ -502,6 +502,9 @@ class ASH_EXPORT AppsGridView : public views::View,
   // non-folder.
   bool extra_page_opened_ = false;
 
+  GhostImageView* current_ghost_view_ = nullptr;
+  GhostImageView* last_ghost_view_ = nullptr;
+
  private:
   friend class test::AppsGridViewTestApi;
   friend class test::AppsGridViewTest;
@@ -898,9 +901,6 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // The location when |current_ghost_view_| was shown.
   GridIndex current_ghost_location_;
-
-  GhostImageView* current_ghost_view_ = nullptr;
-  GhostImageView* last_ghost_view_ = nullptr;
 };
 
 }  // namespace ash

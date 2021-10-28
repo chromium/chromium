@@ -16,6 +16,7 @@
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/apps_container_view.h"
 #include "ash/app_list/views/contents_view.h"
+#include "ash/app_list/views/ghost_image_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
@@ -1149,6 +1150,20 @@ void PagedAppsGridView::AnimateCardifiedState() {
     bounds_animation_for_cardified_state_in_progress_++;
   }
 
+  auto animation_settings = [this](ui::Layer* layer)
+      -> std::unique_ptr<ui::ScopedLayerAnimationSettings> {
+    auto settings = std::make_unique<ui::ScopedLayerAnimationSettings>(
+        layer->GetAnimator());
+    settings->SetPreemptionStrategy(
+        ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
+    settings->SetTweenType(kCardifiedStateTweenType);
+    if (!cardified_state_) {
+      settings->SetTransitionDuration(
+          base::Milliseconds(kDefaultAnimationDuration));
+    }
+    return settings;
+  };
+
   gfx::Vector2d translate_offset(
       0, start_position.y() - items_container()->origin().y());
   for (int i = 0; i < view_model()->view_size(); ++i) {
@@ -1182,20 +1197,29 @@ void PagedAppsGridView::AnimateCardifiedState() {
         gfx::RectF(items_container()->GetMirroredRect(current_bounds)));
     entry_view->layer()->SetTransform(transform);
 
-    ui::ScopedLayerAnimationSettings animator(
-        entry_view->layer()->GetAnimator());
-    animator.SetPreemptionStrategy(
-        ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
-    animator.SetTweenType(kCardifiedStateTweenType);
-    if (!cardified_state_) {
-      animator.SetTransitionDuration(
-          base::Milliseconds(kDefaultAnimationDuration));
-    }
+    auto animator = animation_settings(entry_view->layer());
     // When the animations are done, discard the layer and reset view to
     // proper scale.
-    animator.AddObserver(
+    animator->AddObserver(
         new CardifiedAnimationObserver(on_bounds_animator_callback));
     entry_view->layer()->SetTransform(gfx::Transform());
+  }
+
+  if (current_ghost_view_) {
+    auto index = current_ghost_view_->index();
+    gfx::Rect current_bounds = current_ghost_view_->bounds();
+    current_bounds.Offset(translate_offset);
+    gfx::Rect target_bounds = GetExpectedTileBounds(index);
+    target_bounds.Offset(CalculateTransitionOffset(index.page));
+
+    current_ghost_view_->SetBoundsRect(target_bounds);
+    gfx::Transform transform = gfx::TransformBetweenRects(
+        gfx::RectF(items_container()->GetMirroredRect(target_bounds)),
+        gfx::RectF(items_container()->GetMirroredRect(current_bounds)));
+    current_ghost_view_->layer()->SetTransform(transform);
+
+    auto animator = animation_settings(current_ghost_view_->layer());
+    current_ghost_view_->layer()->SetTransform(gfx::Transform());
   }
 
   for (size_t i = 0; i < background_cards_.size(); i++) {
@@ -1204,15 +1228,8 @@ void PagedAppsGridView::AnimateCardifiedState() {
     gfx::Rect background_bounds = background_card->bounds();
     background_bounds.Offset(translate_offset);
     background_card->SetBounds(background_bounds);
-    ui::ScopedLayerAnimationSettings animator(background_card->GetAnimator());
-    animator.SetTweenType(kCardifiedStateTweenType);
-    animator.SetPreemptionStrategy(
-        ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
-    if (!cardified_state_) {
-      animator.SetTransitionDuration(
-          base::Milliseconds(kDefaultAnimationDuration));
-    }
-    animator.AddObserver(this);
+    auto animator = animation_settings(background_card.get());
+    animator->AddObserver(this);
     ui::AnimationThroughputReporter reporter(
         background_card->GetAnimator(),
         metrics_util::ForSmoothness(

@@ -24,7 +24,8 @@ constexpr gfx::Tween::Type kGhostTween = gfx::Tween::FAST_OUT_SLOW_IN;
 
 }  // namespace
 
-GhostImageView::GhostImageView() : is_hiding_(false) {}
+GhostImageView::GhostImageView(GridIndex index)
+    : is_hiding_(false), index_(index) {}
 
 GhostImageView::~GhostImageView() {
   StopObservingImplicitAnimations();
