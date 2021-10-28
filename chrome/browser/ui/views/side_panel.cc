@@ -65,8 +65,10 @@ class SidePanelBorder : public views::Border {
     gfx::RectF scaled_bounds = gfx::ConvertRectToPixels(
         view.GetLocalBounds(), view.layer()->device_scale_factor());
 
-    const float corner_radius = view.GetLayoutProvider()->GetCornerRadiusMetric(
-        views::Emphasis::kMedium, view.GetContentsBounds().size());
+    const float corner_radius =
+        view.GetLayoutProvider()->GetCornerRadiusMetric(
+            views::Emphasis::kMedium, view.GetContentsBounds().size()) *
+        dsf;
     gfx::Insets insets_in_pixels =
         gfx::ToFlooredInsets(gfx::ConvertInsetsToPixels(GetInsets(), dsf));
     scaled_bounds.Inset(insets_in_pixels);
@@ -78,17 +80,24 @@ class SidePanelBorder : public views::Border {
     // TODO(pbos): Handle user themes with toolbar background images here. This
     // would paint a few rows more of the background outside the toolbar and
     // then transition down to COLOR_TOOLBAR below using a gradient.
-    canvas->DrawColor(
-        view.GetThemeProvider()->GetColor(ThemeProperties::COLOR_TOOLBAR));
+    const ui::ThemeProvider* const theme_provider = view.GetThemeProvider();
+    canvas->DrawColor(theme_provider->GetColor(ThemeProperties::COLOR_TOOLBAR));
 
     // Paint the inner border around SidePanel content.
-    // TODO(pbos): Revisit adding shadows here.
+    const float stroke_thickness = views::Separator::kThickness * dsf;
+
     cc::PaintFlags flags;
-    flags.setStrokeWidth(floor(views::Separator::kThickness * dsf));
-    flags.setColor(view.GetThemeProvider()->GetColor(
-        ThemeProperties::COLOR_TOOLBAR_CONTENT_AREA_SEPARATOR));
+    flags.setStrokeWidth(stroke_thickness);
+    flags.setColor(color_utils::GetResultingPaintColor(
+        theme_provider->GetColor(
+            ThemeProperties::COLOR_TOOLBAR_CONTENT_AREA_SEPARATOR),
+        theme_provider->GetColor(ThemeProperties::COLOR_TOOLBAR)));
     flags.setStyle(cc::PaintFlags::kStroke_Style);
     flags.setAntiAlias(true);
+
+    // Outset half of the stroke thickness so that it's painted fully on the
+    // outside of the clipping region.
+    scaled_bounds.Inset(gfx::Insets(-stroke_thickness / 2));
     canvas->DrawRoundRect(scaled_bounds, corner_radius, flags);
   }
 
