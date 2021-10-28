@@ -7,7 +7,7 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {MechanicalLayout as DiagramMechanicalLayout} from 'chrome://resources/ash/common/keyboard_diagram.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {KeyboardInfo, MechanicalLayout, PhysicalLayout} from './diagnostics_types.js';
+import {KeyboardInfo, MechanicalLayout, NumberPadPresence, PhysicalLayout} from './diagnostics_types.js';
 
 /**
  * @fileoverview
@@ -38,6 +38,12 @@ Polymer({
     diagramMechanicalLayout_: {
       type: String,
       computed: 'computeDiagramMechanicalLayout_(keyboard)',
+    },
+
+    /** @private */
+    showNumberPad_: {
+      type: Boolean,
+      computed: 'computeShowNumberPad_(keyboard)',
     },
   },
 
@@ -72,6 +78,16 @@ Polymer({
       [MechanicalLayout.kIso]: DiagramMechanicalLayout.kIso,
       [MechanicalLayout.kJis]: DiagramMechanicalLayout.kJis,
     }[keyboardInfo.mechanicalLayout];
+  },
+
+  /**
+   * @param {?KeyboardInfo} keyboard
+   * @return {boolean}
+   * @private
+   */
+  computeShowNumberPad_(keyboard) {
+    return !!keyboard &&
+        keyboard.numberPadPresent === NumberPadPresence.kPresent;
   },
 
   /** Shows the tester's dialog. */
