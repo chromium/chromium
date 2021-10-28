@@ -123,9 +123,6 @@ class ASH_EXPORT UnifiedMessageCenterView
   // Called when user clicks the clear all button.
   void ClearAllNotifications();
 
-  // Nulls pointers to dependencies that are about to be destroyed.
-  void OnShutdown();
-
   // Called when user clicks the see all notifications button.
   void ExpandMessageCenter();
 
@@ -181,7 +178,7 @@ class ASH_EXPORT UnifiedMessageCenterView
   View* GetLastFocusableChild();
 
   UnifiedSystemTrayView* const parent_;
-  UnifiedSystemTrayModel* model_;
+  UnifiedSystemTrayModel* const model_;
   UnifiedMessageCenterBubble* const message_center_bubble_;
   StackedNotificationBar* const notification_bar_;
   MessageCenterScrollBar* const scroll_bar_;
