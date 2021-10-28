@@ -939,6 +939,10 @@ void DisplayLockContext::ElementDisconnected() {
   // the context.
   DCHECK(!element_->GetComputedStyle());
   SetRequestedState(EContentVisibility::kVisible);
+
+  // blocked_child_recalc_change_ must be cleared because things can be in an
+  // inconsistent state when we add the element back (e.g. crbug.com/1262742).
+  blocked_child_recalc_change_ = StyleRecalcChange();
 }
 
 void DisplayLockContext::ElementConnected() {
