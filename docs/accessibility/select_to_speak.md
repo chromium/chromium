@@ -297,6 +297,21 @@ must be executed to remove aria-hidden from the content container.
 from Google Docs, as selection information may not be available in the
 Automation API. This happens mostly in input_handler.js.
 
+### Enhanced network voices
+
+As of M94, Select-to-speak supports natural, server-generated voices. When
+enhanced network voices are enabled, Select-to-speak passes the user's selected
+natural voice name to `chrome.tts.speak`. The TTS request is handled by the
+[Enhanced Network TTS engine](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/resources/chromeos/accessibility/enhanced_network_tts/).
+The TTS engine then passes the request to native code
+([ EnhancedNetworkTts](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ash/enhanced_network_tts/enhanced_network_tts_impl.h)),
+which in turn sends a network request to the ReadAloud API, which produces
+synthesized audio.
+
+For instructions on how to add new voices, see
+[go/chromeos-natural-voices](go/chromeos-natural-voices).
+
+
 ## For Googlers
 
 For more, Googlers could check out the Select to Speak feature design docs
@@ -317,3 +332,5 @@ for more details on design as well as UMA.
 [go/chromeos-sts-highlight](go/chromeos-sts-highlight)
 
 - Navigation features, [go/enhanced-sts-dd](go/enhanced-sts-dd)
+
+- Enhanced network voices, [go/wavenet-chromeos-dd](go/wavenet-chromeos-dd)
