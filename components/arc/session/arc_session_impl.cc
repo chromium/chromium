@@ -469,6 +469,11 @@ void ArcSessionImpl::DoStartMiniInstance(size_t num_cores_disabled) {
   params.enable_notifications_refresh =
       ash::features::IsNotificationsRefreshEnabled();
 
+  // TODO (b/196460968): Remove after CTS run is complete.
+  if (params.enable_notifications_refresh) {
+    VLOG(1) << "Notifications Refresh is enabled";
+  }
+
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           chromeos::switches::kArcPlayStoreAutoUpdate)) {
     const std::string value =
