@@ -407,15 +407,15 @@ TEST_P(ProjectorUiControllerTest, UmaMetricsTest) {
 }
 
 TEST_P(ProjectorUiControllerTest, ShowFailureNotification) {
-  MockMessageCenterObserver mock_message_center_observer_;
+  MockMessageCenterObserver mock_message_center_observer;
   message_center::MessageCenter::Get()->AddObserver(
-      &mock_message_center_observer_);
+      &mock_message_center_observer);
 
   EXPECT_CALL(
-      mock_message_center_observer_,
+      mock_message_center_observer,
       OnNotificationAdded(/*notification_id=*/"projector_error_notification"))
       .Times(2);
-  EXPECT_CALL(mock_message_center_observer_,
+  EXPECT_CALL(mock_message_center_observer,
               OnNotificationDisplayed(
                   /*notification_id=*/"projector_error_notification",
                   message_center::DisplaySource::DISPLAY_SOURCE_POPUP));
@@ -424,7 +424,7 @@ TEST_P(ProjectorUiControllerTest, ShowFailureNotification) {
       IDS_ASH_PROJECTOR_FAILURE_MESSAGE_SAVE_SCREENCAST);
 
   EXPECT_CALL(
-      mock_message_center_observer_,
+      mock_message_center_observer,
       OnNotificationRemoved(/*notification_id=*/"projector_error_notification",
                             /*by_user=*/false));
 
