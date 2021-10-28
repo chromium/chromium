@@ -4,7 +4,9 @@
 
 #include "components/global_media_controls/media_item_manager_impl.h"
 
+#include <list>
 #include <memory>
+#include <string>
 
 #include "components/global_media_controls/public/media_dialog_delegate.h"
 #include "components/global_media_controls/public/media_item_manager_observer.h"

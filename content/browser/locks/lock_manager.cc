@@ -5,6 +5,7 @@
 #include "content/browser/locks/lock_manager.h"
 
 #include <algorithm>
+#include <list>
 #include <memory>
 #include <tuple>
 #include <unordered_set>
