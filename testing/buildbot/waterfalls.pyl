@@ -1704,6 +1704,16 @@
           'isolated_scripts': 'chrome_sizes_android',
         },
       },
+      'ToTChromeOS': {
+        'additional_compile_targets': [
+          'all',
+        ],
+      },
+      'ToTChromeOS (dbg)': {
+        'additional_compile_targets': [
+          'all',
+        ],
+      },
       'ToTFuchsia x64': {
         'additional_compile_targets': [
           'all',

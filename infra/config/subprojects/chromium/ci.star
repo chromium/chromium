@@ -2460,6 +2460,22 @@ ci.clang_builder(
 )
 
 ci.clang_builder(
+    name = "ToTChromeOS",
+    console_view_entry = consoles.console_view_entry(
+        category = "ToT ChromeOS",
+        short_name = "rel",
+    ),
+)
+
+ci.clang_builder(
+    name = "ToTChromeOS (dbg)",
+    console_view_entry = consoles.console_view_entry(
+        category = "ToT ChromeOS",
+        short_name = "dbg",
+    ),
+)
+
+ci.clang_builder(
     name = "ToTFuchsia x64",
     console_view_entry = [
         consoles.console_view_entry(

@@ -178,6 +178,8 @@
       'ToTAndroid x64': 'android_clang_tot_x64',
       'ToTAndroid x86': 'android_clang_tot_x86',
       'ToTAndroidCoverage x86': 'android_clang_tot_coverage_x86',
+      'ToTChromeOS': 'lacros_on_linux_tot_release',
+      'ToTChromeOS (dbg)': 'lacros_on_linux_tot_debug',
       'ToTFuchsia x64': 'fuchsia_clang_tot_release_x64',
       'ToTFuchsiaOfficial': 'fuchsia_clang_tot_official_arm64',
       'ToTLinuxOfficial': 'clang_tot_official',
@@ -2489,8 +2491,16 @@
       'lacros_on_linux', 'release_bot', 'also_build_ash_chrome', 'clang', 'use_clang_coverage', 'no_symbols',
     ],
 
+    'lacros_on_linux_tot_release': [
+      'lacros_on_linux', 'release', 'also_build_ash_chrome', 'clang_tot',
+    ],
+
     'lacros_on_linux_release_bot': [
       'lacros_on_linux', 'release_bot', 'also_build_ash_chrome',
+    ],
+
+    'lacros_on_linux_tot_debug': [
+      'lacros_on_linux', 'debug', 'also_build_ash_chrome', 'clang_tot',
     ],
 
     'lacros_on_linux_debug_bot': [
