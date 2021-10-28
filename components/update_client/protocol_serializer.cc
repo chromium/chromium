@@ -131,8 +131,7 @@ protocol_request::Request MakeProtocolRequest(
   request.additional_attributes = additional_attributes;
 
 #if defined(OS_WIN)
-  if (base::win::OSInfo::GetInstance()->wow64_status() ==
-      base::win::OSInfo::WOW64_ENABLED)
+  if (base::win::OSInfo::GetInstance()->IsWowX86OnAMD64())
     request.is_wow64 = true;
 #endif
 
