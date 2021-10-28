@@ -9,7 +9,7 @@
 It can also be run stand-alone as a convenient way of installing a well-tested
 near-tip-of-tree clang version:
 
-  $ curl -s https://raw.githubusercontent.com/chromium/chromium/main/tools/clang/scripts/update.py | python - --output-dir=/tmp/clang
+  $ curl -s https://raw.githubusercontent.com/chromium/chromium/main/tools/clang/scripts/update.py | python3 - --output-dir=/tmp/clang
 
 (Note that the output dir may be deleted and re-created if it exists.)
 """
