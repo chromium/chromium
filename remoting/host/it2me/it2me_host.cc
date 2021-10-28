@@ -243,9 +243,9 @@ void It2MeHost::ConnectOnNetworkThread(
   options.set_enable_user_interface(enable_dialogs_);
   options.set_enable_notifications(enable_notifications_);
   options.set_terminate_upon_input(terminate_upon_input_);
-  // TODO(joedow): Init |clipboard_size_| via a Chrome policy.
-  if (clipboard_size_.has_value()) {
-    options.set_clipboard_size(clipboard_size_.value());
+
+  if (max_clipboard_size_.has_value()) {
+    options.set_clipboard_size(max_clipboard_size_.value());
   }
 
   // Create the host.
@@ -366,6 +366,14 @@ void It2MeHost::OnPolicyUpdate(
   if (policies->GetString(policy::key::kRemoteAccessHostUdpPortRange,
                           &port_range_string)) {
     UpdateHostUdpPortRangePolicy(port_range_string);
+  }
+
+  int max_clipboard_size;
+  if (policies->GetInteger(policy::key::kRemoteAccessHostClipboardSizeBytes,
+                           &max_clipboard_size)) {
+    if (max_clipboard_size >= 0) {
+      max_clipboard_size_ = max_clipboard_size;
+    }
   }
 }
 

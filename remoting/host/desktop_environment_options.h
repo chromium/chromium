@@ -51,7 +51,7 @@ class DesktopEnvironmentOptions final {
   void set_enable_remote_webauthn(bool enabled);
 
   const absl::optional<size_t>& clipboard_size() const;
-  void set_clipboard_size(size_t clipboard_size);
+  void set_clipboard_size(absl::optional<size_t> clipboard_size);
 
   const webrtc::DesktopCaptureOptions* desktop_capture_options() const;
   webrtc::DesktopCaptureOptions* desktop_capture_options();

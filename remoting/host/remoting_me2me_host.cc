@@ -333,6 +333,7 @@ class HostProcess : public ConfigWatcher::Delegate,
   bool OnEnableUserInterfacePolicyUpdate(base::DictionaryValue* policies);
   bool OnAllowRemoteAccessConnections(base::DictionaryValue* policies);
   bool OnMaxSessionDurationPolicyUpdate(base::DictionaryValue* policies);
+  bool OnMaxClipboardSizePolicyUpdate(base::DictionaryValue* policies);
 
   void InitializeSignaling();
 
@@ -389,7 +390,7 @@ class HostProcess : public ConfigWatcher::Delegate,
   base::Value config_{base::Value::Type::DICTIONARY};
   std::string host_owner_;
   bool is_googler_ = false;
-  absl::optional<size_t> clipboard_size_;
+  absl::optional<size_t> max_clipboard_size_;
 
   std::unique_ptr<PolicyWatcher> policy_watcher_;
   PolicyState policy_state_ = POLICY_INITIALIZING;
@@ -1137,6 +1138,7 @@ void HostProcess::OnPolicyUpdate(
   restart_required |= OnEnableUserInterfacePolicyUpdate(policies.get());
   restart_required |= OnAllowRemoteAccessConnections(policies.get());
   restart_required |= OnMaxSessionDurationPolicyUpdate(policies.get());
+  restart_required |= OnMaxClipboardSizePolicyUpdate(policies.get());
 
   policy_state_ = POLICY_LOADED;
 
@@ -1507,6 +1509,29 @@ bool HostProcess::OnMaxSessionDurationPolicyUpdate(
   return true;
 }
 
+bool HostProcess::OnMaxClipboardSizePolicyUpdate(
+    base::DictionaryValue* policies) {
+  DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
+
+  int max_clipboard_size;
+  if (!policies->GetInteger(policy::key::kRemoteAccessHostClipboardSizeBytes,
+                            &max_clipboard_size)) {
+    return false;
+  }
+
+  if (max_clipboard_size >= 0) {
+    max_clipboard_size_ = max_clipboard_size;
+    HOST_LOG << "Policy sets maximum clipboard size to "
+             << max_clipboard_size_.value() << " bytes.";
+  } else {
+    max_clipboard_size_.reset();
+    HOST_LOG << "Policy does not set a maximum clipboard size.";
+  }
+
+  // Restart required.
+  return true;
+}
+
 bool HostProcess::OnAllowRemoteAccessConnections(
     base::DictionaryValue* policies) {
   // Returns false: never restart the host after this policy update.
@@ -1647,9 +1672,13 @@ void HostProcess::StartHost() {
   desktop_environment_options_.set_enable_remote_webauthn(true);
 #endif
 
-  // TODO(joedow): Init |clipboard_size_| via a Chrome policy.
-  if (clipboard_size_.has_value()) {
-    desktop_environment_options_.set_clipboard_size(clipboard_size_.value());
+  if (max_clipboard_size_.has_value()) {
+    desktop_environment_options_.set_clipboard_size(
+        max_clipboard_size_.value());
+  } else if (desktop_environment_options_.clipboard_size().has_value()) {
+    // If we've transitioned from having a policy value to no value then make
+    // sure the value stored in desktop_environment_options has been cleared.
+    desktop_environment_options_.set_clipboard_size(absl::optional<size_t>());
   }
 
   host_ = std::make_unique<ChromotingHost>(

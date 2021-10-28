@@ -518,70 +518,73 @@
     "reason_for_missing_test": "Policy was removed"
   },
   "RemoteAccessHostClientDomain": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+    "reason_for_missing_test": "Not used by the browser, handled by CRD host."
   },
   "RemoteAccessHostClientDomainList": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+    "reason_for_missing_test": "Not used by the browser, handled by CRD host."
   },
   "RemoteAccessHostFirewallTraversal": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+    "reason_for_missing_test": "Not used by the browser, handled by CRD host."
   },
   "RemoteAccessHostRequireTwoFactor": {
     "reason_for_missing_test": "Policy was removed"
   },
   "RemoteAccessHostDomain": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+    "reason_for_missing_test": "Not used by the browser, handled by CRD host."
   },
   "RemoteAccessHostDomainList": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+    "reason_for_missing_test": "Not used by the browser, handled by CRD host."
   },
   "RemoteAccessHostTalkGadgetPrefix": {
     "reason_for_missing_test": "Policy was removed"
   },
   "RemoteAccessHostRequireCurtain": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+    "reason_for_missing_test": "Not used by the browser, handled by CRD host."
   },
   "RemoteAccessHostAllowClientPairing": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+    "reason_for_missing_test": "Not used by the browser, handled by CRD host."
   },
   "RemoteAccessHostAllowGnubbyAuth": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+    "reason_for_missing_test": "Not used by the browser, handled by CRD host."
   },
   "RemoteAccessHostAllowRelayedConnection": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+    "reason_for_missing_test": "Not used by the browser, handled by CRD host."
   },
   "RemoteAccessHostUdpPortRange": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+    "reason_for_missing_test": "Not used by the browser, handled by CRD host."
   },
   "RemoteAccessHostMatchUsername": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+    "reason_for_missing_test": "Not used by the browser, handled by CRD host."
   },
   "RemoteAccessHostTokenUrl": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+    "reason_for_missing_test": "Not used by the browser, handled by CRD host."
   },
   "RemoteAccessHostTokenValidationUrl": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+    "reason_for_missing_test": "Not used by the browser, handled by CRD host."
   },
   "RemoteAccessHostTokenValidationCertificateIssuer": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+    "reason_for_missing_test": "Not used by the browser, handled by CRD host."
   },
   "RemoteAccessHostDebugOverridePolicies": {
     "reason_for_missing_test": "Policy was removed"
   },
   "RemoteAccessHostAllowUiAccessForRemoteAssistance": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+    "reason_for_missing_test": "Not used by the browser, handled by CRD host."
   },
   "RemoteAccessHostAllowFileTransfer": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+    "reason_for_missing_test": "Not used by the browser, handled by CRD host."
   },
   "RemoteAccessHostEnableUserInterface": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+    "reason_for_missing_test": "Not used by the browser, handled by CRD host."
   },
   "RemoteAccessHostAllowRemoteAccessConnections": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+    "reason_for_missing_test": "Not used by the browser, handled by CRD host."
   },
   "RemoteAccessHostMaximumSessionDurationMinutes": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+    "reason_for_missing_test": "Not used by the browser, handled by CRD host."
+  },
+  "RemoteAccessHostClipboardSizeBytes": {
+    "reason_for_missing_test": "Not used by the browser, handled by CRD host."
   },
   "PrintingEnabled": {
     "os": [
