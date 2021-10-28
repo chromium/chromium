@@ -11,11 +11,9 @@ namespace ui {
 
 extern const base::Feature kWaylandSurfaceSubmissionInPixelCoordinates;
 extern const base::Feature kWaylandOverlayDelegation;
-extern const base::Feature kXdgOutputProtocolSupport;
 
 bool IsWaylandSurfaceSubmissionInPixelCoordinatesEnabled();
 bool IsWaylandOverlayDelegationEnabled();
-bool IsXdgOutputProtocolSupportEnabled();
 
 }  // namespace ui
 

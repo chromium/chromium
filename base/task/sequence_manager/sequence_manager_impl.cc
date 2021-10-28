@@ -104,8 +104,10 @@ constexpr int kMemoryCorruptionSentinelValue = 0xdeadbeef;
 void ReclaimMemoryFromQueue(internal::TaskQueueImpl* queue,
                             std::map<TimeDomain*, TimeTicks>* time_domain_now) {
   TimeDomain* time_domain = queue->GetTimeDomain();
-  if (time_domain_now->find(time_domain) == time_domain_now->end())
-    time_domain_now->insert(std::make_pair(time_domain, time_domain->Now()));
+  if (time_domain_now->find(time_domain) == time_domain_now->end()) {
+    time_domain_now->insert(
+        std::make_pair(time_domain, time_domain->NowTicks()));
+  }
   queue->ReclaimMemory(time_domain_now->at(time_domain));
   // If the queue was shut down as a side-effect of reclaiming memory, |queue|
   // will still be valid but the work queues will have been removed by
@@ -443,7 +445,7 @@ void SequenceManagerImpl::MoveReadyDelayedTasksToWorkQueues(LazyNow* lazy_now) {
     if (time_domain == main_thread_only().real_time_domain.get()) {
       time_domain->MoveReadyDelayedTasksToWorkQueues(lazy_now);
     } else {
-      LazyNow time_domain_lazy_now = time_domain->CreateLazyNow();
+      LazyNow time_domain_lazy_now(time_domain);
       time_domain->MoveReadyDelayedTasksToWorkQueues(&time_domain_lazy_now);
     }
   }

@@ -540,13 +540,13 @@ class BASE_EXPORT TaskQueueImpl {
       bool should_report_posted_tasks_when_disabled = false;
     };
 
-    explicit AnyThread(TimeDomain* time_domain);
+    explicit AnyThread(const TickClock* tick_clock);
     ~AnyThread();
 
-    // TimeDomain is maintained in two copies: inside AnyThread and inside
+    // TickClock is maintained in two copies: inside AnyThread and inside
     // MainThreadOnly. It can be changed only from main thread, so it should be
     // locked before accessing from other threads.
-    TimeDomain* time_domain;
+    const TickClock* tick_clock;
 
     TaskDeque immediate_incoming_queue;
 

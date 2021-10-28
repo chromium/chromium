@@ -52,7 +52,7 @@ void TimeDomain::RequestDoWork() {
 void TimeDomain::UnregisterQueue(internal::TaskQueueImpl* queue) {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   DCHECK_EQ(queue->GetTimeDomain(), this);
-  LazyNow lazy_now(CreateLazyNow());
+  LazyNow lazy_now(this);
   SetNextWakeUpForQueue(queue, absl::nullopt, &lazy_now);
 }
 
@@ -195,7 +195,7 @@ Value TimeDomain::AsValue() const {
   state.SetStringKey("name", GetName());
   state.SetIntKey("registered_delay_count", delayed_wake_up_queue_.size());
   if (!delayed_wake_up_queue_.empty()) {
-    TimeDelta delay = delayed_wake_up_queue_.top().wake_up.time - Now();
+    TimeDelta delay = delayed_wake_up_queue_.top().wake_up.time - NowTicks();
     state.SetDoubleKey("next_delay_ms", delay.InMillisecondsF());
   }
   return state;
