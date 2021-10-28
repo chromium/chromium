@@ -44,7 +44,7 @@ class Clipboard {
   virtual std::vector<std::string> ReadMimeTypes() = 0;
 
   // Asynchronously reads clipboard content with |mime_type| format. The result
-  // data is expected to arrive through OnSelectionDataReceived() callback.
+  // data is expected to be delivered through |callback|.
   virtual bool Read(const std::string& mime_type,
                     ui::PlatformClipboard::RequestDataClosure callback) = 0;
 
@@ -80,15 +80,10 @@ class ClipboardImpl final : public Clipboard,
   ClipboardImpl(const ClipboardImpl&) = delete;
   ClipboardImpl& operator=(const ClipboardImpl&) = delete;
 
-  // TODO(crbug.com/1165466): Support nested clipboard requests.
   bool Read(const std::string& mime_type,
             ui::PlatformClipboard::RequestDataClosure callback) final {
-    requested_mime_type_ = mime_type;
-    read_clipboard_closure_ = std::move(callback);
-    if (GetDevice()->RequestSelectionData(GetMimeTypeForRequest(mime_type)))
-      return true;
-    DeliverData(nullptr, mime_type);
-    return false;
+    return GetDevice()->ReadSelectionData(GetMimeTypeForRequest(mime_type),
+                                          std::move(callback));
   }
 
   std::vector<std::string> ReadMimeTypes() final {
@@ -149,14 +144,6 @@ class ClipboardImpl final : public Clipboard,
     return mime_type;
   }
 
-  void DeliverData(ui::PlatformClipboard::Data contents,
-                   const std::string& mime_type) {
-    CHECK_EQ(GetMimeTypeForRequest(requested_mime_type_), mime_type);
-    if (!read_clipboard_closure_.is_null())
-      std::move(read_clipboard_closure_).Run(contents);
-    requested_mime_type_.clear();
-  }
-
   // WaylandDataDeviceBase::SelectionDelegate:
   void OnSelectionOffer(ui::WaylandDataOfferBase* offer) final {
     if (IsSelectionOwner())
@@ -164,11 +151,6 @@ class ClipboardImpl final : public Clipboard,
 
     if (!clipboard_changed_callback_.is_null())
       clipboard_changed_callback_.Run(buffer_);
-  }
-
-  void OnSelectionDataReceived(const std::string& mime_type,
-                               ui::PlatformClipboard::Data contents) final {
-    DeliverData(contents, mime_type);
   }
 
   // WaylandDataSource::Delegate:
@@ -198,12 +180,6 @@ class ClipboardImpl final : public Clipboard,
 
   // The data currently stored in a given clipboard buffer.
   ui::PlatformClipboard::DataMap offered_data_;
-
-  // Stores the callback to be invoked upon data reading from clipboard.
-  ui::PlatformClipboard::RequestDataClosure read_clipboard_closure_;
-
-  // Last mime type requested to be read from the clipboard.
-  std::string requested_mime_type_;
 
   // Notifies when clipboard data changes. Can be empty if not set.
   ClipboardDataChangedCallback clipboard_changed_callback_;
@@ -235,7 +211,6 @@ void WaylandClipboard::OfferClipboardData(
   std::move(callback).Run();
 }
 
-// TODO(crbug.com/1165466): Support nested clipboard requests.
 void WaylandClipboard::RequestClipboardData(
     ClipboardBuffer buffer,
     const std::string& mime_type,

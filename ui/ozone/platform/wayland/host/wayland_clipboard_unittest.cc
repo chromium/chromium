@@ -13,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/location.h"
+#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -32,6 +33,7 @@
 #include "ui/ozone/public/platform_clipboard.h"
 
 using testing::_;
+using testing::Eq;
 using testing::IsEmpty;
 using testing::IsNull;
 using testing::Mock;
@@ -253,7 +255,7 @@ TEST_P(WaylandClipboardTest, OverlapReadingFromDifferentBuffers) {
                           ? ClipboardBuffer::kCopyPaste
                           : ClipboardBuffer::kSelection;
   base::MockCallback<PlatformClipboard::RequestDataClosure> callback;
-  EXPECT_CALL(callback, Run(_)).Times(1);
+  EXPECT_CALL(callback, Run(Eq(nullptr))).Times(1);
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(&PlatformClipboard::RequestClipboardData,
                                 base::Unretained(clipboard_), other_buffer,
@@ -263,22 +265,20 @@ TEST_P(WaylandClipboardTest, OverlapReadingFromDifferentBuffers) {
   // data transfer will take place asynchronously. See WaylandDataDevice impl)
   // and ensure read callback is called with the expected resulting data,
   // regardless any other request that may arrive in the meantime.
-  base::RunLoop run_loop;
-  clipboard_->RequestClipboardData(
-      GetBuffer(), kMimeTypeTextUtf8,
-      base::BindOnce(
-          [](base::OnceClosure quit_closure,
-             const PlatformClipboard::Data& data) {
-            ASSERT_TRUE(data.get());
-            EXPECT_EQ(kSampleClipboardText,
-                      std::string(data->front_as<const char>(), data->size()));
-            std::move(quit_closure).Run();
-          },
-          run_loop.QuitClosure()));
+  std::string text;
+  base::MockCallback<PlatformClipboard::RequestDataClosure> got_text;
+  EXPECT_CALL(got_text, Run(_)).WillOnce([&](PlatformClipboard::Data data) {
+    ASSERT_NE(nullptr, data);
+    text = std::string(data->front_as<const char>(), data->size());
+  });
+  clipboard_->RequestClipboardData(GetBuffer(), kMimeTypeTextUtf8,
+                                   got_text.Get());
 
   Sync();
-  run_loop.Run();
+  base::RunLoop().RunUntilIdle();
   Sync();
+
+  EXPECT_EQ(kSampleClipboardText, text);
 }
 
 // Ensures clipboard change callback is fired only once per read/write.
@@ -321,6 +321,49 @@ TEST_P(CopyPasteOnlyClipboardTest, PrimarySelectionRequestsNoop) {
   base::MockCallback<PlatformClipboard::GetMimeTypesClosure> got_mime_types;
   EXPECT_CALL(got_mime_types, Run(IsEmpty())).Times(1);
   clipboard_->GetAvailableMimeTypes(buffer, got_mime_types.Get());
+}
+
+// Makes sure overlapping read requests for the same clipboard buffer are
+// properly handled.
+TEST_P(CopyPasteOnlyClipboardTest, OverlappingReadRequests) {
+  // Create an selection data offer containing plain and html mime types.
+  auto* data_device = server_.data_device_manager()->data_device();
+  auto* data_offer = data_device->OnDataOffer();
+  data_offer->OnOffer(kMimeTypeText, ToClipboardData(std::string("text")));
+  data_offer->OnOffer(kMimeTypeHTML, ToClipboardData(std::string("html")));
+  data_device->OnSelection(data_offer);
+  Sync();
+
+  // Schedule a clipboard read task (for text/html mime type). As read requests
+  // are processed asynchronously, this will actually start when the request
+  // below is already under processing, thus emulating 2 "overlapping" requests.
+  std::string html;
+  base::MockCallback<PlatformClipboard::RequestDataClosure> got_html;
+  EXPECT_CALL(got_html, Run(_)).WillOnce([&](PlatformClipboard::Data data) {
+    html = std::string(data->front_as<const char>(), data->size());
+  });
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&PlatformClipboard::RequestClipboardData,
+                     base::Unretained(clipboard_), ClipboardBuffer::kCopyPaste,
+                     kMimeTypeHTML, got_html.Get()));
+
+  // Instantly start a read request for text/plain mime type.
+  std::string text;
+  base::MockCallback<PlatformClipboard::RequestDataClosure> got_text;
+  EXPECT_CALL(got_text, Run(_)).WillOnce([&](PlatformClipboard::Data data) {
+    text = std::string(data->front_as<const char>(), data->size());
+  });
+  clipboard_->RequestClipboardData(ClipboardBuffer::kCopyPaste, kMimeTypeText,
+                                   got_text.Get());
+
+  Sync();
+  base::RunLoop().RunUntilIdle();
+  Sync();
+
+  // Ensures both requests were processed correctly.
+  EXPECT_EQ("html", html);
+  EXPECT_EQ("text", text);
 }
 
 INSTANTIATE_TEST_SUITE_P(

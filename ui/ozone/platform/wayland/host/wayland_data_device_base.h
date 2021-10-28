@@ -29,8 +29,6 @@ class WaylandDataDeviceBase {
   class SelectionDelegate {
    public:
     virtual void OnSelectionOffer(WaylandDataOfferBase* offer) = 0;
-    virtual void OnSelectionDataReceived(const std::string& mime_type,
-                                         PlatformClipboard::Data contents) = 0;
 
    protected:
     virtual ~SelectionDelegate() = default;
@@ -52,8 +50,10 @@ class WaylandDataDeviceBase {
   // Returns MIME types given by the current data offer.
   const std::vector<std::string>& GetAvailableMimeTypes() const;
 
-  // Extracts data of the specified MIME type from the data offer.
-  bool RequestSelectionData(const std::string& mime_type);
+  // Asynchronously reads selection data for the specified |mime_type| and
+  // delivers the result, if any, through |callback|.
+  bool ReadSelectionData(const std::string& mime_type,
+                         PlatformClipboard::RequestDataClosure callback);
 
  protected:
   WaylandConnection* connection() const { return connection_; }
@@ -64,9 +64,9 @@ class WaylandDataDeviceBase {
 
   // Resets the data offer.
   void ResetDataOffer();
-  // Reads data of the requested MIME type from the data offer and gives it to
-  // the clipboard linked to the Wayland connection.
-  void ReadClipboardDataFromFD(base::ScopedFD fd, const std::string& mime_type);
+
+  // Reads selection data from the file descriptor |fd|.
+  PlatformClipboard::Data ReadFromFD(base::ScopedFD fd) const;
 
   // Registers DeferredReadCallback as display sync callback listener, to
   // ensure there is no pending operation to be performed by the compositor,
