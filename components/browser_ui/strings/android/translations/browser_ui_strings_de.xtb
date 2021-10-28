@@ -29,6 +29,7 @@
 <translation id="1743802530341753419">Nachfragen, bevor Websites eine Verbindung zu einem Gerät herstellen (empfohlen)</translation>
 <translation id="1779089405699405702">Bild-Decodierer</translation>
 <translation id="1818308510395330587">Damit <ph name="APP_NAME" /> AR verwenden kann, muss die Kameraberechtigung auch in den <ph name="BEGIN_LINK" />Android-Einstellungen<ph name="END_LINK" /> aktiviert sein.</translation>
+<translation id="1864927262126810325">Quelle: <ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">Der Standortzugriff ist für dieses Gerät deaktiviert. Sie können ihn in den <ph name="BEGIN_LINK" />Android-Einstellungen<ph name="END_LINK" /> aktivieren.</translation>
 <translation id="1919345977826869612">Werbung</translation>
 <translation id="1919950603503897840">Kontakte auswählen</translation>
@@ -236,6 +237,7 @@
 <translation id="7016516562562142042">Für die aktuelle Suchmaschine zugelassen</translation>
 <translation id="7053983685419859001">Blockieren</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 ausgewählt}other{# ausgewählt}}</translation>
+<translation id="7070090581017165256">Über diese Website</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> ausgewählt. Optionen sind oben auf dem Bildschirm verfügbar</translation>
 <translation id="7141896414559753902">Anzeige von Pop-ups und Weiterleitungen für Websites blockieren (empfohlen)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>

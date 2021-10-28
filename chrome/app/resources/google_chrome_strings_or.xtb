@@ -102,6 +102,7 @@
 <translation id="3379938682270551431">{0,plural, =0{ବର୍ତ୍ତମାନ Chrome ପୁଣି ଲଞ୍ଚ ହେବ}=1{1 ସେକେଣ୍ଡରେ Chrome ପୁଣି ଲଞ୍ଚ ହେବ}other{# ସେକେଣ୍ଡରେ Chrome ପୁଣି ଲଞ୍ଚ ହେବ}}</translation>
 <translation id="3395323229510056640">Chromium OS ସହ ସାହାଯ୍ୟ ପ୍ରାପ୍ତ କରନ୍ତୁ</translation>
 <translation id="3396977131400919238">ସଂସ୍ଥାପନ ସମୟରେ ଏକ ସଞ୍ଚାଳନ ସିଷ୍ଟମ୍ ତ୍ରୁଟି ସଂଘଠିତ ହୋଇଛି । ଦୟାକରି Google Chrome ପୁନଃ ଡାଉନଲୋଡ୍ କରନ୍ତୁ ।</translation>
+<translation id="3428747202529429621">ଯେତେବେଳେ ଆପଣ ସାଇନ୍ ଇନ୍ କରନ୍ତି ଏହା ଆପଣଙ୍କୁ Chromeରେ ସୁରକ୍ଷିତ ରଖେ ଏବଂ ଅନ୍ୟ Google ଆପଗୁଡ଼ିକରେ ଆପଣଙ୍କ ସୁରକ୍ଷାକୁ ଉନ୍ନତ କରିବା ପାଇଁ ବ୍ୟବହାର କରାଯାଇପାରେ</translation>
 <translation id="3434246496373299699">ଆପଣ ଆପଣଙ୍କର Google ଆକାଉଣ୍ଟ ମାଧ୍ୟମରେ ସାଇନ୍ ଇନ୍ କଲେ, Chrome ଆପଣଙ୍କର ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରିପାରିବ</translation>
 <translation id="3451115285585441894">Chromeକୁ ଯୋଗ କରାଯାଉଛି...</translation>
 <translation id="345171907106878721">ନିଜକୁ Chromeରେ ଯୋଗ କରନ୍ତୁ</translation>
@@ -209,6 +210,7 @@
 <translation id="6291089322031436445">Chrome ଡେଭଲପର୍‌ ଆପ୍ସ</translation>
 <translation id="6291549208091401781">ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟର୍‌ରେ ସମସ୍ତ ଉପଯୋଗକର୍ତ୍ତାଙ୍କ ପାଇଁ Google Chrome ପୂର୍ବରୁ ଇନ୍‌ଷ୍ଟଲ୍ ଅଛି।</translation>
 <translation id="6368958679917195344">Chrome OS ଅତିରିକ୍ତ <ph name="BEGIN_LINK_CROS_OSS" />ମୁକ୍ତ ଉତ୍ସ ସଫ୍ଟୱେୟାର୍ <ph name="END_LINK_CROS_OSS" /> ଦ୍ୱାରା ସମ୍ଭବପର ହୋ‍ଇଛି।</translation>
+<translation id="6412673304250309937">Chromeରେ ଷ୍ଟୋର୍ କରାଯାଇଥିବା ଅସୁରକ୍ଷିତ ସାଇଟଗୁଡ଼ିକର ଏକ ତାଲିକା ସହିତ URLଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରେ। ଯଦି କୌଣସି ସାଇଟ୍ ଆପଣଙ୍କ ପାସୱାର୍ଡ ଚୋରି କରିବାକୁ ଚେଷ୍ଟା କରେ କିମ୍ବା ଆପଣ ଏକ କ୍ଷତିକାରକ ଫାଇଲ୍ ଡାଉନଲୋଡ୍ କଲେ, ପୃଷ୍ଠାର କିଛି ବିଷୟବସ୍ତୁ ସହିତ URLଗୁଡ଼ିକୁ ମଧ୍ୟ Chrome ସେଫ୍ ବ୍ରାଉଜିଂକୁ ପଠାଇପାରେ।</translation>
 <translation id="6418662306461808273">ପୂର୍ବରୁ ଥିବା Chrome ପ୍ରୋଫାଇଲକୁ ସ୍ୱିଚ୍ କରିବେ?</translation>
 <translation id="6506909944137591434">ଆପଣଙ୍କ ପରିପାର୍ଶ୍ୱର ଏକ 3D ମ୍ୟାପ୍ ତିଆରି କରିବା ପାଇଁ Chrome କ୍ୟାମେରା ଅନୁମତି ଆବଶ୍ୟକ କରେ</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>

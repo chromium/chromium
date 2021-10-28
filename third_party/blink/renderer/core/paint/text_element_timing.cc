@@ -36,15 +36,15 @@ TextElementTiming::TextElementTiming(LocalDOMWindow& window)
       performance_(DOMWindowPerformance::performance(window)) {}
 
 // static
-FloatRect TextElementTiming::ComputeIntersectionRect(
+gfx::RectF TextElementTiming::ComputeIntersectionRect(
     const LayoutObject& object,
-    const IntRect& aggregated_visual_rect,
+    const gfx::Rect& aggregated_visual_rect,
     const PropertyTreeStateOrAlias& property_tree_state,
     const LocalFrameView* frame_view) {
   Node* node = object.GetNode();
   DCHECK(node);
   if (!NeededForElementTiming(*node))
-    return FloatRect();
+    return gfx::RectF();
 
   return ElementTimingUtils::ComputeIntersectionRect(
       &frame_view->GetFrame(), aggregated_visual_rect, property_tree_state);
@@ -72,8 +72,8 @@ void TextElementTiming::OnTextObjectPainted(const TextRecord& record) {
   performance_->AddElementTiming(
       kTextPaint, g_empty_string, record.element_timing_rect_,
       record.paint_time, base::TimeTicks(),
-      element->FastGetAttribute(html_names::kElementtimingAttr), IntSize(), id,
-      element);
+      element->FastGetAttribute(html_names::kElementtimingAttr), gfx::Size(),
+      id, element);
 }
 
 void TextElementTiming::Trace(Visitor* visitor) const {

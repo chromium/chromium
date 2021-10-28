@@ -83,9 +83,7 @@ std::string EventMatcher::GetServiceTypeFilter() const {
 }
 
 int EventMatcher::GetInstanceID() const {
-  int instance_id = 0;
-  filter_->GetInteger("instanceId", &instance_id);
-  return instance_id;
+  return filter_->FindIntKey("instanceId").value_or(0);
 }
 
 int EventMatcher::GetWindowTypeCount() const {

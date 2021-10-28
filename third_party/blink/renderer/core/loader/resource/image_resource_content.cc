@@ -626,12 +626,7 @@ ResourceStatus ImageResourceContent::GetContentStatus() const {
   return content_status_;
 }
 
-bool ImageResourceContent::IsAnimatedImageWithPaintedFirstFrame() const {
-  return (image_ && !image_->IsNull() && image_->MaybeAnimated() &&
-          image_->CurrentFrameIsComplete());
-}
-
-// TODO(hiroshige): Consider removing the following methods, or stopping
+// TODO(hiroshige): Consider removing the following methods, or stoping
 // redirecting to ImageResource.
 const KURL& ImageResourceContent::Url() const {
   return info_->Url();

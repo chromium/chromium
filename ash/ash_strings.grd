@@ -1401,7 +1401,10 @@ This file contains the strings for ash.
         Turn on Phone Hub
       </message>
       <message name="IDS_ASH_PHONE_HUB_RECENT_APPS_TITLE" desc="Title of the recently used apps section (where users relaunch it directly after an app is launched from a notification) in phone hub bubble.">
-        Recently used apps
+        Recent apps
+      </message>
+      <message name="IDS_ASH_PHONE_HUB_RECENT_APPS_PLACEHOLDER" desc="The placeholder of the recently used apps section (where users relaunch it directly after an app is launched from a notification) in phone hub bubble.">
+        App streaming is now set up. Once you get started, recently launched apps will appear here.
       </message>
       <message name="IDS_ASH_PHONE_HUB_ONBOARDING_DIALOG_DESCRIPTION" desc="The description of the onboarding dialog that pops up for existing multidevice users to ask for permission when the user enables this feature.">
         Connect to your phone’s hotspot, silence and locate your device, and view recent Chrome tabs open on your phone

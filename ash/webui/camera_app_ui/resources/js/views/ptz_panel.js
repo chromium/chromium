@@ -11,6 +11,7 @@ import * as nav from '../nav.js';
 import * as state from '../state.js';
 import * as tooltip from '../tooltip.js';
 import {ViewName} from '../type.js';
+import {DelayInterval} from '../util.js';
 
 import {PTZPanelOptions, View} from './view.js';
 
@@ -52,33 +53,24 @@ function detectHoldGesture({
   pressTimeout,
   holdInterval,
 }) {
-  let timeoutId = null;
-  let intervalId = null;
-
-  const clear = () => {
-    if (timeoutId !== null) {
-      clearTimeout(timeoutId);
-      timeoutId = null;
-    }
-    if (intervalId !== null) {
-      clearInterval(intervalId);
-      intervalId = null;
-    }
-  };
+  /**
+   * @type {?DelayInterval}
+   */
+  let interval = null;
 
   const press = () => {
-    clear();
+    if (interval !== null) {
+      interval.stop();
+    }
     handlePress();
-    timeoutId = setTimeout(() => {
-      handleHold();
-      intervalId = setInterval(() => {
-        handleHold();
-      }, holdInterval);
-    }, pressTimeout);
+    interval = new DelayInterval(handleHold, pressTimeout, holdInterval);
   };
 
   const release = () => {
-    clear();
+    if (interval !== null) {
+      interval.stop();
+      interval = null;
+    }
     handleRelease();
   };
 
@@ -325,25 +317,25 @@ export class PTZPanel extends View {
       };
     };
 
-    const pressTimeout = 500;
-    const holdInterval = 200;
+    const PRESS_TIMEOUT = 500;
+    const HOLD_INTERVAL = 200;
     const pressStepPercent = attr === 'zoom' ? 10 : 1;
-    const holdStepPercent = holdInterval / 1000;  // Move 1% in 1000 ms.
+    const holdStepPercent = HOLD_INTERVAL / 1000;  // Move 1% in 1000 ms.
     detectHoldGesture({
       button: incBtn,
       handlePress: onTrigger(pressStepPercent, 1),
       handleHold: onTrigger(holdStepPercent, 1),
       handleRelease: () => queue.clear(),
-      pressTimeout,
-      holdInterval,
+      pressTimeout: PRESS_TIMEOUT,
+      holdInterval: HOLD_INTERVAL,
     });
     detectHoldGesture({
       button: decBtn,
       handlePress: onTrigger(pressStepPercent, -1),
       handleHold: onTrigger(holdStepPercent, -1),
       handleRelease: () => queue.clear(),
-      pressTimeout,
-      holdInterval,
+      pressTimeout: PRESS_TIMEOUT,
+      holdInterval: HOLD_INTERVAL,
     });
 
     return queue;

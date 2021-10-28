@@ -12,7 +12,7 @@ namespace {
 const char kTestUserEmail[] = "testuser1@gmail.com";
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 MockAppClient::MockAppClient() {
   identity_test_environment_.MakePrimaryAccountAvailable(
@@ -55,4 +55,4 @@ void MockAppClient::AddSecondaryAccount(const std::string& account_email) {
   identity_test_environment_.SetRefreshTokenForAccount(account_info.account_id);
 }
 
-}  // namespace chromeos
+}  // namespace ash

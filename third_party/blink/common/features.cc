@@ -18,6 +18,11 @@ namespace features {
 const base::Feature kAutomaticLazyFrameLoadingToEmbeds{
     "AutomaticLazyFrameLoadingToEmbeds", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Allows pages with DedicatedWorker to stay eligible for the back/forward
+// cache.
+const base::Feature kBackForwardCacheDedicatedWorker{
+    "BackForwardCacheDedicatedWorker", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable intervention for download that was initiated from or occurred in an ad
 // frame without user activation.
 const base::Feature kBlockingDownloadsInAdFrameWithoutUserActivation{
@@ -1100,11 +1105,6 @@ const base::Feature kDeprecationWillLogToConsole{
     "DeprecationWillLogToConsole", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kDeprecationWillLogToDevToolsIssue{
     "DeprecationWillLogToDevToolsIssue", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Enables reporting and web-exposure (respectively) of the time the first frame
-// of an animated image was painted.
-const base::Feature kLCPAnimatedImagesReporting{
-    "LCPAnimatedImagesReporting", base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace features
 }  // namespace blink

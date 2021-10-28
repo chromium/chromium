@@ -13,13 +13,17 @@
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/rand_util.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/chromeos/extensions/external_cache_delegate.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
 #include "chrome/browser/extensions/updater/chrome_extension_downloader_factory.h"
+#include "chromeos/settings/cros_settings_names.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_details.h"
 #include "content/public/browser/notification_service.h"
@@ -50,17 +54,24 @@ ExternalCacheImpl::ExternalCacheImpl(
     const scoped_refptr<base::SequencedTaskRunner>& backend_task_runner,
     ExternalCacheDelegate* delegate,
     bool always_check_updates,
-    bool wait_for_cache_initialization)
+    bool wait_for_cache_initialization,
+    bool allow_scheduled_updates)
     : local_cache_(cache_dir, 0, base::TimeDelta(), backend_task_runner),
       url_loader_factory_(std::move(url_loader_factory)),
       backend_task_runner_(backend_task_runner),
       delegate_(delegate),
       always_check_updates_(always_check_updates),
       wait_for_cache_initialization_(wait_for_cache_initialization),
+      allow_scheduled_updates_(allow_scheduled_updates),
       cached_extensions_(new base::DictionaryValue()) {
   notification_registrar_.Add(
       this, extensions::NOTIFICATION_EXTENSION_INSTALL_ERROR,
       content::NotificationService::AllBrowserContextsAndSources());
+  kiosk_crx_updates_from_policy_subscription_ =
+      CrosSettings::Get()->AddSettingsObserver(
+          chromeos::kKioskCRXManifestUpdateURLIgnored,
+          base::BindRepeating(&ExternalCacheImpl::MaybeScheduleNextCacheCheck,
+                              weak_ptr_factory_.GetWeakPtr()));
 }
 
 ExternalCacheImpl::~ExternalCacheImpl() = default;
@@ -86,13 +97,7 @@ void ExternalCacheImpl::UpdateExtensionsList(
     return;
   }
 
-  if (local_cache_.is_uninitialized()) {
-    local_cache_.Init(wait_for_cache_initialization_,
-                      base::BindOnce(&ExternalCacheImpl::CheckCache,
-                                     weak_ptr_factory_.GetWeakPtr()));
-  } else {
-    CheckCache();
-  }
+  CheckCache();
 }
 
 void ExternalCacheImpl::OnDamagedFileDetected(const base::FilePath& path) {
@@ -241,6 +246,13 @@ void ExternalCacheImpl::CheckCache() {
   if (local_cache_.is_shutdown())
     return;
 
+  if (local_cache_.is_uninitialized()) {
+    local_cache_.Init(wait_for_cache_initialization_,
+                      base::BindOnce(&ExternalCacheImpl::CheckCache,
+                                     weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+
   // If url_loader_factory_ is missing we can't download anything.
   if (url_loader_factory_) {
     downloader_ = ChromeExtensionDownloaderFactory::CreateForURLLoaderFactory(
@@ -291,6 +303,38 @@ void ExternalCacheImpl::CheckCache() {
           << cached_extensions_->DictSize() << " extensions cached";
 
   UpdateExtensionLoader();
+
+  // Cancel already-scheduled check, if any. We want scheduled update to happen
+  // when update interval passes after previous check, independent of what has
+  // triggered this check.
+  scheduler_weak_ptr_factory_.InvalidateWeakPtrs();
+
+  MaybeScheduleNextCacheCheck();
+}
+
+void ExternalCacheImpl::MaybeScheduleNextCacheCheck() {
+  if (!allow_scheduled_updates_) {
+    return;
+  }
+  bool kiosk_crx_updates_from_policy = false;
+  if (!(ash::CrosSettings::Get()->GetBoolean(
+            ash::kKioskCRXManifestUpdateURLIgnored,
+            &kiosk_crx_updates_from_policy) &&
+        kiosk_crx_updates_from_policy)) {
+    return;
+  }
+
+  // Jitter the frequency by +/- 20% like it's done in ExtensionUpdater.
+  const double jitter_factor = base::RandDouble() * 0.4 + 0.8;
+  base::TimeDelta delay =
+      base::Seconds(extensions::kDefaultUpdateFrequencySeconds);
+  delay *= jitter_factor;
+  content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
+      ->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&ExternalCacheImpl::CheckCache,
+                         scheduler_weak_ptr_factory_.GetWeakPtr()),
+          delay);
 }
 
 void ExternalCacheImpl::OnPutExtension(const extensions::ExtensionId& id,

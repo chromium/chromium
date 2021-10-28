@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/barrier_closure.h"
+#include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/run_loop.h"
@@ -182,14 +183,6 @@ void RunCallbacksOnInstall(
     callback.Run(app->app_id(), code);
 }
 
-void RunCallbacksOnUninstall(
-    const std::vector<std::unique_ptr<WebApp>>& apps,
-    FakeWebAppRegistryController::RepeatingUninstallCallback callback,
-    bool uninstalled) {
-  for (const std::unique_ptr<WebApp>& app : apps)
-    callback.Run(app->app_id(), uninstalled);
-}
-
 }  // namespace
 
 class WebAppSyncBridgeTest : public WebAppTest {
@@ -238,9 +231,9 @@ class WebAppSyncBridgeTest : public WebAppTest {
           ADD_FAILURE();
         }));
 
-    controller().SetUninstallFromSyncAfterRegistryUpdateDelegate(
+    controller().SetUninstallWithoutRegistryUpdateFromSyncDelegate(
         base::BindLambdaForTesting(
-            [&](std::vector<std::unique_ptr<WebApp>> apps_to_uninstall,
+            [&](const std::vector<AppId>& apps_to_uninstall,
                 FakeWebAppRegistryController::RepeatingUninstallCallback
                     callback) { ADD_FAILURE(); }));
   }
@@ -552,7 +545,7 @@ TEST_F(WebAppSyncBridgeTest, ApplySyncChanges_AddUpdateDelete) {
 
   base::RunLoop run_loop;
   base::RepeatingClosure barrier_closure =
-      base::BarrierClosure(3, run_loop.QuitClosure());
+      base::BarrierClosure(2, run_loop.QuitClosure());
 
   controller().SetInstallWebAppsAfterSyncDelegate(base::BindLambdaForTesting(
       [&](std::vector<WebApp*> apps_to_install,
@@ -570,30 +563,20 @@ TEST_F(WebAppSyncBridgeTest, ApplySyncChanges_AddUpdateDelete) {
         barrier_closure.Run();
       }));
 
-  controller().SetUninstallFromSyncBeforeRegistryUpdateDelegate(
-      base::BindLambdaForTesting([&](std::vector<AppId> apps_to_uninstall) {
-        for (AppId& app_id : apps_to_uninstall) {
-          // The app must be registered.
-          EXPECT_TRUE(registrar().GetAppById(app_id));
-        }
-        barrier_closure.Run();
-      }));
-  controller().SetUninstallFromSyncAfterRegistryUpdateDelegate(
+  controller().SetUninstallWithoutRegistryUpdateFromSyncDelegate(
       base::BindLambdaForTesting(
-          [&](std::vector<std::unique_ptr<WebApp>> apps_to_uninstall,
+          [&](const std::vector<AppId>& apps_to_uninstall,
               FakeWebAppRegistryController::RepeatingUninstallCallback
                   callback) {
             EXPECT_EQ(5ul,
                       sync_bridge().GetAppsInSyncUninstallForTest().size());
-            for (std::unique_ptr<WebApp>& app_to_uninstall :
-                 apps_to_uninstall) {
-              // The app must be unregistered.
-              EXPECT_FALSE(registrar().GetAppById(app_to_uninstall->app_id()));
-              registry.erase(app_to_uninstall->app_id());
+            for (const AppId& app_to_uninstall : apps_to_uninstall) {
+              // The app must be registered.
+              EXPECT_TRUE(registrar().GetAppById(app_to_uninstall));
+              registry.erase(app_to_uninstall);
+              callback.Run(app_to_uninstall, true);
             }
 
-            RunCallbacksOnUninstall(apps_to_uninstall, callback,
-                                    /*uninstalled=*/true);
             barrier_closure.Run();
           }));
 
@@ -1144,6 +1127,31 @@ TEST_F(WebAppSyncBridgeTest, ApplySyncChanges_OnWebAppsWillBeUpdatedFromSync) {
     EXPECT_EQ(DisplayMode::kBrowser,
               initial_registry_apps[i]->user_display_mode());
   }
+}
+
+TEST_F(WebAppSyncBridgeTest, RetryIncompleteUninstalls) {
+  AppsList initial_registry_apps = CreateAppsList("https://example.com/", 5);
+  std::vector<AppId> initial_app_ids;
+  for (std::unique_ptr<WebApp>& app : initial_registry_apps) {
+    app->SetUserDisplayMode(DisplayMode::kBrowser);
+    app->SetIsUninstalling(true);
+    initial_app_ids.push_back(app->app_id());
+  }
+
+  SetSyncInstallDelegateFailureIfCalled();
+
+  base::RunLoop run_loop;
+  controller().SetRetryIncompleteUninstallsDelegate(base::BindLambdaForTesting(
+      [&](const std::vector<AppId>& apps_to_uninstall) {
+        EXPECT_EQ(apps_to_uninstall.size(), 5ul);
+        EXPECT_THAT(apps_to_uninstall,
+                    ::testing::UnorderedElementsAreArray(apps_to_uninstall));
+        run_loop.Quit();
+      }));
+
+  InitSyncBridgeFromAppList(initial_registry_apps);
+
+  run_loop.Run();
 }
 
 }  // namespace web_app

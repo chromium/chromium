@@ -639,6 +639,9 @@ void DriveIntegrationService::Shutdown() {
   weak_ptr_factory_.InvalidateWeakPtrs();
 
   RemoveDriveMountPoint();
+
+  for (auto& observer : observers_)
+    observer.OnDriveIntegrationServiceDestroyed();
 }
 
 void DriveIntegrationService::SetEnabled(bool enabled) {

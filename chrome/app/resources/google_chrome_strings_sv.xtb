@@ -101,6 +101,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="3379938682270551431">{0,plural, =0{Chrome startas om nu}=1{Om en sekund startas Chrome om}other{Om # sekunder startas Chrome om}}</translation>
 <translation id="3395323229510056640">Få hjälp med Chrome OS</translation>
 <translation id="3396977131400919238">Ett operativsystemsfel inträffade under installationen. Ladda ned Google Chrome igen.</translation>
+<translation id="3428747202529429621">Skyddar dig i Chrome och kan användas för förbättrad säkerhet i andra Google-appar där du är inloggad</translation>
 <translation id="3434246496373299699">Chrome kan kontrollera dina lösenord när du loggar in med Google-kontot</translation>
 <translation id="3451115285585441894">Lägger till i Chrome ...</translation>
 <translation id="345171907106878721">Lägg till dig själv i Chrome</translation>
@@ -208,6 +209,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="6291089322031436445">Appar i Chrome Dev</translation>
 <translation id="6291549208091401781">Google Chrome har redan installerats för alla användare på datorn.</translation>
 <translation id="6368958679917195344">Chrome OS fungerar tack vare <ph name="BEGIN_LINK_CROS_OSS" />ytterligare program med öppen källkod<ph name="END_LINK_CROS_OSS" />.</translation>
+<translation id="6412673304250309937">Kontrollera webbadresser mot en lista över osäkra webbplatser i Chrome. Om du utsätts för försök att kapa ditt lösenord på en webbplats eller om du laddar ned en skadlig fil kan webbadresserna skickas från Chrome till Säker webbsökning tillsammans med delar av sidinnehållet.</translation>
 <translation id="6418662306461808273">Vill du byta till en befintlig Chrome-profil?</translation>
 <translation id="6506909944137591434">Du behöver ge Chrome kamerabehörighet om du vill skapa en 3D-karta över dina omgivningar</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>

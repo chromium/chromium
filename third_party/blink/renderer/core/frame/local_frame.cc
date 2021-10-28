@@ -2295,7 +2295,8 @@ void LocalFrame::UpdateTaskTime(base::TimeDelta time) {
   Client()->DidChangeCpuTiming(time);
 }
 
-void LocalFrame::UpdateActiveSchedulerTrackedFeatures(uint64_t features_mask) {
+void LocalFrame::UpdateBackForwardCacheDisablingFeatures(
+    uint64_t features_mask) {
   GetBackForwardCacheControllerHostRemote()
       .DidChangeBackForwardCacheDisablingFeatures(features_mask);
 }

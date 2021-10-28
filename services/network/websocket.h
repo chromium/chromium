@@ -121,12 +121,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
    public:
     explicit UnownedPointer(WebSocket* pointer) : pointer_(pointer) {}
 
+    UnownedPointer(const UnownedPointer&) = delete;
+    UnownedPointer& operator=(const UnownedPointer&) = delete;
+
     WebSocket* get() const { return pointer_; }
 
    private:
     WebSocket* const pointer_;
-
-    DISALLOW_COPY_AND_ASSIGN(UnownedPointer);
   };
 
   struct DataFrame final {

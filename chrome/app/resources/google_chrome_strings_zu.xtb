@@ -101,6 +101,7 @@ Ezinye izici kungenzeka zingabi khona futhi izinguquko kokuncamelayo ngeke zize 
 <translation id="3379938682270551431">{0,plural, =0{I-Chrome izoqala kabusha manje}=1{I-Chrome izoqala kabusha kusekhondi elingu-1}one{I-Chrome izoqala kabusha kumasekhondi angu-#}other{I-Chrome izoqala kabusha kumasekhondi angu-#}}</translation>
 <translation id="3395323229510056640">Thola usizo nge-Chrome OS</translation>
 <translation id="3396977131400919238">Iphutha lesistimu yokusebenza livele ngesikhathi sokufakwa. Sicela ulande i-Google Chrome futhi.</translation>
+<translation id="3428747202529429621">Kukugcina uphephile ku-Chrome futhi kungase kusetshenziswe ukuthuthukisa ukuvikeleka kwakho kwezinye izinhlelo zokusebenza ze-Google lapho ungene ngemvume</translation>
 <translation id="3434246496373299699">I-Chrome ingahlola amaphasiwedi akho uma ungena ngemvume nge-Akhawunti yakho ye-Google</translation>
 <translation id="3451115285585441894">Ingeza ku-Chrome...</translation>
 <translation id="345171907106878721">Zingeze ngokwakho ku-Chrome</translation>
@@ -208,6 +209,7 @@ I-Google Chrome ayikwazi ukuthola izilungiselelo zakho.</translation>
 <translation id="6291089322031436445">Izinhlelo zokusebenza ze-Chrome Dev</translation>
 <translation id="6291549208091401781">I-Google Chrome isivele ifakelwe bonke abasebenzisi kukhompuyutha yakho.</translation>
 <translation id="6368958679917195344">I-Chrome OS yenziwa yenzeke nge-<ph name="BEGIN_LINK_CROS_OSS" />softhiwe yelayisense evulekile<ph name="END_LINK_CROS_OSS" /> engeziwe.</translation>
+<translation id="6412673304250309937">Kuhlola ama-URL anohlu lwamasayithi angaphephile agcinwe ku-Chrome. Uma isayithi lizama ukuntshontsha iphasiwedi yakho, noma uma ulanda ifayela eliyingozi, i-Chrome ingathumela nama-URL, kuhlanganise nokuthile okuqukethwe kulelo khasi, Ekuphequluleni Okuphephile.</translation>
 <translation id="6418662306461808273">Shintshela kuphrofayela ye-Chrome ekhona kakade?</translation>
 <translation id="6506909944137591434">I-Chrome idinga imvume yekhamera ukudala imephu ye-3D yendawo yakho ekuzungezile</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>

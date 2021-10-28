@@ -84,7 +84,7 @@ std::string CreateAccessControlRequestHeadersHeader(
 std::unique_ptr<ResourceRequest> CreatePreflightRequest(
     const ResourceRequest& request,
     bool tainted,
-    const net::NetLogSource& net_log_source,
+    const net::NetLogWithSource& net_log_for_actual_request,
     const absl::optional<base::UnguessableToken>& devtools_request_id) {
   DCHECK(!request.url.has_username());
   DCHECK(!request.url.has_password());
@@ -156,7 +156,20 @@ std::unique_ptr<ResourceRequest> CreatePreflightRequest(
   }
   preflight_request->is_fetch_like_api = request.is_fetch_like_api;
   preflight_request->is_favicon = request.is_favicon;
-  preflight_request->net_log_reference_info = net_log_source;
+
+  // Set `net_log_reference_info` to reference actual request from preflight
+  // request in NetLog.
+  preflight_request->net_log_reference_info =
+      net_log_for_actual_request.source();
+
+  net::NetLogSource net_log_source_for_preflight = net::NetLogSource(
+      net::NetLogSourceType::URL_REQUEST, net::NetLog::Get()->NextID());
+  net_log_for_actual_request.AddEventReferencingSource(
+      net::NetLogEventType::CORS_PREFLIGHT_URL_REQUEST,
+      net_log_source_for_preflight);
+  // Set `net_log_create_info` to specify NetLog source used in preflight
+  // URL Request.
+  preflight_request->net_log_create_info = net_log_source_for_preflight;
 
   return preflight_request;
 }
@@ -323,8 +336,8 @@ class PreflightController::PreflightLoader final {
         net_log_(net_log) {
     if (devtools_observer_)
       devtools_request_id_ = base::UnguessableToken::Create();
-    auto preflight_request = CreatePreflightRequest(
-        request, tainted, net_log.source(), devtools_request_id_);
+    auto preflight_request =
+        CreatePreflightRequest(request, tainted, net_log, devtools_request_id_);
 
     if (devtools_observer_) {
       DCHECK(devtools_request_id_);
@@ -343,6 +356,9 @@ class PreflightController::PreflightLoader final {
     }
     loader_->SetURLLoaderFactoryOptions(options);
   }
+
+  PreflightLoader(const PreflightLoader&) = delete;
+  PreflightLoader& operator=(const PreflightLoader&) = delete;
 
   void Request(mojom::URLLoaderFactory* loader_factory) {
     DCHECK(loader_);
@@ -460,8 +476,6 @@ class PreflightController::PreflightLoader final {
   const net::NetworkIsolationKey network_isolation_key_;
   mojo::Remote<mojom::DevToolsObserver> devtools_observer_;
   const net::NetLogWithSource net_log_;
-
-  DISALLOW_COPY_AND_ASSIGN(PreflightLoader);
 };
 
 // static
@@ -471,8 +485,8 @@ PreflightController::CreatePreflightRequestForTesting(
     bool tainted) {
   return CreatePreflightRequest(
       request, tainted,
-      net::NetLogSource(net::NetLogSourceType::URL_REQUEST,
-                        net::NetLog::Get()->NextID()),
+      net::NetLogWithSource::Make(net::NetLog::Get(),
+                                  net::NetLogSourceType::URL_REQUEST),
       /*devtools_request_id=*/absl::nullopt);
 }
 

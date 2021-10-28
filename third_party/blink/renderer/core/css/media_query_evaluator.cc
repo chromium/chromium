@@ -104,10 +104,11 @@ static bool ApplyRestrictor(MediaQuery::RestrictorType r, bool value) {
   return r == MediaQuery::kNot ? !value : value;
 }
 
-bool MediaQueryEvaluator::Eval(
-    const MediaQuery& query,
-    MediaQueryResultList* viewport_dependent_media_query_results,
-    MediaQueryResultList* device_dependent_media_query_results) const {
+bool MediaQueryEvaluator::Eval(const MediaQuery& query) const {
+  return Eval(query, Results());
+}
+
+bool MediaQueryEvaluator::Eval(const MediaQuery& query, Results results) const {
   if (!MediaTypeMatch(query.MediaType()))
     return ApplyRestrictor(query.Restrictor(), false);
 
@@ -117,14 +118,12 @@ bool MediaQueryEvaluator::Eval(
   wtf_size_t i = 0;
   for (; i < expressions.size(); ++i) {
     bool expr_result = Eval(expressions.at(i));
-    if (viewport_dependent_media_query_results &&
-        expressions.at(i).IsViewportDependent()) {
-      viewport_dependent_media_query_results->push_back(
+    if (results.viewport_dependent && expressions.at(i).IsViewportDependent()) {
+      results.viewport_dependent->push_back(
           MediaQueryResult(expressions.at(i), expr_result));
     }
-    if (device_dependent_media_query_results &&
-        expressions.at(i).IsDeviceDependent()) {
-      device_dependent_media_query_results->push_back(
+    if (results.device_dependent && expressions.at(i).IsDeviceDependent()) {
+      results.device_dependent->push_back(
           MediaQueryResult(expressions.at(i), expr_result));
     }
     if (!expr_result)
@@ -135,10 +134,12 @@ bool MediaQueryEvaluator::Eval(
   return ApplyRestrictor(query.Restrictor(), expressions.size() == i);
 }
 
-bool MediaQueryEvaluator::Eval(
-    const MediaQuerySet& query_set,
-    MediaQueryResultList* viewport_dependent_media_query_results,
-    MediaQueryResultList* device_dependent_media_query_results) const {
+bool MediaQueryEvaluator::Eval(const MediaQuerySet& query_set) const {
+  return Eval(query_set, Results());
+}
+
+bool MediaQueryEvaluator::Eval(const MediaQuerySet& query_set,
+                               Results results) const {
   const Vector<std::unique_ptr<MediaQuery>>& queries = query_set.QueryVector();
   if (!queries.size())
     return true;  // Empty query list evaluates to true.
@@ -146,8 +147,7 @@ bool MediaQueryEvaluator::Eval(
   // Iterate over queries, stop if any of them eval to true (OR semantics).
   bool result = false;
   for (wtf_size_t i = 0; i < queries.size() && !result; ++i)
-    result = Eval(*queries[i], viewport_dependent_media_query_results,
-                  device_dependent_media_query_results);
+    result = Eval(*queries[i], results);
 
   return result;
 }

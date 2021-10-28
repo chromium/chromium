@@ -28,6 +28,9 @@ class MediaControllerTest : public testing::Test {
  public:
   MediaControllerTest() = default;
 
+  MediaControllerTest(const MediaControllerTest&) = delete;
+  MediaControllerTest& operator=(const MediaControllerTest&) = delete;
+
   void SetUp() override {
     // Create an instance of the MediaSessionService and bind some interfaces.
     service_ = std::make_unique<MediaSessionServiceImpl>();
@@ -73,8 +76,6 @@ class MediaControllerTest : public testing::Test {
   mojo::Remote<mojom::AudioFocusManager> audio_focus_remote_;
   mojo::Remote<mojom::MediaController> media_controller_remote_;
   mojo::Remote<mojom::MediaControllerManager> controller_manager_remote_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaControllerTest);
 };
 
 TEST_F(MediaControllerTest, ActiveController_Suspend) {

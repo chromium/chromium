@@ -51,6 +51,11 @@ class MediaTransferProtocolDaemonClientImpl
                                    dbus::ObjectPath(mtpd::kMtpdServicePath))),
         listen_for_changes_called_(false) {}
 
+  MediaTransferProtocolDaemonClientImpl(
+      const MediaTransferProtocolDaemonClientImpl&) = delete;
+  MediaTransferProtocolDaemonClientImpl& operator=(
+      const MediaTransferProtocolDaemonClientImpl&) = delete;
+
   // MediaTransferProtocolDaemonClient override.
   void EnumerateStorages(EnumerateStoragesCallback callback,
                          ErrorCallback error_callback) override {
@@ -506,8 +511,6 @@ class MediaTransferProtocolDaemonClientImpl
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<MediaTransferProtocolDaemonClientImpl> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaTransferProtocolDaemonClientImpl);
 };
 
 }  // namespace

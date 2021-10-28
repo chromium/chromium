@@ -131,6 +131,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1882897271359938046">Nusxa tasvir <ph name="DISPLAY_NAME" /> ekraniga uzatilmoqda</translation>
 <translation id="1885785240814121742">Barmoq izi orqali qulfdan chiqarish</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) tiniqlikda ishlamaydi. Tasvir <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) tiniqligiga qaytarildi. Tasdiqlash uchun bosing. Eski sozlamalar <ph name="TIMEOUT_SECONDS" /> dan keyin tiklanadi.</translation>
+<translation id="1915307458270490472">Tugatish</translation>
 <translation id="1919743966458266018">Vazifalar menejerini ishga tushirish uchun tugmalar birikmasi o‘zgardi. Endi “<ph name="OLD_SHORTCUT" />” o‘rniga “<ph name="NEW_SHORTCUT" />” birikmasidan foydalaning.</translation>
 <translation id="1923539912171292317">Avtomatik bosishlar</translation>
 <translation id="1928739107511554905">Yangilanishni o‘rnatish uchun Chromebook qurilmangizni klaviaturani uzmasdan sensor paneli orqali o‘chirib yoqing.</translation>
@@ -372,6 +373,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="3665889125180354336">Mikrofon bilan yozib olish</translation>
 <translation id="3680908746918359504">Barcha markerlarni tozalash</translation>
 <translation id="36813544980941320">Telefoningiz va <ph name="DEVICE_NAME" /> qurilmangizda bitta Wi-Fi tarmoq ishlatiladi</translation>
+<translation id="3701206655856637070">Endi ekran tasvirlari qayerga saqlanishini oʻzgartirishingiz mumkin</translation>
 <translation id="3702809606464356667">Joriy ish stoli oynalari chiqarilgan, barcha ish stollar oynalarini chiqarish uchun yuqoriga strelkani bosing</translation>
 <translation id="3702846122927433391">Nigeriyada aholi soni</translation>
 <translation id="3705722231355495246">-</translation>
@@ -561,6 +563,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
         <ph name="NOTIFICATION" />,
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="4945196315133970626">Bildirishnoma kelmasin</translation>
 <translation id="4946376291507881335">Tasvirga olish</translation>
 <translation id="495046168593986294">Tepaga chiqish</translation>
 <translation id="4952936045814352993">Telefonni topish funksiyasi signallar oʻchiqligida ishlamaydi</translation>
@@ -1129,6 +1132,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="925832987464884575">Razm solishni faolsizlantirish</translation>
 <translation id="938963181863597773">Taqvimda nima bor?</translation>
 <translation id="945522503751344254">Fikr-mulohaza</translation>
+<translation id="951991426597076286">Rad etish</translation>
 <translation id="98515147261107953">Manzara</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" /> oynasi yopildi.</translation>
 </translationbundle>

@@ -23,7 +23,7 @@ namespace signin {
 class IdentityManager;
 }  // namespace signin
 
-namespace chromeos {
+namespace ash {
 
 class MockAppClient : public ProjectorAppClient {
  public:
@@ -54,6 +54,6 @@ class MockAppClient : public ProjectorAppClient {
   network::TestURLLoaderFactory test_url_loader_factory_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_PROJECTOR_APP_TEST_MOCK_APP_CLIENT_H_

@@ -1455,7 +1455,6 @@ AutomationNodeImpl.prototype = {
 const stringAttributes = [
   'accessKey',
   'appId',
-  'ariaInvalidValue',
   'autoComplete',
   'checkedStateDescription',
   'className',

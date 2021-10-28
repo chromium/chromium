@@ -131,6 +131,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1882897271359938046">Speglar á <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Opna með fingrafari</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> styður ekki <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Upplausninni var breytt í <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Smelltu til að staðfesta þessa breytingu. Fyrri stillingar verða endurheimtar eftir <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="1915307458270490472">Leggja á</translation>
 <translation id="1919743966458266018">Flýtileiðinni til að opna verkstjórn hefur verið breytt. Notaðu <ph name="NEW_SHORTCUT" /> í staðinn fyrir <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Sjálfvirkir smellir</translation>
 <translation id="1928739107511554905">Til að fá uppfærsluna skaltu nota snertiskjáinn til að endurræsa Chromebook með lyklaborðið tengt.</translation>
@@ -1129,6 +1130,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="925832987464884575">Fela forskoðun</translation>
 <translation id="938963181863597773">Hvað er á dagskránni hjá mér?</translation>
 <translation id="945522503751344254">Senda ábendingu</translation>
+<translation id="951991426597076286">Hafna</translation>
 <translation id="98515147261107953">Langsnið</translation>
 <translation id="990277280839877440">Glugganum „<ph name="WINDOW_TITILE" />“ lokað.</translation>
 </translationbundle>

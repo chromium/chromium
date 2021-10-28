@@ -461,7 +461,8 @@ class FrameSchedulerDelegateWithUkmSourceId : public FrameScheduler::Delegate {
 
   void UpdateTaskTime(base::TimeDelta time) override {}
 
-  void UpdateActiveSchedulerTrackedFeatures(uint64_t features_mask) override {}
+  void UpdateBackForwardCacheDisablingFeatures(
+      uint64_t features_mask) override {}
 
   const base::UnguessableToken& GetAgentClusterId() const override {
     return base::UnguessableToken::Null();

@@ -1316,7 +1316,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2312219318583366810">URL halaman</translation>
 <translation id="2314165183524574721">Tetapan keterlihatan semasa disembunyikan</translation>
 <translation id="2314774579020744484">Bahasa yang digunakan apabila menterjemahkan halaman</translation>
-<translation id="2315414688463285945">Ralat semasa mengkonfigurasi fail Linux. Sila cuba lagi.</translation>
 <translation id="2315587498123194634">Hantar Pautan ke <ph name="DEVICE_NAME" /></translation>
 <translation id="2316129865977710310">Tidak, terima kasih</translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" />% selesai</translation>
@@ -2365,7 +2364,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="3424969259347320884">Terangkan Perkara Yang Sedang Anda Lakukan Semasa Ranap Tab Berlaku</translation>
 <translation id="3427092606871434483">Benarkan (lalai)</translation>
 <translation id="3428419049384081277">Anda sudah log masuk!</translation>
-<translation id="3428747202529429621">Memastikan anda selamat pada Chrome dan mungkin digunakan untuk meningkatkan keselamatan anda dalam apl Google yang lain apabila anda log masuk</translation>
 <translation id="3429086384982427336">Apl yang disenaraikan di bawah tidak akan mengendalikan pautan protokol.</translation>
 <translation id="3429160811076349561">Ciri percubaan dimatikan</translation>
 <translation id="3429271624041785769">Bahasa kandungan web</translation>
@@ -5130,7 +5128,6 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6410328738210026208">Tukar saluran dan Powerwash</translation>
 <translation id="6410390304316730527">Penyemakan Imbas Selamat melindungi anda daripada penyerang yang mungkin memperdaya anda agar melakukan sesuatu yang berbahaya seperti memasang perisian hasad atau mendedahkan maklumat peribadi, seperti kata laluan, nombor telefon atau kad kredit. Jika anda mematikan ciri ini, sila berhati-hati semasa menyemak imbas tapak web yang tidak biasa dilawati atau tidak bereputasi baik.</translation>
 <translation id="6410668567036790476">Tambah enjin carian</translation>
-<translation id="6412673304250309937">Semak URL melalui perbandingan dengan senarai tapak tidak selamat yang disimpan dalam Chrome. Jika tapak cuba mencuri kata laluan anda atau apabila anda memuat turun fail yang berbahaya, Chrome juga mungkin menghantar URL, termasuk sedikit kandungan halaman, kepada Penyemakan Imbas Selamat.</translation>
 <translation id="641469293210305670">Pasang Kemas Kini dan Apl</translation>
 <translation id="6414878884710400018">Buka Pilihan Sistem</translation>
 <translation id="6414888972213066896">Anda telah bertanya kepada ibu bapa anda sama ada OK untuk melawat tapak ini</translation>
@@ -5539,7 +5536,6 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6843264316370513305">Penyahpepijatan Rangkaian</translation>
 <translation id="6843423766595476978">Ok Google sudah disediakan</translation>
 <translation id="6845038076637626672">Buka dimaksimumkan</translation>
-<translation id="6845325883481699275">Bantu tingkatkan keselamatan Chrome</translation>
 <translation id="6846178040388691741">"<ph name="EXTENSION_NAME" />" mahu mencetak <ph name="FILE_NAME" /> menggunakan <ph name="PRINTER_NAME" />.</translation>
 <translation id="6847125920277401289">Kosongkan ruang untuk meneruskan</translation>
 <translation id="6848388270925200958">Sekarang, anda mempunyai beberapa kad yang boleh digunakan pada peranti ini sahaja</translation>
@@ -6992,7 +6988,6 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8324784016256120271">Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda pada beberapa tapak yang berlainan, contohnya, untuk memperibadikan iklan</translation>
 <translation id="8325413836429495820">Tidak dibenarkan untuk melihat papan keratan anda</translation>
 <translation id="8326478304147373412">PKCS #7, rantaian sijil</translation>
-<translation id="8327039559959785305">Ralat semasa melekapkan fail Linux. Sila cuba lagi.</translation>
 <translation id="8327676037044516220">Kebenaran dan tetapan kandungan</translation>
 <translation id="833256022891467078">Folder kongsi Crostini</translation>
 <translation id="8335587457941836791">Nyahsemat dari rak</translation>

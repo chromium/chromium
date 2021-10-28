@@ -10,13 +10,14 @@
 #include "chrome/browser/ash/login/test/local_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
-#include "chrome/browser/ash/login/test/oobe_screen_exit_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/test_condition_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
+#include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/marketing_opt_in_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/sync_consent_screen_handler.h"
 #include "content/public/test/browser_test.h"
 
 namespace chromeos {
@@ -132,17 +133,25 @@ class OobeTestApiWizardControllerTest : public OobeTestApiTest {
 };
 
 IN_PROC_BROWSER_TEST_F(OobeTestApiWizardControllerTest, AdvanceToScreen) {
+  // Make sure that OOBE is run as a "branded" build so sync screen won't be
+  // skipped.
+  LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build = true;
   login_mixin_.LoginAsNewRegularUser();
-  ash::OobeScreenExitWaiter(ash::GaiaView::kScreenId).Wait();
+  ash::OobeScreenWaiter(ash::SyncConsentScreenView::kScreenId).Wait();
+
   test::OobeJS().ExecuteAsync(
-      base::StringPrintf("OobeAPI.advanceToScreen('%s'",
+      base::StringPrintf("OobeAPI.advanceToScreen('%s')",
                          ash::MarketingOptInScreenView::kScreenId.name));
   ash::OobeScreenWaiter(ash::MarketingOptInScreenView::kScreenId).Wait();
 }
 
 IN_PROC_BROWSER_TEST_F(OobeTestApiWizardControllerTest, SkipPostLoginScreens) {
+  // Make sure that OOBE is run as a "branded" build so sync screen won't be
+  // skipped.
+  LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build = true;
   login_mixin_.LoginAsNewRegularUser();
-  ash::OobeScreenExitWaiter(ash::GaiaView::kScreenId).Wait();
+  ash::OobeScreenWaiter(ash::SyncConsentScreenView::kScreenId).Wait();
+
   test::OobeJS().ExecuteAsync("OobeAPI.skipPostLoginScreens()");
   login_mixin_.WaitForActiveSession();
 }

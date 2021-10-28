@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.merchant_viewer;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
@@ -63,7 +62,6 @@ public class PageInfoStoreInfoController implements PageInfoSubpageController {
         }
     }
 
-    @SuppressLint("ResourceType")
     private void setupStoreInfoRow(@Nullable MerchantTrustSignalsV2 trustSignals) {
         PageInfoRowView.ViewParams rowParams = new PageInfoRowView.ViewParams();
         if (mActionHandlerSupplier == null || mActionHandlerSupplier.get() == null
@@ -79,7 +77,7 @@ public class PageInfoStoreInfoController implements PageInfoSubpageController {
             // If user enters page info via the store icon in omnibox, highlight the "Store info"
             // row.
             if (mPageInfoOpenedFromStoreIcon) {
-                rowParams.rowTint = mContext.getResources().getColor(R.color.iph_highlight_blue);
+                rowParams.rowTint = R.color.iph_highlight_blue;
             }
             rowParams.clickCallback = () -> {
                 if (mPageInfoOpenedFromStoreIcon) {

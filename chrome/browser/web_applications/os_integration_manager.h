@@ -22,6 +22,7 @@
 #include "chrome/browser/web_applications/web_app_shortcut_manager.h"
 #include "chrome/browser/web_applications/web_application_info.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
+#include "content/public/common/custom_handlers/protocol_handler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
@@ -32,9 +33,9 @@ class WebContents;
 
 namespace web_app {
 
-class WebAppRegistrar;
-class WebAppIconManager;
 class FakeOsIntegrationManager;
+class WebAppIconManager;
+class WebAppRegistrar;
 class WebAppUiManager;
 
 // OsHooksErrors contains the result of all Os hook deployments.

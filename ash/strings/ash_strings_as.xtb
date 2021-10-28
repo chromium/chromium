@@ -131,6 +131,7 @@
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" />ৰ সৈতে মিৰ’ৰ কৰা হৈছে</translation>
 <translation id="1885785240814121742">ফিংগাৰপ্ৰিণ্টৰ দ্বাৰা আনলক কৰক</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" />এ <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) সমৰ্থন নকৰে। ৰিজ’লিউশ্বনটো <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />)লৈ সলনি কৰা হৈছে। সালসলনিসমূহ ৰাখিবলৈ নিশ্চিত কৰকত ক্লিক কৰক। পূৰ্বৱৰ্তী ছেটিংসমূহ <ph name="TIMEOUT_SECONDS" />ত পুনঃস্থাপন কৰা হ’ব।</translation>
+<translation id="1915307458270490472">কল শেষ কৰক</translation>
 <translation id="1919743966458266018">কাৰ্য পৰিচালক খোলা শ্বর্টকাট সলনি কৰা হৈছে। অনুগ্ৰহ কৰি <ph name="OLD_SHORTCUT" />ৰ সলনি <ph name="NEW_SHORTCUT" /> ব্যৱহাৰ কৰক।</translation>
 <translation id="1923539912171292317">স্বয়ংক্ৰিয় ক্লিক</translation>
 <translation id="1928739107511554905">আপডে’টটো পাবলৈ কীব’ৰ্ড সংলগ্ন থকা Chromebook ৰিষ্টাৰ্ট কৰিবলৈ টাচ্চস্ক্ৰীণখন ব্যৱহাৰ কৰক।</translation>
@@ -1129,6 +1130,7 @@
 <translation id="925832987464884575">পূৰ্বদৰ্শন লুকুৱাওক</translation>
 <translation id="938963181863597773">আপোনাৰ কেলেণ্ডাৰত কি আছে?</translation>
 <translation id="945522503751344254">মতামত পঠিয়াওক</translation>
+<translation id="951991426597076286">অস্বীকাৰ কৰক</translation>
 <translation id="98515147261107953">লেণ্ডস্কেইপ</translation>
 <translation id="990277280839877440">ৱিণ্ড’ <ph name="WINDOW_TITILE" /> বন্ধ হৈ আছে৷</translation>
 </translationbundle>

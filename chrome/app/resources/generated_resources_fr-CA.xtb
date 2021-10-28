@@ -1302,7 +1302,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2312219318583366810">URL de la page</translation>
 <translation id="2314165183524574721">Le paramètre de visibilité actuelle est réglé à caché</translation>
 <translation id="2314774579020744484">Langue utilisée pour la traduction des pages</translation>
-<translation id="2315414688463285945">Erreur lors de la configuration des fichiers Linux. Veuillez réessayer.</translation>
 <translation id="2315587498123194634">Envoyer le lien vers <ph name="DEVICE_NAME" /></translation>
 <translation id="2316129865977710310">Non merci</translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" /> % terminés</translation>
@@ -2352,7 +2351,6 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="3424969259347320884">Décrivez ce que vous faisiez lorsque l'onglet a planté</translation>
 <translation id="3427092606871434483">Autoriser (par défaut)</translation>
 <translation id="3428419049384081277">Vous êtes connecté!</translation>
-<translation id="3428747202529429621">Il vous protège dans Chrome et peut être utilisé pour améliorer votre sécurité dans d'autres applications Google lorsque vous êtes connecté à votre compte</translation>
 <translation id="3429086384982427336">Les applications énumérées ci-dessous ne prendront jamais en charge les liens de protocoles.</translation>
 <translation id="3429160811076349561">Les fonctionnalités d'essai sont désactivées</translation>
 <translation id="3429271624041785769">Langues pour le contenu Web</translation>
@@ -5116,7 +5114,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6410328738210026208">Changement de version et réinitialisation « Powerwash »</translation>
 <translation id="6410390304316730527">La navigation sécurisée vous protège contre les pirates qui pourraient vous inciter à faire quelque chose de dangereux comme installer un logiciel malveillant ou révéler vos renseignements personnels (par exemple, des mots de passe, des numéros de téléphone ou des numéros de carte de crédit). Si vous la désactivez, faites attention lorsque vous naviguez sur des sites inconnus ou de mauvaise réputation.</translation>
 <translation id="6410668567036790476">Ajouter un moteur de recherche</translation>
-<translation id="6412673304250309937">Il vérifie les URL en fonction d'une liste de sites non sécuritaires stockée dans Chrome. Si un site tente de voler votre mot de passe ou si vous téléchargez un fichier dangereux, Chrome peut également envoyer les URL concernées, y compris des extraits du contenu de pages, à la navigation sécurisée.</translation>
 <translation id="641469293210305670">Installer les mises à jour et les applications</translation>
 <translation id="6414878884710400018">Ouvrir le menu Préférences Système</translation>
 <translation id="6414888972213066896">Tu as demandé à l'un de tes parents l'autorisation de consulter ce site</translation>
@@ -5525,7 +5522,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6843264316370513305">Débogage réseau</translation>
 <translation id="6843423766595476978">Ok Google est prêt</translation>
 <translation id="6845038076637626672">Ouvrir maximisé</translation>
-<translation id="6845325883481699275">Contribuer à améliorer la sécurité de Chrome</translation>
 <translation id="6846178040388691741">« <ph name="EXTENSION_NAME" /> » souhaite imprimer <ph name="FILE_NAME" /> avec <ph name="PRINTER_NAME" />.</translation>
 <translation id="6847125920277401289">Libérez de l'espace pour continuer</translation>
 <translation id="6848388270925200958">Pour le moment, certaines de vos cartes peuvent être utilisées uniquement sur cet appareil</translation>
@@ -6977,7 +6973,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8324784016256120271">Les sites peuvent utiliser des témoins afin de voir votre activité de navigation sur différents sites (par exemple, pour personnaliser les annonces)</translation>
 <translation id="8325413836429495820">Non autorisés à consulter le contenu de votre presse-papiers</translation>
 <translation id="8326478304147373412">PKCS n° 7, chaîne de certificats</translation>
-<translation id="8327039559959785305">Erreur lors du montage des fichiers Linux. Veuillez réessayer.</translation>
 <translation id="8327676037044516220">Autorisations et paramètres de contenu</translation>
 <translation id="833256022891467078">Dossiers partagés Crostini</translation>
 <translation id="8335587457941836791">Retirer de l'étagère</translation>

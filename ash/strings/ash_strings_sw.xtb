@@ -131,6 +131,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1882897271359938046">Inaakisi kwenye <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Tumia alama ya kidole kufungua</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> haitumii <ph name="SPECIFIED_RESOLUTION" /> (Hz <ph name="SPECIFIED_REFRESH_RATE" />). Ubora umebadilishwa kuwa <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Bofya 'thibitisha' ili uhifadhi mabadiliko. Mipangilio ya awali itarejeshwa baada ya <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="1915307458270490472">Kata simu</translation>
 <translation id="1919743966458266018">Njia ya mkato ya kufungua kidhibiti cha shughuli kwenye Chrome imebadilika. Tafadhali tumia <ph name="NEW_SHORTCUT" /> badala ya <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Mibofyo ya kiotomatiki</translation>
 <translation id="1928739107511554905">Ili usasishe, tumia skrini ya kugusa kuwasha Chromebook yako upya huku kibodi ikiwa imeunganishwa.</translation>
@@ -372,6 +373,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="3665889125180354336">Maikrofoni ya kurekodi</translation>
 <translation id="3680908746918359504">Futa alama zote</translation>
 <translation id="36813544980941320">Mitandao ya Wi-Fi itashirikiwa kati ya simu yako na <ph name="DEVICE_NAME" /></translation>
+<translation id="3701206655856637070">Sasa unaweza kubadilisha mahali rekodi au picha za skrini zinahifadhiwa</translation>
 <translation id="3702809606464356667">Inaonyesha madirisha yaliyo kwenye eneokazi la sasa, bonyeza kishale cha Juu ili uonyeshe madirisha yaliyo kwenye maeneokazi yote</translation>
 <translation id="3702846122927433391">Idadi ya watu nchini Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
@@ -561,6 +563,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
         <ph name="NOTIFICATION" />,
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="4945196315133970626">Zima arifa</translation>
 <translation id="4946376291507881335">Nasa</translation>
 <translation id="495046168593986294">Sogeza juu</translation>
 <translation id="4952936045814352993">Kipengele cha kutafuta simu hakipatikani wakati umezima sauti za kengele</translation>
@@ -1130,6 +1133,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="925832987464884575">Ficha maonyesho ya kukagua</translation>
 <translation id="938963181863597773">Kuna nini kwenye kalenda yangu?</translation>
 <translation id="945522503751344254">Tuma maoni</translation>
+<translation id="951991426597076286">Kataa</translation>
 <translation id="98515147261107953">Mlalo</translation>
 <translation id="990277280839877440">Dirisha la <ph name="WINDOW_TITILE" /> limefungwa.</translation>
 </translationbundle>

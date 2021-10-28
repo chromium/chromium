@@ -44,6 +44,7 @@ import {
   MimeType,
   Mode,
   Resolution,
+  Rotation,
   ViewName,
 } from '../type.js';
 import * as util from '../util.js';
@@ -776,18 +777,32 @@ export class Camera extends View {
     let result = null;
     try {
       await this.prepareReview_(async () => {
-        const doCrop = (blob, corners) =>
-            helper.convertToDocument(blob, corners, MimeType.JPEG);
+        const doCrop = (blob, corners, rotation) => {
+          // Do rotation by rotating the index in corners array.
+          const rotatedCorns = [...corners];
+          for (const r
+                   of [Rotation.ANGLE_0, Rotation.ANGLE_270, Rotation.ANGLE_180,
+                       Rotation.ANGLE_90]) {
+            if (r === rotation) {
+              break;
+            }
+            const popped = rotatedCorns.pop();
+            rotatedCorns.unshift(popped);
+          }
+          return helper.convertToDocument(blob, rotatedCorns, MimeType.JPEG);
+        };
         const needFirstRecrop = refCorners === null;
         let corners =
             refCorners || getDefaultScanCorners(originImage.resolution);
         let docBlob;
         const doRecrop = async () => {
-          corners = await this.cropDocument_.reviewCropArea(corners);
+          const {corners: newCorners, rotation} =
+              await this.cropDocument_.reviewCropArea(corners);
+          corners = newCorners;
           docBlob = await (async () => {
             nav.open(ViewName.FLASH);
             try {
-              return await doCrop(originImage.blob, corners);
+              return await doCrop(originImage.blob, corners, rotation);
             } finally {
               nav.close(ViewName.FLASH);
             }
@@ -800,7 +815,7 @@ export class Camera extends View {
           nav.close(ViewName.FLASH);
           await doRecrop();
         } else {
-          docBlob = await doCrop(originImage.blob, corners);
+          docBlob = await doCrop(originImage.blob, corners, Rotation.ANGLE_0);
           await this.review_.setReviewPhoto(docBlob);
           nav.close(ViewName.FLASH);
         }
@@ -898,7 +913,7 @@ export class Camera extends View {
     };
 
     let result = false;
-    this.prepareReview_(async () => {
+    await this.prepareReview_(async () => {
       await this.review_.setReviewPhoto(blob);
       const positive = new review.Options(
           new review.Option(I18nString.LABEL_SAVE, {exitValue: true}),

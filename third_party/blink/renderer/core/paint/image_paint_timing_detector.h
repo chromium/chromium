@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/paint/paint_timing_detector.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
 
@@ -31,8 +32,8 @@ class ImageRecord : public base::SupportsWeakPtr<ImageRecord> {
   ImageRecord(DOMNodeId new_node_id,
               const ImageResourceContent* new_cached_image,
               uint64_t new_first_size,
-              const IntRect& frame_visual_rect,
-              const FloatRect& root_visual_rect)
+              const gfx::Rect& frame_visual_rect,
+              const gfx::RectF& root_visual_rect)
       : node_id(new_node_id),
         cached_image(new_cached_image),
         first_size(new_first_size) {
@@ -40,7 +41,7 @@ class ImageRecord : public base::SupportsWeakPtr<ImageRecord> {
     insertion_index = next_insertion_index_++;
     if (PaintTimingVisualizer::IsTracingEnabled()) {
       lcp_rect_info_ = std::make_unique<LCPRectInfo>(
-          frame_visual_rect, RoundedIntRect(root_visual_rect));
+          frame_visual_rect, gfx::ToRoundedRect(root_visual_rect));
     }
   }
 
@@ -56,10 +57,7 @@ class ImageRecord : public base::SupportsWeakPtr<ImageRecord> {
   // The time of the first paint after fully loaded. 0 means not painted yet.
   base::TimeTicks paint_time = base::TimeTicks();
   base::TimeTicks load_time = base::TimeTicks();
-  base::TimeTicks first_animated_frame_time = base::TimeTicks();
   bool loaded = false;
-  // An animated frame is queued for paint timing.
-  bool queue_animated_paint = false;
   // LCP rect information, only populated when tracing is enabled.
   std::unique_ptr<LCPRectInfo> lcp_rect_info_;
 };
@@ -91,7 +89,7 @@ class CORE_EXPORT ImageRecordsManager {
     invisible_images_.erase(record_id);
   }
 
-  inline void RemoveImageTimeRecords(const RecordId& record_id) {
+  inline void RemoveImageFinishedRecord(const RecordId& record_id) {
     image_finished_times_.erase(record_id);
   }
 
@@ -121,8 +119,8 @@ class CORE_EXPORT ImageRecordsManager {
   }
   void RecordVisible(const RecordId& record_id,
                      const uint64_t& visual_size,
-                     const IntRect& frame_visual_rect,
-                     const FloatRect& root_visual_rect);
+                     const gfx::Rect& frame_visual_rect,
+                     const gfx::RectF& root_visual_rect);
   bool IsRecordedVisibleImage(const RecordId& record_id) const {
     return visible_images_.Contains(record_id);
   }
@@ -136,17 +134,14 @@ class CORE_EXPORT ImageRecordsManager {
     // not currently the case. If we plumb some information from
     // ImageResourceContent we may be able to ensure that this call does not
     // require the Contains() check, which would save time.
-    if (!image_finished_times_.Contains(record_id)) {
+    if (!image_finished_times_.Contains(record_id))
       image_finished_times_.insert(record_id, base::TimeTicks::Now());
-    }
   }
 
   inline bool IsVisibleImageLoaded(const RecordId& record_id) const {
     DCHECK(visible_images_.Contains(record_id));
     return visible_images_.at(record_id)->loaded;
   }
-  bool OnFirstAnimatedFramePainted(const RecordId&,
-                                   unsigned current_frame_index);
   void OnImageLoaded(const RecordId&,
                      unsigned current_frame_index,
                      const StyleFetchedImage*);
@@ -158,8 +153,8 @@ class CORE_EXPORT ImageRecordsManager {
   // larger size.
   void MaybeUpdateLargestIgnoredImage(const RecordId&,
                                       const uint64_t& visual_size,
-                                      const IntRect& frame_visual_rect,
-                                      const FloatRect& root_visual_rect);
+                                      const gfx::Rect& frame_visual_rect,
+                                      const gfx::RectF& root_visual_rect);
   void ReportLargestIgnoredImage(unsigned current_frame_index);
 
   // Compare the last frame index in queue with the last frame index that has
@@ -204,8 +199,8 @@ class CORE_EXPORT ImageRecordsManager {
       const LayoutObject& object,
       const ImageResourceContent* cached_image,
       const uint64_t& visual_size,
-      const IntRect& frame_visual_rect,
-      const FloatRect& root_visual_rect);
+      const gfx::Rect& frame_visual_rect,
+      const gfx::RectF& root_visual_rect);
   inline void QueueToMeasurePaintTime(base::WeakPtr<ImageRecord>& record,
                                       unsigned current_frame_index) {
     images_queued_for_paint_time_.push_back(record);
@@ -274,11 +269,11 @@ class CORE_EXPORT ImagePaintTimingDetector final
   // parameter is needed only for the purposes of plumbing the correct loadTime
   // value to the ImageRecord.
   void RecordImage(const LayoutObject&,
-                   const IntSize& intrinsic_size,
+                   const gfx::Size& intrinsic_size,
                    const ImageResourceContent&,
                    const PropertyTreeStateOrAlias& current_paint_properties,
                    const StyleFetchedImage*,
-                   const IntRect& image_border);
+                   const gfx::Rect& image_border);
   void NotifyImageFinished(const LayoutObject&, const ImageResourceContent*);
   void OnPaintFinished();
   void NotifyImageRemoved(const LayoutObject&, const ImageResourceContent*);
@@ -316,9 +311,9 @@ class CORE_EXPORT ImagePaintTimingDetector final
   // downsizing the size of images with low intrinsic size. Images that occupy
   // the full viewport are special-cased and this method returns 0 for them so
   // that they are not considered valid candidates.
-  uint64_t ComputeImageRectSize(const IntRect& image_border,
-                                const FloatRect& mapped_visual_rect,
-                                const IntSize&,
+  uint64_t ComputeImageRectSize(const gfx::Rect& image_border,
+                                const gfx::RectF& mapped_visual_rect,
+                                const gfx::Size&,
                                 const PropertyTreeStateOrAlias&,
                                 const LayoutObject&,
                                 const ImageResourceContent&);

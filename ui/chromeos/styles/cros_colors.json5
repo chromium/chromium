@@ -94,7 +94,7 @@
     },
     bg_color_dropped_elevation_1: {
       light: "$google_grey_50",
-      dark: "#1a1b1d", /* google_grey_900 + black 20% */
+      dark: "#1a1a1d", /* google_grey_900 + black 20% */
     },
     bg_color_dropped_elevation_2: {
       light: "$google_grey_200",
@@ -150,6 +150,14 @@
     separator_color: {
       light: "rgba($black_rgb, 0.14)",
       dark: "rgba($white_rgb, 0.14)",
+    },
+    shadow_color_key: {
+      light: "rgba($google_grey_800_rgb, 0.3)",
+      dark: "rgba($black_rgb, 0.3)",
+    },
+    shadow_color_ambient: {
+      light: "rgba($google_grey_800_rgb, 0.15)",
+      dark: "rgba($black_rgb, 0.15)",
     },
     link_color: "$color_prominent",
     highlight_color: {

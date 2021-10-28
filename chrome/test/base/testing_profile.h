@@ -248,15 +248,11 @@ class TestingProfile : public Profile {
 
   // !!!!!!!! WARNING: THIS IS GENERALLY NOT SAFE TO CALL! !!!!!!!!
   // This bypasses the BrowserContextDependencyManager, and in particular, it
-  // destroys any previously-created HistoryService. That means any other
-  // KeyedServices that depend on HistoryService may be left with dangling
+  // destroys any previously-created WebDataService. That means any other
+  // KeyedServices that depend on WebDataService may be left with dangling
   // pointers.
   // Instead, use Builder::AddTestingFactory to inject your own factories.
   // !!!!!!!! WARNING: THIS IS GENERALLY NOT SAFE TO CALL! !!!!!!!!
-  // Creates the history service. Returns true on success.
-  // TODO(crbug.com/1106699): Remove this API and adopt the Builder instead.
-  bool CreateHistoryService() WARN_UNUSED_RESULT;
-
   // Creates a WebDataService. If not invoked, the web data service is NULL.
   // TODO(crbug.com/1106699): Remove this API and adopt the Builder instead.
   void CreateWebDataService();

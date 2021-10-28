@@ -160,7 +160,7 @@ bool ProjectorControllerImpl::CanStartNewSession() const {
          client_->IsDriveFsMounted();
 }
 
-void ProjectorControllerImpl::OnToolSet(const chromeos::AnnotatorTool& tool) {
+void ProjectorControllerImpl::OnToolSet(const AnnotatorTool& tool) {
   // TODO(b/198184362): Reflect the annotator tool changes on the Projector
   // toolbar.
 }

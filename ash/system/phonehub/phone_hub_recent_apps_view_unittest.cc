@@ -71,7 +71,7 @@ class RecentAppButtonsViewTest : public AshTestBase {
 TEST_F(RecentAppButtonsViewTest, TaskViewVisibility) {
   // The recent app view is not visible if the NotifyRecentAppAddedOrUpdated
   // function never be called, e.g. device boot.
-  EXPECT_FALSE(recent_apps_view()->GetVisible());
+  EXPECT_FALSE(recent_apps_view()->recent_app_buttons_view_->GetVisible());
 
   NotifyRecentAppAddedOrUpdated();
   recent_apps_view()->Update();

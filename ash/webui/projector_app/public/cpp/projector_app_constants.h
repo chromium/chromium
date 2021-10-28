@@ -5,7 +5,7 @@
 #ifndef ASH_WEBUI_PROJECTOR_APP_PUBLIC_CPP_PROJECTOR_APP_CONSTANTS_H_
 #define ASH_WEBUI_PROJECTOR_APP_PUBLIC_CPP_PROJECTOR_APP_CONSTANTS_H_
 
-namespace chromeos {
+namespace ash {
 
 // TODO(b/193670945): Migrate to ash/components and ash/webui.
 extern const char kChromeUIProjectorAppHost[];
@@ -19,6 +19,6 @@ extern const char kChromeUITrustedProjectorSelfieCamUrl[];
 extern const char kChromeUITrustedAnnotatorUrl[];
 extern const char kChromeUITrustedProjectorSwaAppId[];
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_PROJECTOR_APP_PUBLIC_CPP_PROJECTOR_APP_CONSTANTS_H_

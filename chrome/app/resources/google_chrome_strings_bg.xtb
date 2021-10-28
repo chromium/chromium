@@ -99,6 +99,7 @@
 <translation id="3379938682270551431">{0,plural, =0{Chrome ще се стартира отново сега}=1{Chrome ще се стартира отново след 1 секунда}other{Chrome ще се стартира отново след # секунди}}</translation>
 <translation id="3395323229510056640">Получаване на помощ за Chrome OS</translation>
 <translation id="3396977131400919238">По време на инсталирането възникна грешка в операционната система. Моля, изтеглете Google Chrome отново.</translation>
+<translation id="3428747202529429621">Осигурява безопасността ви в Chrome и може да се използва с цел подобряване на сигурността ви в други приложения на Google, докато сте в профила си.</translation>
 <translation id="3434246496373299699">Chrome може да проверява паролите ви, когато влезете с профила си в Google</translation>
 <translation id="3451115285585441894">Добавя се към Chrome...</translation>
 <translation id="345171907106878721">Добавяне на вас към Chrome</translation>
@@ -201,6 +202,7 @@
 <translation id="6291089322031436445">Приложения за Chrome Dev</translation>
 <translation id="6291549208091401781">Google Chrome вече е инсталиран за всички потребители на компютъра ви.</translation>
 <translation id="6368958679917195344">Chrome OS е възможна благодарение на допълнителен <ph name="BEGIN_LINK_CROS_OSS" />софтуер с отворен код<ph name="END_LINK_CROS_OSS" />.</translation>
+<translation id="6412673304250309937">Проверка на URL адресите в съхраняван в Chrome списък с опасни сайтове. Ако сайт се опита да открадне паролата ви или изтеглите опасен файл от сайт, Chrome може също така да изпрати до „Безопасно сърфиране“ URL адресите и част от съдържанието на страницата.</translation>
 <translation id="6418662306461808273">Искате ли да превключите към съществуващ потребителски профил в Chrome?</translation>
 <translation id="6506909944137591434">Chrome се нуждае от разрешение за достъп до камерата, за да създаде триизмерна карта на заобикалящата ви среда</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>

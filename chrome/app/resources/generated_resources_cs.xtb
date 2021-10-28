@@ -1303,7 +1303,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2312219318583366810">Adresa URL stránky</translation>
 <translation id="2314165183524574721">Aktuální nastavení viditelnosti je Skryto.</translation>
 <translation id="2314774579020744484">Jazyky použité k překladu stránek</translation>
-<translation id="2315414688463285945">Při konfiguraci souborů systému Linux došlo k chybě. Zkuste to znovu.</translation>
 <translation id="2315587498123194634">Odeslat odkaz na zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="2316129865977710310">Ne, děkuji</translation>
 <translation id="2317842250900878657">Dokončeno <ph name="PROGRESS_PERCENT" /> %</translation>
@@ -2352,7 +2351,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3424969259347320884">Popište, co jste dělali, když karta selhala</translation>
 <translation id="3427092606871434483">Povolit (výchozí)</translation>
 <translation id="3428419049384081277">Jste přihlášeni!</translation>
-<translation id="3428747202529429621">Zajišťuje vám bezpečí v Chromu a může zvýšit vaši bezpečnost v jiných aplikacích Google, když jste přihlášeni.</translation>
 <translation id="3429086384982427336">Níže uvedené aplikace nebudou nikdy zpracovávat odkazy s konkrétními protokoly.</translation>
 <translation id="3429160811076349561">Zkušební funkce jsou vypnuté</translation>
 <translation id="3429271624041785769">Jazyky webového obsahu</translation>
@@ -5117,7 +5115,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6410328738210026208">Změnit kanál a použít funkci Powerwash</translation>
 <translation id="6410390304316730527">Bezpečné prohlížení vás chrání před útočníky, kteří se vás snaží přimět k nebezpečné akci, jako je instalace škodlivého softwaru nebo vyzrazení osobních údajů (například hesel, telefonních čísel nebo platebních karet). Pokud ji vypnete, budete si muset dávat pozor na neznámé a podezřelé weby.</translation>
 <translation id="6410668567036790476">Přidat vyhledávač</translation>
-<translation id="6412673304250309937">Kontroluje adresy URL oproti seznamu nebezpečných webů uloženému v Chromu. Pokud se web pokusí odcizit vám heslo nebo když stáhnete škodlivý soubor, může Chrome Bezpečnému prohlížení odeslat také adresy URL, včetně částí obsahu stránky.</translation>
 <translation id="641469293210305670">Instalace aktualizací a aplikací</translation>
 <translation id="6414878884710400018">Otevřít předvolby systému</translation>
 <translation id="6414888972213066896">Zeptal(a) ses rodiče, zda můžeš navštívit tento web.</translation>
@@ -5526,7 +5523,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6843264316370513305">Ladění sítě</translation>
 <translation id="6843423766595476978">Funkce OK Google je připravená</translation>
 <translation id="6845038076637626672">Otevřít maximalizované</translation>
-<translation id="6845325883481699275">Pomoci zlepšovat zabezpečení Chromu</translation>
 <translation id="6846178040388691741">Rozšíření <ph name="EXTENSION_NAME" /> chce vytisknout soubor <ph name="FILE_NAME" /> pomocí tiskárny <ph name="PRINTER_NAME" />.</translation>
 <translation id="6847125920277401289">Chcete-li pokračovat, uvolněte místo</translation>
 <translation id="6848388270925200958">V současné době máte několik karet, které lze používat jen na tomto zařízení.</translation>
@@ -6978,7 +6974,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8324784016256120271">Weby mohou pomocí souborů cookie sledovat vaši aktivitu prohlížení na různých webech, například k personalizaci reklam</translation>
 <translation id="8325413836429495820">Zákaz přístupu ke schránce</translation>
 <translation id="8326478304147373412">PKCS #7, řetězec certifikátu</translation>
-<translation id="8327039559959785305">Při připojování souborů systému Linux došlo k chybě. Zkuste to znovu.</translation>
 <translation id="8327676037044516220">Oprávnění a nastavení obsahu</translation>
 <translation id="833256022891467078">Sdílené složky Crostini</translation>
 <translation id="8335587457941836791">Uvolnit z poličky</translation>

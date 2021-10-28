@@ -102,6 +102,7 @@
 <translation id="3379938682270551431">{0,plural, =0{Chrome-г одоо дахин ажиллуулж байна}=1{Chrome-г 1 секундийн дотор дахин ажиллуулна}other{Chrome-г # секундийн дотор дахин ажиллуулна}}</translation>
 <translation id="3395323229510056640">Chrome үйлдлийн системээс тусламж авах</translation>
 <translation id="3396977131400919238">Суулгах явцад үйлдлийн системд алдаа гарлаа. Google Chrome-ыг дахин татаж авна уу.</translation>
+<translation id="3428747202529429621">Таныг нэвтэрсэн үед Chrome дээр таны аюулгүй байдлыг хангадаг бөгөөд Google-н бусад апп дахь таны аюулгүй байдлыг сайжруулахын тулд ашиглагдах боломжтой</translation>
 <translation id="3434246496373299699">Chrome нь таныг Google Бүртгэлээрээ нэвтрэх үед таны нууц үгсийг шалгах боломжтой</translation>
 <translation id="3451115285585441894">Chrome руу нэмж байна...</translation>
 <translation id="345171907106878721">Chrome-д өөрийгөө нэмэх</translation>
@@ -210,6 +211,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="6291089322031436445">Chrome Dev Апп</translation>
 <translation id="6291549208091401781">Google Chrome-г таны компьютерийн бүх хэрэглэгчид суулгасан.</translation>
 <translation id="6368958679917195344">Chrome OS-ийг нэмэлт <ph name="BEGIN_LINK_CROS_OSS" /> нээлттэй эхийн программ хангамжаар ажиллуулж байна <ph name="END_LINK_CROS_OSS" />.</translation>
+<translation id="6412673304250309937">URL-г Chrome-д хадгалсан аюултай сайтын жагсаалттай харьцуулж шалгадаг. Хэрэв сайт таны нууц үгийг хулгайлах гэж оролдвол эсвэл таныг аюултай файл татах үед Chrome нь хуудасны бага зэрэг контентын хамт URL-г Аюулгүй хайлт руу мөн илгээж болзошгүй.</translation>
 <translation id="6418662306461808273">Chrome-н одоо байгаа профайл руу сэлгэх үү?</translation>
 <translation id="6506909944137591434">Таны эргэн тойрны 3D газрын зургийг үүсгэхийн тулд Chrome-д камерын зөвшөөрөл шаардлагатай</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Дев</translation>

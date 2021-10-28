@@ -5,6 +5,7 @@
 #ifndef ASH_APP_LIST_VIEWS_GHOST_IMAGE_VIEW_H_
 #define ASH_APP_LIST_VIEWS_GHOST_IMAGE_VIEW_H_
 
+#include "ash/app_list/views/apps_grid_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/views/controls/image_view.h"
@@ -21,7 +22,7 @@ class GhostImageView : public views::ImageView,
  public:
   METADATA_HEADER(GhostImageView);
 
-  GhostImageView();
+  explicit GhostImageView(GridIndex index);
 
   GhostImageView(const GhostImageView&) = delete;
   GhostImageView& operator=(const GhostImageView&) = delete;
@@ -41,6 +42,8 @@ class GhostImageView : public views::ImageView,
   // Set the offset used for page transitions.
   void SetTransitionOffset(const gfx::Vector2d& bounds_rect);
 
+  GridIndex index() const { return index_; }
+
  private:
   // Start the animation for showing or for hiding the GhostImageView.
   void DoAnimation(bool hide);
@@ -56,6 +59,9 @@ class GhostImageView : public views::ImageView,
 
   // The corner radius for the painted rect.
   int corner_radius_ = 0;
+
+  // The page and slot for this view in the parent apps grid view.
+  const GridIndex index_;
 };
 
 }  // namespace ash

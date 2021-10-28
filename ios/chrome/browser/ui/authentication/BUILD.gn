@@ -34,7 +34,6 @@ source_set("authentication") {
     "//components/consent_auditor",
     "//components/infobars/core",
     "//components/prefs",
-    "//components/signin/ios/browser",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager/objc",
     "//components/strings",

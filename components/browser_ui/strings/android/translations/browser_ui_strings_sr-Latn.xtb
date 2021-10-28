@@ -29,6 +29,7 @@
 <translation id="1743802530341753419">Pitaj pre nego što dozvoliš sajtovima da se povezuju sa uređajem (preporučeno)</translation>
 <translation id="1779089405699405702">Dekoder slika</translation>
 <translation id="1818308510395330587">Da biste dozvolili da <ph name="APP_NAME" /> koristi PR, uključite i kameru u <ph name="BEGIN_LINK" />Android podešavanjima<ph name="END_LINK" />.</translation>
+<translation id="1864927262126810325">Izvor: <ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">Pristup lokaciji je isključen za ovaj uređaj. Uključite ga u <ph name="BEGIN_LINK" />Android podešavanjima<ph name="END_LINK" />.</translation>
 <translation id="1919345977826869612">Oglasi</translation>
 <translation id="1919950603503897840">Izaberite kontakte</translation>
@@ -236,6 +237,7 @@
 <translation id="7016516562562142042">Dozvoljeno je za aktuelni pretraživač</translation>
 <translation id="7053983685419859001">Blokiraj</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Izabrano: 1}one{Izabrano: #}few{Izabrano: #}other{Izabrano: #}}</translation>
+<translation id="7070090581017165256">O ovom sajtu</translation>
 <translation id="7087918508125750058">Izabrali ste <ph name="ITEM_COUNT" />. Opcije su dostupne pri vrhu ekrana</translation>
 <translation id="7141896414559753902">Blokiraj prikazivanje iskačućih prozora i preusmeravanja na sajtovima (preporučeno)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>

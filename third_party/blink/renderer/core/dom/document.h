@@ -1671,6 +1671,8 @@ class CORE_EXPORT Document : public ContainerNode,
     return !pending_javascript_urls_.IsEmpty();
   }
 
+  String GetFragmentDirective() const { return fragment_directive_string_; }
+
   void ApplyScrollRestorationLogic();
 
   void MarkHasFindInPageRequest();
@@ -2287,6 +2289,7 @@ class CORE_EXPORT Document : public ContainerNode,
 
   bool is_for_markup_sanitization_ = false;
 
+  String fragment_directive_string_;
   Member<FragmentDirective> fragment_directive_;
 
   HeapHashMap<WeakMember<Element>, Member<ExplicitlySetAttrElementsMap>>

@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PrintPreviewDpiSettingsElement, PrintPreviewModelElement, PrintPreviewSettingsSelectElement} from 'chrome://print/print_preview.js';
+import 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 
-import {assertDeepEquals, assertEquals, assertFalse} from '../chai_assert.js';
-import {fakeDataBind} from '../test_util.js';
+import {assertDeepEquals, assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
+import {fakeDataBind} from 'chrome://webui-test/test_util.js';
 
 import {getCddTemplate} from './print_preview_test_utils.js';
 

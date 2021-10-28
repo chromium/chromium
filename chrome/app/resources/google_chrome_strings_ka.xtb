@@ -101,6 +101,7 @@
 <translation id="3379938682270551431">{0,plural, =0{Chrome ახლა ხელახლა გაეშვება}=1{Chrome ხელახლა გაეშვება 1 წამში}other{Chrome ხელახლა გაეშვება # წამში}}</translation>
 <translation id="3395323229510056640">Chrome OS-თან დაკავშირებული დახმარების მიღება</translation>
 <translation id="3396977131400919238">ინსტალაციის დროს წარმოიქმნა ოპერატიული სისტემის შეცდომა. ხელახლა ჩამოტვირთეთ Google Chrome.</translation>
+<translation id="3428747202529429621">უზრუნველყოფს თქვენს უსაფრთხოებას Chrome-ში და Google-ის სხვა აპებში, როცა სისტემაში შესული ხართ</translation>
 <translation id="3434246496373299699">პაროლების Chrome-ის მეშვეობით შესამოწმებლად შედით სისტემაში თქვენი Google ანგარიშით</translation>
 <translation id="3451115285585441894">Chrome-ში დამატება…</translation>
 <translation id="345171907106878721">საკუთარი თავის დამატება Chrome-ში</translation>
@@ -208,6 +209,7 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="6291089322031436445">Chrome Dev აპები</translation>
 <translation id="6291549208091401781">Google Chrome უკვე დაინსტალირებულია თქვენი კომპიუტერის ყველა მომხმარებლისთვის.</translation>
 <translation id="6368958679917195344">Chrome OS არსებობს დამატებითი <ph name="BEGIN_LINK_CROS_OSS" />ღია წყაროს პროგრამული უზრუნველყოფის<ph name="END_LINK_CROS_OSS" /> წყალობით.</translation>
+<translation id="6412673304250309937">შეამოწმებს URL-ების თანხვედრას Chrome-ში შენახულ არაუსაფრთხო საიტების სიასთან. საიტის მიერ პაროლის მოპარვის მცდელობის ან თქვენ მიერ საზიანო ფაილის ჩამოტვირთვის შემთხვევაში Chrome-ის მიერ Safe Browsing-ს გაეგზავნება URL-ები და შესაბამისი გვერდის კონტენტის გარკვეული ნაწილი.</translation>
 <translation id="6418662306461808273">გსურთ არსებულ Chrome პროფილზე გადართვა?</translation>
 <translation id="6506909944137591434">თქვენი შემოგარენის 3-განზომილებიანი რუკის შესაქმნელად Chrome საჭიროებს მეხსიერებაზე წვდომის ნებართვას</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> — Google Chrome Dev</translation>

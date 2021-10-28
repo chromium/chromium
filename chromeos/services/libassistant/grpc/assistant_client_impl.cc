@@ -16,6 +16,8 @@
 #include "chromeos/assistant/internal/internal_constants.h"
 #include "chromeos/assistant/internal/internal_util.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/bootup_settings_interface.pb.h"
+#include "chromeos/assistant/internal/proto/shared/proto/v2/config_settings_interface.pb.h"
+#include "chromeos/assistant/internal/proto/shared/proto/v2/display_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/query_interface.pb.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/libassistant/callback_utils.h"
@@ -42,7 +44,7 @@ const chromeos::libassistant::StateConfig kDefaultStateConfig =
 // we need or is empty.
 template <typename Response>
 base::OnceCallback<void(const grpc::Status& status, const Response&)>
-PrintLogCallback(const std::string& request_name) {
+GetLoggingCallback(const std::string& request_name) {
   return base::BindOnce(
       [](const std::string& request_name, const grpc::Status& status,
          const Response& ignored) {
@@ -90,6 +92,23 @@ bool AssistantClientImpl::StartGrpcServices() {
   return grpc_services_.Start();
 }
 
+void AssistantClientImpl::ResetAllDataAndShutdown() {
+  libassistant_client_.CallServiceMethod(
+      ::assistant::api::ResetAllDataAndShutdownRequest(),
+      GetLoggingCallback<::assistant::api::ResetAllDataAndShutdownResponse>(
+          /*request_name=*/__func__),
+      kDefaultStateConfig);
+}
+
+void AssistantClientImpl::SendDisplayRequest(
+    const OnDisplayRequestRequest& request) {
+  libassistant_client_.CallServiceMethod(
+      request,
+      GetLoggingCallback<::assistant::api::OnDisplayRequestResponse>(
+          /*request_name=*/__func__),
+      kDefaultStateConfig);
+}
+
 void AssistantClientImpl::AddDeviceStateEventObserver(
     GrpcServicesObserver<OnDeviceStateEventRequest>* observer) {
   grpc_services_.AddObserver(observer);
@@ -130,7 +149,7 @@ void AssistantClientImpl::SetAuthenticationInfo(const AuthTokens& tokens) {
 
   libassistant_client_.CallServiceMethod(
       request,
-      PrintLogCallback<::assistant::api::SetAuthInfoResponse>(
+      GetLoggingCallback<::assistant::api::SetAuthInfoResponse>(
           /*request_name=*/__func__),
       kDefaultStateConfig);
 }
@@ -145,7 +164,7 @@ void AssistantClientImpl::SetInternalOptions(const std::string& locale,
 
   libassistant_client_.CallServiceMethod(
       request,
-      PrintLogCallback<::assistant::api::SetInternalOptionsResponse>(
+      GetLoggingCallback<::assistant::api::SetInternalOptionsResponse>(
           /*request_name=*/__func__),
       kDefaultStateConfig);
 }

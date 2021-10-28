@@ -296,6 +296,7 @@
 <translation id="1842969606798536927">Paiement</translation>
 <translation id="1856713167556118146">Ce que la navigation privée ne permet pas</translation>
 <translation id="1863257867908022953">Bac 12</translation>
+<translation id="1864927262126810325">De <ph name="SOURCE_NAME" /></translation>
 <translation id="1871208020102129563">Le mandataire est configuré pour utiliser des serveurs mandataires fixes et non une adresse URL de script .pac.</translation>
 <translation id="1871284979644508959">Champ obligatoire</translation>
 <translation id="1875025161375567525">Plateau photo</translation>
@@ -957,6 +958,7 @@
 <translation id="4117700440116928470">La portée de la règle n'est pas prise en charge.</translation>
 <translation id="4121428309786185360">Expire le</translation>
 <translation id="4123572138124678573">Triple perforation en bas</translation>
+<translation id="4127575959421463246">Vous recherchez les indicateurs Chrome OS? Consultez</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 autre élément}one{# autre élément}other{# autres éléments}}</translation>
 <translation id="4130226655945681476">De vérifier les câbles réseau, le modem et le routeur</translation>
 <translation id="4133224101597112888">Bouton Partager cet onglet. Appuyez sur la touche Tabulation, puis sur la touche Entrée pour partager cet onglet en partageant le lien, en créant un code QR, en diffusant du contenu et plus.</translation>
@@ -1124,6 +1126,7 @@
 <translation id="4606870351894164739">Remarquable</translation>
 <translation id="4607603470419975064">Bouton Afficher les astuces de Chrome, appuyez sur Entrée pour en savoir plus sur les fonctionnalités de Chrome</translation>
 <translation id="4607608436550361748">Afficher les astuces de Chrome</translation>
+<translation id="4627675673814409125">Cette politique ne peut pas être réglée au niveau du profil Chrome et elle sera ignorée.</translation>
 <translation id="4628948037717959914">Photo</translation>
 <translation id="4631649115723685955">Avec remise en argent</translation>
 <translation id="4636930964841734540">Renseignements</translation>
@@ -1755,6 +1758,7 @@
 <translation id="674375294223700098">Erreur inconnue de certificat de serveur.</translation>
 <translation id="6744009308914054259">En attendant la connexion, vous pouvez consulter vos téléchargements pour lire des articles hors connexion.</translation>
 <translation id="6753269504797312559">Valeur de la règle</translation>
+<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Votre appareil s'est mis en veille.</translation>
 <translation id="6767985426384634228">Mettre à jour l'adresse?</translation>
 <translation id="6768213884286397650">Carte postale hagaki</translation>
@@ -1842,6 +1846,7 @@
 <translation id="706295145388601875">Ajoutez et gérez les adresses dans les paramètres de Chrome</translation>
 <translation id="7064851114919012435">Coordonnées</translation>
 <translation id="7068733155164172741">Entrez le code à <ph name="OTP_LENGTH" /> chiffres</translation>
+<translation id="7070090581017165256">À propos de ce site</translation>
 <translation id="70705239631109039">Votre connexion n'est pas parfaitement sécurisée</translation>
 <translation id="7075452647191940183">La taille de la requête est trop grande</translation>
 <translation id="7079718277001814089">Ce site contient des logiciels malveillants</translation>
@@ -2086,6 +2091,7 @@ Détails supplémentaires :
 <translation id="7813600968533626083">Supprimer la suggestion de formulaire de Chrome?</translation>
 <translation id="781440967107097262">Partager le presse-papiers?</translation>
 <translation id="7815407501681723534"><ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> résultat(s) trouvé(s) pour « <ph name="SEARCH_STRING" /> »</translation>
+<translation id="782125616001965242">Afficher des renseignements à propos de ce site</translation>
 <translation id="782886543891417279">Le réseau Wi-Fi que vous utilisez (<ph name="WIFI_NAME" />) peut vous demander de visiter sa page de connexion.</translation>
 <translation id="7836231406687464395">Enveloppe Postfix</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Aucune}=1{1 application : <ph name="EXAMPLE_APP_1" />}=2{2 applications (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# application (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# applications (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
@@ -2365,6 +2371,7 @@ Détails supplémentaires :
 <translation id="8792626944327216835">Microphone</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> a activé les connecteurs Chrome Enterprise dans votre navigateur. Ces connecteurs ont accès à certaines de vos données.</translation>
 <translation id="8798099450830957504">Par défaut</translation>
+<translation id="8798739476508189189">Vous recherchez les indicateurs de navigateur? Consultez</translation>
 <translation id="8805819170075074995">Entrée de liste « <ph name="LANGUAGE_ID" /> » : l'entrée a été ignorée, car elle est aussi incluse dans la politique SpellcheckLanguage.</translation>
 <translation id="8807160976559152894">Couper après chaque page</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Tabulation, puis sur la touche Entrée pour mettre à jour Chrome dans les paramètres de Chrome</translation>
@@ -2470,6 +2477,7 @@ Détails supplémentaires :
 <translation id="9157595877708044936">Configuration en cours...</translation>
 <translation id="9158625974267017556">Enveloppe C6</translation>
 <translation id="9164029392738894042">Contrôle d'exactitude</translation>
+<translation id="9164742147345933553">os://indicateurs</translation>
 <translation id="9168814207360376865">Autoriser les sites à vérifier si des modes de paiement sont enregistrés</translation>
 <translation id="9169664750068251925">Toujours bloquer pour ce site</translation>
 <translation id="9169931577761441333">Ajoutez <ph name="APP_NAME" /> à l'écran d'accueil</translation>

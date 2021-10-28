@@ -131,6 +131,7 @@
 <translation id="1882897271359938046">Κατοπτρισμός σε <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Ξεκλείδωμα με δακτυλικό αποτύπωμα</translation>
 <translation id="1888656773939766144">Η οθόνη <ph name="DISPLAY_NAME" /> δεν υποστηρίζει <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Η ανάλυση άλλαξε σε <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Κάντε κλικ για να επιβεβαιώσετε τις αλλαγές. Θα γίνει επαναφορά των προηγούμενων ρυθμίσεων σε <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="1915307458270490472">Τερματισμός κλήσης</translation>
 <translation id="1919743966458266018">Η συντόμευση για το άνοιγμα της Διαχείρισης Εργασιών άλλαξε. Χρησιμοποιήστε το <ph name="NEW_SHORTCUT" /> αντί για το <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Αυτόματα κλικ</translation>
 <translation id="1928739107511554905">Για να λάβετε την ενημέρωση, χρησιμοποιήστε την οθόνη αφής για να επανεκκινήσετε το Chromebook με το συνδεδεμένο πληκτρολόγιο.</translation>
@@ -1129,6 +1130,7 @@
 <translation id="925832987464884575">Απόκρυψη προεπισκοπήσεων</translation>
 <translation id="938963181863597773">Τι υπάρχει στο ημερολόγιό μου;</translation>
 <translation id="945522503751344254">Αποστολή σχολίων</translation>
+<translation id="951991426597076286">Απόρριψη</translation>
 <translation id="98515147261107953">Οριζόντια</translation>
 <translation id="990277280839877440">Το παράθυρο <ph name="WINDOW_TITILE" /> έκλεισε.</translation>
 </translationbundle>

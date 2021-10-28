@@ -124,7 +124,6 @@ source_set("scene") {
     "//components/prefs",
     "//components/prefs/ios",
     "//components/previous_session_info",
-    "//components/signin/ios/browser:features",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager/objc",

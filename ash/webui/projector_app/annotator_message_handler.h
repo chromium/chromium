@@ -14,21 +14,21 @@ namespace content {
 class WebUI;
 }  // namespace content
 
-namespace chromeos {
+namespace ash {
 
 struct AnnotatorTool;
 
 // Handles communication with the Annotator WebUI (i.e.
 // chrome://projector/annotator/annotator_embedder.html)
 class AnnotatorMessageHandler : public content::WebUIMessageHandler,
-                                public ash::ProjectorAnnotatorController {
+                                public ProjectorAnnotatorController {
  public:
   AnnotatorMessageHandler();
   AnnotatorMessageHandler(const AnnotatorMessageHandler&) = delete;
   AnnotatorMessageHandler& operator=(const AnnotatorMessageHandler&) = delete;
   ~AnnotatorMessageHandler() override;
 
-  // ash::ProjectorAnnotatorController:
+  // ProjectorAnnotatorController:
   void SetTool(const AnnotatorTool& tool) override;
   void Undo() override;
   void Redo() override;
@@ -44,6 +44,6 @@ class AnnotatorMessageHandler : public content::WebUIMessageHandler,
   void OnUndoRedoAvailabilityChanged(base::Value::ConstListView args);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_PROJECTOR_APP_ANNOTATOR_MESSAGE_HANDLER_H_

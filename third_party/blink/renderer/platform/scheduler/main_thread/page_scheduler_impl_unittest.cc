@@ -544,6 +544,33 @@ TEST_F(PageSchedulerImplTest,
   EXPECT_EQ(initial_real_time, scheduler_->tick_clock()->NowTicks());
 }
 
+// Check that enabling virtual time while the page is backgrounded prevents a
+// page from being frozen if it wasn't already.
+TEST_F(PageSchedulerImplTest, PageBackgrounded_EnableVirtualTime) {
+  page_scheduler_->SetPageVisible(false);
+  EXPECT_FALSE(page_scheduler_->IsFrozen());
+
+  page_scheduler_->EnableVirtualTime();
+  test_task_runner_->FastForwardUntilNoTasksRemain();
+
+  // Page should not be frozen after a delay since virtual time
+  // was enabled.
+  EXPECT_FALSE(page_scheduler_->IsFrozen());
+}
+
+// Check that enabling virtual time while a backgrounded page is frozen
+// unfreezes it.
+TEST_F(PageSchedulerImplTest, PageFrozen_EnableVirtualTime) {
+  page_scheduler_->SetPageVisible(false);
+  test_task_runner_->FastForwardUntilNoTasksRemain();
+  EXPECT_TRUE(page_scheduler_->IsFrozen());
+
+  page_scheduler_->EnableVirtualTime();
+
+  // Page should not be frozen since virtual time was enabled.
+  EXPECT_FALSE(page_scheduler_->IsFrozen());
+}
+
 namespace {
 
 void RunOrderTask(int index, Vector<int>* out_run_order) {

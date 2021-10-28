@@ -33,7 +33,6 @@
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scoped_paint_chunk_properties.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -115,7 +114,7 @@ void PaintTimingDetector::NotifyBackgroundImagePaint(
     const Image& image,
     const StyleFetchedImage& style_image,
     const PropertyTreeStateOrAlias& current_paint_chunk_properties,
-    const IntRect& image_border) {
+    const gfx::Rect& image_border) {
   DCHECK(style_image.CachedImage());
   LayoutObject* object = node.GetLayoutObject();
   if (!object)
@@ -123,44 +122,34 @@ void PaintTimingDetector::NotifyBackgroundImagePaint(
   LocalFrameView* frame_view = object->GetFrameView();
   if (!frame_view)
     return;
-
-  ImagePaintTimingDetector* detector =
-      frame_view->GetPaintTimingDetector().GetImagePaintTimingDetector();
-  if (!detector)
+  PaintTimingDetector& detector = frame_view->GetPaintTimingDetector();
+  if (!detector.GetImagePaintTimingDetector())
     return;
-
   if (!IsBackgroundImageContentful(*object, image))
     return;
-
-  ImageResourceContent* cached_image = style_image.CachedImage();
-  DCHECK(cached_image);
-  // TODO(yoav): |image| and |cached_image.GetImage()| are not the same here in
-  // the case of SVGs. Figure out why and if we can remove this footgun.
-
-  detector->RecordImage(*object, image.Size(), *cached_image,
-                        current_paint_chunk_properties, &style_image,
-                        image_border);
+  detector.GetImagePaintTimingDetector()->RecordImage(
+      *object, ToGfxSize(image.Size()), *style_image.CachedImage(),
+      current_paint_chunk_properties, &style_image, image_border);
 }
 
 // static
 void PaintTimingDetector::NotifyImagePaint(
     const LayoutObject& object,
-    const IntSize& intrinsic_size,
+    const gfx::Size& intrinsic_size,
     const ImageResourceContent& cached_image,
     const PropertyTreeStateOrAlias& current_paint_chunk_properties,
-    const IntRect& image_border) {
+    const gfx::Rect& image_border) {
   if (IgnorePaintTimingScope::ShouldIgnore())
     return;
   LocalFrameView* frame_view = object.GetFrameView();
   if (!frame_view)
     return;
-  ImagePaintTimingDetector* detector =
-      frame_view->GetPaintTimingDetector().GetImagePaintTimingDetector();
-  if (!detector)
+  PaintTimingDetector& detector = frame_view->GetPaintTimingDetector();
+  if (!detector.GetImagePaintTimingDetector())
     return;
-
-  detector->RecordImage(object, intrinsic_size, cached_image,
-                        current_paint_chunk_properties, nullptr, image_border);
+  detector.GetImagePaintTimingDetector()->RecordImage(
+      object, intrinsic_size, cached_image, current_paint_chunk_properties,
+      nullptr, image_border);
 }
 
 void PaintTimingDetector::NotifyImageFinished(
@@ -339,24 +328,23 @@ void PaintTimingDetector::DidChangePerformanceTiming() {
   loader->DidChangePerformanceTiming();
 }
 
-FloatRect PaintTimingDetector::BlinkSpaceToDIPs(
-    const FloatRect& float_rect) const {
+gfx::RectF PaintTimingDetector::BlinkSpaceToDIPs(const gfx::RectF& rect) const {
   FrameWidget* widget = frame_view_->GetFrame().GetWidgetForLocalRoot();
   // May be nullptr in tests.
   if (!widget)
-    return float_rect;
-  return FloatRect(widget->BlinkSpaceToDIPs(ToGfxRectF(float_rect)));
+    return rect;
+  return widget->BlinkSpaceToDIPs(rect);
 }
 
-FloatRect PaintTimingDetector::CalculateVisualRect(
-    const IntRect& visual_rect,
+gfx::RectF PaintTimingDetector::CalculateVisualRect(
+    const gfx::Rect& visual_rect,
     const PropertyTreeStateOrAlias& current_paint_chunk_properties) const {
   // This case should be dealt with outside the function.
   DCHECK(!visual_rect.IsEmpty());
 
   // As Layout objects live in different transform spaces, the object's rect
   // should be projected to the viewport's transform space.
-  FloatClipRect float_clip_visual_rect(ToGfxRectF(FloatRect(visual_rect)));
+  FloatClipRect float_clip_visual_rect((gfx::RectF(visual_rect)));
   const LocalFrame& local_root = frame_view_->GetFrame().LocalFrameRoot();
   GeometryMapper::LocalToAncestorVisualRect(current_paint_chunk_properties,
                                             local_root.ContentLayoutObject()
@@ -374,7 +362,7 @@ FloatRect PaintTimingDetector::CalculateVisualRect(
       .LocalFrameRoot()
       .View()
       ->MapToVisualRectInRemoteRootFrame(layout_visual_rect);
-  return BlinkSpaceToDIPs(FloatRect(layout_visual_rect));
+  return BlinkSpaceToDIPs(gfx::RectF(layout_visual_rect));
 }
 
 void PaintTimingDetector::UpdateLargestContentfulPaintCandidate() {
@@ -397,8 +385,8 @@ void PaintTimingDetector::UpdateLargestContentfulPaintCandidate() {
     largest_image_record = image_timing_detector->UpdateCandidate();
   }
 
-  lcp_calculator->UpdateLargestContentfulPaintIfNeeded(largest_text_record,
-                                                       largest_image_record);
+  lcp_calculator->UpdateLargestContentPaintIfNeeded(largest_text_record,
+                                                    largest_image_record);
 }
 
 void PaintTimingDetector::ReportIgnoredContent() {
@@ -498,6 +486,17 @@ void PaintTimingCallbackManagerImpl::ReportPaintTime(
 void PaintTimingCallbackManagerImpl::Trace(Visitor* visitor) const {
   visitor->Trace(frame_view_);
   PaintTimingCallbackManager::Trace(visitor);
+}
+
+void LCPRectInfo::OutputToTraceValue(TracedValue& value) const {
+  value.SetInteger("frame_x", frame_rect_info_.x());
+  value.SetInteger("frame_y", frame_rect_info_.y());
+  value.SetInteger("frame_width", frame_rect_info_.width());
+  value.SetInteger("frame_height", frame_rect_info_.height());
+  value.SetInteger("root_x", root_rect_info_.x());
+  value.SetInteger("root_y", root_rect_info_.y());
+  value.SetInteger("root_width", root_rect_info_.width());
+  value.SetInteger("root_height", root_rect_info_.height());
 }
 
 }  // namespace blink

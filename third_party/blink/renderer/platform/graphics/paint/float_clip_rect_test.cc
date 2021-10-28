@@ -27,7 +27,7 @@ TEST_F(FloatClipRectTest, InfiniteRect) {
 
 TEST_F(FloatClipRectTest, MoveBy) {
   FloatClipRect rect;
-  rect.MoveBy(FloatPoint(1, 2));
+  rect.Move(gfx::Vector2dF(1, 2));
   EXPECT_EQ(rect.Rect(), FloatClipRect().Rect());
   EXPECT_TRUE(rect.IsInfinite());
   EXPECT_FALSE(rect.HasRadius());
@@ -35,8 +35,8 @@ TEST_F(FloatClipRectTest, MoveBy) {
 
   FloatClipRect rect2(gfx::RectF(1, 2, 3, 4));
   rect2.SetHasRadius();
-  rect2.MoveBy(FloatPoint(5, 6));
-  EXPECT_EQ(FloatRect(6, 8, 3, 4), rect2.Rect());
+  rect2.Move(gfx::Vector2dF(5, 6));
+  EXPECT_EQ(gfx::RectF(6, 8, 3, 4), rect2.Rect());
   EXPECT_TRUE(rect2.HasRadius());
   EXPECT_FALSE(rect2.IsTight());
 }
@@ -49,13 +49,13 @@ TEST_F(FloatClipRectTest, Intersect) {
 
   rect.Intersect(rect1);
   EXPECT_FALSE(rect.IsInfinite());
-  EXPECT_EQ(FloatRect(1, 2, 3, 4), rect.Rect());
+  EXPECT_EQ(gfx::RectF(1, 2, 3, 4), rect.Rect());
   EXPECT_FALSE(rect.HasRadius());
   EXPECT_TRUE(rect.IsTight());
 
   rect.Intersect(rect2);
   EXPECT_FALSE(rect.IsInfinite());
-  EXPECT_EQ(FloatRect(3, 4, 1, 2), rect.Rect());
+  EXPECT_EQ(gfx::RectF(3, 4, 1, 2), rect.Rect());
   EXPECT_TRUE(rect.HasRadius());
   EXPECT_FALSE(rect.IsTight());
 }
@@ -68,7 +68,7 @@ TEST_F(FloatClipRectTest, IntersectWithInfinite) {
 
   unclipped.Intersect(infinite);
   EXPECT_FALSE(unclipped.IsInfinite());
-  EXPECT_EQ(large, ToGfxRectF(unclipped.Rect()));
+  EXPECT_EQ(large, unclipped.Rect());
 }
 
 TEST_F(FloatClipRectTest, InclusiveIntersectWithInfinite) {
@@ -79,7 +79,7 @@ TEST_F(FloatClipRectTest, InclusiveIntersectWithInfinite) {
 
   ASSERT_TRUE(unclipped.InclusiveIntersect(infinite));
   EXPECT_FALSE(unclipped.IsInfinite());
-  EXPECT_EQ(large, ToGfxRectF(unclipped.Rect()));
+  EXPECT_EQ(large, unclipped.Rect());
 }
 
 TEST_F(FloatClipRectTest, SetHasRadius) {
@@ -113,11 +113,11 @@ TEST_F(FloatClipRectTest, Map) {
   // transform is known to be identity or a 2d translation.
   FloatClipRect rect2(gfx::RectF(1, 2, 3, 4));
   rect2.Map(identity);
-  EXPECT_EQ(FloatRect(1, 2, 3, 4), rect2.Rect());
+  EXPECT_EQ(gfx::RectF(1, 2, 3, 4), rect2.Rect());
   EXPECT_FALSE(rect2.IsTight());
 
   rect2.Map(translation);
-  EXPECT_EQ(FloatRect(11, 22, 3, 4), rect2.Rect());
+  EXPECT_EQ(gfx::RectF(11, 22, 3, 4), rect2.Rect());
   EXPECT_FALSE(rect2.IsTight());
 }
 

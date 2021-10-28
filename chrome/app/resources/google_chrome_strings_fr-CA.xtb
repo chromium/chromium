@@ -100,6 +100,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="3379938682270551431">{0,plural, =0{Chrome va maintenant redémarrer}=1{Chrome redémarrera dans 1 seconde}one{Chrome redémarrera dans # seconde}other{Chrome redémarrera dans # secondes}}</translation>
 <translation id="3395323229510056640">Obtenir de l'aide pour Chrome OS</translation>
 <translation id="3396977131400919238">Une erreur de système d'exploitation s'est produite pendant l'installation. Veuillez télécharger de nouveau Google Chrome.</translation>
+<translation id="3428747202529429621">Il vous protège dans Chrome et peut être utilisé pour améliorer votre sécurité dans d'autres applications Google lorsque vous êtes connecté à votre compte</translation>
 <translation id="3434246496373299699">Chrome peut vérifier vos mots de passe lorsque vous vous connectez avec votre compte Google</translation>
 <translation id="3451115285585441894">Ajout à Google Chrome en cours…</translation>
 <translation id="345171907106878721">Ajouter un utilisateur à Google Chrome</translation>
@@ -206,6 +207,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6291089322031436445">Applications Chrome Dev</translation>
 <translation id="6291549208091401781">Google Chrome est déjà installé pour tous les utilisateurs sur votre ordinateur.</translation>
 <translation id="6368958679917195344">Chrome OS fonctionne grâce à d'autres <ph name="BEGIN_LINK_CROS_OSS" />logiciels libres<ph name="END_LINK_CROS_OSS" />.</translation>
+<translation id="6412673304250309937">Il vérifie les URL en fonction d'une liste de sites non sécuritaires stockée dans Chrome. Si un site tente de voler votre mot de passe ou si vous téléchargez un fichier dangereux, Chrome peut également envoyer les URL concernées, y compris des extraits du contenu de pages, à la navigation sécurisée.</translation>
 <translation id="6418662306461808273">Passer au profil Chrome existant?</translation>
 <translation id="6506909944137591434">Chrome requiert l'autorisation d'accéder à l'appareil photo pour créer une carte 3D de votre environnement</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome pour les concepteurs</translation>

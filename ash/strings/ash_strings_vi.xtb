@@ -131,6 +131,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1882897271359938046">Đang phản chiếu tới <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Mở khóa bằng vân tay</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> không hỗ trợ <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Độ phân giải đã được đổi thành <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Hãy nhấp vào xác nhận để lưu các thay đổi. Các tùy chọn cài đặt trước sẽ được khôi phục sau <ph name="TIMEOUT_SECONDS" /> nữa.</translation>
+<translation id="1915307458270490472">Kết thúc</translation>
 <translation id="1919743966458266018">Phím tắt để mở trình quản lý tác vụ đã thay đổi. Vui lòng sử dụng <ph name="NEW_SHORTCUT" /> thay vì <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Nhấp chuột tự động</translation>
 <translation id="1928739107511554905">Để cập nhật, hãy dùng màn hình cảm ứng để khởi động lại Chromebook bằng bàn phím đã kết nối.</translation>
@@ -1129,6 +1130,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="925832987464884575">Ẩn bản xem trước</translation>
 <translation id="938963181863597773">Trên lịch của tôi có sự kiện gì?</translation>
 <translation id="945522503751344254">Gửi phản hồi</translation>
+<translation id="951991426597076286">Từ chối</translation>
 <translation id="98515147261107953">Khổ ngang</translation>
 <translation id="990277280839877440">Đã đóng cửa sổ <ph name="WINDOW_TITILE" />.</translation>
 </translationbundle>

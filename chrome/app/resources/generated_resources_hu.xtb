@@ -1315,7 +1315,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2312219318583366810">Oldal URL-címe</translation>
 <translation id="2314165183524574721">Jelenlegi láthatósági beállítás: rejtett</translation>
 <translation id="2314774579020744484">Oldalak fordításánál használt nyelv</translation>
-<translation id="2315414688463285945">Hiba történt a Linux-fájlok konfigurálása során. Próbálja újra.</translation>
 <translation id="2315587498123194634">Link küldése ide: <ph name="DEVICE_NAME" /></translation>
 <translation id="2316129865977710310">Köszönöm, nem</translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" />% kész</translation>
@@ -2364,7 +2363,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3424969259347320884">Írja le, hogy mit csinált a lap összeomlásakor</translation>
 <translation id="3427092606871434483">Engedélyezés (alapértelmezett)</translation>
 <translation id="3428419049384081277">Sikeresen bejelentkezett.</translation>
-<translation id="3428747202529429621">Gondoskodik a biztonságáról a Chrome-ban, és használható a biztonság növelésére más Google-alkalmazásokban olyankor, amikor Ön be van jelentkezve.</translation>
 <translation id="3429086384982427336">Az alább felsorolt alkalmazások soha nem kezelnek protokoll-linkeket.</translation>
 <translation id="3429160811076349561">A próbafunkciók ki vannak kapcsolva</translation>
 <translation id="3429271624041785769">Webes tartalmak nyelvei</translation>
@@ -5132,7 +5130,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6410328738210026208">Csatorna módosítása és Powerwash</translation>
 <translation id="6410390304316730527">A Biztonságos Böngészés megvédi azoktól a támadóktól, akik megpróbálják csellel rávenni Önt valamilyen kockázatos dologra, például arra, hogy rosszindulatú szoftvert telepítsen, vagy felfedje személyes adatait (jelszavakat, telefonszámokat, bankkártyaadatokat stb). Ha kikapcsolja, legyen óvatos, amikor ismeretlen vagy kétes hírű webhelyeket keres fel.</translation>
 <translation id="6410668567036790476">Keresőmotor hozzáadása</translation>
-<translation id="6412673304250309937">Ellenőrzi az URL-eket a Chrome-ban a nem biztonságos webhelyekről tárolt lista alapján. Ha egy webhely megpróbálja ellopni az Ön jelszavát, illetve ha Ön ártalmas fájlt tölt le, akkor a Chrome elküldheti az URL-eket is (az oldaltartalmak részleteivel együtt) a Biztonságos Böngészésnek.</translation>
 <translation id="641469293210305670">Frissítések és alkalmazások telepítése</translation>
 <translation id="6414878884710400018">Rendszerbeállítások megnyitása</translation>
 <translation id="6414888972213066896">Megkérdezted a szülőt, hogy meg szabad-e látogatnod ezt a webhelyet</translation>
@@ -5541,7 +5538,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6843264316370513305">Hálózati hibaelhárítás</translation>
 <translation id="6843423766595476978">Az Ok Google használatra kész</translation>
 <translation id="6845038076637626672">Megnyitás teljes méretben</translation>
-<translation id="6845325883481699275">Segítség a Chrome biztonságának továbberősítésében</translation>
 <translation id="6846178040388691741">A(z) „<ph name="EXTENSION_NAME" />” ki akarja nyomtatni a(z) <ph name="FILE_NAME" /> fájlt a következő nyomtatóval: <ph name="PRINTER_NAME" />.</translation>
 <translation id="6847125920277401289">A folytatáshoz szabadítson fel tárhelyet</translation>
 <translation id="6848388270925200958">Jelenleg van néhány olyan kártyája, amely csak ezen az eszközön használható</translation>
@@ -6993,7 +6989,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8324784016256120271">A webhelyek használhatnak cookie-kat az Ön böngészési tevékenységeinek megismeréséhez a különböző webhelyeken, például a hirdetések személyre szabása érdekében.</translation>
 <translation id="8325413836429495820">Nem használhatják a vágólapot</translation>
 <translation id="8326478304147373412">PKCS #7, tanúsítványlánc</translation>
-<translation id="8327039559959785305">Hiba történt a Linux-fájlok csatlakoztatásakor. Próbálja újra.</translation>
 <translation id="8327676037044516220">Engedélyek és tartalombeállítások</translation>
 <translation id="833256022891467078">Megosztott Crostini-mappák</translation>
 <translation id="8335587457941836791">Rögzítés feloldása a polcon</translation>

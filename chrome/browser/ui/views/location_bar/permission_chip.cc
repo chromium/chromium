@@ -91,7 +91,7 @@ PermissionChip::~PermissionChip() {
 void PermissionChip::OpenBubble() {
   // The prompt bubble is either not opened yet or already closed on
   // deactivation.
-  DCHECK(!GetPromptBubbleWidget());
+  DCHECK(!IsBubbleShowing());
 
   prompt_bubble_tracker_.SetView(CreateBubble());
 }
@@ -174,7 +174,9 @@ void PermissionChip::ExpandAnimationEnded() {
 }
 
 void PermissionChip::ChipButtonPressed() {
-  OpenBubble();
+  if (!IsBubbleShowing()) {
+    OpenBubble();
+  }
   RestartTimersOnInteraction();
 }
 

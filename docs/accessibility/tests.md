@@ -20,10 +20,10 @@ evolved a lot since then. Look for more recent tests as a guide if writing a new
 one.
 
 Test files:
-[third_party/blink/web_tests/accessibility](https://cs.chromium.org/chromium/src/third_party/blink/web_tests/accessibility/)
+[third_party/blink/web_tests/accessibility](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/web_tests/accessibility/)
 
 Source code to AccessibilityController and WebAXObjectProxy:
-[content/shell/test_runner](https://cs.chromium.org/chromium/src/content/shell/test_runner/)
+[content/web_test/renderer](https://source.chromium.org/chromium/chromium/src/+/main:content/web_test/renderer/)
 
 First, you'll need to build the tests:
 ```
@@ -57,10 +57,10 @@ almost no test code is required.
 [More documentation on DumpAccessibilityTree](../../content/test/data/accessibility/readme.md)
 
 Test files:
-[content/test/data/accessibility](https://cs.chromium.org/chromium/src/content/test/data/accessibility/)
+[content/test/data/accessibility](https://source.chromium.org/chromium/chromium/src/+/main:content/test/data/accessibility/)
 
 Test runner:
-[content/browser/accessibility/dump_accessibility_tree_browsertest.cc](https://cs.chromium.org/chromium/src/content/browser/accessibility/dump_accessibility_tree_browsertest.cc)
+[content/browser/accessibility/dump_accessibility_tree_browsertest.h](https://source.chromium.org/chromium/chromium/src/+/main:content/browser/accessibility/dump_accessibility_tree_browsertest.h)
 
 To run all tests:
 
@@ -89,7 +89,13 @@ This tests the core accessibility code that's shared by both web and non-web
 accessibility infrastructure.
 
 Code location:
-[ui/accessibility](https://cs.chromium.org/chromium/src/ui/accessibility/)
+[ui/accessibility](https://source.chromium.org/chromium/chromium/src/+/main:ui/accessibility/)
+and subdirectories; check the
+[`*_unittest.cc` files](https://source.chromium.org/search?q=path:accessibility%20path:_unittest&sq=&ss=chromium%2Fchromium%2Fsrc:ui%2Faccessibility%2F),
+next to every file that it's being tested.
+
+List of sources:
+[ui/accessibility/BUILD.gn](https://source.chromium.org/chromium/chromium/src/+/main:ui/accessibility/BUILD.gn?q=%22test(%22accessibility_unittests%22)%20%7B%22)
 
 To run all tests:
 
@@ -128,11 +134,11 @@ Even this isn't a complete list. The tests described above cover more than 90%
 of the accessibility tests, and the remainder are scattered throughout the
 codebase. Here are a few other locations to check:
 
-*   [chrome/android/javatests/src/org/chromium/chrome/browser/accessibility](https://cs.chromium.org/chromium/src/chrome/android/javatests/src/org/chromium/chrome/browser/accessibility/)
-*   [chrome/browser/accessibility](https://cs.chromium.org/chromium/src/chrome/browser/accessibility/)
-*   [chrome/browser/ash/accessibility/](https://cs.chromium.org/chromium/src/chrome/browser/ash/accessibility/)
-*   [ui/chromeos](https://cs.chromium.org/chromium/src/ui/chromeos/)
-*   [ui/views/accessibility](https://cs.chromium.org/chromium/src/ui/views/accessibility/)
+*   [chrome/android/javatests/src/org/chromium/chrome/browser/accessibility](https://source.chromium.org/chromium/chromium/src/+/main:chrome/android/javatests/src/org/chromium/chrome/browser/accessibility/)
+*   [chrome/browser/accessibility](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/accessibility/)
+*   [chrome/browser/ash/accessibility/](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ash/accessibility/)
+*   [ui/chromeos](https://source.chromium.org/chromium/chromium/src/+/main:ui/chromeos/)
+*   [ui/views/accessibility](https://source.chromium.org/chromium/chromium/src/+/main:ui/views/accessibility/)
 
 ## Helpful flags:
 

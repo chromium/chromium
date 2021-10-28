@@ -77,7 +77,7 @@ struct PaintPropertyTreeBuilderFragmentContext {
 
     // Similar to additional_offset_to_layout_shift_root_delta but for scroll
     // offsets.
-    FloatSize scroll_offset_to_layout_shift_root_delta;
+    gfx::Vector2dF scroll_offset_to_layout_shift_root_delta;
 
     // For paint invalidation optimization for subpixel movement under
     // composited layer. It's reset to zero if subpixel can't be propagated
@@ -111,7 +111,7 @@ struct PaintPropertyTreeBuilderFragmentContext {
     // the transform tree changes.
     const ScrollPaintPropertyNode* scroll = nullptr;
 
-    FloatSize pending_scroll_anchor_adjustment;
+    gfx::Vector2dF pending_scroll_anchor_adjustment;
 
     // Paint offset of the innermost fragmentainer minus accumulated offsets
     // that are baked in PaintOffsetTranslations since we entered the
@@ -176,7 +176,7 @@ struct PaintPropertyTreeBuilderFragmentContext {
 
   // The delta between the old and new accumulated offsets of 2d translation
   // transforms to the layout shift root.
-  FloatSize translation_2d_to_layout_shift_root_delta;
+  gfx::Vector2dF translation_2d_to_layout_shift_root_delta;
 };
 
 struct PaintPropertyTreeBuilderContext final {

@@ -301,6 +301,7 @@
 <translation id="1842969606798536927">ادائیگی کریں</translation>
 <translation id="1856713167556118146">پوشیدگی وضع کیا نہیں کرتی ہے</translation>
 <translation id="1863257867908022953">ٹرے 12</translation>
+<translation id="1864927262126810325"><ph name="SOURCE_NAME" /> سے</translation>
 <translation id="1871208020102129563">‏پراکسی ایک ‎.pac اسکرپٹ URL نہیں بلکہ مقررہ پراکسی سرورز استعمال کرنے کیلئے سیٹ ہے۔</translation>
 <translation id="1871284979644508959">مطلوبہ فیلڈ</translation>
 <translation id="1875025161375567525">تصویری ٹرے</translation>
@@ -964,6 +965,7 @@
 <translation id="4117700440116928470">پالیسی کا دائرۂ کار تعاون یافتہ نہیں ہے۔</translation>
 <translation id="4121428309786185360">میعاد کا اختتام</translation>
 <translation id="4123572138124678573">نیچے تین سوراخ</translation>
+<translation id="4127575959421463246">‏ChromeOS کے جھنڈے تلاش کر رہے ہیں؟ ملاحظہ کریں</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 دیگر}other{# دیگر}}</translation>
 <translation id="4130226655945681476">نیٹ ورک کیبلز، موڈم اور راؤٹر کو چیک کیا جا رہا ہے</translation>
 <translation id="4133224101597112888">‏اس ٹیب کے بٹن کا اشتراک کریں، لنک کا اشتراک، QR کوڈ تخلیق، کاسٹ اور بہت کچھ کر کے اس ٹیب کا اشتراک کرنے کیلئے اینٹر دبائیں۔</translation>
@@ -1135,6 +1137,7 @@
 <translation id="4606870351894164739">متاثر کن</translation>
 <translation id="4607603470419975064">‏Chrome کی تجاویز دیکھیں بٹن، Chrome کی خصوصیات کے بارے میں جاننے کیلئے Enter دبائیں</translation>
 <translation id="4607608436550361748">‏Chrome کی تجاویز دیکھیں</translation>
+<translation id="4627675673814409125">‏یہ پالیسی Chrome پروفائل کی سطح پر سیٹ نہیں کی جا سکتی اور اسے نظر انداز کر دیا جائے گا۔</translation>
 <translation id="4628948037717959914">تصویر</translation>
 <translation id="4631649115723685955">کیش بیک لنک کردہ ہے</translation>
 <translation id="4636930964841734540">معلومات</translation>
@@ -1767,6 +1770,7 @@
 <translation id="674375294223700098">سرور سرٹیفکیٹ میں نامعلوم خرابی۔</translation>
 <translation id="6744009308914054259">کنکشن کا انتظار کرنے کے دوران، آف لائن مضامین پڑھنے کے لیے آپ ڈاؤن لوڈز ملاحظہ کر سکتے ہیں۔</translation>
 <translation id="6753269504797312559">پالیسی کی قدر</translation>
+<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">آپ کا آلہ سیلپ وضع میں چلا گیا۔</translation>
 <translation id="6767985426384634228">پتہ اپ ڈیٹ کریں؟</translation>
 <translation id="6768213884286397650">Hagaki ‎(Postcard)‎</translation>
@@ -1854,6 +1858,7 @@
 <translation id="706295145388601875">‏Chrome ترتیبات میں پتوں کو شامل کریں اور ان کا نظم کریں</translation>
 <translation id="7064851114919012435">رابطہ کی معلومات</translation>
 <translation id="7068733155164172741"><ph name="OTP_LENGTH" /> ہندسے والا کوڈ درج کریں</translation>
+<translation id="7070090581017165256">اس سائٹ کے بارے میں</translation>
 <translation id="70705239631109039">آپ کا کنکشن مکمل طور پر محفوظ نہیں ہے</translation>
 <translation id="7075452647191940183">درخواست کافی بڑی ہے</translation>
 <translation id="7079718277001814089">یہ سائٹ میلویئر پر مشتمل ہے</translation>
@@ -2098,6 +2103,7 @@
 <translation id="7813600968533626083">‏Chrome سے فارم کی تجویز ہٹائیں؟</translation>
 <translation id="781440967107097262">کلپ بورڈ کا اشتراک کریں؟</translation>
 <translation id="7815407501681723534">'<ph name="SEARCH_STRING" />' کیلئے <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> ملے۔</translation>
+<translation id="782125616001965242">اس سائٹ کے بارے میں معلومات دکھائیں</translation>
 <translation id="782886543891417279">‏آپ جو Wi-Fi استعمال کر رہے ہیں <ph name="WIFI_NAME" /> وہ آپ سے اپنا لاگ ان صفحہ ملاحظہ کرنے کا تقاضہ کر سکتا ہے۔</translation>
 <translation id="7836231406687464395">Postfix ‎(Envelope‎)‎</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{کوئی نہیں}=1{1 ایپ (<ph name="EXAMPLE_APP_1" />)}=2{2 ایپس (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# ایپس (<ph name="EXAMPLE_APP_1" />، <ph name="EXAMPLE_APP_2" />، <ph name="AND_MORE" />)}}</translation>
@@ -2376,6 +2382,7 @@
 <translation id="8792626944327216835">مائیکروفون</translation>
 <translation id="8793655568873652685">‏آپ کے براؤزر پر <ph name="ENROLLMENT_DOMAIN" /> نے Chrome انٹرپرائز کنیکٹرز کو آن کر دیا ہے۔ ان کنیکٹرز کو آپ کے کچھ ڈیٹا تک رسائی حاصل ہے۔</translation>
 <translation id="8798099450830957504">ڈیفالٹ</translation>
+<translation id="8798739476508189189">براؤزر کے جھنڈے تلاش کر رہے ہیں؟ ملاحظہ کریں</translation>
 <translation id="8805819170075074995">‏فہرست کا اندراج "<ph name="LANGUAGE_ID" />": اندراج کو نظر انداز کیا گیا کیونکہ یہ SpellcheckLanguage پالیسی میں بھی شامل ہے۔</translation>
 <translation id="8807160976559152894">ہر صفحہ کے بعد تراشیں</translation>
 <translation id="8816395686387277279">‏<ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />، اپنی Chrome کی ترتیبات سے Chrome اپ ڈیٹ کرنے کے لیے ٹیب، پھر اینٹر دبائیں</translation>
@@ -2482,6 +2489,7 @@
 <translation id="9157595877708044936">تشکیل دیا جا رہا ہے…</translation>
 <translation id="9158625974267017556">C6 ‎(Envelope‎)‎</translation>
 <translation id="9164029392738894042">درستگی چیک کریں</translation>
+<translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">سائٹس کو یہ چیک کرنے کی اجازت دیں کہ آیا آپ نے ادائیگی کے طریقوں کو محفوظ کیا ہے</translation>
 <translation id="9169664750068251925">اس سائٹ پر ہمیشہ مسدود کر دیں</translation>
 <translation id="9169931577761441333"><ph name="APP_NAME" /> کو ہوم اسکرین میں شامل کریں</translation>

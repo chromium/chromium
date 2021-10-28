@@ -101,6 +101,9 @@ class Gpu::EstablishRequest
                    scoped_refptr<base::SingleThreadTaskRunner> main_task_runner)
       : parent_(parent), main_task_runner_(main_task_runner) {}
 
+  EstablishRequest(const EstablishRequest&) = delete;
+  EstablishRequest& operator=(const EstablishRequest&) = delete;
+
   const scoped_refptr<gpu::GpuChannelHost>& gpu_channel() {
     return gpu_channel_;
   }
@@ -204,8 +207,6 @@ class Gpu::EstablishRequest
   bool finished_ = false;
 
   scoped_refptr<gpu::GpuChannelHost> gpu_channel_;
-
-  DISALLOW_COPY_AND_ASSIGN(EstablishRequest);
 };
 
 void Gpu::GpuPtrIO::ConnectionError() {

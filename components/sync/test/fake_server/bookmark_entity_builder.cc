@@ -58,7 +58,7 @@ BookmarkEntityBuilder& BookmarkEntityBuilder::SetParentId(
 
 BookmarkEntityBuilder& BookmarkEntityBuilder::SetParentGuid(
     const base::GUID& parent_guid) {
-  DCHECK(parent_guid_.is_valid());
+  DCHECK(parent_guid.is_valid()) << parent_guid.AsLowercaseString();
   parent_guid_ = parent_guid;
   return *this;
 }

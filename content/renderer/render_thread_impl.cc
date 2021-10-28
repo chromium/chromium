@@ -1104,7 +1104,7 @@ media::GpuVideoAcceleratorFactories* RenderThreadImpl::GetGpuFactories() {
           viz::command_buffer_metrics::ContextType::MEDIA, kGpuStreamIdMedia,
           kGpuStreamPriorityMedia);
 
-  const bool enable_video_accelerator =
+  const bool enable_video_decode_accelerator =
 
 #if defined(OS_LINUX)
       base::FeatureList::IsEnabled(media::kVaapiVideoDecodeLinux) &&
@@ -1114,6 +1114,20 @@ media::GpuVideoAcceleratorFactories* RenderThreadImpl::GetGpuFactories() {
       (gpu_channel_host->gpu_feature_info()
            .status_values[gpu::GPU_FEATURE_TYPE_ACCELERATED_VIDEO_DECODE] ==
        gpu::kGpuFeatureStatusEnabled);
+
+  const bool enable_video_encode_accelerator =
+
+#if defined(OS_LINUX)
+      base::FeatureList::IsEnabled(media::kVaapiVideoEncodeLinux) &&
+#else
+      !cmd_line->HasSwitch(switches::kDisableAcceleratedVideoEncode) &&
+#endif  // defined(OS_LINUX)
+      (gpu_channel_host->gpu_feature_info()
+           .status_values[gpu::GPU_FEATURE_TYPE_ACCELERATED_VIDEO_ENCODE] ==
+       gpu::kGpuFeatureStatusEnabled);
+
+  const bool enable_video_accelerator =
+      enable_video_decode_accelerator || enable_video_encode_accelerator;
   const bool enable_gpu_memory_buffers =
       !is_gpu_compositing_disabled_ &&
 #if !defined(OS_ANDROID)

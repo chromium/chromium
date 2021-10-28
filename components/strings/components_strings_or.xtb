@@ -297,6 +297,7 @@
 <translation id="1842969606798536927">ପେମେଣ୍ଟ କରନ୍ତୁ</translation>
 <translation id="1856713167556118146">ଇନକଗ୍ନିଟୋ କଣ କରେ ନାହିଁ</translation>
 <translation id="1863257867908022953">ଟ୍ରେ 12</translation>
+<translation id="1864927262126810325"><ph name="SOURCE_NAME" />ରୁ</translation>
 <translation id="1871208020102129563">ପ୍ରକ୍ସି ନିର୍ଦ୍ଦିଷ୍ଟ କରାଯାଇଥିବା ପ୍ରକ୍ସି ସର୍ଭର୍‌ଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବାକୁ ସେଟ୍ କରାଯାଇଛି, ଏକ .pac ସ୍କ୍ରିପ୍ଟ URLକୁ ନୁହେଁ।</translation>
 <translation id="1871284979644508959">ଆବଶ୍ୟକୀୟ ଫିଲ୍ଡ</translation>
 <translation id="1875025161375567525">ଫଟୋ ଟ୍ରେ</translation>
@@ -955,6 +956,7 @@
 <translation id="4117700440116928470">ନୀତିର କର୍ମପରିସର ସମର୍ଥିତ ନୁହେଁ।</translation>
 <translation id="4121428309786185360">ଏହି ତାରିଖରେ ସମୟ ସୀମା ସମାପ୍ତ ହେବ</translation>
 <translation id="4123572138124678573">ତଳ ପଟରେ ତିନୋଟି ପଞ୍ଚ୍</translation>
+<translation id="4127575959421463246">ChromeOS ଫ୍ଲାଗଗୁଡ଼ିକୁ ଖୋଜୁଛନ୍ତି କି? ଭିଜିଟ କରନ୍ତୁ</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 ଅନ୍ୟ}other{#ଟି ଅନ୍ୟ}}</translation>
 <translation id="4130226655945681476">ନେଟ୍‌ୱର୍କ କେବଲ୍‌, ମୋଡେମ୍‌ ଏବଂ ରାଉଟର୍‌ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="4133224101597112888">"ଏହି ଟାବକୁ ସେୟାର କରନ୍ତୁ" ବଟନ, ଲିଙ୍କ ସେୟାର କରି, ଏକ QR କୋଡ ତିଆରି କରି, କାଷ୍ଟ କରି ଓ ଆହୁରି ଅନେକ ଉପାୟରେ ଏହି ଟାବକୁ ସେୟାର କରିବା ପାଇଁ Enter ଦବାନ୍ତୁ।</translation>
@@ -1122,6 +1124,7 @@
 <translation id="4606870351894164739">ପ୍ରଭାବଶାଳୀ</translation>
 <translation id="4607603470419975064">"Chrome ଟିପ୍ସ ଦେଖନ୍ତୁ" ବଟନ୍, Chromeର ଫିଚରଗୁଡ଼ିକ ବିଷୟରେ ଜାଣିବା ପାଇଁ Enter ଦବାନ୍ତୁ</translation>
 <translation id="4607608436550361748">Chrome ଟିପ୍ସ ଦେଖନ୍ତୁ</translation>
+<translation id="4627675673814409125">ଏହି ନୀତିକୁ Chrome ପ୍ରୋଫାଇଲ ଲେଭେଲରେ ସେଟ କରାଯାଇପାରିବ ନାହିଁ ଏବଂ ଏହାକୁ ଅଣଦେଖା କରାଯିବ।</translation>
 <translation id="4628948037717959914">ଫଟୋ</translation>
 <translation id="4631649115723685955">କ୍ୟାସବ୍ୟାକ୍ ଲିଙ୍କ୍ କରାଯାଇଛି</translation>
 <translation id="4636930964841734540">ସୂଚନା</translation>
@@ -1752,6 +1755,7 @@
 <translation id="674375294223700098">ଅଜଣା ସର୍ଭର୍ ସାର୍ଟିଫିକେଟ୍ ତ୍ରୁଟି।</translation>
 <translation id="6744009308914054259">ଗୋଟିଏ ସଂଯୋଗ ପାଇଁ ଅପେକ୍ଷା କରୁଥିବା ସମୟରେ, ଅଫ୍‌ଲାଇନ୍ ଆର୍ଟିକଲ୍‍ଗୁଡିକୁ ପଢ଼ିବାକୁ ଆପଣ ଡାଉନ୍‌ଲୋଡ୍‌ଗୁଡ଼ିକୁ ଯାଇପାରିବେ।</translation>
 <translation id="6753269504797312559">ନୀତି ମୂଲ୍ୟ</translation>
+<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">ଆପଣଙ୍କର ଡିଭାଇସ୍ ନିଷ୍କ୍ରିୟ ହୋ‍ଇଯାଇଛି।</translation>
 <translation id="6767985426384634228">ଠିକଣା ଅପଡ଼େଟ୍ କରିବେ?</translation>
 <translation id="6768213884286397650">ହାଗାକି (ପୋଷ୍ଟକାର୍ଡ)</translation>
@@ -1839,6 +1843,7 @@
 <translation id="706295145388601875">Chrome ସେଟିଂସରେ ଠିକଣାଗୁଡ଼ିକୁ ଯୋଗ କରି ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="7064851114919012435">ଯୋଗାଯୋଗ ସୂଚନା</translation>
 <translation id="7068733155164172741"><ph name="OTP_LENGTH" />-ଅଙ୍କ ବିଶିଷ୍ଟ କୋଡ ଲେଖନ୍ତୁ</translation>
+<translation id="7070090581017165256">ଏହି ସାଇଟ ବିଷୟରେ</translation>
 <translation id="70705239631109039">ଆପଣଙ୍କର ସଂଯୋଗ ସମ୍ପୂର୍ଣ୍ଣରୂପେ ସୁରକ୍ଷିତ ନୁହେଁ</translation>
 <translation id="7075452647191940183">ଅନୁରୋଧଟି ବହୁତ ଲମ୍ବା ଅଟେ</translation>
 <translation id="7079718277001814089">ଏହି ସାଇଟ୍‌ରେ ମାଲ୍‌ୱେର୍‌ ଅଛି।</translation>
@@ -2083,6 +2088,7 @@
 <translation id="7813600968533626083">Chromeରୁ ଫର୍ମ ସମ୍ବନ୍ଧିତ ପରାମର୍ଶ କାଢ଼ିବେ?</translation>
 <translation id="781440967107097262">କ୍ଲିପବୋର୍ଡ ସେୟାର୍ କରିବେ?</translation>
 <translation id="7815407501681723534">'<ph name="SEARCH_STRING" />' ପାଇଁ <ph name="NUMBER_OF_RESULTS" />ଟି <ph name="SEARCH_RESULTS" /> ମିଳିଲା</translation>
+<translation id="782125616001965242">ଏହି ସାଇଟ ବିଷୟରେ ସୂଚନା ଦେଖାନ୍ତୁ</translation>
 <translation id="782886543891417279">ଆପଣ ବ୍ୟବହାର କରୁଥିବା ୱାଇଫାଇ (<ph name="WIFI_NAME" />) ପାଇଁ, ଆପଣଙ୍କୁ ହୁଏତ ଏହାର ଲଗ୍‌ଇନ୍ ପୃଷ୍ଠାକୁ ଯିବାର ଆବଶ୍ୟକତା ଅଛି।</translation>
 <translation id="7836231406687464395">Postfix (ଏନଭଲପ୍)</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{କିଛିନାହିଁ}=1{1ଟି ଆପ୍ (<ph name="EXAMPLE_APP_1" />)}=2{2ଟି ଆପ୍‌ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{#ଟି ଆପ୍‌ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
@@ -2362,6 +2368,7 @@
 <translation id="8792626944327216835">ମାଇକ୍ରୋଫୋନ୍</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> ଆପଣଙ୍କ ବ୍ରାଉଜରରେ Chrome Enterprise Connectors ଚାଲୁ କରିଛି। ଏହି କନେକ୍ଟରଗୁଡ଼ିକ ପାଖରେ ଆପଣଙ୍କର କିଛି ଡାଟାକୁ ଆକ୍ସେସ୍ ଅଛି।</translation>
 <translation id="8798099450830957504">ଡିଫଲ୍ଟ</translation>
+<translation id="8798739476508189189">ବ୍ରାଉଜର ଫ୍ଲାଗଗୁଡ଼ିକୁ ଖୋଜୁଛନ୍ତି କି? ଭିଜିଟ କରନ୍ତୁ</translation>
 <translation id="8805819170075074995">ତାଲିକା ଏଣ୍ଟ୍ରି "<ph name="LANGUAGE_ID" />": ଏଣ୍ଟ୍ରିକୁ ଅଣଦେଖା କରାଗଲା କାରଣ ଏହାକୁ ମଧ୍ୟ SpellcheckLanguage ନୀତିରେ ସାମିଲ୍ କରାଯାଇଛି।</translation>
 <translation id="8807160976559152894">ପ୍ରତ୍ୟେକ ଡକ୍ୟୁମେଣ୍ଟ ପରେ ଟ୍ରିମ୍ କରନ୍ତୁ</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, ଆପଣଙ୍କ Chrome ସେଟିଂସରୁ Chrome ଅପଡେଟ୍ କରିବାକୁ Tab କରି Enter ଦବାନ୍ତୁ</translation>
@@ -2467,6 +2474,7 @@
 <translation id="9157595877708044936">ସେଟ୍‍‍ଅପ୍ କରାଯାଉଛି...</translation>
 <translation id="9158625974267017556">C6 (ଏନଭଲପ୍)</translation>
 <translation id="9164029392738894042">ସଠିକତା ଯାଞ୍ଚ</translation>
+<translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">ଆପଣଙ୍କର ପେମେଣ୍ଟ ପଦ୍ଧତିଗୁଡ଼ିକ ସେଭ୍ କରାଯାଇଛି କି ନାହିଁ, ତାହା ଯାଞ୍ଚ କରିବାକୁ ସାଇଟ୍‍ଗୁଡ଼ିକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="9169664750068251925">ସର୍ବଦା ଏହି ସାଇଟ୍‌ରେ ବ୍ଲକ୍ କରନ୍ତୁ</translation>
 <translation id="9169931577761441333"><ph name="APP_NAME" />କୁ ମୂଳସ୍କ୍ରିନ୍‌ରେ ଯୋଗ କରନ୍ତୁ</translation>

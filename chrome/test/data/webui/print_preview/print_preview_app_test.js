@@ -5,14 +5,17 @@
 import {CloudPrintInterfaceImpl, Destination, DuplexMode, NativeLayerImpl, PluginProxyImpl, PrintPreviewAppElement} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
-import {CloudPrintInterfaceStub} from 'chrome://test/print_preview/cloud_print_interface_stub.js';
-import {NativeLayerStub} from 'chrome://test/print_preview/native_layer_stub.js';
-import {getCddTemplate, getCloudDestination} from 'chrome://test/print_preview/print_preview_test_utils.js';
-import {TestPluginProxy} from 'chrome://test/print_preview/test_plugin_proxy.js';
+
+import {CloudPrintInterfaceStub} from './cloud_print_interface_stub.js';
 
 // <if expr="chromeos or lacros">
 import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
 // </if>
+
+import {NativeLayerStub} from './native_layer_stub.js';
+import {getCddTemplate, getCloudDestination} from './print_preview_test_utils.js';
+import {TestPluginProxy} from './test_plugin_proxy.js';
+
 
 window.print_preview_app_test = {};
 print_preview_app_test.suiteName = 'PrintPreviewAppTest';

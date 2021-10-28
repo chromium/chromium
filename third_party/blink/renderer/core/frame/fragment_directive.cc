@@ -16,17 +16,6 @@
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
-
-namespace {
-
-constexpr char kFragmentDirectivePrefix[] = ":~:";
-// Subtract 1 because base::size includes the \0 string terminator.
-constexpr size_t kFragmentDirectivePrefixStringLength =
-    base::size(kFragmentDirectivePrefix) - 1;
-
-}  // namespace
 
 namespace blink {
 
@@ -34,30 +23,12 @@ FragmentDirective::FragmentDirective(Document& owner_document)
     : owner_document_(&owner_document) {}
 FragmentDirective::~FragmentDirective() = default;
 
-KURL FragmentDirective::ConsumeFragmentDirective(const KURL& url) {
-  // Strip the fragment directive from the URL fragment. E.g. "#id:~:text=a"
-  // --> "#id". See https://github.com/WICG/scroll-to-text-fragment.
-  String fragment = url.FragmentIdentifier();
-  wtf_size_t start_pos = fragment.Find(kFragmentDirectivePrefix);
+void FragmentDirective::ClearDirectives() {
+  directives_.clear();
+}
 
-  last_navigation_had_fragment_directive_ = start_pos != kNotFound;
-  fragment_directive_string_length_ = 0;
-  if (!last_navigation_had_fragment_directive_)
-    return url;
-
-  KURL new_url = url;
-  String fragment_directive =
-      fragment.Substring(start_pos + kFragmentDirectivePrefixStringLength);
-
-  if (start_pos == 0)
-    new_url.RemoveFragmentIdentifier();
-  else
-    new_url.SetFragmentIdentifier(fragment.Substring(0, start_pos));
-
-  fragment_directive_string_length_ = fragment_directive.length();
-  ParseDirectives(fragment_directive);
-
-  return new_url;
+void FragmentDirective::AddDirective(Directive* directive) {
+  directives_.push_back(directive);
 }
 
 void FragmentDirective::Trace(Visitor* visitor) const {
@@ -161,26 +132,6 @@ ScriptPromise FragmentDirective::createSelectorDirective(
           WrapPersistent(range_in_flat_tree)));
 
   return promise;
-}
-
-void FragmentDirective::ParseDirectives(const String& fragment_directive) {
-  Vector<String> directive_strings;
-  fragment_directive.Split("&", /*allow_empty_entries=*/true,
-                           directive_strings);
-
-  HeapVector<Member<Directive>> new_directives;
-  for (String& directive_string : directive_strings) {
-    if (directive_string.StartsWith("text=")) {
-      String value = directive_string.Right(directive_string.length() - 5);
-      if (value.IsEmpty())
-        continue;
-
-      if (TextDirective* text_directive = TextDirective::Create(value))
-        new_directives.push_back(text_directive);
-    }
-  }
-
-  directives_ = std::move(new_directives);
 }
 
 }  // namespace blink

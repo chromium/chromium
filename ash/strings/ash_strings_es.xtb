@@ -131,6 +131,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1882897271359938046">Proyectando en <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Desbloquear con huella digital</translation>
 <translation id="1888656773939766144">La pantalla <ph name="DISPLAY_NAME" /> no admite <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Se ha modificado la resolución a <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Haz clic en "Confirmar" para mantener los cambios. La configuración anterior se restaurará en <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="1915307458270490472">Colgar</translation>
 <translation id="1919743966458266018">La combinación de teclas para abrir el Administrador de tareas ha cambiado. Utiliza <ph name="NEW_SHORTCUT" /> en lugar de <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Clics automáticos</translation>
 <translation id="1928739107511554905">Para recibir la actualización, usa la pantalla táctil para reiniciar tu Chromebook con el teclado conectado.</translation>
@@ -1130,6 +1131,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="925832987464884575">Ocultar vistas previas</translation>
 <translation id="938963181863597773">¿Qué tengo en el calendario?</translation>
 <translation id="945522503751344254">Enviar comentarios</translation>
+<translation id="951991426597076286">Rechazar</translation>
 <translation id="98515147261107953">Horizontal</translation>
 <translation id="990277280839877440">La ventana <ph name="WINDOW_TITILE" /> se ha cerrado.</translation>
 </translationbundle>

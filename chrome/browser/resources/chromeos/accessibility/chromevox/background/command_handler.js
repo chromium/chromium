@@ -637,11 +637,11 @@ CommandHandler.onCommand = function(command) {
     case 'previousInvalidItem': {
       dir = Dir.BACKWARD;
       rootPred = AutomationPredicate.root;
-      pred = AutomationPredicate.ariaInvalid;
+      pred = AutomationPredicate.isInvalid;
       predErrorMsg = 'no_invalid_item';
     } break;
     case 'nextInvalidItem': {
-      pred = AutomationPredicate.ariaInvalid;
+      pred = AutomationPredicate.isInvalid;
       rootPred = AutomationPredicate.root;
       predErrorMsg = 'no_invalid_item';
     } break;

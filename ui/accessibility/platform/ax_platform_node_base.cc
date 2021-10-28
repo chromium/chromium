@@ -2126,14 +2126,6 @@ std::string AXPlatformNodeBase::GetInvalidValue() const {
     case ax::mojom::InvalidState::kTrue:
       invalid_value = "true";
       break;
-    case ax::mojom::InvalidState::kOther: {
-      if (!target->GetStringAttribute(
-              ax::mojom::StringAttribute::kAriaInvalidValue, &invalid_value)) {
-        // Set the attribute to "true", since we cannot be more specific.
-        invalid_value = "true";
-      }
-      break;
-    }
   }
   return invalid_value;
 }

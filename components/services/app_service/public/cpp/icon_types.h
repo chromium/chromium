@@ -27,9 +27,9 @@ struct COMPONENT_EXPORT(APP_UPDATE) IconKey {
   ~IconKey();
 
   // A timeline value for icons that do not change.
-  constexpr static uint64_t kDoesNotChangeOverTime = 0;
+  static const uint64_t kDoesNotChangeOverTime;
 
-  constexpr static int32_t kInvalidResourceId = 0;
+  static const int32_t kInvalidResourceId;
 
   // A monotonically increasing number so that, after an icon update, a new
   // IconKey, one that is different in terms of field-by-field equality, can be

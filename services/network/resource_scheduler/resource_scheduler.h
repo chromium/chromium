@@ -85,6 +85,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceScheduler {
   };
 
   explicit ResourceScheduler(const base::TickClock* tick_clock = nullptr);
+
+  ResourceScheduler(const ResourceScheduler&) = delete;
+  ResourceScheduler& operator=(const ResourceScheduler&) = delete;
+
   virtual ~ResourceScheduler();
 
   // Requests that this ResourceScheduler schedule, and eventually loads, the
@@ -207,8 +211,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceScheduler {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ResourceScheduler);
 };
 
 }  // namespace network

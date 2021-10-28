@@ -494,7 +494,7 @@ void InlineTextBoxPainter::Paint(const PaintInfo& paint_info,
   }
 
   if (!font.ShouldSkipDrawing())
-    PaintTimingDetector::NotifyTextPaint(visual_rect);
+    PaintTimingDetector::NotifyTextPaint(ToGfxRect(visual_rect));
 }
 
 InlineTextBoxPainter::PaintOffsets

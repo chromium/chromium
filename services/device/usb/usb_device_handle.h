@@ -37,6 +37,9 @@ class UsbDeviceHandle : public base::RefCountedThreadSafe<UsbDeviceHandle> {
       scoped_refptr<base::RefCountedBytes>,
       std::vector<mojom::UsbIsochronousPacketPtr> packets)>;
 
+  UsbDeviceHandle(const UsbDeviceHandle&) = delete;
+  UsbDeviceHandle& operator=(const UsbDeviceHandle&) = delete;
+
   virtual scoped_refptr<UsbDevice> GetDevice() const = 0;
 
   // Notifies UsbDevice to drop the reference of this object; cancels all the
@@ -100,9 +103,6 @@ class UsbDeviceHandle : public base::RefCountedThreadSafe<UsbDeviceHandle> {
 
   UsbDeviceHandle();
   virtual ~UsbDeviceHandle();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UsbDeviceHandle);
 };
 
 }  // namespace device

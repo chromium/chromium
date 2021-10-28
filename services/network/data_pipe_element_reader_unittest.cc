@@ -34,6 +34,10 @@ class PassThroughDataPipeGetter : public mojom::DataPipeGetter {
  public:
   explicit PassThroughDataPipeGetter() = default;
 
+  PassThroughDataPipeGetter(const PassThroughDataPipeGetter&) = delete;
+  PassThroughDataPipeGetter& operator=(const PassThroughDataPipeGetter&) =
+      delete;
+
   mojo::PendingRemote<network::mojom::DataPipeGetter>
   GetDataPipeGetterRemote() {
     EXPECT_FALSE(receiver_.is_bound());
@@ -81,8 +85,6 @@ class PassThroughDataPipeGetter : public mojom::DataPipeGetter {
   mojo::Receiver<network::mojom::DataPipeGetter> receiver_{this};
   mojo::ScopedDataPipeProducerHandle write_pipe_;
   ReadCallback read_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(PassThroughDataPipeGetter);
 };
 
 class DataPipeElementReaderTest : public testing::Test {

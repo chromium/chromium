@@ -29,11 +29,6 @@
 
 [
   {
-    "name": "abusive-notification-permission-revocation",
-    "owners": [ "engedy", "mkwst", "andypaicu", "hkamila", "elklm" ],
-    "expiry_milestone": 93
-  },
-  {
     "name": "accessible-pdf-form",
     "owners": [ "ankk@microsoft.com", "mohitb@microsoft.com" ],
     "expiry_milestone": 100
@@ -574,9 +569,14 @@
     "expiry_milestone": 100
   },
   {
+    "name": "borealis-big-gl",
+    "owners": [ "danielng" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "borealis-disk-management",
     "owners": [ "danielng" ],
-    "expiry_milestone": 96
+    "expiry_milestone": 100
   },
   {
     "name": "button-arc-network-diagnostics",
@@ -4393,7 +4393,12 @@
   {
     "name": "productivity-launcher",
     "owners": [ "cros-system-ui-eng@google.com" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 101
+  },
+  {
+    "name": "productivity-launcher-animation",
+    "owners": [ "jamescook", "tbarzic", "cros-system-ui-eng@google.com" ],
+    "expiry_milestone": 101
   },
   {
     "name":"productivity-reorder-apps",
@@ -4494,11 +4499,6 @@
     "name": "quick-settings-pwa-notifications",
     "owners": [ "yulunwu" ],
     "expiry_milestone": 100
-  },
-  {
-    "name": "quiet-notification-prompts",
-    "owners": [ "engedy", "mkwst", "andypaicu", "hkamila" ],
-    "expiry_milestone": 93
   },
   {
     "name": "raw-audio-capture",

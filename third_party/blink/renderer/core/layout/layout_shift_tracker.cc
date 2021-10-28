@@ -47,9 +47,9 @@ const float kMovementThreshold = 3.0;  // CSS pixels.
 // depending on the writing mode and text direction. Note that the result is
 // still in physical coordinates, just may be of a different corner.
 // See https://wicg.github.io/layout-instability/#starting-point.
-FloatPoint StartingPoint(const PhysicalOffset& paint_offset,
-                         const LayoutBox& box,
-                         const LayoutSize& size) {
+gfx::PointF StartingPoint(const PhysicalOffset& paint_offset,
+                          const LayoutBox& box,
+                          const LayoutSize& size) {
   PhysicalOffset starting_point = paint_offset;
   auto writing_direction = box.StyleRef().GetWritingDirection();
   if (UNLIKELY(writing_direction.IsFlippedBlocks()))
@@ -60,7 +60,7 @@ FloatPoint StartingPoint(const PhysicalOffset& paint_offset,
     else
       starting_point.top += size.Height();
   }
-  return FloatPoint(starting_point);
+  return gfx::PointF(starting_point);
 }
 
 // Returns the part a rect logically below a starting point.
@@ -82,14 +82,14 @@ PhysicalRect RectBelowStartingPoint(const PhysicalRect& rect,
   return result;
 }
 
-float GetMoveDistance(const FloatPoint& old_starting_point,
-                      const FloatPoint& new_starting_point) {
-  FloatSize location_delta = new_starting_point - old_starting_point;
-  return std::max(fabs(location_delta.width()), fabs(location_delta.height()));
+float GetMoveDistance(const gfx::PointF& old_starting_point,
+                      const gfx::PointF& new_starting_point) {
+  gfx::Vector2dF location_delta = new_starting_point - old_starting_point;
+  return std::max(fabs(location_delta.x()), fabs(location_delta.y()));
 }
 
-bool EqualWithinMovementThreshold(const FloatPoint& a,
-                                  const FloatPoint& b,
+bool EqualWithinMovementThreshold(const gfx::PointF& a,
+                                  const gfx::PointF& b,
                                   float threshold_physical_px) {
   return fabs(a.x() - b.x()) < threshold_physical_px &&
          fabs(a.y() - b.y()) < threshold_physical_px;
@@ -101,7 +101,7 @@ bool SmallerThanRegionGranularity(const LayoutRect& rect) {
   return rect.Width() < 0.5 || rect.Height() < 0.5;
 }
 
-void RectToTracedValue(const IntRect& rect,
+void RectToTracedValue(const gfx::Rect& rect,
                        TracedValue& value,
                        const char* key = nullptr) {
   if (key)
@@ -117,12 +117,12 @@ void RectToTracedValue(const IntRect& rect,
 
 void RegionToTracedValue(const LayoutShiftRegion& region, TracedValue& value) {
   Region blink_region;
-  for (IntRect rect : region.GetRects())
-    blink_region.Unite(Region(rect));
+  for (const gfx::Rect& rect : region.GetRects())
+    blink_region.Unite(Region(IntRect(rect)));
 
   value.BeginArray("region_rects");
   for (const IntRect& rect : blink_region.Rects())
-    RectToTracedValue(rect, value);
+    RectToTracedValue(ToGfxRect(rect), value);
   value.EndArray();
 }
 
@@ -231,11 +231,11 @@ void LayoutShiftTracker::ObjectShifted(
     const PropertyTreeStateOrAlias& property_tree_state,
     const PhysicalRect& old_rect,
     const PhysicalRect& new_rect,
-    const FloatPoint& old_starting_point,
-    const FloatSize& translation_delta,
-    const FloatSize& scroll_delta,
-    const FloatSize& scroll_anchor_adjustment,
-    const FloatPoint& new_starting_point) {
+    const gfx::PointF& old_starting_point,
+    const gfx::Vector2dF& translation_delta,
+    const gfx::Vector2dF& scroll_delta,
+    const gfx::Vector2dF& scroll_anchor_adjustment,
+    const gfx::PointF& new_starting_point) {
   // The caller should ensure these conditions.
   DCHECK(!old_rect.IsEmpty());
   DCHECK(!new_rect.IsEmpty());
@@ -269,7 +269,8 @@ void LayoutShiftTracker::ObjectShifted(
     return;
 
   // Check shift of 2d-translation-and-scroll-indifferent starting point.
-  FloatSize translation_and_scroll_delta = scroll_delta + translation_delta;
+  gfx::Vector2dF translation_and_scroll_delta =
+      scroll_delta + translation_delta;
   if (!translation_and_scroll_delta.IsZero() &&
       EqualWithinMovementThreshold(
           old_starting_point + translation_and_scroll_delta, new_starting_point,
@@ -295,9 +296,9 @@ void LayoutShiftTracker::ObjectShifted(
       property_tree_state.Transform(), root_state.Transform());
   // TODO(crbug.com/1187979): Shift by |scroll_delta| to keep backward
   // compatibility in https://crrev.com/c/2754969. See the bug for details.
-  FloatPoint old_starting_point_in_root =
+  gfx::PointF old_starting_point_in_root =
       transform.MapPoint(old_starting_point + scroll_delta);
-  FloatPoint new_starting_point_in_root =
+  gfx::PointF new_starting_point_in_root =
       transform.MapPoint(new_starting_point);
 
   if (EqualWithinMovementThreshold(old_starting_point_in_root,
@@ -305,25 +306,25 @@ void LayoutShiftTracker::ObjectShifted(
                                    threshold_physical_px))
     return;
 
-  FloatRect old_rect_in_root(old_rect);
+  gfx::RectF old_rect_in_root(old_rect);
   // TODO(crbug.com/1187979): Shift by |scroll_delta| to keep backward
   // compatibility in https://crrev.com/c/2754969. See the bug for details.
   old_rect_in_root.Offset(scroll_delta);
   transform.MapRect(old_rect_in_root);
-  FloatRect new_rect_in_root(new_rect);
+  gfx::RectF new_rect_in_root(new_rect);
   transform.MapRect(new_rect_in_root);
 
-  IntRect visible_old_rect =
-      RoundedIntRect(IntersectRects(old_rect_in_root, clip_rect.Rect()));
-  IntRect visible_new_rect =
-      RoundedIntRect(IntersectRects(new_rect_in_root, clip_rect.Rect()));
+  gfx::Rect visible_old_rect = gfx::ToRoundedRect(
+      gfx::IntersectRects(old_rect_in_root, clip_rect.Rect()));
+  gfx::Rect visible_new_rect = gfx::ToRoundedRect(
+      gfx::IntersectRects(new_rect_in_root, clip_rect.Rect()));
   if (visible_old_rect.IsEmpty() && visible_new_rect.IsEmpty())
     return;
 
   // If the object moved from or to out of view, ignore the shift if it's in
   // the inline direction only.
   if (visible_old_rect.IsEmpty() || visible_new_rect.IsEmpty()) {
-    FloatPoint old_inline_direction_indifferent_starting_point_in_root =
+    gfx::PointF old_inline_direction_indifferent_starting_point_in_root =
         old_starting_point_in_root;
     if (object.IsHorizontalWritingMode()) {
       old_inline_direction_indifferent_starting_point_in_root.set_x(
@@ -352,14 +353,16 @@ void LayoutShiftTracker::ObjectShifted(
   if (ShouldLog(frame)) {
     VLOG(1) << "in " << (frame.IsMainFrame() ? "" : "subframe ")
             << frame.GetDocument()->Url() << ", " << object << " moved from "
-            << old_rect_in_root << " to " << new_rect_in_root
-            << " (visible from " << visible_old_rect << " to "
-            << visible_new_rect << ")";
+            << old_rect_in_root.ToString() << " to "
+            << new_rect_in_root.ToString() << " (visible from "
+            << visible_old_rect.ToString() << " to "
+            << visible_new_rect.ToString() << ")";
     if (old_starting_point_in_root != old_rect_in_root.origin() ||
         new_starting_point_in_root != new_rect_in_root.origin() ||
         !translation_delta.IsZero() || !scroll_delta.IsZero()) {
-      VLOG(1) << " (starting point from " << old_starting_point_in_root
-              << " to " << new_starting_point_in_root << ")";
+      VLOG(1) << " (starting point from "
+              << old_starting_point_in_root.ToString() << " to "
+              << new_starting_point_in_root.ToString() << ")";
     }
   }
 
@@ -372,14 +375,6 @@ void LayoutShiftTracker::ObjectShifted(
   }
 }
 
-LayoutShiftTracker::Attribution::Attribution() : node_id(kInvalidDOMNodeId) {}
-LayoutShiftTracker::Attribution::Attribution(DOMNodeId node_id_arg,
-                                             IntRect old_visual_rect_arg,
-                                             IntRect new_visual_rect_arg)
-    : node_id(node_id_arg),
-      old_visual_rect(old_visual_rect_arg),
-      new_visual_rect(new_visual_rect_arg) {}
-
 LayoutShiftTracker::Attribution::operator bool() const {
   return node_id != kInvalidDOMNodeId;
 }
@@ -389,12 +384,13 @@ bool LayoutShiftTracker::Attribution::Encloses(const Attribution& other) const {
          new_visual_rect.Contains(other.new_visual_rect);
 }
 
-int LayoutShiftTracker::Attribution::Area() const {
-  int old_area = old_visual_rect.width() * old_visual_rect.height();
-  int new_area = new_visual_rect.width() * new_visual_rect.height();
+uint64_t LayoutShiftTracker::Attribution::Area() const {
+  uint64_t old_area = old_visual_rect.size().Area64();
+  uint64_t new_area = new_visual_rect.size().Area64();
 
-  IntRect intersection = IntersectRects(old_visual_rect, new_visual_rect);
-  int shared_area = intersection.width() * intersection.height();
+  gfx::Rect intersection =
+      gfx::IntersectRects(old_visual_rect, new_visual_rect);
+  uint64_t shared_area = intersection.size().Area64();
   return old_area + new_area - shared_area;
 }
 
@@ -427,9 +423,9 @@ void LayoutShiftTracker::NotifyBoxPrePaint(
     const PhysicalRect& old_rect,
     const PhysicalRect& new_rect,
     const PhysicalOffset& old_paint_offset,
-    const FloatSize& translation_delta,
-    const FloatSize& scroll_delta,
-    const FloatSize& scroll_anchor_adjustment,
+    const gfx::Vector2dF& translation_delta,
+    const gfx::Vector2dF& scroll_delta,
+    const gfx::Vector2dF& scroll_anchor_adjustment,
     const PhysicalOffset& new_paint_offset) {
   DCHECK(NeedsToTrack(box));
   ObjectShifted(box, property_tree_state, old_rect, new_rect,
@@ -444,9 +440,9 @@ void LayoutShiftTracker::NotifyTextPrePaint(
     const LogicalOffset& old_starting_point,
     const LogicalOffset& new_starting_point,
     const PhysicalOffset& old_paint_offset,
-    const FloatSize& translation_delta,
-    const FloatSize& scroll_delta,
-    const FloatSize& scroll_anchor_adjustment,
+    const gfx::Vector2dF& translation_delta,
+    const gfx::Vector2dF& scroll_delta,
+    const gfx::Vector2dF& scroll_anchor_adjustment,
     const PhysicalOffset& new_paint_offset,
     LayoutUnit logical_height) {
   DCHECK(NeedsToTrack(text));
@@ -475,9 +471,9 @@ void LayoutShiftTracker::NotifyTextPrePaint(
     return;
 
   ObjectShifted(text, property_tree_state, old_rect, new_rect,
-                FloatPoint(old_physical_starting_point), translation_delta,
+                gfx::PointF(old_physical_starting_point), translation_delta,
                 scroll_delta, scroll_anchor_adjustment,
-                FloatPoint(new_physical_starting_point));
+                gfx::PointF(new_physical_starting_point));
 }
 
 double LayoutShiftTracker::SubframeWeightingFactor() const {
@@ -570,8 +566,8 @@ LayoutShift::AttributionList LayoutShiftTracker::CreateAttributionList() const {
       break;
     list.push_back(LayoutShiftAttribution::Create(
         DOMNodeIds::NodeForId(att.node_id),
-        DOMRectReadOnly::FromIntRect(att.old_visual_rect),
-        DOMRectReadOnly::FromIntRect(att.new_visual_rect)));
+        DOMRectReadOnly::FromRect(att.old_visual_rect),
+        DOMRectReadOnly::FromRect(att.new_visual_rect)));
   }
   return list;
 }
@@ -778,7 +774,7 @@ void LayoutShiftTracker::AttributionsToTracedValue(TracedValue& value) const {
 }
 
 void LayoutShiftTracker::SendLayoutShiftRectsToHud(
-    const Vector<IntRect>& int_rects) {
+    const Vector<gfx::Rect>& int_rects) {
   // Store the layout shift rects in the HUD layer.
   auto* cc_layer = frame_view_->RootCcLayer();
   if (cc_layer && cc_layer->layer_tree_host()) {
@@ -787,8 +783,8 @@ void LayoutShiftTracker::SendLayoutShiftRectsToHud(
     if (cc_layer->layer_tree_host()->hud_layer()) {
       WebVector<gfx::Rect> rects;
       Region blink_region;
-      for (IntRect rect : int_rects)
-        blink_region.Unite(Region(rect));
+      for (const gfx::Rect& rect : int_rects)
+        blink_region.Unite(Region(IntRect(rect)));
       for (const IntRect& rect : blink_region.Rects())
         rects.emplace_back(ToGfxRect(rect));
       cc_layer->layer_tree_host()->hud_layer()->SetLayoutShiftRects(

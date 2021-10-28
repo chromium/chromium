@@ -790,6 +790,11 @@
           'shards': 40,
         },
       },
+      'win-backuprefptr-x64-fyi-rel': {
+       'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/win_backuprefptr_fyi.browser_tests.filter',
+        ],
+      },
     },
   },
   'cc_unittests': {

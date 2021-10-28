@@ -23,7 +23,6 @@
 #include "components/infobars/core/infobar_manager.h"
 #include "components/prefs/pref_service.h"
 #import "components/previous_session_info/previous_session_info.h"
-#include "components/signin/ios/browser/features.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"

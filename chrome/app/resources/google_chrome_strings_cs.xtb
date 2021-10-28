@@ -102,6 +102,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="3379938682270551431">{0,plural, =0{Chrome se nyní restartuje}=1{Chrome se za 1 sekundu restartuje}few{Chrome se za # sekundy restartuje}many{Chrome se za # sekundy restartuje}other{Chrome se za # sekund restartuje}}</translation>
 <translation id="3395323229510056640">Pomoc se systémem Chrome OS</translation>
 <translation id="3396977131400919238">Během instalace došlo k chybě operačního systému. Stáhněte prosím Google Chrome ještě jednou.</translation>
+<translation id="3428747202529429621">Zajišťuje vám bezpečí v Chromu a může zvýšit vaši bezpečnost v jiných aplikacích Google, když jste přihlášeni.</translation>
 <translation id="3434246496373299699">Když se přihlásíte k účtu Google, může vám Chrome kontrolovat hesla</translation>
 <translation id="3451115285585441894">Přidává se do prohlížeče Chrome...</translation>
 <translation id="345171907106878721">Přidejte do Chromu svůj účet</translation>
@@ -209,6 +210,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="6291089322031436445">Chrome Dev – aplikace</translation>
 <translation id="6291549208091401781">Prohlížeč Google Chrome je na tomto počítači již nainstalován pro všechny uživatele.</translation>
 <translation id="6368958679917195344">Chrome OS by nemohl existovat bez dalšího <ph name="BEGIN_LINK_CROS_OSS" />softwaru s otevřeným zdrojovým kódem<ph name="END_LINK_CROS_OSS" />.</translation>
+<translation id="6412673304250309937">Kontroluje adresy URL oproti seznamu nebezpečných webů uloženému v Chromu. Pokud se web pokusí odcizit vám heslo nebo když stáhnete škodlivý soubor, může Chrome Bezpečnému prohlížení odeslat také adresy URL, včetně částí obsahu stránky.</translation>
 <translation id="6418662306461808273">Přepnout na stávající profil Chrome?</translation>
 <translation id="6506909944137591434">K vytvoření 3D mapy vašeho okolí potřebuje Chrome přístup k fotoaparátu</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>

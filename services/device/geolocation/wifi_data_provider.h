@@ -19,6 +19,9 @@ class WifiDataProvider : public base::RefCountedThreadSafe<WifiDataProvider> {
  public:
   WifiDataProvider();
 
+  WifiDataProvider(const WifiDataProvider&) = delete;
+  WifiDataProvider& operator=(const WifiDataProvider&) = delete;
+
   // Tells the provider to start looking for data. Callbacks will start
   // receiving notifications after this call.
   virtual void StartDataProvider() = 0;
@@ -68,8 +71,6 @@ class WifiDataProvider : public base::RefCountedThreadSafe<WifiDataProvider> {
   scoped_refptr<base::SingleThreadTaskRunner> client_task_runner_;
 
   CallbackSet callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(WifiDataProvider);
 };
 
 }  // namespace device

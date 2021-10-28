@@ -15,7 +15,7 @@ namespace blink {
 PerformanceElementTiming* PerformanceElementTiming::Create(
     const AtomicString& name,
     const String& url,
-    const FloatRect& intersection_rect,
+    const gfx::RectF& intersection_rect,
     DOMHighResTimeStamp render_time,
     DOMHighResTimeStamp load_time,
     const AtomicString& identifier,
@@ -38,7 +38,7 @@ PerformanceElementTiming::PerformanceElementTiming(
     const AtomicString& name,
     DOMHighResTimeStamp start_time,
     const String& url,
-    const FloatRect& intersection_rect,
+    const gfx::RectF& intersection_rect,
     DOMHighResTimeStamp render_time,
     DOMHighResTimeStamp load_time,
     const AtomicString& identifier,
@@ -48,7 +48,7 @@ PerformanceElementTiming::PerformanceElementTiming(
     Element* element)
     : PerformanceEntry(name, start_time, start_time),
       element_(element),
-      intersection_rect_(DOMRectReadOnly::FromFloatRect(intersection_rect)),
+      intersection_rect_(DOMRectReadOnly::FromRectF(intersection_rect)),
       render_time_(render_time),
       load_time_(load_time),
       identifier_(identifier),

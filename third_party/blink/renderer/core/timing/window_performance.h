@@ -50,8 +50,6 @@
 
 namespace blink {
 
-class IntSize;
-
 class CORE_EXPORT WindowPerformance final : public Performance,
                                             public PerformanceMonitor::Client,
                                             public ExecutionContextClient,
@@ -132,11 +130,11 @@ class CORE_EXPORT WindowPerformance final : public Performance,
 
   void AddElementTiming(const AtomicString& name,
                         const String& url,
-                        const FloatRect& rect,
+                        const gfx::RectF& rect,
                         base::TimeTicks start_time,
                         base::TimeTicks load_time,
                         const AtomicString& identifier,
-                        const IntSize& intrinsic_size,
+                        const gfx::Size& intrinsic_size,
                         const AtomicString& id,
                         Element*);
 
@@ -146,14 +144,12 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   // PageVisibilityObserver
   void PageVisibilityChanged() override;
 
-  void OnLargestContentfulPaintUpdated(
-      base::TimeTicks paint_time,
-      uint64_t paint_size,
-      base::TimeTicks load_time,
-      base::TimeTicks first_animated_frame_time,
-      const AtomicString& id,
-      const String& url,
-      Element*);
+  void OnLargestContentfulPaintUpdated(base::TimeTicks paint_time,
+                                       uint64_t paint_size,
+                                       base::TimeTicks load_time,
+                                       const AtomicString& id,
+                                       const String& url,
+                                       Element*);
 
   void Trace(Visitor*) const override;
 

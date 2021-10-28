@@ -40,3 +40,18 @@ button.text-button.pill:focus {
 .text-button.dark.secondary:hover {
   background: rgba(var(--blue-300-rgb), 0.08);
 }
+
+.icon-button {
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 50%;
+}
+
+button.icon-button:focus {
+  --focus-ring-size: 2px;
+  --focus-ring-style: circle;
+}
+
+button.icon-button.dark:hover {
+  background-color: rgba(var(--blue-300-rgb), 0.08);
+}

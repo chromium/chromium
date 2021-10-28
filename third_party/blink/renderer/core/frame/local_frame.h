@@ -761,7 +761,7 @@ class CORE_EXPORT LocalFrame final : public Frame,
   ukm::UkmRecorder* GetUkmRecorder() override;
   ukm::SourceId GetUkmSourceId() override;
   void UpdateTaskTime(base::TimeDelta time) override;
-  void UpdateActiveSchedulerTrackedFeatures(uint64_t features_mask) override;
+  void UpdateBackForwardCacheDisablingFeatures(uint64_t features_mask) override;
   const base::UnguessableToken& GetAgentClusterId() const override;
 
   // Activates the user activation states of this frame and all its ancestors.

@@ -45,6 +45,10 @@ js_library("peripheral_updates_list_test") {
   deps = [
     "../..:chai_assert",
     "../..:test_util",
+    "//ash/webui/firmware_update_ui/resources:fake_data",
+    "//ash/webui/firmware_update_ui/resources:fake_update_provider",
+    "//ash/webui/firmware_update_ui/resources:firmware_update_types",
+    "//ash/webui/firmware_update_ui/resources:mojo_interface_provider",
     "//ash/webui/firmware_update_ui/resources:peripheral_updates_list",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]

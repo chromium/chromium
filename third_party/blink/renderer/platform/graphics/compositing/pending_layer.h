@@ -132,9 +132,9 @@ class PLATFORM_EXPORT PendingLayer {
   PendingLayer(const PaintChunkSubset&,
                const PaintChunk& first_chunk,
                wtf_size_t first_chunk_index_in_paint_artifact);
-  FloatRect VisualRectForOverlapTesting(
+  gfx::RectF VisualRectForOverlapTesting(
       const PropertyTreeState& ancestor_state) const;
-  FloatRect MapRectKnownToBeOpaque(const PropertyTreeState&) const;
+  gfx::RectF MapRectKnownToBeOpaque(const PropertyTreeState&) const;
   bool MergeInternal(const PendingLayer& guest,
                      const PropertyTreeState& guest_state,
                      bool prefers_lcd_text,

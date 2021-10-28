@@ -83,6 +83,17 @@ source_set("platform") {
     "//ui/display",
   ]
 
+  if (is_fuchsia) {
+    sources += [
+      "fuchsia/accessibility_bridge_fuchsia.h",
+      "fuchsia/fuchsia_types.cc",
+      "fuchsia/fuchsia_types.h",
+    ]
+
+    public_deps +=
+        [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.accessibility.semantics" ]
+  }
+
   if (has_native_accessibility) {
     sources += [
       "ax_platform_text_boundary.cc",
@@ -122,18 +133,6 @@ source_set("platform") {
       libs = [
         "oleacc.lib",
         "uiautomationcore.lib",
-      ]
-    }
-
-    if (is_fuchsia) {
-      sources += [
-        "accessibility_bridge_fuchsia.h",
-        "fuchsia/fuchsia_types.cc",
-        "fuchsia/fuchsia_types.h",
-      ]
-
-      public_deps += [
-        "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.accessibility.semantics",
       ]
     }
 

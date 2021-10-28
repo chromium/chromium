@@ -24,6 +24,16 @@ class LocalFrame;
 class KURL;
 class TextDirective;
 
+constexpr char kFragmentDirectivePrefix[] = ":~:";
+// Subtract 1 because base::size includes the \0 string terminator.
+constexpr size_t kFragmentDirectivePrefixStringLength =
+    base::size(kFragmentDirectivePrefix) - 1;
+
+constexpr char kTextFragmentIdentifierPrefix[] = "text=";
+// Subtract 1 because base::size includes the \0 string terminator.
+constexpr size_t kTextFragmentIdentifierPrefixStringLength =
+    base::size(kTextFragmentIdentifierPrefix) - 1;
+
 class CORE_EXPORT TextFragmentAnchor final : public FragmentAnchor,
                                              public TextFragmentFinder::Client {
  public:
@@ -43,13 +53,14 @@ class CORE_EXPORT TextFragmentAnchor final : public FragmentAnchor,
       WebFrameLoadType load_type,
       mojom::blink::SameDocumentNavigationType same_document_navigation_type);
 
-  static TextFragmentAnchor* TryCreate(const KURL& url,
-                                       LocalFrame& frame,
-                                       bool should_scroll);
+  static TextFragmentAnchor* TryCreateFragmentDirective(const KURL& url,
+                                                        LocalFrame& frame,
+                                                        bool should_scroll);
 
-  TextFragmentAnchor(HeapVector<Member<TextDirective>>& text_directives,
-                     LocalFrame& frame,
-                     bool should_scroll);
+  TextFragmentAnchor(
+      const Vector<TextFragmentSelector>& text_fragment_selectors,
+      LocalFrame& frame,
+      bool should_scroll);
   TextFragmentAnchor(const TextFragmentAnchor&) = delete;
   TextFragmentAnchor& operator=(const TextFragmentAnchor&) = delete;
   ~TextFragmentAnchor() override = default;
@@ -78,10 +89,8 @@ class CORE_EXPORT TextFragmentAnchor final : public FragmentAnchor,
 
   static bool ShouldDismissOnScrollOrClick();
 
-  using DirectiveFinderPair =
-      std::pair<Member<TextDirective>, Member<TextFragmentFinder>>;
-  const HeapVector<DirectiveFinderPair>& DirectiveFinderPairs() const {
-    return directive_finder_pairs_;
+  const HeapVector<Member<TextFragmentFinder>>& TextFragmentFinders() const {
+    return text_fragment_finders_;
   }
 
   bool IsTextFragmentAnchor() override { return true; }
@@ -97,11 +106,8 @@ class CORE_EXPORT TextFragmentAnchor final : public FragmentAnchor,
 
   bool HasSearchEngineSource();
 
-  // This keeps track of each TextDirective and its associated
-  // TextFragmentFinder. The directive is the DOM object exposed to JS that's
-  // parsed from the URL while the finder is the object responsible for
-  // performing the search for the specified text in the Document.
-  HeapVector<DirectiveFinderPair> directive_finder_pairs_;
+  HeapVector<Member<TextFragmentFinder>> text_fragment_finders_;
+  HeapVector<Member<TextDirective>> dom_text_directives_;
 
   Member<LocalFrame> frame_;
 

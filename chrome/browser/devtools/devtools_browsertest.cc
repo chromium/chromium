@@ -2708,6 +2708,22 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   CloseDevToolsWindow();
 }
 
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
+                       ExtensionWebSocketOfflineNetworkConditions) {
+  net::SpawnedTestServer websocket_server(
+      net::SpawnedTestServer::TYPE_WS,
+      base::FilePath(FILE_PATH_LITERAL("net/data/websocket")));
+  websocket_server.set_websocket_basic_auth(false);
+  ASSERT_TRUE(websocket_server.Start());
+  uint16_t websocket_port = websocket_server.host_port_pair().port();
+
+  LoadExtension("web_request");
+  OpenDevToolsWindow(kEmptyTestPage, /* is_docked */ false);
+  DispatchOnTestSuite(window_, "testExtensionWebSocketOfflineNetworkConditions",
+                      base::NumberToString(websocket_port).c_str());
+  CloseDevToolsWindow();
+}
+
 namespace {
 
 class DevToolsLocalizationTest : public DevToolsTest {

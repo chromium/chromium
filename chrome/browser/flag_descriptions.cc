@@ -463,6 +463,9 @@ const char kBiometricReauthForPasswordFillingDescription[] =
     "Enables biometric"
     "re-authentication before password filling";
 
+const char kBorealisBigGlName[] = "Borealis Big GL";
+const char kBorealisBigGlDescription[] = "Enable Big GL when running Borealis.";
+
 const char kBorealisDiskManagementName[] = "Borealis Disk management";
 const char kBorealisDiskManagementDescription[] =
     "Enable experimental disk management settings.";
@@ -2106,13 +2109,6 @@ const char kQuickActionSearchWidgetAndroidDinoVariantName[] =
 const char kQuickActionSearchWidgetAndroidDinoVariantDescription[] =
     "When enabled, the Dino widget will be available to add to the homescreen";
 
-const char kQuietNotificationPromptsName[] =
-    "Quieter notification permission prompts";
-const char kQuietNotificationPromptsDescription[] =
-    "Enables quieter permission prompts for notification permission requests. "
-    "When a site wishes to show notifications, the usual modal dialog is "
-    "replaced with a quieter version.";
-
 const char kSettingsAppNotificationSettingsName[] =
     "Split notification permission settings";
 const char kSettingsAppNotificationSettingsDescription[] =
@@ -2120,15 +2116,6 @@ const char kSettingsAppNotificationSettingsDescription[] =
     "menu. Notification permission settings will be split between the "
     "lacros-chrome browser's notification permission page "
     "and the ChromeOS settings app.";
-
-const char kAbusiveNotificationPermissionRevocationName[] =
-    "Abusive notification permission revocation";
-const char kAbusiveNotificationPermissionRevocationDescription[] =
-    "Enables notification permission revocation for abusive origins. "
-    "Prior to dispatching a push message to the service worker, the origin is "
-    "verified through Safe Browsing. Origins with abusive notification "
-    "permission requests or content will have the notification permission "
-    "revoked.";
 
 const char kReadLaterNewBadgePromoName[] = "Reading list 'New' badge promo";
 const char kReadLaterNewBadgePromoDescription[] =
@@ -4896,6 +4883,10 @@ const char kProductivityLauncherName[] =
 const char kProductivityLauncherDescription[] =
     "To evaluate an enhanced Launcher experience that aims to improve app "
     "workflows by optimizing access to apps, app content, and app actions.";
+
+const char kProductivityLauncherAnimationName[] = "App Launcher: Animation";
+const char kProductivityLauncherAnimationDescription[] =
+    "Enables new animation in the enhanced app launcher.";
 
 const char kForceShowContinueSectionName[] =
     "App Launcher: Force Continue Section Suggestions";

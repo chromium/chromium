@@ -16,7 +16,7 @@
 #include "content/public/browser/web_ui.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -61,7 +61,7 @@ std::string ProjectorErrorToString(ProjectorError mode) {
 ProjectorMessageHandler::ProjectorMessageHandler()
     : content::WebUIMessageHandler(),
       xhr_sender_(std::make_unique<ProjectorXhrSender>(
-          chromeos::ProjectorAppClient::Get()->GetUrlLoaderFactory())) {
+          ProjectorAppClient::Get()->GetUrlLoaderFactory())) {
   ProjectorAppClient::Get()->AddObserver(this);
 }
 
@@ -140,7 +140,7 @@ void ProjectorMessageHandler::GetAccounts(base::Value::ConstListView args) {
 
   // Check that there is only one argument which is the callback id.
   DCHECK_EQ(args.size(), 1u);
-  auto* controller = ash::ProjectorController::Get();
+  auto* controller = ProjectorController::Get();
   DCHECK(controller);
 
   const std::vector<AccountInfo> accounts = oauth_token_fetcher_.GetAccounts();
@@ -170,8 +170,7 @@ void ProjectorMessageHandler::CanStartProjectorSession(
   DCHECK_EQ(args.size(), 1u);
 
   ResolveJavascriptCallback(
-      args[0],
-      base::Value(ash::ProjectorController::Get()->CanStartNewSession()));
+      args[0], base::Value(ProjectorController::Get()->CanStartNewSession()));
 }
 
 void ProjectorMessageHandler::StartProjectorSession(
@@ -192,7 +191,7 @@ void ProjectorMessageHandler::StartProjectorSession(
 
   // TODO(b/195113693): Start the projector session with the selected account
   // and folder.
-  auto* controller = ash::ProjectorController::Get();
+  auto* controller = ProjectorController::Get();
   if (!controller->CanStartNewSession()) {
     ResolveJavascriptCallback(args[0], base::Value(false));
     return;
@@ -318,4 +317,4 @@ void ProjectorMessageHandler::OnXhrRequestCompleted(
   ResolveJavascriptCallback(base::Value(js_callback_id), std::move(response));
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -220,11 +220,10 @@ void WebApps::OpenNativeSettings(const std::string& app_id) {
 
 void WebApps::PublishWebApps(std::vector<apps::mojom::AppPtr> apps) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  const WebApp* web_app =
-      GetWebApp(chromeos::kChromeUITrustedProjectorSwaAppId);
+  const WebApp* web_app = GetWebApp(ash::kChromeUITrustedProjectorSwaAppId);
   if (web_app) {
-    AddDefaultPreferredApp(chromeos::kChromeUITrustedProjectorSwaAppId,
-                           GURL(chromeos::kChromeUIUntrustedProjectorPwaUrl),
+    AddDefaultPreferredApp(ash::kChromeUITrustedProjectorSwaAppId,
+                           GURL(ash::kChromeUIUntrustedProjectorPwaUrl),
                            app_service_);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -246,13 +245,13 @@ void WebApps::PublishWebApps(std::vector<apps::mojom::AppPtr> apps) {
 
 void WebApps::PublishWebApp(apps::mojom::AppPtr app) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (app->app_id == chromeos::kChromeUITrustedProjectorSwaAppId) {
+  if (app->app_id == ash::kChromeUITrustedProjectorSwaAppId) {
     // After OOBE, PublishWebApps() above could execute before the intent filter
     // has been registered. Since we need to call AddDefaultPreferredApp() after
     // the intent filter has been registered, we need this call for the OOBE
     // case.
-    AddDefaultPreferredApp(chromeos::kChromeUITrustedProjectorSwaAppId,
-                           GURL(chromeos::kChromeUIUntrustedProjectorPwaUrl),
+    AddDefaultPreferredApp(ash::kChromeUITrustedProjectorSwaAppId,
+                           GURL(ash::kChromeUIUntrustedProjectorPwaUrl),
                            app_service_);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

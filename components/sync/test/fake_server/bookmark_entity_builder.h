@@ -130,9 +130,8 @@ class BookmarkEntityBuilder {
   gfx::Image favicon_;
   GURL icon_url_;
 
-  // TODO(crbug.com/1063350): update to kHierarchyFieldsInSpecifics.
   BookmarkGeneration bookmark_generation_ =
-      BookmarkGeneration::kValidGuidAndFullTitle;
+      BookmarkGeneration::kHierarchyFieldsInSpecifics;
 };
 
 }  // namespace fake_server

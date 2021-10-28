@@ -301,6 +301,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1842969606798536927">Plati</translation>
 <translation id="1856713167556118146">Šta režim bez arhiviranja ne radi</translation>
 <translation id="1863257867908022953">12. fioka</translation>
+<translation id="1864927262126810325">Izvor: <ph name="SOURCE_NAME" /></translation>
 <translation id="1871208020102129563">Proksi je podešen da koristi fiksne proksi servere, a ne URL adresu .pac skripte.</translation>
 <translation id="1871284979644508959">Obavezno polje</translation>
 <translation id="1875025161375567525">Fioka za slike</translation>
@@ -963,6 +964,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4117700440116928470">Opseg smernica nije podržan.</translation>
 <translation id="4121428309786185360">Ističe</translation>
 <translation id="4123572138124678573">Trostruko bušenje na dnu</translation>
+<translation id="4127575959421463246">Tražite Chrome OS oznake? Poseti</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{još 1}one{još #}few{još #}other{još #}}</translation>
 <translation id="4130226655945681476">da proverite mrežne kablove, modem i ruter</translation>
 <translation id="4133224101597112888">Dugme Deli ovu karticu, pritisnite Enter da biste delili ovu karticu deljenjem linka, pravljenjem QR koda, prebacivanjem i na druge načine.</translation>
@@ -1134,6 +1136,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4606870351894164739">Upečatljivo</translation>
 <translation id="4607603470419975064">Dugme Pogledajte Chrome savete, pritisnite Enter da biste saznali više o Chrome funkcijama</translation>
 <translation id="4607608436550361748">Prikaži Chrome savete</translation>
+<translation id="4627675673814409125">Ove smernice ne mogu da se podese na nivou Chrome profila i biće zanemarene.</translation>
 <translation id="4628948037717959914">Slika</translation>
 <translation id="4631649115723685955">Povezan je povraćaj gotovine</translation>
 <translation id="4636930964841734540">Informacije</translation>
@@ -1764,6 +1767,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="674375294223700098">Nepoznata greška sertifikata servera.</translation>
 <translation id="6744009308914054259">Dok čekate na vezu, posetite Preuzimanja i čitajte oflajn članke.</translation>
 <translation id="6753269504797312559">Vrednost smernica</translation>
+<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Uređaj je prešao u režim spavanja.</translation>
 <translation id="6767985426384634228">Želite da ažurirate adresu?</translation>
 <translation id="6768213884286397650">Hagaki (razglednica)</translation>
@@ -1851,6 +1855,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="706295145388601875">Dodajte adrese i upravljajte njima u podešavanjima Chrome-a</translation>
 <translation id="7064851114919012435">Kontakt informacije</translation>
 <translation id="7068733155164172741">Unesite <ph name="OTP_LENGTH" />-cifreni kôd</translation>
+<translation id="7070090581017165256">O ovom sajtu</translation>
 <translation id="70705239631109039">Veza nije potpuno bezbedna</translation>
 <translation id="7075452647191940183">Zahtev je prevelik</translation>
 <translation id="7079718277001814089">Ovaj sajt sadrži malver</translation>
@@ -2095,6 +2100,7 @@ Dodatni detalji:
 <translation id="7813600968533626083">Želite li da uklonite predlog iz Chrome-a?</translation>
 <translation id="781440967107097262">Dozvolićete deljenje privremene memorije?</translation>
 <translation id="7815407501681723534">Pronašli smo <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> za „<ph name="SEARCH_STRING" />“</translation>
+<translation id="782125616001965242">Prikazuje informacije o ovom sajtu</translation>
 <translation id="782886543891417279">WiFi mreža koju koristite (<ph name="WIFI_NAME" />) će možda zahtevati da posetite stranicu za prijavljivanje.</translation>
 <translation id="7836231406687464395">Postfix (koverat)</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Nijedna}=1{1 aplikacija (<ph name="EXAMPLE_APP_1" />)}=2{2 aplikacije (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# aplikacija (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}few{# aplikacije (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# aplikacija (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
@@ -2375,6 +2381,7 @@ Dodatni detalji:
 <translation id="8792626944327216835">mikrofon</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> je uključio Chrome Enterprise Connectors u pregledaču. Ovi priključci imaju pristup nekim vašim podacima.</translation>
 <translation id="8798099450830957504">Podrazumevano</translation>
+<translation id="8798739476508189189">Tražite oznake pregledača? Poseti</translation>
 <translation id="8805819170075074995">Unos na listi „<ph name="LANGUAGE_ID" />“: Unos se zanemaruje jer je obuhvaćen i smernicama SpellcheckLanguage.</translation>
 <translation id="8807160976559152894">Skraćivanje posle svake stranice</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, pa Enter da biste ažurirali Chrome iz podešavanja Chrome-a</translation>
@@ -2480,6 +2487,7 @@ Dodatni detalji:
 <translation id="9157595877708044936">Podešavanje...</translation>
 <translation id="9158625974267017556">C6 (koverat)</translation>
 <translation id="9164029392738894042">Provera tačnosti</translation>
+<translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">Dozvoli sajtovima da proveravaju da li imam sačuvane načine plaćanja</translation>
 <translation id="9169664750068251925">Uvek blokiraj na ovom sajtu</translation>
 <translation id="9169931577761441333">Dodajte <ph name="APP_NAME" /> na početni ekran</translation>

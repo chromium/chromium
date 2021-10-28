@@ -195,6 +195,7 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
 
  private:
   friend class AppRegistryCacheTest;
+  friend class PublisherTest;
 
   void DoOnApps(std::vector<apps::mojom::AppPtr> deltas);
   void DoOnApps(std::vector<std::unique_ptr<App>> deltas);

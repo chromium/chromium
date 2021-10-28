@@ -81,6 +81,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
 
@@ -1611,12 +1612,14 @@ IntRect CompositedLayerMapping::RecomputeInterestRect(
   auto root_view_state = root_view->FirstFragment().LocalBorderBoxProperties();
 
   // 1. Move into local transform space.
-  mapping_rect.MoveBy(FloatPoint(graphics_layer->GetOffsetFromTransformNode()));
+  mapping_rect.Move(gfx::Vector2dF(
+      ToGfxVector2d(graphics_layer->GetOffsetFromTransformNode())));
   // 2. Map into visible space of the root LayoutView.
   GeometryMapper::LocalToAncestorVisualRect(source_state, root_view_state,
                                             mapping_rect);
 
-  FloatRect visible_content_rect(EnclosingIntRect(mapping_rect.Rect()));
+  FloatRect visible_content_rect(
+      gfx::RectF(gfx::ToEnclosingRect(mapping_rect.Rect())));
 
   FloatRect local_interest_rect;
   // If the visible content rect is empty, then it makes no sense to map it

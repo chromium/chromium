@@ -131,6 +131,7 @@
 <translation id="1882897271359938046">Выконваецца адлюстраванне на дысплэй <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Разблакіроўка па адбітку пальца</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> не падтрымлівае раздзяляльнасць <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Гц). Зададзена раздзяляльнасць <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Каб захаваць змяненні, націсніце "Пацвердзіць". Папярэднія налады будуць адноўлены праз <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="1915307458270490472">Закрыць</translation>
 <translation id="1919743966458266018">Спалучэнне клавіш для адкрыцця менеджара заданняў змянілася. Замест <ph name="OLD_SHORTCUT" /> выкарыстоўвайце <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Аўтаматычныя націсканні</translation>
 <translation id="1928739107511554905">Для абнаўлення падключыце клавіятуру і перазапусціце Chromebook, выкарыстоўваючы сэнсарны экран.</translation>
@@ -1129,6 +1130,7 @@
 <translation id="925832987464884575">Выключыць перадпрагляд</translation>
 <translation id="938963181863597773">Што ў маім календары?</translation>
 <translation id="945522503751344254">Адправіць водгук</translation>
+<translation id="951991426597076286">Адхіліць</translation>
 <translation id="98515147261107953">Альбомная</translation>
 <translation id="990277280839877440">Акно <ph name="WINDOW_TITILE" /> закрыта.</translation>
 </translationbundle>

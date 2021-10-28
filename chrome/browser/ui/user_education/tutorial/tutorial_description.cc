@@ -13,18 +13,22 @@ TutorialDescription::~TutorialDescription() = default;
 TutorialDescription::TutorialDescription(
     const TutorialDescription& description) = default;
 
-TutorialDescription::Step::Step() = default;
+TutorialDescription::Step::Step()
+    : step_type(ui::InteractionSequence::StepType::kShown),
+      arrow(TutorialDescription::Step::Arrow::NONE) {}
 TutorialDescription::Step::~Step() = default;
 TutorialDescription::Step::Step(absl::optional<std::u16string> title_text_,
                                 absl::optional<std::u16string> body_text_,
                                 ui::InteractionSequence::StepType step_type_,
                                 ui::ElementIdentifier element_id_,
-                                Arrow arrow_)
+                                Arrow arrow_,
+                                absl::optional<bool> must_remain_visible_)
     : title_text(title_text_),
       body_text(body_text_),
       step_type(step_type_),
       element_id(element_id_),
-      arrow(arrow_) {}
+      arrow(arrow_),
+      must_remain_visible(must_remain_visible_) {}
 TutorialDescription::Step::Step(const TutorialDescription::Step& description) =
     default;
 

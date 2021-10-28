@@ -617,10 +617,10 @@ void DidDrawImage(
     const Image& image,
     const StyleImage& style_image,
     const PropertyTreeStateOrAlias& current_paint_chunk_properties,
-    const FloatRect& image_rect) {
+    const gfx::RectF& image_rect) {
   if (!node || !style_image.IsImageResource())
     return;
-  const IntRect enclosing_rect = EnclosingIntRect(image_rect);
+  const gfx::Rect enclosing_rect = gfx::ToEnclosingRect(image_rect);
   PaintTimingDetector::NotifyBackgroundImagePaint(
       *node, image, To<StyleFetchedImage>(style_image),
       current_paint_chunk_properties, enclosing_rect);
@@ -741,7 +741,7 @@ inline bool PaintFastBottomLayer(const Document* document,
 
   DidDrawImage(node, *image, *info.image,
                context.GetPaintController().CurrentPaintChunkProperties(),
-               image_border.Rect());
+               ToGfxRectF(image_border.Rect()));
   return true;
 }
 
@@ -872,7 +872,7 @@ void PaintFillLayerBackground(const Document* document,
         info.respect_image_orientation);
     DidDrawImage(node, *image, *info.image,
                  context.GetPaintController().CurrentPaintChunkProperties(),
-                 FloatRect(geometry.SnappedDestRect()));
+                 ToGfxRectF(FloatRect(geometry.SnappedDestRect())));
   }
 }
 

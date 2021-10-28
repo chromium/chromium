@@ -516,8 +516,7 @@
   // Lists the values that `invalidState` can take on.
   enum InvalidState {
     false,
-    true,
-    other
+    true
   };
 
   // Describes possible actions when performing a do default action.

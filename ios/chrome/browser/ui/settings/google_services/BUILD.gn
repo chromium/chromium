@@ -148,7 +148,6 @@ source_set("eg2_tests") {
     "//components/policy/core/common:common_constants",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
-    "//components/signin/ios/browser:features",
     "//components/signin/public/base",
     "//components/strings",
     "//ios/chrome/app/strings",

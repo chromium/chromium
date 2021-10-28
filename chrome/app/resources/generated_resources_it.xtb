@@ -123,6 +123,7 @@
 <translation id="1122068467107743258">Lavoro</translation>
 <translation id="1122198203221319518">S&amp;trumenti</translation>
 <translation id="1122242684574577509">Autenticazione non riuscita. Fai clic per visitare la pagina di accesso della rete Wi-Fi in uso (<ph name="NETWORK_ID" />).</translation>
+<translation id="1122913801042512795">I dati di accesso del tuo account sono obsoleti. Esci ed esegui nuovamente l'accesso.</translation>
 <translation id="1122960773616686544">Aggiungi il nome ai segnalibri</translation>
 <translation id="1124772482545689468">Utente</translation>
 <translation id="1125550662859510761">Risoluzione di <ph name="WIDTH" /> x <ph name="HEIGHT" /> (nativa)</translation>
@@ -1301,7 +1302,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2312219318583366810">URL della pagina</translation>
 <translation id="2314165183524574721">L'attuale impostazione di visibilità è Nascosto</translation>
 <translation id="2314774579020744484">Lingua usata per la traduzione delle pagine</translation>
-<translation id="2315414688463285945">Errore durante la configurazione dei file Linux. Riprova.</translation>
 <translation id="2315587498123194634">Invia link a <ph name="DEVICE_NAME" /></translation>
 <translation id="2316129865977710310">No, grazie</translation>
 <translation id="2317842250900878657">Percentuale di completamento: <ph name="PROGRESS_PERCENT" />%</translation>
@@ -2074,6 +2074,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="310671807099593501">Il sito sta usando il Bluetooth</translation>
 <translation id="3108931485517391283">Impossibile ricevere</translation>
 <translation id="3109724472072898302">Compresso</translation>
+<translation id="311214366526552035">Scarica comunque</translation>
 <translation id="311394601889664316">Non consentire ai siti di modificare file o cartelle sul dispositivo</translation>
 <translation id="3115147772012638511">In attesa di elaborazione cache...</translation>
 <translation id="3115580024857770654">Comprimi tutto</translation>
@@ -2350,11 +2351,11 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="3424969259347320884">Descrivi cosa stavi facendo quando la scheda si è arrestata in modo anomalo</translation>
 <translation id="3427092606871434483">Consenti (predefinita)</translation>
 <translation id="3428419049384081277">Hai eseguito l'accesso.</translation>
-<translation id="3428747202529429621">Ti protegge su Chrome e potrebbe essere utilizzata per migliorare la sicurezza su altre app Google se esegui l'accesso</translation>
 <translation id="3429086384982427336">Le app elencate di seguito non gestiranno mai link protocollo.</translation>
 <translation id="3429160811076349561">Le funzionalità di prova non sono attive</translation>
 <translation id="3429271624041785769">Lingue contenuti web</translation>
 <translation id="3429275422858276529">Aggiungi questa pagina ai preferiti per trovarla facilmente in seguito</translation>
+<translation id="343115368966109153">Vuoi scaricare <ph name="FILE_NAME" />? Tutte le persone che usano il dispositivo potranno vedere il file.</translation>
 <translation id="3432227430032737297">Rimuovi tutti i cookie visualizzati</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433621910545056227">Spiacenti. Il sistema non è riuscito a stabilire il blocco degli attributi del tempo di installazione del dispositivo.</translation>
@@ -2696,6 +2697,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="3777806571986431400">Estensione attivata</translation>
 <translation id="3778152852029592020">Il download è stato annullato.</translation>
 <translation id="3778208826288864398">Il token di sicurezza è stato bloccato perché è stato inserito troppe volte il PIN errato. Dovrai reimpostare il token di sicurezza.</translation>
+<translation id="3778369586810509692">Questo file verrà memorizzato sul dispositivo e potranno vederlo tutti.</translation>
 <translation id="3778740492972734840">&amp;Strumenti per sviluppatori</translation>
 <translation id="3778868487658107119">Chiedigli tutto quello che vuoi e fatti aiutare nelle tue attività. Google è personalizzato per te ed è sempre al tuo fianco.</translation>
 <translation id="3781742599892759500">Accesso al microfono su Linux</translation>
@@ -5114,7 +5116,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6410328738210026208">Cambia canale ed esegui Powerwash</translation>
 <translation id="6410390304316730527">La Navigazione sicura ti protegge da utenti malintenzionati che potrebbero indurti con l'inganno a effettuare operazioni pericolose, come installare software dannosi o rivelare informazioni personali (ad esempio password, numeri di telefono o carte di credito). Se la disattivi, fai attenzione quando navighi in siti sconosciuti o sospetti.</translation>
 <translation id="6410668567036790476">Aggiungi motore di ricerca</translation>
-<translation id="6412673304250309937">Verifica gli URL con un elenco di siti non sicuri archiviati in Chrome. Se un sito cerca di rubare la tua password o se scarichi un file dannoso, Chrome potrebbe inviare anche gli URL, inclusi bit e contenuti di pagina, a Navigazione sicura.</translation>
 <translation id="641469293210305670">Installa aggiornamenti e app</translation>
 <translation id="6414878884710400018">Apri le Preferenze di sistema</translation>
 <translation id="6414888972213066896">Hai chiesto ai tuoi genitori l'autorizzazione per visitare questo sito</translation>
@@ -5523,7 +5524,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6843264316370513305">Debug rete</translation>
 <translation id="6843423766595476978">Ok Google impostato</translation>
 <translation id="6845038076637626672">Apri ingrandita</translation>
-<translation id="6845325883481699275">Contribuisci a migliorare la sicurezza di Chrome</translation>
 <translation id="6846178040388691741">L'estensione "<ph name="EXTENSION_NAME" />" vuole stampare il file <ph name="FILE_NAME" /> con la stampante <ph name="PRINTER_NAME" />.</translation>
 <translation id="6847125920277401289">Libera spazio per continuare</translation>
 <translation id="6848388270925200958">Al momento hai delle carte che possono essere utilizzate solo da questo dispositivo.</translation>
@@ -6976,7 +6976,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8324784016256120271">I siti possono utilizzare i cookie per conoscere la tua attività di navigazione su siti diversi, ad esempio per personalizzare gli annunci</translation>
 <translation id="8325413836429495820">Non possono accedere agli appunti</translation>
 <translation id="8326478304147373412">PKCS #7, catena di certificati</translation>
-<translation id="8327039559959785305">Errore durante il montaggio di file Linux. Riprova.</translation>
 <translation id="8327676037044516220">Autorizzazioni e impostazioni contenuti</translation>
 <translation id="833256022891467078">Cartelle condivise di Crostini</translation>
 <translation id="8335587457941836791">Stacca dalla barra delle app</translation>
@@ -7498,6 +7497,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8879284080359814990">Mostra come &amp;scheda</translation>
 <translation id="8879921471468674457">Memorizza dati di accesso</translation>
 <translation id="8880054210564666174">Impossibile scaricare l'elenco contatti. Controlla la connessione di rete o <ph name="LINK_BEGIN" />riprova<ph name="LINK_END" />.</translation>
+<translation id="8880344290593529089">Apri le Impostazioni per collegare <ph name="USB_DEVICE_NAME" /> a Linux o Parallels Desktop</translation>
 <translation id="8881020143150461183">Riprova. Per assistenza tecnica, contatta <ph name="CARRIER_NAME" />.</translation>
 <translation id="8883273463630735858">Attiva accelerazione del touchpad</translation>
 <translation id="8884570509232205463">Il tuo dispositivo ora si bloccherà alle ore <ph name="UNLOCK_TIME" />.</translation>

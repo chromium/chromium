@@ -67,7 +67,7 @@ class CONTENT_EXPORT PrerenderHostRegistry {
   // Creates and starts a host. Returns the root frame tree node id of the
   // prerendered page, which can be used as the id of the host.
   int CreateAndStartHost(const PrerenderAttributes& attributes,
-                         RenderFrameHostImpl& initiator_render_frame_host);
+                         WebContents* web_contents);
 
   // Cancels the host registered for `frame_tree_node_id`. The host is
   // immediately removed from the map of non-reserved or reserved hosts but

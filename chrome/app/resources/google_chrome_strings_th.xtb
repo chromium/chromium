@@ -47,6 +47,7 @@
 <translation id="2121284319307530122">เปิดอีกครั้งเพื่ออัปเดต Chrome</translation>
 <translation id="2123055963409958220">ช่วยให้ Chrome ดียิ่งขึ้นด้วยการรายงาน<ph name="BEGIN_LINK" />การตั้งค่าปัจจุบัน<ph name="END_LINK" /></translation>
 <translation id="2151406531797534936">โปรดรีสตาร์ท Chrome ตอนนี้เลย</translation>
+<translation id="2189289170880510015">ปรับแต่งตัวเลือกด้านความเป็นส่วนตัวที่สำคัญที่สุดส่วนหนึ่งของ Chrome</translation>
 <translation id="2290014774651636340">คีย์ API ของ Google หายไป การทำงานบางอย่างของ Google Chrome จะถูกปิดใช้งาน</translation>
 <translation id="2290095356545025170">คุณแน่ใจหรือไม่ว่าต้องการยกเลิกการติดตั้ง Google Chrome</translation>
 <translation id="2309047409763057870">นี่เป็นการติดตั้ง Google Chrome แบบสำรอง และไม่สามารถใช้เป็นเบราว์เซอร์เริ่มต้นของคุณ</translation>
@@ -96,6 +97,7 @@
 <translation id="3379938682270551431">{0,plural, =0{Chrome จะเปิดขึ้นมาใหม่ตอนนี้}=1{Chrome จะเปิดขึ้นมาใหม่ใน 1 วินาที}other{Chrome จะเปิดขึ้นมาใหม่ใน # วินาที}}</translation>
 <translation id="3395323229510056640">รับความช่วยเหลือเกี่ยวกับ Chrome OS</translation>
 <translation id="3396977131400919238">มีข้อผิดพลาดของระบบปฏิบัติการเกิดขึ้นในระหว่างการติดตั้ง โปรดดาวน์โหลด Google Chrome อีกครั้ง</translation>
+<translation id="3428747202529429621">รักษาความปลอดภัยของคุณใน Chrome และอาจใช้เพื่อปรับปรุงความปลอดภัยในแอปอื่นๆ ของ Google เมื่อลงชื่อเข้าใช้</translation>
 <translation id="3434246496373299699">Chrome จะตรวจสอบรหัสผ่านได้เมื่อคุณลงชื่อเข้าใช้ด้วยบัญชี Google</translation>
 <translation id="3451115285585441894">กำลังเพิ่มลงใน Chrome...</translation>
 <translation id="345171907106878721">เพิ่มตัวคุณเองใน Chrome</translation>
@@ -108,6 +110,7 @@
 <translation id="3596080736082218006">{COUNT,plural, =0{ผู้ดูแลระบบต้องการให้คุณเปิด Chrome ขึ้นมาใหม่เพื่อใช้การอัปเดต}=1{ผู้ดูแลระบบต้องการให้คุณเปิด Chrome ขึ้นมาใหม่เพื่อใช้การอัปเดต หน้าต่างที่ไม่ระบุตัวตนจะไม่เปิดให้อีก}other{ผู้ดูแลระบบต้องการให้คุณเปิด Chrome ขึ้นมาใหม่เพื่อใช้การอัปเดต หน้าต่างที่ไม่ระบุตัวตนจำนวน # หน้าต่างจะไม่เปิดให้อีก}}</translation>
 <translation id="3622797965165704966">ตอนนี้การใช้ Chrome กับบัญชี Google ของคุณและบนคอมพิวเตอร์ที่ใช้ร่วมกันทำได้ง่ายกว่าเดิม</translation>
 <translation id="3673813398384385993">Chrome พบว่า "<ph name="EXTENSION_NAME" />" มีมัลแวร์</translation>
+<translation id="3678552270983184277">การตั้งค่าเริ่มต้นใช้ได้ดีสำหรับคนส่วนใหญ่ แต่คุณสามารถปรับแต่งการตั้งค่าให้เหมาะกับวิธีที่คุณใช้ Chrome</translation>
 <translation id="3718181793972440140">การดำเนินการนี้จะลบ 1 รายการออกจากอุปกรณ์นี้ หากต้องการดึงข้อมูลภายหลัง ให้ลงชื่อเข้าใช้ Chrome ด้วย <ph name="USER_EMAIL" /></translation>
 <translation id="3735758079232443276">ส่วนขยาย "<ph name="EXTENSION_NAME" />" ได้เปลี่ยนหน้าที่จะแสดงเมื่อคุณเริ่มต้น Chrome</translation>
 <translation id="3779473566290487688">คุณจะต้องใช้ OS X 10.11 ขึ้นไปเพื่อรับการอัปเดตของ Google Chrome ในอนาคต คอมพิวเตอร์เครื่องนี้ใช้ OS X 10.10</translation>
@@ -198,6 +201,7 @@
 <translation id="6291089322031436445">แอป Chrome Dev</translation>
 <translation id="6291549208091401781">มีการติดตั้ง Google Chrome สำหรับผู้ใช้ทุกคนบนคอมพิวเตอร์ของคุณแล้ว</translation>
 <translation id="6368958679917195344">Chrome OS เกิดขึ้นได้ด้วยการสนับสนุนจาก<ph name="BEGIN_LINK_CROS_OSS" />ซอฟต์แวร์โอเพนซอร์ส<ph name="END_LINK_CROS_OSS" />เพิ่มเติม</translation>
+<translation id="6412673304250309937">ตรวจสอบ URL กับรายการเว็บไซต์ที่ไม่ปลอดภัยซึ่งจัดเก็บไว้ใน Chrome หากเว็บไซต์พยายามขโมยรหัสผ่าน หรือคุณดาวน์โหลดไฟล์ที่เป็นอันตราย Chrome อาจส่ง URL รวมถึงเนื้อหาบางส่วนในหน้าไปยัง Google Safe Browsing ด้วย</translation>
 <translation id="6418662306461808273">เปลี่ยนไปใช้โปรไฟล์ Chrome ที่มีอยู่ไหม</translation>
 <translation id="6506909944137591434">Chrome ต้องการสิทธิ์เข้าถึงกล้องเพื่อสร้างแผนที่ 3 มิติของสิ่งที่อยู่รอบตัวคุณ</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>

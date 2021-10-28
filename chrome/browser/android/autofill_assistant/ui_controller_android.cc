@@ -1460,14 +1460,16 @@ void UiControllerAndroid::OnUserDataChanged(
             *collect_user_data_options);
         Java_AssistantCollectUserDataModel_addAutofillContact(
             env, jcontactlist, jcontact,
-            base::android::ToJavaArrayOfStrings(env, errors));
+            base::android::ToJavaArrayOfStrings(env, errors),
+            collect_user_data_options->can_edit_contacts);
       }
     }
     Java_AssistantCollectUserDataModel_setAvailableContacts(env, jmodel,
                                                             jcontactlist);
     Java_AssistantCollectUserDataModel_setSelectedContactDetails(
         env, jmodel, jselected_contact,
-        base::android::ToJavaArrayOfStrings(env, selected_contact_errors));
+        base::android::ToJavaArrayOfStrings(env, selected_contact_errors),
+        collect_user_data_options->can_edit_contacts);
 
     // Billing addresses.
     auto jbillinglist =
@@ -1516,7 +1518,8 @@ void UiControllerAndroid::OnUserDataChanged(
     // off case does not set updated contacts.
     Java_AssistantCollectUserDataModel_setSelectedContactDetails(
         env, jmodel, jselected_contact,
-        base::android::ToJavaArrayOfStrings(env, selected_contact_errors));
+        base::android::ToJavaArrayOfStrings(env, selected_contact_errors),
+        collect_user_data_options->can_edit_contacts);
   }
   if (field_change == UserData::FieldChange::SHIPPING_ADDRESS) {
     // The selection is already known in Java, but it has no errors. The PDM

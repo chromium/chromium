@@ -34,6 +34,10 @@ void DetectCallback(base::OnceClosure quit_closure,
 }  // namespace
 
 class FaceDetectionImplWinTest : public testing::Test {
+ public:
+  FaceDetectionImplWinTest(const FaceDetectionImplWinTest&) = delete;
+  FaceDetectionImplWinTest& operator=(const FaceDetectionImplWinTest&) = delete;
+
  protected:
   FaceDetectionImplWinTest() = default;
   ~FaceDetectionImplWinTest() override = default;
@@ -84,8 +88,6 @@ class FaceDetectionImplWinTest : public testing::Test {
   std::unique_ptr<base::win::ScopedCOMInitializer> scoped_com_initializer_;
 
   base::test::TaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(FaceDetectionImplWinTest);
 };
 
 TEST_F(FaceDetectionImplWinTest, ScanOneFace) {

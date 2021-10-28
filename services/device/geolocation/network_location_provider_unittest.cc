@@ -80,6 +80,9 @@ class MockWifiDataProvider : public WifiDataProvider {
 
   MockWifiDataProvider() : start_calls_(0), stop_calls_(0), got_data_(true) {}
 
+  MockWifiDataProvider(const MockWifiDataProvider&) = delete;
+  MockWifiDataProvider& operator=(const MockWifiDataProvider&) = delete;
+
   // WifiDataProvider implementation.
   void StartDataProvider() override { ++start_calls_; }
 
@@ -117,8 +120,6 @@ class MockWifiDataProvider : public WifiDataProvider {
 
   WifiData data_;
   bool got_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockWifiDataProvider);
 };
 
 MockWifiDataProvider* MockWifiDataProvider::instance_ = nullptr;

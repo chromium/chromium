@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertInstanceof} from '../chrome_util.js';
 import * as dom from '../dom.js';
 // eslint-disable-next-line no-unused-vars
 import {I18nString} from '../i18n_string.js';
@@ -84,10 +85,10 @@ export class Review extends View {
     this.viewName_ = viewName;
 
     /**
-     * @protected {!HTMLImageElement}
+     * @protected {!HTMLElement}
      * @const
      */
-    this.image_ = dom.getFrom(this.root, '.review-image', HTMLImageElement);
+    this.image_ = dom.getFrom(this.root, '.review-image', HTMLElement);
 
     /**
      * @private {!HTMLDivElement}
@@ -117,20 +118,32 @@ export class Review extends View {
   }
 
   /**
+   * @param {!Image|!HTMLImageElement} image
+   * @param {!Blob} blob
+   * @protected
+   */
+  async loadImage_(image, blob) {
+    try {
+      await new Promise((resolve, reject) => {
+        image.onload = () => resolve();
+        image.onerror = (e) =>
+            reject(new Error(`Failed to load review document image: ${e}`));
+        image.src = URL.createObjectURL(blob);
+      });
+    } catch (e) {
+      URL.revokeObjectURL(image.src);
+      throw e;
+    }
+  }
+
+  /**
    * @param {!Blob} blob
    * @return {!Promise}
    */
   async setReviewPhoto(blob) {
-    try {
-      await new Promise((resolve, reject) => {
-        this.image_.onload = () => resolve();
-        this.image_.onerror = (e) =>
-            reject(new Error('Failed to load review document image: ${e}'));
-        this.image_.src = URL.createObjectURL(blob);
-      });
-    } finally {
-      URL.revokeObjectURL(this.image_.src);
-    }
+    const image = assertInstanceof(this.image_, HTMLImageElement);
+    await this.loadImage_(image, blob);
+    URL.revokeObjectURL(image.src);
   }
 
   /**

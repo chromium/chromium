@@ -100,6 +100,7 @@
 <translation id="3379938682270551431">{0,plural, =0{Chrome sẽ khởi động lại ngay bây giờ}=1{Chrome sẽ khởi động lại sau 1 giây}other{Chrome sẽ khởi động lại sau # giây}}</translation>
 <translation id="3395323229510056640">Nhận trợ giúp về Chrome OS</translation>
 <translation id="3396977131400919238">Đã xảy ra lỗi hệ điều hành trong quá trình cài đặt. Vui lòng tải xuống lại Google Chrome.</translation>
+<translation id="3428747202529429621">Giúp bạn an toàn trên Chrome và có thể dùng để tăng cường bảo mật cho bạn trong các ứng dụng khác của Google sau khi đăng nhập</translation>
 <translation id="3434246496373299699">Chrome có thể kiểm tra mật khẩu khi bạn đăng nhập bằng Tài khoản Google của mình</translation>
 <translation id="3451115285585441894">Đang thêm vào Chrome...</translation>
 <translation id="345171907106878721">Thêm chính bạn vào Chrome</translation>
@@ -206,6 +207,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="6291089322031436445">Ứng dụng Chrome Dev</translation>
 <translation id="6291549208091401781">Google Chrome đã được cài đặt cho tất cả người dùng trên máy tính của bạn.</translation>
 <translation id="6368958679917195344">Chrome OS trở nên khả thi là nhờ <ph name="BEGIN_LINK_CROS_OSS" />phần mềm nguồn mở<ph name="END_LINK_CROS_OSS" /> bổ sung.</translation>
+<translation id="6412673304250309937">Kiểm tra đối chiếu các URL với danh sách trang web không an toàn được lưu trữ trong Chrome. Nếu một trang web cố ăn cắp mật khẩu của bạn hoặc nếu bạn tải một tệp gây hại xuống, Chrome cũng có thể gửi các URL, bao gồm cả các đoạn nội dung trên trang, đến tính năng Duyệt web an toàn.</translation>
 <translation id="6418662306461808273">Chuyển sang hồ sơ hiện có trên Chrome?</translation>
 <translation id="6506909944137591434">Chrome cần quyền truy cập máy ảnh để tạo bản đồ 3D về các khu vực xung quanh bạn</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome dành cho nhà phát triển</translation>

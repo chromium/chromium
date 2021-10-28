@@ -6,8 +6,8 @@ import {PrinterType, PrintServerStore, PrintServerStoreEventType} from 'chrome:/
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {addWebUIListener, removeWebUIListener, WebUIListener, webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 
-import {assertDeepEquals, assertTrue} from '../chai_assert.js';
-import {eventToPromise} from '../test_util.js';
+import {assertDeepEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {NativeLayerCrosStub, setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
 

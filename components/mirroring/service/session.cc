@@ -415,7 +415,7 @@ Session::Session(
     gpu_channel_host_ = gpu_->EstablishGpuChannelSync();
     if (gpu_channel_host_ &&
         gpu_channel_host_->gpu_feature_info().status_values
-                [gpu::GPU_FEATURE_TYPE_ACCELERATED_VIDEO_DECODE] ==
+                [gpu::GPU_FEATURE_TYPE_ACCELERATED_VIDEO_ENCODE] ==
             gpu::kGpuFeatureStatusEnabled) {
       supported_profiles_ =
           media::GpuVideoAcceleratorUtil::ConvertGpuToMediaEncodeProfiles(

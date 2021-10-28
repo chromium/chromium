@@ -109,7 +109,6 @@ class CORE_EXPORT ImageResourceContent final
   bool IsLoading() const;
   bool ErrorOccurred() const;
   bool LoadFailedOrCanceled() const;
-  bool IsAnimatedImageWithPaintedFirstFrame() const;
 
   // Redirecting methods to Resource.
   const KURL& Url() const;

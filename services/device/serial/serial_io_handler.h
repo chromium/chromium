@@ -34,6 +34,9 @@ class SerialIoHandler : public base::RefCountedThreadSafe<SerialIoHandler> {
       const base::FilePath& port,
       scoped_refptr<base::SingleThreadTaskRunner> ui_thread_task_runner);
 
+  SerialIoHandler(const SerialIoHandler&) = delete;
+  SerialIoHandler& operator=(const SerialIoHandler&) = delete;
+
   using OpenCompleteCallback = base::OnceCallback<void(bool success)>;
   using ReadCompleteCallback =
       base::OnceCallback<void(uint32_t bytes_read, mojom::SerialReceiveError)>;
@@ -226,8 +229,6 @@ class SerialIoHandler : public base::RefCountedThreadSafe<SerialIoHandler> {
 
   // On Chrome OS, PermissionBrokerClient should be called on the UI thread.
   scoped_refptr<base::SingleThreadTaskRunner> ui_thread_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(SerialIoHandler);
 };
 
 }  // namespace device

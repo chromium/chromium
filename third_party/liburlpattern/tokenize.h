@@ -94,9 +94,10 @@ inline bool operator!=(const Token& lh, const Token& rh) {
 COMPONENT_EXPORT(LIBURLPATTERN)
 std::ostream& operator<<(std::ostream& o, Token token);
 
-// Split the given input pattern string into a list of lexical tokens. Note,
-// the generated Token objects simply reference positions within the input
-// |pattern|.  The |pattern| must be kept alive as long as the Token objects.
+// Split the given input pattern string into a list of lexical tokens.
+// Tokenizing will fail if |pattern| is not valid UTF-8.  Note, the generated
+// Token objects simply reference positions within the input |pattern|.  The
+// |pattern| must be kept alive as long as the Token objects.
 COMPONENT_EXPORT(LIBURLPATTERN)
 absl::StatusOr<std::vector<Token>> Tokenize(
     absl::string_view pattern,

@@ -7384,6 +7384,7 @@ others/histograms.xml -->
   <int value="30" label="ContentsPreferredSizeChanged"/>
   <int value="31" label="BeginDownload"/>
   <int value="32" label="Bug1234857"/>
+  <int value="33" label="FileSystemAccessPermissionRequest"/>
 </enum>
 
 <enum name="BackForwardCacheEligibilityDuringCommit">
@@ -49371,6 +49372,7 @@ from previous Chrome versions.
   <int value="-1153892430"
       label="AlignFontDisplayAutoTimeoutWithLCPGoal:enabled"/>
   <int value="-1151766565" label="enable-fullscreen-tab-detaching"/>
+  <int value="-1151615978" label="BorealisBigGl:disabled"/>
   <int value="-1151014496" label="NearbySharingDeviceContacts:disabled"/>
   <int value="-1150881704"
       label="ArcNativeBridge64BitSupportExperiment:enabled"/>
@@ -49964,6 +49966,7 @@ from previous Chrome versions.
   <int value="-694187898" label="MashOopViz:disabled"/>
   <int value="-693881124"
       label="AutofillEnableSupportForMoreStructureInNames:disabled"/>
+  <int value="-690660906" label="ProductivityLauncherAnimation:disabled"/>
   <int value="-688003116" label="FocusFollowsCursor:enabled"/>
   <int value="-687302378" label="BluetoothFixA2dpPacketSize:enabled"/>
   <int value="-686788480" label="OsSettingsAppNotificationsPage:enabled"/>
@@ -50010,6 +50013,7 @@ from previous Chrome versions.
   <int value="-654705905" label="ShortcutCustomizationApp:enabled"/>
   <int value="-654196854" label="PasswordsKeyboardAccessory:enabled"/>
   <int value="-653616608" label="MacSyscallSandbox:disabled"/>
+  <int value="-652144124" label="BorealisBigGl:enabled"/>
   <int value="-650504533" label="enable-speculative-launch-service-worker"/>
   <int value="-650388312" label="ClipboardHistoryScreenshotNudge:enabled"/>
   <int value="-650213879" label="OmniboxZeroSuggestionsOnNTP:disabled"/>
@@ -50115,6 +50119,7 @@ from previous Chrome versions.
   <int value="-568448085" label="SharedClipboardReceiver:disabled"/>
   <int value="-567920515" label="disable-experimental-hotwording"/>
   <int value="-567743697" label="EnableInputNoiseCancellationUi:enabled"/>
+  <int value="-567197068" label="ProductivityLauncherAnimation:enabled"/>
   <int value="-565368004" label="AutofillCenterAlignedSuggestions:disabled"/>
   <int value="-563980787" label="disable-webrtc"/>
   <int value="-563600258" label="PhotoPickerVideoSupport:disabled"/>
@@ -66158,6 +66163,17 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="Invalid URLs found"/>
   <int value="4" label="OK"/>
   <int value="5" label="Invalid JSON (either syntactically or structurally)"/>
+</enum>
+
+<enum name="PasswordStoreAndroidBackendError">
+  <int value="0" label="Error can't be categorized."/>
+  <int value="1" label="API was called without a context."/>
+  <int value="2" label="API was called without an account."/>
+  <int value="3" label="Profile isn't initialized yet."/>
+  <int value="4" label="Sync service isn't available yet."/>
+  <int value="5" label="API was called with passphrase."/>
+  <int value="6" label="GMS Core version is not supported."/>
+  <int value="7" label="API was successfully called, but returned an error."/>
 </enum>
 
 <enum name="PasswordStoreChange">
@@ -86737,7 +86753,7 @@ Full version information for the fingerprint enum values:
 
 <enum name="VariationsSeedStoreResult">
   <int value="0" label="Success"/>
-  <int value="1" label="Failed - Empty Seed"/>
+  <int value="1" label="Failed - Empty Seed (obsolete)"/>
   <int value="2" label="Failed - Parse Error"/>
   <int value="3" label="Failed - Signature Mismatch"/>
   <int value="4" label="Failed - Gzip Compress Error"/>
@@ -88830,6 +88846,8 @@ others/histograms.xml -->
   <int value="12" label="System app management on ChromeOS"/>
   <int value="13" label="Placeholder app management for preinstalled apps"/>
   <int value="14" label="Externally managed Arc apps"/>
+  <int value="15" label="SubApps API"/>
+  <int value="16" label="Incomplete unisntall cleanup on startup."/>
 </enum>
 
 <enum name="WebAppUrlHandlingDialogState">

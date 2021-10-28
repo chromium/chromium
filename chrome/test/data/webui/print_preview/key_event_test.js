@@ -8,8 +8,8 @@ import {isChromeOS, isLacros, isMac, isWindows} from 'chrome://resources/js/cr.m
 import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assertEquals, assertTrue} from '../chai_assert.js';
-import {eventToPromise, flushTasks} from '../test_util.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise, flushTasks} from 'chrome://webui-test/test_util.js';
 
 // <if expr="chromeos or lacros">
 import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';

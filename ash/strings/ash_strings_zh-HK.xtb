@@ -131,6 +131,7 @@
 <translation id="1882897271359938046">正在建立<ph name="DISPLAY_NAME" />鏡像</translation>
 <translation id="1885785240814121742">使用指紋解鎖</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> 不支援 <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz)。解像度已變更為 <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />)。請按一下 [確認] 以保留變更。系統會在 <ph name="TIMEOUT_SECONDS" />後還原先前的設定。</translation>
+<translation id="1915307458270490472">結束通話</translation>
 <translation id="1919743966458266018">開啟工作管理員的快速鍵已變更，請改用 <ph name="NEW_SHORTCUT" /> 取代 <ph name="OLD_SHORTCUT" /> 。</translation>
 <translation id="1923539912171292317">自動按一下</translation>
 <translation id="1928739107511554905">如要下載更新，請連接鍵盤並使用觸控螢幕重新啟動 Chromebook。</translation>
@@ -372,6 +373,7 @@
 <translation id="3665889125180354336">錄音麥克風</translation>
 <translation id="3680908746918359504">清除所有標記</translation>
 <translation id="36813544980941320">您的手機和 <ph name="DEVICE_NAME" /> 將共用 Wi-Fi 網絡</translation>
+<translation id="3701206655856637070">您現可變更儲存螢幕截圖的位置</translation>
 <translation id="3702809606464356667">顯示緊來自目前桌面嘅視窗，㩒向上箭咀掣就可以顯示來自所有桌面嘅視窗</translation>
 <translation id="3702846122927433391">尼日利亞嘅人口</translation>
 <translation id="3705722231355495246">-</translation>
@@ -561,6 +563,7 @@
         <ph name="NOTIFICATION" />，
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="4945196315133970626">關閉通知</translation>
 <translation id="4946376291507881335">擷取</translation>
 <translation id="495046168593986294">向上捲動</translation>
 <translation id="4952936045814352993">停用鬧鐘音效後無法使用尋找手機的功能</translation>
@@ -1128,6 +1131,7 @@
 <translation id="925832987464884575">隱藏預覽</translation>
 <translation id="938963181863597773">我日曆有咩活動？</translation>
 <translation id="945522503751344254">提供意見反映</translation>
+<translation id="951991426597076286">拒絕</translation>
 <translation id="98515147261107953">橫向</translation>
 <translation id="990277280839877440">視窗 <ph name="WINDOW_TITILE" /> 閂咗。</translation>
 </translationbundle>

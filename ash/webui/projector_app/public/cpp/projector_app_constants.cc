@@ -4,7 +4,7 @@
 
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 const char kChromeUIProjectorAppHost[] = "projector";
 
@@ -22,4 +22,5 @@ const char kChromeUITrustedAnnotatorUrl[] =
     "chrome://projector/annotator/annotator_embedder.html";
 const char kChromeUITrustedProjectorSwaAppId[] =
     "fgnpbdobngpkonkajbmelfhjkemaddhp";
-}  // namespace chromeos
+
+}  // namespace ash

@@ -131,6 +131,7 @@
 <translation id="1882897271359938046">Төмөнкүгө чагылыштыруу <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Кулпуну манжа изи менен ачуу</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Герц) дааналыкты колдоого албайт. Дааналыгы <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) өзгөрдү. Өзгөртүүлөрдү сактоо үчүн "Ырастоо" баскычын басыңыз. Мурунку жөндөөлөр <ph name="TIMEOUT_SECONDS" /> кийин калыбына келтирилет.</translation>
+<translation id="1915307458270490472">Жогоруда кадоо</translation>
 <translation id="1919743966458266018">Тапшырмалар башкаргычын ача турган кыска жол өзгөргөн. <ph name="OLD_SHORTCUT" /> ордуна <ph name="NEW_SHORTCUT" /> колдонуңуз.</translation>
 <translation id="1923539912171292317">Автоматтык чыкылдатуулар</translation>
 <translation id="1928739107511554905">Жаңыртуу үчүн, туташкан баскычтопту үзбөй туруп, сенсордук экрандын жардамы менен, Chromebook'ту өчүрүп-күйгүзүңүз.</translation>
@@ -1129,6 +1130,7 @@
 <translation id="925832987464884575">Алдын ала көрүүнү жашыруу</translation>
 <translation id="938963181863597773">Жылнаамада эмне бар?</translation>
 <translation id="945522503751344254">Пикириңизди билдириңиз</translation>
+<translation id="951991426597076286">Четке кагуу</translation>
 <translation id="98515147261107953">Туурасынан</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" /> терезеси жабылды.</translation>
 </translationbundle>

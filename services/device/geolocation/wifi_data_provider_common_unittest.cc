@@ -63,6 +63,11 @@ class WifiDataProviderCommonWithMock : public WifiDataProviderCommon {
  public:
   WifiDataProviderCommonWithMock() : wlan_api_(new MockWlanApi) {}
 
+  WifiDataProviderCommonWithMock(const WifiDataProviderCommonWithMock&) =
+      delete;
+  WifiDataProviderCommonWithMock& operator=(
+      const WifiDataProviderCommonWithMock&) = delete;
+
   // WifiDataProviderCommon
   std::unique_ptr<WlanApiInterface> CreateWlanApi() override {
     return std::move(wlan_api_);
@@ -79,8 +84,6 @@ class WifiDataProviderCommonWithMock : public WifiDataProviderCommon {
 
  private:
   ~WifiDataProviderCommonWithMock() override = default;
-
-  DISALLOW_COPY_AND_ASSIGN(WifiDataProviderCommonWithMock);
 };
 
 // Main test fixture

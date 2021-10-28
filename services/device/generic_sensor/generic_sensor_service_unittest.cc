@@ -45,6 +45,9 @@ class TestSensorClient : public mojom::SensorClient {
  public:
   TestSensorClient(SensorType type) : type_(type) {}
 
+  TestSensorClient(const TestSensorClient&) = delete;
+  TestSensorClient& operator=(const TestSensorClient&) = delete;
+
   // Implements mojom::SensorClient:
   void SensorReadingChanged() override {
     UpdateReadingData();
@@ -143,13 +146,14 @@ class TestSensorClient : public mojom::SensorClient {
   // expected in SensorReadingChanged().
   base::OnceCallback<void(double)> check_value_;
   SensorType type_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSensorClient);
 };
 
 class GenericSensorServiceTest : public DeviceServiceTestBase {
  public:
   GenericSensorServiceTest() = default;
+
+  GenericSensorServiceTest(const GenericSensorServiceTest&) = delete;
+  GenericSensorServiceTest& operator=(const GenericSensorServiceTest&) = delete;
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
@@ -168,8 +172,6 @@ class GenericSensorServiceTest : public DeviceServiceTestBase {
 
   // This object is owned by the DeviceService instance.
   FakePlatformSensorProvider* fake_platform_sensor_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(GenericSensorServiceTest);
 };
 
 // Requests the SensorProvider to create a sensor.

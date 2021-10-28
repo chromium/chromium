@@ -9,6 +9,18 @@ package org.chromium.chrome.browser.password_manager;
 public interface CredentialManagerLauncher {
     /**
      * Launches the UI surface allowing users to manage their saved passwords.
+     *
+     * @param referrer the place that requested the launch*
+     *
+     * TODO(crbug.com/1255038): Make abstract once its implemented everywhere.
      */
-    void launchCredentialManager();
+    default void launchCredentialManager(@ManagePasswordsReferrer int referrer) {}
+
+    /**
+     * Launches the UI surface allowing users to manage their saved passwords.
+     *
+     * TODO(crbug.com/1255038): Remove once the downstream class no longer implements it.
+     */
+    @Deprecated
+    default void launchCredentialManager() {}
 }

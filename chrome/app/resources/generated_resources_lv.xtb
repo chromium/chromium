@@ -1303,7 +1303,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2312219318583366810">Lapas URL</translation>
 <translation id="2314165183524574721">Pašreizējais redzamības iestatījums ir “Paslēpta”.</translation>
 <translation id="2314774579020744484">Lapu tulkošanai izmantotā valoda</translation>
-<translation id="2315414688463285945">Konfigurējot Linux failus, radās kļūda. Lūdzu, mēģiniet vēlreiz.</translation>
 <translation id="2315587498123194634">Nosūtīt saiti uz: <ph name="DEVICE_NAME" /></translation>
 <translation id="2316129865977710310">Nē, paldies</translation>
 <translation id="2317842250900878657">Pabeigti: <ph name="PROGRESS_PERCENT" />%</translation>
@@ -2353,7 +2352,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3424969259347320884">Norādiet, ko darījāt, kad cilne avarēja</translation>
 <translation id="3427092606871434483">Atļaut (pēc noklusējuma)</translation>
 <translation id="3428419049384081277">Jūs esat pierakstījies!</translation>
-<translation id="3428747202529429621">Tiek nodrošināta jūsu aizsardzība pārlūkprogrammā Chrome. Šis režīms var tikt izmantots jūsu drošības uzlabošanai citās Google lietotnēs, kad esat pierakstījies.</translation>
 <translation id="3429086384982427336">Tālāk norādītās lietotnes nekad neapstrādās protokolu saites.</translation>
 <translation id="3429160811076349561">Izmēģinājuma versijas funkcijas ir izslēgtas</translation>
 <translation id="3429271624041785769">Tīmekļa satura valodas</translation>
@@ -5119,7 +5117,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6410328738210026208">Mainīt kanālu un Powerwash</translation>
 <translation id="6410390304316730527">Izmantojot drošu pārlūkošanu, jūs iegūstat aizsardzību pret uzbrucējiem, kuri varētu mudināt jūs veikt bīstamas darbības, piemēram, instalēt ļaunprātīgu programmatūru vai atklāt personas informāciju — paroles, tālruņa numurus, kredītkaršu datus u.tml. Ja izslēgsiet drošu pārlūkošanu, ievērojiet piesardzību, pārlūkojot nepazīstamas vietnes vai vietnes ar sliktu reputāciju.</translation>
 <translation id="6410668567036790476">Meklētājprogrammas pievienošana</translation>
-<translation id="6412673304250309937">Vietrāži URL tiek pārbaudīti, salīdzinot ar nedrošu vietņu sarakstu, kas glabājas pārlūkprogrammā Chrome. Ja kādā vietnē tiek mēģināts nozagt jūsu paroli vai ja jūs lejupielādējat kaitīgu failu, Chrome var nosūtīt attiecīgo URL un lapas satura fragmentus uz funkciju Droša pārlūkošana.</translation>
 <translation id="641469293210305670">Atjauninājumu un lietotņu saglabāšana</translation>
 <translation id="6414878884710400018">Atvērt sistēmas preferences</translation>
 <translation id="6414888972213066896">Jūs lūdzāt vienam no vecākiem atļauju apmeklēt šo vietni</translation>
@@ -5528,7 +5525,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6843264316370513305">Tīkla atkļūdošana</translation>
 <translation id="6843423766595476978">Komanda “Ok Google” tika iestatīta</translation>
 <translation id="6845038076637626672">Atvērt maksimizētā logā</translation>
-<translation id="6845325883481699275">Palīdzēt uzlabot Chrome drošību</translation>
 <translation id="6846178040388691741">Paplašinājums “<ph name="EXTENSION_NAME" />” vēlas drukāt failu “<ph name="FILE_NAME" />” printerī <ph name="PRINTER_NAME" />.</translation>
 <translation id="6847125920277401289">Lai turpinātu, atbrīvojiet vietu</translation>
 <translation id="6848388270925200958">Pašlaik dažas no savām kartēm varat izmantot tikai šajā ierīcē</translation>
@@ -6980,7 +6976,6 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8324784016256120271">Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbības dažādās vietnēs, piemēram, lai personalizētu reklāmas.</translation>
 <translation id="8325413836429495820">Nedrīkst skatīt starpliktuvi</translation>
 <translation id="8326478304147373412">PKCS #7, sertificēšanas ķēde</translation>
-<translation id="8327039559959785305">Iekļaujot Linux failus, radās kļūda. Lūdzu, mēģiniet vēlreiz.</translation>
 <translation id="8327676037044516220">Atļaujas un satura iestatījumi</translation>
 <translation id="833256022891467078">Crostini koplietotās mapes</translation>
 <translation id="8335587457941836791">Atspraust no plaukta</translation>

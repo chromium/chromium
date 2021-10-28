@@ -308,7 +308,7 @@ void InteractiveDetector::HandleForInputDelay(
     g_num_long_input_events++;
   }
 
-  // ELements in |first_input_delays_after_back_forward_cache_restore| is
+  // Elements in |first_input_delays_after_back_forward_cache_restore| is
   // allocated when the page is restored from the back-forward cache. If the
   // last element exists and this is nullopt value, the first input has not come
   // yet after the last time when the page is restored from the cache.

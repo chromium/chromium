@@ -544,6 +544,12 @@ If your feedback is about image or video quality, please attach a sample photo o
       <message desc="Label for button for finishing select document crop area." name="IDS_LABEL_CROP_DONE">
         Done
       </message>
+      <message desc="Label for button for rotating document 90 degrees in clockwise direction" name="IDS_ROTATE_CLOCKWISE_BUTTON">
+        Rotate 90 degrees clockwise
+      </message>
+      <message desc="Label for button for rotating document 90 degrees in counterclockwise direction" name="IDS_ROTATE_COUNTERCLOCKWISE_BUTTON">
+        Rotate 90 degrees counterclockwise
+      </message>
       <message desc="Label for spoken feedback to read out group of camera mode options." name="IDS_ARIA_CAMERA_MODE_GROUP">
         Camera mode
       </message>

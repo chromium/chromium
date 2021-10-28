@@ -131,6 +131,7 @@
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> ஐப் பிரதிபலிக்கிறது</translation>
 <translation id="1885785240814121742">கைரேகை மூலம் அன்லாக் செய்யலாம்</translation>
 <translation id="1888656773939766144"><ph name="SPECIFIED_RESOLUTION" /> தெளிவுத்திறனை (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) <ph name="DISPLAY_NAME" /> ஆதரிக்கவில்லை. தெளிவுத்திறன் <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) என்பதற்கு மாற்றப்பட்டது. மாற்றங்களை வைத்திருக்க ‘உறுதிசெய்’ என்பதைக் கிளிக் செய்யவும். இன்னும் <ph name="TIMEOUT_SECONDS" /> இல் முந்தைய அமைப்புகள் மீட்டெடுக்கப்படும்.</translation>
+<translation id="1915307458270490472">மூடுக</translation>
 <translation id="1919743966458266018">செயல் நிர்வாகியைத் திறப்பதற்கான ஷார்ட்கட் மாற்றப்பட்டது. <ph name="OLD_SHORTCUT" /> க்குப் பதிலாக <ph name="NEW_SHORTCUT" /> ஐப் பயன்படுத்தவும்.</translation>
 <translation id="1923539912171292317">தன்னியக்க கிளிக்குகள்</translation>
 <translation id="1928739107511554905">புதுப்பிப்பைப் பெற, டச்ஸ்கிரீனைப் பயன்படுத்தி, கீபோர்டு இணைக்கப்பட்ட உங்கள் Chromebookஐ மீண்டும் தொடங்கவும்.</translation>
@@ -1129,6 +1130,7 @@
 <translation id="925832987464884575">மாதிரிக்காட்சிகளை மறை</translation>
 <translation id="938963181863597773">எனது கேலெண்டரில் என்ன உள்ளது?</translation>
 <translation id="945522503751344254">கருத்தை அனுப்பு</translation>
+<translation id="951991426597076286">நிராகரி</translation>
 <translation id="98515147261107953">லேண்ட்ஸ்கேப்</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" /> சாளரம் மூடப்பட்டது.</translation>
 </translationbundle>

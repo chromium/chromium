@@ -43,6 +43,9 @@ class PlatformSensor : public base::RefCountedThreadSafe<PlatformSensor> {
     virtual ~Client() {}
   };
 
+  PlatformSensor(const PlatformSensor&) = delete;
+  PlatformSensor& operator=(const PlatformSensor&) = delete;
+
   virtual mojom::ReportingMode GetReportingMode() = 0;
   virtual PlatformSensorConfiguration GetDefaultConfiguration() = 0;
   virtual bool CheckSensorConfiguration(
@@ -138,7 +141,6 @@ class PlatformSensor : public base::RefCountedThreadSafe<PlatformSensor> {
   absl::optional<SensorReading> last_raw_reading_ GUARDED_BY(lock_);
   mutable base::Lock lock_;  // Protect last_raw_reading_.
   base::WeakPtrFactory<PlatformSensor> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(PlatformSensor);
 };
 
 }  // namespace device

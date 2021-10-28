@@ -151,26 +151,6 @@ void FloatRect::Intersect(const FloatRect& other) {
   SetLocationAndSizeFromEdges(new_left, new_top, new_right, new_bottom);
 }
 
-bool FloatRect::InclusiveIntersect(const FloatRect& other) {
-  float new_left = std::max(x(), other.x());
-  float new_top = std::max(y(), other.y());
-  float new_right = std::min(right(), other.right());
-  float new_bottom = std::min(bottom(), other.bottom());
-
-  // Return a clean empty rectangle for non-intersecting cases.
-  if (new_left > new_right || new_top > new_bottom) {
-    new_left = 0;
-    new_top = 0;
-    new_right = 0;
-    new_bottom = 0;
-    SetLocationAndSizeFromEdges(new_left, new_top, new_right, new_bottom);
-    return false;
-  }
-
-  SetLocationAndSizeFromEdges(new_left, new_top, new_right, new_bottom);
-  return true;
-}
-
 void FloatRect::Union(const FloatRect& other) {
   // Handle empty special cases first.
   if (other.IsEmpty())
@@ -234,40 +214,6 @@ FloatRect UnionRects(const Vector<FloatRect>& rects) {
     result.Union(rect);
 
   return result;
-}
-
-FloatRect MaximumCoveredRect(const FloatRect& a, const FloatRect& b) {
-  // Check a or b by itself.
-  FloatRect maximum(a);
-  float maximum_area = a.size().Area();
-  if (b.size().Area() > maximum_area) {
-    maximum = b;
-    maximum_area = b.size().Area();
-  }
-  // Check the regions that include the intersection of a and b. This can be
-  // done by taking the intersection and expanding it vertically and
-  // horizontally. These expanded intersections will both still be covered by
-  // a or b.
-  FloatRect intersection = a;
-  intersection.InclusiveIntersect(b);
-  if (!intersection.IsZero()) {
-    FloatRect vert_expanded_intersection(intersection);
-    vert_expanded_intersection.ShiftYEdgeTo(std::min(a.y(), b.y()));
-    vert_expanded_intersection.ShiftMaxYEdgeTo(
-        std::max(a.bottom(), b.bottom()));
-    if (vert_expanded_intersection.size().Area() > maximum_area) {
-      maximum = vert_expanded_intersection;
-      maximum_area = vert_expanded_intersection.size().Area();
-    }
-    FloatRect horiz_expanded_intersection(intersection);
-    horiz_expanded_intersection.ShiftXEdgeTo(std::min(a.x(), b.x()));
-    horiz_expanded_intersection.ShiftMaxXEdgeTo(std::max(a.right(), b.right()));
-    if (horiz_expanded_intersection.size().Area() > maximum_area) {
-      maximum = horiz_expanded_intersection;
-      maximum_area = horiz_expanded_intersection.size().Area();
-    }
-  }
-  return maximum;
 }
 
 IntRect EnclosedIntRect(const FloatRect& rect) {

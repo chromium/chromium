@@ -98,6 +98,7 @@
 <translation id="3379938682270551431">{0,plural, =0{Chrome käivitatakse kohe uuesti}=1{Chrome käivitatakse uuesti 1 sekundi pärast}other{Chrome käivitatakse uuesti # sekundi pärast}}</translation>
 <translation id="3395323229510056640">Chrome OS-i puhul abi hankimine</translation>
 <translation id="3396977131400919238">Installimisel ilmnes operatsioonisüsteemi viga. Palun laadige Google Chrome uuesti alla.</translation>
+<translation id="3428747202529429621">Kaitseb teid Chrome'is ja seda võidakse kasutada teie turvalisuse suurendamiseks muudes Google'i rakendustes, kui olete sisse logitud</translation>
 <translation id="3434246496373299699">Chrome saab teie paroole kontrollida siis, kui logite sisse oma Google'i kontoga</translation>
 <translation id="3451115285585441894">Chrome'i lisamine ...</translation>
 <translation id="345171907106878721">Lisa Chrome'i</translation>
@@ -203,6 +204,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="6291089322031436445">Chrome Devi rakendused</translation>
 <translation id="6291549208091401781">Google Chrome on arvutisse kõigi kasutajate jaoks juba installitud.</translation>
 <translation id="6368958679917195344">Chrome OS on võimalik tänu <ph name="BEGIN_LINK_CROS_OSS" />avatud lähtekoodiga lisatarkvarale<ph name="END_LINK_CROS_OSS" />.</translation>
+<translation id="6412673304250309937">Kontrollib URL-e Chrome'i talletatud ohtlike saitide loendi alusel. Kui sait üritab teie parooli varastada või laadite alla kahjuliku faili, võib Chrome saata URL-id ja lehe sisu osad teenusesse Google'i ohutu sirvimine.</translation>
 <translation id="6418662306461808273">Kas lülituda olemasolevale Chrome'i profiilile?</translation>
 <translation id="6506909944137591434">Chrome vajab kaamera kasutamise luba, et luua teie ümbruskonnast 3D-kaart</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>

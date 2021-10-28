@@ -124,5 +124,10 @@ void NonMainThreadSchedulerImpl::AttachToCurrentThread() {
   helper_.AttachToCurrentThread();
 }
 
+WTF::Vector<base::OnceClosure>&
+NonMainThreadSchedulerImpl::GetOnTaskCompletionCallbacks() {
+  return on_task_completion_callbacks_;
+}
+
 }  // namespace scheduler
 }  // namespace blink

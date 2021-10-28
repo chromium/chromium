@@ -138,6 +138,11 @@ struct StructTraits<crosapi::mojom::AppDataView, apps::mojom::AppPtr> {
     return r->permissions;
   }
 
+  static const apps::mojom::OptionalBool& allow_uninstall(
+      const apps::mojom::AppPtr& r) {
+    return r->allow_uninstall;
+  }
+
   static bool Read(crosapi::mojom::AppDataView data, apps::mojom::AppPtr* out);
 };
 

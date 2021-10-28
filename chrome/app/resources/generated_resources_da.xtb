@@ -1317,7 +1317,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2312219318583366810">Webadresse</translation>
 <translation id="2314165183524574721">Den aktuelle indstilling for synlighed er Skjult</translation>
 <translation id="2314774579020744484">Anvendt sprog ved oversættelse af sider</translation>
-<translation id="2315414688463285945">Der opstod en fejl ved konfiguration af Linux-filer. Prøv igen.</translation>
 <translation id="2315587498123194634">Send link til <ph name="DEVICE_NAME" /></translation>
 <translation id="2316129865977710310">Nej tak</translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" /> % udført</translation>
@@ -2366,7 +2365,6 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="3424969259347320884">Beskriv, hvad du foretog dig, da fanen gik ned</translation>
 <translation id="3427092606871434483">Tillad (standardindstilling)</translation>
 <translation id="3428419049384081277">Du er logget ind</translation>
-<translation id="3428747202529429621">Beskytter dig i Chrome og kan bruges til at forbedre din sikkerhed i andre Google-apps, når du er logget ind</translation>
 <translation id="3429086384982427336">De apps, der er angivet nedenfor, håndterer aldrig protokollinks.</translation>
 <translation id="3429160811076349561">Prøvefunktioner er slået fra</translation>
 <translation id="3429271624041785769">Sprog for webindhold</translation>
@@ -5131,7 +5129,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6410328738210026208">Skift kanal og powerwash</translation>
 <translation id="6410390304316730527">Beskyttet browsing beskytter dig mod hackere, som kan narre dig til at gøre uhensigtsmæssige ting, f.eks. at installere skadelig software eller afsløre personlige oplysninger som adgangskoder, telefonnumre eller betalingskortnumre. Hvis du deaktivere funktionen, skal du være ekstra forsigtig, når du besøger websites, du ikke kender eller har tillid til.</translation>
 <translation id="6410668567036790476">Tilføj søgemaskine</translation>
-<translation id="6412673304250309937">Tjekker webadresser ift. en liste over usikre websites, der er gemt i Chrome. Hvis et website forsøger at stjæle din adgangskode, eller når du downloader en skadelig fil, sender Chrome muligvis også webadresser, bl.a. mindre mængder sideindhold, til Beskyttet browsing.</translation>
 <translation id="641469293210305670">Installer opdateringer og apps</translation>
 <translation id="6414878884710400018">Åbn systemindstillingerne</translation>
 <translation id="6414888972213066896">Du har spurgt en af dine forældre, om det er i orden, at du besøger dette website.</translation>
@@ -5540,7 +5537,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6843264316370513305">Fejlretning af netværk</translation>
 <translation id="6843423766595476978">Hey Google er konfigureret</translation>
 <translation id="6845038076637626672">Åbn maksimeret</translation>
-<translation id="6845325883481699275">Hjælp med at forbedre sikkerheden i Chrome</translation>
 <translation id="6846178040388691741">"<ph name="EXTENSION_NAME" />" anmoder om at udskrive <ph name="FILE_NAME" /> via <ph name="PRINTER_NAME" />.</translation>
 <translation id="6847125920277401289">Frigør plads for at fortsætte</translation>
 <translation id="6848388270925200958">Lige nu har du kort, som kun kan bruges på denne enhed.</translation>
@@ -6992,7 +6988,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8324784016256120271">Websites kan anvende cookies til at se din browseraktivitet på forskellige websites for f.eks. at tilpasse annoncer</translation>
 <translation id="8325413836429495820">Har ikke tilladelse til at se din udklipsholder</translation>
 <translation id="8326478304147373412">PKCS #7, certifikatkæde</translation>
-<translation id="8327039559959785305">Der opstod en fejl ved anvendelse af Linux-filer. Prøv igen.</translation>
 <translation id="8327676037044516220">Tilladelser og indstillinger for indhold</translation>
 <translation id="833256022891467078">Delte mapper i Crostini</translation>
 <translation id="8335587457941836791">Frigør fra hylden</translation>

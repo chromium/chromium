@@ -14,6 +14,7 @@
 #include "base/environment.h"
 #include "base/feature_list.h"
 #include "base/files/file.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/metrics/field_trial_params.h"
@@ -90,6 +91,14 @@ base::Time g_last_network_service_crash;
 // invalid.
 const base::FilePath::CharType kCheckpointFileName[] =
     FILE_PATH_LITERAL("NetworkDataMigrated");
+
+// A directory name that is created below the http cache path and passed to the
+// network context when creating a network context with cache enabled.
+// This must be a directory below the main cache path so operations such as
+// resetting the cache via HttpCacheParams.reset_cache can function correctly
+// as they rely on having access to the parent directory of the cache.
+const base::FilePath::CharType kCacheDataDirectoryName[] =
+    FILE_PATH_LITERAL("Cache_Data");
 
 // A platform specific set of parameters that is used when granting the sandbox
 // access to the network context data.
@@ -267,6 +276,31 @@ bool IsSafeToUseDataPath(SandboxGrantResult result) {
   }
 }
 
+// Takes a cache dir and deletes all files in it except those in 'Cache_Data'
+// directory. This can be removed once all caches have been moved to the new
+// sub-directory, around M99.
+void MaybeDeleteOldCache(const base::FilePath& cache_dir) {
+  bool deleted_old_files = false;
+  base::FileEnumerator enumerator(
+      cache_dir, /*recursive=*/false,
+      base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES);
+
+  for (auto name = enumerator.Next(); !name.empty(); name = enumerator.Next()) {
+    base::FileEnumerator::FileInfo info = enumerator.GetInfo();
+    DCHECK_EQ(info.GetName(), name.BaseName());
+
+    if (info.IsDirectory()) {
+      if (name.BaseName().value() == kCacheDataDirectoryName)
+        continue;
+    }
+    base::DeletePathRecursively(name);
+    deleted_old_files = true;
+  }
+
+  base::UmaHistogramBoolean("NetworkService.DeletedOldCacheData",
+                            deleted_old_files);
+}
+
 void CreateNetworkContextInternal(
     mojo::PendingReceiver<network::mojom::NetworkContext> context,
     network::mojom::NetworkContextParamsPtr params,
@@ -300,6 +334,16 @@ void CreateNetworkContextInternal(
     // in this case.
     DCHECK(params->file_paths->unsandboxed_data_path.has_value());
     params->file_paths->data_path = *params->file_paths->unsandboxed_data_path;
+  }
+  if (params->http_cache_enabled && params->http_cache_path) {
+    // Delete any old data except for the "Cache_Data" directory.
+    base::ThreadPool::PostTask(
+        FROM_HERE,
+        {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
+         base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+        base::BindOnce(MaybeDeleteOldCache, *params->http_cache_path));
+    params->http_cache_path =
+        params->http_cache_path->Append(kCacheDataDirectoryName);
   }
   GetNetworkService()->CreateNetworkContext(std::move(context),
                                             std::move(params));

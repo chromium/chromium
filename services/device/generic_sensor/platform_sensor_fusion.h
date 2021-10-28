@@ -43,6 +43,9 @@ class PlatformSensorFusion : public PlatformSensor,
       std::unique_ptr<PlatformSensorFusionAlgorithm> fusion_algorithm,
       PlatformSensorProviderBase::CreateSensorCallback callback);
 
+  PlatformSensorFusion(const PlatformSensorFusion&) = delete;
+  PlatformSensorFusion& operator=(const PlatformSensorFusion&) = delete;
+
   // PlatformSensor:
   mojom::ReportingMode GetReportingMode() override;
   PlatformSensorConfiguration GetDefaultConfiguration() override;
@@ -75,8 +78,6 @@ class PlatformSensorFusion : public PlatformSensor,
   std::unique_ptr<PlatformSensorFusionAlgorithm> fusion_algorithm_;
   SourcesMap source_sensors_;
   mojom::ReportingMode reporting_mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformSensorFusion);
 };
 
 }  // namespace device

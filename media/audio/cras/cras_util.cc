@@ -154,7 +154,11 @@ void mergeDevices(CrasDevice& old_dev, CrasDevice& new_dev) {
   old_dev.active |= new_dev.active;
 }
 
-std::vector<CrasDevice> CrasGetAudioDevices(DeviceType type) {
+CrasUtil::CrasUtil() = default;
+
+CrasUtil::~CrasUtil() = default;
+
+std::vector<CrasDevice> CrasUtil::CrasGetAudioDevices(DeviceType type) {
   std::vector<CrasDevice> devices;
 
   libcras_client* client = CrasConnect();
@@ -202,7 +206,7 @@ std::vector<CrasDevice> CrasGetAudioDevices(DeviceType type) {
   return devices;
 }
 
-bool CrasHasKeyboardMic() {
+bool CrasUtil::CrasHasKeyboardMic() {
   libcras_client* client = CrasConnect();
   if (!client)
     return false;
@@ -231,7 +235,7 @@ bool CrasHasKeyboardMic() {
   return ret;
 }
 
-int CrasGetAecSupported() {
+int CrasUtil::CrasGetAecSupported() {
   libcras_client* client = CrasConnect();
   if (!client)
     return 0;
@@ -243,7 +247,7 @@ int CrasGetAecSupported() {
   return supported;
 }
 
-int CrasGetAecGroupId() {
+int CrasUtil::CrasGetAecGroupId() {
   libcras_client* client = CrasConnect();
   if (!client)
     return -1;
@@ -255,7 +259,7 @@ int CrasGetAecGroupId() {
   return rc < 0 ? rc : id;
 }
 
-int CrasGetDefaultOutputBufferSize() {
+int CrasUtil::CrasGetDefaultOutputBufferSize() {
   libcras_client* client = CrasConnect();
   if (!client)
     return -1;

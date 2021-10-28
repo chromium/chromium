@@ -13,13 +13,14 @@
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
+#include "ui/gfx/geometry/quad_f.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
 
 namespace {
-static void CreateQuad(TracedValue* value,
-                       const char* name,
-                       const FloatQuad& quad) {
+
+void CreateQuad(TracedValue* value, const char* name, const gfx::QuadF& quad) {
   value->BeginArray(name);
   value->PushDouble(quad.p1().x());
   value->PushDouble(quad.p1().y());
@@ -34,9 +35,9 @@ static void CreateQuad(TracedValue* value,
 
 }  // namespace
 
-void PaintTimingVisualizer::RecordRects(const IntRect& rect,
+void PaintTimingVisualizer::RecordRects(const gfx::Rect& rect,
                                         std::unique_ptr<TracedValue>& value) {
-  CreateQuad(value.get(), "rect", FloatRect(rect));
+  CreateQuad(value.get(), "rect", gfx::QuadF(gfx::RectF(rect)));
 }
 void PaintTimingVisualizer::RecordObject(const LayoutObject& object,
                                          std::unique_ptr<TracedValue>& value) {
@@ -49,10 +50,10 @@ void PaintTimingVisualizer::RecordObject(const LayoutObject& object,
 }
 
 void PaintTimingVisualizer::DumpTextDebuggingRect(const LayoutObject& object,
-                                                  const FloatRect& rect) {
+                                                  const gfx::RectF& rect) {
   std::unique_ptr<TracedValue> value = std::make_unique<TracedValue>();
   RecordObject(object, value);
-  RecordRects(RoundedIntRect(rect), value);
+  RecordRects(gfx::ToRoundedRect(rect), value);
   value->SetBoolean("is_aggregation_text", true);
   value->SetBoolean("is_svg", object.IsSVG());
   DumpTrace(std::move(value));
@@ -60,11 +61,11 @@ void PaintTimingVisualizer::DumpTextDebuggingRect(const LayoutObject& object,
 
 void PaintTimingVisualizer::DumpImageDebuggingRect(
     const LayoutObject& object,
-    const FloatRect& rect,
+    const gfx::RectF& rect,
     const ImageResourceContent& cached_image) {
   std::unique_ptr<TracedValue> value = std::make_unique<TracedValue>();
   RecordObject(object, value);
-  RecordRects(RoundedIntRect(rect), value);
+  RecordRects(gfx::ToRoundedRect(rect), value);
   value->SetBoolean("is_image", true);
   value->SetBoolean("is_svg", object.IsSVG());
   value->SetBoolean("is_image_loaded", cached_image.IsLoaded());
@@ -86,16 +87,15 @@ void PaintTimingVisualizer::RecordMainFrameViewport(
     return;
   ScrollableArea* scrollable_area = frame_view.GetScrollableArea();
   DCHECK(scrollable_area);
-  IntRect viewport_rect = scrollable_area->VisibleContentRect();
+  gfx::Rect viewport_rect = ToGfxRect(scrollable_area->VisibleContentRect());
 
-  FloatClipRect float_clip_visual_rect =
-      FloatClipRect(ToGfxRectF(FloatRect(viewport_rect)));
-  FloatRect float_visual_rect =
+  FloatClipRect float_clip_visual_rect((gfx::RectF(viewport_rect)));
+  gfx::RectF float_visual_rect =
       frame_view.GetPaintTimingDetector().BlinkSpaceToDIPs(
           float_clip_visual_rect.Rect());
 
   std::unique_ptr<TracedValue> value = std::make_unique<TracedValue>();
-  CreateQuad(value.get(), "viewport_rect", FloatQuad(float_visual_rect));
+  CreateQuad(value.get(), "viewport_rect", gfx::QuadF(float_visual_rect));
   TRACE_EVENT_INSTANT1("loading", "PaintTimingVisualizer::Viewport",
                        TRACE_EVENT_SCOPE_THREAD, "data", std::move(value));
   need_recording_viewport = false;

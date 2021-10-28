@@ -6,11 +6,14 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
+#include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/drive/drivefs_native_message_host.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
+#include "chrome/browser/ash/file_manager/io_task.h"
+#include "chrome/browser/ash/file_manager/io_task_controller.h"
 #include "chrome/browser/chromeos/extensions/file_manager/drivefs_event_router.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
@@ -119,7 +122,8 @@ SystemNotificationManager::CreateNotification(
     const base::RepeatingClosure& click_callback) {
   return CreateNotification(
       notification_id, title, message,
-      new message_center::HandleNotificationClickDelegate(click_callback));
+      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+          click_callback));
 }
 
 std::unique_ptr<message_center::Notification>
@@ -176,18 +180,54 @@ SystemNotificationManager::CreateProgressNotification(
     const std::u16string& title,
     const std::u16string& message,
     int progress) {
-  std::unique_ptr<message_center::RichNotificationData> rich_data =
-      std::make_unique<message_center::RichNotificationData>();
+  message_center::RichNotificationData rich_data;
+  rich_data.progress = progress;
 
-  rich_data->progress = progress;
   return ash::CreateSystemNotification(
       message_center::NOTIFICATION_TYPE_PROGRESS, notification_id, title,
-      message, app_name_, GURL(), message_center::NotifierId(),
-      *rich_data.get(),
-      new message_center::HandleNotificationClickDelegate(
+      message, app_name_, GURL(), message_center::NotifierId(), rich_data,
+      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating(&SystemNotificationManager::HandleProgressClick,
                               weak_ptr_factory_.GetWeakPtr(), notification_id)),
       kProductIcon, message_center::SystemNotificationWarningLevel::NORMAL);
+}
+
+std::unique_ptr<message_center::Notification>
+SystemNotificationManager::CreateIOTaskProgressNotification(
+    file_manager::io_task::IOTaskId task_id,
+    const std::string& notification_id,
+    const std::u16string& title,
+    const std::u16string& message,
+    int progress) {
+  message_center::RichNotificationData rich_data;
+  rich_data.progress = progress;
+
+  auto notification = ash::CreateSystemNotification(
+      message_center::NOTIFICATION_TYPE_PROGRESS, notification_id, title,
+      message, app_name_, GURL(), message_center::NotifierId(), rich_data,
+      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+          base::BindRepeating(&SystemNotificationManager::CancelTaskId,
+                              weak_ptr_factory_.GetWeakPtr(), task_id,
+                              notification_id)),
+      kProductIcon, message_center::SystemNotificationWarningLevel::NORMAL);
+
+  // Add the cancel button:
+  notification->set_buttons({message_center::ButtonInfo(
+      l10n_util::GetStringUTF16(IDS_FILE_BROWSER_CANCEL_LABEL))});
+  return notification;
+}
+
+void SystemNotificationManager::CancelTaskId(
+    file_manager::io_task::IOTaskId task_id,
+    const std::string& notification_id,
+    absl::optional<int> button_index) {
+  if (button_index) {
+    if (io_task_controller_) {
+      io_task_controller_->Cancel(task_id);
+    } else {
+      LOG(ERROR) << "No TaskController, can't cancel task_id: " << task_id;
+    }
+  }
 }
 
 void SystemNotificationManager::Dismiss(const std::string& notification_id) {
@@ -378,9 +418,10 @@ SystemNotificationManager::MakeDriveConfirmDialogNotification(
           event_arguments[0], &dialog_event)) {
     std::vector<message_center::ButtonInfo> notification_buttons;
     scoped_refptr<message_center::NotificationDelegate> delegate =
-        new message_center::HandleNotificationClickDelegate(base::BindRepeating(
-            &SystemNotificationManager::HandleDriveDialogClick,
-            weak_ptr_factory_.GetWeakPtr()));
+        base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+            base::BindRepeating(
+                &SystemNotificationManager::HandleDriveDialogClick,
+                weak_ptr_factory_.GetWeakPtr()));
     notification = CreateNotification(
         kDriveDialogId, IDS_FILE_BROWSER_DRIVE_DIRECTORY_LABEL,
         IDS_FILE_BROWSER_OFFLINE_ENABLE_MESSAGE, delegate);
@@ -582,8 +623,15 @@ void SystemNotificationManager::HandleIOTaskProgress(
   //                                         id);
   //  return;
   //}
-  int progress = 0;
-  std::unique_ptr<message_center::Notification> notification;
+  if (status.state == io_task::State::kError ||
+      status.state == io_task::State::kCancelled ||
+      status.state == io_task::State::kSuccess) {
+    GetNotificationDisplayService()->Close(NotificationHandler::Type::TRANSIENT,
+                                           id);
+    return;
+  }
+
+  // From here state is kQueued or kInProgress:
   std::u16string title = l10n_util::GetStringUTF16(IDS_FILEMANAGER_APP_NAME);
 
   std::u16string message =
@@ -595,36 +643,18 @@ void SystemNotificationManager::HandleIOTaskProgress(
                 IDS_FILE_BROWSER_COPY_FILE_NAME,
                 GetDisplayableFileName(status.sources.back().url));
 
-  switch (status.state) {
-    case file_manager::io_task::State::kQueued:
-      notification = CreateProgressNotification(id, title, message, 0);
-      notification->set_buttons({message_center::ButtonInfo(
-          l10n_util::GetStringUTF16(IDS_FILE_BROWSER_CANCEL_LABEL))});
-      break;
-    case file_manager::io_task::State::kInProgress:
-      if (status.total_bytes > 0) {
-        progress = status.bytes_transferred * 100.0 / status.total_bytes;
-      }
-      notification = CreateProgressNotification(id, title, message, progress);
-      notification->set_buttons({message_center::ButtonInfo(
-          l10n_util::GetStringUTF16(IDS_FILE_BROWSER_CANCEL_LABEL))});
-      break;
-    case file_manager::io_task::State::kError:
-    case file_manager::io_task::State::kCancelled:
-    case file_manager::io_task::State::kSuccess:
-      GetNotificationDisplayService()->Close(
-          NotificationHandler::Type::TRANSIENT, id);
-      break;
-    default:
-      NOTREACHED();
-      break;
+  int progress = 0;
+  if (status.total_bytes > 0) {
+    progress = status.bytes_transferred * 100.0 / status.total_bytes;
   }
 
-  if (notification) {
-    GetNotificationDisplayService()->Display(
-        NotificationHandler::Type::TRANSIENT, *notification,
-        /*metadata=*/nullptr);
-  }
+  std::unique_ptr<message_center::Notification> notification =
+      CreateIOTaskProgressNotification(status.task_id, id, title, message,
+                                       progress);
+
+  GetNotificationDisplayService()->Display(NotificationHandler::Type::TRANSIENT,
+                                           *notification,
+                                           /*metadata=*/nullptr);
 }
 
 constexpr char kRemovableNotificationId[] = "swa-removable-device-id";
@@ -724,10 +754,11 @@ SystemNotificationManager::MakeMountErrorNotification(
         return notification;
     }
     scoped_refptr<message_center::NotificationDelegate> delegate =
-        new message_center::HandleNotificationClickDelegate(base::BindRepeating(
-            &SystemNotificationManager::HandleRemovableNotificationClick,
-            weak_ptr_factory_.GetWeakPtr(), volume.mount_path().value(),
-            uma_types_for_buttons));
+        base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+            base::BindRepeating(
+                &SystemNotificationManager::HandleRemovableNotificationClick,
+                weak_ptr_factory_.GetWeakPtr(), volume.mount_path().value(),
+                uma_types_for_buttons));
     notification =
         CreateNotification(kDeviceFailNotificationId, title, message, delegate);
     DCHECK_EQ(notification_buttons.size(), uma_types_for_buttons.size());
@@ -848,10 +879,11 @@ SystemNotificationManager::MakeRemovableNotification(
       }
     }
     scoped_refptr<message_center::NotificationDelegate> delegate =
-        new message_center::HandleNotificationClickDelegate(base::BindRepeating(
-            &SystemNotificationManager::HandleRemovableNotificationClick,
-            weak_ptr_factory_.GetWeakPtr(), volume.mount_path().value(),
-            uma_types_for_buttons));
+        base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+            base::BindRepeating(
+                &SystemNotificationManager::HandleRemovableNotificationClick,
+                weak_ptr_factory_.GetWeakPtr(), volume.mount_path().value(),
+                uma_types_for_buttons));
     notification =
         CreateNotification(kRemovableNotificationId, title, message, delegate);
     std::vector<message_center::ButtonInfo> notification_buttons;
@@ -919,6 +951,11 @@ SystemNotificationManager::GetNotificationDisplayService() {
 void SystemNotificationManager::SetDriveFSEventRouter(
     DriveFsEventRouter* drivefs_event_router) {
   drivefs_event_router_ = drivefs_event_router;
+}
+
+void SystemNotificationManager::SetIOTaskController(
+    file_manager::io_task::IOTaskController* io_task_controller) {
+  io_task_controller_ = io_task_controller;
 }
 
 }  // namespace file_manager

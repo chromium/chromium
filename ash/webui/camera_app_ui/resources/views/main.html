@@ -288,8 +288,7 @@
     </div>
     <div id="view-crop-document" class="review-views">
       <div class="review-frame">
-        <img class="review-image">
-        <div id="crop-container">
+        <div class="review-image">
           <svg class="crop-area-container">
             <polygon class="crop-area"></polygon>
           </svg>
@@ -297,6 +296,12 @@
       </div>
       <div class="button-groups">
         <div class="positive button-group"></div>
+        <div class="button-group">
+          <button class="icon-button dark inkdrop"
+            i18n-aria="rotate_clockwise_button" tabindex="0"></button>
+          <button class="icon-button dark inkdrop"
+            i18n-aria="rotate_counterclockwise_button" tabindex="0"></button>
+        </div>
         <div class="negative button-group"></div>
       </div>
     </div>
@@ -654,7 +659,7 @@
       <div class="side line"></div>
     </template>
     <template id="document-drag-point-template">
-      <div class="dot"></div>
+      <button tabindex="0" class="dot"></button>
     </template>
     <template id="inkdrop-template">
       <div class="inkdrop-ripple"></div>

@@ -131,6 +131,7 @@
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> арқылы экран көшірмесін көрсету</translation>
 <translation id="1885785240814121742">Құлыпты саусақ ізімен ашыңыз</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> дисплейі <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Гц) ажыратымдылығын қолдамайды. Ажыратымдылық <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) болып өзгертілді. Өзгерістерді сақтау үшін "Растау" түймесін басыңыз. Алдыңғы параметрлер <ph name="TIMEOUT_SECONDS" /> кейін қалпына келтіріледі.</translation>
+<translation id="1915307458270490472">Жабу</translation>
 <translation id="1919743966458266018">Тапсырмалар реттегішін ашатын пернелер тіркесімі өзгертілді. <ph name="OLD_SHORTCUT" /> орнына <ph name="NEW_SHORTCUT" /> пайдаланыңыз.</translation>
 <translation id="1923539912171292317">Автоматты басу әрекеттері</translation>
 <translation id="1928739107511554905">Жаңартылған нұсқаны алу үшін, пернетақта жалғанған күйі Chromebook ноутбугын сенсорлық экран арқылы қайта қосыңыз.</translation>
@@ -1129,6 +1130,7 @@
 <translation id="925832987464884575">Алдын ала көріністерді жасыру</translation>
 <translation id="938963181863597773">Күнтізбемде не бар?</translation>
 <translation id="945522503751344254">Пікір жіберу</translation>
+<translation id="951991426597076286">Қабылдамау</translation>
 <translation id="98515147261107953">Альбомдық</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" /> терезесі жабық.</translation>
 </translationbundle>

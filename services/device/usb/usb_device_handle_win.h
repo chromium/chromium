@@ -31,6 +31,9 @@ class UsbDeviceWin;
 // UsbDeviceHandle class provides basic I/O related functionalities.
 class UsbDeviceHandleWin : public UsbDeviceHandle {
  public:
+  UsbDeviceHandleWin(const UsbDeviceHandleWin&) = delete;
+  UsbDeviceHandleWin& operator=(const UsbDeviceHandleWin&) = delete;
+
   scoped_refptr<UsbDevice> GetDevice() const override;
   void Close() override;
   void SetConfiguration(int configuration_value,
@@ -98,6 +101,10 @@ class UsbDeviceHandleWin : public UsbDeviceHandle {
 
   struct Interface {
     Interface();
+
+    Interface(const Interface&) = delete;
+    Interface& operator=(const Interface&) = delete;
+
     ~Interface();
 
     // This may be nullptr in the rare case of a device which doesn't have any
@@ -129,8 +136,6 @@ class UsbDeviceHandleWin : public UsbDeviceHandle {
 
     // Closures to execute when |function_path| has been populated.
     std::vector<OpenInterfaceCallback> ready_callbacks;
-
-    DISALLOW_COPY_AND_ASSIGN(Interface);
   };
 
   struct Endpoint {
@@ -222,8 +227,6 @@ class UsbDeviceHandleWin : public UsbDeviceHandle {
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
 
   base::WeakPtrFactory<UsbDeviceHandleWin> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UsbDeviceHandleWin);
 };
 
 }  // namespace device

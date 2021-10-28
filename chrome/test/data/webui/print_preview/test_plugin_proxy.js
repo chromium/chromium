@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {TestBrowserProxy} from '../test_browser_proxy.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 /**
  * Test version of the PluginProxy.

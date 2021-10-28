@@ -97,6 +97,7 @@
 <translation id="3379938682270551431">{0,plural, =0{Chrome će se sada ponovo pokrenuti}=1{Chrome će se ponovo pokrenuti za jednu sekundu}one{Chrome će se ponovo pokrenuti za # s}few{Chrome će se ponovo pokrenuti za # s}other{Chrome će se ponovo pokrenuti za # s}}</translation>
 <translation id="3395323229510056640">Potraži pomoć za upotrebu OS-a Chrome</translation>
 <translation id="3396977131400919238">Došlo je do pogreške operacijskog sustava tijekom instalacije. Ponovno preuzmite program Google Chrome.</translation>
+<translation id="3428747202529429621">Štiti vas na Chromeu i može se upotrebljavati za poboljšanje vaše sigurnosti u drugim Googleovim aplikacijama kada ste prijavljeni</translation>
 <translation id="3434246496373299699">Chrome može provjeriti vaše zaporke kad se prijavite Google računom</translation>
 <translation id="3451115285585441894">Dodavanje u Chrome...</translation>
 <translation id="345171907106878721">Dodajte sebe kao korisnika Chromea</translation>
@@ -200,6 +201,7 @@
 <translation id="6291089322031436445">Aplikacije preglednika Chrome Dev</translation>
 <translation id="6291549208091401781">Google Chrome već je instaliran za sve korisnike na računalu.</translation>
 <translation id="6368958679917195344">OS Chrome omogućen je dodatnim <ph name="BEGIN_LINK_CROS_OSS" />softverom otvorenog koda<ph name="END_LINK_CROS_OSS" />.</translation>
+<translation id="6412673304250309937">Provjerava URL-ove s popisom nesigurnih web-lokacija pohranjenih u Chromeu. Ako neka web-lokacija pokuša ukrasti vašu zaporku ili ako preuzmete štetnu datoteku, Chrome također može poslati URL-ove, uključujući dijelove sadržaja web-stranice, Sigurnom pregledavanju.</translation>
 <translation id="6418662306461808273">Želite li prijeći na postojeći profil u Chromeu?</translation>
 <translation id="6506909944137591434">Chrome treba dopuštenje za fotoaparat kako bi mogao izraditi 3D kartu vašeg okruženja</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>

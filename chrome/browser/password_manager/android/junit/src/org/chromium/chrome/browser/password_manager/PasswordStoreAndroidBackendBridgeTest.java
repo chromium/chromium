@@ -80,7 +80,7 @@ public class PasswordStoreAndroidBackendBridgeTest {
     }
 
     @Test
-    public void testGetAllLoginsCallsBridgeOnFailure() {
+    public void testGetAllLoginsCallsBridgeOnUncategorizedFailure() {
         final int kTestTaskId = 42069;
 
         // Ensure the backend is called with a valid failure callback.
@@ -92,6 +92,25 @@ public class PasswordStoreAndroidBackendBridgeTest {
 
         Exception kExpectedException = new Exception("Sample failure");
         failureCallback.getValue().onResult(kExpectedException);
-        verify(mBridgeJniMock).onError(sDummyNativePointer, kTestTaskId);
+        verify(mBridgeJniMock)
+                .onError(sDummyNativePointer, kTestTaskId, AndroidBackendErrorType.UNCATEGORIZED);
+    }
+
+    @Test
+    public void testGetAllLoginsCallsBridgeOnPreconditionFailure() {
+        final int kTestTaskId = 42069;
+
+        // Ensure the backend is called with a valid failure callback.
+        mBackendBridge.getAllLogins(kTestTaskId);
+        ArgumentCaptor<Callback<Exception>> failureCallback =
+                ArgumentCaptor.forClass(Callback.class);
+        verify(mBackendMock).getAllLogins(any(), failureCallback.capture());
+        assertNotNull(failureCallback.getValue());
+
+        Exception kExpectedException = new PasswordStoreAndroidBackend.BackendException(
+                "Sample failure", AndroidBackendErrorType.NO_ACCOUNT);
+        failureCallback.getValue().onResult(kExpectedException);
+        verify(mBridgeJniMock)
+                .onError(sDummyNativePointer, kTestTaskId, AndroidBackendErrorType.NO_ACCOUNT);
     }
 }

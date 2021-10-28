@@ -1300,7 +1300,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2312219318583366810">Səhifə keçidi</translation>
 <translation id="2314165183524574721">Cari görünmə ayarı gizli olaraq ayarlanıb</translation>
 <translation id="2314774579020744484">Səhifələrin tərcüməsində istifadə edilən dil</translation>
-<translation id="2315414688463285945">Linux fayllarının konfiqurasiyasında xəta baş verdi. Yenidən cəhd edin.</translation>
 <translation id="2315587498123194634">Linki <ph name="DEVICE_NAME" /> cihazına göndərin</translation>
 <translation id="2316129865977710310">Yox, çox sağ olun</translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" />% hazırdır</translation>
@@ -2349,7 +2348,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3424969259347320884">Tabda Xəta Baş Verdiyi Zaman Nə Etdiyinizi Təsvir Edin</translation>
 <translation id="3427092606871434483">İcazə verin (defolt)</translation>
 <translation id="3428419049384081277">Hesaba daxil olmusunuz!</translation>
-<translation id="3428747202529429621">Daxil olduğunuzda Chrome'da sizi qoruyur və digər Google tətbiqlərində təhlükəsizliyinizi artırmaq üçün istifadə edilə bilər</translation>
 <translation id="3429086384982427336">Aşağıda sadalanan tətbiqlər heç vaxt protokol keçidlərini idarə etməyəcək.</translation>
 <translation id="3429160811076349561">Sınaq funksiyaları deaktivdir</translation>
 <translation id="3429271624041785769">Veb məzmun dilləri</translation>
@@ -5111,7 +5109,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6410328738210026208">Kanal və Zavod sıfırlamasını dəyişin</translation>
 <translation id="6410390304316730527">Təhlükəsiz Baxış sizi zərərli proqram təminatı quraşdırmaq və ya parol, telefon nömrəsi, kredit kartı kimi şəxsi məlumatlarınızı aşkar etmək kimi təhlükəli əməliyyatlara sövq etmək üçün aldada biləcək hücumlardan qoruyur. Bu xüsusiyyəti söndürsəniz, tanış və ya məşhur olmayan saytlara baxarkən ehtiyatlı olun.</translation>
 <translation id="6410668567036790476">Axtarış sistemi əlavə edin</translation>
-<translation id="6412673304250309937">URL'ləri Chrome'da saxlanılan təhlükəli saytların siyahısı ilə yoxlayır. Sayt parolunuzu oğurlamağa çalışdıqda və ya zərərli fayl endirdiyinizdə Chrome səhifə məzmunundan kiçik nümunələr də daxil olmaqla, URL'ləri Təhlükəsiz Baxışa göndərə bilər.</translation>
 <translation id="641469293210305670">Güncəlləmə və Tətbiqləri Quraşdırın</translation>
 <translation id="6414878884710400018">Açıq Sistem Tərcihləri</translation>
 <translation id="6414888972213066896">Bu sayta daxil olmaq üçün valideyninizdən icazə istədiniz.</translation>
@@ -5520,7 +5517,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6843264316370513305">Şəbəkə Sazlaması</translation>
 <translation id="6843423766595476978">Ok Google tam hazırdır</translation>
 <translation id="6845038076637626672">Maksimal açın</translation>
-<translation id="6845325883481699275">Chrome təhlükəsizliyini təkmilləşdirin</translation>
 <translation id="6846178040388691741">"<ph name="EXTENSION_NAME" />" <ph name="FILE_NAME" /> faylını <ph name="PRINTER_NAME" /> adı ilə çap etmək istəyir.</translation>
 <translation id="6847125920277401289">Davam etmək üçün yer boşaldın</translation>
 <translation id="6848388270925200958">Hazırda yalnız bu cihazda istifadə edilə bilən bir neçə kartınız var</translation>
@@ -6971,7 +6967,6 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8324784016256120271">Saytlar müxtəlif saytlarda baxış fəaliyyətinizi (məsələn, reklamları fərdiləşdirmək üçün) görmək üçün kukilərdən istifadə edə bilər</translation>
 <translation id="8325413836429495820">Mübadilə buferinizə baxmaq icazəsi verilməyib</translation>
 <translation id="8326478304147373412">PKCS # 7, sertifikat zənciri</translation>
-<translation id="8327039559959785305">Linux faylları əlavə edilərkən xəta baş verdi. Yenidən cəhd edin.</translation>
 <translation id="8327676037044516220">İcazələr və məzmun ayarları</translation>
 <translation id="833256022891467078">Crostini'nin paylaşılan qovluqları</translation>
 <translation id="8335587457941836791">Buferdən çıxarın</translation>

@@ -16,22 +16,24 @@ class AX_EXPORT AccessibilityBridgeFuchsia {
  public:
   virtual ~AccessibilityBridgeFuchsia() = default;
 
-  // Translates NodeIDs to fuchsia IDs, fills the corresponding fields
-  // in |node_data|, and sends the update to fuchsia.
-  // Note that |node_data| should not have any node ID fields (node_id,
-  // child_ids, offset_container_id, etc.) filled initially.
-  virtual void UpdateNode(NodeUpdate node_update) = 0;
+  // Translates AXNodeDescriptorFuchsias to fuchsia IDs, fills the
+  // corresponding fields in |node_update.node_data|, and sends the update
+  // to fuchsia.
+  //
+  // Note that |node_update.node_data| should not have any node ID fields
+  // (node_id, child_ids, offset_container_id, etc.) filled initially.
+  virtual void UpdateNode(AXNodeUpdateFuchsia node_update) = 0;
 
   // Translates |node_id| to a fuchsia node ID, and sends the deletion to
   // fuchsia.
-  virtual void DeleteSemanticNodes(NodeID node_id) = 0;
+  virtual void DeleteSemanticNodes(AXNodeDescriptorFuchsia node_id) = 0;
 
   // Method to notify the accessibility bridge when a hit test result is
   // received. The accessibility bridge will convert |result| to a fuchsia node
   // ID, build a fuchsia Hit object using that ID, and invoke the callback
   // corresponding to hit_test_request_id.
   virtual void OnAccessibilityHitTestResult(int hit_test_request_id,
-                                            NodeID result) = 0;
+                                            AXNodeDescriptorFuchsia result) = 0;
 };
 
 }  // namespace ui

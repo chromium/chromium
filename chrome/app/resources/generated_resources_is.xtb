@@ -1317,7 +1317,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2312219318583366810">Vefslóð síðu</translation>
 <translation id="2314165183524574721">Sýnileiki er stilltur á falin(n)</translation>
 <translation id="2314774579020744484">Tungumál sem notað er þegar síður eru þýddar</translation>
-<translation id="2315414688463285945">Villa við að stilla Linux-skrár. Reyndu aftur.</translation>
 <translation id="2315587498123194634">Senda tengil í <ph name="DEVICE_NAME" /></translation>
 <translation id="2316129865977710310">Nei, takk</translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" />% lokið</translation>
@@ -2365,7 +2364,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3424969259347320884">Lýstu því hvað þú varst að gera þegar flipinn hrundi</translation>
 <translation id="3427092606871434483">Leyfa (sjálfgefið)</translation>
 <translation id="3428419049384081277">Þú ert skráð(ur) inn!</translation>
-<translation id="3428747202529429621">Tryggir öryggi þitt í Chrome og kann að vera notað til að auka öryggi þitt í öðrum Google forritum þegar þú ert skráð(ur) inn</translation>
 <translation id="3429086384982427336">Forrit sem tilgreind eru hér að neðan munu aldrei meðhöndla tengla fyrir samskiptareglur.</translation>
 <translation id="3429160811076349561">Slökkt er á prufueiginleikum</translation>
 <translation id="3429271624041785769">Tungumál vefefnis</translation>
@@ -5130,7 +5128,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6410328738210026208">Skipta um rás og djúphreinsa</translation>
 <translation id="6410390304316730527">Örugg vefnotkun verndar þig fyrir tölvuþrjótum sem gætu platað þig til að gera eitthvað hættulegt eins og að setja upp skaðlegan hugbúnað eða gefa upp persónuupplýsingar á borð við aðgangsorð, símanúmer eða kreditkortaupplýsingar. Ef þú slekkur á henni skaltu fara varlega þegar þú skoðar ókunnug eða óáreiðanleg vefsvæði.</translation>
 <translation id="6410668567036790476">Bæta við leitarvél</translation>
-<translation id="6412673304250309937">Ber vefslóðir saman við lista yfir óörugg vefsvæði sem er vistaður í Chrome. Ef vefsvæði reynir að stela aðgangsorðinu þínu, eða ef þú sækir skaðlega skrá, gæti Chrome einnig sent vefslóðir í Örugga vefskoðun, þar á meðal hluta af innihaldi síðna.</translation>
 <translation id="641469293210305670">Setja upp uppfærslur og forrit</translation>
 <translation id="6414878884710400018">Opna kerfisstillingar</translation>
 <translation id="6414888972213066896">Þú baðst foreldri þitt um leyfi til að fara á þetta vefsvæði</translation>
@@ -5539,7 +5536,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6843264316370513305">Villuleit í netkerfi</translation>
 <translation id="6843423766595476978">Ok Google er tilbúið</translation>
 <translation id="6845038076637626672">Opna stækkað</translation>
-<translation id="6845325883481699275">Hjálpaðu til við að bæta öryggi Chrome</translation>
 <translation id="6846178040388691741">„<ph name="EXTENSION_NAME" />“ vill prenta <ph name="FILE_NAME" /> með <ph name="PRINTER_NAME" />.</translation>
 <translation id="6847125920277401289">Losaðu um pláss til að halda áfram</translation>
 <translation id="6848388270925200958">Eins og er ertu með einhver kort sem aðeins er hægt að nota í þessu tæki</translation>
@@ -6991,7 +6987,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8324784016256120271">Vefsvæði geta notað fótspor til að sjá vafranotkun þína á vefsvæðum, til dæmis til að sérsníða auglýsingar</translation>
 <translation id="8325413836429495820">Mega ekki sjá klippiborðið</translation>
 <translation id="8326478304147373412">PKCS #7, vottorðakeðja</translation>
-<translation id="8327039559959785305">Villa við að tengja Linux-skrár. Reyndu aftur.</translation>
 <translation id="8327676037044516220">Heimildir og efnisstillingar</translation>
 <translation id="833256022891467078">Sameiginlegar möppur í Crostini</translation>
 <translation id="8335587457941836791">Losa úr hillu</translation>

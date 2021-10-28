@@ -253,6 +253,10 @@ class GlobalDumpGraph {
       std::map<base::trace_event::MemoryAllocatorDumpGuid, Node*>;
 
   GlobalDumpGraph();
+
+  GlobalDumpGraph(const GlobalDumpGraph&) = delete;
+  GlobalDumpGraph& operator=(const GlobalDumpGraph&) = delete;
+
   ~GlobalDumpGraph();
 
   // Creates a container for all the dump graphs for the process given
@@ -293,8 +297,6 @@ class GlobalDumpGraph {
   GuidNodeMap nodes_by_guid_;
   std::unique_ptr<GlobalDumpGraph::Process> shared_memory_graph_;
   ProcessDumpGraphMap process_dump_graphs_;
-
-  DISALLOW_COPY_AND_ASSIGN(GlobalDumpGraph);
 };
 
 }  // namespace memory_instrumentation

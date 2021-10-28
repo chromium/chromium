@@ -24,4 +24,7 @@ const base::Feature kPageInfoV2Desktop{"PageInfoV2Desktop",
 const base::Feature kPageInfoAboutThisSite{"PageInfoAboutThisSite",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::FeatureParam<bool> kShowSampleContent{&kPageInfoAboutThisSite,
+                                                  "ShowSampleContent", true};
+
 }  // namespace page_info

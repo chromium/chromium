@@ -31,10 +31,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.StrictModeContext;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
@@ -126,7 +126,8 @@ public class PageInfoAboutThisSiteTest {
     private ViewAssertion renderView(String renderId) {
         return (v, noMatchException) -> {
             if (noMatchException != null) throw noMatchException;
-            try {
+            // Allow disk writes and slow calls to render from UI thread.
+            try (StrictModeContext ignored = StrictModeContext.allowAllThreadPolicies()) {
                 mRenderTestRule.render(v, renderId);
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -166,7 +167,6 @@ public class PageInfoAboutThisSiteTest {
         onView(withId(PageInfoAboutThisSiteController.ROW_ID)).check(matches(not(isDisplayed())));
     }
 
-    @DisabledTest(message = "crbug.com/1263195")
     @Test
     @MediumTest
     @Feature({"RenderTest"})
@@ -177,7 +177,6 @@ public class PageInfoAboutThisSiteTest {
                 .check(renderView("page_info_about_this_site_row"));
     }
 
-    @DisabledTest(message = "crbug.com/1263195")
     @Test
     @MediumTest
     @Feature({"RenderTest"})

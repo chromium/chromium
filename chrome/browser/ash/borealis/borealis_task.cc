@@ -170,6 +170,9 @@ void StartBorealisVm::StartBorealisWithExternalDisk(
   request.set_software_tpm(false);
   request.set_enable_audio_capture(false);
   request.set_enable_vulkan(true);
+  if (base::FeatureList::IsEnabled(chromeos::features::kBorealisBigGl)) {
+    request.set_enable_big_gl(true);
+  }
   request.set_name(context->vm_name());
 
   vm_tools::concierge::DiskImage* disk_image = request.add_disks();

@@ -85,8 +85,7 @@ void TextFragmentHandler::GetExistingSelectors(
     return;
   }
 
-  for (auto& directive_finder_pair : anchor->DirectiveFinderPairs()) {
-    TextFragmentFinder* finder = directive_finder_pair.second.Get();
+  for (auto& finder : anchor->TextFragmentFinders()) {
     if (finder->FirstMatch()) {
       text_fragment_selectors.push_back(finder->GetSelector().ToString());
     }
@@ -148,8 +147,7 @@ void TextFragmentHandler::ExtractTextFragmentsMatches(
     return;
   }
 
-  for (auto& directive_finder_pair : anchor->DirectiveFinderPairs()) {
-    TextFragmentFinder* finder = directive_finder_pair.second.Get();
+  for (auto& finder : anchor->TextFragmentFinders()) {
     if (finder->FirstMatch()) {
       text_fragment_matches.push_back(
           PlainText(finder->FirstMatch()->ToEphemeralRange()));
@@ -166,13 +164,12 @@ void TextFragmentHandler::ExtractFirstFragmentRect(
   IntRect rect_in_viewport;
 
   TextFragmentAnchor* anchor = GetTextFragmentAnchor();
-  if (!anchor || anchor->DirectiveFinderPairs().size() <= 0) {
+  if (!anchor || anchor->TextFragmentFinders().size() <= 0) {
     std::move(callback).Run(gfx::Rect());
     return;
   }
 
-  for (auto& directive_finder_pair : anchor->DirectiveFinderPairs()) {
-    TextFragmentFinder* finder = directive_finder_pair.second.Get();
+  for (auto& finder : anchor->TextFragmentFinders()) {
     if (finder->FirstMatch() == nullptr) {
       continue;
     }

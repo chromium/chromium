@@ -18,6 +18,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">Înlocuiți</translation>
 <translation id="1073899992769346247">Înlocuiește sau încarcă bateria</translation>
+<translation id="1081015718268701546">Aplicațiile Linux nu sunt acceptate momentan. Alte aplicații se vor salva.</translation>
 <translation id="108486256082349153">Celular: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Bună ziua, <ph name="GIVEN_NAME" />!</translation>
 <translation id="109942774857561566">M-am plictisit</translation>
@@ -44,6 +45,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1225748608451425081">Chromebookul este blocat din cauza unei probleme cunoscute. Vei putea să te conectezi după <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Nu mai selecta</translation>
 <translation id="1239161794459865856">Opțiunea <ph name="FEATURE_NAME" /> s-a conectat.</translation>
+<translation id="1246890715821376239">Aplicații neacceptate</translation>
 <translation id="1247372569136754018">Microfon (intern)</translation>
 <translation id="1252999807265626933">Se încarcă de la <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Cum este vremea?</translation>
@@ -129,6 +131,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1882897271359938046">Se oglindește pe <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Deblochează cu amprenta</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> nu acceptă <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Rezoluția a fost modificată la <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Dă clic pe Confirmă pentru a păstra modificările. Setările anterioare vor fi restabilite în <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="1915307458270490472">Încheie apelul</translation>
 <translation id="1919743966458266018">Comanda rapidă pentru a deschide managerul de activități a fost modificată. Folosește <ph name="NEW_SHORTCUT" /> în loc de <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Clicuri automate</translation>
 <translation id="1928739107511554905">Pentru a obține actualizarea, folosește ecranul tactil ca să repornești Chromebookul cu tastatura atașată.</translation>
@@ -169,6 +172,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2148716181193084225">Astăzi</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: reîncearcă</translation>
 <translation id="2170530631236737939">Glisează în jos cu trei degete pentru a ieși din modul Prezentare generală</translation>
+<translation id="2201071101391734388">Fotografia recentă <ph name="INDEX" /> din <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2208323208084708176">Modul Desktop unificat</translation>
 <translation id="2220572644011485463">PIN sau parolă</translation>
 <translation id="2222841058024245321">Desktop 7</translation>
@@ -293,6 +297,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3151786313568798007">Orientare</translation>
 <translation id="3153444934357957346">Conectarea multiplă acceptă maximum <ph name="MULTI_PROFILE_USER_LIMIT" /> conturi.</translation>
 <translation id="3154351730702813399">Este posibil ca administratorul dispozitivului să monitorizeze activitatea de navigare.</translation>
+<translation id="316086887565479535">Aplicații neacceptate în șablon</translation>
 <translation id="3181441307743005334">Repornirea poate dura un timp</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Conectat la un dispozitiv}few{Conectat la # dispozitive}other{Conectat la # de dispozitive}}</translation>
 <translation id="320207200541803018">Setează temporizatorul</translation>
@@ -390,6 +395,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="383058930331066723">Modul Economisirea bateriei este activat</translation>
 <translation id="3835880383832568924">Pentru a vedea actualizările, deschide aplicația Legături directe</translation>
 <translation id="383629559565718788">Afișează setările pentru tastatură</translation>
+<translation id="384082539148746321">Ștergi șablonul?</translation>
 <translation id="3846214748874656680">Ieși din ecranul complet</translation>
 <translation id="3846575436967432996">Nu sunt disponibile informații despre rețele</translation>
 <translation id="385051799172605136">Înapoi</translation>
@@ -824,6 +830,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="7029814467594812963">Ieși din sesiune</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Asistent Google</translation>
 <translation id="7042322267639375032">Restrânge zona de stare</translation>
+<translation id="7045033600005038336">Înlocuiești șablonul?</translation>
 <translation id="7045595904618419789">Activează lupa</translation>
 <translation id="7055381872777910864">M</translation>
 <translation id="7055910611768509537">Creionul nu a fost folosit de mai mult de o săptămână</translation>
@@ -960,6 +967,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="8036504271468642248">Propoziția anterioară</translation>
 <translation id="8042893070933512245">Deschide meniul cu setări de accesibilitate</translation>
 <translation id="8048123526339889627">Setări Bluetooth</translation>
+<translation id="8051716679295756675">Șablonul numit <ph name="DESK_TEMPLATE_NAME" /> există deja</translation>
 <translation id="8052898407431791827">S-a copiat în clipboard</translation>
 <translation id="8054466585765276473">Se calculează durata bateriei.</translation>
 <translation id="8061464966246066292">Contrast ridicat</translation>
@@ -1065,6 +1073,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="8876661425082386199">Verifică-ți conexiunea</translation>
 <translation id="8877788021141246043">Setează un memento</translation>
 <translation id="8878886163241303700">Ecran extins</translation>
+<translation id="8896630965521842259">Șablonul <ph name="DESK_TEMPLATE_NAME" /> va fi șters definitiv</translation>
 <translation id="890616557918890486">Schimbă sursa</translation>
 <translation id="8909138438987180327">Nivelul bateriei este <ph name="PERCENTAGE" /> %.</translation>
 <translation id="8913384980486163186">Cu temă (prestabilit)</translation>
@@ -1121,6 +1130,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="925832987464884575">Ascunde previzualizările</translation>
 <translation id="938963181863597773">Ce am în calendar?</translation>
 <translation id="945522503751344254">Trimite feedback</translation>
+<translation id="951991426597076286">Refuză</translation>
 <translation id="98515147261107953">Peisaj</translation>
 <translation id="990277280839877440">Fereastra <ph name="WINDOW_TITILE" /> s-a închis.</translation>
 </translationbundle>

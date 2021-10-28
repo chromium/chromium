@@ -41,6 +41,9 @@ class AudioFocusManagerTest
  public:
   AudioFocusManagerTest() = default;
 
+  AudioFocusManagerTest(const AudioFocusManagerTest&) = delete;
+  AudioFocusManagerTest& operator=(const AudioFocusManagerTest&) = delete;
+
   void SetUp() override {
     // Create an instance of the MediaSessionService.
     service_ = std::make_unique<MediaSessionServiceImpl>();
@@ -281,8 +284,6 @@ class AudioFocusManagerTest
   mojo::Remote<mojom::MediaControllerManager> controller_manager_remote_;
 
   base::test::ScopedPowerMonitorTestSource power_source_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioFocusManagerTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(

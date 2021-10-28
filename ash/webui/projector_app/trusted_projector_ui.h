@@ -10,7 +10,7 @@
 
 class GURL;
 
-namespace chromeos {
+namespace ash {
 
 // The implementation for the Projector selfie cam and player app WebUI.
 // TODO(b/193670945): Migrate to ash/components and ash/webui.
@@ -25,6 +25,6 @@ class TrustedProjectorUI : public ui::MojoBubbleWebUIController {
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_PROJECTOR_APP_TRUSTED_PROJECTOR_UI_H_

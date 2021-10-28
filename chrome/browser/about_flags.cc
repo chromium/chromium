@@ -2221,29 +2221,6 @@ const FeatureEntry::FeatureVariation
          base::size(kOmniboxOnDeviceHeadSuggestNoDelayRelevance1000), nullptr}};
 #endif  // defined(OS_ANDROID)
 
-const FeatureEntry::FeatureParam
-    kQuietNotificationPromptsWithAdaptiveActivation[] = {
-        {QuietNotificationPermissionUiConfig::kEnableAdaptiveActivation,
-         "true"},
-        {QuietNotificationPermissionUiConfig::kEnableAbusiveRequestBlocking,
-         "true"},
-        {QuietNotificationPermissionUiConfig::kEnableAbusiveRequestWarning,
-         "true"},
-        {QuietNotificationPermissionUiConfig::kEnableCrowdDenyTriggering,
-         "true"},
-        {QuietNotificationPermissionUiConfig::kCrowdDenyHoldBackChance, "0"}};
-
-// The default "Enabled" option has the semantics of showing the quiet UI
-// (animated location bar indicator on Desktop, and mini-infobars on Android),
-// but only when the user directly turns it on in Settings. In addition to that,
-// expose an option to also enable adaptively turning on the quiet UI after
-// three consecutive denies or based on crowd deny verdicts.
-const FeatureEntry::FeatureVariation kQuietNotificationPromptsVariations[] = {
-    {"(with adaptive activation)",
-     kQuietNotificationPromptsWithAdaptiveActivation,
-     base::size(kQuietNotificationPromptsWithAdaptiveActivation), nullptr},
-};
-
 // TODO(crbug.com/991082,1015377): Remove after proper support for back-forward
 // cache is implemented.
 const FeatureEntry::FeatureParam kBackForwardCache_ForceCaching[] = {
@@ -2648,6 +2625,7 @@ const FeatureEntry::FeatureVariation kPaintPreviewStartupVariations[] = {
 #endif  // BUILDFLAG(ENABLE_PAINT_PREVIEW) && defined(OS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+constexpr char kBorealisBigGlInternalName[] = "borealis-big-gl";
 constexpr char kBorealisDiskManagementInternalName[] =
     "borealis-disk-management";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -6117,18 +6095,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillSaveAndFillVPADescription, kOsAll,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillSaveAndFillVPA)},
 
-    {"quiet-notification-prompts",
-     flag_descriptions::kQuietNotificationPromptsName,
-     flag_descriptions::kQuietNotificationPromptsDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kQuietNotificationPrompts,
-                                    kQuietNotificationPromptsVariations,
-                                    "QuietNotificationPrompts")},
-    {"abusive-notification-permission-revocation",
-     flag_descriptions::kAbusiveNotificationPermissionRevocationName,
-     flag_descriptions::kAbusiveNotificationPermissionRevocationDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(features::kAbusiveNotificationPermissionRevocation)},
-
 #if defined(OS_ANDROID)
     {"context-menu-google-lens-chip",
      flag_descriptions::kContextMenuGoogleLensChipName,
@@ -6636,7 +6602,11 @@ const FeatureEntry kFeatureEntries[] = {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"productivity-launcher", flag_descriptions::kProductivityLauncherName,
      flag_descriptions::kProductivityLauncherDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::features::kProductivityLauncher)},
+     FEATURE_VALUE_TYPE(ash::features::kProductivityLauncher)},
+    {"productivity-launcher-animation",
+     flag_descriptions::kProductivityLauncherAnimationName,
+     flag_descriptions::kProductivityLauncherAnimationDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kProductivityLauncherAnimation)},
     {"enable-launcher-app-paging",
      flag_descriptions::kNewDragSpecInLauncherName,
      flag_descriptions::kNewDragSpecInLauncherDescription, kOsCrOS,
@@ -7459,6 +7429,9 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(net::features::kPartitionedCookies)},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    {kBorealisBigGlInternalName, flag_descriptions::kBorealisBigGlName,
+     flag_descriptions::kBorealisBigGlDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kBorealisBigGl)},
     {kBorealisDiskManagementInternalName,
      flag_descriptions::kBorealisDiskManagementName,
      flag_descriptions::kBorealisDiskManagementDescription, kOsCrOS,
@@ -7803,6 +7776,10 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
   }
 
   // Only show Borealis flags on enabled devices.
+  if (!strcmp(kBorealisBigGlInternalName, entry.internal_name)) {
+    return !base::FeatureList::IsEnabled(features::kBorealis);
+  }
+
   if (!strcmp(kBorealisDiskManagementInternalName, entry.internal_name)) {
     return !base::FeatureList::IsEnabled(features::kBorealis);
   }
@@ -7847,12 +7824,6 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
        features::kDnsOverHttpsShowUiParam.Get())) {
     return true;
   }
-
-#if defined(OS_ANDROID)
-  if (!strcmp("password-change-support", entry.internal_name)) {
-    return !base::FeatureList::IsEnabled(features::kTeamfoodFlags);
-  }
-#endif  // OS_ANDROID
 
   if (flags::IsFlagExpired(storage, entry.internal_name))
     return true;

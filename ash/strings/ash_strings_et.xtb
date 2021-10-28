@@ -131,6 +131,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1882897271359938046">Peegeldamine asukohta <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Sõrmejäljega avamine</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> ei toeta eraldusvõimet <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Eraldusvõimeks määrati <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Muudatuste säilitamiseks klõpsake nupul Kinnita. Eelmised seaded taastatakse <ph name="TIMEOUT_SECONDS" /> pärast.</translation>
+<translation id="1915307458270490472">Lõpeta kõne</translation>
 <translation id="1919743966458266018">Tegumihalduri avamise otseteed on muudetud. Kasutage vana otsetee <ph name="OLD_SHORTCUT" /> asemel uut otseteed <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Automaatsed klikid</translation>
 <translation id="1928739107511554905">Värskenduse hankimiseks kasutage puuteekraani, et oma Chromebook koos ühendatud klaviatuuriga taaskäivitada.</translation>
@@ -1130,6 +1131,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="925832987464884575">Peida eelvaated</translation>
 <translation id="938963181863597773">Mis on minu kalendris?</translation>
 <translation id="945522503751344254">Tagasiside saatmine</translation>
+<translation id="951991426597076286">Keeldu</translation>
 <translation id="98515147261107953">Horisontaalpaigutus</translation>
 <translation id="990277280839877440">Aken <ph name="WINDOW_TITILE" /> on suletud.</translation>
 </translationbundle>

@@ -18,6 +18,9 @@ class FakePlatformSensor : public PlatformSensor {
                      SensorReadingSharedBuffer* reading_buffer,
                      PlatformSensorProvider* provider);
 
+  FakePlatformSensor(const FakePlatformSensor&) = delete;
+  FakePlatformSensor& operator=(const FakePlatformSensor&) = delete;
+
   // PlatformSensor:
   MOCK_METHOD1(StartSensor,
                bool(const PlatformSensorConfiguration& configuration));
@@ -42,8 +45,6 @@ class FakePlatformSensor : public PlatformSensor {
   double maximum_supported_frequency_ = 50.0;
 
   ~FakePlatformSensor() override;
-
-  DISALLOW_COPY_AND_ASSIGN(FakePlatformSensor);
 };
 
 class FakePlatformSensorProvider : public PlatformSensorProvider {

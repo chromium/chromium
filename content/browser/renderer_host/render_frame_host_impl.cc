@@ -1374,7 +1374,13 @@ RenderFrameHostImpl::RenderFrameHostImpl(
           FrameTreeNode::kFrameTreeNodeInvalidId),
       anonymous_(parent_ ? parent_->anonymous() : false),
       code_cache_host_receivers_(
-          GetProcess()->GetStoragePartition()->GetGeneratedCodeCacheContext()) {
+          GetProcess()->GetStoragePartition()->GetGeneratedCodeCacheContext()),
+      fenced_frame_status_(
+          frame_tree_node_->IsInFencedFrameTree()
+              ? (frame_tree_node_->IsFencedFrameRoot()
+                     ? FencedFrameStatus::kFencedFrameRoot
+                     : FencedFrameStatus::kIframeNestedWithinFencedFrame)
+              : FencedFrameStatus::kNotNestedInFencedFrame) {
   DCHECK(delegate_);
   DCHECK(lifecycle_state_ == LifecycleStateImpl::kSpeculative ||
          lifecycle_state_ == LifecycleStateImpl::kPrerendering ||
@@ -1885,7 +1891,18 @@ bool RenderFrameHostImpl::IsDescendantOfWithinFrameTree(
 }
 
 bool RenderFrameHostImpl::IsFencedFrameRoot() {
-  return frame_tree_node_->IsFencedFrameRoot();
+  return fenced_frame_status_ == FencedFrameStatus::kFencedFrameRoot;
+}
+
+bool RenderFrameHostImpl::IsNestedWithinFencedFrame() {
+  switch (fenced_frame_status_) {
+    case FencedFrameStatus::kNotNestedInFencedFrame:
+      return false;
+    case FencedFrameStatus::kFencedFrameRoot:
+      return true;
+    case FencedFrameStatus::kIframeNestedWithinFencedFrame:
+      return true;
+  }
 }
 
 void RenderFrameHostImpl::ForEachRenderFrameHost(

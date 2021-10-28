@@ -29,6 +29,7 @@
 <translation id="1743802530341753419">Demander avant d'autoriser des sites à se connecter à un appareil (recommandé)</translation>
 <translation id="1779089405699405702">Décodeur d’image</translation>
 <translation id="1818308510395330587">Pour autoriser <ph name="APP_NAME" /> à utiliser la RA, activez aussi l'accès à l'appareil photo dans les <ph name="BEGIN_LINK" />paramètres d'Android<ph name="END_LINK" />.</translation>
+<translation id="1864927262126810325">De <ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">L'accès à la localisation est désactivé pour cet appareil. Activez-le dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
 <translation id="1919345977826869612">Annonces</translation>
 <translation id="1919950603503897840">Sélectionner des contacts</translation>
@@ -236,6 +237,7 @@
 <translation id="7016516562562142042">Autorisée pour le moteur de recherche actuel</translation>
 <translation id="7053983685419859001">Bloquer</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 élément sélectionné}one{# élément sélectionné}other{# éléments sélectionnés}}</translation>
+<translation id="7070090581017165256">À propos de ce site</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> élément(s) sélectionné(s). Options disponibles vers le haut de l'écran</translation>
 <translation id="7141896414559753902">Bloquer l'affichage de fenêtres contextuelles et de redirections à partir des sites (recommandé)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> ko</translation>

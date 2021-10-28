@@ -599,6 +599,12 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     gpu_preferences_.disable_accelerated_video_decode = true;
   }
 
+  if (kGpuFeatureStatusEnabled !=
+      gpu_feature_info_
+          .status_values[GPU_FEATURE_TYPE_ACCELERATED_VIDEO_ENCODE]) {
+    gpu_preferences_.disable_accelerated_video_encode = true;
+  }
+
   base::TimeDelta initialize_one_off_time =
       base::TimeTicks::Now() - before_initialize_one_off;
   UMA_HISTOGRAM_MEDIUM_TIMES("GPU.InitializeOneOffMediumTime",

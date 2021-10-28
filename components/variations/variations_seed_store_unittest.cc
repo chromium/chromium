@@ -638,7 +638,7 @@ TEST(VariationsSeedStoreTest, StoreSafeSeed_ValidSeed) {
 
   // Verify metrics.
   histogram_tester.ExpectUniqueSample(
-      "Variations.SafeMode.StoreSafeSeed.Result", StoreSeedResult::SUCCESS, 1);
+      "Variations.SafeMode.StoreSafeSeed.Result", StoreSeedResult::kSuccess, 1);
 }
 
 TEST(VariationsSeedStoreTest, StoreSafeSeed_EmptySeed) {
@@ -683,7 +683,7 @@ TEST(VariationsSeedStoreTest, StoreSafeSeed_EmptySeed) {
   // Verify metrics.
   histogram_tester.ExpectUniqueSample(
       "Variations.SafeMode.StoreSafeSeed.Result",
-      StoreSeedResult::FAILED_EMPTY_GZIP_CONTENTS, 1);
+      StoreSeedResult::kFailedEmptyGzipContents, 1);
 }
 
 TEST(VariationsSeedStoreTest, StoreSafeSeed_InvalidSeed) {
@@ -728,7 +728,7 @@ TEST(VariationsSeedStoreTest, StoreSafeSeed_InvalidSeed) {
 
   // Verify metrics.
   histogram_tester.ExpectUniqueSample(
-      "Variations.SafeMode.StoreSafeSeed.Result", StoreSeedResult::FAILED_PARSE,
+      "Variations.SafeMode.StoreSafeSeed.Result", StoreSeedResult::kFailedParse,
       1);
 }
 
@@ -777,7 +777,7 @@ TEST(VariationsSeedStoreTest, StoreSafeSeed_InvalidSignature) {
   // Verify metrics.
   histogram_tester.ExpectUniqueSample(
       "Variations.SafeMode.StoreSafeSeed.Result",
-      StoreSeedResult::FAILED_SIGNATURE, 1);
+      StoreSeedResult::kFailedSignature, 1);
   histogram_tester.ExpectUniqueSample(
       "Variations.SafeMode.StoreSafeSeed.SignatureValidity",
       VerifySignatureResult::INVALID_SEED, 1);
@@ -822,7 +822,7 @@ TEST(VariationsSeedStoreTest, StoreSafeSeed_ValidSignature) {
 
   // Verify metrics.
   histogram_tester.ExpectUniqueSample(
-      "Variations.SafeMode.StoreSafeSeed.Result", StoreSeedResult::SUCCESS, 1);
+      "Variations.SafeMode.StoreSafeSeed.Result", StoreSeedResult::kSuccess, 1);
   histogram_tester.ExpectUniqueSample(
       "Variations.SafeMode.StoreSafeSeed.SignatureValidity",
       VerifySignatureResult::VALID_SIGNATURE, 1);
@@ -874,7 +874,7 @@ TEST(VariationsSeedStoreTest, StoreSafeSeed_IdenticalToLatestSeed) {
 
   // Verify metrics.
   histogram_tester.ExpectUniqueSample(
-      "Variations.SafeMode.StoreSafeSeed.Result", StoreSeedResult::SUCCESS, 1);
+      "Variations.SafeMode.StoreSafeSeed.Result", StoreSeedResult::kSuccess, 1);
 }
 
 TEST(VariationsSeedStoreTest, StoreSafeSeed_PreviouslyIdenticalToLatestSeed) {
@@ -932,7 +932,7 @@ TEST(VariationsSeedStoreTest, StoreSafeSeed_PreviouslyIdenticalToLatestSeed) {
 
   // Verify metrics.
   histogram_tester.ExpectUniqueSample(
-      "Variations.SafeMode.StoreSafeSeed.Result", StoreSeedResult::SUCCESS, 1);
+      "Variations.SafeMode.StoreSafeSeed.Result", StoreSeedResult::kSuccess, 1);
 }
 
 TEST(VariationsSeedStoreTest, StoreSeedData_GzippedEmptySeed) {

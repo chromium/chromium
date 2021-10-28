@@ -1297,7 +1297,6 @@
 <translation id="2312219318583366810">网页网址</translation>
 <translation id="2314165183524574721">当前的公开范围设置是“已隐藏”</translation>
 <translation id="2314774579020744484">翻译页面时使用的语言</translation>
-<translation id="2315414688463285945">配置 Linux 文件时出错。请重试。</translation>
 <translation id="2315587498123194634">将链接发送到<ph name="DEVICE_NAME" /></translation>
 <translation id="2316129865977710310">不用了，谢谢</translation>
 <translation id="2317842250900878657">已迁移 <ph name="PROGRESS_PERCENT" />%</translation>
@@ -2069,6 +2068,7 @@
 <translation id="310671807099593501">该网站正在使用蓝牙</translation>
 <translation id="3108931485517391283">无法接收</translation>
 <translation id="3109724472072898302">已收起</translation>
+<translation id="311214366526552035">仍然下载</translation>
 <translation id="311394601889664316">不允许网站修改您设备上的文件或文件夹</translation>
 <translation id="3115147772012638511">正在等待存入缓存...</translation>
 <translation id="3115580024857770654">全部收起</translation>
@@ -2345,11 +2345,11 @@
 <translation id="3424969259347320884">请说明此标签页崩溃时您在做什么</translation>
 <translation id="3427092606871434483">允许（默认）</translation>
 <translation id="3428419049384081277">您已登录！</translation>
-<translation id="3428747202529429621">保护您在 Chrome 中免受安全威胁，登录状态下还可让您更安全地使用其他 Google 应用</translation>
 <translation id="3429086384982427336">下列应用绝不会处理协议链接。</translation>
 <translation id="3429160811076349561">试用版功能已关闭</translation>
 <translation id="3429271624041785769">网页内容语言</translation>
 <translation id="3429275422858276529">为此网页添加书签，以便日后查找</translation>
+<translation id="343115368966109153">下载 <ph name="FILE_NAME" />？所有使用此设备的用户都能查看该文件。</translation>
 <translation id="3432227430032737297">移除显示的所有 Cookie</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433621910545056227">糟糕！系统无法建立设备安装时间属性锁定。</translation>
@@ -2691,6 +2691,7 @@
 <translation id="3777806571986431400">扩展程序已启用</translation>
 <translation id="3778152852029592020">已取消下载。</translation>
 <translation id="3778208826288864398">此安全密钥已被锁定，因为您输错 PIN 码的次数过多。您需要重置此安全密钥。</translation>
+<translation id="3778369586810509692">该文件将存储在此设备上，并且每位用户都能查看它。</translation>
 <translation id="3778740492972734840">开发者工具(&amp;D)</translation>
 <translation id="3778868487658107119">您可以向它询问各种问题，指示它处理各种事务。它是专门为您配置的 Google 助手，随时为您提供帮助。</translation>
 <translation id="3781742599892759500">Linux 麦克风使用权限</translation>
@@ -5108,7 +5109,6 @@
 <translation id="6410328738210026208">变更版本并执行 Powerwash</translation>
 <translation id="6410390304316730527">“安全浏览”功能可保护您免受攻击者诱骗，以防做出一些危险操作，例如安装恶意软件或泄露个人信息（如密码、电话号码或信用卡信息）。如果关闭此功能，当浏览不熟悉或信誉不佳的网站时，请一定多加小心。</translation>
 <translation id="6410668567036790476">添加搜索引擎</translation>
-<translation id="6412673304250309937">将网址与存储在 Chrome 中的不安全网站列表进行比对。如果某个网站企图窃取您的密码，或者您下载了有害的文件，Chrome 可能还会将相应网址连同少量网页内容发送给“安全浏览”功能。</translation>
 <translation id="641469293210305670">安装更新和应用</translation>
 <translation id="6414878884710400018">打开“系统偏好设置”</translation>
 <translation id="6414888972213066896">您已向父亲/母亲发送请求，询问其是否允许您访问此网站</translation>
@@ -5517,7 +5517,6 @@
 <translation id="6843264316370513305">网络调试</translation>
 <translation id="6843423766595476978">Ok Google 已设置完毕</translation>
 <translation id="6845038076637626672">以最大化模式打开</translation>
-<translation id="6845325883481699275">帮助我们改善 Chrome 安全性</translation>
 <translation id="6846178040388691741">“<ph name="EXTENSION_NAME" />”想使用“<ph name="PRINTER_NAME" />”打印“<ph name="FILE_NAME" />”。</translation>
 <translation id="6847125920277401289">需要释放空间才能继续</translation>
 <translation id="6848388270925200958">此刻，您有一些卡只能在这部设备上使用</translation>
@@ -6968,7 +6967,6 @@
 <translation id="8324784016256120271">网站可以使用 Cookie 查看您在各个不同网站上的浏览活动，以便实现某些功能或目的（例如为您展示个性化广告）</translation>
 <translation id="8325413836429495820">不允许查看您的剪贴板</translation>
 <translation id="8326478304147373412">PKCS #7，证书链</translation>
-<translation id="8327039559959785305">装载 Linux 文件时出错。请重试。</translation>
 <translation id="8327676037044516220">权限和内容设置</translation>
 <translation id="833256022891467078">Crostini 共享文件夹</translation>
 <translation id="8335587457941836791">取消固定到任务栏</translation>

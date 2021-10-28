@@ -110,11 +110,6 @@ crbug.com/1254932 http/tests/preload/meta-csp.html [ Failure ]
 # Extra box in the output:
 crbug.com/1254933 css3/filters/filterRegions.html [ Failure ]
 
-# More line messages added and removed:
-crbug.com/1254937 http/tests/devtools/oopif/oopif-presentation-console-messages.js [ Failure ]
-crbug.com/1254937 http/tests/devtools/resource-tree/resource-tree-frame-add.js [ Failure ]
-crbug.com/1254937 http/tests/inspector-protocol/issues/content-security-policy-issue-creation-img.js [ Failure ]
-crbug.com/1254937 http/tests/inspector-protocol/runtime/eval-await-navigation-paused-message-order.js [ Failure Timeout ]
 crbug.com/1256612 plugins/focus-change-3-change-blur.html [ Failure Pass ]
 crbug.com/1235685 plugins/focus-change-4-change-focus-and-blur.html [ Failure Pass ]
 
@@ -6347,7 +6342,7 @@ crbug.com/1197528 [ Linux ] pointer-lock/pointerlockchange-pointerlockerror-even
 crbug.com/1201123 [ Fuchsia ] tables/mozilla/bugs/bug1188.html [ Failure Pass ]
 
 # Sheriff 2021-04-26
-crbug.com/1202722 [ Linux ] virtual/scroll-unification/fast/events/mouseenter-mouseleave-on-drag.html [ Pass Timeout ]
+crbug.com/1202722 [ Linux ] virtual/scroll-unification/fast/events/mouseenter-mouseleave-on-drag.html [ Pass Timeout Failure ]
 
 # Sheriff 2021-04-29
 crbug.com/1203963 [ Mac10.14 ] external/wpt/css/css-paint-api/idlharness.html [ Failure Pass Skip Timeout ]
@@ -7198,6 +7193,9 @@ crbug.com/1258618 virtual/portals/http/tests/devtools/portals/portals-elements-n
 # Sheriff 2021-10-06
 crbug.com/1257298 svg/dynamic-updates/SVGFEComponentTransferElement-dom-tableValues-attr.html [ Failure Pass ]
 
+# DevTools roll
+crbug.com/1127902 http/tests/devtools/components/cookies-table.js [ Skip ]
+
 # Sheriff 2021-10-07
 crbug.com/896194 plugins/focus-change-1-no-change.html [ Failure Pass ]
 crbug.com/1257570 [ Win7 ] fast/dom/vertical-scrollbar-in-rtl.html [ Failure Pass ]
@@ -7217,9 +7215,6 @@ crbug.com/crbug.com/1256763 [ Win7 ] virtual/gpu-rasterization/images/jpeg-with-
 # Sheriff 2021-10-12
 crbug.com/1259133 [ Mac10.14 ] external/wpt/html/canvas/offscreen/manual/the-offscreen-canvas/offscreencanvas.commit.html [ Failure Pass ]
 crbug.com/1259133 [ Mac10.14 ] virtual/no-alloc-direct-call/external/wpt/html/canvas/offscreen/manual/the-offscreen-canvas/offscreencanvas.commit.html [ Failure Pass ]
-crbug.com/1259167 [ Mac ] virtual/threaded/external/wpt/scroll-animations/scroll-animation-inactive-timeline.html [ Failure Pass ]
-crbug.com/1259167 [ Mac ] virtual/threaded/external/wpt/scroll-animations/scroll-timelines/scroll-animation-inactive-timeline.html [ Failure Pass ]
-crbug.com/1256991 [ Win ] virtual/threaded/external/wpt/scroll-animations/scroll-timelines/scroll-animation-inactive-timeline.html [ Failure Pass ]
 crbug.com/1259188 [ Mac10.14 ] virtual/gpu-rasterization/images/color-profile-animate.html [ Failure Pass ]
 crbug.com/1197465 [ Win7 ] virtual/scroll-unification/fast/events/mouse-cursor-no-mousemove.html [ Failure Pass ]
 crbug.com/1259277 [ Debug Linux ] virtual/scroll-unification/fast/events/message-port-multi.html [ Failure Pass ]

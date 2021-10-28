@@ -131,6 +131,7 @@
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> પર પ્રતિબિંબિત થઈ રહ્યું છે</translation>
 <translation id="1885785240814121742">ફિંગરપ્રિન્ટથી અનલૉક કરો</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz)ને સપોર્ટ આપતું નથી. રિઝોલ્યુશનને બદલીને <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) કરવામાં આવ્યું. ફેરફારો જાળવવા માટે કન્ફર્મ કરો પર ક્લિક કરો. અગાઉના સેટિંગ <ph name="TIMEOUT_SECONDS" />માં રિસ્ટોર કરવામાં આવશે.</translation>
+<translation id="1915307458270490472">સમાપ્ત કરો</translation>
 <translation id="1919743966458266018">Tasks સંચાલક ખોલવાનો શોર્ટકટ બદલાયો છે. કૃપા કરીને <ph name="NEW_SHORTCUT" /> ની બદલે <ph name="OLD_SHORTCUT" /> નો ઉપયોગ કરો.</translation>
 <translation id="1923539912171292317">ઑટોમૅટિક રીતે ક્લિક</translation>
 <translation id="1928739107511554905">અપડેટ મેળવવા માટે, તમારી Chromebookને જોડાયેલ કીબોર્ડ સાથે ફરીથી શરૂ કરવા માટે ટચસ્કીનનો ઉપયોગ કરો.</translation>
@@ -1129,6 +1130,7 @@
 <translation id="925832987464884575">પ્રીવ્યૂ છુપાવો</translation>
 <translation id="938963181863597773">મારા કૅલેન્ડરમાં શું છે?</translation>
 <translation id="945522503751344254">પ્રતિસાદ મોકલો</translation>
+<translation id="951991426597076286">નકારો</translation>
 <translation id="98515147261107953">લેન્ડસ્કૅપ</translation>
 <translation id="990277280839877440">વિંડો <ph name="WINDOW_TITILE" /> બંધ કરેલી છે.</translation>
 </translationbundle>

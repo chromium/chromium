@@ -1601,6 +1601,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiWebTransportTest, SharedWorker) {
   ASSERT_TRUE(RunTest("test_webtransport_shared_worker.html")) << message_;
 }
 
+// Test that the webRequest events are dispatched for the WebTransport
+// handshake in a service worker.
+IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiWebTransportTest, ServiceWorker) {
+  ASSERT_TRUE(RunTest("test_webtransport_service_worker.html")) << message_;
+}
+
 // Test behavior when intercepting requests from a browser-initiated url fetch.
 IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
                        WebRequestURLLoaderInterception) {

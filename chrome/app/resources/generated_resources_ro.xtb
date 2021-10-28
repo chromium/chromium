@@ -1302,7 +1302,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2312219318583366810">Adresa URL a paginii</translation>
 <translation id="2314165183524574721">Setarea de vizibilitate actuală este ascunsă</translation>
 <translation id="2314774579020744484">Limbi folosite la traducerea paginilor</translation>
-<translation id="2315414688463285945">Eroare la configurarea fișierelor Linux. Încearcă din nou.</translation>
 <translation id="2315587498123194634">Trimite linkul la <ph name="DEVICE_NAME" /></translation>
 <translation id="2316129865977710310">Nu, mulțumesc</translation>
 <translation id="2317842250900878657">Finalizat: <ph name="PROGRESS_PERCENT" />%</translation>
@@ -2352,7 +2351,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3424969259347320884">Descrie ce făceai când s-a blocat fila</translation>
 <translation id="3427092606871434483">Permite (în mod prestabilit)</translation>
 <translation id="3428419049384081277">Te-ai conectat!</translation>
-<translation id="3428747202529429621">Te protejează în Chrome și poate fi folosită pentru a spori securitatea în alte aplicații Google dacă te-ai conectat</translation>
 <translation id="3429086384982427336">Aplicațiile afișate mai jos nu vor gestiona niciodată linkuri de protocol.</translation>
 <translation id="3429160811076349561">Funcțiile de încercare sunt dezactivate</translation>
 <translation id="3429271624041785769">Limbile conținutului web</translation>
@@ -5118,7 +5116,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6410328738210026208">Schimbați canalul și porniți Powerwash</translation>
 <translation id="6410390304316730527">Navigarea sigură te protejează împotriva atacatorilor care ar putea să te păcălească să faci lucruri periculoase, cum ar fi să instalezi software rău intenționat sau să dezvălui informații cu caracter personal, cum ar fi parole, numere de telefon sau carduri de credit. Dacă o dezactivezi, ai grijă atunci când navighezi pe site-uri nefamiliare sau nelegitime.</translation>
 <translation id="6410668567036790476">Adaugă motorul de căutare</translation>
-<translation id="6412673304250309937">Verifică adresele URL folosind o listă de site-uri nesigure, stocată în Chrome. Dacă un site încearcă să îți fure parola sau descarci un fișier dăunător, Chrome poate să trimită adresele URL, inclusiv fragmente din conținutul paginilor, către funcția Navigare sigură.</translation>
 <translation id="641469293210305670">Instalează actualizări și aplicații</translation>
 <translation id="6414878884710400018">Deschide Preferințele de sistem</translation>
 <translation id="6414888972213066896">Ți-ai întrebat părintele dacă poți accesa acest site</translation>
@@ -5527,7 +5524,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6843264316370513305">Remedierea erorilor de rețea</translation>
 <translation id="6843423766595476978">Ok Google este configurat</translation>
 <translation id="6845038076637626672">Deschideți aplicația maximizată</translation>
-<translation id="6845325883481699275">Contribuie la îmbunătățirea securității pentru Chrome</translation>
 <translation id="6846178040388691741">„<ph name="EXTENSION_NAME" />” dorește să imprime <ph name="FILE_NAME" /> la <ph name="PRINTER_NAME" />.</translation>
 <translation id="6847125920277401289">Eliberează spațiu pentru a continua</translation>
 <translation id="6848388270925200958">În acest moment ai câteva carduri care pot fi folosite doar pe acest dispozitiv.</translation>
@@ -6979,7 +6975,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8324784016256120271">Site-urile pot folosi cookie-uri pentru a-ți vedea activitatea de navigare de pe diferite site-uri, de exemplu, pentru a personaliza anunțurile</translation>
 <translation id="8325413836429495820">Nu au permisiunea de a vedea clipboardul</translation>
 <translation id="8326478304147373412">PKCS #7, lanț de certificate</translation>
-<translation id="8327039559959785305">Eroare la instalarea fișierelor Linux. Încearcă din nou.</translation>
 <translation id="8327676037044516220">Permisiuni și setări privind conținutul</translation>
 <translation id="833256022891467078">Dosare comune în Crostini</translation>
 <translation id="8335587457941836791">Anulați fixarea din raft</translation>

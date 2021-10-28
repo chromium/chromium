@@ -261,6 +261,9 @@ class EventListener
     DCHECK(platform_sensor_reader_);
   }
 
+  EventListener(const EventListener&) = delete;
+  EventListener& operator=(const EventListener&) = delete;
+
   static Microsoft::WRL::ComPtr<ISensorEvents> CreateInstance(
       PlatformSensorReaderWin32* platform_sensor_reader) {
     Microsoft::WRL::ComPtr<EventListener> event_listener =
@@ -348,8 +351,6 @@ class EventListener
  private:
   PlatformSensorReaderWin32* const platform_sensor_reader_;
   SensorReading last_sensor_reading_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventListener);
 };
 
 // static

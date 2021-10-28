@@ -18,6 +18,9 @@ class FakePlatformSensorFusion : public PlatformSensorFusion {
   explicit FakePlatformSensorFusion(
       std::unique_ptr<PlatformSensorFusionAlgorithm> fusion_algorithm);
 
+  FakePlatformSensorFusion(const FakePlatformSensorFusion&) = delete;
+  FakePlatformSensorFusion& operator=(const FakePlatformSensorFusion&) = delete;
+
   // PlatformSensorFusion:
   bool GetSourceReading(mojom::SensorType type, SensorReading* result) override;
 
@@ -31,8 +34,6 @@ class FakePlatformSensorFusion : public PlatformSensorFusion {
  private:
   base::flat_map<mojom::SensorType, std::pair<SensorReading, bool>>
       sensor_readings_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakePlatformSensorFusion);
 };
 
 }  // namespace device

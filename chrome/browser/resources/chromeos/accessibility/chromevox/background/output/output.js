@@ -2184,18 +2184,18 @@ Output = class {
       ret.push({text: node.placeholder});
     }
 
-    // Invalid text.
-    /** @type {AutomationNode|undefined} */
-    const invalidAncestor = uniqueAncestors.find(
-        /** @type {function(?) : boolean} */ (AutomationPredicate.ariaInvalid));
+    // Invalid Grammar text.
+    if (uniqueAncestors.find(
+            /** @type {function(?) : boolean} */
+            (AutomationPredicate.hasInvalidGrammarMarker))) {
+      ret.push({msgId: 'hint_invalid_grammar'});
+    }
 
-    if (invalidAncestor) {
-      if (invalidAncestor.ariaInvalidValue === 'grammar') {
-        ret.push({msgId: 'hint_invalid_grammar'});
-      }
-      if (invalidAncestor.ariaInvalidValue === 'spelling') {
-        ret.push({msgId: 'hint_invalid_spelling'});
-      }
+    // Invalid Spelling text.
+    if (uniqueAncestors.find(
+            /** @type {function(?) : boolean} */
+            (AutomationPredicate.hasInvalidSpellingMarker))) {
+      ret.push({msgId: 'hint_invalid_spelling'});
     }
 
     // Only include tooltip as a hint as a last alternative. It may have been

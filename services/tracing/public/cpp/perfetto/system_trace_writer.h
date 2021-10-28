@@ -51,6 +51,9 @@ class COMPONENT_EXPORT(TRACING_CPP) SystemTraceWriter {
         trace_type_(trace_type),
         task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
 
+  SystemTraceWriter(const SystemTraceWriter&) = delete;
+  SystemTraceWriter& operator=(const SystemTraceWriter&) = delete;
+
   void WriteData(const StringType& data) {
     DCHECK(task_runner_->RunsTasksInCurrentSequence());
     buffered_data_.push_back(data);
@@ -146,8 +149,6 @@ class COMPONENT_EXPORT(TRACING_CPP) SystemTraceWriter {
   base::OnceClosure on_flush_complete_callback_;
 
   base::WeakPtrFactory<SystemTraceWriter> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SystemTraceWriter);
 };
 
 }  // namespace tracing

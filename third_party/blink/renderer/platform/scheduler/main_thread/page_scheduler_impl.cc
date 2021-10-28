@@ -241,8 +241,6 @@ void PageSchedulerImpl::SetPageVisible(bool page_visible) {
 
   switch (page_visibility_) {
     case PageVisibilityState::kVisible:
-      // Visible pages should not be frozen.
-      SetPageFrozenImpl(false, NotificationPolicy::kDoNotNotifyFrames);
       page_lifecycle_state_tracker_->SetPageLifecycleState(
           PageLifecycleState::kActive);
       break;
@@ -251,14 +249,6 @@ void PageSchedulerImpl::SetPageVisible(bool page_visible) {
           IsBackgrounded() ? PageLifecycleState::kHiddenBackgrounded
                            : PageLifecycleState::kHiddenForegrounded);
       break;
-  }
-
-  if (ShouldFreezePage()) {
-    main_thread_scheduler_->ControlTaskRunner()->PostDelayedTask(
-        FROM_HERE, do_freeze_page_callback_.GetCallback(),
-        freeze_on_network_idle_enabled_
-            ? delay_for_background_and_network_idle_tab_freezing_
-            : delay_for_background_tab_freezing_);
   }
 
   for (FrameSchedulerImpl* frame_scheduler : frame_schedulers_)
@@ -313,7 +303,7 @@ void PageSchedulerImpl::SetPageFrozenImpl(
   } else {
     // The new state may have already been set if unfreezing through the
     // renderer, but that's okay - duplicate state changes won't be recorded.
-    if (page_visibility_ == PageVisibilityState::kVisible) {
+    if (IsPageVisible()) {
       page_lifecycle_state_tracker_->SetPageLifecycleState(
           PageLifecycleState::kActive);
     } else if (IsBackgrounded()) {
@@ -454,7 +444,7 @@ void PageSchedulerImpl::AudioStateChanged(bool is_audio_playing) {
   if (is_audio_playing) {
     audio_state_ = AudioState::kAudible;
     on_audio_silent_closure_.Cancel();
-    if (page_visibility_ == PageVisibilityState::kHidden) {
+    if (!IsPageVisible()) {
       page_lifecycle_state_tracker_->SetPageLifecycleState(
           PageLifecycleState::kHiddenForegrounded);
     }
@@ -547,6 +537,14 @@ void PageSchedulerImpl::OnThrottlingStatusUpdated() {
     UpdateCPUTimeBudgetPool(&lazy_now);
     UpdateWakeUpBudgetPools(&lazy_now);
   }
+}
+
+void PageSchedulerImpl::OnVirtualTimeEnabled() {
+  if (page_visibility_ == PageVisibilityState::kHidden) {
+    page_lifecycle_state_tracker_->SetPageLifecycleState(
+        PageLifecycleState::kHiddenForegrounded);
+  }
+  UpdatePolicyOnVisibilityChange(NotificationPolicy::kNotifyFrames);
 }
 
 void PageSchedulerImpl::OnTraceLogEnabled() {
@@ -725,7 +723,7 @@ void PageSchedulerImpl::UpdatePolicyOnVisibilityChange(
   base::sequence_manager::LazyNow lazy_now(
       main_thread_scheduler_->tick_clock());
 
-  if (page_visibility_ == PageVisibilityState::kVisible) {
+  if (IsPageVisible()) {
     is_cpu_time_throttled_ = false;
     do_throttle_cpu_time_callback_.Cancel();
     UpdateCPUTimeBudgetPool(&lazy_now);
@@ -742,6 +740,17 @@ void PageSchedulerImpl::UpdatePolicyOnVisibilityChange(
         FROM_HERE, do_intensively_throttle_wake_ups_callback_.GetCallback(),
         GetIntensiveWakeUpThrottlingGracePeriod());
   }
+
+  if (ShouldFreezePage()) {
+    main_thread_scheduler_->ControlTaskRunner()->PostDelayedTask(
+        FROM_HERE, do_freeze_page_callback_.GetCallback(),
+        freeze_on_network_idle_enabled_
+            ? delay_for_background_and_network_idle_tab_freezing_
+            : delay_for_background_tab_freezing_);
+  } else {
+    SetPageFrozenImpl(false, NotificationPolicy::kDoNotNotifyFrames);
+  }
+
   if (notification_policy == NotificationPolicy::kNotifyFrames)
     NotifyFrames();
 }
@@ -864,7 +873,12 @@ AgentGroupSchedulerImpl& PageSchedulerImpl::GetAgentGroupScheduler() {
 }
 
 bool PageSchedulerImpl::IsBackgrounded() const {
-  return page_visibility_ == PageVisibilityState::kHidden && !IsAudioPlaying();
+  // When virtual time is enabled, a freezing request would have its timeout
+  // expire immediately when a page is backgrounded, which is undesirable in
+  // headless mode. To prevent that, a page is never considerer backgrounded
+  // when virtual time is enabled.
+  return !IsPageVisible() && !IsAudioPlaying() &&
+         !main_thread_scheduler_->IsVirtualTimeEnabled();
 }
 
 bool PageSchedulerImpl::ShouldFreezePage() const {

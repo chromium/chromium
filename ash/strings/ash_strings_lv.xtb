@@ -131,6 +131,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1882897271359938046">Spoguļo šeit: <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Atbloķēšana ar pirksta nospiedumu</translation>
 <translation id="1888656773939766144">Displejā “<ph name="DISPLAY_NAME" />” netiek atbalstīta izšķirtspēja <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Izšķirtspēja tika mainīta uz <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Lai saglabātu izmaiņas, noklikšķiniet uz “Apstiprināt”. Iepriekšējie iestatījumi tiks atjaunoti pēc šāda laika: <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="1915307458270490472">Pārtraukt</translation>
 <translation id="1919743966458266018">Tika mainīti īsinājumtaustiņi, ar kuriem var atvērt uzdevumu pārvaldnieku. Lūdzu, turpmāk izmantojiet <ph name="NEW_SHORTCUT" />, nevis <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Automātiskie klikšķi</translation>
 <translation id="1928739107511554905">Lai iegūtu atjauninājumu, izmantojiet skārienekrānu, lai ar pievienoto tastatūru restartētu Chromebook datoru.</translation>
@@ -1129,6 +1130,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="925832987464884575">Paslēpt priekšskatījumus</translation>
 <translation id="938963181863597773">Kas ir atrodams manā kalendārā?</translation>
 <translation id="945522503751344254">Sūtīt atsauksmes</translation>
+<translation id="951991426597076286">Noraidīt</translation>
 <translation id="98515147261107953">Ainava</translation>
 <translation id="990277280839877440">Logs “<ph name="WINDOW_TITILE" />” ir aizvērts.</translation>
 </translationbundle>

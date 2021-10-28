@@ -68,11 +68,18 @@ js_library("firmware_update_types") {
 }
 
 js_library("mojo_interface_provider") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
+  deps = [
+    ":fake_data",
+    ":fake_update_provider",
+    ":firmware_update_types",
+    "//ui/webui/resources/js:cr.m",
+  ]
 }
 
 js_library("peripheral_updates_list") {
   deps = [
+    ":firmware_update_types",
+    ":mojo_interface_provider",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }

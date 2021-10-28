@@ -1297,7 +1297,6 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2312219318583366810">Seiten-URL</translation>
 <translation id="2314165183524574721">Die aktuelle Sichtbarkeitseinstellung ist "Verborgen"</translation>
 <translation id="2314774579020744484">Sprache, in die Seiten übersetzt werden sollen</translation>
-<translation id="2315414688463285945">Fehler beim Konfigurieren von Linux-Dateien. Bitte versuchen Sie es noch einmal.</translation>
 <translation id="2315587498123194634">Link an <ph name="DEVICE_NAME" /> senden</translation>
 <translation id="2316129865977710310">Kein Interesse</translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" /> % abgeschlossen</translation>
@@ -2070,6 +2069,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="310671807099593501">Die Website verwendet Bluetooth</translation>
 <translation id="3108931485517391283">Empfang nicht möglich</translation>
 <translation id="3109724472072898302">Minimiert</translation>
+<translation id="311214366526552035">Trotzdem herunterladen</translation>
 <translation id="311394601889664316">Websites dürfen keine Dateien oder Ordner auf meinem Gerät bearbeiten</translation>
 <translation id="3115147772012638511">Warten auf den Cache...</translation>
 <translation id="3115580024857770654">Alle ausblenden</translation>
@@ -2346,11 +2346,11 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3424969259347320884">Beschreiben Sie, was Sie beim Absturz des Tabs getan haben</translation>
 <translation id="3427092606871434483">Zulassen (Standard)</translation>
 <translation id="3428419049384081277">Sie sind angemeldet.</translation>
-<translation id="3428747202529429621">Schützt Sie in Chrome und erhöht möglicherweise die Sicherheit in anderen Google-Apps, wenn Sie angemeldet sind</translation>
 <translation id="3429086384982427336">Die unten aufgeführten Apps verarbeiten niemals Protokolllinks.</translation>
 <translation id="3429160811076349561">Testfunktionen sind deaktiviert</translation>
 <translation id="3429271624041785769">Sprachen für Webinhalte</translation>
 <translation id="3429275422858276529">Seite als Lesezeichen speichern, um sie später schneller zu finden</translation>
+<translation id="343115368966109153"><ph name="FILE_NAME" /> herunterladen? Alle, die das Gerät verwenden, können die Datei sehen.</translation>
 <translation id="3432227430032737297">Alle angezeigten Cookies entfernen</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433621910545056227">Hoppla! Das System konnte die Attributsperre für die Installationszeit des Geräts nicht einrichten.</translation>
@@ -2692,6 +2692,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3777806571986431400">Erweiterung aktiviert</translation>
 <translation id="3778152852029592020">Der Download wurde abgebrochen.</translation>
 <translation id="3778208826288864398">Der Sicherheitsschlüssel wurde gesperrt, weil zu oft die falsche PIN eingegeben wurde. Sie müssen den Sicherheitsschlüssel zurücksetzen.</translation>
+<translation id="3778369586810509692">Diese Datei wird auf dem Gerät gespeichert und alle können sie sehen.</translation>
 <translation id="3778740492972734840">E&amp;ntwicklertools</translation>
 <translation id="3778868487658107119">Sie können ihm Fragen stellen und ihn Dinge erledigen lassen. Er ist immer für Sie da.</translation>
 <translation id="3781742599892759500">Mikrofonzugriff für Linux</translation>
@@ -5108,7 +5109,6 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6410328738210026208">Kanaländerung und Powerwash</translation>
 <translation id="6410390304316730527">Safe Browsing schützt Sie gegen Angreifer, die Sie dazu verleiten möchten, Risiken einzugehen, wie z. B. schädliche Software zu installieren oder personenbezogene Daten wie Passwörter, Telefonnummern oder Kreditkartendaten preiszugeben. Wenn Sie Safe Browsing deaktivieren, seien Sie besonders vorsichtig, wenn Sie auf unbekannten oder zweifelhaften Websites surfen.</translation>
 <translation id="6410668567036790476">Suchmaschine hinzufügen</translation>
-<translation id="6412673304250309937">Prüft URLs anhand einer Liste unsicherer Websites, die in Chrome gespeichert wird. Wenn eine Website versucht, Ihr Passwort zu stehlen, oder wenn Sie eine schädliche Datei herunterladen, kann Chrome auch URLs, einschließlich Teile von Seiteninhalten, an Safe Browsing senden.</translation>
 <translation id="641469293210305670">Updates und Apps installieren</translation>
 <translation id="6414878884710400018">Systemeinstellungen öffnen</translation>
 <translation id="6414888972213066896">Du hast ein Elternteil gefragt, ob du diese Website besuchen darfst</translation>
@@ -5517,7 +5517,6 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6843264316370513305">Netzwerk-Fehlerbehebung</translation>
 <translation id="6843423766595476978">"Ok Google" ist eingerichtet</translation>
 <translation id="6845038076637626672">Maximiert öffnen</translation>
-<translation id="6845325883481699275">Zur Verbesserung der Sicherheit von Chrome beitragen</translation>
 <translation id="6846178040388691741">"<ph name="EXTENSION_NAME" />" möchte die Datei "<ph name="FILE_NAME" />" mit <ph name="PRINTER_NAME" /> ausdrucken.</translation>
 <translation id="6847125920277401289">Zum Fortfahren Speicherplatz freigeben</translation>
 <translation id="6848388270925200958">Zurzeit können einige Ihrer Karten nur auf diesem Gerät verwendet werden</translation>
@@ -6968,7 +6967,6 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8324784016256120271">Websites können Cookies verwenden, um Ihre Browseraktivitäten auf anderen Websites aufzuzeichnen und damit zum Beispiel Werbung zu personalisieren</translation>
 <translation id="8325413836429495820">Dürfen nicht auf meine Zwischenablage zugreifen</translation>
 <translation id="8326478304147373412">PKCS #7, Zertifikatkette</translation>
-<translation id="8327039559959785305">Fehler beim Bereitstellen von Linux-Dateien. Bitte versuchen Sie es noch einmal.</translation>
 <translation id="8327676037044516220">Berechtigungen und Inhaltseinstellungen</translation>
 <translation id="833256022891467078">Freigegebene Crostini-Ordner</translation>
 <translation id="8335587457941836791">Von Ablage loslösen</translation>

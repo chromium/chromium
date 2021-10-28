@@ -117,6 +117,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieManager
   // State associated with a CookieChangeListener.
   struct ListenerRegistration {
     ListenerRegistration();
+
+    ListenerRegistration(const ListenerRegistration&) = delete;
+    ListenerRegistration& operator=(const ListenerRegistration&) = delete;
+
     ~ListenerRegistration();
 
     // Translates a CookieStore change callback to a CookieChangeListener call.
@@ -127,8 +131,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieManager
 
     // The observer receiving change notifications.
     mojo::Remote<mojom::CookieChangeListener> listener;
-
-    DISALLOW_COPY_AND_ASSIGN(ListenerRegistration);
   };
 
   // Handles connection errors on change listener pipes.

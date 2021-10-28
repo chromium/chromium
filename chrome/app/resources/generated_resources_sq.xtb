@@ -1299,7 +1299,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2312219318583366810">URL-ja e faqes</translation>
 <translation id="2314165183524574721">Cilësimi aktual i dukshmërisë është "I fshehur"</translation>
 <translation id="2314774579020744484">Gjuha e përdorur kur përkthehen faqen</translation>
-<translation id="2315414688463285945">Gabim në konfigurimin e skedarëve të Linux. Provo përsëri.</translation>
 <translation id="2315587498123194634">Dërgo lidhjen te pajisja <ph name="DEVICE_NAME" /></translation>
 <translation id="2316129865977710310">Jo, faleminderit</translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" />% i kryer</translation>
@@ -2348,7 +2347,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3424969259347320884">Përshkruaj çfarë po bëje kur skeda pësoi një ndërprerje aksidentale</translation>
 <translation id="3427092606871434483">Lejo (parazgjedhja)</translation>
 <translation id="3428419049384081277">Je i identifikuar!</translation>
-<translation id="3428747202529429621">Të mban të sigurt në Chrome dhe mund të përdoret për të përmirësuar sigurinë tënde në aplikacionet e tjera të Google kur je i identifikuar</translation>
 <translation id="3429086384982427336">Aplikacionet e listuara më poshtë nuk do të menaxhojnë asnjëherë lidhje protokolli.</translation>
 <translation id="3429160811076349561">Veçoritë e provës janë joaktive</translation>
 <translation id="3429271624041785769">Gjuhët e përmbajtjes së uebit</translation>
@@ -5114,7 +5112,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6410328738210026208">Ndërro kanalin dhe zbato Powerwash</translation>
 <translation id="6410390304316730527">"Shfletimi i sigurt" të mbron kundër sulmuesve që mund të të mashtrojnë që të bësh diçka të rrezikshme si instalimi i softuerëve keqdashës ose të zbulosh informacion personal si fjalëkalime, numra telefoni ose karta krediti. Nëse e çaktivizon, ki kujdes kur shfleton sajte të panjohura ose pa reputacion.</translation>
 <translation id="6410668567036790476">Shto motor kërkimi</translation>
-<translation id="6412673304250309937">Kontrollon URL-të kundrejt një liste sajtesh të pasigurta të ruajtur në Chrome. Nëse një sajt përpiqet të vjedhë fjalëkalimin tënd, ose kur shkarkon një skedar të dëmshëm, Chrome mund t'i dërgojë po ashtu "Shfletimit të sigurt" URL-të, duke përfshirë pjesë të përmbajtjes së faqes.</translation>
 <translation id="641469293210305670">Instalo përditësimet dhe aplikacionet</translation>
 <translation id="6414878884710400018">Hap preferencat e sistemit</translation>
 <translation id="6414888972213066896">E pyete prindin tënd nëse nuk ka problem të vizitosh këtë sajt</translation>
@@ -5523,7 +5520,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6843264316370513305">Korrigjimi i rrjetit</translation>
 <translation id="6843423766595476978">"Ok Google" është plotësisht gati</translation>
 <translation id="6845038076637626672">Hape të zmadhuar</translation>
-<translation id="6845325883481699275">Ndihmo në përmirësimin e sigurisë së Chrome</translation>
 <translation id="6846178040388691741">"<ph name="EXTENSION_NAME" />" dëshiron të printojë <ph name="FILE_NAME" /> me <ph name="PRINTER_NAME" />.</translation>
 <translation id="6847125920277401289">Liro hapësirë për të vazhduar</translation>
 <translation id="6848388270925200958">Në këtë moment, ke disa karta që mund të përdoren vetëm në këtë pajisje</translation>
@@ -6973,7 +6969,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8324784016256120271">Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit nëpër sajte të ndryshme, për shembull për t'i personalizuar reklamat</translation>
 <translation id="8325413836429495820">Nuk lejohen të shikojnë kujtesën e fragmenteve</translation>
 <translation id="8326478304147373412">PKCS #7, zinxhiri i certifikatës</translation>
-<translation id="8327039559959785305">Gabim gjatë instalimit të skedarëve të Linux. Provo përsëri më vonë.</translation>
 <translation id="8327676037044516220">Cilësimet e lejeve dhe të përmbajtjeve</translation>
 <translation id="833256022891467078">Dosjet e ndara të Crostini</translation>
 <translation id="8335587457941836791">Zhgozhdo nga rafti</translation>

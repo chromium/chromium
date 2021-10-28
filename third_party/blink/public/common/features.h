@@ -17,6 +17,7 @@ namespace features {
 
 BLINK_COMMON_EXPORT extern const base::Feature
     kAutomaticLazyFrameLoadingToEmbeds;
+BLINK_COMMON_EXPORT extern const base::Feature kBackForwardCacheDedicatedWorker;
 BLINK_COMMON_EXPORT extern const base::Feature
     kBlockingDownloadsInAdFrameWithoutUserActivation;
 BLINK_COMMON_EXPORT extern const base::Feature kCOEPForSharedWorker;
@@ -517,8 +518,6 @@ BLINK_COMMON_EXPORT bool IsSetTimeoutWithoutClampEnabled();
 BLINK_COMMON_EXPORT extern const base::Feature kDeprecationWillLogToConsole;
 BLINK_COMMON_EXPORT extern const base::Feature
     kDeprecationWillLogToDevToolsIssue;
-
-BLINK_COMMON_EXPORT extern const base::Feature kLCPAnimatedImagesReporting;
 
 }  // namespace features
 }  // namespace blink

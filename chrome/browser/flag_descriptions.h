@@ -262,6 +262,9 @@ extern const char kDragWindowToNewDeskDescription[];
 extern const char kBiometricReauthForPasswordFillingName[];
 extern const char kBiometricReauthForPasswordFillingDescription[];
 
+extern const char kBorealisBigGlName[];
+extern const char kBorealisBigGlDescription[];
+
 extern const char kBorealisDiskManagementName[];
 extern const char kBorealisDiskManagementDescription[];
 
@@ -1199,14 +1202,8 @@ extern const char kQuicDescription[];
 extern const char kQuickActionSearchWidgetAndroidName[];
 extern const char kQuickActionSearchWidgetAndroidDescription[];
 
-extern const char kQuietNotificationPromptsName[];
-extern const char kQuietNotificationPromptsDescription[];
-
 extern const char kSettingsAppNotificationSettingsName[];
 extern const char kSettingsAppNotificationSettingsDescription[];
-
-extern const char kAbusiveNotificationPermissionRevocationName[];
-extern const char kAbusiveNotificationPermissionRevocationDescription[];
 
 extern const char kReadLaterFlagId[];
 extern const char kReadLaterName[];
@@ -2821,6 +2818,9 @@ extern const char kPhoneHubRecentAppsDescription[];
 
 extern const char kProductivityLauncherName[];
 extern const char kProductivityLauncherDescription[];
+
+extern const char kProductivityLauncherAnimationName[];
+extern const char kProductivityLauncherAnimationDescription[];
 
 extern const char kForceShowContinueSectionName[];
 extern const char kForceShowContinueSectionDescription[];

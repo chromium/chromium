@@ -131,6 +131,7 @@
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" />에 미러링</translation>
 <translation id="1885785240814121742">지문으로 잠금 해제</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" />에서 <ph name="SPECIFIED_RESOLUTION" />(<ph name="SPECIFIED_REFRESH_RATE" />Hz) 해상도를 지원하지 않습니다. <ph name="FALLBACK_RESOLUTION" />(<ph name="FALLBACK_REFRESH_RATE" />) 해상도로 변경되었습니다. 변경사항을 적용하려면 확인을 클릭하세요. <ph name="TIMEOUT_SECONDS" /> 후 이전 설정으로 복원됩니다.</translation>
+<translation id="1915307458270490472">종료</translation>
 <translation id="1919743966458266018">작업 관리자를 여는 단축키가 변경되었습니다. <ph name="OLD_SHORTCUT" /> 대신 <ph name="NEW_SHORTCUT" />을(를) 사용하세요.</translation>
 <translation id="1923539912171292317">자동 클릭</translation>
 <translation id="1928739107511554905">업데이트하려면 키보드가 연결된 상태로 터치스크린을 사용하여 Chromebook을 다시 시작하세요.</translation>
@@ -1129,6 +1130,7 @@
 <translation id="925832987464884575">미리보기 숨기기</translation>
 <translation id="938963181863597773">오늘 내 일정이 어떻게 돼?</translation>
 <translation id="945522503751344254">의견 보내기</translation>
+<translation id="951991426597076286">거부</translation>
 <translation id="98515147261107953">가로 방향</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" /> 창이 닫혔습니다.</translation>
 </translationbundle>

@@ -131,6 +131,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1882897271359938046">Spejler mod <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Lås op med fingeraftryk</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> understøtter ikke <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Opløsningen blev ændret til <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Klik på Bekræft for at anvende ændringerne. De tidligere indstillinger gendannes om <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="1915307458270490472">Læg på</translation>
 <translation id="1919743966458266018">Genvejen til at åbne Jobliste er ændret. Brug <ph name="NEW_SHORTCUT" /> i stedet for <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Automatiske klik</translation>
 <translation id="1928739107511554905">Brug touchskærmen til at genstarte din Chromebook med det tilsluttede tastatur for at hente opdateringen.</translation>
@@ -1129,6 +1130,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="925832987464884575">Skjul forhåndsvisninger</translation>
 <translation id="938963181863597773">Hvad har jeg i kalenderen?</translation>
 <translation id="945522503751344254">Send feedback</translation>
+<translation id="951991426597076286">Afvis</translation>
 <translation id="98515147261107953">Liggende</translation>
 <translation id="990277280839877440">Vinduet <ph name="WINDOW_TITILE" /> blev lukket.</translation>
 </translationbundle>

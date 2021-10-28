@@ -131,6 +131,7 @@
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> मा प्रतिबिम्बित गर्दै</translation>
 <translation id="1885785240814121742">फिंगरप्रिन्टमार्फत अनलक गर्नुहोस्</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> मा <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> हर्ज) रिजोल्युसन प्रयोग गर्न मिल्दैन। रिजोल्युसन परिवर्तन गरी <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) बनाइयो। यो परिवर्तन सुरक्षित गर्न पुष्टि गर्नुहोस् नामक बटनमा क्लिक गर्नुहोस्। अबको <ph name="TIMEOUT_SECONDS" /> मा यी सेटिङ परिवर्तन गरी पहिलेको जस्तै बनाइने छ।</translation>
+<translation id="1915307458270490472">ह्याङ्ग अप</translation>
 <translation id="1919743966458266018">कार्य प्रबन्धक खोल्ने सर्टकटमा परिवर्तन भएको छ। कृपया <ph name="OLD_SHORTCUT" />को सट्टामा <ph name="NEW_SHORTCUT" /> प्रयोग गर्नुहोस्।</translation>
 <translation id="1923539912171292317">स्वचालित क्लिकहरू</translation>
 <translation id="1928739107511554905">उक्त अद्यावधिक प्राप्त गर्न, किबोर्ड जोडिएकै अवस्थामा आफ्नो Chromebook लाई पुनः सुचारु गर्न टचस्क्रिनको प्रयोग गर्नुहोस्।</translation>
@@ -1129,6 +1130,7 @@
 <translation id="925832987464884575">प्रिभ्यूहरू लुकाउनुहोस्</translation>
 <translation id="938963181863597773">मेरो क्यालेन्डरमा के छ?</translation>
 <translation id="945522503751344254">पृष्ठपोषण पठाउनुहोस्</translation>
+<translation id="951991426597076286">अस्वीकार गर्नुहोस्</translation>
 <translation id="98515147261107953">ल्यान्डस्केप</translation>
 <translation id="990277280839877440">विन्डो <ph name="WINDOW_TITILE" /> बन्द गरियो।</translation>
 </translationbundle>

@@ -41,12 +41,11 @@ bool ShouldUseWebSpeechFallback() {
 
 // static
 void ProjectorClientImpl::InitForProjectorAnnotator(views::WebView* web_view) {
-  web_view->LoadInitialURL(GURL(chromeos::kChromeUITrustedAnnotatorUrl));
+  web_view->LoadInitialURL(GURL(ash::kChromeUITrustedAnnotatorUrl));
 
   content::WebContents* web_contents = web_view->GetWebContents();
   content::WebUI* web_ui = web_contents->GetWebUI();
-  web_ui->AddMessageHandler(
-      std::make_unique<chromeos::AnnotatorMessageHandler>());
+  web_ui->AddMessageHandler(std::make_unique<ash::AnnotatorMessageHandler>());
 }
 
 ProjectorClientImpl::ProjectorClientImpl(ash::ProjectorController* controller)
@@ -183,6 +182,5 @@ void ProjectorClientImpl::OpenProjectorApp() const {
 
 void ProjectorClientImpl::OnNewScreencastPreconditionChanged(
     bool can_start) const {
-  chromeos::ProjectorAppClient::Get()->OnNewScreencastPreconditionChanged(
-      can_start);
+  ash::ProjectorAppClient::Get()->OnNewScreencastPreconditionChanged(can_start);
 }

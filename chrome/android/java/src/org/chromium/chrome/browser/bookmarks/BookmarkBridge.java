@@ -543,6 +543,22 @@ public class BookmarkBridge {
     }
 
     /**
+     * Gets Bookmark GUID which is immutable and differs from the BookmarkId in that it is
+     * consistent across different clients and stable throughout the lifetime of the bookmark, with
+     * the exception of nodes added to the Managed Bookmarks folder, whose GUIDs are re-assigned at
+     * start-up every time.
+     *
+     * @return Bookmark GUID of the given node.
+     */
+    @VisibleForTesting
+    public String getBookmarkGuidByIdForTesting(BookmarkId id) {
+        ThreadUtils.assertOnUiThread();
+        assert mIsNativeBookmarkModelLoaded;
+        return BookmarkBridgeJni.get().getBookmarkGuidByIdForTesting(
+                mNativeBookmarkBridge, BookmarkBridge.this, id.getId(), id.getType());
+    }
+
+    /**
      * @return The number of children that the given node has.
      */
     public int getChildCount(BookmarkId id) {
@@ -1171,6 +1187,8 @@ public class BookmarkBridge {
         BookmarkId getOtherFolderId(long nativeBookmarkBridge, BookmarkBridge caller);
         BookmarkId getDesktopFolderId(long nativeBookmarkBridge, BookmarkBridge caller);
         BookmarkId getPartnerFolderId(long nativeBookmarkBridge, BookmarkBridge caller);
+        String getBookmarkGuidByIdForTesting(
+                long nativeBookmarkBridge, BookmarkBridge caller, long id, int type);
         int getChildCount(long nativeBookmarkBridge, BookmarkBridge caller, long id, int type);
         void getChildIDs(long nativeBookmarkBridge, BookmarkBridge caller, long id, int type,
                 List<BookmarkId> bookmarksList);

@@ -194,6 +194,10 @@ const base::Feature kBluetoothRevamp{"BluetoothRevamp",
 const base::Feature kBluetoothWbsDogfood{"BluetoothWbsDogfood",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enable Big GL when using Borealis.
+const base::Feature kBorealisBigGl{"BorealisBigGl",
+                                   base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable experimental disk management changes for Borealis.
 const base::Feature kBorealisDiskManagement{"BorealisDiskManagement",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
@@ -899,6 +903,10 @@ const base::Feature kPreferConstantFrameRate{"PreferConstantFrameRate",
 // https://crbug.com/1204551
 const base::Feature kProductivityLauncher{"ProductivityLauncher",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables animation in the productivity launcher.
+const base::Feature kProductivityLauncherAnimation{
+    "ProductivityLauncherAnimation", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Controls whether to enable Projector.
 const base::Feature kProjector{"Projector", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -1619,6 +1627,11 @@ bool IsPipRoundedCornersEnabled() {
 
 bool IsProductivityLauncherEnabled() {
   return base::FeatureList::IsEnabled(kProductivityLauncher);
+}
+
+bool IsProductivityLauncherAnimationEnabled() {
+  return IsProductivityLauncherEnabled() &&
+         base::FeatureList::IsEnabled(kProductivityLauncherAnimation);
 }
 
 bool IsProjectorEnabled() {

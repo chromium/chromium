@@ -148,8 +148,12 @@ enum class WebappUninstallSource {
   // SubApp API.
   kSubApp = 15,
 
+  // On system startup, any apps that are flagged as uninstalling but have not
+  // yet been fully uninstalled are re-uninstalled.
+  kStartupCleanup = 16,
+
   // Add any new values above this one.
-  kMaxValue = kSubApp,
+  kMaxValue = kStartupCleanup,
 };
 
 // This is the result of the promotability check that is recorded in the

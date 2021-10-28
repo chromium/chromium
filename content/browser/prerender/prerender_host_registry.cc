@@ -72,25 +72,17 @@ void PrerenderHostRegistry::RemoveObserver(Observer* observer) {
 
 int PrerenderHostRegistry::CreateAndStartHost(
     const PrerenderAttributes& attributes,
-    RenderFrameHostImpl& initiator_render_frame_host) {
-  // The prerender request from a page being prerendered should be deferred
-  // until activation by the Mojo capability control.
-  DCHECK_NE(RenderFrameHostImpl::LifecycleStateImpl::kPrerendering,
-            initiator_render_frame_host.lifecycle_state());
-
-  TRACE_EVENT2(
-      "navigation", "PrerenderHostRegistry::CreateAndStartHost", "attributes",
-      attributes, "initiator_origin",
-      initiator_render_frame_host.GetLastCommittedOrigin().GetURL().spec());
+    WebContents* web_contents) {
+  TRACE_EVENT2("navigation", "PrerenderHostRegistry::CreateAndStartHost",
+               "attributes", attributes, "initiator_origin",
+               attributes.initiator_origin.GetURL().spec());
 
   // Ensure observers are notified that a trigger occurred.
   base::ScopedClosureRunner notify_trigger(
       base::BindOnce(&PrerenderHostRegistry::NotifyTrigger,
-                     base::Unretained(this), attributes.url));
+                     base::Unretained(this), attributes.prerendering_url));
 
   // Don't prerender when the trigger is in the background.
-  auto* web_contents =
-      WebContents::FromRenderFrameHost(&initiator_render_frame_host);
   DCHECK(web_contents);
   if (web_contents->GetVisibility() == Visibility::HIDDEN) {
     base::UmaHistogramEnumeration(
@@ -110,8 +102,8 @@ int PrerenderHostRegistry::CreateAndStartHost(
   }
 
   // TODO(crbug.com/1176054): Support cross-origin prerendering.
-  if (!initiator_render_frame_host.GetLastCommittedOrigin().IsSameOriginWith(
-          url::Origin::Create(attributes.url))) {
+  if (!attributes.initiator_origin.IsSameOriginWith(
+          url::Origin::Create(attributes.prerendering_url))) {
     base::UmaHistogramEnumeration(
         "Prerender.Experimental.PrerenderHostFinalStatus",
         PrerenderHost::FinalStatus::kCrossOriginNavigation);
@@ -120,7 +112,7 @@ int PrerenderHostRegistry::CreateAndStartHost(
 
   // Ignore prerendering requests for the same URL.
   for (auto& iter : prerender_host_by_frame_tree_node_id_) {
-    if (iter.second->GetInitialUrl() == attributes.url)
+    if (iter.second->GetInitialUrl() == attributes.prerendering_url)
       return iter.first;
   }
 
@@ -135,7 +127,7 @@ int PrerenderHostRegistry::CreateAndStartHost(
   }
 
   auto prerender_host =
-      std::make_unique<PrerenderHost>(attributes, initiator_render_frame_host);
+      std::make_unique<PrerenderHost>(attributes, web_contents);
   const int frame_tree_node_id = prerender_host->frame_tree_node_id();
 
   CHECK(!base::Contains(prerender_host_by_frame_tree_node_id_,
@@ -150,7 +142,7 @@ int PrerenderHostRegistry::CreateAndStartHost(
     return RenderFrameHost::kNoFrameTreeNodeId;
   }
 
-  RecordPrerenderTriggered(initiator_render_frame_host);
+  RecordPrerenderTriggered(attributes.initiator_ukm_id);
 
   return frame_tree_node_id;
 }

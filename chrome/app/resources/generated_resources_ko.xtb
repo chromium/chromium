@@ -1316,7 +1316,6 @@
 <translation id="2312219318583366810">페이지 URL</translation>
 <translation id="2314165183524574721">현재 공개 범위가 숨김으로 설정되어 있음</translation>
 <translation id="2314774579020744484">페이지 번역 시 사용하는 언어</translation>
-<translation id="2315414688463285945">Linux 파일을 구성하는 중에 오류가 발생했습니다. 다시 시도해 보세요.</translation>
 <translation id="2315587498123194634"><ph name="DEVICE_NAME" />(으)로 링크 보내기</translation>
 <translation id="2316129865977710310">아니요, 괜찮습니다.</translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" />% 완료</translation>
@@ -2366,7 +2365,6 @@
 <translation id="3424969259347320884">탭이 다운되었을 때 무엇을 하고 계셨는지 설명해 주세요.</translation>
 <translation id="3427092606871434483">허용(기본값)</translation>
 <translation id="3428419049384081277">로그인되었습니다</translation>
-<translation id="3428747202529429621">로그인 상태일 때 Chrome에서 사용자를 보호하고 기타 Google 앱에서 사용자의 보안을 개선하는 데 사용될 수 있습니다.</translation>
 <translation id="3429086384982427336">아래에 나열된 앱이 프로토콜 링크를 처리하지 않게 됩니다.</translation>
 <translation id="3429160811076349561">무료 체험 기능 사용 안함</translation>
 <translation id="3429271624041785769">웹 콘텐츠 언어</translation>
@@ -5130,7 +5128,6 @@
 <translation id="6410328738210026208">채널 변경 및 Powerwash</translation>
 <translation id="6410390304316730527">세이프 브라우징을 사용하면 악성 소프트웨어를 설치하거나 개인정보(예: 비밀번호, 전화번호, 신용카드 정보)를 공개하는 등의 위험한 행동을 하도록 사용자를 속이는 공격자를 차단합니다. 이 기능을 사용 중지하는 경우 익숙하지 않거나 평판이 좋지 않은 사이트를 탐색할 때 주의하시기 바랍니다.</translation>
 <translation id="6410668567036790476">검색엔진 추가</translation>
-<translation id="6412673304250309937">Chrome에 저장된 안전하지 않은 사이트 목록을 사용하여 URL을 검사합니다. 사이트에서 사용자의 비밀번호를 도용하려고 하거나 사용자가 유해한 파일을 다운로드하는 경우, Chrome에서 페이지 콘텐츠 일부를 비롯한 URL을 세이프 브라우징 서비스에 보낼 수 있습니다.</translation>
 <translation id="641469293210305670">업데이트 및 앱 설치</translation>
 <translation id="6414878884710400018">시스템 환경설정 열기</translation>
 <translation id="6414888972213066896">이 사이트를 방문해도 괜찮은지 부모님께 문의했습니다.</translation>
@@ -5539,7 +5536,6 @@
 <translation id="6843264316370513305">네트워크 디버깅</translation>
 <translation id="6843423766595476978">Ok Google 설정 완료</translation>
 <translation id="6845038076637626672">최대화 상태로 열기</translation>
-<translation id="6845325883481699275">Chrome 보안 강화 개선에 참여하기</translation>
 <translation id="6846178040388691741">‘<ph name="EXTENSION_NAME" />’ 확장 프로그램이 <ph name="PRINTER_NAME" />에서 <ph name="FILE_NAME" /> 파일을 인쇄하려고 합니다.</translation>
 <translation id="6847125920277401289">계속하려면 여유 공간을 확보하세요</translation>
 <translation id="6848388270925200958">현재 이 기기에서만 사용할 수 있는 카드가 있습니다.</translation>
@@ -6992,7 +6988,6 @@
 <translation id="8324784016256120271">사이트에서 사용자의 다양한 사이트 탐색 활동 정보를 이용해 광고 맞춤설정 등의 작업을 하기 위해 쿠키를 사용할 수 있습니다.</translation>
 <translation id="8325413836429495820">클립보드 확인이 허용되지 않음</translation>
 <translation id="8326478304147373412">PKCS #7, 인증서 체인</translation>
-<translation id="8327039559959785305">Linux 파일을 마운트하는 중에 오류가 발생했습니다. 다시 시도해 보세요.</translation>
 <translation id="8327676037044516220">권한 및 콘텐츠 설정</translation>
 <translation id="833256022891467078">Crostini 공유 폴더</translation>
 <translation id="8335587457941836791">실행기에서 고정 해제</translation>

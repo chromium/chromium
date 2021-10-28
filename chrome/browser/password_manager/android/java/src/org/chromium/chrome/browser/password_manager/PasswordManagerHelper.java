@@ -41,7 +41,7 @@ public class PasswordManagerHelper {
                     CredentialManagerLauncherFactory.getInstance().createLauncher();
 
             if (credentialManagerLauncher != null) {
-                credentialManagerLauncher.launchCredentialManager();
+                credentialManagerLauncher.launchCredentialManager(referrer);
                 return;
             }
         }

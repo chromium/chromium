@@ -30,6 +30,16 @@ ScriptValue DOMRectReadOnly::toJSONForBinding(ScriptState* script_state) const {
   return result.GetScriptValue();
 }
 
+DOMRectReadOnly* DOMRectReadOnly::FromRect(const gfx::Rect& rect) {
+  return MakeGarbageCollected<DOMRectReadOnly>(rect.x(), rect.y(), rect.width(),
+                                               rect.height());
+}
+
+DOMRectReadOnly* DOMRectReadOnly::FromRectF(const gfx::RectF& rect) {
+  return MakeGarbageCollected<DOMRectReadOnly>(rect.x(), rect.y(), rect.width(),
+                                               rect.height());
+}
+
 DOMRectReadOnly* DOMRectReadOnly::FromIntRect(const IntRect& rect) {
   return MakeGarbageCollected<DOMRectReadOnly>(rect.x(), rect.y(), rect.width(),
                                                rect.height());

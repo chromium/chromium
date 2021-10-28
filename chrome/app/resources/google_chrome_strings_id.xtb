@@ -48,6 +48,7 @@
 <translation id="2121284319307530122">Luncurkan kembali untuk Mengupdate &amp;Chrome</translation>
 <translation id="2123055963409958220">Bantu Chrome jadi lebih baik dengan melaporkan <ph name="BEGIN_LINK" />setelan saat ini<ph name="END_LINK" /></translation>
 <translation id="2151406531797534936">Mulai ulang Chrome sekarang</translation>
+<translation id="2189289170880510015">Sesuaikan beberapa pilihan privasi terpenting Chrome</translation>
 <translation id="2290014774651636340">Kunci API Google tidak ada. Beberapa fungsi Google Chrome tidak akan berfungsi.</translation>
 <translation id="2290095356545025170">Apakah Anda yakin ingin mencopot penginstalan Google Chrome?</translation>
 <translation id="2309047409763057870">Ini adalah pemasangan Google Chrome sekunder, dan tidak dapat digunakan sebagai browser default.</translation>
@@ -97,6 +98,7 @@
 <translation id="3379938682270551431">{0,plural, =0{Chrome akan diluncurkan ulang sekarang}=1{Chrome akan diluncurkan ulang dalam 1 detik}other{Chrome akan diluncurkan ulang dalam # detik}}</translation>
 <translation id="3395323229510056640">Dapatkan bantuan Chrome OS</translation>
 <translation id="3396977131400919238">Terjadi kesalahan pada sistem operasi saat penginstalan berlangsung. Download kembali Google Chrome.</translation>
+<translation id="3428747202529429621">Memastikan Anda tetap aman di Chrome dan dapat digunakan untuk menyempurnakan keamanan Anda di aplikasi Google lainnya saat login</translation>
 <translation id="3434246496373299699">Chrome dapat memeriksa sandi saat Anda login dengan Akun Google</translation>
 <translation id="3451115285585441894">Menambahkan ke Chrome...</translation>
 <translation id="345171907106878721">Tambahkan diri Anda ke Chrome</translation>
@@ -109,6 +111,7 @@
 <translation id="3596080736082218006">{COUNT,plural, =0{Administrator mewajibkan Anda meluncurkan kembali Chrome untuk menerapkan update}=1{Administrator mewajibkan Anda meluncurkan kembali Chrome untuk menerapkan update. Jendela Samaran Anda tidak akan dibuka kembali.}other{Administrator mewajibkan Anda meluncurkan kembali Chrome untuk menerapkan update. # jendela Samaran Anda tidak akan dibuka kembali.}}</translation>
 <translation id="3622797965165704966">Kini, menggunakan Chrome dengan Akun Google Anda dan di komputer bersama jadi lebih mudah.</translation>
 <translation id="3673813398384385993">Chrome menemukan bahwa "<ph name="EXTENSION_NAME" />" berisi malware</translation>
+<translation id="3678552270983184277">Setelan default berfungsi untuk sebagian besar pengguna, tetapi Anda dapat menyesuaikannya dengan cara yang Anda inginkan untuk menggunakan Chrome</translation>
 <translation id="3718181793972440140">Tindakan ini akan menghapus 1 item dari perangkat ini. Untuk mengambil data nanti, login ke Chrome sebagai <ph name="USER_EMAIL" />.</translation>
 <translation id="3735758079232443276">Ekstensi "<ph name="EXTENSION_NAME" />" telah mengubah apa yang ditampilkan oleh halaman saat Anda memulai Chrome.</translation>
 <translation id="3779473566290487688">Untuk mendapatkan update Google Chrome selanjutnya, Anda perlu OS X 10.11 atau yang lebih baru. Komputer ini menggunakan OS X 10.10.</translation>
@@ -200,6 +203,7 @@
 <translation id="6291089322031436445">Aplikasi Chrome Dev</translation>
 <translation id="6291549208091401781">Google Chrome sudah terpasang untuk semua pengguna di komputer Anda.</translation>
 <translation id="6368958679917195344">Chrome OS terwujud karena <ph name="BEGIN_LINK_CROS_OSS" />software sumber terbuka<ph name="END_LINK_CROS_OSS" /> tambahan.</translation>
+<translation id="6412673304250309937">Memeriksa kesesuaian URL dengan daftar situs tidak aman yang disimpan di Chrome. Jika situs berusaha mencuri sandi Anda, atau jika Anda mendownload file berbahaya, Chrome mungkin juga mengirim URL, termasuk bit konten halaman, ke Safe Browsing.</translation>
 <translation id="6418662306461808273">Beralih ke profil Chrome yang sudah ada?</translation>
 <translation id="6506909944137591434">Chrome memerlukan izin kamera untuk membuat peta 3D area sekitar Anda</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>

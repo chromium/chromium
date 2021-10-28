@@ -1302,7 +1302,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2312219318583366810">URL de la page</translation>
 <translation id="2314165183524574721">Le paramètre actuel de visibilité est masqué</translation>
 <translation id="2314774579020744484">Langue utilisée pour la traduction des pages</translation>
-<translation id="2315414688463285945">Erreur lors de la configuration des fichiers Linux. Veuillez réessayer.</translation>
 <translation id="2315587498123194634">Envoyer le lien sur <ph name="DEVICE_NAME" /></translation>
 <translation id="2316129865977710310">Non merci</translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" /> % terminés</translation>
@@ -2075,6 +2074,7 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="310671807099593501">Le site utilise le Bluetooth</translation>
 <translation id="3108931485517391283">Impossible de recevoir le transfert</translation>
 <translation id="3109724472072898302">Réduit</translation>
+<translation id="311214366526552035">Télécharger quand même</translation>
 <translation id="311394601889664316">Ne pas autoriser les sites à modifier les fichiers ni les dossiers sur votre appareil</translation>
 <translation id="3115147772012638511">En attente de l'affichage du cache</translation>
 <translation id="3115580024857770654">Tout réduire</translation>
@@ -2351,11 +2351,11 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="3424969259347320884">Décrivez ce que vous faisiez lorsque l'onglet a planté</translation>
 <translation id="3427092606871434483">Autoriser (par défaut)</translation>
 <translation id="3428419049384081277">Vous êtes connecté</translation>
-<translation id="3428747202529429621">Ce mode assure votre sécurité dans Chrome et peut être utilisé pour améliorer votre sécurité dans d'autres applications Google lorsque vous êtes connecté</translation>
 <translation id="3429086384982427336">Les applis listées ci-dessous ne géreront jamais les liens de protocole.</translation>
 <translation id="3429160811076349561">Les fonctionnalités à l'essai sont désactivées</translation>
 <translation id="3429271624041785769">Langues du contenu Web</translation>
 <translation id="3429275422858276529">Ajoutez cette page aux favoris pour la retrouver facilement</translation>
+<translation id="343115368966109153">Télécharger <ph name="FILE_NAME" /> ? Toute personne qui utilise cet appareil pourra le voir.</translation>
 <translation id="3432227430032737297">Supprimer tous les cookies affichés</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433621910545056227">Petit problème… Le système n'a pas réussi à établir le verrouillage des attributs du temps d'installation de l'appareil.</translation>
@@ -2697,6 +2697,7 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="3777806571986431400">Extension activée</translation>
 <translation id="3778152852029592020">Le téléchargement a été annulé.</translation>
 <translation id="3778208826288864398">La clé de sécurité est verrouillée, car vous avez saisi un code erroné trop de fois. Vous devez la réinitialiser.</translation>
+<translation id="3778369586810509692">Ce fichier sera enregistré sur l'appareil. Tout le monde pourra le voir.</translation>
 <translation id="3778740492972734840">Outils de &amp;développement</translation>
 <translation id="3778868487658107119">Posez-lui des questions et donnez-lui des choses à faire. L'Assistant Google est toujours là pour vous aider.</translation>
 <translation id="3781742599892759500">Accès au micro sous Linux</translation>
@@ -5116,7 +5117,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6410328738210026208">Changer de version et Powerwash</translation>
 <translation id="6410390304316730527">La fonctionnalité Navigation sécurisée vous protège contre les pirates informatiques qui pourraient vous inciter à effectuer des opérations dangereuses, comme installer des logiciels malveillants ou divulguer des informations personnelles (mots de passe, numéros de téléphone ou numéros de carte de crédit, par exemple). Si vous la désactivez, faites preuve de vigilance lorsque vous consultez des sites Web inconnus ou peu fiables.</translation>
 <translation id="6410668567036790476">Ajouter un moteur de recherche</translation>
-<translation id="6412673304250309937">Il vérifie les URL d'après une liste de sites dangereux stockée dans Chrome. Si un site tente de voler votre mot de passe ou si vous téléchargez un fichier dangereux, Chrome peut également envoyer les URL concernées, y compris des extraits du contenu de pages, à la fonctionnalité de navigation sécurisée.</translation>
 <translation id="641469293210305670">Installer des mises à jour et des applications</translation>
 <translation id="6414878884710400018">Ouvrir les préférences système</translation>
 <translation id="6414888972213066896">Une demande d'autorisation a été envoyée à tes parents pour la consultation de ce site</translation>
@@ -5525,7 +5525,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6843264316370513305">Débogage du réseau</translation>
 <translation id="6843423766595476978">Ok Google est à présent configuré</translation>
 <translation id="6845038076637626672">Ouvrir la version agrandie</translation>
-<translation id="6845325883481699275">Contribuer à améliorer la sécurité de Chrome</translation>
 <translation id="6846178040388691741">"<ph name="EXTENSION_NAME" />" souhaite imprimer <ph name="FILE_NAME" /> avec <ph name="PRINTER_NAME" />.</translation>
 <translation id="6847125920277401289">Libérer de l'espace pour continuer</translation>
 <translation id="6848388270925200958">Vous disposez actuellement de plusieurs cartes qui ne peuvent être utilisées qu'avec cet appareil</translation>
@@ -6978,7 +6977,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8324784016256120271">Les sites peuvent utiliser des cookies afin de voir votre activité de navigation sur l'ensemble des différents sites (par exemple, pour personnaliser les annonces)</translation>
 <translation id="8325413836429495820">Non autorisé à voir votre presse-papiers</translation>
 <translation id="8326478304147373412">PKCS #7, chaîne de certificats</translation>
-<translation id="8327039559959785305">Erreur lors de l'installation des fichiers Linux. Veuillez réessayer.</translation>
 <translation id="8327676037044516220">Autorisations et paramètres de contenu</translation>
 <translation id="833256022891467078">Dossiers partagés Crostini</translation>
 <translation id="8335587457941836791">Retirer de l'étagère</translation>

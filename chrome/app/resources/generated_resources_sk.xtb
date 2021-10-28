@@ -123,6 +123,7 @@
 <translation id="1122068467107743258">Práca</translation>
 <translation id="1122198203221319518">&amp;Nástroje</translation>
 <translation id="1122242684574577509">Overenie totožnosti zlyhalo. Kliknutím prejdete na prihlasovaciu stránku pre sieť Wi‑Fi, ktorú používate (<ph name="NETWORK_ID" />).</translation>
+<translation id="1122913801042512795">Prihlasovacie údaje vášho účtu sú zastarané. Odhláste sa a znova sa prihláste.</translation>
 <translation id="1122960773616686544">Názov záložky</translation>
 <translation id="1124772482545689468">Používateľ</translation>
 <translation id="1125550662859510761">Vyzerá ako <ph name="WIDTH" /> x <ph name="HEIGHT" /> (natívne)</translation>
@@ -1303,7 +1304,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2312219318583366810">Webová adresa stránky</translation>
 <translation id="2314165183524574721">Aktuálne nastavenie viditeľnosti je Skryté</translation>
 <translation id="2314774579020744484">Jazyk použitý pri preklade stránok</translation>
-<translation id="2315414688463285945">Pri konfigurovaní súborov systému Linux sa vyskytla chyba. Skúste to znova.</translation>
 <translation id="2315587498123194634">Odoslať odkaz do zariadenia <ph name="DEVICE_NAME" /></translation>
 <translation id="2316129865977710310">Nie, ďakujem</translation>
 <translation id="2317842250900878657">Dokončené: <ph name="PROGRESS_PERCENT" />%</translation>
@@ -2353,7 +2353,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="3424969259347320884">Opíšte, čo ste robili, keď karta zlyhala</translation>
 <translation id="3427092606871434483">Povoliť (predvolené)</translation>
 <translation id="3428419049384081277">Ste prihlásený/-á!</translation>
-<translation id="3428747202529429621">Chráni vás v Chrome a môže zlepšiť zabezpečenie v ďalších aplikáciách Google, keď sa prihlásite</translation>
 <translation id="3429086384982427336">Aplikácie uvedené nižšie nikdy nebudú spracúvať odkazy na protokoly.</translation>
 <translation id="3429160811076349561">Skúšobné funkcie sú vypnuté</translation>
 <translation id="3429271624041785769">Jazyky internetového obsahu</translation>
@@ -5119,7 +5118,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6410328738210026208">Zmeniť kanál a použiť funkciu Powerwash</translation>
 <translation id="6410390304316730527">Bezpečné prehliadanie vás chráni pred útočníkmi, ktorí vás môžu oklamať, aby ste urobili niečo nebezpečné, napríklad nainštalovali škodlivý softvér alebo odhalili osobné údaje, ako sú heslá, telefónne čísla alebo kreditné karty. Ak ho vypnete, pri prehliadaní neznámych alebo pochybných webov postupujte opatrne.</translation>
 <translation id="6410668567036790476">Pridať vyhľadávač</translation>
-<translation id="6412673304250309937">Kontroluje webové adresy podľa zoznamu nebezpečných webov uloženého v Chrome. Ak sa vám určitý web pokúsi ukradnúť heslo alebo stiahnete škodlivý súbor, Chrome môže tiež odoslať webové adresy vrátane častí obsahu stránky Bezpečnému prehliadaniu.</translation>
 <translation id="641469293210305670">Inštalácia aktualizácií a aplikácií</translation>
 <translation id="6414878884710400018">Otvoriť predvoľby systému</translation>
 <translation id="6414888972213066896">Opýtali ste sa svojho rodiča, či môžete navštíviť tento web</translation>
@@ -5528,7 +5526,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6843264316370513305">Ladenie siete</translation>
 <translation id="6843423766595476978">Výraz „Ok Google“ je nastavený</translation>
 <translation id="6845038076637626672">Otvoriť maximalizované</translation>
-<translation id="6845325883481699275">Pomoc so zlepšením zabezpečenia Chromu</translation>
 <translation id="6846178040388691741"><ph name="EXTENSION_NAME" /> chce vytlačiť súbor <ph name="FILE_NAME" /> pomocou tlačiarne <ph name="PRINTER_NAME" />.</translation>
 <translation id="6847125920277401289">Ak chcete pokračovať, uvoľnite priestor</translation>
 <translation id="6848388270925200958">Momentálne máte niekoľko kariet, ktoré je možné použiť iba v tomto zariadení</translation>
@@ -6980,7 +6977,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8324784016256120271">Weby si môžu na základe súborov cookie zobraziť vašu históriu prehliadania v rámci rôznych webov (napríklad na prispôsobenie reklám)</translation>
 <translation id="8325413836429495820">Nemôže zobrazovať vašu schránku</translation>
 <translation id="8326478304147373412">Štandard PKCS #7, certifikačná reťaz</translation>
-<translation id="8327039559959785305">Pri pripájaní súborov systému Linux sa vyskytla chyba. Skúste to znova.</translation>
 <translation id="8327676037044516220">Povolenia a nastavenia obsahu</translation>
 <translation id="833256022891467078">Zdieľané priečinky v systéme Crostini</translation>
 <translation id="8335587457941836791">Odopnúť z poličky</translation>
@@ -7504,6 +7500,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8879284080359814990">&amp;Zobraziť ako kartu</translation>
 <translation id="8879921471468674457">Zapamätať si prihlasovacie údaje</translation>
 <translation id="8880054210564666174">Zoznam kontaktov sa nedá stiahnuť. Skontrolujte pripojenie k sieti alebo to <ph name="LINK_BEGIN" />skúste znova<ph name="LINK_END" />.</translation>
+<translation id="8880344290593529089">Otvorte Nastavenia a pripojte <ph name="USB_DEVICE_NAME" /> k systému Linux alebo aplikácii Parallels Desktop</translation>
 <translation id="8881020143150461183">Skúste to znova. Ak potrebujete technickú podporu, kontaktujte operátora <ph name="CARRIER_NAME" />.</translation>
 <translation id="8883273463630735858">Povoliť zrýchlenie touchpadu</translation>
 <translation id="8884570509232205463">Zariadenie sa teraz uzamyká o <ph name="UNLOCK_TIME" />.</translation>

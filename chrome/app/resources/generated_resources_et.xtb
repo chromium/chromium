@@ -1307,7 +1307,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2312219318583366810">Lehe URL</translation>
 <translation id="2314165183524574721">Praegune nähtavuse seade on Peidetud</translation>
 <translation id="2314774579020744484">Lehtede tõlkimiseks kasutatav keel</translation>
-<translation id="2315414688463285945">Linuxi failide seadistamisel ilmnes viga. Proovige uuesti.</translation>
 <translation id="2315587498123194634">Saada link seadmesse <ph name="DEVICE_NAME" /></translation>
 <translation id="2316129865977710310">Ei, aitäh</translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" />% on valmis</translation>
@@ -2356,7 +2355,6 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="3424969259347320884">Kirjeldage, mida te vahelehe kokkujooksmise ajal tegite</translation>
 <translation id="3427092606871434483">Luba (vaikimisi)</translation>
 <translation id="3428419049384081277">Olete sisse logitud.</translation>
-<translation id="3428747202529429621">Kaitseb teid Chrome'is ja seda võidakse kasutada teie turvalisuse suurendamiseks muudes Google'i rakendustes, kui olete sisse logitud</translation>
 <translation id="3429086384982427336">All loetletud rakendused ei käsitle protokollide linke.</translation>
 <translation id="3429160811076349561">Prooviversiooni funktsioonid on välja lülitatud</translation>
 <translation id="3429271624041785769">Veebisisu keeled</translation>
@@ -5120,7 +5118,6 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6410328738210026208">Muuda kanalit ja aktiveeri Powerwash</translation>
 <translation id="6410390304316730527">Google'i ohutu sirvimine kaitseb teid ründajate eest, kes võivad teid meelitada ohtlikele tegevustele, nagu pahatahtliku tarkvara installimine või isiklike andmete (nt paroolid, telefoninumbrid või krediitkaarditeave) avaldamine. Kui lülitate selle välja, olge võõraste või halva mainega saitide külastamisel ettevaatlik.</translation>
 <translation id="6410668567036790476">Otsingumootori lisamine</translation>
-<translation id="6412673304250309937">Kontrollib URL-e Chrome'i talletatud ohtlike saitide loendi alusel. Kui sait üritab teie parooli varastada või laadite alla kahjuliku faili, võib Chrome saata URL-id ja lehe sisu osad teenusesse Google'i ohutu sirvimine.</translation>
 <translation id="641469293210305670">Värskenduste ja rakenduste installimine</translation>
 <translation id="6414878884710400018">Ava süsteemieelistused</translation>
 <translation id="6414888972213066896">Küsisite vanemalt, kas võite seda saiti külastada</translation>
@@ -5529,7 +5526,6 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6843264316370513305">Võrgu silumine</translation>
 <translation id="6843423766595476978">„Ok Google” on kasutamiseks valmis</translation>
 <translation id="6845038076637626672">Ava maksimeeritult</translation>
-<translation id="6845325883481699275">Aidake Chrome'i turvalisust täiustada</translation>
 <translation id="6846178040388691741">„<ph name="EXTENSION_NAME" />” soovib printida faili <ph name="FILE_NAME" /> printeriga <ph name="PRINTER_NAME" />.</translation>
 <translation id="6847125920277401289">Jätkamiseks vabastage ruumi</translation>
 <translation id="6848388270925200958">Praegu on teil kaarte, mida saab kasutada ainult selles seadmes</translation>
@@ -6982,7 +6978,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8324784016256120271">Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, näiteks reklaamide isikupärastamiseks</translation>
 <translation id="8325413836429495820">Pole lubatud näha teie lõikelauda</translation>
 <translation id="8326478304147373412">PKCS 7, sertifikaadiahel</translation>
-<translation id="8327039559959785305">Linuxi failide ühendamisel ilmnes viga. Proovige uuesti.</translation>
 <translation id="8327676037044516220">Load ja sisu seaded</translation>
 <translation id="833256022891467078">Crostini jagatud kaustad</translation>
 <translation id="8335587457941836791">Riiulilt vabastamine</translation>

@@ -5,6 +5,17 @@
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 
+java_cpp_enum("android_backend_java_enums_srcjar") {
+  sources = [ "android_backend_error.h" ]
+}
+
+# Wrap the java_cpp_enum in android_library so it can be used by both
+# chrome_java and modules.
+android_library("android_backend_java_enums") {
+  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+  srcjar_deps = [ ":android_backend_java_enums_srcjar" ]
+}
+
 if (enable_chrome_android_internal) {
   source_set("backend") {
     visibility = [
@@ -13,6 +24,7 @@ if (enable_chrome_android_internal) {
     ]
 
     sources = [
+      "android_backend_error.h",
       "password_store_android_backend.cc",
       "password_store_android_backend.h",
       "password_store_android_backend_bridge.h",
@@ -34,8 +46,10 @@ if (enable_chrome_android_internal) {
 
 android_library("java") {
   deps = [
+    ":android_backend_java_enums",
     ":java_resources",
     ":settings_interface_java",
+    "$google_play_services_package:google_play_services_basement_java",
     "//base:base_java",
     "//chrome/browser/device_reauth/android:java",
     "//chrome/browser/flags:java",
@@ -100,6 +114,7 @@ junit_binary("password_manager_junit_tests") {
   }
 
   deps = [
+    ":android_backend_java_enums",
     ":java",
     "//base:base_java",
     "//base:base_java_test_support",
@@ -122,7 +137,11 @@ android_resources("java_resources") {
 }
 
 android_library("settings_interface_java") {
-  deps = [ "//base:base_java" ]
+  deps = [
+    "//base:base_java",
+    "//components/password_manager/core/browser:password_manager_java_enums",
+  ]
+
   sources = [
     "java/src/org/chromium/chrome/browser/password_manager/CredentialManagerLauncher.java",
     "java/src/org/chromium/chrome/browser/password_manager/CredentialManagerLauncherFactory.java",
@@ -140,7 +159,10 @@ android_library("settings_interface_public_impl_java") {
 }
 
 android_library("backend_interface_java") {
-  deps = [ "//base:base_java" ]
+  deps = [
+    ":android_backend_java_enums",
+    "//base:base_java",
+  ]
   sources = [
     "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreAndroidBackend.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreAndroidBackendFactory.java",

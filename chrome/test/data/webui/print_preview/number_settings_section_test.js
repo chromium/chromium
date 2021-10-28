@@ -6,8 +6,8 @@ import 'chrome://print/print_preview.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-import {triggerInputEvent} from 'chrome://test/print_preview/print_preview_test_utils.js';
-import {eventToPromise} from 'chrome://test/test_util.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {triggerInputEvent} from './print_preview_test_utils.js';
 
 window.number_settings_section_test = {};
 number_settings_section_test.suiteName = 'NumberSettingsSectionTest';

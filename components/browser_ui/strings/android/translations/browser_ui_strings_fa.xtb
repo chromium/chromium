@@ -29,6 +29,7 @@
 <translation id="1743802530341753419">قبل از اجازه دادن به سایت‌ها برای اتصال به دستگاه سؤال شود (توصیه می‌شود)</translation>
 <translation id="1779089405699405702">رمزگشای تصویر</translation>
 <translation id="1818308510395330587">‏برای اینکه به <ph name="APP_NAME" /> اجازه دهید از AR استفاده کند، دوربین را در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> نیز روشن کنید.</translation>
+<translation id="1864927262126810325">از <ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">‏دسترسی به مکان برای این دستگاه خاموش است. آن را در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> روشن کنید.</translation>
 <translation id="1919345977826869612">آگهی‌ها</translation>
 <translation id="1919950603503897840">انتخاب مخاطبین</translation>
@@ -236,6 +237,7 @@
 <translation id="7016516562562142042">برای موتور جستجوی فعلی مجاز است</translation>
 <translation id="7053983685419859001">مسدود کردن</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{۱ مورد انتخاب شد}one{# مورد انتخاب شد}other{# مورد انتخاب شد}}</translation>
+<translation id="7070090581017165256">درباره این سایت</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> مورد انتخاب شد.  گزینه‌ها در نزدیکی بالای صفحه دردسترس است</translation>
 <translation id="7141896414559753902">مسدود کردن نمایش پنجره‌های بازشو و هدایت‌ها در سایت‌ها (توصیه می‌شود)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> کیلوبایت</translation>

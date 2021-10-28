@@ -102,6 +102,7 @@
 <translation id="3379938682270551431">{0,plural, =0{지금 Chrome이 다시 시작됩니다}=1{1초 후 Chrome이 다시 시작됩니다}other{#초 후 Chrome이 다시 시작됩니다}}</translation>
 <translation id="3395323229510056640">Chrome OS 도움말 보기</translation>
 <translation id="3396977131400919238">설치 중 운영체제 오류가 발생했습니다. Chrome을 다시 다운로드하세요.</translation>
+<translation id="3428747202529429621">로그인 상태일 때 Chrome에서 사용자를 보호하고 기타 Google 앱에서 사용자의 보안을 개선하는 데 사용될 수 있습니다.</translation>
 <translation id="3434246496373299699">Google 계정으로 로그인하면 Chrome에서 비밀번호를 확인할 수 있습니다.</translation>
 <translation id="3451115285585441894">Chrome에 추가하는 중...</translation>
 <translation id="345171907106878721">Chrome에 본인 추가</translation>
@@ -210,6 +211,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="6291089322031436445">Chrome 개발자 앱</translation>
 <translation id="6291549208091401781">컴퓨터에 Chrome이 이미 설치되어 있으며 모든 사용자가 사용할 수 있습니다.</translation>
 <translation id="6368958679917195344">Chrome OS는 추가 <ph name="BEGIN_LINK_CROS_OSS" />오픈소스 소프트웨어<ph name="END_LINK_CROS_OSS" />를 사용했습니다.</translation>
+<translation id="6412673304250309937">Chrome에 저장된 안전하지 않은 사이트 목록을 사용하여 URL을 검사합니다. 사이트에서 사용자의 비밀번호를 도용하려고 하거나 사용자가 유해한 파일을 다운로드하는 경우, Chrome에서 페이지 콘텐츠 일부를 비롯한 URL을 세이프 브라우징 서비스에 보낼 수 있습니다.</translation>
 <translation id="6418662306461808273">기존 Chrome 프로필로 전환하시겠습니까?</translation>
 <translation id="6506909944137591434">Chrome에서 주변의 3D 지도를 만들려면 카메라 권한이 필요합니다.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - 개발자용 Chrome</translation>

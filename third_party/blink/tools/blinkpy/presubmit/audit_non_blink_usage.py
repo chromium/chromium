@@ -314,6 +314,7 @@ _CONFIG = [
             'gfx::ComputeTransform2dScaleComponents',
             'gfx::IntersectRects',
             'gfx::PointAtOffsetFromOrigin',
+            'gfx::MaximumCoveredRect',
             'gfx::RectToSkIRect',
             'gfx::RectToSkRect',
             'gfx::ScalePoint',

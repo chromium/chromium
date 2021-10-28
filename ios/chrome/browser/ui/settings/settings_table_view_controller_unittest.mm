@@ -10,7 +10,6 @@
 #include "components/password_manager/core/browser/test_password_store.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"
-#import "components/signin/ios/browser/features.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/sync/driver/mock_sync_service.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"

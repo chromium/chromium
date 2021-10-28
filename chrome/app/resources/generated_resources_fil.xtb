@@ -1317,7 +1317,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2312219318583366810">URL ng Page</translation>
 <translation id="2314165183524574721">Nakatago ang kasalukuyang setting ng visibility</translation>
 <translation id="2314774579020744484">Ginagamit na wika kapag nagsasalin ng mga page</translation>
-<translation id="2315414688463285945">Nagkaroon ng error sa pag-configure ng mga Linux file. Pakisubukang muli.</translation>
 <translation id="2315587498123194634">Ipadala ang Link sa <ph name="DEVICE_NAME" /></translation>
 <translation id="2316129865977710310">Hindi, salamat</translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" />% ang natapos</translation>
@@ -2366,7 +2365,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3424969259347320884">Ilarawan Ang Ginagawa Mo Noong Nag-crash Ang Tab</translation>
 <translation id="3427092606871434483">Payagan (default)</translation>
 <translation id="3428419049384081277">Naka-sign in ka!</translation>
-<translation id="3428747202529429621">Pinapanatili kang ligtas sa Chrome at puwedeng gamitin para paigtingin ang iyong seguridad sa iba pang Google app kapag naka-sign in ka</translation>
 <translation id="3429086384982427336">Hinding-hindi mangangasiwa ng mga link ng protocol ang mga app na nakalista sa ibaba.</translation>
 <translation id="3429160811076349561">Naka-off ang mga feature ng trial</translation>
 <translation id="3429271624041785769">Mga wika ng content sa web</translation>
@@ -5131,7 +5129,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6410328738210026208">Baguhin ang channel at Powerwash</translation>
 <translation id="6410390304316730527">Pinoprotektahan ka ng Ligtas na Pag-browse laban sa mga attacker na posibleng manlinlang sa iyong gumawa ng anumang mapanganib na bagay tulad ng pag-install ng nakakapinsalang software o paghahayag ng personal na impormasyon tulad ng mga password, numero ng telepono, o credit card. Kung io-off mo ito, maging maingat kapag nagba-browse sa mga hindi pamilyar o hindi mapagkakatiwalaang site.</translation>
 <translation id="6410668567036790476">Magdagdag ng search engine</translation>
-<translation id="6412673304250309937">Sinusuri ang mga URL sa pamamagitan ng listahan ng mga hindi ligtas na site na naka-store sa Chrome. Kung susubukan ng site na nakawin ang iyong password, o kapag nag-download ka ng mapaminsalang file, posible ring magpadala ang Chrome sa Ligtas na Pag-browse ng mga URL, kabilang ang ilang content ng page</translation>
 <translation id="641469293210305670">Mag-install ng Mga Update at App</translation>
 <translation id="6414878884710400018">Buksan ang Mga Kagustuhan sa System</translation>
 <translation id="6414888972213066896">Tinanong mo ang iyong magulang kung maaari mong bisitahin ang site na ito</translation>
@@ -5540,7 +5537,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6843264316370513305">Pag-debug sa Network</translation>
 <translation id="6843423766595476978">Nakahanda na ang Ok Google</translation>
 <translation id="6845038076637626672">Buksan ang naka-maximize</translation>
-<translation id="6845325883481699275">Tulungang paigtingin ang seguridad ng Chrome</translation>
 <translation id="6846178040388691741">Gustong i-print ng "<ph name="EXTENSION_NAME" />" ang <ph name="FILE_NAME" /> gamit ang <ph name="PRINTER_NAME" />.</translation>
 <translation id="6847125920277401289">Magbakante ng espasyo para magpatuloy</translation>
 <translation id="6848388270925200958">Sa ngayon, mayroon kang ilang card na magagamit lang sa device na ito</translation>
@@ -6993,7 +6989,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8324784016256120271">Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-browse sa iba't ibang site, halimbawa, para mag-personalize ng mga ad</translation>
 <translation id="8325413836429495820">Hindi pinapayagang tingnan ang iyong clipboard</translation>
 <translation id="8326478304147373412">PKCS #7, certificate chain</translation>
-<translation id="8327039559959785305">Nagkaroon ng error sa pag-mount ng mga Linux file. Pakisubukang muli.</translation>
 <translation id="8327676037044516220">Mga pahintulot at setting ng content</translation>
 <translation id="833256022891467078">Mga nakabahaging folder ng Crostini</translation>
 <translation id="8335587457941836791">I-unpin mula sa shelf</translation>

@@ -111,10 +111,8 @@ PaintInvalidationReason RasterInvalidator::ChunkPropertiesChanged(
   // Check for accumulated clip rect change, if the clip rects are tight.
   if (new_chunk_info.chunk_to_layer_clip.IsTight() &&
       old_chunk_info.chunk_to_layer_clip.IsTight()) {
-    gfx::RectF new_clip_rect =
-        ToGfxRectF(new_chunk_info.chunk_to_layer_clip.Rect());
-    gfx::RectF old_clip_rect =
-        ToGfxRectF(old_chunk_info.chunk_to_layer_clip.Rect());
+    gfx::RectF new_clip_rect = new_chunk_info.chunk_to_layer_clip.Rect();
+    gfx::RectF old_clip_rect = old_chunk_info.chunk_to_layer_clip.Rect();
     if (new_clip_rect == old_clip_rect)
       return PaintInvalidationReason::kNone;
     // Ignore differences out of the current layer bounds.

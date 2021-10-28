@@ -87,6 +87,8 @@ extern const base::Feature kBluetoothPhoneFilter;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kBluetoothRevamp;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kBluetoothWbsDogfood;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kBorealisBigGl;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kBorealisDiskManagement;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kButtonARCNetworkDiagnostics;
@@ -340,6 +342,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kPreferConstantFrameRate;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kProductivityLauncher;
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kProductivityLauncherAnimation;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kProjector;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kProjectorFeaturePod;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kProjectorAnnotator;
@@ -560,6 +564,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPinAutosubmitFeatureEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPinSetupForManagedUsersEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPipRoundedCornersEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProductivityLauncherEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProductivityLauncherAnimationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorFeaturePodEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorAnnotatorEnabled();

@@ -301,6 +301,7 @@
 <translation id="1842969606798536927">Плати</translation>
 <translation id="1856713167556118146">Шта режим без архивирања не ради</translation>
 <translation id="1863257867908022953">12. фиока</translation>
+<translation id="1864927262126810325">Извор: <ph name="SOURCE_NAME" /></translation>
 <translation id="1871208020102129563">Прокси је подешен да користи фиксне прокси сервере, а не URL адресу .pac скрипте.</translation>
 <translation id="1871284979644508959">Обавезно поље</translation>
 <translation id="1875025161375567525">Фиока за слике</translation>
@@ -963,6 +964,7 @@
 <translation id="4117700440116928470">Опсег смерница није подржан.</translation>
 <translation id="4121428309786185360">Истиче</translation>
 <translation id="4123572138124678573">Троструко бушење на дну</translation>
+<translation id="4127575959421463246">Тражите Chrome ОС ознаке? Посети</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{још 1}one{још #}few{још #}other{још #}}</translation>
 <translation id="4130226655945681476">да проверите мрежне каблове, модем и рутер</translation>
 <translation id="4133224101597112888">Дугме Дели ову картицу, притисните Enter да бисте делили ову картицу дељењем линка, прављењем QR кода, пребацивањем и на друге начине.</translation>
@@ -1134,6 +1136,7 @@
 <translation id="4606870351894164739">Упечатљиво</translation>
 <translation id="4607603470419975064">Дугме Погледајте Chrome савете, притисните Enter да бисте сазнали више о Chrome функцијама</translation>
 <translation id="4607608436550361748">Прикажи Chrome савете</translation>
+<translation id="4627675673814409125">Ове смернице не могу да се подесе на нивоу Chrome профила и биће занемарене.</translation>
 <translation id="4628948037717959914">Слика</translation>
 <translation id="4631649115723685955">Повезан је повраћај готовине</translation>
 <translation id="4636930964841734540">Информације</translation>
@@ -1764,6 +1767,7 @@
 <translation id="674375294223700098">Непозната грешка сертификата сервера.</translation>
 <translation id="6744009308914054259">Док чекате на везу, посетите Преузимања и читајте офлајн чланке.</translation>
 <translation id="6753269504797312559">Вредност смерница</translation>
+<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Уређај је прешао у режим спавања.</translation>
 <translation id="6767985426384634228">Желите да ажурирате адресу?</translation>
 <translation id="6768213884286397650">Hagaki (разгледница)</translation>
@@ -1851,6 +1855,7 @@
 <translation id="706295145388601875">Додајте адресе и управљајте њима у подешавањима Chrome-а</translation>
 <translation id="7064851114919012435">Контакт информације</translation>
 <translation id="7068733155164172741">Унесите <ph name="OTP_LENGTH" />-цифрени кôд</translation>
+<translation id="7070090581017165256">О овом сајту</translation>
 <translation id="70705239631109039">Веза није потпуно безбедна</translation>
 <translation id="7075452647191940183">Захтев је превелик</translation>
 <translation id="7079718277001814089">Овај сајт садржи малвер</translation>
@@ -2095,6 +2100,7 @@
 <translation id="7813600968533626083">Желите ли да уклоните предлог из Chrome-а?</translation>
 <translation id="781440967107097262">Дозволићете дељење привремене меморије?</translation>
 <translation id="7815407501681723534">Пронашли смо <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> за „<ph name="SEARCH_STRING" />“</translation>
+<translation id="782125616001965242">Приказује информације о овом сајту</translation>
 <translation id="782886543891417279">WiFi мрежа коју користите (<ph name="WIFI_NAME" />) ће можда захтевати да посетите страницу за пријављивање.</translation>
 <translation id="7836231406687464395">Postfix (коверат)</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Ниједна}=1{1 апликација (<ph name="EXAMPLE_APP_1" />)}=2{2 апликације (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# апликација (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}few{# апликације (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# апликација (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
@@ -2375,6 +2381,7 @@
 <translation id="8792626944327216835">микрофон</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> је укључио Chrome Enterprise Connectors у прегледачу. Ови прикључци имају приступ неким вашим подацима.</translation>
 <translation id="8798099450830957504">Подразумевано</translation>
+<translation id="8798739476508189189">Тражите ознаке прегледача? Посети</translation>
 <translation id="8805819170075074995">Унос на листи „<ph name="LANGUAGE_ID" />“: Унос се занемарује јер је обухваћен и смерницама SpellcheckLanguage.</translation>
 <translation id="8807160976559152894">Скраћивање после сваке странице</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте ажурирали Chrome из подешавања Chrome-а</translation>
@@ -2480,6 +2487,7 @@
 <translation id="9157595877708044936">Подешавање...</translation>
 <translation id="9158625974267017556">C6 (коверат)</translation>
 <translation id="9164029392738894042">Провера тачности</translation>
+<translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">Дозволи сајтовима да проверавају да ли имам сачуване начине плаћања</translation>
 <translation id="9169664750068251925">Увек блокирај на овом сајту</translation>
 <translation id="9169931577761441333">Додајте <ph name="APP_NAME" /> на почетни екран</translation>

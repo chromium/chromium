@@ -131,6 +131,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1882897271359938046">Zrkadlenie na displej <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Odomykajte odtlačkom prsta</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> nepodporuje rozlíšenie <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Rozlíšenie bolo zmenené na <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Zmeny ponecháte kliknutím na Potvrdiť. Predchádzajúce nastavenia budú obnovené o <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="1915307458270490472">Zložiť</translation>
 <translation id="1919743966458266018">Skratka otvorenia správcu úloh bola zmenená. Namiesto skratky <ph name="OLD_SHORTCUT" /> používajte kombináciu klávesov <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Automatické kliknutia</translation>
 <translation id="1928739107511554905">Ak chcete získať aktualizáciu, reštartuje Chromebook s pripojenou klávesnicou pomocou dotykovej obrazovky.</translation>
@@ -372,6 +373,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="3665889125180354336">Nahrávať mikrofón</translation>
 <translation id="3680908746918359504">Vymazať všetky značky</translation>
 <translation id="36813544980941320">Siete Wi‑Fi sa budú zdieľať medzi vaším telefónom a zariadením <ph name="DEVICE_NAME" /></translation>
+<translation id="3701206655856637070">Teraz môžete zmeniť umiestnenie, do ktorého sa ukladajú záznamy obrazovky</translation>
 <translation id="3702809606464356667">Keď sa zobrazujú okná aktuálnej plochy, stlačením šípky nahor zobrazíte okná všetkých plôch.</translation>
 <translation id="3702846122927433391">Počet obyvateľov Nigérie</translation>
 <translation id="3705722231355495246">-</translation>
@@ -561,6 +563,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
         <ph name="NOTIFICATION" />,
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="4945196315133970626">Vypnúť upozornenia</translation>
 <translation id="4946376291507881335">Nasnímať</translation>
 <translation id="495046168593986294">Posunúť nahor</translation>
 <translation id="4952936045814352993">Keď sú zvuky budíka vypnuté, lokalizácia telefónu nie je k dispozícii</translation>
@@ -1129,6 +1132,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="925832987464884575">Skryť ukážky</translation>
 <translation id="938963181863597773">Čo mám v kalendári?</translation>
 <translation id="945522503751344254">Odoslať spätnú väzbu</translation>
+<translation id="951991426597076286">Odmietnuť</translation>
 <translation id="98515147261107953">Na šírku</translation>
 <translation id="990277280839877440">Okno <ph name="WINDOW_TITILE" /> bolo zatvorené.</translation>
 </translationbundle>

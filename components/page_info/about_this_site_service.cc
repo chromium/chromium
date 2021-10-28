@@ -7,6 +7,7 @@
 #include "components/content_settings/core/browser/content_settings_type_set.h"
 #include "components/optimization_guide/core/optimization_metadata.h"
 #include "components/page_info/about_this_site_validation.h"
+#include "components/page_info/features.h"
 #include "components/page_info/proto/about_this_site_metadata.pb.h"
 #include "url/gurl.h"
 
@@ -32,25 +33,27 @@ absl::optional<proto::SiteInfo> AboutThisSiteService::GetAboutThisSiteInfo(
 
   // TODO(crbug.com/1250653): Remove returning fake data after server-side is
   // ready.
-  page_info::proto::SiteInfo site_info;
-  if (url == GURL("https://example.com")) {
-    auto* description = site_info.mutable_description();
-    description->set_description(
-        "A domain used in illustrative examples in documents.");
-    description->mutable_source()->set_url("https://example.com");
-    description->mutable_source()->set_label("Example source");
-    return site_info;
-  }
+  if (kShowSampleContent.Get()) {
+    page_info::proto::SiteInfo site_info;
+    if (url == GURL("https://example.com")) {
+      auto* description = site_info.mutable_description();
+      description->set_description(
+          "A domain used in illustrative examples in documents.");
+      description->mutable_source()->set_url("https://example.com");
+      description->mutable_source()->set_label("Example source");
+      return site_info;
+    }
 
-  if (url == GURL("https://permission.site")) {
-    auto* description = site_info.mutable_description();
-    description->set_description(
-        "A site containing test buttons for various browser APIs, in order"
-        " to trigger permission dialogues and similar UI in modern "
-        "browsers.");
-    description->mutable_source()->set_url("https://permission.site.com");
-    description->mutable_source()->set_label("Permission Site");
-    return site_info;
+    if (url == GURL("https://permission.site")) {
+      auto* description = site_info.mutable_description();
+      description->set_description(
+          "A site containing test buttons for various browser APIs, in order"
+          " to trigger permission dialogues and similar UI in modern "
+          "browsers.");
+      description->mutable_source()->set_url("https://permission.site.com");
+      description->mutable_source()->set_label("Permission Site");
+      return site_info;
+    }
   }
 
   return absl::nullopt;

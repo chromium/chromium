@@ -179,6 +179,9 @@ class CorsURLLoaderTest : public testing::Test {
     url_request_context_ = context_builder.Build();
   }
 
+  CorsURLLoaderTest(const CorsURLLoaderTest&) = delete;
+  CorsURLLoaderTest& operator=(const CorsURLLoaderTest&) = delete;
+
  protected:
   // testing::Test implementation.
   void SetUp(network::mojom::NetworkContextParamsPtr context_params) {
@@ -463,8 +466,6 @@ class CorsURLLoaderTest : public testing::Test {
 
   // Holds for allowed origin access lists.
   OriginAccessList origin_access_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(CorsURLLoaderTest);
 
   net::RecordingNetLogObserver net_log_observer_;
 };

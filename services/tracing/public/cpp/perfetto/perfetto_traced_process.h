@@ -166,6 +166,9 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
   // Returns the process-wide instance of the PerfettoTracedProcess.
   static PerfettoTracedProcess* Get();
 
+  PerfettoTracedProcess(const PerfettoTracedProcess&) = delete;
+  PerfettoTracedProcess& operator=(const PerfettoTracedProcess&) = delete;
+
   // Provide a factory for lazily creating mojo consumer connections to the
   // tracing service. Allows using Perfetto's Client API for recording traces.
   using ConsumerConnectionFactory = mojom::TracingService& (*)();
@@ -326,7 +329,6 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
       pending_producer_callback_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  DISALLOW_COPY_AND_ASSIGN(PerfettoTracedProcess);
 };
 
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)

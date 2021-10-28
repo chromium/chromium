@@ -411,10 +411,14 @@ bool TestWebContents::IsBackForwardCacheSupported() {
 }
 
 int TestWebContents::AddPrerender(const GURL& url) {
-  PrerenderAttributes attributes{url, PrerenderTriggerType::kSpeculationRule,
-                                 Referrer()};
-  return GetPrerenderHostRegistry()->CreateAndStartHost(attributes,
-                                                        *GetMainFrame());
+  TestRenderFrameHost* rfhi = GetMainFrame();
+  return GetPrerenderHostRegistry()->CreateAndStartHost(
+      PrerenderAttributes(url, PrerenderTriggerType::kSpeculationRule,
+                          Referrer(), rfhi->GetLastCommittedOrigin(),
+                          rfhi->GetLastCommittedURL(),
+                          rfhi->GetProcess()->GetID(), rfhi->GetFrameToken(),
+                          rfhi->GetPageUkmSourceId()),
+      this);
 }
 
 TestRenderFrameHost* TestWebContents::AddPrerenderAndCommitNavigation(

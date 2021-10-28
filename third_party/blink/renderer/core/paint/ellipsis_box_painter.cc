@@ -86,7 +86,7 @@ void EllipsisBoxPainter::PaintEllipsis(const PaintInfo& paint_info,
   context.GetPaintController().SetTextPainted();
 
   if (!font.ShouldSkipDrawing())
-    PaintTimingDetector::NotifyTextPaint(visual_rect);
+    PaintTimingDetector::NotifyTextPaint(ToGfxRect(visual_rect));
 }
 
 }  // namespace blink

@@ -300,6 +300,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1842969606798536927">Pagar</translation>
 <translation id="1856713167556118146">O que a Navegação anónima não faz</translation>
 <translation id="1863257867908022953">Tabuleiro 12</translation>
+<translation id="1864927262126810325">De <ph name="SOURCE_NAME" /></translation>
 <translation id="1871208020102129563">O proxy está definido para utilizar servidores proxy fixos e não um URL de script .pac.</translation>
 <translation id="1871284979644508959">Campo obrigatório</translation>
 <translation id="1875025161375567525">Tabuleiro de fotos</translation>
@@ -962,6 +963,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4117700440116928470">O âmbito da política não é suportado.</translation>
 <translation id="4121428309786185360">Expira em</translation>
 <translation id="4123572138124678573">Perfuração tripla na parte inferior</translation>
+<translation id="4127575959421463246">Está à procura das sinalizações do Chrome OS? Visite</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 outro}other{# outros}}</translation>
 <translation id="4130226655945681476">Verificar os cabos de rede, o modem e o router</translation>
 <translation id="4133224101597112888">Botão Partilhar este separador, prima Enter para partilhar este separador ao partilhar o link, criar um código QR, transmitir e muito mais.</translation>
@@ -1133,6 +1135,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4606870351894164739">Impactante</translation>
 <translation id="4607603470419975064">Botão Ver sugestões do Chrome, prima Enter para saber mais acerca das funcionalidades do Chrome</translation>
 <translation id="4607608436550361748">Ver sugestões do Chrome</translation>
+<translation id="4627675673814409125">Não é possível definir esta política ao nível do perfil do Chrome e a mesma será ignorada.</translation>
 <translation id="4628948037717959914">Fotografia</translation>
 <translation id="4631649115723685955">Reembolso associado</translation>
 <translation id="4636930964841734540">Informações</translation>
@@ -1764,6 +1767,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="674375294223700098">Erro de certificado de servidor desconhecido.</translation>
 <translation id="6744009308914054259">Enquanto aguarda uma ligação, pode visitar a secção Transferências para ler artigos offline.</translation>
 <translation id="6753269504797312559">Valor da política</translation>
+<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">O dispositivo entrou em suspensão.</translation>
 <translation id="6767985426384634228">Pretende atualizar o endereço?</translation>
 <translation id="6768213884286397650">Hagaki (Postcard)</translation>
@@ -1851,6 +1855,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="706295145388601875">Adicione e faça a gestão de endereços nas Definições do Chrome.</translation>
 <translation id="7064851114919012435">Informações de contacto</translation>
 <translation id="7068733155164172741">Introduza um código de <ph name="OTP_LENGTH" /> dígitos</translation>
+<translation id="7070090581017165256">Acerca deste site</translation>
 <translation id="70705239631109039">A sua ligação não é totalmente segura</translation>
 <translation id="7075452647191940183">O pedido é demasiado grande.</translation>
 <translation id="7079718277001814089">Este site contém um software malicioso</translation>
@@ -2094,6 +2099,7 @@ Detalhes adicionais:
 <translation id="7813600968533626083">Remover a sugestão do formulário do Chrome?</translation>
 <translation id="781440967107097262">Pretende partilhar a área de transferência?</translation>
 <translation id="7815407501681723534">Encontrados <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> para "<ph name="SEARCH_STRING" />"</translation>
+<translation id="782125616001965242">Veja informações acerca deste site</translation>
 <translation id="782886543891417279">A rede Wi-Fi que está a utilizar (<ph name="WIFI_NAME" />) pode exigir que visite a respetiva página de início de sessão.</translation>
 <translation id="7836231406687464395">Postfix (Envelope)</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Nenhuma}=1{1 aplicação (<ph name="EXAMPLE_APP_1" />)}=2{2 aplicações (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# aplicações (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
@@ -2374,6 +2380,7 @@ Detalhes adicionais:
 <translation id="8792626944327216835">microfone</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> ativou os Chrome Enterprise Connectors no navegador. Estes conetores têm acesso a alguns dos seus dados.</translation>
 <translation id="8798099450830957504">Predefinição</translation>
+<translation id="8798739476508189189">Está à procura das sinalizações do navegador? Visite</translation>
 <translation id="8805819170075074995">Entrada da lista "<ph name="LANGUAGE_ID" />": a entrada foi ignorada porque também está incluída na política SpellcheckLanguage.</translation>
 <translation id="8807160976559152894">Cortar no fim de cada página</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para atualizar o Chrome nas Definições do Chrome.</translation>
@@ -2479,6 +2486,7 @@ Detalhes adicionais:
 <translation id="9157595877708044936">A configurar...</translation>
 <translation id="9158625974267017556">C6 (Envelope)</translation>
 <translation id="9164029392738894042">Verificação da precisão</translation>
+<translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">Permitir que os sites verifiquem se tem métodos de pagamento guardados</translation>
 <translation id="9169664750068251925">Bloquear sempre neste Website</translation>
 <translation id="9169931577761441333">Adicionar <ph name="APP_NAME" /> ao ecrã principal</translation>

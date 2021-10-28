@@ -478,8 +478,6 @@ blink_core_sources_css = [
   "parser/font_variant_east_asian_parser.h",
   "parser/font_variant_ligatures_parser.h",
   "parser/font_variant_numeric_parser.h",
-  "parser/media_query_block_watcher.cc",
-  "parser/media_query_block_watcher.h",
   "parser/media_query_parser.cc",
   "parser/media_query_parser.h",
   "parser/sizes_attribute_parser.cc",

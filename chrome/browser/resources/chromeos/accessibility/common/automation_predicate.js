@@ -14,6 +14,8 @@ goog.require('constants');
 
 goog.scope(function() {
 const AutomationNode = chrome.automation.AutomationNode;
+const InvalidState = chrome.automation.InvalidState;
+const MarkerType = chrome.automation.MarkerType;
 const Dir = constants.Dir;
 const Restriction = chrome.automation.Restriction;
 const Role = chrome.automation.RoleType;
@@ -205,15 +207,44 @@ AutomationPredicate = class {
   }
 
   /**
-   * Returns true if this node is marked as aria-invalid.
+   * Returns true if this node is marked as invalid.
    * @param {!AutomationNode} node
    * @return {boolean}
    */
-  static ariaInvalid(node) {
-    return node.ariaInvalidValue !== undefined &&
-        node.ariaInvalidValue !== 'false';
+  static isInvalid(node) {
+    return node.invalidState === InvalidState.TRUE;
   }
 
+
+  /**
+   * Returns true if this node has an invalid grammar marker.
+   * @param {!AutomationNode} node
+   * @return {boolean}
+   */
+  static hasInvalidGrammarMarker(node) {
+    const markers = node.markers;
+    if (!markers) {
+      return false;
+    }
+    return markers.some(function(marker) {
+      return marker.flags[MarkerType.GRAMMAR];
+    });
+  }
+
+  /**
+   * Returns true if this node has an invalid spelling marker.
+   * @param {!AutomationNode} node
+   * @return {boolean}
+   */
+  static hasInvalidSpellingMarker(node) {
+    const markers = node.markers;
+    if (!markers) {
+      return false;
+    }
+    return markers.some(function(marker) {
+      return marker.flags[MarkerType.SPELLING];
+    });
+  }
 
   /**
    * @param {!AutomationNode} node

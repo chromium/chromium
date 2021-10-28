@@ -4,11 +4,18 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/files/file.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
+#include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
+#include "base/json/values_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -666,6 +673,145 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest, FactoryOverride) {
   EXPECT_EQ(headers->response_code(), 202);
   EXPECT_TRUE(test_loader_factory->has_received_preflight());
   EXPECT_TRUE(test_loader_factory->has_received_request());
+}
+
+class NetworkServiceBrowserCacheResetTest : public NetworkServiceBrowserTest {
+ public:
+  NetworkServiceBrowserCacheResetTest() = default;
+
+ protected:
+  void StoreTime(base::Time time) {
+    base::FilePath data_file =
+        shell()->web_contents()->GetBrowserContext()->GetPath().Append(
+            FILE_PATH_LITERAL("TestData"));
+    std::string data;
+    base::JSONWriter::Write(base::TimeToValue(time), &data);
+    EXPECT_TRUE(base::WriteFile(data_file, data));
+  }
+
+  void RetrieveTime(base::Time& time) {
+    base::FilePath data_file =
+        shell()->web_contents()->GetBrowserContext()->GetPath().Append(
+            FILE_PATH_LITERAL("TestData"));
+    std::string data;
+    EXPECT_TRUE(base::ReadFileToString(data_file, &data));
+    auto json_data = base::JSONReader::Read(data);
+    EXPECT_TRUE(json_data.has_value());
+    time = base::ValueToTime(json_data.value()).value();
+  }
+
+  base::FilePath GetNetworkContextPath() {
+    return shell()->web_contents()->GetBrowserContext()->GetPath().Append(
+        FILE_PATH_LITERAL("TestContext"));
+  }
+
+  base::FilePath GetNetworkContextCachePath() {
+    return GetNetworkContextPath().Append(FILE_PATH_LITERAL("Cache"));
+  }
+
+  // Creates a network context, optionally with http cache being reset, and then
+  // make a request on the network context to force cache to appear.
+  void MakeNetworkContentAndLoadUrl(bool reset_cache) {
+    auto file_paths = network::mojom::NetworkContextFilePaths::New();
+    base::FilePath context_path = GetNetworkContextPath();
+    file_paths->data_path = context_path.Append(FILE_PATH_LITERAL("Data"));
+    file_paths->unsandboxed_data_path = context_path;
+    file_paths->trigger_migration = true;
+
+    network::mojom::NetworkContextParamsPtr context_params =
+        network::mojom::NetworkContextParams::New();
+    context_params->file_paths = std::move(file_paths);
+    context_params->cert_verifier_params = GetCertVerifierParams(
+        cert_verifier::mojom::CertVerifierCreationParams::New());
+    context_params->reset_http_cache_backend = reset_cache;
+    context_params->http_cache_enabled = true;
+    context_params->http_cache_path = GetNetworkContextCachePath();
+
+    mojo::Remote<network::mojom::NetworkContext> network_context;
+    content::CreateNetworkContextInNetworkService(
+        network_context.BindNewPipeAndPassReceiver(),
+        std::move(context_params));
+
+    network::mojom::URLLoaderFactoryParamsPtr url_loader_params =
+        network::mojom::URLLoaderFactoryParams::New();
+    url_loader_params->process_id = network::mojom::kBrowserProcessId;
+    url_loader_params->is_trusted = true;
+    mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory;
+    network_context->CreateURLLoaderFactory(
+        url_loader_factory.BindNewPipeAndPassReceiver(),
+        std::move(url_loader_params));
+
+    LoadURL(embedded_test_server()->GetURL("/title1.html"),
+            url_loader_factory.get());
+  }
+
+  void GetCacheFileInfo(base::File::Info& info) {
+    base::FilePath ceontxt_path = GetNetworkContextPath();
+    base::FileEnumerator cache_files(GetNetworkContextCachePath(), true,
+                                     base::FileEnumerator::FILES);
+    // Cache entries created.
+    auto file_path = cache_files.Next();
+    ASSERT_FALSE(file_path.empty());
+    ASSERT_TRUE(base::GetFileInfo(file_path, &info));
+  }
+};
+
+// Create a network context and make an HTTP request which causes cache to be
+// created. Store the creation time of a cache file into the persistent json
+// store.
+IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserCacheResetTest,
+                       PRE_PRE_CacheResetTest) {
+  if (IsInProcessNetworkService())
+    return;
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  ASSERT_NO_FATAL_FAILURE(MakeNetworkContentAndLoadUrl(/*reset_cache=*/false));
+  base::File::Info info;
+  ASSERT_NO_FATAL_FAILURE(GetCacheFileInfo(info));
+  ASSERT_NO_FATAL_FAILURE(StoreTime(info.creation_time));
+}
+
+// Using the same network context, make an HTTP request and verify that the
+// cache files are not recreated.
+IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserCacheResetTest,
+                       PRE_CacheResetTest) {
+  if (IsInProcessNetworkService())
+    return;
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  // File info creation time is only accurate to one second on POSIX so sleep
+  // for a second.
+  base::PlatformThread::Sleep(base::Seconds(1));
+
+  ASSERT_NO_FATAL_FAILURE(MakeNetworkContentAndLoadUrl(/*reset_cache=*/false));
+  base::File::Info info;
+  ASSERT_NO_FATAL_FAILURE(GetCacheFileInfo(info));
+  base::Time previous_time;
+  ASSERT_NO_FATAL_FAILURE(RetrieveTime(previous_time));
+
+  // Cache was not reset, verify that the creation_time is the same as before.
+  ASSERT_EQ(previous_time, info.creation_time);
+}
+
+// Using the same network context, make an HTTP request with
+// `reset_http_cache_backend` set to true, and verify that the cache files are
+// recreated successfully.
+IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserCacheResetTest, CacheResetTest) {
+  if (IsInProcessNetworkService())
+    return;
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  // File info creation time is only accurate to one second on POSIX so sleep
+  // for a second.
+  base::PlatformThread::Sleep(base::Seconds(1));
+
+  ASSERT_NO_FATAL_FAILURE(MakeNetworkContentAndLoadUrl(/*reset_cache=*/true));
+  base::File::Info info;
+  ASSERT_NO_FATAL_FAILURE(GetCacheFileInfo(info));
+  base::Time previous_time;
+  ASSERT_NO_FATAL_FAILURE(RetrieveTime(previous_time));
+
+  // Cache was reset, this means that there are new files, and their creation
+  // time should be different.
+  ASSERT_NE(previous_time, info.creation_time);
 }
 
 enum class FailureType {

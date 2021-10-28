@@ -1809,20 +1809,12 @@ static NSDictionary* createMathSubSupScriptsPair(
   if (!_owner->GetIntAttribute(ax::mojom::IntAttribute::kInvalidState,
                                &invalidState))
     return @"false";
-
+  // TODO(rhalavati): Replace with GetInvalidState() and remove NOTREACHED.
   switch (static_cast<ax::mojom::InvalidState>(invalidState)) {
     case ax::mojom::InvalidState::kFalse:
       return @"false";
     case ax::mojom::InvalidState::kTrue:
       return @"true";
-    case ax::mojom::InvalidState::kOther: {
-      std::string ariaInvalidValue;
-      if (_owner->GetStringAttribute(
-              ax::mojom::StringAttribute::kAriaInvalidValue, &ariaInvalidValue))
-        return base::SysUTF8ToNSString(ariaInvalidValue);
-      // Return @"true" since we cannot be more specific about the value.
-      return @"true";
-    }
     default:
       NOTREACHED();
   }

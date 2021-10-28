@@ -131,6 +131,7 @@
 <translation id="1882897271359938046">Հայելապատճենվում է <ph name="DISPLAY_NAME" />-ին</translation>
 <translation id="1885785240814121742">Ապակողպում մատնահետքով</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> սարքում չի աջակցվում <ph name="SPECIFIED_RESOLUTION" /> լուծաչափը (<ph name="SPECIFIED_REFRESH_RATE" /> Հց)։ Լուծաչափը դարձել է <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />)։ Փոփոխությունը պահպանելու համար սեղմեք «Հաստատել»։ Նախորդ կարգավորումները կվերականգնվեն <ph name="TIMEOUT_SECONDS" /> վայրկյան հետո։</translation>
+<translation id="1915307458270490472">Փակել</translation>
 <translation id="1919743966458266018">Խնդիրների կառավարիչը բացելու դյուրանցումը փոխվել է: <ph name="OLD_SHORTCUT" />-ի փոխարեն օգտագործեք <ph name="NEW_SHORTCUT" />:</translation>
 <translation id="1923539912171292317">Ավտոմատ սեղմումներ</translation>
 <translation id="1928739107511554905">Թարմացումը տեղադրելու համար հպէկրանի միջոցով վերագործարկեք Chromebook-ը՝ առանց ստեղնաշարն անջատելու։</translation>
@@ -1129,6 +1130,7 @@
 <translation id="925832987464884575">Անջատել նախադիտումը</translation>
 <translation id="938963181863597773">Ի՞նչ ունեմ պլանավորած։</translation>
 <translation id="945522503751344254">Կարծիք հայտնել</translation>
+<translation id="951991426597076286">Մերժել</translation>
 <translation id="98515147261107953">Հորիզոնական</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" /> պատուհանը փակվեց։</translation>
 </translationbundle>

@@ -1299,7 +1299,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2312219318583366810">URL strony</translation>
 <translation id="2314165183524574721">Bieżące ustawienie widoczności: ukryte</translation>
 <translation id="2314774579020744484">Język używany podczas tłumaczenia stron</translation>
-<translation id="2315414688463285945">Błąd podczas konfigurowania plików Linuksa. Spróbuj ponownie.</translation>
 <translation id="2315587498123194634">Wyślij link na: <ph name="DEVICE_NAME" /></translation>
 <translation id="2316129865977710310">Nie, dziękuję</translation>
 <translation id="2317842250900878657">Gotowe: <ph name="PROGRESS_PERCENT" />%</translation>
@@ -2347,7 +2346,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3424969259347320884">Opisz, co robiłeś, gdy wystąpiła awaria karty</translation>
 <translation id="3427092606871434483">Zezwalaj (domyślnie)</translation>
 <translation id="3428419049384081277">Jesteś zalogowany</translation>
-<translation id="3428747202529429621">Dba o Twoje bezpieczeństwo w Chrome i może poprawiać Twoje bezpieczeństwo w innych aplikacjach Google, gdy się w nich zalogujesz</translation>
 <translation id="3429086384982427336">Wymienione poniżej aplikacje nigdy nie będą obsługiwać linków protokołów.</translation>
 <translation id="3429160811076349561">Funkcje próbne są wyłączone</translation>
 <translation id="3429271624041785769">Języki treści internetowych</translation>
@@ -5110,7 +5108,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6410328738210026208">Zmień kanał i wykonaj Powerwash</translation>
 <translation id="6410390304316730527">Bezpieczne przeglądanie chroni Cię przed osobami przeprowadzającymi ataki, które mogą podstępem nakłonić Cię do wykonania niebezpiecznych czynności, takich jak zainstalowanie oprogramowania czy ujawnienie danych osobowych (na przykład haseł, numerów telefonów lub danych kart kredytowych). Gdy wyłączasz tę funkcję, zachowaj ostrożność, przeglądając nieznane lub cieszące się złą sławą strony.</translation>
 <translation id="6410668567036790476">Dodaj wyszukiwarkę</translation>
-<translation id="6412673304250309937">Sprawdza, czy URL jest na liście potencjalnie niebezpiecznych stron zapisanej w Chrome. Jeśli strona próbuje wykraść Twoje hasło lub pobierasz szkodliwy plik, Chrome może też wysłać URL wraz z fragmentami zawartości strony do usługi Bezpieczne przeglądanie.</translation>
 <translation id="641469293210305670">Instalowanie aktualizacji i aplikacji</translation>
 <translation id="6414878884710400018">Otwórz Preferencje systemowe</translation>
 <translation id="6414888972213066896">Zapytałeś rodzica, czy możesz odwiedzić tę stronę</translation>
@@ -5519,7 +5516,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6843264316370513305">Debugowanie sieci</translation>
 <translation id="6843423766595476978">Ukończono konfigurację OK Google</translation>
 <translation id="6845038076637626672">Otwórz zmaksymalizowane</translation>
-<translation id="6845325883481699275">Pomóż zwiększyć bezpieczeństwo Chrome</translation>
 <translation id="6846178040388691741">„<ph name="EXTENSION_NAME" />” chce wydrukować plik <ph name="FILE_NAME" /> na drukarce <ph name="PRINTER_NAME" />.</translation>
 <translation id="6847125920277401289">Aby kontynuować, zwolnij miejsce</translation>
 <translation id="6848388270925200958">Obecnie niektórych Twoich kart można używać tylko na tym urządzeniu</translation>
@@ -6972,7 +6968,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8324784016256120271">Strony mogą używać plików cookie do śledzenia Twojej aktywność związanej z przeglądaniem różnych stron, na przykład w celu personalizowania reklam</translation>
 <translation id="8325413836429495820">Nie zezwolono na wyświetlanie schowka</translation>
 <translation id="8326478304147373412">PKCS #7, łańcuch certyfikatów</translation>
-<translation id="8327039559959785305">Błąd podczas montowania plików Linuksa. Spróbuj ponownie.</translation>
 <translation id="8327676037044516220">Uprawnienia i ustawienia treści</translation>
 <translation id="833256022891467078">Foldery udostępnione Crostini</translation>
 <translation id="8335587457941836791">Odepnij z półki</translation>

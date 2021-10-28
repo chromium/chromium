@@ -3336,9 +3336,6 @@ void NavigationRequest::OnResponseStarted(
       was_redirected_ /* has_followed_redirect */,
       false /* url_upgraded_after_redirect */, true /* is_response_check */);
   DCHECK_NE(net_error, net::ERR_BLOCKED_BY_CLIENT);
-  // TODO(https://crbug.com/1090859): Remove this once the bug has been fixed.
-  if (net_error == net::ERR_BLOCKED_BY_CLIENT)
-    base::debug::DumpWithoutCrashing();
   if (net_error != net::OK) {
     OnRequestFailedInternal(network::URLLoaderCompletionStatus(net_error),
                             false /* skip_throttles */,

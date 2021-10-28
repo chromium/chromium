@@ -85,6 +85,9 @@ class TimeZoneMonitorLinuxImpl
     return impl;
   }
 
+  TimeZoneMonitorLinuxImpl(const TimeZoneMonitorLinuxImpl&) = delete;
+  TimeZoneMonitorLinuxImpl& operator=(const TimeZoneMonitorLinuxImpl&) = delete;
+
   void StopWatching() {
     DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
     owner_ = nullptr;
@@ -163,8 +166,6 @@ class TimeZoneMonitorLinuxImpl
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
   scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
   TimeZoneMonitorLinux* owner_;
-
-  DISALLOW_COPY_AND_ASSIGN(TimeZoneMonitorLinuxImpl);
 };
 
 }  // namespace

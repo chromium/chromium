@@ -251,7 +251,7 @@ if (!callback_relevant_script_state) {
                 body=[
                     T("v8::HandleScope handle_scope(${isolate});"),
                     T("v8::Context::Scope context_scope("
-                      "CallbackObject()->CreationContext());"),
+                      "CallbackObject()->GetCreationContextChecked());"),
                     T("${exception_state}.ThrowException("
                       "static_cast<ExceptionCode>(ESErrorType::kError), "
                       "\"The provided callback is no longer runnable.\");"),

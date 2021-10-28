@@ -115,6 +115,12 @@ class BookmarkBridge : public bookmarks::BaseBookmarkModelObserver,
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);
 
+  base::android::ScopedJavaLocalRef<jstring> GetBookmarkGuidByIdForTesting(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj,
+      jlong id,
+      jint type);
+
   void GetChildIDs(JNIEnv* env,
                    const base::android::JavaParamRef<jobject>& obj,
                    jlong id,

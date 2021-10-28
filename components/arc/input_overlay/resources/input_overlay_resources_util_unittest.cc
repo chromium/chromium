@@ -24,44 +24,43 @@ constexpr const char kValidJson[] =
           {
             "name": "Fight",
             "key": "KeyA",
-            "location": {
-              "position": [
-                {
-                  "anchor": [
-                    0,
-                    0
-                  ],
-                  "anchor_to_target": [
-                    0.3,
-                    0.5
-                  ]
-                },
-                {
-                  "anchor": [
-                    0,
-                    0
-                  ],
-                  "anchor_to_target": [
-                    0.5,
-                    0.5
-                  ]
-                }
-              ]
-            }
+            "location": [
+              {
+                "type": "position",
+                "anchor": [
+                  0,
+                  0
+                ],
+                "anchor_to_target": [
+                  0.3,
+                  0.5
+                ]
+              },
+              {
+                "type": "position",
+                "anchor": [
+                  0,
+                  0
+                ],
+                "anchor_to_target": [
+                  0.5,
+                  0.5
+                ]
+              }
+            ]
           },
           {
             "name": "Run",
             "key": "KeyB",
-            "location": {
-              "position": [
-                {
-                  "anchor_to_target": [
-                    0.8,
-                    0.8
-                  ]
-                }
-              ]
-            }
+            "location": [
+              {
+                "type": "position",
+                "anchor_to_target": [
+                  0.8,
+                  0.8
+                ]
+              }
+            ]
           }
         ]
       }
@@ -74,78 +73,84 @@ constexpr const char kHalfValidJson[] =
           {
             "name": "Fight",
             "key": "KeyA",
-            "location": {
-              "position": [
-                {
-                  "anchor": [
-                    0,
-                    0
-                  ],
-                  "anchor_to_target": [
-                    0.5,
-                    0.5
-                  ]
-                }
-              ]
-            }
+            "location": [
+              {
+                "type": "position",
+                "anchor": [
+                  0,
+                  0
+                ],
+                "anchor_to_target": [
+                  0.5,
+                  0.5
+                ]
+              }
+            ]
           },
           {
             "name": "Run",
             "key": "Key_B",
-            "location": {
-              "position": [
-                {
-                  "anchor_to_target": [
-                    0.8,
-                    0.8
-                  ]
-                }
-              ]
-            }
+            "location": [
+              {
+                "type": "position",
+                "anchor_to_target": [
+                  0.8,
+                  0.8
+                ]
+              }
+            ]
           }
         ]
       }
     })json";
 
 constexpr const char kLocationValidJson[] =
-    R"json({
-        "position": [
-          {
-            "anchor": [
-              0,
-              0
-            ],
-            "anchor_to_target": [
-              0.5,
-              0.5
-            ]
-          }
-        ],
-        "dependent_position": [
-          {
-            "anchor_to_target": [
-              0.5,
-              0.5
-            ],
-            "x_on_y": 1.8
-          }
-        ]
-    })json";
+    R"json([
+        {
+          "type": "dependent_position",
+          "anchor_to_target": [
+            0.5,
+            0.5
+          ],
+          "x_on_y": 1.8
+        },
+        {
+          "type": "position",
+          "anchor": [
+            0,
+            1
+          ],
+          "anchor_to_target": [
+            0.5,
+            -0.5
+          ]
+        }
+      ]
+    )json";
 
 constexpr const char kEmptyJson[] =
     R"json({
     })json";
 
+constexpr const char kEmptyJsonList[] =
+    R"json([
+    ])json";
+
 TEST(InputOverlayResourcesUtilTest, TestParseLocation) {
   // Check whether Position is parsed correctly.
   base::JSONReader::ValueWithError json_value =
       base::JSONReader::ReadAndReturnValueWithError(kLocationValidJson);
-  EXPECT_FALSE(!json_value.value || !json_value.value->is_dict());
+  EXPECT_FALSE(!json_value.value || !json_value.value->is_list());
   auto result = ParseLocation(json_value.value.value());
   EXPECT_TRUE(result && result->size() == 2);
+  auto* position = (*result)[0].get();
+  EXPECT_EQ(position->anchor(), gfx::PointF(0, 0));
+  position = (*result)[1].get();
+  EXPECT_EQ(position->anchor(), gfx::PointF(0, 1));
 
-  json_value = base::JSONReader::ReadAndReturnValueWithError(kEmptyJson);
-  EXPECT_FALSE(!json_value.value || !json_value.value->is_dict());
+  // Parse empty json.
+  json_value = base::JSONReader::ReadAndReturnValueWithError(kEmptyJsonList);
+  EXPECT_FALSE(!json_value.value || !json_value.value->is_list());
   result = ParseLocation(json_value.value.value());
   EXPECT_FALSE(result);
 }

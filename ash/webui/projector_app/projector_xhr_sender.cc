@@ -18,7 +18,7 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 // Projector network traffic annotation tags.
@@ -80,9 +80,8 @@ void ProjectorXhrSender::Send(const GURL& url,
   // Fetch OAuth token for authorizing the request.
   // TODO(b/197366265): add support for secondary account.
   auto primary_account =
-      chromeos::ProjectorAppClient::Get()
-          ->GetIdentityManager()
-          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+      ProjectorAppClient::Get()->GetIdentityManager()->GetPrimaryAccountInfo(
+          signin::ConsentLevel::kSignin);
   oauth_token_fetcher_.GetAccessTokenFor(
       primary_account.email,
       base::BindOnce(&ProjectorXhrSender::OnAccessTokenRequestCompleted,
@@ -164,4 +163,4 @@ void ProjectorXhrSender::OnSimpleURLLoaderComplete(
   loader_map_.erase(request_id);
 }
 
-}  // namespace chromeos
+}  // namespace ash

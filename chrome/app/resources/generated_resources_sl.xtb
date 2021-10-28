@@ -1319,7 +1319,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2312219318583366810">URL strani</translation>
 <translation id="2314165183524574721">Trenutna nastavitev vidnosti je skrita</translation>
 <translation id="2314774579020744484">Jezik, ki se uporablja za prevajanje strani</translation>
-<translation id="2315414688463285945">Napaka pri konfiguriranju datotek za Linux. Poskusite znova.</translation>
 <translation id="2315587498123194634">Pošiljanje povezave v napravo <ph name="DEVICE_NAME" /></translation>
 <translation id="2316129865977710310">Ne, hvala</translation>
 <translation id="2317842250900878657">Dokončano: <ph name="PROGRESS_PERCENT" />%</translation>
@@ -2369,7 +2368,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3424969259347320884">Opišite, kaj ste počeli, ko se je zavihek zrušil</translation>
 <translation id="3427092606871434483">Dovoli (privzeto)</translation>
 <translation id="3428419049384081277">Prijavljeni ste.</translation>
-<translation id="3428747202529429621">Skrbi za vašo varnost v Chromu in ga je mogoče uporabiti za okrepitev varnosti v drugih Googlovih aplikacijah, ko ste prijavljeni.</translation>
 <translation id="3429086384982427336">Aplikacije, navedene spodaj, ne bodo nikoli obravnavale povezav za protokol.</translation>
 <translation id="3429160811076349561">Funkcije preizkusa so onemogočene</translation>
 <translation id="3429271624041785769">Jeziki za spletno vsebino</translation>
@@ -5138,7 +5136,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6410328738210026208">Sprememba različice in Powerwash</translation>
 <translation id="6410390304316730527">Varno brskanje vas ščiti pred napadalci, ki vas lahko z zavajanjem morda pripravijo do tega, da storite kaj nevarnega – denimo, da namestite zlonamerno programsko opremo ali razkrijete osebne podatke, na primer gesla, telefonske številke ali podatke kreditnih kartic. Če ga izklopite, bodite previdni pri brskanju po neznanih ali razvpitih spletnih mestih.</translation>
 <translation id="6410668567036790476">Dodajanje iskalnika</translation>
-<translation id="6412673304250309937">Preveri URL-je, tako da jih primerja s seznamom spletnih mest, ki niso varna, shranjenim v Chromu. Če vam spletno mesto poskusi ukrasti geslo ali ko prenašate škodljivo datoteko, lahko Chrome prav tako pošlje URL-je, vključno z delčki vsebine strani, Varnemu brskanju.</translation>
 <translation id="641469293210305670">Namestitev posodobitev in aplikacij</translation>
 <translation id="6414878884710400018">Odpri sistemske nastavitve</translation>
 <translation id="6414888972213066896">Starša si vprašal(-a), ali smeš obiskati to spletno mesto</translation>
@@ -5547,7 +5544,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6843264316370513305">Odpravljanje napak z omrežjem</translation>
 <translation id="6843423766595476978">Ok Google je pripravljen</translation>
 <translation id="6845038076637626672">Odpri povečano</translation>
-<translation id="6845325883481699275">Pomagajte izboljšati varnost v Chromu</translation>
 <translation id="6846178040388691741">Razširitev »<ph name="EXTENSION_NAME" />« želi natisniti datoteko <ph name="FILE_NAME" /> s tiskalnikom <ph name="PRINTER_NAME" />.</translation>
 <translation id="6847125920277401289">Sprostite prostor, če želite nadaljevati</translation>
 <translation id="6848388270925200958">Trenutno je mogoče nekatere vaše kartice uporabljati samo v tej napravi</translation>
@@ -7000,7 +6996,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8324784016256120271">Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na različnih spletnih mestih, na primer za osebno prilagajanje oglasov</translation>
 <translation id="8325413836429495820">Ni dovoljen ogled odložišča</translation>
 <translation id="8326478304147373412">PKCS #7, veriga potrdil</translation>
-<translation id="8327039559959785305">Napaka pri vpenjanju datotek za Linux. Poskusite znova.</translation>
 <translation id="8327676037044516220">Nastavitve dovoljenj in vsebine</translation>
 <translation id="833256022891467078">Mape Crostini, deljene z drugimi</translation>
 <translation id="8335587457941836791">Odpenjanje s police</translation>

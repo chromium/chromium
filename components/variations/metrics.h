@@ -44,29 +44,31 @@ enum class LoadSeedResult {
 };
 
 // The result of attempting to store a variations seed received from the server.
-// Note: UMA histogram enum - don't re-order or remove entries.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class StoreSeedResult {
-  SUCCESS,
-  FAILED_EMPTY,
-  FAILED_PARSE,
-  FAILED_SIGNATURE,
-  FAILED_GZIP,
-  DELTA_COUNT_OBSOLETE,
-  FAILED_DELTA_READ_SEED,
-  FAILED_DELTA_APPLY,
-  FAILED_DELTA_STORE,
-  FAILED_UNGZIP,
-  FAILED_EMPTY_GZIP_CONTENTS,
-  FAILED_UNSUPPORTED_SEED_FORMAT,
+  kSuccess = 0,
+  // kFailedEmpty = 1,  // Deprecated.
+  kFailedParse = 2,
+  kFailedSignature = 3,
+  kFailedGzip = 4,
+  // kDeltaCount = 5,  // Deprecated.
+  kFailedDeltaReadSeed = 6,
+  kFailedDeltaApply = 7,
+  kFailedDeltaStore = 8,
+  kFailedUngzip = 9,
+  kFailedEmptyGzipContents = 10,
+  kFailedUnsupportedSeedFormat = 11,
   // The following are not so much a result of the seed store, but rather
   // counting the types of seeds the SeedStore() function saw. Kept in the same
   // histogram for efficiency and convenience of comparing against the other
   // values.
-  GZIP_DELTA_COUNT,
-  NON_GZIP_DELTA_COUNT,
-  GZIP_FULL_COUNT,
-  NON_GZIP_FULL_COUNT,
-  ENUM_SIZE
+  kGzipDeltaCount = 12,
+  kNonGzipDeltaCount = 13,
+  kGzipFullCount = 14,
+  kNonGzipFullCount = 15,
+  kMaxValue = kNonGzipFullCount,
 };
 
 // The result of updating the date associated with an existing stored variations

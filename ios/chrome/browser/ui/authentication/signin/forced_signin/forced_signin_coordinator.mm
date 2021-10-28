@@ -16,7 +16,6 @@
 #import "ios/chrome/browser/ui/first_run/first_run_screen_delegate.h"
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_coordinator.h"
-#import "ios/chrome/browser/ui/first_run/sync/sync_screen_coordinator.h"
 #import "ios/chrome/browser/ui/screen/screen_provider.h"
 #import "ios/chrome/browser/ui/screen/screen_type.h"
 
@@ -116,10 +115,6 @@
                                    browser:self.browser
                                   delegate:self];
     case kSync:
-      return [[SyncScreenCoordinator alloc]
-          initWithBaseNavigationController:self.navigationController
-                                   browser:self.browser
-                                  delegate:self];
     case kWelcomeAndConsent:
     case kDefaultBrowserPromo:
     case kStepsCompleted:

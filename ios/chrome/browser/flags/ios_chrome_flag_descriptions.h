@@ -496,11 +496,6 @@ extern const char kWebViewNativeContextMenuDescription[];
 extern const char kWebViewNativeContextMenuPhase2Name[];
 extern const char kWebViewNativeContextMenuPhase2Description[];
 
-// Title and description for the flag to restore Gaia cookies when the user
-// explicitly requests to be signed in to a Google service.
-extern const char kRestoreGaiaCookiesOnUserActionName[];
-extern const char kRestoreGaiaCookiesOnUserActionDescription[];
-
 extern const char kRecordSnapshotSizeName[];
 extern const char kRecordSnapshotSizeDescription[];
 

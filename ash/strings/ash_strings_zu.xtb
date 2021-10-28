@@ -131,6 +131,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="1882897271359938046">Yenza isibuko ku-<ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Vula ngezigxivizo zeminwe</translation>
 <translation id="1888656773939766144">I-<ph name="DISPLAY_NAME" /> ayisekeli i-<ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Ukulungiswa kuye kwashintshelwa ku-<ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Chofoza okuthi qinisekisa ukuze ugcine izinguquko. Amasethingi angaphambilini azobuyiselwa ku-<ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="1915307458270490472">Vala ikholi</translation>
 <translation id="1919743966458266018">Isinqamuleli sokuvula isiphathi somsebenzi sishintshile. Sicela usebenzise i-<ph name="NEW_SHORTCUT" /> esikhundleni se-<ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Ukuchofozwa okuzenzakalelayo</translation>
 <translation id="1928739107511554905">Ukuze uthole isibuyekezo, sebenzisa isikrini sokuthinta ukuze uqalise i-Chromebook yakho ngekhibhodi enamathiselwe.</translation>
@@ -372,6 +373,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="3665889125180354336">Rekhoda imakrofoni</translation>
 <translation id="3680908746918359504">Sula wonke amamaka</translation>
 <translation id="36813544980941320">Amanethiwekhi we-Wi-Fi azokwabiwa phakathi kwefoni yakho ne-<ph name="DEVICE_NAME" /></translation>
+<translation id="3701206655856637070">Manje usungashintsha lapho ukuthwebula iskrini okulondolozwa khona</translation>
 <translation id="3702809606464356667">Ibonisa amawindi kusuka kutafula lamanje, cindezela ukhiye Womcibisholo waphezulu ukuze ubonise amawindi kusuka kuwo wonke amatafula</translation>
 <translation id="3702846122927433391">Okudumile e-Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
@@ -561,6 +563,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
         <ph name="NOTIFICATION" />,
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="4945196315133970626">Vala izaziso</translation>
 <translation id="4946376291507881335">Thatha</translation>
 <translation id="495046168593986294">Skrolela phezulu</translation>
 <translation id="4952936045814352993">Ukuthola ifoni akutholakali uma imisindo ye-alamu ikhutshaziwe</translation>
@@ -1129,6 +1132,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="925832987464884575">Fihla ukubuka kuqala</translation>
 <translation id="938963181863597773">Yini okukukhalenda yami?</translation>
 <translation id="945522503751344254">Thumela impendulo</translation>
+<translation id="951991426597076286">Yenqaba</translation>
 <translation id="98515147261107953">Ukwakheka kwezwe</translation>
 <translation id="990277280839877440">Iwindi elingu-<ph name="WINDOW_TITILE" /> livaliwe.</translation>
 </translationbundle>

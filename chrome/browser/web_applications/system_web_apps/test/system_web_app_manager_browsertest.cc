@@ -1090,11 +1090,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerUninstallBrowserTest, Uninstall) {
         if (app.AppType() == apps::mojom::AppType::kSystemWeb ||
             app.AppType() == apps::mojom::AppType::kWeb) {
           swa_found = true;
-          EXPECT_EQ(apps::mojom::Readiness::kUninstalledByUser,
-                    app.Readiness());
         }
       });
-  EXPECT_TRUE(swa_found);
+  EXPECT_FALSE(swa_found);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 

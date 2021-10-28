@@ -48,6 +48,7 @@
 <translation id="2121284319307530122">Neu starten, um &amp;Chrome zu aktualisieren</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />Aktuelle Einstellungen<ph name="END_LINK" /> übermitteln und so helfen, Chrome zu verbessern</translation>
 <translation id="2151406531797534936">Starten Sie Chrome jetzt neu</translation>
+<translation id="2189289170880510015">Passen Sie einige der wichtigsten Datenschutzeinstellungen von Chrome an</translation>
 <translation id="2290014774651636340">Google API-Schlüssel fehlen. Einige Funktionen von Google Chrome sind deaktiviert.</translation>
 <translation id="2290095356545025170">Möchten Sie Google Chrome wirklich deinstallieren?</translation>
 <translation id="2309047409763057870">Dies ist eine Zweitinstallation, daher kann Google Chrome nicht als Standardbrowser festgelegt werden.</translation>
@@ -97,6 +98,7 @@
 <translation id="3379938682270551431">{0,plural, =0{Chrome wird jetzt neu gestartet}=1{Chrome wird in einer Sekunde neu gestartet}other{Chrome wird in # Sekunden neu gestartet}}</translation>
 <translation id="3395323229510056640">Hilfe für Chrome OS aufrufen</translation>
 <translation id="3396977131400919238">Während der Installation ist ein Fehler im Betriebssystem aufgetreten. Laden Sie Google Chrome erneut herunter.</translation>
+<translation id="3428747202529429621">Schützt Sie in Chrome und erhöht möglicherweise die Sicherheit in anderen Google-Apps, wenn Sie angemeldet sind</translation>
 <translation id="3434246496373299699">Chrome kann Ihre Passwörter prüfen, wenn Sie sich mit Ihrem Google-Konto anmelden</translation>
 <translation id="3451115285585441894">Wird zu Chrome hinzugefügt...</translation>
 <translation id="345171907106878721">Mich zu Chrome hinzufügen</translation>
@@ -109,6 +111,7 @@
 <translation id="3596080736082218006">{COUNT,plural, =0{Laut Ihrem Administrator müssen Sie Chrome neu starten, um ein Update durchzuführen}=1{Laut Ihrem Administrator müssen Sie Chrome neu starten, um ein Update durchzuführen. Ihr Inkognitofenster wird nicht wieder geöffnet.}other{Laut Ihrem Administrator müssen Sie Chrome neu starten, um ein Update durchzuführen. Ihre # Inkognitofenster werden nicht wieder geöffnet.}}</translation>
 <translation id="3622797965165704966">Sie können Chrome jetzt noch einfacher mit Ihrem Google-Konto und auf gemeinsam genutzten Computern verwenden.</translation>
 <translation id="3673813398384385993">Chrome hat festgestellt, dass „<ph name="EXTENSION_NAME" />“ Malware enthält</translation>
+<translation id="3678552270983184277">Die Standardeinstellungen sind für die meisten Nutzer geeignet, Sie können sie aber ändern und Chrome so an Ihre Bedürfnisse anpassen</translation>
 <translation id="3718181793972440140">Dadurch wird 1 Element von diesem Gerät gelöscht. Wenn Sie Ihre Daten später abrufen möchten, melden Sie sich als <ph name="USER_EMAIL" /> in Chrome an.</translation>
 <translation id="3735758079232443276">Die beim Start von Chrome angezeigte Seite wurde durch die Erweiterung <ph name="EXTENSION_NAME" /> geändert.</translation>
 <translation id="3779473566290487688">Sie benötigen OS X 10.11 oder höher, um zukünftige Google Chrome-Updates zu erhalten. Dieser Computer verfügt über OS X 10.10.</translation>
@@ -199,6 +202,7 @@
 <translation id="6291089322031436445">Chrome Dev-Apps</translation>
 <translation id="6291549208091401781">Google Chrome ist bereits für alle Nutzer auf Ihrem Computer installiert.</translation>
 <translation id="6368958679917195344">Chrome OS wird durch zusätzliche <ph name="BEGIN_LINK_CROS_OSS" />Open-Source-Software<ph name="END_LINK_CROS_OSS" /> ermöglicht.</translation>
+<translation id="6412673304250309937">Prüft URLs anhand einer Liste unsicherer Websites, die in Chrome gespeichert wird. Wenn eine Website versucht, Ihr Passwort zu stehlen, oder wenn Sie eine schädliche Datei herunterladen, kann Chrome auch URLs, einschließlich Teile von Seiteninhalten, an Safe Browsing senden.</translation>
 <translation id="6418662306461808273">Zu bestehendem Chrome-Profil wechseln?</translation>
 <translation id="6506909944137591434">Chrome benötigt die Kameraberechtigung, um eine 3D-Karte Ihrer Umgebung zu erstellen</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>

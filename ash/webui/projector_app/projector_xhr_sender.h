@@ -25,7 +25,7 @@ class URLLoaderFactory;
 }  // namespace mojom
 }  // namespace network
 
-namespace chromeos {
+namespace ash {
 
 /**
  * Projector XHR sender. Used by Projector App to send XHR requests.
@@ -86,5 +86,6 @@ class ProjectorXhrSender {
   base::WeakPtrFactory<ProjectorXhrSender> weak_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
 #endif  // ASH_WEBUI_PROJECTOR_APP_PROJECTOR_XHR_SENDER_H_

@@ -290,6 +290,9 @@ class SSLPrivateKeyInternal : public net::SSLPrivateKey {
                        base::Unretained(this)));
   }
 
+  SSLPrivateKeyInternal(const SSLPrivateKeyInternal&) = delete;
+  SSLPrivateKeyInternal& operator=(const SSLPrivateKeyInternal&) = delete;
+
   // net::SSLPrivateKey:
   std::string GetProviderName() override { return provider_name_; }
 
@@ -331,8 +334,6 @@ class SSLPrivateKeyInternal : public net::SSLPrivateKey {
   std::string provider_name_;
   std::vector<uint16_t> algorithm_preferences_;
   mojo::Remote<mojom::SSLPrivateKey> ssl_private_key_;
-
-  DISALLOW_COPY_AND_ASSIGN(SSLPrivateKeyInternal);
 };
 
 bool ShouldNotifyAboutCookie(net::CookieInclusionStatus status) {

@@ -123,6 +123,7 @@
 <translation id="1122068467107743258">Ish</translation>
 <translation id="1122198203221319518">&amp;Asboblar</translation>
 <translation id="1122242684574577509">Haqiqiylik tekshiruvida xatolik yuz berdi. Wi-Fi (<ph name="NETWORK_ID" />) tarmog‘ining kirish sahifasiga qaytish uchun bosing.</translation>
+<translation id="1122913801042512795">Hisobingiz haqidagi maʼlumotlar eskirgan. Tizimdan chiqib, qaytadan kiring.</translation>
 <translation id="1122960773616686544">Xatcho‘p nomi</translation>
 <translation id="1124772482545689468">Foydalanuvchi</translation>
 <translation id="1125550662859510761"><ph name="WIDTH" /> x <ph name="HEIGHT" /> kabi (asli)</translation>
@@ -1303,7 +1304,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2312219318583366810">Sahifa URL manzili</translation>
 <translation id="2314165183524574721">Ayni vaqtda hech kimga koʻrinmaslik sozlangan</translation>
 <translation id="2314774579020744484">Tarjima qilishda ishlatiladigan til</translation>
-<translation id="2315414688463285945">Linux fayllarini sozlab bo‘lmadi. Qaytadan urining.</translation>
 <translation id="2315587498123194634">Havolani <ph name="DEVICE_NAME" /> qurilmasiga yuborish</translation>
 <translation id="2316129865977710310">Kerak emas</translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" />% bajarildi</translation>
@@ -2353,7 +2353,6 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="3424969259347320884">Varaqda nosozlik ro‘y bergan vaqtda nima qilayotganligingizni tasvirlab bering.</translation>
 <translation id="3427092606871434483">Ruxsat berilsin (standart parametr)</translation>
 <translation id="3428419049384081277">Hisobingizga kirdingiz!</translation>
-<translation id="3428747202529429621">Hisobingizga kirganingizda Chrome va boshqa Google ilovalaridan xavfsiz foydalanishingizni taʼminlaydi</translation>
 <translation id="3429086384982427336">Pastda keltirilgan ilovalar protokol havolalari bilan ishlay olmaydi.</translation>
 <translation id="3429160811076349561">Bepul sinov funksiyalari faolsizlantirilgan</translation>
 <translation id="3429271624041785769">Veb kontent tilllari</translation>
@@ -5120,7 +5119,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6410328738210026208">Boshqa kanal tanlash va Powerwash amalini ishga tushirish</translation>
 <translation id="6410390304316730527">Saytlarni xavfsiz kezish parollar, telefon raqamlari yoki kredit kartalari kabi shaxsiy maʼlumotlaringizni oʻgʻirlash yoki zararli dasturlarni oʻrnatish orqali xavfli ishlarni amalga oshirishga undovchi shubhali kimsalardan himoyalaydi. Agar bu funksiyani faolsizlantirsangiz, notanish va shubhali saytlarga kirishda ehtiyot boʻling.</translation>
 <translation id="6410668567036790476">Qidiruv tizimi qo‘shish</translation>
-<translation id="6412673304250309937">URL manzillar Chrome bilgan zararli saytlar roʻyxati orqali tekshiriladi. Agar sayt parolingizni oʻgirlashga urinsa yoki zararli fayl yuklab olsangiz, Chrome ham URL manzillar kabi sahifa elementlarini Saytlarni xavfsiz kezish tizimiga yuborishi mumkin.</translation>
 <translation id="641469293210305670">Yangilanish va ilovalarni oʻrnatish</translation>
 <translation id="6414878884710400018">Tizim sozlamalarini ochish</translation>
 <translation id="6414888972213066896">Bu saytni ochish uchun ruxsat so‘rovi ota-onangizga jo‘natildi</translation>
@@ -5530,7 +5528,6 @@ maqsadlarida foydalanishi mumkin. Bu ruxsatni myaccount.google.com/activitycontr
 <translation id="6843264316370513305">Tarmoq xatolarini aniqlash</translation>
 <translation id="6843423766595476978">“Ok Google” sozlandi</translation>
 <translation id="6845038076637626672">Yoyib ochish</translation>
-<translation id="6845325883481699275">Chrome xavfsizligini yaxshilashga yordam bering</translation>
 <translation id="6846178040388691741">“<ph name="EXTENSION_NAME" />” kengaytmasi <ph name="FILE_NAME" /> faylini <ph name="PRINTER_NAME" /> printerida chop etmoqchi.</translation>
 <translation id="6847125920277401289">Davom etish uchun xotiradan joy oching</translation>
 <translation id="6848388270925200958">Hozir bu qurilmada kartalardan faqat bir nechtasini ishlatish mumkin</translation>
@@ -6981,7 +6978,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8324784016256120271">Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzatishi mumkin</translation>
 <translation id="8325413836429495820">Vaqtinchalik xotirani koʻrish taqiqlangan</translation>
 <translation id="8326478304147373412">PKCS #7, sertifikat zanjiri</translation>
-<translation id="8327039559959785305">Linux fayllari ulanmadi. Qaytadan urining.</translation>
 <translation id="8327676037044516220">Ruxsatlar va kontent sozlamalari</translation>
 <translation id="833256022891467078">Crostini tizimining umumiy jildlari</translation>
 <translation id="8335587457941836791">Javondan olib tashlash</translation>
@@ -7503,6 +7499,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8879284080359814990">&amp;Ichki oyna sifatida ko‘rsatish</translation>
 <translation id="8879921471468674457">Kirish maʼlumotlarini eslab qolish</translation>
 <translation id="8880054210564666174">Kontaktlar roʻyxati yuklab olinmadi. Tarmoq aloqasini tekshiring yoki <ph name="LINK_BEGIN" />qaytadan urining<ph name="LINK_END" />.</translation>
+<translation id="8880344290593529089"><ph name="USB_DEVICE_NAME" /> qurilmasi Linux yoki Parallels Desktop dasturiga ulanishi uchun Sozlamalarni oching</translation>
 <translation id="8881020143150461183">Qayta urining. Yordam olish uchun <ph name="CARRIER_NAME" /> operatoriga murojaat qiling.</translation>
 <translation id="8883273463630735858">Sensorli panelni tezlatkichni yoqish</translation>
 <translation id="8884570509232205463">Qurilmangiz hozir qulflanadi: <ph name="UNLOCK_TIME" />.</translation>

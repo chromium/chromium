@@ -1747,7 +1747,7 @@ std::unique_ptr<protocol::CSS::CSSMedia> InspectorCSSAgent::BuildMediaObject(
       continue;
     std::unique_ptr<protocol::CSS::MediaQuery> media_query =
         protocol::CSS::MediaQuery::create()
-            .setActive(media_evaluator->Eval(query, nullptr))
+            .setActive(media_evaluator->Eval(query))
             .setExpressions(std::move(expression_array))
             .build();
     media_list_array->emplace_back(std::move(media_query));

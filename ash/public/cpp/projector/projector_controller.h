@@ -9,11 +9,9 @@
 #include "base/time/time.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 
-namespace chromeos {
-struct AnnotatorTool;
-}  // namespace chromeos
-
 namespace ash {
+
+struct AnnotatorTool;
 
 // File extension of Projector metadata file. It is used to identify Projector
 // screencasts at processing pending screencasts and fetching screencast list.
@@ -79,7 +77,7 @@ class ASH_PUBLIC_EXPORT ProjectorController {
   // ProjectorController.
 
   // Callback indicating that the annotator tool has changed.
-  virtual void OnToolSet(const chromeos::AnnotatorTool& tool) = 0;
+  virtual void OnToolSet(const AnnotatorTool& tool) = 0;
   // Callback indicating availability of undo and redo functionalities.
   virtual void OnUndoRedoAvailabilityChanged(bool undo_available,
                                              bool redo_available) = 0;

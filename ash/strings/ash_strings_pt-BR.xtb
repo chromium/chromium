@@ -131,6 +131,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1882897271359938046">Espelhamento de <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Desbloqueio por impressão digital</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> não é compatível com <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). A resolução foi modificada para <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Clique em "Confirmar" para manter as mudanças. As configurações anteriores serão restauradas em <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="1915307458270490472">Desligar</translation>
 <translation id="1919743966458266018">O atalho para abrir o gerenciador de tarefas foi alterado. Use <ph name="NEW_SHORTCUT" /> em vez de <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Cliques automáticos</translation>
 <translation id="1928739107511554905">Para receber a atualização, use a touchscreen para reiniciar o Chromebook com o teclado conectado.</translation>
@@ -1129,6 +1130,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="925832987464884575">Ocultar visualizações</translation>
 <translation id="938963181863597773">O que tem na minha agenda?</translation>
 <translation id="945522503751344254">Enviar comentários</translation>
+<translation id="951991426597076286">Recusar</translation>
 <translation id="98515147261107953">Paisagem</translation>
 <translation id="990277280839877440">Janela <ph name="WINDOW_TITILE" /> fechada.</translation>
 </translationbundle>
