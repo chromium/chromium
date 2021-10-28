@@ -15,10 +15,11 @@ promise_test(async t => {
 
   // Since there's no way to do a non-replacement navigation on the initial
   // about:blank, there's no way to actually get in a situation where we're on
-  // about:blank but there's something else forward in the history list. So this
-  // test will almost certainly pass just because there's nothing in the forward
-  // history list. Oh well; it's still reasonable coverage.
+  // about:blank but there's something else backward/forward in the history
+  // list. So this test will almost certainly pass just because there's nothing
+  // to go back/forward to. Oh well; it's still reasonable coverage.
 
+  await assertBothRejectDOM(t, i.contentWindow.appHistory.back(), "InvalidStateError", i.contentWindow);
   await assertBothRejectDOM(t, i.contentWindow.appHistory.forward(), "InvalidStateError", i.contentWindow);
-}, "forward() in initial about:blank document");
+}, "back() and forward() in initial about:blank document");
 </script>
