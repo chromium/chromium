@@ -5,6 +5,7 @@
 #include "net/base/test_data_stream.h"
 
 #include <algorithm>
+#include <cstring>
 
 namespace net {
 
