@@ -4900,6 +4900,10 @@ const char kProductivityLauncherDescription[] =
     "To evaluate an enhanced Launcher experience that aims to improve app "
     "workflows by optimizing access to apps, app content, and app actions.";
 
+const char kProductivityLauncherAnimationName[] = "App Launcher: Animation";
+const char kProductivityLauncherAnimationDescription[] =
+    "Enables new animation in the enhanced app launcher.";
+
 const char kForceShowContinueSectionName[] =
     "App Launcher: Force Continue Section Suggestions";
 const char kForceShowContinueSectionDescription[] =

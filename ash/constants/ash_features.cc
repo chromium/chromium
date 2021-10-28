@@ -904,6 +904,10 @@ const base::Feature kPreferConstantFrameRate{"PreferConstantFrameRate",
 const base::Feature kProductivityLauncher{"ProductivityLauncher",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables animation in the productivity launcher.
+const base::Feature kProductivityLauncherAnimation{
+    "ProductivityLauncherAnimation", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether to enable Projector.
 const base::Feature kProjector{"Projector", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -1623,6 +1627,11 @@ bool IsPipRoundedCornersEnabled() {
 
 bool IsProductivityLauncherEnabled() {
   return base::FeatureList::IsEnabled(kProductivityLauncher);
+}
+
+bool IsProductivityLauncherAnimationEnabled() {
+  return IsProductivityLauncherEnabled() &&
+         base::FeatureList::IsEnabled(kProductivityLauncherAnimation);
 }
 
 bool IsProjectorEnabled() {
