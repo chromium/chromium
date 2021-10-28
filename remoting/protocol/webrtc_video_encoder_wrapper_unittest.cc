@@ -111,7 +111,6 @@ class MockVideoChannelStateObserver : public VideoChannelStateObserver {
   MOCK_METHOD(void, OnKeyFrameRequested, (), (override));
   MOCK_METHOD(void, OnTargetBitrateChanged, (int bitrate_kbps), (override));
   MOCK_METHOD(void, OnRttUpdate, (base::TimeDelta rtt), (override));
-  MOCK_METHOD(void, OnTopOffActive, (bool active), (override));
   MOCK_METHOD(void,
               OnFrameEncoded,
               (WebrtcVideoEncoder::EncodeResult encode_result,

@@ -65,10 +65,6 @@ class WebrtcVideoEncoderWrapper : public webrtc::VideoEncoder {
   // Notifies WebRTC that this encoder has dropped a frame.
   void NotifyFrameDropped();
 
-  // Sets whether top-off is active, and fires a notification if the setting
-  // changes.
-  void SetTopOffActive(bool active);
-
   // Returns whether the frame should be encoded at low quality, to reduce
   // latency for large frame updates. This is only done here for VP8, as VP9
   // automatically detects target-overshoot and re-encodes the frame at

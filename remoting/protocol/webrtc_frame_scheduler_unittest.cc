@@ -45,10 +45,9 @@ class WebrtcFrameSchedulerTest : public ::testing::Test {
 
     if (simulate_capture_) {
       // Simulate a completed capture and encode.
-      WebrtcVideoEncoder::FrameParams out_params;
-      scheduler_->OnFrameCaptured(&frame_, &out_params);
+      scheduler_->OnFrameCaptured(&frame_);
       WebrtcVideoEncoder::EncodedFrame encoded;
-      encoded.key_frame = out_params.key_frame;
+      encoded.key_frame = false;
       encoded.data = 'X';
       scheduler_->OnFrameEncoded(WebrtcVideoEncoder::EncodeResult::SUCCEEDED,
                                  &encoded);
