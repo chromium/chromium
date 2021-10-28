@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/bind.h"
+#include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -972,6 +973,49 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
                   ->GetProxyCount(),
               1u);
   }
+}
+
+// Reproducer test for https://crbug.com/1264104.
+IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
+                       BackNavigationCoiToNonCoiAfterCrash) {
+  IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+  GURL isolated_page(
+      https_server()->GetURL("a.com",
+                             "/set-header?"
+                             "Cross-Origin-Opener-Policy: same-origin&"
+                             "Cross-Origin-Embedder-Policy: require-corp"));
+  GURL non_isolated_page(https_server()->GetURL("a.com", "/title1.html"));
+
+  // Put a non isolated page in history.
+  EXPECT_TRUE(NavigateToURL(shell(), non_isolated_page));
+  scoped_refptr<SiteInstanceImpl> non_isolated_site_instance(
+      current_frame_host()->GetSiteInstance());
+  EXPECT_FALSE(non_isolated_site_instance->IsCrossOriginIsolated());
+
+  // Keep this alive, simulating not receiving the UnloadACK from the renderer.
+  current_frame_host()->DoNotDeleteForTesting();
+
+  // Navigate to an isolated page.
+  EXPECT_TRUE(NavigateToURL(shell(), isolated_page));
+  scoped_refptr<SiteInstanceImpl> isolated_site_instance(
+      current_frame_host()->GetSiteInstance());
+  EXPECT_TRUE(isolated_site_instance->IsCrossOriginIsolated());
+
+  // Simulate the renderer process crashing.
+  RenderProcessHost* process = isolated_site_instance->GetProcess();
+  ASSERT_TRUE(process);
+  std::unique_ptr<RenderProcessHostWatcher> crash_observer(
+      new RenderProcessHostWatcher(
+          process, RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT));
+  process->Shutdown(0);
+  crash_observer->Wait();
+  crash_observer.reset();
+
+  // Navigate back. Isolated into non-isolated.
+  // This DCHECKs currently because of https://crbug.com/1264104,
+  // remove the death check and add a simple load wait when the
+  // bug is fixed.
+  EXPECT_DCHECK_DEATH(web_contents()->GetController().GoBack());
 }
 
 IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
