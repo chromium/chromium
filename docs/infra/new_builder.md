@@ -344,6 +344,82 @@ ci.builder(
 )
 ```
 
+#### CQ (try builders only)
+
+CQ is responsible for launching try builders against CLs before they are
+submitted to verify that they don't cause any breakages.
+
+Chromium's CQ Starlark configuration is intermixed with the
+[builder definitions][23].
+Chromium's generated CQ configuration is [here][26].
+CQ's configuration schema is [here][27].
+
+##### Opt-in try builders
+
+Opt-in try builders are not automatically added to any CQ attempts, they must be
+requested using the Cq-Include-Trybots footer. By default, try builders will be
+opt-in try builders.
+
+##### CQ builders
+
+CQ builders are automatically added to CQ attempts. They can be configured to
+only be added on specific paths or to be triggered experimentally some
+percentage of the time. Adding builders to the CQ has a substantial cost, so
+doing so will require approval from a limited set of approvers. This is enforced
+by OWNERS files, so no need to worry about accidentally doing so.
+
+To add a builder to the CQ, add a `tryjob` value to the builder definition.
+
+```starlark
+try_.chromium_linux_builder(
+    name = '$BUILDER_NAME',
+    tryjob = try_.job(),
+)
+```
+
+This will add the builder to all CQ attempts (except for CLs that only contain
+files in some particular directories).
+
+###### Experimental CQ builders
+
+Sometimes as a way of testing new features for try builders or as a precursor to
+adding a builder to the CQ, it will be added as an experimental CQ builder,
+which will be triggered for some percentage of CQ attempts. Such builds will not
+block the completion of the CQ attempt and its status will not be considered for
+determining the status of the CQ attempt.
+
+To add a builder to the CQ experimentally, add a `tryjob` value to the builder
+definition that specifies `experiment_percentage`.
+
+```starlark
+try_.chromium_linux_builder(
+    name = '$BUILDER_NAME',
+    tryjob = try_.job(
+        experiment_percentage = 5,
+    ),
+)
+```
+
+###### Path-based CQ builders
+
+Sometimes it will be determined that a try builder is too expensive or catches
+too few errors to be added to all CQ attempts, but that it is effective at
+catching errors introduced when certain files are changed. In that case, the try
+builder can be added to the CQ only when those files are changed.
+
+To add a builder to the CQ on a path basis, add a `tryjob` value to the builder
+definition that specifies `location_regexp`.
+
+```starlark
+try_.chromium_linux_builder(
+    name = '$BUILDER_NAME',
+    tryjob = try_.job(
+        # ".+/[+]/" Matches the repo/+/ prefix of the gitiles file location
+        location_regexp = ".+/[+]/path/with/affected/files",
+    ),
+)
+```
+
 #### Common mistakes
 
 ##### Setting branch_selector
@@ -436,3 +512,5 @@ reach out to infra-dev@chromium.org or [file a bug][19]!
 [23]: /infra/config/subprojects/chromium
 [24]: /infra/config/lib/builders.star
 [25]: https://source.chromium.org/chromium/chromium/tools/build/+/main:recipes/recipe_modules/chromium_tests_builder_config/trybots.py
+[26]: /infra/config/generated/luci/commit-queue.cfg
+[27]: https://luci-config.appspot.com/schemas/projects:commit-queue.cfg
