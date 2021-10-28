@@ -7015,18 +7015,30 @@ void RenderFrameHostImpl::BeginNavigation(
   // - it must not be a main-frame navigation, and
   // - for certain Trust Tokens operations, the frame's parent needs the
   // trust-token-redemption Permissions Policy feature.
-  if (begin_params->trust_token_params && !GetParent()) {
-    mojo::ReportBadMessage("RFHI: Trust Token params in main frame nav");
-    return;
-  }
-  if (begin_params->trust_token_params &&
-      ParentNeedsTrustTokenPermissionsPolicy(*begin_params)) {
-    RenderFrameHostImpl* parent = GetParent();
-    if (!parent->IsFeatureEnabled(
-            blink::mojom::PermissionsPolicyFeature::kTrustTokenRedemption)) {
-      mojo::ReportBadMessage(
-          "RFHI: Mandatory Trust Tokens Permissions Policy feature is absent");
+  if (begin_params->trust_token_params) {
+    // For Fenced Frame trust_token_params shouldn't be populated since that is
+    // driven by the iframe specific attribute as defined here:
+    // https://github.com/WICG/trust-token-api#extension-iframe-activation". If
+    // this changes, the code below using `GetParent()` will need to be changed.
+    // TODO(crbug.com/1254770): For portals implemented with mparch, we'll have
+    // a similar problem with `GetParent()` calls as with Fenced Frame.
+    if (IsFencedFrameRoot()) {
+      mojo::ReportBadMessage("RFHI: Trust Token params in fenced frame nav");
       return;
+    }
+    if (!GetParent()) {
+      mojo::ReportBadMessage("RFHI: Trust Token params in main frame nav");
+      return;
+    }
+    if (ParentNeedsTrustTokenPermissionsPolicy(*begin_params)) {
+      RenderFrameHostImpl* parent = GetParent();
+      if (!parent->IsFeatureEnabled(
+              blink::mojom::PermissionsPolicyFeature::kTrustTokenRedemption)) {
+        mojo::ReportBadMessage(
+            "RFHI: Mandatory Trust Tokens Permissions Policy feature is "
+            "absent");
+        return;
+      }
     }
   }
 
