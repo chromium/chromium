@@ -278,7 +278,7 @@ public class NewTabPageTest {
         final UrlBar urlBar = (UrlBar) mActivityTestRule.getActivity().findViewById(R.id.url_bar);
         OmniboxTestUtils.waitForFocusAndKeyboardActive(urlBar, true);
 
-        InstrumentationRegistry.getInstrumentation().sendStringSync(UrlConstants.CHROME_BLANK_URL);
+        InstrumentationRegistry.getInstrumentation().sendStringSync(UrlConstants.VERSION_URL);
         LocationBarLayout locationBar =
                 (LocationBarLayout) mActivityTestRule.getActivity().findViewById(R.id.location_bar);
         OmniboxTestUtils.waitForOmniboxSuggestions(locationBar);

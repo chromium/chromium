@@ -681,15 +681,14 @@ public class LocationBarTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1237419")
     public void testOmniboxSearchEngineLogo_siteToSite() {
         setupSearchEngineLogo(GOOGLE_URL);
         startActivityNormally();
 
-        mActivityTestRule.loadUrl(UrlConstants.CHROME_BLANK_URL);
+        mActivityTestRule.loadUrl(UrlConstants.GPU_URL);
         onView(withId(R.id.location_bar_status_icon)).check(matches(isDisplayed()));
 
-        mActivityTestRule.loadUrl(UrlConstants.ABOUT_URL);
+        mActivityTestRule.loadUrl(UrlConstants.VERSION_URL);
         onView(withId(R.id.location_bar_status_icon)).check(matches(isDisplayed()));
     }
 }
