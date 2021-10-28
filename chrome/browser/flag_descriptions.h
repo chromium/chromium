@@ -1202,14 +1202,8 @@ extern const char kQuicDescription[];
 extern const char kQuickActionSearchWidgetAndroidName[];
 extern const char kQuickActionSearchWidgetAndroidDescription[];
 
-extern const char kQuietNotificationPromptsName[];
-extern const char kQuietNotificationPromptsDescription[];
-
 extern const char kSettingsAppNotificationSettingsName[];
 extern const char kSettingsAppNotificationSettingsDescription[];
-
-extern const char kAbusiveNotificationPermissionRevocationName[];
-extern const char kAbusiveNotificationPermissionRevocationDescription[];
 
 extern const char kReadLaterFlagId[];
 extern const char kReadLaterName[];

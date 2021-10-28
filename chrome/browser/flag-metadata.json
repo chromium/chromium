@@ -29,11 +29,6 @@
 
 [
   {
-    "name": "abusive-notification-permission-revocation",
-    "owners": [ "engedy", "mkwst", "andypaicu", "hkamila", "elklm" ],
-    "expiry_milestone": 93
-  },
-  {
     "name": "accessible-pdf-form",
     "owners": [ "ankk@microsoft.com", "mohitb@microsoft.com" ],
     "expiry_milestone": 100
@@ -4504,11 +4499,6 @@
     "name": "quick-settings-pwa-notifications",
     "owners": [ "yulunwu" ],
     "expiry_milestone": 100
-  },
-  {
-    "name": "quiet-notification-prompts",
-    "owners": [ "engedy", "mkwst", "andypaicu", "hkamila" ],
-    "expiry_milestone": 93
   },
   {
     "name": "raw-audio-capture",
