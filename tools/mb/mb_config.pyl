@@ -3224,7 +3224,7 @@
 
     'chromeos_device_reclient': {
       'gn_args': 'is_chromeos_device=true ozone_platform_headless=true',
-      'mixins': ['reclient'],
+      'mixins': ['dcheck_off', 'reclient'],
     },
 
     'chromeos_amd64-generic': {
@@ -3252,7 +3252,7 @@
     },
 
     'chromeos_amd64-generic_reclient': {
-      'mixins': ['chromeos_device_reclient', 'amd64-generic',]
+      'mixins': ['chromeos_device_reclient', 'amd64-generic-vm',]
     },
 
     'clang_tot': {
