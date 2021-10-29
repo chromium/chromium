@@ -274,6 +274,7 @@ class CORE_EXPORT MediaQueryExpNode {
   virtual Type GetType() const = 0;
   virtual PhysicalAxes QueriedAxes() const = 0;
   virtual void SerializeTo(StringBuilder&) const = 0;
+  virtual void CollectExpressions(Vector<MediaQueryExp>&) const = 0;
   virtual std::unique_ptr<MediaQueryExpNode> Copy() const = 0;
 };
 
@@ -288,6 +289,7 @@ class CORE_EXPORT MediaQueryFeatureExpNode : public MediaQueryExpNode {
   Type GetType() const override { return Type::kFeature; }
   PhysicalAxes QueriedAxes() const override;
   void SerializeTo(StringBuilder&) const override;
+  void CollectExpressions(Vector<MediaQueryExp>&) const override;
   std::unique_ptr<MediaQueryExpNode> Copy() const override;
 
  private:
@@ -304,6 +306,7 @@ class CORE_EXPORT MediaQueryUnaryExpNode : public MediaQueryExpNode {
   }
 
   PhysicalAxes QueriedAxes() const override;
+  void CollectExpressions(Vector<MediaQueryExp>&) const override;
   const MediaQueryExpNode& Operand() const { return *operand_; }
 
  private:
@@ -346,6 +349,7 @@ class CORE_EXPORT MediaQueryCompoundExpNode : public MediaQueryExpNode {
   }
 
   PhysicalAxes QueriedAxes() const override;
+  void CollectExpressions(Vector<MediaQueryExp>&) const override;
   const MediaQueryExpNode& Left() const { return *left_; }
   const MediaQueryExpNode& Right() const { return *right_; }
 

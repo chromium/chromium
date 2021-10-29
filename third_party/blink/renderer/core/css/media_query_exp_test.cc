@@ -290,4 +290,53 @@ TEST(MediaQueryExpTest, QueriedAxes) {
             NotNode(FeatureNode(width_lt10))->QueriedAxes());
 }
 
+TEST(MediaQueryExpTest, CollectExpressions) {
+  MediaQueryExp width_lt10 = RightExp("width", LtCmp(PxValue(10)));
+  MediaQueryExp height_lt10 = RightExp("height", LtCmp(PxValue(10)));
+
+  // (width < 10px)
+  {
+    Vector<MediaQueryExp> expressions;
+    FeatureNode(width_lt10)->CollectExpressions(expressions);
+    ASSERT_EQ(1u, expressions.size());
+    EXPECT_EQ(width_lt10, expressions[0]);
+  }
+
+  // (width < 10px) and (height < 10px)
+  {
+    Vector<MediaQueryExp> expressions;
+    AndNode(FeatureNode(width_lt10), FeatureNode(height_lt10))
+        ->CollectExpressions(expressions);
+    ASSERT_EQ(2u, expressions.size());
+    EXPECT_EQ(width_lt10, expressions[0]);
+    EXPECT_EQ(height_lt10, expressions[1]);
+  }
+
+  // (width < 10px) or (height < 10px)
+  {
+    Vector<MediaQueryExp> expressions;
+    OrNode(FeatureNode(width_lt10), FeatureNode(height_lt10))
+        ->CollectExpressions(expressions);
+    ASSERT_EQ(2u, expressions.size());
+    EXPECT_EQ(width_lt10, expressions[0]);
+    EXPECT_EQ(height_lt10, expressions[1]);
+  }
+
+  // ((width < 10px))
+  {
+    Vector<MediaQueryExp> expressions;
+    NestedNode(FeatureNode(width_lt10))->CollectExpressions(expressions);
+    ASSERT_EQ(1u, expressions.size());
+    EXPECT_EQ(width_lt10, expressions[0]);
+  }
+
+  // not (width < 10px)
+  {
+    Vector<MediaQueryExp> expressions;
+    NotNode(FeatureNode(width_lt10))->CollectExpressions(expressions);
+    ASSERT_EQ(1u, expressions.size());
+    EXPECT_EQ(width_lt10, expressions[0]);
+  }
+}
+
 }  // namespace blink
