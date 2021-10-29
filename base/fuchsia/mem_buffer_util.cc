@@ -28,18 +28,25 @@ absl::optional<std::u16string> ReadUTF8FromVMOAsUTF16(
              : absl::nullopt;
 }
 
-fuchsia::mem::Buffer MemBufferFromString(StringPiece data, StringPiece name) {
-  fuchsia::mem::Buffer buffer;
+zx::vmo VmoFromString(StringPiece data, StringPiece name) {
+  zx::vmo vmo;
 
-  zx_status_t status = zx::vmo::create(data.size(), 0, &buffer.vmo);
+  // The `ZX_PROP_VMO_CONTENT_SIZE` property is automatically set on VMO
+  // creation.
+  zx_status_t status = zx::vmo::create(data.size(), 0, &vmo);
   ZX_CHECK(status == ZX_OK, status) << "zx_vmo_create";
-  status = buffer.vmo.set_property(ZX_PROP_NAME, name.data(), name.size());
+  status = vmo.set_property(ZX_PROP_NAME, name.data(), name.size());
   ZX_DCHECK(status == ZX_OK, status);
   if (data.size() > 0) {
-    status = buffer.vmo.write(data.data(), 0, data.size());
+    status = vmo.write(data.data(), 0, data.size());
     ZX_CHECK(status == ZX_OK, status) << "zx_vmo_write";
   }
+  return vmo;
+}
 
+fuchsia::mem::Buffer MemBufferFromString(StringPiece data, StringPiece name) {
+  fuchsia::mem::Buffer buffer;
+  buffer.vmo = VmoFromString(data, name);
   buffer.size = data.size();
   return buffer;
 }
@@ -50,6 +57,28 @@ fuchsia::mem::Buffer MemBufferFromString16(StringPiece16 data,
       StringPiece(reinterpret_cast<const char*>(data.data()),
                   data.size() * sizeof(char16_t)),
       name);
+}
+
+absl::optional<std::string> StringFromVmo(const zx::vmo& vmo) {
+  std::string result;
+
+  size_t size;
+  zx_status_t status = vmo.get_prop_content_size(&size);
+  if (status != ZX_OK) {
+    ZX_LOG(ERROR, status) << "zx::vmo::get_prop_content_size";
+    return absl::nullopt;
+  }
+
+  if (size == 0)
+    return result;
+
+  result.resize(size);
+  status = vmo.read(&result[0], 0, size);
+  if (status == ZX_OK)
+    return result;
+
+  ZX_LOG(ERROR, status) << "zx_vmo_read";
+  return absl::nullopt;
 }
 
 absl::optional<std::string> StringFromMemBuffer(
