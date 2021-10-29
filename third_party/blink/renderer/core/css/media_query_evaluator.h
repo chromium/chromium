@@ -97,9 +97,11 @@ class CORE_EXPORT MediaQueryEvaluator final
   bool Eval(const MediaQuery&, Results) const;
 
   bool Eval(const MediaQueryExpNode&) const;
+  bool Eval(const MediaQueryExpNode&, Results) const;
 
   // Evaluates media query subexpression, ie "and (media-feature: value)" part.
   bool Eval(const MediaQueryExp&) const;
+  bool Eval(const MediaQueryExp&, Results) const;
 
   // Returns true if any of the expressions in the results lists changed its
   // evaluation.
