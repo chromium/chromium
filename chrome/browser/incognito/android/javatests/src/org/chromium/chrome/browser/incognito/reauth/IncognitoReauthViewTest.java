@@ -55,8 +55,6 @@ public class IncognitoReauthViewTest extends DummyUiChromeActivityTestCase {
     @Test
     @MediumTest
     public void testIncognitoReauthViewPageCorrectlyDisplayed() {
-        onView(withText(R.string.incognito_reauth_page_title)).check(matches(isDisplayed()));
-
         onView(withId(R.id.incognito_reauth_unlock_incognito_button)).check(matches(isDisplayed()));
         onView(withText(R.string.incognito_reauth_page_unlock_incognito_button_label))
                 .check(matches(isDisplayed()));

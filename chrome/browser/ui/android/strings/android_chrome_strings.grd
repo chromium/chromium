@@ -2628,9 +2628,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
 
      <!-- Incognito reauthentication page -->
-     <message name="IDS_INCOGNITO_REAUTH_PAGE_TITLE" desc="Title on the Incognito re-authentication page which is shown when a user revisits their Incognito session if they have turned on Incognito lock setting.">
-       Verify it's you to unlock Incognito
-     </message>
      <message name="IDS_INCOGNITO_REAUTH_PAGE_UNLOCK_INCOGNITO_BUTTON_LABEL" desc="The label of button which upon click allows user to start the re-authentication process to view their existing Incognito tabs.">
        Unlock Incognito
      </message>
