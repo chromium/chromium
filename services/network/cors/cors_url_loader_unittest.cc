@@ -207,12 +207,16 @@ class CorsURLLoaderTest : public testing::Test {
   }
   void SetUp() override { SetUp(mojom::NetworkContextParams::New()); }
 
-  void CreateLoaderAndStart(const GURL& origin,
-                            const GURL& url,
-                            mojom::RequestMode mode) {
+  void CreateLoaderAndStart(
+      const GURL& origin,
+      const GURL& url,
+      mojom::RequestMode mode,
+      mojom::RedirectMode redirect_mode = mojom::RedirectMode::kFollow,
+      mojom::CredentialsMode credentials_mode = mojom::CredentialsMode::kOmit) {
     ResourceRequest request;
     request.mode = mode;
-    request.credentials_mode = mojom::CredentialsMode::kOmit;
+    request.redirect_mode = redirect_mode;
+    request.credentials_mode = credentials_mode;
     request.method = net::HttpRequestHeaders::kGetMethod;
     request.url = url;
     request.request_initiator = url::Origin::Create(origin);
@@ -702,9 +706,13 @@ TEST_F(CorsURLLoaderTest, NavigateWithEarlyHints) {
 }
 
 TEST_F(CorsURLLoaderTest, NavigationFromRenderer) {
+  ResetFactory(url::Origin::Create(GURL("https://example.com/")),
+               kRendererProcessId);
+
   ResourceRequest request;
   request.mode = mojom::RequestMode::kNavigate;
-  request.url = GURL("https://example.com/");
+  request.redirect_mode = mojom::RedirectMode::kManual;
+  request.url = GURL("https://some.other.example.com/");
   request.request_initiator = absl::nullopt;
 
   BadMessageTestHelper bad_message_helper;
@@ -718,7 +726,7 @@ TEST_F(CorsURLLoaderTest, NavigationFromRenderer) {
   EXPECT_EQ(net::ERR_INVALID_ARGUMENT, client().completion_status().error_code);
   EXPECT_THAT(bad_message_helper.bad_message_reports(),
               ::testing::ElementsAre(
-                  "CorsURLLoaderFactory: navigate from non-browser-process"));
+                  "CorsURLLoaderFactory: lock VS initiator mismatch"));
 }
 
 TEST_F(CorsURLLoaderTest, SameOriginRequest) {
@@ -2873,6 +2881,39 @@ TEST_F(CorsURLLoaderTest, PreflightMissingAllowOrigin) {
   EXPECT_THAT(client().completion_status().cors_error_status,
               Optional(CorsErrorStatus(
                   mojom::CorsError::kPreflightMissingAllowOriginHeader)));
+}
+
+TEST_F(CorsURLLoaderTest, NonBrowserNavigationRedirect) {
+  BadMessageTestHelper bad_message_helper;
+
+  const GURL origin("https://example.com");
+  const GURL url("https://example.com/foo.png");
+  const GURL new_url("https://example.com/bar.png");
+
+  CreateLoaderAndStart(origin, url, mojom::RequestMode::kNavigate,
+                       mojom::RedirectMode::kManual,
+                       mojom::CredentialsMode::kInclude);
+  RunUntilCreateLoaderAndStartCalled();
+
+  EXPECT_EQ(1, num_created_loaders());
+  EXPECT_EQ(GetRequest().url, url);
+  EXPECT_EQ(GetRequest().method, "GET");
+
+  NotifyLoaderClientOnReceiveRedirect(CreateRedirectInfo(301, "GET", new_url));
+  RunUntilRedirectReceived();
+
+  EXPECT_TRUE(IsNetworkLoaderStarted());
+  EXPECT_FALSE(client().has_received_completion());
+  EXPECT_FALSE(client().has_received_response());
+  EXPECT_TRUE(client().has_received_redirect());
+
+  FollowRedirect();
+
+  RunUntilComplete();
+  EXPECT_THAT(
+      bad_message_helper.bad_message_reports(),
+      ::testing::ElementsAre("CorsURLLoader: navigate from non-browser-process "
+                             "should not call FollowRedirect"));
 }
 
 }  // namespace

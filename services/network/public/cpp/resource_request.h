@@ -144,6 +144,8 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   mojom::RedirectMode redirect_mode = mojom::RedirectMode::kFollow;
   std::string fetch_integrity;
   mojom::RequestDestination destination = mojom::RequestDestination::kEmpty;
+  mojom::RequestDestination original_destination =
+      mojom::RequestDestination::kEmpty;
   scoped_refptr<ResourceRequestBody> request_body;
   bool keepalive = false;
   bool has_user_gesture = false;
