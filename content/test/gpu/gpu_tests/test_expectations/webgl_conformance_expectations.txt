@@ -637,6 +637,10 @@ crbug.com/678850 [ android android-nexus-5 ] conformance/attribs/gl-vertexattrib
 
 crbug.com/891456 [ android android-nexus-5 ] conformance/extensions/oes-texture-float-with-video.html [ RetryOnFailure ]
 
+# Started failing after the upgrade to Marshmallow.
+crbug.com/1264880 [ android-marshmallow android-nexus-5 ] conformance/extensions/webgl-multi-draw.html [ Failure ]
+crbug.com/1264882 [ android-marshmallow android-nexus-5 ] conformance/glsl/bugs/sketchfab-lighting-shader-crash.html [ Failure ]
+
 # Nexus 5X
 # Was timing out randomly on android_optional_gpu_tests_rel, but became so
 # flaky (2018-09-10) that it had to be upgraded to Fail.

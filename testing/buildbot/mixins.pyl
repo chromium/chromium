@@ -639,13 +639,6 @@
       },
     },
   },
-  'lollipop_generic': {
-    'swarming': {
-      'dimensions': {
-        'device_os': 'L',
-      },
-    },
-  },
   'mac-archive-rel-args': {
     'args': [
       'mac-release/sizes',

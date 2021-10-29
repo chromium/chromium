@@ -4020,7 +4020,7 @@
           'has_native_resultdb_integration',
           'gpu-swarming-pool',
           'hammerhead',
-          'lollipop_generic',
+          'marshmallow_generic',
         ],
         'test_suites': {
           'gtest_tests': 'gpu_fyi_android_gtests',
