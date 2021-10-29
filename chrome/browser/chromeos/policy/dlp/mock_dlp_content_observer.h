@@ -7,7 +7,6 @@
 
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_observer.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "url/gurl.h"
 
 namespace policy {
 
@@ -19,8 +18,6 @@ class MockDlpContentObserver : public DlpContentObserver {
   MOCK_METHOD2(OnConfidentialityChanged,
                void(content::WebContents*, const DlpContentRestrictionSet&));
   MOCK_METHOD1(OnWebContentsDestroyed, void(content::WebContents*));
-  MOCK_CONST_METHOD1(GetRestrictionSetForURL,
-                     DlpContentRestrictionSet(const GURL&));
   MOCK_METHOD1(OnVisibilityChanged, void(content::WebContents*));
 };
 

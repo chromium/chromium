@@ -6,7 +6,20 @@
 
 #include <algorithm>
 
+#include "base/containers/contains.h"
+#include "base/containers/flat_map.h"
+#include "base/no_destructor.h"
+#include "build/chromeos_buildflags.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
+#include "url/gurl.h"
+
 namespace policy {
+
+namespace {
+static base::NoDestructor<base::flat_map<GURL, DlpContentRestrictionSet>>
+    g_restrictions_for_url_for_testing;
+}
 
 DlpContentRestrictionSet::DlpContentRestrictionSet() {
   restrictions_.fill(RestrictionLevelAndUrl());
@@ -82,6 +95,57 @@ DlpContentRestrictionSet DlpContentRestrictionSet::DifferenceWith(
     }
   }
   return result;
+}
+
+// static
+DlpContentRestrictionSet DlpContentRestrictionSet::GetForURL(const GURL& url) {
+  if (g_restrictions_for_url_for_testing->find(url) !=
+      g_restrictions_for_url_for_testing->end()) {
+    return g_restrictions_for_url_for_testing->at(url);
+  }
+
+  DlpContentRestrictionSet set;
+
+// TODO(crbug.com/1254329) Enable on LaCros once DlpRulesManager is available.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  DlpRulesManager* dlp_rules_manager =
+      DlpRulesManagerFactory::GetForPrimaryProfile();
+  if (!dlp_rules_manager)
+    return set;
+
+  const size_t kRestrictionsCount = 5;
+  static constexpr std::array<
+      std::pair<DlpRulesManager::Restriction, DlpContentRestriction>,
+      kRestrictionsCount>
+      kRestrictionsArray = {{{DlpRulesManager::Restriction::kScreenshot,
+                              DlpContentRestriction::kScreenshot},
+                             {DlpRulesManager::Restriction::kScreenshot,
+                              DlpContentRestriction::kVideoCapture},
+                             {DlpRulesManager::Restriction::kPrivacyScreen,
+                              DlpContentRestriction::kPrivacyScreen},
+                             {DlpRulesManager::Restriction::kPrinting,
+                              DlpContentRestriction::kPrint},
+                             {DlpRulesManager::Restriction::kScreenShare,
+                              DlpContentRestriction::kScreenShare}}};
+
+  for (const auto& restriction : kRestrictionsArray) {
+    DlpRulesManager::Level level =
+        dlp_rules_manager->IsRestricted(url, restriction.first);
+    if (level == DlpRulesManager::Level::kNotSet ||
+        level == DlpRulesManager::Level::kAllow)
+      continue;
+    set.SetRestriction(restriction.second, level, url);
+  }
+#endif
+
+  return set;
+}
+
+// static
+void DlpContentRestrictionSet::SetRestrictionsForURLForTesting(
+    const GURL& url,
+    const DlpContentRestrictionSet& restrictions) {
+  g_restrictions_for_url_for_testing->insert_or_assign(url, restrictions);
 }
 
 }  // namespace policy

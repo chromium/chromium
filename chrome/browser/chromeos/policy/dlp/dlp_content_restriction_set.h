@@ -92,6 +92,14 @@ class DlpContentRestrictionSet {
   DlpContentRestrictionSet DifferenceWith(
       const DlpContentRestrictionSet& other) const;
 
+  // Returns which content restrictions are being applied to the |url| according
+  // to the policies.
+  static DlpContentRestrictionSet GetForURL(const GURL& url);
+
+  static void SetRestrictionsForURLForTesting(
+      const GURL& url,
+      const DlpContentRestrictionSet& restrictions);
+
  private:
   // The current level and url of each of the restrictions.
   std::array<RestrictionLevelAndUrl, DlpContentRestriction::kMaxValue + 1>
