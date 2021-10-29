@@ -24,7 +24,7 @@ def load_test_seed_from_file(hardcoded_seed_path):
   1. A provided seed under test, and when the test is running with this seed,
      it's running as a TRY job and is triggered by the finch_smoke_test recipe
      to test the Finch GCL config changes. The interface between the recipe and
-     this test is a json file named variations_seed.json located at the root of
+     this test is a json file named variations_seed located at the root of
      the checkout.
   2. A hard-coded seed, and when the test is running with this seed, it's
      running on CI continuously to prevent regressions to this test itself.
@@ -39,7 +39,7 @@ def load_test_seed_from_file(hardcoded_seed_path):
     A tuple of two strings: the compressed seed and the seed signature.
   """
   # Provided seed path.
-  path_seed = os.path.join(_SRC_DIR, 'variations_seed.json')
+  path_seed = os.path.join(_SRC_DIR, 'variations_seed')
 
   if not os.path.isfile(path_seed):
     path_seed = hardcoded_seed_path
