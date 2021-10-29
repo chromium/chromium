@@ -7212,3 +7212,6 @@ crbug.com/1249043 external/wpt/html/cross-origin-embedder-policy/reporting-to-fr
 crbug.com/1249043 external/wpt/html/cross-origin-embedder-policy/reporting-to-worker-owner.html [ Failure Pass ]
 crbug.com/1249043 external/wpt/html/cross-origin-embedder-policy/report-only-require-corp.https.html [ Failure Pass ]
 crbug.com/1263732 http/tests/devtools/tracing/timeline-paint/timeline-paint-image.js [ Failure Pass ]
+
+# Sheriff 2021-10-29
+crbug.com/1264670 [ Linux ] http/tests/devtools/resource-tree/resource-tree-frame-add.js [ Failure Pass ]
