@@ -87,6 +87,11 @@ class AutocompleteActionPredictor
   void RegisterTransitionalMatches(const std::u16string& user_text,
                                    const AutocompleteResult& result);
 
+  // Updates the database using the current transitional matches, given the URL
+  // the user navigated to (or an empty URL if the user did not navigate). This
+  // clears the transitional matches.
+  void UpdateDatabaseFromTransitionalMatches(const GURL& opened_url);
+
   // Clears any transitional matches that have been registered. Called when, for
   // example, the OmniboxEditModel is reverted.
   void ClearTransitionalMatches();
@@ -257,10 +262,6 @@ class AutocompleteActionPredictor
   size_t transitional_matches_size_ = 0;
 
   std::unique_ptr<prerender::NoStatePrefetchHandle> no_state_prefetch_handle_;
-
-  // This allows us to predict the effect of confidence threshold changes on
-  // accuracy.  This is cleared after every omnibox navigation.
-  mutable std::vector<std::pair<GURL, double> > tracked_urls_;
 
   // Local caches of the data store.  For incognito-owned predictors this is the
   // only copy of the data.
