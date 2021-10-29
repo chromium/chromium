@@ -879,9 +879,8 @@ TEST_P(AppListPresenterTest, RemoveSuggestionDialogAnimatesWithAppListView) {
   EXPECT_EQ(gfx::RectF(initial_dialog_bounds), current_bounds);
 }
 
-// DISABLED for: https://crbug.com/1263380
 TEST_P(AppListPresenterTest,
-       DISABLED_RemoveSuggestionDialogBoundsUpdateWithAppListState) {
+       RemoveSuggestionDialogBoundsUpdateWithAppListState) {
   ShowZeroStateSearchInHalfState();
 
   // Add a zero state suggestion result.
@@ -889,6 +888,7 @@ TEST_P(AppListPresenterTest,
   Shell::Get()->app_list_controller()->GetSearchModel()->results()->Add(
       CreateOmniboxSuggestionResult(kTestResultId));
   GetAppListTestHelper()->WaitUntilIdle();
+  GetAppListView()->GetWidget()->LayoutRootViewIfNecessary();
 
   SearchResultBaseView* result_view = GetSearchResultListViewItemAt(0);
   ASSERT_TRUE(result_view);
@@ -958,9 +958,7 @@ TEST_P(AppListPresenterTest,
   widget_close_waiter.Wait();
 }
 
-// DISABLED for: https://crbug.com/1263380
-TEST_P(AppListPresenterTest,
-       DISABLED_RemoveSuggestionDialogBoundsUpdateWhenVKHidden) {
+TEST_P(AppListPresenterTest, RemoveSuggestionDialogBoundsUpdateWhenVKHidden) {
   // Enable virtual keyboard for this test.
   KeyboardController* const keyboard_controller =
       Shell::Get()->keyboard_controller();
@@ -974,6 +972,7 @@ TEST_P(AppListPresenterTest,
   Shell::Get()->app_list_controller()->GetSearchModel()->results()->Add(
       CreateOmniboxSuggestionResult(kTestResultId));
   GetAppListTestHelper()->WaitUntilIdle();
+  GetAppListView()->GetWidget()->LayoutRootViewIfNecessary();
 
   SearchResultBaseView* result_view = GetSearchResultListViewItemAt(0);
   ASSERT_TRUE(result_view);
