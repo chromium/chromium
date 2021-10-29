@@ -89,11 +89,6 @@ TEST_F(QRGeneratorCoordinatorTest, Done_DispatchesCommand) {
       base::mac::ObjCCastStrict<QRGeneratorViewController>(
           base_view_controller_.presentedViewController);
 
-  // Verify some properties on the VC.
-  EXPECT_TRUE(viewController.helpButtonAvailable);
-  EXPECT_EQ(test_title_, viewController.titleString);
-  EXPECT_TRUE([net::NSURLWithGURL(test_url_) isEqual:viewController.pageURL]);
-
   // Mimick click on done button.
   [viewController.actionHandler confirmationAlertDismissAction];
 
