@@ -26,7 +26,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
@@ -69,6 +68,9 @@ public class AppMenuTest extends DummyUiChromeActivityTestCase {
 
     @Mock
     private Canvas mCanvas;
+    // Tell R8 not to break the ability to mock the class.
+    @Mock
+    private AppMenu mUnused;
 
     @BeforeClass
     public static void setUpBeforeActivityLaunched() {
@@ -78,7 +80,7 @@ public class AppMenuTest extends DummyUiChromeActivityTestCase {
     @Override
     public void setUpTest() throws Exception {
         super.setUpTest();
-        MockitoAnnotations.initMocks(this);
+        mCanvas = Mockito.mock(Canvas.class);
         TestThreadUtils.runOnUiThreadBlocking(this::setUpTestOnUiThread);
         mLifecycleDispatcher.observerRegisteredCallbackHelper.waitForCallback(0);
     }

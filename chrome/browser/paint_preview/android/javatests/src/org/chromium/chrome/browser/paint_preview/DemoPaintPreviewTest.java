@@ -20,6 +20,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import org.chromium.base.Callback;
@@ -54,6 +55,9 @@ public class DemoPaintPreviewTest {
             new BlankCTATabInitialStateRule(sActivityTestRule, true);
 
     private static final String TEST_URL = "/chrome/test/data/android/about.html";
+
+    // @Mock to tell R8 not to break the ability to mock the class.
+    @Mock
     private static PaintPreviewTabService sMockService;
 
     @BeforeClass
@@ -87,14 +91,14 @@ public class DemoPaintPreviewTest {
 
         // When PaintPreviewTabService#captureTab is called, return true for future calls to
         // PaintPreviewTabService#hasCaptureForTab and call the success callback with true.
-        ArgumentCaptor<Callback<Boolean>> mCallbackCaptor = ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<Boolean>> callbackCaptor = ArgumentCaptor.forClass(Callback.class);
         Mockito.doAnswer(invocation -> {
                    Mockito.doReturn(true).when(sMockService).hasCaptureForTab(Mockito.anyInt());
-                   mCallbackCaptor.getValue().onResult(true);
+                   callbackCaptor.getValue().onResult(true);
                    return null;
                })
                 .when(sMockService)
-                .captureTab(Mockito.any(Tab.class), mCallbackCaptor.capture());
+                .captureTab(Mockito.any(Tab.class), callbackCaptor.capture());
 
         AppMenuCoordinator coordinator = sActivityTestRule.getAppMenuCoordinator();
         TestThreadUtils.runOnUiThreadBlocking(

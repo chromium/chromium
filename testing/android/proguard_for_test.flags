@@ -27,11 +27,24 @@
 # all classes from the test apk.
 -keep class **.test.** { *; }
 
-# These 2 rules together keep all interfaces that are mocked by Mockito, since
-# Mockito generates these mocks at runtime, and the interfaces could get methods
-# stripped out.
+# Keep all interfaces that are mocked by Mockito. Since Mockito generates these
+# mocks at runtime, R8 doesn't know to preserve them (without these rules).
 -if class * {
   @org.mockito.Mock ** *;
+}
+-keep class <2> {
+  <methods>;
+}
+
+-if class * {
+  @org.mockito.Spy ** *;
+}
+-keep class <2> {
+  <methods>;
+}
+
+-if class * {
+  @org.mockito.Captor ** *;
 }
 -keep class <2> {
   <methods>;
