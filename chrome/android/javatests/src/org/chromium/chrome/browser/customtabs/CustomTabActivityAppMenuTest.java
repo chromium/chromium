@@ -28,6 +28,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.IntentUtils;
@@ -39,10 +41,16 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
+import org.chromium.chrome.browser.customtabs.content.CustomTabIntentHandler;
+import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTabActivityModule;
+import org.chromium.chrome.browser.dependency_injection.ModuleOverridesRule;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
+import org.chromium.chrome.browser.init.StartupTabPreloader;
 import org.chromium.chrome.browser.test.ScreenShooter;
+import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
@@ -66,8 +74,25 @@ public class CustomTabActivityAppMenuTest {
     private static final String TEST_PAGE = "/chrome/test/data/android/google.html";
     private static final String TEST_MENU_TITLE = "testMenuTitle";
 
-    @Rule
     public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
+
+    private final TestRule mModuleOverridesRule = new ModuleOverridesRule().setOverride(
+            BaseCustomTabActivityModule.Factory.class,
+            (BrowserServicesIntentDataProvider intentDataProvider,
+                    StartupTabPreloader startupTabPreloader,
+                    CustomTabNightModeStateController nightModeController,
+                    CustomTabIntentHandler.IntentIgnoringCriterion intentIgnoringCriterion,
+                    TopUiThemeColorProvider topUiThemeColorProvider,
+                    DefaultBrowserProviderImpl customTabDefaultBrowserProvider)
+                    -> new BaseCustomTabActivityModule(intentDataProvider, startupTabPreloader,
+                            nightModeController, intentIgnoringCriterion, topUiThemeColorProvider,
+                            new FakeDefaultBrowserProviderImpl()));
+
+    @Rule
+    public RuleChain mRuleChain = RuleChain.emptyRuleChain()
+                                          .around(mCustomTabActivityTestRule)
+                                          .around(mModuleOverridesRule);
+
     @Rule
     public final ScreenShooter mScreenShooter = new ScreenShooter();
 
@@ -252,7 +277,6 @@ public class CustomTabActivityAppMenuTest {
 
         Assert.assertNotNull("App menu is not initialized: ", menuItemsModelList);
         assertEquals(expectedMenuSize, menuItemsModelList.size());
-
         // Checks the first row (icons).
         Assert.assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
                 mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.forward_menu_id));

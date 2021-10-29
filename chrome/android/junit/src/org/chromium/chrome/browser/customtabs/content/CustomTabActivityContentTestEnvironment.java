@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabNavigationEventObserver;
 import org.chromium.chrome.browser.customtabs.CustomTabObserver;
 import org.chromium.chrome.browser.customtabs.CustomTabTabPersistencePolicy;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
+import org.chromium.chrome.browser.customtabs.DefaultBrowserProviderImpl;
 import org.chromium.chrome.browser.customtabs.ReparentingTaskProvider;
 import org.chromium.chrome.browser.customtabs.shadows.ShadowExternalNavigationDelegateImpl;
 import org.chromium.chrome.browser.flags.ActivityType;
@@ -182,7 +183,7 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
                         ()
                                 -> customTabObserver,
                         closeButtonNavigator, browserInitializer, activity, lifecycleDispatcher,
-                        () -> fullscreenManager);
+                        () -> fullscreenManager, new DefaultBrowserProviderImpl());
         controller.onToolbarInitialized(toolbarManager);
         return controller;
     }

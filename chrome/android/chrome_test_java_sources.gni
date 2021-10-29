@@ -154,6 +154,7 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/customtabs/CustomTabTaskDescriptionHelperTest.java",
   "javatests/src/org/chromium/chrome/browser/customtabs/CustomTabsConnectionTest.java",
   "javatests/src/org/chromium/chrome/browser/customtabs/DetachedResourceRequestTest.java",
+  "javatests/src/org/chromium/chrome/browser/customtabs/FakeDefaultBrowserProviderImpl.java",
   "javatests/src/org/chromium/chrome/browser/customtabs/IncognitoCustomTabActivityRenderTest.java",
   "javatests/src/org/chromium/chrome/browser/customtabs/IncognitoCustomTabActivityTestRule.java",
   "javatests/src/org/chromium/chrome/browser/customtabs/TabReparentingTest.java",
