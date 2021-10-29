@@ -3053,6 +3053,8 @@ source_set("chromeos") {
     "../ash/vm_starting_observer.h",
     "../ash/wallpaper/wallpaper_enumerator.cc",
     "../ash/wallpaper/wallpaper_enumerator.h",
+    "../ash/web_applications/calculator_app/calculator_app_utils.cc",
+    "../ash/web_applications/calculator_app/calculator_app_utils.h",
     "../ash/web_applications/camera_app/camera_system_web_app_info.cc",
     "../ash/web_applications/camera_app/camera_system_web_app_info.h",
     "../ash/web_applications/camera_app/chrome_camera_app_ui_constants.h",
