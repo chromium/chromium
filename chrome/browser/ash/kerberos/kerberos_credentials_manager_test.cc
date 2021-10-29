@@ -1323,9 +1323,6 @@ TEST_F(KerberosCredentialsManagerTest,
 // - ValidateConfig
 //     + Normalization like in AddAccountAndAuthenticate
 //     + Calls the ValidateConfig KerberosClient method
-// - AcquireKerberosTgt
-//     + Normalization like in AddAccountAndAuthenticate
-//     + Calls the AcquireKerberosTgt KerberosClient method
 // - SetActiveAccount
 //     + Calls OnAccountsChanged on observers
 // - GetKerberosFiles
