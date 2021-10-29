@@ -471,6 +471,7 @@ body.files-ng div.splitter.splitter-active .splitter-button .icon {
 .dialog-header.files-ng {
   background: none;
   border-bottom: 1px solid var(--cros-separator-color);
+  color: var(--cros-text-color-secondary);
   font-size: 14px;
   height: 56px;
   overflow: hidden;
@@ -1423,6 +1424,7 @@ body.check-select #read-only-indicator {
 
 .dialog-header.files-ng #read-only-icon {
   -webkit-mask-image: url(../images/files/ui/visibility_ng.svg);
+  background-color: var(--cros-icon-color-secondary);
   height: 20px;
   margin-inline-end: 8px;
   width: 20px;
