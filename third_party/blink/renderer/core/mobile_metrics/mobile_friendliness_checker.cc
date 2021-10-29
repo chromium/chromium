@@ -51,7 +51,7 @@ MobileFriendlinessChecker::MobileFriendlinessChecker(LocalFrameView& frame_view)
                    : 0),
       timer_(frame_view_->GetFrame().GetTaskRunner(TaskType::kInternalDefault),
              this,
-             &MobileFriendlinessChecker::EvaluateNow) {}
+             &MobileFriendlinessChecker::Activate) {}
 
 MobileFriendlinessChecker::~MobileFriendlinessChecker() = default;
 
@@ -350,17 +350,24 @@ int MobileFriendlinessChecker::ComputeBadTapTargetsRatio() {
   return bad_tap_targets * 100.0 / all_tap_targets;
 }
 
-void MobileFriendlinessChecker::EvaluateNow(TimerBase*) {
+void MobileFriendlinessChecker::Activate(TimerBase*) {
   // If detached, there's no need to calculate any metrics.
   if (!frame_view_->GetChromeClient())
     return;
 
+  frame_view_->RegisterForLifecycleNotifications(this);
+  frame_view_->ScheduleAnimation();
+}
+
+void MobileFriendlinessChecker::DidFinishLifecycleUpdate(
+    const LocalFrameView&) {
   mobile_friendliness_.bad_tap_targets_ratio = ComputeBadTapTargetsRatio();
   mobile_friendliness_.small_text_ratio = text_area_sizes_.SmallTextRatio();
   mobile_friendliness_.text_content_outside_viewport_percentage =
       ComputeContentOutsideViewport();
 
   frame_view_->DidChangeMobileFriendliness(mobile_friendliness_);
+  frame_view_->UnregisterFromLifecycleNotifications(this);
   last_evaluated_ = base::TimeTicks::Now();
 }
 
