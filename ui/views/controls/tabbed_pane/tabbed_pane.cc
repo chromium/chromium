@@ -334,7 +334,7 @@ void TabStrip::AnimationEnded(const gfx::Animation* animation) {
 void TabStrip::OnSelectedTabChanged(Tab* from_tab, Tab* to_tab, bool animate) {
   DCHECK(!from_tab->selected());
   DCHECK(to_tab->selected());
-  if (!animate)
+  if (!animate || !GetWidget())
     return;
 
   if (GetOrientation() == TabbedPane::Orientation::kHorizontal) {
