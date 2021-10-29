@@ -2965,6 +2965,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="protected-media-identifier" label="Protected media exceptions"/>
   <suffix name="protocol-handler" label="Protocol handler exceptions"/>
   <suffix name="push-messaging" label="Push messaging exceptions"/>
+  <suffix name="request-desktop-site" label="Request desktop site exceptions"/>
   <suffix name="safe-browsing-url-check-data"
       label="Safe browsing url check data"/>
   <suffix name="serial-chooser-data" label="Serial chooser data"/>
