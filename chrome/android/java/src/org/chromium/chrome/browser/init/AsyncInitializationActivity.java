@@ -711,6 +711,10 @@ public abstract class AsyncInitializationActivity
         super.recreate();
 
         mLifecycleDispatcher.dispatchOnRecreate();
+
+        // TODO(https://crbug.com/1252526): Remove stack trace logging once root cause of bug is
+        // identified & fixed.
+        Thread.dumpStack();
     }
 
     /**
