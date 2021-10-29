@@ -6,11 +6,13 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/command_line.h"
 #include "base/environment.h"
 #include "base/logging.h"
 #include "ui/base/glib/glib_cast.h"
 #include "ui/base/linux/linux_ui_delegate.h"
-#include "ui/gtk/gtk_compat.h"
+#include "ui/events/event_utils.h"
+#include "ui/gtk/gtk_util.h"
 
 namespace gtk {
 
@@ -30,6 +32,31 @@ void GtkUiPlatformWayland::OnInitialized(GtkWidget* widget) {
 GdkKeymap* GtkUiPlatformWayland::GetGdkKeymap() {
   NOTIMPLEMENTED_LOG_ONCE();
   return nullptr;
+}
+
+GdkModifierType GtkUiPlatformWayland::GetGdkKeyEventState(
+    const ui::KeyEvent& key_event) {
+  const ui::Event::Properties* properties = key_event.properties();
+  if (!properties)
+    return static_cast<GdkModifierType>(0);
+  auto it = properties->find(ui::kPropertyKeyboardState);
+  if (it == properties->end())
+    return static_cast<GdkModifierType>(0);
+  DCHECK_EQ(it->second.size(), 4u);
+  // Stored in little endian.
+  int flags = 0;
+  int bitshift = 0;
+  for (uint8_t value : it->second) {
+    flags |= value << bitshift;
+    bitshift += 8;
+  }
+  return ExtractGdkEventStateFromKeyEventFlags(flags);
+}
+
+int GtkUiPlatformWayland::GetGdkKeyEventGroup(const ui::KeyEvent& key_event) {
+  auto state = GetGdkKeyEventState(key_event);
+  // See XkbGroupForCoreState() in //ui/events/x/x11_event_translation.cc.
+  return (state >> 13) & 0x3;
 }
 
 GdkWindow* GtkUiPlatformWayland::GetGdkWindow(
@@ -90,6 +117,10 @@ void GtkUiPlatformWayland::OnHandleForward(
     base::OnceCallback<void(std::string)> callback,
     const std::string& handle) {
   std::move(callback).Run("wayland:" + handle);
+}
+
+bool GtkUiPlatformWayland::PreferGtkIme() {
+  return gtk::GtkCheckVersion(4);
 }
 
 }  // namespace gtk

@@ -26,6 +26,8 @@ class GtkUiPlatformX11 : public GtkUiPlatform {
   // GtkUiPlatform:
   void OnInitialized(GtkWidget* widget) override;
   GdkKeymap* GetGdkKeymap() override;
+  GdkModifierType GetGdkKeyEventState(const ui::KeyEvent& key_event) override;
+  int GetGdkKeyEventGroup(const ui::KeyEvent& key_event) override;
   GdkWindow* GetGdkWindow(gfx::AcceleratedWidget window_id) override;
   bool ExportWindowHandle(
       gfx::AcceleratedWidget window_id,
@@ -34,6 +36,7 @@ class GtkUiPlatformX11 : public GtkUiPlatform {
                                 gfx::AcceleratedWidget parent) override;
   void ClearTransientFor(gfx::AcceleratedWidget parent) override;
   void ShowGtkWindow(GtkWindow* window) override;
+  bool PreferGtkIme() override;
 
  private:
   GdkDisplay* GetGdkDisplay();

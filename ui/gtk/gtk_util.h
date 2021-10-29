@@ -212,6 +212,13 @@ std::string GetGtkSettingsStringProperty(GtkSettings* settings,
 // https://gitlab.freedesktop.org/xorg/proto/xorgproto/blob/master/include/X11/extensions/XKB.h#L372
 int BuildXkbStateFromGdkEvent(unsigned int state, unsigned char group);
 
+// GDK uses different flags for modifiers than are defined in ui::EventFlags.
+// This function translates ui::EventFlags to GDK flags.
+//
+// More details:
+// https://gitlab.gnome.org/GNOME/gtk/-/blob/master/gdk/gdktypes.h#L131
+GdkModifierType ExtractGdkEventStateFromKeyEventFlags(int flags);
+
 int GetKeyEventProperty(const ui::KeyEvent& key_event,
                         const char* property_key);
 

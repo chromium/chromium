@@ -19,6 +19,7 @@
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
+#include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine.h"
@@ -137,6 +138,13 @@ uint32_t WaylandEventSource::OnKeyboardKeyEvent(
     return POST_DISPATCH_NONE;
   }
 
+#if BUILDFLAG(USE_GTK)
+  // GTK expects the state of a key event to be the mask of modifier keys
+  // _prior_ to this event. Some IMEs rely on this behavior. See
+  // https://crbug.com/1086946#c11.
+  int state_before_event = keyboard_modifiers_;
+#endif
+
   if (!repeat) {
     int flag = ModifierDomKeyToEventFlag(dom_key);
     UpdateKeyboardModifiers(flag, type == ET_KEY_PRESSED);
@@ -146,13 +154,33 @@ uint32_t WaylandEventSource::OnKeyboardKeyEvent(
                  keyboard_modifiers_ | (repeat ? EF_IS_REPEAT : 0), dom_key,
                  timestamp);
   event.set_source_device_id(device_id);
+
+  Event::Properties properties;
+#if BUILDFLAG(USE_GTK)
+  // GTK uses XKB keycodes.
+  uint32_t converted_key_code =
+      ui::KeycodeConverter::DomCodeToXkbKeycode(dom_code);
+  properties.emplace(
+      kPropertyKeyboardHwKeyCode,
+      std::vector<uint8_t>{static_cast<unsigned char>(converted_key_code)});
+  // Save state before event. The flags have different values than what GTK
+  // expects, but GtkUiPlatformWayland::GetGdkKeyEventState() takes care of the
+  // conversion.
+  properties.emplace(kPropertyKeyboardState,
+                     std::vector<uint8_t>{
+                         static_cast<uint8_t>(state_before_event),
+                         static_cast<uint8_t>(state_before_event >> 8),
+                         static_cast<uint8_t>(state_before_event >> 16),
+                         static_cast<uint8_t>(state_before_event >> 24),
+                     });
+#endif
+
   if (kind == WaylandKeyboard::KeyEventKind::kKey) {
     // Mark that this is the key event which IME did not consume.
-    event.SetProperties({{
-        kPropertyKeyboardImeFlag,
-        std::vector<uint8_t>{kPropertyKeyboardImeIgnoredFlag},
-    }});
+    properties.emplace(kPropertyKeyboardImeFlag,
+                       std::vector<uint8_t>{kPropertyKeyboardImeIgnoredFlag});
   }
+  event.SetProperties(properties);
   return DispatchEvent(&event);
 }
 
