@@ -76,8 +76,16 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
                     - res.getDimensionPixelSize(R.dimen.toolbar_total_height);
             lp.setMargins(leftPx, topPx, 0, 0);
 
-            addReaction(reactionLayout, lp);
+            addReactionLayoutToScene(reactionLayout, lp);
         });
+    }
+
+    private void replaceActiveReaction(ReactionMetadata reaction) {
+        assert mActiveReaction != null;
+        mMediator.getGifForUrl(reaction.assetUrl,
+                (baseGifImage)
+                        -> mActiveReaction.setDrawable(
+                                new ReactionGifDrawable(baseGifImage, Bitmap.Config.ARGB_8888)));
     }
 
     /**
@@ -99,7 +107,7 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
         }
     }
 
-    private void addReaction(
+    private void addReactionLayoutToScene(
             ReactionLayout reactionLayout, RelativeLayout.LayoutParams layoutParams) {
         mSceneBackground.addView(reactionLayout, layoutParams);
         mReactionLayouts.add(reactionLayout);
@@ -128,7 +136,7 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
         newLayoutParams.topMargin = oldLayoutParams.topMargin + offsetPx;
         newReactionLayout.setRotation(reactionLayout.getRotation());
 
-        addReaction(newReactionLayout, newLayoutParams);
+        addReactionLayoutToScene(newReactionLayout, newLayoutParams);
     }
 
     @Override
@@ -155,6 +163,10 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
     // ToolbarReactionsDelegate implementation.
     @Override
     public void onToolbarReactionTapped(ReactionMetadata reaction) {
-        addReactionInDefaultLocation(reaction);
+        if (mActiveReaction != null) {
+            replaceActiveReaction(reaction);
+        } else {
+            addReactionInDefaultLocation(reaction);
+        }
     }
 }

@@ -43,10 +43,15 @@ class ReactionLayout extends RelativeLayout {
      * @param sceneEditorDelegate {@link SceneEditorDelegate} to call scene editing methods.
      */
     void init(ReactionGifDrawable drawable, SceneEditorDelegate sceneEditorDelegate) {
-        mDrawable = drawable;
+        setDrawable(drawable);
         mSceneEditorDelegate = sceneEditorDelegate;
         mIsActive = true;
         setUpReactionView();
+    }
+
+    void setDrawable(ReactionGifDrawable drawable) {
+        mDrawable = drawable;
+        mReaction.setImageDrawable(mDrawable);
     }
 
     @Override
@@ -81,7 +86,6 @@ class ReactionLayout extends RelativeLayout {
 
     @SuppressLint("ClickableViewAccessibility")
     private void setUpReactionView() {
-        mReaction.setImageDrawable(mDrawable);
         GestureDetector gestureDetector =
                 new GestureDetector(mContext, new GestureDetector.SimpleOnGestureListener() {
                     @Override
