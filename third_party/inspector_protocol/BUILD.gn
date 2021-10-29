@@ -4,6 +4,16 @@
 
 component("crdtp") {
   sources = [
+    "crdtp/chromium/protocol_traits.cc",
+    "crdtp/chromium/protocol_traits.h",
+  ]
+  defines = [ "CRDTP_IMPLEMENTATION" ]
+  public_deps = [ ":crdtp_core" ]
+  deps = [ "//base" ]
+}
+
+source_set("crdtp_core") {
+  sources = [
     "crdtp/cbor.cc",
     "crdtp/cbor.h",
     "crdtp/dispatch.cc",
@@ -33,12 +43,13 @@ component("crdtp") {
     configs -= [ "//build/config/compiler:default_optimization" ]
     configs += [ "//build/config/compiler:optimize_max" ]
   }
+
   deps = [ ":crdtp_platform" ]
 }
 
 # A small adapter library which only :crdtp may depend on.
 source_set("crdtp_platform") {
-  visibility = [ ":crdtp" ]
+  visibility = [ ":crdtp_core" ]
   sources = [
     "crdtp/chromium/json_platform_chromium.cc",
     "crdtp/json_platform.h",
