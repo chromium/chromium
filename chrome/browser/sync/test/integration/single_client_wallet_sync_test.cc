@@ -1383,7 +1383,7 @@ class SingleClientWalletSecondaryAccountSyncTest
 };
 
 // ChromeOS doesn't support changes to the primary account after startup, so
-// these secondary-account-related tests don't apply.
+// these tests don't apply.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(SingleClientWalletSecondaryAccountSyncTest,
                        SwitchesFromAccountToProfileStorageOnSyncOptIn) {
@@ -1393,8 +1393,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSecondaryAccountSyncTest,
                                   CreateDefaultSyncPaymentsCustomerData(),
                                   CreateDefaultSyncCreditCardCloudTokenData()});
 
-  // Set up Sync in transport mode for a non-primary account.
-  secondary_account_helper::SignInSecondaryAccount(
+  // Set up Sync in transport mode for an unconsented account.
+  secondary_account_helper::SignInUnconsentedAccount(
       profile(), &test_url_loader_factory_, "user@email.com");
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
@@ -1423,9 +1423,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSecondaryAccountSyncTest,
   EXPECT_EQ(1U, GetCreditCardCloudTokenData(account_data).size());
   EXPECT_EQ(0U, GetCreditCardCloudTokenData(profile_data).size());
 
-  // Simulate the user opting in to full Sync: Make the account primary, and
-  // set first-time setup to complete.
-  secondary_account_helper::MakeAccountPrimary(profile(), "user@email.com");
+  // Simulate the user opting in to full Sync, and set first-time setup to
+  // complete.
+  secondary_account_helper::GrantSyncConsent(profile(), "user@email.com");
   GetSyncService(0)->GetUserSettings()->SetSyncRequested(true);
   GetSyncService(0)->GetUserSettings()->SetFirstSetupComplete(
       kSetSourceFromTest);
@@ -1461,8 +1461,8 @@ IN_PROC_BROWSER_TEST_F(
   GetFakeServer()->SetWalletData({CreateDefaultSyncWalletCard(),
                                   CreateDefaultSyncCreditCardCloudTokenData()});
 
-  // Set up Sync in transport mode for a non-primary account.
-  secondary_account_helper::SignInSecondaryAccount(
+  // Set up Sync in transport mode for an unconsented account.
+  secondary_account_helper::SignInUnconsentedAccount(
       profile(), &test_url_loader_factory_, "user@email.com");
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
@@ -1489,8 +1489,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(1U, GetCreditCardCloudTokenData(account_data).size());
   EXPECT_EQ(0U, GetCreditCardCloudTokenData(profile_data).size());
 
-  // Simulate the user opting in to full Sync: First, make the account primary.
-  secondary_account_helper::MakeAccountPrimary(profile(), "user@email.com");
+  // Simulate the user opting in to full Sync.
+  secondary_account_helper::GrantSyncConsent(profile(), "user@email.com");
 
   // Now start actually configuring Sync.
   GetSyncService(0)->GetUserSettings()->SetSyncRequested(true);

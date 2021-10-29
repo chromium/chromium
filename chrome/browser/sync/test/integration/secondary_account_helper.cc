@@ -63,7 +63,7 @@ void InitNetwork() {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-AccountInfo SignInSecondaryAccount(
+AccountInfo SignInUnconsentedAccount(
     Profile* profile,
     network::TestURLLoaderFactory* test_url_loader_factory,
     const std::string& email) {
@@ -82,10 +82,9 @@ AccountInfo SignInSecondaryAccount(
   return account_info;
 }
 
-void SignOutSecondaryAccount(
-    Profile* profile,
-    network::TestURLLoaderFactory* test_url_loader_factory,
-    const CoreAccountId& account_id) {
+void SignOutAccount(Profile* profile,
+                    network::TestURLLoaderFactory* test_url_loader_factory,
+                    const CoreAccountId& account_id) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   signin::SetCookieAccounts(identity_manager, test_url_loader_factory, {});
@@ -93,7 +92,7 @@ void SignOutSecondaryAccount(
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-void MakeAccountPrimary(Profile* profile, const std::string& email) {
+void GrantSyncConsent(Profile* profile, const std::string& email) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   AccountInfo account =
