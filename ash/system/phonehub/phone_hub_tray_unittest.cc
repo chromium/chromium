@@ -157,12 +157,12 @@ class PhoneHubTrayTest : public AshTestBase {
 
   views::Button* notification_opt_in_set_up_button() {
     return static_cast<views::Button*>(bubble_view()->GetViewByID(
-        PhoneHubViewID::kNotificationOptInSetUpButton));
+        PhoneHubViewID::kSubFeatureOptInConfirmButton));
   }
 
   views::Button* notification_opt_in_dismiss_button() {
     return static_cast<views::Button*>(bubble_view()->GetViewByID(
-        PhoneHubViewID::kNotificationOptInDismissButton));
+        PhoneHubViewID::kSubFeatureOptInDismissButton));
   }
 
  protected:
