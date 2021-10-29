@@ -31,6 +31,25 @@ void CSSFontSelectorBase::WillUseFontData(
     const FontDescription& font_description,
     const FontFamily& family,
     const String& text) {
+  if (family.FamilyIsGeneric()) {
+    if (family.IsPrewarmed())
+      return;
+    family.SetIsPrewarmed();
+    // |FamilyNameFromSettings| has a visible impact on the load performance.
+    // Because |FamilyName.IsPrewarmed| can prevent doing this multiple times
+    // only when the |Font| is shared across elements, and therefore it can't
+    // help when e.g., the font size is different, check once more if this
+    // generic family is already prewarmed.
+    const auto result = prewarmed_generic_families_.insert(family.FamilyName());
+    if (!result.is_new_entry)
+      return;
+    const AtomicString& family_name =
+        FamilyNameFromSettings(font_description, family);
+    if (!family_name.IsEmpty())
+      FontCache::PrewarmFamily(family_name);
+    return;
+  }
+
   if (CSSSegmentedFontFace* face =
           font_face_cache_->Get(font_description, family.FamilyName())) {
     face->WillUseFontData(font_description, text);
