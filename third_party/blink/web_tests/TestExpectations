@@ -7261,3 +7261,7 @@ crbug.com/1263732 http/tests/devtools/tracing/timeline-paint/timeline-paint-imag
 
 # Sheriff 2021-10-29
 crbug.com/1264670 [ Linux ] http/tests/devtools/resource-tree/resource-tree-frame-add.js [ Failure Pass ]
+crbug.com/1264753 [ Mac10.12 ] external/wpt/referrer-policy/gen/srcdoc.meta/strict-origin/iframe-tag.http.html [ Failure ]
+crbug.com/1264753 [ Mac10.13 ] external/wpt/referrer-policy/gen/srcdoc.meta/strict-origin/iframe-tag.http.html [ Failure ]
+crbug.com/1264753 [ Mac10.12 ] virtual/plz-dedicated-worker/external/wpt/referrer-policy/gen/srcdoc.meta/strict-origin/iframe-tag.http.html [ Failure ]
+crbug.com/1264753 [ Mac10.13 ] virtual/plz-dedicated-worker/external/wpt/referrer-policy/gen/srcdoc.meta/strict-origin/iframe-tag.http.html [ Failure ]
