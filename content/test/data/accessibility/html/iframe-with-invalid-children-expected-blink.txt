@@ -1,0 +1,4 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++iframe name='Empty iframe'
