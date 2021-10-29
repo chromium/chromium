@@ -1427,6 +1427,21 @@
   <message name="IDS_SETTINGS_PRIVACY_REVIEW_COOKIES_CARD_BLOCK_TPC_PRIVACY_DESCRIPTION1" desc="A part of the privacy description of the third party cookie blocking section of the cookies card in the privacy review.">
     Sites can only use your cookies to see your browsing activity on their own site
   </message>
+  <message name="IDS_SETTINGS_PRIVACY_REVIEW_SAFE_BROWSING_CARD_HEADER" desc="Header of the safe browsing card in the privacy review.">
+    Choose your Safe Browsing protection
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_REVIEW_SAFE_BROWSING_CARD_ENHANCED_PROTECTION_PRIVACY_DESCRIPTION1" desc="A part of the privacy description of the enhanced protection section of the safe browsing card in the privacy review.">
+    Sends URLs to Safe Browsing to check them
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_REVIEW_SAFE_BROWSING_CARD_ENHANCED_PROTECTION_PRIVACY_DESCRIPTION2" desc="A part of the privacy description of the enhanced protection section of the safe browsing card in the privacy review.">
+    Also sends a small sample of pages, downloads, extension activity, and system information to help discover new threats
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_REVIEW_SAFE_BROWSING_CARD_ENHANCED_PROTECTION_PRIVACY_DESCRIPTION3" desc="A part of the privacy description of the enhanced protection section of the safe browsing card in the privacy review.">
+    Temporarily links this data to your Google Account when you're signed in, to protect you across Google apps
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_REVIEW_SAFE_BROWSING_CARD_STANDARD_PROTECTION_FEATURE_DESCRIPTION1" desc="A part of the feature description of the standard protection section of the safe browsing card in the privacy review.">
+    Detects and warns you about dangerous events when they happen
+  </message>
 
   <!-- Safety check -->
   <message name="IDS_SETTINGS_SAFETY_CHECK_SECTION_TITLE" desc="'Safety check' is a noun phrase (sentence case). 'Safety check' refers to an area of the Settings page where users can quickly check whether their safety-related settings are fully protecting them.">

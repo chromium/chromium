@@ -13,6 +13,7 @@ html_to_js("web_components") {
     "privacy_review_history_sync_fragment.ts",
     "privacy_review_msbb_fragment.ts",
     "privacy_review_page.ts",
+    "privacy_review_safe_browsing_fragment.ts",
     "privacy_review_welcome_fragment.ts",
     "step_indicator.ts",
   ]

@@ -1677,6 +1677,20 @@ void AddPrivacyReviewStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_PRIVACY_REVIEW_COOKIES_CARD_BLOCK_TPC_FEATURE_DESCRIPTION2},
       {"privacyReviewCookiesCardBlockTpcPrivacyDescription1",
        IDS_SETTINGS_PRIVACY_REVIEW_COOKIES_CARD_BLOCK_TPC_PRIVACY_DESCRIPTION1},
+      {"privacyReviewSafeBrowsingCardHeader",
+       IDS_SETTINGS_PRIVACY_REVIEW_SAFE_BROWSING_CARD_HEADER},
+      {"privacyReviewSafeBrowsingCardEnhancedProtectionPrivacyDescription1",
+       IDS_SETTINGS_PRIVACY_REVIEW_SAFE_BROWSING_CARD_ENHANCED_PROTECTION_PRIVACY_DESCRIPTION1},
+      {"privacyReviewSafeBrowsingCardEnhancedProtectionPrivacyDescription2",
+       IDS_SETTINGS_PRIVACY_REVIEW_SAFE_BROWSING_CARD_ENHANCED_PROTECTION_PRIVACY_DESCRIPTION2},
+      {"privacyReviewSafeBrowsingCardEnhancedProtectionPrivacyDescription3",
+       IDS_SETTINGS_PRIVACY_REVIEW_SAFE_BROWSING_CARD_ENHANCED_PROTECTION_PRIVACY_DESCRIPTION3},
+      {"privacyReviewSafeBrowsingCardStandardProtectionFeatureDescription1",
+       IDS_SETTINGS_PRIVACY_REVIEW_SAFE_BROWSING_CARD_STANDARD_PROTECTION_FEATURE_DESCRIPTION1},
+      {"privacyReviewSafeBrowsingCardStandardProtectionFeatureDescription2",
+       IDS_SETTINGS_PRIVACY_REVIEW_SAFE_BROWSING_CARD_STANDARD_PROTECTION_FEATURE_DESCRIPTION2},
+      {"privacyReviewSafeBrowsingCardStandardProtectionPrivacyDescription1",
+       IDS_SETTINGS_PRIVACY_REVIEW_SAFE_BROWSING_CARD_STANDARD_PROTECTION_PRIVACY_DESCRIPTION1},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }

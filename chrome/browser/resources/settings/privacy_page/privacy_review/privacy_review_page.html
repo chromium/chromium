@@ -74,6 +74,13 @@
   </template>
   <template is="dom-if"
       if="[[showFragment_(
+             privacyReviewStepEnum_.SAFE_BROWSING, privacyReviewStep_)]]">
+    <privacy-review-safe-browsing-fragment id="safeBrowsingFragment"
+        prefs="{{prefs}}">
+    </privacy-review-safe-browsing-fragment>
+  </template>
+  <template is="dom-if"
+      if="[[showFragment_(
              privacyReviewStepEnum_.COOKIES, privacyReviewStep_)]]">
     <privacy-review-cookies-fragment id="cookiesFragment" prefs="{{prefs}}">
     </privacy-review-cookies-fragment>
