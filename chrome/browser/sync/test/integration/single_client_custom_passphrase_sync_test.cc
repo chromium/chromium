@@ -89,8 +89,6 @@ class CommittedBookmarkEntityNameObserver : public FakeServer::Observer {
 // however, directly ensure that two clients syncing through the same account
 // will be able to access each others' data in the presence of a custom
 // passphrase. For this, a separate two-client test is be used.
-// TODO(crbug.com/877933): Add test coverage to verify client can encrypt using
-// both PBKDF2 and Scrypt key derivation method that was set remotely.
 class SingleClientCustomPassphraseSyncTest : public SyncTest {
  public:
   SingleClientCustomPassphraseSyncTest() : SyncTest(SINGLE_CLIENT) {}
@@ -197,19 +195,72 @@ IN_PROC_BROWSER_TEST_F(SingleClientCustomPassphraseSyncTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientCustomPassphraseSyncTest,
-                       CanDecryptPbkdf2KeyEncryptedData) {
-  KeyParamsForTesting key_params =
+                       ShouldDecryptPbkdf2KeyEncryptedData) {
+  const KeyParamsForTesting kKeyParams =
       Pbkdf2PassphraseKeyParamsForTesting("hunter2");
   InjectEncryptedServerBookmark("PBKDF2-encrypted bookmark",
                                 GURL("http://example.com/doesnt-matter"),
-                                key_params);
-  SetNigoriInFakeServer(BuildCustomPassphraseNigoriSpecifics(key_params),
+                                kKeyParams);
+  SetNigoriInFakeServer(BuildCustomPassphraseNigoriSpecifics(kKeyParams),
                         GetFakeServer());
   SetDecryptionPassphraseForClient(/*index=*/0, "hunter2");
   ASSERT_TRUE(SetupSync());
   EXPECT_TRUE(WaitForPassphraseRequiredState(/*desired_state=*/false));
 
   EXPECT_TRUE(WaitForClientBookmarkWithTitle("PBKDF2-encrypted bookmark"));
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientCustomPassphraseSyncTest,
+                       ShouldEncryptDataWithPbkdf2Key) {
+  const KeyParamsForTesting kKeyParams =
+      Pbkdf2PassphraseKeyParamsForTesting("hunter2");
+  SetNigoriInFakeServer(BuildCustomPassphraseNigoriSpecifics(kKeyParams),
+                        GetFakeServer());
+  SetDecryptionPassphraseForClient(/*index=*/0, "hunter2");
+  ASSERT_TRUE(SetupSync());
+  EXPECT_TRUE(WaitForPassphraseRequiredState(/*desired_state=*/false));
+
+  const std::string kTitle = "Should be encrypted";
+  const GURL kURL("https://google.com/encrypted");
+  ASSERT_TRUE(AddURL(/*profile=*/0, kTitle, kURL));
+
+  EXPECT_TRUE(WaitForEncryptedServerBookmarks({{kTitle, kURL}},
+                                              /*passphrase=*/"hunter2"));
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientCustomPassphraseSyncTest,
+                       ShouldDecryptScryptKeyEncryptedData) {
+  const KeyParamsForTesting kKeyParams =
+      ScryptPassphraseKeyParamsForTesting("hunter2");
+  InjectEncryptedServerBookmark("scypt-encrypted bookmark",
+                                GURL("http://example.com/doesnt-matter"),
+                                kKeyParams);
+  SetNigoriInFakeServer(BuildCustomPassphraseNigoriSpecifics(kKeyParams),
+                        GetFakeServer());
+  SetDecryptionPassphraseForClient(/*index=*/0, "hunter2");
+
+  ASSERT_TRUE(SetupSync());
+  EXPECT_TRUE(WaitForPassphraseRequiredState(/*desired_state=*/false));
+
+  EXPECT_TRUE(WaitForClientBookmarkWithTitle("scypt-encrypted bookmark"));
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientCustomPassphraseSyncTest,
+                       ShouldEncryptDataWithScryptKey) {
+  const KeyParamsForTesting kKeyParams =
+      ScryptPassphraseKeyParamsForTesting("hunter2");
+  SetNigoriInFakeServer(BuildCustomPassphraseNigoriSpecifics(kKeyParams),
+                        GetFakeServer());
+  SetDecryptionPassphraseForClient(/*index=*/0, "hunter2");
+  ASSERT_TRUE(SetupSync());
+  EXPECT_TRUE(WaitForPassphraseRequiredState(/*desired_state=*/false));
+
+  const std::string kTitle = "Should be encrypted";
+  const GURL kURL("https://google.com/encrypted");
+  ASSERT_TRUE(AddURL(/*profile=*/0, kTitle, kURL));
+
+  EXPECT_TRUE(WaitForEncryptedServerBookmarks({{kTitle, kURL}},
+                                              /*passphrase=*/"hunter2"));
 }
 
 // PRE_* tests aren't supported on Android browser tests.
@@ -241,23 +292,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientCustomPassphraseSyncTest,
           .Wait());
 }
 #endif  // !defined(OS_ANDROID)
-
-IN_PROC_BROWSER_TEST_F(SingleClientCustomPassphraseSyncTest,
-                       CanDecryptScryptKeyEncryptedData) {
-  KeyParamsForTesting key_params =
-      ScryptPassphraseKeyParamsForTesting("hunter2");
-  InjectEncryptedServerBookmark("scypt-encrypted bookmark",
-                                GURL("http://example.com/doesnt-matter"),
-                                key_params);
-  SetNigoriInFakeServer(BuildCustomPassphraseNigoriSpecifics(key_params),
-                        GetFakeServer());
-  SetDecryptionPassphraseForClient(/*index=*/0, "hunter2");
-
-  ASSERT_TRUE(SetupSync());
-  EXPECT_TRUE(WaitForPassphraseRequiredState(/*desired_state=*/false));
-
-  EXPECT_TRUE(WaitForClientBookmarkWithTitle("scypt-encrypted bookmark"));
-}
 
 IN_PROC_BROWSER_TEST_F(SingleClientCustomPassphraseSyncTest,
                        DoesNotLeakUnencryptedData) {
