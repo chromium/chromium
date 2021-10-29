@@ -565,12 +565,12 @@ class ResultDigestTest(unittest.TestCase):
         self.fs.write_text_file('/all-pass/bar-expected.txt',
                                 ALL_PASS_TESTHARNESS_RESULT2)
         self.fs.write_text_file('/failures/baz-expected.txt', 'failure')
-        self.fs.write_binary_file('/others/reftest-expected.png', 'extra')
-        self.fs.write_binary_file('/others/reftest2-expected.png', 'extra2')
+        self.fs.write_binary_file('/others/reftest-expected.png', b'extra')
+        self.fs.write_binary_file('/others/reftest2-expected.png', b'extra2')
         self.fs.write_text_file('/others/empty-expected.txt', '')
         self.fs.write_binary_file('/others/something-expected.png',
-                                  'Something')
-        self.fs.write_binary_file('/others/empty-expected.png', '')
+                                  b'Something')
+        self.fs.write_binary_file('/others/empty-expected.png', b'')
 
     def test_all_pass_testharness_result(self):
         self.assertTrue(
