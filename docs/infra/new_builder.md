@@ -108,8 +108,37 @@ per-builder configuration outside of the chromium repo, though the
 specifics vary. The recipe you use depends on what you want your
 builder to do.
 
-For typical chromium compile and/or test builders, the chromium and
-chromium\_trybot recipes should be sufficient.
+Most builders that compile and/or test code will use one of the chromium family
+of recipes: chromium for CI builders or chromium_trybot or chromium/orchestrator
+for try builders. These recipes require per-builder configuration defined for
+the [chromium\_tests\_builder\_config][5] recipe module.
+
+### Module properties
+
+The [chromium\_tests\_builder\_config][5] module now supports module properties
+that can be used to specify the per-builder config as part of the builder's
+properties. There is starlark code that handles setting the properties correctly
+for capturing parent-child and mirroring relationships. Having the config
+specified at the builder definition simplifies adding and maintaining builders
+and removes the need to make a change to [chromium/tools/build][17].
+
+The module properties can be used if the following conditions are true:
+
+* Findit support is not required for the builder (irrelevant for try builders)
+  (support for this is intended to be enabled Q4 2022)
+* Module properties must be used for all related builders (triggered/triggering
+  builders and mirrored/mirroring builders)
+
+> There are a handful of features that are not yet supported by the starlark:
+> builders with execution mode PROVIDE_TEST_SPEC and the various non-mirrors
+> fields of TrySpec that change the try builder's behavior. If these are
+> necessary for your use-case, contact gbeaty@.
+
+If you will be using module properties, skip ahead to [Chromium
+configuration](#chromium-configuration). The details of defining the per-builder
+config will be covered there.
+
+### Recipe-based config
 
 To configure a chromium CI builder, you'll want to add a config block to the
 file in [recipe\_modules/chromium\_tests\_builder\_config][5] corresponding to
@@ -449,19 +478,100 @@ builder is the mirror of a non-experimental try builder on the CQ.
 
 ### Recipe-specific configurations
 
-#### chromium & chromium\_trybot
+#### chromium, chromium\_trybot & chromium/orchestrator
 
-The build and test configurations used by the main `chromium` and
-`chromium_trybot` recipes are stored src-side:
+The chromium family of recipes reads certain types of configuration from the
+source tree.
 
-* **Build configuration**: the gn configuration used by chromium
-recipe builders is handled by [MB][13]. MB's configuration is documented
-[here][14]. You only need to modify it if your new builder will be
-compiling.
+##### Build system configuration
 
-* **Test configuration**: the test configuration used by chromium
-recipe builders is in a group of `.pyl` and derived `.json` files
-in `//testing/buildbot`. The format is described [here][15].
+The gn configuration used by the chromium family of recipes is handled by
+[MB][13]. MB's configuration is documented [here][14]. You only need to modify
+it if your new builder will be compiling.
+
+##### Test configuration
+
+The test configuration used by the chromium family of recipes is in a group of
+`.pyl` and derived `.json` files in `//testing/buildbot`. The format is
+described [here][15].
+
+##### Builder configuration
+
+If you've decided to use module properties to configure the
+[chromium\_tests\_builder\_config][5] module as described in (Module
+Properties)[#module-properties], then that will be specified as part of the
+builder definition in the starlark files.
+
+###### CI builders
+
+CI builders will specify the `builder_spec` argument which contains the same
+information that a `BuilderSpec` defined in the recipe would, though not in the
+same structure.
+
+```starlark
+ci.linux_builder(
+    name = '$BUILDER_NAME',
+    bootstrap = True,
+    builder_spec = builder_config.builder_spec(
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+    ),
+...
+)
+```
+
+If the CI builder only runs tests and is triggered by another builder, they
+should set `execution_mode` to `builder_config.execution_mode.TEST` and specify
+the triggering builder as `parent`. It is an error to set `triggered_by` in the
+builder definition if `parent` is set in `builder_spec`.
+
+```starlark
+ci.linux_builder(
+    name = '$BUILDER_NAME',
+    bootstrap = True,
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.TEST,
+        parent = 'ci/$PARENT_BUILDER_NAME',
+        chromium_config = builder_config.execution_mode.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+    ),
+    ...
+)
+```
+
+###### Try builders
+
+Most try builders will mirror 1 or more CI builders, this is done by specifying
+the `mirrors` argument.
+
+```starlark
+try_.chromium_linux_builder(
+    name = '$BUILDER_NAME',
+    bootstrap = True,
+    mirrors = [
+        'ci/$CI_BUILDER_NAME',
+        'ci/$CI_TESTER_NAME',
+    ],
+)
+```
+
+Occasionally, a try builder will be needed that doesn't mirror any CI builders,
+in this case the `builder_spec` argument is specified just as a CI builder
+would.
 
 ### Branched builders
 
