@@ -299,7 +299,7 @@ void LayoutSVGRoot::RecalcVisualOverflow() {
 
 LayoutRect LayoutSVGRoot::ComputeContentsVisualOverflow() const {
   NOT_DESTROYED();
-  FloatRect content_visual_rect = VisualRectInLocalSVGCoordinates();
+  gfx::RectF content_visual_rect = VisualRectInLocalSVGCoordinates();
   content_visual_rect =
       local_to_border_box_transform_.MapRect(content_visual_rect);
   // Condition the visual overflow rect to avoid being clipped/culled
@@ -458,7 +458,7 @@ void LayoutSVGRoot::WillBeRemovedFromTree() {
 PositionWithAffinity LayoutSVGRoot::PositionForPoint(
     const PhysicalOffset& point) const {
   NOT_DESTROYED();
-  FloatPoint absolute_point = FloatPoint(point);
+  gfx::PointF absolute_point(point);
   absolute_point =
       local_to_border_box_transform_.Inverse().MapPoint(absolute_point);
   LayoutObject* closest_descendant =
@@ -481,7 +481,7 @@ PositionWithAffinity LayoutSVGRoot::PositionForPoint(
   absolute_point = transform.Inverse().MapPoint(absolute_point);
 
   return closest_descendant->PositionForPoint(
-      PhysicalOffset::FromFloatPointRound(absolute_point));
+      PhysicalOffset::FromPointFRound(absolute_point));
 }
 
 // LayoutBox methods will expect coordinates w/o any transforms in coordinates

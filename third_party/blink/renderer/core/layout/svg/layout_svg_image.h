@@ -53,9 +53,9 @@ class LayoutSVGImage final : public LayoutSVGModelObject {
     return image_resource_.Get();
   }
 
-  FloatRect ObjectBoundingBox() const override {
+  gfx::RectF ObjectBoundingBox() const override {
     NOT_DESTROYED();
-    return FloatRect(object_bounding_box_);
+    return object_bounding_box_;
   }
   bool IsObjectBoundingBoxValid() const {
     NOT_DESTROYED();
@@ -83,9 +83,9 @@ class LayoutSVGImage final : public LayoutSVGModelObject {
   void WillBeDestroyed() override;
 
  private:
-  FloatRect StrokeBoundingBox() const override {
+  gfx::RectF StrokeBoundingBox() const override {
     NOT_DESTROYED();
-    return FloatRect(object_bounding_box_);
+    return object_bounding_box_;
   }
 
   void ImageChanged(WrappedImagePtr, CanDeferInvalidation) override;

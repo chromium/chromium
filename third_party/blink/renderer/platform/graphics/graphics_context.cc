@@ -1233,8 +1233,7 @@ Path GraphicsContext::GetPathForTextLine(const FloatPoint& pt,
     path.MoveTo(ToGfxPointF(FloatPoint(start)));
     path.AddLineTo(ToGfxPointF(FloatPoint(end)));
   } else {
-    SkRect r = GetRectForTextLine(pt, width, stroke_thickness);
-    path.AddRect(r);
+    path.AddRect(GetRectForTextLine(pt, width, stroke_thickness));
   }
   return path;
 }

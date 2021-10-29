@@ -901,9 +901,9 @@ void CompositorAnimations::GetAnimationOnCompositor(
       case CSSPropertyID::kScale:
       case CSSPropertyID::kTranslate:
       case CSSPropertyID::kTransform: {
-        FloatSize box_size = ComputedStyleUtils::ReferenceBoxForTransform(
-                                 *target_element.GetLayoutObject())
-                                 .size();
+        FloatSize box_size(ComputedStyleUtils::ReferenceBoxForTransform(
+                               *target_element.GetLayoutObject())
+                               .size());
         auto transform_curve =
             std::make_unique<CompositorTransformAnimationCurve>();
         AddKeyframesToCurve(*transform_curve, values, box_size);

@@ -330,10 +330,10 @@ bool SVGSVGElement::CheckIntersectionOrEnclosure(
 
   AffineTransform ctm =
       To<SVGGraphicsElement>(element).ComputeCTM(kAncestorScope, this);
-  FloatRect visual_rect = layout_object->VisualRectInLocalSVGCoordinates();
+  gfx::RectF visual_rect = layout_object->VisualRectInLocalSVGCoordinates();
   SVGLayoutSupport::AdjustWithClipPathAndMask(
       *layout_object, layout_object->ObjectBoundingBox(), visual_rect);
-  gfx::RectF mapped_repaint_rect = ToGfxRectF(ctm.MapRect(visual_rect));
+  gfx::RectF mapped_repaint_rect = ctm.MapRect(visual_rect);
 
   bool result = false;
   switch (mode) {

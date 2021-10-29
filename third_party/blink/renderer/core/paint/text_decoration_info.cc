@@ -318,14 +318,16 @@ FloatRect TextDecorationInfo::BoundsForDottedOrDashed(
   StrokeData stroke_data;
   stroke_data.SetThickness(roundf(ResolvedThickness()));
   stroke_data.SetStyle(TextDecorationStyleToStrokeStyle(DecorationStyle()));
-  return line_data_[line_data_index].stroke_path.value().StrokeBoundingRect(
-      stroke_data);
+  return FloatRect(
+      line_data_[line_data_index].stroke_path.value().StrokeBoundingRect(
+          stroke_data));
 }
 
 FloatRect TextDecorationInfo::BoundsForWavy(TextDecoration line) const {
   StrokeData stroke_data;
   stroke_data.SetThickness(ResolvedThickness());
-  return PrepareWavyStrokePath(line)->StrokeBoundingRect(stroke_data);
+  return FloatRect(
+      PrepareWavyStrokePath(line)->StrokeBoundingRect(stroke_data));
 }
 
 /*

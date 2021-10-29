@@ -111,18 +111,19 @@ bool Path::StrokeContains(const gfx::PointF& point,
       .contains(SkScalar(point.x()), SkScalar(point.y()));
 }
 
-FloatRect Path::TightBoundingRect() const {
-  return path_.computeTightBounds();
+gfx::RectF Path::TightBoundingRect() const {
+  return gfx::SkRectToRectF(path_.computeTightBounds());
 }
 
-FloatRect Path::BoundingRect() const {
-  return path_.getBounds();
+gfx::RectF Path::BoundingRect() const {
+  return gfx::SkRectToRectF(path_.getBounds());
 }
 
-FloatRect Path::StrokeBoundingRect(const StrokeData& stroke_data) const {
+gfx::RectF Path::StrokeBoundingRect(const StrokeData& stroke_data) const {
   // Skia stroke resolution scale for reduced-precision requirements.
   constexpr float kStrokePrecision = 0.3f;
-  return StrokePath(stroke_data, kStrokePrecision).computeTightBounds();
+  return gfx::SkRectToRectF(
+      StrokePath(stroke_data, kStrokePrecision).computeTightBounds());
 }
 
 static gfx::PointF* ConvertPathPoints(gfx::PointF dst[],

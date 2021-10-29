@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/platform/graphics/stroke_data.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/clear_collection_scope.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
 
@@ -57,16 +58,16 @@ struct SearchCandidate {
   float distance;
 };
 
-FloatRect SVGLayoutSupport::LocalVisualRect(const LayoutObject& object) {
+gfx::RectF SVGLayoutSupport::LocalVisualRect(const LayoutObject& object) {
   // For LayoutSVGRoot, use LayoutSVGRoot::localVisualRect() instead.
   DCHECK(!object.IsSVGRoot());
 
   // Return early for any cases where we don't actually paint
   if (object.StyleRef().Visibility() != EVisibility::kVisible &&
       !object.EnclosingLayer()->HasVisibleContent())
-    return FloatRect();
+    return gfx::RectF();
 
-  FloatRect visual_rect = object.VisualRectInLocalSVGCoordinates();
+  gfx::RectF visual_rect = object.VisualRectInLocalSVGCoordinates();
   if (int outset = OutlinePainter::OutlineOutsetExtent(object.StyleRef()))
     visual_rect.Outset(outset);
   return visual_rect;
@@ -82,17 +83,17 @@ PhysicalRect SVGLayoutSupport::VisualRectInAncestorSpace(
   return rect;
 }
 
-static FloatRect MapToSVGRootIncludingFilter(
+static gfx::RectF MapToSVGRootIncludingFilter(
     const LayoutObject& object,
-    const FloatRect& local_visual_rect) {
+    const gfx::RectF& local_visual_rect) {
   DCHECK(object.IsSVGChild());
 
-  FloatRect visual_rect = local_visual_rect;
+  gfx::RectF visual_rect = local_visual_rect;
   const LayoutObject* parent = &object;
   for (; !parent->IsSVGRoot(); parent = parent->Parent()) {
     const ComputedStyle& style = parent->StyleRef();
     if (style.HasFilter())
-      visual_rect = style.Filter().MapRect(visual_rect);
+      visual_rect = ToGfxRectF(style.Filter().MapRect(FloatRect(visual_rect)));
     visual_rect = parent->LocalToSVGParentTransform().MapRect(visual_rect);
   }
 
@@ -121,7 +122,7 @@ static const LayoutSVGRoot& ComputeTransformToSVGRoot(
 bool SVGLayoutSupport::MapToVisualRectInAncestorSpace(
     const LayoutObject& object,
     const LayoutBoxModelObject* ancestor,
-    const FloatRect& local_visual_rect,
+    const gfx::RectF& local_visual_rect,
     PhysicalRect& result_rect,
     VisualRectFlags visual_rect_flags) {
   AffineTransform root_border_box_transform;
@@ -129,7 +130,7 @@ bool SVGLayoutSupport::MapToVisualRectInAncestorSpace(
   const LayoutSVGRoot& svg_root = ComputeTransformToSVGRoot(
       object, root_border_box_transform, &filter_skipped);
 
-  FloatRect adjusted_rect;
+  gfx::RectF adjusted_rect;
   if (filter_skipped)
     adjusted_rect = MapToSVGRootIncludingFilter(object, local_visual_rect);
   else
@@ -141,7 +142,7 @@ bool SVGLayoutSupport::MapToVisualRectInAncestorSpace(
     // Use EnclosingIntRect because we cannot properly apply subpixel offset of
     // the SVGRoot since we don't know the desired subpixel accumulation at this
     // point.
-    result_rect = PhysicalRect(EnclosingIntRect(adjusted_rect));
+    result_rect = PhysicalRect(gfx::ToEnclosingRect(adjusted_rect));
   }
 
   // Apply initial viewport clip.
@@ -240,8 +241,8 @@ bool SVGLayoutSupport::IsOverflowHidden(const ComputedStyle& style) {
 
 void SVGLayoutSupport::AdjustWithClipPathAndMask(
     const LayoutObject& layout_object,
-    const FloatRect& object_bounding_box,
-    FloatRect& visual_rect) {
+    const gfx::RectF& object_bounding_box,
+    gfx::RectF& visual_rect) {
   SVGResourceClient* client = SVGResources::GetClient(layout_object);
   if (!client)
     return;
@@ -250,16 +251,18 @@ void SVGLayoutSupport::AdjustWithClipPathAndMask(
           GetSVGResourceAsType(*client, style.ClipPath()))
     visual_rect.Intersect(clipper->ResourceBoundingBox(object_bounding_box));
   if (auto* masker = GetSVGResourceAsType<LayoutSVGResourceMasker>(
-          *client, style.MaskerResource()))
-    visual_rect.Intersect(masker->ResourceBoundingBox(object_bounding_box, 1));
+          *client, style.MaskerResource())) {
+    visual_rect.Intersect(
+        ToGfxRectF(masker->ResourceBoundingBox(object_bounding_box, 1)));
+  }
 }
 
-FloatRect SVGLayoutSupport::ExtendTextBBoxWithStroke(
+gfx::RectF SVGLayoutSupport::ExtendTextBBoxWithStroke(
     const LayoutObject& layout_object,
-    const FloatRect& text_bounds) {
+    const gfx::RectF& text_bounds) {
   DCHECK(layout_object.IsSVGText() || layout_object.IsNGSVGText() ||
          layout_object.IsSVGInline());
-  FloatRect bounds = text_bounds;
+  gfx::RectF bounds = text_bounds;
   const ComputedStyle& style = layout_object.StyleRef();
   if (style.HasStroke()) {
     SVGLengthContext length_context(To<SVGElement>(layout_object.GetNode()));
@@ -271,19 +274,19 @@ FloatRect SVGLayoutSupport::ExtendTextBBoxWithStroke(
   return bounds;
 }
 
-FloatRect SVGLayoutSupport::ComputeVisualRectForText(
+gfx::RectF SVGLayoutSupport::ComputeVisualRectForText(
     const LayoutObject& layout_object,
-    const FloatRect& text_bounds) {
+    const gfx::RectF& text_bounds) {
   DCHECK(layout_object.IsSVGText() || layout_object.IsNGSVGText() ||
          layout_object.IsSVGInline());
-  FloatRect visual_rect = ExtendTextBBoxWithStroke(layout_object, text_bounds);
+  FloatRect visual_rect(ExtendTextBBoxWithStroke(layout_object, text_bounds));
   if (const ShadowList* text_shadow = layout_object.StyleRef().TextShadow())
     text_shadow->AdjustRectForShadow(visual_rect);
-  return visual_rect;
+  return ToGfxRectF(visual_rect);
 }
 
 bool SVGLayoutSupport::IntersectsClipPath(const LayoutObject& object,
-                                          const FloatRect& reference_box,
+                                          const gfx::RectF& reference_box,
                                           const HitTestLocation& location) {
   ClipPathOperation* clip_path_operation = object.StyleRef().ClipPath();
   if (!clip_path_operation)
@@ -291,7 +294,7 @@ bool SVGLayoutSupport::IntersectsClipPath(const LayoutObject& object,
   if (clip_path_operation->GetType() == ClipPathOperation::SHAPE) {
     ShapeClipPathOperation& clip_path =
         To<ShapeClipPathOperation>(*clip_path_operation);
-    return clip_path.GetPath(reference_box, 1)
+    return clip_path.GetPath(FloatRect(reference_box), 1)
         .Contains(ToGfxPointF(location.TransformedPoint()));
   }
   DCHECK_EQ(clip_path_operation->GetType(), ClipPathOperation::REFERENCE);
@@ -299,12 +302,6 @@ bool SVGLayoutSupport::IntersectsClipPath(const LayoutObject& object,
   auto* clipper = GetSVGResourceAsType(
       *client, To<ReferenceClipPathOperation>(*clip_path_operation));
   return !clipper || clipper->HitTestClipContent(reference_box, location);
-}
-
-bool SVGLayoutSupport::IntersectsClipPath(const LayoutObject& object,
-                                          const gfx::RectF& reference_box,
-                                          const HitTestLocation& location) {
-  return IntersectsClipPath(object, FloatRect(reference_box), location);
 }
 
 DashArray SVGLayoutSupport::ResolveSVGDashArray(
@@ -446,19 +443,21 @@ static inline bool CompareCandidateDistance(const SearchCandidate& r1,
 }
 
 static inline float DistanceToChildLayoutObject(LayoutObject* child,
-                                                const FloatPoint& point) {
+                                                const gfx::PointF& point) {
   const AffineTransform& local_to_parent_transform =
       child->LocalToSVGParentTransform();
   if (!local_to_parent_transform.IsInvertible())
     return std::numeric_limits<float>::max();
-  FloatPoint child_local_point =
+  gfx::PointF child_local_point =
       local_to_parent_transform.Inverse().MapPoint(point);
-  return child->ObjectBoundingBox().SquaredDistanceTo(child_local_point);
+  return (child->ObjectBoundingBox().ClosestPoint(child_local_point) -
+          child_local_point)
+      .LengthSquared();
 }
 
 static SearchCandidate SearchTreeForFindClosestLayoutSVGText(
     const LayoutObject* layout_object,
-    const FloatPoint& point) {
+    const gfx::PointF& point) {
   // Try to find the closest LayoutSVGText.
   SearchCandidate closest_text;
   HeapVector<SearchCandidate> candidates;
@@ -500,7 +499,7 @@ static SearchCandidate SearchTreeForFindClosestLayoutSVGText(
     if (closest_text.distance < search_candidate.distance)
       break;
     LayoutObject* candidate_layout_object = search_candidate.layout_object;
-    FloatPoint candidate_local_point =
+    gfx::PointF candidate_local_point =
         candidate_layout_object->LocalToSVGParentTransform().Inverse().MapPoint(
             point);
 
@@ -516,7 +515,7 @@ static SearchCandidate SearchTreeForFindClosestLayoutSVGText(
 
 LayoutObject* SVGLayoutSupport::FindClosestLayoutSVGText(
     const LayoutObject* layout_object,
-    const FloatPoint& point) {
+    const gfx::PointF& point) {
   return SearchTreeForFindClosestLayoutSVGText(layout_object, point)
       .layout_object;
 }

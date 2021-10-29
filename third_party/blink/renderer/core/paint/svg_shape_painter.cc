@@ -160,11 +160,11 @@ void SVGShapePainter::FillShape(GraphicsContext& context,
       layout_svg_shape_.StyleRef(), DarkModeFilter::ElementRole::kSVG));
   switch (layout_svg_shape_.GeometryCodePath()) {
     case kRectGeometryFastPath:
-      context.DrawRect(layout_svg_shape_.ObjectBoundingBox(), flags,
+      context.DrawRect(FloatRect(layout_svg_shape_.ObjectBoundingBox()), flags,
                        auto_dark_mode);
       break;
     case kEllipseGeometryFastPath:
-      context.DrawOval(layout_svg_shape_.ObjectBoundingBox(), flags,
+      context.DrawOval(FloatRect(layout_svg_shape_.ObjectBoundingBox()), flags,
                        auto_dark_mode);
       break;
     default: {
@@ -186,11 +186,11 @@ void SVGShapePainter::StrokeShape(GraphicsContext& context,
 
   switch (layout_svg_shape_.GeometryCodePath()) {
     case kRectGeometryFastPath:
-      context.DrawRect(layout_svg_shape_.ObjectBoundingBox(), flags,
+      context.DrawRect(FloatRect(layout_svg_shape_.ObjectBoundingBox()), flags,
                        auto_dark_mode);
       break;
     case kEllipseGeometryFastPath:
-      context.DrawOval(layout_svg_shape_.ObjectBoundingBox(), flags,
+      context.DrawOval(FloatRect(layout_svg_shape_.ObjectBoundingBox()), flags,
                        auto_dark_mode);
       break;
     default:

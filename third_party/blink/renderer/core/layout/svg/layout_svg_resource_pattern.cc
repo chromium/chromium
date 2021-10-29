@@ -121,7 +121,7 @@ bool LayoutSVGResourcePattern::FindCycleFromSelf() const {
 }
 
 std::unique_ptr<PatternData> LayoutSVGResourcePattern::BuildPatternData(
-    const FloatRect& object_bounding_box) {
+    const gfx::RectF& object_bounding_box) {
   NOT_DESTROYED();
   auto pattern_data = std::make_unique<PatternData>();
 
@@ -140,7 +140,7 @@ std::unique_ptr<PatternData> LayoutSVGResourcePattern::BuildPatternData(
 
   // Compute tile metrics.
   FloatRect tile_bounds = SVGLengthContext::ResolveRectangle(
-      GetElement(), attributes.PatternUnits(), object_bounding_box,
+      GetElement(), attributes.PatternUnits(), FloatRect(object_bounding_box),
       *attributes.X(), *attributes.Y(), *attributes.Width(),
       *attributes.Height());
   if (tile_bounds.IsEmpty())
@@ -176,7 +176,7 @@ std::unique_ptr<PatternData> LayoutSVGResourcePattern::BuildPatternData(
 
 bool LayoutSVGResourcePattern::ApplyShader(
     const SVGResourceClient& client,
-    const FloatRect& reference_box,
+    const gfx::RectF& reference_box,
     const AffineTransform* additional_transform,
     PaintFlags& flags) {
   NOT_DESTROYED();

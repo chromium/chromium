@@ -45,7 +45,7 @@ FloatRect TransformHelper::ComputeReferenceBox(
   const ComputedStyle& style = layout_object.StyleRef();
   FloatRect reference_box;
   if (style.TransformBox() == ETransformBox::kFillBox) {
-    reference_box = layout_object.ObjectBoundingBox();
+    reference_box = FloatRect(layout_object.ObjectBoundingBox());
   } else {
     DCHECK_EQ(style.TransformBox(), ETransformBox::kViewBox);
     SVGLengthContext length_context(

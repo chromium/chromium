@@ -151,11 +151,11 @@ LayoutRect LayoutSVGInlineText::LocalCaretRect(const InlineBox* box,
   return LayoutRect(x, rect.Y(), GetFrameView()->CaretWidth(), rect.Height());
 }
 
-FloatRect LayoutSVGInlineText::FloatLinesBoundingBox() const {
+gfx::RectF LayoutSVGInlineText::FloatLinesBoundingBox() const {
   NOT_DESTROYED();
-  FloatRect bounding_box;
+  gfx::RectF bounding_box;
   for (InlineTextBox* box : TextBoxes())
-    bounding_box.Union(FloatRect(box->FrameRect()));
+    bounding_box.Union(gfx::RectF(box->FrameRect()));
   return bounding_box;
 }
 
@@ -182,12 +182,12 @@ bool LayoutSVGInlineText::CharacterStartsNewTextChunk(int position) const {
   return it->value.HasX() || it->value.HasY();
 }
 
-FloatRect LayoutSVGInlineText::ObjectBoundingBox() const {
+gfx::RectF LayoutSVGInlineText::ObjectBoundingBox() const {
   NOT_DESTROYED();
   if (!IsInLayoutNGInlineFormattingContext())
     return FloatLinesBoundingBox();
 
-  FloatRect bounds;
+  gfx::RectF bounds;
   NGInlineCursor cursor;
   cursor.MoveTo(*this);
   for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
@@ -252,8 +252,9 @@ PositionWithAffinity LayoutSVGInlineText::PositionForPoint(
 
   // Map local point to absolute point, as the character origins stored in the
   // text fragments use absolute coordinates.
-  FloatPoint absolute_point(point);
-  absolute_point.MoveBy(FloatPoint(containing_block->Location()));
+  gfx::PointF absolute_point(point);
+  absolute_point +=
+      gfx::PointF(containing_block->Location()).OffsetFromOrigin();
 
   float closest_distance = std::numeric_limits<float>::max();
   float position_in_fragment = 0;
@@ -266,9 +267,11 @@ PositionWithAffinity LayoutSVGInlineText::PositionForPoint(
       continue;
 
     for (const SVGTextFragment& fragment : text_box->TextFragments()) {
-      FloatRect fragment_rect = fragment.BoundingBox(baseline);
+      gfx::RectF fragment_rect = fragment.BoundingBox(baseline);
 
-      float distance = fragment_rect.SquaredDistanceTo(absolute_point);
+      float distance =
+          (fragment_rect.ClosestPoint(absolute_point) - absolute_point)
+              .LengthSquared();
       if (distance <= closest_distance) {
         closest_distance = distance;
         closest_distance_box = text_box;
@@ -526,7 +529,7 @@ PhysicalRect LayoutSVGInlineText::VisualRectInDocument(
   return Parent()->VisualRectInDocument(flags);
 }
 
-FloatRect LayoutSVGInlineText::VisualRectInLocalSVGCoordinates() const {
+gfx::RectF LayoutSVGInlineText::VisualRectInLocalSVGCoordinates() const {
   NOT_DESTROYED();
   return Parent()->VisualRectInLocalSVGCoordinates();
 }

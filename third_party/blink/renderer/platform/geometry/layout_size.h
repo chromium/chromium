@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "ui/gfx/geometry/size_f.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
 
@@ -72,6 +73,9 @@ class PLATFORM_EXPORT LayoutSize {
   }
   constexpr explicit operator gfx::SizeF() const {
     return gfx::SizeF(width_.ToFloat(), height_.ToFloat());
+  }
+  constexpr explicit operator gfx::Vector2dF() const {
+    return gfx::Vector2dF(width_.ToFloat(), height_.ToFloat());
   }
 
   constexpr LayoutUnit Width() const { return width_; }

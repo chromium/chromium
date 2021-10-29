@@ -25,7 +25,7 @@ TEST_F(SVGLayoutSupportTest, FindClosestLayoutSVGText) {
 </svg>)HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  constexpr FloatPoint kBelowT3(220, 250);
+  constexpr gfx::PointF kBelowT3(220, 250);
   LayoutObject* hit_text = SVGLayoutSupport::FindClosestLayoutSVGText(
       GetLayoutBoxByElementId("svg"), kBelowT3);
   EXPECT_EQ("t3", To<Element>(hit_text->GetNode())->GetIdAttribute());

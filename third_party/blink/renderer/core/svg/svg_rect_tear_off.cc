@@ -30,8 +30,8 @@
 
 #include "third_party/blink/renderer/core/svg/svg_rect_tear_off.h"
 
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
@@ -76,7 +76,7 @@ void SVGRectTearOff::setHeight(float f, ExceptionState& exception_state) {
   CommitChange();
 }
 
-SVGRectTearOff* SVGRectTearOff::CreateDetached(const FloatRect& r) {
+SVGRectTearOff* SVGRectTearOff::CreateDetached(const gfx::RectF& r) {
   return CreateDetached(r.x(), r.y(), r.width(), r.height());
 }
 

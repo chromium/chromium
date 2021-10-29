@@ -63,10 +63,11 @@ void LayoutSVGResourceMarker::RemoveAllClientsFromCache() {
   MarkAllClientsForInvalidation(kLayoutInvalidation | kBoundariesInvalidation);
 }
 
-FloatRect LayoutSVGResourceMarker::MarkerBoundaries(
+gfx::RectF LayoutSVGResourceMarker::MarkerBoundaries(
     const AffineTransform& marker_transformation) const {
   NOT_DESTROYED();
-  FloatRect coordinates = LayoutSVGContainer::VisualRectInLocalSVGCoordinates();
+  gfx::RectF coordinates =
+      LayoutSVGContainer::VisualRectInLocalSVGCoordinates();
 
   // Map visual rect into parent coordinate space, in which the marker
   // boundaries have to be evaluated.

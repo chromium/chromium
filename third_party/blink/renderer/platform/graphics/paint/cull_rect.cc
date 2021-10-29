@@ -47,10 +47,10 @@ bool CullRect::Intersects(const gfx::Rect& rect) const {
 }
 
 bool CullRect::IntersectsTransformed(const AffineTransform& transform,
-                                     const FloatRect& rect) const {
+                                     const gfx::RectF& rect) const {
   if (rect.IsEmpty())
     return false;
-  return IsInfinite() || transform.MapRect(rect).Intersects(IntRect(rect_));
+  return IsInfinite() || transform.MapRect(rect).Intersects(gfx::RectF(rect_));
 }
 
 bool CullRect::IntersectsHorizontalRange(LayoutUnit lo, LayoutUnit hi) const {

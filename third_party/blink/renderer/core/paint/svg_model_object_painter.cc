@@ -37,8 +37,7 @@ void SVGModelObjectPainter::RecordHitTestData(const LayoutObject& svg_object,
 
   paint_info.context.GetPaintController().RecordHitTestData(
       svg_object,
-      gfx::ToEnclosingRect(
-          ToGfxRectF(svg_object.VisualRectInLocalSVGCoordinates())),
+      gfx::ToEnclosingRect(svg_object.VisualRectInLocalSVGCoordinates()),
       svg_object.EffectiveAllowedTouchAction(),
       svg_object.InsideBlockingWheelEventHandler());
 }
@@ -53,8 +52,7 @@ void SVGModelObjectPainter::RecordRegionCaptureData(
     if (crop_id) {
       paint_info.context.GetPaintController().RecordRegionCaptureData(
           svg_object, *crop_id,
-          ToGfxRect(
-              EnclosingIntRect(svg_object.VisualRectInLocalSVGCoordinates())));
+          gfx::ToEnclosingRect(svg_object.VisualRectInLocalSVGCoordinates()));
     }
   }
 }
@@ -72,7 +70,7 @@ void SVGModelObjectPainter::PaintOutline(const PaintInfo& paint_info) {
   auto visual_rect = layout_svg_model_object_.VisualRectInLocalSVGCoordinates();
   ObjectPainter(layout_svg_model_object_)
       .PaintOutline(outline_paint_info,
-                    PhysicalOffset::FromFloatPointRound(visual_rect.origin()));
+                    PhysicalOffset::FromPointFRound(visual_rect.origin()));
 }
 
 }  // namespace blink

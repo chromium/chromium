@@ -115,12 +115,12 @@ TEST_F(SvgHitTestPerfTest, IntersectsClipPath) {
       HitTestLocation(document_point), container->LocalToSVGParentTransform());
   ASSERT_TRUE(local_location);
 
-  FloatRect object_bounding_box = container->ObjectBoundingBox();
+  gfx::RectF object_bounding_box = container->ObjectBoundingBox();
 
   RunTest(
       "IntersectsClipPath",
       WTF::BindRepeating(
-          [](const LayoutObject* container, FloatRect& container_bounding_box,
+          [](const LayoutObject* container, gfx::RectF& container_bounding_box,
              TransformedHitTestLocation& local_location) {
             SVGLayoutSupport::IntersectsClipPath(
                 *container, container_bounding_box, *local_location);

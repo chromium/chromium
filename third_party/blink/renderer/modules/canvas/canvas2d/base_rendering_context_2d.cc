@@ -1266,7 +1266,7 @@ void BaseRenderingContext2D::DrawPathInternal(
     return;
 
   SkPath sk_path = path.GetSkPath();
-  FloatRect bounds = path.BoundingRect();
+  FloatRect bounds(path.BoundingRect());
   if (std::isnan(bounds.x()) || std::isnan(bounds.y()) ||
       std::isnan(bounds.width()) || std::isnan(bounds.height()))
     return;

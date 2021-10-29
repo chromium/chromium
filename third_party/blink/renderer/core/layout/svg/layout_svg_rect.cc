@@ -66,8 +66,8 @@ void LayoutSVGRect::UpdateShapeFromElement() {
       use_path_fallback_ = true;
       return;
     }
-    FloatPoint radii(
-        length_context.ResolveLengthPair(style.Rx(), style.Ry(), style));
+    gfx::Vector2dF radii =
+        length_context.ResolveLengthPair(style.Rx(), style.Ry(), style);
     if (radii.x() > 0 || radii.y() > 0 || !DefinitelyHasSimpleStroke()) {
       CreatePath();
       use_path_fallback_ = true;

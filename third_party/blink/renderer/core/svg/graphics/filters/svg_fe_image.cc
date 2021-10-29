@@ -63,8 +63,8 @@ void FEImage::Trace(Visitor* visitor) const {
 }
 
 static FloatRect GetLayoutObjectRepaintRect(const LayoutObject& layout_object) {
-  return layout_object.LocalToSVGParentTransform().MapRect(
-      layout_object.VisualRectInLocalSVGCoordinates());
+  return FloatRect(layout_object.LocalToSVGParentTransform().MapRect(
+      layout_object.VisualRectInLocalSVGCoordinates()));
 }
 
 static AffineTransform MakeMapBetweenRects(const FloatRect& source,

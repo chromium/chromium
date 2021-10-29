@@ -94,6 +94,9 @@ class CORE_EXPORT HitTestLocation {
   bool Intersects(const FloatRoundedRect&) const;
   bool Intersects(const FloatQuad&) const;
   bool ContainsPoint(const FloatPoint&) const;
+  bool ContainsPoint(const gfx::PointF& p) const {
+    return ContainsPoint(FloatPoint(p));
+  }
 
   const FloatPoint& TransformedPoint() const { return transformed_point_; }
   const FloatQuad& TransformedRect() const { return transformed_rect_; }

@@ -130,7 +130,7 @@ float LayoutSVGShape::DashScaleFactor() const {
 void LayoutSVGShape::UpdateShapeFromElement() {
   NOT_DESTROYED();
   CreatePath();
-  fill_bounding_box_ = ToGfxRectF(GetPath().TightBoundingRect());
+  fill_bounding_box_ = GetPath().TightBoundingRect();
   ClampBoundsToFinite(fill_bounding_box_);
 
   if (HasNonScalingStroke()) {
@@ -272,7 +272,8 @@ bool LayoutSVGShape::StrokeContains(const HitTestLocation& location,
     return false;
 
   if (requires_stroke) {
-    if (!StrokeBoundingBox().InclusiveContains(location.TransformedPoint()))
+    if (!StrokeBoundingBox().InclusiveContains(
+            ToGfxPointF(location.TransformedPoint())))
       return false;
 
     if (!HasPaintServer(*this, StyleRef().StrokePaint()))
@@ -301,7 +302,7 @@ void LayoutSVGShape::UpdateLayout() {
   // shape may be affected by ancestor transforms.
   if (needs_shape_update_ || needs_boundaries_update_ ||
       HasNonScalingStroke()) {
-    FloatRect old_object_bounding_box = ObjectBoundingBox();
+    gfx::RectF old_object_bounding_box = ObjectBoundingBox();
     UpdateShapeFromElement();
     if (old_object_bounding_box != ObjectBoundingBox()) {
       SetShouldDoFullPaintInvalidation();
@@ -465,8 +466,8 @@ gfx::RectF LayoutSVGShape::CalculateNonScalingStrokeBoundingBox() const {
   gfx::RectF stroke_bounding_box = fill_bounding_box_;
   const auto& non_scaling_transform = NonScalingStrokeTransform();
   if (non_scaling_transform.IsInvertible()) {
-    gfx::RectF stroke_bounding_rect = ApproximateStrokeBoundingBox(
-        ToGfxRectF(NonScalingStrokePath().BoundingRect()));
+    gfx::RectF stroke_bounding_rect =
+        ApproximateStrokeBoundingBox(NonScalingStrokePath().BoundingRect());
     stroke_bounding_rect =
         non_scaling_transform.Inverse().MapRect(stroke_bounding_rect);
     stroke_bounding_box.Union(stroke_bounding_rect);

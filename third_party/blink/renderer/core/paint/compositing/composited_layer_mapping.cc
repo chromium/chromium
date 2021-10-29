@@ -512,20 +512,22 @@ void CompositedLayerMapping::ComputeBoundsOfOwningLayer(
 
   absl::optional<IntRect> mask_bounding_box =
       CSSMaskPainter::MaskBoundingBox(GetLayoutObject(), subpixel_accumulation);
-  absl::optional<FloatRect> clip_path_bounding_box =
+  absl::optional<gfx::RectF> clip_path_bounding_box =
       ClipPathClipper::LocalClipPathBoundingBox(GetLayoutObject());
   if (clip_path_bounding_box)
-    clip_path_bounding_box->MoveBy(FloatPoint(subpixel_accumulation));
+    clip_path_bounding_box->Offset(gfx::Vector2dF(subpixel_accumulation));
 
   // Override graphics layer size to the bound of mask layer, this is because
   // the compositor implementation requires mask layer bound to match its
   // host layer.
   if (mask_bounding_box) {
     local_bounds = *mask_bounding_box;
-    if (clip_path_bounding_box)
-      local_bounds.Intersect(EnclosingIntRect(*clip_path_bounding_box));
+    if (clip_path_bounding_box) {
+      local_bounds.Intersect(
+          IntRect(gfx::ToEnclosingRect(*clip_path_bounding_box)));
+    }
   } else if (clip_path_bounding_box) {
-    local_bounds = EnclosingIntRect(*clip_path_bounding_box);
+    local_bounds = IntRect(gfx::ToEnclosingRect(*clip_path_bounding_box));
   } else {
     // Move the bounds by the subpixel accumulation so that it pixel-snaps
     // relative to absolute pixels instead of local coordinates.

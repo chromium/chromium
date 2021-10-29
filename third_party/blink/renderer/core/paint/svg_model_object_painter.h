@@ -55,11 +55,11 @@ class SVGDrawingRecorder : public DrawingRecorder {
   SVGDrawingRecorder(GraphicsContext& context,
                      const LayoutObjectType& object,
                      DisplayItem::Type type)
-      : DrawingRecorder(context,
-                        object,
-                        type,
-                        gfx::ToEnclosingRect(ToGfxRectF(
-                            object.VisualRectInLocalSVGCoordinates()))) {
+      : DrawingRecorder(
+            context,
+            object,
+            type,
+            gfx::ToEnclosingRect(object.VisualRectInLocalSVGCoordinates())) {
     DCHECK(object.IsSVGChild());
     // We should not use this for SVG containers which paint effects only,
     // while VisualRectInLocalSVGCoordinates() contains visual rects from

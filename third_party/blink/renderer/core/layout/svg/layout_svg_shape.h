@@ -29,7 +29,6 @@
 #include <memory>
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_model_object.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_marker_data.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -131,9 +130,9 @@ class LayoutSVGShape : public LayoutSVGModelObject {
     return kPathGeometry;
   }
 
-  FloatRect ObjectBoundingBox() const final {
+  gfx::RectF ObjectBoundingBox() const final {
     NOT_DESTROYED();
-    return FloatRect(fill_bounding_box_);
+    return fill_bounding_box_;
   }
 
   const char* GetName() const override {
@@ -199,9 +198,9 @@ class LayoutSVGShape : public LayoutSVGModelObject {
                     const HitTestLocation&,
                     PointerEventsHitRules);
 
-  FloatRect StrokeBoundingBox() const final {
+  gfx::RectF StrokeBoundingBox() const final {
     NOT_DESTROYED();
-    return FloatRect(stroke_bounding_box_);
+    return stroke_bounding_box_;
   }
 
   // Calculates an inclusive bounding box of this shape as if this shape has a

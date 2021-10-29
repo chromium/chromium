@@ -46,7 +46,7 @@ class SVGPathElement final : public SVGGeometryElement {
   float ComputePathLength() const override;
   const SVGPathByteStream& PathByteStream() const;
 
-  FloatRect GetBBox() override;
+  gfx::RectF GetBBox() override;
 
   void Trace(Visitor*) const override;
 

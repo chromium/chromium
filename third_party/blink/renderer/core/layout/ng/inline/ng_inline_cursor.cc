@@ -454,7 +454,7 @@ const Node* NGInlineCursorPosition::GetNode() const {
   return nullptr;
 }
 
-FloatRect NGInlineCursorPosition::ObjectBoundingBox(
+gfx::RectF NGInlineCursorPosition::ObjectBoundingBox(
     const NGInlineCursor& cursor) const {
   return item_->ObjectBoundingBox(cursor.Items());
 }

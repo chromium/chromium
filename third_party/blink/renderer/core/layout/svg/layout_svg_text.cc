@@ -272,7 +272,7 @@ void LayoutSVGText::UpdateLayout() {
     SetChildrenInline(true);
 
   // FIXME: We need to find a way to only layout the child boxes, if needed.
-  FloatRect old_boundaries = ObjectBoundingBox();
+  gfx::RectF old_boundaries = ObjectBoundingBox();
   DCHECK(ChildrenInline());
 
   RebuildFloatsFromIntruding();
@@ -396,7 +396,7 @@ PositionWithAffinity LayoutSVGText::PositionForPoint(
 void LayoutSVGText::AbsoluteQuads(Vector<FloatQuad>& quads,
                                   MapCoordinatesFlags mode) const {
   NOT_DESTROYED();
-  quads.push_back(LocalToAbsoluteQuad(StrokeBoundingBox(), mode));
+  quads.push_back(LocalToAbsoluteQuad(FloatRect(StrokeBoundingBox()), mode));
 }
 
 void LayoutSVGText::Paint(const PaintInfo& paint_info) const {
@@ -404,24 +404,24 @@ void LayoutSVGText::Paint(const PaintInfo& paint_info) const {
   SVGTextPainter(*this).Paint(paint_info);
 }
 
-FloatRect LayoutSVGText::ObjectBoundingBox() const {
+gfx::RectF LayoutSVGText::ObjectBoundingBox() const {
   NOT_DESTROYED();
   if (const RootInlineBox* box = FirstRootBox())
-    return FloatRect(box->FrameRect());
-  return FloatRect();
+    return gfx::RectF(box->FrameRect());
+  return gfx::RectF();
 }
 
-FloatRect LayoutSVGText::StrokeBoundingBox() const {
+gfx::RectF LayoutSVGText::StrokeBoundingBox() const {
   NOT_DESTROYED();
   if (!FirstRootBox())
-    return FloatRect();
+    return gfx::RectF();
   return SVGLayoutSupport::ExtendTextBBoxWithStroke(*this, ObjectBoundingBox());
 }
 
-FloatRect LayoutSVGText::VisualRectInLocalSVGCoordinates() const {
+gfx::RectF LayoutSVGText::VisualRectInLocalSVGCoordinates() const {
   NOT_DESTROYED();
   if (!FirstRootBox())
-    return FloatRect();
+    return gfx::RectF();
   return SVGLayoutSupport::ComputeVisualRectForText(*this, ObjectBoundingBox());
 }
 

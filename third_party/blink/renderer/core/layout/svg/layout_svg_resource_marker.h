@@ -43,7 +43,7 @@ class LayoutSVGResourceMarker final : public LayoutSVGResourceContainer {
 
   // Calculates marker boundaries, mapped to the target element's coordinate
   // space.
-  FloatRect MarkerBoundaries(
+  gfx::RectF MarkerBoundaries(
       const AffineTransform& marker_transformation) const;
   AffineTransform MarkerTransformation(const MarkerPosition&,
                                        float stroke_width) const;

@@ -65,7 +65,7 @@ void SVGImagePainter::PaintForeground(const PaintInfo& paint_info) {
     return;
 
   scoped_refptr<Image> image = image_resource.GetImage(image_viewport_size);
-  FloatRect dest_rect = layout_svg_image_.ObjectBoundingBox();
+  FloatRect dest_rect(layout_svg_image_.ObjectBoundingBox());
   auto* image_element = To<SVGImageElement>(layout_svg_image_.GetElement());
   RespectImageOrientationEnum respect_orientation =
       image_resource.ImageOrientation();
@@ -121,7 +121,7 @@ FloatSize SVGImagePainter::ComputeImageViewportSize() const {
           ->preserveAspectRatio()
           ->CurrentValue()
           ->Align() != SVGPreserveAspectRatio::kSvgPreserveaspectratioNone)
-    return layout_svg_image_.ObjectBoundingBox().size();
+    return FloatSize(layout_svg_image_.ObjectBoundingBox().size());
 
   ImageResourceContent* cached_image =
       layout_svg_image_.ImageResource()->CachedImage();
@@ -138,7 +138,7 @@ FloatSize SVGImagePainter::ComputeImageViewportSize() const {
   Image* image = cached_image->GetImage();
   if (auto* svg_image = DynamicTo<SVGImage>(image)) {
     return svg_image->ConcreteObjectSize(
-        layout_svg_image_.ObjectBoundingBox().size());
+        FloatSize(layout_svg_image_.ObjectBoundingBox().size()));
   }
   // The orientation here does not matter. Just use kRespectImageOrientation.
   return image->SizeAsFloat(kRespectImageOrientation);

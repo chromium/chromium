@@ -312,6 +312,7 @@ _CONFIG = [
             'gfx::BoundingRect',
             'gfx::ComputeApproximateMaxScale',
             'gfx::ComputeTransform2dScaleComponents',
+            'gfx::Determinant',
             'gfx::IntersectRects',
             'gfx::PointAtOffsetFromOrigin',
             'gfx::MaximumCoveredRect',
@@ -322,7 +323,11 @@ _CONFIG = [
             'gfx::ScaleToCeiledSize',
             'gfx::ScaleToEnclosingRectSafe',
             'gfx::ScaleToFlooredSize',
+            'gfx::ScaleSize',
+            'gfx::ScalePoint',
             'gfx::ScaleVector2d',
+            'gfx::SkIRectToRect',
+            'gfx::SkRectToRectF',
             'gfx::SubtractRects',
             'gfx::ToCeiledPoint',
             'gfx::ToCeiledSize',
@@ -334,6 +339,8 @@ _CONFIG = [
             'gfx::ToRoundedRect',
             'gfx::ToRoundedSize',
             'gfx::TransposePoint',
+            'gfx::TransposeRect',
+            'gfx::TransposeSize',
             'gfx::UnionRects',
 
             # Range type.
