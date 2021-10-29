@@ -1714,6 +1714,11 @@ def make_v8_set_return_value(cg_context):
             args.append("${blink_receiver}")
         return T("bindings::V8SetReturnValue({});".format(", ".join(args)))
 
+    if return_type_body.is_observable_array:
+        return T("bindings::V8SetReturnValue"
+                 "(${info}, ${return_value}->GetExoticObject(), "
+                 "${blink_receiver});")
+
     if return_type.is_promise:
         return T("bindings::V8SetReturnValue"
                  "(${info}, ${return_value}.V8Value());")
@@ -1950,8 +1955,24 @@ EventListener* event_handler = JSEventHandler::CreateOrNull(
     body.extend([
         make_steps_of_ce_reactions(cg_context),
         EmptyNode(),
-        make_v8_set_return_value(cg_context),
     ])
+
+    if cg_context.attribute.idl_type.unwrap(typedef=True).is_observable_array:
+        # Make an expression of "attribute get" instead of "attribute set" in
+        # order to acquire the observable array (backing list) object.
+        attribute_get_call = _make_blink_api_call(
+            body, cg_context.make_copy(attribute_get=True,
+                                       attribute_set=False))
+        body.extend([
+            FormatNode("auto&& observable_array = {attribute_get_call};",
+                       attribute_get_call=attribute_get_call),
+            TextNode("observable_array->PerformAttributeSet("
+                     "${script_state}, ${v8_property_value}, "
+                     "${exception_state});"),
+        ])
+        return func_def
+
+    body.append(make_v8_set_return_value(cg_context))
 
     return func_def
 

@@ -137,6 +137,42 @@ def make_constructors(cg_context):
     return func_def, None
 
 
+def make_attribute_set_function(cg_context):
+    assert isinstance(cg_context, CodeGenContext)
+
+    func_decl = CxxFuncDeclNode(name="PerformAttributeSet",
+                                arg_decls=[
+                                    "ScriptState* script_state",
+                                    "v8::Local<v8::Value> v8_value",
+                                    "ExceptionState& exception_state",
+                                ],
+                                return_type="void")
+
+    func_def = CxxFuncDefNode(name="PerformAttributeSet",
+                              arg_decls=[
+                                  "ScriptState* script_state",
+                                  "v8::Local<v8::Value> v8_value",
+                                  "ExceptionState& exception_state",
+                              ],
+                              return_type="void",
+                              class_name=cg_context.class_name)
+    func_def.set_base_template_vars(cg_context.template_bindings())
+
+    body = func_def.body
+    body.add_template_vars({
+        "script_state": "script_state",
+        "v8_value": "v8_value",
+        "exception_state": "exception_state",
+    })
+    bind_local_vars(body, cg_context)
+
+    body.append(
+        TextNode("Handler::PerformAttributeSet("
+                 "${script_state}, *this, ${v8_value}, ${exception_state});"))
+
+    return func_decl, func_def
+
+
 def make_handler_template_function(cg_context):
     assert isinstance(cg_context, CodeGenContext)
 
@@ -314,6 +350,7 @@ def generate_observable_array(observable_array_identifier):
     wrapper_type_info_def = make_wrapper_type_info(cg_context)
     handler_class_decls, handler_class_defs = make_handler_class(cg_context)
     ctor_decls, ctor_defs = make_constructors(cg_context)
+    attr_set_decls, attr_set_defs = make_attribute_set_function(cg_context)
     handler_func_decls, handler_func_defs = make_handler_template_function(
         cg_context)
     install_backing_list_decls, install_backing_list_defs = (
@@ -416,6 +453,11 @@ def generate_observable_array(observable_array_identifier):
     class_def.public_section.append(ctor_decls)
     class_def.public_section.append(EmptyNode())
     source_blink_ns.body.append(ctor_defs)
+    source_blink_ns.body.append(EmptyNode())
+
+    class_def.public_section.append(attr_set_decls)
+    class_def.public_section.append(EmptyNode())
+    source_blink_ns.body.append(attr_set_defs)
     source_blink_ns.body.append(EmptyNode())
 
     class_def.public_section.append(handler_func_decls)
