@@ -40,23 +40,22 @@ LayoutSVGRect::~LayoutSVGRect() = default;
 
 void LayoutSVGRect::UpdateShapeFromElement() {
   NOT_DESTROYED();
-  // Before creating a new object we need to clear the cached bounding box
-  // to avoid using garbage.
-  fill_bounding_box_ = FloatRect();
-  stroke_bounding_box_ = FloatRect();
+
+  stroke_bounding_box_ = gfx::RectF();
   use_path_fallback_ = false;
 
   SVGLengthContext length_context(GetElement());
   const ComputedStyle& style = StyleRef();
-  FloatSize bounding_box_size(
-      length_context.ResolveLengthPair(style.Width(), style.Height(), style));
-
-  // Spec: "A negative value is an error."
-  if (bounding_box_size.width() < 0 || bounding_box_size.height() < 0)
-    return;
+  gfx::Vector2dF origin =
+      length_context.ResolveLengthPair(style.X(), style.Y(), style);
+  gfx::Vector2dF size =
+      length_context.ResolveLengthPair(style.Width(), style.Height(), style);
+  // Spec: "A negative value is an error." gfx::Rect::SetRect() clamps negative
+  // width/height to 0.
+  fill_bounding_box_.SetRect(origin.x(), origin.y(), size.x(), size.y());
 
   // Spec: "A value of zero disables rendering of the element."
-  if (!bounding_box_size.IsEmpty()) {
+  if (!fill_bounding_box_.IsEmpty()) {
     // Fallback to LayoutSVGShape and path-based hit detection if the rect
     // has rounded corners or a non-scaling or non-simple stroke.
     // However, only use LayoutSVGShape bounding-box calculations for the
@@ -78,9 +77,6 @@ void LayoutSVGRect::UpdateShapeFromElement() {
   if (!use_path_fallback_)
     ClearPath();
 
-  fill_bounding_box_ = FloatRect(
-      FloatPoint(length_context.ResolveLengthPair(style.X(), style.Y(), style)),
-      bounding_box_size);
   stroke_bounding_box_ = CalculateStrokeBoundingBox();
 }
 
@@ -116,7 +112,8 @@ bool LayoutSVGRect::ShapeDependentFillContains(const HitTestLocation& location,
   NOT_DESTROYED();
   if (use_path_fallback_)
     return LayoutSVGShape::ShapeDependentFillContains(location, fill_rule);
-  return fill_bounding_box_.InclusiveContains(location.TransformedPoint());
+  return fill_bounding_box_.InclusiveContains(
+      ToGfxPointF(location.TransformedPoint()));
 }
 
 // Returns true if the stroke is continuous and definitely uses miter joins.

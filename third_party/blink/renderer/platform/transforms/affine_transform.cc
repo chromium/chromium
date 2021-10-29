@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
@@ -309,10 +310,17 @@ FloatRect AffineTransform::MapRect(const FloatRect& rect) const {
 
   FloatQuad result;
   result.set_p1(MapPoint(rect.origin()));
-  result.set_p2(MapPoint(FloatPoint(rect.right(), rect.y())));
-  result.set_p3(MapPoint(FloatPoint(rect.right(), rect.bottom())));
-  result.set_p4(MapPoint(FloatPoint(rect.x(), rect.bottom())));
+  result.set_p2(MapPoint(rect.top_right()));
+  result.set_p3(MapPoint(rect.bottom_right()));
+  result.set_p4(MapPoint(rect.bottom_left()));
   return result.BoundingBox();
+}
+
+gfx::RectF AffineTransform::MapRect(const gfx::RectF& rect) const {
+  // Still use FloatRect/FloatQuad version because FloatQuad::BoundingBox()
+  // clamp to int range, which is required by some callers.
+  // TODO(crbug.com/738465): Find a way to use gfx types.
+  return ToGfxRectF(MapRect(FloatRect(rect)));
 }
 
 FloatQuad AffineTransform::MapQuad(const FloatQuad& q) const {

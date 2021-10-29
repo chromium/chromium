@@ -29,6 +29,10 @@
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
+namespace gfx {
+class RectF;
+}
+
 namespace blink {
 
 class AffineTransform;
@@ -68,6 +72,9 @@ class CORE_EXPORT SVGLayoutSupport {
   // and can differ from the reference box of the passed LayoutObject.
   static bool IntersectsClipPath(const LayoutObject&,
                                  const FloatRect& reference_box,
+                                 const HitTestLocation&);
+  static bool IntersectsClipPath(const LayoutObject&,
+                                 const gfx::RectF& reference_box,
                                  const HitTestLocation&);
 
   // Important functions used by nearly all SVG layoutObjects centralizing

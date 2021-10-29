@@ -301,6 +301,12 @@ bool SVGLayoutSupport::IntersectsClipPath(const LayoutObject& object,
   return !clipper || clipper->HitTestClipContent(reference_box, location);
 }
 
+bool SVGLayoutSupport::IntersectsClipPath(const LayoutObject& object,
+                                          const gfx::RectF& reference_box,
+                                          const HitTestLocation& location) {
+  return IntersectsClipPath(object, FloatRect(reference_box), location);
+}
+
 DashArray SVGLayoutSupport::ResolveSVGDashArray(
     const SVGDashArray& svg_dash_array,
     const ComputedStyle& style,

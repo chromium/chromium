@@ -34,6 +34,7 @@
 
 namespace gfx {
 class PointF;
+class RectF;
 }  // namespace gfx
 
 namespace blink {
@@ -82,6 +83,7 @@ class PLATFORM_EXPORT AffineTransform {
   // box computations but may not be what is wanted in other contexts.
   IntRect MapRect(const IntRect&) const;
 
+  gfx::RectF MapRect(const gfx::RectF&) const;
   FloatRect MapRect(const FloatRect&) const;
   FloatQuad MapQuad(const FloatQuad&) const;
 

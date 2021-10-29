@@ -106,16 +106,18 @@ void LayoutSVGForeignObject::UpdateLayout() {
   // zoom.
   SVGLengthContext length_context(foreign);
   const ComputedStyle& style = StyleRef();
-  viewport_ = FloatRect(
-      FloatPoint(length_context.ResolveLengthPair(style.X(), style.Y(), style)),
-      FloatSize(length_context.ResolveLengthPair(style.Width(), style.Height(),
-                                                 style)));
+  gfx::Vector2dF origin =
+      length_context.ResolveLengthPair(style.X(), style.Y(), style);
+  gfx::Vector2dF size =
+      length_context.ResolveLengthPair(style.Width(), style.Height(), style);
+  // SetRect() will clamp negative width/height to zero.
+  viewport_.SetRect(origin.x(), origin.y(), size.x(), size.y());
 
   // Use the zoomed version of the viewport as the location, because we will
   // interpose a transform that "unzooms" the effective zoom to let the children
   // of the foreign object exist with their specified zoom.
-  FloatPoint zoomed_location =
-      viewport_.origin().ScaledBy(style.EffectiveZoom());
+  gfx::PointF zoomed_location =
+      gfx::ScalePoint(viewport_.origin(), style.EffectiveZoom());
 
   // Set box origin to the foreignObject x/y translation, so positioned objects
   // in XHTML content get correct positions. A regular LayoutBoxModelObject

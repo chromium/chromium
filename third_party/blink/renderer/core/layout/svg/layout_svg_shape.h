@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
@@ -132,7 +133,7 @@ class LayoutSVGShape : public LayoutSVGModelObject {
 
   FloatRect ObjectBoundingBox() const final {
     NOT_DESTROYED();
-    return fill_bounding_box_;
+    return FloatRect(fill_bounding_box_);
   }
 
   const char* GetName() const override {
@@ -165,13 +166,13 @@ class LayoutSVGShape : public LayoutSVGModelObject {
 
   // Update (cached) shape data and the (object) bounding box.
   virtual void UpdateShapeFromElement();
-  FloatRect CalculateStrokeBoundingBox() const;
+  gfx::RectF CalculateStrokeBoundingBox() const;
   virtual bool ShapeDependentStrokeContains(const HitTestLocation&);
   virtual bool ShapeDependentFillContains(const HitTestLocation&,
                                           const WindRule) const;
 
-  FloatRect fill_bounding_box_;
-  FloatRect stroke_bounding_box_;
+  gfx::RectF fill_bounding_box_;
+  gfx::RectF stroke_bounding_box_;
 
   LayoutSVGShapeRareData& EnsureRareData() const;
 
@@ -200,18 +201,18 @@ class LayoutSVGShape : public LayoutSVGModelObject {
 
   FloatRect StrokeBoundingBox() const final {
     NOT_DESTROYED();
-    return stroke_bounding_box_;
+    return FloatRect(stroke_bounding_box_);
   }
 
   // Calculates an inclusive bounding box of this shape as if this shape has a
   // stroke. If this shape has a stroke, then |stroke_bounding_box_| is
   // returned; otherwise, estimates a bounding box (not necessarily tight) that
   // would include this shape's stroke bounding box if it had a stroke.
-  FloatRect HitTestStrokeBoundingBox() const;
+  gfx::RectF HitTestStrokeBoundingBox() const;
   // Compute an approximation of the bounding box that this stroke geometry
   // would generate when applied to the shape.
-  FloatRect ApproximateStrokeBoundingBox(const FloatRect& shape_bounds) const;
-  FloatRect CalculateNonScalingStrokeBoundingBox() const;
+  gfx::RectF ApproximateStrokeBoundingBox(const gfx::RectF& shape_bounds) const;
+  gfx::RectF CalculateNonScalingStrokeBoundingBox() const;
   void UpdateNonScalingStrokeData();
 
  private:
