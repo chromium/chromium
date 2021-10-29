@@ -28,8 +28,6 @@ source_set("browser_sources") {
   sources = [
     "allow_service_worker_result.cc",
     "allow_service_worker_result.h",
-    "appcache_service.cc",
-    "appcache_service.h",
     "audio_service.h",
     "audio_service_info.cc",
     "audio_service_info.h",
