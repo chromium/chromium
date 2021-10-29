@@ -36,6 +36,8 @@ template("rust_target") {
   }
   if (defined(invoker.crate_root)) {
     _crate_root = invoker.crate_root
+  } else if (invoker.target_type == "executable") {
+    _crate_root = "src/main.rs"
   } else {
     _crate_root = "src/lib.rs"
   }
@@ -125,6 +127,7 @@ template("rust_target") {
 
   target(invoker.target_type, "${target_name}${main_target_suffix}") {
     crate_name = _crate_name
+    crate_root = _crate_root
     configs += _configs
     deps = _deps
     rustflags = _rustflags
