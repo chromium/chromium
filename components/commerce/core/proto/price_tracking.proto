@@ -39,6 +39,9 @@ message BuyableProduct {
 
   // Docid of the offer.
   optional fixed64 offer_id = 5;
+
+  // Cluster id.
+  optional uint64 product_cluster_id = 6;
 }
 
 message ProductPriceUpdate {
