@@ -222,11 +222,6 @@ const base::Feature kCalendarView{"CalendarView",
 const base::Feature kCameraPrivacySwitchNotifications{
     "CameraPrivacySwitchNotifications", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// If enabled, allow per-network roaming configuration when cellular roaming is
-// not disabled for the device through enterprise policy.
-const base::Feature kCellularAllowPerNetworkRoaming{
-    "CellularAllowPerNetworkRoaming", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // If enabled, the value of |kCellularUseAttachApn| should have no effect and
 // and the LTE attach APN configuration will not be sent to the modem. This
 // flag exists because the |kCellularUseAttachApn| flag can be enabled

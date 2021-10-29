@@ -19,7 +19,6 @@ import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from '//resources/cr_c
 import {OncMojo} from '//resources/cr_components/chromeos/network/onc_mojo.m.js';
 import {assert} from '//resources/js/assert.m.js';
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
-import {loadTimeData} from '//resources/js/load_time_data.m.js';
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
@@ -53,18 +52,6 @@ Polymer({
     },
 
     /**
-     * Whether or not the per-network cellular roaming configuration feature
-     * flag is enabled.
-     * @private
-     */
-    allowPerNetworkRoaming_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('allowPerNetworkRoaming');
-      },
-    },
-
-    /**
      * The allow roaming state.
      * @private
      */
@@ -88,10 +75,7 @@ Polymer({
    * @return {string}
    */
   getSubLabelForTesting() {
-    if (this.allowPerNetworkRoaming_) {
-      return this.$$('#cellularRoamingToggleSubLabel').innerText;
-    }
-    return this.$$('#cellularRoamingToggle').subLabel;
+    return this.$$('#cellularRoamingToggleSubLabel').innerText;
   },
 
   /**
@@ -99,16 +83,11 @@ Polymer({
    * @return {?CrToggleElement}
    */
   getCellularRoamingToggle() {
-    if (this.allowPerNetworkRoaming_) {
-      return /** @type {?CrToggleElement} */ (this.$$('#control'));
-    }
-    return /** @type {?CrToggleElement} */ (
-        this.$$('#cellularRoamingToggle').shadowRoot.querySelector('#control'));
+    return /** @type {?CrToggleElement} */ (this.$$('#control'));
   },
 
   /** @private */
   isRoamingAllowedForNetworkChanged_() {
-    assert(this.allowPerNetworkRoaming_);
     assert(this.networkConfig_);
     if (!this.managedProperties ||
         !this.managedProperties.typeProperties.cellular.allowRoaming) {
@@ -155,9 +134,6 @@ Polymer({
 
   /** @private */
   managedPropertiesChanged_() {
-    if (!this.allowPerNetworkRoaming_) {
-      return;
-    }
     if (!this.managedProperties ||
         !this.managedProperties.typeProperties.cellular.allowRoaming) {
       return;
@@ -189,7 +165,6 @@ Polymer({
 
   /** @private */
   showPerNetworkAllowRoamingToggle_() {
-    return this.allowPerNetworkRoaming_ &&
-        this.isRoamingAllowedForNetwork_ !== undefined;
+    return this.isRoamingAllowedForNetwork_ !== undefined;
   },
 });

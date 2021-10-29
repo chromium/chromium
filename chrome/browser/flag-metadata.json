@@ -644,11 +644,6 @@
     "expiry_milestone": 105
   },
   {
-    "name": "cellular-allow-per-network-roaming",
-    "owners": [ "chadduffin", "khorimoto", "cros-connectivity@google.com" ],
-    "expiry_milestone": 96
-  },
-  {
     "name": "cellular-forbid-attach-apn",
     "owners": [ "hsuregan", "cros-connectivity@google.com" ],
     "expiry_milestone": 100

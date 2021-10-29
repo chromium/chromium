@@ -2376,9 +2376,6 @@ extern const char kHdrNetOverrideDescription[];
 extern const char kCategoricalSearchName[];
 extern const char kCategoricalSearchDescription[];
 
-extern const char kCellularAllowPerNetworkRoamingName[];
-extern const char kCellularAllowPerNetworkRoamingDescription[];
-
 extern const char kCellularForbidAttachApnName[];
 extern const char kCellularForbidAttachApnDescription[];
 

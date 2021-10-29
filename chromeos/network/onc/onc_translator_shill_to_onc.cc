@@ -474,10 +474,9 @@ void ShillToONCTranslator::TranslateCellularWithState() {
     // Do not let any value for |::onc::cellular::kAllowRoaming| that was
     // translated using the device table override the value that was translated
     // using the cellular with state table.
-    // TODO(chadduffin): Remove when the
-    // |ash::features::kCellularAllowPerNetworkRoaming| feature flag has fully
-    // launched and |shill::kCellularAllowRoamingProperty| usage as a Shill
-    // device property is fully deprecated.
+    // TODO(crbug.com/1232818): Remove when
+    // |shill::kCellularAllowRoamingProperty| usage as a Shill device property
+    // is fully deprecated.
     if (onc_object_->FindKey(::onc::cellular::kAllowRoaming)) {
       nested_object->RemoveKey(::onc::cellular::kAllowRoaming);
     }
