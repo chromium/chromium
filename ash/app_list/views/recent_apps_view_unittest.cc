@@ -91,7 +91,7 @@ class RecentAppsViewTest : public AshTestBase,
     result->set_result_type(type);
     // TODO(crbug.com/1216662): Replace with a real display type after the ML
     // team gives us a way to query directly for recent apps.
-    result->set_display_type(SearchResultDisplayType::kChip);
+    result->set_display_type(SearchResultDisplayType::kList);
     GetAppListTestHelper()->GetSearchResults()->Add(std::move(result));
   }
 

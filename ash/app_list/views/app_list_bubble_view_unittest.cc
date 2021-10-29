@@ -64,6 +64,8 @@ void AddSearchResult(const std::string& id, const std::u16string& title) {
   GetSearchModel()->results()->Add(std::move(search_result));
 }
 
+// TODO(jamescook): Move this into AppListTestHelper. This will require
+// changing how AppListTestHelper::AddAppItems() names the apps.
 void AddRecentApps(int num_apps) {
   auto* search_model = GetSearchModel();
   for (int i = 0; i < num_apps; i++) {
@@ -74,7 +76,7 @@ void AddRecentApps(int num_apps) {
     result->set_result_type(AppListSearchResultType::kInstalledApp);
     // TODO(crbug.com/1216662): Replace with a real display type after the ML
     // team gives us a way to query directly for recent apps.
-    result->set_display_type(SearchResultDisplayType::kChip);
+    result->set_display_type(SearchResultDisplayType::kList);
     search_model->results()->Add(std::move(result));
   }
 }

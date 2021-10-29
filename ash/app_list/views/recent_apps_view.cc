@@ -74,7 +74,7 @@ std::vector<std::string> GetRecentAppIdsFromSuggestionChips(
   SearchModel::SearchResults* results = search_model->results();
   auto is_app_suggestion = [](const SearchResult& r) -> bool {
     return IsAppType(r.result_type()) &&
-           r.display_type() == SearchResultDisplayType::kChip;
+           r.display_type() == SearchResultDisplayType::kList;
   };
   std::vector<SearchResult*> app_suggestion_results =
       SearchModel::FilterSearchResultsByFunction(
