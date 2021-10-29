@@ -31,8 +31,10 @@ X11WorkspaceHandler::X11WorkspaceHandler(Delegate* delegate)
   DCHECK(delegate_);
   x11::Connection::Get()->AddEventObserver(this);
 
+  // TODO: Stop selecting SubstructureNotify events on the root window.
   x_root_window_events_ = std::make_unique<x11::XScopedEventSelector>(
-      x_root_window_, x11::EventMask::PropertyChange);
+      x_root_window_,
+      x11::EventMask::PropertyChange | x11::EventMask::SubstructureNotify);
 }
 
 X11WorkspaceHandler::~X11WorkspaceHandler() {

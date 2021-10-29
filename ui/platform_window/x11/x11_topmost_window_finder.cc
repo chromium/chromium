@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "ui/base/x/x11_menu_list.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/xproto_util.h"
@@ -34,22 +33,10 @@ bool EnumerateChildren(ShouldStopIteratingCallback should_stop_iterating,
   if (depth > max_depth)
     return false;
 
-  std::vector<x11::Window> windows;
-  if (depth == 0) {
-    XMenuList::GetInstance()->InsertMenuWindows(&windows);
-    // Enumerate the menus first.
-    std::vector<x11::Window>::iterator iter;
-    for (iter = windows.begin(); iter != windows.end(); iter++) {
-      if (should_stop_iterating.Run(*iter))
-        return true;
-    }
-    windows.clear();
-  }
-
   auto query_tree = x11::Connection::Get()->QueryTree({window}).Sync();
   if (!query_tree)
     return false;
-  windows = std::move(query_tree->children);
+  std::vector<x11::Window> windows = std::move(query_tree->children);
 
   // XQueryTree returns the children of |window| in bottom-to-top order, so
   // reverse-iterate the list to check the windows from top-to-bottom.
