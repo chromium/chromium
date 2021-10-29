@@ -32,7 +32,8 @@ class ContentIndexServiceImplTest : public ::testing::Test {
       : service_(std::make_unique<ContentIndexServiceImpl>(
             url::Origin::Create(GURL(kOrigin)),
             /* content_index_context= */ nullptr,
-            /* service_worker_context= */ nullptr)) {}
+            /* service_worker_context= */ nullptr,
+            /* is_top_level_context= */ true)) {}
 
   ContentIndexServiceImplTest(const ContentIndexServiceImplTest&) = delete;
   ContentIndexServiceImplTest& operator=(const ContentIndexServiceImplTest&) =

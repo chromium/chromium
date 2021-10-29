@@ -36,6 +36,10 @@ message ContentEntry {
   // |description.launch_url()| since that field is developer-provided, and
   // can be an absolute or relative path without the host.
   optional string launch_url = 3;
+
+  // Whether the ContentIndex entry was created from a top-level context (i.e
+  // not an iframe).
+  optional bool is_top_level_context = 4 [default = true];
 }
 
 // Wrapper to store all the serialized icons.
