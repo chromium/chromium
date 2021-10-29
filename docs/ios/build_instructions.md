@@ -171,6 +171,7 @@ application extensions:
 -   `${prefix}.chrome.ios.dev`
 -   `${prefix}.chrome.ios.dev.ContentTodayExtension`
 -   `${prefix}.chrome.ios.dev.CredentialProviderExtension`
+-   `${prefix}.chrome.ios.dev.IntentsExtension`
 -   `${prefix}.chrome.ios.dev.SearchTodayExtension`
 -   `${prefix}.chrome.ios.dev.ShareExtension`
 -   `${prefix}.chrome.ios.dev.TodayExtension`
