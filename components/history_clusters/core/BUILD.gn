@@ -69,6 +69,7 @@ source_set("clustering_backend") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "history_clusters_db_tasks_unittest.cc",
     "history_clusters_service_unittest.cc",
     "remote_clustering_backend_unittest.cc",
   ]
