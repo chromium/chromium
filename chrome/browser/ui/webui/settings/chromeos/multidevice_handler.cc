@@ -572,7 +572,8 @@ MultideviceHandler::GetFeatureStatesMap() {
       << "MultiDevice setup client missing. Responding to "
          "GetFeatureStatesMap() request by generating default feature map.";
   return multidevice_setup::MultiDeviceSetupClient::
-      GenerateDefaultFeatureStatesMap();
+      GenerateDefaultFeatureStatesMap(
+          multidevice_setup::mojom::FeatureState::kProhibitedByPolicy);
 }
 
 }  // namespace settings

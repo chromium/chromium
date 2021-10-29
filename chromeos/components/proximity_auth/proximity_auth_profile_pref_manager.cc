@@ -140,6 +140,8 @@ bool ProximityAuthProfilePrefManager::IsSmartLockEligible() const {
   switch (multidevice_setup_client_->GetFeatureState(Feature::kSmartLock)) {
     case FeatureState::kUnavailableNoVerifiedHost:
       FALLTHROUGH;
+    case FeatureState::kUnavailableNoVerifiedHost_ClientNotReady:
+      FALLTHROUGH;
     case FeatureState::kNotSupportedByChromebook:
       FALLTHROUGH;
     case FeatureState::kNotSupportedByPhone:

@@ -47,7 +47,10 @@ enum HostStatus {
 };
 
 // Individual multi-device features types. Enums should remain in sync with
-// those in c/b/r/s/chromeos/multidevice_page/multidevice_constants.js
+// those in c/b/r/s/chromeos/multidevice_page/multidevice_constants.js,
+// and all features should be reflected in the FeatureStateMaps generated in
+// chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.cc
+// and chrome/browser/ui/webui/settings/chromeos/multidevice_handler.cc
 enum Feature {
   kBetterTogetherSuite = 0,
   kInstantTethering = 1,
@@ -63,7 +66,8 @@ enum Feature {
 
 // This enum is tied directly to a UMA enum defined in
 // //tools/metrics/histograms/enums.xml, and should always reflect it (do not
-// change one without changing the other).
+// change one without changing the other). Enums should remain in sync with
+// those in c/b/r/s/chromeos/multidevice_page/multidevice_constants.js
 enum FeatureState {
   // Feature was prohibited by a device policy (e.g., EDU or Enterprise).
   kProhibitedByPolicy = 0,
@@ -102,7 +106,14 @@ enum FeatureState {
   // because it is a sub-feature of a top-level feature, and that top-level
   // feature has been disabled (e.g., Phone Hub notifications are a sub-feature
   // of Phone Hub).
-  kUnavailableTopLevelFeatureDisabled = 9
+  kUnavailableTopLevelFeatureDisabled = 9,
+
+  // The feature is unavailable because there is no verified multi-device host.
+  // This is essentially the same as kUnavailableNoVerifiedHost, but we are
+  // filtering out the uses when the state is kUnavailableNoVerifiedHost and
+  // the device sync client is not ready yet to better understand the flow
+  // in the feature states with metrics.
+  kUnavailableNoVerifiedHost_ClientNotReady = 10,
 };
 
 // Metadata describing a device that can used as the host for multidevice
