@@ -29,12 +29,12 @@ class TtsControllerAndroid : public AutofillAssistantTtsController {
   void Speak(const std::string& message, const std::string& locale) override;
   void Stop() override;
 
-  // Overrides UtteranceEventDelegate.
-  void OnTtsEvent(content::TtsUtterance* utterance,
-                  content::TtsEventType event_type,
-                  int char_index,
-                  int char_length,
-                  const std::string& error_message) override;
+  // Mimics receiving a content::TtsEventType for the current utterance.
+  // |eventType| should be an integer representing a valid content::TtsEventType
+  // value.
+  void SimulateTtsEvent(JNIEnv* env,
+                        const base::android::JavaParamRef<jobject>& jcaller,
+                        jint eventType);
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_tts_controller_;
