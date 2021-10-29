@@ -179,13 +179,7 @@ IN_PROC_BROWSER_TEST_F(FingerprintSetupTest, FingerprintEnrollFull) {
       ElementsAre(base::Bucket(static_cast<int>(UserAction::kSetupDone), 1)));
 }
 
-// Test failure on Chrome OS: crbug.com/1220967
-#if defined(OS_CHROMEOS)
-#define MAYBE_FingerprintEnrollLimit DISABLED_FingerprintEnrollLimit
-#else
-#define MAYBE_FingerprintEnrollLimit FingerprintEnrollLimit
-#endif
-IN_PROC_BROWSER_TEST_F(FingerprintSetupTest, MAYBE_FingerprintEnrollLimit) {
+IN_PROC_BROWSER_TEST_F(FingerprintSetupTest, FingerprintEnrollLimit) {
   ShowFingerprintScreen();
 
   for (int i = 0; i < kMaxAllowedFingerprints - 1; i++) {
