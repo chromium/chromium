@@ -6,5 +6,9 @@
 <resources>
   <declare-styleable name="PrivacyReviewExplanationHeading">
         <attr name="titleText" format="reference|string" />
-    </declare-styleable>
+  </declare-styleable>
+  <declare-styleable name="PrivacyReviewExplanationItem">
+        <attr name="iconImage" format="integer" />
+        <attr name="summaryText" format="reference|string" />
+  </declare-styleable>
 </resources>

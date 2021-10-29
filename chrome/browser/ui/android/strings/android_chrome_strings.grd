@@ -1034,6 +1034,18 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_PRIVACY_REVIEW_WHAT_YOU_SHARE" desc="Section header text describing what data the user shares when using the feature.">
         What you share with Google
       </message>
+      <message name="IDS_PRIVACY_REVIEW_MSBB_ITEM_ONE" desc="First bullet point that describes the details of the MSBB toggle.">
+        You’ll browse faster because content is proactively loaded based on your current webpage visit
+      </message>
+      <message name="IDS_PRIVACY_REVIEW_MSBB_ITEM_TWO" desc="Second bullet point that describes the details of the MSBB toggle.">
+        You’ll get improved suggestions in the address bar
+      </message>
+      <message name="IDS_PRIVACY_REVIEW_MSBB_ITEM_THREE" desc="Third bullet point that describes the details of the MSBB toggle.">
+        URLs you visit are sent to Google
+      </message>
+      <message name="IDS_PRIVACY_REVIEW_MSBB_ITEM_FOUR" desc="Fourth bullet point that describes the details of the MSBB toggle.">
+        If you also share Chrome usage reports, those reports include the URLs you visit
+      </message>
 
       <!-- Safety check -->
       <message name="IDS_PREFS_SAFETY_CHECK" desc="Title of the Safety check element in settings, allowing the user to check multiple areas of browser safety. [CHAR_LIMIT=32]">

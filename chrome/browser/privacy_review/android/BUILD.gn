@@ -8,6 +8,7 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/privacy_review/PrivacyReviewDialog.java",
     "java/src/org/chromium/chrome/browser/privacy_review/PrivacyReviewExplanationHeading.java",
+    "java/src/org/chromium/chrome/browser/privacy_review/PrivacyReviewExplanationItem.java",
     "java/src/org/chromium/chrome/browser/privacy_review/PrivacyReviewPagerAdapter.java",
   ]
   deps = [
@@ -31,6 +32,7 @@ android_resources("java_resources") {
     "java/res/layout/privacy_review_cookies_step.xml",
     "java/res/layout/privacy_review_dialog.xml",
     "java/res/layout/privacy_review_explanation_heading.xml",
+    "java/res/layout/privacy_review_explanation_item.xml",
     "java/res/layout/privacy_review_msbb_step.xml",
     "java/res/layout/privacy_review_sb_step.xml",
     "java/res/layout/privacy_review_steps.xml",
