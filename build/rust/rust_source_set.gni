@@ -2,11 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/rust.gni")
-import("//build/rust/rust_unit_test.gni")
+import("//build/rust/rust_target.gni")
 
 # Defines a Rust static library which can be used by downstream Rust or C++
-# targets.
+# targets. This is a single Rust compilation unit consisting of potentially
+# multiple .rs files.
+#
+# We term this 'rust_source_set' because it is used most analogously
+# to a C++ 'source_set' in Chromium. The fact that it actually produces
+# a static library (specifically an rlib) is an implementation detail.
 #
 # Important: downstream C++ targets should NOT depend upon this
 # type of target. Instead they should append the suffix "_cpp_bindings"
@@ -135,131 +139,11 @@ import("//build/rust/rust_unit_test.gni")
 #
 # This template is intended to serve the same purpose as 'rustc_library'
 # in Fuchsia.
-
 template("rust_source_set") {
-  _target_name = target_name
-  _crate_name = _target_name
-  if (defined(invoker.crate_name)) {
-    _crate_name = invoker.crate_name
-  }
-  if (defined(invoker.crate_root)) {
-    _crate_root = invoker.crate_root
-  } else {
-    _crate_root = "src/lib.rs"
-  }
-  crate_root = _crate_root
-
-  _rustflags = []
-  if (defined(invoker.rustflags)) {
-    _rustflags += invoker.rustflags
-  }
-  if (defined(invoker.features)) {
-    foreach(i, invoker.features) {
-      _rustflags += [ "--cfg=feature=\"${i}\"" ]
-    }
-  }
-  if (defined(invoker.edition) && invoker.edition == "2015") {
-    _configs = [ "//build/rust:edition_2015" ]
-  } else {
-    _configs = [ "//build/rust:edition_2018" ]
-  }
-  if (defined(invoker.configs)) {
-    _configs += invoker.configs
-  }
-  _deps_for_rust_targets = []
-  if (defined(invoker.mutually_dependent_target)) {
-    _deps_for_rust_targets += [ invoker.mutually_dependent_target ]
-  }
-  _deps = []
-  if (defined(invoker.deps)) {
-    _deps += invoker.deps
-  }
-  _build_unit_tests = build_rust_unit_tests
-  if (defined(invoker.skip_unit_tests) && invoker.skip_unit_tests == true) {
-    _build_unit_tests = false
-  }
-
-  # TODO(danakj): This could be a hash generated from the input crate, such as
-  # from its path, in which case the BUILD.gn would not need to specify
-  # anything. But GN doesn't give us a hash function to make that easy.
-  _metadata = "0"
-  if (defined(invoker.epoch)) {
-    _metadata = invoker.epoch
-  }
-
-  # We require that all source files are listed, even though this is
-  # not a requirement for rustc. The reason is to ensure that tools
-  # such as `gn deps` give the correct answer, and thus we trigger
-  # the right test suites etc. on code change.
-  # TODO(crbug.com/1256930) - verify this is correct
-  assert(defined(invoker.sources), "sources must be listed")
-
-  # Downstream Rust targets should include this in their deps.
-  group(target_name) {
-    deps = [ ":${_target_name}_rlib" ]
-    deps += _deps_for_rust_targets
-    forward_variables_from(invoker, [ "visibility" ])
-  }
-
-  # Downstream C++ targets should include this in their deps.
-  group("${_target_name}_cpp_bindings") {
-    deps = [
-      ":${_target_name}_rlib",
-      "//build/rust/std",  # explanation: any C++ code depending on this
-                           # target should also depend on the Rust standard
-                           # library to ensure it's linked into the final
-                           # binary by the C++ linker.
-    ]
-    if (defined(invoker.mutually_dependent_target)) {
-      visibility = [ invoker.mutually_dependent_target ]
-    } else {
-      forward_variables_from(invoker, [ "visibility" ])
-    }
-  }
-
-  rust_library("${target_name}_rlib") {
-    crate_name = _crate_name
-    configs += _configs
-    deps = _deps
-    rustflags = _rustflags
-    rustflags += [ string_join("",
-                               [
-                                 "-Cmetadata=",
-                                 _metadata,
-                               ]) ]
-    forward_variables_from(invoker,
-                           "*",
-                           [
-                             "features",
-                             "deps",
-                             "rustflags",
-                             "configs",
-                             "output_name",
-                             "crate_root",
-                             "unit_test_target",
-                             "visibility",
-                           ])
-    visibility = [
-      ":${_target_name}",
-      ":${_target_name}_cpp_bindings",
-    ]
-  }
-
-  if (_build_unit_tests) {
-    _unit_test_target = "${_target_name}_unittests"
-    if (defined(invoker.unit_test_target)) {
-      _unit_test_target = invoker.unit_test_target
-    }
-
-    rust_unit_test(_unit_test_target) {
-      forward_variables_from(invoker, [ "sources" ])
-      crate_root = _crate_root
-      rustflags = _rustflags
-      deps = _deps
-      if (defined(invoker.test_deps)) {
-        deps += invoker.test_deps
-      }
-      deps += _deps_for_rust_targets
-    }
+  rust_target(target_name) {
+    forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+    target_type = "rust_library"
+    create_cpp_groups = true
   }
 }
