@@ -48190,6 +48190,7 @@ from previous Chrome versions.
       label="PasswordsAccountStorageRevisedOptInFlow:disabled"/>
   <int value="-2011532551" label="SignedExchangeSubresourcePrefetch:disabled"/>
   <int value="-2011428140" label="RelatedSearchesAlternateUx:disabled"/>
+  <int value="-2011079494" label="Vp9kSVCHWDecoding:enabled"/>
   <int value="-2010634516" label="OmniboxLocalEntitySuggestions:disabled"/>
   <int value="-2009622663" label="WebRtcHWH264Encoding:enabled"/>
   <int value="-2009172938" label="DragToPinTabs:disabled"/>
@@ -50618,6 +50619,7 @@ from previous Chrome versions.
   <int value="-176524053"
       label="VmCameraMicIndicatorsAndNotifications:disabled"/>
   <int value="-175696105" label="MessagesForAndroidUpdatePassword:enabled"/>
+  <int value="-175692563" label="Vp9kSVCHWDecoding:disabled"/>
   <int value="-175666252" label="Portals:disabled"/>
   <int value="-175574799" label="finch-seed-no-charging-requirement"/>
   <int value="-174829803" label="TabOutlinesInLowContrastThemes:enabled"/>

@@ -1507,6 +1507,9 @@ extern const char kV8VmFutureDescription[];
 extern const char kVerticalSnapName[];
 extern const char kVerticalSnapDescription[];
 
+extern const char kVp9kSVCHWDecodingName[];
+extern const char kVp9kSVCHWDecodingDescription[];
+
 extern const char kWalletServiceUseSandboxName[];
 extern const char kWalletServiceUseSandboxDescription[];
 

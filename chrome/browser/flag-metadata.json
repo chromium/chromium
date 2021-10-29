@@ -2754,6 +2754,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "enable-vp9-kSVC-decode-acceleration",
+    "owners": [ "hiroh", "chromeos-gfx-webrtc@google.com" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "enable-vulkan",
     "owners": [ "penghuang" ],
     "expiry_milestone": 100
