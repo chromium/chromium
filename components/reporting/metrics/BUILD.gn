@@ -4,6 +4,8 @@
 
 static_library("metrics_data_collection") {
   sources = [
+    "metric_rate_controller.cc",
+    "metric_rate_controller.h",
     "metric_reporting_controller.cc",
     "metric_reporting_controller.h",
     "reporting_settings.h",
@@ -29,7 +31,10 @@ static_library("test_support") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "metric_reporting_controller_unittest.cc" ]
+  sources = [
+    "metric_rate_controller_unittest.cc",
+    "metric_reporting_controller_unittest.cc",
+  ]
   deps = [
     ":metrics_data_collection",
     ":test_support",
