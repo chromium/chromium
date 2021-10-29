@@ -199,7 +199,11 @@ WebContents* OpenApplicationTab(Profile* profile,
   WebContents* contents = NULL;
   if (!browser) {
     // No browser for this profile, need to open a new one.
-    //
+    if (Browser::GetCreationStatusForProfile(profile) !=
+        Browser::CreationStatus::kOk) {
+      return contents;
+    }
+
     // TODO(erg): AppLaunchParams should pass user_gesture from the extension
     // system to here.
     browser = Browser::Create(
