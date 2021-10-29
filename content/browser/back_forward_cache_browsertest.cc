@@ -1991,7 +1991,7 @@ IN_PROC_BROWSER_TEST_F(HighCacheSizeBackForwardCacheBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       NavigationsAreFullyCommitted) {
+                       DISABLED_NavigationsAreFullyCommitted) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // During a navigation, the document being navigated *away from* can either be
@@ -2073,7 +2073,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       ProxiesAreStoredAndRestored) {
+                       DISABLED_ProxiesAreStoredAndRestored) {
   // This test makes assumption about where iframe processes live.
   if (!AreAllSitesIsolatedForTesting())
     return;
