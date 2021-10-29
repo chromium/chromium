@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar.top;
 
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
@@ -41,7 +42,7 @@ class StartSurfaceToolbarProperties {
             new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableObjectPropertyKey<Boolean> SHOW_ANIMATION =
             new PropertyModel.WritableObjectPropertyKey<>(true);
-    public static final PropertyModel.WritableObjectPropertyKey<Drawable> LOGO_IMAGE =
+    public static final PropertyModel.WritableObjectPropertyKey<Bitmap> LOGO_IMAGE =
             new PropertyModel.WritableObjectPropertyKey<>();
     public static final PropertyModel.WritableObjectPropertyKey<String> LOGO_CONTENT_DESCRIPTION =
             new PropertyModel.WritableObjectPropertyKey<>();

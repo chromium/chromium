@@ -4,20 +4,18 @@
 
 package org.chromium.chrome.browser.toolbar;
 
-import android.graphics.drawable.BitmapDrawable;
+import android.content.Context;
 import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneShotCallback;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ntp.LogoBridge.Logo;
 import org.chromium.chrome.browser.ntp.LogoBridge.LogoObserver;
 import org.chromium.chrome.browser.ntp.LogoDelegateImpl;
+import org.chromium.chrome.browser.ntp.LogoView;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
@@ -30,7 +28,7 @@ import org.chromium.chrome.features.start_surface.StartSurfaceState;
 public class LogoLoadHelper {
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final TopToolbarCoordinator mToolbar;
-    private final AppCompatActivity mActivity;
+    private final Context mContext;
 
     private CallbackController mCallbackController = new CallbackController();
     private LogoDelegateImpl mLogoDelegate;
@@ -41,13 +39,13 @@ public class LogoLoadHelper {
      *
      * @param profileSupplier Supplier of the currently applicable profile.
      * @param toolbar The {@link TopToolbarCoordinator}.
-     * @param activity The Android activity.
+     * @param context The activity context.
      */
     public LogoLoadHelper(ObservableSupplier<Profile> profileSupplier,
-            TopToolbarCoordinator toolbar, AppCompatActivity activity) {
+            TopToolbarCoordinator toolbar, Context context) {
         mProfileSupplier = profileSupplier;
         mToolbar = toolbar;
-        mActivity = activity;
+        mContext = context;
     }
 
     /**
@@ -55,7 +53,7 @@ public class LogoLoadHelper {
      * homepage, destroy mLogoDelegate.
      */
     void maybeLoadSearchProviderLogoOnHomepage(@StartSurfaceState int startSurfaceState) {
-        assert ReturnToChromeExperimentsUtil.isStartSurfaceEnabled(mActivity);
+        assert ReturnToChromeExperimentsUtil.isStartSurfaceEnabled(mContext);
         if (startSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE) {
             if (mProfileSupplier.hasValue()) {
                 loadSearchProviderLogo();
@@ -99,7 +97,7 @@ public class LogoLoadHelper {
      * Load the search provider logo on Start surface.
      */
     private void loadSearchProviderLogo() {
-        assert ReturnToChromeExperimentsUtil.isStartSurfaceEnabled(mActivity);
+        assert ReturnToChromeExperimentsUtil.isStartSurfaceEnabled(mContext);
 
         // If logo is already updated for the current search provider, or profile is null or off the
         // record, don't bother loading the logo image.
@@ -123,8 +121,9 @@ public class LogoLoadHelper {
         // TODO(crbug.com/1119467): Support Google doodles for Start surface.
         if (TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle()) {
             mHasLogoLoadedForCurrentSearchEngine = true;
-            mToolbar.onLogoAvailable(ResourcesCompat.getDrawable(mActivity.getResources(),
-                                             R.drawable.google_logo, mActivity.getTheme()),
+            // TODO(crbug.com/1261631): Separate logo codes and use LogoView for Start surface
+            // toolbar.
+            mToolbar.onLogoAvailable(LogoView.getDefaultGoogleLogo(mContext.getResources()),
                     /*contentDescription=*/null);
             return;
         }
@@ -140,9 +139,7 @@ public class LogoLoadHelper {
                     // R.string.accessibility_google_doodle before altText.
                     String contentDescription =
                             TextUtils.isEmpty(logo.altText) ? null : logo.altText;
-                    mToolbar.onLogoAvailable(
-                            new BitmapDrawable(mActivity.getResources(), logo.image),
-                            contentDescription);
+                    mToolbar.onLogoAvailable(logo.image, contentDescription);
                 }
             }
 

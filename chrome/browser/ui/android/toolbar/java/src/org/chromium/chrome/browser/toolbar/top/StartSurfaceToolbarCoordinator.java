@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar.top;
 
-import android.graphics.drawable.Drawable;
+import android.graphics.Bitmap;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
@@ -239,7 +239,7 @@ public class StartSurfaceToolbarCoordinator {
      * @param logoImage The logo image.
      * @param contentDescription The accessibility text describing the logo.
      */
-    void onLogoImageAvailable(Drawable logoImage, String contentDescription) {
+    void onLogoImageAvailable(Bitmap logoImage, String contentDescription) {
         mToolbarMediator.onLogoImageAvailable(logoImage, contentDescription);
     }
 
