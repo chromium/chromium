@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/style/color_provider.h"
+#include "base/bind.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_clipboard_bubble_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -18,6 +19,7 @@
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/link.h"
+#include "ui/views/controls/styled_label.h"
 
 namespace policy {
 
@@ -112,8 +114,9 @@ END_METADATA
 ClipboardBubbleView::ClipboardBubbleView(const std::u16string& text) {
   SetPaintToLayer(ui::LAYER_SOLID_COLOR);
   ash::ColorProvider* color_provider = ash::ColorProvider::Get();
-  layer()->SetColor(color_provider->GetBaseLayerColor(
-      ash::ColorProvider::BaseLayerType::kTransparent80));
+  SkColor background_color = color_provider->GetBaseLayerColor(
+      ash::ColorProvider::BaseLayerType::kTransparent80);
+  layer()->SetColor(background_color);
   if (ash::features::IsBackgroundBlurEnabled())
     layer()->SetBackgroundBlur(kBubbleBlurRadius);
   layer()->SetRoundedCornerRadius(kCornerRadii);
@@ -130,44 +133,43 @@ ClipboardBubbleView::ClipboardBubbleView(const std::u16string& text) {
                                                 kManagedIconSize, icon_color));
 
   // Add the bubble text.
-  label_ = AddChildView(std::make_unique<views::Label>());
+  label_ = AddChildView(std::make_unique<views::StyledLabel>());
   label_->SetPaintToLayer();
   label_->layer()->SetFillsBoundsOpaquely(false);
   label_->SetPosition(gfx::Point(
       kBubblePadding + kManagedIconSize + kIconLabelSpacing, kBubblePadding));
+  label_->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
 
-  // Set the styling of the text.
+  std::u16string learn_more_link_text =
+      l10n_util::GetStringUTF16(IDS_LEARN_MORE);
+  std::u16string full_text = l10n_util::GetStringFUTF16(
+      IDS_POLICY_DLP_CLIPBOARD_BUBBLE_MESSAGE, text, learn_more_link_text);
+  const int main_message_length =
+      full_text.size() - learn_more_link_text.size();
+
+  // Set the styling of the main text.
   // TODO(crbug.com/1150741): Handle RTL.
-  label_->SetText(text);
-  label_->SetFontList(gfx::FontList({kTextFontName}, gfx::Font::NORMAL,
-                                    kTextFontSize, gfx::Font::Weight::NORMAL));
-  label_->SetEnabledColor(color_provider->GetContentLayerColor(
-      ash::ColorProvider::ContentLayerType::kTextColorPrimary));
+  views::StyledLabel::RangeStyleInfo message_style;
+  message_style.override_color = color_provider->GetContentLayerColor(
+      ash::ColorProvider::ContentLayerType::kTextColorPrimary);
+
+  label_->SetDisplayedOnBackgroundColor(background_color);
+  label_->SetText(full_text);
+  label_->AddStyleRange(gfx::Range(0, main_message_length), message_style);
+
+  // Add "Learn more" link.
+  views::StyledLabel::RangeStyleInfo link_style =
+      views::StyledLabel::RangeStyleInfo::CreateForLink(
+          base::BindRepeating(&OnLearnMoreLinkClicked));
+  link_style.override_color = color_provider->GetContentLayerColor(
+      ash::ColorProvider::ContentLayerType::kTextColorURL);
+
+  label_->AddStyleRange(gfx::Range(main_message_length, full_text.size()),
+                        link_style);
   label_->SetLineHeight(kLineHeight);
-  label_->SetMultiLine(true);
   label_->SizeToFit(kBubbleWidth - 2 * kBubblePadding - kManagedIconSize -
                     kIconLabelSpacing);
   label_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
-  label_->SetAutoColorReadabilityEnabled(false);
-
-  // Add "Learn more" link.
-  // TODO(crbug.com/1252779): Move it to continue the label text, not below it.
-  link_ = AddChildView(
-      std::make_unique<views::Link>(l10n_util::GetStringUTF16(IDS_LEARN_MORE)));
-  link_->SetPaintToLayer();
-  link_->layer()->SetFillsBoundsOpaquely(false);
-  link_->SetPosition(
-      gfx::Point(kBubblePadding + kManagedIconSize + kIconLabelSpacing,
-                 kBubblePadding + label_->height()));
-  link_->SetFontList(gfx::FontList({kTextFontName}, gfx::Font::NORMAL,
-                                   kTextFontSize, gfx::Font::Weight::NORMAL));
-  link_->SetLineHeight(kLineHeight);
-  link_->SetMultiLine(true);
-  link_->SizeToFit(kBubbleWidth - 2 * kBubblePadding - kManagedIconSize -
-                   kIconLabelSpacing);
-  link_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
-  link_->SetAutoColorReadabilityEnabled(false);
-  link_->SetCallback(base::BindRepeating(&OnLearnMoreLinkClicked));
 
   // Bubble borders
   border_ = AddChildView(std::make_unique<views::ImageView>());

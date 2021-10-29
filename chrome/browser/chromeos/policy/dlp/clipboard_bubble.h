@@ -14,7 +14,7 @@
 
 namespace views {
 class ImageView;
-class Label;
+class StyledLabel;
 class LabelButton;
 class Link;
 }  // namespace views
@@ -35,7 +35,7 @@ class ClipboardBubbleView : public views::View {
   // This function should get called if the view got updated e.g. AddChildView.
   void UpdateBorderSize(const gfx::Size& size);
 
-  views::Label* label_ = nullptr;
+  views::StyledLabel* label_ = nullptr;
   views::ImageView* managed_icon_ = nullptr;
   views::ImageView* border_ = nullptr;
   views::Link* link_ = nullptr;
