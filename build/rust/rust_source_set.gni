@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/rust.gni")
+import("//build/rust/rust_unit_test.gni")
 
 # Defines a Rust static library which can be used by downstream Rust or C++
 # targets.
@@ -50,6 +51,10 @@ import("//build/config/rust.gni")
 #
 #   configs (optional)
 #     A list of config labels (in the GN meaning) applying to this target.
+#
+#   rustflags (optional)
+#     Explicit flags for rustc command line. (Use 'edition' or 'features'
+#     where possible).
 #
 #   deps (optional)
 #     List of GN targets on which this crate depends. These may be Rust
@@ -246,31 +251,10 @@ template("rust_source_set") {
       _unit_test_target = invoker.unit_test_target
     }
 
-    # TODO(crbug.com/1229320): Arrange to run test executables on try bots.
-    # TODO(crbug.com/gn/146): Allow Rust executables to depend on C/C++ source sets.
-    # This is important in cases where Rust tests may depend upon C/C++
-    # dependencies.
-    executable(_unit_test_target) {
-      forward_variables_from(invoker,
-                             "*",
-                             [
-                               "features",
-                               "deps",
-                               "rustflags",
-                               "configs",
-                               "output_name",
-                               "crate_name",
-                               "crate_root",
-                               "unit_test_target",
-                             ])
-      rustflags = [
-        "--cfg",
-        "feature=\"test\"",
-        "--test",
-      ]
+    rust_unit_test(_unit_test_target) {
+      forward_variables_from(invoker, [ "sources" ])
       crate_root = _crate_root
-      rustflags += _rustflags
-      configs += _configs
+      rustflags = _rustflags
       deps = _deps
       if (defined(invoker.test_deps)) {
         deps += invoker.test_deps
