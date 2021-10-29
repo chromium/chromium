@@ -107,7 +107,6 @@ source_set("audio") {
     "audio_output_stream_sink.h",
     "audio_sink_parameters.cc",
     "audio_sink_parameters.h",
-    "audio_source_diverter.h",
     "audio_source_parameters.cc",
     "audio_source_parameters.h",
     "audio_system.cc",
