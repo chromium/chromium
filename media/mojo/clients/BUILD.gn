@@ -35,6 +35,8 @@ source_set("clients") {
   sources = [
     "mojo_audio_decoder.cc",
     "mojo_audio_decoder.h",
+    "mojo_audio_encoder.cc",
+    "mojo_audio_encoder.h",
     "mojo_cdm.cc",
     "mojo_cdm.h",
     "mojo_cdm_factory.cc",
@@ -105,6 +107,7 @@ source_set("unit_tests") {
 
   sources = [
     "mojo_audio_decoder_unittest.cc",
+    "mojo_audio_encoder_unittest.cc",
     "mojo_cdm_unittest.cc",
     "mojo_decryptor_unittest.cc",
     "mojo_renderer_unittest.cc",

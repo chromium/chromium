@@ -13,6 +13,7 @@ mojom("mojom") {
   sources = [
     "audio_data_pipe.mojom",
     "audio_decoder.mojom",
+    "audio_encoder.mojom",
     "audio_input_stream.mojom",
     "audio_logging.mojom",
     "audio_output_stream.mojom",
@@ -175,6 +176,36 @@ mojom("mojom") {
         "//base",
         "//media",
         "//media/base/ipc",
+      ]
+    },
+    {
+      types = [
+        {
+          mojom = "media.mojom.AudioEncoderConfig"
+          cpp = "::media::AudioEncoder::Options"
+        },
+      ]
+      traits_headers = [ "audio_encoder_config_mojom_traits.h" ]
+      traits_sources = [ "audio_encoder_config_mojom_traits.cc" ]
+      traits_public_deps = [
+        "//base",
+        "//media",
+        "//media/base/ipc",
+      ]
+    },
+    {
+      types = [
+        {
+          mojom = "media.mojom.EncodedAudioBuffer"
+          cpp = "::media::EncodedAudioBuffer"
+          move_only = true
+        },
+      ]
+      traits_headers = [ "encoded_audio_buffer_traits.h" ]
+      traits_sources = [ "encoded_audio_buffer_traits.cc" ]
+      traits_public_deps = [
+        "//base",
+        "//media",
       ]
     },
     {
