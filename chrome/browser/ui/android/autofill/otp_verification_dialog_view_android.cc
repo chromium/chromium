@@ -50,11 +50,7 @@ CardUnmaskOtpInputDialogView* CardUnmaskOtpInputDialogView::CreateAndShow(
   OtpVerificationDialogViewAndroid* dialog_view =
       new OtpVerificationDialogViewAndroid(controller);
   // Return the dialog only if we were able to show it.
-  if (dialog_view->ShowDialog(window_android)) {
-    return dialog_view;
-  } else {
-    return nullptr;
-  }
+  return dialog_view->ShowDialog(window_android) ? dialog_view : nullptr;
 }
 
 void OtpVerificationDialogViewAndroid::ShowPendingState() {
@@ -63,12 +59,12 @@ void OtpVerificationDialogViewAndroid::ShowPendingState() {
   NOTREACHED();
 }
 
-void OtpVerificationDialogViewAndroid::ShowErrorMessage(
-    const std::u16string error_message) {
+void OtpVerificationDialogViewAndroid::ShowInvalidState(
+    const std::u16string& invalid_label_text) {
   DCHECK(java_object_);
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_OtpVerificationDialogBridge_showOtpErrorMessage(
-      env, java_object_, ConvertUTF16ToJavaString(env, error_message));
+      env, java_object_, ConvertUTF16ToJavaString(env, invalid_label_text));
 }
 
 void OtpVerificationDialogViewAndroid::OnControllerDestroying() {

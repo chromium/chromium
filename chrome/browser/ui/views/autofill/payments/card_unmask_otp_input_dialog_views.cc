@@ -67,10 +67,16 @@ void CardUnmaskOtpInputDialogViews::ShowPendingState() {
   SetButtonEnabled(ui::DIALOG_BUTTON_OK, false);
 }
 
-void CardUnmaskOtpInputDialogViews::ShowErrorMessage(
-    const std::u16string error_message) {
-  // TODO(crbug.com/1196021): Show error message when OTP verification fails.
-  NOTIMPLEMENTED();
+void CardUnmaskOtpInputDialogViews::ShowInvalidState(
+    const std::u16string& invalid_label_text) {
+  otp_input_view_->SetVisible(true);
+  progress_view_->SetVisible(false);
+  progress_throbber_->Stop();
+  SetButtonEnabled(ui::DIALOG_BUTTON_OK, false);
+  otp_input_textfield_->SetInvalid(true);
+  otp_input_textfield_invalid_label_->SetVisible(true);
+  otp_input_textfield_invalid_label_->SetText(invalid_label_text);
+  otp_input_textfield_invalid_label_padding_->SetVisible(false);
 }
 
 void CardUnmaskOtpInputDialogViews::OnControllerDestroying() {
@@ -105,6 +111,9 @@ void CardUnmaskOtpInputDialogViews::OnThemeChanged() {
 void CardUnmaskOtpInputDialogViews::ContentsChanged(
     views::Textfield* sender,
     const std::u16string& new_contents) {
+  if (otp_input_textfield_->GetInvalid())
+    HideInvalidState();
+
   SetButtonEnabled(ui::DIALOG_BUTTON_OK,
                    /*enabled=*/controller_->IsValidOtp(new_contents));
 }
@@ -131,19 +140,44 @@ void CardUnmaskOtpInputDialogViews::CreateOtpInputView() {
   // view shown in the dialog.
   otp_input_view_->SetVisible(true);
 
+  // Adds view that combines textfield and textfield invalid label.
+  auto* otp_input_textfield_view =
+      otp_input_view_->AddChildView(std::make_unique<views::BoxLayoutView>());
+  otp_input_textfield_view->SetOrientation(
+      views::BoxLayout::Orientation::kVertical);
+
   // Adds textfield.
-  otp_input_textfield_ =
-      otp_input_view_->AddChildView(std::make_unique<views::Textfield>());
+  otp_input_textfield_ = otp_input_textfield_view->AddChildView(
+      std::make_unique<views::Textfield>());
   otp_input_textfield_->SetPlaceholderText(
       controller_->GetTextfieldPlaceholderText());
   otp_input_textfield_->SetTextInputType(
       ui::TextInputType::TEXT_INPUT_TYPE_NUMBER);
   otp_input_textfield_->SetController(this);
 
+  // Adds textfield invalid label. The invalid label is initially not visible.
+  otp_input_textfield_invalid_label_ =
+      otp_input_textfield_view->AddChildView(std::make_unique<views::Label>(
+          std::u16string(), ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
+          STYLE_RED));
+  otp_input_textfield_invalid_label_->SetHorizontalAlignment(
+      gfx::HorizontalAlignment::ALIGN_LEFT);
+  otp_input_textfield_invalid_label_->SetVisible(false);
+  otp_input_textfield_invalid_label_->SetMultiLine(true);
+
+  // Adds padding between the textfield and footer text while textfield label
+  // is not visible, so that the initial dialog layout allows room for the error
+  // label to appear if necessary. The padding is initially visible.
+  otp_input_textfield_invalid_label_padding_ =
+      otp_input_textfield_view->AddChildView(std::make_unique<views::View>());
+  otp_input_textfield_invalid_label_padding_->SetPreferredSize(
+      otp_input_textfield_invalid_label_->GetPreferredSize());
+
   // Adds footer.
   const std::u16string link_text = controller_->GetNewCodeLinkText();
   const FooterText footer_text = controller_->GetFooterText(link_text);
-  auto footer_label = std::make_unique<views::StyledLabel>();
+  auto* footer_label =
+      otp_input_view_->AddChildView(std::make_unique<views::StyledLabel>());
   footer_label->SetText(footer_text.text);
   footer_label->AddStyleRange(
       gfx::Range(footer_text.link_offset_in_text,
@@ -153,7 +187,6 @@ void CardUnmaskOtpInputDialogViews::CreateOtpInputView() {
           // OTP once implemented.
           views::Link::ClickedCallback()));
   footer_label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
-  otp_input_view_->AddChildView(std::move(footer_label));
 }
 
 void CardUnmaskOtpInputDialogViews::CreateHiddenProgressView() {
@@ -177,6 +210,13 @@ void CardUnmaskOtpInputDialogViews::CreateHiddenProgressView() {
   progress_label_ = progress_view_->AddChildView(
       std::make_unique<views::Label>(controller_->GetProgressLabel()));
   progress_label_->SetMultiLine(true);
+}
+
+void CardUnmaskOtpInputDialogViews::HideInvalidState() {
+  DCHECK(otp_input_textfield_->GetInvalid());
+  otp_input_textfield_->SetInvalid(false);
+  otp_input_textfield_invalid_label_->SetVisible(false);
+  otp_input_textfield_invalid_label_padding_->SetVisible(true);
 }
 
 }  // namespace autofill

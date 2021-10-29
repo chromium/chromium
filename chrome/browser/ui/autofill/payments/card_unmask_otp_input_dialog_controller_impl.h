@@ -16,6 +16,8 @@
 
 namespace autofill {
 
+enum class OtpUnmaskResult;
+
 class CardUnmaskOtpInputDialogControllerImpl
     : public CardUnmaskOtpInputDialogController,
       public content::WebContentsObserver,
@@ -53,6 +55,10 @@ class CardUnmaskOtpInputDialogControllerImpl
 
   friend class content::WebContentsUserData<
       CardUnmaskOtpInputDialogControllerImpl>;
+
+  // Sets the view's state to the invalid state for the corresponding
+  // |otp_unmask_result|.
+  void ShowInvalidState(OtpUnmaskResult otp_unmask_result);
 
   size_t otp_length_;
   CardUnmaskOtpInputDialogView* dialog_view_ = nullptr;
