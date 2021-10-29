@@ -42,7 +42,7 @@ UntrustedEcheAppUI::UntrustedEcheAppUI(content::WebUI* web_ui)
                                IDR_CHROMEOS_ECHE_APP_BUNDLE_CSS);
   html_source->AddResourcePath(
       "message_pipe.js",
-      IDR_ASH_ECHE_APP_____________CHROMEOS_COMPONENTS_SYSTEM_APPS_PUBLIC_JS_MESSAGE_PIPE_JS);
+      IDR_ASH_ECHE_APP_______SYSTEM_APPS_PUBLIC_JS_MESSAGE_PIPE_JS);
   html_source->AddResourcePath("message_types.js",
                                IDR_ASH_ECHE_APP_MESSAGE_TYPES_JS);
   html_source->AddResourcePath("receiver.js", IDR_ASH_ECHE_APP_RECEIVER_JS);

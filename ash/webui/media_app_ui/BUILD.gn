@@ -154,7 +154,7 @@ js_library("test_guest_query_receiver_js") {
     ":test_dom_testing_helpers_js",
     ":test_driver_api_js",
     "//ash/webui/media_app_ui/resources/js:receiver",
-    "//chromeos/components/system_apps/public/js:message_pipe",
+    "//ash/webui/system_apps/public/js:message_pipe",
   ]
 }
 
@@ -165,7 +165,7 @@ js_library("test_driver_js") {
   deps = [
     ":test_driver_api_js",
     "//ash/webui/media_app_ui/resources/js:launch",
-    "//chromeos/components/system_apps/public/js:message_pipe",
+    "//ash/webui/system_apps/public/js:message_pipe",
   ]
 }
 
@@ -188,7 +188,7 @@ js_library("test_media_app_ui_browsertest_js") {
   deps = [
     ":test_driver_js",
     "//ash/webui/media_app_ui/resources/js:launch",
-    "//chromeos/components/system_apps/public/js:message_pipe",
+    "//ash/webui/system_apps/public/js:message_pipe",
   ]
 }
 
@@ -201,7 +201,7 @@ js_library("test_media_app_guest_ui_browsertest_js") {
     ":test_driver_js",
     ":test_worker_js",
     "//ash/webui/media_app_ui/resources/js:receiver",
-    "//chromeos/components/system_apps/public/js:message_pipe",
+    "//ash/webui/system_apps/public/js:message_pipe",
   ]
 }
 

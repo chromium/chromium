@@ -14,9 +14,8 @@ js_library("sandboxed_load_time_data") {
 }
 
 js_library("message_pipe.m") {
-  sources = [
-    "$root_gen_dir/chromeos/components/system_apps/public/js/message_pipe.m.js",
-  ]
+  sources =
+      [ "$root_gen_dir/ash/webui/system_apps/public/js/message_pipe.m.js" ]
   extra_deps = [ ":modulize" ]
 }
 

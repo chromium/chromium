@@ -42,6 +42,8 @@ async function sendTestMessage(messageType, message = {}) {
   return untrustedMessagePipe.sendMessage(messageType, message);
 }
 
+// js2gtest fixtures require var here (https://crbug.com/1033337).
+// eslint-disable-next-line no-var
 var MessagePipeBrowserTest = class extends testing.Test {
   /** @override */
   get browsePreload() {

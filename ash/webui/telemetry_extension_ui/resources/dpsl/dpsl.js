@@ -7,7 +7,7 @@
  * used by Telemetry System Extensions.
  */
 
-// <include src="../../../../../chromeos/components/system_apps/public/js/message_pipe.js">
+// <include src="../../../system_apps/public/js/message_pipe.js">
 // <include src="types.js">
 // <include src="namespace.js">
 // <include src="dpsl_types.js">

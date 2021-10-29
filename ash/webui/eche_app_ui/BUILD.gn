@@ -144,7 +144,7 @@ js_type_check("closure_compile") {
 js_library("app") {
   deps = [
     "//ash/webui/eche_app_ui/mojom:mojom_js_library_for_compile",
-    "//chromeos/components/system_apps/public/js:message_pipe",
+    "//ash/webui/system_apps/public/js:message_pipe",
     "//ui/webui/resources/js:cr.m",
   ]
   externs_list = [ "$externs_path/metrics_private.js" ]
@@ -165,7 +165,7 @@ js2gtest("browser_tests_js") {
 generate_grd("build_grd") {
   input_files_base_dir = rebase_path("resources", "//")
   input_files = [
-    "../../../../chromeos/components/system_apps/public/js/message_pipe.js",
+    "../../system_apps/public/js/message_pipe.js",
     "browser_proxy.js",
     "message_types.js",
     "receiver.js",
