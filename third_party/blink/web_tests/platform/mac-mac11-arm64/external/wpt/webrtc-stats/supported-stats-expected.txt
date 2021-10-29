@@ -1,0 +1,314 @@
+This is a testharness.js-based test.
+Found 310 tests; 117 PASS, 193 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS getStats succeeds
+PASS Validating stats
+PASS codec's payloadType
+FAIL codec's codecType assert_true: Is codecType present expected true got false
+PASS codec's transportId
+PASS codec's mimeType
+PASS codec's clockRate
+PASS codec's channels
+PASS codec's sdpFmtpLine
+PASS codec's timestamp
+PASS codec's type
+PASS codec's id
+FAIL inbound-rtp's receiverId assert_true: Is receiverId present expected true got false
+FAIL inbound-rtp's remoteId assert_true: Is remoteId present expected true got false
+PASS inbound-rtp's framesDecoded
+PASS inbound-rtp's keyFramesDecoded
+FAIL inbound-rtp's frameWidth assert_true: Is frameWidth present expected true got false
+FAIL inbound-rtp's frameHeight assert_true: Is frameHeight present expected true got false
+FAIL inbound-rtp's frameBitDepth assert_true: Is frameBitDepth present expected true got false
+FAIL inbound-rtp's framesPerSecond assert_true: Is framesPerSecond present expected true got false
+FAIL inbound-rtp's qpSum assert_true: Is qpSum present expected true got false
+PASS inbound-rtp's totalDecodeTime
+PASS inbound-rtp's totalInterFrameDelay
+PASS inbound-rtp's totalSquaredInterFrameDelay
+FAIL inbound-rtp's voiceActivityFlag assert_true: Is voiceActivityFlag present expected true got false
+FAIL inbound-rtp's lastPacketReceivedTimestamp assert_true: Is lastPacketReceivedTimestamp present expected true got false
+FAIL inbound-rtp's averageRtcpInterval assert_true: Is averageRtcpInterval present expected true got false
+PASS inbound-rtp's headerBytesReceived
+PASS inbound-rtp's fecPacketsReceived
+PASS inbound-rtp's fecPacketsDiscarded
+PASS inbound-rtp's bytesReceived
+FAIL inbound-rtp's packetsFailedDecryption assert_true: Is packetsFailedDecryption present expected true got false
+FAIL inbound-rtp's packetsDuplicated assert_true: Is packetsDuplicated present expected true got false
+FAIL inbound-rtp's perDscpPacketsReceived assert_true: Is perDscpPacketsReceived present expected true got false
+PASS inbound-rtp's nackCount
+PASS inbound-rtp's firCount
+PASS inbound-rtp's pliCount
+FAIL inbound-rtp's sliCount assert_true: Is sliCount present expected true got false
+FAIL inbound-rtp's totalProcessingDelay assert_true: Is totalProcessingDelay present expected true got false
+FAIL inbound-rtp's estimatedPlayoutTimestamp assert_true: Is estimatedPlayoutTimestamp present expected true got false
+PASS inbound-rtp's jitterBufferDelay
+PASS inbound-rtp's jitterBufferEmittedCount
+PASS inbound-rtp's totalSamplesReceived
+FAIL inbound-rtp's totalSamplesDecoded assert_true: Is totalSamplesDecoded present expected true got false
+FAIL inbound-rtp's samplesDecodedWithSilk assert_true: Is samplesDecodedWithSilk present expected true got false
+FAIL inbound-rtp's samplesDecodedWithCelt assert_true: Is samplesDecodedWithCelt present expected true got false
+PASS inbound-rtp's concealedSamples
+PASS inbound-rtp's silentConcealedSamples
+PASS inbound-rtp's concealmentEvents
+PASS inbound-rtp's insertedSamplesForDeceleration
+PASS inbound-rtp's removedSamplesForAcceleration
+FAIL inbound-rtp's audioLevel assert_true: Is audioLevel present expected true got false
+PASS inbound-rtp's totalAudioEnergy
+PASS inbound-rtp's totalSamplesDuration
+PASS inbound-rtp's framesReceived
+PASS inbound-rtp's decoderImplementation
+PASS inbound-rtp's packetsReceived
+PASS inbound-rtp's packetsLost
+PASS inbound-rtp's jitter
+PASS inbound-rtp's packetsDiscarded
+FAIL inbound-rtp's packetsRepaired assert_true: Is packetsRepaired present expected true got false
+FAIL inbound-rtp's burstPacketsLost assert_true: Is burstPacketsLost present expected true got false
+FAIL inbound-rtp's burstPacketsDiscarded assert_true: Is burstPacketsDiscarded present expected true got false
+FAIL inbound-rtp's burstLossCount assert_true: Is burstLossCount present expected true got false
+FAIL inbound-rtp's burstDiscardCount assert_true: Is burstDiscardCount present expected true got false
+FAIL inbound-rtp's burstLossRate assert_true: Is burstLossRate present expected true got false
+FAIL inbound-rtp's burstDiscardRate assert_true: Is burstDiscardRate present expected true got false
+FAIL inbound-rtp's gapLossRate assert_true: Is gapLossRate present expected true got false
+FAIL inbound-rtp's gapDiscardRate assert_true: Is gapDiscardRate present expected true got false
+PASS inbound-rtp's framesDropped
+FAIL inbound-rtp's partialFramesLost assert_true: Is partialFramesLost present expected true got false
+FAIL inbound-rtp's fullFramesLost assert_true: Is fullFramesLost present expected true got false
+PASS inbound-rtp's ssrc
+PASS inbound-rtp's kind
+PASS inbound-rtp's transportId
+FAIL inbound-rtp's codecId assert_true: Is codecId present expected true got false
+PASS inbound-rtp's timestamp
+PASS inbound-rtp's type
+PASS inbound-rtp's id
+FAIL outbound-rtp's rtxSsrc assert_true: Is rtxSsrc present expected true got false
+PASS outbound-rtp's mediaSourceId
+FAIL outbound-rtp's senderId assert_true: Is senderId present expected true got false
+FAIL outbound-rtp's remoteId assert_true: Is remoteId present expected true got false
+FAIL outbound-rtp's rid assert_true: Is rid present expected true got false
+FAIL outbound-rtp's lastPacketSentTimestamp assert_true: Is lastPacketSentTimestamp present expected true got false
+PASS outbound-rtp's headerBytesSent
+FAIL outbound-rtp's packetsDiscardedOnSend assert_true: Is packetsDiscardedOnSend present expected true got false
+FAIL outbound-rtp's bytesDiscardedOnSend assert_true: Is bytesDiscardedOnSend present expected true got false
+FAIL outbound-rtp's fecPacketsSent assert_true: Is fecPacketsSent present expected true got false
+PASS outbound-rtp's retransmittedPacketsSent
+PASS outbound-rtp's retransmittedBytesSent
+FAIL outbound-rtp's targetBitrate assert_true: Is targetBitrate present expected true got false
+PASS outbound-rtp's totalEncodedBytesTarget
+FAIL outbound-rtp's frameWidth assert_true: Is frameWidth present expected true got false
+FAIL outbound-rtp's frameHeight assert_true: Is frameHeight present expected true got false
+FAIL outbound-rtp's frameBitDepth assert_true: Is frameBitDepth present expected true got false
+FAIL outbound-rtp's framesPerSecond assert_true: Is framesPerSecond present expected true got false
+PASS outbound-rtp's framesSent
+PASS outbound-rtp's hugeFramesSent
+PASS outbound-rtp's framesEncoded
+PASS outbound-rtp's keyFramesEncoded
+FAIL outbound-rtp's framesDiscardedOnSend assert_true: Is framesDiscardedOnSend present expected true got false
+FAIL outbound-rtp's qpSum assert_true: Is qpSum present expected true got false
+FAIL outbound-rtp's totalSamplesSent assert_true: Is totalSamplesSent present expected true got false
+FAIL outbound-rtp's samplesEncodedWithSilk assert_true: Is samplesEncodedWithSilk present expected true got false
+FAIL outbound-rtp's samplesEncodedWithCelt assert_true: Is samplesEncodedWithCelt present expected true got false
+FAIL outbound-rtp's voiceActivityFlag assert_true: Is voiceActivityFlag present expected true got false
+PASS outbound-rtp's totalEncodeTime
+PASS outbound-rtp's totalPacketSendDelay
+FAIL outbound-rtp's averageRtcpInterval assert_true: Is averageRtcpInterval present expected true got false
+PASS outbound-rtp's qualityLimitationReason
+PASS outbound-rtp's qualityLimitationDurations
+PASS outbound-rtp's qualityLimitationResolutionChanges
+FAIL outbound-rtp's perDscpPacketsSent assert_true: Is perDscpPacketsSent present expected true got false
+PASS outbound-rtp's nackCount
+PASS outbound-rtp's firCount
+PASS outbound-rtp's pliCount
+FAIL outbound-rtp's sliCount assert_true: Is sliCount present expected true got false
+PASS outbound-rtp's encoderImplementation
+PASS outbound-rtp's packetsSent
+PASS outbound-rtp's bytesSent
+PASS outbound-rtp's ssrc
+PASS outbound-rtp's kind
+PASS outbound-rtp's transportId
+PASS outbound-rtp's codecId
+PASS outbound-rtp's timestamp
+PASS outbound-rtp's type
+PASS outbound-rtp's id
+FAIL remote-inbound-rtp's localId assert_true: Is localId present expected true got false
+FAIL remote-inbound-rtp's roundTripTime assert_true: Is roundTripTime present expected true got false
+FAIL remote-inbound-rtp's totalRoundTripTime assert_true: Is totalRoundTripTime present expected true got false
+FAIL remote-inbound-rtp's fractionLost assert_true: Is fractionLost present expected true got false
+FAIL remote-inbound-rtp's reportsReceived assert_true: Is reportsReceived present expected true got false
+FAIL remote-inbound-rtp's roundTripTimeMeasurements assert_true: Is roundTripTimeMeasurements present expected true got false
+FAIL remote-inbound-rtp's packetsReceived assert_true: Is packetsReceived present expected true got false
+FAIL remote-inbound-rtp's packetsLost assert_true: Is packetsLost present expected true got false
+FAIL remote-inbound-rtp's jitter assert_true: Is jitter present expected true got false
+FAIL remote-inbound-rtp's packetsDiscarded assert_true: Is packetsDiscarded present expected true got false
+FAIL remote-inbound-rtp's packetsRepaired assert_true: Is packetsRepaired present expected true got false
+FAIL remote-inbound-rtp's burstPacketsLost assert_true: Is burstPacketsLost present expected true got false
+FAIL remote-inbound-rtp's burstPacketsDiscarded assert_true: Is burstPacketsDiscarded present expected true got false
+FAIL remote-inbound-rtp's burstLossCount assert_true: Is burstLossCount present expected true got false
+FAIL remote-inbound-rtp's burstDiscardCount assert_true: Is burstDiscardCount present expected true got false
+FAIL remote-inbound-rtp's burstLossRate assert_true: Is burstLossRate present expected true got false
+FAIL remote-inbound-rtp's burstDiscardRate assert_true: Is burstDiscardRate present expected true got false
+FAIL remote-inbound-rtp's gapLossRate assert_true: Is gapLossRate present expected true got false
+FAIL remote-inbound-rtp's gapDiscardRate assert_true: Is gapDiscardRate present expected true got false
+FAIL remote-inbound-rtp's framesDropped assert_true: Is framesDropped present expected true got false
+FAIL remote-inbound-rtp's partialFramesLost assert_true: Is partialFramesLost present expected true got false
+FAIL remote-inbound-rtp's fullFramesLost assert_true: Is fullFramesLost present expected true got false
+FAIL remote-inbound-rtp's ssrc assert_true: Is ssrc present expected true got false
+FAIL remote-inbound-rtp's kind assert_true: Is kind present expected true got false
+FAIL remote-inbound-rtp's transportId assert_true: Is transportId present expected true got false
+FAIL remote-inbound-rtp's codecId assert_true: Is codecId present expected true got false
+FAIL remote-inbound-rtp's timestamp assert_true: Is timestamp present expected true got false
+FAIL remote-inbound-rtp's type assert_true: Is type present expected true got false
+FAIL remote-inbound-rtp's id assert_true: Is id present expected true got false
+FAIL remote-outbound-rtp's localId assert_true: Is localId present expected true got false
+FAIL remote-outbound-rtp's remoteTimestamp assert_true: Is remoteTimestamp present expected true got false
+FAIL remote-outbound-rtp's reportsSent assert_true: Is reportsSent present expected true got false
+FAIL remote-outbound-rtp's roundTripTime assert_true: Is roundTripTime present expected true got false
+FAIL remote-outbound-rtp's totalRoundTripTime assert_true: Is totalRoundTripTime present expected true got false
+FAIL remote-outbound-rtp's roundTripTimeMeasurements assert_true: Is roundTripTimeMeasurements present expected true got false
+FAIL remote-outbound-rtp's packetsSent assert_true: Is packetsSent present expected true got false
+FAIL remote-outbound-rtp's bytesSent assert_true: Is bytesSent present expected true got false
+FAIL remote-outbound-rtp's ssrc assert_true: Is ssrc present expected true got false
+FAIL remote-outbound-rtp's kind assert_true: Is kind present expected true got false
+FAIL remote-outbound-rtp's transportId assert_true: Is transportId present expected true got false
+FAIL remote-outbound-rtp's codecId assert_true: Is codecId present expected true got false
+FAIL remote-outbound-rtp's timestamp assert_true: Is timestamp present expected true got false
+FAIL remote-outbound-rtp's type assert_true: Is type present expected true got false
+FAIL remote-outbound-rtp's id assert_true: Is id present expected true got false
+FAIL csrc's contributorSsrc assert_true: Is contributorSsrc present expected true got false
+FAIL csrc's inboundRtpStreamId assert_true: Is inboundRtpStreamId present expected true got false
+FAIL csrc's packetsContributedTo assert_true: Is packetsContributedTo present expected true got false
+FAIL csrc's audioLevel assert_true: Is audioLevel present expected true got false
+FAIL csrc's timestamp assert_true: Is timestamp present expected true got false
+FAIL csrc's type assert_true: Is type present expected true got false
+FAIL csrc's id assert_true: Is id present expected true got false
+PASS peer-connection's dataChannelsOpened
+PASS peer-connection's dataChannelsClosed
+FAIL peer-connection's dataChannelsRequested assert_true: Is dataChannelsRequested present expected true got false
+FAIL peer-connection's dataChannelsAccepted assert_true: Is dataChannelsAccepted present expected true got false
+PASS peer-connection's timestamp
+PASS peer-connection's type
+PASS peer-connection's id
+PASS data-channel's label
+PASS data-channel's protocol
+PASS data-channel's dataChannelIdentifier
+PASS data-channel's state
+PASS data-channel's messagesSent
+PASS data-channel's bytesSent
+PASS data-channel's messagesReceived
+PASS data-channel's bytesReceived
+PASS data-channel's timestamp
+PASS data-channel's type
+PASS data-channel's id
+PASS media-source's audioLevel
+PASS media-source's totalAudioEnergy
+PASS media-source's totalSamplesDuration
+FAIL media-source's echoReturnLoss assert_true: Is echoReturnLoss present expected true got false
+FAIL media-source's echoReturnLossEnhancement assert_true: Is echoReturnLossEnhancement present expected true got false
+PASS media-source's width
+PASS media-source's height
+FAIL media-source's bitDepth assert_true: Is bitDepth present expected true got false
+PASS media-source's frames
+PASS media-source's framesPerSecond
+PASS media-source's trackIdentifier
+PASS media-source's kind
+FAIL media-source's relayedSource assert_true: Is relayedSource present expected true got false
+PASS media-source's timestamp
+PASS media-source's type
+PASS media-source's id
+FAIL sender's mediaSourceId assert_true: Is mediaSourceId present expected true got false
+FAIL sender's trackIdentifier assert_true: Is trackIdentifier present expected true got false
+FAIL sender's ended assert_true: Is ended present expected true got false
+FAIL sender's kind assert_true: Is kind present expected true got false
+FAIL sender's timestamp assert_true: Is timestamp present expected true got false
+FAIL sender's type assert_true: Is type present expected true got false
+FAIL sender's id assert_true: Is id present expected true got false
+FAIL receiver's trackIdentifier assert_true: Is trackIdentifier present expected true got false
+FAIL receiver's ended assert_true: Is ended present expected true got false
+FAIL receiver's kind assert_true: Is kind present expected true got false
+FAIL receiver's timestamp assert_true: Is timestamp present expected true got false
+FAIL receiver's type assert_true: Is type present expected true got false
+FAIL receiver's id assert_true: Is id present expected true got false
+PASS transport's packetsSent
+PASS transport's packetsReceived
+PASS transport's bytesSent
+PASS transport's bytesReceived
+FAIL transport's rtcpTransportStatsId assert_true: Is rtcpTransportStatsId present expected true got false
+FAIL transport's iceRole assert_true: Is iceRole present expected true got false
+FAIL transport's iceLocalUsernameFragment assert_true: Is iceLocalUsernameFragment present expected true got false
+PASS transport's dtlsState
+FAIL transport's iceState assert_true: Is iceState present expected true got false
+FAIL transport's selectedCandidatePairId assert_true: Is selectedCandidatePairId present expected true got false
+PASS transport's localCertificateId
+FAIL transport's remoteCertificateId assert_true: Is remoteCertificateId present expected true got false
+FAIL transport's tlsVersion assert_true: Is tlsVersion present expected true got false
+FAIL transport's dtlsCipher assert_true: Is dtlsCipher present expected true got false
+FAIL transport's srtpCipher assert_true: Is srtpCipher present expected true got false
+FAIL transport's tlsGroup assert_true: Is tlsGroup present expected true got false
+PASS transport's selectedCandidatePairChanges
+PASS transport's timestamp
+PASS transport's type
+PASS transport's id
+FAIL candidate-pair's transportId assert_true: Is transportId present expected true got false
+FAIL candidate-pair's localCandidateId assert_true: Is localCandidateId present expected true got false
+FAIL candidate-pair's remoteCandidateId assert_true: Is remoteCandidateId present expected true got false
+FAIL candidate-pair's state assert_true: Is state present expected true got false
+FAIL candidate-pair's nominated assert_true: Is nominated present expected true got false
+FAIL candidate-pair's packetsSent assert_true: Is packetsSent present expected true got false
+FAIL candidate-pair's packetsReceived assert_true: Is packetsReceived present expected true got false
+FAIL candidate-pair's bytesSent assert_true: Is bytesSent present expected true got false
+FAIL candidate-pair's bytesReceived assert_true: Is bytesReceived present expected true got false
+FAIL candidate-pair's lastPacketSentTimestamp assert_true: Is lastPacketSentTimestamp present expected true got false
+FAIL candidate-pair's lastPacketReceivedTimestamp assert_true: Is lastPacketReceivedTimestamp present expected true got false
+FAIL candidate-pair's firstRequestTimestamp assert_true: Is firstRequestTimestamp present expected true got false
+FAIL candidate-pair's lastRequestTimestamp assert_true: Is lastRequestTimestamp present expected true got false
+FAIL candidate-pair's lastResponseTimestamp assert_true: Is lastResponseTimestamp present expected true got false
+FAIL candidate-pair's totalRoundTripTime assert_true: Is totalRoundTripTime present expected true got false
+FAIL candidate-pair's currentRoundTripTime assert_true: Is currentRoundTripTime present expected true got false
+FAIL candidate-pair's availableOutgoingBitrate assert_true: Is availableOutgoingBitrate present expected true got false
+FAIL candidate-pair's availableIncomingBitrate assert_true: Is availableIncomingBitrate present expected true got false
+FAIL candidate-pair's circuitBreakerTriggerCount assert_true: Is circuitBreakerTriggerCount present expected true got false
+FAIL candidate-pair's requestsReceived assert_true: Is requestsReceived present expected true got false
+FAIL candidate-pair's requestsSent assert_true: Is requestsSent present expected true got false
+FAIL candidate-pair's responsesReceived assert_true: Is responsesReceived present expected true got false
+FAIL candidate-pair's responsesSent assert_true: Is responsesSent present expected true got false
+FAIL candidate-pair's retransmissionsReceived assert_true: Is retransmissionsReceived present expected true got false
+FAIL candidate-pair's retransmissionsSent assert_true: Is retransmissionsSent present expected true got false
+FAIL candidate-pair's consentRequestsSent assert_true: Is consentRequestsSent present expected true got false
+FAIL candidate-pair's consentExpiredTimestamp assert_true: Is consentExpiredTimestamp present expected true got false
+FAIL candidate-pair's packetsDiscardedOnSend assert_true: Is packetsDiscardedOnSend present expected true got false
+FAIL candidate-pair's bytesDiscardedOnSend assert_true: Is bytesDiscardedOnSend present expected true got false
+FAIL candidate-pair's requestBytesSent assert_true: Is requestBytesSent present expected true got false
+FAIL candidate-pair's consentRequestBytesSent assert_true: Is consentRequestBytesSent present expected true got false
+FAIL candidate-pair's responseBytesSent assert_true: Is responseBytesSent present expected true got false
+FAIL candidate-pair's timestamp assert_true: Is timestamp present expected true got false
+FAIL candidate-pair's type assert_true: Is type present expected true got false
+FAIL candidate-pair's id assert_true: Is id present expected true got false
+FAIL local-candidate's transportId assert_true: Is transportId present expected true got false
+FAIL local-candidate's address assert_true: Is address present expected true got false
+FAIL local-candidate's port assert_true: Is port present expected true got false
+FAIL local-candidate's protocol assert_true: Is protocol present expected true got false
+FAIL local-candidate's candidateType assert_true: Is candidateType present expected true got false
+FAIL local-candidate's priority assert_true: Is priority present expected true got false
+FAIL local-candidate's url assert_true: Is url present expected true got false
+FAIL local-candidate's relayProtocol assert_true: Is relayProtocol present expected true got false
+FAIL local-candidate's timestamp assert_true: Is timestamp present expected true got false
+FAIL local-candidate's type assert_true: Is type present expected true got false
+FAIL local-candidate's id assert_true: Is id present expected true got false
+FAIL remote-candidate's transportId assert_true: Is transportId present expected true got false
+FAIL remote-candidate's address assert_true: Is address present expected true got false
+FAIL remote-candidate's port assert_true: Is port present expected true got false
+FAIL remote-candidate's protocol assert_true: Is protocol present expected true got false
+FAIL remote-candidate's candidateType assert_true: Is candidateType present expected true got false
+FAIL remote-candidate's priority assert_true: Is priority present expected true got false
+FAIL remote-candidate's url assert_true: Is url present expected true got false
+FAIL remote-candidate's relayProtocol assert_true: Is relayProtocol present expected true got false
+FAIL remote-candidate's timestamp assert_true: Is timestamp present expected true got false
+FAIL remote-candidate's type assert_true: Is type present expected true got false
+FAIL remote-candidate's id assert_true: Is id present expected true got false
+PASS certificate's fingerprint
+PASS certificate's fingerprintAlgorithm
+PASS certificate's base64Certificate
+FAIL certificate's issuerCertificateId assert_true: Is issuerCertificateId present expected true got false
+PASS certificate's timestamp
+PASS certificate's type
+PASS certificate's id
+Harness: the test ran to completion.
+

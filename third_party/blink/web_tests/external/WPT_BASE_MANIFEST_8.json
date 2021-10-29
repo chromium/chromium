@@ -276372,14 +276372,6 @@
        "86654525dda61a31ed7a9617ad449309b8a55366",
        []
       ],
-      "cache-storage.tentative.https.window_dedicated_worker-expected.txt": [
-       "cfb3376feff4285356d70408c109d44938f656c1",
-       []
-      ],
-      "dedicated-worker.tentative.https.window-expected.txt": [
-       "7ecbf9ce7d5e1358c846788eb555627ca00c4833",
-       []
-      ],
       "resources": {
        "common.js": [
         "ce21c766f6c30fcb87147611ae1a6af9aa54ce0e",
@@ -276405,14 +276397,6 @@
      ],
      "data.https.html.headers": [
       "6604450991a122e3e241e40b1b9e0516c525389d",
-      []
-     ],
-     "dedicated-worker-cache-storage.https-expected.txt": [
-      "88a4a82baccbde282990faed56ab17e438fa51cf",
-      []
-     ],
-     "dedicated-worker.https-expected.txt": [
-      "883c29a04dfcd6030c7bf83b60deb63e970cd110",
       []
      ],
      "javascript.https.html.headers": [
@@ -298497,28 +298481,16 @@
       "9aa4a28996b56e4303a741353f626591b56802af",
       []
      ],
-     "client-url-of-blob-url-worker.https-expected.txt": [
-      "bc07e042a2626d0bf8c80179df67cfd90d4a5463",
-      []
-     ],
-     "clients-get-client-types.https-expected.txt": [
-      "58bae3013f3e9b54f93bad719971ffcaf2a09b26",
-      []
-     ],
-     "clients-matchall-blob-url-worker.https-expected.txt": [
-      "0065aa4ad95bafe37955a86b9ba9397d760dfa4c",
-      []
-     ],
      "clients-matchall-client-types.https-expected.txt": [
       "a5702d0326367c8a1552bbd99d98bb3d0c12cb7c",
       []
      ],
-     "clients-matchall-order.https-expected.txt": [
-      "78737fe4f60050c6e8cd4762d776fa8518e91225",
+     "clients-matchall-frozen.https-expected.txt": [
+      "1cb1906cfb62638e725f10e328ed93a9fface56d",
       []
      ],
-     "dedicated-worker-service-worker-interception.https-expected.txt": [
-      "e6e6986dc00a2077b683c28c4b9d639ef0f2d949",
+     "clients-matchall-order.https-expected.txt": [
+      "78737fe4f60050c6e8cd4762d776fa8518e91225",
       []
      ],
      "fetch-canvas-tainting-video-with-range-request.https-expected.txt": [
@@ -298582,7 +298554,7 @@
       []
      ],
      "local-url-inherit-controller.https-expected.txt": [
-      "5bbd21b5890f94e6eff4c5cd8f4e6300fa79c0e1",
+      "b3b46912445464bbcd50a77d995dae0adfb3328e",
       []
      ],
      "multi-globals": {
@@ -300212,11 +300184,11 @@
       []
      ],
      "worker-interception-redirect.https-expected.txt": [
-      "6ebfc05e07493232ef0f3d8a9f06e2605b54c558",
+      "06706c050fa5c7504d224c44f353b7b19ae3f5ea",
       []
      ],
      "worker-interception.https-expected.txt": [
-      "dba3694a6f928b5d0802aabda02604ae19797663",
+      "41d45df239565395ab8ce55043002800aa21c35f",
       []
      ],
      "xhr-content-length.https.window-expected.txt": [
