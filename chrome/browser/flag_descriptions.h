@@ -2361,6 +2361,9 @@ extern const char kButtonARCNetworkDiagnosticsDescription[];
 extern const char kCalendarViewName[];
 extern const char kCalendarViewDescription[];
 
+extern const char kDesksTemplatesName[];
+extern const char kDesksTemplatesDescription[];
+
 extern const char kDesksTrackpadSwipeImprovementsName[];
 extern const char kDesksTrackpadSwipeImprovementsDescription[];
 

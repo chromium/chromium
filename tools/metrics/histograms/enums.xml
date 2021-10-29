@@ -48991,6 +48991,7 @@ from previous Chrome versions.
       label="EnterpriseReportingApiKeychainRecreation:disabled"/>
   <int value="-1460561942" label="SystemEmojiPicker:disabled"/>
   <int value="-1460462432" label="disable-media-source"/>
+  <int value="-1459907288" label="DesksTemplates:enabled"/>
   <int value="-1457775295" label="PasswordSearchMobile:disabled"/>
   <int value="-1456789591" label="MediaFoundationVideoCapture:enabled"/>
   <int value="-1456627355" label="EnableEmojiContextMenu:disabled"/>
@@ -50737,6 +50738,7 @@ from previous Chrome versions.
   <int value="-116692797" label="HTTPAuthCommittedInterstitials:enabled"/>
   <int value="-116172457" label="PhoneHubRecentApps:disabled"/>
   <int value="-115834377" label="EnableUnifiedMultiDeviceSetup:disabled"/>
+  <int value="-115261987" label="DesksTemplates:disabled"/>
   <int value="-114807608" label="TerminalSystemApp:disabled"/>
   <int value="-114768488" label="ImmersiveFullscreen:enabled"/>
   <int value="-113855291" label="RelatedSearchesUi:enabled"/>

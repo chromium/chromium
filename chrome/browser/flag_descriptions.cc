@@ -4110,6 +4110,11 @@ const char kCalendarViewDescription[] =
     "Show Monthly Calendar View with Google Calendar events to increase "
     "productivity by helping users view their schedules more quickly.";
 
+const char kDesksTemplatesName[] = "Desks Templates";
+const char kDesksTemplatesDescription[] =
+    "Streamline workflows by saving a group of applications and windows as a "
+    "launchable template.";
+
 const char kDesksTrackpadSwipeImprovementsName[] =
     "Experiment: Trackpad swiping to switch desks.";
 const char kDesksTrackpadSwipeImprovementsDescription[] =
