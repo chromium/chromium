@@ -539,6 +539,7 @@ chrome_java_resources = [
   "java/res/drawable/shared_clipboard_zero_state_light.xml",
   "java/res/drawable/sharing_more.xml",
   "java/res/drawable/sharing_print.xml",
+  "java/res/drawable/sharing_print_baseline.xml",
   "java/res/drawable/signin_header_animation.xml",
   "java/res/drawable/store_locally_tooltip_background.xml",
   "java/res/drawable/tab_indicator.xml",

@@ -783,7 +783,7 @@ by a child template that "extends" this file.
         <!-- This activity is to expose the print option via the generic Android share action. -->
         <activity
             android:name="org.chromium.chrome.browser.printing.PrintShareActivity"
-            android:icon="@drawable/sharing_print"
+            android:icon="@drawable/sharing_print_baseline"
             android:label="@string/print_share_activity_title"
             android:enabled="false"
             android:excludeFromRecents="true"
