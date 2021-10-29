@@ -16,9 +16,11 @@
 #include "base/base_paths_mac.h"
 #elif defined(OS_ANDROID)
 #include "base/base_paths_android.h"
+#elif defined(OS_FUCHSIA)
+#include "base/base_paths_fuchsia.h"
 #endif
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if defined(OS_POSIX)
 #include "base/base_paths_posix.h"
 #endif
 

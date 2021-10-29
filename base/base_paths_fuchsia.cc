@@ -25,7 +25,6 @@ bool PathProviderFuchsia(int key, FilePath* result) {
       *result = CommandLine::ForCurrentProcess()->GetProgram();
       return true;
     case DIR_APP_DATA:
-    case DIR_CACHE:
       *result = base::FilePath(base::kPersistedDataDirectoryPath);
       return true;
     case DIR_ASSETS:
