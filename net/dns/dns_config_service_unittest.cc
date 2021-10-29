@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/cancelable_callback.h"
 #include "base/location.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
 #include "base/task/single_thread_task_runner.h"

@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "media/base/media_export.h"
 #include "media/base/media_log.h"
@@ -111,8 +110,8 @@ class MEDIA_EXPORT TrackRunIterator {
   const std::vector<uint8_t>& GetKeyId(size_t sample_index) const;
   bool ApplyConstantIv(size_t sample_index, SampleEncryptionEntry* entry) const;
 
-  raw_ptr<const Movie> moov_;
-  raw_ptr<MediaLog> media_log_;
+  const Movie* moov_;
+  MediaLog* media_log_;
 
   std::vector<TrackRunInfo> runs_;
   std::vector<TrackRunInfo>::const_iterator run_itr_;

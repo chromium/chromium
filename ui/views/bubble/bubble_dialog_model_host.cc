@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/memory/raw_ptr.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/class_property.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -185,7 +184,7 @@ class BubbleDialogModelHost::LayoutConsensusView : public View {
   }
 
  private:
-  const raw_ptr<LayoutConsensusGroup> group_;
+  LayoutConsensusGroup* const group_;
 };
 
 BEGIN_METADATA(BubbleDialogModelHost, LayoutConsensusView, View)

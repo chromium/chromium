@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/threading/thread.h"
@@ -85,7 +84,7 @@ class VizCompositorThreadRunnerWebView : public viz::VizCompositorThreadRunner {
   THREAD_CHECKER(viz_thread_checker_);
   std::unique_ptr<viz::ServerSharedBitmapManager> server_shared_bitmap_manager_;
   std::unique_ptr<viz::FrameSinkManagerImpl> frame_sink_manager_;
-  raw_ptr<viz::GpuServiceImpl> gpu_service_impl_ = nullptr;
+  viz::GpuServiceImpl* gpu_service_impl_ = nullptr;
 };
 
 }  // namespace android_webview

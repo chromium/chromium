@@ -7,8 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
-
 namespace base {
 class Value;
 }  // namespace base
@@ -49,9 +47,9 @@ class PostMessageSender final {
  private:
   std::unique_ptr<content::V8ValueConverter> v8_value_converter_;
 
-  raw_ptr<v8::Isolate> isolate_;
+  v8::Isolate* isolate_;
 
-  raw_ptr<blink::WebPluginContainer> container_ = nullptr;
+  blink::WebPluginContainer* container_ = nullptr;
 };
 
 }  // namespace chrome_pdf

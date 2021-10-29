@@ -17,7 +17,6 @@
 #include "base/check_op.h"
 #include "base/hash/md5.h"
 #include "base/memory/free_deleter.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/synchronization/lock.h"
@@ -732,7 +731,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
 
   // Shared memory handle, if this frame is STORAGE_SHMEM.  The region pointed
   // to is unowned.
-  raw_ptr<const base::UnsafeSharedMemoryRegion> shm_region_ = nullptr;
+  const base::UnsafeSharedMemoryRegion* shm_region_ = nullptr;
 
   // Used if this is a STORAGE_SHMEM frame with owned shared memory. In that
   // case, shm_region_ will refer to this region.

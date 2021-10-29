@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -118,7 +117,7 @@ class WebAppFrameToolbarView : public views::AccessiblePaneView,
   void UpdateChildrenColor(bool color_changed);
 
   // The containing browser view.
-  const raw_ptr<BrowserView> browser_view_;
+  BrowserView* const browser_view_;
 
   // Button and text colors.
   bool paint_as_active_ = true;
@@ -130,12 +129,12 @@ class WebAppFrameToolbarView : public views::AccessiblePaneView,
   // All remaining members are owned by the views hierarchy.
 
   // The navigation container is only created when display mode is minimal-ui.
-  raw_ptr<WebAppNavigationButtonContainer> left_container_ = nullptr;
+  WebAppNavigationButtonContainer* left_container_ = nullptr;
 
   // Empty container used by the parent frame to layout additional elements.
-  raw_ptr<views::View> center_container_ = nullptr;
+  views::View* center_container_ = nullptr;
 
-  raw_ptr<WebAppToolbarButtonContainer> right_container_ = nullptr;
+  WebAppToolbarButtonContainer* right_container_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_FRAME_TOOLBAR_WEB_APP_FRAME_TOOLBAR_VIEW_H_

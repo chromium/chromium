@@ -9,7 +9,6 @@
 
 #include "base/check_op.h"
 #include "base/debug/activity_tracker.h"
-#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
@@ -149,7 +148,7 @@ class SyncWaiter : public WaitableEvent::Waiter {
 
  private:
   bool fired_;
-  raw_ptr<WaitableEvent> signaling_event_;  // The WaitableEvent which woke us
+  WaitableEvent* signaling_event_;  // The WaitableEvent which woke us
   base::Lock lock_;
   base::ConditionVariable cv_;
 };

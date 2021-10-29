@@ -4,7 +4,6 @@
 
 #include "chrome/browser/performance_manager/decorators/helpers/page_live_state_decorator_helper.h"
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/public/performance_manager.h"
@@ -71,9 +70,9 @@ class PageLiveStateDecoratorHelper::WebContentsObserver
   }
 
  private:
-  const raw_ptr<PageLiveStateDecoratorHelper> outer_;
-  raw_ptr<WebContentsObserver> prev_;
-  raw_ptr<WebContentsObserver> next_;
+  PageLiveStateDecoratorHelper* const outer_;
+  WebContentsObserver* prev_;
+  WebContentsObserver* next_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

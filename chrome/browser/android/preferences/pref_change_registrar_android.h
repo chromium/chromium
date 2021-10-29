@@ -7,7 +7,6 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
 
 using base::android::JavaParamRef;
@@ -39,7 +38,7 @@ class PrefChangeRegistrarAndroid {
 
   PrefChangeRegistrar pref_change_registrar_;
   ScopedJavaGlobalRef<jobject> pref_change_registrar_jobject_;
-  raw_ptr<Profile> profile_;
+  Profile* profile_;
 };
 
 #endif  // CHROME_BROWSER_ANDROID_PREFERENCES_PREF_CHANGE_REGISTRAR_ANDROID_H_

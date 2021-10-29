@@ -4,7 +4,6 @@
 
 #include "components/performance_manager/public/decorators/site_data_recorder.h"
 
-#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/performance_manager/graph/node_attached_data_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
@@ -125,11 +124,10 @@ class SiteDataNodeData : public NodeAttachedDataImpl<SiteDataNodeData>,
 
   // The SiteDataCache used to serve writers for the PageNode owned by this
   // object.
-  raw_ptr<SiteDataCache> data_cache_ GUARDED_BY_CONTEXT(sequence_checker_) =
-      nullptr;
+  SiteDataCache* data_cache_ GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
 
   // The PageNode that owns this object.
-  raw_ptr<const PageNodeImpl> page_node_ GUARDED_BY_CONTEXT(sequence_checker_) =
+  const PageNodeImpl* page_node_ GUARDED_BY_CONTEXT(sequence_checker_) =
       nullptr;
 
   // The time at which this tab switched to LoadingState::kLoadedIdle, null if

@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 #include "base/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/proto/v2/wire/feed_action.pb.h"
@@ -123,7 +122,7 @@ class UploadActionsTask : public offline_pages::Task {
 
   std::string gaia_;
 
-  raw_ptr<LaunchReliabilityLogger> launch_reliability_logger_ = nullptr;
+  LaunchReliabilityLogger* launch_reliability_logger_ = nullptr;
   NetworkRequestId last_network_request_id_;
 
   base::WeakPtrFactory<UploadActionsTask> weak_ptr_factory_{this};

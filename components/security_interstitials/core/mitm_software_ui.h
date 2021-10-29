@@ -6,7 +6,6 @@
 #define COMPONENTS_SECURITY_INTERSTITIALS_CORE_MITM_SOFTWARE_UI_H_
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "components/security_interstitials/core/controller_client.h"
 #include "components/ssl_errors/error_classification.h"
@@ -43,7 +42,7 @@ class MITMSoftwareUI {
   const net::SSLInfo ssl_info_;
   const std::string mitm_software_name_;
   const bool is_enterprise_managed_;
-  raw_ptr<ControllerClient> controller_;
+  ControllerClient* controller_;
 };
 
 }  // namespace security_interstitials

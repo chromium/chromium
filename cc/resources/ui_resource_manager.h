@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/memory/raw_ptr.h"
 #include "cc/cc_export.h"
 #include "cc/resources/ui_resource_request.h"
 
@@ -53,7 +52,7 @@ class CC_EXPORT UIResourceManager {
 
  private:
   struct UIResourceClientData {
-    raw_ptr<UIResourceClient> client;
+    UIResourceClient* client;
     gfx::Size size;
   };
 

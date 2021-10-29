@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_VR_WIN_SCHEDULER_DELEGATE_WIN_H_
 #define CHROME_BROWSER_VR_WIN_SCHEDULER_DELEGATE_WIN_H_
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/vr/scheduler_delegate.h"
 
 namespace vr {
@@ -38,7 +37,7 @@ class SchedulerDelegateWin : public SchedulerDelegate {
       device::mojom::XRRuntimeSessionOptionsPtr options) override;
 
  private:
-  raw_ptr<SchedulerBrowserRendererInterface> browser_renderer_ = nullptr;
+  SchedulerBrowserRendererInterface* browser_renderer_ = nullptr;
   base::OnceCallback<void()> on_frame_ended_;
 };
 

@@ -15,7 +15,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
@@ -186,7 +185,7 @@ class PasswordManagerPresenter
   BooleanPrefMember show_passwords_;
 
   // UI view that owns this presenter.
-  raw_ptr<PasswordUIView> password_view_;
+  PasswordUIView* password_view_;
 
   // Contains the helpers currently executing moving tasks.
   MovePasswordToAccountStoreHelperList move_to_account_helpers_;

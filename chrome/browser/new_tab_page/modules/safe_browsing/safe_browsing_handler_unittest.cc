@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/new_tab_page/modules/safe_browsing/safe_browsing_handler.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -79,10 +78,10 @@ class SafeBrowsingHandlerTest : public ::testing::Test {
  protected:
   std::unique_ptr<SafeBrowsingHandler> module_handler_;
   // Unowned MockSafeBrowsingMetricsCollector
-  raw_ptr<MockSafeBrowsingMetricsCollector> metrics_collector_;
+  MockSafeBrowsingMetricsCollector* metrics_collector_;
   // Unowned PrefService. Use TestingPrefServiceSyncable
   // as that is what TestingProfileManager returns.
-  raw_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
+  sync_preferences::TestingPrefServiceSyncable* pref_service_;
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 

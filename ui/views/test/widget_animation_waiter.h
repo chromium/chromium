@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_TEST_WIDGET_ANIMATION_WAITER_H_
 #define UI_VIEWS_TEST_WIDGET_ANIMATION_WAITER_H_
 
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "ui/compositor/layer_animation_observer.h"
 
@@ -38,7 +37,7 @@ class WidgetAnimationWaiter : ui::LayerAnimationObserver {
   gfx::Rect target_bounds_;
 
   // Unowned
-  const raw_ptr<Widget> widget_;
+  Widget* const widget_;
 
   base::RunLoop run_loop_;
   bool is_valid_animation_ = false;

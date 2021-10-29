@@ -16,7 +16,6 @@
 #include "base/json/json_writer.h"
 #include "base/macros.h"
 #include "base/memory/free_deleter.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/win/object_watcher.h"
@@ -136,7 +135,7 @@ class PrintSystemWatcherWin : public base::win::ObjectWatcher::Delegate {
   printing::ScopedPrinterHandle printer_;  // The printer being watched
   // Returned by FindFirstPrinterChangeNotifier.
   printing::ScopedPrinterChangeHandle printer_change_;
-  raw_ptr<Delegate> delegate_ = nullptr;  // Delegate to notify
+  Delegate* delegate_ = nullptr;  // Delegate to notify
   std::string printer_info_;      // For crash reporting.
 };
 
@@ -174,7 +173,7 @@ class PrintServerWatcherWin
   ~PrintServerWatcherWin() override {}
 
  private:
-  raw_ptr<PrintSystem::PrintServerWatcher::Delegate> delegate_ = nullptr;
+  PrintSystem::PrintServerWatcher::Delegate* delegate_ = nullptr;
   PrintSystemWatcherWin watcher_;
 };
 
@@ -224,7 +223,7 @@ class PrinterWatcherWin
 
  private:
   const std::string printer_name_;
-  raw_ptr<PrintSystem::PrinterWatcher::Delegate> delegate_ = nullptr;
+  PrintSystem::PrinterWatcher::Delegate* delegate_ = nullptr;
   PrintSystemWatcherWin watcher_;
 };
 
@@ -397,7 +396,7 @@ class JobSpoolerWin : public PrintSystem::JobSpooler {
       void reset() { job_ptr_ = nullptr; }
 
      private:
-      raw_ptr<Microsoft::WRL::ComPtr<IXpsPrintJob>> job_ptr_;
+      Microsoft::WRL::ComPtr<IXpsPrintJob>* job_ptr_;
     };
 
     void PrintJobDone(bool success) {
@@ -514,7 +513,7 @@ class JobSpoolerWin : public PrintSystem::JobSpooler {
     }
 
     PlatformJobId job_id_ = -1;
-    raw_ptr<PrintSystem::JobSpooler::Delegate> delegate_ = nullptr;
+    PrintSystem::JobSpooler::Delegate* delegate_ = nullptr;
     int saved_dc_ = 0;
     base::win::ScopedCreateDC printer_dc_;
     base::win::ScopedHandle job_progress_event_;

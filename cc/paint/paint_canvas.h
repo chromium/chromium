@@ -6,7 +6,6 @@
 #define CC_PAINT_PAINT_CANVAS_H_
 
 #include "base/compiler_specific.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "cc/paint/node_id.h"
@@ -262,7 +261,7 @@ class CC_PAINT_EXPORT PaintCanvasAutoRestore {
   }
 
  private:
-  raw_ptr<PaintCanvas> canvas_ = nullptr;
+  PaintCanvas* canvas_ = nullptr;
   int save_count_ = 0;
 };
 

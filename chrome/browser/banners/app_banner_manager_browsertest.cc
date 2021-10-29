@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -704,7 +703,7 @@ class AppBannerManagerBrowserTestWithFailableInstallableManager
   }
 
  protected:
-  raw_ptr<FailingInstallableManager> installable_manager_ = nullptr;
+  FailingInstallableManager* installable_manager_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(

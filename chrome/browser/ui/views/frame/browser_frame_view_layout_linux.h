@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_VIEW_LAYOUT_LINUX_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_VIEW_LAYOUT_LINUX_H_
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/frame/opaque_browser_frame_view_layout.h"
 
 class BrowserFrameViewLinux;
@@ -43,7 +42,7 @@ class BrowserFrameViewLayoutLinux : public OpaqueBrowserFrameViewLayout {
   int NonClientExtraTopThickness() const override;
 
  private:
-  raw_ptr<BrowserFrameViewLinux> view_ = nullptr;
+  BrowserFrameViewLinux* view_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_VIEW_LAYOUT_LINUX_H_

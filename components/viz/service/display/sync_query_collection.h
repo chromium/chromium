@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/containers/circular_deque.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 
 namespace gpu {
@@ -34,7 +33,7 @@ class SyncQueryCollection {
   base::circular_deque<std::unique_ptr<SyncQuery>> pending_sync_queries_;
   base::circular_deque<std::unique_ptr<SyncQuery>> available_sync_queries_;
   std::unique_ptr<SyncQuery> current_sync_query_;
-  raw_ptr<gpu::gles2::GLES2Interface> gl_;
+  gpu::gles2::GLES2Interface* gl_;
 };
 
 }  // namespace viz

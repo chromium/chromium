@@ -4,7 +4,6 @@
 
 #include "chrome/browser/cart/cart_service.h"
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/cart/cart_db_content.pb.h"
 #include "chrome/browser/cart/cart_service_factory.h"
 #include "chrome/browser/cart/fetch_discount_worker.h"
@@ -321,7 +320,7 @@ class CartServiceTest : public testing::Test {
   // Required to run tests from UI thread.
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-  raw_ptr<CartService> service_;
+  CartService* service_;
 };
 
 // Verifies the hide status is flipped by hiding and restoring.

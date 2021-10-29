@@ -12,7 +12,6 @@
 
 #include "base/cxx17_backports.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "sandbox/win/src/nt_internals.h"
 
 namespace sandbox {
@@ -37,7 +36,7 @@ class AutoLock {
   ~AutoLock() { ::LeaveCriticalSection(lock_); }
 
  private:
-  raw_ptr<CRITICAL_SECTION> lock_;
+  CRITICAL_SECTION* lock_;
   DISALLOW_IMPLICIT_CONSTRUCTORS(AutoLock);
 };
 

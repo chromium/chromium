@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/media_access_handler.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -72,7 +71,7 @@ class MediaCaptureDevicesDispatcherTest
   }
 
  protected:
-  raw_ptr<MediaCaptureDevicesDispatcher> dispatcher_;
+  MediaCaptureDevicesDispatcher* dispatcher_;
 };
 
 TEST_F(MediaCaptureDevicesDispatcherTest,

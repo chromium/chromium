@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/common/service_process.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -88,9 +87,9 @@ class ServiceIPCServer : public service_manager::mojom::InterfaceProvider,
   void HandleServiceProcessConnection(
       mojo::PendingReceiver<chrome::mojom::ServiceProcess> receiver);
 
-  raw_ptr<Client> client_;
+  Client* client_;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
-  raw_ptr<base::WaitableEvent> shutdown_event_;
+  base::WaitableEvent* shutdown_event_;
 
   // Indicates whether an IPC client is currently connected to the channel.
   bool ipc_client_connected_ = false;

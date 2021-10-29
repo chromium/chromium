@@ -6,7 +6,6 @@
 
 #include "base/json/json_reader.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -230,7 +229,7 @@ class PageInfoBubbleViewTestApi {
 
   std::u16string GetPermissionComboboxTextAt(int index) {
     DCHECK(!is_version_two_);
-    auto* combobox = GetPermissionSelectorAt(index)->combobox_.get();
+    auto* combobox = GetPermissionSelectorAt(index)->combobox_;
     return combobox->GetTextForRow(combobox->GetSelectedRow());
   }
 
@@ -241,7 +240,7 @@ class PageInfoBubbleViewTestApi {
 
   void SimulateUserSelectingComboboxItemAt(int selector_index, int menu_index) {
     DCHECK(!is_version_two_);
-    auto* combobox = GetPermissionSelectorAt(selector_index)->combobox_.get();
+    auto* combobox = GetPermissionSelectorAt(selector_index)->combobox_;
     combobox->SetSelectedRow(menu_index);
   }
 
@@ -302,17 +301,16 @@ class PageInfoBubbleViewTestApi {
     quit_closure.Run();
   }
 
-  raw_ptr<views::BubbleDialogDelegateView> bubble_delegate_;
-  raw_ptr<PageInfo> presenter_ = nullptr;
-  raw_ptr<std::vector<std::unique_ptr<PermissionSelectorRow>>> selector_rows_ =
-      nullptr;
-  raw_ptr<std::vector<PermissionToggleRowView*>> toggle_rows_ = nullptr;
+  views::BubbleDialogDelegateView* bubble_delegate_;
+  PageInfo* presenter_ = nullptr;
+  std::vector<std::unique_ptr<PermissionSelectorRow>>* selector_rows_ = nullptr;
+  std::vector<PermissionToggleRowView*>* toggle_rows_ = nullptr;
 
-  raw_ptr<PageInfoNavigationHandler> navigation_handler_ = nullptr;
+  PageInfoNavigationHandler* navigation_handler_ = nullptr;
 
   // For recreating the view.
   gfx::NativeView parent_;
-  raw_ptr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
   base::RunLoop run_loop_;
   absl::optional<bool> reload_prompt_;
   absl::optional<views::Widget::ClosedReason> closed_reason_;
@@ -375,9 +373,9 @@ class ScopedWebContentsTestHelper {
 #endif
 
   TestingProfileManager testing_profile_manager_;
-  raw_ptr<Profile> profile_ = nullptr;
+  Profile* profile_ = nullptr;
   content::TestWebContentsFactory factory_;
-  raw_ptr<content::WebContents> web_contents_;  // Weak. Owned by factory_.
+  content::WebContents* web_contents_;  // Weak. Owned by factory_.
 };
 
 class PageInfoBubbleViewTest : public testing::Test,
@@ -429,10 +427,9 @@ class PageInfoBubbleViewTest : public testing::Test,
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<ScopedWebContentsTestHelper> web_contents_helper_;
   std::unique_ptr<views::ScopedViewsTestHelper> views_helper_;
-  raw_ptr<MockTrustSafetySentimentService> mock_sentiment_service_;
+  MockTrustSafetySentimentService* mock_sentiment_service_;
 
-  raw_ptr<views::Widget> parent_window_ =
-      nullptr;  // Weak. Owned by the NativeWidget.
+  views::Widget* parent_window_ = nullptr;  // Weak. Owned by the NativeWidget.
   std::unique_ptr<test::PageInfoBubbleViewTestApi> api_;
 };
 

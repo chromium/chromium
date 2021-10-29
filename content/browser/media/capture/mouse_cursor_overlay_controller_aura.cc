@@ -4,7 +4,6 @@
 
 #include "content/browser/media/capture/mouse_cursor_overlay_controller.h"
 
-#include "base/memory/raw_ptr.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/cursor/cursor.h"
@@ -116,8 +115,8 @@ class MouseCursorOverlayController::Observer final
     window_ = nullptr;
   }
 
-  const raw_ptr<MouseCursorOverlayController> controller_;
-  raw_ptr<aura::Window> window_;
+  MouseCursorOverlayController* const controller_;
+  aura::Window* window_;
 };
 
 MouseCursorOverlayController::MouseCursorOverlayController()

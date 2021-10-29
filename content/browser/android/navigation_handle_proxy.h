@@ -7,7 +7,6 @@
 
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/memory/raw_ptr.h"
 #include "net/http/http_request_headers.h"
 
 namespace content {
@@ -45,7 +44,7 @@ class NavigationHandleProxy final {
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_navigation_handle_;
-  raw_ptr<NavigationHandle> cpp_navigation_handle_ = nullptr;
+  NavigationHandle* cpp_navigation_handle_ = nullptr;
 };
 
 }  // namespace content

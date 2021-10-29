@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "net/http/http_stream.h"
 #include "net/http/http_stream_factory.h"
 #include "net/http/http_stream_factory_job.h"
@@ -174,8 +173,8 @@ class TestJobFactory : public HttpStreamFactory::JobFactory {
   }
 
  private:
-  raw_ptr<MockHttpStreamFactoryJob> main_job_;
-  raw_ptr<MockHttpStreamFactoryJob> alternative_job_;
+  MockHttpStreamFactoryJob* main_job_;
+  MockHttpStreamFactoryJob* alternative_job_;
   bool override_main_job_url_;
   GURL main_job_alternative_url_;
 };

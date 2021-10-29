@@ -12,7 +12,6 @@
 
 #include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "remoting/codec/audio_encoder.h"
@@ -79,8 +78,8 @@ class AudioPumpTest : public testing::Test, public protocol::AudioStub {
   base::test::SingleThreadTaskEnvironment task_environment_;
 
   // |source_| and |encoder_| are owned by the |pump_|.
-  raw_ptr<FakeAudioSource> source_;
-  raw_ptr<FakeAudioEncoder> encoder_;
+  FakeAudioSource* source_;
+  FakeAudioEncoder* encoder_;
 
   std::unique_ptr<AudioPump> pump_;
 
@@ -92,8 +91,8 @@ void AudioPumpTest::SetUp() {
   source_ = new FakeAudioSource();
   encoder_ = new FakeAudioEncoder();
   pump_ = std::make_unique<AudioPump>(
-      task_environment_.GetMainThreadTaskRunner(),
-      base::WrapUnique(source_.get()), base::WrapUnique(encoder_.get()), this);
+      task_environment_.GetMainThreadTaskRunner(), base::WrapUnique(source_),
+      base::WrapUnique(encoder_), this);
 }
 
 void AudioPumpTest::TearDown() {

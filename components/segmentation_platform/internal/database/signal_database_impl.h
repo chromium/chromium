@@ -12,7 +12,6 @@
 #include <utility>
 
 #include "base/callback_forward.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/leveldb_proto/public/proto_database.h"
@@ -93,7 +92,7 @@ class SignalDatabaseImpl : public SignalDatabase {
   std::unique_ptr<SignalProtoDb> database_;
 
   // Used for getting current time.
-  raw_ptr<base::Clock> clock_;
+  base::Clock* clock_;
 
   // Whether or not initialization has been completed.
   bool initialized_{false};

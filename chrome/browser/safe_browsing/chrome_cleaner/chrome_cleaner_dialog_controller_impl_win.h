@@ -9,7 +9,6 @@
 #include <set>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_controller_win.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_dialog_controller_win.h"
 #include "chrome/browser/ui/browser_list_observer.h"
@@ -75,15 +74,15 @@ class ChromeCleanerDialogControllerImpl
   void OnInteractionDone();
   void ShowChromeCleanerPrompt();
 
-  raw_ptr<ChromeCleanerController> cleaner_controller_ = nullptr;
+  ChromeCleanerController* cleaner_controller_ = nullptr;
   bool dialog_shown_ = false;
 
   // In case there is no browser available to prompt a user
   // signal it, this way we can prompt it once a browser gets available..
   bool prompt_pending_ = false;
-  raw_ptr<Browser> browser_ = nullptr;
+  Browser* browser_ = nullptr;
   std::unique_ptr<ChromeCleanerPromptDelegate> prompt_delegate_impl_;
-  raw_ptr<ChromeCleanerPromptDelegate> prompt_delegate_ = nullptr;
+  ChromeCleanerPromptDelegate* prompt_delegate_ = nullptr;
 };
 
 }  // namespace safe_browsing

@@ -19,7 +19,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/android/url_utils.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -334,7 +333,7 @@ class TestAwComponentUpdateService : public AwComponentUpdateService {
   }
 
  private:
-  raw_ptr<MockInstallerPolicy> mock_policy_;
+  MockInstallerPolicy* mock_policy_;
 };
 
 class AwComponentUpdateServiceTest : public testing::Test {

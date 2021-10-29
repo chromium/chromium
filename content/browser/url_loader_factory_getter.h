@@ -9,7 +9,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
@@ -148,14 +147,13 @@ class URLLoaderFactoryGetter
   // Only accessed on IO thread.
   mojo::Remote<network::mojom::URLLoaderFactory> network_factory_;
   mojo::Remote<network::mojom::URLLoaderFactory> network_factory_corb_enabled_;
-  raw_ptr<network::mojom::URLLoaderFactory> test_factory_ = nullptr;
-  raw_ptr<network::mojom::URLLoaderFactory> test_factory_corb_enabled_ =
-      nullptr;
+  network::mojom::URLLoaderFactory* test_factory_ = nullptr;
+  network::mojom::URLLoaderFactory* test_factory_corb_enabled_ = nullptr;
 
   // Used to re-create |network_factory_| when connection error happens. Can
   // only be accessed on UI thread. Must be cleared by |StoragePartitionImpl|
   // when it's going away.
-  raw_ptr<StoragePartitionImpl> partition_ = nullptr;
+  StoragePartitionImpl* partition_ = nullptr;
 };
 
 }  // namespace content

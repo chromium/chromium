@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_EXTENSIONS_EXTENSION_BROWSER_WINDOW_HELPER_H_
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
@@ -39,7 +38,7 @@ class ExtensionBrowserWindowHelper : public ExtensionRegistryObserver {
   void CleanUpTabsOnUnload(const Extension* extension);
 
   // The associated browser. Must outlive this object.
-  const raw_ptr<Browser> browser_ = nullptr;
+  Browser* const browser_ = nullptr;
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       registry_observation_{this};

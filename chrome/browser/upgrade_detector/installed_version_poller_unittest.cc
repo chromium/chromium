@@ -4,7 +4,6 @@
 
 #include "chrome/browser/upgrade_detector/installed_version_poller.h"
 
-#include "base/memory/raw_ptr.h"
 #include "stdint.h"
 
 #include <memory>
@@ -120,7 +119,7 @@ class InstalledVersionPollerTest : public ::testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   ::testing::StrictMock<MockBuildStateObserver> mock_observer_;
   BuildState build_state_;
-  raw_ptr<FakeMonitor> fake_monitor_ = nullptr;
+  FakeMonitor* fake_monitor_ = nullptr;
 };
 
 // Tests that a poll returning the current version does not update the

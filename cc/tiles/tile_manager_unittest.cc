@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -1625,7 +1624,7 @@ class TestSoftwareRasterBufferProvider : public FakeRasterBufferProviderImpl {
 
    private:
     gfx::Size size_;
-    raw_ptr<void> pixels_;
+    void* pixels_;
   };
 };
 

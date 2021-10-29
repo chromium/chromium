@@ -4,7 +4,6 @@
 
 #include "ui/views/layout/table_layout.h"
 
-#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/border.h"
 #include "ui/views/view.h"
@@ -68,7 +67,7 @@ class TableLayoutTest : public testing::Test {
 
  private:
   std::unique_ptr<View> host_;
-  raw_ptr<TableLayout> layout_;
+  TableLayout* layout_;
 };
 
 class TableLayoutAlignmentTest : public testing::Test {
@@ -93,7 +92,7 @@ class TableLayoutAlignmentTest : public testing::Test {
 
  private:
   std::unique_ptr<View> host_;
-  raw_ptr<TableLayout> layout_;
+  TableLayout* layout_;
 };
 
 TEST_F(TableLayoutAlignmentTest, Fill) {

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -33,7 +32,7 @@ class PasswordManagerInternalsWebUIBrowserTest : public WebUIBrowserTest {
                                     WindowOpenDisposition disposition);
 
  private:
-  raw_ptr<PasswordManagerInternalsUI> controller_ = nullptr;
+  PasswordManagerInternalsUI* controller_ = nullptr;
 };
 
 PasswordManagerInternalsWebUIBrowserTest::

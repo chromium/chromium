@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_METRICS_FIELD_TRIALS_PROVIDER_H_
 #define COMPONENTS_METRICS_FIELD_TRIALS_PROVIDER_H_
 
-#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "components/metrics/metrics_provider.h"
@@ -56,7 +55,7 @@ class FieldTrialsProvider : public metrics::MetricsProvider {
   // ProvideSystemProfileMetricsWithLogCreationTime().
   base::TimeTicks log_creation_time_;
 
-  raw_ptr<SyntheticTrialRegistry> registry_;
+  SyntheticTrialRegistry* registry_;
 
   // Suffix used for the field trial names before they are hashed for uploads.
   std::string suffix_;

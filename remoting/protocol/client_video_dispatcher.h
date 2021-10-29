@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/base/constants.h"
 #include "remoting/protocol/channel_dispatcher_base.h"
@@ -41,8 +40,8 @@ class ClientVideoDispatcher : public ChannelDispatcherBase {
 
   PendingFramesList pending_frames_;
 
-  raw_ptr<VideoStub> video_stub_;
-  raw_ptr<ClientStub> client_stub_;
+  VideoStub* video_stub_;
+  ClientStub* client_stub_;
 
   webrtc::DesktopSize screen_size_;
   webrtc::DesktopVector screen_dpi_ =

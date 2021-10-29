@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/web_history_service_factory.h"
@@ -117,7 +116,7 @@ class HistoryCounterTest : public InProcessBrowserTest {
 
  private:
   std::unique_ptr<base::RunLoop> run_loop_;
-  raw_ptr<history::HistoryService> history_service_;
+  history::HistoryService* history_service_;
   std::unique_ptr<history::FakeWebHistoryService> fake_web_history_service_;
   base::Time time_;
 

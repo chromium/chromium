@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_THEME_COPYING_WIDGET_H_
 #define CHROME_BROWSER_UI_VIEWS_THEME_COPYING_WIDGET_H_
 
-#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -31,7 +30,7 @@ class ThemeCopyingWidget : public views::Widget, public views::WidgetObserver {
 
  private:
   // The widget we'll copy our theme from.
-  raw_ptr<views::Widget> role_model_;
+  views::Widget* role_model_;
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       observed_widget_{this};

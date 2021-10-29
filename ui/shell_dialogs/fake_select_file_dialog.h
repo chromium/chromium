@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
@@ -104,7 +103,7 @@ class FakeSelectFileDialog : public SelectFileDialog {
   std::u16string title_;
   FileTypeInfo file_types_;
   std::string default_extension_;
-  raw_ptr<void> params_;
+  void* params_;
   base::WeakPtrFactory<FakeSelectFileDialog> weak_ptr_factory_{this};
 };
 

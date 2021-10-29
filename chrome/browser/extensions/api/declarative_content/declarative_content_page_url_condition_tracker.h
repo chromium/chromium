@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/api/declarative_content/content_predicate_evaluator.h"
 #include "components/url_matcher/url_matcher.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -55,7 +54,7 @@ class DeclarativeContentPageUrlPredicate : public ContentPredicate {
           url_matcher_condition_set);
 
   // Weak.
-  const raw_ptr<ContentPredicateEvaluator> evaluator_;
+  ContentPredicateEvaluator* const evaluator_;
 
   scoped_refptr<url_matcher::URLMatcherConditionSet> url_matcher_condition_set_;
 };
@@ -126,7 +125,7 @@ class DeclarativeContentPageUrlConditionTracker
     // content::WebContentsObserver
     void WebContentsDestroyed() override;
 
-    raw_ptr<url_matcher::URLMatcher> url_matcher_;
+    url_matcher::URLMatcher* url_matcher_;
     const RequestEvaluationCallback request_evaluation_;
     WebContentsDestroyedCallback web_contents_destroyed_;
 
@@ -139,7 +138,7 @@ class DeclarativeContentPageUrlConditionTracker
   void UpdateMatchesForAllTrackers();
 
   // Weak.
-  const raw_ptr<Delegate> delegate_;
+  Delegate* const delegate_;
 
   // Matches URLs for all WebContents.
   url_matcher::URLMatcher url_matcher_;

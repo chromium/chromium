@@ -5,7 +5,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "content/browser/feature_observer.h"
@@ -46,7 +45,7 @@ class TestBrowserClient : public ContentBrowserClient {
   TestBrowserClient& operator=(const TestBrowserClient&) = delete;
 
  private:
-  raw_ptr<FeatureObserverClient> feature_observer_client_;
+  FeatureObserverClient* feature_observer_client_;
 };
 
 class MockObserverClient : public FeatureObserverClient {
@@ -139,7 +138,7 @@ class LockManagerBrowserTest : public ContentBrowserTest {
  private:
   content::ContentMockCertVerifier mock_cert_verifier_;
   net::EmbeddedTestServer server_{net::EmbeddedTestServer::TYPE_HTTPS};
-  raw_ptr<ContentBrowserClient> original_client_ = nullptr;
+  ContentBrowserClient* original_client_ = nullptr;
   TestBrowserClient test_browser_client_{&mock_observer_client_};
 };
 

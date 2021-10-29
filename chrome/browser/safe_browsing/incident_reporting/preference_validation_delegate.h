@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "services/preferences/public/mojom/tracked_preference_validation_delegate.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -54,7 +53,7 @@ class PreferenceValidationDelegate
           external_validation_value_state,
       bool is_personal) override;
 
-  raw_ptr<Profile> profile_;
+  Profile* profile_;
   std::unique_ptr<IncidentReceiver> incident_receiver_;
 };
 

@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "components/language/content/browser/language_code_locator.h"
 
 class PrefRegistrySimple;
@@ -43,7 +42,7 @@ class UlpLanguageCodeLocator : public LanguageCodeLocator {
 
  private:
   std::vector<std::unique_ptr<SerializedLanguageTree>> serialized_langtrees_;
-  raw_ptr<PrefService> prefs_;
+  PrefService* prefs_;
 };
 }  // namespace language
 

@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/files/file.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "device/bluetooth/bluetooth_low_energy_defs_win.h"
@@ -89,13 +88,13 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattServiceWin
   void RemoveIncludedCharacteristic(std::string identifier);
   void ClearIncludedCharacteristics();
 
-  raw_ptr<BluetoothAdapterWin> adapter_;
-  raw_ptr<BluetoothDeviceWin> device_;
+  BluetoothAdapterWin* adapter_;
+  BluetoothDeviceWin* device_;
   base::FilePath service_path_;
   BluetoothUUID service_uuid_;
   uint16_t service_attribute_handle_;
   bool is_primary_;
-  raw_ptr<BluetoothRemoteGattServiceWin> parent_service_;
+  BluetoothRemoteGattServiceWin* parent_service_;
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
   std::string service_identifier_;
 

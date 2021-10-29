@@ -28,7 +28,6 @@
 #include "base/json/json_reader.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -594,10 +593,10 @@ class UpdateViewportIntersectionMessageFilter
   void set_run_loop(base::RunLoop* run_loop) { run_loop_ = run_loop; }
 
  private:
-  raw_ptr<base::RunLoop> run_loop_ = nullptr;
+  base::RunLoop* run_loop_ = nullptr;
   bool msg_received_;
   blink::mojom::ViewportIntersectionStatePtr intersection_state_;
-  raw_ptr<content::RenderFrameProxyHost> render_frame_proxy_host_;
+  content::RenderFrameProxyHost* render_frame_proxy_host_;
 };
 
 //
@@ -881,7 +880,7 @@ class TextAutosizerPageInfoInterceptor
   }
 
  private:
-  raw_ptr<RenderFrameHostImpl> render_frame_host_;
+  RenderFrameHostImpl* render_frame_host_;
   bool remote_page_info_seen_ = false;
   blink::mojom::TextAutosizerPageInfoPtr remote_page_info_ =
       blink::mojom::TextAutosizerPageInfo::New(/*main_frame_width=*/0,
@@ -6957,7 +6956,7 @@ class ShowCreatedWindowInterceptor
   }
 
  private:
-  raw_ptr<RenderFrameHostImpl> render_frame_host_;
+  RenderFrameHostImpl* render_frame_host_;
   base::OnceCallback<void(int32_t pending_widget_routing_id)> test_callback_;
   ShowCreatedWindowCallback show_callback_;
   blink::LocalFrameToken opener_frame_token_;
@@ -7092,7 +7091,7 @@ class RequestCloseWidgetInterceptor
   void RequestClosePopup() override {}
 
  private:
-  raw_ptr<RenderWidgetHostImpl> render_widget_host_;
+  RenderWidgetHostImpl* render_widget_host_;
 };
 
 // Intercepts calls to PopupWidgetHost's ShowPopup mojo method, and
@@ -7135,7 +7134,7 @@ class ShowCreatedPopupWidgetInterceptor
   }
 
  private:
-  raw_ptr<RenderWidgetHostImpl> render_widget_host_;
+  RenderWidgetHostImpl* render_widget_host_;
   base::OnceCallback<void(int32_t pending_widget_routing_id)> test_callback_;
   ShowPopupCallback show_callback_;
   gfx::Rect initial_rect_;
@@ -7171,7 +7170,7 @@ class NewPopupWidgetCreatedObserver {
     frame_host_ = nullptr;
   }
 
-  raw_ptr<RenderFrameHostImpl> frame_host_;
+  RenderFrameHostImpl* frame_host_;
   std::unique_ptr<ShowCreatedPopupWidgetInterceptor> show_interceptor_;
   base::OnceCallback<void(int32_t pending_widget_routing_id)> test_callback_;
 };
@@ -7596,7 +7595,7 @@ class DispatchLoadInterceptor
   void DispatchLoad() override {}
 
  private:
-  raw_ptr<RenderFrameHostImpl> render_frame_host_;
+  RenderFrameHostImpl* render_frame_host_;
 };
 
 // Test that the renderer isn't killed when a frame generates a load event just
@@ -8534,7 +8533,7 @@ class RequestDelayingSitePerProcessBrowserTest
     }
 
    private:
-    raw_ptr<RequestDelayingSitePerProcessBrowserTest> test_harness_;
+    RequestDelayingSitePerProcessBrowserTest* test_harness_;
   };
 
   // Set of delegates to call which will complete delayed requests. May only be
@@ -8622,7 +8621,7 @@ class TextSelectionObserver : public TextInputManager::Observer {
       loop_runner_->Quit();
   }
 
-  const raw_ptr<TextInputManager> text_input_manager_;
+  TextInputManager* const text_input_manager_;
   std::string last_selected_text_;
   std::string expected_text_;
   scoped_refptr<MessageLoopRunner> loop_runner_;
@@ -10203,7 +10202,7 @@ class TouchSelectionControllerClientTestWrapper
   ui::SelectionEventType expected_event_;
   std::unique_ptr<base::RunLoop> run_loop_;
   // Not owned.
-  raw_ptr<ui::TouchSelectionControllerClient> client_;
+  ui::TouchSelectionControllerClient* client_;
 };
 
 class TouchSelectionControllerClientAndroidSiteIsolationTest
@@ -10271,7 +10270,7 @@ class TouchSelectionControllerClientAndroidSiteIsolationTest
         new TouchSelectionControllerClientTestWrapper(
             root_rwhv_->GetSelectionControllerClientManagerForTesting());
     root_rwhv_->SetSelectionControllerClientForTesting(
-        base::WrapUnique(selection_controller_client_.get()));
+        base::WrapUnique(selection_controller_client_));
 
     // We need to load the desired subframe and then wait until it's stable,
     // i.e. generates no new compositor frames for some reasonable time period:
@@ -10282,8 +10281,7 @@ class TouchSelectionControllerClientAndroidSiteIsolationTest
     // not a property of this test.
     GURL child_url(
         embedded_test_server()->GetURL("b.com", "/touch_selection.html"));
-    EXPECT_TRUE(
-        NavigateToURLFromRenderer(child_frame_tree_node_.get(), child_url));
+    EXPECT_TRUE(NavigateToURLFromRenderer(child_frame_tree_node_, child_url));
     EXPECT_EQ(
         " Site A ------------ proxies for B\n"
         "   +--Site B ------- proxies for A\n"
@@ -10407,12 +10405,11 @@ class TouchSelectionControllerClientAndroidSiteIsolationTest
     view->OnTouchEvent(touch);
   }
 
-  raw_ptr<RenderWidgetHostViewAndroid> root_rwhv_;
-  raw_ptr<RenderWidgetHostViewChildFrame> child_rwhv_;
-  raw_ptr<FrameTreeNode> child_frame_tree_node_;
+  RenderWidgetHostViewAndroid* root_rwhv_;
+  RenderWidgetHostViewChildFrame* child_rwhv_;
+  FrameTreeNode* child_frame_tree_node_;
   std::unique_ptr<RenderFrameSubmissionObserver> frame_observer_;
-  raw_ptr<TouchSelectionControllerClientTestWrapper>
-      selection_controller_client_;
+  TouchSelectionControllerClientTestWrapper* selection_controller_client_;
 
   std::unique_ptr<base::RunLoop> gesture_run_loop_;
 };
@@ -10596,8 +10593,8 @@ class TouchEventObserver : public RenderWidgetHost::InputEventObserver {
   }
 
  private:
-  raw_ptr<std::vector<uint32_t>> outgoing_touch_event_ids_;
-  raw_ptr<std::vector<uint32_t>> acked_touch_event_ids_;
+  std::vector<uint32_t>* outgoing_touch_event_ids_;
+  std::vector<uint32_t>* acked_touch_event_ids_;
 };
 
 // This test verifies the ability of the TouchEventAckQueue to send TouchEvent
@@ -12912,7 +12909,7 @@ class EnableForceZoomContentClient : public TestContentBrowserClient {
   }
 
  private:
-  raw_ptr<ContentBrowserClient> old_client_ = nullptr;
+  ContentBrowserClient* old_client_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTouchActionTest,
@@ -14700,7 +14697,7 @@ class InnerWebContentsAttachTest
     }
 
     bool did_call_prepare_ = false;
-    raw_ptr<RenderFrameHostImpl> new_render_frame_host_ = nullptr;
+    RenderFrameHostImpl* new_render_frame_host_ = nullptr;
     base::RunLoop run_loop_;
   };
 

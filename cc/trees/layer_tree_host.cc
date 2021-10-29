@@ -2066,13 +2066,13 @@ void LayerTreeHost::SetDelegatedInkMetadata(
 }
 
 gfx::RenderingPipeline* LayerTreeHost::TakeMainPipeline() {
-  auto* pipeline = main_thread_pipeline_.get();
+  auto* pipeline = main_thread_pipeline_;
   main_thread_pipeline_ = nullptr;
   return pipeline;
 }
 
 gfx::RenderingPipeline* LayerTreeHost::TakeCompositorPipeline() {
-  auto* pipeline = compositor_thread_pipeline_.get();
+  auto* pipeline = compositor_thread_pipeline_;
   compositor_thread_pipeline_ = nullptr;
   return pipeline;
 }

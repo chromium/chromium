@@ -4,7 +4,6 @@
 
 #include "content/browser/android/render_widget_host_connector.h"
 
-#include "base/memory/raw_ptr.h"
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "content/browser/web_contents/web_contents_android.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -45,10 +44,10 @@ class RenderWidgetHostConnector::Observer
  private:
   void DoDestroy(WebContentsAndroid* web_contents_android);
 
-  const raw_ptr<RenderWidgetHostConnector> connector_;
+  RenderWidgetHostConnector* const connector_;
 
   // Active RenderWidgetHostView connected to this instance.
-  raw_ptr<RenderWidgetHostViewAndroid> active_rwhva_;
+  RenderWidgetHostViewAndroid* active_rwhva_;
 };
 
 RenderWidgetHostConnector::Observer::Observer(

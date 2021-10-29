@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/models/list_selection_model.h"
 #include "ui/base/models/table_model.h"
@@ -460,7 +459,7 @@ class VIEWS_EXPORT TableView : public views::View,
   // Updates the focus rings of the TableView and the TableHeader if necessary.
   void UpdateFocusRings();
 
-  raw_ptr<ui::TableModel> model_ = nullptr;
+  ui::TableModel* model_ = nullptr;
 
   std::vector<ui::TableColumn> columns_;
 
@@ -474,7 +473,7 @@ class VIEWS_EXPORT TableView : public views::View,
 
   // The header. This is only created if more than one column is specified or
   // the first column has a non-empty title.
-  raw_ptr<TableHeader> header_ = nullptr;
+  TableHeader* header_ = nullptr;
 
   // TableView allows using the keyboard to activate a cell or row, including
   // optionally the header row. This bool keeps track of whether the active row
@@ -492,7 +491,7 @@ class VIEWS_EXPORT TableView : public views::View,
   // is selected then.
   bool select_on_remove_ = true;
 
-  raw_ptr<TableViewObserver> observer_ = nullptr;
+  TableViewObserver* observer_ = nullptr;
   // If |sort_on_paint_| is true, table will sort before painting.
   bool sort_on_paint_ = false;
 
@@ -517,7 +516,7 @@ class VIEWS_EXPORT TableView : public views::View,
   std::vector<int> view_to_model_;
   std::vector<int> model_to_view_;
 
-  raw_ptr<TableGrouper> grouper_ = nullptr;
+  TableGrouper* grouper_ = nullptr;
 
   // True if in SetVisibleColumnWidth().
   bool in_set_visible_column_width_ = false;

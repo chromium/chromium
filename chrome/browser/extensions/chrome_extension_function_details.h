@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_EXTENSIONS_CHROME_EXTENSION_FUNCTION_DETAILS_H_
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "ui/gfx/native_widget_types.h"
 
 class Browser;
@@ -66,7 +65,7 @@ class ChromeExtensionFunctionDetails {
  private:
   // The function for which these details have been created. Must outlive the
   // ChromeExtensionFunctionDetails instance.
-  raw_ptr<ExtensionFunction> function_;
+  ExtensionFunction* function_;
 };
 
 #endif  // CHROME_BROWSER_EXTENSIONS_CHROME_EXTENSION_FUNCTION_DETAILS_H_

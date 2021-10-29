@@ -5,7 +5,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -67,7 +66,7 @@ class ExtensionUninstallDialogViews
   // is being closed and OnDialogClosed is reported. As such it prevents access
   // to the dialog after it's been closed, as well as preventing multiple
   // reports of OnDialogClosed.
-  raw_ptr<ui::DialogModel> dialog_model_ = nullptr;
+  ui::DialogModel* dialog_model_ = nullptr;
 
   // WeakPtrs because the associated dialog may outlive |this|, which is owned
   // by the caller of extensions::ExtensionsUninstallDialog::Create().

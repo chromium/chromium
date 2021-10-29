@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
@@ -121,7 +120,7 @@ class ClientTelemetryLogger {
   std::unique_ptr<protocol::TransportRoute> transport_route_;
 
   // The log writer that actually sends log to the server.
-  raw_ptr<ChromotingEventLogWriter> log_writer_;
+  ChromotingEventLogWriter* log_writer_;
 
   base::ThreadChecker thread_checker_;
 };

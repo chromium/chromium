@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -190,7 +189,7 @@ class DeletingLayerAnimationObserver : public LayerAnimationObserver {
   void OnLayerAnimationScheduled(LayerAnimationSequence* sequence) override {}
 
  private:
-  raw_ptr<LayerAnimator> animator_;
+  LayerAnimator* animator_;
 };
 
 // When notified that an animation has started, aborts all animations.
@@ -217,7 +216,7 @@ class AbortAnimationsOnStartedLayerAnimationObserver
   void OnLayerAnimationScheduled(LayerAnimationSequence* sequence) override {}
 
  private:
-  raw_ptr<LayerAnimator> animator_;
+  LayerAnimator* animator_;
 };
 
 class LayerAnimatorDestructionObserver {
@@ -270,7 +269,7 @@ class TestLayerAnimator : public LayerAnimator {
   }
 
  private:
-  raw_ptr<LayerAnimatorDestructionObserver> destruction_observer_;
+  LayerAnimatorDestructionObserver* destruction_observer_;
 };
 
 // The test layer animation sequence updates a live instances count when it is
@@ -291,7 +290,7 @@ class TestLayerAnimationSequence : public LayerAnimationSequence {
   ~TestLayerAnimationSequence() override { (*num_live_instances_)--; }
 
  private:
-  raw_ptr<int> num_live_instances_;
+  int* num_live_instances_;
 };
 
 }  // namespace
@@ -371,7 +370,7 @@ class CountCheckingLayerAnimationObserver : public LayerAnimationObserver {
 
  private:
   // Observer to which LayerAnimationObserver calls are delgated.
-  raw_ptr<LayerAnimationObserver> observer_;
+  LayerAnimationObserver* observer_;
 
   // The total number of animation sequences that have been attached.
   int attached_sequence_count_ = 0;
@@ -2645,7 +2644,7 @@ TEST(LayerAnimatorTest, CallbackDeletesAnimationInProgress) {
         animator_->StopAnimating();
     }
    private:
-    raw_ptr<LayerAnimator> animator_;
+    LayerAnimator* animator_;
     int max_width_;
     // Allow copy and assign.
   };
@@ -3011,7 +3010,7 @@ class DeletingObserver : public LayerAnimationObserver {
   bool delete_on_animation_ended_;
   bool delete_on_animation_aborted_;
   bool delete_on_animation_scheduled_;
-  raw_ptr<bool> was_deleted_;
+  bool* was_deleted_;
 };
 
 TEST(LayerAnimatorTest, ObserverDeletesAnimatorAfterFinishingAnimation) {
@@ -3501,7 +3500,7 @@ class CountCyclesObserver : public LayerAnimationObserver {
   int cycles_count() { return cycles_count_; }
 
  private:
-  raw_ptr<ui::LayerAnimator> animator_;
+  ui::LayerAnimator* animator_;
   int cycles_count_ = 0;
 };
 

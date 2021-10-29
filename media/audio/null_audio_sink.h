@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "media/base/audio_renderer_sink.h"
 
 namespace base {
@@ -61,7 +60,7 @@ class MEDIA_EXPORT NullAudioSink : public SwitchableAudioRendererSink {
   bool initialized_;
   bool started_;
   bool playing_;
-  raw_ptr<RenderCallback> callback_;
+  RenderCallback* callback_;
 
   // Controls whether or not a running hash is computed for audio frames.
   std::unique_ptr<AudioHash> audio_hash_;

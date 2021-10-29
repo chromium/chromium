@@ -6,7 +6,6 @@
 #define REMOTING_HOST_FAKE_MOUSE_CURSOR_MONITOR_H_
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
 
 namespace remoting {
@@ -24,7 +23,7 @@ class FakeMouseCursorMonitor : public webrtc::MouseCursorMonitor {
   void Capture() override;
 
  private:
-  raw_ptr<Callback> callback_;
+  Callback* callback_;
 };
 
 }  // namespace remoting

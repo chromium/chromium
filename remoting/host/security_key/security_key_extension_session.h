@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "base/values.h"
@@ -65,7 +64,7 @@ class SecurityKeyExtensionSession : public HostExtensionSession {
   base::ThreadChecker thread_checker_;
 
   // Interface through which messages can be sent to the client.
-  raw_ptr<protocol::ClientStub> client_stub_ = nullptr;
+  protocol::ClientStub* client_stub_ = nullptr;
 
   // Handles platform specific security key operations.
   std::unique_ptr<SecurityKeyAuthHandler> security_key_auth_handler_;

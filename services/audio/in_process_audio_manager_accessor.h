@@ -6,7 +6,6 @@
 #define SERVICES_AUDIO_IN_PROCESS_AUDIO_MANAGER_ACCESSOR_H_
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "services/audio/service.h"
 
 namespace media {
@@ -37,7 +36,7 @@ class InProcessAudioManagerAccessor final
   void SetAudioLogFactory(media::AudioLogFactory* factory) final;
 
  private:
-  const raw_ptr<media::AudioManager> audio_manager_;
+  media::AudioManager* const audio_manager_;
 };
 
 }  // namespace audio

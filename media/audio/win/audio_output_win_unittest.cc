@@ -13,7 +13,6 @@
 #include "base/logging.h"
 #include "base/memory/aligned_memory.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/sync_socket.h"
 #include "base/test/task_environment.h"
@@ -150,7 +149,7 @@ class ReadOnlyMappedFile {
 
  private:
   HANDLE fmap_;
-  raw_ptr<char> start_;
+  char* start_;
   uint32_t size_;
 };
 
@@ -524,7 +523,7 @@ class SyncSocketSource : public AudioOutputStream::AudioSourceCallback {
   void OnError(ErrorType type) override {}
 
  private:
-  raw_ptr<base::SyncSocket> socket_;
+  base::SyncSocket* socket_;
   const AudioParameters params_;
   int packet_size_;
   std::unique_ptr<float, base::AlignedFreeDeleter> data_;

@@ -12,7 +12,6 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -127,7 +126,7 @@ class ExtensionFunctionDispatcher::ResponseCallbackWrapper
   }
 
   base::WeakPtr<ExtensionFunctionDispatcher> dispatcher_;
-  raw_ptr<content::RenderFrameHost> render_frame_host_;
+  content::RenderFrameHost* render_frame_host_;
   base::WeakPtrFactory<ResponseCallbackWrapper> weak_ptr_factory_{this};
 };
 
@@ -140,7 +139,7 @@ class ExtensionFunctionDispatcher::WorkerResponseCallbackWrapper
       int worker_thread_id)
       : dispatcher_(dispatcher),
         render_process_host_(render_process_host) {
-    observation_.Observe(render_process_host_.get());
+    observation_.Observe(render_process_host_);
   }
 
   WorkerResponseCallbackWrapper(const WorkerResponseCallbackWrapper&) = delete;
@@ -195,7 +194,7 @@ class ExtensionFunctionDispatcher::WorkerResponseCallbackWrapper
   base::ScopedObservation<content::RenderProcessHost,
                           content::RenderProcessHostObserver>
       observation_{this};
-  const raw_ptr<content::RenderProcessHost> render_process_host_;
+  content::RenderProcessHost* const render_process_host_;
   base::WeakPtrFactory<WorkerResponseCallbackWrapper> weak_ptr_factory_{this};
 };
 

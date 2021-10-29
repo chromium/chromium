@@ -13,7 +13,6 @@
 
 #include "base/command_line.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display.h"
@@ -126,7 +125,7 @@ class TestScreenWin : public ScreenWin {
     return metric;
   }
 
-  raw_ptr<Screen> old_screen_ = Screen::SetScreenInstance(this);
+  Screen* old_screen_ = Screen::SetScreenInstance(this);
   std::vector<MONITORINFOEX> monitor_infos_;
   std::unordered_map<HWND, gfx::Rect> hwnd_map_;
 };

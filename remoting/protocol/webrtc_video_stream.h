@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
@@ -103,7 +102,7 @@ class WebrtcVideoStream : public VideoStream,
 
   webrtc::DesktopSize frame_size_;
   webrtc::DesktopVector frame_dpi_;
-  raw_ptr<Observer> observer_ = nullptr;
+  Observer* observer_ = nullptr;
 
   base::ThreadChecker thread_checker_;
 

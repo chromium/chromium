@@ -11,7 +11,6 @@
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -284,7 +283,7 @@ class SiteDataImpl : public base::RefCounted<SiteDataImpl> {
 
   // The data store used to store the site characteristics, it should outlive
   // this object.
-  const raw_ptr<SiteDataStore> data_store_;
+  SiteDataStore* const data_store_;
 
   // The delegate that should get notified when this object is about to get
   // destroyed, it should outlive this object.

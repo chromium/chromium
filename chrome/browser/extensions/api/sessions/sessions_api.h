@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/common/extensions/api/sessions.h"
 #include "chrome/common/extensions/api/tab_groups.h"
 #include "chrome/common/extensions/api/tabs.h"
@@ -105,10 +104,10 @@ class SessionsEventRouter : public sessions::TabRestoreServiceObserver {
       sessions::TabRestoreService* service) override;
 
  private:
-  raw_ptr<Profile> profile_;
+  Profile* profile_;
 
   // TabRestoreService that we are observing.
-  raw_ptr<sessions::TabRestoreService> tab_restore_service_;
+  sessions::TabRestoreService* tab_restore_service_;
 };
 
 class SessionsAPI : public BrowserContextKeyedAPI,
@@ -133,7 +132,7 @@ class SessionsAPI : public BrowserContextKeyedAPI,
  private:
   friend class BrowserContextKeyedAPIFactory<SessionsAPI>;
 
-  raw_ptr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
 
   // BrowserContextKeyedAPI implementation.
   static const char* service_name() {

@@ -17,7 +17,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
 #include "components/viz/common/viz_common_export.h"
@@ -355,7 +354,7 @@ class VIZ_COMMON_EXPORT GLScaler final : public ContextLostObserver {
     static const GLfloat kVertexAttributes[16];
 
    private:
-    const raw_ptr<GLES2Interface> gl_;
+    GLES2Interface* const gl_;
     const Shader shader_;
     const GLenum texture_type_;
 
@@ -441,14 +440,14 @@ class VIZ_COMMON_EXPORT GLScaler final : public ContextLostObserver {
     // changed.
     void EnsureIntermediateTextureDefined(const gfx::Size& size);
 
-    const raw_ptr<GLES2Interface> gl_;
+    GLES2Interface* const gl_;
     const Shader shader_;
     const Axis primary_axis_;
     const gfx::Vector2d scale_from_;
     const gfx::Vector2d scale_to_;
 
     std::unique_ptr<ScalerStage> input_stage_;
-    raw_ptr<ShaderProgram> program_ = nullptr;
+    ShaderProgram* program_ = nullptr;
     bool is_flipped_source_ = false;
     bool flip_output_ = false;
 
@@ -499,7 +498,7 @@ class VIZ_COMMON_EXPORT GLScaler final : public ContextLostObserver {
 
   // The provider of the GL context. This is non-null while the GL context is
   // valid and GLScaler is observing for context loss.
-  raw_ptr<ContextProvider> context_provider_;
+  ContextProvider* context_provider_;
 
   // Set by Configure() to the resolved set of Parameters.
   Parameters params_;

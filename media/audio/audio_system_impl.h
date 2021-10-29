@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "media/audio/audio_system.h"
 #include "media/audio/audio_system_helper.h"
@@ -58,7 +57,7 @@ class MEDIA_EXPORT AudioSystemImpl : public AudioSystem {
       base::OnceCallback<void(Args...)> callback);
 
   THREAD_CHECKER(thread_checker_);
-  const raw_ptr<AudioManager> audio_manager_;
+  AudioManager* const audio_manager_;
 };
 
 }  // namespace media

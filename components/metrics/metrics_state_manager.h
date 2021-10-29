@@ -12,7 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "build/chromeos_buildflags.h"
 #include "components/metrics/clean_exit_beacon.h"
@@ -313,11 +312,11 @@ class MetricsStateManager final {
   static bool instance_exists_;
 
   // Weak pointer to the local state prefs store.
-  const raw_ptr<PrefService> local_state_;
+  PrefService* const local_state_;
 
   // Weak pointer to an enabled state provider. Used to know whether the user
   // has consented to reporting, and if reporting should be done.
-  raw_ptr<EnabledStateProvider> enabled_state_provider_;
+  EnabledStateProvider* enabled_state_provider_;
 
   // A callback run during client id creation so this MetricsStateManager can
   // store a backup of the newly generated ID.

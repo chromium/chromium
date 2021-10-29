@@ -14,7 +14,6 @@
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/gesture_event_details.h"
@@ -72,7 +71,7 @@ class EVENTS_EXPORT Event {
     void set_time_stamp(base::TimeTicks time) { event_->time_stamp_ = time; }
 
    private:
-    raw_ptr<Event> event_;
+    Event* event_;
   };
 
   void SetNativeEvent(const PlatformEvent& event);
@@ -318,7 +317,7 @@ class EVENTS_EXPORT Event {
   // Neither Event copy constructor nor the assignment operator copies
   // `target_`, as `target_` should be explicitly set so the setter will be
   // responsible for tracking it.
-  raw_ptr<EventTarget> target_ = nullptr;
+  EventTarget* target_ = nullptr;
   EventPhase phase_ = EP_PREDISPATCH;
   EventResult result_ = ER_UNHANDLED;
 
@@ -493,7 +492,7 @@ class EVENTS_EXPORT MouseEvent : public LocatedEvent {
     }
 
    private:
-    raw_ptr<MouseEvent> event_;
+    MouseEvent* event_;
   };
 
   // Conveniences to quickly test what button is down

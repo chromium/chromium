@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/profiles/profile_shortcut_manager.h"
@@ -129,7 +128,7 @@ class ProfileShortcutManagerWin : public ProfileShortcutManager,
       NonProfileShortcutAction action,
       bool incognito);
 
-  raw_ptr<ProfileManager> profile_manager_;
+  ProfileManager* profile_manager_;
   // The profile icon of these profiles needs to be updated when an avatar image
   // is loaded.
   std::set<base::FilePath> profiles_with_pending_avatar_load_;

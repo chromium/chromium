@@ -16,7 +16,6 @@
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -105,9 +104,9 @@ class ProfileResetter : public content::BrowsingDataRemover::Observer {
   // Callback for when TemplateURLService has loaded.
   void OnTemplateURLServiceLoaded();
 
-  const raw_ptr<Profile> profile_;
+  Profile* const profile_;
   std::unique_ptr<BrandcodedDefaultSettings> master_settings_;
-  raw_ptr<TemplateURLService> template_url_service_;
+  TemplateURLService* template_url_service_;
 
   // Flags of a Resetable indicating which reset operations we are still waiting
   // for.
@@ -118,7 +117,7 @@ class ProfileResetter : public content::BrowsingDataRemover::Observer {
 
   // If non-null it means removal is in progress. BrowsingDataRemover takes care
   // of deleting itself when done.
-  raw_ptr<content::BrowsingDataRemover> cookies_remover_;
+  content::BrowsingDataRemover* cookies_remover_;
 
   base::CallbackListSubscription template_url_service_subscription_;
 

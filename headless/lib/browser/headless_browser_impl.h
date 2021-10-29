@@ -5,7 +5,6 @@
 #ifndef HEADLESS_LIB_BROWSER_HEADLESS_BROWSER_IMPL_H_
 #define HEADLESS_LIB_BROWSER_HEADLESS_BROWSER_IMPL_H_
 
-#include "base/memory/raw_ptr.h"
 #include "headless/public/headless_browser.h"
 
 #include <memory>
@@ -119,11 +118,11 @@ class HEADLESS_EXPORT HeadlessBrowserImpl : public HeadlessBrowser,
  protected:
   base::OnceCallback<void(HeadlessBrowser*)> on_start_callback_;
   HeadlessBrowser::Options options_;
-  raw_ptr<HeadlessBrowserMainParts> browser_main_parts_;  // Not owned.
+  HeadlessBrowserMainParts* browser_main_parts_;  // Not owned.
 
   base::flat_map<std::string, std::unique_ptr<HeadlessBrowserContextImpl>>
       browser_contexts_;
-  raw_ptr<HeadlessBrowserContext> default_browser_context_;  // Not owned.
+  HeadlessBrowserContext* default_browser_context_;  // Not owned.
 
   scoped_refptr<content::DevToolsAgentHost> agent_host_;
   std::unique_ptr<HeadlessRequestContextManager>

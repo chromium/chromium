@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
@@ -223,7 +222,7 @@ class ManagementUninstallFunctionUninstallDialogDelegate
   }
 
  private:
-  raw_ptr<extensions::ManagementUninstallFunctionBase> function_;
+  extensions::ManagementUninstallFunctionBase* function_;
   std::unique_ptr<extensions::ExtensionUninstallDialog>
       extension_uninstall_dialog_;
 };

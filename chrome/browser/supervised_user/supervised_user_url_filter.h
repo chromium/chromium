@@ -12,7 +12,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "build/chromeos_buildflags.h"
@@ -284,7 +283,7 @@ class SupervisedUserURLFilter {
   std::map<std::string, bool> host_map_;
 
   // Not owned.
-  raw_ptr<const SupervisedUserDenylist> denylist_;
+  const SupervisedUserDenylist* denylist_;
 
   std::unique_ptr<safe_search_api::URLChecker> async_url_checker_;
 

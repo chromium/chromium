@@ -10,7 +10,6 @@
 #include "base/callback_forward.h"
 #include "base/containers/id_map.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -43,7 +42,7 @@ class WebTestStorageAccessManager
                 receiver);
 
  private:
-  raw_ptr<BrowserContext> browser_context_;
+  BrowserContext* browser_context_;
 
   mojo::ReceiverSet<blink::test::mojom::StorageAccessAutomation> receivers_;
 

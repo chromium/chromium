@@ -36,7 +36,6 @@
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/task/current_thread.h"
@@ -655,7 +654,7 @@ class CONTENT_EXPORT MediaStreamManager
   const base::TimeDelta conditional_focus_window_;
 #endif
 
-  const raw_ptr<media::AudioSystem> audio_system_;  // not owned
+  media::AudioSystem* const audio_system_;  // not owned
   scoped_refptr<AudioInputDeviceManager> audio_input_device_manager_;
   scoped_refptr<VideoCaptureManager> video_capture_manager_;
 

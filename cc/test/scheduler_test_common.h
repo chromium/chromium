@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "cc/metrics/compositor_timing_history.h"
 #include "cc/metrics/dropped_frame_counter.h"
@@ -142,7 +141,7 @@ class TestScheduler : public Scheduler {
   base::TimeTicks Now() const override;
 
  private:
-  raw_ptr<const base::TickClock> now_src_;
+  const base::TickClock* now_src_;
 };
 
 }  // namespace cc

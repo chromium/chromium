@@ -8,7 +8,6 @@
 #include <cstdint>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/media/audio_muting_session.h"
 #include "content/browser/media/audio_stream_broker.h"
@@ -69,7 +68,7 @@ class CONTENT_EXPORT AudioLoopbackStreamBroker final
   void Cleanup();
 
   // Owner of the output streams to be looped back.
-  raw_ptr<AudioStreamBroker::LoopbackSource> source_;
+  AudioStreamBroker::LoopbackSource* source_;
 
   const media::AudioParameters params_;
   const uint32_t shared_memory_count_;

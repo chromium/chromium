@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_TOP_CONTAINER_BACKGROUND_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_TOP_CONTAINER_BACKGROUND_H_
 
-#include "base/memory/raw_ptr.h"
 #include "ui/views/background.h"
 
 class BrowserView;
@@ -36,7 +35,7 @@ class TopContainerBackground : public views::Background {
   // views::Background:
   void Paint(gfx::Canvas* canvas, views::View* view) const override;
 
-  const raw_ptr<BrowserView> browser_view_;
+  BrowserView* const browser_view_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_TOP_CONTAINER_BACKGROUND_H_

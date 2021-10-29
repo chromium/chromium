@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/memory/raw_ptr.h"
 #include "content/public/browser/bluetooth_chooser.h"
 #include "content/public/browser/web_contents.h"
 
@@ -56,7 +55,7 @@ class BluetoothChooserAndroid : public content::BluetoothChooser {
   void OpenURL(const char* url);
   base::android::ScopedJavaGlobalRef<jobject> java_dialog_;
 
-  raw_ptr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
   BluetoothChooser::EventHandler event_handler_;
   std::unique_ptr<BluetoothChooserAndroidDelegate> delegate_;
 };

@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
@@ -110,10 +109,10 @@ class IndexedDBConnectionCoordinator::ConnectionRequest {
 
   IndexedDBStorageKeyStateHandle storage_key_state_handle_;
   // This is safe because IndexedDBDatabase owns this object.
-  raw_ptr<IndexedDBDatabase> db_;
+  IndexedDBDatabase* db_;
 
   // Rawptr safe because IndexedDBConnectionCoordinator owns this object.
-  raw_ptr<IndexedDBConnectionCoordinator> connection_coordinator_;
+  IndexedDBConnectionCoordinator* connection_coordinator_;
 
   TasksAvailableCallback tasks_available_callback_;
 
@@ -378,7 +377,7 @@ class IndexedDBConnectionCoordinator::OpenRequest
 
   // This raw pointer is stored solely for comparison to the connection in
   // OnConnectionClosed. It is not guaranteed to be pointing to a live object.
-  raw_ptr<IndexedDBConnection> connection_ptr_for_close_comparision_ = nullptr;
+  IndexedDBConnection* connection_ptr_for_close_comparision_ = nullptr;
 
   base::WeakPtrFactory<OpenRequest> weak_factory_{this};
 };

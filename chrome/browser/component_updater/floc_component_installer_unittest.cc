@@ -12,7 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
@@ -139,8 +138,8 @@ class FlocComponentInstallerTest : public PlatformTest {
   content::BrowserTaskEnvironment task_environment_;
   base::ScopedTempDir component_install_dir_;
   std::unique_ptr<FlocComponentInstallerPolicy> policy_;
-  raw_ptr<MockFlocSortingLshClustersService>
-      test_floc_sorting_lsh_clusters_service_ = nullptr;
+  MockFlocSortingLshClustersService* test_floc_sorting_lsh_clusters_service_ =
+      nullptr;
 };
 
 TEST_F(FlocComponentInstallerTest, TestComponentRegistration) {

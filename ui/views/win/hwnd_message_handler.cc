@@ -19,7 +19,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util_win.h"
 #include "base/task/current_thread.h"
@@ -104,7 +103,7 @@ class MoveLoopMouseWatcher {
   void Unhook();
 
   // HWNDMessageHandler that created us.
-  raw_ptr<HWNDMessageHandler> host_;
+  HWNDMessageHandler* host_;
 
   // Should the window be hidden when escape is pressed?
   const bool hide_on_escape_;
@@ -379,7 +378,7 @@ class HWNDMessageHandler::ScopedRedrawLock {
 
  private:
   // The owner having its style changed.
-  raw_ptr<HWNDMessageHandler> owner_;
+  HWNDMessageHandler* owner_;
   // The owner's HWND, cached to avoid action after window destruction.
   HWND hwnd_;
   // A flag indicating that the unlock operation was canceled.

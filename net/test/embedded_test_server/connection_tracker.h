@@ -9,7 +9,6 @@
 
 #include <map>
 
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/net_errors.h"
@@ -84,7 +83,7 @@ class ConnectionTracker {
     scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
     // This pointer should be only accessed on the `task_runner_` thread.
-    raw_ptr<ConnectionTracker> tracker_;
+    ConnectionTracker* tracker_;
   };
 
   void AcceptedSocketWithPort(uint16_t port);
@@ -94,7 +93,7 @@ class ConnectionTracker {
 
   ConnectionListener connection_listener_;
 
-  raw_ptr<base::RunLoop> read_loop_ = nullptr;
+  base::RunLoop* read_loop_ = nullptr;
 
   // Port -> SocketStatus.
   using SocketContainer = std::map<uint16_t, SocketStatus>;
@@ -107,7 +106,7 @@ class ConnectionTracker {
   // waiting for |num_accepted_connections_needed_| sockets to be accepted
   // before quitting the |num_accepted_connections_loop_|.
   size_t num_accepted_connections_needed_ = 0;
-  raw_ptr<base::RunLoop> num_accepted_connections_loop_ = nullptr;
+  base::RunLoop* num_accepted_connections_loop_ = nullptr;
 };
 
 }  // namespace test_server

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/payments/card_unmask_otp_input_dialog_controller.h"
 #include "chrome/browser/ui/autofill/payments/card_unmask_otp_input_dialog_view.h"
@@ -73,7 +72,7 @@ class CardUnmaskOtpInputDialogControllerImpl
 
   base::WeakPtr<OtpUnmaskDelegate> delegate_;
 
-  raw_ptr<CardUnmaskOtpInputDialogView> dialog_view_ = nullptr;
+  CardUnmaskOtpInputDialogView* dialog_view_ = nullptr;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

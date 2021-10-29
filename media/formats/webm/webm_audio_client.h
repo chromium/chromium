@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "media/base/encryption_scheme.h"
 #include "media/base/media_log.h"
 #include "media/formats/webm/webm_parser.h"
@@ -50,7 +49,7 @@ class WebMAudioClient : public WebMParserClient {
   bool OnUInt(int id, int64_t val) override;
   bool OnFloat(int id, double val) override;
 
-  raw_ptr<MediaLog> media_log_;
+  MediaLog* media_log_;
   int channels_;
   double samples_per_second_;
   double output_samples_per_second_;

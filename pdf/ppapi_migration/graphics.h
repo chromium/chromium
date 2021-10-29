@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "pdf/ppapi_migration/callback.h"
 #include "ppapi/cpp/graphics_2d.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -120,7 +119,7 @@ class SkiaGraphics final : public Graphics {
   explicit SkiaGraphics(Client* client, const gfx::Size& size);
 
   // Unowned pointer. The client is required to outlive this object.
-  raw_ptr<Client> client_;
+  Client* client_;
 
   sk_sp<SkSurface> skia_graphics_;
 };

@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -707,7 +706,7 @@ class DeviceInfoSyncBridgeTest : public testing::Test,
   // test case to modify the dependencies the bridge will be constructed with.
   std::unique_ptr<DeviceInfoSyncBridge> bridge_;
 
-  raw_ptr<TestLocalDeviceInfoProvider> local_device_info_provider_ = nullptr;
+  TestLocalDeviceInfoProvider* local_device_info_provider_ = nullptr;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<chromeos::system::ScopedFakeStatisticsProvider>

@@ -8,7 +8,6 @@
 #include <cstdint>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 
 namespace base {
 class Clock;
@@ -46,10 +45,10 @@ class PrefetchDownloaderQuota {
 
  private:
   // DB connection. Not owned.
-  raw_ptr<sql::Database> db_;
+  sql::Database* db_;
 
   // Clock used for time related calculation and quota updates in DB. Not owned.
-  raw_ptr<const base::Clock> clock_;
+  const base::Clock* clock_;
 };
 }  // namespace offline_pages
 

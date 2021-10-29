@@ -14,7 +14,6 @@
 #include "base/debug/debugging_buildflags.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_local_storage.h"
 
 namespace base {
@@ -155,15 +154,15 @@ class BASE_EXPORT CFIBacktraceAndroid {
   // The UNW_INDEX table: Start address of the function address column. The
   // memory segment corresponding to this column is treated as an array of
   // uintptr_t.
-  raw_ptr<const uintptr_t> unw_index_function_col_ = nullptr;
+  const uintptr_t* unw_index_function_col_ = nullptr;
   // The UNW_INDEX table: Start address of the index column. The memory segment
   // corresponding to this column is treated as an array of uint16_t.
-  raw_ptr<const uint16_t> unw_index_indices_col_ = nullptr;
+  const uint16_t* unw_index_indices_col_ = nullptr;
   // The number of rows in UNW_INDEX table.
   size_t unw_index_row_count_ = 0;
 
   // The start address of UNW_DATA table.
-  raw_ptr<const uint16_t> unw_data_start_addr_ = nullptr;
+  const uint16_t* unw_data_start_addr_ = nullptr;
 
   bool can_unwind_stack_frames_ = false;
 

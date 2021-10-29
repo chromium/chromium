@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/proto/device_trust_attestation_ca.pb.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate_factory.h"
@@ -66,7 +65,7 @@ class DesktopAttestationServiceTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<DesktopAttestationService> attestation_service_;
   test::ScopedKeyPersistenceDelegateFactory persistence_delegate_factory_;
-  raw_ptr<test::MockKeyPersistenceDelegate> mock_persistence_delegate_;
+  test::MockKeyPersistenceDelegate* mock_persistence_delegate_;
 };
 
 TEST_F(DesktopAttestationServiceTest, BuildChallengeResponse) {

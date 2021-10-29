@@ -15,7 +15,6 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "cc/base/synced_property.h"
 #include "cc/cc_export.h"
@@ -112,7 +111,7 @@ class CC_EXPORT PropertyTree {
  protected:
   std::vector<T> nodes_;
   bool needs_update_;
-  raw_ptr<PropertyTrees> property_trees_;
+  PropertyTrees* property_trees_;
 };
 
 struct StickyPositionNodeData;

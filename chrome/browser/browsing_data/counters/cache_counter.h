@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/browsing_data/core/counters/browsing_data_counter.h"
 
@@ -43,7 +42,7 @@ class CacheCounter : public browsing_data::BrowsingDataCounter {
   void Count() override;
   void OnCacheSizeCalculated(bool is_upper_limit, int64_t cache_bytes);
 
-  raw_ptr<Profile> profile_;
+  Profile* profile_;
   int64_t calculated_size_;
   bool is_upper_limit_;
   int pending_sources_;

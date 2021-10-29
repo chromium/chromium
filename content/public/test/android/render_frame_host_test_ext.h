@@ -8,7 +8,6 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 
 namespace content {
@@ -38,7 +37,7 @@ class RenderFrameHostTestExt : public base::SupportsUserData::Data {
       jint height);
 
  private:
-  const raw_ptr<RenderFrameHostImpl> render_frame_host_;
+  RenderFrameHostImpl* const render_frame_host_;
 };
 
 }  // namespace content

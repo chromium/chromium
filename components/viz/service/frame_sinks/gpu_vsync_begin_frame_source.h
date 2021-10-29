@@ -6,7 +6,6 @@
 #define COMPONENTS_VIZ_SERVICE_FRAME_SINKS_GPU_VSYNC_BEGIN_FRAME_SOURCE_H_
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "components/viz/common/display/update_vsync_parameters_callback.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/service/display/frame_rate_decider.h"
@@ -46,7 +45,7 @@ class VIZ_SERVICE_EXPORT GpuVSyncBeginFrameSource
  private:
   void OnGpuVSync(base::TimeTicks vsync_time, base::TimeDelta vsync_interval);
 
-  const raw_ptr<OutputSurface> output_surface_;
+  OutputSurface* const output_surface_;
   BeginFrameArgsGenerator begin_frame_args_generator_;
 
   bool run_at_half_refresh_rate_ = false;

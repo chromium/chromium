@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/qrcode_generator/qrcode_generator_bubble.h"
 
-#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/services/qrcode_generator/public/cpp/qrcode_generator_service.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -148,8 +147,8 @@ class QRCodeGeneratorBubbleUITest : public ChromeViewsTestBase {
 
  private:
   WidgetAutoclosePtr anchor_widget_;
-  raw_ptr<views::View> anchor_view_;
-  raw_ptr<QRCodeGeneratorBubble> bubble_;
+  views::View* anchor_view_;
+  QRCodeGeneratorBubble* bubble_;
   WidgetAutoclosePtr bubble_widget_;
 
   FakeQRCodeGeneratorService fake_service_;

@@ -8,7 +8,6 @@
 #include <queue>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/send_tab_to_self/receiving_ui_handler.h"
 #include "components/messages/android/message_wrapper.h"
 
@@ -55,7 +54,7 @@ class AndroidNotificationHandler : public ReceivingUiHandler {
   // messages::MessageDispatcherBridge.
   std::vector<std::unique_ptr<messages::MessageWrapper>> queued_messages_;
 
-  raw_ptr<Profile> profile_;
+  Profile* profile_;
 
   base::WeakPtr<content::WebContents> web_contents_;
 };

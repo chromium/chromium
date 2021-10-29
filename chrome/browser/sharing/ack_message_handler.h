@@ -7,7 +7,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/sharing/sharing_message_handler.h"
 
 class SharingMessageSender;
@@ -27,7 +26,7 @@ class AckMessageHandler : public SharingMessageHandler {
                  SharingMessageHandler::DoneCallback done_callback) override;
 
  private:
-  raw_ptr<SharingMessageSender> sharing_message_sender_;
+  SharingMessageSender* sharing_message_sender_;
 };
 
 #endif  // CHROME_BROWSER_SHARING_ACK_MESSAGE_HANDLER_H_

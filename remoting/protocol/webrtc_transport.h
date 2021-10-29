@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
@@ -232,7 +231,7 @@ class WebrtcTransport : public Transport,
   base::ThreadChecker thread_checker_;
 
   scoped_refptr<TransportContext> transport_context_;
-  raw_ptr<EventHandler> event_handler_ = nullptr;
+  EventHandler* event_handler_ = nullptr;
   SendTransportInfoCallback send_transport_info_callback_;
 
   crypto::HMAC handshake_hmac_;

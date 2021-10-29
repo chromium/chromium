@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_LAYOUT_FLEX_LAYOUT_VIEW_H_
 #define UI_VIEWS_LAYOUT_FLEX_LAYOUT_VIEW_H_
 
-#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
@@ -69,7 +68,7 @@ class VIEWS_EXPORT FlexLayoutView : public View {
   }
 
  private:
-  raw_ptr<FlexLayout> layout_;
+  FlexLayout* layout_;
   LayoutOrientation orientation_;
   LayoutAlignment main_axis_alignment_;
   LayoutAlignment cross_axis_alignment_;

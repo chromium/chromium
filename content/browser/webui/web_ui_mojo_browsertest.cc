@@ -10,7 +10,6 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -265,7 +264,7 @@ class WebUIMojoTest : public ContentBrowserTest {
   TestWebUIControllerFactory factory_;
   content::ScopedWebUIControllerFactoryRegistration factory_registration_{
       &factory_};
-  raw_ptr<ContentBrowserClient> original_client_ = nullptr;
+  ContentBrowserClient* original_client_ = nullptr;
   TestWebUIContentBrowserClient client_;
 };
 

@@ -13,7 +13,6 @@
 #include "base/callback_list.h"
 #include "base/compiler_specific.h"
 #include "base/containers/linked_list.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -151,7 +150,7 @@ class CookieMonsterChangeDispatcher : public CookieChangeDispatcher {
   // Called by the Subscription destructor.
   void UnlinkSubscription(Subscription* subscription);
 
-  raw_ptr<const CookieMonster> cookie_monster_;
+  const CookieMonster* cookie_monster_;
 
   CookieDomainMap cookie_domain_map_;
 

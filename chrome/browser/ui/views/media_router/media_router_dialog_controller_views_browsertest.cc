@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/browser.h"
@@ -52,8 +51,8 @@ class MediaRouterDialogControllerViewsTest : public InProcessBrowserTest {
   void CreateDialogController();
 
  protected:
-  raw_ptr<WebContents> initiator_;
-  raw_ptr<MediaRouterDialogControllerViews> dialog_controller_;
+  WebContents* initiator_;
+  MediaRouterDialogControllerViews* dialog_controller_;
 };
 
 void MediaRouterDialogControllerViewsTest::CreateDialogController() {

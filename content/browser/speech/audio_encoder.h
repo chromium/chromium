@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "content/browser/speech/audio_buffer.h"
 #include "third_party/flac/include/FLAC/stream_encoder.h"
@@ -43,7 +42,7 @@ class AudioEncoder {
  private:
   AudioBuffer encoded_audio_buffer_;
 
-  raw_ptr<FLAC__StreamEncoder> encoder_;
+  FLAC__StreamEncoder* encoder_;
   bool is_encoder_initialized_;
 };
 

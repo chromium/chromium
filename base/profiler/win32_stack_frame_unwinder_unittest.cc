@@ -11,7 +11,6 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -61,7 +60,7 @@ class TestUnwindFunctions : public Win32StackFrameUnwinder::UnwindFunctions {
   DWORD64 expected_program_counter_;
   DWORD64 next_image_base_;
   DWORD64 expected_image_base_;
-  raw_ptr<RUNTIME_FUNCTION> next_runtime_function_;
+  RUNTIME_FUNCTION* next_runtime_function_;
   std::vector<RUNTIME_FUNCTION> runtime_functions_;
 };
 
@@ -147,7 +146,7 @@ class Win32StackFrameUnwinderTest : public testing::Test {
   std::unique_ptr<Win32StackFrameUnwinder> CreateUnwinder();
 
   // Weak pointer to the unwind functions used by last created unwinder.
-  raw_ptr<TestUnwindFunctions> unwind_functions_;
+  TestUnwindFunctions* unwind_functions_;
 };
 
 std::unique_ptr<Win32StackFrameUnwinder>

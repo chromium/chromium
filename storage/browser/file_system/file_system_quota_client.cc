@@ -165,7 +165,7 @@ void FileSystemQuotaClient::GetStorageKeyUsage(
           base::BindOnce(
               &FileSystemQuotaUtil::GetStorageKeyUsageOnFileTaskRunner,
               base::Unretained(quota_util),
-              base::RetainedRef(file_system_context_.get()), storage_key, type),
+              base::RetainedRef(file_system_context_), storage_key, type),
           barrier);
     } else {
       barrier.Run(0);
@@ -192,7 +192,7 @@ void FileSystemQuotaClient::GetStorageKeysForType(
     file_task_runner()->PostTaskAndReplyWithResult(
         FROM_HERE,
         base::BindOnce(&GetStorageKeysForTypeOnFileTaskRunner,
-                       base::RetainedRef(file_system_context_.get()), type),
+                       base::RetainedRef(file_system_context_), type),
         barrier);
   }
 }
@@ -217,8 +217,7 @@ void FileSystemQuotaClient::GetStorageKeysForHost(
     file_task_runner()->PostTaskAndReplyWithResult(
         FROM_HERE,
         base::BindOnce(&GetStorageKeysForHostOnFileTaskRunner,
-                       base::RetainedRef(file_system_context_.get()), type,
-                       host),
+                       base::RetainedRef(file_system_context_), type, host),
         barrier);
   }
 }
@@ -249,8 +248,8 @@ void FileSystemQuotaClient::DeleteStorageKeyData(
     file_task_runner()->PostTaskAndReplyWithResult(
         FROM_HERE,
         base::BindOnce(&DeleteStorageKeyOnFileTaskRunner,
-                       base::RetainedRef(file_system_context_.get()),
-                       storage_key, fs_type),
+                       base::RetainedRef(file_system_context_), storage_key,
+                       fs_type),
         barrier);
   }
 }
@@ -271,7 +270,7 @@ void FileSystemQuotaClient::PerformStorageCleanup(
     file_task_runner()->PostTaskAndReply(
         FROM_HERE,
         base::BindOnce(&PerformStorageCleanupOnFileTaskRunner,
-                       base::RetainedRef(file_system_context_.get()), fs_type),
+                       base::RetainedRef(file_system_context_), fs_type),
         barrier);
   }
 }

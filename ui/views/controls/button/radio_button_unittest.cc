@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/base_event_utils.h"
@@ -51,7 +50,7 @@ class RadioButtonTest : public ViewsTestBase {
   View& button_container() { return *button_container_; }
 
  private:
-  raw_ptr<View> button_container_ = nullptr;
+  View* button_container_ = nullptr;
   std::unique_ptr<Widget> widget_;
 };
 

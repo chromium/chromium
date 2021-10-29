@@ -15,7 +15,6 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/hash/hash.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -92,7 +91,7 @@ class TestRecordingHelper {
   }
 
  private:
-  raw_ptr<UkmRecorder> recorder_;
+  UkmRecorder* recorder_;
 };
 
 namespace {

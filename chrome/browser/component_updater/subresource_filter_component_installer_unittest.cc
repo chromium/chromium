@@ -13,7 +13,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -186,7 +185,7 @@ class SubresourceFilterComponentInstallerTest : public PlatformTest {
   std::unique_ptr<SubresourceFilterComponentInstallerPolicy> policy_;
   TestingPrefServiceSimple pref_service_;
 
-  raw_ptr<TestRulesetService> test_ruleset_service_ = nullptr;
+  TestRulesetService* test_ruleset_service_ = nullptr;
 };
 
 TEST_F(SubresourceFilterComponentInstallerTest,

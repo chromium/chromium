@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 
 namespace sync_file_system {
@@ -34,7 +33,7 @@ class AbortHelper {
       const base::WeakPtr<AbortHelper>& abort_helper);
 
  private:
-  raw_ptr<CallbackTracker> tracker_;  // Not owned.
+  CallbackTracker* tracker_;  // Not owned.
   base::WeakPtrFactory<AbortHelper> weak_ptr_factory_{this};
 };
 

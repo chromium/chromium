@@ -5,7 +5,6 @@
 #include "cc/paint/skottie_mru_resource_provider.h"
 
 #include "base/files/file_path.h"
-#include "base/memory/raw_ptr.h"
 #include "cc/paint/paint_image.h"
 #include "cc/paint/skottie_resource_metadata.h"
 #include "cc/test/skia_common.h"
@@ -32,7 +31,7 @@ class SkottieMRUResourceProviderTest : public ::testing::Test {
         provider_base_(provider_.get()) {}
 
   const sk_sp<SkottieMRUResourceProvider> provider_;
-  const raw_ptr<skresources::ResourceProvider> provider_base_;
+  skresources::ResourceProvider* const provider_base_;
 };
 
 TEST_F(SkottieMRUResourceProviderTest, ProvidesMostRecentFrameDataForAsset) {

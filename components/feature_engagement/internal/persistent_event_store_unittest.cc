@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/feature_engagement/internal/proto/feature_event.pb.h"
 #include "components/feature_engagement/internal/stats.h"
@@ -68,7 +67,7 @@ class PersistentEventStoreTest : public ::testing::Test {
 
   EventStore::OnLoadedCallback load_callback_;
   std::map<std::string, Event> db_events_;
-  raw_ptr<leveldb_proto::test::FakeDB<Event>> db_;
+  leveldb_proto::test::FakeDB<Event>* db_;
   std::unique_ptr<EventStore> store_;
 };
 

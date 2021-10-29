@@ -15,7 +15,6 @@
 #include "base/guid.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/android/chrome_jni_headers/OfflinePageDownloadBridge_jni.h"
 #include "chrome/browser/android/profile_key_util.h"
 #include "chrome/browser/android/tab_android.h"
@@ -112,7 +111,7 @@ class DownloadUIAdapterDelegate : public DownloadUIAdapter::Delegate {
 
  private:
   // Not owned, cached service pointer.
-  raw_ptr<OfflinePageModel> model_;
+  OfflinePageModel* model_;
 };
 
 DownloadUIAdapterDelegate::DownloadUIAdapterDelegate(OfflinePageModel* model)

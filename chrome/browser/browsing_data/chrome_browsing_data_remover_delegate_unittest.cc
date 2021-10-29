@@ -17,7 +17,6 @@
 #include "base/guid.h"
 #include "base/json/values_util.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -362,7 +361,7 @@ class RemoveSafeBrowsingCookieTester : public RemoveCookieTester {
   }
 
  private:
-  raw_ptr<TestingBrowserProcess> browser_process_;
+  TestingBrowserProcess* browser_process_;
 };
 
 class RemoveHistoryTester {
@@ -490,8 +489,8 @@ class RemoveFaviconTester {
   base::OnceClosure quit_closure_;
 
   // Owned by TestingProfile.
-  raw_ptr<history::HistoryService> history_service_ = nullptr;
-  raw_ptr<favicon::FaviconService> favicon_service_ = nullptr;
+  history::HistoryService* history_service_ = nullptr;
+  favicon::FaviconService* favicon_service_ = nullptr;
 };
 
 std::unique_ptr<KeyedService> BuildProtocolHandlerRegistry(
@@ -598,8 +597,8 @@ class RemovePasswordsTester {
   }
 
  private:
-  raw_ptr<password_manager::MockPasswordStoreInterface> profile_store_;
-  raw_ptr<password_manager::MockPasswordStoreInterface> account_store_;
+  password_manager::MockPasswordStoreInterface* profile_store_;
+  password_manager::MockPasswordStoreInterface* account_store_;
   testing::NiceMock<password_manager::MockSmartBubbleStatsStore>
       mock_smart_bubble_stats_store_;
   testing::NiceMock<password_manager::MockFieldInfoStore>
@@ -678,7 +677,7 @@ class RemovePermissionPromptCountsTest {
   }
 
  private:
-  raw_ptr<permissions::PermissionDecisionAutoBlocker> autoblocker_;
+  permissions::PermissionDecisionAutoBlocker* autoblocker_;
 };
 
 // Custom matcher to test the equivalence of two URL filters. Since those are
@@ -754,7 +753,7 @@ class RemoveDownloadsTester {
   explicit RemoveDownloadsTester(TestingProfile* testing_profile)
       : download_manager_(new testing::NiceMock<content::MockDownloadManager>) {
     testing_profile->SetDownloadManagerForTesting(
-        base::WrapUnique(download_manager_.get()));
+        base::WrapUnique(download_manager_));
     std::unique_ptr<ChromeDownloadManagerDelegate> delegate =
         std::make_unique<ChromeDownloadManagerDelegate>(testing_profile);
     chrome_download_manager_delegate_ = delegate.get();
@@ -777,10 +776,9 @@ class RemoveDownloadsTester {
   content::MockDownloadManager* download_manager() { return download_manager_; }
 
  private:
-  raw_ptr<DownloadCoreService> service_;
-  raw_ptr<content::MockDownloadManager>
-      download_manager_;  // Owned by testing profile.
-  raw_ptr<ChromeDownloadManagerDelegate> chrome_download_manager_delegate_;
+  DownloadCoreService* service_;
+  content::MockDownloadManager* download_manager_;  // Owned by testing profile.
+  ChromeDownloadManagerDelegate* chrome_download_manager_delegate_;
 };
 
 }  // namespace
@@ -891,7 +889,7 @@ class RemoveAutofillTester {
     base::RunLoop().Run();
   }
 
-  raw_ptr<autofill::PersonalDataManager> personal_data_manager_;
+  autofill::PersonalDataManager* personal_data_manager_;
   testing::NiceMock<PersonalDataLoadedObserverMock> personal_data_observer_;
 };
 
@@ -1014,7 +1012,7 @@ class StrikeDatabaseTester {
   }
 
  private:
-  raw_ptr<autofill::StrikeDatabase> strike_database_;
+  autofill::StrikeDatabase* strike_database_;
 };
 
 }  // namespace autofill
@@ -1039,9 +1037,9 @@ class ClearReportingCacheTester {
   const MockReportingService& mock() { return *service_; }
 
  private:
-  raw_ptr<net::URLRequestContext> url_request_context_;
+  net::URLRequestContext* url_request_context_;
   std::unique_ptr<MockReportingService> service_;
-  raw_ptr<net::ReportingService> old_service_;
+  net::ReportingService* old_service_;
 };
 
 class MockNetworkErrorLoggingService : public net::NetworkErrorLoggingService {
@@ -1118,7 +1116,7 @@ class ClearNetworkErrorLoggingTester {
   const MockNetworkErrorLoggingService& mock() { return *service_; }
 
  private:
-  raw_ptr<net::URLRequestContext> url_request_context_;
+  net::URLRequestContext* url_request_context_;
   std::unique_ptr<MockNetworkErrorLoggingService> service_;
 };
 #endif  // BUILDFLAG(ENABLE_REPORTING)
@@ -1319,7 +1317,7 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
 
  private:
   // Cached pointer to BrowsingDataRemover for access to testing methods.
-  raw_ptr<content::BrowsingDataRemover> remover_;
+  content::BrowsingDataRemover* remover_;
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};

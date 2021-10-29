@@ -10,7 +10,6 @@
 #include "base/callback_list.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/supervised_user/supervised_users.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -50,7 +49,7 @@ class SupervisedUserGoogleAuthNavigationThrottle
 
   void OnReauthenticationFailed();
 
-  raw_ptr<ChildAccountService> child_account_service_;
+  ChildAccountService* child_account_service_;
   base::CallbackListSubscription google_auth_state_subscription_;
 
 #if defined(OS_ANDROID)

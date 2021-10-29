@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/keyed_service/core/refcounted_keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -83,10 +82,10 @@ class PluginPrefs : public RefcountedKeyedService {
 
   bool always_open_pdf_externally_ = false;
 
-  raw_ptr<Profile> profile_ = nullptr;
+  Profile* profile_ = nullptr;
 
   // Weak pointer, owned by the profile.
-  raw_ptr<PrefService> prefs_ = nullptr;
+  PrefService* prefs_ = nullptr;
 
   PrefChangeRegistrar registrar_;
 };

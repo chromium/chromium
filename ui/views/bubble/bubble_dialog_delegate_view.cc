@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -258,8 +257,8 @@ class BubbleDialogDelegate::AnchorViewObserver : public ViewObserver {
       vector.back()->NotifyAnchoredBubbleIsPrimary();
   }
 
-  const raw_ptr<BubbleDialogDelegate> parent_;
-  const raw_ptr<View> anchor_view_;
+  BubbleDialogDelegate* const parent_;
+  View* const anchor_view_;
 };
 
 // This class is responsible for observing events on a BubbleDialogDelegate's
@@ -318,7 +317,7 @@ class BubbleDialogDelegate::AnchorWidgetObserver : public WidgetObserver,
 #endif
 
  private:
-  raw_ptr<BubbleDialogDelegate> owner_;
+  BubbleDialogDelegate* owner_;
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
 #if !defined(OS_MAC)
@@ -367,7 +366,7 @@ class BubbleDialogDelegate::BubbleWidgetObserver : public WidgetObserver {
   }
 
  private:
-  const raw_ptr<BubbleDialogDelegate> owner_;
+  BubbleDialogDelegate* const owner_;
   base::ScopedObservation<views::Widget, views::WidgetObserver> observation_{
       this};
 };
@@ -383,7 +382,7 @@ class BubbleDialogDelegate::ThemeObserver : public ViewObserver {
   }
 
  private:
-  const raw_ptr<BubbleDialogDelegate> delegate_;
+  BubbleDialogDelegate* const delegate_;
   base::ScopedObservation<View, ViewObserver> observation_{this};
 };
 

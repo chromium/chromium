@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/optimization_guide/core/model_executor.h"
@@ -144,13 +143,13 @@ class ModelExecutionManagerImpl : public ModelExecutionManager {
       model_handlers_;
 
   // Used to access the current time.
-  raw_ptr<base::Clock> clock_;
+  base::Clock* clock_;
 
   // Database for segment information and metadata.
-  raw_ptr<SegmentInfoDatabase> segment_database_;
+  SegmentInfoDatabase* segment_database_;
 
   // Main signal database for user actions and histograms.
-  raw_ptr<SignalDatabase> signal_database_;
+  SignalDatabase* signal_database_;
 
   // The FeatureAggregator aggregates all the data based on metadata and input.
   std::unique_ptr<FeatureAggregator> feature_aggregator_;

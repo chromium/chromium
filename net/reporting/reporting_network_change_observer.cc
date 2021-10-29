@@ -5,7 +5,6 @@
 #include "net/reporting/reporting_network_change_observer.h"
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "net/base/network_change_notifier.h"
 #include "net/reporting/reporting_cache.h"
 #include "net/reporting/reporting_context.h"
@@ -52,7 +51,7 @@ class ReportingNetworkChangeObserverImpl
   }
 
  private:
-  raw_ptr<ReportingContext> context_;
+  ReportingContext* context_;
 };
 
 }  // namespace

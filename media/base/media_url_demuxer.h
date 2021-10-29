@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/demuxer.h"
 #include "url/gurl.h"
@@ -78,7 +77,7 @@ class MEDIA_EXPORT MediaUrlDemuxer : public Demuxer {
 
  private:
   MediaUrlParams params_;
-  raw_ptr<DemuxerHost> host_;
+  DemuxerHost* host_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };

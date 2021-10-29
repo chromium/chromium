@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
@@ -107,12 +106,12 @@ class MenuHost : public Widget, public WidgetObserver {
   void OnWidgetDestroying(Widget* widget) override;
 
   // Parent of the MenuHost widget.
-  raw_ptr<Widget> owner_ = nullptr;
+  Widget* owner_ = nullptr;
 
   gfx::NativeView native_view_for_gestures_ = nullptr;
 
   // The view we contain.
-  raw_ptr<SubmenuView> submenu_;
+  SubmenuView* submenu_;
 
   // If true, DestroyMenuHost has been invoked.
   bool destroying_;

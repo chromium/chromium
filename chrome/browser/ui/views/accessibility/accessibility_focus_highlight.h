@@ -10,7 +10,6 @@
 #include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -93,13 +92,13 @@ class AccessibilityFocusHighlight : public ui::LayerDelegate,
   std::unique_ptr<ui::Layer> layer_;
 
   // The compositor associated with this layer.
-  raw_ptr<ui::Compositor> compositor_ = nullptr;
+  ui::Compositor* compositor_ = nullptr;
 
   // The bounding rectangle of the focused object, relative to the layer.
   gfx::Rect node_bounds_;
 
   // Owns this.
-  raw_ptr<BrowserView> browser_view_;
+  BrowserView* browser_view_;
 
   // The time the layer was created and started fading in.
   base::TimeTicks layer_created_time_;

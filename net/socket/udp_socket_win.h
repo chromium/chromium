@@ -15,7 +15,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
@@ -143,7 +142,7 @@ class NET_EXPORT DscpManager {
                               base::WeakPtr<DscpManager> dscp_manager,
                               HANDLE handle);
 
-  const raw_ptr<QwaveApi> api_;
+  QwaveApi* const api_;
   const SOCKET socket_;
 
   DiffServCodePoint dscp_value_ = DSCP_NO_CHANGE;
@@ -475,7 +474,7 @@ class NET_EXPORT UDPSocketWin : public base::win::ObjectWatcher::Delegate {
   int read_iobuffer_len_;
   int write_iobuffer_len_;
 
-  raw_ptr<IPEndPoint> recv_from_address_;
+  IPEndPoint* recv_from_address_;
 
   // Cached copy of the current address we're sending to, if any.  Used for
   // logging.

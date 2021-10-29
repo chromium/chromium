@@ -10,7 +10,6 @@
 
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
-#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
@@ -241,7 +240,7 @@ class ChromeFileSystemAccessPermissionContext
 
   base::WeakPtr<ChromeFileSystemAccessPermissionContext> GetWeakPtr();
 
-  const raw_ptr<content::BrowserContext> profile_;
+  content::BrowserContext* const profile_;
 
   // Permission state per origin.
   struct OriginState;
@@ -254,7 +253,7 @@ class ChromeFileSystemAccessPermissionContext
   // Number of custom IDs an origin can specify.
   size_t max_ids_per_origin_ = 32u;
 
-  const raw_ptr<const base::Clock> clock_;
+  const base::Clock* const clock_;
   base::RepeatingTimer periodic_sweep_persisted_permissions_timer_;
 
   base::WeakPtrFactory<ChromeFileSystemAccessPermissionContext> weak_factory_{

@@ -11,7 +11,6 @@
 #include "base/containers/queue.h"
 #include "base/files/file.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
 #include "base/task/single_thread_task_runner.h"
@@ -90,7 +89,7 @@ class NativeMessageProcessHost : public NativeMessageHost {
 
   // The Client messages will be posted to. Should only be accessed from the
   // UI thread.
-  raw_ptr<Client> client_;
+  Client* client_;
 
   // ID of the calling extension.
   std::string source_extension_id_;

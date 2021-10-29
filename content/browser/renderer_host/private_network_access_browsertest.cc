@@ -7,7 +7,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/test/scoped_feature_list.h"
@@ -111,7 +110,7 @@ class ContentBrowserClientRegistration {
   }
 
  private:
-  const raw_ptr<ContentBrowserClient> old_client_;
+  ContentBrowserClient* const old_client_;
 };
 
 // A `net::EmbeddedTestServer` that only starts on demand and pretends to be

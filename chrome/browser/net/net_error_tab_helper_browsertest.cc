@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/net/net_error_diagnostics_dialog.h"
 #include "chrome/browser/net/net_error_tab_helper.h"
@@ -74,7 +73,7 @@ class NetErrorTabHelperTest : public InProcessBrowserTest {
   }
 
  private:
-  raw_ptr<chrome_browser_net::NetErrorTabHelper> tab_helper_ = nullptr;
+  chrome_browser_net::NetErrorTabHelper* tab_helper_ = nullptr;
 };
 
 class NetErrorTabHelperWithPrerenderingTest : public NetErrorTabHelperTest {

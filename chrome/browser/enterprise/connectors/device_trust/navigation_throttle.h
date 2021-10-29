@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_NAVIGATION_THROTTLE_H_
 
 #include "base/callback_list.h"
-#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "content/public/browser/navigation_throttle.h"
 
@@ -68,7 +67,7 @@ class DeviceTrustNavigationThrottle : public content::NavigationThrottle {
   bool deferring_ = false;
 
   // Not owned.
-  const raw_ptr<DeviceTrustService> device_trust_service_;
+  DeviceTrustService* const device_trust_service_;
 
   // Set `challege_response` into the header
   // `X-Verified-Access-Challenge-Response` of the redirection request to the

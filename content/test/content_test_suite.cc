@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "content/test/content_test_suite.h"
-#include "base/memory/raw_ptr.h"
 
 #include "base/base_paths.h"
 #include "base/base_switches.h"
@@ -50,8 +49,7 @@ class TestInitializationListener : public testing::EmptyTestEventListener {
   }
 
  private:
-  raw_ptr<content::TestContentClientInitializer>
-      test_content_client_initializer_;
+  content::TestContentClientInitializer* test_content_client_initializer_;
 };
 
 }  // namespace

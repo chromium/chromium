@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -44,7 +43,7 @@ class FakeVideoStream : public protocol::VideoStream {
   base::WeakPtr<FakeVideoStream> GetWeakPtr();
 
  private:
-  raw_ptr<Observer> observer_ = nullptr;
+  Observer* observer_ = nullptr;
 
   base::WeakPtrFactory<FakeVideoStream> weak_factory_{this};
 };
@@ -104,17 +103,17 @@ class FakeConnectionToClient : public ConnectionToClient {
   // a success.
   std::unique_ptr<webrtc::DesktopCapturer> desktop_capturer_;
   std::unique_ptr<Session> session_;
-  raw_ptr<EventHandler> event_handler_ = nullptr;
+  EventHandler* event_handler_ = nullptr;
 
   base::WeakPtr<FakeVideoStream> last_video_stream_;
 
-  raw_ptr<ClientStub> client_stub_ = nullptr;
+  ClientStub* client_stub_ = nullptr;
 
-  raw_ptr<ClipboardStub> clipboard_stub_ = nullptr;
-  raw_ptr<HostStub> host_stub_ = nullptr;
-  raw_ptr<InputStub> input_stub_ = nullptr;
-  raw_ptr<VideoStub> video_stub_ = nullptr;
-  raw_ptr<VideoFeedbackStub> video_feedback_stub_ = nullptr;
+  ClipboardStub* clipboard_stub_ = nullptr;
+  HostStub* host_stub_ = nullptr;
+  InputStub* input_stub_ = nullptr;
+  VideoStub* video_stub_ = nullptr;
+  VideoFeedbackStub* video_feedback_stub_ = nullptr;
 
   scoped_refptr<base::SingleThreadTaskRunner> video_encode_task_runner_;
 

@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -209,7 +208,7 @@ class NotificationScheduleServiceTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir tmp_dir_;
   std::unique_ptr<KeyedService> service_;
-  raw_ptr<TestBackgroundTaskScheduler> task_scheduler_;
+  TestBackgroundTaskScheduler* task_scheduler_;
   std::map<SchedulerClientType, TestClient*> clients_;
 };
 

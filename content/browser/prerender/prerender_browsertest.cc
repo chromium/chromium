@@ -10,7 +10,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -3742,7 +3741,7 @@ class ScopedDataSaverTestContentBrowserClient
   }
 
  private:
-  raw_ptr<ContentBrowserClient> old_client;
+  ContentBrowserClient* old_client;
 };
 
 // Tests that the data saver doesn't prevent image load in a prerendered page.
@@ -4441,7 +4440,7 @@ class FrameDisplayStateChangedObserver : public WebContentsObserver {
   }
 
   int changed_count_ = 0;
-  const raw_ptr<RenderFrameHost> target_host_;
+  RenderFrameHost* const target_host_;
   base::OnceClosure callback_;
 };
 

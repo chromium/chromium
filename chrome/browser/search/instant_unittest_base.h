@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "base/test/simple_test_clock.h"
 #include "build/build_config.h"
 #include "chrome/browser/search/instant_service.h"
@@ -35,9 +34,9 @@ class InstantUnitTestBase : public BrowserWithTestWindowTest {
   // search_terms_replacement_key.
   void SetUserSelectedDefaultSearchProvider(const std::string& base_url);
 
-  raw_ptr<InstantService> instant_service_;
-  raw_ptr<TemplateURLService> template_url_service_;
-  raw_ptr<base::SimpleTestClock> clock_;
+  InstantService* instant_service_;
+  TemplateURLService* template_url_service_;
+  base::SimpleTestClock* clock_;
 
  private:
   // BrowserWithTestWindowTest override:

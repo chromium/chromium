@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_CONTROLS_TEXTFIELD_TEXTFIELD_UNITTEST_H_
 #define UI_VIEWS_CONTROLS_TEXTFIELD_TEXTFIELD_UNITTEST_H_
 
-#include "base/memory/raw_ptr.h"
 #include "ui/views/controls/textfield/textfield.h"
 
 #include <memory>
@@ -152,15 +151,15 @@ class TextfieldTest : public ViewsTestBase, public TextfieldController {
   // We need widget to populate wrapper class.
   std::unique_ptr<Widget> widget_;
 
-  raw_ptr<TestTextfield> textfield_ = nullptr;
+  TestTextfield* textfield_ = nullptr;
   std::unique_ptr<TextfieldTestApi> test_api_;
-  raw_ptr<TextfieldModel> model_ = nullptr;
+  TextfieldModel* model_ = nullptr;
 
   // The string from Controller::ContentsChanged callback.
   std::u16string last_contents_;
 
   // For testing input method related behaviors.
-  raw_ptr<MockInputMethod> input_method_ = nullptr;
+  MockInputMethod* input_method_ = nullptr;
 
   // Indicates how many times OnBeforeUserAction() is called.
   int on_before_user_action_ = 0;
@@ -173,7 +172,7 @@ class TextfieldTest : public ViewsTestBase, public TextfieldController {
 
   ui::ClipboardBuffer copied_to_clipboard_ = ui::ClipboardBuffer::kMaxValue;
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
-  raw_ptr<View> event_target_ = nullptr;
+  View* event_target_ = nullptr;
 };
 
 }  // namespace test

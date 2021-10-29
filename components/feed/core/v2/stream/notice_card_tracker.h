@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 #include "base/strings/string_piece.h"
-#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 
 class PrefService;
@@ -68,7 +67,7 @@ class NoticeCardTracker {
   int GetCount(base::StringPiece dict_key) const;
   void SetCount(base::StringPiece, int new_count);
 
-  raw_ptr<PrefService> profile_prefs_;
+  PrefService* profile_prefs_;
   std::string key_;
   base::TimeTicks last_view_time_;
 };

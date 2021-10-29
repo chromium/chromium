@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/post_task.h"
 #include "base/task/task_runner.h"
@@ -91,7 +90,7 @@ class DmServerUploadService {
     policy::CloudPolicyClient* GetClient() const { return client_; }
 
    private:
-    const raw_ptr<policy::CloudPolicyClient> client_;
+    policy::CloudPolicyClient* const client_;
   };
 
   // Context runner for handling the upload of events passed to the
@@ -139,7 +138,7 @@ class DmServerUploadService {
     std::unique_ptr<std::vector<EncryptedRecord>> encrypted_records_;
     ReportSuccessfulUploadCallback report_success_upload_cb_;
     EncryptionKeyAttachedCallback encryption_key_attached_cb_;
-    raw_ptr<RecordHandler> handler_;
+    RecordHandler* handler_;
 
     SEQUENCE_CHECKER(sequence_checker_);
   };
@@ -176,7 +175,7 @@ class DmServerUploadService {
 
   policy::CloudPolicyClient* GetClient();
 
-  raw_ptr<policy::CloudPolicyClient> client_;
+  policy::CloudPolicyClient* client_;
   std::unique_ptr<RecordHandler> handler_;
 
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;

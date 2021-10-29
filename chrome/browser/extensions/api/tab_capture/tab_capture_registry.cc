@@ -9,7 +9,6 @@
 
 #include "base/lazy_instance.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -109,7 +108,7 @@ class TabCaptureRegistry::LiveRequest : public content::WebContentsObserver {
  private:
   const std::string extension_id_;
   const bool is_anonymous_;
-  const raw_ptr<TabCaptureRegistry> registry_;
+  TabCaptureRegistry* const registry_;
   TabCaptureState capture_state_;
   bool is_verified_;
   bool is_fullscreened_;

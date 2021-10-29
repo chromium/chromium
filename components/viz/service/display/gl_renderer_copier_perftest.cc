@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
 #include "components/viz/service/display/gl_renderer_copier.h"
 
 #include "base/bind.h"
@@ -266,7 +265,7 @@ class GLRendererCopierPerfTest : public testing::Test {
   }
 
  private:
-  raw_ptr<gpu::gles2::GLES2Interface> gl_ = nullptr;
+  gpu::gles2::GLES2Interface* gl_ = nullptr;
   scoped_refptr<TestInProcessContextProvider> context_provider_;
   std::unique_ptr<TextureDeleter> texture_deleter_;
   std::unique_ptr<GLRendererCopier> copier_;

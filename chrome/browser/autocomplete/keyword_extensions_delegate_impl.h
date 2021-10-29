@@ -12,7 +12,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
@@ -84,10 +83,10 @@ class KeywordExtensionsDelegateImpl : public KeywordExtensionsDelegate,
   // the URL bar while the autocomplete popup is open.
   std::string current_keyword_extension_id_;
 
-  raw_ptr<Profile> profile_;
+  Profile* profile_;
 
   // The owner of this class.
-  raw_ptr<KeywordProvider> provider_;
+  KeywordProvider* provider_;
 
   content::NotificationRegistrar registrar_;
 

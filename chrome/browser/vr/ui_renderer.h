@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_VR_UI_RENDERER_H_
 #define CHROME_BROWSER_VR_UI_RENDERER_H_
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/vr/ui_input_manager.h"
 #include "chrome/browser/vr/vr_ui_export.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -42,8 +41,8 @@ class VR_UI_EXPORT UiRenderer {
                     const RenderInfo& render_info);
   void DrawElement(const CameraModel& camera_model, const UiElement& element);
 
-  raw_ptr<UiScene> scene_ = nullptr;
-  raw_ptr<UiElementRenderer> ui_element_renderer_ = nullptr;
+  UiScene* scene_ = nullptr;
+  UiElementRenderer* ui_element_renderer_ = nullptr;
 };
 
 }  // namespace vr

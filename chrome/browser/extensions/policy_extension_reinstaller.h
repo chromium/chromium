@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_EXTENSIONS_POLICY_EXTENSION_REINSTALLER_H_
 
 #include "base/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "extensions/common/extension_id.h"
@@ -47,7 +46,7 @@ class PolicyExtensionReinstaller {
   base::TimeDelta GetNextFireDelay();
   void ScheduleNextReinstallAttempt();
 
-  const raw_ptr<content::BrowserContext> context_ = nullptr;
+  content::BrowserContext* const context_ = nullptr;
   net::BackoffEntry backoff_entry_;
   // Whether or not there is a pending PostTask to Fire().
   bool scheduled_fire_pending_ = false;

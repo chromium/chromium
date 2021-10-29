@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "base/guid.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -324,13 +323,13 @@ class LocalCardMigrationManagerTest : public testing::Test {
   syncer::TestSyncService sync_service_;
   base::test::ScopedFeatureList scoped_feature_list_;
   // Ends up getting owned (and destroyed) by TestAutofillClient:
-  raw_ptr<TestStrikeDatabase> strike_database_;
+  TestStrikeDatabase* strike_database_;
   // Ends up getting owned (and destroyed) by TestFormDataImporter:
-  raw_ptr<TestCreditCardSaveManager> credit_card_save_manager_;
+  TestCreditCardSaveManager* credit_card_save_manager_;
   // Ends up getting owned (and destroyed) by TestFormDataImporter:
-  raw_ptr<TestLocalCardMigrationManager> local_card_migration_manager_;
+  TestLocalCardMigrationManager* local_card_migration_manager_;
   // Ends up getting owned (and destroyed) by TestAutofillClient:
-  raw_ptr<payments::TestPaymentsClient> payments_client_;
+  payments::TestPaymentsClient* payments_client_;
 };
 
 // Having one local card on file and using it will not trigger migration.

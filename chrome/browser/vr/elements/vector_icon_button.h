@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/vr/elements/button.h"
 #include "chrome/browser/vr/vr_ui_export.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -47,7 +46,7 @@ class VR_UI_EXPORT VectorIconButton : public Button {
   // This value is used to determine the amount of scaling and can be set
   // externally to create a smaller or larger icon.
   float icon_scale_factor_;
-  raw_ptr<VectorIcon> foreground_;
+  VectorIcon* foreground_;
 };
 
 }  // namespace vr

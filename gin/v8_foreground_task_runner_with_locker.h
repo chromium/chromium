@@ -5,7 +5,6 @@
 #ifndef GIN_V8_FOREGROUND_TASK_RUNNER_WITH_LOCKER_H_
 #define GIN_V8_FOREGROUND_TASK_RUNNER_WITH_LOCKER_H_
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "gin/v8_foreground_task_runner_base.h"
 
@@ -36,7 +35,7 @@ class V8ForegroundTaskRunnerWithLocker : public V8ForegroundTaskRunnerBase {
   bool NonNestableTasksEnabled() const override;
 
  private:
-  raw_ptr<v8::Isolate> isolate_;
+  v8::Isolate* isolate_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };
 

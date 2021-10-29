@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -121,7 +120,7 @@ class BatteryMonitorImplTest : public DeviceServiceTestBase {
   mojo::Remote<mojom::BatteryMonitor> battery_monitor_;
 
  private:
-  raw_ptr<FakeBatteryStatusManager> battery_manager_;
+  FakeBatteryStatusManager* battery_manager_;
 };
 
 TEST_F(BatteryMonitorImplTest, BatteryManagerDefaultValues) {

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "ui/events/gesture_detection/motion_event.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -143,7 +142,7 @@ class UI_TOUCH_SELECTION_EXPORT TouchHandle : public TouchSelectionDraggable {
 
   std::unique_ptr<TouchHandleDrawable> drawable_;
 
-  const raw_ptr<TouchHandleClient> client_;
+  TouchHandleClient* const client_;
 
   gfx::PointF focus_bottom_;
   gfx::PointF focus_top_;

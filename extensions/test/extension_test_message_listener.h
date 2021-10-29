@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/scoped_observation.h"
 #include "extensions/browser/api/test/test_api_observer.h"
@@ -194,7 +193,7 @@ class ExtensionTestMessageListener : public extensions::TestApiObserver {
   std::string extension_id_;
 
   // If non-null, we listen to messages only from this BrowserContext.
-  raw_ptr<const content::BrowserContext> browser_context_ = nullptr;
+  const content::BrowserContext* browser_context_ = nullptr;
 
   // The message that signals failure.
   absl::optional<std::string> failure_message_;

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_FORCE_SIGNIN_DIALOG_HOST_H_
 
 #include "base/files/file_path.h"
-#include "base/memory/raw_ptr.h"
 #include "ui/gfx/native_widget_types.h"
 
 class GURL;
@@ -54,7 +53,7 @@ class ProfilePickerForceSigninDialogHost {
   void OnDialogDestroyed();
 
   // Owned by the view hierarchy.
-  raw_ptr<ProfilePickerForceSigninDialogDelegate> delegate_ = nullptr;
+  ProfilePickerForceSigninDialogDelegate* delegate_ = nullptr;
 
   // The path of profile that is being force signed in.
   base::FilePath force_signin_profile_path_;

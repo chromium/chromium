@@ -6,7 +6,6 @@
 #define UI_COMPOSITOR_TEST_LAYER_ANIMATION_OBSERVER_TEST_API_H_
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "ui/compositor/layer_animation_observer.h"
 
 namespace ui {
@@ -28,7 +27,7 @@ class LayerAnimationObserverTestApi {
 
  private:
   // The instance to provide internal access to.
-  raw_ptr<LayerAnimationObserver> observer_;
+  LayerAnimationObserver* observer_;
 };
 
 }  // namespace test

@@ -9,7 +9,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/memory_pressure_listener.h"
-#include "base/memory/raw_ptr.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/node_data_describer.h"
 #include "components/performance_manager/public/graph/page_node.h"
@@ -73,7 +72,7 @@ class BackgroundTabLoadingPolicy : public GraphOwned,
     PageNodeToLoadData& operator=(const PageNodeToLoadData&) = delete;
 
     // Keeps a pointer to the corresponding PageNode.
-    raw_ptr<const PageNode> page_node;
+    const PageNode* page_node;
 
     // A higher value here means the tab has higher priority for restoring.
     float score = 0.0f;

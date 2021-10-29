@@ -6,7 +6,6 @@
 #define CONTENT_PUBLIC_BROWSER_DOCUMENT_USER_DATA_H_
 
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "content/common/content_export.h"
 
@@ -141,7 +140,7 @@ class DocumentUserData : public base::SupportsUserData::Data {
 
   // This is a pointer (rather than a reference) to ensure that go/miracleptr
   // can cover this field (see also //base/memory/raw_ptr.md).
-  const raw_ptr<RenderFrameHost> render_frame_host_ = nullptr;
+  RenderFrameHost* const render_frame_host_ = nullptr;
 };
 
 // Users won't be able to instantiate the template if they miss declaring the

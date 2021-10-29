@@ -17,7 +17,6 @@
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 
 namespace flags_ui {
@@ -265,7 +264,7 @@ class FlagsState {
 
   // Delegate used for embedders to control display and application of flags.
   // May be null.
-  raw_ptr<Delegate> delegate_;
+  Delegate* delegate_;
 };
 
 }  // namespace flags_ui

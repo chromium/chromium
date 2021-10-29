@@ -9,7 +9,6 @@
 #include "base/check.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/template_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -128,7 +127,7 @@ template <class T>
 class TrackedRefFactory {
  public:
   explicit TrackedRefFactory(T* ptr)
-      : ptr_(ptr), self_ref_(TrackedRef<T>(ptr_.get(), this)) {
+      : ptr_(ptr), self_ref_(TrackedRef<T>(ptr_, this)) {
     DCHECK(ptr_);
   }
 
@@ -154,14 +153,14 @@ class TrackedRefFactory {
     // vend new TrackedRefs while it's being destroyed (owners of TrackedRefs
     // may still copy/move their refs around during the destruction phase).
     DCHECK(!live_tracked_refs_.IsZero());
-    return TrackedRef<T>(ptr_.get(), this);
+    return TrackedRef<T>(ptr_, this);
   }
 
  private:
   friend class TrackedRef<T>;
   FRIEND_TEST_ALL_PREFIXES(TrackedRefTest, CopyAndMoveSemantics);
 
-  const raw_ptr<T> ptr_;
+  T* const ptr_;
 
   // The number of live TrackedRefs vended by this factory.
   AtomicRefCount live_tracked_refs_{0};

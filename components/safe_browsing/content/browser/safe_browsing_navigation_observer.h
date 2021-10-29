@@ -8,7 +8,6 @@
 #include <unordered_map>
 
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/supports_user_data.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
@@ -190,7 +189,7 @@ class SafeBrowsingNavigationObserver : public base::SupportsUserData::Data,
   base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>
       content_settings_observation_{this};
 
-  raw_ptr<SafeBrowsingNavigationObserverManager> observer_manager_ = nullptr;
+  SafeBrowsingNavigationObserverManager* observer_manager_ = nullptr;
 };
 
 }  // namespace safe_browsing

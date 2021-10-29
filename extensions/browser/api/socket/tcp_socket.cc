@@ -357,7 +357,7 @@ void TCPSocket::OnListenComplete(
 
 content::StoragePartition* TCPSocket::GetStoragePartitionHelper() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  return storage_partition_ ? storage_partition_.get()
+  return storage_partition_ ? storage_partition_
                             : browser_context_->GetDefaultStoragePartition();
 }
 

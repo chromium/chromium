@@ -86,7 +86,7 @@ std::unique_ptr<Browser> TestBrowserWindowAura::CreateBrowser(
     Browser::CreateParams* params) {
   params->window = this;
   browser_ = Browser::Create(*params);
-  return base::WrapUnique(browser_.get());
+  return base::WrapUnique(browser_);
 }
 
 TestBrowserWindowViews::TestBrowserWindowViews(aura::Window* parent)

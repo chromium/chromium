@@ -10,7 +10,6 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/task/current_thread.h"
@@ -64,7 +63,7 @@ class SynchronousLoadObserver {
   }
 
  private:
-  raw_ptr<HeadlessWebContents> web_contents_;  // Not owned.
+  HeadlessWebContents* web_contents_;  // Not owned.
   std::unique_ptr<HeadlessDevToolsClient> devtools_client_;
   std::unique_ptr<LoadObserver> load_observer_;
 };
@@ -100,8 +99,8 @@ class EvaluateHelper {
   }
 
  private:
-  raw_ptr<HeadlessBrowserTest> browser_test_;  // Not owned.
-  raw_ptr<HeadlessWebContents> web_contents_;  // Not owned.
+  HeadlessBrowserTest* browser_test_;  // Not owned.
+  HeadlessWebContents* web_contents_;  // Not owned.
   std::unique_ptr<HeadlessDevToolsClient> devtools_client_;
 
   std::unique_ptr<runtime::EvaluateResult> result_;

@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/themes/theme_properties.h"
@@ -45,7 +44,7 @@ class BrowserNonClientFrameViewTest : public TestWithBrowserView {
 
  protected:
   // Owned by the browser view.
-  raw_ptr<BrowserNonClientFrameView> frame_view_;
+  BrowserNonClientFrameView* frame_view_;
 };
 
 class BrowserNonClientFrameViewPopupTest

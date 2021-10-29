@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/current_thread.h"
 #include "base/values.h"
@@ -125,9 +124,9 @@ class BoxSignInObserver : public SigninExperienceTestObserver,
   // closure from unexpected dialog shutdown/crash/exits. Before triggering an
   // action to close the dialog, the test class will set this variable to true.
   bool expecting_dialog_shutdown_ = false;
-  raw_ptr<views::DialogDelegate> signin_confirmation_dlg_ = nullptr;
-  raw_ptr<views::Widget> sign_in_widget_ = nullptr;
-  raw_ptr<FileSystemSigninDialogDelegate> sign_in_dlg_ = nullptr;
+  views::DialogDelegate* signin_confirmation_dlg_ = nullptr;
+  views::Widget* sign_in_widget_ = nullptr;
+  FileSystemSigninDialogDelegate* sign_in_dlg_ = nullptr;
   std::unique_ptr<base::RunLoop> run_loop_;
   base::OnceClosure stop_waiting_for_signin_confirmation_;
   base::OnceClosure stop_waiting_for_page_load_;
@@ -167,7 +166,7 @@ class BoxDownloadItemObserver : public download::DownloadItem::Observer {
   }
 
  private:
-  raw_ptr<download::DownloadItem> download_item_ = nullptr;
+  download::DownloadItem* download_item_ = nullptr;
   base::OnceClosure stop_waiting_for_rename_handler_creation_;
   base::OnceClosure stop_waiting_for_download_near_completion_;
   bool rename_handler_created_ = false;

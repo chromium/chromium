@@ -7,7 +7,6 @@
 #include <map>
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -35,7 +34,7 @@ class TestLabel : public internal::LabelButtonLabel {
   }
 
  private:
-  raw_ptr<SkColor> last_color_;
+  SkColor* last_color_;
 };
 
 }  // namespace
@@ -72,7 +71,7 @@ class LabelButtonLabelTest : public ViewsTestBase {
  protected:
   SkColor last_color_ = gfx::kPlaceholderColor;
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<TestLabel> label_;
+  TestLabel* label_;
 };
 
 // Test that LabelButtonLabel reacts properly to themed and overridden colors.

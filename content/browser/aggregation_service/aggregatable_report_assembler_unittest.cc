@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
@@ -75,8 +74,8 @@ class AggregatableReportAssemblerTest : public testing::Test {
   std::unique_ptr<AggregatableReportAssembler> assembler_;
 
   // These objects are owned by `assembler_`.
-  raw_ptr<TestAggregationServiceKeyFetcher> fetcher_;
-  raw_ptr<TestAggregatableReportProvider> report_provider_;
+  TestAggregationServiceKeyFetcher* fetcher_;
+  TestAggregatableReportProvider* report_provider_;
 
   int num_assembly_callbacks_run_ = 0;
 

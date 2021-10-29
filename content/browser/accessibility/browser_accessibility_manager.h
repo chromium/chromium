@@ -16,7 +16,6 @@
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "content/browser/accessibility/browser_accessibility.h"
@@ -542,7 +541,7 @@ class CONTENT_EXPORT BrowserAccessibilityManager : public ui::AXTreeObserver,
   static BrowserAccessibility* GetLastFocusedNode();
 
   // The object that can perform actions on our behalf.
-  raw_ptr<BrowserAccessibilityDelegate> delegate_;
+  BrowserAccessibilityDelegate* delegate_;
 
   // A mapping from a node id to its wrapper of type BrowserAccessibility.
   std::map<ui::AXNodeID, std::unique_ptr<BrowserAccessibility>> id_wrapper_map_;

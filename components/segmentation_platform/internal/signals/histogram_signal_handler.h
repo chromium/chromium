@@ -12,7 +12,6 @@
 #include <string>
 #include <utility>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/statistics_recorder.h"
@@ -48,7 +47,7 @@ class HistogramSignalHandler {
                          base::HistogramBase::Sample sample);
 
   // The database storing relevant histogram samples.
-  raw_ptr<SignalDatabase> db_;
+  SignalDatabase* db_;
 
   // Whether or not the segmentation platform should record metrics events.
   bool metrics_enabled_;

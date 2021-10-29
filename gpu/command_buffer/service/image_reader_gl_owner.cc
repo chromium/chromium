@@ -16,7 +16,6 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/posix/eintr_wrapper.h"
@@ -122,7 +121,7 @@ class ImageReaderGLOwner::ScopedHardwareBufferImpl
  private:
   base::ScopedFD read_fence_;
   scoped_refptr<ImageReaderGLOwner> texture_owner_;
-  raw_ptr<AImage> image_;
+  AImage* image_;
 };
 
 ImageReaderGLOwner::ImageReaderGLOwner(

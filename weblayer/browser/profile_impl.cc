@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/task/task_traits.h"
@@ -164,7 +163,7 @@ class ProfileImpl::DataClearer : public content::BrowsingDataRemover::Observer {
   // DataClearer deletes itself when removal is done.
   ~DataClearer() override = default;
 
-  raw_ptr<content::BrowsingDataRemover> remover_;
+  content::BrowsingDataRemover* remover_;
   base::OnceCallback<void()> callback_;
 };
 

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/cxx17_backports.h"
-#include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/client/program_info_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -170,7 +169,7 @@ class ProgramInfoManagerTest : public testing::Test {
   }
 
   std::unique_ptr<ProgramInfoManager> program_info_manager_;
-  raw_ptr<Program> program_;
+  Program* program_;
 };
 
 TEST_F(ProgramInfoManagerTest, UpdateES2) {

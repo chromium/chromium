@@ -15,7 +15,6 @@
 #include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
@@ -215,7 +214,7 @@ class AttributionManagerImplTest : public testing::Test {
   base::ScopedTempDir dir_;
   BrowserTaskEnvironment task_environment_;
   std::unique_ptr<AttributionManagerImpl> attribution_manager_;
-  raw_ptr<TestAttributionReporter> test_reporter_ = nullptr;
+  TestAttributionReporter* test_reporter_ = nullptr;
   scoped_refptr<storage::MockSpecialStoragePolicy> mock_storage_policy_;
 };
 

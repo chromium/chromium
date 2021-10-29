@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_prefetch_status.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -165,10 +164,10 @@ class PrefetchProxyProxyingURLLoaderFactory
     void MaybeReportResourceLoadSuccess(
         const network::URLLoaderCompletionStatus& status);
 
-    raw_ptr<Profile> profile_;
+    Profile* profile_;
 
     // Back pointer to the factory which owns this class.
-    const raw_ptr<PrefetchProxyProxyingURLLoaderFactory> parent_factory_;
+    PrefetchProxyProxyingURLLoaderFactory* const parent_factory_;
 
     // Callback for recording metrics during |OnComplete|. Not always set.
     OnCompleteRecordMetricsCallback on_complete_metrics_callback_;
@@ -269,7 +268,7 @@ class PrefetchProxyProxyingURLLoaderFactory
   void MaybeDestroySelf();
 
   // Must outlive |this|.
-  raw_ptr<ResourceMetricsObserver> metrics_observer_;
+  ResourceMetricsObserver* metrics_observer_;
   // For getting the web contents.
   const int frame_tree_node_id_;
 

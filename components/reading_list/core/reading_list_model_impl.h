@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/reading_list/core/reading_list_entry.h"
 #include "components/reading_list/core/reading_list_model.h"
@@ -158,9 +157,9 @@ class ReadingListModelImpl : public ReadingListModel,
   // Set the unseen flag to true.
   void SetUnseenFlag();
 
-  raw_ptr<base::Clock> clock_;
+  base::Clock* clock_;
   std::unique_ptr<ReadingListModelStorage> storage_layer_;
-  raw_ptr<PrefService> pref_service_;
+  PrefService* pref_service_;
   bool has_unseen_;
   bool loaded_;
 

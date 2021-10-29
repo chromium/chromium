@@ -14,7 +14,6 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process_handle.h"
@@ -271,7 +270,7 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost
   void LogFrame(base::Value frame_data) override;
 #endif
 
-  const raw_ptr<Delegate> delegate_;
+  Delegate* const delegate_;
   mojo::Remote<mojom::VizMain> viz_main_;
   const InitParams params_;
 

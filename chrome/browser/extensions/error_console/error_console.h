@@ -13,7 +13,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
@@ -190,12 +189,12 @@ class ErrorConsole : public KeyedService,
   // The profile with which the ErrorConsole is associated. Only collect errors
   // from extensions and RenderViews associated with this Profile (and it's
   // incognito fellow).
-  raw_ptr<Profile> profile_;
+  Profile* profile_;
 
   // The ExtensionPrefs with which the ErrorConsole is associated. This weak
   // pointer is safe because ErrorConsole is owned by ExtensionSystem, which
   // is dependent on ExtensionPrefs.
-  raw_ptr<ExtensionPrefs> prefs_;
+  ExtensionPrefs* prefs_;
 
   base::ScopedMultiSourceObservation<Profile, ProfileObserver>
       profile_observations_{this};

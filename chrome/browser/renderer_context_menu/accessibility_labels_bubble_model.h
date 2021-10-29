@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_RENDERER_CONTEXT_MENU_ACCESSIBILITY_LABELS_BUBBLE_MODEL_H_
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/confirm_bubble_model.h"
 
@@ -44,7 +43,7 @@ class AccessibilityLabelsBubbleModel : public ConfirmBubbleModel {
   void SetPref(bool enabled);
 
   // Unowned.
-  raw_ptr<Profile> profile_;
+  Profile* profile_;
 
   base::WeakPtr<content::WebContents> web_contents_;
 

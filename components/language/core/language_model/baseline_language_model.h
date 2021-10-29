@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "components/language/core/browser/language_model.h"
 #include "components/language/core/browser/url_language_histogram.h"
 
@@ -42,7 +41,7 @@ class BaselineLanguageModel : public LanguageModel {
   std::vector<LanguageDetails> GetLanguages() override;
 
  private:
-  const raw_ptr<const PrefService> pref_service_;
+  const PrefService* const pref_service_;
   const std::string ui_lang_;
   const std::string accept_langs_pref_;
   const UrlLanguageHistogram lang_histogram_;

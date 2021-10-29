@@ -5,7 +5,6 @@
 #include "chrome/browser/tab_contents/web_contents_collection.h"
 
 #include "base/check.h"
-#include "base/memory/raw_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 
 class WebContentsCollection::ForwardingWebContentsObserver
@@ -37,11 +36,11 @@ class WebContentsCollection::ForwardingWebContentsObserver
 
   // The observer that callbacks should forward to, annotating the
   // web contents they were fired in.
-  raw_ptr<WebContentsCollection::Observer> observer_;
+  WebContentsCollection::Observer* observer_;
 
   // The collection this observer belongs to, needed to cleanup observer
   // lifetime.
-  raw_ptr<WebContentsCollection> collection_;
+  WebContentsCollection* collection_;
 };
 
 WebContentsCollection::WebContentsCollection(

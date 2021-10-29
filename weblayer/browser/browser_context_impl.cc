@@ -4,7 +4,6 @@
 
 #include "weblayer/browser/browser_context_impl.h"
 
-#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_restrictions.h"
 #include "components/background_sync/background_sync_controller_impl.h"
 #include "components/blocked_content/safe_browsing_triggered_popup_blocker.h"
@@ -327,7 +326,7 @@ class BrowserContextImpl::WebLayerVariationsClient
   }
 
  private:
-  raw_ptr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
 };
 
 variations::VariationsClient* BrowserContextImpl::GetVariationsClient() {

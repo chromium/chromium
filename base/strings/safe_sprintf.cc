@@ -11,7 +11,6 @@
 #include <limits>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 
 #if !defined(NDEBUG)
@@ -264,7 +263,7 @@ class Buffer {
   }
 
   // User-provided buffer that will receive the fully formatted output string.
-  raw_ptr<char> buffer_;
+  char* buffer_;
 
   // Number of bytes that are available in the buffer excluding the trailing
   // NUL byte that will be added by the destructor.

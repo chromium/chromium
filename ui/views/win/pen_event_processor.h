@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/point.h"
@@ -54,7 +53,7 @@ class VIEWS_EXPORT PenEventProcessor {
       const gfx::Point& point,
       const ui::PointerDetails& pointer_details);
 
-  raw_ptr<ui::SequentialIDGenerator> id_generator_;
+  ui::SequentialIDGenerator* id_generator_;
   bool direct_manipulation_enabled_;
   base::flat_map<UINT32, bool> pen_in_contact_;
   base::flat_map<UINT32, bool> send_touch_for_pen_;

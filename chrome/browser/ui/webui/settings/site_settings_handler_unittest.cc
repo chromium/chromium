@@ -14,7 +14,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -173,8 +172,8 @@ class ContentSettingSourceSetter {
   }
 
  private:
-  raw_ptr<sync_preferences::TestingPrefServiceSyncable> prefs_;
-  raw_ptr<HostContentSettingsMap> host_content_settings_map_;
+  sync_preferences::TestingPrefServiceSyncable* prefs_;
+  HostContentSettingsMap* host_content_settings_map_;
   ContentSettingsType content_type_;
 };
 
@@ -513,7 +512,7 @@ class SiteSettingsHandlerTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-  raw_ptr<TestingProfile> incognito_profile_;
+  TestingProfile* incognito_profile_;
   content::TestWebUI web_ui_;
   std::unique_ptr<SiteSettingsHandler> handler_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)

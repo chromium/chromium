@@ -5,7 +5,6 @@
 #include "components/performance_manager/graph/frame_node_impl.h"
 
 #include "base/containers/contains.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gtest_util.h"
 #include "components/performance_manager/graph/page_node_impl.h"
@@ -164,7 +163,7 @@ class LenientMockObserver : public FrameNodeImpl::Observer {
   const FrameNode* created_frame_node() { return created_frame_node_; }
 
  private:
-  raw_ptr<const FrameNode> created_frame_node_ = nullptr;
+  const FrameNode* created_frame_node_ = nullptr;
 };
 
 using MockObserver = ::testing::StrictMock<LenientMockObserver>;

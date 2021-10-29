@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/proxy_server.h"
 #include "net/http/proxy_client_socket.h"
@@ -125,7 +124,7 @@ class NET_EXPORT_PRIVATE QuicProxyClientSocket : public ProxyClientSocket {
   // Stores the callback for Read().
   CompletionOnceCallback read_callback_;
   // Stores the read buffer pointer for Read().
-  raw_ptr<IOBuffer> read_buf_;
+  IOBuffer* read_buf_;
   // Stores the callback for Write().
   CompletionOnceCallback write_callback_;
   // Stores the write buffer length for Write().
@@ -145,7 +144,7 @@ class NET_EXPORT_PRIVATE QuicProxyClientSocket : public ProxyClientSocket {
   const ProxyServer proxy_server_;
 
   // This delegate must outlive this proxy client socket.
-  const raw_ptr<ProxyDelegate> proxy_delegate_;
+  ProxyDelegate* const proxy_delegate_;
 
   std::string user_agent_;
 

@@ -8,7 +8,6 @@
 #include <memory>
 #include <unordered_map>
 
-#include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/permission_controller.h"
@@ -90,8 +89,8 @@ class CONTENT_EXPORT PermissionServiceContext
   // to a RenderFrameHost.
   explicit PermissionServiceContext(RenderFrameHost* render_frame_host);
 
-  const raw_ptr<RenderFrameHost> render_frame_host_;
-  const raw_ptr<RenderProcessHost> render_process_host_;
+  RenderFrameHost* const render_frame_host_;
+  RenderProcessHost* const render_process_host_;
   mojo::UniqueReceiverSet<blink::mojom::PermissionService> services_;
   std::unordered_map<PermissionController::SubscriptionId,
                      std::unique_ptr<PermissionSubscription>>

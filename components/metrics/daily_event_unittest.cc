@@ -6,7 +6,6 @@
 
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -42,7 +41,7 @@ class DailyEventTest : public testing::Test {
   DailyEventTest() : event_(&prefs_, kTestPrefName, kTestMetricName) {
     DailyEvent::RegisterPref(prefs_.registry(), kTestPrefName);
     observer_ = new TestDailyObserver();
-    event_.AddObserver(base::WrapUnique(observer_.get()));
+    event_.AddObserver(base::WrapUnique(observer_));
   }
 
   DailyEventTest(const DailyEventTest&) = delete;
@@ -50,7 +49,7 @@ class DailyEventTest : public testing::Test {
 
  protected:
   TestingPrefServiceSimple prefs_;
-  raw_ptr<TestDailyObserver> observer_;
+  TestDailyObserver* observer_;
   DailyEvent event_;
 };
 

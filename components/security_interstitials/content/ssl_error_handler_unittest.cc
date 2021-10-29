@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -370,7 +369,7 @@ class SSLErrorHandlerNameMismatchTest
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<captive_portal::CaptivePortalService> captive_portal_service_;
   std::unique_ptr<TestSSLErrorHandler> error_handler_;
-  raw_ptr<TestSSLErrorHandlerDelegate> delegate_;
+  TestSSLErrorHandlerDelegate* delegate_;
 };
 
 // A class to test name mismatch errors, where the certificate lacks a
@@ -616,7 +615,7 @@ class SSLErrorAssistantProtoTest : public content::RenderViewHostTestHarness {
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<captive_portal::CaptivePortalService> captive_portal_service_;
   std::unique_ptr<TestSSLErrorHandler> error_handler_;
-  raw_ptr<TestSSLErrorHandlerDelegate> delegate_;
+  TestSSLErrorHandlerDelegate* delegate_;
 };
 
 class SSLErrorAssistantProtoCaptivePortalEnabledTest
@@ -779,11 +778,11 @@ class SSLErrorHandlerDateInvalidTest
 
   net::SSLInfo ssl_info_;
   std::unique_ptr<TestSSLErrorHandler> error_handler_;
-  raw_ptr<TestSSLErrorHandlerDelegate> delegate_;
+  TestSSLErrorHandlerDelegate* delegate_;
 
   std::unique_ptr<network_time::FieldTrialTest> field_trial_test_;
-  raw_ptr<base::SimpleTestClock> clock_;
-  raw_ptr<base::SimpleTestTickClock> tick_clock_;
+  base::SimpleTestClock* clock_;
+  base::SimpleTestTickClock* tick_clock_;
   TestingPrefServiceSimple pref_service_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
   std::unique_ptr<network_time::NetworkTimeTracker> tracker_;

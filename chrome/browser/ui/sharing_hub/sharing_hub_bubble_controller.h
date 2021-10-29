@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_SHARING_HUB_SHARING_HUB_BUBBLE_CONTROLLER_H_
 
 #include "base/memory/weak_ptr.h"
-#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -98,11 +97,11 @@ class SharingHubBubbleController
 #endif
 
   // The web_contents associated with this controller.
-  raw_ptr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
   // Weak reference. Will be nullptr if no bubble is currently shown.
-  raw_ptr<SharingHubBubbleView> sharing_hub_bubble_view_ = nullptr;
+  SharingHubBubbleView* sharing_hub_bubble_view_ = nullptr;
   // Cached reference to the model.
-  raw_ptr<SharingHubModel> sharing_hub_model_ = nullptr;
+  SharingHubModel* sharing_hub_model_ = nullptr;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

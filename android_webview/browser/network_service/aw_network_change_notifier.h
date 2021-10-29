@@ -6,7 +6,6 @@
 #define ANDROID_WEBVIEW_BROWSER_NETWORK_SERVICE_AW_NETWORK_CHANGE_NOTIFIER_H_
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "net/android/network_change_notifier_delegate_android.h"
 #include "net/base/network_change_notifier.h"
 
@@ -60,7 +59,7 @@ class AwNetworkChangeNotifier
 
   static NetworkChangeCalculatorParams DefaultNetworkChangeCalculatorParams();
 
-  const raw_ptr<net::NetworkChangeNotifierDelegateAndroid> delegate_;
+  net::NetworkChangeNotifierDelegateAndroid* const delegate_;
 };
 
 }  // namespace android_webview

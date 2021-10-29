@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -41,7 +40,7 @@ class CreditCardOtpAuthenticator : public OtpUnmaskDelegate {
       return *this;
     }
     bool did_succeed = false;
-    raw_ptr<const CreditCard> card;
+    const CreditCard* card;
     std::u16string cvc;
   };
 
@@ -119,7 +118,7 @@ class CreditCardOtpAuthenticator : public OtpUnmaskDelegate {
   void Reset();
 
   // Card being unmasked.
-  raw_ptr<const CreditCard> card_;
+  const CreditCard* card_;
 
   // User-entered OTP value.
   std::u16string otp_;
@@ -139,10 +138,10 @@ class CreditCardOtpAuthenticator : public OtpUnmaskDelegate {
   bool selected_challenge_option_request_ongoing_ = false;
 
   // The associated autofill client.
-  raw_ptr<AutofillClient> autofill_client_;
+  AutofillClient* autofill_client_;
 
   // The associated payments client.
-  raw_ptr<payments::PaymentsClient> payments_client_;
+  payments::PaymentsClient* payments_client_;
 
   // Weak pointer to object that is requesting authentication.
   base::WeakPtr<Requester> requester_;

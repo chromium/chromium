@@ -11,7 +11,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "services/preferences/tracked/pref_hash_filter.h"
 #include "services/preferences/tracked/tracked_preference.h"
 #include "services/preferences/tracked/tracked_preference_helper.h"
@@ -51,7 +50,7 @@ class TrackedAtomicPreference : public TrackedPreference {
  private:
   const std::string pref_path_;
   const TrackedPreferenceHelper helper_;
-  raw_ptr<prefs::mojom::TrackedPreferenceValidationDelegate> delegate_;
+  prefs::mojom::TrackedPreferenceValidationDelegate* delegate_;
 };
 
 #endif  // SERVICES_PREFERENCES_TRACKED_TRACKED_ATOMIC_PREFERENCE_H_

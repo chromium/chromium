@@ -12,7 +12,6 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -314,7 +313,7 @@ class CONTENT_EXPORT VideoCaptureManager
 
   const std::unique_ptr<VideoCaptureProvider> video_capture_provider_;
   base::RepeatingCallback<void(const std::string&)> emit_log_message_cb_;
-  raw_ptr<ScreenlockMonitor> screenlock_monitor_;
+  ScreenlockMonitor* screenlock_monitor_;
 
   base::ObserverList<media::VideoCaptureObserver>::Unchecked capture_observers_;
 

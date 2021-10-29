@@ -7,7 +7,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
@@ -95,7 +94,7 @@ class CONTENT_EXPORT AudioStreamMonitor : public WebContentsObserver {
     ~AudibleClientRegistration();
 
    private:
-    raw_ptr<AudioStreamMonitor> audio_stream_monitor_;
+    AudioStreamMonitor* audio_stream_monitor_;
   };
 
   // Registers an audible client, which will be unregistered when the returned
@@ -141,7 +140,7 @@ class CONTENT_EXPORT AudioStreamMonitor : public WebContentsObserver {
 
   // The WebContents instance to receive indicator toggle notifications.  This
   // pointer should be valid for the lifetime of AudioStreamMonitor.
-  const raw_ptr<WebContents> web_contents_;
+  WebContents* const web_contents_;
 
   // Note: |clock_| is always a DefaultTickClock, except during unit
   // testing.

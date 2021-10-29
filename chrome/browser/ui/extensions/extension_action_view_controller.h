@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_ACTION_VIEW_CONTROLLER_H_
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/extension_action_icon_factory.h"
@@ -180,23 +179,23 @@ class ExtensionActionViewController
   scoped_refptr<const extensions::Extension> extension_;
 
   // The corresponding browser.
-  const raw_ptr<Browser> browser_;
+  Browser* const browser_;
 
   // The browser action this view represents. The ExtensionAction is not owned
   // by this class.
-  const raw_ptr<extensions::ExtensionAction> extension_action_;
+  extensions::ExtensionAction* const extension_action_;
 
   // The corresponding ExtensionsContainer on the toolbar.
-  const raw_ptr<ExtensionsContainer> extensions_container_;
+  ExtensionsContainer* const extensions_container_;
 
   // The extension popup's host if the popup is visible; null otherwise.
-  raw_ptr<extensions::ExtensionViewHost> popup_host_;
+  extensions::ExtensionViewHost* popup_host_;
 
   // The context menu model for the extension.
   std::unique_ptr<extensions::ExtensionContextMenuModel> context_menu_model_;
 
   // Our view delegate.
-  raw_ptr<ToolbarActionViewDelegate> view_delegate_;
+  ToolbarActionViewDelegate* view_delegate_;
 
   // The delegate to handle platform-specific implementations.
   std::unique_ptr<ExtensionActionPlatformDelegate> platform_delegate_;
@@ -208,7 +207,7 @@ class ExtensionActionViewController
   ExtensionActionIconFactory icon_factory_;
 
   // The associated ExtensionRegistry; cached for quick checking.
-  raw_ptr<extensions::ExtensionRegistry> extension_registry_;
+  extensions::ExtensionRegistry* extension_registry_;
 
   base::ScopedObservation<extensions::ExtensionHost,
                           extensions::ExtensionHostObserver>

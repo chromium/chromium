@@ -4,8 +4,6 @@
 
 #include "base/tracing/perfetto_task_runner.h"
 
-#include "base/memory/raw_ptr.h"
-
 #if defined(OS_POSIX) && !defined(OS_NACL)
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -92,7 +90,7 @@ class PosterThread : public base::SimpleThread {
   }
 
  private:
-  raw_ptr<PerfettoTaskRunner> task_runner_;
+  PerfettoTaskRunner* task_runner_;
   base::WeakPtr<TaskDestination> weak_ptr_;
   const int n_;
   const size_t sequence_number_;

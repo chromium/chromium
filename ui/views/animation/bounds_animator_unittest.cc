@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/task_environment.h"
@@ -130,7 +129,7 @@ class RTLAnimationTestDelegate : public gfx::AnimationDelegate {
   gfx::Rect target_;
 
   // view to be animated.
-  raw_ptr<View> view_;
+  View* view_;
 
   base::RepeatingClosure quit_closure_;
 };
@@ -144,7 +143,7 @@ class BoundsAnimatorTest : public testing::Test {
             base::test::TaskEnvironment::TimeSource::MOCK_TIME,
             base::test::SingleThreadTaskEnvironment::MainThreadType::UI),
         child_(new TestView()) {
-    parent_.AddChildView(child_.get());
+    parent_.AddChildView(child_);
     RecreateAnimator(/*use_transforms=*/false);
   }
 
@@ -201,7 +200,7 @@ class BoundsAnimatorTest : public testing::Test {
 
  private:
   TestView parent_;
-  raw_ptr<TestView> child_;  // Owned by |parent_|.
+  TestView* child_;  // Owned by |parent_|.
   std::unique_ptr<BoundsAnimator> animator_;
 };
 

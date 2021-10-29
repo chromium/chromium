@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/containers/circular_deque.h"
-#include "base/memory/raw_ptr.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "net/base/net_export.h"
@@ -77,8 +76,7 @@ class NET_EXPORT_PRIVATE DnsUdpTracker {
   base::circular_deque<base::TimeTicks> recent_unrecognized_id_hits_;
   base::circular_deque<base::TimeTicks> recent_recognized_id_hits_;
 
-  raw_ptr<const base::TickClock> tick_clock_ =
-      base::DefaultTickClock::GetInstance();
+  const base::TickClock* tick_clock_ = base::DefaultTickClock::GetInstance();
 };
 
 }  // namespace net

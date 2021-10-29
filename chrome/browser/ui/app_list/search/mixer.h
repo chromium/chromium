@@ -13,7 +13,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/app_list/search/ranking/launch_data.h"
 
 class AppListModelUpdater;
@@ -82,7 +81,7 @@ class Mixer {
 
     bool operator<(const SortData& other) const;
 
-    raw_ptr<ChromeSearchResult> result;  // Not owned.
+    ChromeSearchResult* result;  // Not owned.
     double score;
   };
   typedef std::vector<Mixer::SortData> SortedResults;
@@ -95,8 +94,8 @@ class Mixer {
 
   void FetchResults(const std::u16string& query);
 
-  const raw_ptr<AppListModelUpdater> model_updater_;       // Not owned.
-  const raw_ptr<SearchControllerImpl> search_controller_;  // Not owned.
+  AppListModelUpdater* const model_updater_;       // Not owned.
+  SearchControllerImpl* const search_controller_;  // Not owned.
 
   Groups groups_;
 

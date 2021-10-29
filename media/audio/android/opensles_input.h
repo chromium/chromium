@@ -13,7 +13,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
 #include "media/audio/android/opensles_util.h"
@@ -81,9 +80,9 @@ class OpenSLESInputStream : public AudioInputStream {
   // |buffer_size_bytes_| and |simple_buffer_queue_|.
   base::Lock lock_;
 
-  raw_ptr<AudioManagerAndroid> audio_manager_;
+  AudioManagerAndroid* audio_manager_;
 
-  raw_ptr<AudioInputCallback> callback_;
+  AudioInputCallback* callback_;
 
   // Shared engine interfaces for the app.
   media::ScopedSLObjectItf recorder_object_;

@@ -5,9 +5,8 @@
 #include <string>
 
 #include "android_webview/browser/aw_pac_processor.h"
-#include "base/memory/raw_ptr.h"
-#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "base/test/task_environment.h"
 
 namespace android_webview {
 
@@ -34,7 +33,7 @@ class AwPacProcessorTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_{
            base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  raw_ptr<AwPacProcessor> pac_processor_ = new AwPacProcessor();
+  AwPacProcessor* pac_processor_ = new AwPacProcessor();
 };
 
 TEST_F(AwPacProcessorTest, MakeProxyRequest) {

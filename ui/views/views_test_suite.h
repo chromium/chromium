@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_VIEWS_TEST_SUITE_H_
 #define UI_VIEWS_VIEWS_TEST_SUITE_H_
 
-#include "base/memory/raw_ptr.h"
 #include "base/test/test_suite.h"
 
 #include "build/build_config.h"
@@ -49,7 +48,7 @@ class ViewsTestSuite : public base::TestSuite {
 #endif
 
   int argc_;
-  raw_ptr<char*> argv_;
+  char** argv_;
 };
 
 }  // namespace views

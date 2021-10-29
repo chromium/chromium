@@ -11,7 +11,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "remoting/protocol/input_stub.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -59,7 +58,7 @@ class InputEventTracker : public InputStub {
   void InjectTouchEvent(const TouchEvent& event) override;
 
  private:
-  raw_ptr<InputStub> input_stub_ = nullptr;
+  InputStub* input_stub_ = nullptr;
 
   std::set<ui::DomCode> pressed_keys_;
 

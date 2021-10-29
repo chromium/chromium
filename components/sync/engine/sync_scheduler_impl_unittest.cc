@@ -12,7 +12,6 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/mock_callback.h"
@@ -458,8 +457,8 @@ class SyncSchedulerImplTest : public testing::Test {
   std::unique_ptr<SyncCycleContext> context_;
   std::unique_ptr<SyncSchedulerImpl> scheduler_;
   MockNudgeHandler mock_nudge_handler_;
-  raw_ptr<MockSyncer> syncer_ = nullptr;
-  raw_ptr<MockDelayProvider> delay_ = nullptr;
+  MockSyncer* syncer_ = nullptr;
+  MockDelayProvider* delay_ = nullptr;
   scoped_refptr<ExtensionsActivity> extensions_activity_;
   base::WeakPtrFactory<SyncSchedulerImplTest> weak_ptr_factory_{this};
 };

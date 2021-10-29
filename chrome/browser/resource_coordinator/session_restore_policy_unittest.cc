@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
@@ -69,7 +68,7 @@ class TestDelegate : public SessionRestorePolicy::Delegate {
  private:
   size_t number_of_cores_ = 1;
   size_t free_memory_mb_ = 0;
-  raw_ptr<base::TickClock> clock_ = nullptr;
+  base::TickClock* clock_ = nullptr;
   size_t site_engagement_score_ = 0;
 };
 

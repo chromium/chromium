@@ -9,7 +9,6 @@
 #include <stddef.h>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/payments/autofill_progress_dialog_controller.h"
 #include "chrome/browser/ui/autofill/payments/autofill_progress_dialog_view.h"
 
@@ -38,7 +37,7 @@ class AutofillProgressDialogViewAndroid : public AutofillProgressDialogView {
   void ShowConfirmation();
 
  private:
-  raw_ptr<AutofillProgressDialogController> controller_;
+  AutofillProgressDialogController* controller_;
   // The corresponding java object.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
 };

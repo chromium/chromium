@@ -6,7 +6,6 @@
 #define EXTENSIONS_SHELL_BROWSER_SHELL_NATIVE_APP_WINDOW_H_
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/native_app_window.h"
 
@@ -72,7 +71,7 @@ class ShellNativeAppWindow : public NativeAppWindow {
   void SetActivateOnPointer(bool activate_on_pointer) override;
 
  private:
-  raw_ptr<AppWindow> app_window_;
+  AppWindow* app_window_;
 };
 
 }  // namespace extensions
