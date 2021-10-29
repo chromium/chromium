@@ -116,7 +116,9 @@ void ParentAccessUI::SetUpResources() {
   // Forward data to the WebUI.
   source->AddResourcePath("parent_access_controller.js",
                           IDR_PARENT_ACCESS_CONTROLLER_JS);
+  source->AddResourcePath("parent_access_app.js", IDR_PARENT_ACCESS_APP_JS);
   source->AddResourcePath("parent_access_ui.js", IDR_PARENT_ACCESS_UI_JS);
+  source->AddResourcePath("parent_access_after.js", IDR_PARENT_ACCESS_AFTER_JS);
 
   source->AddLocalizedString("pageTitle", IDS_PARENT_ACCESS_PAGE_TITLE);
   source->AddResourcePath("parent_access_ui.mojom-lite.js",

@@ -353,7 +353,9 @@
         <include name="IDR_ADD_SUPERVISION_API_SERVER_JS" file="resources\chromeos\add_supervision\add_supervision_api_server.js" type="BINDATA" />
         <include name="IDR_ADD_SUPERVISION_MOJOM_LITE_JS" file="${root_gen_dir}\chrome\browser\ui\webui\chromeos\add_supervision\add_supervision.mojom-lite.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_PARENT_ACCESS_HTML" file="resources\chromeos\parent_access\parent_access.html" type="chrome_html" />
+        <include name="IDR_PARENT_ACCESS_APP_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\parent_access\parent_access_app.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_PARENT_ACCESS_UI_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\parent_access\parent_access_ui.js" use_base_dir="false" type="BINDATA" />
+        <include name="IDR_PARENT_ACCESS_AFTER_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\parent_access\parent_access_after.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_PARENT_ACCESS_CONTROLLER_JS" file="resources\chromeos\parent_access\parent_access_controller.js" type="BINDATA" />
         <include name="IDR_PARENT_ACCESS_UI_MOJOM_LITE_JS" file="${root_gen_dir}\chrome\browser\ui\webui\chromeos\parent_access\parent_access_ui.mojom-lite.js" use_base_dir="false" type="BINDATA" />
       </if>
