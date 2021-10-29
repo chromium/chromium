@@ -24,6 +24,7 @@ struct CrasDevice {
   DeviceType type;
   uint64_t id;
   uint32_t dev_idx;
+  uint32_t max_supported_channels;
   bool plugged;
   bool active;
   std::string node_type;

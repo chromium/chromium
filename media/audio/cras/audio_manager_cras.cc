@@ -189,6 +189,34 @@ AudioParameters AudioManagerCras::GetPreferredOutputStreamParameters(
           std::min(static_cast<int>(limits::kMaxAudioBufferSize),
                    std::max(static_cast<int>(limits::kMinAudioBufferSize),
                             input_params.frames_per_buffer()));
+    return AudioParameters(
+        AudioParameters::AUDIO_PCM_LOW_LATENCY, channel_layout, sample_rate,
+        buffer_size,
+        AudioParameters::HardwareCapabilities(limits::kMinAudioBufferSize,
+                                              limits::kMaxAudioBufferSize));
+  }
+
+  // Get max supported channels from |output_device_id| or the primary active
+  // one if |output_device_id| is the default device.
+  uint64_t preferred_device_id;
+  if (AudioDeviceDescription::IsDefaultDevice(output_device_id)) {
+    preferred_device_id = GetPrimaryActiveOutputNode();
+  } else {
+    if (!base::StringToUint64(output_device_id, &preferred_device_id))
+      preferred_device_id = 0;  // 0 represents invalid |output_device_id|.
+  }
+
+  for (const auto& device :
+       cras_util_->CrasGetAudioDevices(DeviceType::kOutput)) {
+    if (device.id == preferred_device_id) {
+      channel_layout =
+          GuessChannelLayout(static_cast<int>(device.max_supported_channels));
+      // Fall-back to old fashion: always fixed to STEREO layout.
+      if (channel_layout == CHANNEL_LAYOUT_UNSUPPORTED) {
+        channel_layout = CHANNEL_LAYOUT_STEREO;
+      }
+      break;
+    }
   }
 
   if (!buffer_size)  // Not user-provided.

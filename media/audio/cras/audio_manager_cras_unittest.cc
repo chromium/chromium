@@ -71,6 +71,23 @@ TEST_F(AudioManagerCrasTest, HasAudioInputDevices) {
   EXPECT_EQ(ret, true);
 }
 
+TEST_F(AudioManagerCrasTest, MaxChannel) {
+  std::unique_ptr<MockCrasUtil> util = std::make_unique<MockCrasUtil>();
+  std::vector<CrasDevice> devices;
+  CrasDevice dev;
+  dev.type = DeviceType::kOutput;
+  dev.id = 123;
+  dev.max_supported_channels = 6;
+  devices.emplace_back(dev);
+  EXPECT_CALL(*util, CrasGetDefaultOutputBufferSize());
+  EXPECT_CALL(*util, CrasGetAudioDevices(DeviceType::kOutput))
+      .WillRepeatedly(testing::Return(devices));
+  mock_manager_->SetCrasUtil(std::move(util));
+  auto params = mock_manager_->GetPreferredOutputStreamParameters(
+      "123", AudioParameters());
+  EXPECT_EQ(params.channels(), 6);
+}
+
 }  // namespace
 
 }  // namespace media
