@@ -4,6 +4,8 @@
 
 /** @fileoverview Runs the Parent Access flow tests. */
 
+GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
+
 GEN('#include "content/public/test/browser_test.h"');
 
 var ParentAccessControllerTest = class extends testing.Test {
@@ -27,4 +29,31 @@ var ParentAccessControllerTest = class extends testing.Test {
 TEST_F('ParentAccessControllerTest', 'ParentAccessResultFnCalled', function() {
   this.runMochaTest(
       parent_access_controller_tests.TestNames.ParentAccessResultFnCalled);
+});
+
+var ParentAccessUITest = class extends PolymerTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://parent-access/test_loader.html?module=' +
+        'chromeos/parent_access/parent_access_ui_test.js';
+  }
+
+  /** @override */
+  get isAsync() {
+    return true;
+  }
+
+  /** @param {string} testName The name of the test to run. */
+  runMochaTest(testName) {
+    runMochaTest(parent_access_ui_tests.suiteName, testName);
+  }
+};
+
+TEST_F('ParentAccessUITest', 'TestIsAllowedRequest', function() {
+  this.runMochaTest(parent_access_ui_tests.TestNames.TestIsAllowedRequest);
+});
+
+TEST_F('ParentAccessUITest', 'TestShouldReceiveAuthHeader', function() {
+  this.runMochaTest(
+      parent_access_ui_tests.TestNames.TestShouldReceiveAuthHeader);
 });
