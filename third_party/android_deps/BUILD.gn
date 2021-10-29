@@ -1266,6 +1266,7 @@ if (!limit_android_deps) {
 
     # Reduce binary size. https:crbug.com/954584
     ignore_proguard_configs = true
+    proguard_configs = [ "material_design.flags" ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
