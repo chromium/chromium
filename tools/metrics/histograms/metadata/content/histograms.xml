@@ -192,7 +192,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="ContentSettings.DefaultAutoDarkWebContetntSetting"
+<histogram name="ContentSettings.DefaultAutoDarkWebContentSetting"
     enum="ContentSetting" expires_after="2022-06-19">
   <owner>wenyufu@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>

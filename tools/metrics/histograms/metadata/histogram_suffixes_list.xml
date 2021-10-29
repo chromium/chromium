@@ -2930,6 +2930,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram_suffixes name="ContentSettingsType" separator=".">
   <suffix name="app-banner" label="App banner exceptions"/>
   <suffix name="auto-select-certificate" label="Auto-select cert exceptions"/>
+  <suffix name="auto-dark-web-content" label="Auto-dark web contents exceptions"/>
   <suffix name="automatic-downloads" label="Automatic downloads exceptions"/>
   <suffix name="autoplay" label="Autoplay exception"/>
   <suffix name="background-sync" label="Background sync exceptions"/>
