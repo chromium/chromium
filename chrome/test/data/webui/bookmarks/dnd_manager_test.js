@@ -117,7 +117,6 @@ suite('drag and drop', function() {
     });
     store.replaceSingleton();
 
-    chrome.bookmarks.move = function(id, details) {};
     chrome.bookmarkManagerPrivate.startDrag = function(
         idList, dragNodeIndex, isFromTouch) {
       dndManager.dragInfo_.setNativeDragData(createDragData(idList));
