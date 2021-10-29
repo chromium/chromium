@@ -8,10 +8,12 @@
 #include <vector>
 
 #include "ash/app_list/app_list_view_delegate.h"
+#include "ash/app_list/model/search/search_box_model.h"
 #include "ash/app_list/model/search/search_box_model_observer.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/search_box/search_box_view_base.h"
+#include "base/scoped_observation.h"
 
 namespace views {
 class Textfield;
@@ -24,7 +26,6 @@ class AppListView;
 class AppListViewDelegate;
 class ContentsView;
 class ResultSelectionController;
-class SearchModel;
 class SearchResultBaseView;
 
 // Subclass of SearchBoxViewBase. SearchBoxModel is its data model
@@ -189,7 +190,6 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   ui::KeyboardCode last_key_pressed_ = ui::VKEY_UNKNOWN;
 
   AppListViewDelegate* const view_delegate_;
-  SearchModel* search_model_ = nullptr;  // Owned by the profile-keyed service.
 
   // Owned by views hierarchy. May be null for bubble launcher.
   AppListView* const app_list_view_;
@@ -210,6 +210,9 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // Owned by SearchResultPageView (for fullscreen launcher) or
   // AppListBubbleSearchPage (for bubble launcher).
   ResultSelectionController* result_selection_controller_ = nullptr;
+
+  base::ScopedObservation<SearchBoxModel, SearchBoxModelObserver>
+      search_box_model_observer_{this};
 
   base::WeakPtrFactory<SearchBoxView> weak_ptr_factory_{this};
 };

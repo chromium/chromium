@@ -237,19 +237,18 @@ class AppsGridViewTest : public AshTestBase {
     // Make the display big enough to hold the app list.
     UpdateDisplay("1024x768");
 
-    // Replace the model before the app list views are created, because some
-    // views cache pointers to the model.
-    auto model = std::make_unique<test::AppListTestModel>();
-    model_ = model.get();
-    Shell::Get()->app_list_controller()->SetAppListModelForTest(
-        std::move(model));
-
     // Populate some suggested apps.
-    search_model_ = Shell::Get()->app_list_controller()->GetSearchModel();
+    search_model_ = std::make_unique<SearchModel>();
     for (size_t i = 0; i < kNumOfSuggestedApps; ++i) {
       search_model_->results()->Add(
           std::make_unique<TestSuggestedSearchResult>());
     }
+
+    // Replace the model before the app list views are created, because some
+    // views cache pointers to the model.
+    model_ = std::make_unique<test::AppListTestModel>();
+    Shell::Get()->app_list_controller()->SetActiveModel(model_.get(),
+                                                        search_model_.get());
 
     // Show the app list.
     auto* helper = GetAppListTestHelper();
@@ -589,8 +588,8 @@ class AppsGridViewTest : public AshTestBase {
       nullptr;                                    // Owned by |apps_grid_view_|.
   ExpandArrowView* expand_arrow_view_ = nullptr;  // Owned by |apps_grid_view_|.
 
-  AppListTestModel* model_ = nullptr;
-  SearchModel* search_model_ = nullptr;
+  std::unique_ptr<AppListTestModel> model_;
+  std::unique_ptr<SearchModel> search_model_;
   std::unique_ptr<AppsGridViewTestApi> test_api_;
 
   // True if the test screen is configured to work with RTL locale.
@@ -757,6 +756,7 @@ TEST_P(AppsGridViewClamshellTest, RemoveSelectedLastApp) {
 TEST_F(AppsGridViewNonBubbleTest, UMATestForLaunchingApps) {
   base::HistogramTester histogram_tester;
   model_->PopulateApps(5);
+  UpdateLayout();
 
   // Select the first app in grid and launch it.
   SimulateLeftClickOnView(GetItemViewInTopLevelGrid(0));
@@ -830,6 +830,7 @@ TEST_F(AppsGridViewTest, MoveItemAcrossRowDoesNotCauseAnimation) {
 // Productivity launcher does not use suggestion chips.
 TEST_F(AppsGridViewNonBubbleTest, ControlArrowOnSuggestedChip) {
   model_->PopulateApps(5);
+  UpdateLayout();
   suggestions_container_->children().front()->RequestFocus();
 
   SimulateKeyPress(ui::VKEY_UP, ui::EF_CONTROL_DOWN);
@@ -873,6 +874,7 @@ TEST_P(AppsGridViewRTLTest, ScrollSequenceHandledByAppListView) {
   base::HistogramTester histogram_tester;
 
   model_->PopulateApps(GetTilesPerPage(0) + 1);
+  UpdateLayout();
   EXPECT_EQ(2, GetPaginationModel()->total_pages());
 
   gfx::Point apps_grid_view_origin =
@@ -924,6 +926,7 @@ TEST_P(AppsGridViewRTLTest, MouseScrollSequenceHandledByAppListView) {
   base::HistogramTester histogram_tester;
 
   model_->PopulateApps(GetTilesPerPage(0) + 1);
+  UpdateLayout();
   EXPECT_EQ(2, GetPaginationModel()->total_pages());
 
   const gfx::Point apps_grid_view_origin =
@@ -993,6 +996,7 @@ TEST_P(AppsGridViewRTLTest,
   base::HistogramTester histogram_tester;
 
   model_->PopulateApps(GetTilesPerPage(0) + 1);
+  UpdateLayout();
   EXPECT_EQ(2, GetPaginationModel()->total_pages());
 
   gfx::Point apps_grid_view_origin =
@@ -1039,6 +1043,7 @@ TEST_P(AppsGridViewRTLTest,
 // AppList closing.
 TEST_F(AppsGridViewTest, TapsBetweenAppsWontCloseAppList) {
   model_->PopulateApps(2);
+  UpdateLayout();
   gfx::Point between_apps = GetItemRectOnCurrentPageAt(0, 0).right_center();
   gfx::Point empty_space = GetItemRectOnCurrentPageAt(0, 2).CenterPoint();
 
@@ -1235,6 +1240,7 @@ TEST_P(AppsGridViewRTLTest, ScrollDownShouldNotExitFolder) {
 // TODO(jamescook): Investigate why this is broken with AppListBubble.
 TEST_F(AppsGridViewTest, AppIconSelectedWhenMenuIsShown) {
   model_->PopulateApps(1);
+  UpdateLayout();
   ASSERT_EQ(1u, model_->top_level_item_list()->item_count());
   AppListItemView* app = GetItemViewInTopLevelGrid(0);
   EXPECT_FALSE(apps_grid_view_->IsSelectedView(app));
@@ -1258,6 +1264,7 @@ TEST_P(AppsGridViewRTLTest, MenuAtRightPosition) {
   const size_t kItemsInPage = GetTilesPerPage(0);
   const size_t kPages = 2;
   model_->PopulateApps(kItemsInPage * kPages);
+  UpdateLayout();
 
   auto* root = apps_grid_view_->GetWidget()->GetNativeWindow()->GetRootWindow();
   gfx::Rect root_bounds = root->GetBoundsInScreen();
@@ -1302,6 +1309,7 @@ TEST_P(AppsGridViewRTLTest, MenuAtRightPosition) {
 TEST_P(AppsGridViewClamshellTest, ItemViewsDontHaveLayer) {
   size_t kTotalItems = 3;
   model_->PopulateApps(kTotalItems);
+  UpdateLayout();
 
   // Normally individual item-view does not have a layer.
   for (size_t i = 0; i < model_->top_level_item_list()->item_count(); ++i)
@@ -2533,6 +2541,8 @@ TEST_P(AppsGridViewTabletTest, TouchDragFlipToNextPage) {
   // Create 3 full pages of apps.
   model_->PopulateApps(GetTilesPerPage(0) + GetTilesPerPage(1) +
                        GetTilesPerPage(2));
+  UpdateLayout();
+
   const gfx::Rect apps_grid_bounds = paged_apps_grid_view_->GetLocalBounds();
   // Drag an item to the bottom to start flipping pages.
   page_flip_waiter_->Reset();

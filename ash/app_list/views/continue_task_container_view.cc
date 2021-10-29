@@ -45,15 +45,14 @@ struct CompareByDisplayIndexAndPositionPriority {
 };
 
 std::vector<SearchResult*> GetTasksResultsForContinueSection(
-    SearchModel* search_model) {
-  SearchModel::SearchResults* results = search_model->results();
+    SearchModel::SearchResults* results) {
   auto continue_filter = [](const SearchResult& r) -> bool {
     return r.display_type() == SearchResultDisplayType::kContinue;
   };
-  std::vector<SearchResult*> continue_results =
-      SearchModel::FilterSearchResultsByFunction(
-          results, base::BindRepeating(continue_filter),
-          /*max_results=*/4);
+  std::vector<SearchResult*> continue_results;
+  continue_results = SearchModel::FilterSearchResultsByFunction(
+      results, base::BindRepeating(continue_filter),
+      /*max_results=*/4);
 
   std::sort(continue_results.begin(), continue_results.end(),
             CompareByDisplayIndexAndPositionPriority());
@@ -127,7 +126,7 @@ void ContinueTaskContainerView::Update() {
   // Invalidate this callback to cancel a scheduled update.
   update_factory_.InvalidateWeakPtrs();
   std::vector<SearchResult*> tasks =
-      GetTasksResultsForContinueSection(view_delegate_->GetSearchModel());
+      GetTasksResultsForContinueSection(results_);
 
   // Update search results here.
   for (size_t i = 0; i < suggestion_tasks_views_.size(); ++i) {

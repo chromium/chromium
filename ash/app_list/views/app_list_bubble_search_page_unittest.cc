@@ -4,7 +4,10 @@
 
 #include "ash/app_list/views/app_list_bubble_search_page.h"
 
+#include <utility>
+
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/model/search/test_search_result.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/constants/ash_features.h"
@@ -116,7 +119,7 @@ TEST_F(AppListBubbleSearchPageTest, SearchPageA11y) {
   SearchModel::SearchResults* results = test_helper->GetSearchResults();
 
   // Delete all results and verify the bubble search page's A11yNodeData.
-  Shell::Get()->app_list_controller()->GetSearchModel()->DeleteAllResults();
+  AppListModelProvider::Get()->search_model()->DeleteAllResults();
   test_helper->GetBubbleSearchPage()->OnSearchResultContainerResultsChanged();
 
   // The single result container is visible.

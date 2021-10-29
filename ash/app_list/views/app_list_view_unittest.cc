@@ -108,6 +108,10 @@ constexpr int kPageSwitcherSpacing = 8;
 // The maximum allowed margin between items in apps item grid.
 constexpr int kMaxItemMargin = 96;
 
+SearchModel* GetSearchModel() {
+  return AppListModelProvider::Get()->search_model();
+}
+
 int GridItemSizeWithMargins(int grid_size, int item_size, int item_count) {
   int margin = (grid_size - item_size * item_count) / (2 * (item_count - 1));
   return item_size + 2 * margin;
@@ -496,7 +500,7 @@ class AppListViewFocusTest : public views::ViewsTestBase,
     const int kAppListItemNum =
         SharedAppListConfig::instance().GetMaxNumOfItemsPerPage() + 1;
     AppListTestModel* model = delegate_->GetTestModel();
-    SearchModel* search_model = delegate_->GetSearchModel();
+    SearchModel* search_model = GetSearchModel();
     for (size_t i = 0; i < kSuggestionAppNum; i++) {
       search_model->results()->Add(
           std::make_unique<TestStartPageSearchResult>());
@@ -562,8 +566,7 @@ class AppListViewFocusTest : public views::ViewsTestBase,
     result_types.emplace_back(SearchResultDisplayType::kTile, tile_results_num);
     result_types.emplace_back(SearchResultDisplayType::kList, list_results_num);
 
-    SearchModel::SearchResults* results =
-        delegate_->GetSearchModel()->results();
+    SearchModel::SearchResults* results = GetSearchModel()->results();
     results->DeleteAll();
     double display_score = result_types.size();
     for (const auto& data : result_types) {
@@ -588,8 +591,7 @@ class AppListViewFocusTest : public views::ViewsTestBase,
   // Add search results for test on embedded Assistant UI.
   void SetUpSearchResultsForAssistantUI(int list_results_num,
                                         int index_open_assistant_ui) {
-    SearchModel::SearchResults* results =
-        delegate_->GetSearchModel()->results();
+    SearchModel::SearchResults* results = GetSearchModel()->results();
     results->DeleteAll();
     double display_score = list_results_num;
     for (int i = 0; i < list_results_num; ++i) {
@@ -613,9 +615,7 @@ class AppListViewFocusTest : public views::ViewsTestBase,
     RunPendingMessages();
   }
 
-  void ClearSearchResults() {
-    delegate_->GetSearchModel()->results()->DeleteAll();
-  }
+  void ClearSearchResults() { GetSearchModel()->results()->DeleteAll(); }
 
   void AddSearchResultWithTitleAndScore(const base::StringPiece& title,
                                         double score) {
@@ -624,7 +624,7 @@ class AppListViewFocusTest : public views::ViewsTestBase,
     result->set_display_type(ash::SearchResultDisplayType::kList);
     result->set_display_score(score);
     result->set_title(ASCIIToUTF16(title));
-    delegate_->GetSearchModel()->results()->Add(std::move(result));
+    GetSearchModel()->results()->Add(std::move(result));
     RunPendingMessages();
   }
 
@@ -2341,7 +2341,7 @@ TEST_F(AppListViewTest, DISABLED_SearchResultsTest) {
       search_text,
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   // Check that the current search is using |search_text|.
-  EXPECT_EQ(search_text, delegate_->GetSearchModel()->search_box()->text());
+  EXPECT_EQ(search_text, GetSearchModel()->search_box()->text());
   EXPECT_EQ(search_text, main_view->search_box_view()->search_box()->GetText());
   contents_view->Layout();
   EXPECT_TRUE(
@@ -2362,7 +2362,7 @@ TEST_F(AppListViewTest, DISABLED_SearchResultsTest) {
       new_search_text,
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   // Check that the current search is using |new_search_text|.
-  EXPECT_EQ(new_search_text, delegate_->GetSearchModel()->search_box()->text());
+  EXPECT_EQ(new_search_text, GetSearchModel()->search_box()->text());
   EXPECT_EQ(new_search_text,
             main_view->search_box_view()->search_box()->GetText());
   contents_view->Layout();

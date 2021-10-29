@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/app_list_util.h"
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/search/search_model.h"
@@ -51,8 +52,7 @@ std::unique_ptr<views::Label> CreateContinueLabel(const std::u16string& text) {
 
 ContinueSectionView::ContinueSectionView(AppListViewDelegate* view_delegate,
                                          int columns,
-                                         bool tablet_mode)
-    : view_delegate_(view_delegate) {
+                                         bool tablet_mode) {
   DCHECK(view_delegate);
 
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -103,7 +103,7 @@ ContinueTaskView* ContinueSectionView::GetTaskViewAtForTesting(
 
 void ContinueSectionView::UpdateSuggestionTasks() {
   suggestions_container_->SetResults(
-      view_delegate_->GetSearchModel()->results());
+      AppListModelProvider::Get()->search_model()->results());
 }
 
 void ContinueSectionView::OnSearchResultContainerResultsChanged() {

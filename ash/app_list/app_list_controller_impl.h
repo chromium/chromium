@@ -54,6 +54,7 @@ namespace ash {
 
 class AppListBubblePresenter;
 class AppListControllerObserver;
+class AppListModelProvider;
 class AppListPresenterImpl;
 enum class AppListSortOrder;
 
@@ -102,6 +103,7 @@ class ASH_EXPORT AppListControllerImpl
   AppListClient* GetClient() override;
   void AddObserver(AppListControllerObserver* observer) override;
   void RemoveObserver(AppListControllerObserver* obsever) override;
+  void SetActiveModel(AppListModel* model, SearchModel* search_model) override;
   void AddItem(std::unique_ptr<AppListItemMetadata> app_item) override;
   void AddItemToFolder(std::unique_ptr<AppListItemMetadata> app_item,
                        const std::string& folder_id) override;
@@ -175,8 +177,6 @@ class ASH_EXPORT AppListControllerImpl
   bool ShouldHomeLauncherBeVisible() const;
 
   // AppListViewDelegate:
-  AppListModel* GetModel() override;
-  SearchModel* GetSearchModel() override;
   AppListNotifier* GetNotifier() override;
   void StartAssistant() override;
   void StartSearch(const std::u16string& raw_query) override;
@@ -377,8 +377,6 @@ class ASH_EXPORT AppListControllerImpl
       const ui::LocatedEvent& event_in_screen,
       float launcher_above_shelf_bottom_amount) const;
 
-  void SetAppListModelForTest(std::unique_ptr<AppListModel> model);
-
   using StateTransitionAnimationCallback =
       base::RepeatingCallback<void(AppListViewState)>;
 
@@ -415,11 +413,12 @@ class ASH_EXPORT AppListControllerImpl
   void RecordAppListState();
 
  private:
-  syncer::StringOrdinal GetOemFolderPos();
+  // Convenience methods for getting models from `model_provider_`.
+  AppListModel* GetModel();
+  SearchModel* GetSearchModel();
+
   std::unique_ptr<AppListItem> CreateAppListItem(
       std::unique_ptr<AppListItemMetadata> metadata);
-  AppListFolderItem* FindFolderItem(const std::string& folder_id);
-
   // Update the visibility of Assistant functionality.
   void UpdateAssistantVisibility();
 
@@ -487,6 +486,11 @@ class ASH_EXPORT AppListControllerImpl
   HomeLauncherTransitionState home_launcher_transition_state_ = kFinished;
 
   AppListClient* client_ = nullptr;
+
+  // Tracks active app list and search models to app list UI stack. It can be
+  // accessed outside AppListModelControllerImpl using
+  // `AppListModelController::Get()`.
+  std::unique_ptr<AppListModelProvider> model_provider_;
 
   std::unique_ptr<AppListModel> model_;
   SearchModel search_model_;
@@ -598,6 +602,9 @@ class ASH_EXPORT AppListControllerImpl
 
   // Used for closing the Assistant ui in the asynchronous way.
   base::ScopedClosureRunner close_assistant_ui_runner_;
+
+  base::ScopedObservation<AppListModel, AppListModelObserver>
+      model_observation_{this};
 
   base::ScopedObservation<SplitViewController, SplitViewObserver>
       split_view_observation_{this};

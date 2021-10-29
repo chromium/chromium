@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/app_list/app_list_metrics.h"
+#include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/app_list_util.h"
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/model/app_list_model.h"
@@ -555,14 +556,12 @@ class ScrollViewWithMaxHeight : public views::ScrollView {
 
 AppListFolderView::AppListFolderView(AppListFolderController* folder_controller,
                                      AppsGridView* root_apps_grid_view,
-                                     AppListModel* model,
                                      ContentsView* contents_view,
                                      AppListA11yAnnouncer* a11y_announcer,
                                      AppListViewDelegate* view_delegate)
     : folder_controller_(folder_controller),
       root_apps_grid_view_(root_apps_grid_view),
       a11y_announcer_(a11y_announcer),
-      model_(model),
       view_delegate_(view_delegate) {
   DCHECK(folder_controller_);
   DCHECK(root_apps_grid_view_);
@@ -588,8 +587,6 @@ AppListFolderView::AppListFolderView(AppListFolderController* folder_controller,
     CreateScrollableAppsGrid();
   else
     CreatePagedAppsGrid(contents_view);
-
-  model_->AddObserver(this);
 }
 
 void AppListFolderView::CreatePagedAppsGrid(ContentsView* contents_view) {
@@ -691,8 +688,6 @@ void AppListFolderView::CreateScrollableAppsGrid() {
 }
 
 AppListFolderView::~AppListFolderView() {
-  model_->RemoveObserver(this);
-
   // This prevents the AppsGridView's destructor from calling the now-deleted
   // AppListFolderView's methods if a drag is in progress at the time.
   items_grid_view_->set_folder_delegate(nullptr);
@@ -722,9 +717,12 @@ void AppListFolderView::ConfigureForFolderItemView(
 
   folder_item_ = static_cast<AppListFolderItem*>(folder_item_view->item());
 
-  items_grid_view_->SetModel(model_);
+  AppListModel* model = AppListModelProvider::Get()->model();
+  items_grid_view_->SetModel(model);
   items_grid_view_->SetItemList(folder_item_->item_list());
   folder_header_view_->SetFolderItem(folder_item_);
+
+  model_observation_.Observe(model);
 
   UpdatePreferredBounds();
 }
@@ -850,6 +848,8 @@ void AppListFolderView::ResetState(bool restore_folder_item_view_state) {
     folder_header_view_->SetFolderItem(nullptr);
     folder_item_ = nullptr;
   }
+
+  model_observation_.Reset();
 
   show_hide_metrics_tracker_.reset();
 
@@ -1107,7 +1107,7 @@ void AppListFolderView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 
 void AppListFolderView::SetItemName(AppListFolderItem* item,
                                     const std::string& name) {
-  model_->SetItemName(item, name);
+  AppListModelProvider::Get()->model()->SetItemName(item, name);
 }
 
 const AppListConfig* AppListFolderView::GetAppListConfig() const {

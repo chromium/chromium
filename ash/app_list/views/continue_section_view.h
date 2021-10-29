@@ -41,8 +41,6 @@ class ASH_EXPORT ContinueSectionView : public views::View {
   ContinueTaskView* GetTaskViewAtForTesting(size_t index) const;
 
  private:
-  AppListViewDelegate* const view_delegate_;
-
   ContinueTaskContainerView* suggestions_container_ = nullptr;
 };
 

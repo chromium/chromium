@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/remote_apps/remote_apps_manager.h"
 
-#include "ash/app_list/app_list_controller_impl.h"
+#include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/constants/ash_switches.h"
@@ -205,11 +205,8 @@ class RemoteAppsManagerBrowsertest
             });
   }
 
-  ash::AppListItem* GetAppListItem(const std::string& id) {
-    ash::AppListControllerImpl* controller =
-        ash::Shell::Get()->app_list_controller();
-    ash::AppListModel* model = controller->GetModel();
-    return model->FindItem(id);
+  AppListItem* GetAppListItem(const std::string& id) {
+    return AppListModelProvider::Get()->model()->FindItem(id);
   }
 
   std::string AddApp(const std::string& name,
@@ -223,13 +220,11 @@ class RemoteAppsManagerBrowsertest
                          [](base::RepeatingClosure closure, std::string* id_arg,
                             const std::string& id, RemoteAppsError error) {
                            ASSERT_EQ(RemoteAppsError::kNone, error);
+                           ASSERT_TRUE(
+                               AppListModelProvider::Get()->model()->FindItem(
+                                   id));
 
-                           ash::AppListControllerImpl* controller =
-                               ash::Shell::Get()->app_list_controller();
-                           ash::AppListModel* model = controller->GetModel();
-                           ASSERT_TRUE(model->FindItem(id));
                            *id_arg = id;
-
                            closure.Run();
                          },
                          run_loop.QuitClosure(), &id));

@@ -1,0 +1,54 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "ash/app_list/app_list_model_provider.h"
+
+#include "base/check.h"
+#include "base/check_op.h"
+
+namespace ash {
+
+namespace {
+
+// Pointer to the global `AppListModelProvider` instance.
+AppListModelProvider* g_instance = nullptr;
+
+}  // namespace
+
+AppListModelProvider::AppListModelProvider() {
+  DCHECK(!g_instance);
+  g_instance = this;
+}
+
+AppListModelProvider::~AppListModelProvider() {
+  DCHECK_EQ(g_instance, this);
+  g_instance = nullptr;
+}
+
+// static
+AppListModelProvider* AppListModelProvider::Get() {
+  return g_instance;
+}
+
+void AppListModelProvider::SetActiveModel(AppListModel* model,
+                                          SearchModel* search_model) {
+  // If either model is reset, so should be the other one.
+  DCHECK_EQ(!model, !search_model);
+
+  model_ = model ? model : &default_model_;
+  search_model_ = search_model ? search_model : &default_search_model_;
+
+  for (auto& observer : observers_)
+    observer.OnActiveAppListModelsChanged(model_, search_model_);
+}
+
+void AppListModelProvider::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void AppListModelProvider::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+}  // namespace ash

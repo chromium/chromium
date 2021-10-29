@@ -11,6 +11,7 @@
 #include <set>
 #include <string>
 
+#include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/app_list_util.h"
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/search/search_result.h"
@@ -218,9 +219,9 @@ int SearchResultTileItemListView::DoUpdate() {
       base::STLSetDifference<std::set<std::string>>(result_id_added,
                                                     result_id_removed);
 
+  SearchModel* const search_model = AppListModelProvider::Get()->search_model();
   for (const std::string& added_id : actual_added_ids) {
-    SearchResult* added =
-        view_delegate()->GetSearchModel()->FindSearchResult(added_id);
+    SearchResult* added = search_model->FindSearchResult(added_id);
     if (added != nullptr && added->notify_visibility_change()) {
       view_delegate()->OnSearchResultVisibilityChanged(added->id(), shown());
     }
@@ -231,8 +232,7 @@ int SearchResultTileItemListView::DoUpdate() {
                                                       result_id_added);
     // we only notify removed items if we're in the middle of showing.
     for (const std::string& removed_id : actual_removed_ids) {
-      SearchResult* removed =
-          view_delegate()->GetSearchModel()->FindSearchResult(removed_id);
+      SearchResult* removed = search_model->FindSearchResult(removed_id);
       if (removed != nullptr && removed->notify_visibility_change()) {
         view_delegate()->OnSearchResultVisibilityChanged(removed->id(),
                                                          false /*=shown*/);

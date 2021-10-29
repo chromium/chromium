@@ -49,7 +49,6 @@ class ASH_EXPORT AppListMainView : public views::View,
       ApplicationDragAndDropHost* drag_and_drop_host);
 
   ContentsView* contents_view() const { return contents_view_; }
-  SearchModel* search_model() { return search_model_; }
   AppListViewDelegate* view_delegate() { return delegate_; }
 
   // Called when the search box's visibility is changed.
@@ -76,7 +75,6 @@ class ASH_EXPORT AppListMainView : public views::View,
   bool CanSelectSearchResults() override;
 
   AppListViewDelegate* delegate_;  // Owned by parent view (AppListView).
-  SearchModel* search_model_;  // Unowned; ownership is handled by |delegate_|.
 
   // Created by AppListView. Owned by views hierarchy.
   SearchBoxView* search_box_view_ = nullptr;

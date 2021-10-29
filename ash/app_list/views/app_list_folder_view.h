@@ -10,6 +10,8 @@
 #include <vector>
 
 #include "ash/app_list/model/app_list_item_list_observer.h"
+#include "ash/app_list/model/app_list_model.h"
+#include "ash/app_list/model/app_list_model_observer.h"
 #include "ash/app_list/views/apps_grid_view.h"
 #include "ash/app_list/views/apps_grid_view_folder_delegate.h"
 #include "ash/app_list/views/folder_header_view.h"
@@ -57,7 +59,6 @@ class ASH_EXPORT AppListFolderView
 
   AppListFolderView(AppListFolderController* folder_controller,
                     AppsGridView* root_apps_grid_view,
-                    AppListModel* model,
                     ContentsView* contents_view,
                     AppListA11yAnnouncer* a11y_announcer,
                     AppListViewDelegate* view_delegate);
@@ -247,7 +248,6 @@ class ASH_EXPORT AppListFolderView
   // Only used for ProductivityLauncher.
   std::unique_ptr<ScrollViewGradientHelper> gradient_helper_;
 
-  AppListModel* const model_;
   AppListViewDelegate* const view_delegate_;
   AppListFolderItem* folder_item_ = nullptr;  // Not owned.
 
@@ -270,6 +270,9 @@ class ASH_EXPORT AppListFolderView
 
   // Records smoothness of the folder show/hide animation.
   absl::optional<ui::ThroughputTracker> show_hide_metrics_tracker_;
+
+  base::ScopedObservation<AppListModel, AppListModelObserver>
+      model_observation_{this};
 
   // Observes `folder_item_view_` deletion, so the folder state can be cleared
   // if the folder item view is destroyed (for example, the view may get deleted

@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "ash/app_list/app_list_metrics.h"
+#include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/app_list_util.h"
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/app_list_folder_item.h"
@@ -50,9 +51,7 @@ namespace ash {
 
 AppListMainView::AppListMainView(AppListViewDelegate* delegate,
                                  AppListView* app_list_view)
-    : delegate_(delegate),
-      search_model_(delegate->GetSearchModel()),
-      app_list_view_(app_list_view) {
+    : delegate_(delegate), app_list_view_(app_list_view) {
   // We need a layer to apply transform to in small display so that the apps
   // grid fits in the display.
   SetPaintToLayer();
@@ -99,7 +98,6 @@ void AppListMainView::ShowAppListWhenReady() {
 }
 
 void AppListMainView::ModelChanged() {
-  search_model_ = delegate_->GetSearchModel();
   search_box_view_->ModelChanged();
   delete contents_view_;
   contents_view_ = nullptr;
@@ -137,7 +135,8 @@ void AppListMainView::Layout() {
 }
 
 void AppListMainView::QueryChanged(SearchBoxViewBase* sender) {
-  std::u16string raw_query = search_model_->search_box()->text();
+  SearchModel* const search_model = AppListModelProvider::Get()->search_model();
+  const std::u16string raw_query = search_model->search_box()->text();
   std::u16string query;
   base::TrimWhitespace(raw_query, base::TRIM_ALL, &query);
   contents_view_->ShowSearchResults(search_box_view_->is_search_box_active() ||
@@ -154,7 +153,9 @@ void AppListMainView::ActiveChanged(SearchBoxViewBase* sender) {
   if (search_box_view_->is_search_box_active()) {
     // Show zero state suggestions when search box is activated with an empty
     // query.
-    std::u16string raw_query = search_model_->search_box()->text();
+    SearchModel* const search_model =
+        AppListModelProvider::Get()->search_model();
+    const std::u16string raw_query = search_model->search_box()->text();
     std::u16string query;
     base::TrimWhitespace(raw_query, base::TRIM_ALL, &query);
     if (query.empty())

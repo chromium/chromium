@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/app_list_util.h"
 #include "ash/app_list/views/app_list_a11y_announcer.h"
 #include "ash/app_list/views/app_list_folder_view.h"
@@ -243,8 +244,7 @@ END_METADATA
 
 }  // namespace
 
-AppsContainerView::AppsContainerView(ContentsView* contents_view,
-                                     AppListModel* model)
+AppsContainerView::AppsContainerView(ContentsView* contents_view)
     : contents_view_(contents_view) {
   SetPaintToLayer(ui::LAYER_NOT_DRAWN);
 
@@ -320,8 +320,7 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view,
   page_switcher_ = AddChildView(std::move(page_switcher));
 
   auto app_list_folder_view = std::make_unique<AppListFolderView>(
-      this, apps_grid_view_, model, contents_view_, a11y_announcer,
-      view_delegate);
+      this, apps_grid_view_, contents_view_, a11y_announcer, view_delegate);
   folder_background_view_ = AddChildView(
       std::make_unique<FolderBackgroundView>(app_list_folder_view.get()));
 
@@ -825,13 +824,12 @@ void AppsContainerView::OnBoundsChanged(const gfx::Rect& old_bounds) {
 
   // Finish initialization of views that require app list config.
   if (creating_initial_config) {
-    AppListViewDelegate* view_delegate =
-        contents_view_->GetAppListMainView()->view_delegate();
-
-    apps_grid_view_->SetModel(view_delegate->GetModel());
-    apps_grid_view_->SetItemList(
-        view_delegate->GetModel()->top_level_item_list());
+    AppListModel* const model = AppListModelProvider::Get()->model();
+    apps_grid_view_->SetModel(model);
+    apps_grid_view_->SetItemList(model->top_level_item_list());
     UpdateRecentApps();
+    UpdateSuggestionChips();
+
     SetShowState(SHOW_APPS, false);
   }
 }
@@ -1072,10 +1070,9 @@ void AppsContainerView::UpdateRecentApps() {
   if (!recent_apps_ || !app_list_config_)
     return;
 
-  AppListViewDelegate* view_delegate =
-      contents_view_->GetAppListMainView()->view_delegate();
-  recent_apps_->ShowResults(view_delegate->GetSearchModel(),
-                            view_delegate->GetModel());
+  AppListModelProvider* const model_provider = AppListModelProvider::Get();
+  recent_apps_->ShowResults(model_provider->search_model(),
+                            model_provider->model());
 }
 
 void AppsContainerView::UpdateSuggestionChips() {
@@ -1083,10 +1080,7 @@ void AppsContainerView::UpdateSuggestionChips() {
     return;
 
   suggestion_chip_container_view_->SetResults(
-      contents_view_->GetAppListMainView()
-          ->view_delegate()
-          ->GetSearchModel()
-          ->results());
+      AppListModelProvider::Get()->search_model()->results());
 }
 
 base::ScopedClosureRunner AppsContainerView::DisableSuggestionChipsBlur() {

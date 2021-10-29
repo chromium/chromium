@@ -5,6 +5,7 @@
 #include "ash/app_list/views/paged_apps_grid_view.h"
 
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/test/app_list_test_helper.h"
@@ -124,12 +125,12 @@ TEST_F(PagedAppsGridViewTest, PageMaxAppCounts) {
   // Add some recent apps and re-layout so the first page of the apps grid has
   // less rows to accommodate.
   GetAppListTestHelper()->AddRecentApps(4);
-  GetAppListTestHelper()->GetAppsContainerView()->UpdateRecentApps();
+  GetAppListTestHelper()->GetAppsContainerView()->ResetForShowApps();
   UpdateLayout();
 
   // There should be a total of 40 items in the item list.
   AppListItemList* item_list =
-      Shell::Get()->app_list_controller()->GetModel()->top_level_item_list();
+      AppListModelProvider::Get()->model()->top_level_item_list();
   ASSERT_EQ(40u, item_list->item_count());
 
   // The first page should be maxed at 15 apps, the second page maxed at 20
@@ -148,7 +149,7 @@ TEST_F(PagedAppsGridViewTest, GridDimensionsChangesWithDisplaySize) {
   // Add some recent apps to take up space on the first page.
   GetAppListTestHelper()->AddAppItems(4);
   GetAppListTestHelper()->AddRecentApps(4);
-  GetAppListTestHelper()->GetAppsContainerView()->UpdateRecentApps();
+  GetAppListTestHelper()->GetAppsContainerView()->ResetForShowApps();
 
   // Test with a display in landscape mode.
   UpdateDisplay("1000x600");
@@ -209,6 +210,7 @@ TEST_F(PagedAppsGridViewTest, DragItemToNextPage) {
   // Populate with enough apps to fill 2 pages.
   GetAppListTestHelper()->AddAppItems(35);
   EXPECT_EQ(2, pagination_model->total_pages());
+  GetPagedAppsGridView()->GetWidget()->LayoutRootViewIfNecessary();
 
   // Drag the item at page 0 slot 0 to the next page.
   StartDragOnItemViewAtVisualIndex(0, 0);

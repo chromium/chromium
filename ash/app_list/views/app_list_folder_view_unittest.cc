@@ -27,14 +27,15 @@ class AppListFolderViewProductivityLauncherTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
-    auto model = std::make_unique<test::AppListTestModel>();
-    app_list_test_model_ = model.get();
-    Shell::Get()->app_list_controller()->SetAppListModelForTest(
-        std::move(model));
+    app_list_test_model_ = std::make_unique<test::AppListTestModel>();
+    search_model_ = std::make_unique<SearchModel>();
+    Shell::Get()->app_list_controller()->SetActiveModel(
+        app_list_test_model_.get(), search_model_.get());
   }
 
   base::test::ScopedFeatureList feature_list_{features::kProductivityLauncher};
-  test::AppListTestModel* app_list_test_model_ = nullptr;
+  std::unique_ptr<test::AppListTestModel> app_list_test_model_;
+  std::unique_ptr<SearchModel> search_model_;
 };
 
 TEST_F(AppListFolderViewProductivityLauncherTest,
