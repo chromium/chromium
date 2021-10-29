@@ -28,7 +28,7 @@ class FeatureContext;
 
 // ManifestParser handles the logic of parsing the Web Manifest from a string.
 // It implements:
-// http://w3c.github.io/manifest/#dfn-steps-for-processing-a-manifest
+// https://w3c.github.io/manifest/#processing
 // Takes a |FeatureContext| to check origin trial statuses with.
 class MODULES_EXPORT ManifestParser {
  public:
@@ -43,8 +43,8 @@ class MODULES_EXPORT ManifestParser {
   ~ManifestParser();
 
   // Parse the Manifest from a string using following:
-  // http://w3c.github.io/manifest/#dfn-steps-for-processing-a-manifest
-  void Parse();
+  // https://w3c.github.io/manifest/#processing
+  bool Parse();
 
   const mojom::blink::ManifestPtr& manifest() const;
   bool failed() const;
