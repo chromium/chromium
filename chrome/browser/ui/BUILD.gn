@@ -4513,8 +4513,6 @@ static_library("ui") {
       "views/tabs/window_finder.h",
       "views/task_manager_view.cc",
       "views/task_manager_view.h",
-      "views/textfield_layout.cc",
-      "views/textfield_layout.h",
       "views/theme_copying_widget.cc",
       "views/theme_copying_widget.h",
       "views/title_origin_label.cc",
