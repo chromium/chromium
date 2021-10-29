@@ -26,6 +26,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/memory/tagging.h"
 #include "base/thread_annotations.h"
+#include "build/build_config.h"
 
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
 #include "base/allocator/partition_allocator/partition_ref_count.h"
@@ -128,6 +129,20 @@ struct __attribute__((packed)) SlotSpanMetadata {
   // Cannot use the full 64 bits in this bitfield, as this structure is embedded
   // in PartitionPage, which has other fields as well, and must fit in 32 bytes.
 
+  // CHECK()ed in AllocNewSlotSpan().
+#if defined(PA_HAS_64_BITS_POINTERS) && defined(OS_APPLE)
+  // System page size is not a constant on Apple OSes, but is either 4 or 16kiB
+  // (1 << 12 or 1 << 14), as checked in PartitionRoot::Init(). And
+  // PartitionPageSize() is 4 times the OS page size.
+  static constexpr int16_t kMaxSlotsPerSlotSpan =
+      4 * (1 << 14) / kSmallestBucket;
+#else
+  // A slot span can "span" multiple PartitionPages, but then its slot size is
+  // larger, so it doesn't have as many slots.
+  static constexpr int16_t kMaxSlotsPerSlotSpan =
+      PartitionPageSize() / kSmallestBucket;
+#endif  // defined(PA_HAS_64_BITS_POINTERS) && defined(OS_APPLE)
+
   explicit SlotSpanMetadata(PartitionBucket<thread_safe>* bucket);
 
   // Public API
@@ -137,6 +152,9 @@ struct __attribute__((packed)) SlotSpanMetadata {
 
   void Decommit(PartitionRoot<thread_safe>* root);
   void DecommitIfPossible(PartitionRoot<thread_safe>* root);
+
+  // Sorts the freelist in ascending addresses order.
+  void SortFreelist();
 
   // Pointer manipulation functions. These must be static as the input
   // |slot_span| pointer may be the result of an offset calculation and
