@@ -313,16 +313,8 @@ class NearbyConnectionBrokerImplTest : public testing::Test,
   }
 
   void ReceiveFileTransferUpdate(PayloadTransferUpdatePtr update) {
-    base::RunLoop run_loop;
-    on_file_transfer_update_closure_ = run_loop.QuitClosure();
     payload_listener_->OnPayloadTransferUpdate(kEndpointId, std::move(update));
-    run_loop.Run();
-  }
-
-  void ReceiveInvalidFileTransferUpdate(PayloadTransferUpdatePtr update) {
-    // No callback is expected to run when an invalid PayloadTransferUpdate is
-    // received.
-    payload_listener_->OnPayloadTransferUpdate(kEndpointId, std::move(update));
+    payload_listener_.FlushForTesting();
   }
 
   void DisconnectMojoBindings(bool expected_to_disconnect) {
@@ -394,6 +386,10 @@ class NearbyConnectionBrokerImplTest : public testing::Test,
 
   bool IsTimerRunning() const { return mock_timer_->IsRunning(); }
 
+  mojo::Receiver<mojom::FilePayloadListener>& file_payload_listener() {
+    return file_payload_listener_;
+  }
+
   const std::vector<mojom::FileTransferUpdatePtr>& file_transfer_updates() {
     return file_transfer_updates_;
   }
@@ -414,7 +410,6 @@ class NearbyConnectionBrokerImplTest : public testing::Test,
   // mojom::FilePayloadListener:
   void OnFileTransferUpdate(mojom::FileTransferUpdatePtr update) override {
     file_transfer_updates_.push_back(std::move(update));
-    std::move(on_file_transfer_update_closure_).Run();
   }
 
   void OnConnected() { std::move(on_connected_closure_).Run(); }
@@ -437,7 +432,6 @@ class NearbyConnectionBrokerImplTest : public testing::Test,
   base::OnceClosure on_connected_closure_;
   base::OnceClosure on_disconnected_closure_;
   base::OnceClosure on_message_received_closure_;
-  base::OnceClosure on_file_transfer_update_closure_;
   base::OnceClosure on_disconnect_from_endpoint_closure_;
 
   mojo::Remote<ConnectionLifecycleListener> connection_lifecycle_listener_;
@@ -528,6 +522,8 @@ TEST_F(NearbyConnectionBrokerImplTest, FileTransferUpdateForRegisteredPayload) {
       PayloadTransferUpdate::New(payload_id, PayloadStatus::kInProgress,
                                  /*total_bytes=*/1000,
                                  /*bytes_transferred=*/200));
+  file_payload_listener().FlushForTesting();
+
   EXPECT_EQ(2, file_transfer_updates().size());
   EXPECT_EQ(file_transfer_updates().at(0),
             mojom::FileTransferUpdate::New(
@@ -561,10 +557,12 @@ TEST_F(NearbyConnectionBrokerImplTest, FileTransferUpdateForCompletedPayload) {
                                  /*bytes_transferred=*/1000));
   // This is not supposed to trigger a FileTransferUpdate callback as this
   // payload has already been completed and is now untracked.
-  ReceiveInvalidFileTransferUpdate(
+  ReceiveFileTransferUpdate(
       PayloadTransferUpdate::New(payload_id, PayloadStatus::kInProgress,
                                  /*total_bytes=*/2000,
                                  /*bytes_transferred=*/1100));
+  file_payload_listener().FlushForTesting();
+
   EXPECT_EQ(1, file_transfer_updates().size());
   EXPECT_EQ(file_transfer_updates().at(0),
             mojom::FileTransferUpdate::New(payload_id,
@@ -586,15 +584,81 @@ TEST_F(NearbyConnectionBrokerImplTest,
   base::FilePath path;
   base::CreateTemporaryFile(&path);
   RegisterPayloadFile(/*payload_id=*/1234, path, /*expect_success=*/true);
-  ReceiveInvalidFileTransferUpdate(PayloadTransferUpdate::New(
+  ReceiveFileTransferUpdate(PayloadTransferUpdate::New(
       /*payload_id=*/5678, PayloadStatus::kInProgress,
       /*total_bytes=*/1000,
       /*bytes_transferred=*/100));
+  file_payload_listener().FlushForTesting();
+
   EXPECT_TRUE(file_transfer_updates().empty());
 
   DisconnectMojoBindings(/*expected_to_disconnect=*/true);
   InvokeDisconnectedFromEndpointCallback(/*success=*/true);
   InvokeDisconnectedCallback();
+}
+
+TEST_F(NearbyConnectionBrokerImplTest, FileTransferCanceledOnDisconnect) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kPhoneHubCameraRoll);
+  SetUpFullConnection();
+
+  int64_t payload_id = 1234;
+  base::FilePath path;
+  base::CreateTemporaryFile(&path);
+  RegisterPayloadFile(payload_id, path, /*expect_success=*/true);
+  ReceiveFilePayload(payload_id, path);
+  ReceiveFileTransferUpdate(
+      PayloadTransferUpdate::New(payload_id, PayloadStatus::kInProgress,
+                                 /*total_bytes=*/1000,
+                                 /*bytes_transferred=*/100));
+  // Disconnect before the transfer is complete.
+  InvokeDisconnectedCallback();
+  file_payload_listener().FlushForTesting();
+
+  EXPECT_EQ(2, file_transfer_updates().size());
+  EXPECT_EQ(file_transfer_updates().at(0),
+            mojom::FileTransferUpdate::New(
+                payload_id, mojom::FileTransferStatus::kInProgress,
+                /*total_bytes=*/1000,
+                /*bytes_transferred=*/100));
+  EXPECT_EQ(file_transfer_updates().at(1),
+            mojom::FileTransferUpdate::New(payload_id,
+                                           mojom::FileTransferStatus::kCanceled,
+                                           /*total_bytes=*/0,
+                                           /*bytes_transferred=*/0));
+}
+
+TEST_F(NearbyConnectionBrokerImplTest, FileTransferCanceledOnMojoDisconnect) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kPhoneHubCameraRoll);
+  SetUpFullConnection();
+
+  int64_t payload_id = 1234;
+  base::FilePath path;
+  base::CreateTemporaryFile(&path);
+  RegisterPayloadFile(payload_id, path, /*expect_success=*/true);
+  ReceiveFilePayload(payload_id, path);
+  ReceiveFileTransferUpdate(
+      PayloadTransferUpdate::New(payload_id, PayloadStatus::kInProgress,
+                                 /*total_bytes=*/1000,
+                                 /*bytes_transferred=*/100));
+  // Disconnect before the transfer is complete.
+  DisconnectMojoBindings(/*expected_to_disconnect=*/true);
+  InvokeDisconnectedFromEndpointCallback(/*success=*/true);
+  InvokeDisconnectedCallback();
+  file_payload_listener().FlushForTesting();
+
+  EXPECT_EQ(2, file_transfer_updates().size());
+  EXPECT_EQ(file_transfer_updates().at(0),
+            mojom::FileTransferUpdate::New(
+                payload_id, mojom::FileTransferStatus::kInProgress,
+                /*total_bytes=*/1000,
+                /*bytes_transferred=*/100));
+  EXPECT_EQ(file_transfer_updates().at(1),
+            mojom::FileTransferUpdate::New(payload_id,
+                                           mojom::FileTransferStatus::kCanceled,
+                                           /*total_bytes=*/0,
+                                           /*bytes_transferred=*/0));
 }
 
 TEST_F(NearbyConnectionBrokerImplTest, FailToSend) {

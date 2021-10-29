@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "base/bind.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file.h"
 #include "base/location.h"
@@ -22,6 +23,8 @@
 #include "chrome/browser/ash/secure_channel/nearby_endpoint_finder.h"
 #include "chrome/browser/ash/secure_channel/util/histogram_util.h"
 #include "chromeos/components/multidevice/logging/logging.h"
+#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash {
 namespace secure_channel {
@@ -241,6 +244,7 @@ void NearbyConnectionBrokerImpl::TransitionToDisconnectedAndInvokeCallback() {
     return;
 
   TransitionToStatus(ConnectionStatus::kDisconnected);
+  CleanUpPendingFileTransfers();
   InvokeDisconnectedCallback();
 }
 
@@ -439,10 +443,32 @@ void NearbyConnectionBrokerImpl::OnPayloadFileRegistered(
     Status status) {
   bool success = status == Status::kSuccess;
   if (success) {
-    file_payload_listeners_.emplace(payload_id, std::move(listener));
+    mojo::Remote<chromeos::secure_channel::mojom::FilePayloadListener>
+        listener_remote(std::move(listener));
+    // Safe to use Unretained because the Remote and its disconnect handler does
+    // not out live NearbyConnectionBrokerImpl.
+    listener_remote.set_disconnect_handler(base::BindOnce(
+        &NearbyConnectionBrokerImpl::OnFilePayloadListenerDisconnect,
+        base::Unretained(this), payload_id));
+    file_payload_listeners_.emplace(payload_id, std::move(listener_remote));
   }
   // TODO(https://crbug.com/1221297): log file payload registration results
   std::move(callback).Run(success);
+}
+
+void NearbyConnectionBrokerImpl::OnFilePayloadListenerDisconnect(
+    int64_t payload_id) {
+  file_payload_listeners_.erase(payload_id);
+}
+
+void NearbyConnectionBrokerImpl::CleanUpPendingFileTransfers() {
+  for (auto& id_to_listener : file_payload_listeners_) {
+    id_to_listener.second->OnFileTransferUpdate(mojom::FileTransferUpdate::New(
+        id_to_listener.first, mojom::FileTransferStatus::kCanceled,
+        /*total_bytes=*/0,
+        /*bytes_transferred=*/0));
+  }
+  file_payload_listeners_.clear();
 }
 
 void NearbyConnectionBrokerImpl::OnConnectionInitiated(

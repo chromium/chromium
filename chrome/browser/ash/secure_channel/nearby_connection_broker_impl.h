@@ -150,6 +150,8 @@ class NearbyConnectionBrokerImpl
           listener,
       RegisterPayloadFileCallback callback,
       location::nearby::connections::mojom::Status status);
+  void OnFilePayloadListenerDisconnect(int64_t payload_id);
+  void CleanUpPendingFileTransfers();
 
   // NearbyConnectionBroker:
   void OnMojoDisconnection() override;
