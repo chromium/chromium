@@ -1772,6 +1772,32 @@ TEST_P(StorageQueueTest, CreateStorageQueueInvalidOptionsPath) {
   EXPECT_EQ(queue_result.status().error_code(), error::UNAVAILABLE);
 }
 
+TEST_P(StorageQueueTest, WriteRecordWithInsufficientDiskSpace) {
+  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsImmediate());
+
+  // Update total disk space and reset after running the write operation so it
+  // does not affect other tests
+  const auto original_disk_space = GetDiskResource()->GetTotal();
+  GetDiskResource()->Test_SetTotal(0);
+  Status write_result = WriteString(kData[0]);
+  GetDiskResource()->Test_SetTotal(original_disk_space);
+  EXPECT_FALSE(write_result.ok());
+  EXPECT_EQ(write_result.error_code(), error::RESOURCE_EXHAUSTED);
+}
+
+TEST_P(StorageQueueTest, WriteRecordWithInsufficientMemory) {
+  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsImmediate());
+
+  // Update total memory and reset after running the write operation so it does
+  // not affect other tests
+  const auto original_total_memory = GetMemoryResource()->GetTotal();
+  GetMemoryResource()->Test_SetTotal(0);
+  Status write_result = WriteString(kData[0]);
+  GetMemoryResource()->Test_SetTotal(original_total_memory);
+  EXPECT_FALSE(write_result.ok());
+  EXPECT_EQ(write_result.error_code(), error::RESOURCE_EXHAUSTED);
+}
+
 INSTANTIATE_TEST_SUITE_P(
     VaryingFileSize,
     StorageQueueTest,
@@ -1779,10 +1805,6 @@ INSTANTIATE_TEST_SUITE_P(
                                      256 /* two records in file */,
                                      1 /* single record in file */),
                      testing::Values("DM TOKEN", "")));
-
-// TODO(b/202885123): Additional tests:
-// 1) Attempt to create file with duplicated file extension.
-// 2) Disk and memory limit exceeded.
 
 }  // namespace
 }  // namespace reporting
