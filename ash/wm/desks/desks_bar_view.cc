@@ -363,6 +363,7 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
       std::make_unique<ExpandedDesksBarButton>(
           this, &kDesksNewDeskButtonIcon,
           l10n_util::GetStringUTF16(IDS_ASH_DESKS_NEW_DESK_BUTTON),
+          /*initially_enabled=*/DesksController::Get()->CanCreateDesks(),
           base::BindRepeating(&DesksBarView::OnNewDeskButtonPressed,
                               base::Unretained(this),
                               DesksCreationRemovalSource::kButton)));
@@ -381,6 +382,7 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
                 this, &kDesksTemplatesIcon,
                 l10n_util::GetStringUTF16(
                     IDS_ASH_DESKS_TEMPLATES_DESKS_BAR_BUTTON),
+                /*initially_enabled=*/true,
                 base::BindRepeating(
                     &DesksBarView::OnDesksTemplatesButtonPressed,
                     base::Unretained(this))));
@@ -784,9 +786,7 @@ void DesksBarView::OnDeskRemoved(const Desk* desk) {
   if (drag_view_ == removed_mini_view)
     EndDragDesk(removed_mini_view, /*end_by_user=*/false);
 
-  expanded_state_new_desk_button_->UpdateButtonState();
-  if (desks_templates_util::AreDesksTemplatesEnabled())
-    expanded_state_desks_templates_button_->UpdateButtonState();
+  expanded_state_new_desk_button_->SetButtonState(/*enabled=*/true);
 
   for (auto* mini_view : mini_views_)
     mini_view->UpdateCloseButtonVisibility();
@@ -943,9 +943,8 @@ void DesksBarView::OnNewDeskButtonPressed(
     return;
   set_should_name_nudge(true);
   controller->NewDesk(desks_creation_removal_source);
-  expanded_state_new_desk_button_->UpdateButtonState();
-  if (desks_templates_util::AreDesksTemplatesEnabled())
-    expanded_state_desks_templates_button_->UpdateButtonState();
+  if (!controller->CanCreateDesks())
+    expanded_state_new_desk_button_->SetButtonState(/*enabled=*/false);
 }
 
 void DesksBarView::UpdateButtonsForDesksTemplatesGrid() {

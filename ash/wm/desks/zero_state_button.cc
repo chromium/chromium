@@ -146,8 +146,7 @@ void DeskButtonBase::OnViewUnhighlighted() {
 }
 
 void DeskButtonBase::UpdateBorderState() {
-  border_ptr_->SetFocused(IsViewHighlighted() &&
-                          DesksController::Get()->CanCreateDesks());
+  border_ptr_->SetFocused(IsViewHighlighted() && GetEnabled());
   SchedulePaint();
 }
 
