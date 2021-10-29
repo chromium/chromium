@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 import {canEditNode, canReorderChildren, getDescendants, removeIdsFromObject, removeIdsFromSet} from 'chrome://bookmarks/bookmarks.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+
 import {TestStore} from './test_store.js';
 import {createFolder, createItem, normalizeIterable, testTree} from './test_util.js';
 
@@ -45,13 +47,13 @@ suite('util', function() {
       '4': true,
     };
 
-    const nodes = new Set([2, 3, 4]);
+    const nodes = new Set(['2', '3', '4']);
 
     const newMap = removeIdsFromObject(obj, nodes);
 
     assertEquals(undefined, newMap['2']);
     assertEquals(undefined, newMap['4']);
-    assertTrue(newMap['1']);
+    assertTrue(newMap['1']!);
 
     // Should not have changed the input object.
     assertFalse(obj['2']);
@@ -76,9 +78,15 @@ suite('util', function() {
           createFolder(
               '4',
               [
-                createItem('41', {unmodifiable: 'managed'}),
+                createItem('41', {
+                  unmodifiable:
+                      chrome.bookmarks.BookmarkTreeNodeUnmodifiable.MANAGED
+                }),
               ],
-              {unmodifiable: 'managed'})),
+              {
+                unmodifiable:
+                    chrome.bookmarks.BookmarkTreeNodeUnmodifiable.MANAGED
+              })),
     });
 
     // Top-level folders are unmodifiable, but their children can be changed.

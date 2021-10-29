@@ -7,13 +7,15 @@
  * and/or have non-trivial logic.
  */
 
-import {ROOT_NODE_ID, selectFolder, selectItem} from 'chrome://bookmarks/bookmarks.js';
+import {ROOT_NODE_ID, selectFolder, selectItem, SelectItemsAction} from 'chrome://bookmarks/bookmarks.js';
+import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
+
 import {TestStore} from './test_store.js';
 import {createFolder, createItem, testTree} from './test_util.js';
 
 suite('selectItem', function() {
-  let store;
-  let action;
+  let store: TestStore;
+  let action: SelectItemsAction;
 
   setup(function() {
     store = new TestStore({
@@ -116,6 +118,6 @@ test('selectFolder prevents selecting invalid nodes', function() {
   assertEquals(null, action);
 
   action = selectFolder('1', nodes);
-  assertEquals('select-folder', action.name);
-  assertEquals('1', action.id);
+  assertEquals('select-folder', action!.name);
+  assertEquals('1', action!.id);
 });

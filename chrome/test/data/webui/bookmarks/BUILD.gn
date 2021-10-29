@@ -27,7 +27,7 @@ ts_library("build_ts") {
                     target_gen_dir),
   ]
   in_files = [
-    "actions_test.js",
+    "actions_test.ts",
     "app_test.js",
     "bookmarks_focus_test.js",
     "command_manager_test.js",
@@ -37,12 +37,12 @@ ts_library("build_ts") {
     "extension_api_test.js",
     "extension_api_test_edit_disabled.js",
     "folder_node_focus_test.js",
-    "folder_node_test.js",
-    "item_test.js",
+    "folder_node_test.ts",
+    "item_test.ts",
     "list_focus_test.js",
     "list_test.js",
-    "policy_test.js",
-    "reducers_test.js",
+    "policy_test.ts",
+    "reducers_test.ts",
     "router_test.js",
     "store_test.js",
     "test_browser_proxy.ts",
@@ -51,7 +51,7 @@ ts_library("build_ts") {
     "test_timer_proxy.js",
     "test_util.ts",
     "toolbar_test.ts",
-    "util_test.js",
+    "util_test.ts",
   ]
   deps = [ "//chrome/browser/resources/bookmarks:build_ts" ]
   definitions = [

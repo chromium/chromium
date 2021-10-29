@@ -238,4 +238,10 @@ export class BookmarksAppElement extends BookmarksAppElementBase {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'bookmarks-app': BookmarksAppElement;
+  }
+}
+
 customElements.define(BookmarksAppElement.is, BookmarksAppElement);

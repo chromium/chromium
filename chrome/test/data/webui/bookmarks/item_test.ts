@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {selectItem} from 'chrome://bookmarks/bookmarks.js';
+import {BookmarksItemElement, selectItem} from 'chrome://bookmarks/bookmarks.js';
+import {assertDeepEquals, assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
+
 import {TestStore} from './test_store.js';
 import {createFolder, createItem, getAllFoldersOpenState, replaceBody, testTree} from './test_util.js';
 
 suite('<bookmarks-item>', function() {
-  let item;
-  let store;
-  const TEST_ITEM = createItem('0');
+  let item: BookmarksItemElement;
+  let store: TestStore;
 
   setup(function() {
     const nodes = testTree(createFolder('1', [
@@ -55,12 +56,12 @@ suite('<bookmarks-item>', function() {
         store.lastAction);
   });
 
-  function testEventSelection(eventname) {
-    item.isSelectedItem_ = true;
+  function testEventSelection(eventname: string) {
+    item.setIsSelectedItemForTesting(true);
     item.dispatchEvent(new MouseEvent(eventname));
     assertEquals(null, store.lastAction);
 
-    item.isSelectedItem_ = false;
+    item.setIsSelectedItemForTesting(false);
     item.dispatchEvent(new MouseEvent(eventname));
     assertDeepEquals(
         selectItem('2', store.data, {

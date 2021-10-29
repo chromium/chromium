@@ -363,4 +363,10 @@ export class BookmarksListElement extends BookmarksListElementBase {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'bookmarks-list': BookmarksListElement;
+  }
+}
+
 customElements.define(BookmarksListElement.is, BookmarksListElement);

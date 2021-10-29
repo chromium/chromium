@@ -2,17 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BookmarksCommandManagerElement, BrowserProxyImpl, Command, IncognitoAvailability} from 'chrome://bookmarks/bookmarks.js';
+import {BookmarksAppElement, BookmarksCommandManagerElement, BrowserProxyImpl, Command, IncognitoAvailability} from 'chrome://bookmarks/bookmarks.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+
 import {TestBookmarksBrowserProxy} from './test_browser_proxy.js';
 import {TestStore} from './test_store.js';
 import {createFolder, createItem, getAllFoldersOpenState, replaceBody, testTree} from './test_util.js';
 
 suite('Bookmarks policies', function() {
-  let store;
-  let app;
-  /** @type {?bookmarks.BrowserProxy} */
-  let testBrowserProxy;
+  let store: TestStore;
+  let app: BookmarksAppElement;
+  let testBrowserProxy: TestBookmarksBrowserProxy;
 
   setup(function() {
     const nodes = testTree(createFolder('1', [
@@ -38,7 +39,7 @@ suite('Bookmarks policies', function() {
     const commandManager = BookmarksCommandManagerElement.getInstance();
     // Incognito is disabled during testGenPreamble(). Wait for the front-end to
     // load the config.
-    const whenIncognitoSet = await Promise.all([
+    await Promise.all([
       testBrowserProxy.whenCalled('getIncognitoAvailability'),
       store.waitForAction('set-incognito-availability')
     ]);
@@ -58,7 +59,7 @@ suite('Bookmarks policies', function() {
 
   test('canEdit updates when changed', async function() {
     const commandManager = BookmarksCommandManagerElement.getInstance();
-    const whenCanEditSet = await Promise.all([
+    await Promise.all([
       testBrowserProxy.whenCalled('getCanEditBookmarks'),
       store.waitForAction('set-can-edit')
     ]);
