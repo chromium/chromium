@@ -146,6 +146,7 @@ export const DocResultType = {
   CANCELED: 'canceled',
   SAVE_AS_PHOTO: 'save-as-photo',
   SAVE_AS_PDF: 'save-as-pdf',
+  SHARE: 'share',
 };
 
 /**
