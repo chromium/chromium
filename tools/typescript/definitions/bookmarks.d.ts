@@ -54,9 +54,9 @@ declare global {
 
       export function search(
           query: string|{
-            query?: string,
-            url?: string,
-            title?: string,
+            query: string | undefined,
+            url: string|undefined,
+            title: string|undefined
           },
           callback: (p1: BookmarkTreeNode[]) => void): void;
 
