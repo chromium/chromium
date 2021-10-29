@@ -55,3 +55,11 @@ bool OsUrlHandlerSystemWebAppDelegate::ShouldCaptureNavigations() const {
 bool OsUrlHandlerSystemWebAppDelegate::IsAppEnabled() const {
   return true;
 }
+
+bool OsUrlHandlerSystemWebAppDelegate::ShouldShowInLauncher() const {
+  return false;
+}
+
+bool OsUrlHandlerSystemWebAppDelegate::ShouldShowInSearch() const {
+  return false;
+}

@@ -78,6 +78,7 @@
 #include "chrome/browser/ash/web_applications/help_app/help_app_web_app_info.h"
 #include "chrome/browser/ash/web_applications/media_app/media_web_app_info.h"
 #include "chrome/browser/ash/web_applications/os_feedback_system_web_app_info.h"
+#include "chrome/browser/ash/web_applications/os_flags_system_web_app_info.h"
 #include "chrome/browser/ash/web_applications/os_settings_web_app_info.h"
 #include "chrome/browser/ash/web_applications/os_url_handler_system_web_app_info.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_info.h"
@@ -146,6 +147,7 @@ SystemAppDelegateMap CreateSystemWebApps(Profile* profile) {
       std::make_unique<OsUrlHandlerSystemWebAppDelegate>(profile));
   info_vec.emplace_back(
       std::make_unique<FirmwareUpdateSystemAppDelegate>(profile));
+  info_vec.emplace_back(std::make_unique<OsFlagsSystemWebAppDelegate>(profile));
 
 #if !defined(OFFICIAL_BUILD)
   info_vec.emplace_back(std::make_unique<TelemetrySystemAppDelegate>(profile));
