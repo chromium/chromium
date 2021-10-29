@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/network/network_feature_pod_button_legacy.h"
+#include "ash/system/network/network_feature_pod_button.h"
 
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -114,7 +114,7 @@ std::u16string GetSubLabelForConnectedNetwork(
 
 }  // namespace
 
-NetworkFeaturePodButtonLegacy::NetworkFeaturePodButtonLegacy(
+NetworkFeaturePodButton::NetworkFeaturePodButton(
     FeaturePodControllerBase* controller)
     : FeaturePodButton(controller) {
   Shell::Get()->system_tray_model()->network_state_model()->AddObserver(this);
@@ -122,21 +122,21 @@ NetworkFeaturePodButtonLegacy::NetworkFeaturePodButtonLegacy(
   Update();
 }
 
-NetworkFeaturePodButtonLegacy::~NetworkFeaturePodButtonLegacy() {
+NetworkFeaturePodButton::~NetworkFeaturePodButton() {
   network_icon::NetworkIconAnimation::GetInstance()->RemoveObserver(this);
   Shell::Get()->system_tray_model()->network_state_model()->RemoveObserver(
       this);
 }
 
-void NetworkFeaturePodButtonLegacy::NetworkIconChanged() {
+void NetworkFeaturePodButton::NetworkIconChanged() {
   Update();
 }
 
-void NetworkFeaturePodButtonLegacy::ActiveNetworkStateChanged() {
+void NetworkFeaturePodButton::ActiveNetworkStateChanged() {
   Update();
 }
 
-void NetworkFeaturePodButtonLegacy::OnThemeChanged() {
+void NetworkFeaturePodButton::OnThemeChanged() {
   FeaturePodButton::OnThemeChanged();
 
   // Need to redraw all network icons with new colors.
@@ -147,11 +147,11 @@ void NetworkFeaturePodButtonLegacy::OnThemeChanged() {
   NetworkIconChanged();
 }
 
-const char* NetworkFeaturePodButtonLegacy::GetClassName() const {
-  return "NetworkFeaturePodButtonLegacy";
+const char* NetworkFeaturePodButton::GetClassName() const {
+  return "NetworkFeaturePodButton";
 }
 
-void NetworkFeaturePodButtonLegacy::Update() {
+void NetworkFeaturePodButton::Update() {
   TrayNetworkStateModel* model =
       Shell::Get()->system_tray_model()->network_state_model();
   const NetworkStateProperties* network = model->default_network();
@@ -217,7 +217,7 @@ void NetworkFeaturePodButtonLegacy::Update() {
   UpdateTooltip(tooltip);
 }
 
-void NetworkFeaturePodButtonLegacy::UpdateTooltip(
+void NetworkFeaturePodButton::UpdateTooltip(
     const std::u16string& connection_state_message) {
   // When the button is enabled, use tooltips to alert the user of the actions
   // that will be taken when interacting with the button/toggle. However, if the
