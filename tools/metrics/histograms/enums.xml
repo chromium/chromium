@@ -29771,6 +29771,7 @@ Called by update_extension_histograms.py.-->
   <int value="1594" label="INPUTMETHODPRIVATE_GETTEXTFIELDBOUNDS"/>
   <int value="1595" label="PASSWORDSPRIVATE_GETURLCOLLECTION"/>
   <int value="1596" label="PASSWORDSPRIVATE_ADDPASSWORD"/>
+  <int value="1597" label="PASSWORDSPRIVATE_ISACCOUNTSTOREDEFAULT"/>
 </enum>
 
 <enum name="ExtensionIconState">
