@@ -194,12 +194,18 @@ void PasswordStoreAndroidBackend::FillMatchingLoginsAsync(
     bool include_psl,
     const std::vector<PasswordFormDigest>& forms) {
   // TODO(https://crbug.com/1229654): Implement.
+  // Run callback with an empty forms list to facilitate testing of other
+  // backend methods while this method is not implemented.
+  std::move(callback).Run({});
 }
 
 void PasswordStoreAndroidBackend::AddLoginAsync(
     const PasswordForm& form,
     PasswordStoreChangeListReply callback) {
-  // TODO(https://crbug.com/1229655):Implement.
+  JobId job_id = bridge_->AddLogin(form);
+  QueueNewJob(job_id,
+              JobReturnHandler(std::move(callback),
+                               JobReturnHandler::MetricInfix("AddLoginAsync")));
 }
 
 void PasswordStoreAndroidBackend::UpdateLoginAsync(

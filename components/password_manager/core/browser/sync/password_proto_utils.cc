@@ -133,6 +133,16 @@ sync_pb::PasswordSpecificsData SpecificsDataFromPassword(
   return password_data;
 }
 
+sync_pb::PasswordWithLocalData PasswordWithLocalDataFromPassword(
+    const PasswordForm& password_form) {
+  sync_pb::PasswordWithLocalData password_with_local_data;
+  *password_with_local_data.mutable_password_specifics_data() =
+      SpecificsDataFromPassword(password_form);
+  // TODO(crbug.com/1229655): Check if password_form.local_chrome_data() is
+  // needed by GMS Core and either pass it additionally or clean up this method.
+  return password_with_local_data;
+}
+
 PasswordForm PasswordFromSpecifics(
     const sync_pb::PasswordSpecificsData& password_data) {
   PasswordForm password;
