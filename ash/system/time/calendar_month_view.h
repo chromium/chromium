@@ -81,11 +81,11 @@ class ASH_EXPORT CalendarMonthView : public views::View {
   bool has_today() { return has_today_; }
 
  private:
-  // Adds the `current_date`'s `CalendarDateCellView` to the grid layout and
-  // returns the next column set id.
+  // Adds the `current_date`'s `CalendarDateCellView` to the table layout and
+  // returns it.
   CalendarDateCellView* AddDateCellToLayout(
       base::Time::Exploded current_date_exploded,
-      int column_set_id,
+      int column,
       bool is_in_current_month);
 
   // Owned by `CalendarView`.

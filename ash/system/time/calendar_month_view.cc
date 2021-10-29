@@ -15,7 +15,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/highlight_path_generator.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/table_layout.h"
 
 namespace ash {
 
@@ -34,19 +34,17 @@ constexpr float kEventsPresentRoundedRadius = 2.f;
 // The padding of the focus circle.
 constexpr int kFocusCirclePadding = 4;
 
-// Move to the next day. Both the column set and the current date are
-// moved to the next one.
-void MoveToNextDay(int& column_set_id,
+// Move to the next day. Both the column and the current date are moved to the
+// next one.
+void MoveToNextDay(int& column,
                    base::Time& current_date,
                    base::Time::Exploded& current_date_exploded) {
   current_date += base::Days(1);
   current_date.LocalExplode(&current_date_exploded);
-  column_set_id = (column_set_id + 1) % calendar_utils::kDateInOneWeek;
+  column = (column + 1) % calendar_utils::kDateInOneWeek;
 }
 
 }  // namespace
-
-using views::GridLayout;
 
 // TODO(https://crbug.com/1236276): Fix the ChromeVox window position on this
 // view.
@@ -188,10 +186,10 @@ CalendarMonthView::CalendarMonthView(
     const base::Time first_day_of_month,
     CalendarViewController* calendar_view_controller)
     : calendar_view_controller_(calendar_view_controller) {
-  GridLayout* layout = SetLayoutManager(std::make_unique<GridLayout>());
-  views::ColumnSet* column_set = layout->AddColumnSet(0);
+  views::TableLayout* layout =
+      SetLayoutManager(std::make_unique<views::TableLayout>());
 
-  calendar_utils::SetUpWeekColumnSets(column_set);
+  calendar_utils::SetUpWeekColumns(layout);
 
   base::Time::Exploded first_day_of_month_exploded =
       calendar_utils::GetExplodedLocal(first_day_of_month);
@@ -204,22 +202,22 @@ CalendarMonthView::CalendarMonthView(
 
   // TODO(https://crbug.com/1236276): Extract the following 3 parts (while
   // loops) into a method.
-  int column_set_id = 0;
+  int column = 0;
   // Gray-out dates in the first row, which are from the previous month.
   while (current_date_exploded.month % 12 ==
          (first_day_of_month_exploded.month - 1) % 12) {
-    AddDateCellToLayout(current_date_exploded, column_set_id,
+    AddDateCellToLayout(current_date_exploded, column,
                         /*is_in_current_month=*/false);
-    MoveToNextDay(column_set_id, current_date, current_date_exploded);
+    MoveToNextDay(column, current_date, current_date_exploded);
   }
 
   int row_number = 0;
   // Builds non-gray-out dates of the current month.
   while (current_date_exploded.month == first_day_of_month_exploded.month) {
-    auto* cell = AddDateCellToLayout(current_date_exploded, column_set_id,
+    auto* cell = AddDateCellToLayout(current_date_exploded, column,
                                      /*is_in_current_month=*/true);
     // Add the first non-grayed-out cell of the row to the `focused_cells_`.
-    if (column_set_id == 0 || current_date_exploded.day_of_month == 1) {
+    if (column == 0 || current_date_exploded.day_of_month == 1) {
       focused_cells_.push_back(cell);
       // Count a row when a new row starts.
       ++row_number;
@@ -233,7 +231,7 @@ CalendarMonthView::CalendarMonthView(
       focused_cells_.back() = cell;
       has_today_ = true;
     }
-    MoveToNextDay(column_set_id, current_date, current_date_exploded);
+    MoveToNextDay(column, current_date, current_date_exploded);
   }
 
   // TODO(https://crbug.com/1236276): Handle some cases when the first day is
@@ -251,10 +249,10 @@ CalendarMonthView::CalendarMonthView(
   // Gray-out dates in the last row, which are from the next month.
   while (current_date_exploded.day_of_month <=
          end_of_row_exploded.day_of_month) {
-    // Next column set id is generated.
-    AddDateCellToLayout(current_date_exploded, column_set_id,
+    // Next column is generated.
+    AddDateCellToLayout(current_date_exploded, column,
                         /*is_in_current_month=*/false);
-    MoveToNextDay(column_set_id, current_date, current_date_exploded);
+    MoveToNextDay(column, current_date, current_date_exploded);
   }
 }
 
@@ -262,12 +260,12 @@ CalendarMonthView::~CalendarMonthView() = default;
 
 CalendarDateCellView* CalendarMonthView::AddDateCellToLayout(
     base::Time::Exploded current_date_exploded,
-    int column_set_id,
+    int column,
     bool is_in_current_month) {
-  GridLayout* layout_manager = static_cast<GridLayout*>(GetLayoutManager());
-  if (column_set_id == 0)
-    layout_manager->StartRow(0, 0);
-  return layout_manager->AddView(std::make_unique<CalendarDateCellView>(
+  auto* layout_manager = static_cast<views::TableLayout*>(GetLayoutManager());
+  if (column == 0)
+    layout_manager->AddRows(1, views::TableLayout::kFixedSize);
+  return AddChildView(std::make_unique<CalendarDateCellView>(
       calendar_view_controller_, current_date_exploded,
       /*is_grayed_out_date=*/!is_in_current_month));
 }

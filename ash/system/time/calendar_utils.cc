@@ -10,7 +10,7 @@
 #include "third_party/icu/source/i18n/unicode/datefmt.h"
 #include "third_party/icu/source/i18n/unicode/dtptngen.h"
 #include "third_party/icu/source/i18n/unicode/smpdtfmt.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/table_layout.h"
 
 namespace ash {
 
@@ -57,11 +57,13 @@ std::u16string GetMonthName(const base::Time date) {
   return base::i18n::UnicodeStringToString16(unicode_string);
 }
 
-void SetUpWeekColumnSets(views::ColumnSet* column_set) {
+void SetUpWeekColumns(views::TableLayout* layout) {
   for (int i = 0; i < calendar_utils::kDateInOneWeek; ++i) {
-    column_set->AddColumn(views::GridLayout::FILL, views::GridLayout::FILL, 1,
-                          views::GridLayout::ColumnSize::kFixed, 0, 0);
-    column_set->AddPaddingColumn(0, kColumnSetPadding);
+    layout
+        ->AddColumn(views::LayoutAlignment::kStretch,
+                    views::LayoutAlignment::kStretch, 1.0f,
+                    views::TableLayout::ColumnSize::kFixed, 0, 0)
+        .AddPaddingColumn(views::TableLayout::kFixedSize, kColumnSetPadding);
   }
 }
 

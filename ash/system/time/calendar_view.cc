@@ -22,7 +22,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/table_layout.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -91,11 +91,10 @@ class CalendarLabel : public views::Label {
 class MonthHeaderView : public views::View {
  public:
   MonthHeaderView() {
-    views::GridLayout* layout =
-        SetLayoutManager(std::make_unique<views::GridLayout>());
-    views::ColumnSet* column_set = layout->AddColumnSet(0);
-    calendar_utils::SetUpWeekColumnSets(column_set);
-    layout->StartRow(0, 0);
+    views::TableLayout* layout =
+        SetLayoutManager(std::make_unique<views::TableLayout>());
+    calendar_utils::SetUpWeekColumns(layout);
+    layout->AddRows(1, views::TableLayout::kFixedSize);
 
     for (int week_day : kDefaultWeekTitles) {
       auto label =
@@ -107,7 +106,7 @@ class MonthHeaderView : public views::View {
       label->SetSubpixelRenderingEnabled(false);
       label->SetTextContext(CONTEXT_CALENDAR_DATE);
 
-      layout->AddView(std::move(label));
+      AddChildView(std::move(label));
     }
   }
 

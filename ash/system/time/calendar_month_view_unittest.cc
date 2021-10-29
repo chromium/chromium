@@ -11,7 +11,6 @@
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "ui/views/controls/button/label_button.h"
-#include "ui/views/layout/grid_layout.h"
 
 namespace ash {
 
@@ -79,12 +78,6 @@ TEST_F(CalendarMonthViewTest, Basics) {
                 ->GetText());
   EXPECT_EQ(u"4", static_cast<views::LabelButton*>(month_view()->children()[34])
                       ->GetText());
-
-  views::GridLayout* layout =
-      static_cast<views::GridLayout*>(month_view()->GetLayoutManager());
-  views::ColumnSet* column_set0 = layout->GetColumnSet(0);
-  // 7 date columns and 7 padding columns.
-  EXPECT_EQ(14, column_set0->num_columns());
 
   // Create a monthview based on Jun,1st 2021, which has the previous month's
   // dates in the first row.
