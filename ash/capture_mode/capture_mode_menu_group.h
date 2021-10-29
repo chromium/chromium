@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "ash/capture_mode/capture_mode_session_focus_cycler.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 
@@ -80,12 +79,6 @@ class ASH_EXPORT CaptureModeMenuGroup : public views::View {
   // Returns true if the option with the given |option_id| is checked, if such
   // option exists.
   bool IsOptionChecked(int option_id) const;
-
-  // Appends the enabled items from `options_` and `menu_items_` to the given
-  // `highlightable_items`.
-  void AppendHighlightableItems(
-      std::vector<CaptureModeSessionFocusCycler::HighlightableView*>&
-          highlightable_items);
 
   // For tests only.
   views::View* GetOptionForTesting(int option_id);

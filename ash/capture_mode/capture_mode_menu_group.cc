@@ -125,9 +125,7 @@ END_METADATA
 
 // A button which has a text label. Its behavior on click can be customized.
 // For selecting folder, a folder window will be opened on click.
-class CaptureModeMenuItem
-    : public views::Button,
-      public CaptureModeSessionFocusCycler::HighlightableView {
+class CaptureModeMenuItem : public views::Button {
  public:
   METADATA_HEADER(CaptureModeMenuItem);
 
@@ -148,9 +146,6 @@ class CaptureModeMenuItem
   CaptureModeMenuItem& operator=(const CaptureModeMenuItem&) = delete;
   ~CaptureModeMenuItem() override = default;
 
-  // CaptureModeSessionFocusCycler::HighlightableView:
-  views::View* GetView() override { return this; }
-
  private:
   views::Label* label_view_;
 };
@@ -165,9 +160,7 @@ END_METADATA
 // and a checked icon. The checked icon will be shown on button click and any
 // other option's checked icon will be set to invisible in the meanwhile. One
 // and only one checked icon is visible in the menu group.
-class CaptureModeOption
-    : public views::Button,
-      public CaptureModeSessionFocusCycler::HighlightableView {
+class CaptureModeOption : public views::Button {
  public:
   METADATA_HEADER(CaptureModeOption);
 
@@ -230,9 +223,6 @@ class CaptureModeOption
                                      ? provider->GetDisabledColor(enabled_color)
                                      : enabled_color);
   }
-
-  // CaptureModeSessionFocusCycler::HighlightableView:
-  views::View* GetView() override { return this; }
 
  private:
   views::Label* label_view_;
@@ -311,17 +301,6 @@ void CaptureModeMenuGroup::AddMenuItem(views::Button::PressedCallback callback,
 bool CaptureModeMenuGroup::IsOptionChecked(int option_id) const {
   auto* option = GetOptionById(option_id);
   return option && option->IsOptionChecked();
-}
-
-void CaptureModeMenuGroup::AppendHighlightableItems(
-    std::vector<CaptureModeSessionFocusCycler::HighlightableView*>&
-        highlightable_items) {
-  for (auto* option : options_) {
-    if (option->GetEnabled())
-      highlightable_items.push_back(option);
-  }
-  for (auto* menu_item : menu_items_)
-    highlightable_items.push_back(menu_item);
 }
 
 views::View* CaptureModeMenuGroup::GetOptionForTesting(int option_id) {
