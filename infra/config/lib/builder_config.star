@@ -324,7 +324,7 @@ def _try_settings(
         rts_config = rts_config,
     )
 
-ctbc = struct(
+builder_config = struct(
     # Function and associated constants for defining builder spec
     builder_spec = _builder_spec,
     execution_mode = _execution_mode,
@@ -350,65 +350,66 @@ ctbc = struct(
 # Internal details =============================================================
 
 # The kind of the nodes containing the builder config details for a builder
-_CTBC_KIND = "ctbc"
+_BUILDER_CONFIG_KIND = "builder_config"
 
-def _ctbc_key(bucket, builder):
-    return graph.key("@chromium", "", kinds.BUCKET, bucket, _CTBC_KIND, builder)
+def _builder_config_key(bucket, builder):
+    return graph.key("@chromium", "", kinds.BUCKET, bucket, _BUILDER_CONFIG_KIND, builder)
 
 # The kind of the nodes tracking references to other builders in the builder
 # config details
 #
-# There will be multiple ctbc_ref nodes pointing at a single ctbc node to allow
-# builders to be referred to either as <bucket>/<builder> or just <builder> if
-# it is unambiguous. They will only be used via a parent, with the type of the
-# parent corresponding to the purpose of the reference.
-_CTBC_REF_KIND = "ctbc_ref"
+# There will be multiple builder_config_ref nodes pointing at a single
+# builder_config node to allow builders to be referred to either as
+# <bucket>/<builder> or just <builder> if it is unambiguous. They will only be
+# used via a parent, with the type of the parent corresponding to the purpose of
+# the reference.
+_BUILDER_CONFIG_REF_KIND = "builder_config_ref"
 
-def _ctbc_ref_key(ref):
+def _builder_config_ref_key(ref):
     chunks = ref.split(":", 1)
     if len(chunks) != 1:
         fail("reference to builder in external project '{}' is not allowed here"
             .format(chunks[0]))
     chunks = ref.split("/", 1)
     if len(chunks) == 1:
-        return graph.key("@chromium", "", _CTBC_REF_KIND, ref)
-    return graph.key("@chromium", "", kinds.BUCKET, chunks[0], _CTBC_REF_KIND, chunks[1])
+        return graph.key("@chromium", "", _BUILDER_CONFIG_REF_KIND, ref)
+    return graph.key("@chromium", "", kinds.BUCKET, chunks[0], _BUILDER_CONFIG_REF_KIND, chunks[1])
 
 # The kind of the nodes representing a link to a parent builder
 #
-# Will have a single ctbc_ref node as a child and a single ctbc node as a
-# parent.
-_CTBC_PARENT_KIND = "ctbc_parent"
+# Will have a single builder_config_ref node as a child and a single
+# builder_config node as a parent.
+_BUILDER_CONFIG_PARENT_KIND = "builder_config_parent"
 
-def _ctbc_parent_key(ref):
-    return graph.key("@chromium", "", _CTBC_PARENT_KIND, ref)
+def _builder_config_parent_key(ref):
+    return graph.key("@chromium", "", _BUILDER_CONFIG_PARENT_KIND, ref)
 
 # The kind of the nodes representing a link to a mirror
 #
-# Will have a single ctbc_ref node as a child and a single ctbc node as a
-# parent.
-_CTBC_MIRROR_KIND = "ctbc_mirror"
+# Will have a single builder_config_ref node as a child and a single
+# builder_config node as a parent.
+_BUILDER_CONFIG_MIRROR_KIND = "builder_config_mirror"
 
-def _ctbc_mirror_key(ref):
-    return graph.key("@chromium", "", _CTBC_MIRROR_KIND, ref)
+def _builder_config_mirror_key(ref):
+    return graph.key("@chromium", "", _BUILDER_CONFIG_MIRROR_KIND, ref)
 
-def _follow_ctbc_ref(ref_node, context_node):
-    """Given a CTBC ref node, returns a CTBC node that the ref points to.
+def _follow_builder_config_ref(ref_node, context_node):
+    """Get the pointed-at builder config node for a builder config ref.
 
     Fails if the reference is ambiguous (i.e. 'ref_node' has more than one
     child). Such references can't be used to refer to a single builder.
 
     Args:
-        ref_node: CTBC ref node.
+        ref_node: builder config ref node.
         context_node: Node where this ref is used, for error messages.
 
     Returns:
-        CTBC graph node.
+        builder config graph node.
     """
-    if ref_node.key.kind != _CTBC_REF_KIND:
-        fail("{} is not ctbc ref".format(ref_node))
+    if ref_node.key.kind != _BUILDER_CONFIG_REF_KIND:
+        fail("{} is not builder_config ref".format(ref_node))
 
-    variants = graph.children(ref_node.key, _CTBC_KIND)
+    variants = graph.children(ref_node.key, _BUILDER_CONFIG_KIND)
     if not variants:
         fail("{} is unexpectedly unconnected".format(ref_node))
 
@@ -461,8 +462,8 @@ def register_builder_config(bucket, name, builder_group, builder_spec, mirrors):
     if builder_spec and mirrors:
         fail("only one of builder_spec or mirrors can be set")
 
-    ctbc_key = _ctbc_key(bucket, name)
-    graph.add_node(ctbc_key, props = dict(
+    builder_config_key = _builder_config_key(bucket, name)
+    graph.add_node(builder_config_key, props = dict(
         bucket = bucket,
         name = name,
         builder_group = builder_group,
@@ -470,31 +471,31 @@ def register_builder_config(bucket, name, builder_group, builder_spec, mirrors):
         mirrors = mirrors,
     ))
     for ref in (name, "{}/{}".format(bucket, name)):
-        ref_key = _ctbc_ref_key(ref)
+        ref_key = _builder_config_ref_key(ref)
         graph.add_node(ref_key, idempotent = True)
-        graph.add_edge(ref_key, ctbc_key)
+        graph.add_edge(ref_key, builder_config_key)
 
     parent = getattr(builder_spec, "parent", None)
     if parent:
-        parent_key = _ctbc_parent_key(parent)
+        parent_key = _builder_config_parent_key(parent)
         graph.add_node(parent_key, idempotent = True)
-        graph.add_edge(ctbc_key, parent_key)
-        graph.add_edge(parent_key, _ctbc_ref_key(parent))
+        graph.add_edge(builder_config_key, parent_key)
+        graph.add_edge(parent_key, _builder_config_ref_key(parent))
 
     for m in mirrors or []:
-        mirror_key = _ctbc_mirror_key(m)
+        mirror_key = _builder_config_mirror_key(m)
         graph.add_node(mirror_key, idempotent = True)
-        graph.add_edge(ctbc_key, mirror_key)
-        graph.add_edge(mirror_key, _ctbc_ref_key(m))
+        graph.add_edge(builder_config_key, mirror_key)
+        graph.add_edge(mirror_key, _builder_config_ref_key(m))
 
 def _builder_name(node):
     return "{}/{}".format(node.props.bucket, node.props.name)
 
 def _get_parent_node(node):
     nodes = []
-    for p in graph.children(node.key, _CTBC_PARENT_KIND):
-        for r in graph.children(p.key, _CTBC_REF_KIND):
-            nodes.append(_follow_ctbc_ref(r, node))
+    for p in graph.children(node.key, _BUILDER_CONFIG_PARENT_KIND):
+        for r in graph.children(p.key, _BUILDER_CONFIG_REF_KIND):
+            nodes.append(_follow_builder_config_ref(r, node))
 
     execution_mode = node.props.builder_spec["execution_mode"]
 
@@ -515,9 +516,9 @@ def _get_parent_node(node):
 
 def _get_child_nodes(node):
     nodes = []
-    for r in graph.parents(node.key, _CTBC_REF_KIND):
-        for p in graph.parents(r.key, _CTBC_PARENT_KIND):
-            nodes.extend(graph.parents(p.key, _CTBC_KIND))
+    for r in graph.parents(node.key, _BUILDER_CONFIG_REF_KIND):
+        for p in graph.parents(r.key, _BUILDER_CONFIG_PARENT_KIND):
+            nodes.extend(graph.parents(p.key, _BUILDER_CONFIG_KIND))
 
     execution_mode = node.props.builder_spec["execution_mode"]
 
@@ -529,9 +530,9 @@ def _get_child_nodes(node):
 
 def _get_mirrored_builders(node):
     nodes = []
-    for m in graph.children(node.key, _CTBC_MIRROR_KIND):
-        for r in graph.children(m.key, _CTBC_REF_KIND):
-            mirror = _follow_ctbc_ref(r, node)
+    for m in graph.children(node.key, _BUILDER_CONFIG_MIRROR_KIND):
+        for r in graph.children(m.key, _BUILDER_CONFIG_REF_KIND):
+            mirror = _follow_builder_config_ref(r, node)
             if not mirror.props.builder_spec:
                 fail("builder {} mirrors builder {} which does not have a builder spec"
                     .format(_builder_name(node), _builder_name(mirror)))
@@ -541,9 +542,9 @@ def _get_mirrored_builders(node):
 
 def _get_mirroring_builders(node):
     nodes = []
-    for r in graph.parents(node.key, _CTBC_REF_KIND):
-        for m in graph.parents(r.key, _CTBC_MIRROR_KIND):
-            nodes.extend(graph.parents(m.key, _CTBC_KIND))
+    for r in graph.parents(node.key, _BUILDER_CONFIG_REF_KIND):
+        for m in graph.parents(r.key, _BUILDER_CONFIG_MIRROR_KIND):
+            nodes.extend(graph.parents(m.key, _BUILDER_CONFIG_KIND))
 
     return nodes
 
@@ -581,7 +582,7 @@ def _entry(node, parent = None):
 def _builder_id_sort_key(builder_id):
     return (builder_id["bucket"], builder_id["builder"])
 
-def _set_ctbc_property(ctx):
+def _set_builder_config_property(ctx):
     cfg = None
     for f in ctx.output:
         if f.startswith("luci/cr-buildbucket"):
@@ -594,7 +595,7 @@ def _set_ctbc_property(ctx):
         bucket_name = bucket.name
         for builder in bucket.swarming.builders:
             builder_name = builder.name
-            key = _ctbc_key(bucket_name, builder_name)
+            key = _builder_config_key(bucket_name, builder_name)
             node = graph.node(key)
             if not node:
                 continue
@@ -668,4 +669,4 @@ def _set_ctbc_property(ctx):
             )
             builder.properties = json.encode(builder_properties)
 
-lucicfg.generator(_set_ctbc_property)
+lucicfg.generator(_set_builder_config_property)

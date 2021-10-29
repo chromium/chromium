@@ -29,7 +29,7 @@ load("@stdlib//internal/graph.star", "graph")
 load("//project.star", "settings")
 load("./args.star", "args")
 load("./branches.star", "branches")
-load("./chromium_tests_builder_config.star", "ctbc", "register_builder_config")
+load("./builder_config.star", "builder_config", "register_builder_config")
 load("./listify.star", "listify")
 
 ################################################################################
@@ -740,7 +740,7 @@ def builder(
             by_timestamp = resultdb_index_by_timestamp,
         )
 
-    if builder_spec and builder_spec.execution_mode == ctbc.execution_mode.TEST:
+    if builder_spec and builder_spec.execution_mode == builder_config.execution_mode.TEST:
         if triggered_by != args.DEFAULT:
             fail("triggered testers cannot specify triggered_by")
         triggered_by = [builder_spec.parent]
