@@ -647,12 +647,7 @@ void RTCVideoDecoderAdapter::DecrementCurrentDecoderCountForTesting() {
 
 // static
 bool RTCVideoDecoderAdapter::Vp9HwSupportForSpatialLayers() {
-  // Most hardware VP9 decoders don't handle more than one spatial layer.
-#if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
-  return base::FeatureList::IsEnabled(media::kVaapiVp9kSVCHWDecoding);
-#else
-  return false;
-#endif
+  return base::FeatureList::IsEnabled(media::kVp9kSVCHWDecoding);
 }
 
 }  // namespace blink
