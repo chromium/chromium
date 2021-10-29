@@ -39,6 +39,8 @@ const OutputRoleInfo = {
   checkBox: {msgId: 'role_checkbox'},
   columnHeader: {msgId: 'role_columnheader', inherits: 'cell'},
   comboBoxMenuButton: {msgId: 'role_combobox', earconId: 'LISTBOX'},
+  comboBoxGrouping:
+      {msgId: 'role_combobox', inherits: 'abstractFormFieldContainer'},
   complementary: {msgId: 'role_complementary', inherits: 'abstractContainer'},
   comment: {
     msgId: 'role_comment',
