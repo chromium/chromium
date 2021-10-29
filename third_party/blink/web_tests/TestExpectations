@@ -6260,6 +6260,11 @@ crbug.com/1196620 [ Mac ] external/wpt/css/compositing/mix-blend-mode/mix-blend-
 
 # WebTransport tests should eventually run when the WebTransport WPT server is added.
 crbug.com/1201569 external/wpt/webtransport/* [ Skip ]
+# WebTransport server infra tests pass on python3 but fail on python2.
+crbug.com/1201569 external/wpt/infrastructure/server/webtransport-h3.https.sub.any.html [ Pass Failure ]
+crbug.com/1201569 external/wpt/infrastructure/server/webtransport-h3.https.sub.any.serviceworker.html [ Pass Failure ]
+crbug.com/1201569 external/wpt/infrastructure/server/webtransport-h3.https.sub.any.sharedworker.html [ Pass Failure ]
+crbug.com/1201569 external/wpt/infrastructure/server/webtransport-h3.https.sub.any.worker.html [ Pass Failure ]
 
 crbug.com/1194958 fast/events/mouse-event-buttons-attribute.html [ Failure Pass ]
 
