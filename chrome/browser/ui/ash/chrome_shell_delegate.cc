@@ -436,15 +436,17 @@ desks_storage::DeskModel* ChromeShellDelegate::GetDeskModel() {
 
 void ChromeShellDelegate::GetFaviconForUrl(
     const std::string& page_url,
-    favicon_base::FaviconImageCallback callback,
+    int desired_icon_size,
+    favicon_base::FaviconRawBitmapCallback callback,
     base::CancelableTaskTracker* tracker) const {
   favicon::FaviconService* favicon_service =
       FaviconServiceFactory::GetForProfile(
           ProfileManager::GetActiveUserProfile(),
           ServiceAccessType::EXPLICIT_ACCESS);
 
-  favicon_service->GetFaviconImageForPageURL(GURL(page_url),
-                                             std::move(callback), tracker);
+  favicon_service->GetRawFaviconForPageURL(
+      GURL(page_url), {favicon_base::IconType::kFavicon}, desired_icon_size,
+      /*fallback_to_host=*/false, std::move(callback), tracker);
 }
 
 void ChromeShellDelegate::GetIconForAppId(

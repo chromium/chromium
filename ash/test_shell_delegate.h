@@ -70,7 +70,8 @@ class TestShellDelegate : public ShellDelegate {
   std::unique_ptr<app_restore::AppLaunchInfo> GetAppLaunchDataForDeskTemplate(
       aura::Window* window) const override;
   void GetFaviconForUrl(const std::string& page_url,
-                        favicon_base::FaviconImageCallback callback,
+                        int desired_icon_size,
+                        favicon_base::FaviconRawBitmapCallback callback,
                         base::CancelableTaskTracker* tracker) const override;
   void GetIconForAppId(
       const std::string& app_id,

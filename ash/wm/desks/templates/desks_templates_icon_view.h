@@ -12,13 +12,20 @@
 #include "components/favicon_base/favicon_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/views/controls/image_view.h"
+#include "ui/views/view.h"
+
+namespace views {
+class Label;
+}  // namespace views
 
 namespace ash {
 
+class RoundedImageView;
+
 // A class for loading and displaying the icon of apps/urls used in a
-// DesksTemplatesItemView.
-class DesksTemplatesIconView : public views::ImageView {
+// DesksTemplatesItemView. Depending on the `count_` and `icon_identifier_`,
+// this View may have only an icon, only a count label, or both.
+class DesksTemplatesIconView : public views::View {
  public:
   METADATA_HEADER(DesksTemplatesIconView);
 
@@ -30,28 +37,48 @@ class DesksTemplatesIconView : public views::ImageView {
   // The size of an icon.
   static constexpr int kIconSize = 28;
 
-  void SetIconIdentifier(const std::string& icon_identifier) {
-    icon_identifier_ = icon_identifier;
-  }
-  void SetIsUrl(bool is_url) { is_url_ = is_url; }
+  const std::string& icon_identifier() const { return icon_identifier_; }
 
-  // Fetches the icon for the provided `icon_identifier_`.
-  void LoadIcon();
+  int count() const { return count_; }
+
+  // Sets `icon_identifier_` to `icon_identifier` and `count_` to `count` then
+  // based on their values determines what views need to be created and starts
+  // loading the icon specified by `icon_identifier`.
+  void SetIconAndCount(const std::string& icon_identifier, int count);
+
+  // Sets `count_` to `count` and updates the `count_label_`.
+  void UpdateCount(int count);
+
+  // views::View:
+  gfx::Size CalculatePreferredSize() const override;
+  void Layout() override;
 
  private:
+  friend class DesksTemplatesIconViewTestApi;
+
   // Callbacks for when the app icon/favicon has been fetched. If the result is
   // non-null/empty then we'll set this's image to the result. Otherwise, we'll
   // use a placeholder icon.
-  void OnFaviconLoaded(const favicon_base::FaviconImageResult& image_result);
+  void OnFaviconLoaded(
+      const favicon_base::FaviconRawBitmapResult& image_result);
   void OnAppIconLoaded(apps::mojom::IconValuePtr icon_value);
+
+  // Loads the default favicon to `icon_view_`. Should be called when we fail to
+  // load an icon.
+  void LoadDefaultIcon();
 
   // The identifier for an icon. For a favicon, this will be a url. For an app,
   // this will be an app id.
   std::string icon_identifier_;
 
-  // If true, `icon_identifier_` is a url. Otherwise, `icon_identifier_` is an
-  // app id.
-  bool is_url_ = false;
+  // The number of instances of this icon's respective app/url stored in this's
+  // respective DeskTemplate.
+  int count_;
+
+  // Owned by the views hierarchy.
+  // TODO(chinsenj): Add styling for these views.
+  views::Label* count_label_ = nullptr;
+  RoundedImageView* icon_view_ = nullptr;
 
   // Used for favicon loading tasks.
   base::CancelableTaskTracker cancelable_task_tracker_;
@@ -59,9 +86,7 @@ class DesksTemplatesIconView : public views::ImageView {
   base::WeakPtrFactory<DesksTemplatesIconView> weak_ptr_factory_{this};
 };
 
-BEGIN_VIEW_BUILDER(/* no export */, DesksTemplatesIconView, views::ImageView)
-VIEW_BUILDER_PROPERTY(std::string, IconIdentifier)
-VIEW_BUILDER_PROPERTY(bool, IsUrl)
+BEGIN_VIEW_BUILDER(/* no export */, DesksTemplatesIconView, views::View)
 END_VIEW_BUILDER
 
 }  // namespace ash

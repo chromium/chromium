@@ -101,7 +101,8 @@ TestShellDelegate::GetAppLaunchDataForDeskTemplate(aura::Window* window) const {
 
 void TestShellDelegate::GetFaviconForUrl(
     const std::string& page_url,
-    favicon_base::FaviconImageCallback callback,
+    int desired_icon_size,
+    favicon_base::FaviconRawBitmapCallback callback,
     base::CancelableTaskTracker* tracker) const {}
 
 void TestShellDelegate::GetIconForAppId(
