@@ -1644,6 +1644,14 @@
           'shards': 2,
         },},
       'color_unittests': {},
+      'components_unittests': {
+        'swarming': {
+          'shards': 2,
+        },
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.components_unittests.filter',
+        ],
+      },
       'compositor_unittests': {},
       'content_unittests': {
         'args': [
@@ -1743,11 +1751,6 @@
 
     'fuchsia_experimental_gtests': {
       'components_browsertests': {},
-      'components_unittests': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.components_unittests.filter',
-        ],
-      },
       'content_browsertests': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.content_browsertests.filter',
