@@ -114,10 +114,19 @@ export class ClientRenderer {
     if (this.clipboardTextarea) {
       this.clipboardTextarea.onblur = this.hideClipboard_.bind(this);
     }
-    var clipboardButtons = document.getElementsByClassName('copy-button');
-    if (clipboardButtons) {
-      for (var i = 0; i < clipboardButtons.length; i++) {
-        clipboardButtons[i].onclick = this.copyToClipboard_.bind(this);
+
+    var copyPropertiesButtons =
+        document.getElementsByClassName('copy-properties-button');
+    if (copyPropertiesButtons) {
+      for (var i = 0; i < copyPropertiesButtons.length; i++) {
+        copyPropertiesButtons[i].onclick = this.copyProperties_.bind(this);
+      }
+    }
+
+    var copyLogButtons = document.getElementsByClassName('copy-log-button');
+    if (copyLogButtons) {
+      for (var i = 0; i < copyLogButtons.length; i++) {
+        copyLogButtons[i].onclick = this.copyLog_.bind(this);
       }
     }
 
@@ -532,6 +541,19 @@ export class ClientRenderer {
     downloadLog(JSON.stringify(strippedPlayers, null, 2));
   }
 
+  copyLog_() {
+    if (!this.selectedPlayer) {
+      return;
+    }
+
+    // Copy both properties and events for convenience since both are useful
+    // in bug reports.
+    var p = this.selectedPlayer;
+    var playerLog = {properties: p.properties, events: p.allEvents};
+
+    this.showClipboard(JSON.stringify(playerLog, null, 2));
+  }
+
   showClipboard(string) {
     this.clipboardTextarea.value = string;
     this.clipboardDialog.showModal();
@@ -545,7 +567,7 @@ export class ClientRenderer {
     }
   }
 
-  copyToClipboard_() {
+  copyProperties_() {
     if (!this.selectedPlayer && !this.selectedAudioCompontentData) {
       return;
     }
