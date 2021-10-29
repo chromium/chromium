@@ -68,6 +68,7 @@ TEST_F(NetworkSessionConfiguratorTest, Defaults) {
 
   EXPECT_TRUE(params_.enable_http2);
   EXPECT_TRUE(params_.http2_settings.empty());
+  EXPECT_FALSE(params_.enable_http2_settings_grease);
   EXPECT_FALSE(params_.greased_http2_frame);
   EXPECT_FALSE(params_.http2_end_stream_with_data_frame);
   EXPECT_TRUE(params_.enable_websocket_over_http2);
@@ -825,14 +826,7 @@ TEST_F(NetworkSessionConfiguratorTest, Http2GreaseSettingsFromCommandLine) {
 
   ParseCommandLineAndFieldTrials(command_line);
 
-  bool greased_setting_found = false;
-  for (const auto& setting : params_.http2_settings) {
-    if ((setting.first & 0x0f0f) == 0x0a0a) {
-      greased_setting_found = true;
-      break;
-    }
-  }
-  EXPECT_TRUE(greased_setting_found);
+  EXPECT_TRUE(params_.enable_http2_settings_grease);
 }
 
 TEST_F(NetworkSessionConfiguratorTest, Http2GreaseSettingsFromFieldTrial) {
@@ -843,14 +837,7 @@ TEST_F(NetworkSessionConfiguratorTest, Http2GreaseSettingsFromFieldTrial) {
 
   ParseFieldTrials();
 
-  bool greased_setting_found = false;
-  for (const auto& setting : params_.http2_settings) {
-    if ((setting.first & 0x0f0f) == 0x0a0a) {
-      greased_setting_found = true;
-      break;
-    }
-  }
-  EXPECT_TRUE(greased_setting_found);
+  EXPECT_TRUE(params_.enable_http2_settings_grease);
 }
 
 TEST_F(NetworkSessionConfiguratorTest, Http2GreaseFrameTypeFromCommandLine) {

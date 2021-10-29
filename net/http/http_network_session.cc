@@ -96,6 +96,7 @@ HttpNetworkSessionParams::HttpNetworkSessionParams()
 #else
       spdy_go_away_on_ip_change(false),
 #endif  // defined(OS_ANDROID) || defined(OS_WIN) || defined(OS_IOS)
+      enable_http2_settings_grease(false),
       http2_end_stream_with_data_frame(false),
       time_func(&base::TimeTicks::Now),
       enable_http2_alternative_service(false),
@@ -192,6 +193,7 @@ HttpNetworkSession::HttpNetworkSession(const HttpNetworkSessionParams& params,
                          params.spdy_session_max_recv_window_size,
                          params.spdy_session_max_queued_capped_frames,
                          AddDefaultHttp2Settings(params.http2_settings),
+                         params.enable_http2_settings_grease,
                          params.greased_http2_frame,
                          params.http2_end_stream_with_data_frame,
                          params.enable_priority_update,

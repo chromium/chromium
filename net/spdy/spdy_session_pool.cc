@@ -85,6 +85,7 @@ SpdySessionPool::SpdySessionPool(
     size_t session_max_recv_window_size,
     int session_max_queued_capped_frames,
     const spdy::SettingsMap& initial_settings,
+    bool enable_http2_settings_grease,
     const absl::optional<GreasedHttp2Frame>& greased_http2_frame,
     bool http2_end_stream_with_data_frame,
     bool enable_priority_update,
@@ -104,6 +105,7 @@ SpdySessionPool::SpdySessionPool(
       session_max_recv_window_size_(session_max_recv_window_size),
       session_max_queued_capped_frames_(session_max_queued_capped_frames),
       initial_settings_(initial_settings),
+      enable_http2_settings_grease_(enable_http2_settings_grease),
       greased_http2_frame_(greased_http2_frame),
       http2_end_stream_with_data_frame_(http2_end_stream_with_data_frame),
       enable_priority_update_(enable_priority_update),
@@ -661,9 +663,9 @@ std::unique_ptr<SpdySession> SpdySessionPool::CreateSession(
       enable_ping_based_connection_checking_, is_http2_enabled_,
       is_quic_enabled_, session_max_recv_window_size_,
       session_max_queued_capped_frames_, initial_settings_,
-      greased_http2_frame_, http2_end_stream_with_data_frame_,
-      enable_priority_update_, time_func_, push_delegate_,
-      network_quality_estimator_, net_log);
+      enable_http2_settings_grease_, greased_http2_frame_,
+      http2_end_stream_with_data_frame_, enable_priority_update_, time_func_,
+      push_delegate_, network_quality_estimator_, net_log);
 }
 
 base::WeakPtr<SpdySession> SpdySessionPool::InsertSession(

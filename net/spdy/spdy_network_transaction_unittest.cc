@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -10438,6 +10439,71 @@ TEST_F(SpdyNetworkTransactionTest, ZeroRTTConfirmErrorAsync) {
   helper.RunDefaultTest();
   TransactionHelperResult out = helper.output();
   EXPECT_THAT(out.rv, IsError(ERR_SSL_PROTOCOL_ERROR));
+}
+
+TEST_F(SpdyNetworkTransactionTest, GreaseSettings) {
+  RecordingNetLogObserver net_log_observer;
+
+  auto session_deps = std::make_unique<SpdySessionDependencies>();
+  session_deps->enable_http2_settings_grease = true;
+  NormalSpdyTransactionHelper helper(
+      request_, DEFAULT_PRIORITY,
+      NetLogWithSource::Make(NetLogSourceType::NONE), std::move(session_deps));
+
+  SpdySessionPool* spdy_session_pool = helper.session()->spdy_session_pool();
+  SpdySessionPoolPeer pool_peer(spdy_session_pool);
+  pool_peer.SetEnableSendingInitialData(true);
+
+  // Greased setting parameter is random.  Hang writes instead of trying to
+  // construct matching mock data.  Extra write and read is needed because mock
+  // data cannot end on ERR_IO_PENDING.  Writes or reads will not actually be
+  // resumed.
+  MockWrite writes[] = {MockWrite(ASYNC, ERR_IO_PENDING, 0),
+                        MockWrite(ASYNC, OK, 1)};
+  MockRead reads[] = {MockRead(ASYNC, ERR_IO_PENDING, 2),
+                      MockRead(ASYNC, OK, 3)};
+  SequencedSocketData data(reads, writes);
+  helper.RunPreTestSetup();
+  helper.AddData(&data);
+
+  int rv = helper.trans()->Start(&request_, CompletionOnceCallback{}, log_);
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  base::RunLoop().RunUntilIdle();
+
+  helper.ResetTrans();
+
+  EXPECT_FALSE(data.AllReadDataConsumed());
+  EXPECT_FALSE(data.AllWriteDataConsumed());
+
+  const auto entries = net_log_observer.GetEntries();
+
+  size_t pos = ExpectLogContainsSomewhere(
+      entries, 0, NetLogEventType::HTTP2_SESSION_SEND_SETTINGS,
+      NetLogEventPhase::NONE);
+  ASSERT_LT(pos, entries.size());
+
+  const base::Value& params = entries[pos].params;
+  const base::Value* const settings = params.FindKey("settings");
+  ASSERT_TRUE(settings);
+  ASSERT_TRUE(settings->is_list());
+
+  base::Value::ConstListView list = settings->GetList();
+  ASSERT_FALSE(list.empty());
+  // Get last setting parameter.
+  const base::Value& greased_setting = list[list.size() - 1];
+  ASSERT_TRUE(greased_setting.is_string());
+  base::StringPiece greased_setting_string(greased_setting.GetString());
+
+  const std::string kExpectedPrefix = "[id:";
+  EXPECT_EQ(kExpectedPrefix,
+            greased_setting_string.substr(0, kExpectedPrefix.size()));
+  int setting_identifier = 0;
+  base::StringToInt(greased_setting_string.substr(kExpectedPrefix.size()),
+                    &setting_identifier);
+  // The setting identifier must be of format 0x?a?a.
+  EXPECT_EQ(0xa, setting_identifier % 16);
+  EXPECT_EQ(0xa, (setting_identifier / 256) % 16);
 }
 
 // If |http2_end_stream_with_data_frame| is false, then the HEADERS frame of a
