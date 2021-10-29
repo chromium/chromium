@@ -43195,6 +43195,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="4" label="A11y"/>
   <int value="5" label="Handwriting"/>
   <int value="6" label="Emoji"/>
+  <int value="7" label="StylusHandwriting"/>
 </enum>
 
 <enum name="IMEVKMode">
