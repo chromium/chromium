@@ -65,6 +65,16 @@
       "use_goma": true
     }
   },
+  "fuchsia-binary-size": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "is_debug": false,
+      "is_official_build": true,
+      "target_cpu": "arm64",
+      "target_os": "fuchsia",
+      "use_goma": true
+    }
+  },
   "fuchsia-compile-x64-dbg": {
     "gn_args": {
       "is_component_build": true,
