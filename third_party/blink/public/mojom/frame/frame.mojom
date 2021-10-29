@@ -1234,7 +1234,7 @@ interface LocalMainFrameHost {
   // Frame unload handlers should have already been called before this method is called.
   RequestClose();
 
-  // Causes a window previously opened via RenderMessageFilter::CreateNewWindow
+  // Causes a window previously opened via content.mojom.FrameHost::CreateNewWindow
   // to be shown on the screen. This message contains the opener_frame_token
   // which is always set. This is called on the main frame of the window to be shown.
   ShowCreatedWindow(blink.mojom.LocalFrameToken opener_frame_token,
