@@ -49637,6 +49637,7 @@ from previous Chrome versions.
   <int value="-963683462" label="EnablePalmSuppression:enabled"/>
   <int value="-962030536" label="ChromeDuetLabeled:enabled"/>
   <int value="-960077963" label="EnableAuraTooltipsOnWindows:enabled"/>
+  <int value="-959746153" label="SystemExtensions:disabled"/>
   <int value="-959173180" label="AccessibilityPageZoom:disabled"/>
   <int value="-958950214" label="AllowDisableMouseAcceleration:disabled"/>
   <int value="-958372962" label="LacrosSupport:enabled"/>
@@ -50618,6 +50619,7 @@ from previous Chrome versions.
       label="EnableEphemeralGuestProfilesOnDesktop:disabled"/>
   <int value="-176524053"
       label="VmCameraMicIndicatorsAndNotifications:disabled"/>
+  <int value="-176163507" label="SystemExtensions:enabled"/>
   <int value="-175696105" label="MessagesForAndroidUpdatePassword:enabled"/>
   <int value="-175692563" label="Vp9kSVCHWDecoding:disabled"/>
   <int value="-175666252" label="Portals:disabled"/>

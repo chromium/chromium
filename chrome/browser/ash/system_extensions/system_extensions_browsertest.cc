@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -13,7 +14,6 @@
 #include "chrome/browser/ash/system_extensions/system_extensions_provider_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -64,7 +64,7 @@ void CreateFakeSystemExtensionResources(
 class SystemExtensionsBrowserTest : public InProcessBrowserTest {
  public:
   SystemExtensionsBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kSystemExtensions);
+    feature_list_.InitAndEnableFeature(ash::features::kSystemExtensions);
   }
 
   ~SystemExtensionsBrowserTest() override = default;

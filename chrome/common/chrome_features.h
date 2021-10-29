@@ -643,9 +643,6 @@ extern const base::Feature kSupportTool;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kSysInternals;
 
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kSystemExtensions;
-
 COMPONENT_EXPORT(CHROME_FEATURES) extern const base::Feature kTPMFirmwareUpdate;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

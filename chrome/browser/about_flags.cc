@@ -3585,6 +3585,9 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kLockScreenNotifications)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"system-extensions", flag_descriptions::kSystemExtensionsName,
+     flag_descriptions::kSystemExtensionsDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kSystemExtensions)},
     {"crostini-bullseye-upgrade",
      flag_descriptions::kCrostiniBullseyeUpgradeName,
      flag_descriptions::kCrostiniBullseyeUpgradeDescription, kOsCrOS,

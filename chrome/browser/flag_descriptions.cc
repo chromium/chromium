@@ -4192,6 +4192,10 @@ const char kCrosRegionsModeDefault[] = "Default";
 const char kCrosRegionsModeOverride[] = "Override VPD values.";
 const char kCrosRegionsModeHide[] = "Hide VPD values.";
 
+const char kSystemExtensionsName[] = "Chrome OS System Extensions";
+const char kSystemExtensionsDescription[] =
+    "Enable the Chrome OS System Extension platform.";
+
 const char kCrostiniBullseyeUpgradeName[] = "Upgrade Crostini to Bullseye";
 const char kCrostiniBullseyeUpgradeDescription[] =
     "Offer to upgrade Crostini containers on older versions to bullseye.";

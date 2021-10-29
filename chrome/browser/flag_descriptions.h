@@ -2409,6 +2409,9 @@ extern const char kCrosRegionsModeDefault[];
 extern const char kCrosRegionsModeOverride[];
 extern const char kCrosRegionsModeHide[];
 
+extern const char kSystemExtensionsName[];
+extern const char kSystemExtensionsDescription[];
+
 extern const char kCrostiniBullseyeUpgradeName[];
 extern const char kCrostiniBullseyeUpgradeDescription[];
 

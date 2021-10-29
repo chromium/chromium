@@ -5090,6 +5090,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "system-extensions",
+    "owners": [ "calamity", "dominicschulz" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "system-keyboard-lock",
     "owners": [ "joedow", "garykac", "jamiewalch" ],
     // This flag allows users to prevent the keyboard-lock API from capturing
