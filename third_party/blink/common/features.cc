@@ -167,7 +167,7 @@ const base::Feature kNavigatorPluginsFixed{"NavigatorPluginsFixed",
 // Enable browser-initiated dedicated worker script loading
 // (PlzDedicatedWorker). https://crbug.com/906991
 const base::Feature kPlzDedicatedWorker{"PlzDedicatedWorker",
-                                        base::FEATURE_ENABLED_BY_DEFAULT};
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enable Portals. https://crbug.com/865123.
 // Note that default enabling this does not expose the portal

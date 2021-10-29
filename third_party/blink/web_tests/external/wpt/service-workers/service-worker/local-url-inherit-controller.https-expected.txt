@@ -5,6 +5,6 @@ FAIL Same-origin blob URL worker should inherit service worker controller. promi
 PASS Same-origin blob URL worker should intercept fetch().
 PASS Data URL iframe should not intercept fetch().
 FAIL Data URL worker should not inherit service worker controller. promise_test: Unhandled rejection with value: "Uncaught TypeError: Cannot read properties of undefined (reading 'controller')"
-PASS Data URL worker should not intercept fetch().
+FAIL Data URL worker should not intercept fetch(). assert_equals: data URL worker should not intercept fetch expected "" but got "intercepted"
 Harness: the test ran to completion.
 
