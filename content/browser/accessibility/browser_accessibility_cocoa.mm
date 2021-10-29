@@ -1805,21 +1805,13 @@ static NSDictionary* createMathSubSupScriptsPair(
 - (NSString*)invalid {
   if (![self instanceActive])
     return nil;
-  int invalidState;
-  if (!_owner->GetIntAttribute(ax::mojom::IntAttribute::kInvalidState,
-                               &invalidState))
-    return @"false";
-  // TODO(rhalavati): Replace with GetInvalidState() and remove NOTREACHED.
-  switch (static_cast<ax::mojom::InvalidState>(invalidState)) {
+  switch (_owner->GetData().GetInvalidState()) {
+    case ax::mojom::InvalidState::kNone:
     case ax::mojom::InvalidState::kFalse:
       return @"false";
     case ax::mojom::InvalidState::kTrue:
       return @"true";
-    default:
-      NOTREACHED();
   }
-
-  return @"false";
 }
 
 - (NSNumber*)isMultiSelectable {
