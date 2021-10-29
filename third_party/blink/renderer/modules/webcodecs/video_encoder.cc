@@ -247,19 +247,20 @@ VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
   result->level = 0;
   result->codec_string = config->codec();
 
+  // Some codec strings provide color space info, but for WebCodecs this is
+  // ignored. Instead, the VideoFrames given to encode() are the source of truth
+  // for input color space. Note also that the output color space is up to the
+  // underlying codec impl. See https://github.com/w3c/webcodecs/issues/345.
+  media::VideoColorSpace codec_string_color_space;
+
   bool parse_succeeded = media::ParseVideoCodecString(
       "", config->codec().Utf8(), &is_codec_ambiguous, &result->codec,
-      &result->profile, &result->level, &result->color_space);
+      &result->profile, &result->level, &codec_string_color_space);
 
   if (!parse_succeeded || is_codec_ambiguous) {
     exception_state.ThrowTypeError("Unknown codec.");
     return nullptr;
   }
-
-  // For now spec allows UA to always choose the output color space, so ignore
-  // whatever we parsed from the codec string. Hard-code to 601 since that is
-  // correct most often. See https://crbug.com/1241448.
-  result->color_space = media::VideoColorSpace::REC601();
 
   // We are done with the parsing.
   if (!config->hasAvc())
@@ -858,8 +859,22 @@ void VideoEncoder::CallOutputCallback(
   if (active_config->options.scalability_mode.has_value())
     metadata->setTemporalLayerId(output.temporal_id);
 
-  if (first_output_after_configure_ || codec_desc.has_value()) {
+  // TODO(https://crbug.com/1241448): All encoders should output color space.
+  // For now, fallback to 601 since that is correct most often.
+  gfx::ColorSpace output_color_space = output.color_space.IsValid()
+                                           ? output.color_space
+                                           : gfx::ColorSpace::CreateREC601();
+
+  if (first_output_after_configure_ || codec_desc.has_value() ||
+      output_color_space != last_output_color_space_) {
     first_output_after_configure_ = false;
+
+    if (output_color_space != last_output_color_space_) {
+      DCHECK(output.key_frame) << "Encoders should generate a keyframe when "
+                               << "changing color space";
+      last_output_color_space_ = output_color_space;
+    }
+
     auto* decoder_config = VideoDecoderConfig::Create();
     decoder_config->setCodec(active_config->codec_string);
     decoder_config->setCodedHeight(active_config->options.frame_size.height());
@@ -873,7 +888,7 @@ void VideoEncoder::CallOutputCallback(
     }
 
     VideoColorSpace* color_space =
-        MakeGarbageCollected<VideoColorSpace>(active_config->color_space);
+        MakeGarbageCollected<VideoColorSpace>(output_color_space);
     decoder_config->setColorSpace(color_space->toJSON());
 
     if (codec_desc.has_value()) {
